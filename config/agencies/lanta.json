@@ -8,11 +8,30 @@
   "feedUrl": "https://realtimelanta.availtec.com/InfoPoint/gtfs-zip.ashx",
   "region": "Pennsylvania",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-30010/latest.zip",
-  "lastFeedExpiry": "20260823",
-  "lastFeedVersion": "20260806",
-  "lastRefreshedAt": "2026-08-07",
+  "lastFeedExpiry": "20270124",
+  "lastFeedVersion": "20260813",
+  "lastRefreshedAt": "2026-08-24",
   "cities": [
     "Allentown, Pennsylvania",
     "Bethlehem, Pennsylvania"
-  ]
+  ],
+  "lastFeedCheckAt": "20260824",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270124",
+  "feedQuality": {
+    "status": "review",
+    "score": 70,
+    "reasons": [
+      "4 route frequency metrics need review."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 4,
+      "featureCount": 150
+    },
+    "checkedAt": "2026-08-24"
+  }
 }

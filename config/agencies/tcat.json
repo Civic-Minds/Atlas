@@ -7,7 +7,24 @@
     -76.501
   ],
   "feedUrl": "https://s3.amazonaws.com/tcat-gtfs/tcat-ny-us.zip",
-  "lastFeedExpiry": "20260815",
-  "lastFeedVersion": "20260625",
-  "lastRefreshedAt": "2026-08-07"
+  "lastFeedExpiry": "20261219",
+  "lastFeedVersion": "20260811",
+  "lastRefreshedAt": "2026-08-24",
+  "lastFeedCheckAt": "20260824",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261219",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 160
+    },
+    "checkedAt": "2026-08-24"
+  }
 }

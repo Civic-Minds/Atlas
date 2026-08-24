@@ -6,14 +6,31 @@
     41.59,
     -93.62
   ],
-  "feedUrl": "https://files.mobilitydatabase.org/mdb-193/mdb-193-202606150117/mdb-193-202606150117.zip",
-  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-193/mdb-193-202606150117/mdb-193-202606150117.zip",
-  "lastFeedExpiry": "20260822",
-  "lastFeedVersion": "2026.06_20260514",
-  "lastRefreshedAt": "2026-08-07",
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-193/latest.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-193/latest.zip",
+  "lastFeedExpiry": "20261121",
+  "lastFeedVersion": null,
+  "lastRefreshedAt": "2026-08-24",
   "cities": [
     "Des Moines, Iowa",
     "West Des Moines, Iowa",
     "Ankeny, Iowa"
-  ]
+  ],
+  "lastFeedCheckAt": "20260824",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261121",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 66
+    },
+    "checkedAt": "2026-08-24"
+  }
 }

@@ -5,11 +5,11 @@
     36.17,
     -115.14
   ],
-  "feedUrl": "https://files.mobilitydatabase.org/mdb-2351/mdb-2351-202606300119/mdb-2351-202606300119.zip",
-  "lastFeedExpiry": "20260822",
-  "lastFeedVersion": "October 2025_20260302",
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-2351/latest.zip",
+  "lastFeedExpiry": "20270821",
+  "lastFeedVersion": "August 2026_20260730",
   "region": "Nevada",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-24",
   "cities": [
     "Las Vegas, Nevada",
     "Spring Valley, Nevada",
@@ -18,5 +18,24 @@
     "Sunrise Manor, Nevada",
     "Henderson, Nevada",
     "Enterprise, Nevada"
-  ]
+  ],
+  "lastFeedCheckAt": "20260824",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270821",
+  "feedQuality": {
+    "status": "review",
+    "score": 80,
+    "reasons": [
+      "2 route frequency metrics need review."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 2,
+      "featureCount": 294
+    },
+    "checkedAt": "2026-08-24"
+  }
 }

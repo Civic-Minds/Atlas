@@ -19,8 +19,27 @@
     "Catalina Foothills, Arizona"
   ],
   "timezone": "America/Phoenix",
-  "lastFeedExpiry": "20260815",
-  "lastFeedVersion": "May1726_20260501",
+  "lastFeedExpiry": "20261128",
+  "lastFeedVersion": "Aug1626_20260723",
   "lastRawArchiveKey": "20260815-5c6eab88e8d5dede",
-  "lastRefreshedAt": "2026-08-13"
+  "lastRefreshedAt": "2026-08-24",
+  "lastFeedCheckAt": "20260824",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261128",
+  "feedQuality": {
+    "status": "review",
+    "score": 80,
+    "reasons": [
+      "2 shape corrections needed."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 2,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 206
+    },
+    "checkedAt": "2026-08-24"
+  }
 }

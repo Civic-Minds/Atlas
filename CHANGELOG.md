@@ -6,6 +6,9 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Feed audits now compare expired snapshots with newer available sources, preventing stale agency URLs from hiding current service.
+- Expired-feed audits now hold inaccessible replacement sources for manual review instead of treating them as definitively expired.
+- Expired-feed notices now show how many automatic checks have confirmed the same stale schedule.
 - Invisible routes can no longer be selected through the map's transparent click area when they have no service in the active period.
 - Reprocessed 39 production agencies that were registered but missing from the map, including Orangeville and Owen Sound, and rebuilt the shared route archive.
 - Route cards no longer show a bogus "Combined" frequency for lettered route variants that don't actually share a real path, and for larger families (e.g. GRTC's 1/1A/1B/1C) only the members that truly share one now combine — matching letters or numbers in the name wasn't enough evidence on its own ([#448](https://github.com/Civic-Minds/Atlas/issues/448)).

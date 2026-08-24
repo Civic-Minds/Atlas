@@ -441,6 +441,9 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
                     helpTopic: 'new-schedule-data',
                     agencyName: agency.name,
                     lastRefreshedAt: agency.lastRefreshedAt ?? undefined,
+                    lastFeedCheckAt: agency.lastFeedCheckAt ?? undefined,
+                    expiredFeedCheckCount: agency.expiredFeedCheckCount,
+                    expiredFeedCheckSince: agency.expiredFeedCheckSince ?? undefined,
                     websiteUrl: agency.websiteUrl,
                   })}
                 />

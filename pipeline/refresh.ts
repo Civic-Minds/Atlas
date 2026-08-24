@@ -49,6 +49,7 @@ import { historyRouteKey } from './historyRouteKey.js';
 import { effectiveFeedExpiry } from './feedFreshness.js';
 import { isActiveProductionFeed } from '../shared/feedAvailability.js';
 import { bumpPublicDataVersion } from './dataVersion.js';
+import { recordFeedCheck, type FeedCheckFields } from './feedCheckTracking.js';
 
 console.log(`  env: ${LOADED_ENV_FILE} (bucket=${process.env.R2_BUCKET_NAME ?? '?'}${isProductionPublicR2Bucket() ? ' [PRODUCTION]' : ' [non-prod]'})`);
 
@@ -191,6 +192,10 @@ interface AgencyEntry {
   lastFeedExpiry?: string | null;
   lastFeedVersion?: string | null;
   lastRefreshedAt?: string | null;
+  lastFeedCheckAt?: string | null;
+  expiredFeedCheckCount?: number;
+  expiredFeedCheckSince?: string | null;
+  expiredFeedCheckExpiry?: string | null;
   agencyId?: string;
   routeTypes?: number[];
   preprocess?: GtfsPreprocess;
@@ -271,6 +276,7 @@ async function refreshAgency(
   // Primary key: feed_end_date. Fallback: feed_version (for agencies without feed_info expiry).
   const { feedExpiry: peekedExpiry, feedVersion: peekedVersion } = await peekFeedInfo(buf);
   const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+  recordFeedCheck(agency as FeedCheckFields, { feedExpiry: peekedExpiry, todayYmd: today });
 
   if (isFeedExpired(peekedExpiry, today)) {
     const expDate = `${peekedExpiry.slice(0, 4)}-${peekedExpiry.slice(4, 6)}-${peekedExpiry.slice(6, 8)}`;

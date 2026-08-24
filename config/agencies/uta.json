@@ -5,11 +5,11 @@
     40.76,
     -111.89
   ],
-  "feedUrl": "https://files.mobilitydatabase.org/mdb-170/mdb-170-202606250127/mdb-170-202606250127.zip",
-  "lastFeedExpiry": "20260815",
-  "lastFeedVersion": "2026 April SGR After_20260624",
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-170/latest.zip",
+  "lastFeedExpiry": "20261205",
+  "lastFeedVersion": "2026 AUG_20260813",
   "region": "Utah",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-24",
   "cities": [
     "Salt Lake City, Utah",
     "Ogden, Utah",
@@ -21,5 +21,22 @@
     "Taylorsville, Utah",
     "Sandy, Utah",
     "Orem, Utah"
-  ]
+  ],
+  "lastFeedCheckAt": "20260824",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261205",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 363
+    },
+    "checkedAt": "2026-08-24"
+  }
 }

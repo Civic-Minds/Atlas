@@ -13,7 +13,7 @@
     44.8,
     -77.5
   ],
-  "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-go-transit-gtfs-1993.zip?alt=media",
+  "feedUrl": "https://assets.metrolinx.com/raw/upload/Documents/Metrolinx/Open%20Data/GO-GTFS.zip",
   "lastFeedExpiry": "20260904",
   "lastFeedVersion": "20260529182459",
   "lastRefreshedAt": "2026-08-08",

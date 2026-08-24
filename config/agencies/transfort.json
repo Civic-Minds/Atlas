@@ -5,12 +5,12 @@
     40.4552,
     -105.0936
   ],
-  "feedUrl": "https://files.mobilitydatabase.org/mdb-179/mdb-179-202404150046/mdb-179-202404150046.zip",
+  "feedUrl": "https://ridetransfort.com/wp-content/uploads/transfort_gtfs.zip",
   "mdbFeedUrl": null,
-  "lastFeedExpiry": "20240511",
-  "lastFeedVersion": "S1000201",
+  "lastFeedExpiry": "20270116",
+  "lastFeedVersion": "S1000234",
   "region": "Colorado",
-  "lastRefreshedAt": "20260811",
+  "lastRefreshedAt": "2026-08-24",
   "websiteUrl": "http://www.ridetransfort.com/",
   "cities": [
     "Fort Collins, Colorado",
@@ -19,5 +19,22 @@
     "Boulder, Colorado"
   ],
   "timezone": "America/Denver",
-  "lastRawArchiveKey": "20240511-1765080d3133e8df"
+  "lastRawArchiveKey": "20240511-1765080d3133e8df",
+  "lastFeedCheckAt": "20260824",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270116",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 60
+    },
+    "checkedAt": "2026-08-24"
+  }
 }

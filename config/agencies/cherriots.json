@@ -12,15 +12,34 @@
     45.31,
     -122.42
   ],
-  "feedUrl": "https://www.cherriots.org/media/doc/gtfs.zip",
+  "feedUrl": "https://cherriots.rideralerts.com/InfoPoint/gtfs-zip.ashx",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-oregon-cherriots-gtfs-128.zip?alt=media",
-  "lastFeedExpiry": "20260102",
-  "lastFeedVersion": null,
-  "lastRefreshedAt": "20260811",
+  "lastFeedExpiry": "20270117",
+  "lastFeedVersion": "20260717",
+  "lastRefreshedAt": "2026-08-24",
   "cities": [
     "Salem, Oregon",
     "Tigard, Oregon"
   ],
   "timezone": "America/Los_Angeles",
-  "lastRawArchiveKey": "20260102-024bddedbb9eacbd"
+  "lastRawArchiveKey": "20260102-024bddedbb9eacbd",
+  "lastFeedCheckAt": "20260824",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270117",
+  "feedQuality": {
+    "status": "review",
+    "score": 70,
+    "reasons": [
+      "12 shape corrections needed."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 12,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 136
+    },
+    "checkedAt": "2026-08-24"
+  }
 }

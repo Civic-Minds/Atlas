@@ -193,7 +193,7 @@
         44.8,
         -77.5
       ],
-      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-go-transit-gtfs-1993.zip?alt=media",
+      "feedUrl": "https://assets.metrolinx.com/raw/upload/Documents/Metrolinx/Open%20Data/GO-GTFS.zip",
       "lastFeedExpiry": "20260904",
       "lastFeedVersion": "20260529182459",
       "lastRefreshedAt": "2026-08-08",
@@ -261,6 +261,10 @@
       "lastFeedVersion": "2025 May _20250801",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-guelph-transit-gtfs-1300.zip?alt=media",
       "lastRefreshedAt": "20260811",
+      "lastFeedCheckAt": "20260817",
+      "expiredFeedCheckCount": 19,
+      "expiredFeedCheckSince": "20260622",
+      "expiredFeedCheckExpiry": "20250830",
       "websiteUrl": "http://www.guelphtransit.ca",
       "cities": [
         "Guelph, Ontario"
@@ -990,10 +994,10 @@
         -73.21
       ],
       "feedUrl": "https://www.stlaval.ca/datas/opendata/GTF_STL.zip",
-      "lastFeedExpiry": "20260821",
-      "lastFeedVersion": "20260810044658",
+      "lastFeedExpiry": "20261030",
+      "lastFeedVersion": "20260824044705",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-societe-de-transport-de-laval-gtfs-3190.zip?alt=media",
-      "lastRefreshedAt": "2026-08-10",
+      "lastRefreshedAt": "2026-08-24",
       "cities": [
         "Laval, Quebec",
         "Chomedey, Quebec",
@@ -1005,7 +1009,26 @@
         "Ahuntsic-Cartierville, Quebec",
         "Saint-Léonard, Quebec",
         "Saint-Laurent, Quebec"
-      ]
+      ],
+      "lastFeedCheckAt": "20260824",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20261030",
+      "feedQuality": {
+        "status": "review",
+        "score": 90,
+        "reasons": [
+          "1 route frequency metric need review."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 1,
+          "featureCount": 259
+        },
+        "checkedAt": "2026-08-24"
+      }
     },
     {
       "slug": "stlevis",
@@ -1050,12 +1073,12 @@
         -73.07
       ],
       "feedUrl": "https://www.stm.info/sites/default/files/gtfs/gtfs_stm.zip",
-      "lastFeedExpiry": "20260823",
-      "lastFeedVersion": "20260602153030_26U",
+      "lastFeedExpiry": "20261025",
+      "lastFeedVersion": "20260805110000_26S",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-societe-de-transport-de-montreal-stm-gtfs-2126.zip?alt=media",
       "gtfsFares": true,
       "fareUrl": "https://www.stm.info/en/info/fares",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-24",
       "cities": [
         "Saint-Laurent, Quebec",
         "Notre-Dame-de-Grâce, Quebec",
@@ -1067,7 +1090,26 @@
         "Pierrefonds, Quebec",
         "Rosemont–La Petite-Patrie, Quebec",
         "Ville-Marie, Quebec"
-      ]
+      ],
+      "lastFeedCheckAt": "20260824",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20261025",
+      "feedQuality": {
+        "status": "review",
+        "score": 90,
+        "reasons": [
+          "1 route frequency metric need review."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 1,
+          "featureCount": 1129
+        },
+        "checkedAt": "2026-08-24"
+      }
     },
     {
       "slug": "sto",
@@ -1976,15 +2018,32 @@
         -73.756
       ],
       "feedUrl": "https://www.cdta.org/schedules/google_transit.zip",
-      "lastFeedExpiry": "20260822",
+      "lastFeedExpiry": "20261128",
       "lastFeedVersion": "Major",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-capital-district-transportation-authority-cdta-gtfs-538.zip?alt=media",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-24",
       "cities": [
         "West Albany, New York",
         "Schenectady, New York",
         "Albany, New York"
-      ]
+      ],
+      "lastFeedCheckAt": "20260824",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20261128",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 315
+        },
+        "checkedAt": "2026-08-24"
+      }
     },
     {
       "slug": "centro",
@@ -2014,9 +2073,26 @@
         -76.501
       ],
       "feedUrl": "https://s3.amazonaws.com/tcat-gtfs/tcat-ny-us.zip",
-      "lastFeedExpiry": "20260815",
-      "lastFeedVersion": "20260625",
-      "lastRefreshedAt": "2026-08-07"
+      "lastFeedExpiry": "20261219",
+      "lastFeedVersion": "20260811",
+      "lastRefreshedAt": "2026-08-24",
+      "lastFeedCheckAt": "20260824",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20261219",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 160
+        },
+        "checkedAt": "2026-08-24"
+      }
     },
     {
       "slug": "broome",
@@ -2061,15 +2137,34 @@
         -81.519
       ],
       "feedUrl": "https://www.yourmetrobus.org/Data/Sites/2/gtfs-data/metro_rta_gtfs.zip",
-      "lastFeedExpiry": "20260822",
-      "lastFeedVersion": "Updated: Jul 29, 2026, 7:39 AM",
+      "lastFeedExpiry": "20270116",
+      "lastFeedVersion": "Updated: Aug 6, 2026, 12:06 PM",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-ohio-akron-metro-regional-transit-authority-metro-gtfs-411.zip?alt=media",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-24",
       "cities": [
         "Akron, Ohio",
         "Parma, Ohio",
         "Cleveland, Ohio"
-      ]
+      ],
+      "lastFeedCheckAt": "20260824",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20270116",
+      "feedQuality": {
+        "status": "review",
+        "score": 80,
+        "reasons": [
+          "2 shape corrections needed."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 2,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 136
+        },
+        "checkedAt": "2026-08-24"
+      }
     },
     {
       "slug": "sarta",
@@ -2134,12 +2229,29 @@
         -84.556
       ],
       "feedUrl": "http://developers.cata.org/gtfsdownload.ashx?key=5b4690ed-0a69-4320-897b-7d92def4b96f&data=base",
-      "lastFeedExpiry": "20260823",
-      "lastFeedVersion": "26-04 (May04-Aug23)_20260512",
-      "lastRefreshedAt": "2026-08-07",
+      "lastFeedExpiry": "20261011",
+      "lastFeedVersion": "26-05 (May04-Oct11)_20260817",
+      "lastRefreshedAt": "2026-08-24",
       "cities": [
         "Lansing, Michigan"
-      ]
+      ],
+      "lastFeedCheckAt": "20260824",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20261011",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 131
+        },
+        "checkedAt": "2026-08-24"
+      }
     },
     {
       "slug": "the-rapid",
@@ -3032,18 +3144,38 @@
         44.22,
         -122.12
       ],
-      "feedUrl": "https://www.ltd.org/files/library/ltdgtfs.zip",
+      "feedUrl": "https://feed.ltd.org/TMGTFSRealTimeWebService/GTFS/google_transit.zip",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-oregon-lane-transit-district-ltd-gtfs-131.zip?alt=media",
-      "lastFeedExpiry": "20260131",
-      "lastFeedVersion": "",
-      "lastRefreshedAt": "20260811",
+      "lastFeedExpiry": "20260905",
+      "lastFeedVersion": "2606a",
+      "lastRefreshedAt": "2026-08-24",
       "websiteUrl": "http://www.ltd.org",
       "cities": [
         "Eugene, Oregon",
         "Springfield, Oregon"
       ],
       "timezone": "America/Los_Angeles",
-      "lastRawArchiveKey": "20260131-84ccd5ec5befb0c2"
+      "lastRawArchiveKey": "20260131-84ccd5ec5befb0c2",
+      "lastFeedCheckAt": "20260824",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20260905",
+      "feedQuality": {
+        "status": "review",
+        "score": 70,
+        "reasons": [
+          "1 validation warning.",
+          "2 shape corrections needed."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 1,
+          "shapeAnomalies": 2,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 141
+        },
+        "checkedAt": "2026-08-24"
+      }
     },
     {
       "slug": "cherriots",
@@ -3059,17 +3191,36 @@
         45.31,
         -122.42
       ],
-      "feedUrl": "https://www.cherriots.org/media/doc/gtfs.zip",
+      "feedUrl": "https://cherriots.rideralerts.com/InfoPoint/gtfs-zip.ashx",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-oregon-cherriots-gtfs-128.zip?alt=media",
-      "lastFeedExpiry": "20260102",
-      "lastFeedVersion": null,
-      "lastRefreshedAt": "20260811",
+      "lastFeedExpiry": "20270117",
+      "lastFeedVersion": "20260717",
+      "lastRefreshedAt": "2026-08-24",
       "cities": [
         "Salem, Oregon",
         "Tigard, Oregon"
       ],
       "timezone": "America/Los_Angeles",
-      "lastRawArchiveKey": "20260102-024bddedbb9eacbd"
+      "lastRawArchiveKey": "20260102-024bddedbb9eacbd",
+      "lastFeedCheckAt": "20260824",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20270117",
+      "feedQuality": {
+        "status": "review",
+        "score": 70,
+        "reasons": [
+          "12 shape corrections needed."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 12,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 136
+        },
+        "checkedAt": "2026-08-24"
+      }
     },
     {
       "slug": "corvallis",
@@ -4311,11 +4462,11 @@
         38.74,
         -121.45
       ],
-      "feedUrl": "http://www.yolobus.com/GTFS/google_transit.zip",
+      "feedUrl": "https://avl.yctd.org/RealTime/google_transit.zip",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-yolo-county-transportation-district-gtfs-1295.zip?alt=media",
-      "lastFeedExpiry": "20260201",
+      "lastFeedExpiry": "20260907",
       "lastFeedVersion": null,
-      "lastRefreshedAt": "20260811",
+      "lastRefreshedAt": "2026-08-24",
       "cities": [
         "West Sacramento, California",
         "Woodland, California",
@@ -4323,7 +4474,26 @@
         "Sacramento, California"
       ],
       "timezone": "America/Los_Angeles",
-      "lastRawArchiveKey": "20260201-a6cccff8306719af"
+      "lastRawArchiveKey": "20260201-a6cccff8306719af",
+      "lastFeedCheckAt": "20260824",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20260907",
+      "feedQuality": {
+        "status": "review",
+        "score": 70,
+        "reasons": [
+          "6 shape corrections needed."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 6,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 34
+        },
+        "checkedAt": "2026-08-24"
+      }
     },
     {
       "slug": "unitrans",
@@ -4633,11 +4803,11 @@
         33.77,
         -118.19
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-1198/mdb-1198-202606170039/mdb-1198-202606170039.zip",
-      "lastFeedExpiry": "20260823",
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-1198/latest.zip",
+      "lastFeedExpiry": "20270206",
       "lastFeedVersion": null,
       "region": "California",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-24",
       "cities": [
         "Long Beach, California",
         "Lakewood, California",
@@ -4649,7 +4819,24 @@
         "Wilmington, California",
         "Downey, California",
         "Santa Monica, California"
-      ]
+      ],
+      "lastFeedCheckAt": "20260824",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20270206",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 198
+        },
+        "checkedAt": "2026-08-24"
+      }
     },
     {
       "slug": "octa",
@@ -4945,14 +5132,31 @@
         34.42,
         -119.7
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-1246/mdb-1246-202606300054/mdb-1246-202606300054.zip",
-      "lastFeedExpiry": "20260816",
-      "lastFeedVersion": "S1000258",
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-1246/latest.zip",
+      "lastFeedExpiry": "20261129",
+      "lastFeedVersion": "S1000262",
       "region": "California",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-24",
       "cities": [
         "Santa Barbara, California"
-      ]
+      ],
+      "lastFeedCheckAt": "20260824",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20261129",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 108
+        },
+        "checkedAt": "2026-08-24"
+      }
     },
     {
       "slug": "slotransit",
@@ -5017,11 +5221,11 @@
         36.17,
         -115.14
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-2351/mdb-2351-202606300119/mdb-2351-202606300119.zip",
-      "lastFeedExpiry": "20260822",
-      "lastFeedVersion": "October 2025_20260302",
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2351/latest.zip",
+      "lastFeedExpiry": "20270821",
+      "lastFeedVersion": "August 2026_20260730",
       "region": "Nevada",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-24",
       "cities": [
         "Las Vegas, Nevada",
         "Spring Valley, Nevada",
@@ -5030,7 +5234,26 @@
         "Sunrise Manor, Nevada",
         "Henderson, Nevada",
         "Enterprise, Nevada"
-      ]
+      ],
+      "lastFeedCheckAt": "20260824",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20270821",
+      "feedQuality": {
+        "status": "review",
+        "score": 80,
+        "reasons": [
+          "2 route frequency metrics need review."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 2,
+          "featureCount": 294
+        },
+        "checkedAt": "2026-08-24"
+      }
     },
     {
       "slug": "rtcwashoe",
@@ -5224,11 +5447,11 @@
         30.27,
         -97.74
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-150/mdb-150-202607020147/mdb-150-202607020147.zip",
-      "lastFeedExpiry": "20260815",
-      "lastFeedVersion": "260630_1449",
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-150/latest.zip",
+      "lastFeedExpiry": "20270109",
+      "lastFeedVersion": "260818_1456",
       "region": "Texas",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-24",
       "cities": [
         "University of Texas, Texas",
         "Austin, Texas",
@@ -5236,7 +5459,27 @@
         "Cedar Park, Texas",
         "Round Rock, Texas",
         "Leander, Texas"
-      ]
+      ],
+      "lastFeedCheckAt": "20260824",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20270109",
+      "feedQuality": {
+        "status": "review",
+        "score": 60,
+        "reasons": [
+          "28 shape corrections needed.",
+          "1 route frequency metric need review."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 28,
+          "routeHeadwayMismatches": 1,
+          "featureCount": 318
+        },
+        "checkedAt": "2026-08-24"
+      }
     },
     {
       "slug": "dart",
@@ -5320,14 +5563,31 @@
         29.42,
         -98.49
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/tld-217/tld-217-202607030139/tld-217-202607030139.zip",
-      "lastFeedExpiry": "20260823",
-      "lastFeedVersion": "May 2026_20260701",
+      "feedUrl": "https://files.mobilitydatabase.org/tld-217/latest.zip",
+      "lastFeedExpiry": "20270110",
+      "lastFeedVersion": null,
       "region": "Texas",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-24",
       "cities": [
         "San Antonio, Texas"
-      ]
+      ],
+      "lastFeedCheckAt": "20260824",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20270110",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 626
+        },
+        "checkedAt": "2026-08-24"
+      }
     },
     {
       "slug": "embark",
@@ -5449,15 +5709,32 @@
         39.1,
         -84.51
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-307/mdb-307-202607010002/mdb-307-202607010002.zip",
-      "lastFeedExpiry": "20260815",
-      "lastFeedVersion": "gtfs_20260531-20260815_20260626",
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-307/latest.zip",
+      "lastFeedExpiry": "20261205",
+      "lastFeedVersion": "gtfs_20260816-20261205_20260818",
       "region": "Ohio",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-24",
       "cities": [
         "Cincinnati, Ohio",
         "Hamilton, Ohio"
-      ]
+      ],
+      "lastFeedCheckAt": "20260824",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20261205",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 299
+        },
+        "checkedAt": "2026-08-24"
+      }
     },
     {
       "slug": "tarc",
@@ -6017,12 +6294,12 @@
         40.4552,
         -105.0936
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-179/mdb-179-202404150046/mdb-179-202404150046.zip",
+      "feedUrl": "https://ridetransfort.com/wp-content/uploads/transfort_gtfs.zip",
       "mdbFeedUrl": null,
-      "lastFeedExpiry": "20240511",
-      "lastFeedVersion": "S1000201",
+      "lastFeedExpiry": "20270116",
+      "lastFeedVersion": "S1000234",
       "region": "Colorado",
-      "lastRefreshedAt": "20260811",
+      "lastRefreshedAt": "2026-08-24",
       "websiteUrl": "http://www.ridetransfort.com/",
       "cities": [
         "Fort Collins, Colorado",
@@ -6031,7 +6308,24 @@
         "Boulder, Colorado"
       ],
       "timezone": "America/Denver",
-      "lastRawArchiveKey": "20240511-1765080d3133e8df"
+      "lastRawArchiveKey": "20240511-1765080d3133e8df",
+      "lastFeedCheckAt": "20260824",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20270116",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 60
+        },
+        "checkedAt": "2026-08-24"
+      }
     },
     {
       "slug": "septa",
@@ -6052,9 +6346,9 @@
         "https://files.mobilitydatabase.org/mdb-503/mdb-503-202608050051/mdb-503-202608050051.zip"
       ],
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-502/mdb-502-202608050207/mdb-502-202608050207.zip",
-      "lastFeedExpiry": "20260822",
-      "lastFeedVersion": "v202608090",
-      "lastRefreshedAt": "2026-08-10",
+      "lastFeedExpiry": "20270220",
+      "lastFeedVersion": "v202608233",
+      "lastRefreshedAt": "2026-08-24",
       "cities": [
         "Havertown, Pennsylvania",
         "Philadelphia, Pennsylvania",
@@ -6066,7 +6360,26 @@
         "Cherry Hill, New Jersey",
         "Camden, New Jersey",
         "Reading, Pennsylvania"
-      ]
+      ],
+      "lastFeedCheckAt": "20260824",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20270220",
+      "feedQuality": {
+        "status": "review",
+        "score": 70,
+        "reasons": [
+          "7 route frequency metrics need review."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 7,
+          "featureCount": 1027
+        },
+        "checkedAt": "2026-08-24"
+      }
     },
     {
       "slug": "wmata",
@@ -6774,11 +7087,11 @@
         44.98,
         -93.27
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-205/mdb-205-202606280024/mdb-205-202606280024.zip",
-      "lastFeedExpiry": "20260821",
-      "lastFeedVersion": "1782334167",
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-205/latest.zip",
+      "lastFeedExpiry": "20261204",
+      "lastFeedVersion": "1787169866",
       "region": "Minnesota",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-24",
       "cities": [
         "Minneapolis, Minnesota",
         "Saint Paul, Minnesota",
@@ -6790,7 +7103,27 @@
         "Minnetonka Mills, Minnesota",
         "Plymouth, Minnesota",
         "West Coon Rapids, Minnesota"
-      ]
+      ],
+      "lastFeedCheckAt": "20260824",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20261204",
+      "feedQuality": {
+        "status": "review",
+        "score": 60,
+        "reasons": [
+          "1 shape correction needed.",
+          "11 route frequency metrics need review."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 1,
+          "routeHeadwayMismatches": 11,
+          "featureCount": 652
+        },
+        "checkedAt": "2026-08-24"
+      }
     },
     {
       "slug": "port-authority-pa",
@@ -7091,11 +7424,11 @@
         40.76,
         -111.89
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-170/mdb-170-202606250127/mdb-170-202606250127.zip",
-      "lastFeedExpiry": "20260815",
-      "lastFeedVersion": "2026 April SGR After_20260624",
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-170/latest.zip",
+      "lastFeedExpiry": "20261205",
+      "lastFeedVersion": "2026 AUG_20260813",
       "region": "Utah",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-24",
       "cities": [
         "Salt Lake City, Utah",
         "Ogden, Utah",
@@ -7107,7 +7440,24 @@
         "Taylorsville, Utah",
         "Sandy, Utah",
         "Orem, Utah"
-      ]
+      ],
+      "lastFeedCheckAt": "20260824",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20261205",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 363
+        },
+        "checkedAt": "2026-08-24"
+      }
     },
     {
       "slug": "jta",
@@ -7211,11 +7561,11 @@
         39.29,
         -76.61
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-466/mdb-466-202607030053/mdb-466-202607030053.zip",
-      "lastFeedExpiry": "20260822",
-      "lastFeedVersion": "20260701",
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-466/latest.zip",
+      "lastFeedExpiry": "20270206",
+      "lastFeedVersion": "20260821",
       "region": "Maryland",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-24",
       "cities": [
         "Baltimore, Maryland",
         "Towson, Maryland",
@@ -7224,7 +7574,27 @@
         "Glen Burnie, Maryland",
         "Bowie, Maryland",
         "Columbia, Maryland"
-      ]
+      ],
+      "lastFeedCheckAt": "20260824",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20270206",
+      "feedQuality": {
+        "status": "review",
+        "score": 60,
+        "reasons": [
+          "4 shape corrections needed.",
+          "1 route frequency metric need review."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 4,
+          "routeHeadwayMismatches": 1,
+          "featureCount": 420
+        },
+        "checkedAt": "2026-08-24"
+      }
     },
     {
       "slug": "hart",
@@ -7234,17 +7604,36 @@
         -82.46
       ],
       "agencyId": "1",
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-325/mdb-325-202605190014/mdb-325-202605190014.zip",
-      "lastFeedExpiry": "20260815",
-      "lastFeedVersion": "2606.2",
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-325/latest.zip",
+      "lastFeedExpiry": "20270102",
+      "lastFeedVersion": "2608.1",
       "region": "Florida",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-24",
       "cities": [
         "Tampa, Florida",
         "Town 'n' Country, Florida",
         "Brandon, Florida",
         "Riverview, Florida"
-      ]
+      ],
+      "lastFeedCheckAt": "20260824",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20270102",
+      "feedQuality": {
+        "status": "review",
+        "score": 90,
+        "reasons": [
+          "1 validation warning."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 1,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 170
+        },
+        "checkedAt": "2026-08-24"
+      }
     },
     {
       "slug": "tampa-international-airport",
@@ -7254,15 +7643,34 @@
         -82.5348
       ],
       "agencyId": "2",
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-325/mdb-325-202605190014/mdb-325-202605190014.zip",
-      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-325/mdb-325-202605190014/mdb-325-202605190014.zip",
-      "lastFeedExpiry": "20260815",
-      "lastFeedVersion": "2606.2",
-      "lastRefreshedAt": "2026-08-10",
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-325/latest.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-325/latest.zip",
+      "lastFeedExpiry": "20270102",
+      "lastFeedVersion": "2608.1",
+      "lastRefreshedAt": "2026-08-24",
       "websiteUrl": "https://www.tampaairport.com/",
       "cities": [
         "Tampa, Florida"
-      ]
+      ],
+      "lastFeedCheckAt": "20260824",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20270102",
+      "feedQuality": {
+        "status": "review",
+        "score": 90,
+        "reasons": [
+          "1 validation warning."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 1,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 6
+        },
+        "checkedAt": "2026-08-24"
+      }
     },
     {
       "slug": "lynx",
@@ -7292,14 +7700,31 @@
         21.31,
         -157.86
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-2350/mdb-2350-202605210014/mdb-2350-202605210014.zip",
-      "lastFeedExpiry": "20260822",
-      "lastFeedVersion": "(2605_v5_BusRail_MERGED_Landlines)",
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2350/latest.zip",
+      "lastFeedExpiry": "20261205",
+      "lastFeedVersion": "(2608_v5_BusRail_MERGED_Landlines)",
       "region": "Hawaii",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-24",
       "cities": [
         "Honolulu, Hawaii"
-      ]
+      ],
+      "lastFeedCheckAt": "20260824",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20261205",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 640
+        },
+        "checkedAt": "2026-08-24"
+      }
     },
     {
       "slug": "ripta",
@@ -7866,10 +8291,29 @@
         "Catalina Foothills, Arizona"
       ],
       "timezone": "America/Phoenix",
-      "lastFeedExpiry": "20260815",
-      "lastFeedVersion": "May1726_20260501",
+      "lastFeedExpiry": "20261128",
+      "lastFeedVersion": "Aug1626_20260723",
       "lastRawArchiveKey": "20260815-5c6eab88e8d5dede",
-      "lastRefreshedAt": "2026-08-13"
+      "lastRefreshedAt": "2026-08-24",
+      "lastFeedCheckAt": "20260824",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20261128",
+      "feedQuality": {
+        "status": "review",
+        "score": 80,
+        "reasons": [
+          "2 shape corrections needed."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 2,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 206
+        },
+        "checkedAt": "2026-08-24"
+      }
     },
     {
       "slug": "ycat",
@@ -8680,12 +9124,31 @@
       "feedUrl": "http://transitdata.cityofmadison.com/GTFS/mmt_gtfs.zip",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-394/latest.zip",
       "region": "Wisconsin",
-      "lastFeedExpiry": "20260815",
-      "lastFeedVersion": "S070_202605050858",
-      "lastRefreshedAt": "2026-08-07",
+      "lastFeedExpiry": "20261205",
+      "lastFeedVersion": "S072_202608240858",
+      "lastRefreshedAt": "2026-08-24",
       "cities": [
         "Madison, Wisconsin"
-      ]
+      ],
+      "lastFeedCheckAt": "20260824",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20261205",
+      "feedQuality": {
+        "status": "review",
+        "score": 90,
+        "reasons": [
+          "1 route frequency metric need review."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 1,
+          "featureCount": 139
+        },
+        "checkedAt": "2026-08-24"
+      }
     },
     {
       "slug": "waukesha-metro",
@@ -8816,16 +9279,33 @@
         41.59,
         -93.62
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-193/mdb-193-202606150117/mdb-193-202606150117.zip",
-      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-193/mdb-193-202606150117/mdb-193-202606150117.zip",
-      "lastFeedExpiry": "20260822",
-      "lastFeedVersion": "2026.06_20260514",
-      "lastRefreshedAt": "2026-08-07",
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-193/latest.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-193/latest.zip",
+      "lastFeedExpiry": "20261121",
+      "lastFeedVersion": null,
+      "lastRefreshedAt": "2026-08-24",
       "cities": [
         "Des Moines, Iowa",
         "West Des Moines, Iowa",
         "Ankeny, Iowa"
-      ]
+      ],
+      "lastFeedCheckAt": "20260824",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20261121",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 66
+        },
+        "checkedAt": "2026-08-24"
+      }
     },
     {
       "slug": "wichita",
@@ -9061,13 +9541,32 @@
       "feedUrl": "https://mystop.lextran.com/InfoPoint/gtfs-zip.ashx",
       "region": "Kentucky",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2067/latest.zip",
-      "lastFeedExpiry": "20260815",
-      "lastFeedVersion": "20260708",
-      "lastRefreshedAt": "2026-08-07",
+      "lastFeedExpiry": "20261219",
+      "lastFeedVersion": "20260820",
+      "lastRefreshedAt": "2026-08-24",
       "cities": [
         "Lexington-Fayette, Kentucky",
         "Lexington, Kentucky"
-      ]
+      ],
+      "lastFeedCheckAt": "20260824",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20261219",
+      "feedQuality": {
+        "status": "review",
+        "score": 90,
+        "reasons": [
+          "1 route frequency metric need review."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 1,
+          "featureCount": 135
+        },
+        "checkedAt": "2026-08-24"
+      }
     },
     {
       "slug": "mtd-champaign",
@@ -9136,12 +9635,29 @@
       "feedUrl": "http://api.nextlift.ca/gtfs.zip",
       "region": "Ontario",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-736/latest.zip",
-      "lastFeedExpiry": "20260822",
-      "lastFeedVersion": "1/20260629 12:26:31/20260630 04:00:00",
-      "lastRefreshedAt": "2026-08-07",
+      "lastFeedExpiry": "20261114",
+      "lastFeedVersion": "1/20260819 15:43:36/20260823 04:00:00",
+      "lastRefreshedAt": "2026-08-24",
       "cities": [
         "Thunder Bay, Ontario"
-      ]
+      ],
+      "lastFeedCheckAt": "20260824",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20261114",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 124
+        },
+        "checkedAt": "2026-08-24"
+      }
     },
     {
       "slug": "greensboro",
@@ -9150,19 +9666,36 @@
         36.0744,
         -79.8048
       ],
-      "feedUrl": "https://app.mecatran.com/urb/ws/feed/c2l0ZT1ncmVlbnNib3JvO2NsaWVudD1zZWxmO2V4cGlyZT07dHlwZT1ndGZzO2tleT00ZDQ3MDYyMjNiNjI3ZjFmMTU1YzFiNGIxNTY0Mzg0ZDFjNzYyOTQy",
+      "feedUrl": "https://trackmygta.com/gtfs",
       "region": "North Carolina",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-615/latest.zip",
-      "lastFeedExpiry": "20250228",
-      "lastFeedVersion": "2024-06-28T20:55:07Z",
-      "lastRefreshedAt": "20260811",
+      "lastFeedExpiry": "",
+      "lastFeedVersion": "7/4/2024",
+      "lastRefreshedAt": "2026-08-24",
       "websiteUrl": "http://www.greensboro-nc.gov/index.aspx?page=2180",
       "cities": [
         "Greensboro, North Carolina",
         "High Point, North Carolina"
       ],
       "timezone": "America/New_York",
-      "lastRawArchiveKey": "20250228-1828d0c249445f06"
+      "lastRawArchiveKey": "20250228-1828d0c249445f06",
+      "lastFeedCheckAt": "20260824",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20991231",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 101
+        },
+        "checkedAt": "2026-08-24"
+      }
     },
     {
       "slug": "lanta",
@@ -9174,13 +9707,32 @@
       "feedUrl": "https://realtimelanta.availtec.com/InfoPoint/gtfs-zip.ashx",
       "region": "Pennsylvania",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-30010/latest.zip",
-      "lastFeedExpiry": "20260823",
-      "lastFeedVersion": "20260806",
-      "lastRefreshedAt": "2026-08-07",
+      "lastFeedExpiry": "20270124",
+      "lastFeedVersion": "20260813",
+      "lastRefreshedAt": "2026-08-24",
       "cities": [
         "Allentown, Pennsylvania",
         "Bethlehem, Pennsylvania"
-      ]
+      ],
+      "lastFeedCheckAt": "20260824",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20270124",
+      "feedQuality": {
+        "status": "review",
+        "score": 70,
+        "reasons": [
+          "4 route frequency metrics need review."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 4,
+          "featureCount": 150
+        },
+        "checkedAt": "2026-08-24"
+      }
     },
     {
       "slug": "winston-salem",
@@ -9935,9 +10487,9 @@
         -77.86
       ],
       "feedUrl": "https://files.mobilitydatabase.org/ntd-30054/latest.zip",
-      "lastFeedExpiry": "20260816",
-      "lastFeedVersion": "20260430",
-      "lastRefreshedAt": "2026-08-07",
+      "lastFeedExpiry": "20261213",
+      "lastFeedVersion": "20260810",
+      "lastRefreshedAt": "2026-08-24",
       "region": "Pennsylvania",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-30054/latest.zip",
       "bbox": [
@@ -9945,7 +10497,24 @@
         -77.9455,
         40.8581,
         -77.7763
-      ]
+      ],
+      "lastFeedCheckAt": "20260824",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20261213",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 90
+        },
+        "checkedAt": "2026-08-24"
+      }
     },
     {
       "slug": "cyride",
@@ -10024,9 +10593,9 @@
         -91.54
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-197/latest.zip",
-      "lastFeedExpiry": "20260821",
-      "lastFeedVersion": "UTC: 27-Mar-2026 18:02",
-      "lastRefreshedAt": "2026-08-07",
+      "lastFeedExpiry": "20270301",
+      "lastFeedVersion": "UTC: 21-Aug-2026 20:14",
+      "lastRefreshedAt": "2026-08-24",
       "region": "Iowa",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-197/latest.zip",
       "bbox": [
@@ -10037,7 +10606,24 @@
       ],
       "cities": [
         "Iowa City, Iowa"
-      ]
+      ],
+      "lastFeedCheckAt": "20260824",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20270301",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 11
+        },
+        "checkedAt": "2026-08-24"
+      }
     },
     {
       "slug": "lawrence-ku",
@@ -10774,9 +11360,9 @@
         -86.91
       ],
       "feedUrl": "https://bus.gocitybus.com/GTFSRT/citybus-lafayette-in-us.zip",
-      "lastFeedExpiry": "20260823",
-      "lastFeedVersion": "2026.2.3",
-      "lastRefreshedAt": "2026-08-07",
+      "lastFeedExpiry": "20261231",
+      "lastFeedVersion": "2026.3.1",
+      "lastRefreshedAt": "2026-08-24",
       "region": "Indiana",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-391/latest.zip",
       "bbox": [
@@ -10787,7 +11373,24 @@
       ],
       "cities": [
         "Lafayette, Indiana"
-      ]
+      ],
+      "lastFeedCheckAt": "20260824",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20261231",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 70
+        },
+        "checkedAt": "2026-08-24"
+      }
     },
     {
       "slug": "duke",

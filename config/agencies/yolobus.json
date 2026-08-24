@@ -12,11 +12,11 @@
     38.74,
     -121.45
   ],
-  "feedUrl": "http://www.yolobus.com/GTFS/google_transit.zip",
+  "feedUrl": "https://avl.yctd.org/RealTime/google_transit.zip",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-yolo-county-transportation-district-gtfs-1295.zip?alt=media",
-  "lastFeedExpiry": "20260201",
+  "lastFeedExpiry": "20260907",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "20260811",
+  "lastRefreshedAt": "2026-08-24",
   "cities": [
     "West Sacramento, California",
     "Woodland, California",
@@ -24,5 +24,24 @@
     "Sacramento, California"
   ],
   "timezone": "America/Los_Angeles",
-  "lastRawArchiveKey": "20260201-a6cccff8306719af"
+  "lastRawArchiveKey": "20260201-a6cccff8306719af",
+  "lastFeedCheckAt": "20260824",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20260907",
+  "feedQuality": {
+    "status": "review",
+    "score": 70,
+    "reasons": [
+      "6 shape corrections needed."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 6,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 34
+    },
+    "checkedAt": "2026-08-24"
+  }
 }

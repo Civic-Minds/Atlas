@@ -5,11 +5,11 @@
     39.29,
     -76.61
   ],
-  "feedUrl": "https://files.mobilitydatabase.org/mdb-466/mdb-466-202607030053/mdb-466-202607030053.zip",
-  "lastFeedExpiry": "20260822",
-  "lastFeedVersion": "20260701",
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-466/latest.zip",
+  "lastFeedExpiry": "20270206",
+  "lastFeedVersion": "20260821",
   "region": "Maryland",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-24",
   "cities": [
     "Baltimore, Maryland",
     "Towson, Maryland",
@@ -18,5 +18,25 @@
     "Glen Burnie, Maryland",
     "Bowie, Maryland",
     "Columbia, Maryland"
-  ]
+  ],
+  "lastFeedCheckAt": "20260824",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270206",
+  "feedQuality": {
+    "status": "review",
+    "score": 60,
+    "reasons": [
+      "4 shape corrections needed.",
+      "1 route frequency metric need review."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 4,
+      "routeHeadwayMismatches": 1,
+      "featureCount": 420
+    },
+    "checkedAt": "2026-08-24"
+  }
 }

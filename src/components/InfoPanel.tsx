@@ -23,6 +23,9 @@ export type HelpContext = {
   agencyName?: string;
   expDateStr?: string;
   lastRefreshedAt?: string;
+  lastFeedCheckAt?: string;
+  expiredFeedCheckCount?: number;
+  expiredFeedCheckSince?: string;
   websiteUrl?: string;
   overrideNote?: string;
   issueUrl?: string;
@@ -36,6 +39,9 @@ export type OpenInfoOptions = {
   agencyName?: string;
   expDateStr?: string;
   lastRefreshedAt?: string;
+  lastFeedCheckAt?: string;
+  expiredFeedCheckCount?: number;
+  expiredFeedCheckSince?: string;
   websiteUrl?: string;
   overrideNote?: string;
   issueUrl?: string;
@@ -555,7 +561,9 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                   {helpContext.agencyName}&apos;s schedule
                   {helpContext.expDateStr ? ` ended ${helpContext.expDateStr}` : ' may no longer be current'}.
                   {helpContext.lastRefreshedAt && formatStoredDate(helpContext.lastRefreshedAt)
-                    ? ` Atlas last checked this feed on ${formatStoredDate(helpContext.lastRefreshedAt)}.`
+                    ? helpContext.expiredFeedCheckCount != null && helpContext.expiredFeedCheckSince && helpContext.lastFeedCheckAt && formatStoredDate(helpContext.lastFeedCheckAt)
+                      ? ` Atlas has checked this feed ${helpContext.expiredFeedCheckCount} time${helpContext.expiredFeedCheckCount === 1 ? '' : 's'} since it expired; automatic tracking began on ${formatStoredDate(helpContext.expiredFeedCheckSince)}. The latest check was ${formatStoredDate(helpContext.lastFeedCheckAt)}.`
+                      : ` Atlas last successfully refreshed this feed on ${formatStoredDate(helpContext.lastRefreshedAt)}.`
                     : ''}
                 </p>
               )}

@@ -12,16 +12,36 @@
     44.22,
     -122.12
   ],
-  "feedUrl": "https://www.ltd.org/files/library/ltdgtfs.zip",
+  "feedUrl": "https://feed.ltd.org/TMGTFSRealTimeWebService/GTFS/google_transit.zip",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-oregon-lane-transit-district-ltd-gtfs-131.zip?alt=media",
-  "lastFeedExpiry": "20260131",
-  "lastFeedVersion": "",
-  "lastRefreshedAt": "20260811",
+  "lastFeedExpiry": "20260905",
+  "lastFeedVersion": "2606a",
+  "lastRefreshedAt": "2026-08-24",
   "websiteUrl": "http://www.ltd.org",
   "cities": [
     "Eugene, Oregon",
     "Springfield, Oregon"
   ],
   "timezone": "America/Los_Angeles",
-  "lastRawArchiveKey": "20260131-84ccd5ec5befb0c2"
+  "lastRawArchiveKey": "20260131-84ccd5ec5befb0c2",
+  "lastFeedCheckAt": "20260824",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20260905",
+  "feedQuality": {
+    "status": "review",
+    "score": 70,
+    "reasons": [
+      "1 validation warning.",
+      "2 shape corrections needed."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 1,
+      "shapeAnomalies": 2,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 141
+    },
+    "checkedAt": "2026-08-24"
+  }
 }
