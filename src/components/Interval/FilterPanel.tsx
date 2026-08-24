@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Settings, X, Sun, Moon, Zap, ArrowLeft, Search, ShieldCheck } from 'lucide-react';
-import { ICON_BTN, DROPDOWN_PANEL, dropdownAnim, TRANSITION_BASE, Z_MODAL_TOP } from '../../styles';
+import { ICON_BTN, DROPDOWN_PANEL, SEARCH_FIELD, SEARCH_PILL, dropdownAnim, TRANSITION_BASE, Z_MODAL_TOP } from '../../styles';
 import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
 import { FILTER_MODES } from '../../../shared/modes';
 import { DAY_TYPES } from '../../../shared/dayTypes';
@@ -122,6 +122,9 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
   const [hiddenRoutesLoading, setHiddenRoutesLoading] = useState(false);
   const [hiddenRoutesQuery, setHiddenRoutesQuery] = useState('');
   const [hiddenRegionFilter, setHiddenRegionFilter] = useState<Set<string>>(new Set());
+  const [degradedFeedsQuery, setDegradedFeedsQuery] = useState('');
+  const [degradedFeedsStatus, setDegradedFeedsStatus] = useState<'all' | 'degraded' | 'unusable'>('all');
+  const [degradedFeedsSort, setDegradedFeedsSort] = useState<'name' | 'status'>('name');
 
   useEffect(() => {
     if (open) {
@@ -155,6 +158,9 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
     setView('settings');
     setHiddenRoutesQuery('');
     setHiddenRegionFilter(new Set());
+    setDegradedFeedsQuery('');
+    setDegradedFeedsStatus('all');
+    setDegradedFeedsSort('name');
   };
 
   const filteredHiddenRoutes = useMemo(() => {
@@ -202,6 +208,25 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
 
   const agencyCatalog = allAgencies ?? agencies ?? [];
   const hiddenFeedAgencies = useMemo(() => getHiddenFeedAgencies(agencyCatalog), [agencyCatalog]);
+
+  const filteredDegradedFeeds = useMemo(() => {
+    const q = degradedFeedsQuery.trim().toLowerCase();
+    return hiddenFeedAgencies
+      .filter(agency => degradedFeedsStatus === 'all' || agency.feedQuality?.status === degradedFeedsStatus)
+      .filter(agency => {
+        if (!q) return true;
+        const quality = agency.feedQuality!;
+        return [agency.name, ...(agency.cities ?? []), agency.displayArea ?? '', quality.status, ...quality.reasons]
+          .some(value => value.toLowerCase().includes(q));
+      })
+      .sort((a, b) => {
+        if (degradedFeedsSort === 'status') {
+          const byStatus = (a.feedQuality?.status ?? '').localeCompare(b.feedQuality?.status ?? '');
+          if (byStatus !== 0) return byStatus;
+        }
+        return a.name.localeCompare(b.name);
+      });
+  }, [degradedFeedsQuery, degradedFeedsSort, degradedFeedsStatus, hiddenFeedAgencies]);
 
   const agencyCitiesBySlug = useMemo(
     () => new Map(agencyCatalog.map(agency => [agency.slug, agency.cities] as const)),
@@ -292,13 +317,13 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
               {view === 'hidden-routes' ? (
                 <>
                   <div className="px-5 pt-4 pb-3">
-                    <label className="relative block">
-                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--text-dim)]" />
+                    <label className={SEARCH_PILL}>
+                      <Search className="w-3 h-3 text-[var(--text-dim)] shrink-0" />
                       <input
                         value={hiddenRoutesQuery}
                         onChange={event => setHiddenRoutesQuery(event.target.value)}
                         placeholder="Search hidden routes…"
-                        className="w-full h-8 pl-9 pr-3 rounded-lg bg-[var(--bg-app)] border border-[var(--border-primary)] text-[11px] text-[var(--text-primary)] placeholder:text-[var(--text-dim)] outline-none focus:border-[var(--accent-border)]"
+                        className={SEARCH_FIELD}
                         autoFocus
                       />
                     </label>
@@ -370,13 +395,56 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                       ? 'These feeds are hidden because processing marked them degraded or unusable.'
                       : 'These feeds would be hidden when Hide degraded feeds is enabled.'}
                   </p>
+                  {hiddenFeedAgencies.length > 0 && (
+                    <>
+                      <label className={SEARCH_PILL}>
+                        <Search className="w-3 h-3 text-[var(--text-dim)] shrink-0" />
+                        <input
+                          value={degradedFeedsQuery}
+                          onChange={event => setDegradedFeedsQuery(event.target.value)}
+                          placeholder="Search feeds…"
+                          className={SEARCH_FIELD}
+                          autoFocus
+                        />
+                      </label>
+                      <div className="flex items-center gap-1.5 mt-2">
+                        {(['all', 'degraded', 'unusable'] as const).map(status => (
+                          <button
+                            key={status}
+                            onClick={() => setDegradedFeedsStatus(status)}
+                            aria-pressed={degradedFeedsStatus === status}
+                            className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition-colors whitespace-nowrap ${
+                              degradedFeedsStatus === status
+                                ? 'bg-[var(--bg-btn-hover)] text-[var(--text-primary)] border-[var(--text-primary)]'
+                                : 'bg-[var(--bg-app)] text-[var(--text-muted)] border-[var(--border-primary)] hover:text-[var(--text-primary)] hover:border-[var(--text-dim)]'
+                            }`}
+                          >
+                            {status === 'all' ? 'All' : qualityStatusLabel(status)}
+                          </button>
+                        ))}
+                        <select
+                          value={degradedFeedsSort}
+                          onChange={event => setDegradedFeedsSort(event.target.value as 'name' | 'status')}
+                          aria-label="Sort degraded feeds"
+                          className="ml-auto h-6 rounded-md bg-[var(--bg-app)] border border-[var(--border-primary)] px-1.5 text-[10px] text-[var(--text-muted)] outline-none"
+                        >
+                          <option value="name">Name</option>
+                          <option value="status">Status</option>
+                        </select>
+                      </div>
+                    </>
+                  )}
                   {hiddenFeedAgencies.length === 0 ? (
                     <p className="py-4 text-[10px] text-[var(--text-muted)]">
                       No degraded or unusable feeds are currently recorded.
                     </p>
+                  ) : filteredDegradedFeeds.length === 0 ? (
+                    <p className="py-4 text-[10px] text-[var(--text-muted)]">
+                      No feeds match your search or filter.
+                    </p>
                   ) : (
                     <div className="divide-y divide-[var(--border-primary)]">
-                      {hiddenFeedAgencies.map(agency => {
+                      {filteredDegradedFeeds.map(agency => {
                         const quality = agency.feedQuality!;
                         const { primary, secondary } = agencyDisplayParts(agency.name, agency.cities, agency.displayArea);
                         const checkedDate = formatStoredDate(quality.checkedAt.slice(0, 10)) || quality.checkedAt;
