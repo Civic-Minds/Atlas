@@ -4637,7 +4637,7 @@
         33.77,
         -118.19
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-1198/mdb-1198-202606170039/mdb-1198-202606170039.zip",
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-1198/latest.zip",
       "lastFeedExpiry": "20260823",
       "lastFeedVersion": null,
       "region": "California",
@@ -4949,7 +4949,7 @@
         34.42,
         -119.7
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-1246/mdb-1246-202606300054/mdb-1246-202606300054.zip",
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-1246/latest.zip",
       "lastFeedExpiry": "20260816",
       "lastFeedVersion": "S1000258",
       "region": "California",
@@ -5021,7 +5021,7 @@
         36.17,
         -115.14
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-2351/mdb-2351-202606300119/mdb-2351-202606300119.zip",
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2351/latest.zip",
       "lastFeedExpiry": "20260822",
       "lastFeedVersion": "October 2025_20260302",
       "region": "Nevada",
@@ -5228,7 +5228,7 @@
         30.27,
         -97.74
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-150/mdb-150-202607020147/mdb-150-202607020147.zip",
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-150/latest.zip",
       "lastFeedExpiry": "20260815",
       "lastFeedVersion": "260630_1449",
       "region": "Texas",
@@ -5324,7 +5324,7 @@
         29.42,
         -98.49
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/tld-217/tld-217-202607030139/tld-217-202607030139.zip",
+      "feedUrl": "https://files.mobilitydatabase.org/tld-217/latest.zip",
       "lastFeedExpiry": "20260823",
       "lastFeedVersion": "May 2026_20260701",
       "region": "Texas",
@@ -5453,7 +5453,7 @@
         39.1,
         -84.51
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-307/mdb-307-202607010002/mdb-307-202607010002.zip",
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-307/latest.zip",
       "lastFeedExpiry": "20260815",
       "lastFeedVersion": "gtfs_20260531-20260815_20260626",
       "region": "Ohio",
@@ -6778,7 +6778,7 @@
         44.98,
         -93.27
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-205/mdb-205-202606280024/mdb-205-202606280024.zip",
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-205/latest.zip",
       "lastFeedExpiry": "20260821",
       "lastFeedVersion": "1782334167",
       "region": "Minnesota",
@@ -7095,7 +7095,7 @@
         40.76,
         -111.89
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-170/mdb-170-202606250127/mdb-170-202606250127.zip",
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-170/latest.zip",
       "lastFeedExpiry": "20260815",
       "lastFeedVersion": "2026 April SGR After_20260624",
       "region": "Utah",
@@ -7215,7 +7215,7 @@
         39.29,
         -76.61
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-466/mdb-466-202607030053/mdb-466-202607030053.zip",
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-466/latest.zip",
       "lastFeedExpiry": "20260822",
       "lastFeedVersion": "20260701",
       "region": "Maryland",
@@ -7238,7 +7238,7 @@
         -82.46
       ],
       "agencyId": "1",
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-325/mdb-325-202605190014/mdb-325-202605190014.zip",
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-325/latest.zip",
       "lastFeedExpiry": "20260815",
       "lastFeedVersion": "2606.2",
       "region": "Florida",
@@ -7258,8 +7258,8 @@
         -82.5348
       ],
       "agencyId": "2",
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-325/mdb-325-202605190014/mdb-325-202605190014.zip",
-      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-325/mdb-325-202605190014/mdb-325-202605190014.zip",
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-325/latest.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-325/latest.zip",
       "lastFeedExpiry": "20260815",
       "lastFeedVersion": "2606.2",
       "lastRefreshedAt": "2026-08-10",
@@ -7296,7 +7296,7 @@
         21.31,
         -157.86
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-2350/mdb-2350-202605210014/mdb-2350-202605210014.zip",
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2350/latest.zip",
       "lastFeedExpiry": "20260822",
       "lastFeedVersion": "(2605_v5_BusRail_MERGED_Landlines)",
       "region": "Hawaii",
@@ -8820,8 +8820,8 @@
         41.59,
         -93.62
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-193/mdb-193-202606150117/mdb-193-202606150117.zip",
-      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-193/mdb-193-202606150117/mdb-193-202606150117.zip",
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-193/latest.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-193/latest.zip",
       "lastFeedExpiry": "20260822",
       "lastFeedVersion": "2026.06_20260514",
       "lastRefreshedAt": "2026-08-07",

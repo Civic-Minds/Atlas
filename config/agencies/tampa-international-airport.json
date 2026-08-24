@@ -6,8 +6,8 @@
     -82.5348
   ],
   "agencyId": "2",
-  "feedUrl": "https://files.mobilitydatabase.org/mdb-325/mdb-325-202605190014/mdb-325-202605190014.zip",
-  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-325/mdb-325-202605190014/mdb-325-202605190014.zip",
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-325/latest.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-325/latest.zip",
   "lastFeedExpiry": "20260815",
   "lastFeedVersion": "2606.2",
   "lastRefreshedAt": "2026-08-10",

@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Feed audits now compare expired snapshots with newer available sources, preventing stale agency URLs from hiding current service.
 - Expired-feed notices now show how many automatic checks have confirmed the same stale schedule.
 - Invisible routes can no longer be selected through the map's transparent click area when they have no service in the active period.
 - Reprocessed 39 production agencies that were registered but missing from the map, including Orangeville and Owen Sound, and rebuilt the shared route archive.
