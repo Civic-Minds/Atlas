@@ -19,6 +19,7 @@ Use this page as the documentation index. The root [README](../README.md) explai
 - [Route service metrics](ROUTE_SERVICE_METRICS.md)
 - [Live polling and history archiving](LIVE_POLLING.md)
 - [Agency backlog](AGENCY_BACKLOG.md)
+- [Manual GTFS refresh queue](MANUAL_GTFS_REFRESHES.md)
 - [International expansion](INTERNATIONAL.md)
 - [Known issues](KNOWN_ISSUES.md)
 
