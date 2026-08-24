@@ -8,10 +8,27 @@
   "feedUrl": "http://api.nextlift.ca/gtfs.zip",
   "region": "Ontario",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-736/latest.zip",
-  "lastFeedExpiry": "20260822",
-  "lastFeedVersion": "1/20260629 12:26:31/20260630 04:00:00",
-  "lastRefreshedAt": "2026-08-07",
+  "lastFeedExpiry": "20261114",
+  "lastFeedVersion": "1/20260819 15:43:36/20260823 04:00:00",
+  "lastRefreshedAt": "2026-08-24",
   "cities": [
     "Thunder Bay, Ontario"
-  ]
+  ],
+  "lastFeedCheckAt": "20260824",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261114",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 124
+    },
+    "checkedAt": "2026-08-24"
+  }
 }

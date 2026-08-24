@@ -6,10 +6,10 @@
     -97.74
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-150/latest.zip",
-  "lastFeedExpiry": "20260815",
-  "lastFeedVersion": "260630_1449",
+  "lastFeedExpiry": "20270109",
+  "lastFeedVersion": "260818_1456",
   "region": "Texas",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-24",
   "cities": [
     "University of Texas, Texas",
     "Austin, Texas",
@@ -17,5 +17,25 @@
     "Cedar Park, Texas",
     "Round Rock, Texas",
     "Leander, Texas"
-  ]
+  ],
+  "lastFeedCheckAt": "20260824",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270109",
+  "feedQuality": {
+    "status": "review",
+    "score": 60,
+    "reasons": [
+      "28 shape corrections needed.",
+      "1 route frequency metric need review."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 28,
+      "routeHeadwayMismatches": 1,
+      "featureCount": 318
+    },
+    "checkedAt": "2026-08-24"
+  }
 }

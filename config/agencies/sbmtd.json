@@ -6,11 +6,28 @@
     -119.7
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-1246/latest.zip",
-  "lastFeedExpiry": "20260816",
-  "lastFeedVersion": "S1000258",
+  "lastFeedExpiry": "20261129",
+  "lastFeedVersion": "S1000262",
   "region": "California",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-24",
   "cities": [
     "Santa Barbara, California"
-  ]
+  ],
+  "lastFeedCheckAt": "20260824",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261129",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 108
+    },
+    "checkedAt": "2026-08-24"
+  }
 }

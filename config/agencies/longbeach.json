@@ -6,10 +6,10 @@
     -118.19
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-1198/latest.zip",
-  "lastFeedExpiry": "20260823",
+  "lastFeedExpiry": "20270206",
   "lastFeedVersion": null,
   "region": "California",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-24",
   "cities": [
     "Long Beach, California",
     "Lakewood, California",
@@ -21,5 +21,22 @@
     "Wilmington, California",
     "Downey, California",
     "Santa Monica, California"
-  ]
+  ],
+  "lastFeedCheckAt": "20260824",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270206",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 198
+    },
+    "checkedAt": "2026-08-24"
+  }
 }

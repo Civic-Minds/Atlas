@@ -17,9 +17,9 @@
     "https://files.mobilitydatabase.org/mdb-503/mdb-503-202608050051/mdb-503-202608050051.zip"
   ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-502/mdb-502-202608050207/mdb-502-202608050207.zip",
-  "lastFeedExpiry": "20260822",
-  "lastFeedVersion": "v202608090",
-  "lastRefreshedAt": "2026-08-10",
+  "lastFeedExpiry": "20270220",
+  "lastFeedVersion": "v202608233",
+  "lastRefreshedAt": "2026-08-24",
   "cities": [
     "Havertown, Pennsylvania",
     "Philadelphia, Pennsylvania",
@@ -31,5 +31,24 @@
     "Cherry Hill, New Jersey",
     "Camden, New Jersey",
     "Reading, Pennsylvania"
-  ]
+  ],
+  "lastFeedCheckAt": "20260824",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270220",
+  "feedQuality": {
+    "status": "review",
+    "score": 70,
+    "reasons": [
+      "7 route frequency metrics need review."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 7,
+      "featureCount": 1027
+    },
+    "checkedAt": "2026-08-24"
+  }
 }

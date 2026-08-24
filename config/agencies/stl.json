@@ -13,10 +13,10 @@
     -73.21
   ],
   "feedUrl": "https://www.stlaval.ca/datas/opendata/GTF_STL.zip",
-  "lastFeedExpiry": "20260821",
-  "lastFeedVersion": "20260810044658",
+  "lastFeedExpiry": "20261030",
+  "lastFeedVersion": "20260824044705",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-societe-de-transport-de-laval-gtfs-3190.zip?alt=media",
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "2026-08-24",
   "cities": [
     "Laval, Quebec",
     "Chomedey, Quebec",
@@ -28,5 +28,24 @@
     "Ahuntsic-Cartierville, Quebec",
     "Saint-Léonard, Quebec",
     "Saint-Laurent, Quebec"
-  ]
+  ],
+  "lastFeedCheckAt": "20260824",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261030",
+  "feedQuality": {
+    "status": "review",
+    "score": 90,
+    "reasons": [
+      "1 route frequency metric need review."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 1,
+      "featureCount": 259
+    },
+    "checkedAt": "2026-08-24"
+  }
 }

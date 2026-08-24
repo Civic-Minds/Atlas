@@ -6,10 +6,10 @@
     -93.27
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-205/latest.zip",
-  "lastFeedExpiry": "20260821",
-  "lastFeedVersion": "1782334167",
+  "lastFeedExpiry": "20261204",
+  "lastFeedVersion": "1787169866",
   "region": "Minnesota",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-24",
   "cities": [
     "Minneapolis, Minnesota",
     "Saint Paul, Minnesota",
@@ -21,5 +21,25 @@
     "Minnetonka Mills, Minnesota",
     "Plymouth, Minnesota",
     "West Coon Rapids, Minnesota"
-  ]
+  ],
+  "lastFeedCheckAt": "20260824",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261204",
+  "feedQuality": {
+    "status": "review",
+    "score": 60,
+    "reasons": [
+      "1 shape correction needed.",
+      "11 route frequency metrics need review."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 1,
+      "routeHeadwayMismatches": 11,
+      "featureCount": 652
+    },
+    "checkedAt": "2026-08-24"
+  }
 }

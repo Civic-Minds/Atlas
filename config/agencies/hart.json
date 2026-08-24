@@ -7,14 +7,33 @@
   ],
   "agencyId": "1",
   "feedUrl": "https://files.mobilitydatabase.org/mdb-325/latest.zip",
-  "lastFeedExpiry": "20260815",
-  "lastFeedVersion": "2606.2",
+  "lastFeedExpiry": "20270102",
+  "lastFeedVersion": "2608.1",
   "region": "Florida",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-24",
   "cities": [
     "Tampa, Florida",
     "Town 'n' Country, Florida",
     "Brandon, Florida",
     "Riverview, Florida"
-  ]
+  ],
+  "lastFeedCheckAt": "20260824",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270102",
+  "feedQuality": {
+    "status": "review",
+    "score": 90,
+    "reasons": [
+      "1 validation warning."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 1,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 170
+    },
+    "checkedAt": "2026-08-24"
+  }
 }

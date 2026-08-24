@@ -6,9 +6,9 @@
     -91.54
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-197/latest.zip",
-  "lastFeedExpiry": "20260821",
-  "lastFeedVersion": "UTC: 27-Mar-2026 18:02",
-  "lastRefreshedAt": "2026-08-07",
+  "lastFeedExpiry": "20270301",
+  "lastFeedVersion": "UTC: 21-Aug-2026 20:14",
+  "lastRefreshedAt": "2026-08-24",
   "region": "Iowa",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-197/latest.zip",
   "bbox": [
@@ -19,5 +19,22 @@
   ],
   "cities": [
     "Iowa City, Iowa"
-  ]
+  ],
+  "lastFeedCheckAt": "20260824",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270301",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 11
+    },
+    "checkedAt": "2026-08-24"
+  }
 }

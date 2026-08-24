@@ -6,9 +6,9 @@
     -77.86
   ],
   "feedUrl": "https://files.mobilitydatabase.org/ntd-30054/latest.zip",
-  "lastFeedExpiry": "20260816",
-  "lastFeedVersion": "20260430",
-  "lastRefreshedAt": "2026-08-07",
+  "lastFeedExpiry": "20261213",
+  "lastFeedVersion": "20260810",
+  "lastRefreshedAt": "2026-08-24",
   "region": "Pennsylvania",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-30054/latest.zip",
   "bbox": [
@@ -16,5 +16,22 @@
     -77.9455,
     40.8581,
     -77.7763
-  ]
+  ],
+  "lastFeedCheckAt": "20260824",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261213",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 90
+    },
+    "checkedAt": "2026-08-24"
+  }
 }

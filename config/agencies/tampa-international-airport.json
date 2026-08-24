@@ -8,11 +8,30 @@
   "agencyId": "2",
   "feedUrl": "https://files.mobilitydatabase.org/mdb-325/latest.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-325/latest.zip",
-  "lastFeedExpiry": "20260815",
-  "lastFeedVersion": "2606.2",
-  "lastRefreshedAt": "2026-08-10",
+  "lastFeedExpiry": "20270102",
+  "lastFeedVersion": "2608.1",
+  "lastRefreshedAt": "2026-08-24",
   "websiteUrl": "https://www.tampaairport.com/",
   "cities": [
     "Tampa, Florida"
-  ]
+  ],
+  "lastFeedCheckAt": "20260824",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270102",
+  "feedQuality": {
+    "status": "review",
+    "score": 90,
+    "reasons": [
+      "1 validation warning."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 1,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 6
+    },
+    "checkedAt": "2026-08-24"
+  }
 }

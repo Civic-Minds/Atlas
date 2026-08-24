@@ -7,13 +7,30 @@
     -73.756
   ],
   "feedUrl": "https://www.cdta.org/schedules/google_transit.zip",
-  "lastFeedExpiry": "20260822",
+  "lastFeedExpiry": "20261128",
   "lastFeedVersion": "Major",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-capital-district-transportation-authority-cdta-gtfs-538.zip?alt=media",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-24",
   "cities": [
     "West Albany, New York",
     "Schenectady, New York",
     "Albany, New York"
-  ]
+  ],
+  "lastFeedCheckAt": "20260824",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261128",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 315
+    },
+    "checkedAt": "2026-08-24"
+  }
 }
