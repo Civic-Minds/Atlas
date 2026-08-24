@@ -3173,15 +3173,34 @@
       ],
       "feedUrl": "https://cherriots.rideralerts.com/InfoPoint/gtfs-zip.ashx",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-oregon-cherriots-gtfs-128.zip?alt=media",
-      "lastFeedExpiry": "20260102",
-      "lastFeedVersion": null,
-      "lastRefreshedAt": "20260811",
+      "lastFeedExpiry": "20270117",
+      "lastFeedVersion": "20260717",
+      "lastRefreshedAt": "2026-08-24",
       "cities": [
         "Salem, Oregon",
         "Tigard, Oregon"
       ],
       "timezone": "America/Los_Angeles",
-      "lastRawArchiveKey": "20260102-024bddedbb9eacbd"
+      "lastRawArchiveKey": "20260102-024bddedbb9eacbd",
+      "lastFeedCheckAt": "20260824",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20270117",
+      "feedQuality": {
+        "status": "review",
+        "score": 70,
+        "reasons": [
+          "12 shape corrections needed."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 12,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 136
+        },
+        "checkedAt": "2026-08-24"
+      }
     },
     {
       "slug": "corvallis",
@@ -4425,9 +4444,9 @@
       ],
       "feedUrl": "https://avl.yctd.org/RealTime/google_transit.zip",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-yolo-county-transportation-district-gtfs-1295.zip?alt=media",
-      "lastFeedExpiry": "20260201",
+      "lastFeedExpiry": "20260907",
       "lastFeedVersion": null,
-      "lastRefreshedAt": "20260811",
+      "lastRefreshedAt": "2026-08-24",
       "cities": [
         "West Sacramento, California",
         "Woodland, California",
@@ -4435,7 +4454,26 @@
         "Sacramento, California"
       ],
       "timezone": "America/Los_Angeles",
-      "lastRawArchiveKey": "20260201-a6cccff8306719af"
+      "lastRawArchiveKey": "20260201-a6cccff8306719af",
+      "lastFeedCheckAt": "20260824",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20260907",
+      "feedQuality": {
+        "status": "review",
+        "score": 70,
+        "reasons": [
+          "6 shape corrections needed."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 6,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 34
+        },
+        "checkedAt": "2026-08-24"
+      }
     },
     {
       "slug": "unitrans",
@@ -6238,10 +6276,10 @@
       ],
       "feedUrl": "https://ridetransfort.com/wp-content/uploads/transfort_gtfs.zip",
       "mdbFeedUrl": null,
-      "lastFeedExpiry": "20240511",
-      "lastFeedVersion": "S1000201",
+      "lastFeedExpiry": "20270116",
+      "lastFeedVersion": "S1000234",
       "region": "Colorado",
-      "lastRefreshedAt": "20260811",
+      "lastRefreshedAt": "2026-08-24",
       "websiteUrl": "http://www.ridetransfort.com/",
       "cities": [
         "Fort Collins, Colorado",
@@ -6250,7 +6288,24 @@
         "Boulder, Colorado"
       ],
       "timezone": "America/Denver",
-      "lastRawArchiveKey": "20240511-1765080d3133e8df"
+      "lastRawArchiveKey": "20240511-1765080d3133e8df",
+      "lastFeedCheckAt": "20260824",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20270116",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 60
+        },
+        "checkedAt": "2026-08-24"
+      }
     },
     {
       "slug": "septa",
