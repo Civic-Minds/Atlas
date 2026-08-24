@@ -448,20 +448,12 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                         const quality = agency.feedQuality!;
                         const { primary, secondary } = agencyDisplayParts(agency.name, agency.cities, agency.displayArea);
                         const checkedDate = formatStoredDate(quality.checkedAt.slice(0, 10)) || quality.checkedAt;
-                        const statusClasses = quality.status === 'unusable'
-                          ? 'text-[var(--status-danger-text)] bg-[var(--status-danger-bg)] border-[var(--status-danger-border)]'
-                          : 'text-[var(--status-warn-text)] bg-[var(--status-warn-bg)] border-[var(--status-warn-border)]';
                         return (
                           <div key={agency.slug} className="py-3 first:pt-2">
-                            <div className="flex items-start justify-between gap-3">
-                              <p className="text-[11px] font-bold text-[var(--text-primary)] min-w-0">
-                                {primary}
-                                {secondary && <span className="font-normal text-[var(--text-dim)]"> · {secondary}</span>}
-                              </p>
-                              <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded-full border shrink-0 ${statusClasses}`}>
-                                {qualityStatusLabel(quality.status)}
-                              </span>
-                            </div>
+                            <p className="text-[11px] font-bold text-[var(--text-primary)] min-w-0">
+                              {primary}
+                              {secondary && <span className="font-normal text-[var(--text-dim)]"> · {secondary}</span>}
+                            </p>
                             {quality.reasons.length > 0 && (
                               <ul className="mt-1.5 space-y-0.5 text-[10px] text-[var(--text-muted)] leading-relaxed">
                                 {quality.reasons.map(reason => <li key={reason}>{reason}</li>)}
