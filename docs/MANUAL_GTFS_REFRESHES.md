@@ -6,7 +6,6 @@ verified replacement that Atlas can currently download automatically.
 | Agency | Why it needs manual work | Next action |
 | --- | --- | --- |
 | Augusta Transit | Official archive URL returns 404; Mobility Database copy is expired | Find a current agency feed or request one from Augusta Transit |
-| Eugene LTD | Official source is unavailable; catalog copy is expired | Find the current LTD developer download |
 | LAVTA / Wheels | Official ZIP exists but service ended 2026-04-30 | Find the current Wheels schedule export |
 | PVTA | Official ZIP is current, but the site returns HTTP 403 to Atlas | Ask PVTA to allow automated downloads or provide an accessible mirror |
 | West Berkeley Shuttle | Cal-ITP URL returns HTML instead of a ZIP; catalog copy is expired | Confirm whether the shuttle still operates and locate its current feed |
