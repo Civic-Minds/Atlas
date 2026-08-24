@@ -8,14 +8,31 @@
   "feedUrl": "https://trackmygta.com/gtfs",
   "region": "North Carolina",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-615/latest.zip",
-  "lastFeedExpiry": "20250228",
-  "lastFeedVersion": "2024-06-28T20:55:07Z",
-  "lastRefreshedAt": "20260811",
+  "lastFeedExpiry": "",
+  "lastFeedVersion": "7/4/2024",
+  "lastRefreshedAt": "2026-08-24",
   "websiteUrl": "http://www.greensboro-nc.gov/index.aspx?page=2180",
   "cities": [
     "Greensboro, North Carolina",
     "High Point, North Carolina"
   ],
   "timezone": "America/New_York",
-  "lastRawArchiveKey": "20250228-1828d0c249445f06"
+  "lastRawArchiveKey": "20250228-1828d0c249445f06",
+  "lastFeedCheckAt": "20260824",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20991231",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 101
+    },
+    "checkedAt": "2026-08-24"
+  }
 }

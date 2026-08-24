@@ -1,2 +1,2 @@
 /** Bumped by pipeline refresh when R2 artifacts change (busts browser IDB cache). */
-export const CACHE_BUILD = 42;
+export const CACHE_BUILD = 43;
