@@ -6,6 +6,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Feed-quality warnings now explain schedule, map-line, and frequency issues in plain language.
+- Feed review and hidden-route lists now use the same rounded search controls as the Agencies list.
 - Feed audits now compare expired snapshots with newer available sources, preventing stale agency URLs from hiding current service.
 - Expired-feed audits now hold inaccessible replacement sources for manual review instead of treating them as definitively expired.
 - Expired-feed notices now show how many automatic checks have confirmed the same stale schedule.

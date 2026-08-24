@@ -46,15 +46,15 @@ export function assessFeedQuality(input: FeedQualityInput): FeedQuality {
 
   if (input.validationWarnings > 0) {
     score -= Math.min(30, input.validationWarnings * 10);
-    reasons.push(`${input.validationWarnings} validation warning${input.validationWarnings === 1 ? '' : 's'}.`);
+    reasons.push(`${input.validationWarnings} schedule-data warning${input.validationWarnings === 1 ? '' : 's'} — Atlas found a minor issue while reading the schedule.`);
   }
   if (input.shapeAnomalies > 0) {
     score -= Math.min(30, input.shapeAnomalies * 10);
-    reasons.push(`${input.shapeAnomalies} shape correction${input.shapeAnomalies === 1 ? '' : 's'} needed.`);
+    reasons.push(`${input.shapeAnomalies} map line${input.shapeAnomalies === 1 ? ' was' : 's were'} repaired — Atlas fixed unusual route geometry before displaying it.`);
   }
   if (input.routeHeadwayMismatches > 0) {
     score -= Math.min(30, input.routeHeadwayMismatches * 10);
-    reasons.push(`${input.routeHeadwayMismatches} route frequency metric${input.routeHeadwayMismatches === 1 ? '' : 's'} need review.`);
+    reasons.push(`${input.routeHeadwayMismatches} route frequenc${input.routeHeadwayMismatches === 1 ? 'y needs' : 'ies need'} checking — some stops appear to have more frequent service than the route's overall schedule suggests.`);
   }
   if (isExpired(input.feedExpiry, checkedAt)) {
     score -= 35;
