@@ -552,7 +552,6 @@ export default function App() {
               showSelectionUi={inLive}
               showRouteLayers={inFrequency || inLive || inHistory || inFares || inCorridors || inNight}
               liveRoutesOnly={inLive}
-              forceShowCorridors={inCorridors}
               fareView={inFares}
               nightServiceView={inNight}
               showMapContext

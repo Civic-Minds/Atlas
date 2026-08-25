@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Settings, X, Sun, Moon, Zap, ArrowLeft, Search, ShieldCheck } from 'lucide-react';
+import { Settings, X, Sun, Moon, ArrowLeft, Search, ShieldCheck } from 'lucide-react';
 import { ICON_BTN, DROPDOWN_PANEL, SEARCH_FIELD, SEARCH_PILL, dropdownAnim, TRANSITION_BASE, Z_MODAL_TOP } from '../../styles';
 import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
 import { FILTER_MODES } from '../../../shared/modes';
@@ -17,8 +17,6 @@ interface FilterPanelProps {
   setHideSpan: (v: boolean | ((prev: boolean) => boolean)) => void;
   livePollingOnly: boolean;
   setLivePollingOnly: (v: boolean | ((prev: boolean) => boolean)) => void;
-  showCorridors: boolean;
-  setShowCorridors: (v: boolean | ((prev: boolean) => boolean)) => void;
   onInfoOpen?: (tab?: 'about' | 'agencies' | 'live') => void;
   inFrequency?: boolean;
 
@@ -74,12 +72,6 @@ function Toggle({ on }: { on: boolean }) {
 
 const SETTINGS = [
   {
-    id: 'corridors',
-    icon: Zap,
-    label: 'Combined corridors',
-    description: 'Highlights segments where multiple routes overlap and shows their combined service in one band.',
-  },
-  {
     id: 'span',
     icon: ({ className }: { className?: string }) => <span className={`w-4 h-4 flex items-center justify-center text-[10px] font-black leading-none shrink-0 ${className ?? ''}`}>≠</span>,
     label: 'Hide irregular routes',
@@ -94,8 +86,6 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
   setHideSpan,
   livePollingOnly,
   setLivePollingOnly,
-  showCorridors,
-  setShowCorridors,
   onInfoOpen,
   inFrequency = true,
   maxHeadway,
@@ -238,17 +228,15 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
   );
 
   const hasActiveCoreFilter = maxHeadway !== undefined && (maxHeadway !== Infinity || period !== 'all' || (selectedModes && selectedModes.size > 0));
-  const hasActiveFilters = hideSpan || livePollingOnly || showCorridors || hasActiveCoreFilter || hideLowQuality;
+  const hasActiveFilters = hideSpan || livePollingOnly || hasActiveCoreFilter || hideLowQuality;
 
   const values: Record<string, boolean> = {
-    corridors: showCorridors,
     live: livePollingOnly,
     span: hideSpan,
     quality: hideLowQuality,
   };
 
   const toggles: Record<string, () => void> = {
-    corridors: () => setShowCorridors(v => !v),
     live: () => setLivePollingOnly(v => !v),
     span: () => setHideSpan(v => !v),
     quality: () => setHideLowQuality(v => !v),
