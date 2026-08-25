@@ -41,8 +41,6 @@ interface Props {
   showSelectionUi?: boolean;
   showRouteLayers?: boolean;
   liveRoutesOnly?: boolean;
-  showCorridorBand?: boolean;
-  forceShowCorridors?: boolean;
   onInfoOpen?: OpenInfoFn;
   selectedAgencySlug?: string | null;
   setSelectedAgencySlug?: (slug: string | null) => void;
@@ -81,7 +79,7 @@ function readSavedAgenciesOff(): Set<string> {
   }
 }
 
-export default function Interval({ agencies, allAgencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, showCorridorBand = false, forceShowCorridors = false, filterToAgencies = false, onHistoryRouteClick, onDirectFromStop, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, onSelectionActiveChange, headerPortalContainer, fareView = false, nightServiceView = false, showMapContext = false, showMatchPercentage = false, sidebarLeft, searchBarWidth, searchEnterRef, hideLowQuality, setHideLowQuality, feedQualityEnabled = false }: Props) {
+export default function Interval({ agencies, allAgencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, filterToAgencies = false, onHistoryRouteClick, onDirectFromStop, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, onSelectionActiveChange, headerPortalContainer, fareView = false, nightServiceView = false, showMapContext = false, showMatchPercentage = false, sidebarLeft, searchBarWidth, searchEnterRef, hideLowQuality, setHideLowQuality, feedQualityEnabled = false }: Props) {
   const [searchParams] = useSearchParams();
   const [mapContextOpen, setMapContextOpen] = useState(false);
   const [mapContextView, setMapContextView] = useState<'agencies' | 'routes'>('routes');
@@ -204,12 +202,17 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     const initialAgency = initialSlug ? agencies.find(a => a.slug === initialSlug) : undefined;
     return getNowPeriodForTimezone(initialAgency?.timezone);
   });
-  const [hideSpan, setHideSpan] = useState(true);
+  const [hideSpan, setHideSpan] = useState(() => {
+    try {
+      const urlValue = new URLSearchParams(window.location.search).get('span');
+      if (urlValue != null) return urlValue !== '0';
+      const saved = localStorage.getItem('atlas_pref_hide_span');
+      return saved == null ? true : saved === 'true';
+    } catch {
+      return true;
+    }
+  });
   const [livePollingOnly, setLivePollingOnly] = useState(false);
-  const [showCorridors, setShowCorridors] = useState(forceShowCorridors);
-  useEffect(() => {
-    if (forceShowCorridors) setShowCorridors(true);
-  }, [forceShowCorridors]);
 
   const selectionUiVisible = showSelectionUi && (!!selectedRoute || !!selectedStop || !!disambiguationRoutes?.length || !!selectedAgencySlug);
   const showSidebar = showUi || fareView || selectionUiVisible;
@@ -247,7 +250,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   const [isTilesLoading, setIsTilesLoading] = useState(false);
 
   const { layers, loadedCount, requestedCount, isLoading } = useAgencyData(agencies, bounds, {
-    showCorridorBand: showCorridorBand || showCorridors,
+    showCorridorBand: false,
     searchQuery: searchFocused ? query : '',
   });
 
@@ -300,8 +303,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     bounds,
     hideSpan,
     livePollingOnly,
-    showCorridors,
-    showCorridorBand,
+    showCorridors: false,
+    showCorridorBand: false,
     hoveredBranch,
   });
 
@@ -323,14 +326,18 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
       period,
       hideSpan,
       livePollingOnly,
-      showCorridors,
-      showCorridorBand,
+      showCorridors: false,
+      showCorridorBand: false,
       selectedRoute: null,
     }, routesForStop);
-  }, [day, hideSpan, layers, livePollingOnly, maxHeadway, period, routesForStop, selectedAgencies, selectedModes, selectedRoute, showCorridorBand, showCorridors]);
+  }, [day, hideSpan, layers, livePollingOnly, maxHeadway, period, routesForStop, selectedAgencies, selectedModes, selectedRoute]);
 
   useEffect(() => { try { localStorage.setItem('atlas_pref_headway', String(maxHeadway)); } catch {} }, [maxHeadway]);
   useEffect(() => { try { localStorage.setItem('atlas_pref_day', day); } catch {} }, [day]);
+  useEffect(() => {
+    try { localStorage.setItem('atlas_pref_hide_span', String(hideSpan)); } catch {}
+    syncUrlParams({ span: hideSpan ? null : '0' });
+  }, [hideSpan]);
   useEffect(() => {
     try {
       const off = agencies.filter(a => !selectedAgencies.has(a.slug)).map(a => a.slug);
@@ -476,8 +483,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
         day={day}
         showRouteLayers={showRouteLayers}
         liveRoutesOnly={liveRoutesOnly}
-        showCorridorBand={showCorridorBand}
-        showCorridors={showCorridors}
+        showCorridorBand={false}
+        showCorridors={false}
         selectedCorridorFamily={selectedCorridorFamily}
         hideSpan={hideSpan}
         filterToAgencies={filterToAgencies}
@@ -610,8 +617,6 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
               setHideSpan={setHideSpan}
               livePollingOnly={livePollingOnly}
               setLivePollingOnly={setLivePollingOnly}
-              showCorridors={showCorridors}
-              setShowCorridors={setShowCorridors}
               onInfoOpen={onInfoOpen}
               inFrequency={showUi}
               maxHeadway={maxHeadway}

@@ -20,7 +20,7 @@ import { t2m } from './transit-utils.js';
 import { adaptiveMedianHeadwayInWindow, computePeriodHeadways, computePeriodHeadwayRanges, computePeriodMaxGaps, computePeriodSustained, forCrossMidnightWindow, hasGenuineBranchPattern, hasSustainedFrequentService, hasSustainedNightService, headwayToTier, medianHeadwayInWindow, nightServiceDepartureTimes, NIGHT_SERVICE_WINDOW_END_MIN, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
 import { computeRouteBaseFares, detectBusSubType } from './route-metadata.js';
 import { buildStopsMeta } from './stopsMeta.js';
-import { clipLineBetweenStops, projectStopsOntoShape, simplifyLine } from './geometry.js';
+import { clipLineBetweenPositions, clipLineBetweenStops, projectStopsOntoShape, simplifyLine } from './geometry.js';
 import { computeLivePollingOffsets, computeLiveTripStopTimes } from './live-polling-offsets.js';
 import { annotateShortTurnVariants, buildShapeSelectionContext } from './shape-selection.js';
 import { stampWorstDirectionHeadways, stampRouteIrregularDirection } from './worst-direction.js';
@@ -945,7 +945,22 @@ export async function processGtfsBuffer(
             stopId === c.stopA && stopOrder[i + 1] === c.stopB,
           );
         })
-        .map(feature => clipLineBetweenStops(feature.geometry.coordinates, from, to))
+        .map(feature => {
+          const stopOrder = feature.properties.stopOrder as string[];
+          const stopPositions = feature.properties.stopPositions as number[] | undefined;
+          const pairIndex = stopOrder.findIndex((stopId, i) =>
+            stopId === c.stopA && stopOrder[i + 1] === c.stopB,
+          );
+          if (pairIndex < 0) return null;
+          if (stopPositions && stopPositions.length === stopOrder.length) {
+            return clipLineBetweenPositions(
+              feature.geometry.coordinates,
+              stopPositions[pairIndex],
+              stopPositions[pairIndex + 1],
+            );
+          }
+          return clipLineBetweenStops(feature.geometry.coordinates, from, to);
+        })
         .find((geometry): geometry is number[][] => geometry != null);
       // A corridor without a matching shaped route is safer to omit than to render as a
       // straight line through places where no vehicle travels.
