@@ -20,7 +20,7 @@ import { t2m } from './transit-utils.js';
 import { adaptiveMedianHeadwayInWindow, computePeriodHeadways, computePeriodHeadwayRanges, computePeriodMaxGaps, computePeriodSustained, forCrossMidnightWindow, hasGenuineBranchPattern, hasSustainedFrequentService, hasSustainedNightService, headwayToTier, medianHeadwayInWindow, nightServiceDepartureTimes, NIGHT_SERVICE_WINDOW_END_MIN, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
 import { computeRouteBaseFares, detectBusSubType } from './route-metadata.js';
 import { buildStopsMeta } from './stopsMeta.js';
-import { clipBetweenStopIndices, clipLineBetweenStops, projectStopsOntoShape, simplifyLine } from './geometry.js';
+import { clipLineBetweenPositions, clipLineBetweenStops, projectStopsOntoShape, simplifyLine } from './geometry.js';
 import { computeLivePollingOffsets, computeLiveTripStopTimes } from './live-polling-offsets.js';
 import { annotateShortTurnVariants, buildShapeSelectionContext } from './shape-selection.js';
 import { stampWorstDirectionHeadways, stampRouteIrregularDirection } from './worst-direction.js';
@@ -953,11 +953,10 @@ export async function processGtfsBuffer(
           );
           if (pairIndex < 0) return null;
           if (stopPositions && stopPositions.length === stopOrder.length) {
-            return clipBetweenStopIndices(
+            return clipLineBetweenPositions(
               feature.geometry.coordinates,
-              stopPositions,
-              pairIndex,
-              pairIndex + 1,
+              stopPositions[pairIndex],
+              stopPositions[pairIndex + 1],
             );
           }
           return clipLineBetweenStops(feature.geometry.coordinates, from, to);

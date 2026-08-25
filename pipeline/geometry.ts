@@ -144,3 +144,44 @@ export function clipLineBetweenStops(
 
   return clipped.length >= 2 ? clipped : null;
 }
+
+/** Clip a shaped LineString between two normalized positions already projected onto it. */
+export function clipLineBetweenPositions(
+  coords: number[][],
+  tStart: number,
+  tEnd: number,
+): number[][] | null {
+  if (coords.length < 2 || tEnd <= tStart) return null;
+  const lengths: number[] = [0];
+  for (let i = 0; i < coords.length - 1; i++) {
+    const dx = coords[i + 1][0] - coords[i][0];
+    const dy = coords[i + 1][1] - coords[i][1];
+    lengths.push(lengths[i] + Math.sqrt(dx * dx + dy * dy));
+  }
+  const totalLength = lengths[lengths.length - 1];
+  if (totalLength === 0) return null;
+
+  const start = tStart * totalLength;
+  const end = tEnd * totalLength;
+  const clipped: number[][] = [];
+  for (let i = 0; i < coords.length - 1; i++) {
+    const segmentLength = lengths[i + 1] - lengths[i];
+    if (lengths[i + 1] >= start && clipped.length === 0) {
+      const fraction = segmentLength > 0 ? (start - lengths[i]) / segmentLength : 0;
+      clipped.push([
+        coords[i][0] + fraction * (coords[i + 1][0] - coords[i][0]),
+        coords[i][1] + fraction * (coords[i + 1][1] - coords[i][1]),
+      ]);
+    }
+    if (lengths[i + 1] > start && lengths[i + 1] < end) clipped.push(coords[i + 1]);
+    if (lengths[i] < end && lengths[i + 1] >= end) {
+      const fraction = segmentLength > 0 ? (end - lengths[i]) / segmentLength : 1;
+      clipped.push([
+        coords[i][0] + fraction * (coords[i + 1][0] - coords[i][0]),
+        coords[i][1] + fraction * (coords[i + 1][1] - coords[i][1]),
+      ]);
+      break;
+    }
+  }
+  return clipped.length >= 2 ? clipped : null;
+}
