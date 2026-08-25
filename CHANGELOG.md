@@ -6,20 +6,16 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [3.2.21] - 2026-08-24
 
-### Feed quality
+### Added
 
-- Feed-quality warnings now explain schedule, map-line, and frequency issues in plain language.
-- Feed review and hidden-route lists now use the same rounded search controls as the Agencies list.
-- Feed audits now cross-check expired snapshots against newer sources, hold inaccessible replacements for manual review, and show how many checks have confirmed an outdated schedule.
+- **Feed-quality warnings**: Explain schedule, map-line, and frequency issues in plain language.
+- **Feed review and hidden-route lists**: Use the same rounded search controls as the Agencies list.
 
-### Map and route behavior
+### Fixed
 
-- Invisible routes can no longer be selected through the map's transparent click area when they have no service in the active period.
-- Route cards no longer show a bogus "Combined" frequency for lettered route variants that don't actually share a real path, and for larger families (e.g. GRTC's 1/1A/1B/1C) only the members that truly share one now combine — matching letters or numbers in the name wasn't enough evidence on its own ([#448](https://github.com/Civic-Minds/Atlas/issues/448)).
-
-### Data pipeline
-
-- Reprocessed 39 production agencies that were registered but missing from the map, including Orangeville and Owen Sound, and rebuilt the shared route archive.
+- **Feed audits**: Cross-check expired snapshots against newer sources, hold inaccessible replacements for manual review, and show how many checks have confirmed an outdated schedule.
+- **Invisible routes**: Can no longer be selected through the map's transparent click area when they have no service in the active period.
+- **Route cards**: No longer show a bogus "Combined" frequency for lettered route variants that don't actually share a real path, and for larger families (e.g. GRTC's 1/1A/1B/1C) only the members that truly share one now combine — matching letters or numbers in the name wasn't enough evidence on its own ([#448](https://github.com/Civic-Minds/Atlas/issues/448)).
 
 ## [3.2.20] - 2026-08-19
 
