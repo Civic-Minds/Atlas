@@ -47,5 +47,9 @@
       "featureCount": 1847
     },
     "checkedAt": "2026-08-25"
-  }
+  },
+  "lastFeedCheckAt": "20260825",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20260905"
 }

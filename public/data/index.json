@@ -195,8 +195,8 @@
       ],
       "feedUrl": "https://assets.metrolinx.com/raw/upload/Documents/Metrolinx/Open%20Data/GO-GTFS.zip",
       "lastFeedExpiry": "20260904",
-      "lastFeedVersion": "20260529182459",
-      "lastRefreshedAt": "2026-08-08",
+      "lastFeedVersion": "20260821142646",
+      "lastRefreshedAt": "2026-08-25",
       "cities": [
         "Mississauga, Ontario",
         "Brampton, Ontario",
@@ -209,7 +209,27 @@
         "Pickering, Ontario",
         "Barrie, Ontario"
       ],
-      "timezone": "America/Toronto"
+      "timezone": "America/Toronto",
+      "lastFeedCheckAt": "20260825",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20260904",
+      "feedQuality": {
+        "status": "degraded",
+        "score": 40,
+        "reasons": [
+          "3 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
+          "10 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 3,
+          "routeHeadwayMismatches": 10,
+          "featureCount": 289
+        },
+        "checkedAt": "2026-08-25"
+      }
     },
     {
       "slug": "grt",
@@ -778,7 +798,11 @@
           "featureCount": 1847
         },
         "checkedAt": "2026-08-25"
-      }
+      },
+      "lastFeedCheckAt": "20260825",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20260905"
     },
     {
       "slug": "windsor",
@@ -846,7 +870,7 @@
       "lastFeedExpiry": "20260905",
       "lastFeedVersion": "2026.06.28_June_20260611",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-york-region-transit-gtfs-728.zip?alt=media",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-25",
       "cities": [
         "Vaughan, Ontario",
         "Richmond Hill, Ontario",
@@ -858,7 +882,24 @@
         "Willowdale, Ontario",
         "Etobicoke, Ontario",
         "Pickering, Ontario"
-      ]
+      ],
+      "lastFeedCheckAt": "20260825",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20260905",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 327
+        },
+        "checkedAt": "2026-08-25"
+      }
     },
     {
       "slug": "linter",
