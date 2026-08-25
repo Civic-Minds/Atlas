@@ -192,11 +192,14 @@ export default function App() {
   });
   const [hideLowQuality, setHideLowQuality] = useState(() => {
     if (!BETA_BUILD || typeof window === 'undefined') return false;
+    const urlValue = new URLSearchParams(window.location.search).get('quality');
+    if (urlValue != null) return urlValue === '1';
     return localStorage.getItem('atlas_pref_hide_low_quality') === 'true';
   });
 
   useEffect(() => {
     if (BETA_BUILD) localStorage.setItem('atlas_pref_hide_low_quality', String(hideLowQuality));
+    syncUrlParams({ quality: BETA_BUILD && hideLowQuality ? '1' : null });
   }, [hideLowQuality]);
 
   const visibleAgencies = useMemo(

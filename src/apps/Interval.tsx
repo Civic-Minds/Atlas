@@ -204,6 +204,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   });
   const [hideSpan, setHideSpan] = useState(() => {
     try {
+      const urlValue = new URLSearchParams(window.location.search).get('span');
+      if (urlValue != null) return urlValue !== '0';
       const saved = localStorage.getItem('atlas_pref_hide_span');
       return saved == null ? true : saved === 'true';
     } catch {
@@ -332,7 +334,10 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
 
   useEffect(() => { try { localStorage.setItem('atlas_pref_headway', String(maxHeadway)); } catch {} }, [maxHeadway]);
   useEffect(() => { try { localStorage.setItem('atlas_pref_day', day); } catch {} }, [day]);
-  useEffect(() => { try { localStorage.setItem('atlas_pref_hide_span', String(hideSpan)); } catch {} }, [hideSpan]);
+  useEffect(() => {
+    try { localStorage.setItem('atlas_pref_hide_span', String(hideSpan)); } catch {}
+    syncUrlParams({ span: hideSpan ? null : '0' });
+  }, [hideSpan]);
   useEffect(() => {
     try {
       const off = agencies.filter(a => !selectedAgencies.has(a.slug)).map(a => a.slug);
