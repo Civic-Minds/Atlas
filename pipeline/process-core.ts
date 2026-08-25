@@ -935,6 +935,16 @@ export async function processGtfsBuffer(
           feature.properties.day === d &&
           c.routeIds.includes(String(feature.properties.routeId)),
         )
+        // A route can have multiple branches/shapes close to the same stops. Only use a
+        // shape whose serialized stop order contains this exact consecutive link; otherwise
+        // projecting the two stops onto an unrelated branch can draw the corridor off-road.
+        .filter(feature => {
+          const stopOrder = feature.properties.stopOrder as string[] | undefined;
+          if (!stopOrder) return false;
+          return stopOrder.some((stopId, i) =>
+            stopId === c.stopA && stopOrder[i + 1] === c.stopB,
+          );
+        })
         .map(feature => clipLineBetweenStops(feature.geometry.coordinates, from, to))
         .find((geometry): geometry is number[][] => geometry != null);
       // A corridor without a matching shaped route is safer to omit than to render as a

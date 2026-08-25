@@ -10,6 +10,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 - Direction hovers no longer make route cards and map highlights flicker when the hovered row changes the schedule preview height.
 - TTC subway lines now keep their evening service visible when the feed publishes separate same-destination rail shapes.
+- Combined corridor overlays now stay on the route shape that actually serves each shared stop pair.
 
 ## [3.2.21] - 2026-08-24
 
