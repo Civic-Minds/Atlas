@@ -65,12 +65,14 @@ interface HourlySparklineProps {
   onHourHover?: (hour: number | null) => void;
   /** Beta-only control for opening the full-day schedule view. */
   allowExpand?: boolean;
+  /** Keep the legend's vertical space while a route branch is hovered. */
+  reserveStackedLegendSpace?: boolean;
   title?: string;
   /** Used by the modal's larger, all-period rendering. */
   expanded?: boolean;
 }
 
-export function HeadwaySparkline({ byHour, stackedByHour, period, onPeriodChange, onPeriodHover, onHourHover, allowExpand = false, title = 'Schedule overview', expanded = false }: HourlySparklineProps) {
+export function HeadwaySparkline({ byHour, stackedByHour, period, onPeriodChange, onPeriodHover, onHourHover, allowExpand = false, reserveStackedLegendSpace = false, title = 'Schedule overview', expanded = false }: HourlySparklineProps) {
   const [hoveredPeriod, setHoveredPeriod] = useState<string | null>(null);
   const [hoveredHour, setHoveredHour] = useState<number | null>(null);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -242,8 +244,8 @@ export function HeadwaySparkline({ byHour, stackedByHour, period, onPeriodChange
         </div>
 
       </div>
-      {stackedLegend.length > 0 && (
-        <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-0.5 mt-1 px-1 text-[7px] font-bold text-[var(--text-dim)] leading-tight">
+      {(stackedLegend.length > 0 || reserveStackedLegendSpace) && (
+        <div className={`flex min-h-[10px] flex-wrap items-center justify-center gap-x-2 gap-y-0.5 mt-1 px-1 text-[7px] font-bold text-[var(--text-dim)] leading-tight`}>
           {stackedLegend.map(segment => (
             <span key={segment.label} className="inline-flex items-center gap-0.5">
               <span className="inline-block h-1.5 w-1.5 rounded-full" style={{ background: segment.color }} />

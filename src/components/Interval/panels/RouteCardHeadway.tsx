@@ -352,6 +352,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
               onPeriodChange={p => setPeriod(p as TimePeriod)}
               onHourHover={setHoveredHour}
               allowExpand={BETA_BUILD}
+              reserveStackedLegendSpace={hasTrunkSparkline}
               title={`${currentRoute.routeShortName ?? 'Route'}${currentRoute.routeLongName ? ` — ${currentRoute.routeLongName}` : ''}`}
             />
           </>
