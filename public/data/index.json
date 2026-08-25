@@ -746,11 +746,11 @@
         44.05,
         -78.88
       ],
-      "feedUrl": "http://opendata.toronto.ca/toronto.transit.commission/ttc-routes-and-schedules/OpenData_TTC_Schedules.zip",
+      "feedUrl": "https://ckan0.cf.opendata.inter.prod-toronto.ca/dataset/7795b45e-e65a-4465-81fc-c36b9dfff169/resource/cfb6b2b8-6191-41e3-bda1-b175c51148cb/download/TTC%20Routes%20and%20Schedules%20Data.zip",
       "lastFeedExpiry": "20260905",
       "lastFeedVersion": null,
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-toronto-transit-commission-gtfs-2253.zip?alt=media",
-      "lastRefreshedAt": "2026-08-13",
+      "lastRefreshedAt": "2026-08-25",
       "cities": [
         "Toronto, Ontario",
         "Etobicoke, Ontario",
@@ -762,7 +762,23 @@
         "Vaughan, Ontario"
       ],
       "timezone": "America/Toronto",
-      "lastRawArchiveKey": "20260905-6a2597e02c81c1c5"
+      "lastRawArchiveKey": "unknown-6a2597e02c81c1c5",
+      "feedQuality": {
+        "status": "degraded",
+        "score": 40,
+        "reasons": [
+          "4 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
+          "8 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 4,
+          "routeHeadwayMismatches": 8,
+          "featureCount": 1847
+        },
+        "checkedAt": "2026-08-25"
+      }
     },
     {
       "slug": "windsor",

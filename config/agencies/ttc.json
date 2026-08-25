@@ -19,7 +19,7 @@
   "lastFeedExpiry": "20260905",
   "lastFeedVersion": null,
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-toronto-transit-commission-gtfs-2253.zip?alt=media",
-  "lastRefreshedAt": "2026-08-13",
+  "lastRefreshedAt": "2026-08-25",
   "cities": [
     "Toronto, Ontario",
     "Etobicoke, Ontario",
@@ -31,5 +31,21 @@
     "Vaughan, Ontario"
   ],
   "timezone": "America/Toronto",
-  "lastRawArchiveKey": "20260905-6a2597e02c81c1c5"
+  "lastRawArchiveKey": "unknown-6a2597e02c81c1c5",
+  "feedQuality": {
+    "status": "degraded",
+    "score": 40,
+    "reasons": [
+      "4 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
+      "8 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 4,
+      "routeHeadwayMismatches": 8,
+      "featureCount": 1847
+    },
+    "checkedAt": "2026-08-25"
+  }
 }
