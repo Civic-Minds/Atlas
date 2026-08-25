@@ -208,7 +208,9 @@ async function main() {
   const center = argCenter ?? computedCenter ?? [0, 0];
 
   const todayYmd = todayUtcYmd().replace(/-/g, '');
-  if (!dryRun && candidateIsOlderThanActive({ candidateExpiry: feedExpiry, existingExpiry: previousFeedExpiry })) {
+  // --force is the explicit maintainer override for a known-current source that omits or
+  // misstates feed_info metadata; validation and the zero-feature guard still apply below.
+  if (!dryRun && !force && candidateIsOlderThanActive({ candidateExpiry: feedExpiry, existingExpiry: previousFeedExpiry })) {
     throw new Error(`Refusing to replace ${slug}: downloaded feed ends ${feedExpiry ?? 'unknown'}, older than active snapshot ${previousFeedExpiry}`);
   }
   if (!dryRun && featureCount === 0) {

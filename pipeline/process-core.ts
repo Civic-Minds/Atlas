@@ -29,6 +29,7 @@ import type { AnalysisResult } from '../types/gtfs.js';
 import { assessFeedQuality, type FeedQuality } from '../shared/feedQuality.js';
 import { routeDataQualityWarningForShape } from './routeDataQuality.js';
 import { deriveRouteBranch } from '../shared/routeBranch.js';
+import { isRailLikeRoute } from '../shared/modes.js';
 
 export type { GtfsPreprocess };
 export type { HeadwayByPeriod };
@@ -601,6 +602,12 @@ export async function processGtfsBuffer(
       continue;
     }
     const featureHeadsign = feature.properties.headsign as string | null;
+    const featureRoute = routeById.get(feature.properties.routeId as string);
+    const railFeature = isRailLikeRoute({
+      routeType: featureRoute?.route_type,
+      routeLongName: featureRoute?.route_long_name,
+      routeShortName: featureRoute?.route_short_name,
+    });
     const headsignMap = featureHeadsign
       ? stopDepsByHeadsignGroup.get(`${shortName}::${dirId}::${day}::${featureHeadsign}`)
       : undefined;
@@ -609,7 +616,14 @@ export async function processGtfsBuffer(
     // physical patterns (NRT 301/401 reuse one generic headsign for unrelated shapes).
     const featureShape = featureShapeId.get(feature);
     const shapeMap = featureShape ? stopDepsByShapeGroup.get(`${featureShape}::${day}`) : undefined;
-    const metricStopMap = shapeMap ?? headsignMap ?? stopMap;
+    // Rail feeds commonly publish several physical shapes for one displayed line and
+    // destination (short turns, service patterns, or timetable variants). For buses, a
+    // shape-scoped map prevents unrelated branches from being combined; for rail, the
+    // same-destination headsign pool preserves service that would otherwise disappear
+    // when the daytime shape wins feature deduplication (e.g. TTC Lines 1 and 2 evening).
+    const metricStopMap = railFeature
+      ? (headsignMap ?? shapeMap ?? stopMap)
+      : (shapeMap ?? headsignMap ?? stopMap);
 
     // Night Service must be evaluated before the daytime stop-headway bail-outs below: a
     // genuinely overnight-only route has no 9am–7pm data, so allStopHw would otherwise be empty
@@ -789,10 +803,12 @@ export async function processGtfsBuffer(
     feature.properties.frequentService = (day === 'Weekday' && terminalRawTimes)
       ? hasSustainedFrequentService(terminalRawTimes)
       : false;
-    const terminalScopedTimes = selectTerminalDepartureTimes(
-      terminalStopId ? shapeMap?.get(terminalStopId) : undefined,
-      headsignTerminalTimes,
-    );
+    const terminalScopedTimes = railFeature
+      ? (headsignTerminalTimes ?? (terminalStopId ? shapeMap?.get(terminalStopId) : undefined))
+      : selectTerminalDepartureTimes(
+        terminalStopId ? shapeMap?.get(terminalStopId) : undefined,
+        headsignTerminalTimes,
+      );
     const headsignTerminalPeriodHw = terminalScopedTimes && terminalScopedTimes.length > 0
       ? computePeriodHeadways(terminalScopedTimes)
       : undefined;
