@@ -29,16 +29,10 @@ export async function registerProtocol() {
 
 export const getMapStyle = (lightMode: boolean): maplibregl.StyleSpecification => {
   const lightTiles = [
-    'https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
-    'https://b.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
-    'https://c.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
-    'https://d.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
+    '/api/carto-tiles?style=light_all&z={z}&x={x}&y={y}',
   ];
   const darkTiles = [
-    'https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
-    'https://b.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
-    'https://c.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
-    'https://d.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
+    '/api/carto-tiles?style=dark_all&z={z}&x={x}&y={y}',
   ];
   const lightVis = lightMode ? 'visible' : 'none';
   const darkVis = lightMode ? 'none' : 'visible';

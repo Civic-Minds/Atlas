@@ -17,11 +17,13 @@ async function loadHandlers() {
   const { default: liveAdherence } = await import('./api/live-adherence.js');
   const { default: historyAdherence } = await import('./api/history-adherence.js');
   const { default: gtfsRt } = await import('./api/gtfs-rt.js');
+  const { default: cartoTiles } = await import('./api/carto-tiles.js');
   handlers['/api/live-vehicles'] = liveVehicles.fetch;
   handlers['/api/live-stop'] = liveStop.fetch;
   handlers['/api/live-adherence'] = liveAdherence.fetch;
   handlers['/api/history-adherence'] = historyAdherence.fetch;
   handlers['/api/gtfs-rt'] = gtfsRt.fetch;
+  handlers['/api/carto-tiles'] = cartoTiles.fetch;
 }
 
 await loadHandlers();
@@ -49,8 +51,9 @@ createServer(async (req, res) => {
   try {
     const request = new Request(`http://localhost:${API_PORT}${req.url}`, { method: req.method ?? 'GET' });
     const response = await handler(request);
-    const body = await response.text();
-    res.writeHead(response.status, { 'Content-Type': 'application/json' });
+    const body = Buffer.from(await response.arrayBuffer());
+    response.headers.forEach((value, name) => res.setHeader(name, value));
+    res.writeHead(response.status);
     res.end(body);
   } catch (err: any) {
     res.writeHead(500, { 'Content-Type': 'application/json' });
@@ -58,5 +61,5 @@ createServer(async (req, res) => {
   }
 }).listen(API_PORT, () => {
   console.log(`API dev server listening on http://localhost:${API_PORT}`);
-  console.log('Routes: /api/live-vehicles, /api/live-stop, /api/live-adherence, /api/history-adherence, /api/gtfs-rt');
+  console.log('Routes: /api/live-vehicles, /api/live-stop, /api/live-adherence, /api/history-adherence, /api/gtfs-rt, /api/carto-tiles');
 });

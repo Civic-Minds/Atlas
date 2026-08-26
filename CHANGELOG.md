@@ -6,6 +6,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **CARTO basemaps now load without the API-key watermark**: Atlas proxies tile requests with the key kept server-side.
+
 - Shared Atlas links now generate useful previews when posted on social media.
 ### Map and route behavior
 
