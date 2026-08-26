@@ -467,7 +467,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                           const hasLive = liveBySlug.has(a.slug);
                           const hasHistory = historyBySlug.has(a.slug);
                           const showLiveBadge = hasLive;
-                          const showHistoryBadge = hasHistory;
+                          const showHistoryBadge = HISTORY_ENABLED && hasHistory;
                           const showQualityBadge = a.feedQuality && a.feedQuality.status !== 'healthy';
                           const { primary, secondary } = agencyDisplayParts(a.name, a.cities, a.displayArea);
                           const listLabel = secondary ? `${primary} · ${secondary}` : primary;
