@@ -108,7 +108,7 @@ export default function Diagnostics({ agencies }: DiagnosticsProps) {
   // dropdown to "Select a region..." (regionFilter === '') opts back out of loading anything,
   // for whenever you specifically want to search one agency without pulling in everyone else.
   const hasScope = regionFilter !== '' || agencySearch.trim() !== '';
-  const { layers, isLoading } = useAgencyData(hasScope ? filteredAgencies : EMPTY_AGENCIES, WORLD_BOUNDS);
+  const { layers, isLoading, failedSlugs } = useAgencyData(hasScope ? filteredAgencies : EMPTY_AGENCIES, WORLD_BOUNDS);
 
   const rows = useMemo<Row[]>(() => {
     if (!hasScope) return [];
@@ -295,6 +295,11 @@ export default function Diagnostics({ agencies }: DiagnosticsProps) {
           <span className="text-[10px] font-bold text-[var(--text-dim)]">
             {sortedRows.length} rows{isLoading ? ' · loading…' : ''}
           </span>
+          {failedSlugs.size > 0 && (
+            <span className="text-[10px] font-bold text-red-500" title={[...failedSlugs].join(', ')}>
+              {failedSlugs.size} agenc{failedSlugs.size === 1 ? 'y' : 'ies'} failed to load
+            </span>
+          )}
         </aside>
 
         <div className="flex-1 min-w-0">

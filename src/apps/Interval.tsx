@@ -256,7 +256,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   const clearUserLocation = useCallback(() => setUserLocation(null), []);
   const [isTilesLoading, setIsTilesLoading] = useState(false);
 
-  const { layers, loadedCount, requestedCount, isLoading } = useAgencyData(agencies, bounds, {
+  const { layers, loadedCount, requestedCount, isLoading, failedSlugs } = useAgencyData(agencies, bounds, {
     showCorridorBand: false,
     searchQuery: searchFocused ? query : '',
   });
@@ -509,13 +509,23 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
 
       <MapAttribution />
 
-      {((stats && (stats.total > 0 || !isLoading)) || isLoading || isTilesLoading) && (
+      {((stats && (stats.total > 0 || !isLoading)) || isLoading || isTilesLoading || failedSlugs.size > 0) && (
         <div className={`absolute bottom-6 right-14 ${Z_PANEL} flex gap-2 transition-all ${TRANSITION_SLOW} ${showUi ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
           {(isLoading || isTilesLoading) && (
             <div className={`${MAP_BADGE} h-8`}>
               <div className="w-3 h-3 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin shrink-0" />
               <span className={MAP_BADGE_LABEL}>
                 {isLoading ? `${loadedCount}/${requestedCount} networks` : 'Loading map...'}
+              </span>
+            </div>
+          )}
+          {failedSlugs.size > 0 && (
+            <div
+              className={`${MAP_BADGE} h-8`}
+              title={`Couldn't load: ${[...failedSlugs].join(', ')}`}
+            >
+              <span className={MAP_BADGE_LABEL}>
+                {failedSlugs.size === 1 ? '1 network failed to load' : `${failedSlugs.size} networks failed to load`}
               </span>
             </div>
           )}
