@@ -81,6 +81,10 @@ const inflight = new Map<string, Promise<GeoJSON.FeatureCollection>>();
 const corridorsCache = new Map<string, GeoJSON.FeatureCollection>();
 const corridorsInflight = new Map<string, Promise<GeoJSON.FeatureCollection>>();
 
+// A hung/crashed worker (fails to boot, CSP-blocked, module error outside its own
+// try/catch) must not leave a request pending forever with nothing to reject it.
+const WORKER_REQUEST_TIMEOUT_MS = 20_000;
+
 let worker: Worker | null = null;
 const pendingRequests = new Map<
   string,
@@ -103,8 +107,32 @@ function getWorker(): Worker | null {
         req.reject(new Error(error));
       }
     };
+    worker.onerror = (e: ErrorEvent) => {
+      const err = new Error(e.message || 'Agency data worker crashed');
+      for (const req of pendingRequests.values()) req.reject(err);
+      pendingRequests.clear();
+      // Force a fresh worker on the next request rather than reusing a dead one.
+      worker = null;
+    };
   }
   return worker;
+}
+
+/** Registers a pending worker request with a timeout so a hung worker can't stall it forever. */
+function registerPendingRequest(
+  key: string,
+  resolve: (data: GeoJSON.FeatureCollection) => void,
+  reject: (err: any) => void,
+): void {
+  const timeoutId = setTimeout(() => {
+    if (pendingRequests.delete(key)) {
+      reject(new Error(`${key} worker request timed out`));
+    }
+  }, WORKER_REQUEST_TIMEOUT_MS);
+  pendingRequests.set(key, {
+    resolve: (data) => { clearTimeout(timeoutId); resolve(data); },
+    reject: (err) => { clearTimeout(timeoutId); reject(err); },
+  });
 }
 
 let _pruned = false;
@@ -145,18 +173,18 @@ export async function fetchAgencyGeo(agency: AgencyGeoSource): Promise<GeoJSON.F
 
     if (w) {
       pending = new Promise<GeoJSON.FeatureCollection>((resolve, reject) => {
-        const key = agency.slug;
-        pendingRequests.set(key, {
-          resolve: (data) => {
+        registerPendingRequest(
+          agency.slug,
+          (data) => {
             normalizeAgencyFeatures(data);
             lruSet(cache, agency.slug, data);
             resolve(data);
           },
-          reject: (err) => {
+          (err) => {
             inflight.delete(agency.slug);
             reject(err);
-          }
-        });
+          },
+        );
         w.postMessage({
           type: 'geo',
           slug: agency.slug,
@@ -212,17 +240,17 @@ export async function fetchAgencyCorridors(slug: string, corridorsUrl: string): 
 
     if (w) {
       pending = new Promise<GeoJSON.FeatureCollection>((resolve, reject) => {
-        const key = `${slug}-corridors`;
-        pendingRequests.set(key, {
-          resolve: (data) => {
+        registerPendingRequest(
+          `${slug}-corridors`,
+          (data) => {
             lruSet(corridorsCache, slug, data);
             resolve(data);
           },
-          reject: (err) => {
+          (err) => {
             corridorsInflight.delete(slug);
             reject(err);
-          }
-        });
+          },
+        );
         w.postMessage({
           type: 'corridors',
           slug,

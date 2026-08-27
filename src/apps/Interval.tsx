@@ -144,6 +144,13 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
       }, 80);
     }
   }, []);
+
+  useEffect(() => {
+    return () => {
+      if (hoverTimeoutRef.current !== null) clearTimeout(hoverTimeoutRef.current);
+    };
+  }, []);
+
   const prevSearchFocused = useRef(searchFocused);
   const agencyCardRef = useRef<HTMLDivElement>(null);
 

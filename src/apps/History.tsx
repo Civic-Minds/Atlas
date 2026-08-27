@@ -410,10 +410,11 @@ export default function History({ active, initialAgencySlug, initialAgencySlugs 
   const [visible, setVisible] = useState(false);
   const { setOverlay } = useHistoryMapOverlay();
   const [historyData, setHistoryData] = useState<AgencyHistory[] | null>(null);
+  const [historyLoadFailed, setHistoryLoadFailed] = useState(false);
 
-  useEffect(() => {
+  const loadHistoryConfig = useCallback(() => {
+    setHistoryLoadFailed(false);
     const fetchUrl = `${R2_PUBLIC_URL}/atlas/history-config.json`;
-    console.log("Fetching history config from:", fetchUrl);
     fetch(fetchUrl)
       .then(r => {
         if (!r.ok) {
@@ -422,14 +423,18 @@ export default function History({ active, initialAgencySlug, initialAgencySlugs 
         return r.json();
       })
       .then((data: AgencyHistory[]) => {
-        console.log("Successfully loaded history data:", data);
         setHistoryData(data);
       })
       .catch((err) => {
         console.error("Failed to fetch history config from R2:", err);
         setHistoryData([]);
+        setHistoryLoadFailed(true);
       });
   }, []);
+
+  useEffect(() => {
+    loadHistoryConfig();
+  }, [loadHistoryConfig]);
 
   useEffect(() => {
     if (active) {
@@ -662,7 +667,18 @@ export default function History({ active, initialAgencySlug, initialAgencySlugs 
               {historyData === null && (
                 <p className="text-[11px] text-[var(--text-dim)] px-4 py-3">Loading…</p>
               )}
-              {historyData !== null && filtered.length === 0 && (
+              {historyData !== null && historyLoadFailed && (
+                <div className="px-4 py-3">
+                  <p className="text-[11px] text-[var(--text-dim)]">Couldn't load history data. Check your connection and try again.</p>
+                  <button
+                    onClick={loadHistoryConfig}
+                    className="mt-2 text-[11px] font-medium text-[var(--accent)] hover:underline"
+                  >
+                    Retry
+                  </button>
+                </div>
+              )}
+              {historyData !== null && !historyLoadFailed && filtered.length === 0 && (
                 <p className="text-[11px] text-[var(--text-dim)] px-4 py-3">No agencies match.</p>
               )}
               {filteredByTier.map(({ tier, agencies }, sectionIdx) => (
