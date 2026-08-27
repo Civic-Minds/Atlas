@@ -376,8 +376,9 @@ async function refreshAgency(
   }
 
   let { geojson, corridorsGeojson, stopsJson, tripsJson, stopsMetaJson, featureCount } = primary;
-  const { feedExpiry, feedVersion } = primary;
+  const { feedExpiry, feedVersion, timezone } = primary;
   agency.feedQuality = primary.feedQuality;
+  agency.timezone = timezone ?? agency.timezone;
 
   // Merge supplemental feeds (e.g. separate rail zip alongside a bus zip).
   // Skip-if-unchanged only checks the primary feed; supplemental feeds always reprocess.
