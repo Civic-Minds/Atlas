@@ -17,9 +17,25 @@
   "overrideNote": "City of Seattle (agency_id 23) inside KCM multi-agency GTFS; filter to agency 23 on process to avoid duplicating Metro/ST.",
   "lastFeedExpiry": "20270326",
   "lastFeedVersion": "SPR26-160.8-Combined-EasyLoop",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-27",
   "lastFeedCheckAt": "20260827",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20270326"
+  "expiredFeedCheckExpiry": "20270326",
+  "timezone": "America/Los_Angeles",
+  "feedQuality": {
+    "status": "review",
+    "score": 70,
+    "reasons": [
+      "7 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 7,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 12
+    },
+    "checkedAt": "2026-08-27"
+  }
 }

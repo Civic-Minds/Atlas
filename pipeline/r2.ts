@@ -224,6 +224,29 @@ export async function r2GetArchive(key: string): Promise<string | null> {
   return r2GetRaw(key, requireEnv('R2_ARCHIVE_BUCKET_NAME'));
 }
 
+/** Read binary (e.g. an archived GTFS zip) from the private archive bucket. */
+export async function r2GetArchiveBuffer(key: string): Promise<Buffer | null> {
+  const client = getR2Client();
+  const maxAttempts = 4;
+  let lastErr: unknown;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      const res = await client.send(new GetObjectCommand({ Bucket: requireEnv('R2_ARCHIVE_BUCKET_NAME'), Key: key }));
+      return Buffer.from(await res.Body!.transformToByteArray());
+    } catch (err: any) {
+      if (err.name === 'NoSuchKey') return null;
+      lastErr = err;
+      if (attempt < maxAttempts && isRetryableR2Error(err)) {
+        await sleep(500 * 2 ** (attempt - 1));
+        continue;
+      }
+      throw err;
+    }
+  }
+  throw lastErr;
+}
+
 export async function r2Get(key: string): Promise<string | null> {
   return r2GetRaw(key, requireEnv('R2_BUCKET_NAME'));
 }

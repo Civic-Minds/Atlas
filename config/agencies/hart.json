@@ -10,7 +10,7 @@
   "lastFeedExpiry": "20270102",
   "lastFeedVersion": "2608.1",
   "region": "Florida",
-  "lastRefreshedAt": "2026-08-24",
+  "lastRefreshedAt": "2026-08-27",
   "cities": [
     "Tampa, Florida",
     "Town 'n' Country, Florida",
@@ -22,18 +22,17 @@
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270102",
   "feedQuality": {
-    "status": "review",
-    "score": 90,
-    "reasons": [
-      "1 validation warning."
-    ],
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
     "metrics": {
       "validationErrors": 0,
-      "validationWarnings": 1,
+      "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 170
     },
-    "checkedAt": "2026-08-24"
-  }
+    "checkedAt": "2026-08-27"
+  },
+  "timezone": "America/New_York"
 }

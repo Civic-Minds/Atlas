@@ -22,27 +22,26 @@
   "overrideNote": "The source feed also contains regional BC-SMI/SMI-BC trips already supplied by RFTA; exclude those duplicates and keep the local Village Shuttle routes here.",
   "lastFeedExpiry": "20260920",
   "lastFeedVersion": "UTC: 27-May-2026 19:57",
-  "lastRefreshedAt": "2026-08-18",
+  "lastRefreshedAt": "2026-08-27",
   "cities": [
     "Snowmass Village, Colorado"
   ],
   "feedQuality": {
-    "status": "review",
-    "score": 90,
-    "reasons": [
-      "1 validation warning."
-    ],
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
     "metrics": {
       "validationErrors": 0,
-      "validationWarnings": 1,
+      "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 6
     },
-    "checkedAt": "2026-08-18"
+    "checkedAt": "2026-08-27"
   },
   "lastFeedCheckAt": "20260827",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20260920"
+  "expiredFeedCheckExpiry": "20260920",
+  "timezone": "America/Denver"
 }

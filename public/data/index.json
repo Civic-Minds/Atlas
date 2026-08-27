@@ -9787,7 +9787,7 @@
       "lastFeedExpiry": "20270102",
       "lastFeedVersion": "2608.1",
       "region": "Florida",
-      "lastRefreshedAt": "2026-08-24",
+      "lastRefreshedAt": "2026-08-27",
       "cities": [
         "Tampa, Florida",
         "Town 'n' Country, Florida",
@@ -9799,20 +9799,19 @@
       "expiredFeedCheckSince": null,
       "expiredFeedCheckExpiry": "20270102",
       "feedQuality": {
-        "status": "review",
-        "score": 90,
-        "reasons": [
-          "1 validation warning."
-        ],
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
         "metrics": {
           "validationErrors": 0,
-          "validationWarnings": 1,
+          "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
           "featureCount": 170
         },
-        "checkedAt": "2026-08-24"
-      }
+        "checkedAt": "2026-08-27"
+      },
+      "timezone": "America/New_York"
     },
     {
       "slug": "tampa-international-airport",
@@ -9826,7 +9825,7 @@
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-325/latest.zip",
       "lastFeedExpiry": "20270102",
       "lastFeedVersion": "2608.1",
-      "lastRefreshedAt": "2026-08-24",
+      "lastRefreshedAt": "2026-08-27",
       "websiteUrl": "https://www.tampaairport.com/",
       "cities": [
         "Tampa, Florida"
@@ -9836,20 +9835,19 @@
       "expiredFeedCheckSince": null,
       "expiredFeedCheckExpiry": "20270102",
       "feedQuality": {
-        "status": "review",
-        "score": 90,
-        "reasons": [
-          "1 validation warning."
-        ],
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
         "metrics": {
           "validationErrors": 0,
-          "validationWarnings": 1,
+          "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
           "featureCount": 6
         },
-        "checkedAt": "2026-08-24"
-      }
+        "checkedAt": "2026-08-27"
+      },
+      "timezone": "America/New_York"
     },
     {
       "slug": "lynx",
@@ -15517,11 +15515,27 @@
       "overrideNote": "City of Seattle (agency_id 23) inside KCM multi-agency GTFS; filter to agency 23 on process to avoid duplicating Metro/ST.",
       "lastFeedExpiry": "20270326",
       "lastFeedVersion": "SPR26-160.8-Combined-EasyLoop",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-08-27",
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20270326"
+      "expiredFeedCheckExpiry": "20270326",
+      "timezone": "America/Los_Angeles",
+      "feedQuality": {
+        "status": "review",
+        "score": 70,
+        "reasons": [
+          "7 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 7,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 12
+        },
+        "checkedAt": "2026-08-27"
+      }
     },
     {
       "slug": "metz",
@@ -18961,29 +18975,28 @@
       "overrideNote": "The source feed also contains regional BC-SMI/SMI-BC trips already supplied by RFTA; exclude those duplicates and keep the local Village Shuttle routes here.",
       "lastFeedExpiry": "20260920",
       "lastFeedVersion": "UTC: 27-May-2026 19:57",
-      "lastRefreshedAt": "2026-08-18",
+      "lastRefreshedAt": "2026-08-27",
       "cities": [
         "Snowmass Village, Colorado"
       ],
       "feedQuality": {
-        "status": "review",
-        "score": 90,
-        "reasons": [
-          "1 validation warning."
-        ],
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
         "metrics": {
           "validationErrors": 0,
-          "validationWarnings": 1,
+          "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
           "featureCount": 6
         },
-        "checkedAt": "2026-08-18"
+        "checkedAt": "2026-08-27"
       },
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20260920"
+      "expiredFeedCheckExpiry": "20260920",
+      "timezone": "America/Denver"
     },
     {
       "slug": "winter-park",
