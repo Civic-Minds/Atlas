@@ -17,7 +17,7 @@ describe('filterGtfsByAgencyId', () => {
         { trip_id: 'streetcar-trip', route_id: 'streetcar', service_id: 'weekday', shape_id: 'streetcar-shape' },
         { trip_id: 'metro-trip', route_id: 'metro', service_id: 'weekday', shape_id: 'metro-shape' },
       ],
-      stop_times: [
+      stopTimes: [
         { trip_id: 'streetcar-trip', arrival_time: '08:00:00', departure_time: '08:00:00', stop_id: 'streetcar-stop', stop_sequence: '1' },
         { trip_id: 'metro-trip', arrival_time: '08:00:00', departure_time: '08:00:00', stop_id: 'metro-stop', stop_sequence: '1' },
       ],
@@ -33,7 +33,7 @@ describe('filterGtfsByAgencyId', () => {
     expect(filtered.agencies.map(a => a.agency_id)).toEqual(['23']);
     expect(filtered.routes.map(r => r.route_id)).toEqual(['streetcar']);
     expect(filtered.trips.map(t => t.trip_id)).toEqual(['streetcar-trip']);
-    expect(filtered.stop_times.map(st => st.trip_id)).toEqual(['streetcar-trip']);
+    expect(filtered.stopTimes.map(st => st.trip_id)).toEqual(['streetcar-trip']);
     expect(filtered.shapes.map(s => s.id)).toEqual(['streetcar-shape']);
     expect(filtered.frequencies?.map(f => f.trip_id)).toEqual(['streetcar-trip']);
   });

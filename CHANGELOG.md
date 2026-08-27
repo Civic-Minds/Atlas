@@ -8,6 +8,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 - **CARTO basemaps now load without the API-key watermark**: Atlas proxies tile requests with the key kept server-side.
 - Shared Atlas links now generate useful previews when posted on social media.
+- Fixed a pipeline bug where agencies extracted from a shared multi-agency feed (Seattle Streetcar, HART, Niagara, Tampa Airport, Stratford, and others) could publish stops belonging to the other agencies in that feed — the filter step wasn't actually applied to the stop list. Affected agencies still need a reprocess to pick up the fix.
 
 ### Map and route behavior
 
