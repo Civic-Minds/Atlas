@@ -7,8 +7,9 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - **CARTO basemaps now load without the API-key watermark**: Atlas proxies tile requests with the key kept server-side.
-
 - Shared Atlas links now generate useful previews when posted on social media.
+- Fixed a pipeline bug affecting the 10 agencies that filter routes out of a shared/multi-agency feed (Seattle Streetcar, HART, Niagara, Tampa Airport, Stratford, and 5 Colorado mountain-town shuttles) — the filter step wasn't actually applied to the stop list, so these agencies could publish stops that belong to other agencies or excluded routes in that feed. Affected agencies still need a reprocess to pick up the fix.
+
 ### Map and route behavior
 
 - History coverage pills now appear only where the History feature is available, keeping the production agency list consistent with its hidden History app.
@@ -16,6 +17,9 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - TTC subway lines now keep their evening service visible when the feed publishes separate same-destination rail shapes.
 - Combined corridor overlays now stay on the route shape that actually serves each shared stop pair.
 - Combined corridor overlays are temporarily hidden while their map geometry is reworked, and filter choices now carry through shared links.
+- Short-turn/branch route variants now show for both directions of a route, not just one ([#470](https://github.com/Civic-Minds/Atlas/issues/470)).
+- The History map camera no longer jumps when you open or close a stop's detail card, and can no longer snap back to a route you already navigated away from ([#471](https://github.com/Civic-Minds/Atlas/issues/471), [#472](https://github.com/Civic-Minds/Atlas/issues/472)).
+- If an agency's map data or the History list fails to load, Atlas now retries once and shows an error instead of silently displaying nothing ([#474](https://github.com/Civic-Minds/Atlas/issues/474), [#475](https://github.com/Civic-Minds/Atlas/issues/475)).
 
 ## [3.2.21] - 2026-08-24
 

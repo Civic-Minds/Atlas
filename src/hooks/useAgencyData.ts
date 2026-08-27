@@ -107,6 +107,7 @@ export function useAgencyData(
   const [layers, setLayers] = useState<AgencyLayers>({});
   const [loadedCount, setLoadedCount] = useState(0);
   const [requestedCount, setRequestedCount] = useState(0);
+  const [failedSlugs, setFailedSlugs] = useState<Set<string>>(new Set());
   const loadedSlugs = useRef(new Set<string>());
   const queuedSlugs = useRef(new Set<string>());
   const fetchQueue = useRef<Agency[]>([]);
@@ -125,8 +126,33 @@ export function useAgencyData(
     setLayers({});
     setLoadedCount(0);
     setRequestedCount(0);
+    setFailedSlugs(new Set());
     return () => { cancelled.current = true; };
   }, [agencies]);
+
+  // Fetches an agency, with one automatic retry (e.g. a dropped connection) before
+  // giving up. Resolves only once fully settled so the caller's activeFetches/loadedCount
+  // bookkeeping counts one agency load, not one per attempt.
+  const attemptFetchAgency = useCallback((agency: Agency, isRetry: boolean): Promise<void> =>
+    fetchAgencyGeo(agency)
+      .then(data => {
+        if (cancelled.current) return;
+        setLayers(prev => ({ ...prev, [agency.slug]: stampAgencySlug(data, agency.slug) }));
+        if (isRetry) {
+          setFailedSlugs(prev => {
+            if (!prev.has(agency.slug)) return prev;
+            const next = new Set(prev);
+            next.delete(agency.slug);
+            return next;
+          });
+        }
+      })
+      .catch(err => {
+        console.error(`Failed to load ${agency.slug}${isRetry ? ' (retry)' : ''}`, err);
+        if (!isRetry) return attemptFetchAgency(agency, true);
+        if (!cancelled.current) setFailedSlugs(prev => new Set(prev).add(agency.slug));
+      }),
+    []);
 
   const pumpFetchQueue = useCallback(() => {
     while (activeFetches.current < MAX_CONCURRENT_AGENCY_FETCHES && fetchQueue.current.length > 0) {
@@ -134,21 +160,13 @@ export function useAgencyData(
       queuedSlugs.current.delete(agency.slug);
       activeFetches.current++;
 
-      fetchAgencyGeo(agency)
-        .then(data => {
-          if (cancelled.current) return;
-          setLayers(prev => ({ ...prev, [agency.slug]: stampAgencySlug(data, agency.slug) }));
-        })
-        .catch(err => {
-          console.error(`Failed to load ${agency.slug}`, err);
-        })
-        .finally(() => {
-          activeFetches.current--;
-          if (!cancelled.current) setLoadedCount(n => n + 1);
-          pumpRef.current();
-        });
+      attemptFetchAgency(agency, false).finally(() => {
+        activeFetches.current--;
+        if (!cancelled.current) setLoadedCount(n => n + 1);
+        pumpRef.current();
+      });
     }
-  }, []);
+  }, [attemptFetchAgency]);
 
   pumpRef.current = pumpFetchQueue;
 
@@ -250,5 +268,5 @@ export function useAgencyData(
 
   const isLoading = loadedCount < requestedCount;
 
-  return { layers, loadedCount, requestedCount, isLoading };
+  return { layers, loadedCount, requestedCount, isLoading, failedSlugs };
 }

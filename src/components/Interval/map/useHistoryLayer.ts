@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import * as maplibregl from 'maplibre-gl';
 import { getTierColor } from '../../../hooks/useIntervalStats';
-import { useHistoryMapOverlay } from '../../../context/HistoryMapOverlay';
+import { useHistoryMapOverlay, type HistoryMapStop } from '../../../context/HistoryMapOverlay';
 import { StopCardHtml } from '../../../lib/mapHtml';
 
 /** History map layers: route shape, time-scrubber routes, and stop markers. */
@@ -11,7 +11,12 @@ export function useHistoryLayer(
 ) {
   const { overlay: historyOverlay } = useHistoryMapOverlay();
   const [expandedStop, setExpandedStop] = useState<string | null>(null);
+  const expandedStopRef = useRef<string | null>(null);
   const historyMarkersRef = useRef<maplibregl.Marker[]>([]);
+  const historyStopElsRef = useRef<Map<string, { el: HTMLDivElement; stop: HistoryMapStop }>>(new Map());
+  const tryZoomHandlerRef = useRef<(() => void) | null>(null);
+
+  expandedStopRef.current = expandedStop;
 
   // History route shape (historical geometry for selected period, AI-162/AI-161)
   useEffect(() => {
@@ -63,6 +68,13 @@ export function useHistoryLayer(
     // Clear old markers
     historyMarkersRef.current.forEach(m => m.remove());
     historyMarkersRef.current = [];
+    historyStopElsRef.current.clear();
+
+    // Cancel any stale one-shot zoom handler left over from a previous route/overlay
+    if (tryZoomHandlerRef.current) {
+      map.off('moveend', tryZoomHandlerRef.current);
+      tryZoomHandlerRef.current = null;
+    }
 
     if (!historyOverlay) return;
 
@@ -87,6 +99,8 @@ export function useHistoryLayer(
         if (historyOverlay.routeShortName) {
           const rsn = historyOverlay.routeShortName;
           const tryZoom = () => {
+            map.off('moveend', tryZoom);
+            tryZoomHandlerRef.current = null;
             if (!map.getLayer('routes-layer')) return;
             const features = map.queryRenderedFeatures(undefined, { layers: ['routes-layer'] })
               .filter((f: maplibregl.MapGeoJSONFeature) => String(f.properties?.routeShortName ?? '') === rsn);
@@ -105,7 +119,8 @@ export function useHistoryLayer(
               map.fitBounds([[minLng, minLat], [maxLng, maxLat]], { padding: { top: 80, bottom: 80, left: 80, right: 280 }, maxZoom: 14 });
             }
           };
-          map.once('moveend', tryZoom);
+          tryZoomHandlerRef.current = tryZoom;
+          map.on('moveend', tryZoom);
         }
       }
       return;
@@ -115,7 +130,7 @@ export function useHistoryLayer(
 
     historyOverlay.stops.forEach(stop => {
       if (!stop.lat || !stop.lon) return;
-      const isExpanded = expandedStop === stop.stopId;
+      const isExpanded = expandedStopRef.current === stop.stopId;
       const html = StopCardHtml(stop, isExpanded);
 
       const el = document.createElement('div');
@@ -131,6 +146,7 @@ export function useHistoryLayer(
         .addTo(map);
 
       historyMarkersRef.current.push(marker);
+      historyStopElsRef.current.set(stop.stopId, { el, stop });
 
       if (stop.lon < minLng) minLng = stop.lon;
       if (stop.lon > maxLng) maxLng = stop.lon;
@@ -142,7 +158,15 @@ export function useHistoryLayer(
     if (historyOverlay.stops.length >= 2) {
       map.fitBounds([[minLng, minLat], [maxLng, maxLat]], { padding: { top: 80, bottom: 80, left: 80, right: 280 }, maxZoom: 14 });
     }
-  }, [historyOverlay, mapLoaded, expandedStop]);
+  }, [historyOverlay, mapLoaded]);
+
+  // Re-render marker content in place when a stop card is expanded/collapsed —
+  // deliberately excluded from the effect above so this never re-fits the camera.
+  useEffect(() => {
+    historyStopElsRef.current.forEach(({ el, stop }, stopId) => {
+      el.innerHTML = StopCardHtml(stop, expandedStop === stopId);
+    });
+  }, [expandedStop]);
 
   // Remove markers on unmount
   useEffect(() => {

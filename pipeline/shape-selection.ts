@@ -280,7 +280,6 @@ export function annotateShortTurnVariants(
 
   for (const feature of features) {
     const dirId = String(feature.properties.directionId ?? '0');
-    if (dirId !== '0') continue;
     const routeId = feature.properties.routeId as string;
     const key = `${routeId}::${dirId}`;
     const counts = ctx.shapeCounts.get(key);
