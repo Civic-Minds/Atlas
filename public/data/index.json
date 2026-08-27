@@ -40,7 +40,8 @@
           "featureCount": 50
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/New_York"
     },
     {
       "slug": "belleville",
@@ -80,7 +81,8 @@
           "featureCount": 45
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Toronto"
     },
     {
       "slug": "brampton",
@@ -126,7 +128,8 @@
           "featureCount": 317
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/New_York"
     },
     {
       "slug": "burlington",
@@ -167,7 +170,8 @@
           "featureCount": 74
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Toronto"
     },
     {
       "slug": "chatham-kent",
@@ -203,7 +207,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20271231"
+      "expiredFeedCheckExpiry": "20271231",
+      "timezone": "America/Toronto"
     },
     {
       "slug": "cornwall",
@@ -240,7 +245,8 @@
           "featureCount": 19
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Toronto"
     },
     {
       "slug": "drt",
@@ -289,7 +295,8 @@
           "featureCount": 215
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Toronto"
     },
     {
       "slug": "go",
@@ -453,7 +460,8 @@
           "featureCount": 251
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Toronto"
     },
     {
       "slug": "kingston",
@@ -493,7 +501,8 @@
           "featureCount": 170
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Toronto"
     },
     {
       "slug": "london",
@@ -536,7 +545,8 @@
           "featureCount": 276
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Toronto"
     },
     {
       "slug": "miway",
@@ -567,7 +577,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261025"
+      "expiredFeedCheckExpiry": "20261025",
+      "timezone": "America/Toronto"
     },
     {
       "slug": "milton",
@@ -608,7 +619,8 @@
           "featureCount": 60
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Toronto"
     },
     {
       "slug": "niagara",
@@ -704,7 +716,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20260829"
+      "expiredFeedCheckExpiry": "20260829",
+      "timezone": "Canada/Eastern"
     },
     {
       "slug": "oakville",
@@ -733,7 +746,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20260905"
+      "expiredFeedCheckExpiry": "20260905",
+      "timezone": "America/New_York"
     },
     {
       "slug": "orangeville",
@@ -767,7 +781,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261231"
+      "expiredFeedCheckExpiry": "20261231",
+      "timezone": "America/Toronto"
     },
     {
       "slug": "orillia",
@@ -801,7 +816,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20280101"
+      "expiredFeedCheckExpiry": "20280101",
+      "timezone": "America/Toronto"
     },
     {
       "slug": "owen-sound",
@@ -837,7 +853,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261231"
+      "expiredFeedCheckExpiry": "20261231",
+      "timezone": "America/Toronto"
     },
     {
       "slug": "north-bay",
@@ -873,7 +890,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20270428"
+      "expiredFeedCheckExpiry": "20270428",
+      "timezone": "America/Toronto"
     },
     {
       "slug": "sarnia",
@@ -906,7 +924,8 @@
           "featureCount": 36
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Toronto"
     },
     {
       "slug": "simcoe",
@@ -947,7 +966,8 @@
           "featureCount": 18
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Toronto"
     },
     {
       "slug": "st-thomas",
@@ -981,7 +1001,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20270526"
+      "expiredFeedCheckExpiry": "20270526",
+      "timezone": "America/Toronto"
     },
     {
       "slug": "stratford",
@@ -1026,7 +1047,8 @@
           "featureCount": 7
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Toronto"
     },
     {
       "slug": "ttc",
@@ -1109,7 +1131,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261024"
+      "expiredFeedCheckExpiry": "20261024",
+      "timezone": "America/New_York"
     },
     {
       "slug": "upexpress",
@@ -1137,7 +1160,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20270124"
+      "expiredFeedCheckExpiry": "20270124",
+      "timezone": "America/Toronto"
     },
     {
       "slug": "yrt",
@@ -1173,7 +1197,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20260905"
+      "expiredFeedCheckExpiry": "20260905",
+      "timezone": "America/Toronto"
     },
     {
       "slug": "linter",
@@ -1199,7 +1224,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20270807"
+      "expiredFeedCheckExpiry": "20270807",
+      "timezone": "America/Toronto"
     },
     {
       "slug": "mont-tremblant",
@@ -1223,7 +1249,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20260907"
+      "expiredFeedCheckExpiry": "20260907",
+      "timezone": "America/Toronto"
     },
     {
       "slug": "rem",
@@ -1260,7 +1287,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261231"
+      "expiredFeedCheckExpiry": "20261231",
+      "timezone": "America/Montreal"
     },
     {
       "slug": "rtc",
@@ -1292,7 +1320,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 1,
       "expiredFeedCheckSince": "20260622",
-      "expiredFeedCheckExpiry": "20260821"
+      "expiredFeedCheckExpiry": "20260821",
+      "timezone": "America/Montreal"
     },
     {
       "slug": "rtl",
@@ -1379,7 +1408,8 @@
           "featureCount": 259
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Montreal"
     },
     {
       "slug": "stlevis",
@@ -1423,7 +1453,8 @@
           "featureCount": 114
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Montreal"
     },
     {
       "slug": "stm",
@@ -1479,7 +1510,8 @@
           "featureCount": 1129
         },
         "checkedAt": "2026-08-24"
-      }
+      },
+      "timezone": "America/Montreal"
     },
     {
       "slug": "sto",
@@ -1525,7 +1557,8 @@
           "featureCount": 222
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Montreal"
     },
     {
       "slug": "sjsr",
@@ -1567,7 +1600,8 @@
           "featureCount": 33
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Toronto"
     },
     {
       "slug": "saint-hyacinthe",
@@ -1632,7 +1666,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20270103"
+      "expiredFeedCheckExpiry": "20270103",
+      "timezone": "America/Montreal"
     },
     {
       "slug": "exo-presquile",
@@ -1660,7 +1695,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20270103"
+      "expiredFeedCheckExpiry": "20270103",
+      "timezone": "America/Montreal"
     },
     {
       "slug": "exo-sudouest",
@@ -1693,7 +1729,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20270103"
+      "expiredFeedCheckExpiry": "20270103",
+      "timezone": "America/Montreal"
     },
     {
       "slug": "exo-lrrs",
@@ -1725,7 +1762,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20270103"
+      "expiredFeedCheckExpiry": "20270103",
+      "timezone": "America/Montreal"
     },
     {
       "slug": "exo-laurentides",
@@ -1759,7 +1797,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20270103"
+      "expiredFeedCheckExpiry": "20270103",
+      "timezone": "America/Montreal"
     },
     {
       "slug": "exo-terrebonne",
@@ -1795,7 +1834,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20270103"
+      "expiredFeedCheckExpiry": "20270103",
+      "timezone": "America/Montreal"
     },
     {
       "slug": "bc-fraser-valley",
@@ -1837,7 +1877,8 @@
           "featureCount": 134
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Vancouver"
     },
     {
       "slug": "kelowna",
@@ -1872,7 +1913,8 @@
           "featureCount": 144
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Vancouver"
     },
     {
       "slug": "victoria",
@@ -1910,7 +1952,8 @@
           "featureCount": 348
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Vancouver"
     },
     {
       "slug": "translink",
@@ -1964,7 +2007,8 @@
           "featureCount": 1500
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Vancouver"
     },
     {
       "slug": "calgary",
@@ -2007,7 +2051,8 @@
           "featureCount": 754
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Edmonton"
     },
     {
       "slug": "edmonton",
@@ -2051,7 +2096,8 @@
           "featureCount": 848
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Edmonton"
     },
     {
       "slug": "winnipeg",
@@ -2092,7 +2138,8 @@
           "featureCount": 315
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Winnipeg"
     },
     {
       "slug": "regina",
@@ -2118,7 +2165,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 1,
       "expiredFeedCheckSince": "20260622",
-      "expiredFeedCheckExpiry": "20260822"
+      "expiredFeedCheckExpiry": "20260822",
+      "timezone": "America/Regina"
     },
     {
       "slug": "saskatoon",
@@ -2178,7 +2226,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 1,
       "expiredFeedCheckSince": "20260622",
-      "expiredFeedCheckExpiry": "20260823"
+      "expiredFeedCheckExpiry": "20260823",
+      "timezone": "America/Halifax"
     },
     {
       "slug": "codiac",
@@ -2221,7 +2270,8 @@
           "featureCount": 65
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Halifax"
     },
     {
       "slug": "fredericton",
@@ -2261,7 +2311,8 @@
           "featureCount": 53
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Halifax"
     },
     {
       "slug": "saint-john",
@@ -2287,7 +2338,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20271231"
+      "expiredFeedCheckExpiry": "20271231",
+      "timezone": "America/Halifax"
     },
     {
       "slug": "t3-transit",
@@ -2310,7 +2362,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261231"
+      "expiredFeedCheckExpiry": "20261231",
+      "timezone": "America/Moncton"
     },
     {
       "slug": "metrobus",
@@ -2337,7 +2390,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20260907"
+      "expiredFeedCheckExpiry": "20260907",
+      "timezone": "America/St_Johns"
     },
     {
       "slug": "nfta",
@@ -2383,7 +2437,8 @@
           "featureCount": 270
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/New_York"
     },
     {
       "slug": "port-huron",
@@ -2404,7 +2459,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261231"
+      "expiredFeedCheckExpiry": "20261231",
+      "timezone": "America/Detroit"
     },
     {
       "slug": "ddot",
@@ -2434,7 +2490,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20260920"
+      "expiredFeedCheckExpiry": "20260920",
+      "timezone": "America/Detroit"
     },
     {
       "slug": "detroit-people-mover",
@@ -2454,7 +2511,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20271231"
+      "expiredFeedCheckExpiry": "20271231",
+      "timezone": "America/Detroit"
     },
     {
       "slug": "qline",
@@ -2523,7 +2581,8 @@
           "featureCount": 221
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Detroit"
     },
     {
       "slug": "theride",
@@ -2544,7 +2603,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 1,
       "expiredFeedCheckSince": "20260622",
-      "expiredFeedCheckExpiry": "20260822"
+      "expiredFeedCheckExpiry": "20260822",
+      "timezone": "America/New_York"
     },
     {
       "slug": "gcrta",
@@ -2568,7 +2628,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261205"
+      "expiredFeedCheckExpiry": "20261205",
+      "timezone": "America/New_York"
     },
     {
       "slug": "butler-county-rta",
@@ -2602,7 +2663,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20991231"
+      "expiredFeedCheckExpiry": "20991231",
+      "timezone": "America/New_York"
     },
     {
       "slug": "seat",
@@ -2637,7 +2699,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261231"
+      "expiredFeedCheckExpiry": "20261231",
+      "timezone": "America/New_York"
     },
     {
       "slug": "richland-county-oh",
@@ -2672,7 +2735,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20270504"
+      "expiredFeedCheckExpiry": "20270504",
+      "timezone": "America/New_York"
     },
     {
       "slug": "tarta",
@@ -2706,7 +2770,8 @@
           "featureCount": 107
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/New_York"
     },
     {
       "slug": "rgrta",
@@ -2728,7 +2793,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20260906"
+      "expiredFeedCheckExpiry": "20260906",
+      "timezone": "America/New_York"
     },
     {
       "slug": "cdta",
@@ -2764,7 +2830,8 @@
           "featureCount": 315
         },
         "checkedAt": "2026-08-24"
-      }
+      },
+      "timezone": "America/New_York"
     },
     {
       "slug": "centro",
@@ -2802,7 +2869,8 @@
           "featureCount": 337
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/New_York"
     },
     {
       "slug": "tcat",
@@ -2832,7 +2900,8 @@
           "featureCount": 160
         },
         "checkedAt": "2026-08-24"
-      }
+      },
+      "timezone": "America/New_York"
     },
     {
       "slug": "broome",
@@ -2866,7 +2935,8 @@
           "featureCount": 80
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/New_York"
     },
     {
       "slug": "emta",
@@ -2927,7 +2997,8 @@
           "featureCount": 136
         },
         "checkedAt": "2026-08-24"
-      }
+      },
+      "timezone": "America/New_York"
     },
     {
       "slug": "sarta",
@@ -2949,7 +3020,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261107"
+      "expiredFeedCheckExpiry": "20261107",
+      "timezone": "America/New_York"
     },
     {
       "slug": "laketran",
@@ -2985,7 +3057,8 @@
           "featureCount": 39
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/New_York"
     },
     {
       "slug": "mta-flint",
@@ -3008,7 +3081,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20271231"
+      "expiredFeedCheckExpiry": "20271231",
+      "timezone": "America/New_York"
     },
     {
       "slug": "cata-lansing",
@@ -3041,7 +3115,8 @@
           "featureCount": 131
         },
         "checkedAt": "2026-08-24"
-      }
+      },
+      "timezone": "America/Detroit"
     },
     {
       "slug": "the-rapid",
@@ -3079,7 +3154,8 @@
           "featureCount": 137
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/New_York"
     },
     {
       "slug": "mbta",
@@ -3126,7 +3202,8 @@
           "featureCount": 1045
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/New_York"
     },
     {
       "slug": "pvta",
@@ -3166,7 +3243,8 @@
           "featureCount": 295
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/New_York"
     },
     {
       "slug": "wrta",
@@ -3187,7 +3265,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 1,
       "expiredFeedCheckSince": "20260622",
-      "expiredFeedCheckExpiry": "20260811"
+      "expiredFeedCheckExpiry": "20260811",
+      "timezone": "America/New_York"
     },
     {
       "slug": "cttransit",
@@ -3212,7 +3291,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20270109"
+      "expiredFeedCheckExpiry": "20270109",
+      "timezone": "America/New_York"
     },
     {
       "slug": "red-deer",
@@ -3245,7 +3325,8 @@
           "featureCount": 68
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Edmonton"
     },
     {
       "slug": "lethbridge",
@@ -3266,7 +3347,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261231"
+      "expiredFeedCheckExpiry": "20261231",
+      "timezone": "America/Denver"
     },
     {
       "slug": "moose-jaw",
@@ -3303,7 +3385,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20281229"
+      "expiredFeedCheckExpiry": "20281229",
+      "timezone": "America/Regina"
     },
     {
       "slug": "kamloops",
@@ -3339,7 +3422,8 @@
           "featureCount": 94
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Vancouver"
     },
     {
       "slug": "south-okanagan",
@@ -3374,7 +3458,8 @@
           "featureCount": 52
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Vancouver"
     },
     {
       "slug": "nanaimo",
@@ -3409,7 +3494,8 @@
           "featureCount": 112
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Vancouver"
     },
     {
       "slug": "cowichan",
@@ -3445,7 +3531,8 @@
           "featureCount": 60
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Vancouver"
     },
     {
       "slug": "comox-valley",
@@ -3475,7 +3562,8 @@
           "featureCount": 65
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Vancouver"
     },
     {
       "slug": "campbell-river",
@@ -3505,7 +3593,8 @@
           "featureCount": 41
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Vancouver"
     },
     {
       "slug": "squamish",
@@ -3539,7 +3628,8 @@
           "featureCount": 29
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Vancouver"
     },
     {
       "slug": "pemberton",
@@ -3570,7 +3660,8 @@
           "featureCount": 9
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Vancouver"
     },
     {
       "slug": "whistler",
@@ -3601,7 +3692,8 @@
           "featureCount": 66
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Vancouver"
     },
     {
       "slug": "kingcountymetro",
@@ -3636,7 +3728,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20260828"
+      "expiredFeedCheckExpiry": "20260828",
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "soundtransit",
@@ -3708,7 +3801,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20260829"
+      "expiredFeedCheckExpiry": "20260829",
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "communitytransit",
@@ -3741,7 +3835,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20260828"
+      "expiredFeedCheckExpiry": "20260828",
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "everetttransit",
@@ -3767,7 +3862,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20260905"
+      "expiredFeedCheckExpiry": "20260905",
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "kitsaptransit",
@@ -3797,7 +3893,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20260912"
+      "expiredFeedCheckExpiry": "20260912",
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "intercitytransit",
@@ -3824,7 +3921,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20260912"
+      "expiredFeedCheckExpiry": "20260912",
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "skagittransit",
@@ -3882,7 +3980,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20260919"
+      "expiredFeedCheckExpiry": "20260919",
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "islandtransit",
@@ -3910,7 +4009,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261001"
+      "expiredFeedCheckExpiry": "20261001",
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "jeffersontransit",
@@ -3964,7 +4064,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20270522"
+      "expiredFeedCheckExpiry": "20270522",
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "portlandme",
@@ -4004,7 +4105,8 @@
           "featureCount": 97
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/New_York"
     },
     {
       "slug": "southportlandme",
@@ -4045,7 +4147,8 @@
           "featureCount": 97
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/New_York"
     },
     {
       "slug": "hocts",
@@ -4150,7 +4253,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261001"
+      "expiredFeedCheckExpiry": "20261001",
+      "timezone": "America/New_York"
     },
     {
       "slug": "wsf",
@@ -4173,7 +4277,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20260927"
+      "expiredFeedCheckExpiry": "20260927",
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "sherbrooke",
@@ -4200,7 +4305,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261220"
+      "expiredFeedCheckExpiry": "20261220",
+      "timezone": "America/Toronto"
     },
     {
       "slug": "trimet",
@@ -4245,7 +4351,8 @@
           "featureCount": 488
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "ctran",
@@ -4289,7 +4396,8 @@
           "featureCount": 244
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "spokane",
@@ -4317,7 +4425,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20270116"
+      "expiredFeedCheckExpiry": "20270116",
+      "timezone": "America/Vancouver"
     },
     {
       "slug": "eugene-ltd",
@@ -4449,7 +4558,8 @@
           "featureCount": 22
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "grovelink",
@@ -4747,7 +4857,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20260828"
+      "expiredFeedCheckExpiry": "20260828",
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "bart",
@@ -4820,7 +4931,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20270131"
+      "expiredFeedCheckExpiry": "20270131",
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "actransit",
@@ -4857,7 +4969,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20270403"
+      "expiredFeedCheckExpiry": "20270403",
+      "timezone": "US/Pacific"
     },
     {
       "slug": "vta",
@@ -4891,7 +5004,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261025"
+      "expiredFeedCheckExpiry": "20261025",
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "samtrans",
@@ -4937,7 +5051,8 @@
           "featureCount": 171
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "goldengate",
@@ -4970,7 +5085,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20260912"
+      "expiredFeedCheckExpiry": "20260912",
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "weta",
@@ -5017,7 +5133,8 @@
           "featureCount": 45
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "countyconnection",
@@ -5051,7 +5168,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20270109"
+      "expiredFeedCheckExpiry": "20270109",
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "westcat",
@@ -5097,7 +5215,8 @@
           "featureCount": 26
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "soltrans",
@@ -5146,7 +5265,8 @@
           "featureCount": 57
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "marintransit",
@@ -5206,7 +5326,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20270110"
+      "expiredFeedCheckExpiry": "20270110",
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "sonoma-county",
@@ -5279,7 +5400,8 @@
           "featureCount": 41
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "emerygoround",
@@ -5305,7 +5427,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20271127"
+      "expiredFeedCheckExpiry": "20271127",
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "stanford",
@@ -5348,7 +5471,8 @@
           "featureCount": 16
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "tridelta",
@@ -5378,7 +5502,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20271231"
+      "expiredFeedCheckExpiry": "20271231",
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "lavta",
@@ -5497,7 +5622,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20991231"
+      "expiredFeedCheckExpiry": "20991231",
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "santarosa",
@@ -5524,7 +5650,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20991231"
+      "expiredFeedCheckExpiry": "20991231",
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "fast-ca",
@@ -5647,7 +5774,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261231"
+      "expiredFeedCheckExpiry": "20261231",
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "rvtd",
@@ -5687,7 +5815,8 @@
           "featureCount": 12
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "bts-or",
@@ -5726,7 +5855,8 @@
           "featureCount": 16
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "rct",
@@ -5790,7 +5920,8 @@
           "featureCount": 20
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "mendocino",
@@ -5829,7 +5960,8 @@
           "featureCount": 11
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "raba",
@@ -5872,7 +6004,8 @@
           "featureCount": 37
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "siskiyou",
@@ -5933,7 +6066,8 @@
           "featureCount": 6
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "lassen",
@@ -5957,7 +6091,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261130"
+      "expiredFeedCheckExpiry": "20261130",
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "sacrt",
@@ -6069,7 +6204,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20260922"
+      "expiredFeedCheckExpiry": "20260922",
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "roseville",
@@ -6098,7 +6234,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261231"
+      "expiredFeedCheckExpiry": "20261231",
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "smart-or",
@@ -6144,7 +6281,8 @@
           "featureCount": 25
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "sam",
@@ -6192,7 +6330,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20270101"
+      "expiredFeedCheckExpiry": "20270101",
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "yamhill",
@@ -6234,7 +6373,8 @@
           "featureCount": 14
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "lacmta",
@@ -6281,7 +6421,8 @@
           "featureCount": 1002
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "metrolink",
@@ -6311,7 +6452,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20360501"
+      "expiredFeedCheckExpiry": "20360501",
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "torrance-transit",
@@ -6452,7 +6594,8 @@
           "featureCount": 80
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "longbeach",
@@ -6494,7 +6637,8 @@
           "featureCount": 198
         },
         "checkedAt": "2026-08-24"
-      }
+      },
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "octa",
@@ -6524,7 +6668,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261107"
+      "expiredFeedCheckExpiry": "20261107",
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "foothill",
@@ -6553,7 +6698,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261031"
+      "expiredFeedCheckExpiry": "20261031",
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "avta",
@@ -6613,7 +6759,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20260905"
+      "expiredFeedCheckExpiry": "20260905",
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "nctd",
@@ -6672,7 +6819,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20260912"
+      "expiredFeedCheckExpiry": "20260912",
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "omnitrans",
@@ -6702,7 +6850,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20270103"
+      "expiredFeedCheckExpiry": "20270103",
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "fax",
@@ -6724,7 +6873,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261101"
+      "expiredFeedCheckExpiry": "20261101",
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "get",
@@ -6744,7 +6894,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20271231"
+      "expiredFeedCheckExpiry": "20271231",
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "sjrtd",
@@ -6769,7 +6920,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20270123"
+      "expiredFeedCheckExpiry": "20270123",
+      "timezone": "America/Juneau"
     },
     {
       "slug": "merced",
@@ -6812,7 +6964,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20270630"
+      "expiredFeedCheckExpiry": "20270630",
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "mst",
@@ -6833,7 +6986,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20260828"
+      "expiredFeedCheckExpiry": "20260828",
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "sbmtd",
@@ -6866,7 +7020,8 @@
           "featureCount": 108
         },
         "checkedAt": "2026-08-24"
-      }
+      },
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "slotransit",
@@ -6886,7 +7041,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20270101"
+      "expiredFeedCheckExpiry": "20270101",
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "slorta",
@@ -6906,7 +7062,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20271231"
+      "expiredFeedCheckExpiry": "20271231",
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "sunline",
@@ -6975,7 +7132,8 @@
           "featureCount": 294
         },
         "checkedAt": "2026-08-24"
-      }
+      },
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "rtcwashoe",
@@ -6997,7 +7155,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20260904"
+      "expiredFeedCheckExpiry": "20260904",
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "smat",
@@ -7047,7 +7206,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261025"
+      "expiredFeedCheckExpiry": "20261025",
+      "timezone": "America/Phoenix"
     },
     {
       "slug": "mountainline",
@@ -7067,7 +7227,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261230"
+      "expiredFeedCheckExpiry": "20261230",
+      "timezone": "America/Phoenix"
     },
     {
       "slug": "mountainmetro",
@@ -7136,7 +7297,8 @@
           "featureCount": 692
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Denver"
     },
     {
       "slug": "bustang",
@@ -7185,7 +7347,8 @@
           "featureCount": 31
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Denver"
     },
     {
       "slug": "abqride",
@@ -7206,7 +7369,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20260904"
+      "expiredFeedCheckExpiry": "20260904",
+      "timezone": "America/Denver"
     },
     {
       "slug": "santafetrails",
@@ -7270,7 +7434,8 @@
           "featureCount": 318
         },
         "checkedAt": "2026-08-24"
-      }
+      },
+      "timezone": "America/Chicago"
     },
     {
       "slug": "dart",
@@ -7340,7 +7505,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20260926"
+      "expiredFeedCheckExpiry": "20260926",
+      "timezone": "America/Chicago"
     },
     {
       "slug": "metrohouston",
@@ -7385,7 +7551,8 @@
           "featureCount": 580
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Chicago"
     },
     {
       "slug": "via",
@@ -7418,7 +7585,8 @@
           "featureCount": 626
         },
         "checkedAt": "2026-08-24"
-      }
+      },
+      "timezone": "America/Chicago"
     },
     {
       "slug": "embark",
@@ -7442,7 +7610,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20270702"
+      "expiredFeedCheckExpiry": "20270702",
+      "timezone": "America/Chicago"
     },
     {
       "slug": "rockregion",
@@ -7489,7 +7658,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20270102"
+      "expiredFeedCheckExpiry": "20270102",
+      "timezone": "America/Chicago"
     },
     {
       "slug": "mata",
@@ -7551,7 +7721,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20270124"
+      "expiredFeedCheckExpiry": "20270124",
+      "timezone": "US/Central"
     },
     {
       "slug": "cincinnatimetro",
@@ -7585,7 +7756,8 @@
           "featureCount": 299
         },
         "checkedAt": "2026-08-24"
-      }
+      },
+      "timezone": "America/New_York"
     },
     {
       "slug": "tarc",
@@ -8334,7 +8506,8 @@
           "featureCount": 1027
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/New_York"
     },
     {
       "slug": "wmata",
@@ -8389,7 +8562,8 @@
           "featureCount": 766
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/New_York"
     },
     {
       "slug": "vre",
@@ -8434,7 +8608,8 @@
           "featureCount": 4
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/New_York"
     },
     {
       "slug": "marc",
@@ -8591,7 +8766,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20270731"
+      "expiredFeedCheckExpiry": "20270731",
+      "timezone": "America/New_York"
     },
     {
       "slug": "nyct-subway",
@@ -8642,7 +8818,8 @@
           "featureCount": 205
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/New_York"
     },
     {
       "slug": "nyct-bus-manhattan",
@@ -8867,7 +9044,8 @@
           "featureCount": 120
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/New_York"
     },
     {
       "slug": "mnr",
@@ -9144,7 +9322,8 @@
           "featureCount": 141
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/New_York"
     },
     {
       "slug": "part",
@@ -9242,7 +9421,8 @@
           "featureCount": 652
         },
         "checkedAt": "2026-08-24"
-      }
+      },
+      "timezone": "America/Chicago"
     },
     {
       "slug": "port-authority-pa",
@@ -9296,7 +9476,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261231"
+      "expiredFeedCheckExpiry": "20261231",
+      "timezone": "America/New_York"
     },
     {
       "slug": "butler-pa",
@@ -9330,7 +9511,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20271231"
+      "expiredFeedCheckExpiry": "20271231",
+      "timezone": "America/New_York"
     },
     {
       "slug": "camtran",
@@ -9367,7 +9549,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20290131"
+      "expiredFeedCheckExpiry": "20290131",
+      "timezone": "America/New_York"
     },
     {
       "slug": "fact",
@@ -9401,7 +9584,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20270131"
+      "expiredFeedCheckExpiry": "20270131",
+      "timezone": "America/New_York"
     },
     {
       "slug": "freedom-transit",
@@ -9435,7 +9619,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261231"
+      "expiredFeedCheckExpiry": "20261231",
+      "timezone": "America/New_York"
     },
     {
       "slug": "indigo",
@@ -9469,7 +9654,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20270630"
+      "expiredFeedCheckExpiry": "20270630",
+      "timezone": "America/New_York"
     },
     {
       "slug": "mmvta",
@@ -9506,7 +9692,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20270731"
+      "expiredFeedCheckExpiry": "20270731",
+      "timezone": "America/New_York"
     },
     {
       "slug": "new-castle",
@@ -9540,7 +9727,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261231"
+      "expiredFeedCheckExpiry": "20261231",
+      "timezone": "America/New_York"
     },
     {
       "slug": "westmoreland",
@@ -9574,7 +9762,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261231"
+      "expiredFeedCheckExpiry": "20261231",
+      "timezone": "America/New_York"
     },
     {
       "slug": "uta",
@@ -9616,7 +9805,8 @@
           "featureCount": 363
         },
         "checkedAt": "2026-08-24"
-      }
+      },
+      "timezone": "America/Denver"
     },
     {
       "slug": "jta",
@@ -9773,7 +9963,8 @@
           "featureCount": 420
         },
         "checkedAt": "2026-08-24"
-      }
+      },
+      "timezone": "America/New_York"
     },
     {
       "slug": "hart",
@@ -9905,7 +10096,8 @@
           "featureCount": 640
         },
         "checkedAt": "2026-08-24"
-      }
+      },
+      "timezone": "Pacific/Honolulu"
     },
     {
       "slug": "ripta",
@@ -10121,7 +10313,8 @@
           "featureCount": 82
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Chicago"
     },
     {
       "slug": "xpress-ga",
@@ -10383,7 +10576,8 @@
           "featureCount": 69
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/New_York"
     },
     {
       "slug": "dart-first-state",
@@ -10689,7 +10883,8 @@
           "featureCount": 173
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/New_York"
     },
     {
       "slug": "greenlink",
@@ -10728,7 +10923,8 @@
           "featureCount": 55
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/New_York"
     },
     {
       "slug": "carta-chattanooga",
@@ -10821,7 +11017,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20300129"
+      "expiredFeedCheckExpiry": "20300129",
+      "timezone": "America/Chicago"
     },
     {
       "slug": "bata",
@@ -10854,7 +11051,8 @@
           "featureCount": 45
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/New_York"
     },
     {
       "slug": "citylink-peoria",
@@ -10881,7 +11079,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261205"
+      "expiredFeedCheckExpiry": "20261205",
+      "timezone": "America/Chicago"
     },
     {
       "slug": "cedar-rapids",
@@ -10922,7 +11121,8 @@
           "featureCount": 29
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Chicago"
     },
     {
       "slug": "matbus",
@@ -10962,7 +11162,8 @@
           "featureCount": 55
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Chicago"
     },
     {
       "slug": "duluth-transit",
@@ -10988,7 +11189,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261205"
+      "expiredFeedCheckExpiry": "20261205",
+      "timezone": "America/Chicago"
     },
     {
       "slug": "grtc",
@@ -11058,7 +11260,8 @@
           "featureCount": 63
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/New_York"
     },
     {
       "slug": "gltc",
@@ -11152,7 +11355,8 @@
           "featureCount": 93
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/New_York"
     },
     {
       "slug": "sun-metro",
@@ -11641,7 +11845,8 @@
           "featureCount": 4
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Denver"
     },
     {
       "slug": "kart",
@@ -11676,7 +11881,8 @@
           "featureCount": 27
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "tulare-county-transit",
@@ -11737,7 +11943,8 @@
           "featureCount": 139
         },
         "checkedAt": "2026-08-24"
-      }
+      },
+      "timezone": "US/Central"
     },
     {
       "slug": "waukesha-metro",
@@ -11816,7 +12023,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261218"
+      "expiredFeedCheckExpiry": "20261218",
+      "timezone": "America/New_York"
     },
     {
       "slug": "visalia",
@@ -11918,7 +12126,8 @@
           "featureCount": 66
         },
         "checkedAt": "2026-08-24"
-      }
+      },
+      "timezone": "America/Chicago"
     },
     {
       "slug": "wichita",
@@ -12103,7 +12312,8 @@
           "featureCount": 64
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Chicago"
     },
     {
       "slug": "south-bend",
@@ -12203,7 +12413,8 @@
           "featureCount": 144
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Toronto"
     },
     {
       "slug": "anchorage",
@@ -12261,7 +12472,8 @@
           "featureCount": 135
         },
         "checkedAt": "2026-08-24"
-      }
+      },
+      "timezone": "America/New_York"
     },
     {
       "slug": "mtd-champaign",
@@ -12282,7 +12494,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261219"
+      "expiredFeedCheckExpiry": "20261219",
+      "timezone": "America/Chicago"
     },
     {
       "slug": "kalamazoo",
@@ -12318,7 +12531,8 @@
           "featureCount": 112
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Detroit"
     },
     {
       "slug": "laredo",
@@ -12379,7 +12593,8 @@
           "featureCount": 124
         },
         "checkedAt": "2026-08-24"
-      }
+      },
+      "timezone": "America/Thunder_Bay"
     },
     {
       "slug": "greensboro",
@@ -12454,7 +12669,8 @@
           "featureCount": 150
         },
         "checkedAt": "2026-08-24"
-      }
+      },
+      "timezone": "America/New_York"
     },
     {
       "slug": "winston-salem",
@@ -12554,7 +12770,8 @@
           "featureCount": 72
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/New_York"
     },
     {
       "slug": "colts",
@@ -12973,7 +13190,8 @@
           "featureCount": 17
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Chicago"
     },
     {
       "slug": "tangipahoa-parish",
@@ -13072,7 +13290,8 @@
           "featureCount": 10
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/New_York"
     },
     {
       "slug": "indian-river",
@@ -13141,7 +13360,8 @@
           "featureCount": 84
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/New_York"
     },
     {
       "slug": "springfield-mo",
@@ -13294,7 +13514,8 @@
           "featureCount": 117
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/New_York"
     },
     {
       "slug": "bloomington",
@@ -13334,7 +13555,8 @@
           "featureCount": 70
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/New_York"
     },
     {
       "slug": "athens-acc",
@@ -13374,7 +13596,8 @@
           "featureCount": 80
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/New_York"
     },
     {
       "slug": "uga",
@@ -13467,7 +13690,8 @@
           "featureCount": 90
         },
         "checkedAt": "2026-08-24"
-      }
+      },
+      "timezone": "America/New_York"
     },
     {
       "slug": "cyride",
@@ -13509,7 +13733,8 @@
           "featureCount": 44
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Chicago"
     },
     {
       "slug": "iowa-city",
@@ -13549,7 +13774,8 @@
           "featureCount": 23
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Chicago"
     },
     {
       "slug": "coralville",
@@ -13592,7 +13818,8 @@
           "featureCount": 10
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Chicago"
     },
     {
       "slug": "cambus",
@@ -13632,7 +13859,8 @@
           "featureCount": 11
         },
         "checkedAt": "2026-08-24"
-      }
+      },
+      "timezone": "America/Chicago"
     },
     {
       "slug": "lawrence-ku",
@@ -13699,7 +13927,8 @@
           "featureCount": 81
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Chicago"
     },
     {
       "slug": "topeka",
@@ -13739,7 +13968,8 @@
           "featureCount": 48
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Chicago"
     },
     {
       "slug": "barta",
@@ -13856,7 +14086,8 @@
           "featureCount": 47
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/New_York"
     },
     {
       "slug": "marble-valley",
@@ -13896,7 +14127,8 @@
           "featureCount": 21
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/New_York"
     },
     {
       "slug": "bis-man",
@@ -14222,7 +14454,8 @@
           "featureCount": 26
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Denver"
     },
     {
       "slug": "bridgeport-gbt",
@@ -14324,7 +14557,8 @@
           "featureCount": 6
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Chicago"
     },
     {
       "slug": "dubuque",
@@ -14610,7 +14844,8 @@
           "featureCount": 70
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/New_York"
     },
     {
       "slug": "duke",
@@ -14730,7 +14965,8 @@
           "featureCount": 96
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Chicago"
     },
     {
       "slug": "dekalb",
@@ -14758,7 +14994,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261231"
+      "expiredFeedCheckExpiry": "20261231",
+      "timezone": "US/Central"
     },
     {
       "slug": "radford",
@@ -14885,7 +15122,8 @@
           "featureCount": 61
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/New_York"
     },
     {
       "slug": "rioc-tram",
@@ -15190,7 +15428,8 @@
           "featureCount": 12
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "simi-valley",
@@ -15360,7 +15599,8 @@
           "featureCount": 1
         },
         "checkedAt": "2026-08-27"
-      }
+      },
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "valley-express",
@@ -17936,7 +18176,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261231"
+      "expiredFeedCheckExpiry": "20261231",
+      "timezone": "America/New_York"
     },
     {
       "slug": "jacksonville-nc",
@@ -17977,7 +18218,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20271231"
+      "expiredFeedCheckExpiry": "20271231",
+      "timezone": "America/New_York"
     },
     {
       "slug": "fast-nc",
@@ -18018,7 +18260,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20501230"
+      "expiredFeedCheckExpiry": "20501230",
+      "timezone": "America/New_York"
     },
     {
       "slug": "greenway",
@@ -18059,7 +18302,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20271231"
+      "expiredFeedCheckExpiry": "20271231",
+      "timezone": "America/New_York"
     },
     {
       "slug": "concord-kannapolis",
@@ -18099,7 +18343,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20991231"
+      "expiredFeedCheckExpiry": "20991231",
+      "timezone": "America/New_York"
     },
     {
       "slug": "gaston-county",
@@ -18138,7 +18383,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20301031"
+      "expiredFeedCheckExpiry": "20301031",
+      "timezone": "US/Eastern"
     },
     {
       "slug": "coast-rta",
@@ -18182,7 +18428,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20501231"
+      "expiredFeedCheckExpiry": "20501231",
+      "timezone": "America/New_York"
     },
     {
       "slug": "sunshine-bus",
@@ -18225,7 +18472,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20301031"
+      "expiredFeedCheckExpiry": "20301031",
+      "timezone": "America/New_York"
     },
     {
       "slug": "key-west-transit",
@@ -18266,7 +18514,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261231"
+      "expiredFeedCheckExpiry": "20261231",
+      "timezone": "America/New_York"
     },
     {
       "slug": "citylink-north",
@@ -18308,7 +18557,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20271231"
+      "expiredFeedCheckExpiry": "20271231",
+      "timezone": "America/Los_Angeles"
     },
     {
       "slug": "dcta",
@@ -18351,7 +18601,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20270110"
+      "expiredFeedCheckExpiry": "20270110",
+      "timezone": "America/Chicago"
     },
     {
       "slug": "waco",
@@ -18393,7 +18644,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20501231"
+      "expiredFeedCheckExpiry": "20501231",
+      "timezone": "America/Chicago"
     },
     {
       "slug": "brazos",
@@ -18438,7 +18690,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261231"
+      "expiredFeedCheckExpiry": "20261231",
+      "timezone": "America/Chicago"
     },
     {
       "slug": "lafayette-la",
@@ -18477,7 +18730,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20991231"
+      "expiredFeedCheckExpiry": "20991231",
+      "timezone": "America/Chicago"
     },
     {
       "slug": "coast-transit-ms",
@@ -18520,7 +18774,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261231"
+      "expiredFeedCheckExpiry": "20261231",
+      "timezone": "America/Chicago"
     },
     {
       "slug": "hub-city-transit",
@@ -18559,7 +18814,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20270923"
+      "expiredFeedCheckExpiry": "20270923",
+      "timezone": "US/Central"
     },
     {
       "slug": "tank",
@@ -18600,7 +18856,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261106"
+      "expiredFeedCheckExpiry": "20261106",
+      "timezone": "America/New_York"
     },
     {
       "slug": "sandusky",
@@ -18640,7 +18897,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20270430"
+      "expiredFeedCheckExpiry": "20270430",
+      "timezone": "America/New_York"
     },
     {
       "slug": "bay-metro",
@@ -18685,7 +18943,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20270227"
+      "expiredFeedCheckExpiry": "20270227",
+      "timezone": "America/New_York"
     },
     {
       "slug": "burlington-ia",
@@ -18728,7 +18987,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20260930"
+      "expiredFeedCheckExpiry": "20260930",
+      "timezone": "America/Chicago"
     },
     {
       "slug": "jefftran",
@@ -18768,7 +19028,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20351004"
+      "expiredFeedCheckExpiry": "20351004",
+      "timezone": "US/Central"
     },
     {
       "slug": "muskegon",
@@ -18809,7 +19070,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20271231"
+      "expiredFeedCheckExpiry": "20271231",
+      "timezone": "America/Chicago"
     },
     {
       "slug": "telluride",
@@ -18853,7 +19115,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261122"
+      "expiredFeedCheckExpiry": "20261122",
+      "timezone": "America/Denver"
     },
     {
       "slug": "mountain-village",
@@ -18899,7 +19162,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261122"
+      "expiredFeedCheckExpiry": "20261122",
+      "timezone": "America/Denver"
     },
     {
       "slug": "smart-telluride",
@@ -18949,7 +19213,8 @@
       "lastFeedCheckAt": "20260827",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261122"
+      "expiredFeedCheckExpiry": "20261122",
+      "timezone": "America/Denver"
     },
     {
       "slug": "snowmass-village",
