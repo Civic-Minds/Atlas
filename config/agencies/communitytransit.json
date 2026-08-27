@@ -25,5 +25,9 @@
     "Redmond, Washington",
     "Bellevue, Washington",
     "Sammamish, Washington"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20260828"
 }

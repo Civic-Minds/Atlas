@@ -30,5 +30,9 @@
     "Davis, California"
   ],
   "timezone": "America/Los_Angeles",
-  "lastRawArchiveKey": "20260613-5e822cf6a9ea298f"
+  "lastRawArchiveKey": "20260613-5e822cf6a9ea298f",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
+  "expiredFeedCheckExpiry": "20250405"
 }

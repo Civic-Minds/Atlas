@@ -15,5 +15,9 @@
     "El Monte, California"
   ],
   "timezone": "America/Los_Angeles",
-  "lastRawArchiveKey": "20251031-7b5bc958bf995eaa"
+  "lastRawArchiveKey": "20251031-7b5bc958bf995eaa",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
+  "expiredFeedCheckExpiry": "20251031"
 }

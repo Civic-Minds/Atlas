@@ -15,5 +15,9 @@
   "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-prince-edward-island-t3-transit-gtfs-2132.zip?alt=media",
   "lastFeedExpiry": "20261231",
   "lastFeedVersion": "UTC: 14-May-2026 15:14",
-  "lastRefreshedAt": "2026-08-07"
+  "lastRefreshedAt": "2026-08-07",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261231"
 }

@@ -14,8 +14,8 @@
   ],
   "feedUrl": "https://rrgtfsfeeds.s3.amazonaws.com/gtfs_subway.zip",
   "lastFeedExpiry": "20261031",
-  "lastFeedVersion": "20260807-H-rockaways-extension-removed",
-  "lastRefreshedAt": "2026-08-07",
+  "lastFeedVersion": "20260826-X-long-term-supplement-trip-ids",
+  "lastRefreshedAt": "2026-08-27",
   "cities": [
     "East Village, New York",
     "Park Slope, New York",
@@ -27,5 +27,25 @@
     "Mott Haven, New York",
     "Chinatown, New York",
     "Cypress Hills, New York"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261031",
+  "feedQuality": {
+    "status": "review",
+    "score": 60,
+    "reasons": [
+      "54 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
+      "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 54,
+      "routeHeadwayMismatches": 1,
+      "featureCount": 205
+    },
+    "checkedAt": "2026-08-27"
+  }
 }

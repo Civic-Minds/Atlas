@@ -15,5 +15,9 @@
   "region": "Virginia",
   "lastFeedExpiry": "20270101",
   "lastFeedVersion": "UTC: 01-May-2026 16:41",
-  "lastRefreshedAt": "2026-08-10"
+  "lastRefreshedAt": "2026-08-10",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270101"
 }

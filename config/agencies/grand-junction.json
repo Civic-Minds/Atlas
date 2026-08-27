@@ -18,5 +18,9 @@
     -108.3284
   ],
   "timezone": "America/Denver",
-  "lastRawArchiveKey": "20251105-a5ee28f94a564f8e"
+  "lastRawArchiveKey": "20251105-a5ee28f94a564f8e",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
+  "expiredFeedCheckExpiry": "20251105"
 }

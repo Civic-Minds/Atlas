@@ -21,5 +21,9 @@
     "Durham, North Carolina"
   ],
   "timezone": "America/New_York",
-  "lastRawArchiveKey": "20250810-6d0d75181fa18f7f"
+  "lastRawArchiveKey": "20250810-6d0d75181fa18f7f",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
+  "expiredFeedCheckExpiry": "20250810"
 }

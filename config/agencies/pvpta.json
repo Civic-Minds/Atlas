@@ -10,5 +10,9 @@
   "lastFeedExpiry": "20261201",
   "lastFeedVersion": "UTC: 24-Jul-2026 15:05",
   "region": "California",
-  "lastRefreshedAt": "2026-08-10"
+  "lastRefreshedAt": "2026-08-10",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261201"
 }

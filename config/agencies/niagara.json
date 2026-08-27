@@ -28,10 +28,9 @@
     "301",
     "401"
   ],
-  "overrideNote": "We removed a few incomplete schedule records from Routes 209 and 216 and separated overlapping patterns on Routes 301 and 401. Those routes now show the published service more accurately.",
-  "lastFeedExpiry": "20260905",
-  "lastFeedVersion": "S1000282",
-  "lastRefreshedAt": "2026-08-16",
+  "lastFeedExpiry": "20261010",
+  "lastFeedVersion": "S1000285",
+  "lastRefreshedAt": "2026-08-27",
   "websiteUrl": "https://nrtransit.ca/",
   "cities": [
     "St. Catharines, Ontario",
@@ -49,8 +48,12 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 407
+      "featureCount": 450
     },
-    "checkedAt": "2026-08-16"
-  }
+    "checkedAt": "2026-08-27"
+  },
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261010"
 }

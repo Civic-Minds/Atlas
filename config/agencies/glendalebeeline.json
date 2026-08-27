@@ -16,5 +16,9 @@
     "Pasadena, California"
   ],
   "timezone": "America/Los_Angeles",
-  "lastRawArchiveKey": "20220831-fd08ce68f5a5f345"
+  "lastRawArchiveKey": "20220831-fd08ce68f5a5f345",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
+  "expiredFeedCheckExpiry": "20220831"
 }

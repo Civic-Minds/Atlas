@@ -27,5 +27,9 @@
     "Chinatown, New York",
     "New York City, New York",
     "Financial District, New York"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20260905"
 }

@@ -19,11 +19,17 @@
   "correctionNotices": [
     {
       "type": "removedPlaceholderDestination",
-      "routeIds": ["TL-58"]
+      "routeIds": [
+        "TL-58"
+      ]
     }
   ],
   "lastRefreshedAt": "2026-08-10",
   "cities": [
     "Brownsville, Texas"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20501230"
 }

@@ -9,5 +9,9 @@
   "lastFeedExpiry": "20261201",
   "region": "Colorado",
   "lastFeedVersion": "UTC: 21-May-2026 20:09",
-  "lastRefreshedAt": "2026-07-06"
+  "lastRefreshedAt": "2026-07-06",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261201"
 }

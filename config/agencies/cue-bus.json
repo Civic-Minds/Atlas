@@ -13,5 +13,9 @@
   "cities": [
     "Centreville, Virginia",
     "Reston, Virginia"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20501230"
 }

@@ -14,5 +14,9 @@
     "Reno, Nevada",
     "Sparks, Nevada",
     "Carson City, Nevada"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20260904"
 }

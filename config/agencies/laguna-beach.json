@@ -19,5 +19,9 @@
   "cities": [
     "Aliso Viejo, California",
     "Laguna Niguel, California"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261223"
 }

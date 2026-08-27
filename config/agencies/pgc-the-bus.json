@@ -17,5 +17,9 @@
     "Silver Spring, Maryland",
     "Waldorf, Maryland",
     "Columbia, Maryland"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20260901"
 }

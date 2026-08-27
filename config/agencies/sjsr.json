@@ -13,11 +13,30 @@
     -73.07
   ],
   "feedUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=saint-jean-sur-richelieu",
-  "lastFeedExpiry": "20261231",
-  "lastFeedVersion": "1785852042484",
-  "lastRefreshedAt": "2026-08-07",
+  "lastFeedExpiry": "20270531",
+  "lastFeedVersion": "1786711635491",
+  "lastRefreshedAt": "2026-08-27",
   "cities": [
     "Saint-Jean-sur-Richelieu, Quebec",
     "Brossard, Quebec"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270531",
+  "feedQuality": {
+    "status": "review",
+    "score": 70,
+    "reasons": [
+      "5 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 5,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 33
+    },
+    "checkedAt": "2026-08-27"
+  }
 }

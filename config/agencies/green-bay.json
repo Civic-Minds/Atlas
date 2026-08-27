@@ -16,5 +16,9 @@
     "Green Bay, Wisconsin"
   ],
   "timezone": "US/Central",
-  "lastRawArchiveKey": "20201231-a3bd5150fb0630b1"
+  "lastRawArchiveKey": "20201231-a3bd5150fb0630b1",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
+  "expiredFeedCheckExpiry": "20201231"
 }

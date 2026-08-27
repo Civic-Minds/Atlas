@@ -18,5 +18,9 @@
   "lastFeedExpiry": "20251231",
   "lastFeedVersion": null,
   "timezone": "America/Los_Angeles",
-  "lastRawArchiveKey": "20251231-915e28c519db2c9f"
+  "lastRawArchiveKey": "20251231-915e28c519db2c9f",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
+  "expiredFeedCheckExpiry": "20251231"
 }

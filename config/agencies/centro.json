@@ -7,13 +7,32 @@
     -76.147
   ],
   "feedUrl": "https://www.centro.org/CentroGTFS/CentroGTFS.zip",
-  "lastFeedExpiry": "20260906",
-  "lastFeedVersion": "2026-06 Centro_20260616",
+  "lastFeedExpiry": "20270228",
+  "lastFeedVersion": null,
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-centro-gtfs-534.zip?alt=media",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-27",
   "cities": [
     "Syracuse, New York",
     "Utica, New York",
     "Clay, New York"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270228",
+  "feedQuality": {
+    "status": "review",
+    "score": 80,
+    "reasons": [
+      "2 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 2,
+      "featureCount": 337
+    },
+    "checkedAt": "2026-08-27"
+  }
 }

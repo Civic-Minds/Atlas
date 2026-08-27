@@ -13,15 +13,34 @@
     -75.391
   ],
   "feedUrl": "https://contenu.sto.ca/GTFS/GTFS.zip",
-  "lastFeedExpiry": "20261004",
+  "lastFeedExpiry": "20261019",
   "lastFeedVersion": null,
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-societe-de-transport-de-loutaouais-gtfs-740.zip?alt=media",
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "2026-08-27",
   "cities": [
     "Gatineau, Quebec",
     "Aylmer, Quebec",
     "Hull, Quebec",
     "Orléans, Ontario",
     "Ottawa, Ontario"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261019",
+  "feedQuality": {
+    "status": "review",
+    "score": 80,
+    "reasons": [
+      "2 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 2,
+      "featureCount": 222
+    },
+    "checkedAt": "2026-08-27"
+  }
 }

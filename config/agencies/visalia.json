@@ -13,5 +13,9 @@
   "lastRefreshedAt": "2026-08-10",
   "cities": [
     "Visalia, California"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270106"
 }

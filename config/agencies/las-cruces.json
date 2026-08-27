@@ -16,5 +16,9 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2075/mdb-2075-202608100019/mdb-2075-202608100019.zip",
   "lastFeedExpiry": "20271231",
   "lastFeedVersion": "20250228",
-  "lastRefreshedAt": "2026-08-10"
+  "lastRefreshedAt": "2026-08-10",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20271231"
 }

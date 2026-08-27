@@ -15,11 +15,30 @@
   "feedUrl": "https://files.mobilitydatabase.org/tld-4506/latest.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-4506/latest.zip",
   "lastFeedExpiry": "20261231",
-  "lastFeedVersion": "2026-08-03 Route Adjustment",
-  "lastRefreshedAt": "2026-08-07",
+  "lastFeedVersion": "2026-08-15 Loop adjustment",
+  "lastRefreshedAt": "2026-08-27",
   "cities": [
     "Port Saint Lucie, Florida",
     "Jupiter, Florida",
     "Palm Beach Gardens, Florida"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261231",
+  "feedQuality": {
+    "status": "review",
+    "score": 90,
+    "reasons": [
+      "1 map line was repaired — Atlas fixed unusual route geometry before displaying it."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 1,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 10
+    },
+    "checkedAt": "2026-08-27"
+  }
 }

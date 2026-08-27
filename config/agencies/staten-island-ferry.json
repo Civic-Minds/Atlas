@@ -20,5 +20,9 @@
   "cities": [
     "Bayonne, New Jersey",
     "Financial District, New York"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20280130"
 }

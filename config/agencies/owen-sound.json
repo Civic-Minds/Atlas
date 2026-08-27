@@ -13,20 +13,24 @@
   ],
   "feedQuality": {
     "status": "review",
-    "score": 80,
+    "score": 90,
     "reasons": [
-      "2 shape corrections needed."
+      "1 map line was repaired — Atlas fixed unusual route geometry before displaying it."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 2,
+      "shapeAnomalies": 1,
       "routeHeadwayMismatches": 0,
       "featureCount": 8
     },
-    "checkedAt": "2026-08-21"
+    "checkedAt": "2026-08-27"
   },
   "lastFeedExpiry": "20261231",
-  "lastFeedVersion": "1/20260723 10:53:53/20260723 00:00:00",
-  "lastRefreshedAt": "2026-08-21"
+  "lastFeedVersion": "1/20260826 22:00:00/20260827 00:00:00",
+  "lastRefreshedAt": "2026-08-27",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261231"
 }

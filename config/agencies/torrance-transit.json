@@ -22,5 +22,9 @@
     "Inglewood, California"
   ],
   "timezone": "America/Los_Angeles",
-  "lastRawArchiveKey": "20240113-a600269e90446424"
+  "lastRawArchiveKey": "20240113-a600269e90446424",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
+  "expiredFeedCheckExpiry": "20240113"
 }

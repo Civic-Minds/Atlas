@@ -14,13 +14,33 @@
   ],
   "feedUrl": "https://mysmartbus.com/gtfs",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-oregon-south-metro-area-regional-transit-smart-gtfs-2706.zip?alt=media",
-  "lastFeedExpiry": "20991231",
-  "lastFeedVersion": "FY26 Q4 Effective 5/28/2026",
-  "lastRefreshedAt": "2026-08-10",
+  "lastFeedExpiry": "",
+  "lastFeedVersion": "FY27 Q1 Effective 8-24-26",
+  "lastRefreshedAt": "2026-08-27",
   "cities": [
     "Tigard, Oregon",
     "Salem, Oregon",
     "Gresham, Oregon",
     "Portland, Oregon"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20991231",
+  "feedQuality": {
+    "status": "review",
+    "score": 70,
+    "reasons": [
+      "2 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
+      "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 2,
+      "routeHeadwayMismatches": 1,
+      "featureCount": 25
+    },
+    "checkedAt": "2026-08-27"
+  }
 }

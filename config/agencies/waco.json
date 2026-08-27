@@ -34,5 +34,9 @@
   },
   "lastFeedExpiry": "20501231",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-08-21"
+  "lastRefreshedAt": "2026-08-21",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20501231"
 }

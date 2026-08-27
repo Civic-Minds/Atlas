@@ -20,5 +20,9 @@
     "Ventura, California"
   ],
   "timezone": "America/Vancouver",
-  "lastRawArchiveKey": "20260808-26a2b10b0d954217"
+  "lastRawArchiveKey": "20260808-26a2b10b0d954217",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
+  "expiredFeedCheckExpiry": "20260808"
 }

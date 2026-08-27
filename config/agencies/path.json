@@ -26,5 +26,9 @@
     "New York City, New York"
   ],
   "timezone": "America/New_York",
-  "lastRawArchiveKey": "20260601-572eaf8ff298767c"
+  "lastRawArchiveKey": "20260601-572eaf8ff298767c",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
+  "expiredFeedCheckExpiry": "20260601"
 }

@@ -22,5 +22,9 @@
     "Rancho Penasquitos, California"
   ],
   "timezone": "America/Los_Angeles",
-  "lastRawArchiveKey": "20250517-3b39f629f5e0d959"
+  "lastRawArchiveKey": "20250517-3b39f629f5e0d959",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
+  "expiredFeedCheckExpiry": "20250517"
 }

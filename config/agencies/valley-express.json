@@ -21,5 +21,9 @@
     "Camarillo, California"
   ],
   "timezone": "America/Los_Angeles",
-  "lastRawArchiveKey": "20250815-66df0279f8010e64"
+  "lastRawArchiveKey": "20250815-66df0279f8010e64",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
+  "expiredFeedCheckExpiry": "20250815"
 }

@@ -18,5 +18,9 @@
     "Saint Peters, Missouri"
   ],
   "timezone": "America/Chicago",
-  "lastRawArchiveKey": "20261025-4c0fd0987c705d50"
+  "lastRawArchiveKey": "20261025-4c0fd0987c705d50",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
+  "expiredFeedCheckExpiry": "20260614"
 }

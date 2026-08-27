@@ -21,5 +21,9 @@
     "Savannah, Georgia"
   ],
   "timezone": "America/New_York",
-  "lastRawArchiveKey": "20250727-6723aa5560da6d1c"
+  "lastRawArchiveKey": "20250727-6723aa5560da6d1c",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
+  "expiredFeedCheckExpiry": "20250727"
 }

@@ -21,5 +21,9 @@
     "Gainesville, Florida"
   ],
   "timezone": "America/New_York",
-  "lastRawArchiveKey": "20250817-826a9fab634aebc4"
+  "lastRawArchiveKey": "20250817-826a9fab634aebc4",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
+  "expiredFeedCheckExpiry": "20250817"
 }

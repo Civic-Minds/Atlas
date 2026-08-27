@@ -21,5 +21,9 @@
     "Davenport, Iowa"
   ],
   "timezone": "America/Chicago",
-  "lastRawArchiveKey": "20241231-19de367bf787d09c"
+  "lastRawArchiveKey": "20241231-19de367bf787d09c",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
+  "expiredFeedCheckExpiry": "20241231"
 }

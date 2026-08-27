@@ -21,5 +21,9 @@
     "Roanoke, Virginia"
   ],
   "timezone": "America/New_York",
-  "lastRawArchiveKey": "20260731-0bc49aabb978919b"
+  "lastRawArchiveKey": "20260731-0bc49aabb978919b",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
+  "expiredFeedCheckExpiry": "20260731"
 }

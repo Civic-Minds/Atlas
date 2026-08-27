@@ -21,5 +21,9 @@
     "El Paso, Texas"
   ],
   "timezone": "America/Denver",
-  "lastRawArchiveKey": "20260613-c56de1a2d238fe79"
+  "lastRawArchiveKey": "20260613-c56de1a2d238fe79",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
+  "expiredFeedCheckExpiry": "20260613"
 }

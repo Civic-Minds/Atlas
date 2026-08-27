@@ -15,5 +15,9 @@
     "North Little Rock, Arkansas"
   ],
   "timezone": "America/Chicago",
-  "lastRawArchiveKey": "20251019-9254f70ee7df65fe"
+  "lastRawArchiveKey": "20251019-9254f70ee7df65fe",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
+  "expiredFeedCheckExpiry": "20251019"
 }

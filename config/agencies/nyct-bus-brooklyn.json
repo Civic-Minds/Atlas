@@ -27,5 +27,9 @@
     "Flatbush, New York",
     "Ridgewood, New York",
     "East New York, New York"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20260905"
 }

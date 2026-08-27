@@ -14,7 +14,11 @@
   "correctionNotices": [
     {
       "type": "excludedNonRevenueTrips",
-      "routeShortNames": ["12", "47", "48"]
+      "routeShortNames": [
+        "12",
+        "47",
+        "48"
+      ]
     }
   ],
   "region": "Louisiana",
@@ -24,5 +28,9 @@
     "Metairie, Louisiana",
     "Metairie Terrace, Louisiana",
     "Kenner, Louisiana"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270124"
 }

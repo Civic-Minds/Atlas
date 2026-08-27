@@ -14,9 +14,9 @@
   ],
   "feedUrl": "https://www.stlaval.ca/datas/opendata/GTF_STL.zip",
   "lastFeedExpiry": "20261030",
-  "lastFeedVersion": "20260824044705",
+  "lastFeedVersion": "20260827044702",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-societe-de-transport-de-laval-gtfs-3190.zip?alt=media",
-  "lastRefreshedAt": "2026-08-24",
+  "lastRefreshedAt": "2026-08-27",
   "cities": [
     "Laval, Quebec",
     "Chomedey, Quebec",
@@ -29,7 +29,7 @@
     "Saint-Léonard, Quebec",
     "Saint-Laurent, Quebec"
   ],
-  "lastFeedCheckAt": "20260824",
+  "lastFeedCheckAt": "20260827",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261030",
@@ -37,7 +37,7 @@
     "status": "review",
     "score": 90,
     "reasons": [
-      "1 route frequency metric need review."
+      "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
     ],
     "metrics": {
       "validationErrors": 0,
@@ -46,6 +46,6 @@
       "routeHeadwayMismatches": 1,
       "featureCount": 259
     },
-    "checkedAt": "2026-08-24"
+    "checkedAt": "2026-08-27"
   }
 }

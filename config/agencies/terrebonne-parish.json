@@ -14,7 +14,24 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/ntd-60080/latest.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-60080/latest.zip",
-  "lastFeedExpiry": "20261106",
-  "lastFeedVersion": "420",
-  "lastRefreshedAt": "2026-08-10"
+  "lastFeedExpiry": "20261115",
+  "lastFeedVersion": "421",
+  "lastRefreshedAt": "2026-08-27",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261115",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 17
+    },
+    "checkedAt": "2026-08-27"
+  }
 }

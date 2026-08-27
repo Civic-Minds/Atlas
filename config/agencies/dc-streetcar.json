@@ -15,5 +15,9 @@
     "Downtown DC, District of Columbia"
   ],
   "timezone": "America/New_York",
-  "lastRawArchiveKey": "20250630-3b299905c0a7023a"
+  "lastRawArchiveKey": "20250630-3b299905c0a7023a",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
+  "expiredFeedCheckExpiry": "20250630"
 }

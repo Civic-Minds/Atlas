@@ -20,7 +20,7 @@
     "status": "review",
     "score": 90,
     "reasons": [
-      "1 validation warning."
+      "1 schedule-data warning — Atlas found a minor issue while reading the schedule."
     ],
     "metrics": {
       "validationErrors": 0,
@@ -29,9 +29,13 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 9
     },
-    "checkedAt": "2026-08-21"
+    "checkedAt": "2026-08-27"
   },
   "lastFeedExpiry": "20261229",
   "lastFeedVersion": "20250228",
-  "lastRefreshedAt": "2026-08-21"
+  "lastRefreshedAt": "2026-08-27",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261231"
 }

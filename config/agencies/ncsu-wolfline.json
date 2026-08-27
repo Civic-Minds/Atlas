@@ -19,5 +19,9 @@
   ],
   "cities": [
     "West Raleigh, North Carolina"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20271231"
 }

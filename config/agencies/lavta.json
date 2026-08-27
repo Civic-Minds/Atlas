@@ -24,5 +24,9 @@
     "Dublin, California"
   ],
   "timezone": "America/Los_Angeles",
-  "lastRawArchiveKey": "20260430-d4b24aea487f70da"
+  "lastRawArchiveKey": "20260430-d4b24aea487f70da",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
+  "expiredFeedCheckExpiry": "20260430"
 }

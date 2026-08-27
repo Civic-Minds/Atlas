@@ -27,5 +27,9 @@
     "Middletown, New Jersey",
     "New Brunswick, New Jersey",
     "Union, New Jersey"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261225"
 }

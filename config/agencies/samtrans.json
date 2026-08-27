@@ -15,8 +15,8 @@
   "feedUrl": "http://www.samtrans.com/Assets/GTFS/samtrans/ST-GTFS.zip",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-san-mateo-county-transit-district-samtrans-gtfs-49.zip?alt=media",
   "lastFeedExpiry": "20261114",
-  "lastFeedVersion": "Initial",
-  "lastRefreshedAt": "2026-08-07",
+  "lastFeedVersion": "Revision1",
+  "lastRefreshedAt": "2026-08-27",
   "cities": [
     "South San Francisco, California",
     "San Mateo, California",
@@ -25,5 +25,22 @@
     "Palo Alto, California",
     "San Francisco, California",
     "Chinatown, California"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261114",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 171
+    },
+    "checkedAt": "2026-08-27"
+  }
 }

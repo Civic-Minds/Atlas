@@ -6,9 +6,9 @@
     -93.63
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-923/latest.zip",
-  "lastFeedExpiry": "20260816",
-  "lastFeedVersion": "20260513",
-  "lastRefreshedAt": "2026-08-07",
+  "lastFeedExpiry": "20270514",
+  "lastFeedVersion": "20260821",
+  "lastRefreshedAt": "2026-08-27",
   "region": "Iowa",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-923/latest.zip",
   "bbox": [
@@ -19,5 +19,24 @@
   ],
   "cities": [
     "Ames, Iowa"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270514",
+  "feedQuality": {
+    "status": "review",
+    "score": 90,
+    "reasons": [
+      "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 1,
+      "featureCount": 44
+    },
+    "checkedAt": "2026-08-27"
+  }
 }

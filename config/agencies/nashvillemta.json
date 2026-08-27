@@ -16,5 +16,9 @@
     "Murfreesboro, Tennessee",
     "Franklin, Tennessee",
     "Clarksville, Tennessee"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270102"
 }

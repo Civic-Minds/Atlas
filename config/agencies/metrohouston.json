@@ -6,10 +6,10 @@
     -95.37
   ],
   "feedUrl": "https://metro.resourcespace.com/pages/download.php?ref=4835&ext=zip",
-  "lastFeedExpiry": "20270206",
-  "lastFeedVersion": "Feb2026IVOMS_20260710",
+  "lastFeedExpiry": "20270123",
+  "lastFeedVersion": "August2026IVOMS_20260825",
   "region": "Texas",
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "2026-08-27",
   "cities": [
     "Houston, Texas",
     "Alief, Texas",
@@ -22,5 +22,24 @@
     "League City, Texas",
     "Baytown, Texas"
   ],
-  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2060/mdb-2060-202607120126/mdb-2060-202607120126.zip"
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2060/mdb-2060-202607120126/mdb-2060-202607120126.zip",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270213",
+  "feedQuality": {
+    "status": "review",
+    "score": 90,
+    "reasons": [
+      "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 1,
+      "featureCount": 580
+    },
+    "checkedAt": "2026-08-27"
+  }
 }

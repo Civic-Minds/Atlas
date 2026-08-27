@@ -22,5 +22,9 @@
     "East Pensacola Heights, Florida"
   ],
   "timezone": "America/Chicago",
-  "lastRawArchiveKey": "20221101-cc58fb6d6d6ac384"
+  "lastRawArchiveKey": "20221101-cc58fb6d6d6ac384",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
+  "expiredFeedCheckExpiry": "20221101"
 }

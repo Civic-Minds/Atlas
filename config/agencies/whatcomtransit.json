@@ -20,5 +20,9 @@
     "Bellingham, Washington",
     "Abbotsford, British Columbia",
     "South Surrey, British Columbia"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20260919"
 }

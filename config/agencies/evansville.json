@@ -21,5 +21,9 @@
     "Evansville, Indiana"
   ],
   "timezone": "America/Chicago",
-  "lastRawArchiveKey": "20250115-762408ee68963c10"
+  "lastRawArchiveKey": "20250115-762408ee68963c10",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
+  "expiredFeedCheckExpiry": "20250115"
 }

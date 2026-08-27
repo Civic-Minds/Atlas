@@ -13,15 +13,34 @@
     -79.26
   ],
   "feedUrl": "https://www.arcgis.com/sharing/rest/content/items/a355aabd5a8c490186bdce559c9c75fb/data",
-  "lastFeedExpiry": "20260906",
-  "lastFeedVersion": "20260803",
+  "lastFeedExpiry": "20261101",
+  "lastFeedVersion": "20260907",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-brampton-transit-gtfs-729.zip?alt=media",
-  "lastRefreshedAt": "2026-08-09",
+  "lastRefreshedAt": "2026-08-27",
   "cities": [
     "Brampton, Ontario",
     "Etobicoke, Ontario",
     "Vaughan, Ontario",
     "Mississauga, Ontario",
     "Caledon, Ontario"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261101",
+  "feedQuality": {
+    "status": "review",
+    "score": 80,
+    "reasons": [
+      "2 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 2,
+      "featureCount": 317
+    },
+    "checkedAt": "2026-08-27"
+  }
 }

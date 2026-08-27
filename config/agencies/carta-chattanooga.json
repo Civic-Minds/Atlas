@@ -21,5 +21,9 @@
     "East Chattanooga, Tennessee"
   ],
   "timezone": "America/Los_Angeles",
-  "lastRawArchiveKey": "20260110-43ad9b4912295a43"
+  "lastRawArchiveKey": "20260110-43ad9b4912295a43",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
+  "expiredFeedCheckExpiry": "20240817"
 }

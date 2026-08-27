@@ -11,5 +11,9 @@
   "region": "Virginia",
   "lastRefreshedAt": "20260811",
   "timezone": "America/New_York",
-  "lastRawArchiveKey": "20250331-57559b8d2e92112e"
+  "lastRawArchiveKey": "20250331-57559b8d2e92112e",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
+  "expiredFeedCheckExpiry": "20250331"
 }

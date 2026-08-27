@@ -27,5 +27,9 @@
     "Yonkers, New York",
     "East Norwalk, Connecticut",
     "Kings Bridge, New York"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261226"
 }

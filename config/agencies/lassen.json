@@ -16,5 +16,9 @@
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-lassen-rural-bus-lrb-gtfs-118.zip?alt=media",
   "lastFeedExpiry": "20261130",
   "lastFeedVersion": "UTC: 22-May-2026 15:35",
-  "lastRefreshedAt": "2026-08-07"
+  "lastRefreshedAt": "2026-08-07",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261130"
 }

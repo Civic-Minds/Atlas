@@ -19,5 +19,9 @@
   ],
   "cities": [
     "Ann Arbor, Michigan"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
+  "expiredFeedCheckExpiry": "20260822"
 }

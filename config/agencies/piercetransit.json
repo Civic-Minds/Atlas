@@ -29,5 +29,9 @@
     "Bellevue, Washington",
     "Kent, Washington"
   ],
-  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-265/mdb-265-202608080054/mdb-265-202608080054.zip"
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-265/mdb-265-202608080054/mdb-265-202608080054.zip",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20260829"
 }

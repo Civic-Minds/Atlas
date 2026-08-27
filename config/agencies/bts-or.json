@@ -14,7 +14,26 @@
   ],
   "feedUrl": "https://oregon-gtfs.trilliumtransit.com/gtfs_data/basin-or-us/basin-or-us.zip",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-oregon-basin-transit-service-bts-gtfs-125.zip?alt=media",
-  "lastFeedExpiry": "20260831",
-  "lastFeedVersion": "UTC: 30-Apr-2026 20:28",
-  "lastRefreshedAt": "2026-08-07"
+  "lastFeedExpiry": "20270201",
+  "lastFeedVersion": "UTC: 21-Aug-2026 20:59",
+  "lastRefreshedAt": "2026-08-27",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270201",
+  "feedQuality": {
+    "status": "review",
+    "score": 80,
+    "reasons": [
+      "2 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 2,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 16
+    },
+    "checkedAt": "2026-08-27"
+  }
 }

@@ -14,13 +14,32 @@
   ],
   "feedUrl": "https://metrolinx.tmix.se/gtfs/gtfs-stratford.zip",
   "lastFeedExpiry": "20270506",
-  "lastFeedVersion": "1/20260723 10:53:53/20260723 00:00:00",
+  "lastFeedVersion": "1/20260826 22:00:00/20260827 00:00:00",
   "excludeRouteShortNames": [
     "LOS"
   ],
   "overrideNote": "The \"Lights On Stratford\" shuttle is a seasonal hop-on hop-off route that only runs mid-December to mid-January, but it was showing up on the map year-round. We've hidden it until the transit agency fixes their schedule data.",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-27",
   "cities": [
     "Kitchener, Ontario"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270506",
+  "feedQuality": {
+    "status": "review",
+    "score": 80,
+    "reasons": [
+      "2 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 2,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 7
+    },
+    "checkedAt": "2026-08-27"
+  }
 }

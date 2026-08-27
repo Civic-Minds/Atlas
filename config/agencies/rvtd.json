@@ -15,9 +15,26 @@
   "feedUrl": "https://gtfs.rvtd.cadavl.com/RVTD/GTFS/GTFS_RVTD.zip",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-oregon-rogue-valley-transportation-district-rvtd-gtfs-3219.zip?alt=media",
   "lastFeedExpiry": "20261122",
-  "lastFeedVersion": "08-10-26  02:35",
-  "lastRefreshedAt": "2026-08-10",
+  "lastFeedVersion": "08-27-26  02:35",
+  "lastRefreshedAt": "2026-08-27",
   "cities": [
     "Medford, Oregon"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261122",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 12
+    },
+    "checkedAt": "2026-08-27"
+  }
 }

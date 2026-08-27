@@ -27,5 +27,9 @@
     "Ridgewood, New York",
     "Parkchester, New York",
     "East Village, New York"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20260905"
 }

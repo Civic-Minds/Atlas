@@ -8,10 +8,29 @@
   ],
   "feedUrl": "http://data.trilliumtransit.com/gtfs/lakecounty-oh-us/lakecounty-oh-us.zip",
   "lastFeedExpiry": "20260927",
-  "lastFeedVersion": "May 2026",
+  "lastFeedVersion": "August 2026 V3",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-ohio-laketran-gtfs-410.zip?alt=media",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-27",
   "cities": [
     "Cleveland, Ohio"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20260927",
+  "feedQuality": {
+    "status": "review",
+    "score": 70,
+    "reasons": [
+      "16 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 16,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 39
+    },
+    "checkedAt": "2026-08-27"
+  }
 }

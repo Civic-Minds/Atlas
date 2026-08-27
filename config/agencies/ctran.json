@@ -14,12 +14,31 @@
   ],
   "feedUrl": "https://www.c-tran.com/images/Google/GoogleTransitUpload.zip",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-washington-c-tran-gtfs-258.zip?alt=media",
-  "lastFeedExpiry": "20260912",
-  "lastFeedVersion": "20260510-20260912",
-  "lastRefreshedAt": "2026-08-07",
+  "lastFeedExpiry": "20270109",
+  "lastFeedVersion": "20260510-20270109",
+  "lastRefreshedAt": "2026-08-27",
   "cities": [
     "Vancouver, Washington",
     "Gresham, Oregon",
     "Portland, Oregon"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270109",
+  "feedQuality": {
+    "status": "review",
+    "score": 70,
+    "reasons": [
+      "57 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 57,
+      "featureCount": 244
+    },
+    "checkedAt": "2026-08-27"
+  }
 }

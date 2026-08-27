@@ -20,5 +20,9 @@
     "Corpus Christi, Texas"
   ],
   "timezone": "America/Chicago",
-  "lastRawArchiveKey": "20250531-11faaa728a80569c"
+  "lastRawArchiveKey": "20250531-11faaa728a80569c",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
+  "expiredFeedCheckExpiry": "20250531"
 }

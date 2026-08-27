@@ -14,16 +14,33 @@
   ],
   "feedUrl": "https://metro.nfta.com/__googletransit/google_transit.zip",
   "lastFeedExpiry": "20260829",
-  "lastFeedVersion": "SUMF",
+  "lastFeedVersion": "SUMD",
   "supplementalFeedUrls": [
     "https://metro.nfta.com/__googletransit/rail/google_transit.zip"
   ],
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-niagara-frontier-transportation-authority-nfta-gtfs-465.zip?alt=media",
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "2026-08-27",
   "cities": [
     "Buffalo, New York",
     "Amherst, New York",
     "Cheektowaga, New York",
     "Niagara Falls, Ontario"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20260829",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 270
+    },
+    "checkedAt": "2026-08-27"
+  }
 }

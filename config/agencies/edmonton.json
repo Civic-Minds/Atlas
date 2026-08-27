@@ -13,13 +13,32 @@
     -113.15
   ],
   "feedUrl": "https://gtfs.edmonton.ca/TMGTFSRealTimeWebService/GTFS/GTFS.zip",
-  "lastFeedExpiry": "20260919",
-  "lastFeedVersion": "260731_1622",
+  "lastFeedExpiry": "20261128",
+  "lastFeedVersion": "260824_2022",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-alberta-edmonton-transit-system-gtfs-714.zip?alt=media",
-  "lastRefreshedAt": "2026-08-09",
+  "lastRefreshedAt": "2026-08-27",
   "cities": [
     "Edmonton, Alberta",
     "St. Albert, Alberta",
     "Sherwood Park, Alberta"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261128",
+  "feedQuality": {
+    "status": "review",
+    "score": 80,
+    "reasons": [
+      "2 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 2,
+      "featureCount": 848
+    },
+    "checkedAt": "2026-08-27"
+  }
 }

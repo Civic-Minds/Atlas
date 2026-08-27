@@ -14,11 +14,31 @@
   "feedUrl": "https://myvalleystops.wrtaonline.com/InfoPoint/gtfs-zip.ashx",
   "region": "Ohio",
   "lastFeedExpiry": "20260905",
-  "lastFeedVersion": "20260622",
-  "lastRefreshedAt": "2026-08-10",
+  "lastFeedVersion": "20260817",
+  "lastRefreshedAt": "2026-08-27",
   "websiteUrl": "http://www.wrtaonline.com/",
   "cities": [
     "Youngstown, Ohio"
   ],
-  "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-1717/tld-1717-202606230015/tld-1717-202606230015.zip"
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-1717/tld-1717-202606230015/tld-1717-202606230015.zip",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20260905",
+  "feedQuality": {
+    "status": "review",
+    "score": 60,
+    "reasons": [
+      "13 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
+      "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 13,
+      "routeHeadwayMismatches": 1,
+      "featureCount": 93
+    },
+    "checkedAt": "2026-08-27"
+  }
 }

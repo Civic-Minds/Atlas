@@ -17,5 +17,9 @@
   "lastFeedVersion": "20250228",
   "lastRefreshedAt": "2026-08-10",
   "websiteUrl": "http://passiotech.com/",
-  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2881/mdb-2881-202608100019/mdb-2881-202608100019.zip"
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2881/mdb-2881-202608100019/mdb-2881-202608100019.zip",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20271231"
 }

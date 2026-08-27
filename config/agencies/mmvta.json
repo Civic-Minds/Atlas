@@ -16,7 +16,7 @@
     "status": "review",
     "score": 90,
     "reasons": [
-      "1 route frequency metric need review."
+      "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
     ],
     "metrics": {
       "validationErrors": 0,
@@ -25,9 +25,13 @@
       "routeHeadwayMismatches": 1,
       "featureCount": 27
     },
-    "checkedAt": "2026-08-21"
+    "checkedAt": "2026-08-27"
   },
   "lastFeedExpiry": "20270731",
-  "lastFeedVersion": "20260819",
-  "lastRefreshedAt": "2026-08-21"
+  "lastFeedVersion": "20260824",
+  "lastRefreshedAt": "2026-08-27",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270731"
 }

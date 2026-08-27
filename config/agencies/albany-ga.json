@@ -21,5 +21,9 @@
     "Albany, Georgia"
   ],
   "timezone": "America/New_York",
-  "lastRawArchiveKey": "20240630-cc0eb0e68ef49960"
+  "lastRawArchiveKey": "20240630-cc0eb0e68ef49960",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
+  "expiredFeedCheckExpiry": "20240630"
 }

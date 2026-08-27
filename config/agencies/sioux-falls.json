@@ -21,5 +21,9 @@
     "Sioux Falls, South Dakota"
   ],
   "timezone": "US/Central",
-  "lastRawArchiveKey": "20240403-d45b07265ba69af5"
+  "lastRawArchiveKey": "20240403-d45b07265ba69af5",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
+  "expiredFeedCheckExpiry": "20240403"
 }

@@ -17,5 +17,9 @@
     "West Allis, Wisconsin"
   ],
   "timezone": "America/Chicago",
-  "lastRawArchiveKey": "20250601-9d45b36319c36615"
+  "lastRawArchiveKey": "20250601-9d45b36319c36615",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
+  "expiredFeedCheckExpiry": "20250601"
 }

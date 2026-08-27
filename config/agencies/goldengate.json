@@ -25,5 +25,9 @@
     "San Francisco, California",
     "Santa Rosa, California",
     "Petaluma, California"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20260912"
 }

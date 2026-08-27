@@ -9,10 +9,29 @@
   "region": "Pennsylvania",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2000/latest.zip",
   "lastFeedExpiry": "20271231",
-  "lastFeedVersion": "20260717",
-  "lastRefreshedAt": "2026-08-07",
+  "lastFeedVersion": "20260826",
+  "lastRefreshedAt": "2026-08-27",
   "cities": [
     "Lancaster, Pennsylvania",
     "Harrisburg, Pennsylvania"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20271231",
+  "feedQuality": {
+    "status": "review",
+    "score": 70,
+    "reasons": [
+      "19 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 19,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 72
+    },
+    "checkedAt": "2026-08-27"
+  }
 }

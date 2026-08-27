@@ -14,5 +14,9 @@
     "Fresno, California",
     "Clovis, California"
   ],
-  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-90/mdb-90-202608050001/mdb-90-202608050001.zip"
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-90/mdb-90-202608050001/mdb-90-202608050001.zip",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261101"
 }

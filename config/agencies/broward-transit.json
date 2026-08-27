@@ -21,5 +21,9 @@
     "Sunrise, Florida",
     "Coconut Creek, Florida",
     "Miramar, Florida"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20260926"
 }

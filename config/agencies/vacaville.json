@@ -22,5 +22,9 @@
     "Vacaville, California"
   ],
   "timezone": "America/Los_Angeles",
-  "lastRawArchiveKey": "20260630-9771867b4141da3d"
+  "lastRawArchiveKey": "20260630-9771867b4141da3d",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
+  "expiredFeedCheckExpiry": "20260630"
 }

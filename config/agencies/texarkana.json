@@ -16,5 +16,9 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-60093/latest.zip",
   "lastFeedExpiry": "20281231",
   "lastFeedVersion": "02-2025",
-  "lastRefreshedAt": "2026-08-10"
+  "lastRefreshedAt": "2026-08-10",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20281231"
 }

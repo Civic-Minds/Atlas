@@ -15,5 +15,9 @@
     "Detroit, Michigan"
   ],
   "timezone": "America/Detroit",
-  "lastRawArchiveKey": "20251231-8926b6d5769c203c"
+  "lastRawArchiveKey": "20251231-8926b6d5769c203c",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
+  "expiredFeedCheckExpiry": "20251231"
 }

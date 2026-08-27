@@ -18,7 +18,7 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2050/latest.zip",
   "lastFeedExpiry": "20261019",
   "lastFeedVersion": "UTC: 02-Jun-2026 18:30",
-  "lastRefreshedAt": "2026-08-18",
+  "lastRefreshedAt": "2026-08-27",
   "cities": [
     "Telluride, Colorado",
     "Mountain Village, Colorado",
@@ -31,16 +31,20 @@
     "status": "degraded",
     "score": 40,
     "reasons": [
-      "4 validation warnings.",
-      "4 shape corrections needed."
+      "3 schedule-data warnings — Atlas found a minor issue while reading the schedule.",
+      "4 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
     ],
     "metrics": {
       "validationErrors": 0,
-      "validationWarnings": 4,
+      "validationWarnings": 3,
       "shapeAnomalies": 4,
       "routeHeadwayMismatches": 0,
       "featureCount": 10
     },
-    "checkedAt": "2026-08-18"
-  }
+    "checkedAt": "2026-08-27"
+  },
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261122"
 }

@@ -13,10 +13,10 @@
     -78.35
   ],
   "feedUrl": "https://maps.durham.ca/OpenDataGTFS/GTFS_Durham_TXT.zip",
-  "lastFeedExpiry": "20260906",
+  "lastFeedExpiry": "20261018",
   "lastFeedVersion": null,
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-durham-region-transit-gtfs-726.zip?alt=media",
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "2026-08-27",
   "cities": [
     "Oshawa, Ontario",
     "Ajax, Ontario",
@@ -25,5 +25,25 @@
     "Woburn, Ontario",
     "Newmarket, Ontario",
     "Barrie, Ontario"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261018",
+  "feedQuality": {
+    "status": "review",
+    "score": 60,
+    "reasons": [
+      "2 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
+      "2 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 2,
+      "routeHeadwayMismatches": 2,
+      "featureCount": 215
+    },
+    "checkedAt": "2026-08-27"
+  }
 }

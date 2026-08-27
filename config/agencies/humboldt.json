@@ -14,7 +14,24 @@
   ],
   "feedUrl": "https://hta.optibus.co/public_api/v1/feeds/gtfs",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-humboldt-county-gtfs-3032.zip?alt=media",
-  "lastFeedExpiry": "20261231",
-  "lastFeedVersion": "UTC: 04-Jun-2026 22:50",
-  "lastRefreshedAt": "2026-08-07"
+  "lastFeedExpiry": "20270630",
+  "lastFeedVersion": "UTC: 19-Aug-2026 17:58",
+  "lastRefreshedAt": "2026-08-27",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270630",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 20
+    },
+    "checkedAt": "2026-08-27"
+  }
 }

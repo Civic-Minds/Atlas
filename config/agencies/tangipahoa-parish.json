@@ -18,5 +18,9 @@
   "lastFeedVersion": "20251212",
   "lastRefreshedAt": "2026-08-07",
   "overrideNote": "Real fixed-route bus service (route_type 3, ordered stop sequences) but shapes.txt is present with header only — every trip's shape_id is blank. Needs a stop-sequence fallback capability Atlas doesn't have yet. Tracked in #216.",
-  "pmtilesPending": true
+  "pmtilesPending": true,
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270201"
 }

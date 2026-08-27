@@ -19,5 +19,9 @@
   "lastRefreshedAt": "2026-08-07",
   "cities": [
     "Davis, California"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20260922"
 }

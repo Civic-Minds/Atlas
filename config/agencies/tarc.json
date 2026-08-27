@@ -13,5 +13,9 @@
   "cities": [
     "Louisville, Kentucky"
   ],
-  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2662/mdb-2662-202608040049/mdb-2662-202608040049.zip"
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2662/mdb-2662-202608040049/mdb-2662-202608040049.zip",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270109"
 }

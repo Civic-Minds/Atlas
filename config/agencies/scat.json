@@ -21,5 +21,9 @@
     "Sarasota, Florida",
     "North Port, Florida",
     "Bradenton, Florida"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20290629"
 }

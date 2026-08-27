@@ -20,5 +20,9 @@
     "Victoria, British Columbia",
     "Shoreline, Washington",
     "Seattle, Washington"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270522"
 }

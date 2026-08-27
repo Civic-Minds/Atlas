@@ -7,15 +7,34 @@
     -72.59
   ],
   "feedUrl": "https://www.pvta.com/g_trans/google_transit.zip",
-  "lastFeedExpiry": "20260822",
+  "lastFeedExpiry": "20261219",
   "lastFeedVersion": null,
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-massachusetts-pioneer-valley-transit-authority-pvta-gtfs-1234.zip?alt=media",
   "gtfsFares": true,
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-27",
   "cities": [
     "Springfield, Massachusetts",
     "North Chicopee, Massachusetts",
     "Chicopee, Massachusetts",
     "Worcester, Massachusetts"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261219",
+  "feedQuality": {
+    "status": "review",
+    "score": 80,
+    "reasons": [
+      "2 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 2,
+      "featureCount": 295
+    },
+    "checkedAt": "2026-08-27"
+  }
 }

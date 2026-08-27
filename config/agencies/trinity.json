@@ -15,6 +15,23 @@
   "feedUrl": "https://gtfs.remix.com/trinity_county_ca.zip",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-trinity-transit-gtfs-2709.zip?alt=media",
   "lastFeedExpiry": "20261231",
-  "lastFeedVersion": "Updated: Jul 28, 2026, 1:28 AM",
-  "lastRefreshedAt": "2026-08-07"
+  "lastFeedVersion": "Updated: Aug 20, 2026, 5:19 PM",
+  "lastRefreshedAt": "2026-08-27",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261231",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 6
+    },
+    "checkedAt": "2026-08-27"
+  }
 }

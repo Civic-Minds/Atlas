@@ -22,5 +22,9 @@
     "Union City, California"
   ],
   "timezone": "America/Los_Angeles",
-  "lastRawArchiveKey": "20230927-651281e25dba5ea3"
+  "lastRawArchiveKey": "20230927-651281e25dba5ea3",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
+  "expiredFeedCheckExpiry": "20230927"
 }

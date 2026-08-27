@@ -19,5 +19,9 @@
   "cities": [
     "Seattle, Washington"
   ],
-  "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-2290/tld-2290-202604210048/tld-2290-202604210048.zip"
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-2290/tld-2290-202604210048/tld-2290-202604210048.zip",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270530"
 }

@@ -6,9 +6,9 @@
     -104.71
   ],
   "feedUrl": "https://data.trilliumtransit.com/gtfs/greeleyevans-co-us/greeleyevans-co-us.zip",
-  "lastFeedExpiry": "20260831",
-  "lastFeedVersion": "UTC: 23-Feb-2026 11:20",
-  "lastRefreshedAt": "2026-08-07",
+  "lastFeedExpiry": "20270228",
+  "lastFeedVersion": "UTC: 13-Aug-2026 19:35",
+  "lastRefreshedAt": "2026-08-27",
   "region": "Colorado",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2076/latest.zip",
   "bbox": [
@@ -21,5 +21,22 @@
     "Greeley, Colorado",
     "Loveland, Colorado",
     "Fort Collins, Colorado"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270228",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 26
+    },
+    "checkedAt": "2026-08-27"
+  }
 }

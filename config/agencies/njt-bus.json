@@ -29,5 +29,9 @@
     "Irvington, New Jersey"
   ],
   "timezone": "America/New_York",
-  "lastRawArchiveKey": "20261225-dafb95e8c171680d"
+  "lastRawArchiveKey": "20261225-dafb95e8c171680d",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261225"
 }

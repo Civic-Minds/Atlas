@@ -12,5 +12,9 @@
   "lastRefreshedAt": "2026-08-07",
   "cities": [
     "Flagstaff, Arizona"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261230"
 }

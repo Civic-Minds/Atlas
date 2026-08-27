@@ -6,9 +6,9 @@
     -88.99
   ],
   "feedUrl": "https://rideconnecttransit.com/gtfs",
-  "lastFeedExpiry": "20991231",
-  "lastFeedVersion": "Sapphire Route Change Summer 2026",
-  "lastRefreshedAt": "2026-08-10",
+  "lastFeedExpiry": "",
+  "lastFeedVersion": "Fixing 113 and 114",
+  "lastRefreshedAt": "2026-08-27",
   "region": "Illinois",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2267/latest.zip",
   "bbox": [
@@ -20,5 +20,22 @@
   "cities": [
     "Bloomington, Illinois",
     "Normal, Illinois"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20991231",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 96
+    },
+    "checkedAt": "2026-08-27"
+  }
 }

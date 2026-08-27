@@ -8,9 +8,9 @@
   "feedUrl": "http://www.dart.org/transitdata/latest/google_transit.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-152/mdb-152-202607200103/mdb-152-202607200103.zip",
   "lastFeedExpiry": "20260913",
-  "lastFeedVersion": "V716-215-216-20260720",
+  "lastFeedVersion": "V720-215-216-20260818",
   "region": "Texas",
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "2026-08-27",
   "cities": [
     "Dallas, Texas",
     "Richardson, Texas",
@@ -23,5 +23,22 @@
     "Grand Prairie, Texas",
     "Frisco, Texas"
   ],
-  "timezone": "America/Chicago"
+  "timezone": "America/Chicago",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20260913",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 540
+    },
+    "checkedAt": "2026-08-27"
+  }
 }

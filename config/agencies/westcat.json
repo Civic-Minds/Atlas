@@ -14,13 +14,33 @@
   ],
   "feedUrl": "http://data.trilliumtransit.com/gtfs/westcat-ca-us/westcat-ca-us.zip",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-westcat-gtfs-78.zip?alt=media",
-  "lastFeedExpiry": "20260831",
-  "lastFeedVersion": "UTC: 25-Jun-2026 20:50",
-  "lastRefreshedAt": "2026-08-07",
+  "lastFeedExpiry": "20260911",
+  "lastFeedVersion": "UTC: 12-Aug-2026 16:36",
+  "lastRefreshedAt": "2026-08-27",
   "cities": [
     "Richmond, California",
     "Vallejo, California",
     "Concord, California",
     "Chinatown, California"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20260911",
+  "feedQuality": {
+    "status": "review",
+    "score": 60,
+    "reasons": [
+      "1 schedule-data warning — Atlas found a minor issue while reading the schedule.",
+      "7 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 1,
+      "shapeAnomalies": 7,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 26
+    },
+    "checkedAt": "2026-08-27"
+  }
 }

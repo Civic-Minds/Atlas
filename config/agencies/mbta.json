@@ -8,10 +8,10 @@
   ],
   "feedUrl": "https://cdn.mbta.com/MBTA_GTFS.zip",
   "lastFeedExpiry": "20260905",
-  "lastFeedVersion": "Summer 2026, 2026-08-07T15:32:18+00:00, version D",
+  "lastFeedVersion": "Summer 2026, 2026-08-19T21:11:39+00:00, version D",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-massachusetts-massachusetts-bay-transportation-authority-mbta-gtfs-437.zip?alt=media",
   "gtfsFares": true,
-  "lastRefreshedAt": "2026-08-09",
+  "lastRefreshedAt": "2026-08-27",
   "cities": [
     "Dorchester, Massachusetts",
     "Brookline, Massachusetts",
@@ -23,5 +23,25 @@
     "Revere, Massachusetts",
     "Newton, Massachusetts",
     "Cambridge, Massachusetts"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20260905",
+  "feedQuality": {
+    "status": "degraded",
+    "score": 40,
+    "reasons": [
+      "22 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
+      "14 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 22,
+      "routeHeadwayMismatches": 14,
+      "featureCount": 1045
+    },
+    "checkedAt": "2026-08-27"
+  }
 }

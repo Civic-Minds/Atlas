@@ -16,5 +16,9 @@
     "Santa Monica, California"
   ],
   "timezone": "America/Los_Angeles",
-  "lastRawArchiveKey": "20260712-b7c46c977165e86f"
+  "lastRawArchiveKey": "20260712-b7c46c977165e86f",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
+  "expiredFeedCheckExpiry": "20260712"
 }

@@ -6,9 +6,9 @@
     -89.65
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-3187/latest.zip",
-  "lastFeedExpiry": "20260822",
-  "lastFeedVersion": "S1000203",
-  "lastRefreshedAt": "2026-08-07",
+  "lastFeedExpiry": "20270102",
+  "lastFeedVersion": "S1000206",
+  "lastRefreshedAt": "2026-08-27",
   "region": "Illinois",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3187/latest.zip",
   "bbox": [
@@ -19,5 +19,22 @@
   ],
   "cities": [
     "Springfield, Illinois"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270102",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 81
+    },
+    "checkedAt": "2026-08-27"
+  }
 }

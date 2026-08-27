@@ -22,5 +22,9 @@
     "Tri-Cities, Washington",
     "Kennewick, Washington",
     "Pasco, Washington"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20260829"
 }

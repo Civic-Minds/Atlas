@@ -15,10 +15,29 @@
   ],
   "feedUrl": "https://www.londontransit.ca/gtfsfeed/google_transit.zip",
   "lastFeedExpiry": "20260905",
-  "lastFeedVersion": "2026 Summer - No Tripper_20260724",
+  "lastFeedVersion": "2026 Summer - No Tripper_20260811",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-london-transit-commission-gtfs-2.zip?alt=media",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-27",
   "cities": [
     "London, Ontario"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20260905",
+  "feedQuality": {
+    "status": "review",
+    "score": 90,
+    "reasons": [
+      "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 1,
+      "featureCount": 276
+    },
+    "checkedAt": "2026-08-27"
+  }
 }

@@ -12,5 +12,9 @@
   "lastRefreshedAt": "20260811",
   "websiteUrl": "https://moosejaw.ca",
   "timezone": "America/Regina",
-  "lastRawArchiveKey": "20240331-79d15cce8428630e"
+  "lastRawArchiveKey": "20240331-79d15cce8428630e",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
+  "expiredFeedCheckExpiry": "20240331"
 }

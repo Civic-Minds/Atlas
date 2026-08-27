@@ -18,5 +18,9 @@
   "lastRefreshedAt": "2026-08-07",
   "cities": [
     "Danbury, Connecticut"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20510930"
 }

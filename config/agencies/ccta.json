@@ -6,9 +6,9 @@
     -73.21
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-629/latest.zip",
-  "lastFeedExpiry": "20261001",
-  "lastFeedVersion": "UTC: 14-Jul-2026 17:10",
-  "lastRefreshedAt": "2026-08-07",
+  "lastFeedExpiry": "20270101",
+  "lastFeedVersion": "UTC: 24-Aug-2026 19:10",
+  "lastRefreshedAt": "2026-08-27",
   "region": "Vermont",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-629/latest.zip",
   "bbox": [
@@ -16,5 +16,24 @@
     -73.3189,
     45.0175,
     -72.0007
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270101",
+  "feedQuality": {
+    "status": "review",
+    "score": 70,
+    "reasons": [
+      "3 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 3,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 47
+    },
+    "checkedAt": "2026-08-27"
+  }
 }

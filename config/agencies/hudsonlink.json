@@ -20,5 +20,9 @@
     "Greenburgh, New York",
     "White Plains, New York",
     "Paterson, New Jersey"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261001"
 }

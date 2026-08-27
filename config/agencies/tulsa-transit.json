@@ -21,5 +21,9 @@
     "Tulsa, Oklahoma",
     "Broken Arrow, Oklahoma"
   ],
-  "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-235/tld-235-202604220049/tld-235-202604220049.zip"
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-235/tld-235-202604220049/tld-235-202604220049.zip",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261205"
 }

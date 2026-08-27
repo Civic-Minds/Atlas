@@ -21,5 +21,9 @@
     "Rancho Cucamonga, California"
   ],
   "timezone": "America/Los_Angeles",
-  "lastRawArchiveKey": "20250329-3f568bd33b3ddb28"
+  "lastRawArchiveKey": "20250329-3f568bd33b3ddb28",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
+  "expiredFeedCheckExpiry": "20250329"
 }

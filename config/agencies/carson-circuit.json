@@ -15,5 +15,9 @@
     "Gardena, California"
   ],
   "timezone": "America/Los_Angeles",
-  "lastRawArchiveKey": "20211111-1c359ccdcc3657b6"
+  "lastRawArchiveKey": "20211111-1c359ccdcc3657b6",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
+  "expiredFeedCheckExpiry": "20211111"
 }

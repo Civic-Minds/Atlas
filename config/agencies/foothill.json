@@ -21,5 +21,9 @@
     "Arcadia, California",
     "Los Angeles, California",
     "Upland, California"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261031"
 }

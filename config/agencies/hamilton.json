@@ -16,12 +16,31 @@
     -79.37
   ],
   "feedUrl": "https://opendata.hamilton.ca/GTFS-Static/google_transit.zip",
-  "lastFeedExpiry": "20260905",
-  "lastFeedVersion": "2026 Spring & 2026 Summer Merged",
-  "lastRefreshedAt": "2026-08-07",
+  "lastFeedExpiry": "20261226",
+  "lastFeedVersion": "2026 Summer & 2026 Fall Merged",
+  "lastRefreshedAt": "2026-08-27",
   "cities": [
     "Hamilton, Ontario",
     "Stoney Creek, Ontario",
     "Burlington, Ontario"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261226",
+  "feedQuality": {
+    "status": "review",
+    "score": 90,
+    "reasons": [
+      "1 schedule-data warning — Atlas found a minor issue while reading the schedule."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 1,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 251
+    },
+    "checkedAt": "2026-08-27"
+  }
 }

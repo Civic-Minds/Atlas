@@ -18,5 +18,9 @@
     "Raleigh, North Carolina",
     "Burlington, North Carolina"
   ],
-  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3183/mdb-3183-202608040111/mdb-3183-202608040111.zip"
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3183/mdb-3183-202608040111/mdb-3183-202608040111.zip",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270213"
 }

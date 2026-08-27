@@ -15,8 +15,8 @@
   "feedUrl": "https://soltrans.connexionz.net/rtt/public/resource/gtfs.zip",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-soltrans-gtfs-80.zip?alt=media",
   "lastFeedExpiry": "20271231",
-  "lastFeedVersion": "20260809",
-  "lastRefreshedAt": "2026-08-10",
+  "lastFeedVersion": "20260826",
+  "lastRefreshedAt": "2026-08-27",
   "cities": [
     "Vallejo, California",
     "Fairfield, California",
@@ -26,5 +26,24 @@
     "Walnut Creek, California",
     "Vacaville, California",
     "Chinatown, California"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20271231",
+  "feedQuality": {
+    "status": "review",
+    "score": 70,
+    "reasons": [
+      "6 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 6,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 57
+    },
+    "checkedAt": "2026-08-27"
+  }
 }

@@ -21,5 +21,9 @@
     "Greenville, South Carolina"
   ],
   "timezone": "America/New_York",
-  "lastRawArchiveKey": "20200101-974da843f871ba68"
+  "lastRawArchiveKey": "20200101-974da843f871ba68",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
+  "expiredFeedCheckExpiry": "20200101"
 }

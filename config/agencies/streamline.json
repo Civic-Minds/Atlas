@@ -16,5 +16,9 @@
     -111.2156,
     45.8027,
     -110.5413
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20281231"
 }

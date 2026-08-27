@@ -19,5 +19,9 @@
   "overrideNote": "Upstream trips.txt service_ids have zero overlap with calendar.txt/calendar_dates.txt (dangling references) — every trip resolves to 0 active departures. Not an Atlas pipeline bug; feed itself is malformed. Tracked in #216.",
   "pmtilesPending": true,
   "timezone": "America/New_York",
-  "lastRawArchiveKey": "20211231-9dc8f1ca4ed5df71"
+  "lastRawArchiveKey": "20211231-9dc8f1ca4ed5df71",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
+  "expiredFeedCheckExpiry": "20211231"
 }

@@ -29,5 +29,9 @@
     "Chomedey, Quebec",
     "Verdun, Quebec",
     "Montréal, Quebec"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261231"
 }

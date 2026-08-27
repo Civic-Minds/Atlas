@@ -15,11 +15,28 @@
   "feedUrl": "http://ycta.connexionz.net/rtt/public/resource/gtfs.zip",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-oregon-yamhill-county-transit-area-gtfs-250.zip?alt=media",
   "lastFeedExpiry": "20271231",
-  "lastFeedVersion": "20260619",
-  "lastRefreshedAt": "2026-08-07",
+  "lastFeedVersion": "20260823",
+  "lastRefreshedAt": "2026-08-27",
   "cities": [
     "Salem, Oregon",
     "Tigard, Oregon",
     "Hillsboro, Oregon"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20271231",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 14
+    },
+    "checkedAt": "2026-08-27"
+  }
 }

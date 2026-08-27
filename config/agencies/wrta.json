@@ -13,5 +13,9 @@
   "lastRefreshedAt": "2026-08-10",
   "cities": [
     "Worcester, Massachusetts"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
+  "expiredFeedCheckExpiry": "20260811"
 }

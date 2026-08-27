@@ -6,9 +6,9 @@
     -86.53
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-2066/latest.zip",
-  "lastFeedExpiry": "20270730",
-  "lastFeedVersion": "99",
-  "lastRefreshedAt": "2026-08-07",
+  "lastFeedExpiry": "20270825",
+  "lastFeedVersion": "103",
+  "lastRefreshedAt": "2026-08-27",
   "region": "Indiana",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2066/latest.zip",
   "bbox": [
@@ -19,5 +19,22 @@
   ],
   "cities": [
     "Bloomington, Indiana"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270825",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 70
+    },
+    "checkedAt": "2026-08-27"
+  }
 }

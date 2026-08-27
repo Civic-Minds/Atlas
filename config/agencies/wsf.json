@@ -15,5 +15,9 @@
   "feedUrl": "https://gtfs.sound.obaweb.org/prod/95_gtfs.zip",
   "lastFeedExpiry": "20260927",
   "lastFeedVersion": "PDT: 07-Aug-2026 10:50",
-  "lastRefreshedAt": "2026-08-10"
+  "lastRefreshedAt": "2026-08-10",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20260927"
 }

@@ -7,10 +7,10 @@
   ],
   "feedUrl": "http://srv.mvta.com/InfoPoint/GTFS-Zip.ashx",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-206/mdb-206-202607280034/mdb-206-202607280034.zip",
-  "lastFeedExpiry": "20260826",
-  "lastFeedVersion": "20260727",
+  "lastFeedExpiry": "20260907",
+  "lastFeedVersion": "20260824",
   "region": "Minnesota",
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "2026-08-27",
   "cities": [
     "Eagan, Minnesota",
     "Burnsville, Minnesota",
@@ -20,5 +20,24 @@
     "Saint Paul, Minnesota",
     "Bloomington, Minnesota",
     "Lakeville, Minnesota"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20260907",
+  "feedQuality": {
+    "status": "review",
+    "score": 70,
+    "reasons": [
+      "30 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 30,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 82
+    },
+    "checkedAt": "2026-08-27"
+  }
 }

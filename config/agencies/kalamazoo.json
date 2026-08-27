@@ -8,10 +8,29 @@
   "feedUrl": "https://trackmybus.kmetro.org/InfoPoint/GTFS-Zip.ashx",
   "region": "Michigan",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-674/latest.zip",
-  "lastFeedExpiry": "20260928",
-  "lastFeedVersion": "20260808",
-  "lastRefreshedAt": "2026-08-10",
+  "lastFeedExpiry": "20261130",
+  "lastFeedVersion": "20260827",
+  "lastRefreshedAt": "2026-08-27",
   "cities": [
     "Kalamazoo, Michigan"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261130",
+  "feedQuality": {
+    "status": "review",
+    "score": 70,
+    "reasons": [
+      "8 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 8,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 112
+    },
+    "checkedAt": "2026-08-27"
+  }
 }

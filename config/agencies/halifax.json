@@ -20,5 +20,9 @@
     "Dartmouth, Nova Scotia",
     "Halifax, Nova Scotia",
     "Lower Sackville, Nova Scotia"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
+  "expiredFeedCheckExpiry": "20260823"
 }

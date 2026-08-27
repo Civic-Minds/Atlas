@@ -21,5 +21,9 @@
     "Berkeley, California"
   ],
   "timezone": "America/Los_Angeles",
-  "lastRawArchiveKey": "20211231-b8f85ab96a9ec3fb"
+  "lastRawArchiveKey": "20211231-b8f85ab96a9ec3fb",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
+  "expiredFeedCheckExpiry": "20211231"
 }

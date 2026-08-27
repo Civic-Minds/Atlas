@@ -15,5 +15,9 @@
     "Colorado Springs, Colorado"
   ],
   "timezone": "America/Denver",
-  "lastRawArchiveKey": "20250927-1abb7aaac18b1cfe"
+  "lastRawArchiveKey": "20250927-1abb7aaac18b1cfe",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
+  "expiredFeedCheckExpiry": "20250927"
 }

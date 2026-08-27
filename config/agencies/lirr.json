@@ -13,9 +13,9 @@
     -71.9532
   ],
   "feedUrl": "https://rrgtfsfeeds.s3.amazonaws.com/gtfslirr.zip",
-  "lastFeedExpiry": "20260907",
+  "lastFeedExpiry": "20261108",
   "lastFeedVersion": "GO201_26",
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "2026-08-27",
   "cities": [
     "Hempstead, New York",
     "Brentwood, New York",
@@ -27,5 +27,24 @@
     "New Rochelle, New York",
     "East Village, New York",
     "Corona, New York"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261108",
+  "feedQuality": {
+    "status": "review",
+    "score": 70,
+    "reasons": [
+      "4 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 4,
+      "featureCount": 120
+    },
+    "checkedAt": "2026-08-27"
+  }
 }

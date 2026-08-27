@@ -21,5 +21,9 @@
     "Tallahassee, Florida"
   ],
   "timezone": "America/New_York",
-  "lastRawArchiveKey": "20240901-cca38c6c6d9dd482"
+  "lastRawArchiveKey": "20240901-cca38c6c6d9dd482",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
+  "expiredFeedCheckExpiry": "20240901"
 }

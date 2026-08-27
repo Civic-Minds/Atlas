@@ -20,5 +20,9 @@
   "cities": [
     "Spokane, Washington",
     "Spokane Valley, Washington"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270116"
 }

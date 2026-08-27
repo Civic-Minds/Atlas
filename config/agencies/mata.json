@@ -18,5 +18,9 @@
     "Cordova, Tennessee"
   ],
   "timezone": "America/Chicago",
-  "lastRawArchiveKey": "20250310-afc2dd4fc38ea397"
+  "lastRawArchiveKey": "20250310-afc2dd4fc38ea397",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
+  "expiredFeedCheckExpiry": "20250310"
 }

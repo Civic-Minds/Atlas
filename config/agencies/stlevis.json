@@ -14,12 +14,31 @@
   ],
   "feedUrl": "https://www.stlevis.ca/sites/default/files/public/assets/gtfs/transit/gtfs_stlevis.zip",
   "lastFeedExpiry": "20261220",
-  "lastFeedVersion": "20260807",
+  "lastFeedVersion": "20260826",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-societe-de-transport-de-levis-gtfs-763.zip?alt=media",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-08-27",
   "cities": [
     "Sainte-Foy, Quebec",
     "Lévis, Quebec",
     "Québec, Quebec"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261220",
+  "feedQuality": {
+    "status": "review",
+    "score": 70,
+    "reasons": [
+      "8 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 8,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 114
+    },
+    "checkedAt": "2026-08-27"
+  }
 }

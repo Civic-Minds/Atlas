@@ -22,5 +22,9 @@
     "Orange, California",
     "Laguna Niguel, California",
     "Corona, California"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20360501"
 }

@@ -20,5 +20,9 @@
     "Saint-Hyacinthe, Quebec"
   ],
   "timezone": "America/Toronto",
-  "lastRawArchiveKey": "20241231-ab9230a3408482f5"
+  "lastRawArchiveKey": "20241231-ab9230a3408482f5",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
+  "expiredFeedCheckExpiry": "20241231"
 }

@@ -20,5 +20,9 @@
     "South Fulton, Georgia"
   ],
   "timezone": "America/New_York",
-  "lastRawArchiveKey": "20250705-37f33282ddbabbdf"
+  "lastRawArchiveKey": "20250705-37f33282ddbabbdf",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
+  "expiredFeedCheckExpiry": "20250705"
 }

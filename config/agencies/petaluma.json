@@ -20,5 +20,9 @@
   "websiteUrl": "http://cityofpetaluma.net/pubworks/transit-sub.html",
   "cities": [
     "Petaluma, California"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20991231"
 }

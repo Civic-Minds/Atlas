@@ -16,5 +16,9 @@
     "Pawtucket, Rhode Island",
     "Cranston, Rhode Island",
     "Fall River, Massachusetts"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20260828"
 }

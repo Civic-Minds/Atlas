@@ -29,5 +29,9 @@
     "Gilroy, California",
     "Daly City, California"
   ],
-  "lastRawArchiveKey": "20270131-786de3fea43ef033"
+  "lastRawArchiveKey": "20270131-786de3fea43ef033",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270131"
 }

@@ -27,5 +27,9 @@
     "Cambridge, Ontario"
   ],
   "timezone": "America/Toronto",
-  "lastRawArchiveKey": "20260426-071369b92e6aeb7d"
+  "lastRawArchiveKey": "20260426-071369b92e6aeb7d",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
+  "expiredFeedCheckExpiry": "20260426"
 }

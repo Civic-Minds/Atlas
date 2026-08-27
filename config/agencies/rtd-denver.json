@@ -8,8 +8,8 @@
   "feedUrl": "https://files.mobilitydatabase.org/mdb-178/latest.zip",
   "region": "Colorado",
   "lastFeedExpiry": "20260926",
-  "lastFeedVersion": "Jun26-36941-19-26-20260808-030208",
-  "lastRefreshedAt": "2026-08-10",
+  "lastFeedVersion": "Jun26-36973-20-27-20260819-030145",
+  "lastRefreshedAt": "2026-08-27",
   "cities": [
     "Denver, Colorado",
     "Aurora, Colorado",
@@ -21,5 +21,26 @@
     "Commerce City, Colorado",
     "Broomfield, Colorado",
     "Westminster, Colorado"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20260926",
+  "feedQuality": {
+    "status": "review",
+    "score": 60,
+    "reasons": [
+      "1 schedule-data warning — Atlas found a minor issue while reading the schedule.",
+      "1 map line was repaired — Atlas fixed unusual route geometry before displaying it.",
+      "2 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 1,
+      "shapeAnomalies": 1,
+      "routeHeadwayMismatches": 2,
+      "featureCount": 692
+    },
+    "checkedAt": "2026-08-27"
+  }
 }

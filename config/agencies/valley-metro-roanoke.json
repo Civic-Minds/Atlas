@@ -13,10 +13,31 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-2274/latest.zip",
   "region": "Virginia",
-  "lastFeedExpiry": "20991231",
-  "lastFeedVersion": "7/30/2026",
-  "lastRefreshedAt": "2026-08-10",
+  "lastFeedExpiry": "",
+  "lastFeedVersion": "Walmart Changes",
+  "lastRefreshedAt": "2026-08-27",
   "cities": [
     "Roanoke, Virginia"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20991231",
+  "feedQuality": {
+    "status": "degraded",
+    "score": 50,
+    "reasons": [
+      "1 schedule-data warning — Atlas found a minor issue while reading the schedule.",
+      "3 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
+      "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 1,
+      "shapeAnomalies": 3,
+      "routeHeadwayMismatches": 1,
+      "featureCount": 63
+    },
+    "checkedAt": "2026-08-27"
+  }
 }

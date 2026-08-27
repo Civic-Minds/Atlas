@@ -8,11 +8,31 @@
   ],
   "feedUrl": "http://connect.ridetherapid.org/InfoPoint/gtfs-zip.ashx",
   "lastFeedExpiry": "20260830",
-  "lastFeedVersion": "20260731",
-  "lastRefreshedAt": "2026-08-07",
+  "lastFeedVersion": "20260821",
+  "lastRefreshedAt": "2026-08-27",
   "cities": [
     "Grand Rapids, Michigan",
     "Wyoming, Michigan",
     "Kentwood, Michigan"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20260830",
+  "feedQuality": {
+    "status": "degraded",
+    "score": 40,
+    "reasons": [
+      "28 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
+      "3 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 28,
+      "routeHeadwayMismatches": 3,
+      "featureCount": 137
+    },
+    "checkedAt": "2026-08-27"
+  }
 }

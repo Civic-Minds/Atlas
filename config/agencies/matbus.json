@@ -14,10 +14,27 @@
   "feedUrl": "https://ridematbus.com/gtfs",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-80003/ntd-80003-202608100019/ntd-80003-202608100019.zip",
   "region": "North Dakota",
-  "lastFeedExpiry": "20991231",
-  "lastFeedVersion": "6/15/26 Schedule",
-  "lastRefreshedAt": "2026-08-10",
+  "lastFeedExpiry": "",
+  "lastFeedVersion": "8/24/2026 schedule",
+  "lastRefreshedAt": "2026-08-27",
   "cities": [
     "Fargo, North Dakota"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20991231",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 55
+    },
+    "checkedAt": "2026-08-27"
+  }
 }

@@ -7,8 +7,8 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-903/latest.zip",
   "lastFeedExpiry": "20261231",
-  "lastFeedVersion": "UTC: 10-Jul-2026 16:58",
-  "lastRefreshedAt": "2026-08-07",
+  "lastFeedVersion": "UTC: 25-Aug-2026 15:26",
+  "lastRefreshedAt": "2026-08-27",
   "region": "North Carolina",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-903/latest.zip",
   "bbox": [
@@ -19,5 +19,22 @@
   ],
   "cities": [
     "Asheville, North Carolina"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261231",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 117
+    },
+    "checkedAt": "2026-08-27"
+  }
 }

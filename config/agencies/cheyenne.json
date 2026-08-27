@@ -20,5 +20,9 @@
     "Cheyenne, Wyoming"
   ],
   "timezone": "America/Denver",
-  "lastRawArchiveKey": "20250914-5430c00ec2bfc130"
+  "lastRawArchiveKey": "20250914-5430c00ec2bfc130",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
+  "expiredFeedCheckExpiry": "20250914"
 }

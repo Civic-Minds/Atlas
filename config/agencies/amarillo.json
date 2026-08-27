@@ -21,5 +21,9 @@
     "Amarillo, Texas"
   ],
   "timezone": "America/Chicago",
-  "lastRawArchiveKey": "20211231-c26aa6cd3c0c0489"
+  "lastRawArchiveKey": "20211231-c26aa6cd3c0c0489",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
+  "expiredFeedCheckExpiry": "20211231"
 }

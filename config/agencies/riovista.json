@@ -22,5 +22,9 @@
     "Fairfield, California"
   ],
   "timezone": "America/Los_Angeles",
-  "lastRawArchiveKey": "20250131-ef82facebacb419b"
+  "lastRawArchiveKey": "20250131-ef82facebacb419b",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
+  "expiredFeedCheckExpiry": "20250131"
 }

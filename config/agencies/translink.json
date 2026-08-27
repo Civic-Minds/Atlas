@@ -14,10 +14,10 @@
   ],
   "feedUrl": "https://gtfs-static.translink.ca/gtfs/google_transit.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-696/mdb-696-202608080041/mdb-696-202608080041.zip",
-  "lastFeedExpiry": "20260906",
-  "lastFeedVersion": "26JUN_20260807",
+  "lastFeedExpiry": "20270103",
+  "lastFeedVersion": null,
   "gtfsFares": true,
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "2026-08-27",
   "cities": [
     "Vancouver, British Columbia",
     "North Vancouver, British Columbia",
@@ -29,5 +29,26 @@
     "Coquitlam, British Columbia",
     "Brighouse-City Centre, British Columbia",
     "Langley, British Columbia"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270103",
+  "feedQuality": {
+    "status": "degraded",
+    "score": 30,
+    "reasons": [
+      "1 schedule-data warning — Atlas found a minor issue while reading the schedule.",
+      "38 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
+      "5 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 1,
+      "shapeAnomalies": 38,
+      "routeHeadwayMismatches": 5,
+      "featureCount": 1500
+    },
+    "checkedAt": "2026-08-27"
+  }
 }

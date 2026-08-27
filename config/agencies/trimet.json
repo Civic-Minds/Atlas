@@ -15,8 +15,8 @@
   "feedUrl": "http://developer.trimet.org/schedule/gtfs.zip",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-oregon-trimet-portland-streetcar-gtfs-247.zip?alt=media",
   "lastFeedExpiry": "20261128",
-  "lastFeedVersion": "20260705-20260713-2100",
-  "lastRefreshedAt": "2026-08-07",
+  "lastFeedVersion": "20260719-20260823-2100",
+  "lastRefreshedAt": "2026-08-27",
   "cities": [
     "Portland, Oregon",
     "Gresham, Oregon",
@@ -24,5 +24,22 @@
     "Beaverton, Oregon",
     "Hillsboro, Oregon",
     "Vancouver, Washington"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261128",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 488
+    },
+    "checkedAt": "2026-08-27"
+  }
 }

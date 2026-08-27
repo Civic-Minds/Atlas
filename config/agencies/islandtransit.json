@@ -20,5 +20,9 @@
     "Marysville, Washington",
     "Everett, Washington",
     "Bellingham, Washington"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261001"
 }

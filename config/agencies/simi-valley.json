@@ -20,5 +20,9 @@
     "Simi Valley, California",
     "Canoga Park, California"
   ],
-  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-40/mdb-40-202402080004/mdb-40-202402080004.zip"
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-40/mdb-40-202402080004/mdb-40-202402080004.zip",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20301231"
 }

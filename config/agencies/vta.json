@@ -26,5 +26,9 @@
     "Mountain View, California",
     "Gilroy, California",
     "Palo Alto, California"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261025"
 }

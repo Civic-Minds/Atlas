@@ -10,7 +10,7 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-615/latest.zip",
   "lastFeedExpiry": "",
   "lastFeedVersion": "7/4/2024",
-  "lastRefreshedAt": "2026-08-24",
+  "lastRefreshedAt": "2026-08-27",
   "websiteUrl": "http://www.greensboro-nc.gov/index.aspx?page=2180",
   "cities": [
     "Greensboro, North Carolina",
@@ -18,7 +18,7 @@
   ],
   "timezone": "America/New_York",
   "lastRawArchiveKey": "20250228-1828d0c249445f06",
-  "lastFeedCheckAt": "20260824",
+  "lastFeedCheckAt": "20260827",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",
@@ -33,6 +33,6 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 101
     },
-    "checkedAt": "2026-08-24"
+    "checkedAt": "2026-08-27"
   }
 }

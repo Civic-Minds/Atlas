@@ -22,5 +22,9 @@
     "Marysville, Washington"
   ],
   "timezone": "America/Los_Angeles",
-  "lastRawArchiveKey": "20251024-da59ce8fbb6ab9c7"
+  "lastRawArchiveKey": "20251024-da59ce8fbb6ab9c7",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
+  "expiredFeedCheckExpiry": "20251024"
 }

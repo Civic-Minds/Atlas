@@ -21,5 +21,9 @@
     "San Pedro, California",
     "North Hills, California",
     "North Hollywood, California"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20271231"
 }

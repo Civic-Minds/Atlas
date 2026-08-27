@@ -15,5 +15,9 @@
     "Santa Fe, New Mexico"
   ],
   "timezone": "America/Denver",
-  "lastRawArchiveKey": "20260330-d16bafca3fa50d8f"
+  "lastRawArchiveKey": "20260330-d16bafca3fa50d8f",
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
+  "expiredFeedCheckExpiry": "20260330"
 }

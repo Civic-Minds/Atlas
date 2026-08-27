@@ -6,9 +6,9 @@
     -90.51
   ],
   "feedUrl": "https://data.trilliumtransit.com/gtfs/bettendorf-ia-us/bettendorf-ia-us.zip",
-  "lastFeedExpiry": "20261001",
-  "lastFeedVersion": "UTC: 27-Feb-2026 21:22",
-  "lastRefreshedAt": "2026-08-07",
+  "lastFeedExpiry": "20270301",
+  "lastFeedVersion": "UTC: 20-Aug-2026 15:15",
+  "lastRefreshedAt": "2026-08-27",
   "region": "Iowa",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1826/latest.zip",
   "bbox": [
@@ -19,5 +19,22 @@
   ],
   "cities": [
     "Davenport, Iowa"
-  ]
+  ],
+  "lastFeedCheckAt": "20260827",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270301",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 6
+    },
+    "checkedAt": "2026-08-27"
+  }
 }
