@@ -13,5 +13,6 @@
   "websiteUrl": "https://www.reseau-tao.fr/",
   "cities": [
     "Orléans, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

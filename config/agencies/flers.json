@@ -12,5 +12,6 @@
   "pmtilesPending": true,
   "cities": [
     "Flers, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

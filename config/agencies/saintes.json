@@ -12,5 +12,6 @@
   "pmtilesPending": true,
   "cities": [
     "Saintes, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

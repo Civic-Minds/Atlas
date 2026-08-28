@@ -13,5 +13,6 @@
   "websiteUrl": "https://www.vitalis-poitiers.fr/",
   "cities": [
     "Poitiers, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

@@ -12,5 +12,6 @@
   "pmtilesPending": true,
   "cities": [
     "Bourgoin-Jallieu, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

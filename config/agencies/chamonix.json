@@ -12,5 +12,6 @@
   "pmtilesPending": true,
   "cities": [
     "Chamonix-Mont-Blanc, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

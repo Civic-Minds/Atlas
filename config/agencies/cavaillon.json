@@ -12,5 +12,6 @@
   "pmtilesPending": true,
   "cities": [
     "Cavaillon, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

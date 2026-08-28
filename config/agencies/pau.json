@@ -13,5 +13,6 @@
   "websiteUrl": "https://www.idelis.fr/",
   "cities": [
     "Pau, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

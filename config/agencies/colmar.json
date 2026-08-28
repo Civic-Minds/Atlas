@@ -12,5 +12,6 @@
   "pmtilesPending": true,
   "cities": [
     "Colmar, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

@@ -12,5 +12,6 @@
   "pmtilesPending": true,
   "cities": [
     "Cosne-Cours-sur-Loire, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

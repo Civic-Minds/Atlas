@@ -12,5 +12,6 @@
   "pmtilesPending": true,
   "cities": [
     "Albi, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

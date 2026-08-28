@@ -13,5 +13,6 @@
   "websiteUrl": "https://www.dkbus.com/",
   "cities": [
     "Dunkerque, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

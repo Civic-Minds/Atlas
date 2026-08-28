@@ -13,5 +13,6 @@
   "websiteUrl": "https://www.solea.info/",
   "cities": [
     "Mulhouse, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

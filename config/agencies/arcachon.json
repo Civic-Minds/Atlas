@@ -13,5 +13,6 @@
   "cities": [
     "Arcachon, France",
     "La Teste-de-Buch, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

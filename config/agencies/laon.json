@@ -12,5 +12,6 @@
   "pmtilesPending": true,
   "cities": [
     "Laon, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

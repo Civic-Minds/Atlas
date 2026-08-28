@@ -12,5 +12,6 @@
   "pmtilesPending": true,
   "cities": [
     "Oyonnax, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

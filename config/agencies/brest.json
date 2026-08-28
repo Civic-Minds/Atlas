@@ -13,5 +13,6 @@
   "websiteUrl": "https://www.bibus.fr/",
   "cities": [
     "Brest, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

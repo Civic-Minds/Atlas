@@ -12,5 +12,6 @@
   "pmtilesPending": true,
   "cities": [
     "Saumur, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

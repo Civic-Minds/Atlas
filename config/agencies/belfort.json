@@ -13,5 +13,6 @@
   "cities": [
     "Belfort, France"
   ],
-  "websiteUrl": "https://www.optymo.fr/"
+  "websiteUrl": "https://www.optymo.fr/",
+  "timezone": "Europe/Paris"
 }

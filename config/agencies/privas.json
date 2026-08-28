@@ -12,5 +12,6 @@
   "pmtilesPending": true,
   "cities": [
     "Privas, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

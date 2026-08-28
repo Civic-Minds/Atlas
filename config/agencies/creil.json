@@ -12,5 +12,6 @@
   "pmtilesPending": true,
   "cities": [
     "Creil, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

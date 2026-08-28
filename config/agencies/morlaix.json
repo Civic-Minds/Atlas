@@ -12,5 +12,6 @@
   "pmtilesPending": true,
   "cities": [
     "Morlaix, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

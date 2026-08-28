@@ -12,5 +12,6 @@
   "pmtilesPending": true,
   "cities": [
     "Sélestat, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

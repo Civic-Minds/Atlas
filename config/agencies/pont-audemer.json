@@ -12,5 +12,6 @@
   "pmtilesPending": true,
   "cities": [
     "Pont-Audemer, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

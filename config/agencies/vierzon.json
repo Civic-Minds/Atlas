@@ -12,5 +12,6 @@
   "pmtilesPending": true,
   "cities": [
     "Vierzon, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

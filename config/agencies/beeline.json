@@ -27,5 +27,6 @@
     "Danbury, Connecticut",
     "The Bronx, New York",
     "Kings Bridge, New York"
-  ]
+  ],
+  "timezone": "America/New_York"
 }

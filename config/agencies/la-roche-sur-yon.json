@@ -12,5 +12,6 @@
   "pmtilesPending": true,
   "cities": [
     "La Roche-sur-Yon, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

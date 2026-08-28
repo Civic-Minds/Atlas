@@ -13,5 +13,6 @@
   "cities": [
     "Valenciennes, France"
   ],
-  "websiteUrl": "https://www.transvilles.com/"
+  "websiteUrl": "https://www.transvilles.com/",
+  "timezone": "Europe/Paris"
 }

@@ -12,5 +12,6 @@
   "pmtilesPending": true,
   "cities": [
     "Concarneau, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

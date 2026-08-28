@@ -13,5 +13,6 @@
   "websiteUrl": "https://www.reseau-stan.com/",
   "cities": [
     "Nancy, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

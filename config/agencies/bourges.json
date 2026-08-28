@@ -13,5 +13,6 @@
   "websiteUrl": "https://www.agglobus.com/",
   "cities": [
     "Bourges, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

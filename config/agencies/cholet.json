@@ -13,5 +13,6 @@
   "websiteUrl": "https://www.choletbus.fr/",
   "cities": [
     "Cholet, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

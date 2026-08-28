@@ -13,5 +13,6 @@
   "cities": [
     "Moulins, France"
   ],
-  "websiteUrl": "https://www.aleo-moulins.fr/"
+  "websiteUrl": "https://www.aleo-moulins.fr/",
+  "timezone": "Europe/Paris"
 }

@@ -13,5 +13,6 @@
   "websiteUrl": "https://www.rtm.fr/",
   "cities": [
     "Marseille, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

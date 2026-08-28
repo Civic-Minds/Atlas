@@ -12,5 +12,6 @@
   "pmtilesPending": true,
   "cities": [
     "Auch, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

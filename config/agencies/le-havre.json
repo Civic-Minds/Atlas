@@ -13,5 +13,6 @@
   "websiteUrl": "https://www.transports-lia.fr/",
   "cities": [
     "Le Havre, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

@@ -13,5 +13,6 @@
   "websiteUrl": "https://www.tul-laval.fr/",
   "cities": [
     "Laval, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

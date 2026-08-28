@@ -13,5 +13,6 @@
   "websiteUrl": "https://www.kiceo.fr/",
   "cities": [
     "Vannes, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

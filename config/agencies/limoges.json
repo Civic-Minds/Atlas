@@ -13,5 +13,6 @@
   "cities": [
     "Limoges, France"
   ],
-  "websiteUrl": "https://www.stcl.fr/"
+  "websiteUrl": "https://www.stcl.fr/",
+  "timezone": "Europe/Paris"
 }

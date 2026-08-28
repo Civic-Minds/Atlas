@@ -13,5 +13,6 @@
   "websiteUrl": "https://www.filibus.fr/",
   "cities": [
     "Chartres, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

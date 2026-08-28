@@ -13,5 +13,6 @@
   "cities": [
     "Nevers, France"
   ],
-  "websiteUrl": "https://www.taneo-nevers.fr/"
+  "websiteUrl": "https://www.taneo-nevers.fr/",
+  "timezone": "Europe/Paris"
 }

@@ -13,5 +13,6 @@
   "websiteUrl": "https://www.reseau-stas.fr/",
   "cities": [
     "Saint-Étienne, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

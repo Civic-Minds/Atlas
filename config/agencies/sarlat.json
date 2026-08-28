@@ -12,5 +12,6 @@
   "pmtilesPending": true,
   "cities": [
     "Sarlat-la-Canéda, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

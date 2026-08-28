@@ -12,5 +12,6 @@
   "pmtilesPending": true,
   "cities": [
     "Mont-de-Marsan, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

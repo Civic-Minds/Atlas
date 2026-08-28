@@ -12,5 +12,6 @@
   "pmtilesPending": true,
   "cities": [
     "Bergerac, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

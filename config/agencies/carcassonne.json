@@ -12,5 +12,6 @@
   "pmtilesPending": true,
   "cities": [
     "Carcassonne, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

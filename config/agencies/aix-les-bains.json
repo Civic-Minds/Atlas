@@ -12,5 +12,6 @@
   "pmtilesPending": true,
   "cities": [
     "Aix-les-Bains, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

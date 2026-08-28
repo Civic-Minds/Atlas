@@ -12,5 +12,6 @@
   "pmtilesPending": true,
   "cities": [
     "Lannion, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

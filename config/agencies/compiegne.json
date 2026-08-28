@@ -12,5 +12,6 @@
   "pmtilesPending": true,
   "cities": [
     "Compiègne, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

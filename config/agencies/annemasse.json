@@ -13,5 +13,6 @@
   "websiteUrl": "https://www.tac-mobilites.fr/",
   "cities": [
     "Annemasse, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

@@ -12,5 +12,6 @@
   "pmtilesPending": true,
   "cities": [
     "Romans-sur-Isère, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

@@ -12,5 +12,6 @@
   "pmtilesPending": true,
   "cities": [
     "Dieppe, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

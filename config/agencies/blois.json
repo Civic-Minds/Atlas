@@ -13,5 +13,6 @@
   "cities": [
     "Blois, France"
   ],
-  "websiteUrl": "https://www.azalys-blois.fr/"
+  "websiteUrl": "https://www.azalys-blois.fr/",
+  "timezone": "Europe/Paris"
 }

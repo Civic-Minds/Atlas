@@ -12,5 +12,6 @@
   "pmtilesPending": true,
   "cities": [
     "Louviers, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

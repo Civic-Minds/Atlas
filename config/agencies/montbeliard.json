@@ -13,5 +13,6 @@
   "cities": [
     "Montbéliard, France"
   ],
-  "websiteUrl": "https://www.evolity.fr/"
+  "websiteUrl": "https://www.evolity.fr/",
+  "timezone": "Europe/Paris"
 }

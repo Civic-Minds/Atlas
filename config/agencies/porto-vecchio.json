@@ -12,5 +12,6 @@
   "pmtilesPending": true,
   "cities": [
     "Porto-Vecchio, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

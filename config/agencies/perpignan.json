@@ -13,5 +13,6 @@
   "websiteUrl": "https://www.sankeo.com/",
   "cities": [
     "Perpignan, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

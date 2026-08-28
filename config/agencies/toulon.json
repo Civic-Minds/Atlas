@@ -13,5 +13,6 @@
   "websiteUrl": "https://www.reseaumistral.com/",
   "cities": [
     "Toulon, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

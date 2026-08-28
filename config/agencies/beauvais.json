@@ -12,5 +12,6 @@
   "pmtilesPending": true,
   "cities": [
     "Beauvais, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

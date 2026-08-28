@@ -13,5 +13,6 @@
   "cities": [
     "Aix-en-Provence, France"
   ],
-  "websiteUrl": "https://www.aixenbus.fr/"
+  "websiteUrl": "https://www.aixenbus.fr/",
+  "timezone": "Europe/Paris"
 }

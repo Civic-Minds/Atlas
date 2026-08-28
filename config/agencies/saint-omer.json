@@ -12,5 +12,6 @@
   "pmtilesPending": true,
   "cities": [
     "Saint-Omer, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

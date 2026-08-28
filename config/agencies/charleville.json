@@ -12,5 +12,6 @@
   "pmtilesPending": true,
   "cities": [
     "Charleville-Mézières, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

@@ -12,5 +12,6 @@
   "pmtilesPending": true,
   "cities": [
     "Niort, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

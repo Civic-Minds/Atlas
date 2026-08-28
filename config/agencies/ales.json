@@ -12,5 +12,6 @@
   "pmtilesPending": true,
   "cities": [
     "Alès, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

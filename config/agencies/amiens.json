@@ -13,5 +13,6 @@
   "websiteUrl": "https://www.ametois.fr/",
   "cities": [
     "Amiens, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

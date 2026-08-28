@@ -12,5 +12,6 @@
   "pmtilesPending": true,
   "cities": [
     "Thiers, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

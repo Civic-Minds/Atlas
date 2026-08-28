@@ -12,5 +12,6 @@
   "pmtilesPending": true,
   "cities": [
     "Redon, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

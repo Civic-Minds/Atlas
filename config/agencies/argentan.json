@@ -12,5 +12,6 @@
   "pmtilesPending": true,
   "cities": [
     "Argentan, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

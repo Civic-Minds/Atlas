@@ -12,5 +12,6 @@
   "pmtilesPending": true,
   "cities": [
     "Libourne, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

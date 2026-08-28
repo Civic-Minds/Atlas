@@ -16,5 +16,6 @@
   "lastFeedCheckAt": "20260827",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20270301"
+  "expiredFeedCheckExpiry": "20270301",
+  "timezone": "America/Denver"
 }

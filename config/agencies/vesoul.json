@@ -12,5 +12,6 @@
   "pmtilesPending": true,
   "cities": [
     "Vesoul, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

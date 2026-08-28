@@ -12,5 +12,6 @@
   "pmtilesPending": true,
   "cities": [
     "Tarbes, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

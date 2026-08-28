@@ -12,5 +12,6 @@
   "pmtilesPending": true,
   "cities": [
     "Fécamp, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

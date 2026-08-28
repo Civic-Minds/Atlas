@@ -13,5 +13,6 @@
   "websiteUrl": "https://www.reseau-astuce.fr/",
   "cities": [
     "Rouen, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

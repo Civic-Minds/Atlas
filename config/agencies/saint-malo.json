@@ -12,5 +12,6 @@
   "pmtilesPending": true,
   "cities": [
     "Saint-Malo, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

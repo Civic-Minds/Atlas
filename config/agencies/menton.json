@@ -12,5 +12,6 @@
   "pmtilesPending": true,
   "cities": [
     "Menton, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

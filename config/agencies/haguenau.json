@@ -12,5 +12,6 @@
   "pmtilesPending": true,
   "cities": [
     "Haguenau, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

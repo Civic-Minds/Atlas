@@ -12,5 +12,6 @@
   "pmtilesPending": true,
   "cities": [
     "Rumilly, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

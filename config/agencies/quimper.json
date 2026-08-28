@@ -13,5 +13,6 @@
   "websiteUrl": "https://www.qub.fr/",
   "cities": [
     "Quimper, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

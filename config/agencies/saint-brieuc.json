@@ -12,5 +12,6 @@
   "pmtilesPending": true,
   "cities": [
     "Saint-Brieuc, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

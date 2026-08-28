@@ -12,5 +12,6 @@
   "pmtilesPending": true,
   "cities": [
     "Châteauroux, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

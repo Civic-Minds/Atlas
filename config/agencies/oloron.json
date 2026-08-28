@@ -12,5 +12,6 @@
   "pmtilesPending": true,
   "cities": [
     "Oloron-Sainte-Marie, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

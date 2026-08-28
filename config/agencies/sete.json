@@ -12,5 +12,6 @@
   "pmtilesPending": true,
   "cities": [
     "Sète, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }

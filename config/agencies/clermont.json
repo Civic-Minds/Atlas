@@ -13,5 +13,6 @@
   "websiteUrl": "https://www.t2c.fr/",
   "cities": [
     "Clermont-Ferrand, France"
-  ]
+  ],
+  "timezone": "Europe/Paris"
 }
