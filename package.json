@@ -80,7 +80,7 @@
     "@mapbox/vector-tile": "^3.0.0",
     "@tailwindcss/vite": "^4.3.3",
     "@testing-library/jest-dom": "^7.0.1",
-    "@testing-library/react": "^16.3.2",
+    "@testing-library/react": "^16.3.3",
     "@types/geojson": "^7946.0.16",
     "@types/papaparse": "^5.5.2",
     "@types/react": "^19.2.18",
