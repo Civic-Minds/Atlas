@@ -79,8 +79,10 @@ export function useHistoryLayer(
     if (!historyOverlay) return;
 
     // If we have historical route geometry (from per-period snapshot), fit to it (supports discontinued routes)
-    if (historyOverlay.routeGeometry && historyOverlay.routeGeometry.length > 1) {
-      const coords = historyOverlay.routeGeometry;
+    const routeGeometry = historyOverlay.routeGeometry;
+    const hasRouteGeometry = Boolean(routeGeometry && routeGeometry.length > 1);
+    if (routeGeometry && routeGeometry.length > 1) {
+      const coords = routeGeometry;
       let minLng = 180, maxLng = -180, minLat = 90, maxLat = -90;
       coords.forEach((coord) => {
         const [lng, lat] = coord;
@@ -94,9 +96,16 @@ export function useHistoryLayer(
 
     if (historyOverlay.stops.length === 0) {
       if (historyOverlay.agencyCenter) {
-        map.flyTo({ center: [historyOverlay.agencyCenter[1], historyOverlay.agencyCenter[0]], zoom: 13 });
-        // After the fly completes, try to zoom to the specific route if one is selected
-        if (historyOverlay.routeShortName) {
+        // A historical route already has a precise camera target above. Do not
+        // immediately fly back to the agency center; the competing camera
+        // animations can keep emitting moveend updates and trigger React's
+        // update-depth guard (#478).
+        if (!hasRouteGeometry) {
+          map.flyTo({ center: [historyOverlay.agencyCenter[1], historyOverlay.agencyCenter[0]], zoom: 13 });
+        }
+        // Without historical geometry, try to zoom to the specific current route
+        // after the agency fly completes.
+        if (!hasRouteGeometry && historyOverlay.routeShortName) {
           const rsn = historyOverlay.routeShortName;
           const tryZoom = () => {
             map.off('moveend', tryZoom);

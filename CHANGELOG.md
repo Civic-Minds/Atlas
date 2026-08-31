@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- History route selections now settle on one camera target instead of triggering competing map movements and React warnings ([#478](https://github.com/Civic-Minds/Atlas/issues/478)).
 - **CARTO basemaps now load without the API-key watermark**: Atlas proxies tile requests with the key kept server-side.
 - Shared Atlas links now generate useful previews when posted on social media.
 - Fixed a pipeline bug affecting the 10 agencies that filter routes out of a shared/multi-agency feed (Seattle Streetcar, HART, Niagara, Tampa Airport, Stratford, and 5 Colorado mountain-town shuttles) — the filter step wasn't actually applied to the stop list, so these agencies could publish stops that belong to other agencies or excluded routes in that feed. All 10 have now been reprocessed with the fix.
