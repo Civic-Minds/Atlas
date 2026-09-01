@@ -111,7 +111,7 @@ async function getZxyWithRetry(
   zoom: number,
   x: number,
   y: number,
-  retries = 5,
+  retries = 8,
 ): Promise<Awaited<ReturnType<PMTiles['getZxy']>>> {
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
@@ -121,7 +121,7 @@ async function getZxyWithRetry(
       const message = (e as Error).message || '';
       const isTransient = /Bad response code: (429|5\d\d)/.test(message);
       if (isLast || !isTransient) throw e;
-      const delayMs = 300 * 2 ** attempt + Math.random() * 200;
+      const delayMs = 400 * 2 ** attempt + Math.random() * 300;
       await new Promise(r => setTimeout(r, delayMs));
     }
   }
@@ -189,7 +189,7 @@ async function main() {
     }
   });
 
-  const concurrency = 8;
+  const concurrency = 5;
   console.log(`Fetching ${tasks.length} tiles (concurrency ${concurrency})...`);
   await runWithConcurrency(tasks, concurrency);
 
