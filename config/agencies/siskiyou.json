@@ -12,6 +12,7 @@
     41.91,
     -122.13
   ],
+  "pmtilesPending": true,
   "feedUrl": "http://data.trilliumtransit.com/gtfs/siskiyou-ca-us/siskiyou-ca-us.zip",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-siskiyou-county-gtfs-117.zip?alt=media",
   "lastFeedExpiry": "20300925",
