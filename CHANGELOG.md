@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Route cards now show a faster combined frequency for a single branch too, not just when a route has multiple destinations — TTC 94 eastbound was showing only "every 20 min" and hiding that Castle Frank buses run every 9 min where a short-turn pattern overlaps ([#493](https://github.com/Civic-Minds/Atlas/issues/493)).
 - Google Analytics now waits for consent in stricter privacy regions and can be disabled from Atlas settings.
 - Analytics consent now matches Atlas's compact update notice and uses neutral wording.
 - Analytics consent now presents the sharing choice before the decline option.

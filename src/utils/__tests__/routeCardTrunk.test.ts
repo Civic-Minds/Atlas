@@ -97,15 +97,20 @@ describe('routeCardTrunk', () => {
   });
 
   describe('shouldShowBranchHeadwayRange', () => {
-    it('shows range for multi-branch trunk vs destination gap', () => {
-      expect(shouldShowBranchHeadwayRange(8, 30, true)).toBe(true);
+    it('shows range for a materially better trunk vs destination gap', () => {
+      expect(shouldShowBranchHeadwayRange(8, 30)).toBe(true);
     });
 
-    it('hides range for single branch, small gap, or sub-5 trunk mins', () => {
-      expect(shouldShowBranchHeadwayRange(8, 30, false)).toBe(false);
-      expect(shouldShowBranchHeadwayRange(8, 11, true)).toBe(false);
-      expect(shouldShowBranchHeadwayRange(3, 9, true)).toBe(false);
-      expect(shouldShowBranchHeadwayRange(5, 25, true)).toBe(false);
+    it('shows range for a single branch too (#493) -- multi-branch is not required', () => {
+      // TTC 94 eastbound: one "Castle Frank" branch, headsignMinStopHeadwayByPeriod already
+      // pools the overlapping short-turn's departures regardless of branch count.
+      expect(shouldShowBranchHeadwayRange(9, 20)).toBe(true);
+    });
+
+    it('hides range for a small gap or sub-5 trunk minutes', () => {
+      expect(shouldShowBranchHeadwayRange(8, 11)).toBe(false);
+      expect(shouldShowBranchHeadwayRange(3, 9)).toBe(false);
+      expect(shouldShowBranchHeadwayRange(5, 25)).toBe(false);
     });
   });
 

@@ -407,7 +407,6 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
               branchDimmed: !!hoveredBranch && !isHovered,
             };
           };
-          const multiBranchGroup = (g: DirectionGroup) => g.realTier.length >= 2;
           return displayGroups.map((group, gi) => {
             const groupHasCoreSummary = shouldShowTrunkSummary(group.realTier, period);
             const groupCoreHeadway = groupHasCoreSummary
@@ -478,7 +477,6 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                             label={label}
                             headway={displayH ?? undefined}
                             trunkHeadway={trunkHw}
-                            allowTrunkRange={multiBranchGroup(group)}
                             dimmed={dimmed}
                             {...branchHoverProps(group.dirId, d.headsign)}
                           />

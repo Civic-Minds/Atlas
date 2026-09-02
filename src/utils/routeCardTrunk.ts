@@ -10,13 +10,20 @@ export function headsignTrunkHeadway(d: ShapeProperties, period: string): number
   return shared.byHeadsignPeriod?.[period] ?? null;
 }
 
-/** Show `every X–Y min` only when trunk wait is materially better than destination wait. */
+/**
+ * Show `every X-Y min` whenever the headsign-scoped trunk wait is materially better than the
+ * destination wait -- including a single branch whose own headsign has a faster same-destination
+ * short-turn overlapping it (e.g. TTC 94 eastbound "Castle Frank" served by both a full-length and
+ * a Wellesley-originating pattern, #493). Previously required 2+ realTier branches, which hid this
+ * exact case: the pipeline already pools short-turn departures into headsignMinStopHeadwayByPeriod
+ * regardless of branch count (process-core.ts), so the trunk value itself is already trustworthy
+ * for a single branch -- the ratio/gap checks below are what actually guards against noise.
+ */
 export function shouldShowBranchHeadwayRange(
   trunkHw: number | null | undefined,
   destHw: number | null | undefined,
-  multiBranch: boolean,
 ): boolean {
-  if (!multiBranch || trunkHw == null || destHw == null) return false;
+  if (trunkHw == null || destHw == null) return false;
   if (trunkHw < 5 || trunkHw >= destHw) return false;
   if (destHw - trunkHw < 5) return false;
   if (destHw / trunkHw > 4) return false;
