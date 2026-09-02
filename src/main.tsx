@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router';
 import App from './App';
+import LegalPage from './LegalPage';
 import './styles/index.css';
 import { BETA_BUILD } from '../shared/config';
 import { inject } from '@vercel/analytics';
@@ -41,6 +42,8 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
               <Route path="/apps/diagnostics" element={<Navigate to="/apps/diagnostics/table" replace />} />
             </>
           )}
+          <Route path="/terms" element={<LegalPage document="terms" />} />
+          <Route path="/privacy" element={<LegalPage document="privacy" />} />
           <Route path="/*" element={<App />} />
         </Routes>
       </React.Suspense>

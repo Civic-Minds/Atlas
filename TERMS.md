@@ -21,7 +21,7 @@ Excessive automated use may be rate-limited or blocked without notice.
 
 **Everything else on the map** (route shapes, stop locations, headway/frequency data) is public transit schedule data published by transit agencies via GTFS, not personal data.
 
-Atlas uses privacy settings in Google Analytics to measure anonymous site usage and performance. This helps us understand which map features are useful; it is not used for advertising or account profiling. No Atlas account is required, and Atlas does not collect precise location data or ask for personal information through analytics.
+Atlas uses Google Analytics 4, Vercel Web Analytics, and Vercel Speed Insights to understand feature usage and real-user performance. These services may collect page views, device type, approximate location, referrer, and performance measurements. Atlas does not use this information for advertising or account profiling. No Atlas account is required, and Atlas does not collect precise location data or ask for personal information through analytics.
 
 ## Data accuracy
 
