@@ -7,7 +7,7 @@ import './styles/index.css';
 import { BETA_BUILD } from '../shared/config';
 import { inject } from '@vercel/analytics';
 import { injectSpeedInsights } from '@vercel/speed-insights';
-import { initAnalytics } from './lib/analytics';
+import AnalyticsConsent from './components/AnalyticsConsent';
 
 const DiagnosticsPage = React.lazy(() => import('./DiagnosticsPage'));
 const DiagnosticsUnevenPage = React.lazy(() => import('./DiagnosticsUnevenPage'));
@@ -17,7 +17,6 @@ const DiagnosticsUnevenPage = React.lazy(() => import('./DiagnosticsUnevenPage')
 if (import.meta.env.PROD) {
   inject();
   injectSpeedInsights();
-  initAnalytics();
 }
 
 if (BETA_BUILD) {
@@ -27,6 +26,7 @@ if (BETA_BUILD) {
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <BrowserRouter>
+      <AnalyticsConsent />
       <React.Suspense fallback={null}>
         <Routes>
           {/* Maintainer-only tools, local dev only -- not gated by DIAGNOSTICS_ENABLED/beta

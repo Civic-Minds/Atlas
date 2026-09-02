@@ -357,6 +357,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                   {LIVE_ENABLED && !HISTORY_ENABLED && ` See live vehicle positions on ${totalLiveAgencies}.`}
                   {!LIVE_ENABLED && HISTORY_ENABLED && ` Check History on ${totalHistoryExploreAgencies}+ agencies.`}
                 </p>
+                <button type="button" onClick={() => window.dispatchEvent(new Event('atlas:privacy-settings'))} className="text-xs text-[var(--accent)] hover:underline">Privacy settings</button>
                 <div className="space-y-2">
                   <button
                     onClick={() => setView('agencies')}
