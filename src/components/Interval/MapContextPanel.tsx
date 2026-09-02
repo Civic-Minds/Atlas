@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { Search } from 'lucide-react';
 import type { MapContextAgency, MapContextRoute } from '../../utils/mapContext';
 import { getRouteLabel, titleCase } from '../../utils/format';
-import { FLOATING_CARD, LIST_ROW, LIST_ROW_PRIMARY, LIST_ROW_DIM, PANEL_TITLE_BAR, PANEL_TITLE, Z_PANEL } from '../../styles';
+import { FLOATING_CARD, LIST_ROW_SPACED, LIST_ROW_PRIMARY, LIST_ROW_DIM, PANEL_TITLE_BAR, PANEL_TITLE, Z_PANEL } from '../../styles';
 
 interface MapContextPanelProps {
   agencies: MapContextAgency[];
@@ -57,7 +57,7 @@ export const MapContextPanel: React.FC<MapContextPanelProps> = ({ agencies, mode
               key={agency.slug}
               type="button"
               onClick={() => onSelectAgency?.(agency.slug)}
-              className={`${LIST_ROW} ${onSelectAgency ? 'cursor-pointer' : 'cursor-default'}`}
+              className={`${LIST_ROW_SPACED} ${onSelectAgency ? 'cursor-pointer' : 'cursor-default'}`}
             >
               <span className={`${LIST_ROW_PRIMARY} min-w-0 truncate text-left`}>{agency.name}</span>
             </button>
@@ -70,7 +70,7 @@ export const MapContextPanel: React.FC<MapContextPanelProps> = ({ agencies, mode
               key={route.key}
               type="button"
               onClick={() => onSelectRoute?.(route.key)}
-              className={`${LIST_ROW} ${onSelectRoute ? 'cursor-pointer' : 'cursor-default'}`}
+              className={`${LIST_ROW_SPACED} ${onSelectRoute ? 'cursor-pointer' : 'cursor-default'}`}
             >
               <span className="min-w-0 text-left">
                 <span className={`${LIST_ROW_PRIMARY} block truncate`}>{titleCase(getRouteLabel(route.shortName, route.longName))}</span>
