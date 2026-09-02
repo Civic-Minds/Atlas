@@ -472,7 +472,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                         {list.map(a => {
                           const hasLive = liveBySlug.has(a.slug);
                           const hasHistory = historyBySlug.has(a.slug);
-                          const showLiveBadge = hasLive;
+                          const showLiveBadge = LIVE_ENABLED && hasLive;
                           const showHistoryBadge = HISTORY_ENABLED && hasHistory;
                           const showQualityBadge = a.feedQuality && a.feedQuality.status !== 'healthy';
                           const { primary, secondary } = agencyDisplayParts(a.name, a.cities, a.displayArea);

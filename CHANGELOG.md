@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Public route and agency cards no longer expose beta-only live-data indicators while Live remains gated.
 - Hid the experimental routes/agencies-in-view controls from the public main build while keeping them available in beta.
 - Removed the duplicate in-view filter field so Atlas has one consistent search entry point.
 - Opened in-view route and agency lists in the same left-side card position as search results.
