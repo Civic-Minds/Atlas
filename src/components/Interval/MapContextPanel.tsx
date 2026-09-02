@@ -1,8 +1,9 @@
 import React, { useMemo, useState } from 'react';
 import { Search } from 'lucide-react';
 import type { MapContextAgency, MapContextRoute } from '../../utils/mapContext';
-import { getRouteLabel, titleCase } from '../../utils/format';
-import { FLOATING_CARD, LIST_ROW_SPACED, LIST_ROW_PRIMARY, LIST_ROW_DIM, PANEL_TITLE_BAR, PANEL_TITLE, Z_PANEL } from '../../styles';
+import { FLOATING_CARD, LIST_ROW_SPACED, LIST_ROW_PRIMARY, PANEL_SECTION_HEAD, PANEL_TITLE_BAR, PANEL_TITLE, Z_PANEL } from '../../styles';
+import RouteListRow from '../RouteListRow';
+import { routeRowLabels } from './SearchSuggestionsPanel';
 
 interface MapContextPanelProps {
   agencies: MapContextAgency[];
@@ -25,6 +26,15 @@ export const MapContextPanel: React.FC<MapContextPanelProps> = ({ agencies, mode
       ? routes.filter(route => [route.shortName, route.longName, route.agencyName].some(value => value?.toLowerCase().includes(q)))
       : routes;
   }, [query, routes]);
+  const filteredRouteGroups = useMemo(() => {
+    const groups = new Map<string, { agencyName: string; routes: MapContextRoute[] }>();
+    for (const route of filteredRoutes) {
+      const group = groups.get(route.agencySlug) ?? { agencyName: route.agencyName, routes: [] };
+      group.routes.push(route);
+      groups.set(route.agencySlug, group);
+    }
+    return [...groups.values()].sort((a, b) => a.agencyName.localeCompare(b.agencyName));
+  }, [filteredRoutes]);
 
   return (
     <div className={`absolute bottom-[9rem] right-3 ${Z_PANEL} w-[min(21rem,calc(100vw-2rem))] max-h-[min(30rem,calc(100vh-11rem))] ${FLOATING_CARD} flex flex-col overflow-hidden pointer-events-auto`}>
@@ -65,18 +75,23 @@ export const MapContextPanel: React.FC<MapContextPanelProps> = ({ agencies, mode
             <div className="px-4 py-3 text-[10px] font-bold text-[var(--text-dim)]">No matching agencies.</div>
           )
         ) : (
-          filteredRoutes.length > 0 ? filteredRoutes.map((route: MapContextRoute) => (
-            <button
-              key={route.key}
-              type="button"
-              onClick={() => onSelectRoute?.(route.key)}
-              className={`${LIST_ROW_SPACED} ${onSelectRoute ? 'cursor-pointer' : 'cursor-default'}`}
-            >
-              <span className="min-w-0 text-left">
-                <span className={`${LIST_ROW_PRIMARY} block truncate`}>{titleCase(getRouteLabel(route.shortName, route.longName))}</span>
-                <span className={`${LIST_ROW_DIM} block truncate mt-0.5`}>{route.agencyName}</span>
-              </span>
-            </button>
+          filteredRouteGroups.length > 0 ? filteredRouteGroups.map(group => (
+            <section key={group.agencyName}>
+              <div className={`${PANEL_SECTION_HEAD} pt-2 pb-1`}>{group.agencyName}</div>
+              {group.routes.map((route: MapContextRoute) => {
+                const labels = routeRowLabels(route.shortName, route.longName);
+                return (
+                  <RouteListRow
+                    key={route.key}
+                    shortName={labels.shortName}
+                    name={labels.name}
+                    variant="spaced"
+                    onClick={() => onSelectRoute?.(route.key)}
+                    className={onSelectRoute ? 'cursor-pointer' : 'cursor-default'}
+                  />
+                );
+              })}
+            </section>
           )) : (
             <div className="px-4 py-3 text-[10px] font-bold text-[var(--text-dim)]">No matching routes.</div>
           )

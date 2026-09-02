@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Grouped map-context routes by agency and matched the main search result labels for easier scanning.
 - Removed unnecessary dividers from the map context agency and route lists for a cleaner scan.
 - Keep legal links and Civic Minds attribution on one compact line in the Info area.
 - Added privacy-conscious Atlas usage analytics so feature adoption can be measured beyond page visits.
