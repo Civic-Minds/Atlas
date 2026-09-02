@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Removed the duplicate in-view filter field so Atlas has one consistent search entry point.
 - Opened in-view route and agency lists in the same left-side card position as search results.
 - Matched the in-view list search field to Atlas’s shared search styling.
 - Grouped map-context routes by agency and matched the main search result labels for easier scanning.

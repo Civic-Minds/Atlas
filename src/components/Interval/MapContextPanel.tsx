@@ -1,7 +1,6 @@
-import React, { useMemo, useState } from 'react';
-import { Search } from 'lucide-react';
+import React, { useMemo } from 'react';
 import type { MapContextAgency, MapContextRoute } from '../../utils/mapContext';
-import { FLOATING_CARD, LIST_ROW_SPACED, LIST_ROW_PRIMARY, PANEL_SECTION_HEAD, PANEL_TITLE_BAR, PANEL_TITLE, SEARCH_FIELD, SEARCH_PILL, SIDEBAR_PANEL_WIDTH, PANEL_SIDEBAR, SIDEBAR_LEFT_FALLBACK, Z_PANEL } from '../../styles';
+import { FLOATING_CARD, LIST_ROW_SPACED, LIST_ROW_PRIMARY, PANEL_SECTION_HEAD, PANEL_TITLE_BAR, PANEL_TITLE, SIDEBAR_PANEL_WIDTH, PANEL_SIDEBAR, SIDEBAR_LEFT_FALLBACK } from '../../styles';
 import RouteListRow from '../RouteListRow';
 import { routeRowLabels } from './SearchSuggestionsPanel';
 
@@ -15,28 +14,17 @@ interface MapContextPanelProps {
 }
 
 export const MapContextPanel: React.FC<MapContextPanelProps> = ({ agencies, mode, sidebarLeft, searchBarWidth, onSelectAgency, onSelectRoute }) => {
-  const [query, setQuery] = useState('');
   const routes = useMemo(() => agencies.flatMap(agency => agency.routes), [agencies]);
   const count = mode === 'agencies' ? agencies.length : routes.length;
-  const filteredAgencies = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    return q ? agencies.filter(agency => agency.name.toLowerCase().includes(q)) : agencies;
-  }, [agencies, query]);
-  const filteredRoutes = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    return q
-      ? routes.filter(route => [route.shortName, route.longName, route.agencyName].some(value => value?.toLowerCase().includes(q)))
-      : routes;
-  }, [query, routes]);
   const filteredRouteGroups = useMemo(() => {
     const groups = new Map<string, { agencyName: string; routes: MapContextRoute[] }>();
-    for (const route of filteredRoutes) {
+    for (const route of routes) {
       const group = groups.get(route.agencySlug) ?? { agencyName: route.agencyName, routes: [] };
       group.routes.push(route);
       groups.set(route.agencySlug, group);
     }
     return [...groups.values()].sort((a, b) => a.agencyName.localeCompare(b.agencyName));
-  }, [filteredRoutes]);
+  }, [routes]);
 
   return (
     <div
@@ -55,22 +43,9 @@ export const MapContextPanel: React.FC<MapContextPanelProps> = ({ agencies, mode
         </div>
       </div>
 
-      {(mode === 'agencies' ? agencies.length : routes.length) > 5 && (
-        <label className={`${SEARCH_PILL} mx-3 mt-2`}>
-          <Search className="w-3 h-3 shrink-0 text-[var(--text-dim)]" />
-          <input
-            value={query}
-            onChange={event => setQuery(event.target.value)}
-            placeholder={mode === 'agencies' ? 'Filter agencies' : 'Filter routes'}
-            aria-label={mode === 'agencies' ? 'Filter agencies in view' : 'Filter routes in view'}
-            className={SEARCH_FIELD}
-          />
-        </label>
-      )}
-
       <div className="custom-scrollbar overflow-y-auto py-1">
         {mode === 'agencies' ? (
-          filteredAgencies.length > 0 ? filteredAgencies.map(agency => (
+          agencies.length > 0 ? agencies.map(agency => (
             <button
               key={agency.slug}
               type="button"
