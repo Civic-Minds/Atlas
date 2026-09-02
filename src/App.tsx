@@ -567,7 +567,7 @@ export default function App() {
               liveRoutesOnly={inLive}
               fareView={inFares}
               nightServiceView={inNight}
-              showMapContext
+              showMapContext={BETA_BUILD}
               showMatchPercentage={BETA_BUILD}
               filterToAgencies={inHistory || inFares}
               onHistoryRouteClick={inHistory ? handleHistoryRouteClick : undefined}
