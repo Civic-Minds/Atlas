@@ -521,6 +521,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
         onTileLoadingChange={setIsTilesLoading}
         setQuery={setQuery}
         onClearSelection={clearMapSelection}
+        sidebarLeft={sidebarLeft}
+        searchBarWidth={searchBarWidth}
       />
 
       <MapAttribution />

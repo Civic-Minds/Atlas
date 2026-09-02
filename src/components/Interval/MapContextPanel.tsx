@@ -1,18 +1,20 @@
 import React, { useMemo, useState } from 'react';
 import { Search } from 'lucide-react';
 import type { MapContextAgency, MapContextRoute } from '../../utils/mapContext';
-import { FLOATING_CARD, LIST_ROW_SPACED, LIST_ROW_PRIMARY, PANEL_SECTION_HEAD, PANEL_TITLE_BAR, PANEL_TITLE, SEARCH_FIELD, SEARCH_PILL, Z_PANEL } from '../../styles';
+import { FLOATING_CARD, LIST_ROW_SPACED, LIST_ROW_PRIMARY, PANEL_SECTION_HEAD, PANEL_TITLE_BAR, PANEL_TITLE, SEARCH_FIELD, SEARCH_PILL, SIDEBAR_PANEL_WIDTH, PANEL_SIDEBAR, SIDEBAR_LEFT_FALLBACK, Z_PANEL } from '../../styles';
 import RouteListRow from '../RouteListRow';
 import { routeRowLabels } from './SearchSuggestionsPanel';
 
 interface MapContextPanelProps {
   agencies: MapContextAgency[];
   mode: 'agencies' | 'routes';
+  sidebarLeft?: number;
+  searchBarWidth?: number;
   onSelectAgency?: (slug: string) => void;
   onSelectRoute?: (key: string) => void;
 }
 
-export const MapContextPanel: React.FC<MapContextPanelProps> = ({ agencies, mode, onSelectAgency, onSelectRoute }) => {
+export const MapContextPanel: React.FC<MapContextPanelProps> = ({ agencies, mode, sidebarLeft, searchBarWidth, onSelectAgency, onSelectRoute }) => {
   const [query, setQuery] = useState('');
   const routes = useMemo(() => agencies.flatMap(agency => agency.routes), [agencies]);
   const count = mode === 'agencies' ? agencies.length : routes.length;
@@ -37,7 +39,13 @@ export const MapContextPanel: React.FC<MapContextPanelProps> = ({ agencies, mode
   }, [filteredRoutes]);
 
   return (
-    <div className={`absolute bottom-[9rem] right-3 ${Z_PANEL} w-[min(21rem,calc(100vw-2rem))] max-h-[min(30rem,calc(100vh-11rem))] ${FLOATING_CARD} flex flex-col overflow-hidden pointer-events-auto`}>
+    <div
+      className={`${PANEL_SIDEBAR} ${SIDEBAR_PANEL_WIDTH} max-h-[calc(100vh-132px)] ${FLOATING_CARD} flex flex-col overflow-hidden pointer-events-auto`}
+      style={{
+        '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px`,
+        ...(searchBarWidth ? { width: `${searchBarWidth}px`, maxWidth: 'none' } : {}),
+      } as React.CSSProperties}
+    >
       <div className={PANEL_TITLE_BAR}>
         <div className="min-w-0 flex-1">
           <div className={PANEL_TITLE}>In view</div>

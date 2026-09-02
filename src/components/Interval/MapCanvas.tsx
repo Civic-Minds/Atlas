@@ -202,6 +202,8 @@ interface MapCanvasProps {
   onTileLoadingChange?: (loading: boolean) => void;
   setQuery?: (q: string) => void;
   onClearSelection?: () => void;
+  sidebarLeft?: number;
+  searchBarWidth?: number;
 }
 
 const MapCanvasInner: React.FC<MapCanvasProps> = ({
@@ -249,6 +251,8 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   initialMapCenter,
   onTileLoadingChange,
   onClearSelection,
+  sidebarLeft,
+  searchBarWidth,
 }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
@@ -1665,6 +1669,8 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
           <MapContextPanel
             agencies={mapContextAgencies}
             mode={mapContextView}
+            sidebarLeft={sidebarLeft}
+            searchBarWidth={searchBarWidth}
             onSelectAgency={setSelectedAgencySlug ? slug => {
               onClearSelection?.();
               setSelectedAgencySlug(slug);
