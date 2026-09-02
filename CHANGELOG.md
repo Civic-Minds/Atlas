@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Matched the in-view list search field to Atlas’s shared search styling.
 - Grouped map-context routes by agency and matched the main search result labels for easier scanning.
 - Removed unnecessary dividers from the map context agency and route lists for a cleaner scan.
 - Keep legal links and Civic Minds attribution on one compact line in the Info area.

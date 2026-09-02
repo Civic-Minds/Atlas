@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { Search } from 'lucide-react';
 import type { MapContextAgency, MapContextRoute } from '../../utils/mapContext';
-import { FLOATING_CARD, LIST_ROW_SPACED, LIST_ROW_PRIMARY, PANEL_SECTION_HEAD, PANEL_TITLE_BAR, PANEL_TITLE, Z_PANEL } from '../../styles';
+import { FLOATING_CARD, LIST_ROW_SPACED, LIST_ROW_PRIMARY, PANEL_SECTION_HEAD, PANEL_TITLE_BAR, PANEL_TITLE, SEARCH_FIELD, SEARCH_PILL, Z_PANEL } from '../../styles';
 import RouteListRow from '../RouteListRow';
 import { routeRowLabels } from './SearchSuggestionsPanel';
 
@@ -48,14 +48,14 @@ export const MapContextPanel: React.FC<MapContextPanelProps> = ({ agencies, mode
       </div>
 
       {(mode === 'agencies' ? agencies.length : routes.length) > 5 && (
-        <label className="mx-3 mt-2 flex h-8 items-center gap-1.5 rounded-lg border border-[var(--border-primary)] bg-[var(--bg-app)] px-2.5">
+        <label className={`${SEARCH_PILL} mx-3 mt-2`}>
           <Search className="w-3 h-3 shrink-0 text-[var(--text-dim)]" />
           <input
             value={query}
             onChange={event => setQuery(event.target.value)}
             placeholder={mode === 'agencies' ? 'Filter agencies' : 'Filter routes'}
             aria-label={mode === 'agencies' ? 'Filter agencies in view' : 'Filter routes in view'}
-            className="min-w-0 flex-1 bg-transparent text-[10px] font-bold text-[var(--text-primary)] placeholder:text-[var(--text-dim)] focus:outline-none"
+            className={SEARCH_FIELD}
           />
         </label>
       )}
