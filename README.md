@@ -22,6 +22,7 @@ GTFS feeds are scattered — one per agency, with no way to see a whole region's
 - **Mapping**: MapLibre GL JS, deck.gl, PMTiles
 - **Pipeline**: Node.js / tsx, JSZip, PapaParse, GTFS-Realtime protobuf bindings, Tippecanoe
 - **Infrastructure**: Vercel (hosting + serverless API routes), Cloudflare R2 (public map artifacts and private GTFS-RT archives), Cloudflare Workers (background GTFS-RT archiver), GitHub Actions (weekly refresh)
+- **Analytics**: Google Analytics 4 for privacy-conscious feature usage measurement, Vercel Speed Insights for real-user performance
 - **Testing**: Vitest
 
 ---
