@@ -26,6 +26,7 @@ import { DAY_TYPES, getNowDay, type DayType } from '../shared/dayTypes';
 import { syncUrlParams } from './utils/syncUrlParams';
 import AppUpdateBanner from './components/AppUpdateBanner';
 import type { FeedQuality } from '../shared/feedQuality';
+import { trackEvent, trackPageView } from './lib/analytics';
 
 export interface FareOverride {
   adult?: number;      // base card/electronic fare (fallback when GeoJSON baseFare is absent)
@@ -124,7 +125,12 @@ export default function App() {
     if (gated) navigate('/', { replace: true });
   }, [gated, navigate]);
 
+  useEffect(() => {
+    trackPageView(pathname);
+  }, [pathname]);
+
   function setActiveApp(app: AppId) {
+    trackEvent('app_opened', { app });
     navigate(APP_TO_PATH[app]);
   }
 
@@ -179,7 +185,11 @@ export default function App() {
   const [searchBarWidth, setSearchBarWidth] = useState<number>();
   const searchEnterRef = useRef<(() => void) | null>(null);
   const [sidebarLeft, setSidebarLeft] = useState<number>(SIDEBAR_LEFT_FALLBACK);
-  const handleAgencySelect = useCallback((slug: string) => { setSelectedAgencySlug(slug); closeInfo(); }, [closeInfo]);
+  const handleAgencySelect = useCallback((slug: string) => {
+    trackEvent('agency_selected', { agency_slug: slug });
+    setSelectedAgencySlug(slug);
+    closeInfo();
+  }, [closeInfo]);
   const handleLiveRouteClick = useCallback((slug: string, routeShortName: string) => { setPendingLiveRoute({ slug, routeShortName }); closeInfo(); }, [closeInfo]);
   const handleHistoryRouteClick = useCallback((slug: string, routeShortName: string) => { setPendingHistoryRoute({ slug, routeShortName }); }, []);
   const handleAgencyCardClose = useCallback(() => setSelectedAgencySlug(null), []);

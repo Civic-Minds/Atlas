@@ -1,6 +1,6 @@
 # Terms of Service
 
-Last updated: July 2026.
+Last updated: September 2026.
 
 ## What this is
 
@@ -21,7 +21,7 @@ Excessive automated use may be rate-limited or blocked without notice.
 
 **Everything else on the map** (route shapes, stop locations, headway/frequency data) is public transit schedule data published by transit agencies via GTFS, not personal data.
 
-No accounts, no cookies for tracking, no analytics tracking as of this writing.
+Atlas uses privacy settings in Google Analytics to measure anonymous site usage and performance. This helps us understand which map features are useful; it is not used for advertising or account profiling. No Atlas account is required, and Atlas does not collect precise location data or ask for personal information through analytics.
 
 ## Data accuracy
 
@@ -37,4 +37,4 @@ These terms may change at any time.
 
 ## Contact
 
-Report issues or data problems via [GitHub Issues](https://github.com/Civic-Minds/Atlas/issues).
+For general questions or feedback, email [hey@ryanisnota.pro](mailto:hey@ryanisnota.pro?subject=Atlas%20Contact). Use the in-app report action for a specific schedule or data problem; technical issue tracking remains on [GitHub Issues](https://github.com/Civic-Minds/Atlas/issues).

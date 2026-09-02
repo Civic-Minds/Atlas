@@ -22,6 +22,7 @@ import { splitRouteKey } from '../utils/routeKey';
 import { resolveRouteSelectionForDay } from '../utils/routeSelection';
 import { syncUrlParams } from '../utils/syncUrlParams';
 import { searchOverlayHidesPanel } from '../utils/format';
+import { trackEvent } from '../lib/analytics';
 
 // Versioned because the original preference could accidentally persist only
 // agencies in the current viewport when the bulk "All" action was used.
@@ -108,6 +109,21 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   });
   const [selectedRoute, setSelectedRoute] = useState<string | null>(() => searchParams.get('route'));
   const [selectedStop, setSelectedStop] = useState<string | null>(() => searchParams.get('stop'));
+
+  useEffect(() => {
+    if (!selectedRoute) return;
+    const { agencySlug, routeId, routeBranch } = splitRouteKey(selectedRoute);
+    trackEvent('route_selected', { agency_slug: agencySlug, route_id: routeId, route_branch: routeBranch });
+  }, [selectedRoute]);
+
+  useEffect(() => {
+    if (!selectedStop) return;
+    const separator = selectedStop.indexOf('::');
+    trackEvent('stop_selected', {
+      agency_slug: separator >= 0 ? selectedStop.slice(0, separator) : selectedStop,
+      stop_id: separator >= 0 ? selectedStop.slice(separator + 2) : selectedStop,
+    });
+  }, [selectedStop]);
   // Debug-only: draw extra routes on the map in distinct colors, independent of the normal
   // single-route selection/sidebar/fit-bounds flow. ?highlight=agency::routeId,agency::routeId2 --
   // same key format as ?route=. Not surfaced in any UI; for investigating cases like #294 where

@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Added privacy-conscious Atlas usage analytics so feature adoption can be measured beyond page visits.
 - History route selections now settle on one camera target instead of triggering competing map movements and React warnings ([#478](https://github.com/Civic-Minds/Atlas/issues/478)).
 - **CARTO basemaps now load without the API-key watermark**: Atlas proxies tile requests with the key kept server-side.
 - Shared Atlas links now generate useful previews when posted on social media.

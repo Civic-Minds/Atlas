@@ -6,6 +6,7 @@ import './styles/index.css';
 import { BETA_BUILD } from '../shared/config';
 import { inject } from '@vercel/analytics';
 import { injectSpeedInsights } from '@vercel/speed-insights';
+import { initAnalytics } from './lib/analytics';
 
 const DiagnosticsPage = React.lazy(() => import('./DiagnosticsPage'));
 const DiagnosticsUnevenPage = React.lazy(() => import('./DiagnosticsUnevenPage'));
@@ -15,6 +16,7 @@ const DiagnosticsUnevenPage = React.lazy(() => import('./DiagnosticsUnevenPage')
 if (import.meta.env.PROD) {
   inject();
   injectSpeedInsights();
+  initAnalytics();
 }
 
 if (BETA_BUILD) {
