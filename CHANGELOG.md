@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
-## [Unreleased]
+## [3.2.22] - 2026-09-03
 
 - Route cards now show a faster combined frequency for a single branch too, not just when a route has multiple destinations — TTC 94 eastbound was showing only "every 20 min" and hiding that Castle Frank buses run every 10 min where a short-turn pattern overlaps ([#493](https://github.com/Civic-Minds/Atlas/issues/493)).
 - Fixed a few routes' combined-frequency figure reading a minute or two faster than reality — a rounding quirk in how two overlapping schedules line up at one or two stops could set the whole number instead of being smoothed out ([#494](https://github.com/Civic-Minds/Atlas/issues/494)).
