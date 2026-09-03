@@ -8,34 +8,21 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 - Route cards now show a faster combined frequency for a single branch too, not just when a route has multiple destinations — TTC 94 eastbound was showing only "every 20 min" and hiding that Castle Frank buses run every 10 min where a short-turn pattern overlaps ([#493](https://github.com/Civic-Minds/Atlas/issues/493)).
 - Fixed a few routes' combined-frequency figure reading a minute or two faster than reality — a rounding quirk in how two overlapping schedules line up at one or two stops could set the whole number instead of being smoothed out ([#494](https://github.com/Civic-Minds/Atlas/issues/494)).
-- Google Analytics now waits for consent in stricter privacy regions and can be disabled from Atlas settings.
+- Added privacy-conscious usage analytics so feature adoption can be measured beyond page visits, with a consent prompt that respects stricter privacy regions and can be turned off in Atlas settings.
 - Live GTFS-RT archiving is paused while its data collection is rebuilt for reliability.
-- Atlas now deploys successfully on Vercel Hobby while keeping regional analytics consent available.
-- Analytics consent now matches Atlas's compact update notice and uses neutral wording.
-- Analytics consent now presents the sharing choice before the decline option.
+- Atlas deploys successfully on Vercel again after hitting its plan's function limit.
 - Public route and agency cards no longer expose beta-only live-data indicators while Live remains gated.
-- Hid the experimental routes/agencies-in-view controls from the public main build while keeping them available in beta.
-- Removed the duplicate in-view filter field so Atlas has one consistent search entry point.
-- Opened in-view route and agency lists in the same left-side card position as search results.
-- Matched the in-view list search field to Atlas’s shared search styling.
-- Grouped map-context routes by agency and matched the main search result labels for easier scanning.
-- Removed unnecessary dividers from the map context agency and route lists for a cleaner scan.
-- Keep legal links and Civic Minds attribution on one compact line in the Info area.
-- Added privacy-conscious Atlas usage analytics so feature adoption can be measured beyond page visits.
+- Cleaned up the map's "routes/agencies in view" list: removed a duplicate search field, matched its styling to Atlas's main search, grouped results by agency, and kept it experimental-only (hidden from the public build, still on in beta).
+- Kept legal links and Civic Minds attribution on one compact line in the Info area.
 - History route selections now settle on one camera target instead of triggering competing map movements and React warnings ([#478](https://github.com/Civic-Minds/Atlas/issues/478)).
-- **CARTO basemaps now load without the API-key watermark**: Atlas proxies tile requests with the key kept server-side.
+- CARTO basemaps now load without the API-key watermark — Atlas proxies tile requests with the key kept server-side.
 - Shared Atlas links now generate useful previews when posted on social media.
 - Fixed a pipeline bug affecting the 10 agencies that filter routes out of a shared/multi-agency feed (Seattle Streetcar, HART, Niagara, Tampa Airport, Stratford, and 5 Colorado mountain-town shuttles) — the filter step wasn't actually applied to the stop list, so these agencies could publish stops that belong to other agencies or excluded routes in that feed. All 10 have now been reprocessed with the fix.
-- Weekly GTFS refresh now correctly saves each agency's timezone instead of silently discarding it — links to a specific route/stop now default to that agency's own local time on far more agencies than before.
-- Every agency now has a timezone on file (was 96 of 670) — links to a specific route/stop always default to that agency's own local time now instead of the browser's.
-
-### Map and route behavior
-
+- Every agency now has a timezone on file, and the weekly refresh no longer silently discards it — links to a specific route/stop default to that agency's own local time instead of the browser's.
 - History coverage pills now appear only where the History feature is available, keeping the production agency list consistent with its hidden History app.
 - Direction hovers no longer make route cards and map highlights flicker when the hovered row changes the schedule preview height.
 - TTC subway lines now keep their evening service visible when the feed publishes separate same-destination rail shapes.
-- Combined corridor overlays now stay on the route shape that actually serves each shared stop pair.
-- Combined corridor overlays are temporarily hidden while their map geometry is reworked, and filter choices now carry through shared links.
+- Combined corridor overlays now stay on the route shape that actually serves each shared stop pair, and are temporarily hidden while their map geometry is reworked; filter choices now carry through shared links.
 - Short-turn/branch route variants now show for both directions of a route, not just one ([#470](https://github.com/Civic-Minds/Atlas/issues/470)).
 - The History map camera no longer jumps when you open or close a stop's detail card, and can no longer snap back to a route you already navigated away from ([#471](https://github.com/Civic-Minds/Atlas/issues/471), [#472](https://github.com/Civic-Minds/Atlas/issues/472)).
 - If an agency's map data or the History list fails to load, Atlas now retries once and shows an error instead of silently displaying nothing ([#474](https://github.com/Civic-Minds/Atlas/issues/474), [#475](https://github.com/Civic-Minds/Atlas/issues/475)).
