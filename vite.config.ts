@@ -116,6 +116,19 @@ export default defineConfig(({ mode }) => {
       localPmtilesPreview,
       localAgencyDataPreview,
     ],
+    build: {
+      rollupOptions: {
+        output: {
+          // Map/render libraries change far less often than app code — keeping
+          // them in their own file lets returning visitors reuse the cached
+          // copy instead of re-downloading it on every deploy.
+          manualChunks(id) {
+            if (id.includes('node_modules/maplibre-gl')) return 'maplibre';
+            if (id.includes('node_modules/@deck.gl')) return 'deck';
+          },
+        },
+      },
+    },
     server: {
       port: 5100,
       strictPort: true,
