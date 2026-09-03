@@ -111,7 +111,7 @@ async function getZxyWithRetry(
   zoom: number,
   x: number,
   y: number,
-  retries = 8,
+  retries = 10,
 ): Promise<Awaited<ReturnType<PMTiles['getZxy']>>> {
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
@@ -121,7 +121,10 @@ async function getZxyWithRetry(
       const message = (e as Error).message || '';
       const isTransient = /Bad response code: (429|5\d\d)/.test(message);
       if (isLast || !isTransient) throw e;
-      const delayMs = 400 * 2 ** attempt + Math.random() * 300;
+      // R2 can keep returning 429s briefly while a large archive is being
+      // checked. Give the request enough time to leave the rate-limit window
+      // without allowing one tile to stall the whole verification forever.
+      const delayMs = Math.min(15_000, 750 * 2 ** attempt) + Math.random() * 500;
       await new Promise(r => setTimeout(r, delayMs));
     }
   }
@@ -189,7 +192,9 @@ async function main() {
     }
   });
 
-  const concurrency = 5;
+  // This check can request tens of thousands of tiles. Keep the burst low so
+  // the verifier does not rate-limit its own reads from the R2 public host.
+  const concurrency = 2;
   console.log(`Fetching ${tasks.length} tiles (concurrency ${concurrency})...`);
   await runWithConcurrency(tasks, concurrency);
 
