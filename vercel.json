@@ -29,6 +29,10 @@
       "destination": "/api/history-adherence.ts"
     },
     {
+      "source": "/api/privacy-region",
+      "destination": "/api/geo.ts?mode=privacy-region"
+    },
+    {
       "source": "/beta-data/:path*",
       "destination": "https://pub-5f1c48f86b024c42a8d174a4a5dd69ca.r2.dev/:path*"
     },
