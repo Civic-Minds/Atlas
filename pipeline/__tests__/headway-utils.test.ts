@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { adaptiveMedianHeadwayInWindow, computePeriodHeadways, computePeriodMaxGaps, computePeriodSustained, forCrossMidnightWindow, hasGenuineBranchPattern, hasSustainedFrequentService, hasSustainedNightService, isSustainedHeadway, medianHeadwayInWindow, nightServiceDepartureTimes, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow } from '../headway-utils';
+import { adaptiveMedianHeadwayInWindow, computePeriodHeadways, computePeriodMaxGaps, computePeriodSustained, forCrossMidnightWindow, hasGenuineBranchPattern, hasSustainedFrequentService, hasSustainedNightService, headsignOverlapMinHeadway, isSustainedHeadway, medianHeadwayInWindow, nightServiceDepartureTimes, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow } from '../headway-utils';
 
 describe('medianHeadwayInWindow', () => {
   it('does not expose a sparse two-departure cluster as an hourly headway', () => {
@@ -434,5 +434,30 @@ describe('computePeriodMaxGaps (#281)', () => {
     const result = computePeriodMaxGaps([840, 915, 945, 975]);
     expect(result.midday).toBe(60); // 8:00–9:15, clipped to the 9:00–15:00 window
     expect(result.pmPeak).toBe(30); // the same gap contributes 15 minutes after 9:00, below 30
+  });
+});
+
+describe('headsignOverlapMinHeadway', () => {
+  // TTC 94 eastbound shape (#494): 15 solo stops read this shape's own ~20 min headway, 9 stops
+  // overlap with a same-headsign short-turn -- 7 read a clean 10, 2 read 9 from a rounding-drift
+  // gap sequence (18x9min, 17x11min -> median 9 at those two stops specifically).
+  const solo = Array(15).fill(20);
+  const overlapClean = Array(7).fill(10);
+  const overlapDrifted = Array(2).fill(9);
+
+  it('takes the median of the overlap section instead of the single noisiest overlap stop', () => {
+    expect(headsignOverlapMinHeadway([...solo, ...overlapClean, ...overlapDrifted], 20)).toBe(10);
+  });
+
+  it('falls back to the plain minimum with too few overlap stops to trust a median (#448 threshold)', () => {
+    expect(headsignOverlapMinHeadway([...solo, 10, 9], 20)).toBe(9);
+  });
+
+  it('falls back to the plain minimum when there is no baseline to judge overlap against', () => {
+    expect(headsignOverlapMinHeadway([...overlapClean, ...overlapDrifted], null)).toBe(9);
+  });
+
+  it('returns null for an empty input', () => {
+    expect(headsignOverlapMinHeadway([], 20)).toBeNull();
   });
 });

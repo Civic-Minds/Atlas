@@ -169,6 +169,37 @@ export function resolveTerminalPeriodHeadway(
   return Math.max(branchHeadway, terminalHeadway);
 }
 
+// Matches src/utils/routeBranchGeometry.ts's MIN_SHARED_STOPS_FOR_TRUNK, raised from 2 to 3
+// after #448 found 2 let Halifax 7A/7B and GoRaleigh 11/11L misclassify on one coincidental
+// shared stop. Duplicated rather than imported: pipeline/ never depends on src/ (separate
+// runtime graphs), and both need the same "at least 3 stops before trusting an overlap" bar.
+export const MIN_OVERLAP_STOPS_FOR_MEDIAN = 3;
+
+/**
+ * Minimum stop headway on a headsign's shared/overlap section (#494). A stop where two
+ * same-headsign shapes converge (e.g. TTC 94's Wellesley Station short-turn joining the
+ * full-length route) reads a genuinely lower combined headway than the shape's own solo stops —
+ * but the bare minimum across those overlap stops is fragile: schedule-rounding drift between the
+ * two patterns can make one or two stops read a minute or two lower than the rest even though the
+ * corridor's real combined headway is higher (TTC 94: 2 of 9 overlap stops read 9 min from an
+ * alternating 9/11 gap sequence while the other 7, including the stop where the patterns actually
+ * meet, read a clean 10).
+ *
+ * Restricting to stops meaningfully faster than the shape's own period headway (`baseline`)
+ * isolates the overlap section from solo stops, and taking the median — not the min — within
+ * that section absorbs a one- or two-stop rounding outlier. Below `MIN_OVERLAP_STOPS_FOR_MEDIAN`
+ * the median would just be that same outlier, so this falls back to the plain minimum in that
+ * case, matching what this always returned before.
+ */
+export function headsignOverlapMinHeadway(vals: number[], baseline: number | null): number | null {
+  if (vals.length === 0) return null;
+  const overlapVals = baseline != null ? vals.filter(v => v < baseline * 0.85) : [];
+  if (overlapVals.length < MIN_OVERLAP_STOPS_FOR_MEDIAN) return Math.min(...vals);
+  const sorted = [...overlapVals].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  return sorted.length % 2 === 1 ? sorted[mid] : Math.round((sorted[mid - 1] + sorted[mid]) / 2);
+}
+
 // route-report's own threshold for flagging a headway mismatch worth a second look — reused
 // here so "is this a real branch" uses the same bar as "is this worth flagging" elsewhere.
 export const BRANCH_MISMATCH_RATIO = 1.8;
