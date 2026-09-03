@@ -4,6 +4,8 @@ Reference for Atlas's live GTFS-RT integration status — which agencies are pol
 
 For where this fits in the platform's future direction, see [Live Data Infrastructure](./roadmap/TECHNICAL.md#live-data-infrastructure).
 
+**Current status:** Live GTFS-RT archiving is paused while the collection and quality checks are rebuilt. Existing R2 snapshots remain available; no new snapshots are being written.
+
 ---
 
 ## Live Polling
@@ -51,7 +53,7 @@ Per-agency live feed quirks (trip-ID mismatches, missing routes, protobuf issues
 
 ---
 
-## History Archiving
+## History Archiving (paused)
 
 The Cloudflare Workers in `workers/gtfs-rt-archiver/` write to private R2 bucket `atlas-live`. Five small Workers use the five free Cron slots: TTC positions, TTC trips, Hamilton, STM, and Burlington plus Halifax. Each shard runs every minute; trip-update archives run every 5 minutes, while vehicle-position samples run every minute. R2 lifecycle rules enforce **30-day** retention.
 Deploy the five configs separately: `wrangler.toml`, `wrangler.ttc-trips.toml`,

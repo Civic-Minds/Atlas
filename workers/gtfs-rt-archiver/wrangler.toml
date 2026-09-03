@@ -12,8 +12,3 @@ bucket_name = "atlas-live"
 
 [observability]
 enabled = true
-
-[triggers]
-# One free Cron Trigger per shard. The other four shard configs use the same
-# every-minute schedule and the same source file.
-crons = ["* * * * *"]

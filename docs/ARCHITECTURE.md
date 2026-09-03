@@ -51,9 +51,9 @@ Client polls `/api/live-vehicles` (and stop/adherence helpers). Route list and k
 hamilton, ttc, edmonton, yrt, halifax) and key-gated ones (TransLink, STM, SF Muni `active`,
 LA Metro parked).
 
-### 2. Background Worker archiver
+### 2. Background Worker archiver (paused)
 
-Hardcoded feed lists in `shared/liveArchiveFeeds.ts` (not `LIVE_POLLING_ROUTES`):
+Hardcoded feed lists in `shared/liveArchiveFeeds.ts` (not `LIVE_POLLING_ROUTES`). The five archive Workers are currently deployed without Cron Triggers, so they are paused and no longer write new snapshots to `atlas-live`:
 trip-updates and vehicle positions for **ttc, burlington, hamilton, halifax, and stm**. Five small Workers divide the feeds so each invocation stays under the Workers Free CPU limit.
 Writes private `atlas-live`. Expand only after canary health + contract checks.
 

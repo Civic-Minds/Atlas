@@ -12,6 +12,3 @@ bucket_name = "atlas-live"
 
 [observability]
 enabled = true
-
-[triggers]
-crons = ["* * * * *"]
