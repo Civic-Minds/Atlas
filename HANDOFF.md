@@ -12,6 +12,7 @@
 ## Next suggested work
 
 - Rebuild Live as a small, reliable on-demand relay without background archiving. Define feed coverage, freshness/error behavior, and agency-specific validation before restoring the UI.
+- Keep the main Atlas app on Vercel for now. Evaluate moving the Live relay, and possibly Atlas hosting later, to Cloudflare because the project already uses Cloudflare R2 and the account has substantial Worker capacity. The current account is on Cloudflare Free with 7 of 100 Workers in use; the constraint reached before pausing was the 5-account Cron Trigger limit, not the Worker count.
 - Do not restore the five Cron Triggers until collection quality is verified.
 
 
