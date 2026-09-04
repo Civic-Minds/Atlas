@@ -1,5 +1,20 @@
 # Product Decisions
 
+## 2026-07-29 — Curate History around meaningful service change
+
+Atlas History is intentionally enabled for selected agencies rather than
+backfilled across every city. Selection should favor places where archived GTFS
+feeds can reveal meaningful network or service changes. Official agency feeds
+are preferred; MDB is a historical fallback.
+
+Historical GTFS files remain immutable snapshots. Atlas may derive compact
+route-level snapshots for each documented schedule period without duplicating
+the raw ZIP. Normal history can remain change-only, while period-level
+materialization is used when the UI needs every available schedule period to be
+selectable. Missing or unusable periods remain unavailable rather than being
+represented by a duplicate or inferred snapshot. Sacramento is the initial
+prototype for this model.
+
 ## 2026-07-15 — Atlas is the shared transit data platform
 
 Atlas owns reusable transit-data capabilities for the Transit tool family:
