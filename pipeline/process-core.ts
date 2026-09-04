@@ -376,7 +376,6 @@ export async function processGtfsBuffer(
         routeShortName: shortName,
         routeLongName: route?.route_long_name ?? null,
         routeBranch: deriveRouteBranch(options?.slug, shortName, resolveDisplayHeadsign(result.headsign, shortName, routeLongName)),
-        routeDataQualityWarning: routeDataQualityWarningForShape(shapeId, gtfs.shapeAnomalies),
         routeColor: route?.route_color ?? null,
         routeType: parseInt(result.routeType || '3'),
         busSubType: detectBusSubType(result.routeType, shortName, route?.route_long_name ?? null, options?.slug),
