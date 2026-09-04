@@ -178,31 +178,41 @@ async function main() {
   console.log(`  Selected ${picks.length} datasets (one per year from ${startYear}):`);
   picks.forEach(d => console.log(`    ${d.downloaded_at.slice(0, 10)} → ${d.hosted_url.split('/').pop()}`));
 
+  const skipped: string[] = [];
   for (const dataset of picks) {
     const dateStr = dataset.downloaded_at.slice(0, 10);
     console.log(`\nDownloading ${dateStr}...`);
-    const res = await fetch(dataset.hosted_url);
-    if (!res.ok) throw new Error(`Download failed: ${res.status} for ${dataset.hosted_url}`);
-    const buf = Buffer.from(await res.arrayBuffer());
-    console.log(`  Downloaded ${(buf.length / 1024 / 1024).toFixed(1)} MB`);
+    try {
+      const res = await fetch(dataset.hosted_url);
+      if (!res.ok) throw new Error(`Download failed: ${res.status} for ${dataset.hosted_url}`);
+      const buf = Buffer.from(await res.arrayBuffer());
+      console.log(`  Downloaded ${(buf.length / 1024 / 1024).toFixed(1)} MB`);
 
-    const { feedExpiry, feedVersion } = await peekFeedInfo(buf);
-    const periodKey = feedExpiry ?? feedVersion ?? dateStr.replace(/-/g, '');
-    console.log(`  periodKey: ${periodKey}`);
+      const { feedExpiry, feedVersion } = await peekFeedInfo(buf);
+      const periodKey = feedExpiry ?? feedVersion ?? dateStr.replace(/-/g, '');
+      console.log(`  periodKey: ${periodKey}`);
 
-    const result = await processGtfsBuffer(buf, msg => process.stdout.write(`  ${msg}\n`), { slug });
-    console.log(`  Processed ${result.featureCount} features`);
+      const result = await processGtfsBuffer(buf, msg => process.stdout.write(`  ${msg}\n`), { slug });
+      console.log(`  Processed ${result.featureCount} features`);
 
-    const archiveKey = feedExpiry ?? feedVersion;
-    if (archiveKey) {
-      await r2PutArchive(`gtfs/archive/${slug}/${archiveKey}.zip`, buf, 'application/zip');
-      console.log(`  Archived → gtfs/archive/${slug}/${archiveKey}.zip`);
-    } else {
-      console.log(`  [warn] No feed_end_date — zip not archived`);
+      const archiveKey = feedExpiry ?? feedVersion;
+      if (archiveKey) {
+        await r2PutArchive(`gtfs/archive/${slug}/${archiveKey}.zip`, buf, 'application/zip');
+        console.log(`  Archived → gtfs/archive/${slug}/${archiveKey}.zip`);
+      } else {
+        console.log(`  [warn] No feed_end_date — zip not archived`);
+      }
+
+      const { changed, total } = await writeSnapshot(slug, result.geojson, periodKey);
+      console.log(`  History: ${changed.length}/${total} routes changed (${changed.slice(0, 6).join(', ')}${changed.length > 6 ? '…' : ''})`);
+    } catch (err) {
+      console.log(`  [skip] ${dateStr} failed: ${err instanceof Error ? err.message : err}`);
+      skipped.push(dateStr);
     }
+  }
 
-    const { changed, total } = await writeSnapshot(slug, result.geojson, periodKey);
-    console.log(`  History: ${changed.length}/${total} routes changed (${changed.slice(0, 6).join(', ')}${changed.length > 6 ? '…' : ''})`);
+  if (skipped.length) {
+    console.log(`\nSkipped ${skipped.length} dataset(s) due to errors: ${skipped.join(', ')}`);
   }
 
   console.log('\nDone. Run: npm run build-history');

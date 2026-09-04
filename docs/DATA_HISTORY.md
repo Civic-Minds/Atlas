@@ -33,6 +33,14 @@ Historical snapshots are compiled via two methods:
 | **Metro Transit** (`metro-transit`) | `mdb-205` | 2016 - 2026 | 11 years | Backfilled (August 2026). Dynamic URLs updated in `index.json`. |
 | **Grand River Transit** (`grt`) | `mdb-721` | 2016 - 2026 | 11 years | Backfilled (August 2026) using deprecated source ID redirect. |
 | **Brampton Transit** (`brampton`) | `mdb-729` | 2016 - 2026 | 11 years | Backfilled (August 2026) using dynamic open data feeds. |
+| **BART** (`bart`) | `mdb-53` | 2013 - 2026 | 14 years | Backfilled via Mobility Database. |
+| **Caltrain** (`caltrain`) | `mdb-54` | 2013 - 2026 | 13 years | Backfilled via Mobility Database; 2016 dataset skipped (malformed upstream `stop_times.txt` row). |
+| **MARTA** (`marta`) | `mdb-368` | 2013 - 2026 | 14 years | Backfilled via Mobility Database. |
+| **RTD Denver** (`rtd-denver`) | `mdb-178` | 2013 - 2026 | 14 years | Backfilled via Mobility Database. |
+| **PATH** (`path`) | `mdb-517` | 2015 - 2025 | 11 years | Backfilled via Mobility Database; no earlier MDB coverage. |
+| **STM** (`stm`) | `mdb-2126` | 2013 - 2026 | 14 years | Backfilled via Mobility Database. |
+
+These six (plus GCRTA above) are the rail-mode candidates identified for the trip-time-over-years comparison experiment — see `docs/roadmap/EXPERIMENTS.md`.
 
 ---
 
