@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
-import { ChevronLeft, ChevronRight, X, Search, TrendingUp } from 'lucide-react';
+import { ChevronLeft, ChevronRight, X, Search, TrendingUp, SlidersHorizontal } from 'lucide-react';
 import { useHistoryMapOverlay } from '../context/HistoryMapOverlay';
 import { R2_PUBLIC_URL, type HeadwayByPeriod } from '../../shared/config';
-import { FLOATING_CARD, PANEL_ENTER, TRANSITION_SLOW, SEARCH_PILL, SEARCH_FIELD, LIST_ROW, Z_PANEL, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH } from '../styles';
+import { FLOATING_CARD, PANEL_ENTER, PANEL_ENTER_TOP, TRANSITION_SLOW, SEARCH_PILL, SEARCH_FIELD, LIST_ROW, CHIP_BASE, Z_PANEL, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH } from '../styles';
 import RouteListRow from '../components/RouteListRow';
 import { shortenAgencyName } from '../utils/format';
 import {
   agencyHistoryTier,
   agencyQualifiesForHistory,
-  historyTierLabel,
+  historyTierAgencyLabel,
   type HistoryTier,
 } from '../../shared/historyEligibility';
 
@@ -561,28 +561,26 @@ export default function History({ active, initialAgencySlug, onInfoOpen, query, 
     }
   }, []);
 
+  const [depthFilter, setDepthFilter] = useState<'all' | HistoryTier>('all');
+  const [depthFilterOpen, setDepthFilterOpen] = useState(false);
+
   const filtered = useMemo(() => {
     const q = query.toLowerCase();
-    if (!q) return historyAgencies;
-    return historyAgencies.filter(a =>
+    const byQuery = !q ? historyAgencies : historyAgencies.filter(a =>
       a.name.toLowerCase().includes(q) || a.region.toLowerCase().includes(q)
     );
-  }, [query, historyAgencies]);
+    if (depthFilter === 'all') return byQuery;
+    return byQuery.filter(a => agencyHistoryTier(a) === depthFilter);
+  }, [query, historyAgencies, depthFilter]);
 
-  /** Explore first, then Recent — each section labeled so the 10-year bar stays visible. */
-  const filteredByTier = useMemo(() => {
-    const explore: AgencyHistory[] = [];
-    const recent: AgencyHistory[] = [];
-    for (const agency of filtered) {
-      const tier = agencyHistoryTier(agency);
-      if (tier === 'explore') explore.push(agency);
-      else if (tier === 'recent') recent.push(agency);
-    }
-    const sections: Array<{ tier: HistoryTier; agencies: AgencyHistory[] }> = [];
-    if (explore.length) sections.push({ tier: 'explore', agencies: explore });
-    if (recent.length) sections.push({ tier: 'recent', agencies: recent });
-    return sections;
-  }, [filtered]);
+  /** Deeper-history agencies first when showing both; no visible grouping -- each row's own year range already says how far back it goes. */
+  const sortedAgencies = useMemo(() => {
+    if (depthFilter !== 'all') return filtered;
+    return [...filtered].sort((a, b) => {
+      const rank = (t: HistoryTier | null) => t === 'explore' ? 0 : 1;
+      return rank(agencyHistoryTier(a)) - rank(agencyHistoryTier(b));
+    });
+  }, [filtered, depthFilter]);
 
   const availableYears = useMemo(() => {
     if (!selectedSlug) return [];
@@ -680,34 +678,57 @@ export default function History({ active, initialAgencySlug, onInfoOpen, query, 
                   </button>
                 </div>
               )}
-              {historyData !== null && !historyLoadFailed && filtered.length === 0 && (
+              {historyData !== null && !historyLoadFailed && (
+                <div className="px-4 pt-3 pb-2 flex items-center justify-end relative">
+                  <button
+                    onClick={() => setDepthFilterOpen(v => !v)}
+                    className={`relative h-7 px-3 flex items-center gap-1.5 ${CHIP_BASE} text-[10px] font-bold transition-colors ${
+                      depthFilter !== 'all'
+                        ? 'border-[var(--accent-border)] text-[var(--accent)]'
+                        : 'border-[var(--border-primary)] text-[var(--text-dim)] hover:text-[var(--text-primary)]'
+                    }`}
+                  >
+                    <SlidersHorizontal className="w-3 h-3" />
+                    {depthFilter === 'all' ? 'Filter' : historyTierAgencyLabel(depthFilter)}
+                  </button>
+                  {depthFilterOpen && (
+                    <div className={`absolute top-9 right-4 ${FLOATING_CARD} p-1.5 ${PANEL_ENTER_TOP} flex flex-col gap-1 w-40 z-10`}>
+                      {(['all', 'explore', 'recent'] as const).map(opt => (
+                        <button
+                          key={opt}
+                          onClick={() => { setDepthFilter(opt); setDepthFilterOpen(false); }}
+                          className={`w-full text-left px-2.5 py-1.5 rounded-md text-[11px] font-bold transition-colors ${
+                            depthFilter === opt
+                              ? 'bg-[var(--accent-bg)] text-[var(--accent)]'
+                              : 'text-[var(--text-dim)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-btn-hover)]'
+                          }`}
+                        >
+                          {opt === 'all' ? 'All agencies' : historyTierAgencyLabel(opt)}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+              {historyData !== null && !historyLoadFailed && sortedAgencies.length === 0 && (
                 <p className="text-[11px] text-[var(--text-dim)] px-4 py-3">No agencies match.</p>
               )}
-              {filteredByTier.map(({ tier, agencies }, sectionIdx) => (
-                <div key={tier}>
-                  <div className={`px-4 pt-3 pb-2 border-b border-[var(--border-primary)] ${sectionIdx > 0 ? 'border-t' : ''}`}>
-                    <p className="text-[10px] font-bold text-[var(--text-muted)]">
-                      {historyTierLabel(tier)}
+              {sortedAgencies.map(agency => (
+                <RouteListRow
+                  key={agency.slug}
+                  shortName={shortenAgencyName(agency.name)}
+                  subtitle={
+                    <p className="text-[9px] text-[var(--text-dim)] mt-0.5">
+                      {agency.region} · {agency.routes.length} route{agency.routes.length !== 1 ? 's' : ''}
                     </p>
-                  </div>
-                  {agencies.map(agency => (
-                    <RouteListRow
-                      key={agency.slug}
-                      shortName={shortenAgencyName(agency.name)}
-                      subtitle={
-                        <p className="text-[9px] text-[var(--text-dim)] mt-0.5">
-                          {agency.region} · {agency.routes.length} route{agency.routes.length !== 1 ? 's' : ''}
-                        </p>
-                      }
-                      onClick={() => {
-                        saveRecentSearch(query);
-                        setSelectedSlug(agency.slug);
-                      }}
-                      variant="spaced"
-                      right={<ChevronRight className="w-3.5 h-3.5 text-[var(--text-dim)] group-hover:text-[var(--accent)] transition-colors shrink-0" />}
-                    />
-                  ))}
-                </div>
+                  }
+                  onClick={() => {
+                    saveRecentSearch(query);
+                    setSelectedSlug(agency.slug);
+                  }}
+                  variant="spaced"
+                  right={<ChevronRight className="w-3.5 h-3.5 text-[var(--text-dim)] group-hover:text-[var(--accent)] transition-colors shrink-0" />}
+                />
               ))}
             </>
           )}

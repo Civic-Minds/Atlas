@@ -15,6 +15,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Opening History now always shows the full agency list instead of jumping straight to whatever agency the map happened to be showing (e.g. TTC, just because the map defaults to Toronto).
 - Removed the "10+ years of snapshots" internal detail from History's "Explore" section header.
 - Fixed History's agency list not scrolling — the panel had no height limit or scroll behavior, so it just got cut off instead of letting you scroll to agencies further down.
+- Replaced History's "Explore"/"Recent" section labels (sounded like "recently added") with a real Filter control — the agency list is one flat list by default, and the filter lets you narrow to just full- or partial-history agencies using the same plain-language wording already used for the rider-facing badge elsewhere.
 
 ## [3.2.22] - 2026-09-03
 

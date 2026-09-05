@@ -60,10 +60,6 @@ export function agencyQualifiesForHistory(agency: HistoryAgencyLike): boolean {
   return agencyHistoryTier(agency) != null;
 }
 
-export function historyTierLabel(tier: HistoryTier): string {
-  return tier === 'explore' ? 'Explore' : 'Recent';
-}
-
 /** Rider-facing label for agency capability badges. */
 export function historyTierAgencyLabel(tier: HistoryTier): string {
   return tier === 'explore' ? 'Full history' : 'Partial history';
