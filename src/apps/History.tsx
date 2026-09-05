@@ -39,7 +39,6 @@ export interface AgencyHistory {
 interface Props {
   active: boolean;
   initialAgencySlug?: string | null;
-  initialAgencySlugs?: string[];
   onInfoOpen?: (tab?: 'about' | 'agencies' | 'live') => void;
   query: string;
   searchFocused: boolean;
@@ -399,7 +398,7 @@ function HistoryAgencyPanel({
   );
 }
 
-export default function History({ active, initialAgencySlug, initialAgencySlugs = [], onInfoOpen, query, searchFocused, setQuery, pendingRouteClick, onPendingRouteHandled, sidebarLeft }: Props) {
+export default function History({ active, initialAgencySlug, onInfoOpen, query, searchFocused, setQuery, pendingRouteClick, onPendingRouteHandled, sidebarLeft }: Props) {
   // Applies initialAgencySlug (the currently map-selected agency) once per
   // History session, not every time selectedSlug clears -- otherwise a user
   // typing a new search gets raced back to whatever agency the map still
@@ -564,14 +563,11 @@ export default function History({ active, initialAgencySlug, initialAgencySlugs 
 
   const filtered = useMemo(() => {
     const q = query.toLowerCase();
-    const scoped = initialAgencySlugs.length > 0
-      ? historyAgencies.filter(a => initialAgencySlugs.includes(a.slug))
-      : historyAgencies;
-    if (!q) return scoped;
-    return scoped.filter(a =>
+    if (!q) return historyAgencies;
+    return historyAgencies.filter(a =>
       a.name.toLowerCase().includes(q) || a.region.toLowerCase().includes(q)
     );
-  }, [query, historyAgencies, initialAgencySlugs]);
+  }, [query, historyAgencies]);
 
   /** Explore first, then Recent — each section labeled so the 10-year bar stays visible. */
   const filteredByTier = useMemo(() => {
@@ -692,9 +688,6 @@ export default function History({ active, initialAgencySlug, initialAgencySlugs 
                   <div className={`px-4 pt-3 pb-2 border-b border-[var(--border-primary)] ${sectionIdx > 0 ? 'border-t' : ''}`}>
                     <p className="text-[10px] font-bold text-[var(--text-muted)]">
                       {historyTierLabel(tier)}
-                      {tier === 'explore' && (
-                        <span className="font-normal text-[var(--text-dim)] ml-1">· 10+ years of snapshots</span>
-                      )}
                     </p>
                   </div>
                   {agencies.map(agency => (

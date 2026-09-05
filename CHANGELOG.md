@@ -13,6 +13,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Fixed search doing nothing while an agency's route list was already open anywhere in the app — the search box's underlying value could get stuck indefinitely behind other page activity like the map re-rendering ([#495](https://github.com/Civic-Minds/Atlas/issues/495)).
 - Removed a confusing "shorter series from refreshes" label from History's agency list section headers.
 - Opening History now always shows the full agency list instead of jumping straight to whatever agency the map happened to be showing (e.g. TTC, just because the map defaults to Toronto).
+- Removed the "10+ years of snapshots" internal detail from History's "Explore" section header.
 
 ## [3.2.22] - 2026-09-03
 

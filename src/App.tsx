@@ -272,10 +272,6 @@ export default function App() {
     [],
   );
   const showHistoryControl = HISTORY_ENABLED && (inHistory || (historyAgencySlugs != null && [...loadedAgencySlugs].some(slug => historyAgencySlugs.has(slug))));
-  const historyAgencySlugsInView = useMemo(
-    () => historyAgencySlugs ? [...loadedAgencySlugs].filter(slug => historyAgencySlugs.has(slug)) : [],
-    [historyAgencySlugs, loadedAgencySlugs],
-  );
   // Always open History on the agency chooser rather than guessing one from
   // whatever the map happens to be showing -- auto-jumping straight to an
   // agency (e.g. TTC, just because the map defaults to Toronto) surprised
@@ -609,7 +605,7 @@ export default function App() {
             )}
             {HISTORY_ENABLED && (
               <React.Suspense fallback={null}>
-                <History key={inHistory ? 'history' : 'no-history'} active={inHistory} initialAgencySlug={historyAgencyForView} initialAgencySlugs={historyAgencySlugsInView} onInfoOpen={openInfo} query={deferredQuery} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} sidebarLeft={sidebarLeft} />
+                <History key={inHistory ? 'history' : 'no-history'} active={inHistory} initialAgencySlug={historyAgencyForView} onInfoOpen={openInfo} query={deferredQuery} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} sidebarLeft={sidebarLeft} />
               </React.Suspense>
             )}
             {BETA_BUILD && (
