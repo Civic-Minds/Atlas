@@ -276,9 +276,11 @@ export default function App() {
     () => historyAgencySlugs ? [...loadedAgencySlugs].filter(slug => historyAgencySlugs.has(slug)) : [],
     [historyAgencySlugs, loadedAgencySlugs],
   );
-  const historyAgencyForView = selectedAgencySlug && historyAgencySlugs?.has(selectedAgencySlug)
-    ? selectedAgencySlug
-    : historyAgencySlugsInView.length === 1 ? historyAgencySlugsInView[0] : null;
+  // Always open History on the agency chooser rather than guessing one from
+  // whatever the map happens to be showing -- auto-jumping straight to an
+  // agency (e.g. TTC, just because the map defaults to Toronto) surprised
+  // users who never actually picked that agency themselves.
+  const historyAgencyForView = null;
   const searchPlaceholder = inFrequency
     ? 'Search routes'
     : inFares ? 'Search agencies'
