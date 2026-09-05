@@ -692,9 +692,9 @@ export default function History({ active, initialAgencySlug, initialAgencySlugs 
                   <div className={`px-4 pt-3 pb-2 border-b border-[var(--border-primary)] ${sectionIdx > 0 ? 'border-t' : ''}`}>
                     <p className="text-[10px] font-bold text-[var(--text-muted)]">
                       {historyTierLabel(tier)}
-                      <span className="font-normal text-[var(--text-dim)] ml-1">
-                        {tier === 'explore' ? '· 10+ years of snapshots' : '· shorter series from refreshes'}
-                      </span>
+                      {tier === 'explore' && (
+                        <span className="font-normal text-[var(--text-dim)] ml-1">· 10+ years of snapshots</span>
+                      )}
                     </p>
                   </div>
                   {agencies.map(agency => (
