@@ -10,6 +10,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - History's route list no longer shows a divider line between every route, and an agency whose short archived series falls entirely within one year (e.g. "2026") no longer shows a silly-looking repeated range like "2026–2026".
 - Fixed the History route card's chart-toggle icon disappearing on routes with a longer name (e.g. Orange-N) — the name was squeezing the row narrow enough to push the icon out entirely instead of properly truncating.
 - Removed the "Recent" badge and "recent refreshes"/"long archive" text from History — every list there (route list, agency list, recent searches) now uses the same spaced style instead of three different hand-rolled versions, and searching for a different agency while History is open now actually opens it instead of snapping back to whichever agency was already selected.
+- Fixed search doing nothing while an agency's route list was already open anywhere in the app — the search box's underlying value could get stuck indefinitely behind other page activity like the map re-rendering ([#495](https://github.com/Civic-Minds/Atlas/issues/495)).
 
 ## [3.2.22] - 2026-09-03
 

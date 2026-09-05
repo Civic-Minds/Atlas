@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback, useDeferredValue, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router';
 import { Map as MapIcon, Search, X, Info, History as HistoryIcon, Moon } from 'lucide-react';
 import { PILL_SURFACE, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_HEADER, SIDEBAR_LEFT_FALLBACK } from './styles';
@@ -139,8 +139,18 @@ export default function App() {
   const [historyAgencySlugs, setHistoryAgencySlugs] = useState<Set<string> | null>(null);
   const [historyExploreAgencyCount, setHistoryExploreAgencyCount] = useState<number | null>(null);
   const [query, setQuery] = useState('');
-  // Search scans / map filters / prefetch run from this so keystrokes can paint first.
-  const deferredQuery = useDeferredValue(query);
+  // Search scans / map filters / prefetch run from this so keystrokes can paint
+  // first. A plain debounce instead of useDeferredValue -- deferred values can
+  // be starved indefinitely by other state updates elsewhere in the tree (the
+  // map's own move/render events keep the scheduler busy), which showed up as
+  // typing a new search doing nothing while an agency's own view was open in
+  // History (issue #495). A timeout always fires regardless of what else is
+  // re-rendering.
+  const [deferredQuery, setDeferredQuery] = useState(query);
+  useEffect(() => {
+    const id = setTimeout(() => setDeferredQuery(query), 150);
+    return () => clearTimeout(id);
+  }, [query]);
   const [stats, setStats] = useState<{ total: number; matching: number } | null>(null);
   const [resetViewKey, setResetViewKey] = useState(0);
   const [infoOpen, setInfoOpen] = useState(false);
