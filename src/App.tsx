@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback, useDeferredValue, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router';
 import { Map as MapIcon, Search, X, Info, History as HistoryIcon, Moon } from 'lucide-react';
 import { PILL_SURFACE, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_HEADER, SIDEBAR_LEFT_FALLBACK } from './styles';
@@ -6,6 +6,7 @@ import { R2_PUBLIC_URL, getAgencyArtifactUrls, LIVE_ENABLED, HISTORY_ENABLED, CO
 import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig';
 import Interval from './apps/Interval';
 import type { StopEntry } from './apps/corridor-search';
+import { useDebouncedValue } from './hooks/useDebouncedValue';
 const NightService = React.lazy(() => import('./apps/NightService'));
 // Lazy-loaded and rendered only when their flag is on (shared/config.ts) -- keeps this code out
 // of what main's build actually fetches, not just hidden behind a runtime check.
@@ -139,8 +140,9 @@ export default function App() {
   const [historyAgencySlugs, setHistoryAgencySlugs] = useState<Set<string> | null>(null);
   const [historyExploreAgencyCount, setHistoryExploreAgencyCount] = useState<number | null>(null);
   const [query, setQuery] = useState('');
-  // Search scans / map filters / prefetch run from this so keystrokes can paint first.
-  const deferredQuery = useDeferredValue(query);
+  // Search scans / map filters / prefetch run from this so keystrokes can
+  // paint first. See useDebouncedValue for why this isn't useDeferredValue.
+  const deferredQuery = useDebouncedValue(query);
   const [stats, setStats] = useState<{ total: number; matching: number } | null>(null);
   const [resetViewKey, setResetViewKey] = useState(0);
   const [infoOpen, setInfoOpen] = useState(false);
@@ -274,9 +276,11 @@ export default function App() {
     () => historyAgencySlugs ? [...loadedAgencySlugs].filter(slug => historyAgencySlugs.has(slug)) : [],
     [historyAgencySlugs, loadedAgencySlugs],
   );
-  const historyAgencyForView = selectedAgencySlug && historyAgencySlugs?.has(selectedAgencySlug)
-    ? selectedAgencySlug
-    : historyAgencySlugsInView.length === 1 ? historyAgencySlugsInView[0] : null;
+  // Always open History on the agency chooser rather than guessing one from
+  // whatever the map happens to be showing -- auto-jumping straight to an
+  // agency (e.g. TTC, just because the map defaults to Toronto) surprised
+  // users who never actually picked that agency themselves.
+  const historyAgencyForView = null;
   const searchPlaceholder = inFrequency
     ? 'Search routes'
     : inFares ? 'Search agencies'
