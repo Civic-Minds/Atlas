@@ -6,6 +6,7 @@ import { R2_PUBLIC_URL, getAgencyArtifactUrls, LIVE_ENABLED, HISTORY_ENABLED, CO
 import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig';
 import Interval from './apps/Interval';
 import type { StopEntry } from './apps/corridor-search';
+import { useDebouncedValue } from './hooks/useDebouncedValue';
 const NightService = React.lazy(() => import('./apps/NightService'));
 // Lazy-loaded and rendered only when their flag is on (shared/config.ts) -- keeps this code out
 // of what main's build actually fetches, not just hidden behind a runtime check.
@@ -139,18 +140,9 @@ export default function App() {
   const [historyAgencySlugs, setHistoryAgencySlugs] = useState<Set<string> | null>(null);
   const [historyExploreAgencyCount, setHistoryExploreAgencyCount] = useState<number | null>(null);
   const [query, setQuery] = useState('');
-  // Search scans / map filters / prefetch run from this so keystrokes can paint
-  // first. A plain debounce instead of useDeferredValue -- deferred values can
-  // be starved indefinitely by other state updates elsewhere in the tree (the
-  // map's own move/render events keep the scheduler busy), which showed up as
-  // typing a new search doing nothing while an agency's own view was open in
-  // History (issue #495). A timeout always fires regardless of what else is
-  // re-rendering.
-  const [deferredQuery, setDeferredQuery] = useState(query);
-  useEffect(() => {
-    const id = setTimeout(() => setDeferredQuery(query), 150);
-    return () => clearTimeout(id);
-  }, [query]);
+  // Search scans / map filters / prefetch run from this so keystrokes can
+  // paint first. See useDebouncedValue for why this isn't useDeferredValue.
+  const deferredQuery = useDebouncedValue(query);
   const [stats, setStats] = useState<{ total: number; matching: number } | null>(null);
   const [resetViewKey, setResetViewKey] = useState(0);
   const [infoOpen, setInfoOpen] = useState(false);
