@@ -215,6 +215,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Removed the "10+ years of snapshots" internal detail from History's "Explore" section header.
 - Fixed History's agency list not scrolling — the panel had no height limit or scroll behavior, so it just got cut off instead of letting you scroll to agencies further down.
 - Replaced History's "Explore"/"Recent" section labels (sounded like "recently added") with a real Filter control — the agency list is one flat list by default, and the filter lets you narrow to just full- or partial-history agencies using the same plain-language wording already used for the rider-facing badge elsewhere.
+- History now shows how BART's actual trip time has changed year to year, on the routes where the stations and alignment stayed the same long enough to compare fairly (pilot for a future rail-wide rollout).
 
 ## [3.2.22] - 2026-09-03
 

@@ -21,10 +21,19 @@ export interface RouteSnapshot {
   note?: string;
 }
 
+export interface RouteTripDurationSummary {
+  firstLabel: string;
+  firstMinutes: number;
+  lastLabel: string;
+  lastMinutes: number;
+}
+
 export interface RouteHistoryEntry {
   routeShortName: string;
   routeName: string;
   snapshots: RouteSnapshot[];
+  /** Only present when the route's stops/alignment were identical across the compared range. */
+  tripDuration?: RouteTripDurationSummary;
 }
 
 export interface AgencyHistory {
@@ -279,6 +288,17 @@ function RouteHistoryCard({
             <p className={`text-xs font-bold leading-tight ${summary.worse ? 'text-[var(--status-negative)]' : 'text-[var(--status-positive)]'}`}>{summary.text}</p>
             <p className="text-[10px] text-[var(--text-muted)] mt-0.5">{summary.subtext}</p>
             <p className="text-[10px] text-[var(--text-dim)] mt-1">Latest archived snapshot: {last.label}</p>
+          </div>
+        )}
+
+        {route.tripDuration && (
+          <div className={`mx-4 ${summary ? '' : 'mt-3'} mb-4 rounded-xl px-3 py-2.5 bg-[var(--bg-app)] border border-[var(--border-primary)]`}>
+            <p className="text-xs font-bold leading-tight text-[var(--text-primary)]">
+              Trip time: {route.tripDuration.firstMinutes} min ({route.tripDuration.firstLabel}) → {route.tripDuration.lastMinutes} min ({route.tripDuration.lastLabel})
+            </p>
+            <p className="text-[10px] text-[var(--text-dim)] mt-1">
+              End-to-end scheduled time on a representative weekday trip. Only shown when the route's stops and alignment haven't changed between these years.
+            </p>
           </div>
         )}
       </div>
