@@ -640,7 +640,7 @@ export default function History({ active, initialAgencySlug, onInfoOpen, query, 
         })()
       ) : (
         <div
-          className={`${FLOATING_CARD} overflow-hidden transition-[opacity,transform] duration-200 ease-out ${showAgencyChooser || searchFocused ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}
+          className={`${FLOATING_CARD} max-h-[calc(100vh-104px)] overflow-y-auto custom-scrollbar transition-[opacity,transform] duration-200 ease-out ${showAgencyChooser || searchFocused ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}
           onMouseDown={e => e.preventDefault()}
         >
           {query === '' && recentSearches.length > 0 ? (

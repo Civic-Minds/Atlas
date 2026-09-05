@@ -14,6 +14,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Removed a confusing "shorter series from refreshes" label from History's agency list section headers.
 - Opening History now always shows the full agency list instead of jumping straight to whatever agency the map happened to be showing (e.g. TTC, just because the map defaults to Toronto).
 - Removed the "10+ years of snapshots" internal detail from History's "Explore" section header.
+- Fixed History's agency list not scrolling — the panel had no height limit or scroll behavior, so it just got cut off instead of letting you scroll to agencies further down.
 
 ## [3.2.22] - 2026-09-03
 
