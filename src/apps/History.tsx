@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { ChevronLeft, ChevronRight, X, Search, TrendingUp } from 'lucide-react';
 import { useHistoryMapOverlay } from '../context/HistoryMapOverlay';
 import { R2_PUBLIC_URL, type HeadwayByPeriod } from '../../shared/config';
@@ -349,13 +349,9 @@ function HistoryAgencyPanel({
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-1.5 min-w-0">
               <h2 className="text-sm font-black text-[var(--text-primary)] leading-tight truncate">{shortenAgencyName(agencyHistory.name)}</h2>
-              <span className="shrink-0 text-[9px] font-bold px-2 py-0.5 rounded-full bg-[var(--accent-bg)] text-[var(--accent)] border border-[var(--accent-border)]">
-                {historyTierLabel(tier)}
-              </span>
             </div>
             <p className="text-[10px] font-bold text-[var(--text-muted)] tracking-wide mt-0.5">
               {agencyHistory.region} · {agencyHistory.routes.length} routes · {minYear === maxYear ? minYear : `${minYear}–${maxYear}`}
-              {tier === 'recent' ? ' · recent refreshes' : ' · long archive'}
             </p>
             {!routeQuery && (
               <p className="text-[9px] text-[var(--text-dim)] mt-1">Routes ordered by biggest frequency change</p>
@@ -404,6 +400,11 @@ function HistoryAgencyPanel({
 }
 
 export default function History({ active, initialAgencySlug, initialAgencySlugs = [], onInfoOpen, query, searchFocused, setQuery, pendingRouteClick, onPendingRouteHandled, sidebarLeft }: Props) {
+  // Applies initialAgencySlug (the currently map-selected agency) once per
+  // History session, not every time selectedSlug clears -- otherwise a user
+  // typing a new search gets raced back to whatever agency the map still
+  // has selected, since that prop doesn't change just because the user typed.
+  const appliedInitialSlugRef = useRef(false);
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
   const [selectedRouteShortName, setSelectedRouteShortName] = useState<string | null>(null);
   const [selectedYear, setSelectedYear] = useState<number>(0);
@@ -456,8 +457,15 @@ export default function History({ active, initialAgencySlug, initialAgencySlugs 
   }, [historyData]);
 
   useEffect(() => {
-    if (!active || selectedSlug || !initialAgencySlug) return;
-    if (historyAgencies.some(a => a.slug === initialAgencySlug)) setSelectedSlug(initialAgencySlug);
+    if (!active) { appliedInitialSlugRef.current = false; return; }
+  }, [active]);
+
+  useEffect(() => {
+    if (!active || selectedSlug || !initialAgencySlug || appliedInitialSlugRef.current) return;
+    if (historyAgencies.some(a => a.slug === initialAgencySlug)) {
+      setSelectedSlug(initialAgencySlug);
+      appliedInitialSlugRef.current = true;
+    }
   }, [active, historyAgencies, initialAgencySlug, selectedSlug]);
 
   useEffect(() => {
@@ -651,16 +659,13 @@ export default function History({ active, initialAgencySlug, initialAgencySlugs 
                 </button>
               </div>
               {recentSearches.map((s, i) => (
-                <button
+                <RouteListRow
                   key={i}
+                  shortName={s}
                   onClick={() => setQuery(s)}
-                  className="flex items-center justify-between w-full px-4 py-3 border-b border-[var(--border-primary)] last:border-0 hover:bg-[var(--bg-btn-hover)] transition-colors text-left group"
-                >
-                  <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">
-                    {s}
-                  </span>
-                  <span className="text-[10px] text-[var(--text-dim)] font-mono">↵</span>
-                </button>
+                  variant="spaced"
+                  right={<span className="text-[10px] text-[var(--text-dim)] font-mono">↵</span>}
+                />
               ))}
             </>
           ) : (
@@ -693,31 +698,21 @@ export default function History({ active, initialAgencySlug, initialAgencySlugs 
                     </p>
                   </div>
                   {agencies.map(agency => (
-                    <button
+                    <RouteListRow
                       key={agency.slug}
+                      shortName={shortenAgencyName(agency.name)}
+                      subtitle={
+                        <p className="text-[9px] text-[var(--text-dim)] mt-0.5">
+                          {agency.region} · {agency.routes.length} route{agency.routes.length !== 1 ? 's' : ''}
+                        </p>
+                      }
                       onClick={() => {
                         saveRecentSearch(query);
                         setSelectedSlug(agency.slug);
                       }}
-                      className="flex items-center justify-between w-full px-4 py-3 border-b border-[var(--border-primary)] last:border-0 hover:bg-[var(--bg-btn-hover)] transition-colors text-left group"
-                    >
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-1.5 min-w-0">
-                          <p className="text-xs font-black text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors truncate">
-                            {shortenAgencyName(agency.name)}
-                          </p>
-                          {tier === 'recent' && (
-                            <span className="shrink-0 text-[9px] font-bold px-2 py-0.5 rounded-full bg-[var(--accent-bg)] text-[var(--accent)] border border-[var(--accent-border)]">
-                              Recent
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-[9px] text-[var(--text-dim)] mt-0.5">
-                          {agency.region} · {agency.routes.length} route{agency.routes.length !== 1 ? 's' : ''}
-                        </p>
-                      </div>
-                      <ChevronRight className="w-3.5 h-3.5 text-[var(--text-dim)] group-hover:text-[var(--accent)] transition-colors shrink-0" />
-                    </button>
+                      variant="spaced"
+                      right={<ChevronRight className="w-3.5 h-3.5 text-[var(--text-dim)] group-hover:text-[var(--accent)] transition-colors shrink-0" />}
+                    />
                   ))}
                 </div>
               ))}
