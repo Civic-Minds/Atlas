@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - Added an opt-in history build mode (`materializeAllPeriods`) that keeps every documented schedule period instead of collapsing unchanged ones, for agencies like Sacramento with dense archived history worth showing period-by-period.
+- History now shows how BART's actual trip time has changed year to year, on the routes where the stations and alignment stayed the same long enough to compare fairly (pilot for a future rail-wide rollout).
 
 ## [3.2.22] - 2026-09-03
 
