@@ -174,8 +174,8 @@ function RouteHistoryCard({
           <span className="text-[10px] font-medium">{agencyName}</span>
         </button>
         <div className="flex items-center justify-between gap-2">
-          <div className="min-w-0 flex items-baseline gap-1.5">
-            <span className="text-sm font-black text-[var(--text-primary)]">{route.routeShortName}</span>
+          <div className="min-w-0 flex-1 flex items-baseline gap-1.5">
+            <span className="text-sm font-black text-[var(--text-primary)] shrink-0">{route.routeShortName}</span>
             {route.routeName && (
               <span className="text-xs font-semibold text-[var(--text-dim)] truncate">{toTitleCase(route.routeName)}</span>
             )}
