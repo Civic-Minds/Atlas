@@ -349,12 +349,12 @@ function HistoryAgencyPanel({
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-1.5 min-w-0">
               <h2 className="text-sm font-black text-[var(--text-primary)] leading-tight truncate">{shortenAgencyName(agencyHistory.name)}</h2>
-              <span className="shrink-0 text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-[var(--bg-btn)] text-[var(--text-muted)] border border-[var(--border-primary)]">
+              <span className="shrink-0 text-[9px] font-bold px-2 py-0.5 rounded-full bg-[var(--accent-bg)] text-[var(--accent)] border border-[var(--accent-border)]">
                 {historyTierLabel(tier)}
               </span>
             </div>
             <p className="text-[10px] font-bold text-[var(--text-muted)] tracking-wide mt-0.5">
-              {agencyHistory.region} · {agencyHistory.routes.length} routes · {minYear}–{maxYear}
+              {agencyHistory.region} · {agencyHistory.routes.length} routes · {minYear === maxYear ? minYear : `${minYear}–${maxYear}`}
               {tier === 'recent' ? ' · recent refreshes' : ' · long archive'}
             </p>
             {!routeQuery && (
@@ -394,6 +394,7 @@ function HistoryAgencyPanel({
             shortName={route.routeShortName}
             name={route.routeName}
             onClick={() => onRouteSelect(route.routeShortName)}
+            variant="spaced"
             right={<ChevronRight className="w-3 h-3 text-[var(--text-dim)] group-hover:text-[var(--accent)] transition-colors shrink-0 ml-3" />}
           />
         ))}
@@ -706,7 +707,7 @@ export default function History({ active, initialAgencySlug, initialAgencySlugs 
                             {shortenAgencyName(agency.name)}
                           </p>
                           {tier === 'recent' && (
-                            <span className="shrink-0 text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-[var(--bg-btn)] text-[var(--text-muted)] border border-[var(--border-primary)]">
+                            <span className="shrink-0 text-[9px] font-bold px-2 py-0.5 rounded-full bg-[var(--accent-bg)] text-[var(--accent)] border border-[var(--accent-border)]">
                               Recent
                             </span>
                           )}
