@@ -6,9 +6,9 @@
     -83.74
   ],
   "feedUrl": "https://webapps.fo.umich.edu/transit_uploads/google_transit.zip",
-  "lastFeedExpiry": "20260822",
-  "lastFeedVersion": "S1000095",
-  "lastRefreshedAt": "2026-08-07",
+  "lastFeedExpiry": "20270102",
+  "lastFeedVersion": "S1000100",
+  "lastRefreshedAt": "2026-09-07",
   "region": "Michigan",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2072/latest.zip",
   "bbox": [
@@ -20,9 +20,22 @@
   "cities": [
     "Ann Arbor, Michigan"
   ],
-  "lastFeedCheckAt": "20260827",
-  "expiredFeedCheckCount": 1,
-  "expiredFeedCheckSince": "20260622",
-  "expiredFeedCheckExpiry": "20260822",
-  "timezone": "America/Detroit"
+  "lastFeedCheckAt": "20260907",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270102",
+  "timezone": "America/Detroit",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 40
+    },
+    "checkedAt": "2026-09-07"
+  }
 }

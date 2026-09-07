@@ -13,9 +13,9 @@
     -76.9286
   ],
   "feedUrl": "https://mcg.montgomerycountymd.gov/DOT-Transit/Resources/Files/GTFS/RideOnGTFS.zip",
-  "lastFeedExpiry": "20260905",
-  "lastFeedVersion": "13-May 3, 2026_20260423",
-  "lastRefreshedAt": "2026-08-09",
+  "lastFeedExpiry": "20270109",
+  "lastFeedVersion": "13-September 6, 2026_20260901",
+  "lastRefreshedAt": "2026-09-07",
   "cities": [
     "Rockville, Maryland",
     "Silver Spring, Maryland",
@@ -26,8 +26,23 @@
     "Reston, Virginia"
   ],
   "timezone": "America/New_York",
-  "lastFeedCheckAt": "20260827",
+  "lastFeedCheckAt": "20260907",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20260905"
+  "expiredFeedCheckExpiry": "20270109",
+  "feedQuality": {
+    "status": "review",
+    "score": 90,
+    "reasons": [
+      "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 1,
+      "featureCount": 392
+    },
+    "checkedAt": "2026-09-07"
+  }
 }

@@ -13,9 +13,9 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-512/latest.zip",
   "region": "New York",
-  "lastFeedExpiry": "20260905",
-  "lastFeedVersion": "gtfs_b_20260611T155327Z",
-  "lastRefreshedAt": "2026-08-07",
+  "lastFeedExpiry": "20270102",
+  "lastFeedVersion": "20260813",
+  "lastRefreshedAt": "2026-09-07",
   "cities": [
     "Bushwick, New York",
     "Park Slope, New York",
@@ -28,9 +28,24 @@
     "Ridgewood, New York",
     "East New York, New York"
   ],
-  "lastFeedCheckAt": "20260827",
+  "lastFeedCheckAt": "20260907",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20260905",
-  "timezone": "America/New_York"
+  "expiredFeedCheckExpiry": "20270102",
+  "timezone": "America/New_York",
+  "feedQuality": {
+    "status": "review",
+    "score": 70,
+    "reasons": [
+      "4 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 4,
+      "featureCount": 496
+    },
+    "checkedAt": "2026-09-07"
+  }
 }

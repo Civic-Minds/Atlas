@@ -9,14 +9,30 @@
   "region": "Illinois",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-50060/latest.zip",
   "lastFeedExpiry": "20261219",
-  "lastFeedVersion": "GTFS Feed 09/08/2026 – 19/12/2026 (Generated: 09/08/2026 12:30:29)",
-  "lastRefreshedAt": "2026-08-10",
+  "lastFeedVersion": "GTFS Feed 09/08/2026 – 19/12/2026 (Generated: 02/09/2026 12:10:42)",
+  "lastRefreshedAt": "2026-09-07",
   "cities": [
     "Champaign, Illinois"
   ],
-  "lastFeedCheckAt": "20260827",
+  "lastFeedCheckAt": "20260907",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261219",
-  "timezone": "America/Chicago"
+  "timezone": "America/Chicago",
+  "feedQuality": {
+    "status": "degraded",
+    "score": 50,
+    "reasons": [
+      "29 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
+      "2 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 29,
+      "routeHeadwayMismatches": 2,
+      "featureCount": 150
+    },
+    "checkedAt": "2026-09-07"
+  }
 }

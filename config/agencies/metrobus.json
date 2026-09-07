@@ -14,15 +14,30 @@
   ],
   "feedUrl": "http://www.metrobustransit.ca/google/google_transit.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-758/mdb-758-202606160013/mdb-758-202606160013.zip",
-  "lastFeedExpiry": "20260907",
+  "lastFeedExpiry": "20261111",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "2026-09-07",
   "cities": [
     "St. John's, Newfoundland and Labrador"
   ],
-  "lastFeedCheckAt": "20260827",
+  "lastFeedCheckAt": "20260907",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20260907",
-  "timezone": "America/St_Johns"
+  "expiredFeedCheckExpiry": "20261111",
+  "timezone": "America/St_Johns",
+  "feedQuality": {
+    "status": "review",
+    "score": 90,
+    "reasons": [
+      "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 1,
+      "featureCount": 105
+    },
+    "checkedAt": "2026-09-07"
+  }
 }

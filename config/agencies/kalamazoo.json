@@ -9,12 +9,12 @@
   "region": "Michigan",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-674/latest.zip",
   "lastFeedExpiry": "20261130",
-  "lastFeedVersion": "20260827",
-  "lastRefreshedAt": "2026-08-27",
+  "lastFeedVersion": "20260901",
+  "lastRefreshedAt": "2026-09-07",
   "cities": [
     "Kalamazoo, Michigan"
   ],
-  "lastFeedCheckAt": "20260827",
+  "lastFeedCheckAt": "20260907",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261130",
@@ -22,16 +22,16 @@
     "status": "review",
     "score": 70,
     "reasons": [
-      "8 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+      "6 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 8,
+      "shapeAnomalies": 6,
       "routeHeadwayMismatches": 0,
-      "featureCount": 112
+      "featureCount": 121
     },
-    "checkedAt": "2026-08-27"
+    "checkedAt": "2026-09-07"
   },
   "timezone": "America/Detroit"
 }

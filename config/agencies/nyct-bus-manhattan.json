@@ -13,9 +13,9 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-513/latest.zip",
   "region": "New York",
-  "lastFeedExpiry": "20260905",
-  "lastFeedVersion": "gtfs_m_20260611T155328Z",
-  "lastRefreshedAt": "2026-08-07",
+  "lastFeedExpiry": "20270102",
+  "lastFeedVersion": "20260813",
+  "lastRefreshedAt": "2026-09-07",
   "cities": [
     "East Village, New York",
     "Manhattan, New York",
@@ -28,9 +28,22 @@
     "New York City, New York",
     "Financial District, New York"
   ],
-  "lastFeedCheckAt": "20260827",
+  "lastFeedCheckAt": "20260907",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20260905",
-  "timezone": "America/New_York"
+  "expiredFeedCheckExpiry": "20270102",
+  "timezone": "America/New_York",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 304
+    },
+    "checkedAt": "2026-09-07"
+  }
 }

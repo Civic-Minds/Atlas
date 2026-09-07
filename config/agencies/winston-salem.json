@@ -8,15 +8,28 @@
   "feedUrl": "https://ridewsta.com/gtfs",
   "region": "North Carolina",
   "mdbFeedUrl": "https://ridewsta.com/gtfs",
-  "lastFeedExpiry": "20991231",
-  "lastFeedVersion": "GTFS 8-30-26 R2,Jan 4th 2026 GTFS",
-  "lastRefreshedAt": "2026-08-10",
+  "lastFeedExpiry": "",
+  "lastFeedVersion": "Aug 30 start - Rev 1",
+  "lastRefreshedAt": "2026-09-07",
   "cities": [
     "Winston-Salem, North Carolina"
   ],
-  "lastFeedCheckAt": "20260827",
+  "lastFeedCheckAt": "20260907",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",
-  "timezone": "America/New_York"
+  "timezone": "America/New_York",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 121
+    },
+    "checkedAt": "2026-09-07"
+  }
 }

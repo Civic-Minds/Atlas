@@ -14,12 +14,25 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/ntd-60023/latest.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-60023/latest.zip",
-  "lastFeedExpiry": "20261030",
-  "lastFeedVersion": "158",
-  "lastRefreshedAt": "2026-08-07",
-  "lastFeedCheckAt": "20260827",
+  "lastFeedExpiry": "20261130",
+  "lastFeedVersion": "159",
+  "lastRefreshedAt": "2026-09-07",
+  "lastFeedCheckAt": "20260907",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261030",
-  "timezone": "America/Chicago"
+  "expiredFeedCheckExpiry": "20261130",
+  "timezone": "America/Chicago",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 5
+    },
+    "checkedAt": "2026-09-07"
+  }
 }

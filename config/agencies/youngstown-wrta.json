@@ -21,9 +21,9 @@
     "Youngstown, Ohio"
   ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-1717/tld-1717-202606230015/tld-1717-202606230015.zip",
-  "lastFeedCheckAt": "20260827",
-  "expiredFeedCheckCount": 0,
-  "expiredFeedCheckSince": null,
+  "lastFeedCheckAt": "20260907",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
   "expiredFeedCheckExpiry": "20260905",
   "feedQuality": {
     "status": "review",

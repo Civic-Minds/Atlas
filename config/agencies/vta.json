@@ -15,8 +15,8 @@
   "feedUrl": "https://gtfs.vta.org/gtfs_vta.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-57/mdb-57-202607160107/mdb-57-202607160107.zip",
   "lastFeedExpiry": "20261025",
-  "lastFeedVersion": "2026-07-27_13:41",
-  "lastRefreshedAt": "2026-08-10",
+  "lastFeedVersion": "2026-08-27_10:32",
+  "lastRefreshedAt": "2026-09-07",
   "cities": [
     "San Jose, California",
     "Santa Clara, California",
@@ -27,9 +27,22 @@
     "Gilroy, California",
     "Palo Alto, California"
   ],
-  "lastFeedCheckAt": "20260827",
+  "lastFeedCheckAt": "20260907",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261025",
-  "timezone": "America/Los_Angeles"
+  "timezone": "America/Los_Angeles",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 298
+    },
+    "checkedAt": "2026-09-07"
+  }
 }

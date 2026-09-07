@@ -14,13 +14,13 @@
   ],
   "feedUrl": "https://metrolinx.tmix.se/gtfs/gtfs-belleville.zip",
   "lastFeedExpiry": "20261231",
-  "lastFeedVersion": "1/20260826 22:00:00/20260827 00:00:00",
+  "lastFeedVersion": "1/20260905 22:00:00/20260906 00:00:00",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-belleville-transit-gtfs-1858.zip?alt=media",
-  "lastRefreshedAt": "2026-08-27",
+  "lastRefreshedAt": "2026-09-07",
   "cities": [
     "Belleville, Ontario"
   ],
-  "lastFeedCheckAt": "20260827",
+  "lastFeedCheckAt": "20260907",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
@@ -35,7 +35,7 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 45
     },
-    "checkedAt": "2026-08-27"
+    "checkedAt": "2026-09-07"
   },
   "timezone": "America/Toronto"
 }

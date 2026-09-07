@@ -13,17 +13,33 @@
     -82.607
   ],
   "feedUrl": "https://opendata.citywindsor.ca/Uploads/google_transit.zip",
-  "lastFeedExpiry": "20261024",
-  "lastFeedVersion": "a7629ca9-56fc-4ff2-948a-31a6573afe17",
+  "lastFeedExpiry": "20261130",
+  "lastFeedVersion": "a89023c9-c111-4aa9-870e-c69191a6760d",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-transit-windsor-gtfs-720.zip?alt=media",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-09-07",
   "cities": [
     "Windsor, Ontario",
     "Detroit, Michigan"
   ],
-  "lastFeedCheckAt": "20260827",
+  "lastFeedCheckAt": "20260907",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261024",
-  "timezone": "America/New_York"
+  "expiredFeedCheckExpiry": "20261130",
+  "timezone": "America/New_York",
+  "feedQuality": {
+    "status": "review",
+    "score": 80,
+    "reasons": [
+      "1 map line was repaired — Atlas fixed unusual route geometry before displaying it.",
+      "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 1,
+      "routeHeadwayMismatches": 1,
+      "featureCount": 93
+    },
+    "checkedAt": "2026-09-07"
+  }
 }

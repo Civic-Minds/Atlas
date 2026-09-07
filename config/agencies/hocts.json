@@ -20,8 +20,8 @@
   "pmtilesPending": true,
   "timezone": "America/New_York",
   "lastRawArchiveKey": "20211231-9dc8f1ca4ed5df71",
-  "lastFeedCheckAt": "20260827",
-  "expiredFeedCheckCount": 1,
+  "lastFeedCheckAt": "20260907",
+  "expiredFeedCheckCount": 2,
   "expiredFeedCheckSince": "20260622",
   "expiredFeedCheckExpiry": "20211231"
 }

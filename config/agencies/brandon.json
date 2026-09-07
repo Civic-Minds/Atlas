@@ -6,9 +6,9 @@
     -99.95
   ],
   "feedUrl": "https://files.mobilitydatabase.org/tld-4820/latest.zip",
-  "lastFeedExpiry": "20260830",
-  "lastFeedVersion": "2026-07-13 - 2026-08-30",
-  "lastRefreshedAt": "2026-08-07",
+  "lastFeedExpiry": "20261004",
+  "lastFeedVersion": "2026 08 31 - 2026 10 04",
+  "lastRefreshedAt": "2026-09-07",
   "region": "Manitoba",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-4820/latest.zip",
   "bbox": [
@@ -17,9 +17,24 @@
     49.9072,
     -99.8338
   ],
-  "lastFeedCheckAt": "20260827",
+  "lastFeedCheckAt": "20260907",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20260830",
-  "timezone": "America/Winnipeg"
+  "expiredFeedCheckExpiry": "20261004",
+  "timezone": "America/Chicago",
+  "feedQuality": {
+    "status": "review",
+    "score": 70,
+    "reasons": [
+      "4 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 4,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 27
+    },
+    "checkedAt": "2026-09-07"
+  }
 }

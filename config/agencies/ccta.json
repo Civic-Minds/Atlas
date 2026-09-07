@@ -7,8 +7,8 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-629/latest.zip",
   "lastFeedExpiry": "20270101",
-  "lastFeedVersion": "UTC: 24-Aug-2026 19:10",
-  "lastRefreshedAt": "2026-08-27",
+  "lastFeedVersion": "UTC: 02-Sep-2026 21:44",
+  "lastRefreshedAt": "2026-09-07",
   "region": "Vermont",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-629/latest.zip",
   "bbox": [
@@ -17,7 +17,7 @@
     45.0175,
     -72.0007
   ],
-  "lastFeedCheckAt": "20260827",
+  "lastFeedCheckAt": "20260907",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270101",
@@ -25,16 +25,17 @@
     "status": "review",
     "score": 70,
     "reasons": [
-      "3 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+      "2 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
+      "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 3,
-      "routeHeadwayMismatches": 0,
+      "shapeAnomalies": 2,
+      "routeHeadwayMismatches": 1,
       "featureCount": 47
     },
-    "checkedAt": "2026-08-27"
+    "checkedAt": "2026-09-07"
   },
   "timezone": "America/New_York"
 }
