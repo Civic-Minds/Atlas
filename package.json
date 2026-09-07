@@ -52,7 +52,7 @@
     "@aws-sdk/lib-storage": "^3.1121.0",
     "@deck.gl/core": "^9.3.10",
     "@deck.gl/layers": "^9.3.10",
-    "@deck.gl/mapbox": "^9.3.10",
+    "@deck.gl/mapbox": "^9.3.11",
     "@mapbox/vector-tile": "^3.0.0",
     "@vercel/analytics": "^2.0.1",
     "@vercel/speed-insights": "^2.0.0",
