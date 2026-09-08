@@ -51,6 +51,34 @@ These candidates were researched but still need processing or a final feed decis
 | todo | `avon-transit` | Avon Transit | Colorado | Current public static feed is expired; staged with degraded quality and documented for refresh |
 | todo | `timmins` | Timmins Transit | Ontario | Current Metrolinx/Tmix feed — dry-run validated |
 
+## Research sweep (2026-09-08 — active GTFS gap candidates)
+
+These agencies passed the first sweep: active downloadable feeds, scheduled trips, and no route-report anomaly flags. They are processed to R2 and are waiting for the next approved PMTiles rebuild.
+
+| Status | Slug | Agency | Region | Notes |
+|--------|------|--------|--------|-------|
+| done | `albemarle-county` | Charlottesville Area Transit (CAT) | Virginia | mdb-3493 |
+| done | `chemung-county` | Chemung County C-TRAN | New York | ntd-20005 |
+| done | `decatur` | Decatur Public Transit System | Illinois | tld-7036 |
+| done | `essex-county` | Cape Ann Transportation Authority (CATA) | Massachusetts | mdb-447 |
+| done | `fort-mcmurray` | Regional Municipality of Wood Buffalo Transit | Alberta | tld-4690 |
+| done | `fort-smith` | City of Fort Smith | Arkansas | ntd-60086 |
+| done | `janesville` | Janesville Transit System | Wisconsin | mdb-393 |
+| done | `kaua-i-county` | The Kauai Bus | Hawaii | ntd-90237 |
+| done | `los-alamos-county` | Atomic City Transit | New Mexico | mdb-1240 |
+| done | `marathon-county` | Metro Ride | Wisconsin | mdb-830 |
+| done | `mason-city` | Mason City Public Transit | Iowa | mdb-204 |
+| done | `maui-county` | Maui County Transit | Hawaii | ntd-90241 |
+| done | `medicine-hat` | Medicine Hat Transit | Alberta | mdb-2591 |
+| done | `muscogee-county` | METRA | Georgia | ntd-40024 |
+| done | `nash-county` | Tar River Transit | North Carolina | mdb-472 |
+| done | `rock-county` | Beloit Transit System | Wisconsin | tld-77 |
+| done | `sheboygan-county` | Shoreline Metro | Wisconsin | mdb-399 |
+| done | `washington-county` | Johnson City | Tennessee | ntd-40054 |
+| done | `whitman-county` | City of Pullman | Washington | ntd-294 |
+
+Held for follow-up: Link Transit (`chelan`) had nine repaired/truncated shapes, and Sault Ste. Marie Transit (`sault-ste-marie`) had one truncated shape. They need a visual review before publishing.
+
 ## Recently completed (2026-07-16 — Seattle specialty)
 
 | Status | Slug | Agency | Region | Notes |

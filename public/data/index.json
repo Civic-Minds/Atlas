@@ -9495,6 +9495,777 @@
       "timezone": "America/New_York"
     },
     {
+      "slug": "ata",
+      "name": "Area Transportation Authority (ATA)",
+      "agencyId": "30196",
+      "websiteUrl": "https://www.rideata.com/",
+      "region": "Pennsylvania",
+      "center": [
+        41.2377,
+        -78.7204
+      ],
+      "bbox": [
+        40.87,
+        -79.45,
+        42.03,
+        -78.17
+      ],
+      "feedUrl": "https://rideata.rideralerts.com/InfoPoint/gtfs-zip.ashx",
+      "cities": [
+        "Bradford, Pennsylvania",
+        "Clearfield, Pennsylvania",
+        "DuBois, Pennsylvania",
+        "Emporium, Pennsylvania",
+        "Punxsutawney, Pennsylvania",
+        "St. Marys, Pennsylvania"
+      ],
+      "timezone": "America/New_York",
+      "lastFeedExpiry": "20270228",
+      "lastFeedVersion": "20260826",
+      "lastRefreshedAt": "2026-09-08",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 46
+        },
+        "checkedAt": "2026-09-08"
+      }
+    },
+    {
+      "slug": "albemarle-county",
+      "name": "Charlottesville Area Transit (CAT)",
+      "center": [
+        38.04,
+        -78.48
+      ],
+      "bbox": [
+        37.98634719848633,
+        -78.52404022216797,
+        38.09883880615234,
+        -78.43753814697266
+      ],
+      "feedUrl": "https://apps.charlottesville.gov/publicfiles/GTFS.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3493/latest.zip",
+      "region": "Virginia",
+      "cities": [
+        "Charlottesville, Virginia",
+        "Albemarle County, Virginia"
+      ],
+      "timezone": "America/New_York",
+      "lastFeedExpiry": "20270113",
+      "lastFeedVersion": "87",
+      "lastRefreshedAt": "2026-09-08",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 46
+        },
+        "checkedAt": "2026-09-08"
+      }
+    },
+    {
+      "slug": "chemung-county",
+      "name": "Chemung County C-TRAN",
+      "center": [
+        42.21,
+        -76.65
+      ],
+      "bbox": [
+        41.980677,
+        -77.07267,
+        42.447267,
+        -76.227525
+      ],
+      "feedUrl": "https://s3.amazonaws.com/datatools-511ny/public/Chemung_C_TRAN.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-20005/latest.zip",
+      "region": "New York",
+      "cities": [
+        "Elmira, New York",
+        "Chemung County, New York"
+      ],
+      "timezone": "America/New_York",
+      "lastFeedExpiry": "20271231",
+      "lastFeedVersion": "2050410",
+      "lastRefreshedAt": "2026-09-08",
+      "feedQuality": {
+        "status": "review",
+        "score": 90,
+        "reasons": [
+          "1 schedule-data warning — Atlas found a minor issue while reading the schedule."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 1,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 25
+        },
+        "checkedAt": "2026-09-08"
+      }
+    },
+    {
+      "slug": "decatur",
+      "name": "Decatur Public Transit System",
+      "center": [
+        39.86,
+        -88.95
+      ],
+      "bbox": [
+        39.808034,
+        -89.028715,
+        39.92168,
+        -88.876906
+      ],
+      "feedUrl": "https://gtfs.remix.com/dpts_decatur_il_us.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-7036/latest.zip",
+      "region": "Illinois",
+      "cities": [
+        "Decatur, Illinois"
+      ],
+      "timezone": "America/Chicago",
+      "lastFeedExpiry": "20261231",
+      "lastFeedVersion": "Updated: Jun 18, 2026, 3:44 PM",
+      "lastRefreshedAt": "2026-09-08",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 48
+        },
+        "checkedAt": "2026-09-08"
+      }
+    },
+    {
+      "slug": "essex-county",
+      "name": "Cape Ann Transportation Authority (CATA)",
+      "center": [
+        42.61,
+        -70.77
+      ],
+      "bbox": [
+        42.539489238339485,
+        -70.94377590441808,
+        42.68663764127053,
+        -70.5986306
+      ],
+      "feedUrl": "http://data.trilliumtransit.com/gtfs/capeann-ma-us/capeann-ma-us.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-447/latest.zip",
+      "region": "Massachusetts",
+      "cities": [
+        "Gloucester, Massachusetts",
+        "Rockport, Massachusetts",
+        "Essex County, Massachusetts"
+      ],
+      "timezone": "America/New_York",
+      "lastFeedExpiry": "20270301",
+      "lastFeedVersion": "UTC: 13-Aug-2026 20:25",
+      "lastRefreshedAt": "2026-09-08",
+      "feedQuality": {
+        "status": "review",
+        "score": 90,
+        "reasons": [
+          "1 schedule-data warning — Atlas found a minor issue while reading the schedule."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 1,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 35
+        },
+        "checkedAt": "2026-09-08"
+      }
+    },
+    {
+      "slug": "fort-mcmurray",
+      "name": "Regional Municipality of Wood Buffalo Transit",
+      "center": [
+        56.72,
+        -111.41
+      ],
+      "bbox": [
+        56.65388779,
+        -111.4841937,
+        56.788512,
+        -111.3264264
+      ],
+      "feedUrl": "https://rmwb-gtfsrt.civilia.ca/gtfs",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-4690/latest.zip",
+      "region": "Alberta",
+      "cities": [
+        "Fort McMurray, Alberta"
+      ],
+      "timezone": "America/Edmonton",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null,
+      "lastRefreshedAt": "2026-09-08",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 28
+        },
+        "checkedAt": "2026-09-08"
+      }
+    },
+    {
+      "slug": "fort-smith",
+      "name": "City of Fort Smith",
+      "center": [
+        35.36,
+        -94.37
+      ],
+      "bbox": [
+        35.291551,
+        -94.431808,
+        35.429409,
+        -94.29935
+      ],
+      "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11783/FST_GTFS.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-60086/latest.zip",
+      "region": "Arkansas",
+      "cities": [
+        "Fort Smith, Arkansas"
+      ],
+      "timezone": "America/Chicago",
+      "lastFeedExpiry": "20270110",
+      "lastFeedVersion": "20240421",
+      "lastRefreshedAt": "2026-09-08",
+      "feedQuality": {
+        "status": "review",
+        "score": 90,
+        "reasons": [
+          "1 schedule-data warning — Atlas found a minor issue while reading the schedule."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 1,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 9
+        },
+        "checkedAt": "2026-09-08"
+      }
+    },
+    {
+      "slug": "janesville",
+      "name": "Janesville Transit System",
+      "center": [
+        42.61,
+        -89.01
+      ],
+      "bbox": [
+        42.4970909,
+        -89.065752,
+        42.72933096,
+        -88.962477
+      ],
+      "feedUrl": "http://data.trilliumtransit.com/gtfs/jts-wi-us/jts-wi-us.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-393/latest.zip",
+      "region": "Wisconsin",
+      "cities": [
+        "Janesville, Wisconsin"
+      ],
+      "timezone": "America/Chicago",
+      "lastFeedExpiry": "20261210",
+      "lastFeedVersion": "UTC: 08-Jun-2026 20:01",
+      "lastRefreshedAt": "2026-09-08",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 11
+        },
+        "checkedAt": "2026-09-08"
+      }
+    },
+    {
+      "slug": "kaua-i-county",
+      "name": "The Kauai Bus",
+      "center": [
+        22.04,
+        -159.51
+      ],
+      "bbox": [
+        21.876408,
+        -159.721686,
+        22.213158,
+        -159.305271
+      ],
+      "feedUrl": "https://thekauaibus.com/gtfs",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-90237/latest.zip",
+      "region": "Hawaii",
+      "cities": [
+        "Kauaʻi County, Hawaii"
+      ],
+      "timezone": "Pacific/Honolulu",
+      "lastFeedExpiry": "",
+      "lastFeedVersion": "CORRECTED RUN NUMBERS Routes with 900/950 Express and Kilauea Food Mart.",
+      "lastRefreshedAt": "2026-09-08",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 21
+        },
+        "checkedAt": "2026-09-08"
+      }
+    },
+    {
+      "slug": "los-alamos-county",
+      "name": "Atomic City Transit",
+      "center": [
+        35.84,
+        -106.26
+      ],
+      "bbox": [
+        35.778407,
+        -106.332453,
+        35.905342,
+        -106.190867
+      ],
+      "feedUrl": "https://gtfs.remix.com/act_los_alamos_nm_us.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1240/latest.zip",
+      "region": "New Mexico",
+      "cities": [
+        "Los Alamos, New Mexico"
+      ],
+      "timezone": "America/Denver",
+      "lastFeedExpiry": "20261231",
+      "lastFeedVersion": "Updated: Jun 8, 2026, 10:12 AM",
+      "lastRefreshedAt": "2026-09-08",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 17
+        },
+        "checkedAt": "2026-09-08"
+      }
+    },
+    {
+      "slug": "marathon-county",
+      "name": "Metro Ride",
+      "center": [
+        44.97,
+        -89.64
+      ],
+      "bbox": [
+        44.930681890042365,
+        -89.68125311151744,
+        45.0029636867689,
+        -89.59766209521625
+      ],
+      "feedUrl": "http://data.trilliumtransit.com/gtfs/wausau-wi-us/wausau-wi-us.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-830/latest.zip",
+      "region": "Wisconsin",
+      "cities": [
+        "Wausau, Wisconsin",
+        "Marathon County, Wisconsin"
+      ],
+      "timezone": "America/Chicago",
+      "lastFeedExpiry": "20270101",
+      "lastFeedVersion": "UTC: 16-Apr-2024 16:53",
+      "lastRefreshedAt": "2026-09-08",
+      "feedQuality": {
+        "status": "review",
+        "score": 90,
+        "reasons": [
+          "1 schedule-data warning — Atlas found a minor issue while reading the schedule."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 1,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 7
+        },
+        "checkedAt": "2026-09-08"
+      }
+    },
+    {
+      "slug": "mason-city",
+      "name": "Mason City Public Transit",
+      "center": [
+        43.15,
+        -93.2
+      ],
+      "bbox": [
+        43.12978090160232,
+        -93.267866896241,
+        43.169472329595,
+        -93.130789378269
+      ],
+      "feedUrl": "http://data.trilliumtransit.com/gtfs/masoncity-ia-us/masoncity-ia-us.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-204/latest.zip",
+      "region": "Iowa",
+      "cities": [
+        "Mason City, Iowa"
+      ],
+      "timezone": "America/Chicago",
+      "lastFeedExpiry": "20270101",
+      "lastFeedVersion": "UTC: 20-Jul-2026 20:46",
+      "lastRefreshedAt": "2026-09-08",
+      "feedQuality": {
+        "status": "review",
+        "score": 90,
+        "reasons": [
+          "1 schedule-data warning — Atlas found a minor issue while reading the schedule."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 1,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 6
+        },
+        "checkedAt": "2026-09-08"
+      }
+    },
+    {
+      "slug": "maui-county",
+      "name": "Maui County Transit",
+      "center": [
+        20.84,
+        -156.5
+      ],
+      "bbox": [
+        20.686865,
+        -156.693993,
+        20.997756,
+        -156.31062
+      ],
+      "feedUrl": "https://mauibus.org/gtfs",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-90241/latest.zip",
+      "region": "Hawaii",
+      "cities": [
+        "Maui County, Hawaii"
+      ],
+      "timezone": "Pacific/Honolulu",
+      "lastFeedExpiry": "",
+      "lastFeedVersion": "Fixed Route with Commuters",
+      "lastRefreshedAt": "2026-09-08",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 54
+        },
+        "checkedAt": "2026-09-08"
+      }
+    },
+    {
+      "slug": "medicine-hat",
+      "name": "Medicine Hat Transit",
+      "center": [
+        50.03,
+        -110.68
+      ],
+      "bbox": [
+        49.9940059090001,
+        -110.728568386335,
+        50.0637504895139,
+        -110.625130933593
+      ],
+      "feedUrl": "https://medicinehat.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2591/latest.zip",
+      "region": "Alberta",
+      "cities": [
+        "Medicine Hat, Alberta"
+      ],
+      "timezone": "America/Edmonton",
+      "lastFeedExpiry": "20270327",
+      "lastFeedVersion": "202603280/20260327 09:51:37/20260328 04:00:00",
+      "lastRefreshedAt": "2026-09-08",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 31
+        },
+        "checkedAt": "2026-09-08"
+      }
+    },
+    {
+      "slug": "muscogee-county",
+      "name": "METRA",
+      "center": [
+        32.46,
+        -84.93
+      ],
+      "bbox": [
+        32.363111,
+        -84.990535,
+        32.562217,
+        -84.869212
+      ],
+      "feedUrl": "https://metracolumbus.com/gtfs",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-40024/latest.zip",
+      "region": "Georgia",
+      "cities": [
+        "Columbus, Georgia",
+        "Muscogee County, Georgia"
+      ],
+      "timezone": "America/New_York",
+      "lastFeedExpiry": "",
+      "lastFeedVersion": "6/17/2026 Saturday Reduced",
+      "lastRefreshedAt": "2026-09-08",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 42
+        },
+        "checkedAt": "2026-09-08"
+      }
+    },
+    {
+      "slug": "nash-county",
+      "name": "Tar River Transit",
+      "center": [
+        35.99,
+        -77.82
+      ],
+      "bbox": [
+        35.91651113417029,
+        -77.89909933899753,
+        36.06269963548954,
+        -77.745024054245
+      ],
+      "feedUrl": "http://data.trilliumtransit.com/gtfs/tarriver-nc-us/tarriver-nc-us.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-472/latest.zip",
+      "region": "North Carolina",
+      "cities": [
+        "Rocky Mount, North Carolina",
+        "Nash County, North Carolina"
+      ],
+      "timezone": "America/New_York",
+      "lastFeedExpiry": "20270201",
+      "lastFeedVersion": "UTC: 10-Jul-2026 15:46",
+      "lastRefreshedAt": "2026-09-08",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 20
+        },
+        "checkedAt": "2026-09-08"
+      }
+    },
+    {
+      "slug": "rock-county",
+      "name": "Beloit Transit System",
+      "center": [
+        42.61,
+        -89.02
+      ],
+      "bbox": [
+        42.490103676,
+        -89.070638525,
+        42.728102,
+        -88.964825827
+      ],
+      "feedUrl": "https://passio3.com/beloit/passioTransit/gtfs/google_transit.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-77/latest.zip",
+      "region": "Wisconsin",
+      "cities": [
+        "Beloit, Wisconsin",
+        "Rock County, Wisconsin"
+      ],
+      "timezone": "America/Chicago",
+      "lastFeedExpiry": "20261007",
+      "lastFeedVersion": "20250228",
+      "lastRefreshedAt": "2026-09-08",
+      "feedQuality": {
+        "status": "review",
+        "score": 90,
+        "reasons": [
+          "1 schedule-data warning — Atlas found a minor issue while reading the schedule."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 1,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 21
+        },
+        "checkedAt": "2026-09-08"
+      }
+    },
+    {
+      "slug": "sheboygan-county",
+      "name": "Shoreline Metro",
+      "center": [
+        43.74,
+        -87.76
+      ],
+      "bbox": [
+        43.70197264543341,
+        -87.82449695,
+        43.7830422,
+        -87.70109301564207
+      ],
+      "feedUrl": "http://data.trilliumtransit.com/gtfs/sheboygan-wi-us/sheboygan-wi-us.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-399/latest.zip",
+      "region": "Wisconsin",
+      "cities": [
+        "Sheboygan, Wisconsin",
+        "Sheboygan County, Wisconsin"
+      ],
+      "timezone": "America/Chicago",
+      "lastFeedExpiry": "20271231",
+      "lastFeedVersion": "UTC: 05-Feb-2026 10:06",
+      "lastRefreshedAt": "2026-09-08",
+      "feedQuality": {
+        "status": "review",
+        "score": 90,
+        "reasons": [
+          "1 schedule-data warning — Atlas found a minor issue while reading the schedule."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 1,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 18
+        },
+        "checkedAt": "2026-09-08"
+      }
+    },
+    {
+      "slug": "washington-county",
+      "name": "Johnson City",
+      "center": [
+        36.33,
+        -82.37
+      ],
+      "bbox": [
+        36.2806636858382,
+        -82.429003,
+        36.3891228371336,
+        -82.320102889544
+      ],
+      "feedUrl": "https://www.johnsoncitytransit.org/google_transit.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-40054/latest.zip",
+      "region": "Tennessee",
+      "cities": [
+        "Johnson City, Tennessee",
+        "Washington County, Tennessee"
+      ],
+      "timezone": "America/Toronto",
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null,
+      "lastRefreshedAt": "2026-09-08",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 26
+        },
+        "checkedAt": "2026-09-08"
+      }
+    },
+    {
+      "slug": "whitman-county",
+      "name": "City of Pullman",
+      "center": [
+        46.73,
+        -117.16
+      ],
+      "bbox": [
+        46.712487,
+        -117.208703,
+        46.750406,
+        -117.12101
+      ],
+      "feedUrl": "https://pullmanbusbeacon.com/gtfs",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-294/latest.zip",
+      "region": "Washington",
+      "cities": [
+        "Pullman, Washington",
+        "Whitman County, Washington"
+      ],
+      "timezone": "America/Los_Angeles",
+      "lastFeedExpiry": "",
+      "lastFeedVersion": "Holiday Service,resume regular service, but without PUW routes",
+      "lastRefreshedAt": "2026-09-08",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 8
+        },
+        "checkedAt": "2026-09-08"
+      }
+    },
+    {
       "slug": "beaver-county",
       "name": "Beaver County Transit Authority",
       "region": "Pennsylvania",

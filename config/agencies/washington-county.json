@@ -1,0 +1,38 @@
+{
+  "slug": "washington-county",
+  "name": "Johnson City",
+  "center": [
+    36.33,
+    -82.37
+  ],
+  "bbox": [
+    36.2806636858382,
+    -82.429003,
+    36.3891228371336,
+    -82.320102889544
+  ],
+  "feedUrl": "https://www.johnsoncitytransit.org/google_transit.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-40054/latest.zip",
+  "region": "Tennessee",
+  "cities": [
+    "Johnson City, Tennessee",
+    "Washington County, Tennessee"
+  ],
+  "timezone": "America/Toronto",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "lastRefreshedAt": "2026-09-08",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 26
+    },
+    "checkedAt": "2026-09-08"
+  }
+}

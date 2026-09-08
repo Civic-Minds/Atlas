@@ -1,0 +1,37 @@
+{
+  "slug": "fort-mcmurray",
+  "name": "Regional Municipality of Wood Buffalo Transit",
+  "center": [
+    56.72,
+    -111.41
+  ],
+  "bbox": [
+    56.65388779,
+    -111.4841937,
+    56.788512,
+    -111.3264264
+  ],
+  "feedUrl": "https://rmwb-gtfsrt.civilia.ca/gtfs",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-4690/latest.zip",
+  "region": "Alberta",
+  "cities": [
+    "Fort McMurray, Alberta"
+  ],
+  "timezone": "America/Edmonton",
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "lastRefreshedAt": "2026-09-08",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 28
+    },
+    "checkedAt": "2026-09-08"
+  }
+}

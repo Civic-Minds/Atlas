@@ -1,0 +1,38 @@
+{
+  "slug": "albemarle-county",
+  "name": "Charlottesville Area Transit (CAT)",
+  "center": [
+    38.04,
+    -78.48
+  ],
+  "bbox": [
+    37.98634719848633,
+    -78.52404022216797,
+    38.09883880615234,
+    -78.43753814697266
+  ],
+  "feedUrl": "https://apps.charlottesville.gov/publicfiles/GTFS.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3493/latest.zip",
+  "region": "Virginia",
+  "cities": [
+    "Charlottesville, Virginia",
+    "Albemarle County, Virginia"
+  ],
+  "timezone": "America/New_York",
+  "lastFeedExpiry": "20270113",
+  "lastFeedVersion": "87",
+  "lastRefreshedAt": "2026-09-08",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 46
+    },
+    "checkedAt": "2026-09-08"
+  }
+}

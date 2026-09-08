@@ -1,0 +1,39 @@
+{
+  "slug": "mason-city",
+  "name": "Mason City Public Transit",
+  "center": [
+    43.15,
+    -93.2
+  ],
+  "bbox": [
+    43.12978090160232,
+    -93.267866896241,
+    43.169472329595,
+    -93.130789378269
+  ],
+  "feedUrl": "http://data.trilliumtransit.com/gtfs/masoncity-ia-us/masoncity-ia-us.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-204/latest.zip",
+  "region": "Iowa",
+  "cities": [
+    "Mason City, Iowa"
+  ],
+  "timezone": "America/Chicago",
+  "lastFeedExpiry": "20270101",
+  "lastFeedVersion": "UTC: 20-Jul-2026 20:46",
+  "lastRefreshedAt": "2026-09-08",
+  "feedQuality": {
+    "status": "review",
+    "score": 90,
+    "reasons": [
+      "1 schedule-data warning — Atlas found a minor issue while reading the schedule."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 1,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 6
+    },
+    "checkedAt": "2026-09-08"
+  }
+}

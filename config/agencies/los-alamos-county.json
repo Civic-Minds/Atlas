@@ -1,0 +1,37 @@
+{
+  "slug": "los-alamos-county",
+  "name": "Atomic City Transit",
+  "center": [
+    35.84,
+    -106.26
+  ],
+  "bbox": [
+    35.778407,
+    -106.332453,
+    35.905342,
+    -106.190867
+  ],
+  "feedUrl": "https://gtfs.remix.com/act_los_alamos_nm_us.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1240/latest.zip",
+  "region": "New Mexico",
+  "cities": [
+    "Los Alamos, New Mexico"
+  ],
+  "timezone": "America/Denver",
+  "lastFeedExpiry": "20261231",
+  "lastFeedVersion": "Updated: Jun 8, 2026, 10:12 AM",
+  "lastRefreshedAt": "2026-09-08",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 17
+    },
+    "checkedAt": "2026-09-08"
+  }
+}

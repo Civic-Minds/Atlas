@@ -1,0 +1,39 @@
+{
+  "slug": "fort-smith",
+  "name": "City of Fort Smith",
+  "center": [
+    35.36,
+    -94.37
+  ],
+  "bbox": [
+    35.291551,
+    -94.431808,
+    35.429409,
+    -94.29935
+  ],
+  "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11783/FST_GTFS.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-60086/latest.zip",
+  "region": "Arkansas",
+  "cities": [
+    "Fort Smith, Arkansas"
+  ],
+  "timezone": "America/Chicago",
+  "lastFeedExpiry": "20270110",
+  "lastFeedVersion": "20240421",
+  "lastRefreshedAt": "2026-09-08",
+  "feedQuality": {
+    "status": "review",
+    "score": 90,
+    "reasons": [
+      "1 schedule-data warning — Atlas found a minor issue while reading the schedule."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 1,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 9
+    },
+    "checkedAt": "2026-09-08"
+  }
+}

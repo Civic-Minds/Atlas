@@ -1,0 +1,37 @@
+{
+  "slug": "decatur",
+  "name": "Decatur Public Transit System",
+  "center": [
+    39.86,
+    -88.95
+  ],
+  "bbox": [
+    39.808034,
+    -89.028715,
+    39.92168,
+    -88.876906
+  ],
+  "feedUrl": "https://gtfs.remix.com/dpts_decatur_il_us.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-7036/latest.zip",
+  "region": "Illinois",
+  "cities": [
+    "Decatur, Illinois"
+  ],
+  "timezone": "America/Chicago",
+  "lastFeedExpiry": "20261231",
+  "lastFeedVersion": "Updated: Jun 18, 2026, 3:44 PM",
+  "lastRefreshedAt": "2026-09-08",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 48
+    },
+    "checkedAt": "2026-09-08"
+  }
+}

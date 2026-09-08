@@ -1,0 +1,37 @@
+{
+  "slug": "medicine-hat",
+  "name": "Medicine Hat Transit",
+  "center": [
+    50.03,
+    -110.68
+  ],
+  "bbox": [
+    49.9940059090001,
+    -110.728568386335,
+    50.0637504895139,
+    -110.625130933593
+  ],
+  "feedUrl": "https://medicinehat.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2591/latest.zip",
+  "region": "Alberta",
+  "cities": [
+    "Medicine Hat, Alberta"
+  ],
+  "timezone": "America/Edmonton",
+  "lastFeedExpiry": "20270327",
+  "lastFeedVersion": "202603280/20260327 09:51:37/20260328 04:00:00",
+  "lastRefreshedAt": "2026-09-08",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 31
+    },
+    "checkedAt": "2026-09-08"
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "slug": "rock-county",
+  "name": "Beloit Transit System",
+  "center": [
+    42.61,
+    -89.02
+  ],
+  "bbox": [
+    42.490103676,
+    -89.070638525,
+    42.728102,
+    -88.964825827
+  ],
+  "feedUrl": "https://passio3.com/beloit/passioTransit/gtfs/google_transit.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-77/latest.zip",
+  "region": "Wisconsin",
+  "cities": [
+    "Beloit, Wisconsin",
+    "Rock County, Wisconsin"
+  ],
+  "timezone": "America/Chicago",
+  "lastFeedExpiry": "20261007",
+  "lastFeedVersion": "20250228",
+  "lastRefreshedAt": "2026-09-08",
+  "feedQuality": {
+    "status": "review",
+    "score": 90,
+    "reasons": [
+      "1 schedule-data warning — Atlas found a minor issue while reading the schedule."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 1,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 21
+    },
+    "checkedAt": "2026-09-08"
+  }
+}

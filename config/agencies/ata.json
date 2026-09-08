@@ -1,0 +1,43 @@
+{
+  "slug": "ata",
+  "name": "Area Transportation Authority (ATA)",
+  "agencyId": "30196",
+  "websiteUrl": "https://www.rideata.com/",
+  "region": "Pennsylvania",
+  "center": [
+    41.2377,
+    -78.7204
+  ],
+  "bbox": [
+    40.87,
+    -79.45,
+    42.03,
+    -78.17
+  ],
+  "feedUrl": "https://rideata.rideralerts.com/InfoPoint/gtfs-zip.ashx",
+  "cities": [
+    "Bradford, Pennsylvania",
+    "Clearfield, Pennsylvania",
+    "DuBois, Pennsylvania",
+    "Emporium, Pennsylvania",
+    "Punxsutawney, Pennsylvania",
+    "St. Marys, Pennsylvania"
+  ],
+  "timezone": "America/New_York",
+  "lastFeedExpiry": "20270228",
+  "lastFeedVersion": "20260826",
+  "lastRefreshedAt": "2026-09-08",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 46
+    },
+    "checkedAt": "2026-09-08"
+  }
+}

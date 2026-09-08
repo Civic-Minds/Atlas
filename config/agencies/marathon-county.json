@@ -1,0 +1,40 @@
+{
+  "slug": "marathon-county",
+  "name": "Metro Ride",
+  "center": [
+    44.97,
+    -89.64
+  ],
+  "bbox": [
+    44.930681890042365,
+    -89.68125311151744,
+    45.0029636867689,
+    -89.59766209521625
+  ],
+  "feedUrl": "http://data.trilliumtransit.com/gtfs/wausau-wi-us/wausau-wi-us.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-830/latest.zip",
+  "region": "Wisconsin",
+  "cities": [
+    "Wausau, Wisconsin",
+    "Marathon County, Wisconsin"
+  ],
+  "timezone": "America/Chicago",
+  "lastFeedExpiry": "20270101",
+  "lastFeedVersion": "UTC: 16-Apr-2024 16:53",
+  "lastRefreshedAt": "2026-09-08",
+  "feedQuality": {
+    "status": "review",
+    "score": 90,
+    "reasons": [
+      "1 schedule-data warning — Atlas found a minor issue while reading the schedule."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 1,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 7
+    },
+    "checkedAt": "2026-09-08"
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "slug": "sheboygan-county",
+  "name": "Shoreline Metro",
+  "center": [
+    43.74,
+    -87.76
+  ],
+  "bbox": [
+    43.70197264543341,
+    -87.82449695,
+    43.7830422,
+    -87.70109301564207
+  ],
+  "feedUrl": "http://data.trilliumtransit.com/gtfs/sheboygan-wi-us/sheboygan-wi-us.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-399/latest.zip",
+  "region": "Wisconsin",
+  "cities": [
+    "Sheboygan, Wisconsin",
+    "Sheboygan County, Wisconsin"
+  ],
+  "timezone": "America/Chicago",
+  "lastFeedExpiry": "20271231",
+  "lastFeedVersion": "UTC: 05-Feb-2026 10:06",
+  "lastRefreshedAt": "2026-09-08",
+  "feedQuality": {
+    "status": "review",
+    "score": 90,
+    "reasons": [
+      "1 schedule-data warning — Atlas found a minor issue while reading the schedule."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 1,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 18
+    },
+    "checkedAt": "2026-09-08"
+  }
+}

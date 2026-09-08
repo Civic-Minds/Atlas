@@ -1,0 +1,37 @@
+{
+  "slug": "kaua-i-county",
+  "name": "The Kauai Bus",
+  "center": [
+    22.04,
+    -159.51
+  ],
+  "bbox": [
+    21.876408,
+    -159.721686,
+    22.213158,
+    -159.305271
+  ],
+  "feedUrl": "https://thekauaibus.com/gtfs",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-90237/latest.zip",
+  "region": "Hawaii",
+  "cities": [
+    "Kauaʻi County, Hawaii"
+  ],
+  "timezone": "Pacific/Honolulu",
+  "lastFeedExpiry": "",
+  "lastFeedVersion": "CORRECTED RUN NUMBERS Routes with 900/950 Express and Kilauea Food Mart.",
+  "lastRefreshedAt": "2026-09-08",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 21
+    },
+    "checkedAt": "2026-09-08"
+  }
+}

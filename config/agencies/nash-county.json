@@ -1,0 +1,38 @@
+{
+  "slug": "nash-county",
+  "name": "Tar River Transit",
+  "center": [
+    35.99,
+    -77.82
+  ],
+  "bbox": [
+    35.91651113417029,
+    -77.89909933899753,
+    36.06269963548954,
+    -77.745024054245
+  ],
+  "feedUrl": "http://data.trilliumtransit.com/gtfs/tarriver-nc-us/tarriver-nc-us.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-472/latest.zip",
+  "region": "North Carolina",
+  "cities": [
+    "Rocky Mount, North Carolina",
+    "Nash County, North Carolina"
+  ],
+  "timezone": "America/New_York",
+  "lastFeedExpiry": "20270201",
+  "lastFeedVersion": "UTC: 10-Jul-2026 15:46",
+  "lastRefreshedAt": "2026-09-08",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 20
+    },
+    "checkedAt": "2026-09-08"
+  }
+}

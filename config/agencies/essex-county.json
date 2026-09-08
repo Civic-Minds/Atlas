@@ -1,0 +1,41 @@
+{
+  "slug": "essex-county",
+  "name": "Cape Ann Transportation Authority (CATA)",
+  "center": [
+    42.61,
+    -70.77
+  ],
+  "bbox": [
+    42.539489238339485,
+    -70.94377590441808,
+    42.68663764127053,
+    -70.5986306
+  ],
+  "feedUrl": "http://data.trilliumtransit.com/gtfs/capeann-ma-us/capeann-ma-us.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-447/latest.zip",
+  "region": "Massachusetts",
+  "cities": [
+    "Gloucester, Massachusetts",
+    "Rockport, Massachusetts",
+    "Essex County, Massachusetts"
+  ],
+  "timezone": "America/New_York",
+  "lastFeedExpiry": "20270301",
+  "lastFeedVersion": "UTC: 13-Aug-2026 20:25",
+  "lastRefreshedAt": "2026-09-08",
+  "feedQuality": {
+    "status": "review",
+    "score": 90,
+    "reasons": [
+      "1 schedule-data warning — Atlas found a minor issue while reading the schedule."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 1,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 35
+    },
+    "checkedAt": "2026-09-08"
+  }
+}

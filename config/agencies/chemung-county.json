@@ -1,0 +1,40 @@
+{
+  "slug": "chemung-county",
+  "name": "Chemung County C-TRAN",
+  "center": [
+    42.21,
+    -76.65
+  ],
+  "bbox": [
+    41.980677,
+    -77.07267,
+    42.447267,
+    -76.227525
+  ],
+  "feedUrl": "https://s3.amazonaws.com/datatools-511ny/public/Chemung_C_TRAN.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-20005/latest.zip",
+  "region": "New York",
+  "cities": [
+    "Elmira, New York",
+    "Chemung County, New York"
+  ],
+  "timezone": "America/New_York",
+  "lastFeedExpiry": "20271231",
+  "lastFeedVersion": "2050410",
+  "lastRefreshedAt": "2026-09-08",
+  "feedQuality": {
+    "status": "review",
+    "score": 90,
+    "reasons": [
+      "1 schedule-data warning — Atlas found a minor issue while reading the schedule."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 1,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 25
+    },
+    "checkedAt": "2026-09-08"
+  }
+}
