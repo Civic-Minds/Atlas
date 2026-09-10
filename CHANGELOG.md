@@ -8,6 +8,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 - Added Area Transportation Authority coverage across North Central Pennsylvania, including Punxsutawney's local bus route.
 - Added 19 previously uncovered fixed-route agencies across the US and Canada, including Decatur, Charlottesville, Johnson City, Maui, and Medicine Hat.
+- Added eight more fixed-route agencies across Iowa, New Mexico, Kentucky, Illinois, Tennessee, Indiana, Arizona, and Washington.
 - Added an opt-in history build mode (`materializeAllPeriods`) that keeps every documented schedule period instead of collapsing unchanged ones, for agencies like Sacramento with dense archived history worth showing period-by-period.
 - History's route list no longer shows a divider line between every route, and an agency whose short archived series falls entirely within one year (e.g. "2026") no longer shows a silly-looking repeated range like "2026–2026".
 - Fixed the History route card's chart-toggle icon disappearing on routes with a longer name (e.g. Orange-N) — the name was squeezing the row narrow enough to push the icon out entirely instead of properly truncating.

@@ -20650,6 +20650,226 @@
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
       "expiredFeedCheckExpiry": "20271231"
+    },
+    {
+      "slug": "ottumwa",
+      "name": "10-15 Transit",
+      "center": [
+        41.15,
+        -92.52
+      ],
+      "timezone": "America/Chicago",
+      "feedUrl": null,
+      "lastFeedExpiry": "20270301",
+      "lastFeedVersion": "UTC: 20-Aug-2026 23:12",
+      "lastRefreshedAt": "2026-09-10",
+      "feedQuality": {
+        "status": "review",
+        "score": 90,
+        "reasons": [
+          "1 schedule-data warning — Atlas found a minor issue while reading the schedule."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 1,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 6
+        },
+        "checkedAt": "2026-09-10"
+      }
+    },
+    {
+      "slug": "mckinley-county",
+      "name": "A:Shiwi Transit",
+      "center": [
+        35.3,
+        -108.79
+      ],
+      "timezone": "America/Denver",
+      "feedUrl": null,
+      "lastFeedExpiry": "20280131",
+      "lastFeedVersion": "20260321",
+      "lastRefreshedAt": "2026-09-10",
+      "feedQuality": {
+        "status": "review",
+        "score": 90,
+        "reasons": [
+          "1 schedule-data warning — Atlas found a minor issue while reading the schedule."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 1,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 8
+        },
+        "checkedAt": "2026-09-10"
+      }
+    },
+    {
+      "slug": "bowling-green",
+      "name": "City of Bowling Green",
+      "center": [
+        36.97,
+        -86.44
+      ],
+      "timezone": "America/Chicago",
+      "feedUrl": null,
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null,
+      "lastRefreshedAt": "2026-09-10",
+      "feedQuality": {
+        "status": "review",
+        "score": 90,
+        "reasons": [
+          "1 schedule-data warning — Atlas found a minor issue while reading the schedule."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 1,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 5
+        },
+        "checkedAt": "2026-09-10"
+      }
+    },
+    {
+      "slug": "knox-county",
+      "name": "City of Galesburg",
+      "center": [
+        40.96,
+        -90.37
+      ],
+      "timezone": "US/Central",
+      "feedUrl": null,
+      "lastFeedExpiry": "20270131",
+      "lastFeedVersion": "26.32",
+      "lastRefreshedAt": "2026-09-10",
+      "feedQuality": {
+        "status": "review",
+        "score": 90,
+        "reasons": [
+          "1 schedule-data warning — Atlas found a minor issue while reading the schedule."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 1,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 12
+        },
+        "checkedAt": "2026-09-10"
+      }
+    },
+    {
+      "slug": "sevier-county",
+      "name": "City of Gatlinburg Trolley",
+      "center": [
+        35.73,
+        -83.47
+      ],
+      "timezone": "America/New_York",
+      "feedUrl": null,
+      "lastFeedExpiry": "20271231",
+      "lastFeedVersion": "20260515",
+      "lastRefreshedAt": "2026-09-10",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 12
+        },
+        "checkedAt": "2026-09-10"
+      }
+    },
+    {
+      "slug": "howard-county",
+      "name": "City of Kokomo",
+      "center": [
+        40.47,
+        -86.13
+      ],
+      "timezone": "America/New_York",
+      "feedUrl": null,
+      "lastFeedExpiry": "20280504",
+      "lastFeedVersion": "20260610",
+      "lastRefreshedAt": "2026-09-10",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 6
+        },
+        "checkedAt": "2026-09-10"
+      }
+    },
+    {
+      "slug": "kittitas-county",
+      "name": "City of Ellensburg Public Transit (Central Transit)",
+      "center": [
+        47,
+        -120.55
+      ],
+      "timezone": "America/Los_Angeles",
+      "feedUrl": null,
+      "lastFeedExpiry": "20261101",
+      "lastFeedVersion": "UTC: 02-Sep-2026 21:07",
+      "lastRefreshedAt": "2026-09-10",
+      "feedQuality": {
+        "status": "review",
+        "score": 90,
+        "reasons": [
+          "1 schedule-data warning — Atlas found a minor issue while reading the schedule."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 1,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 36
+        },
+        "checkedAt": "2026-09-10"
+      }
+    },
+    {
+      "slug": "sierra-vista",
+      "name": "City of Sierra Vista",
+      "center": [
+        31.55,
+        -110.27
+      ],
+      "timezone": "America/Phoenix",
+      "feedUrl": null,
+      "lastFeedExpiry": "20270331",
+      "lastFeedVersion": "20250522",
+      "lastRefreshedAt": "2026-09-10",
+      "feedQuality": {
+        "status": "review",
+        "score": 90,
+        "reasons": [
+          "1 schedule-data warning — Atlas found a minor issue while reading the schedule."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 1,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 3
+        },
+        "checkedAt": "2026-09-10"
+      }
     }
   ]
 }

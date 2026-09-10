@@ -1,0 +1,28 @@
+{
+  "slug": "kittitas-county",
+  "name": "City of Ellensburg Public Transit (Central Transit)",
+  "center": [
+    47,
+    -120.55
+  ],
+  "timezone": "America/Los_Angeles",
+  "feedUrl": null,
+  "lastFeedExpiry": "20261101",
+  "lastFeedVersion": "UTC: 02-Sep-2026 21:07",
+  "lastRefreshedAt": "2026-09-10",
+  "feedQuality": {
+    "status": "review",
+    "score": 90,
+    "reasons": [
+      "1 schedule-data warning — Atlas found a minor issue while reading the schedule."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 1,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 36
+    },
+    "checkedAt": "2026-09-10"
+  }
+}

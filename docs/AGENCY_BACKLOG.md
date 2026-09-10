@@ -28,28 +28,28 @@ These candidates were researched but still need processing or a final feed decis
 
 | Status | Slug | Agency | Region | Notes |
 |--------|------|--------|--------|-------|
-| todo | `jfk-airtrain` | JFK AirTrain | New York | mdb-522 — config only |
-| todo | `staten-island-ferry` | Staten Island Ferry | New York | mdb-518 — config only |
-| todo | `nyc-ferry` | NYC Ferry | New York | mdb-515 — config only |
-| todo | `rioc-tram` | Roosevelt Island Tramway | New York | mdb-1109 — config only |
+| done | `jfk-airtrain` | JFK AirTrain | New York | mdb-522 |
+| done | `staten-island-ferry` | Staten Island Ferry | New York | mdb-518 |
+| done | `nyc-ferry` | NYC Ferry | New York | mdb-515 |
+| done | `rioc-tram` | Roosevelt Island Tramway | New York | mdb-1109 |
 | todo | `guadalajara` | Mi Transporte (Guadalajara) | Jalisco | mdb-2366 first MX — config only |
-| todo | `cheyenne` | Cheyenne Transit Program | Wyoming | National RTAP CTP_gtfs — first WY — config only |
-| todo | `rapid-city` | Rapid Transit System | South Dakota | National RTAP rts_corc_gtfs — config only |
-| todo | `sioux-city` | Sioux City Transit System | Iowa | mdb-191 — config only |
+| done | `cheyenne` | Cheyenne Transit Program | Wyoming | National RTAP CTP_gtfs |
+| done | `rapid-city` | Rapid Transit System | South Dakota | National RTAP rts_corc_gtfs |
+| done | `sioux-city` | Sioux City Transit System | Iowa | mdb-191 |
 | blocked | `cdmx` | CDMX multi-operator GTFS | Mexico City | Official datos.cdmx download timed out / MDB latest 403 |
-| todo | `casper` | Casper Area Transit | Wyoming | Current Passio feed — config staged and dry-run validated |
+| done | `casper` | Casper Area Transit | Wyoming | Current Passio feed |
 
 ## Recently researched (2026-08-18 — smaller mountain and northern-city sweep)
 
 | Status | Slug | Agency | Region | Notes |
 |--------|------|--------|--------|-------|
-| todo | `winter-park` | The Lift | Colorado | Agency-hosted GTFS — dry-run reviewed |
-| todo | `roundabout` | Clear Creek County Transit (RoundAbout) | Colorado | Trillium feed — dry-run validated |
-| todo | `breck-free-ride` | Breckenridge Free Ride | Colorado | Current Syncromatics feed, filtered to agency 103 — dry-run reviewed |
-| todo | `summit-stage` | Summit Stage | Colorado | Trillium feed — dry-run reviewed |
-| todo | `vail-transit` | Vail Transit | Colorado | Agency-hosted GTFS — dry-run validated |
+| done | `winter-park` | The Lift | Colorado | Agency-hosted GTFS |
+| done | `roundabout` | Clear Creek County Transit (RoundAbout) | Colorado | Trillium feed |
+| done | `breck-free-ride` | Breckenridge Free Ride | Colorado | Current Syncromatics feed, filtered to agency 103 |
+| done | `summit-stage` | Summit Stage | Colorado | Trillium feed |
+| done | `vail-transit` | Vail Transit | Colorado | Agency-hosted GTFS |
 | todo | `avon-transit` | Avon Transit | Colorado | Current public static feed is expired; staged with degraded quality and documented for refresh |
-| todo | `timmins` | Timmins Transit | Ontario | Current Metrolinx/Tmix feed — dry-run validated |
+| done | `timmins` | Timmins Transit | Ontario | Current Metrolinx/Tmix feed |
 
 ## Research sweep (2026-09-08 — active GTFS gap candidates)
 
@@ -79,13 +79,28 @@ These agencies passed the first sweep: active downloadable feeds, scheduled trip
 
 Held for follow-up: Link Transit (`chelan`) had nine repaired/truncated shapes, and Sault Ste. Marie Transit (`sault-ste-marie`) had one truncated shape. They need a visual review before publishing.
 
+## Research sweep (2026-09-10 — active GTFS gap candidates)
+
+These agencies passed a fresh feed download, scheduled-service, and route-report check. Their GeoJSON is now in R2; they need the next approved PMTiles rebuild before their routes appear on the map.
+
+| Status | Slug | Agency | Region | Notes |
+|--------|------|--------|--------|-------|
+| done | `ottumwa` | 10-15 Transit | Iowa | mdb-195 |
+| done | `mckinley-county` | A:Shiwi Transit | New Mexico | ntd-66242 |
+| done | `bowling-green` | City of Bowling Green | Kentucky | ntd-40184 |
+| done | `knox-county` | City of Galesburg | Illinois | ntd-50502 |
+| done | `sevier-county` | City of Gatlinburg Trolley | Tennessee | tld-6775 |
+| done | `howard-county` | City of Kokomo | Indiana | ntd-50145 |
+| done | `sierra-vista` | City of Sierra Vista | Arizona | tld-679 |
+| done | `kittitas-county` | City of Ellensburg Public Transit (Central Transit) | Washington | mdb-2456 |
+
 ## Recently completed (2026-07-16 — Seattle specialty)
 
 | Status | Slug | Agency | Region | Notes |
 |--------|------|--------|--------|-------|
-| todo | `seattle-streetcar` | Seattle Streetcar | Washington | KCM multi-agency zip (`agency_id` 23); must filter on process |
-| todo | `seattle-monorail` | Seattle Center Monorail | Washington | Trillium seattlemonorail-wa-us — config only |
-| todo | `snoqualmie-valley` | Snoqualmie Valley Transportation | Washington | Trillium snoqualmie-wa-us — config only |
+| done | `seattle-streetcar` | Seattle Streetcar | Washington | KCM multi-agency zip (`agency_id` 23) |
+| done | `seattle-monorail` | Seattle Center Monorail | Washington | Trillium seattlemonorail-wa-us |
+| done | `snoqualmie-valley` | Snoqualmie Valley Transportation | Washington | Trillium snoqualmie-wa-us |
 
 ---
 

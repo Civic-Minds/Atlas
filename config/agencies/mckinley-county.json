@@ -1,0 +1,28 @@
+{
+  "slug": "mckinley-county",
+  "name": "A:Shiwi Transit",
+  "center": [
+    35.3,
+    -108.79
+  ],
+  "timezone": "America/Denver",
+  "feedUrl": null,
+  "lastFeedExpiry": "20280131",
+  "lastFeedVersion": "20260321",
+  "lastRefreshedAt": "2026-09-10",
+  "feedQuality": {
+    "status": "review",
+    "score": 90,
+    "reasons": [
+      "1 schedule-data warning — Atlas found a minor issue while reading the schedule."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 1,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 8
+    },
+    "checkedAt": "2026-09-10"
+  }
+}

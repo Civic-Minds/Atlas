@@ -1,0 +1,26 @@
+{
+  "slug": "sevier-county",
+  "name": "City of Gatlinburg Trolley",
+  "center": [
+    35.73,
+    -83.47
+  ],
+  "timezone": "America/New_York",
+  "feedUrl": null,
+  "lastFeedExpiry": "20271231",
+  "lastFeedVersion": "20260515",
+  "lastRefreshedAt": "2026-09-10",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 12
+    },
+    "checkedAt": "2026-09-10"
+  }
+}

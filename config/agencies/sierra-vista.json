@@ -1,0 +1,28 @@
+{
+  "slug": "sierra-vista",
+  "name": "City of Sierra Vista",
+  "center": [
+    31.55,
+    -110.27
+  ],
+  "timezone": "America/Phoenix",
+  "feedUrl": null,
+  "lastFeedExpiry": "20270331",
+  "lastFeedVersion": "20250522",
+  "lastRefreshedAt": "2026-09-10",
+  "feedQuality": {
+    "status": "review",
+    "score": 90,
+    "reasons": [
+      "1 schedule-data warning — Atlas found a minor issue while reading the schedule."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 1,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 3
+    },
+    "checkedAt": "2026-09-10"
+  }
+}

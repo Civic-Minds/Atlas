@@ -1,0 +1,28 @@
+{
+  "slug": "knox-county",
+  "name": "City of Galesburg",
+  "center": [
+    40.96,
+    -90.37
+  ],
+  "timezone": "US/Central",
+  "feedUrl": null,
+  "lastFeedExpiry": "20270131",
+  "lastFeedVersion": "26.32",
+  "lastRefreshedAt": "2026-09-10",
+  "feedQuality": {
+    "status": "review",
+    "score": 90,
+    "reasons": [
+      "1 schedule-data warning — Atlas found a minor issue while reading the schedule."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 1,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 12
+    },
+    "checkedAt": "2026-09-10"
+  }
+}

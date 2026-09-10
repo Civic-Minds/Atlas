@@ -1,0 +1,28 @@
+{
+  "slug": "ottumwa",
+  "name": "10-15 Transit",
+  "center": [
+    41.15,
+    -92.52
+  ],
+  "timezone": "America/Chicago",
+  "feedUrl": null,
+  "lastFeedExpiry": "20270301",
+  "lastFeedVersion": "UTC: 20-Aug-2026 23:12",
+  "lastRefreshedAt": "2026-09-10",
+  "feedQuality": {
+    "status": "review",
+    "score": 90,
+    "reasons": [
+      "1 schedule-data warning — Atlas found a minor issue while reading the schedule."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 1,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 6
+    },
+    "checkedAt": "2026-09-10"
+  }
+}

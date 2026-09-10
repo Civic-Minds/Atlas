@@ -1,0 +1,28 @@
+{
+  "slug": "bowling-green",
+  "name": "City of Bowling Green",
+  "center": [
+    36.97,
+    -86.44
+  ],
+  "timezone": "America/Chicago",
+  "feedUrl": null,
+  "lastFeedExpiry": null,
+  "lastFeedVersion": null,
+  "lastRefreshedAt": "2026-09-10",
+  "feedQuality": {
+    "status": "review",
+    "score": 90,
+    "reasons": [
+      "1 schedule-data warning — Atlas found a minor issue while reading the schedule."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 1,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 5
+    },
+    "checkedAt": "2026-09-10"
+  }
+}

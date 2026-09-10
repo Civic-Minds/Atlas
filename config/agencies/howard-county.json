@@ -1,0 +1,26 @@
+{
+  "slug": "howard-county",
+  "name": "City of Kokomo",
+  "center": [
+    40.47,
+    -86.13
+  ],
+  "timezone": "America/New_York",
+  "feedUrl": null,
+  "lastFeedExpiry": "20280504",
+  "lastFeedVersion": "20260610",
+  "lastRefreshedAt": "2026-09-10",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 6
+    },
+    "checkedAt": "2026-09-10"
+  }
+}
