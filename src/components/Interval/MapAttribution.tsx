@@ -8,11 +8,19 @@ const FULL_ATTRIBUTION =
 
 /** Basemap credit — linked names satisfy OSM + CARTO attribution requirements. */
 export function MapAttribution() {
+  const feedbackHref = `mailto:hey@ryanisnota.pro?subject=Atlas%20Feedback&body=${encodeURIComponent(`Page: ${window.location.href}\n\n`)}`;
+
   return (
     <div
-      className={`absolute bottom-6 left-6 ${Z_PANEL} pointer-events-auto`}
+      className={`absolute bottom-6 left-6 ${Z_PANEL} pointer-events-auto flex items-center gap-1.5`}
       title={FULL_ATTRIBUTION}
     >
+      <a
+        href={feedbackHref}
+        className={`${MAP_BADGE} h-8 text-[10px] font-bold text-[var(--text-muted)] no-underline hover:text-[var(--text-primary)]`}
+      >
+        Feedback
+      </a>
       <div className={`${MAP_BADGE} h-8`}>
         <p className={`${MAP_BADGE_LABEL} whitespace-nowrap leading-none`}>
           <a
