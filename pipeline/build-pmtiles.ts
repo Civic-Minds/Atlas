@@ -45,6 +45,9 @@ async function fetchJson(url: string, retries = 5): Promise<FeatureCollection | 
 
 async function main() {
   const dryRun = process.argv.includes('--dry-run');
+  const localPreviewDir = process.env.ATLAS_LOCAL_PREVIEW_DIR
+    ? path.resolve(process.env.ATLAS_LOCAL_PREVIEW_DIR)
+    : null;
   if (dryRun) {
     console.log('Dry run: building PMTiles locally without uploading to R2.');
   }
@@ -80,7 +83,10 @@ async function main() {
 
     // 1. Routes
     if (url) {
-      const data = await fetchJson(url, 5);
+      const localPath = localPreviewDir ? path.join(localPreviewDir, slug, `${slug}.json`) : null;
+      const data = localPath && fs.existsSync(localPath)
+        ? JSON.parse(fs.readFileSync(localPath, 'utf8')) as FeatureCollection
+        : await fetchJson(url, 5);
       if (data && data.features) {
         allRoutes.push(...prepareAgencyRouteFeaturesForTiles(data.features, slug));
       } else if (!data) {
@@ -94,7 +100,10 @@ async function main() {
 
     // 2. Stops
     if (stopsUrl) {
-      const data = await fetchJson(stopsUrl);
+      const localPath = localPreviewDir ? path.join(localPreviewDir, slug, `${slug}-stops.json`) : null;
+      const data = localPath && fs.existsSync(localPath)
+        ? JSON.parse(fs.readFileSync(localPath, 'utf8')) as FeatureCollection
+        : await fetchJson(stopsUrl);
       if (data) {
         let stopFeatures: any[] = [];
         if (data.features) {
@@ -121,7 +130,10 @@ async function main() {
 
     // 3. Corridors
     if (corridorsUrl) {
-      const data = await fetchJson(corridorsUrl);
+      const localPath = localPreviewDir ? path.join(localPreviewDir, slug, `${slug}-corridors.json`) : null;
+      const data = localPath && fs.existsSync(localPath)
+        ? JSON.parse(fs.readFileSync(localPath, 'utf8')) as FeatureCollection
+        : await fetchJson(corridorsUrl);
       if (data && data.features) {
         data.features.forEach(f => {
           f.properties = f.properties || {};
