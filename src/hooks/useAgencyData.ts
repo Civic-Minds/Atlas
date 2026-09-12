@@ -34,6 +34,9 @@ export interface ShapeProperties {
   busSubType?: 'brt' | 'express' | 'coach' | 'local';
   worstDirectionHeadway?: number;
   worstDirectionHeadwayByPeriod?: HeadwayByPeriod;
+  periodCoverageHeadway?: HeadwayByPeriod;
+  worstDirectionPeriodCoverageHeadway?: HeadwayByPeriod;
+  stopPeriodCoverageHeadways?: Record<string, HeadwayByPeriod>;
   /** #318: at least one direction of this route+day has no sustained/real-tier pattern at all. */
   routeHasIrregularDirection?: boolean;
   minStopHeadway?: number;

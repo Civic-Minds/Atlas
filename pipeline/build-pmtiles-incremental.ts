@@ -62,7 +62,7 @@ import { VectorTile } from '@mapbox/vector-tile';
 import { LOADED_ENV_FILE } from './loadEnv.js';
 import { r2PutFile } from './r2.js';
 import { getAgencyArtifactUrls, pmtilesMinZoomForHeadway, AGENCY_BBOX_PAD, R2_PUBLIC_URL } from '../shared/config.js';
-import { flattenPeriodHeadwayProps } from '../shared/pmtilesProps.js';
+import { prepareAgencyRouteFeaturesForTiles } from './prepareAgencyRoutesForTiles.js';
 import {
   assertAgencyNotAlreadyPublished,
   assertNoBboxOverlap,
@@ -224,13 +224,7 @@ async function collectAgencyFeatures(slug: string): Promise<{ routes: Feature[];
       `an incremental PMTiles update with no route data — process/refresh the agency first.`,
     );
   }
-  routeData.features.forEach(f => {
-    if (f.geometry?.type !== 'LineString') return; // skip stop Points mixed into route GeoJSON
-    f.properties = f.properties || {};
-    f.properties.agencySlug = slug;
-    flattenPeriodHeadwayProps(f.properties);
-    routes.push(f);
-  });
+  routes.push(...prepareAgencyRouteFeaturesForTiles(routeData.features, slug));
 
   // 2. Stops — best effort, matching build-pmtiles.ts.
   const stopsData = await fetchJson(arts.stopsUrl);

@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Period filters now require service across the full time window, so late-start routes no longer appear as frequent overnight service.
 - Calgary MAX route cards now show the terminal name without repeating the MAX service branding.
 - Fixed the agency report form opening at the width of its flag icon instead of the full card.
 - Removed feed-quality badges from the public agency list so technical review states do not look like rider action items.

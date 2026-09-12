@@ -42,6 +42,8 @@ export function tileEffectiveHeadwayExpr(period?: PeriodFilter): unknown[] {
     const periodKeys = [wdph, hph];
     return [
       'case',
+      ['has', `wdpch_${period}`], ['get', `wdpch_${period}`],
+      ['has', `pch_${period}`], ['get', `pch_${period}`],
       ['any', ...periodKeys.map((key) => ['has', key])],
       ['coalesce', ...periodKeys.map((key) => ['get', key])],
       allDay,

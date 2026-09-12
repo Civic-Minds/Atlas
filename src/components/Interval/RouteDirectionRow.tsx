@@ -9,6 +9,7 @@ interface Props {
   label: string;
   // Regular service
   headway?: number | null;
+  headwayLabel?: string;
   trunkHeadway?: number | null;  // for range display (every 6–12 min)
   headwaySuffix?: string;
   subLabel?: string;
@@ -31,7 +32,7 @@ interface Props {
  * Owns label color, headway display, and limited-service variants
  * so there's one place to change instead of hunting across SidebarControls.
  */
-export default function RouteDirectionRow({ label, headway, trunkHeadway, headwaySuffix, subLabel, live, limited, limitedHint, dimmed, onHoverStart, onHoverEnd, branchHovered, branchDimmed, onClick }: Props) {
+export default function RouteDirectionRow({ label, headway, headwayLabel, trunkHeadway, headwaySuffix, subLabel, live, limited, limitedHint, dimmed, onHoverStart, onHoverEnd, branchHovered, branchDimmed, onClick }: Props) {
   const interactive = !!(onHoverStart && onHoverEnd);
   const clickable = !!onClick;
   const faded = dimmed || branchDimmed;
@@ -72,7 +73,7 @@ export default function RouteDirectionRow({ label, headway, trunkHeadway, headwa
           </span>
         )}
         {!limited && headway != null && !showRange && (
-          <HeadwayBadge headway={headway} live={live} suffix={headwaySuffix} />
+          <HeadwayBadge headway={headway} live={live} suffix={headwaySuffix} label={headwayLabel} />
         )}
         {!limited && rangeText && (
           <span className="inline-flex items-center gap-1 font-black text-[var(--text-primary)] text-[11px] leading-snug shrink-0">

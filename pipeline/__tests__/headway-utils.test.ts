@@ -1,4 +1,59 @@
 import { describe, expect, it } from 'vitest';
+import { computePeriodCoverageHeadways } from '../headway-utils';
+import { TIME_PERIODS } from '../../shared/config';
+
+describe('computePeriodCoverageHeadways', () => {
+  it('counts the missing early morning service in a Calgary-style late-start pattern', () => {
+    const times = [480, 490, 500, 510, 520, 530, 540];
+    expect(computePeriodCoverageHeadways(times).amPeak).toBe(120);
+    expect(computePeriodHeadways(times).amPeak).toBe(10);
+    expect(computePeriodMaxGaps(times).amPeak).toBe(10);
+  });
+
+  it.each(TIME_PERIODS)('keeps true full-window service in $key', ({ key, startHour, endHour }) => {
+    const times = Array.from({ length: (endHour - startHour) * 6 + 1 }, (_, i) => startHour * 60 + i * 10);
+    expect(computePeriodCoverageHeadways(times)[key]).toBe(10);
+  });
+
+  it('counts the end gap even when there is no later departure', () => {
+    expect(computePeriodCoverageHeadways([360, 370, 380, 390]).amPeak).toBe(150);
+  });
+
+  it('counts the longest internal gap', () => {
+    expect(computePeriodCoverageHeadways([360, 370, 380, 500, 510, 520, 530, 540]).amPeak).toBe(120);
+  });
+
+  it('measures one or two departures without requiring a median', () => {
+    expect(computePeriodCoverageHeadways([450]).amPeak).toBe(90);
+    expect(computePeriodCoverageHeadways([390, 510]).amPeak).toBe(120);
+    expect(computePeriodHeadways([390, 510]).amPeak).toBeNull();
+  });
+
+  it('returns explicit nulls for empty periods even with surrounding departures', () => {
+    expect(computePeriodCoverageHeadways([359, 541]).amPeak).toBeNull();
+    expect(Object.values(computePeriodCoverageHeadways([]))).toEqual(TIME_PERIODS.map(() => null));
+  });
+
+  it('includes departures exactly at the window boundaries', () => {
+    expect(computePeriodCoverageHeadways([360]).amPeak).toBe(180);
+    expect(computePeriodCoverageHeadways([540]).amPeak).toBe(180);
+  });
+
+  it('rounds fractional waits up and ignores duplicates without mutating the input', () => {
+    const times = [540, 380.1, 360, 380.1, 520];
+    expect(computePeriodCoverageHeadways(times).amPeak).toBe(140);
+    expect(times).toEqual([540, 380.1, 360, 380.1, 520]);
+    expect(computePeriodCoverageHeadways([380.1, 400, 420, 440, 460, 480, 500, 520, 540]).amPeak).toBe(21);
+  });
+
+  it('treats plain, extended, and mixed midnight notation identically', () => {
+    const extended = Array.from({ length: 43 }, (_, i) => 1380 + i * 10);
+    const plain = extended.map(t => t % 1440);
+    expect(computePeriodCoverageHeadways(plain)).toMatchObject({ late: 10, overnight: 10 });
+    expect(computePeriodCoverageHeadways(extended)).toMatchObject({ late: 10, overnight: 10 });
+    expect(computePeriodCoverageHeadways([...plain, ...extended])).toMatchObject({ late: 10, overnight: 10 });
+  });
+});
 import { adaptiveMedianHeadwayInWindow, computePeriodHeadways, computePeriodMaxGaps, computePeriodSustained, forCrossMidnightWindow, hasGenuineBranchPattern, hasSustainedFrequentService, hasSustainedNightService, headsignOverlapMinHeadway, isSustainedHeadway, medianHeadwayInWindow, nightServiceDepartureTimes, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow } from '../headway-utils';
 
 describe('medianHeadwayInWindow', () => {

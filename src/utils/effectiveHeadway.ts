@@ -17,6 +17,29 @@ export function routeCardDisplayHeadway(p: ShapeProperties, period: TimePeriod):
     ?? metricValueForPeriod(summary.display, period);
 }
 
+export function hasPeriodCoverage(p: ShapeProperties, period: TimePeriod): boolean {
+  return period !== 'all' && (p.periodCoverageHeadway !== undefined || p.worstDirectionPeriodCoverageHeadway !== undefined);
+}
+
+/** Full-window bound first; raw median remains a separately labelled cadence. */
+export function routeCardCoverageText(p: ShapeProperties, period: TimePeriod): string | undefined {
+  if (!hasPeriodCoverage(p, period)) return undefined;
+  const wait = effectiveRouteHeadway(p, period);
+  if (wait == null) return 'no full-period service';
+  const typical = period === 'all' ? null : p.headwayByPeriod?.[period];
+  return typical != null && typical !== wait
+    ? `typically every ${typical} min · max wait ${wait} min`
+    : `max wait ${wait} min`;
+}
+
+export function routeCardTypicalText(p: ShapeProperties, period: TimePeriod): string | undefined {
+  if (!hasPeriodCoverage(p, period) || period === 'all') return undefined;
+  const range = routeCardDisplayHeadwayRange(p, period);
+  if (range) return range;
+  const median = p.headwayByPeriod?.[period];
+  return median == null ? undefined : `typically every ${median} min`;
+}
+
 /** Rider-facing range for an irregular period, scoped to this destination/branch. */
 export function routeCardDisplayHeadwayRange(p: ShapeProperties, period: TimePeriod): string | null {
   if (p.tier === 'span' || period === 'all' || p.headwayByPeriodSustained?.[period] !== false) return null;

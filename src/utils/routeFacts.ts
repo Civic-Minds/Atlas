@@ -1,6 +1,6 @@
 import type { GeoJSON } from 'geojson';
 import type { ShapeProperties } from '../hooks/useAgencyData';
-import { TIME_PERIODS, type PeriodKey } from '../../shared/config';
+import { PERIOD_KEYS, TIME_PERIODS, type PeriodKey } from '../../shared/config';
 
 export type ServicePeriod = PeriodKey | 'all';
 
@@ -112,6 +112,10 @@ function firstAvailableByPeriod(
  * projections instead of independently choosing among raw GeoJSON fields.
  */
 export function buildRouteServiceSummary(p: ShapeProperties): RouteServiceSummary {
+  const coverage = p.worstDirectionPeriodCoverageHeadway ?? p.periodCoverageHeadway;
+  const coveragePeriods = coverage === undefined ? undefined : Object.fromEntries(
+    PERIOD_KEYS.map(key => [key, coverage[key] ?? null]),
+  );
   const branchValue = p.headway ?? null;
   const branchProvenance: HeadwayProvenance = p.headwayByPeriod
     ? 'period-summary' : branchValue != null ? 'all-day-summary' : 'none';
@@ -132,7 +136,7 @@ export function buildRouteServiceSummary(p: ShapeProperties): RouteServiceSummar
       // reflect a shared-core combined frequency that only applies to part of the route, and
       // without geometry clipping to match, letting it drive pass/fail here would smuggle a
       // partial match through as if the whole route qualified (#314/#315).
-      firstAvailableByPeriod(
+      coveragePeriods ?? firstAvailableByPeriod(
         p.worstDirectionHeadwayByPeriod,
         p.headwayByPeriod,
       ),

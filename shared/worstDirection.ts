@@ -1,4 +1,4 @@
-import type { HeadwayByPeriod, HeadwayByPeriodSustained, PeriodKey } from './config.js';
+import { PERIOD_KEYS, type HeadwayByPeriod, type HeadwayByPeriodSustained, type PeriodKey } from './config.js';
 
 export type WorstDirectionFeature = {
   properties: {
@@ -12,6 +12,8 @@ export type WorstDirectionFeature = {
     headwayByPeriodSustained?: HeadwayByPeriodSustained;
     worstDirectionHeadway?: number;
     worstDirectionHeadwayByPeriod?: HeadwayByPeriod;
+    periodCoverageHeadway?: HeadwayByPeriod;
+    worstDirectionPeriodCoverageHeadway?: HeadwayByPeriod;
     [key: string]: unknown;
   };
 };
@@ -42,12 +44,42 @@ function isInfrequentTier(tier: string | null | undefined): boolean {
  *    also has a regular tier pattern (peak short-turn debris shouldn't set all-day filter).
  */
 export function stampWorstDirectionHeadways(features: WorstDirectionFeature[]): void {
+  // Coverage includes unsustained windows. A direction with no departures must
+  // fail the whole-route test; an inactive sibling within an active direction
+  // does not erase that direction's service. Never invent an absent direction.
+  const coverageGroups = new Map<string, WorstDirectionFeature[]>();
+  for (const f of features) {
+    if (!f.properties?.routeShortName || f.properties.directionId == null) continue;
+    const key = routeDayKey(f.properties.routeShortName, f.properties.routeBranch, f.properties.day);
+    const group = coverageGroups.get(key) ?? [];
+    group.push(f);
+    coverageGroups.set(key, group);
+  }
+  const coverageStamps = new Map<string, HeadwayByPeriod>();
+  for (const [key, group] of coverageGroups) {
+    if (!group.some(f => f.properties.periodCoverageHeadway !== undefined)) continue;
+    const stamp: HeadwayByPeriod = {};
+    const directions = new Set(group.map(f => f.properties.directionId));
+    for (const period of PERIOD_KEYS) {
+      const values = [...directions].map(direction => {
+        const siblings = group.filter(f => f.properties.directionId === direction);
+        // Mixed old/new artifacts cannot establish a complete bound.
+        if (siblings.some(f => f.properties.periodCoverageHeadway === undefined)) return null;
+        const waits = siblings.map(f => f.properties.periodCoverageHeadway?.[period])
+          .filter((v): v is number => v != null);
+        return waits.length ? Math.max(...waits) : null;
+      });
+      stamp[period] = values.some(v => v == null) ? null : Math.max(...values as number[]);
+    }
+    coverageStamps.set(key, stamp);
+  }
   // route+day → directionId → candidate all-day headways with tier
   const dirAllDay = new Map<string, Map<number, Array<{ hw: number; tier: string | null | undefined }>>>();
   // route+day → directionId → period → worst (max) real period headway
   const dirWorstByPeriod = new Map<string, Map<number, HeadwayByPeriod>>();
 
   for (const f of features) {
+    if (!f.properties) continue;
     if (f.properties.tier === 'span') continue;
     const sn = f.properties.routeShortName as string | undefined;
     if (!sn) continue;
@@ -124,9 +156,13 @@ export function stampWorstDirectionHeadways(features: WorstDirectionFeature[]): 
   }
 
   for (const f of features) {
+    if (!f.properties) continue;
     const sn = f.properties.routeShortName as string | undefined;
     if (!sn) continue;
     const key = routeDayKey(sn, f.properties.routeBranch, f.properties.day);
+    const coverage = coverageStamps.get(key);
+    if (coverage) f.properties.worstDirectionPeriodCoverageHeadway = coverage;
+    else delete f.properties.worstDirectionPeriodCoverageHeadway;
     const worst = routeWorstHw.get(key);
     if (worst != null) f.properties.worstDirectionHeadway = worst;
     else delete f.properties.worstDirectionHeadway;

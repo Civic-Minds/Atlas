@@ -20,7 +20,7 @@ import {
 } from '../cardUi';
 import { CARD_NOTICE, CARD_NOTICE_FOOTER } from '../../../styles';
 import { BETA_BUILD, SPARKLINE_HOURS, TIME_PERIODS, UNEVEN_BANNER_ENABLED, formatPeriodRangeLong, periodKeyForHour } from '../../../../shared/config';
-import { routeCardDisplayHeadway, routeCardDisplayHeadwayRange } from '../../../utils/effectiveHeadway';
+import { routeCardCoverageText, routeCardDisplayHeadway, routeCardDisplayHeadwayRange } from '../../../utils/effectiveHeadway';
 import { buildRouteServiceSummary, metricValueForPeriod } from '../../../utils/routeFacts';
 import { unevenPeriodMaxGap } from '../../../utils/routeCardUneven';
 import {
@@ -215,7 +215,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
         // Not "no scheduled service" -- null means the pipeline didn't compute a value for this
         // period, which can happen even when real service exists (#297). Don't assert absence.
         const range = routeCardDisplayHeadwayRange(direction, period);
-        return `- ${reportLabel}: ${headway != null ? `every ${headway} min` : range ?? 'no data for this period'}`;
+        return `- ${reportLabel}: ${routeCardCoverageText(direction, period) ?? (headway != null ? `every ${headway} min` : range ?? 'no data for this period')}`;
       })
       .filter((line): line is string => line !== null);
     const limitedLines = !hideSpan
@@ -476,6 +476,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                           <CardDirectionRow
                             label={label}
                             headway={displayH ?? undefined}
+                            headwayLabel={hoveredHour == null ? routeCardCoverageText(d, period) : undefined}
                             trunkHeadway={trunkHw}
                             dimmed={dimmed}
                             {...branchHoverProps(group.dirId, d.headsign)}

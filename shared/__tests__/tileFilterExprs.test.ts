@@ -106,6 +106,14 @@ describe('tileEffectiveHeadwayExpr', () => {
       headway: 10,
     }) as any)).toBe(true);
   });
+
+  it('uses full-window coverage when the route has been reprocessed', () => {
+    const compiled = compileFilter(periodFilter('late', 10));
+    const ctx = { zoom: 10 };
+    expect(compiled.filter(ctx, feat({ wdpch_late: 120, hph_late: 5 }) as any)).toBe(false);
+    expect(compiled.filter(ctx, feat({ wdpch_late: 10, hph_late: 5 }) as any)).toBe(true);
+    expect(compiled.filter(ctx, feat({ hph_late: 5 }) as any)).toBe(true);
+  });
 });
 
 describe('buildModeFilterClause', () => {
