@@ -175,7 +175,7 @@ describe('effectiveRouteHeadway', () => {
     expect(routeCardDisplayHeadway(p, 'midday')).toBe(10);
   });
 
-  it('uses full-period coverage instead of a fast short-window median', () => {
+  it('keeps the active-service cadence separate from full-period filter coverage', () => {
     const p = {
       headway: 10,
       headwayByPeriod: { overnight: 10 },
@@ -183,6 +183,7 @@ describe('effectiveRouteHeadway', () => {
       periodCoverageHeadway: { overnight: 171 },
       tier: '10',
     } as ShapeProperties;
-    expect(routeCardDisplayHeadway(p, 'overnight')).toBe(171);
+    expect(routeCardDisplayHeadway(p, 'overnight')).toBe(10);
+    expect(effectiveRouteHeadway(p, 'overnight')).toBe(171);
   });
 });

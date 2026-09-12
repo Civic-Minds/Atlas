@@ -3,13 +3,6 @@ import { buildRouteServiceSummary, metricValueForPeriod } from './routeFacts';
 
 /** Headway shown on route cards and lists — the same route-level metric used by the filter. */
 export function routeCardDisplayHeadway(p: ShapeProperties, period: TimePeriod): number | null {
-  const summary = buildRouteServiceSummary(p);
-  // Full-window coverage is the authoritative metric for a named period. It must
-  // win over the older sustained-period guard, or a short service window can still
-  // render its fast branch median as if it described the whole period.
-  if (hasPeriodCoverage(p, period)) {
-    return metricValueForPeriod(summary.filter, period);
-  }
   // A numeric gap inside a short-turn/peak-only cluster is not sustained route
   // service. Keep limited branches out of normal route-card/list cadence rows.
   if (p.tier === 'span') return null;
@@ -19,8 +12,12 @@ export function routeCardDisplayHeadway(p: ShapeProperties, period: TimePeriod):
   if (period !== 'all' && p.headwayByPeriodSustained?.[period] === false) {
     return p.headway ?? null;
   }
-  return metricValueForPeriod(summary.filter, period)
-    ?? metricValueForPeriod(summary.display, period);
+  const summary = buildRouteServiceSummary(p);
+  // New artifacts can distinguish filter eligibility (full-period coverage) from
+  // the cadence while service is running. Older artifacts still need the legacy
+  // route-level metric so their cards do not regress.
+  const displayMetric = hasPeriodCoverage(p, period) ? summary.display : summary.filter;
+  return metricValueForPeriod(displayMetric, period);
 }
 
 export function hasPeriodCoverage(p: ShapeProperties, period: TimePeriod): boolean {
@@ -29,13 +26,9 @@ export function hasPeriodCoverage(p: ShapeProperties, period: TimePeriod): boole
 
 /** Full-window bound first; raw median remains a separately labelled cadence. */
 export function routeCardCoverageText(p: ShapeProperties, period: TimePeriod): string | undefined {
-  if (!hasPeriodCoverage(p, period)) return undefined;
-  const wait = effectiveRouteHeadway(p, period);
-  if (wait == null) return 'no full-period service';
-  const typical = period === 'all' ? null : p.headwayByPeriod?.[period];
-  return typical != null && typical !== wait
-    ? `typically every ${typical} min · max wait ${wait} min`
-    : `max wait ${wait} min`;
+  // Coverage is a filter-eligibility metric, not a rider-facing headway. A route
+  // can run every 10 minutes within a shorter service span inside this period.
+  return undefined;
 }
 
 export function routeCardTypicalText(p: ShapeProperties, period: TimePeriod): string | undefined {
