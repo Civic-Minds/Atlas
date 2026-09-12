@@ -116,13 +116,16 @@ export function buildRouteServiceSummary(p: ShapeProperties): RouteServiceSummar
   const regularPeriods = firstAvailableByPeriod(p.worstDirectionHeadwayByPeriod, p.headwayByPeriod);
   const filterPeriods = coverage === undefined ? regularPeriods : Object.fromEntries(
     PERIOD_KEYS.map(key => {
-      // A sustained period should be filtered by its actual cadence. Coverage is only
-      // needed when the period is explicitly marked unsustained; that catches routes that
-      // start late or stop early without turning ordinary evening boundary gaps into a
-      // false 15-minute-or-worse route.
+      // A sustained period should be filtered by its actual cadence only when it covers
+      // the window (coverage <= 60). If the period is unsustained or has no service for most
+      // of the window (e.g. Calgary overnight routes starting around 5 AM), use the full-window
+      // coverage value so a late-start route cannot pass as frequent or receive a normal tier (#507).
       const sustained = p.headwayByPeriodSustained?.[key];
-      if (sustained === true) return [key, regularPeriods?.[key] ?? null];
-      return [key, coverage[key] ?? null];
+      const covVal = coverage[key] ?? null;
+      if (sustained === true && covVal != null && covVal <= 60) {
+        return [key, regularPeriods?.[key] ?? null];
+      }
+      return [key, covVal];
     }),
   ) as ShapeProperties['headwayByPeriod'];
   const branchValue = p.headway ?? null;

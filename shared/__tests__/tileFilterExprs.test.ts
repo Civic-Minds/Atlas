@@ -115,11 +115,12 @@ describe('tileEffectiveHeadwayExpr', () => {
     expect(compiled.filter(ctx, feat({ hph_late: 5 }) as any)).toBe(true);
   });
 
-  it('uses active cadence for sustained periods but coverage for unsustained periods', () => {
+  it('uses active cadence for sustained periods that cover the window, but coverage when unsustained or exceeding frequent tiers', () => {
     const compiled = compileFilter(periodFilter('late', 10));
     const ctx = { zoom: 10 };
     expect(compiled.filter(ctx, feat({ hps_late: true, wdpch_late: 15, hph_late: 10 }) as any)).toBe(true);
     expect(compiled.filter(ctx, feat({ hps_late: false, wdpch_late: 15, hph_late: 10 }) as any)).toBe(false);
+    expect(compiled.filter(ctx, feat({ hps_late: true, wdpch_late: 190, hph_late: 10 }) as any)).toBe(false);
   });
 });
 

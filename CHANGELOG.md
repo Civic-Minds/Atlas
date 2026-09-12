@@ -6,8 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
-- Period filters now reject unsustained late-start service without penalizing normal period-boundary gaps, so Calgary evening routes remain visible while overnight 201 stays out of the frequent tier.
-- Route cards keep the active-service cadence separate from full-period filter eligibility.
+- Calgary overnight routes starting near the end of the window (such as LRT 201 and late-night buses) no longer pass as frequent overnight routes on the map or in the filter, while route cards preserve active operating cadence with the matching filter tier color ([#507](https://github.com/Civic-Minds/Atlas/issues/507)).
 - Calgary MAX route cards now show the terminal name without repeating the MAX service branding.
 - Fixed the agency report form opening at the width of its flag icon instead of the full card.
 - Removed feed-quality badges from the public agency list so technical review states do not look like rider action items.

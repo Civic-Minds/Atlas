@@ -186,4 +186,16 @@ describe('effectiveRouteHeadway', () => {
     expect(routeCardDisplayHeadway(p, 'overnight')).toBe(10);
     expect(effectiveRouteHeadway(p, 'overnight')).toBe(171);
   });
+
+  it('requires coverage to be within frequent tiers (<= 60) even if sustained flag was true (#507)', () => {
+    const p = {
+      headway: 36,
+      headwayByPeriod: { overnight: 24 },
+      headwayByPeriodSustained: { overnight: true },
+      periodCoverageHeadway: { overnight: 190 },
+      tier: '30',
+    } as ShapeProperties;
+    expect(routeCardDisplayHeadway(p, 'overnight')).toBe(24);
+    expect(effectiveRouteHeadway(p, 'overnight')).toBe(190);
+  });
 });

@@ -424,12 +424,14 @@ export function CardBackButton({ onClick, label = 'Back' }: { onClick: () => voi
 
 export function HeadwayBadge({
   headway,
+  colorHeadway,
   label,
   live,
   suffix,
   className = '',
 }: {
   headway: number;
+  colorHeadway?: number | null;
   label?: string;
   live?: boolean;
   suffix?: string;
@@ -438,7 +440,7 @@ export function HeadwayBadge({
   return (
     <span className={`inline-flex items-center gap-1 font-black text-[var(--text-primary)] text-[11px] leading-snug shrink-0 ${className}`}>
       {live && <Radio className="w-2.5 h-2.5 text-[var(--accent)] shrink-0" aria-label="Live data available" />}
-      <span className="w-2 h-2 rounded-full shrink-0" style={{ background: headwayToTierColor(headway) }} />
+      <span className="w-2 h-2 rounded-full shrink-0" style={{ background: headwayToTierColor(colorHeadway ?? headway) }} />
       <span className="whitespace-nowrap">{label ?? fmtHeadway(headway)}</span>
       {suffix && <span className="text-[9px] font-bold text-[var(--text-dim)] whitespace-nowrap">{suffix}</span>}
     </span>

@@ -55,14 +55,21 @@ export function tileEffectiveHeadwayExpr(period?: PeriodFilter): unknown[] {
       ['has', periodKeys[1]], ['get', periodKeys[1]],
       allDay,
     ];
+    const qualifiedCadence = [
+      'case',
+      ['all', ['==', ['get', `hps_${period}`], true], ['<=', coverage, 60]],
+      regularPeriod,
+      coverage,
+    ];
     return [
       'case',
-      // New artifacts keep the active cadence for a properly sustained period. If the
-      // period is marked unsustained, use the full-window coverage value so a late-start
-      // cluster (e.g. Calgary 201 overnight) cannot pass as a frequent route. Older tiles
-      // have no hps_* flag and retain the coverage-first fallback.
+      // New artifacts keep the active cadence for a properly sustained period that covers
+      // the window (coverage <= 60). If the period is marked unsustained or has no service for most
+      // of the window (e.g. Calgary overnight routes starting around 5 AM), use the full-window
+      // coverage value so a late-start route cannot pass as frequent or receive a normal tier (#507).
+      // Older tiles have no hps_* flag and retain the coverage-first fallback.
       ['has', `hps_${period}`],
-      ['case', ['==', ['get', `hps_${period}`], false], coverage, regularPeriod],
+      qualifiedCadence,
       coverage,
     ];
   }

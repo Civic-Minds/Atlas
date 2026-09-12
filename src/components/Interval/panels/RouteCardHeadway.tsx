@@ -476,6 +476,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                           <CardDirectionRow
                             label={label}
                             headway={displayH ?? undefined}
+                            colorHeadway={hoveredHour == null ? metricValueForPeriod(filterHw, period) : undefined}
                             headwayLabel={hoveredHour == null ? routeCardCoverageText(d, period) : undefined}
                             trunkHeadway={trunkHw}
                             dimmed={dimmed}
