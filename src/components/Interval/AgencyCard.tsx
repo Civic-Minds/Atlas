@@ -337,6 +337,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
   return (
     <div
       ref={ref}
+      data-report-anchor="true"
       className={`absolute top-20 left-6 sm:left-[var(--sidebar-left)] ${Z_PANEL} ${SIDEBAR_PANEL_WIDTH} ${fareView ? '' : 'max-h-[calc(100vh-104px)] flex flex-col'} ${FLOATING_CARD} ${PANEL_ENTER} overflow-hidden`}
       style={{
         '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px`,
