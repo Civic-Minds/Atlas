@@ -6,16 +6,27 @@ export function routeCardDisplayHeadway(p: ShapeProperties, period: TimePeriod):
   // A numeric gap inside a short-turn/peak-only cluster is not sustained route
   // service. Keep limited branches out of normal route-card/list cadence rows.
   if (p.tier === 'span') return null;
-  // A period median marked as unsustained is a bunching/edge-cluster signal, not a
-  // reliable rider-facing cadence. Use the branch's stable headline headway instead
-  // of displaying a value like TTC 63's false 2-minute midday median (#319).
+  const coverage = p.worstDirectionPeriodCoverageHeadway ?? p.periodCoverageHeadway;
+  const covVal = coverage && period !== 'all' ? coverage[period] : undefined;
+
+  // If full-window coverage is available and exceeds 60m, this route does not provide
+  // scheduled service across this period (e.g. Calgary 201/155 overnight #507).
+  if (period !== 'all' && covVal != null && covVal > 60) {
+    return null;
+  }
+
+  // A period median marked as unsustained:
+  // If the route genuinely covers the period (covVal <= 60), or if it's a legacy artifact
+  // without coverage data, the unsustained flag is a bunching signal (TTC 63 midday #319) —
+  // use the stable headline headway.
+  // When coverage data is present but exceeds 60m or is null, return null (no scheduled service).
   if (period !== 'all' && p.headwayByPeriodSustained?.[period] === false) {
-    return p.headway ?? null;
+    if (!hasPeriodCoverage(p, period) || (covVal != null && covVal <= 60)) {
+      return p.headway ?? null;
+    }
+    return null;
   }
   const summary = buildRouteServiceSummary(p);
-  // New artifacts can distinguish filter eligibility (full-period coverage) from
-  // the cadence while service is running. Older artifacts still need the legacy
-  // route-level metric so their cards do not regress.
   const displayMetric = hasPeriodCoverage(p, period) ? summary.display : summary.filter;
   return metricValueForPeriod(displayMetric, period);
 }
