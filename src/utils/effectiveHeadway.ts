@@ -3,6 +3,13 @@ import { buildRouteServiceSummary, metricValueForPeriod } from './routeFacts';
 
 /** Headway shown on route cards and lists — the same route-level metric used by the filter. */
 export function routeCardDisplayHeadway(p: ShapeProperties, period: TimePeriod): number | null {
+  const summary = buildRouteServiceSummary(p);
+  // Full-window coverage is the authoritative metric for a named period. It must
+  // win over the older sustained-period guard, or a short service window can still
+  // render its fast branch median as if it described the whole period.
+  if (hasPeriodCoverage(p, period)) {
+    return metricValueForPeriod(summary.filter, period);
+  }
   // A numeric gap inside a short-turn/peak-only cluster is not sustained route
   // service. Keep limited branches out of normal route-card/list cadence rows.
   if (p.tier === 'span') return null;
@@ -12,7 +19,6 @@ export function routeCardDisplayHeadway(p: ShapeProperties, period: TimePeriod):
   if (period !== 'all' && p.headwayByPeriodSustained?.[period] === false) {
     return p.headway ?? null;
   }
-  const summary = buildRouteServiceSummary(p);
   return metricValueForPeriod(summary.filter, period)
     ?? metricValueForPeriod(summary.display, period);
 }

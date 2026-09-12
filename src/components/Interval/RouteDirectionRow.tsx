@@ -62,7 +62,7 @@ export default function RouteDirectionRow({ label, headway, headwayLabel, trunkH
       onMouseEnter={onHoverStart}
       onMouseLeave={onHoverEnd}
     >
-      <div className="flex items-center justify-between gap-2">
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <span className={`font-bold flex-1 min-w-0 leading-snug break-words ${clickable ? '' : 'text-[var(--text-primary)]'}`}>
           {label}
         </span>

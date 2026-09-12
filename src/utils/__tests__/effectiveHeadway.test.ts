@@ -174,4 +174,15 @@ describe('effectiveRouteHeadway', () => {
     expect(routeListDisplayHeadway([p], 'overnight')).toBeNull();
     expect(routeCardDisplayHeadway(p, 'midday')).toBe(10);
   });
+
+  it('uses full-period coverage instead of a fast short-window median', () => {
+    const p = {
+      headway: 10,
+      headwayByPeriod: { overnight: 10 },
+      headwayByPeriodSustained: { overnight: false },
+      periodCoverageHeadway: { overnight: 171 },
+      tier: '10',
+    } as ShapeProperties;
+    expect(routeCardDisplayHeadway(p, 'overnight')).toBe(171);
+  });
 });
