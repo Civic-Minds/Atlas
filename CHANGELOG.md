@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Selected routes now keep normal background-route visibility while the chosen route is highlighted.
 - Added isolated Mexico City Metro ingestion with agency filtering for its multi-agency GTFS feed.
 - Night Service route rows now open the normal route card and highlight the selected route on the map.
 - Combined BART’s north/south directional variants into one suggested route per line.
