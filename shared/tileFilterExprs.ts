@@ -40,13 +40,30 @@ export function tileEffectiveHeadwayExpr(period?: PeriodFilter): unknown[] {
     // whole (unclipped) route through the filter (#314/#315).
     const [, wdph, hph] = periodHeadwayFlatKeys(period);
     const periodKeys = [wdph, hph];
-    return [
+    const coverageKeys = [`wdpch_${period}`, `pch_${period}`];
+    const coverage = [
       'case',
-      ['has', `wdpch_${period}`], ['get', `wdpch_${period}`],
-      ['has', `pch_${period}`], ['get', `pch_${period}`],
+      ['has', coverageKeys[0]], ['get', coverageKeys[0]],
+      ['has', coverageKeys[1]], ['get', coverageKeys[1]],
       ['any', ...periodKeys.map((key) => ['has', key])],
       ['coalesce', ...periodKeys.map((key) => ['get', key])],
       allDay,
+    ];
+    const regularPeriod = [
+      'case',
+      ['has', periodKeys[0]], ['get', periodKeys[0]],
+      ['has', periodKeys[1]], ['get', periodKeys[1]],
+      allDay,
+    ];
+    return [
+      'case',
+      // New artifacts keep the active cadence for a properly sustained period. If the
+      // period is marked unsustained, use the full-window coverage value so a late-start
+      // cluster (e.g. Calgary 201 overnight) cannot pass as a frequent route. Older tiles
+      // have no hps_* flag and retain the coverage-first fallback.
+      ['has', `hps_${period}`],
+      ['case', ['==', ['get', `hps_${period}`], false], coverage, regularPeriod],
+      coverage,
     ];
   }
   return allDay;

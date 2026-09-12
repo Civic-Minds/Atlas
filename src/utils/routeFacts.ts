@@ -113,9 +113,18 @@ function firstAvailableByPeriod(
  */
 export function buildRouteServiceSummary(p: ShapeProperties): RouteServiceSummary {
   const coverage = p.worstDirectionPeriodCoverageHeadway ?? p.periodCoverageHeadway;
-  const coveragePeriods = coverage === undefined ? undefined : Object.fromEntries(
-    PERIOD_KEYS.map(key => [key, coverage[key] ?? null]),
-  );
+  const regularPeriods = firstAvailableByPeriod(p.worstDirectionHeadwayByPeriod, p.headwayByPeriod);
+  const filterPeriods = coverage === undefined ? regularPeriods : Object.fromEntries(
+    PERIOD_KEYS.map(key => {
+      // A sustained period should be filtered by its actual cadence. Coverage is only
+      // needed when the period is explicitly marked unsustained; that catches routes that
+      // start late or stop early without turning ordinary evening boundary gaps into a
+      // false 15-minute-or-worse route.
+      const sustained = p.headwayByPeriodSustained?.[key];
+      if (sustained === true) return [key, regularPeriods?.[key] ?? null];
+      return [key, coverage[key] ?? null];
+    }),
+  ) as ShapeProperties['headwayByPeriod'];
   const branchValue = p.headway ?? null;
   const branchProvenance: HeadwayProvenance = p.headwayByPeriod
     ? 'period-summary' : branchValue != null ? 'all-day-summary' : 'none';
@@ -136,10 +145,7 @@ export function buildRouteServiceSummary(p: ShapeProperties): RouteServiceSummar
       // reflect a shared-core combined frequency that only applies to part of the route, and
       // without geometry clipping to match, letting it drive pass/fail here would smuggle a
       // partial match through as if the whole route qualified (#314/#315).
-      coveragePeriods ?? firstAvailableByPeriod(
-        p.worstDirectionHeadwayByPeriod,
-        p.headwayByPeriod,
-      ),
+      filterPeriods,
       p.headwayByHour,
       filterProvenance,
     ),

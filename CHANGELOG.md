@@ -6,7 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
-- Period filters now require service across the full time window, so late-start routes no longer appear as frequent overnight service.
+- Period filters now reject unsustained late-start service without penalizing normal period-boundary gaps, so Calgary evening routes remain visible while overnight 201 stays out of the frequent tier.
 - Route cards keep the active-service cadence separate from full-period filter eligibility.
 - Calgary MAX route cards now show the terminal name without repeating the MAX service branding.
 - Fixed the agency report form opening at the width of its flag icon instead of the full card.

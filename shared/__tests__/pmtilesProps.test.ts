@@ -55,4 +55,13 @@ describe('flattenPeriodHeadwayProps', () => {
     expect(props.wdpch_midday).toBe(15);
     expect(props.wdpch_overnight).toBe(NO_PERIOD_SERVICE_TILE_VALUE);
   });
+
+  it('flattens sustained-period flags for map filtering', () => {
+    const props: Record<string, unknown> = {
+      headwayByPeriodSustained: { evening: true, overnight: false },
+    };
+    flattenPeriodHeadwayProps(props);
+    expect(props.hps_evening).toBe(true);
+    expect(props.hps_overnight).toBe(false);
+  });
 });
