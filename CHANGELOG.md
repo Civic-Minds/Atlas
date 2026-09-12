@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Fixed map route selection showing duplicate Calgary lines when the feed uses multiple internal IDs for one visible route.
 - Added a visible Feedback email link beside the map attribution for launch-period comments and feature requests.
 - Calgary MAX route cards now show the terminal name without repeating the MAX service branding.
 - Fixed the agency report form opening at the width of its flag icon instead of the full card.

@@ -21,7 +21,7 @@ import { LIVE_POLLING_ROUTES } from '../../../shared/livePollingConfig';
 import { tileEffectiveHeadwayExpr, tileRouteKeyExpr } from '../../../shared/tileFilterExprs';
 import { syncUrlParams } from '../../utils/syncUrlParams';
 import { buildFocusedRoutePaint } from '../../utils/routeFocus';
-import { splitRouteKey } from '../../utils/routeKey';
+import { dedupeRouteKeysByDisplay, splitRouteKey } from '../../utils/routeKey';
 import { computeFrequencySegmentOverlay, buildPartialMatchFilterExpression, broadenFilterForPartialMatches } from '../../utils/frequencySegments';
 import { buildSharedHoverSegments } from '../../utils/sharedHoverSegments';
 import { getMapContextAgenciesFromFeatures, isMapContextOutsideClick, type MapContextAgency } from '../../utils/mapContext';
@@ -527,10 +527,15 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       const routeHits = map.queryRenderedFeatures(bbox, { layers: routeHitLayers });
       if (routeHits.length > 0) {
         const props = routeHits[0].properties;
-      const uniqueRouteKeys: string[] = Array.from(new Set(routeHits.map((f: maplibregl.MapGeoJSONFeature) => {
+        const uniqueRouteKeys = dedupeRouteKeysByDisplay(routeHits.map((f: maplibregl.MapGeoJSONFeature) => {
           const p = f.properties;
-          return routeKey({ ...p, agencySlug: p.agencySlug } as any);
-        })));
+          return {
+            key: routeKey({ ...p, agencySlug: p.agencySlug } as any),
+            agencySlug: String(p.agencySlug ?? ''),
+            shortName: String(p.routeShortName ?? p.routeId ?? ''),
+            longName: p.routeLongName as string | null | undefined,
+          };
+        }));
 
         setSelectedStopRef.current(null);
         if (onHistoryRouteClickRef.current) {
