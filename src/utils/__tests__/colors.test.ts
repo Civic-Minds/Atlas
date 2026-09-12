@@ -1,4 +1,4 @@
-import { buildDefaultRouteLineOpacityExpression, getTierColor, getVehicleStatus } from '../colors';
+import { buildDefaultRouteLineOpacityExpression, buildFocusedRouteLineOpacityExpression, getTierColor, getVehicleStatus } from '../colors';
 import { describe, it, expect } from 'vitest';
 
 describe('getTierColor', () => {
@@ -47,6 +47,20 @@ describe('buildDefaultRouteLineOpacityExpression', () => {
       'case',
       ['==', ['get', 'routeId'], 'partial'],
       0.35,
+      ['case', ['>', ['get', 'headway'], 20], 0, 0.7],
+    ]);
+  });
+});
+
+describe('buildFocusedRouteLineOpacityExpression', () => {
+  it('keeps background routes on the normal headway opacity curve', () => {
+    const expression = buildFocusedRouteLineOpacityExpression(['==', ['get', 'routeId'], 'selected'], ['get', 'headway']);
+
+    expect(expression[0]).toBe('interpolate');
+    expect(expression[4]).toEqual([
+      'case',
+      ['==', ['get', 'routeId'], 'selected'],
+      1,
       ['case', ['>', ['get', 'headway'], 20], 0, 0.7],
     ]);
   });
