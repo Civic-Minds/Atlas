@@ -44,6 +44,15 @@ export function cleanHeadsign(
     h = h.replace(new RegExp(`^${escaped}\\s+(?:towards|to)\\s+`, 'i'), '');
   }
 
+  // Calgary Transit MAX routes repeat the service brand in every headsign
+  // (e.g. "MAX GREEN CITY CENTRE"). The route long name starts with the same
+  // two-word brand, so keep only the actual terminal.
+  const maxBrand = longName?.match(/^(MAX\s+\w+)/i)?.[1];
+  if (maxBrand) {
+    const escapedBrand = maxBrand.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    h = h.replace(new RegExp(`^${escapedBrand}\\s+`, 'i'), '');
+  }
+
   // MVTA 4FUN: "4FUN East to MOA/MSP", "4FUN West to Marschall Road TS"
   h = h.replace(/^4FUN\s+(?:East|West)\s+(?:Mystic Lake\s+to\s+)?/i, '');
   h = h.replace(/^4FUN\s+(?:East|West)\s+to\s+/i, '');

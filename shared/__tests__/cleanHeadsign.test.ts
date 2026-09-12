@@ -37,6 +37,11 @@ describe('cleanHeadsign', () => {
     expect(cleanHeadsign('4FUN East Mystic Lake to MOA/MSP', '495', '4FUN: Shakopee-Savage-Burnsville-MOA-MSP')).toBe('MOA/MSP');
   });
 
+  it('strips repeated Calgary MAX branding from destinations', () => {
+    expect(cleanHeadsign('MAX GREEN CITY CENTRE', 'MG', 'MAX Green North Pointe/ City Centre')).toBe('CITY CENTRE');
+    expect(cleanHeadsign('MAX GREEN NORTH POINTE', 'MG', 'MAX Green North Pointe/ City Centre')).toBe('NORTH POINTE');
+  });
+
   it('merges Lyon ZI8\'s orphaned un-accented headsign variant into the real pattern', () => {
     expect(cleanHeadsign('Parc des Lumieres', 'ZI8', null)).toBe('Parc des Lumières 1');
     expect(cleanHeadsign('Parc des Lumières 1', 'ZI8', null)).toBe('Parc des Lumières 1');

@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Calgary MAX route cards now show the terminal name without repeating the MAX service branding.
 - Fixed the agency report form opening at the width of its flag icon instead of the full card.
 - Removed feed-quality badges from the public agency list so technical review states do not look like rider action items.
 - Added Area Transportation Authority coverage across North Central Pennsylvania, including Punxsutawney's local bus route.
