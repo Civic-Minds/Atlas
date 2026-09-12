@@ -7,9 +7,9 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-205/latest.zip",
   "lastFeedExpiry": "20261204",
-  "lastFeedVersion": "1787169866",
+  "lastFeedVersion": "1788376763",
   "region": "Minnesota",
-  "lastRefreshedAt": "2026-08-24",
+  "lastRefreshedAt": "2026-09-07",
   "cities": [
     "Minneapolis, Minnesota",
     "Saint Paul, Minnesota",
@@ -22,7 +22,7 @@
     "Plymouth, Minnesota",
     "West Coon Rapids, Minnesota"
   ],
-  "lastFeedCheckAt": "20260827",
+  "lastFeedCheckAt": "20260907",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261204",
@@ -30,8 +30,8 @@
     "status": "review",
     "score": 60,
     "reasons": [
-      "1 shape correction needed.",
-      "11 route frequency metrics need review."
+      "1 map line was repaired — Atlas fixed unusual route geometry before displaying it.",
+      "11 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
     ],
     "metrics": {
       "validationErrors": 0,
@@ -40,7 +40,7 @@
       "routeHeadwayMismatches": 11,
       "featureCount": 652
     },
-    "checkedAt": "2026-08-24"
+    "checkedAt": "2026-09-07"
   },
   "timezone": "America/Chicago"
 }

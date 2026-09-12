@@ -14,17 +14,17 @@
     -80.75
   ],
   "feedUrl": "https://www.londontransit.ca/gtfsfeed/google_transit.zip",
-  "lastFeedExpiry": "20260905",
-  "lastFeedVersion": "2026 Summer - No Tripper_20260811",
+  "lastFeedExpiry": "20261128",
+  "lastFeedVersion": "2026 September_20260827",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-london-transit-commission-gtfs-2.zip?alt=media",
-  "lastRefreshedAt": "2026-08-27",
+  "lastRefreshedAt": "2026-09-07",
   "cities": [
     "London, Ontario"
   ],
-  "lastFeedCheckAt": "20260827",
+  "lastFeedCheckAt": "20260907",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20260905",
+  "expiredFeedCheckExpiry": "20261128",
   "feedQuality": {
     "status": "review",
     "score": 90,
@@ -36,9 +36,9 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 1,
-      "featureCount": 276
+      "featureCount": 299
     },
-    "checkedAt": "2026-08-27"
+    "checkedAt": "2026-09-07"
   },
   "timezone": "America/Toronto"
 }

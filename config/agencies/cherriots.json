@@ -23,10 +23,10 @@
   ],
   "timezone": "America/Los_Angeles",
   "lastRawArchiveKey": "20260102-024bddedbb9eacbd",
-  "lastFeedCheckAt": "20260827",
+  "lastFeedCheckAt": "20260907",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20270117",
+  "expiredFeedCheckExpiry": "20270102",
   "feedQuality": {
     "status": "review",
     "score": 70,

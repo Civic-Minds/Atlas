@@ -14,17 +14,17 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-2259/latest.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2259/latest.zip",
-  "lastFeedExpiry": "20260910",
+  "lastFeedExpiry": "20260921",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-08-27",
+  "lastRefreshedAt": "2026-09-07",
   "cities": [
     "Bonita Springs, Florida",
     "Lehigh Acres, Florida"
   ],
-  "lastFeedCheckAt": "20260827",
+  "lastFeedCheckAt": "20260907",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20260910",
+  "expiredFeedCheckExpiry": "20260921",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -36,7 +36,7 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 84
     },
-    "checkedAt": "2026-08-27"
+    "checkedAt": "2026-09-07"
   },
   "timezone": "America/New_York"
 }

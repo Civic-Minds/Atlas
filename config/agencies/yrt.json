@@ -13,10 +13,10 @@
     -78.94
   ],
   "feedUrl": "https://www.yrt.ca/google/google_transit.zip",
-  "lastFeedExpiry": "20260905",
-  "lastFeedVersion": "2026.06.28_June_20260611",
+  "lastFeedExpiry": "20261031",
+  "lastFeedVersion": "2026.09.06_September_20260810",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-york-region-transit-gtfs-728.zip?alt=media",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-09-07",
   "cities": [
     "Vaughan, Ontario",
     "Richmond Hill, Ontario",
@@ -29,9 +29,24 @@
     "Etobicoke, Ontario",
     "Pickering, Ontario"
   ],
-  "lastFeedCheckAt": "20260827",
+  "lastFeedCheckAt": "20260907",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20260905",
-  "timezone": "America/Toronto"
+  "expiredFeedCheckExpiry": "20261031",
+  "timezone": "America/Toronto",
+  "feedQuality": {
+    "status": "review",
+    "score": 70,
+    "reasons": [
+      "6 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 6,
+      "featureCount": 338
+    },
+    "checkedAt": "2026-09-07"
+  }
 }

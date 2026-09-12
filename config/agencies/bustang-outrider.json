@@ -14,11 +14,27 @@
     -104.4
   ],
   "lastFeedExpiry": "20270201",
-  "lastFeedVersion": "UTC: 24-Jul-2026 18:40",
-  "lastRefreshedAt": "2026-08-07",
-  "lastFeedCheckAt": "20260827",
+  "lastFeedVersion": "UTC: 28-Aug-2026 14:56",
+  "lastRefreshedAt": "2026-09-07",
+  "lastFeedCheckAt": "20260907",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270201",
-  "timezone": "America/Denver"
+  "timezone": "America/Denver",
+  "feedQuality": {
+    "status": "review",
+    "score": 60,
+    "reasons": [
+      "1 schedule-data warning — Atlas found a minor issue while reading the schedule.",
+      "10 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 1,
+      "shapeAnomalies": 10,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 8
+    },
+    "checkedAt": "2026-09-07"
+  }
 }

@@ -7,9 +7,9 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-150/latest.zip",
   "lastFeedExpiry": "20270109",
-  "lastFeedVersion": "260818_1456",
+  "lastFeedVersion": "260826_0956",
   "region": "Texas",
-  "lastRefreshedAt": "2026-08-24",
+  "lastRefreshedAt": "2026-09-07",
   "cities": [
     "University of Texas, Texas",
     "Austin, Texas",
@@ -18,25 +18,25 @@
     "Round Rock, Texas",
     "Leander, Texas"
   ],
-  "lastFeedCheckAt": "20260827",
+  "lastFeedCheckAt": "20260907",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270109",
   "feedQuality": {
-    "status": "review",
-    "score": 60,
+    "status": "degraded",
+    "score": 40,
     "reasons": [
-      "28 shape corrections needed.",
-      "1 route frequency metric need review."
+      "369 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
+      "7 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 28,
-      "routeHeadwayMismatches": 1,
-      "featureCount": 318
+      "shapeAnomalies": 369,
+      "routeHeadwayMismatches": 7,
+      "featureCount": 271
     },
-    "checkedAt": "2026-08-24"
+    "checkedAt": "2026-09-07"
   },
   "timezone": "America/Chicago"
 }

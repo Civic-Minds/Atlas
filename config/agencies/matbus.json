@@ -15,12 +15,12 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-80003/ntd-80003-202608100019/ntd-80003-202608100019.zip",
   "region": "North Dakota",
   "lastFeedExpiry": "",
-  "lastFeedVersion": "8/24/2026 schedule",
-  "lastRefreshedAt": "2026-08-27",
+  "lastFeedVersion": "9/7/2026 Schedule",
+  "lastRefreshedAt": "2026-09-07",
   "cities": [
     "Fargo, North Dakota"
   ],
-  "lastFeedCheckAt": "20260827",
+  "lastFeedCheckAt": "20260907",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",
@@ -35,7 +35,7 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 55
     },
-    "checkedAt": "2026-08-27"
+    "checkedAt": "2026-09-07"
   },
   "timezone": "America/Chicago"
 }

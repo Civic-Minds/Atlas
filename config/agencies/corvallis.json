@@ -15,12 +15,12 @@
   "feedUrl": "http://www.corvallistransit.com/rtt/public/resource/gtfs.zip",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-oregon-city-of-corvallis-gtfs-2283.zip?alt=media",
   "lastFeedExpiry": "20271231",
-  "lastFeedVersion": "20260825",
-  "lastRefreshedAt": "2026-08-27",
+  "lastFeedVersion": "20260831",
+  "lastRefreshedAt": "2026-09-07",
   "cities": [
     "Corvallis, Oregon"
   ],
-  "lastFeedCheckAt": "20260827",
+  "lastFeedCheckAt": "20260907",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
@@ -33,9 +33,9 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 22
+      "featureCount": 24
     },
-    "checkedAt": "2026-08-27"
+    "checkedAt": "2026-09-07"
   },
   "timezone": "America/Los_Angeles"
 }

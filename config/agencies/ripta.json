@@ -17,9 +17,9 @@
     "Cranston, Rhode Island",
     "Fall River, Massachusetts"
   ],
-  "lastFeedCheckAt": "20260827",
-  "expiredFeedCheckCount": 0,
-  "expiredFeedCheckSince": null,
+  "lastFeedCheckAt": "20260907",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
   "expiredFeedCheckExpiry": "20260828",
   "timezone": "America/New_York"
 }

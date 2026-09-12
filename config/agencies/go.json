@@ -14,9 +14,9 @@
     -77.5
   ],
   "feedUrl": "https://assets.metrolinx.com/raw/upload/Documents/Metrolinx/Open%20Data/GO-GTFS.zip",
-  "lastFeedExpiry": "20260904",
-  "lastFeedVersion": "20260821142646",
-  "lastRefreshedAt": "2026-08-27",
+  "lastFeedExpiry": "20261127",
+  "lastFeedVersion": "20260831134935",
+  "lastRefreshedAt": "2026-09-07",
   "cities": [
     "Mississauga, Ontario",
     "Brampton, Ontario",
@@ -30,24 +30,24 @@
     "Barrie, Ontario"
   ],
   "timezone": "America/Toronto",
-  "lastFeedCheckAt": "20260827",
+  "lastFeedCheckAt": "20260907",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20260904",
+  "expiredFeedCheckExpiry": "20261127",
   "feedQuality": {
     "status": "degraded",
     "score": 40,
     "reasons": [
-      "3 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
-      "10 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+      "5 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
+      "12 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 3,
-      "routeHeadwayMismatches": 10,
-      "featureCount": 289
+      "shapeAnomalies": 5,
+      "routeHeadwayMismatches": 12,
+      "featureCount": 301
     },
-    "checkedAt": "2026-08-27"
+    "checkedAt": "2026-09-07"
   }
 }

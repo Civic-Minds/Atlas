@@ -7,10 +7,10 @@
   ],
   "feedUrl": "http://www.dart.org/transitdata/latest/google_transit.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-152/mdb-152-202607200103/mdb-152-202607200103.zip",
-  "lastFeedExpiry": "20260913",
-  "lastFeedVersion": "V720-215-216-20260818",
+  "lastFeedExpiry": "20260920",
+  "lastFeedVersion": "V731-218-216-20260914",
   "region": "Texas",
-  "lastRefreshedAt": "2026-08-27",
+  "lastRefreshedAt": "2026-09-07",
   "cities": [
     "Dallas, Texas",
     "Richardson, Texas",
@@ -24,21 +24,23 @@
     "Frisco, Texas"
   ],
   "timezone": "America/Chicago",
-  "lastFeedCheckAt": "20260827",
+  "lastFeedCheckAt": "20260907",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20260913",
+  "expiredFeedCheckExpiry": "20260920",
   "feedQuality": {
-    "status": "healthy",
-    "score": 100,
-    "reasons": [],
+    "status": "review",
+    "score": 70,
+    "reasons": [
+      "3 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+    ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 0,
-      "routeHeadwayMismatches": 0,
-      "featureCount": 540
+      "routeHeadwayMismatches": 3,
+      "featureCount": 541
     },
-    "checkedAt": "2026-08-27"
+    "checkedAt": "2026-09-07"
   }
 }

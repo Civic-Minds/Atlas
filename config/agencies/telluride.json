@@ -18,7 +18,7 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2050/latest.zip",
   "lastFeedExpiry": "20261019",
   "lastFeedVersion": "UTC: 02-Jun-2026 18:30",
-  "lastRefreshedAt": "2026-08-27",
+  "lastRefreshedAt": "2026-09-07",
   "cities": [
     "Telluride, Colorado"
   ],
@@ -35,9 +35,9 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 3
     },
-    "checkedAt": "2026-08-27"
+    "checkedAt": "2026-09-07"
   },
-  "lastFeedCheckAt": "20260827",
+  "lastFeedCheckAt": "20260907",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261122",

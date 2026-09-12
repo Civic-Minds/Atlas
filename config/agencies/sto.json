@@ -13,10 +13,10 @@
     -75.391
   ],
   "feedUrl": "https://contenu.sto.ca/GTFS/GTFS.zip",
-  "lastFeedExpiry": "20261019",
+  "lastFeedExpiry": "20261029",
   "lastFeedVersion": null,
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-societe-de-transport-de-loutaouais-gtfs-740.zip?alt=media",
-  "lastRefreshedAt": "2026-08-27",
+  "lastRefreshedAt": "2026-09-07",
   "cities": [
     "Gatineau, Quebec",
     "Aylmer, Quebec",
@@ -24,10 +24,10 @@
     "Orléans, Ontario",
     "Ottawa, Ontario"
   ],
-  "lastFeedCheckAt": "20260827",
+  "lastFeedCheckAt": "20260907",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261019",
+  "expiredFeedCheckExpiry": "20261029",
   "feedQuality": {
     "status": "review",
     "score": 80,
@@ -41,7 +41,7 @@
       "routeHeadwayMismatches": 2,
       "featureCount": 222
     },
-    "checkedAt": "2026-08-27"
+    "checkedAt": "2026-09-07"
   },
   "timezone": "America/Montreal"
 }

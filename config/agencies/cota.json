@@ -8,15 +8,28 @@
   ],
   "feedUrl": "https://www.cota.com/data/cota.gtfs.zip",
   "mdbFeedUrl": "https://www.cota.com/data/cota.gtfs.zip",
-  "lastFeedExpiry": "20260906",
-  "lastFeedVersion": "2026-MAY-04-BB_20260630",
-  "lastRefreshedAt": "2026-08-07",
+  "lastFeedExpiry": "20270103",
+  "lastFeedVersion": "2026-SEP-07-BB_20260904",
+  "lastRefreshedAt": "2026-09-07",
   "cities": [
     "Columbus, Ohio"
   ],
-  "lastFeedCheckAt": "20260827",
+  "lastFeedCheckAt": "20260907",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20260906",
-  "timezone": "America/New_York"
+  "expiredFeedCheckExpiry": "20270103",
+  "timezone": "America/New_York",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 198
+    },
+    "checkedAt": "2026-09-07"
+  }
 }

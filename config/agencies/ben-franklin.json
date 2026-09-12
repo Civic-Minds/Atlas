@@ -6,9 +6,9 @@
     -119.14
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-2122/latest.zip",
-  "lastFeedExpiry": "20260829",
-  "lastFeedVersion": "0626 Fixed Rev 2",
-  "lastRefreshedAt": "2026-08-07",
+  "lastFeedExpiry": "20270313",
+  "lastFeedVersion": "0926 Fixed Rev 2",
+  "lastRefreshedAt": "2026-09-07",
   "region": "Washington",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2122/latest.zip",
   "bbox": [
@@ -23,9 +23,22 @@
     "Kennewick, Washington",
     "Pasco, Washington"
   ],
-  "lastFeedCheckAt": "20260827",
+  "lastFeedCheckAt": "20260907",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20260829",
-  "timezone": "America/Los_Angeles"
+  "expiredFeedCheckExpiry": "20270313",
+  "timezone": "America/Los_Angeles",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 104
+    },
+    "checkedAt": "2026-09-07"
+  }
 }

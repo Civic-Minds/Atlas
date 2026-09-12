@@ -8,8 +8,8 @@
   ],
   "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=13",
   "lastFeedExpiry": "20270102",
-  "lastFeedVersion": "202608270/20260826 21:00:00/20260827 04:00:00",
-  "lastRefreshedAt": "2026-08-27",
+  "lastFeedVersion": "202609070/20260906 21:00:00/20260907 04:00:00",
+  "lastRefreshedAt": "2026-09-07",
   "websiteUrl": "https://www.bctransit.com/",
   "cities": [
     "Abbotsford, British Columbia",
@@ -19,7 +19,7 @@
     "New Westminster, British Columbia"
   ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1991/mdb-1991-202608100127/mdb-1991-202608100127.zip",
-  "lastFeedCheckAt": "20260827",
+  "lastFeedCheckAt": "20260907",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270102",
@@ -27,17 +27,17 @@
     "status": "review",
     "score": 60,
     "reasons": [
-      "19 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
+      "16 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
       "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 19,
+      "shapeAnomalies": 16,
       "routeHeadwayMismatches": 1,
       "featureCount": 134
     },
-    "checkedAt": "2026-08-27"
+    "checkedAt": "2026-09-07"
   },
   "timezone": "America/Vancouver"
 }

@@ -7,9 +7,9 @@
     -83.0458
   ],
   "feedUrl": "https://www.detroitmi.gov/Portals/0/docs/deptoftransportation/pdfs/ddot_gtfs.zip",
-  "lastFeedExpiry": "20260920",
-  "lastFeedVersion": "S1000181",
-  "lastRefreshedAt": "2026-08-10",
+  "lastFeedExpiry": "20270207",
+  "lastFeedVersion": "S1000182",
+  "lastRefreshedAt": "2026-09-07",
   "websiteUrl": "https://DetroitMI.gov/DDOT",
   "cities": [
     "Detroit, Michigan",
@@ -23,9 +23,22 @@
     "Windsor, Ontario"
   ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-464/mdb-464-202606250001/mdb-464-202606250001.zip",
-  "lastFeedCheckAt": "20260827",
+  "lastFeedCheckAt": "20260907",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20260920",
-  "timezone": "America/Detroit"
+  "expiredFeedCheckExpiry": "20270207",
+  "timezone": "America/Detroit",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 224
+    },
+    "checkedAt": "2026-09-07"
+  }
 }
