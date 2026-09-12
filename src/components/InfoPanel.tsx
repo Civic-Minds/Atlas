@@ -9,7 +9,6 @@ import { agencyHistoryTier, agencyQualifiesForHistory, agencyQualifiesForHistory
 import { countriesForAgencies } from '../../shared/regionCountry';
 import type { Agency } from '../App';
 import { isFeedExpired } from '../utils/feedFreshness';
-import { qualityStatusLabel } from '../../shared/feedQuality';
 import { trackEvent } from '../lib/analytics';
 
 interface HistoryAgencySummary { slug: string; name: string; region: string; routes: unknown[] }
@@ -475,7 +474,6 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                           const hasHistory = historyBySlug.has(a.slug);
                           const showLiveBadge = LIVE_ENABLED && hasLive;
                           const showHistoryBadge = HISTORY_ENABLED && hasHistory;
-                          const showQualityBadge = a.feedQuality && a.feedQuality.status !== 'healthy';
                           const { primary, secondary } = agencyDisplayParts(a.name, a.cities, a.displayArea);
                           const listLabel = secondary ? `${primary} · ${secondary}` : primary;
                           return (
@@ -491,13 +489,8 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                                   <span className="text-[var(--text-dim)]"> · {secondary}</span>
                                 )}
                               </span>
-                              {(showLiveBadge || showHistoryBadge || showQualityBadge) && (
+                              {(showLiveBadge || showHistoryBadge) && (
                                 <div className="flex items-center gap-1.5 shrink-0 ml-2">
-                                  {showQualityBadge && (
-                                    <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded-full border ${a.feedQuality?.status === 'unusable' ? 'text-[var(--status-danger-text)] bg-[var(--status-danger-bg)] border-[var(--status-danger-border)]' : a.feedQuality?.status === 'degraded' ? 'text-[var(--status-warn-text)] bg-[var(--status-warn-bg)] border-[var(--status-warn-border)]' : 'text-[var(--text-muted)] bg-[var(--bg-btn)] border-[var(--border-primary)]'}`}>
-                                      {qualityStatusLabel(a.feedQuality!.status)}
-                                    </span>
-                                  )}
                                   {showLiveBadge && (
                                     <span
                                       title={liveCoverageBySlug.has(a.slug) ? undefined : 'Live route coverage is still loading.'}

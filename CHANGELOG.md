@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Removed feed-quality badges from the public agency list so technical review states do not look like rider action items.
 - Added Area Transportation Authority coverage across North Central Pennsylvania, including Punxsutawney's local bus route.
 - Added 19 previously uncovered fixed-route agencies across the US and Canada, including Decatur, Charlottesville, Johnson City, Maui, and Medicine Hat.
 - Added eight more fixed-route agencies across Iowa, New Mexico, Kentucky, Illinois, Tennessee, Indiana, Arizona, and Washington.
