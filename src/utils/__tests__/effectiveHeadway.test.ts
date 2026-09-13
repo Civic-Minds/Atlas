@@ -187,7 +187,7 @@ describe('effectiveRouteHeadway', () => {
     expect(effectiveRouteHeadway(p, 'overnight')).toBe(171);
   });
 
-  it('requires coverage to be within frequent tiers (<= 60) for card cadence and filter eligibility (#507)', () => {
+  it('preserves active-service cadence on cards while filtering by full-period coverage (#507)', () => {
     const p = {
       headway: 36,
       headwayByPeriod: { overnight: 24 },
@@ -195,7 +195,19 @@ describe('effectiveRouteHeadway', () => {
       periodCoverageHeadway: { overnight: 190 },
       tier: '30',
     } as ShapeProperties;
-    expect(routeCardDisplayHeadway(p, 'overnight')).toBeNull();
+    expect(routeCardDisplayHeadway(p, 'overnight')).toBe(24);
     expect(effectiveRouteHeadway(p, 'overnight')).toBe(190);
+  });
+
+  it('preserves cadence for sustained infrequent routes with coverage > 60m', () => {
+    const p = {
+      headway: 60,
+      headwayByPeriod: { midday: 60 },
+      headwayByPeriodSustained: { midday: true },
+      periodCoverageHeadway: { midday: 61 },
+      tier: '60',
+    } as ShapeProperties;
+    expect(routeCardDisplayHeadway(p, 'midday')).toBe(60);
+    expect(effectiveRouteHeadway(p, 'midday')).toBe(61);
   });
 });

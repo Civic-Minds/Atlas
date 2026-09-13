@@ -9,12 +9,6 @@ export function routeCardDisplayHeadway(p: ShapeProperties, period: TimePeriod):
   const coverage = p.worstDirectionPeriodCoverageHeadway ?? p.periodCoverageHeadway;
   const covVal = coverage && period !== 'all' ? coverage[period] : undefined;
 
-  // If full-window coverage is available and exceeds 60m, this route does not provide
-  // scheduled service across this period (e.g. Calgary 201/155 overnight #507).
-  if (period !== 'all' && covVal != null && covVal > 60) {
-    return null;
-  }
-
   // A period median marked as unsustained:
   // If the route genuinely covers the period (covVal <= 60), or if it's a legacy artifact
   // without coverage data, the unsustained flag is a bunching signal (TTC 63 midday #319) —
