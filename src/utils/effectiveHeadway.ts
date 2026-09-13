@@ -1,4 +1,5 @@
 import type { ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
+import { isHourInPeriod } from '../../shared/config';
 import { buildRouteServiceSummary, metricValueForPeriod } from './routeFacts';
 
 /** Headway shown on route cards and lists — the same route-level metric used by the filter. */
@@ -27,6 +28,26 @@ export function routeCardDisplayHeadway(p: ShapeProperties, period: TimePeriod):
 
 export function hasPeriodCoverage(p: ShapeProperties, period: TimePeriod): boolean {
   return period !== 'all' && (p.periodCoverageHeadway !== undefined || p.worstDirectionPeriodCoverageHeadway !== undefined);
+}
+
+/**
+ * Whether a route direction has scheduled departures during a specific time period.
+ * Distinguishes between complete absence of service (0 trips) and partial/limited
+ * service (e.g. route starting late or ending early in the period window).
+ */
+export function hasDirectionPeriodService(p: ShapeProperties, period: TimePeriod): boolean {
+  if (period === 'all') return true;
+  const coverage = p.worstDirectionPeriodCoverageHeadway ?? p.periodCoverageHeadway;
+  if (coverage && coverage[period] != null) return true;
+  if (p.headwayByPeriod && p.headwayByPeriod[period] != null) return true;
+  if (p.headwayByHour) {
+    for (const [hourStr, val] of Object.entries(p.headwayByHour)) {
+      if (val != null && isHourInPeriod(Number(hourStr), period)) {
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
 /** Full-window bound first; raw median remains a separately labelled cadence. */

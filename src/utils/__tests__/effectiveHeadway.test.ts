@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { effectiveRouteHeadway, routeCardDisplayHeadway, routeListDisplayHeadway } from '../effectiveHeadway';
+import { effectiveRouteHeadway, hasDirectionPeriodService, routeCardDisplayHeadway, routeListDisplayHeadway } from '../effectiveHeadway';
 import type { ShapeProperties } from '../../hooks/useIntervalStats';
 
 describe('effectiveRouteHeadway', () => {
@@ -209,5 +209,26 @@ describe('effectiveRouteHeadway', () => {
     } as ShapeProperties;
     expect(routeCardDisplayHeadway(p, 'midday')).toBe(60);
     expect(effectiveRouteHeadway(p, 'midday')).toBe(61);
+  });
+
+  it('detects partial period service for routes starting late or ending early (#507)', () => {
+    const withCoverage = {
+      periodCoverageHeadway: { overnight: 171 },
+    } as unknown as ShapeProperties;
+    expect(hasDirectionPeriodService(withCoverage, 'overnight')).toBe(true);
+
+    const withHourly = {
+      headwayByHour: { 5: 10 },
+    } as unknown as ShapeProperties;
+    expect(hasDirectionPeriodService(withHourly, 'overnight')).toBe(true);
+
+    const withZeroService = {
+      periodCoverageHeadway: { overnight: null },
+      headwayByPeriod: { midday: 10 },
+      headwayByHour: { 12: 10 },
+    } as unknown as ShapeProperties;
+    expect(hasDirectionPeriodService(withZeroService, 'overnight')).toBe(false);
+    expect(hasDirectionPeriodService(withZeroService, 'midday')).toBe(true);
+    expect(hasDirectionPeriodService(withZeroService, 'all')).toBe(true);
   });
 });
