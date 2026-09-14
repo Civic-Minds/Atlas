@@ -1508,7 +1508,11 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         } else {
           setRouteLayerPaint(map, 'line-opacity', buildFocusedRouteLineOpacityExpression(routeMatch, headwayExpr) as any);
           setRouteLayerPaint(map, 'line-width', [
-            'case', routeMatch, 3.5, ['interpolate', ['linear'], ['zoom'], 8, 1.5, 11, 2.0, 14, 2.5, 17, 3.5],
+            'interpolate', ['linear'], ['zoom'],
+            8, ['case', routeMatch, 3.5, 1.5],
+            11, ['case', routeMatch, 3.5, 2.0],
+            14, ['case', routeMatch, 3.5, 2.5],
+            17, 3.5,
           ]);
         }
       } else if (hoveredSearchRoute) {
@@ -1516,7 +1520,11 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         const hoverMatch: any = routeKeyMatchExpression(hoveredSearchRoute);
         setRouteLayerPaint(map, 'line-opacity', buildFocusedRouteLineOpacityExpression(hoverMatch, headwayExpr) as any);
         setRouteLayerPaint(map, 'line-width', [
-          'case', hoverMatch, 3.5, ['interpolate', ['linear'], ['zoom'], 8, 1.5, 11, 2.0, 14, 2.5, 17, 3.5],
+          'interpolate', ['linear'], ['zoom'],
+          8, ['case', hoverMatch, 3.5, 1.5],
+          11, ['case', hoverMatch, 3.5, 2.0],
+          14, ['case', hoverMatch, 3.5, 2.5],
+          17, 3.5,
         ]);
       } else if (selectedStop && routesForStop?.siblingIdsByAgency) {
         const servingMatch = buildServingStopMatchExpression(layers, routesForStop.siblingIdsByAgency);
