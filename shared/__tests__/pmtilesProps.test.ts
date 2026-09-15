@@ -37,4 +37,31 @@ describe('flattenPeriodHeadwayProps', () => {
     flattenPeriodHeadwayProps(props);
     expect(Object.hasOwn(props, 'hph_late')).toBe(false);
   });
+
+  it('keeps legacy tiles on the old fallback until coverage data exists', () => {
+    const props: Record<string, unknown> = { headway: 30 };
+    flattenPeriodHeadwayProps(props);
+    expect(Object.keys(props).some(key => key.startsWith('pch_'))).toBe(false);
+  });
+
+  it('flattens full-window coverage and its explicit no-service periods', () => {
+    const props: Record<string, unknown> = {
+      periodCoverageHeadway: { midday: 10, overnight: null },
+      worstDirectionPeriodCoverageHeadway: { midday: 15, overnight: null },
+    };
+    flattenPeriodHeadwayProps(props);
+    expect(props.pch_midday).toBe(10);
+    expect(props.pch_overnight).toBe(NO_PERIOD_SERVICE_TILE_VALUE);
+    expect(props.wdpch_midday).toBe(15);
+    expect(props.wdpch_overnight).toBe(NO_PERIOD_SERVICE_TILE_VALUE);
+  });
+
+  it('flattens sustained-period flags for map filtering', () => {
+    const props: Record<string, unknown> = {
+      headwayByPeriodSustained: { evening: true, overnight: false },
+    };
+    flattenPeriodHeadwayProps(props);
+    expect(props.hps_evening).toBe(true);
+    expect(props.hps_overnight).toBe(false);
+  });
 });

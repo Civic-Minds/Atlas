@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { effectiveRouteHeadway, routeCardDisplayHeadway, routeListDisplayHeadway } from '../effectiveHeadway';
+import { effectiveRouteHeadway, hasDirectionPeriodService, routeCardDisplayHeadway, routeListDisplayHeadway } from '../effectiveHeadway';
 import type { ShapeProperties } from '../../hooks/useIntervalStats';
 
 describe('effectiveRouteHeadway', () => {
@@ -173,5 +173,62 @@ describe('effectiveRouteHeadway', () => {
     expect(routeCardDisplayHeadway(p, 'overnight')).toBeNull();
     expect(routeListDisplayHeadway([p], 'overnight')).toBeNull();
     expect(routeCardDisplayHeadway(p, 'midday')).toBe(10);
+  });
+
+  it('does not show a false active-service cadence on cards when full-period coverage has multi-hour voids (#507)', () => {
+    const p = {
+      headway: 10,
+      headwayByPeriod: { overnight: 10 },
+      headwayByPeriodSustained: { overnight: false },
+      periodCoverageHeadway: { overnight: 171 },
+      tier: '10',
+    } as ShapeProperties;
+    expect(routeCardDisplayHeadway(p, 'overnight')).toBeNull();
+    expect(effectiveRouteHeadway(p, 'overnight')).toBe(171);
+  });
+
+  it('preserves active-service cadence on cards while filtering by full-period coverage (#507)', () => {
+    const p = {
+      headway: 36,
+      headwayByPeriod: { overnight: 24 },
+      headwayByPeriodSustained: { overnight: true },
+      periodCoverageHeadway: { overnight: 190 },
+      tier: '30',
+    } as ShapeProperties;
+    expect(routeCardDisplayHeadway(p, 'overnight')).toBe(24);
+    expect(effectiveRouteHeadway(p, 'overnight')).toBe(190);
+  });
+
+  it('preserves cadence for sustained infrequent routes with coverage > 60m', () => {
+    const p = {
+      headway: 60,
+      headwayByPeriod: { midday: 60 },
+      headwayByPeriodSustained: { midday: true },
+      periodCoverageHeadway: { midday: 61 },
+      tier: '60',
+    } as ShapeProperties;
+    expect(routeCardDisplayHeadway(p, 'midday')).toBe(60);
+    expect(effectiveRouteHeadway(p, 'midday')).toBe(61);
+  });
+
+  it('detects partial period service for routes starting late or ending early (#507)', () => {
+    const withCoverage = {
+      periodCoverageHeadway: { overnight: 171 },
+    } as unknown as ShapeProperties;
+    expect(hasDirectionPeriodService(withCoverage, 'overnight')).toBe(true);
+
+    const withHourly = {
+      headwayByHour: { 5: 10 },
+    } as unknown as ShapeProperties;
+    expect(hasDirectionPeriodService(withHourly, 'overnight')).toBe(true);
+
+    const withZeroService = {
+      periodCoverageHeadway: { overnight: null },
+      headwayByPeriod: { midday: 10 },
+      headwayByHour: { 12: 10 },
+    } as unknown as ShapeProperties;
+    expect(hasDirectionPeriodService(withZeroService, 'overnight')).toBe(false);
+    expect(hasDirectionPeriodService(withZeroService, 'midday')).toBe(true);
+    expect(hasDirectionPeriodService(withZeroService, 'all')).toBe(true);
   });
 });

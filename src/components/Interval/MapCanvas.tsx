@@ -4,7 +4,7 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import type { MapboxOverlay } from '@deck.gl/mapbox';
 import { LocateFixed, Plus, Minus, Link2, Flag } from 'lucide-react';
 import { routeKey } from '../../hooks/useIntervalStats';
-import { HEADWAY_TIERS, NIGHT_SERVICE_COLOR, buildFareColorExpression, buildDefaultRouteLineOpacityExpression, buildZoomHeadwayGateExpression } from '../../utils/colors';
+import { HEADWAY_TIERS, NIGHT_SERVICE_COLOR, buildFareColorExpression, buildDefaultRouteLineOpacityExpression, buildFocusedRouteLineOpacityExpression, buildZoomHeadwayGateExpression } from '../../utils/colors';
 import { getRegionalView, saveView, getSavedView, getAgencyBounds } from '../../utils/regionView';
 import { useViewport } from '../../context/ViewportContext';
 import { useHistoryMapOverlay } from '../../context/HistoryMapOverlay';
@@ -21,7 +21,7 @@ import { LIVE_POLLING_ROUTES } from '../../../shared/livePollingConfig';
 import { tileEffectiveHeadwayExpr, tileRouteKeyExpr } from '../../../shared/tileFilterExprs';
 import { syncUrlParams } from '../../utils/syncUrlParams';
 import { buildFocusedRoutePaint } from '../../utils/routeFocus';
-import { splitRouteKey } from '../../utils/routeKey';
+import { dedupeRouteKeysByDisplay, splitRouteKey } from '../../utils/routeKey';
 import { computeFrequencySegmentOverlay, buildPartialMatchFilterExpression, broadenFilterForPartialMatches } from '../../utils/frequencySegments';
 import { buildSharedHoverSegments } from '../../utils/sharedHoverSegments';
 import { getMapContextAgenciesFromFeatures, isMapContextOutsideClick, type MapContextAgency } from '../../utils/mapContext';
@@ -527,10 +527,15 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       const routeHits = map.queryRenderedFeatures(bbox, { layers: routeHitLayers });
       if (routeHits.length > 0) {
         const props = routeHits[0].properties;
-      const uniqueRouteKeys: string[] = Array.from(new Set(routeHits.map((f: maplibregl.MapGeoJSONFeature) => {
+        const uniqueRouteKeys = dedupeRouteKeysByDisplay(routeHits.map((f: maplibregl.MapGeoJSONFeature) => {
           const p = f.properties;
-          return routeKey({ ...p, agencySlug: p.agencySlug } as any);
-        })));
+          return {
+            key: routeKey({ ...p, agencySlug: p.agencySlug } as any),
+            agencySlug: String(p.agencySlug ?? ''),
+            shortName: String(p.routeShortName ?? p.routeId ?? ''),
+            longName: p.routeLongName as string | null | undefined,
+          };
+        }));
 
         setSelectedStopRef.current(null);
         if (onHistoryRouteClickRef.current) {
@@ -1501,16 +1506,26 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
             'case', branchMatch, 3.5, routeMatch, 1.5, DIM_WIDTH,
           ]);
         } else {
-          const focusedPaint = buildFocusedRoutePaint(routeMatch, DIM_OPACITY, DIM_WIDTH);
-          setRouteLayerPaint(map, 'line-opacity', focusedPaint.opacity as any);
-          setRouteLayerPaint(map, 'line-width', focusedPaint.width as any);
+          setRouteLayerPaint(map, 'line-opacity', buildFocusedRouteLineOpacityExpression(routeMatch, headwayExpr) as any);
+          setRouteLayerPaint(map, 'line-width', [
+            'interpolate', ['linear'], ['zoom'],
+            8, ['case', routeMatch, 3.5, 1.5],
+            11, ['case', routeMatch, 3.5, 2.0],
+            14, ['case', routeMatch, 3.5, 2.5],
+            17, 3.5,
+          ]);
         }
       } else if (hoveredSearchRoute) {
         // Hovering a search result: spotlight that route, fade the rest
         const hoverMatch: any = routeKeyMatchExpression(hoveredSearchRoute);
-        const focusedPaint = buildFocusedRoutePaint(hoverMatch, DIM_OPACITY, DIM_WIDTH);
-        setRouteLayerPaint(map, 'line-opacity', focusedPaint.opacity as any);
-        setRouteLayerPaint(map, 'line-width', focusedPaint.width as any);
+        setRouteLayerPaint(map, 'line-opacity', buildFocusedRouteLineOpacityExpression(hoverMatch, headwayExpr) as any);
+        setRouteLayerPaint(map, 'line-width', [
+          'interpolate', ['linear'], ['zoom'],
+          8, ['case', hoverMatch, 3.5, 1.5],
+          11, ['case', hoverMatch, 3.5, 2.0],
+          14, ['case', hoverMatch, 3.5, 2.5],
+          17, 3.5,
+        ]);
       } else if (selectedStop && routesForStop?.siblingIdsByAgency) {
         const servingMatch = buildServingStopMatchExpression(layers, routesForStop.siblingIdsByAgency);
         setRouteLayerPaint(map, 'line-opacity', [

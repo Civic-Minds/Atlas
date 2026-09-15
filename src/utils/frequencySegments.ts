@@ -61,6 +61,9 @@ export function findQualifyingStopRanges(
 
 function stopHeadwayAt(p: ShapeProperties, period: TimePeriod, stopId: string): number | null {
   if (period !== 'all') {
+    if (p.periodCoverageHeadway !== undefined || p.worstDirectionPeriodCoverageHeadway !== undefined) {
+      return p.stopPeriodCoverageHeadways?.[stopId]?.[period] ?? null;
+    }
     const v = p.stopPeriodHeadways?.[stopId]?.[period as PeriodKey];
     return v ?? null;
   }
@@ -218,6 +221,11 @@ export function computeFrequencySegmentOverlay(
     // Stop-level values can be noisy (MARTA 121 reports 32/33/30 at different shared stops even
     // though both branches are displayed as every 30), which otherwise cuts one core into pieces.
     for (const group of groups.values()) {
+      // Reciprocals of medians (or maximum waits) cannot prove combined coverage.
+      if (period !== 'all' && group.some(f => {
+        const p = f.properties as unknown as ShapeProperties;
+        return p.periodCoverageHeadway !== undefined || p.worstDirectionPeriodCoverageHeadway !== undefined;
+      })) continue;
       const branches = group
         .map(feature => ({ feature, p: feature.properties as unknown as ShapeProperties }))
         .filter(({ p }) => p.tier !== 'span' && p.tier !== 'infrequent')

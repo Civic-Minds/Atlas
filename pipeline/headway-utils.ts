@@ -385,6 +385,27 @@ export function computePeriodHeadways(departureTimes: number[]): HeadwayByPeriod
   return result;
 }
 
+/** Worst wait across the entire period, including both window edges, rounded up to minutes.
+ * Unlike the historical median and max gap, this also measures late starts and early finishes.
+ * One departure is enough to measure coverage; no departure inside the window means no service.
+ */
+export function computePeriodCoverageHeadways(departureTimes: number[]): HeadwayByPeriod {
+  const result: HeadwayByPeriod = {};
+  for (const [key, { start, end }] of Object.entries(PERIODS) as [PeriodKey, { start: number; end: number }][]) {
+    const times = [...new Set(forCrossMidnightWindow(departureTimes, end))]
+      .filter(t => t >= start && t <= end)
+      .sort((a, b) => a - b);
+    if (times.length === 0) {
+      result[key] = null;
+      continue;
+    }
+    let worstWait = Math.max(times[0] - start, end - times[times.length - 1]);
+    for (let i = 1; i < times.length; i++) worstWait = Math.max(worstWait, times[i] - times[i - 1]);
+    result[key] = Math.ceil(worstWait);
+  }
+  return result;
+}
+
 /**
  * Return the longest wait represented inside each period.
  *

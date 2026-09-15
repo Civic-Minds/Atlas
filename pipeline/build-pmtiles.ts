@@ -6,7 +6,7 @@ import { LOADED_ENV_FILE } from './loadEnv.js';
 import { r2PutFile } from './r2';
 import { getAgencyArtifactUrls, pmtilesMinZoomForHeadway } from '../shared/config.js';
 import { runWithConcurrency } from './utils.js';
-import { flattenPeriodHeadwayProps } from '../shared/pmtilesProps.js';
+import { prepareAgencyRouteFeaturesForTiles } from './prepareAgencyRoutesForTiles.js';
 
 console.log(`env: ${LOADED_ENV_FILE} (bucket=${process.env.R2_BUCKET_NAME ?? '?'})`);
 
@@ -45,6 +45,9 @@ async function fetchJson(url: string, retries = 5): Promise<FeatureCollection | 
 
 async function main() {
   const dryRun = process.argv.includes('--dry-run');
+  const localPreviewDir = process.env.ATLAS_LOCAL_PREVIEW_DIR
+    ? path.resolve(process.env.ATLAS_LOCAL_PREVIEW_DIR)
+    : null;
   if (dryRun) {
     console.log('Dry run: building PMTiles locally without uploading to R2.');
   }
@@ -80,15 +83,12 @@ async function main() {
 
     // 1. Routes
     if (url) {
-      const data = await fetchJson(url, 5);
+      const localPath = localPreviewDir ? path.join(localPreviewDir, slug, `${slug}.json`) : null;
+      const data = localPath && fs.existsSync(localPath)
+        ? JSON.parse(fs.readFileSync(localPath, 'utf8')) as FeatureCollection
+        : await fetchJson(url, 5);
       if (data && data.features) {
-        data.features.forEach(f => {
-          if (f.geometry?.type !== 'LineString') return; // skip stop Points mixed into route GeoJSON
-          f.properties = f.properties || {};
-          f.properties.agencySlug = slug;
-          flattenPeriodHeadwayProps(f.properties);
-          allRoutes.push(f);
-        });
+        allRoutes.push(...prepareAgencyRouteFeaturesForTiles(data.features, slug));
       } else if (!data) {
         if (agency.pmtilesPending) {
           console.warn(`  Skipping ${slug}: marked "pmtilesPending" (no route data published yet — excluded from fail-closed check, not from the map once it is).`);
@@ -100,7 +100,10 @@ async function main() {
 
     // 2. Stops
     if (stopsUrl) {
-      const data = await fetchJson(stopsUrl);
+      const localPath = localPreviewDir ? path.join(localPreviewDir, slug, `${slug}-stops.json`) : null;
+      const data = localPath && fs.existsSync(localPath)
+        ? JSON.parse(fs.readFileSync(localPath, 'utf8')) as FeatureCollection
+        : await fetchJson(stopsUrl);
       if (data) {
         let stopFeatures: any[] = [];
         if (data.features) {
@@ -127,7 +130,10 @@ async function main() {
 
     // 3. Corridors
     if (corridorsUrl) {
-      const data = await fetchJson(corridorsUrl);
+      const localPath = localPreviewDir ? path.join(localPreviewDir, slug, `${slug}-corridors.json`) : null;
+      const data = localPath && fs.existsSync(localPath)
+        ? JSON.parse(fs.readFileSync(localPath, 'utf8')) as FeatureCollection
+        : await fetchJson(corridorsUrl);
       if (data && data.features) {
         data.features.forEach(f => {
           f.properties = f.properties || {};

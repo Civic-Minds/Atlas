@@ -40,11 +40,37 @@ export function tileEffectiveHeadwayExpr(period?: PeriodFilter): unknown[] {
     // whole (unclipped) route through the filter (#314/#315).
     const [, wdph, hph] = periodHeadwayFlatKeys(period);
     const periodKeys = [wdph, hph];
-    return [
+    const coverageKeys = [`wdpch_${period}`, `pch_${period}`];
+    const coverage = [
       'case',
+      ['has', coverageKeys[0]], ['get', coverageKeys[0]],
+      ['has', coverageKeys[1]], ['get', coverageKeys[1]],
       ['any', ...periodKeys.map((key) => ['has', key])],
       ['coalesce', ...periodKeys.map((key) => ['get', key])],
       allDay,
+    ];
+    const regularPeriod = [
+      'case',
+      ['has', periodKeys[0]], ['get', periodKeys[0]],
+      ['has', periodKeys[1]], ['get', periodKeys[1]],
+      allDay,
+    ];
+    const qualifiedCadence = [
+      'case',
+      ['all', ['==', ['get', `hps_${period}`], true], ['<=', coverage, 60]],
+      regularPeriod,
+      coverage,
+    ];
+    return [
+      'case',
+      // New artifacts keep the active cadence for a properly sustained period that covers
+      // the window (coverage <= 60). If the period is marked unsustained or has no service for most
+      // of the window (e.g. Calgary overnight routes starting around 5 AM), use the full-window
+      // coverage value so a late-start route cannot pass as frequent or receive a normal tier (#507).
+      // Older tiles have no hps_* flag and retain the coverage-first fallback.
+      ['has', `hps_${period}`],
+      qualifiedCadence,
+      coverage,
     ];
   }
   return allDay;

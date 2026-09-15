@@ -36,6 +36,14 @@ This same adaptive-window computation is shared by three call sites in `process-
 
 ### `headwayByPeriod` — median plus a longest-gap companion
 
+#### Full-window frequency qualification
+
+`periodCoverageHeadway` is an additive qualification metric, separate from the median below. It measures the largest gap between departures inside a period, including the wait from the period start to its first departure and from its last departure to the period end. It rounds upward to whole minutes; a period with no departures is `null`. Sparse periods are measured rather than borrowing an all-day average. Plain and extended post-midnight times use the same normalization as other period calculations.
+
+For example, departures every five minutes beginning at 04:30 have a 150-minute leading gap in Overnight (02:00–06:00). They cannot qualify for a 10-minute overnight filter. Departures spaced at ten minutes throughout the window do qualify. The same rule applies to every named period.
+
+Route and stop qualification use their own departure scopes. Existing medians, hourly estimates, all-day tiers and history values retain their definitions. Older artifacts without the new field retain legacy behavior until reprocessed; publication therefore requires reprocessing followed by a PMTiles rebuild, not just a frontend deployment.
+
 Each period (AM Peak, Midday, PM Peak, etc.) filters departures to its own `[start, end]` window independently, then computes the median gap between departures inside that same window. The median stays unchanged so existing consumers and historical values remain compatible.
 
 An attempted fix (2026-07-25: let a period's gap list reach forward to the next departure past its boundary) was built, tested, and reverted before committing. It has the same failure signature as the all-day fallback below: TTC route 10 (Van Horne → Victoria Park) has real departures every 30 min in AM peak, then a genuine 315-minute gap with zero service, then 30 min again in PM peak. The fix let midday's gap list borrow the 30 min edge-gaps from both neighboring periods, so its 3-gap median became `30` — completely outvoting the one real 315 min gap that *is* midday's actual story. The current behavior returns `173` for that cell. `maxGapByPeriod.midday` now adds the missing `315`-minute gap, and the route card shows that the period is uneven instead of presenting the median by itself.

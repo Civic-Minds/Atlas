@@ -2,6 +2,9 @@ import { PERIOD_KEYS, type PeriodKey } from './config.js';
 
 /** Nested GeoJSON period maps → flat keys for PMTiles/MVT (tippecanoe drops nested objects). */
 const PERIOD_FLAT_PREFIXES = [
+  ['periodCoverageHeadway', 'pch'],
+  ['worstDirectionPeriodCoverageHeadway', 'wdpch'],
+  ['headwayByPeriodSustained', 'hps'],
   ['minStopHeadwayByPeriod', 'msph'],
   ['worstDirectionHeadwayByPeriod', 'wdph'],
   ['headwayByPeriod', 'hph'],
@@ -27,7 +30,9 @@ export function flattenPeriodHeadwayProps(props: Record<string, unknown>): void 
     for (const key of PERIOD_KEYS) {
       const periodProps = obj as Record<string, unknown>;
       const v = periodProps[key];
-      if (typeof v === 'number' && Number.isFinite(v)) {
+      if (typeof v === 'boolean') {
+        props[`${prefix}_${key}`] = v;
+      } else if (typeof v === 'number' && Number.isFinite(v)) {
         props[`${prefix}_${key}`] = v;
       } else if (v === null) {
         props[`${prefix}_${key}`] = NO_PERIOD_SERVICE_TILE_VALUE;

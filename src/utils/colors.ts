@@ -129,3 +129,13 @@ export function buildDefaultRouteLineOpacityExpression(headwayExpr: unknown, par
   }
   return expr;
 }
+
+/** Keep the normal zoom/headway visibility for background routes while spotlighting one route. */
+export function buildFocusedRouteLineOpacityExpression(routeMatch: unknown, headwayExpr: unknown): unknown[] {
+  const expr: unknown[] = ['interpolate', ['linear'], ['zoom']];
+  for (const [z, opacity] of [[8, 0.7], [11, 0.8], [14, 0.9]] as const) {
+    const backgroundOpacity = ['case', ['>', headwayExpr, headwayThresholdForZoom(z)], 0, opacity];
+    expr.push(z, ['case', routeMatch, 1.0, backgroundOpacity]);
+  }
+  return expr;
+}

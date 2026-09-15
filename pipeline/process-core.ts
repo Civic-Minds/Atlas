@@ -30,6 +30,7 @@ import { assessFeedQuality, type FeedQuality } from '../shared/feedQuality.js';
 import { routeDataQualityWarningForShape } from './routeDataQuality.js';
 import { deriveRouteBranch } from '../shared/routeBranch.js';
 import { isRailLikeRoute } from '../shared/modes.js';
+import { computePeriodCoverageHeadways } from './headway-utils.js';
 
 export type { GtfsPreprocess };
 export type { HeadwayByPeriod };
@@ -59,6 +60,18 @@ export function selectTerminalDepartureTimes(
   headsignTimes: number[] | undefined,
 ): number[] | undefined {
   return shapeTimes ?? headsignTimes;
+}
+
+/** Follow the existing display-source choice without borrowing service into an empty branch. */
+export function selectPeriodCoverageHeadway(
+  terminalCoverage: number | null,
+  branchCoverage: number | null,
+  terminalMedian: number | null,
+  selectedMedian: number | null,
+  terminalIsBranchScoped: boolean,
+): number | null {
+  if (terminalIsBranchScoped && terminalCoverage == null) return null;
+  return selectedMedian === terminalMedian ? terminalCoverage : branchCoverage;
 }
 
 /** Evaluate route-level Night Service from either end of a shape. */
@@ -360,6 +373,7 @@ export async function processGtfsBuffer(
         serviceClass: result.serviceClass ?? (result.tier === 'span' ? 'irregular' : 'regular'),
         headway: newHeadway,
         headwayByPeriod: computePeriodHeadways(result.times),
+        periodCoverageHeadway: computePeriodCoverageHeadways(result.times),
         headwayRangeByPeriod: computePeriodHeadwayRanges(result.times),
         maxGapByPeriod: computePeriodMaxGaps(result.times),
         headwayByPeriodSustained: computePeriodSustained(result.times),
@@ -646,6 +660,7 @@ export async function processGtfsBuffer(
     // Step 1: compute all-day, per-period, and per-hour headways for every stop in the route+dir group.
     const allStopHw: Record<string, number> = {};
     const allStopPeriodHw: Record<string, Partial<Record<PeriodKey, number>>> = {};
+    const allStopPeriodCoverageHw: Record<string, HeadwayByPeriod> = {};
     const allStopPeriodMaxGaps: Record<string, HeadwayByPeriodMaxGap> = {};
     const allStopPeriodSustained: Record<string, HeadwayByPeriodSustained> = {};
     const allStopHourHw: Record<string, HeadwayByHour> = {};
@@ -676,6 +691,7 @@ export async function processGtfsBuffer(
         if (ph != null) byPeriod[pk] = ph;
       }
       allStopPeriodMaxGaps[stopId] = computePeriodMaxGaps(times);
+      allStopPeriodCoverageHw[stopId] = computePeriodCoverageHeadways(times);
       if (Object.keys(byPeriod).length > 0) {
         allStopPeriodHw[stopId] = byPeriod;
         allStopPeriodSustained[stopId] = computePeriodSustained(times);
@@ -689,6 +705,13 @@ export async function processGtfsBuffer(
       }
       allStopHourHw[stopId] = byHour;
     }
+    // Coverage needs only one departure, so publish it before the legacy median bail-outs.
+    // Project separately to keep historical stopOrder and geometry completely unchanged.
+    const coverageStops = projectStopsOntoShape([...metricStopMap.keys()], stopsById, shapePts)
+      .filter(p => p.dev2 <= MAX_STOP_DEV2);
+    feature.properties.stopPeriodCoverageHeadways = Object.fromEntries(
+      coverageStops.map(({ stopId }) => [stopId, allStopPeriodCoverageHw[stopId]]),
+    );
     if (Object.keys(allStopHw).length === 0) continue;
 
     // Step 2: project all stops onto this feature's specific shape, then filter to stops
@@ -820,6 +843,13 @@ export async function processGtfsBuffer(
     const terminalPeriodSustained = terminalStopId ? allStopPeriodSustained[terminalStopId] : undefined;
     const terminalPeriodMaxGaps = terminalStopId ? allStopPeriodMaxGaps[terminalStopId] : undefined;
     const terminalPeriodIsBranchScoped = !!headsignTerminalPeriodHw;
+    // Select the time array before looking up a period: a scoped null is real no-service,
+    // not permission to borrow departures from another branch at the same stop.
+    const terminalCoverage = computePeriodCoverageHeadways(
+      terminalScopedTimes ?? (terminalStopId ? metricStopMap.get(terminalStopId) : undefined) ?? [],
+    );
+    const branchCoverage = feature.properties.periodCoverageHeadway as HeadwayByPeriod;
+    const periodCoverage: HeadwayByPeriod = {};
     const periodMedians: HeadwayByPeriod = {};
     const periodMaxGaps: HeadwayByPeriodMaxGap = {};
     const periodSustained: HeadwayByPeriodSustained = {};
@@ -832,6 +862,10 @@ export async function processGtfsBuffer(
       const bH = branchPeriodHw?.[pk] ?? null;
       const finalH = resolveTerminalPeriodHeadway(termH, bH, terminalPeriodIsBranchScoped);
       periodMedians[pk] = finalH;
+      periodCoverage[pk] = selectPeriodCoverageHeadway(
+        terminalCoverage[pk] ?? null, branchCoverage[pk] ?? null,
+        termH, finalH, terminalScopedTimes != null,
+      );
       const termMaxGap = headsignTerminalMaxGaps?.[pk] ?? terminalPeriodMaxGaps?.[pk] ?? null;
       const branchMaxGap = branchPeriodMaxGaps?.[pk] ?? null;
       periodMaxGaps[pk] = finalH === termH ? termMaxGap : (finalH === bH ? branchMaxGap : termMaxGap);
@@ -849,6 +883,7 @@ export async function processGtfsBuffer(
       if (allVals.length > 0) periodMins[pk] = Math.min(...allVals);
     }
     feature.properties.headwayByPeriod = periodMedians;
+    feature.properties.periodCoverageHeadway = periodCoverage;
     feature.properties.maxGapByPeriod = periodMaxGaps;
     feature.properties.headwayByPeriodSustained = periodSustained;
     feature.properties.minStopHeadwayByPeriod = periodMins;

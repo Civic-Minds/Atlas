@@ -1,6 +1,6 @@
 import type { GeoJSON } from 'geojson';
 import type { ShapeProperties } from '../hooks/useAgencyData';
-import { TIME_PERIODS, type PeriodKey } from '../../shared/config';
+import { PERIOD_KEYS, TIME_PERIODS, type PeriodKey } from '../../shared/config';
 
 export type ServicePeriod = PeriodKey | 'all';
 
@@ -112,6 +112,22 @@ function firstAvailableByPeriod(
  * projections instead of independently choosing among raw GeoJSON fields.
  */
 export function buildRouteServiceSummary(p: ShapeProperties): RouteServiceSummary {
+  const coverage = p.worstDirectionPeriodCoverageHeadway ?? p.periodCoverageHeadway;
+  const regularPeriods = firstAvailableByPeriod(p.worstDirectionHeadwayByPeriod, p.headwayByPeriod);
+  const filterPeriods = coverage === undefined ? regularPeriods : Object.fromEntries(
+    PERIOD_KEYS.map(key => {
+      // A sustained period should be filtered by its actual cadence only when it covers
+      // the window (coverage <= 60). If the period is unsustained or has no service for most
+      // of the window (e.g. Calgary overnight routes starting around 5 AM), use the full-window
+      // coverage value so a late-start route cannot pass as frequent or receive a normal tier (#507).
+      const sustained = p.headwayByPeriodSustained?.[key];
+      const covVal = coverage[key] ?? null;
+      if (sustained === true && covVal != null && covVal <= 60) {
+        return [key, regularPeriods?.[key] ?? null];
+      }
+      return [key, covVal];
+    }),
+  ) as ShapeProperties['headwayByPeriod'];
   const branchValue = p.headway ?? null;
   const branchProvenance: HeadwayProvenance = p.headwayByPeriod
     ? 'period-summary' : branchValue != null ? 'all-day-summary' : 'none';
@@ -132,10 +148,7 @@ export function buildRouteServiceSummary(p: ShapeProperties): RouteServiceSummar
       // reflect a shared-core combined frequency that only applies to part of the route, and
       // without geometry clipping to match, letting it drive pass/fail here would smuggle a
       // partial match through as if the whole route qualified (#314/#315).
-      firstAvailableByPeriod(
-        p.worstDirectionHeadwayByPeriod,
-        p.headwayByPeriod,
-      ),
+      filterPeriods,
       p.headwayByHour,
       filterProvenance,
     ),

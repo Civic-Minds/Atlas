@@ -16,3 +16,25 @@ export function splitRouteKey(key: string): { agencySlug: string; routeId: strin
     routeBranch: branchSeparator >= 0 ? routePart.slice(branchSeparator + BRANCH_MARKER.length) : undefined,
   };
 }
+
+export interface RouteDisplayCandidate {
+  key: string;
+  agencySlug: string;
+  shortName: string;
+  longName?: string | null;
+}
+
+/** Collapse feed route IDs that render as the same line to a rider. */
+export function dedupeRouteKeysByDisplay(candidates: RouteDisplayCandidate[]): string[] {
+  const seen = new Set<string>();
+  const keys: string[] = [];
+  for (const candidate of candidates) {
+    const displayKey = [candidate.agencySlug, candidate.shortName, candidate.longName ?? '']
+      .map(value => value.trim().toLowerCase())
+      .join('::');
+    if (seen.has(displayKey)) continue;
+    seen.add(displayKey);
+    keys.push(candidate.key);
+  }
+  return keys;
+}

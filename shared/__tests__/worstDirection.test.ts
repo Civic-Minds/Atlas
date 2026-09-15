@@ -176,4 +176,14 @@ describe('stampWorstDirectionHeadways', () => {
     expect(features[0].properties.worstDirectionHeadway).toBe(30);
     expect(features[0].properties.worstDirectionHeadwayByPeriod).toEqual({ midday: 45 });
   });
+
+  it('stamps the worst full-window wait, including a late-start direction', () => {
+    const features = [
+      { properties: { routeShortName: '201', day: 'Weekday', directionId: 0, periodCoverageHeadway: { overnight: 10 } } },
+      { properties: { routeShortName: '201', day: 'Weekday', directionId: 1, periodCoverageHeadway: { overnight: 150 } } },
+    ] as WorstDirectionFeature[];
+    stampWorstDirectionHeadways(features);
+    expect(features[0].properties.worstDirectionPeriodCoverageHeadway?.overnight).toBe(150);
+    expect(features[1].properties.worstDirectionPeriodCoverageHeadway?.overnight).toBe(150);
+  });
 });

@@ -167,6 +167,7 @@ export function passesRouteFilter(
       if (periodHw > filters.maxHeadway) return false;
       return true;
     }
+    if (p.periodCoverageHeadway !== undefined || p.worstDirectionPeriodCoverageHeadway !== undefined) return false;
     // An explicit null period summary means no scheduled service in that
     // period. Do not let the all-day fallback make the route look like an
     // active-period match (the agency card may still list it as inventory).

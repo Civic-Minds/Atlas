@@ -20,7 +20,7 @@ import {
 } from '../cardUi';
 import { CARD_NOTICE, CARD_NOTICE_FOOTER } from '../../../styles';
 import { BETA_BUILD, SPARKLINE_HOURS, TIME_PERIODS, UNEVEN_BANNER_ENABLED, formatPeriodRangeLong, periodKeyForHour } from '../../../../shared/config';
-import { routeCardDisplayHeadway, routeCardDisplayHeadwayRange } from '../../../utils/effectiveHeadway';
+import { hasDirectionPeriodService, routeCardCoverageText, routeCardDisplayHeadway, routeCardDisplayHeadwayRange } from '../../../utils/effectiveHeadway';
 import { buildRouteServiceSummary, metricValueForPeriod } from '../../../utils/routeFacts';
 import { unevenPeriodMaxGap } from '../../../utils/routeCardUneven';
 import {
@@ -165,6 +165,10 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
     group.realTier.some(direction => routeCardDisplayHeadway(direction, period) != null) ||
     group.span.length > 0,
   );
+  const hasPartialPeriodService = selectedPeriod != null && !hasPeriodService && directionGroups.some(group =>
+    group.realTier.some(direction => hasDirectionPeriodService(direction, period)) ||
+    group.span.some(direction => hasDirectionPeriodService(direction, period)),
+  );
   // Only primary patterns per direction drive the uneven banner. A rare short-turn
   // branch (TTC 63 midday "to St Clair") can show a multi-hour max gap even when
   // the direction's real service is even — that gap is not the rider message. When
@@ -215,7 +219,8 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
         // Not "no scheduled service" -- null means the pipeline didn't compute a value for this
         // period, which can happen even when real service exists (#297). Don't assert absence.
         const range = routeCardDisplayHeadwayRange(direction, period);
-        return `- ${reportLabel}: ${headway != null ? `every ${headway} min` : range ?? 'no data for this period'}`;
+        const isLimited = headway == null && period !== 'all' && hasDirectionPeriodService(direction, period);
+        return `- ${reportLabel}: ${routeCardCoverageText(direction, period) ?? (headway != null ? `every ${headway} min` : range ?? (isLimited ? 'limited service' : 'no data for this period'))}`;
       })
       .filter((line): line is string => line !== null);
     const limitedLines = !hideSpan
@@ -361,10 +366,14 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
       {selectedPeriod && !hasPeriodService && (
         <div className="mt-4 mb-3 rounded-xl bg-[var(--bg-app)] px-3 py-2.5">
           <p className="text-[10px] font-black text-[var(--text-primary)]">
-            No scheduled service during {selectedPeriod.label}
+            {hasPartialPeriodService
+              ? `Limited service during ${selectedPeriod.label}`
+              : `No scheduled service during ${selectedPeriod.label}`}
           </p>
           <p className="text-[9px] font-bold text-[var(--text-dim)] mt-0.5">
-            {formatPeriodRangeLong(selectedPeriod.startHour, selectedPeriod.endHour)}. This route may run during another period.
+            {hasPartialPeriodService
+              ? `Service only runs for part of this period (${formatPeriodRangeLong(selectedPeriod.startHour, selectedPeriod.endHour)}).`
+              : `${formatPeriodRangeLong(selectedPeriod.startHour, selectedPeriod.endHour)}. This route may run during another period.`}
           </p>
         </div>
       )}
@@ -471,13 +480,17 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                       const trunkHw = hoveredHour == null && period !== 'all'
                         ? headsignTrunkHeadway(d, period)
                         : undefined;
+                      const isLimited = displayH == null && hoveredHour == null && period !== 'all' && hasDirectionPeriodService(d, period);
                       return (
                         <FlaggableValue key={`r${i}`} reason="Frequency is wrong" reportRef={reportRef} className="block w-full text-left">
                           <CardDirectionRow
                             label={label}
                             headway={displayH ?? undefined}
+                            colorHeadway={hoveredHour == null ? metricValueForPeriod(filterHw, period) : undefined}
+                            headwayLabel={hoveredHour == null ? routeCardCoverageText(d, period) : undefined}
                             trunkHeadway={trunkHw}
                             dimmed={dimmed}
+                            limited={isLimited}
                             {...branchHoverProps(group.dirId, d.headsign)}
                           />
                         </FlaggableValue>
