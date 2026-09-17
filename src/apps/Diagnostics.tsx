@@ -7,7 +7,7 @@ import { buildRouteFacts, metricValueForPeriod } from '../utils/routeFacts';
 import { TIME_PERIODS, type PeriodKey } from '../../shared/config';
 import { DAY_TYPES, getNowDay, type DayType } from '../../shared/dayTypes';
 import { FILTER_MODES, effectiveMode } from '../../shared/modes';
-import { SURFACE, FLOATING_CARD } from '../styles';
+import { SURFACE, FLOATING_CARD, CONTROL_ACTIVE, CONTROL_INACTIVE } from '../styles';
 import { CardReportButton } from '../components/Interval/cardUi';
 import { currentAtlasUrl } from '../utils/reportIssue';
 
@@ -59,9 +59,7 @@ function FilterPill({ active, onClick, children }: { active: boolean; onClick: (
       type="button"
       onClick={onClick}
       className={`h-7 px-2.5 flex items-center justify-center text-[10px] font-bold rounded-full border transition-colors ${
-        active
-          ? 'bg-[var(--control-active-bg)] border-[var(--control-active-border)] text-[var(--control-active-fg)]'
-          : 'bg-[var(--control-inactive-bg)] border-[var(--control-inactive-border)] text-[var(--control-inactive-fg)] hover:bg-[var(--control-hover-bg)]'
+        active ? CONTROL_ACTIVE : CONTROL_INACTIVE
       }`}
     >
       {children}

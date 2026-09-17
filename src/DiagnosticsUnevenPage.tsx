@@ -5,7 +5,7 @@ import type { ShapeProperties } from './hooks/useAgencyData';
 import { isRiderMeaningfulGap } from './utils/routeCardUneven';
 import { TIME_PERIODS, type PeriodKey } from '../shared/config';
 import { DAY_TYPES, getNowDay, type DayType } from '../shared/dayTypes';
-import { FLOATING_CARD } from './styles';
+import { FLOATING_CARD, CONTROL_ACTIVE, CONTROL_INACTIVE } from './styles';
 import type { Agency } from './App';
 
 const MAX_CONCURRENT_FETCHES = 8;
@@ -177,8 +177,8 @@ export default function DiagnosticsUnevenPage() {
                   onClick={() => setDay(d)}
                   className={`h-7 px-2.5 flex items-center justify-center text-[10px] font-bold rounded-full border transition-colors ${
                     day === d
-                      ? 'bg-[var(--control-active-bg)] border-[var(--control-active-border)] text-[var(--control-active-fg)]'
-                      : 'bg-[var(--control-inactive-bg)] border-[var(--control-inactive-border)] text-[var(--control-inactive-fg)] hover:bg-[var(--control-hover-bg)]'
+                      ? CONTROL_ACTIVE
+                      : CONTROL_INACTIVE
                   }`}
                 >
                   {d}

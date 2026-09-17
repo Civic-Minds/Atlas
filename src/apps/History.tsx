@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { ChevronLeft, ChevronRight, X, Search, TrendingUp } from 'lucide-react';
 import { useHistoryMapOverlay } from '../context/HistoryMapOverlay';
 import { R2_PUBLIC_URL, type HeadwayByPeriod } from '../../shared/config';
-import { FLOATING_CARD, PANEL_ENTER, PANEL_ENTER_TOP, TRANSITION_SLOW, SEARCH_PILL, SEARCH_FIELD, LIST_ROW, CHIP_BASE, Z_PANEL, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH } from '../styles';
+import { FLOATING_CARD, PANEL_ENTER, PANEL_ENTER_TOP, TRANSITION_SLOW, SEARCH_PILL, SEARCH_FIELD, LIST_ROW, CHIP_BASE, Z_PANEL, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH, CONTROL_ACTIVE, CONTROL_INACTIVE } from '../styles';
 import RouteListRow from '../components/RouteListRow';
 import { shortenAgencyName } from '../utils/format';
 import { useColorVision } from '../context/ColorVisionContext';
@@ -686,8 +686,8 @@ export default function History({ active, initialAgencySlug, onInfoOpen, query, 
                     onClick={() => setDepthFilterOpen(v => !v)}
                     className={`relative h-8 px-3.5 flex items-center justify-center ${CHIP_BASE} text-xs font-bold transition-colors whitespace-nowrap ${
                       depthFilter !== 'all'
-                        ? 'bg-[var(--control-active-bg)] border-[var(--control-active-border)] text-[var(--control-active-fg)]'
-                        : 'bg-[var(--control-inactive-bg)] border-[var(--control-inactive-border)] text-[var(--control-inactive-fg)] hover:bg-[var(--control-hover-bg)]'
+                        ? CONTROL_ACTIVE
+                        : CONTROL_INACTIVE
                     }`}
                   >
                     Filter
@@ -703,8 +703,8 @@ export default function History({ active, initialAgencySlug, onInfoOpen, query, 
                           onClick={() => { setDepthFilter(opt); setDepthFilterOpen(false); }}
                           className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-[11px] font-bold transition-all border text-left min-w-0 ${
                             depthFilter === opt
-                              ? 'bg-[var(--control-active-bg)] border-[var(--control-active-border)] text-[var(--control-active-fg)]'
-                              : 'bg-[var(--control-inactive-bg)] border-[var(--control-inactive-border)] text-[var(--control-inactive-fg)] hover:bg-[var(--control-hover-bg)]'
+                              ? CONTROL_ACTIVE
+                              : CONTROL_INACTIVE
                           }`}
                         >
                           {opt === 'all' ? 'All agencies' : historyTierAgencyLabel(opt)}
