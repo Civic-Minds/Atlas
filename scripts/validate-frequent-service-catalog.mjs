@@ -1,7 +1,9 @@
 import fs from 'node:fs';
 
 const path = 'docs/research/frequent-service-catalog.json';
+const analysisPath = 'docs/research/frequent-service-analysis-2026-09.json';
 const catalog = JSON.parse(fs.readFileSync(path, 'utf8'));
+const analysis = JSON.parse(fs.readFileSync(analysisPath, 'utf8'));
 const failures = [];
 const statuses = new Set(['planned', 'definition_found', 'qualitative_definition_only', 'no_definition_found', 'blocked']);
 
@@ -30,6 +32,26 @@ const reviewed = catalog.agencies.filter((agency) => agency.reviewStatus !== 'pl
 const planned = catalog.agencies.filter((agency) => agency.reviewStatus === 'planned');
 if (reviewed.length + planned.length !== catalog.targetAgencyCount) failures.push('reviewed plus planned records must equal targetAgencyCount');
 if (process.env.REQUIRE_COMPLETE === '1' && planned.length > 0) failures.push(`${planned.length} planned records remain`);
+
+if (analysis.sourceCatalog !== path) failures.push('analysis must identify the catalog it was generated from');
+if (analysis.sample?.agencyCount !== catalog.agencies.length) failures.push('analysis agency count must match catalog agency count');
+if (analysis.agencies?.length !== catalog.agencies.length) failures.push('analysis must include one record per catalog agency');
+const analysisIds = new Set(analysis.agencies?.map((agency) => agency.agencyId));
+if (analysisIds.size !== catalog.agencies.length) failures.push('analysis agencyIds must be unique');
+for (const agency of catalog.agencies) {
+  if (!analysisIds.has(agency.agencyId)) failures.push(`analysis is missing ${agency.agencyId}`);
+}
+const categoryTotal = Object.values(analysis.sample?.categories ?? {}).reduce((sum, count) => sum + count, 0);
+if (categoryTotal !== catalog.agencies.length) failures.push('analysis category counts must sum to catalog agency count');
+const analysisAgencyById = new Map(analysis.agencies.map((agency) => [agency.agencyId, agency]));
+for (const agency of catalog.agencies) {
+  const analyzed = analysisAgencyById.get(agency.agencyId);
+  if (!analyzed) continue;
+  for (const evidence of analyzed.evidence ?? []) {
+    if (!Number.isInteger(evidence.tierIndex) || !agency.tiers[evidence.tierIndex]) failures.push(`${agency.agencyId}: analysis evidence points to a missing tier`);
+    if (evidence.numericFrequency && (!Array.isArray(evidence.publishedThresholdMinutes) || evidence.publishedThresholdMinutes.length === 0)) failures.push(`${agency.agencyId}: numeric evidence needs published thresholds`);
+  }
+}
 
 if (failures.length > 0) {
   console.error(failures.map((failure) => `- ${failure}`).join('\n'));

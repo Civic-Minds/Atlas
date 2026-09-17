@@ -40,6 +40,7 @@
     "audit-feed-freshness": "npx tsx scripts/audit-feed-freshness.ts",
     "audit-expired-sources": "npx tsx scripts/audit-expired-sources.ts",
     "validate:frequent-service-catalog": "node scripts/validate-frequent-service-catalog.mjs",
+    "analyze:frequent-service-catalog": "node scripts/analyze-frequent-service-catalog.mjs",
     "poc:burlington": "npx tsx scripts/poc/burlington-rt.ts",
     "poc:hamilton": "npx tsx scripts/poc/hamilton-rt.ts",
     "find-mdb": "npx tsx pipeline/find-mdb-feed.ts",

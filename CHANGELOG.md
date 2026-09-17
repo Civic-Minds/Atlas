@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Added a reproducible analysis of the 500-agency frequent-service catalog, separating named definitions from broader numeric frequency tiers so Atlas can make a source-backed sample-specific research claim.
 - Added a beta-only Frequent Service research view for comparing 15- and 30-minute service across selected days and time spans.
 - Frequent Service research now reuses the existing mode filter so users can compare frequency by bus, rail, subway, or other modes.
 - Frequent Service research exposes its two frequency thresholds inline for faster comparison.

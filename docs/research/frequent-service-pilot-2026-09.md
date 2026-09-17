@@ -17,7 +17,7 @@ The comparison columns mean:
 - `extended15`: no gap over 15 minutes from 7am–midnight
 - `extended30`: no gap over 30 minutes from 7am–midnight
 
-The authoritative review tracker is the [structured agency catalog](frequent-service-catalog.json). It contains 500 completed records toward the 500-agency goal: 172 agencies with documented numeric definitions, 73 with qualitative or named service definitions, and 255 where no formal frequent-service definition was located. The completed international phase contains 100 French agencies across 12 regions, broadening the catalog beyond its North American focus. This is evidence-gathering work: the catalog documents the landscape and does not by itself change Atlas's production frequency definitions. A record may have an Atlas comparison marked `not_run` when the agency has no Atlas configuration or the comparison was not part of the source review.
+The authoritative review tracker is the [structured agency catalog](frequent-service-catalog.json). It contains 500 completed records: 172 agencies with documented definitions, 73 with qualitative or named service definitions, and 255 where no formal frequent-service definition was located. The completed international phase contains 100 French agencies across 12 regions. The derived [500-agency analysis](frequent-service-analysis-2026-09.md) applies explicit classification rules and keeps numeric observations tied to their source tiers. This is evidence-gathering work: the catalog documents the landscape and does not by itself change Atlas's production frequency definitions. A record may have an Atlas comparison marked `not_run` when the agency has no Atlas configuration or the comparison was not part of the source review.
 
 ## Results
 

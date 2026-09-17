@@ -2,7 +2,7 @@
   "catalogVersion": 1,
   "checkedAt": "2026-09-18",
   "targetAgencyCount": 500,
-  "scope": "North American public-transit agencies",
+  "scope": "Atlas public-transit agencies reviewed across North America and France",
   "researchPurpose": "Document the agency landscape and establish that Atlas did its research. This catalog does not by itself change Atlas's production frequency definitions.",
   "reviewProtocol": {
     "officialSources": [
