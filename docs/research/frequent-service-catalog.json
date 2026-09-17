@@ -10936,7 +10936,29 @@
       "country": "United States",
       "researchBatch": 10,
       "agencySizeTier": "unclassified",
-      "reviewStatus": "planned"
+      "reviewStatus": "no_definition_found",
+      "tierCoverage": "negative_result",
+      "reviewedAt": "2026-09-18",
+      "sources": [
+        {
+          "url": "https://www.go-metro.com/wp-content/uploads/2025/04/metrosystemmap.pdf",
+          "type": "system_map"
+        },
+        {
+          "url": "https://www.go-metro.com/wp-content/uploads/2024/12/Planning-and-Operations-July-2025.pdf",
+          "type": "service_guidelines"
+        },
+        {
+          "url": "https://www.go-metro.com/wp-content/uploads/2026/02/Reinventing-Metro-Final-Report.pdf",
+          "type": "planning_document"
+        }
+      ],
+      "tiers": [],
+      "atlasComparison": {
+        "status": "not_run"
+      },
+      "confidence": "not_found",
+      "noDefinitionReason": "Official materials document route-specific headways and service spans but do not define a named agency-wide frequent-service tier."
     },
     {
       "agencyId": "citibus",
@@ -10945,7 +10967,29 @@
       "country": "United States",
       "researchBatch": 10,
       "agencySizeTier": "unclassified",
-      "reviewStatus": "planned"
+      "reviewStatus": "no_definition_found",
+      "tierCoverage": "negative_result",
+      "reviewedAt": "2026-09-18",
+      "sources": [
+        {
+          "url": "https://citibus.com/faqs/",
+          "type": "service_guidelines"
+        },
+        {
+          "url": "https://citibus.com/maps-and-schedules/",
+          "type": "system_map"
+        },
+        {
+          "url": "https://citibus.com/",
+          "type": "frequent_network_page"
+        }
+      ],
+      "tiers": [],
+      "atlasComparison": {
+        "status": "not_run"
+      },
+      "confidence": "not_found",
+      "noDefinitionReason": "The official FAQ gives general route frequency by time period, but no named or formal frequent-service tier is defined."
     },
     {
       "agencyId": "citilink-fw",
@@ -10954,7 +10998,59 @@
       "country": "United States",
       "researchBatch": 10,
       "agencySizeTier": "unclassified",
-      "reviewStatus": "planned"
+      "reviewStatus": "definition_found",
+      "tierCoverage": "documented",
+      "reviewedAt": "2026-09-18",
+      "sources": [
+        {
+          "url": "https://fwcitilink.com/wp-content/uploads/2022/11/Citilink-2030-Transit-Development-Plan.pdf",
+          "type": "planning_document"
+        },
+        {
+          "url": "https://fwcitilink.com/wp-content/uploads/2026/03/Citilink-System-Map_March-2026-Update.pdf",
+          "type": "system_map"
+        },
+        {
+          "url": "https://fwcitilink.com/wp-content/uploads/2025/05/2025-Citilink-Title-VI-Program-with-Exhibits_draft.pdf",
+          "type": "service_guidelines"
+        }
+      ],
+      "tiers": [
+        {
+          "label": "Campus shuttle",
+          "thresholdMinutes": 20,
+          "thresholdText": "Operates every 20 minutes",
+          "span": "published schedule",
+          "days": "published schedule",
+          "geography": "campus shuttle",
+          "mode": "bus",
+          "kind": "frequency"
+        },
+        {
+          "label": "Higher-frequency fixed routes",
+          "thresholdMinutes": 30,
+          "thresholdText": "Routes 4, 7, and 8 operate every 30 minutes",
+          "span": "published schedule",
+          "days": "published schedule",
+          "geography": "route",
+          "mode": "bus",
+          "kind": "frequency"
+        },
+        {
+          "label": "Standard fixed routes",
+          "thresholdMinutes": 60,
+          "thresholdText": "Most routes operate every 60 minutes",
+          "span": "published schedule",
+          "days": "published schedule",
+          "geography": "route",
+          "mode": "bus",
+          "kind": "frequency"
+        }
+      ],
+      "atlasComparison": {
+        "status": "not_run"
+      },
+      "confidence": "explicit"
     },
     {
       "agencyId": "citybus-lafayette",
