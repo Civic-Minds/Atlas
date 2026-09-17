@@ -73,7 +73,7 @@ const compactOptBtn = (active: boolean) =>
   `h-7 px-2.5 flex items-center justify-center text-[11px] font-bold rounded-full border transition-colors ${
     active
       ? 'bg-[var(--accent-bg)] border-[var(--accent-border)] text-[var(--accent)]'
-      : 'border-[var(--border-primary)] text-[var(--text-dim)] hover:text-[var(--text-primary)]'
+      : 'border-[var(--border-primary)] text-[var(--text-primary)] hover:text-[var(--accent)]'
   }`;
 
 const rowBtn = (active: boolean) =>
