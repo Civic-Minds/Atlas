@@ -500,9 +500,61 @@
       "atlasComparison": { "status": "not_run", "reason": "Research catalog review; current service map comparison is a follow-up." },
       "confidence": "qualitative_with_historical_service_context"
     },
-    {"agencyId":"lethbridge","agencyName":"Lethbridge Transit","region":"Alberta","country":"Canada","researchBatch":2,"agencySizeTier":"unclassified","reviewStatus":"planned"},
-    {"agencyId":"medicine-hat","agencyName":"Medicine Hat Transit","region":"Alberta","country":"Canada","researchBatch":2,"agencySizeTier":"unclassified","reviewStatus":"planned"},
-    {"agencyId":"red-deer","agencyName":"Red Deer Transit","region":"Alberta","country":"Canada","researchBatch":2,"agencySizeTier":"unclassified","reviewStatus":"planned"},
+    {
+      "agencyId": "lethbridge",
+      "agencyName": "Lethbridge Transit",
+      "region": "Alberta",
+      "country": "Canada",
+      "reviewStatus": "definition_found",
+      "tierCoverage": "documented",
+      "reviewedAt": "2026-09-17",
+      "sources": [
+        { "url": "https://www.lethbridge.ca/media/0nmdnz5c/transit-master-plan-2017.pdf", "type": "planning_document" },
+        { "url": "https://www.lethbridge.ca/media/t2wnioeg/tmp_final_fulltechnical_oct25_stamped.pdf", "type": "planning_document" }
+      ],
+      "tiers": [
+        { "label": "Frequent Transit Network", "thresholdMinutes": 15, "span": "until 9pm", "days": "every day", "geography": "network", "mode": "bus", "kind": "frequency", "currentity": "planned/performance target" },
+        { "label": "Fixed route service", "thresholdText": "Most routes 30–40 minutes; three routes 20 minutes; two routes hourly", "span": "weekday chart", "days": "weekdays", "geography": "route", "mode": "bus", "kind": "frequency", "currentity": "reported network" }
+      ],
+      "atlasComparison": { "status": "not_run", "reason": "Research catalog review; GTFS comparison is a follow-up." },
+      "confidence": "explicit_planning_definition",
+      "notes": "The 15-minute FTN is a planning/performance target, while the later reviewed frequency chart describes the reported fixed-route network separately."
+    },
+    {
+      "agencyId": "medicine-hat",
+      "agencyName": "Medicine Hat Transit",
+      "region": "Alberta",
+      "country": "Canada",
+      "reviewStatus": "no_definition_found",
+      "tierCoverage": "negative_result",
+      "reviewedAt": "2026-09-17",
+      "sources": [
+        { "url": "https://gis.medicinehat.ca/arcgistest/rest/services/Transit/Transit/FeatureServer", "type": "official_data_service" }
+      ],
+      "tiers": [],
+      "atlasComparison": { "status": "not_run", "reason": "No agency definition to compare; independent GTFS benchmark can be added later." },
+      "confidence": "not_found",
+      "noDefinitionReason": "The reviewed official GIS service exposes transit stops and routes but does not publish a named frequent-service threshold or tier."
+    },
+    {
+      "agencyId": "red-deer",
+      "agencyName": "Red Deer Transit",
+      "region": "Alberta",
+      "country": "Canada",
+      "reviewStatus": "qualitative_definition_only",
+      "tierCoverage": "documented",
+      "reviewedAt": "2026-09-17",
+      "sources": [
+        { "url": "https://secure.reddeer.ca/city-services/transit/routes-and-schedules/regular-routes/", "type": "route_service_page" },
+        { "url": "https://www.reddeer.ca/city-government/plans-and-projects/ongoing-plans-and-projects/moving-red-deer-forward/", "type": "planning_document" }
+      ],
+      "tiers": [
+        { "label": "Rapid Bus", "thresholdText": "Highest level of service; numeric threshold not stated in reviewed route page", "span": "not specified", "days": "not specified", "geography": "route", "mode": "bus", "kind": "service_class" },
+        { "label": "Frequent service", "thresholdText": "Planning outcome language; numeric threshold not stated in reviewed sources", "span": "not specified", "days": "not specified", "geography": "network", "mode": "bus", "kind": "service_class" }
+      ],
+      "atlasComparison": { "status": "not_run", "reason": "Research catalog review; no numeric agency threshold was available for a direct comparison." },
+      "confidence": "qualitative_only"
+    },
     {"agencyId":"fort-mcmurray","agencyName":"Regional Municipality of Wood Buffalo Transit","region":"Alberta","country":"Canada","researchBatch":2,"agencySizeTier":"unclassified","reviewStatus":"planned"},
     {"agencyId":"campbell-river","agencyName":"BC Transit (Campbell River)","region":"British Columbia","country":"Canada","researchBatch":2,"agencySizeTier":"unclassified","reviewStatus":"planned"},
     {"agencyId":"comox-valley","agencyName":"BC Transit (Comox Valley)","region":"British Columbia","country":"Canada","researchBatch":2,"agencySizeTier":"unclassified","reviewStatus":"planned"},
