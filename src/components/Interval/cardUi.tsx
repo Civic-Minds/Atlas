@@ -6,6 +6,7 @@ import { headwayToTierColor } from './HeadwaySparkline';
 import { CARD_NOTICE, CARD_NOTICE_ACTION, FLOATING_CARD, PANEL_ENTER_LEFT, SIDEBAR_PANEL_WIDTH } from '../../styles';
 import { openAtlasIssueReport } from '../../utils/reportIssue';
 import { CARD_CLICK_TO_FLAG_ENABLED } from '../../../shared/config';
+import { useColorVision } from '../../context/ColorVisionContext';
 
 export { default as CardDirectionRow } from './RouteDirectionRow';
 
@@ -437,10 +438,12 @@ export function HeadwayBadge({
   suffix?: string;
   className?: string;
 }) {
+  const { colorVisionFriendly } = useColorVision();
+  const colorMode = colorVisionFriendly ? 'friendly' : 'default';
   return (
     <span className={`inline-flex items-center gap-1 font-black text-[var(--text-primary)] text-[11px] leading-snug shrink-0 ${className}`}>
       {live && <Radio className="w-2.5 h-2.5 text-[var(--accent)] shrink-0" aria-label="Live data available" />}
-      <span className="w-2 h-2 rounded-full shrink-0" style={{ background: headwayToTierColor(colorHeadway ?? headway) }} />
+      <span className="w-2 h-2 rounded-full shrink-0" style={{ background: headwayToTierColor(colorHeadway ?? headway, colorMode) }} />
       <span className="whitespace-nowrap">{label ?? fmtHeadway(headway)}</span>
       {suffix && <span className="text-[9px] font-bold text-[var(--text-dim)] whitespace-nowrap">{suffix}</span>}
     </span>

@@ -5,6 +5,7 @@ import { R2_PUBLIC_URL, type HeadwayByPeriod } from '../../shared/config';
 import { FLOATING_CARD, PANEL_ENTER, PANEL_ENTER_TOP, TRANSITION_SLOW, SEARCH_PILL, SEARCH_FIELD, LIST_ROW, CHIP_BASE, Z_PANEL, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH } from '../styles';
 import RouteListRow from '../components/RouteListRow';
 import { shortenAgencyName } from '../utils/format';
+import { useColorVision } from '../context/ColorVisionContext';
 import {
   agencyHistoryTier,
   agencyQualifiesForHistory,
@@ -102,6 +103,7 @@ function RouteHistoryCard({
   region: string;
   onBack: () => void;
 }) {
+  const { colorVisionFriendly } = useColorVision();
   const [showChart, setShowChart] = useState(false);
   const { newestFirst: snaps, oldestFirst: chartSnaps } = routeHistorySnapshots(route);
 
@@ -146,7 +148,7 @@ function RouteHistoryCard({
   const linePath = 'M ' + points.map(p => `${p.x} ${p.y}`).join(' L ');
   const fillPath = `${linePath} L ${points[points.length - 1].x} ${height - 18} L ${points[0].x} ${height - 18} Z`;
 
-  const lineColor = worse ? '#ef4444' : better ? '#10b981' : '#9ca3af';
+  const lineColor = worse ? (colorVisionFriendly ? '#c44516' : '#ef4444') : better ? (colorVisionFriendly ? '#009e73' : '#10b981') : '#9ca3af';
   // x-axis label visibility: always show first and last; intermediate only if they have clearance
   const labelClearance = 34;
   const labelIndices = new Set<number>([0, points.length - 1]);

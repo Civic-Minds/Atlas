@@ -1,4 +1,4 @@
-import { buildDefaultRouteLineOpacityExpression, buildFocusedRouteLineOpacityExpression, getTierColor, getVehicleStatus } from '../colors';
+import { buildDefaultRouteLineOpacityExpression, buildFocusedRouteLineOpacityExpression, getTierColor, getVehicleStatus, getVehicleColors, getFareColor } from '../colors';
 import { describe, it, expect } from 'vitest';
 
 describe('getTierColor', () => {
@@ -33,6 +33,20 @@ describe('getVehicleStatus', () => {
     expect(getVehicleStatus(5.4)).toBe('on_time');
     expect(getVehicleStatus(5.5)).toBe('late');
     expect(getVehicleStatus(10)).toBe('late');
+  });
+});
+
+describe('colour-blind-friendly palette', () => {
+  it('keeps each frequency tier mapped to a distinct friendly colour', () => {
+    const colors = ['10', '15', '20', '30', '60', 'infrequent'].map(tier => getTierColor(tier, 'friendly'));
+    expect(new Set(colors).size).toBe(colors.length);
+    expect(colors).toEqual(['#13294b', '#244c66', '#3c6f73', '#5e8b72', '#9a8a45', '#c8a900']);
+  });
+
+  it('uses the friendly status and fare colours when enabled', () => {
+    expect(getVehicleColors('early', 'friendly').border).toBe('#005a8d');
+    expect(getVehicleColors('late', 'friendly').border).toBe('#9e3510');
+    expect(getFareColor(5, 'friendly')).toBe('#c44516');
   });
 });
 
