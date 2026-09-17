@@ -5,7 +5,7 @@ const catalog = JSON.parse(fs.readFileSync(path, 'utf8'));
 const failures = [];
 const statuses = new Set(['planned', 'definition_found', 'qualitative_definition_only', 'no_definition_found', 'blocked']);
 
-if (catalog.targetAgencyCount !== 200) failures.push('targetAgencyCount must be 200');
+if (!Number.isInteger(catalog.targetAgencyCount) || catalog.targetAgencyCount < 200) failures.push('targetAgencyCount must be an integer of at least 200');
 if (catalog.agencies.length !== catalog.targetAgencyCount) failures.push('agency count must match targetAgencyCount');
 
 const ids = new Set();
