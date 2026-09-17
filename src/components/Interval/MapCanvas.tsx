@@ -1465,6 +1465,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     // changes) they may temporarily not exist. Guard to avoid console spam.
     const hasRoutes = !!map.getLayer('routes-layer');
     const hasLocalRoutes = !!map.getLayer('local-routes-layer');
+    const hasFrequentRoutes = !!map.getLayer('frequent-service-routes-layer');
     const hasRoutesHit = !!map.getLayer('routes-hit-layer');
     const hasStops = !!map.getLayer('stops-layer');
 
@@ -1557,7 +1558,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       map.setFilter('routes-hit-layer', hitRouteFilter as any);
     }
 
-    if (hasRoutes || hasLocalRoutes) {
+    if (hasRoutes || hasLocalRoutes || hasFrequentRoutes) {
       // Apply color paint styling — fare view if requested and baseFare present, else tier
       let lineColorExpr: any;
       if (fareView) {
