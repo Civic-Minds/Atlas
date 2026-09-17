@@ -10792,27 +10792,142 @@
       "agencyName": "Chemung County C-TRAN",
       "region": "New York",
       "country": "United States",
-      "researchBatch": 10,
+      "researchBatch": 12,
       "agencySizeTier": "unclassified",
-      "reviewStatus": "planned"
+      "reviewStatus": "no_definition_found",
+      "tierCoverage": "negative_result",
+      "reviewedAt": "2026-09-18",
+      "sources": [
+        {
+          "url": "https://www.chemungcountyny.gov/DocumentCenter/View/19019",
+          "type": "planning_document"
+        },
+        {
+          "url": "https://chemungcountyny.gov/DocumentCenter/View/524/Elmira-Chemung-Transportation-Council-Long-Range-Plan-2035-PDF",
+          "type": "planning_document"
+        }
+      ],
+      "tiers": [],
+      "atlasComparison": {
+        "status": "not_run"
+      },
+      "confidence": "not_found",
+      "noDefinitionReason": "Official C-TRAN planning materials publish an hourly baseline and route-specific exceptions, but no named frequent-service tier or agency-wide frequent-service definition was located."
     },
     {
       "agencyId": "cherriots",
       "agencyName": "Cherriots (Salem, OR)",
       "region": "Oregon",
       "country": "United States",
-      "researchBatch": 10,
+      "researchBatch": 12,
       "agencySizeTier": "unclassified",
-      "reviewStatus": "planned"
+      "reviewStatus": "definition_found",
+      "tierCoverage": "documented",
+      "reviewedAt": "2026-09-18",
+      "sources": [
+        {
+          "url": "https://www.cherriots.org/media/doc/Service_Guidelines_2020-09-01.pdf",
+          "type": "service_guidelines"
+        },
+        {
+          "url": "https://www.cherriots.org/media/doc/PACKET1_BD_2018-05-24_vUYV0wA.pdf",
+          "type": "system_map"
+        },
+        {
+          "url": "https://www.cherriots.org/media/doc/FY2021-22_Approved_Budget.pdf",
+          "type": "planning_document"
+        }
+      ],
+      "tiers": [
+        {
+          "label": "Frequent Service",
+          "thresholdMinutes": 15,
+          "thresholdText": "Every 15 minutes or better during most of the day; less frequent after 7 p.m.",
+          "span": "most of the day",
+          "days": "weekdays",
+          "geography": "local routes",
+          "mode": "bus",
+          "kind": "frequency"
+        },
+        {
+          "label": "Standard Service",
+          "thresholdMinutes": 30,
+          "thresholdText": "Every 30 minutes during most of the day.",
+          "span": "most of the day",
+          "days": "weekdays",
+          "geography": "local routes",
+          "mode": "bus",
+          "kind": "frequency"
+        },
+        {
+          "label": "Basic Service",
+          "thresholdMinutes": 60,
+          "thresholdText": "Every 60 minutes during most of the day.",
+          "span": "most of the day",
+          "days": "weekdays",
+          "geography": "local routes",
+          "mode": "bus",
+          "kind": "frequency"
+        },
+        {
+          "label": "Select Trips",
+          "thresholdText": "Trips offered only at select times; consult the schedule.",
+          "span": "varies",
+          "days": "varies",
+          "geography": "local routes",
+          "mode": "bus",
+          "kind": "service_class"
+        },
+        {
+          "label": "Regional Express",
+          "thresholdText": "At least two weekday round trips; routes may operate throughout the day or only during peak periods.",
+          "span": "varies",
+          "days": "weekdays",
+          "geography": "regional routes",
+          "mode": "bus",
+          "kind": "service_class"
+        },
+        {
+          "label": "Regional Flex Zone",
+          "thresholdText": "Flexible service requiring a reservation; schedules vary.",
+          "span": "varies",
+          "days": "varies",
+          "geography": "regional service area",
+          "mode": "bus",
+          "kind": "service_class"
+        }
+      ],
+      "atlasComparison": {
+        "status": "not_run"
+      },
+      "confidence": "explicit"
     },
     {
       "agencyId": "cheyenne",
       "agencyName": "Cheyenne Transit Program",
       "region": "Wyoming",
       "country": "United States",
-      "researchBatch": 10,
+      "researchBatch": 12,
       "agencySizeTier": "unclassified",
-      "reviewStatus": "planned"
+      "reviewStatus": "no_definition_found",
+      "tierCoverage": "negative_result",
+      "reviewedAt": "2026-09-18",
+      "sources": [
+        {
+          "url": "https://www.cheyennecity.org/Your-Government/Departments/Public-Works/Transit/Fixed-Route-Service",
+          "type": "route_service_page"
+        },
+        {
+          "url": "https://www.cheyennecity.org/Your-Government/Departments/Public-Works/Transit/Route-System-Map",
+          "type": "system_map"
+        }
+      ],
+      "tiers": [],
+      "atlasComparison": {
+        "status": "not_run"
+      },
+      "confidence": "not_found",
+      "noDefinitionReason": "Official Cheyenne Transit materials publish fixed-route operating hours and route maps but no named frequent-service tier or numeric agency-wide frequency definition was located."
     },
     {
       "agencyId": "cincinnatimetro",
