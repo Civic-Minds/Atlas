@@ -254,7 +254,7 @@ function RouteHistoryCard({
             const hw = snapHeadway(snap);
             const isLatest = i === 0;
             const hwColor = isLatest
-              ? worse ? 'text-red-500' : better ? 'text-green-500' : 'text-[var(--text-primary)]'
+              ? worse ? 'text-[var(--status-negative)]' : better ? 'text-[var(--status-positive)]' : 'text-[var(--text-primary)]'
               : 'text-[var(--text-dim)]';
             const delta = i < snaps.length - 1 ? hw - snapHeadway(snaps[i + 1]) : null;
             return (
@@ -264,7 +264,7 @@ function RouteHistoryCard({
                 </span>
                 <div className="flex items-center gap-2">
                   {delta !== null && delta !== 0 && (
-                    <span className={`text-[9px] font-bold ${delta > 0 ? 'text-red-400' : 'text-green-400'}`}>
+                    <span className={`text-[9px] font-bold ${delta > 0 ? 'text-[var(--status-negative)]' : 'text-[var(--status-positive)]'}`}>
                       {delta > 0 ? `+${delta}` : `${delta}`}
                     </span>
                   )}
@@ -276,8 +276,8 @@ function RouteHistoryCard({
         </div>
 
         {summary && (
-          <div className={`mx-4 mt-3 mb-4 rounded-xl px-3 py-2.5 ${summary.worse ? 'bg-red-500/10' : 'bg-green-500/10'}`}>
-            <p className={`text-xs font-bold leading-tight ${summary.worse ? 'text-red-500' : 'text-green-500'}`}>{summary.text}</p>
+          <div className={`mx-4 mt-3 mb-4 rounded-xl px-3 py-2.5 ${summary.worse ? 'bg-[var(--status-negative-bg)]' : 'bg-[var(--status-positive-bg)]'}`}>
+            <p className={`text-xs font-bold leading-tight ${summary.worse ? 'text-[var(--status-negative)]' : 'text-[var(--status-positive)]'}`}>{summary.text}</p>
             <p className="text-[10px] text-[var(--text-muted)] mt-0.5">{summary.subtext}</p>
             <p className="text-[10px] text-[var(--text-dim)] mt-1">Latest archived snapshot: {last.label}</p>
           </div>
@@ -686,8 +686,8 @@ export default function History({ active, initialAgencySlug, onInfoOpen, query, 
                     onClick={() => setDepthFilterOpen(v => !v)}
                     className={`relative h-8 px-3.5 flex items-center justify-center ${CHIP_BASE} text-xs font-bold transition-colors whitespace-nowrap ${
                       depthFilter !== 'all'
-                        ? 'border-[var(--accent-border)] text-[var(--accent)]'
-                        : 'border-[var(--border-primary)] text-[var(--text-primary)] hover:text-[var(--accent)]'
+                        ? 'bg-[var(--control-active-bg)] border-[var(--control-active-border)] text-[var(--control-active-fg)]'
+                        : 'bg-[var(--control-inactive-bg)] border-[var(--control-inactive-border)] text-[var(--control-inactive-fg)] hover:bg-[var(--control-hover-bg)]'
                     }`}
                   >
                     Filter
@@ -703,8 +703,8 @@ export default function History({ active, initialAgencySlug, onInfoOpen, query, 
                           onClick={() => { setDepthFilter(opt); setDepthFilterOpen(false); }}
                           className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-[11px] font-bold transition-all border text-left min-w-0 ${
                             depthFilter === opt
-                              ? 'bg-[var(--accent-bg)] border-[var(--accent-border)] text-[var(--accent)]'
-                              : 'bg-[var(--bg-btn)] border-[var(--border-primary)] text-[var(--text-dim)] hover:text-[var(--text-primary)]'
+                              ? 'bg-[var(--control-active-bg)] border-[var(--control-active-border)] text-[var(--control-active-fg)]'
+                              : 'bg-[var(--control-inactive-bg)] border-[var(--control-inactive-border)] text-[var(--control-inactive-fg)] hover:bg-[var(--control-hover-bg)]'
                           }`}
                         >
                           {opt === 'all' ? 'All agencies' : historyTierAgencyLabel(opt)}

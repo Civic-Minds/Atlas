@@ -20,6 +20,7 @@ export function ColorVisionProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     localStorage.setItem('atlas_color_vision', colorVisionFriendly ? 'friendly' : 'default');
+    document.documentElement.dataset.colorVision = colorVisionFriendly ? 'high-contrast' : 'normal';
   }, [colorVisionFriendly]);
 
   return (

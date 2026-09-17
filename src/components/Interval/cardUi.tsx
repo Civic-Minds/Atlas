@@ -358,7 +358,7 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
                   Submitting copies route diagnostics to your clipboard so you can paste them into GitHub.
                 </p>
               )}
-              {validationError && <p className="text-[10px] font-bold text-red-600" role="alert">{validationError}</p>}
+              {validationError && <p className="text-[10px] font-bold text-[var(--status-negative)]" role="alert">{validationError}</p>}
             </div>
 
             <div className="sticky bottom-0 flex justify-end gap-2 px-4 py-3 bg-[var(--bg-panel)] border-t border-[var(--border-primary)]">

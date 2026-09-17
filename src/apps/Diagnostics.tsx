@@ -60,8 +60,8 @@ function FilterPill({ active, onClick, children }: { active: boolean; onClick: (
       onClick={onClick}
       className={`h-7 px-2.5 flex items-center justify-center text-[10px] font-bold rounded-full border transition-colors ${
         active
-          ? 'bg-[var(--accent-bg)] border-[var(--accent-border)] text-[var(--accent)]'
-          : 'border-[var(--border-primary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+          ? 'bg-[var(--control-active-bg)] border-[var(--control-active-border)] text-[var(--control-active-fg)]'
+          : 'bg-[var(--control-inactive-bg)] border-[var(--control-inactive-border)] text-[var(--control-inactive-fg)] hover:bg-[var(--control-hover-bg)]'
       }`}
     >
       {children}
@@ -296,7 +296,7 @@ export default function Diagnostics({ agencies }: DiagnosticsProps) {
             {sortedRows.length} rows{isLoading ? ' · loading…' : ''}
           </span>
           {failedSlugs.size > 0 && (
-            <span className="text-[10px] font-bold text-red-500" title={[...failedSlugs].join(', ')}>
+            <span className="text-[10px] font-bold text-[var(--status-negative)]" title={[...failedSlugs].join(', ')}>
               {failedSlugs.size} agenc{failedSlugs.size === 1 ? 'y' : 'ies'} failed to load
             </span>
           )}

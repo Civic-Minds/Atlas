@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Search } from 'lucide-react';
 import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
-import { FLOATING_CARD, CHIP_BASE, PANEL_ENTER_TOP } from '../../styles';
+import { FLOATING_CARD, CHIP_BASE, PANEL_ENTER_TOP, CONTROL_ACTIVE, CONTROL_INACTIVE } from '../../styles';
 import type { Agency } from '../../App';
 import { PERIOD_LABELS, PERIOD_KEYS } from '../../hooks/useIntervalStats';
 import type { TimePeriod, ViewportBounds } from '../../hooks/useIntervalStats';
@@ -64,15 +64,15 @@ const PANEL = `absolute top-10 right-0 ${FLOATING_CARD} p-2 ${PANEL_ENTER_TOP} f
 const compactOptBtn = (active: boolean) =>
   `h-7 px-2.5 flex items-center justify-center text-[11px] font-bold rounded-full border transition-colors ${
     active
-      ? 'bg-[var(--accent-bg)] border-[var(--accent-border)] text-[var(--accent)]'
-      : 'border-[var(--border-primary)] text-[var(--text-dim)] hover:text-[var(--text-primary)]'
+      ? CONTROL_ACTIVE
+      : CONTROL_INACTIVE
   }`;
 
 const rowBtn = (active: boolean) =>
   `w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-[11px] font-bold transition-all border text-left min-w-0 ${
     active
-      ? 'bg-[var(--accent-bg)] border-[var(--accent-border)] text-[var(--accent)]'
-      : 'bg-[var(--bg-btn)] border-[var(--border-primary)] text-[var(--text-dim)] hover:text-[var(--text-primary)]'
+      ? CONTROL_ACTIVE
+      : CONTROL_INACTIVE
   }`;
 
 interface AgenciesPanelProps {

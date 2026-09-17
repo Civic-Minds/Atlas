@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Settings, X, Sun, Moon, ArrowLeft, Search, ShieldCheck } from 'lucide-react';
-import { ICON_BTN, DROPDOWN_PANEL, SEARCH_FIELD, SEARCH_PILL, dropdownAnim, TRANSITION_BASE, Z_MODAL_TOP } from '../../styles';
+import { ICON_BTN, DROPDOWN_PANEL, SEARCH_FIELD, SEARCH_PILL, CONTROL_ACTIVE, CONTROL_INACTIVE, dropdownAnim, TRANSITION_BASE, Z_MODAL_TOP } from '../../styles';
 import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
 import { FILTER_MODES } from '../../../shared/modes';
 import { DAY_TYPES } from '../../../shared/dayTypes';
@@ -496,13 +496,13 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                   <div className="flex items-center gap-3 min-w-0">
                     <span className="w-4 h-4 shrink-0 text-center text-[10px] font-black text-[var(--text-dim)]">◈</span>
                     <div className="min-w-0">
-                      <p className="text-[11px] font-bold text-[var(--text-primary)] leading-tight">Enhanced colour distinction</p>
+                      <p className="text-[11px] font-bold text-[var(--text-primary)] leading-tight">High contrast mode</p>
                       <p className="text-[10px] text-[var(--text-muted)] mt-1 leading-relaxed">Uses clearer colours and line weights to make routes easier to tell apart.</p>
                     </div>
                   </div>
                   <button
                     onClick={() => setColorVisionFriendly(v => !v)}
-                    aria-label="Toggle enhanced colour distinction"
+                    aria-label="Toggle high contrast mode"
                     className="shrink-0"
                   >
                     <Toggle on={colorVisionFriendly} />
@@ -573,9 +573,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                           key={label}
                           onClick={() => setMaxHeadway?.(max)}
                           className={`h-7 px-2.5 flex items-center justify-center text-[10px] font-bold rounded-full border transition-colors ${
-                            active
-                              ? 'bg-[var(--accent-bg)] border-[var(--accent-border)] text-[var(--accent)]'
-                              : 'border-[var(--border-primary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                            active ? CONTROL_ACTIVE : CONTROL_INACTIVE
                           }`}
                         >
                           <span className="w-1.5 h-1.5 rounded-full mr-1.5 shrink-0" style={{ background: color }} />
@@ -597,9 +595,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                           key={dayType}
                           onClick={() => setDay?.(dayType)}
                           className={`flex-1 h-7 flex items-center justify-center text-[10px] font-bold rounded-full border transition-colors ${
-                            active
-                              ? 'bg-[var(--accent-bg)] border-[var(--accent-border)] text-[var(--accent)]'
-                              : 'border-[var(--border-primary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                            active ? CONTROL_ACTIVE : CONTROL_INACTIVE
                           }`}
                         >
                           {dayType}
@@ -620,9 +616,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                           key={key}
                           onClick={() => setPeriod?.(key)}
                           className={`h-7 px-2.5 flex items-center justify-center text-[10px] font-bold rounded-full border transition-colors ${
-                            active
-                              ? 'bg-[var(--accent-bg)] border-[var(--accent-border)] text-[var(--accent)]'
-                              : 'border-[var(--border-primary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                            active ? CONTROL_ACTIVE : CONTROL_INACTIVE
                           }`}
                         >
                           {label}
@@ -648,9 +642,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                             setSelectedModes(next);
                           }}
                           className={`h-7 px-2.5 flex items-center justify-center text-[10px] font-bold rounded-full border transition-colors ${
-                            active
-                              ? 'bg-[var(--accent-bg)] border-[var(--accent-border)] text-[var(--accent)]'
-                              : 'border-[var(--border-primary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                            active ? CONTROL_ACTIVE : CONTROL_INACTIVE
                           }`}
                         >
                           {label}

@@ -177,8 +177,8 @@ export default function DiagnosticsUnevenPage() {
                   onClick={() => setDay(d)}
                   className={`h-7 px-2.5 flex items-center justify-center text-[10px] font-bold rounded-full border transition-colors ${
                     day === d
-                      ? 'bg-[var(--accent-bg)] border-[var(--accent-border)] text-[var(--accent)]'
-                      : 'border-[var(--border-primary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                      ? 'bg-[var(--control-active-bg)] border-[var(--control-active-border)] text-[var(--control-active-fg)]'
+                      : 'bg-[var(--control-inactive-bg)] border-[var(--control-inactive-border)] text-[var(--control-inactive-fg)] hover:bg-[var(--control-hover-bg)]'
                   }`}
                 >
                   {d}

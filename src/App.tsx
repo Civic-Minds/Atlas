@@ -454,7 +454,7 @@ export default function App() {
           <button
             onClick={() => setActiveApp(inLive ? 'frequency' : 'live')}
             aria-label="Live vehicles"
-            className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold ${inLive ? 'bg-[var(--accent-bg)] border border-[var(--accent-border)] text-[var(--accent)]' : 'bg-[var(--bg-panel)] border border-[var(--border-primary)] hover:bg-[var(--bg-btn-hover)] text-[var(--text-secondary)]'}`}
+            className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold ${inLive ? 'bg-[var(--control-active-bg)] border border-[var(--control-active-border)] text-[var(--control-active-fg)]' : 'bg-[var(--control-inactive-bg)] border border-[var(--control-inactive-border)] hover:bg-[var(--control-hover-bg)] text-[var(--control-inactive-fg)]'}`}
           >
             <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${inLive ? 'bg-[var(--accent)] animate-pulse' : 'bg-[var(--text-dim)]'}`} />
             <span>Live</span>
@@ -467,7 +467,7 @@ export default function App() {
             href={inHistory ? '/' : '/apps/history'}
             aria-label={inHistory ? 'Back to frequency map' : 'Historical service'}
             aria-pressed={inHistory}
-            className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${inHistory ? 'bg-[var(--accent-bg)] border border-[var(--accent-border)] text-[var(--accent)]' : 'bg-[var(--bg-panel)] border border-[var(--border-primary)] hover:bg-[var(--bg-btn-hover)] text-[var(--text-secondary)]'}`}
+            className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${inHistory ? 'bg-[var(--control-active-bg)] border border-[var(--control-active-border)] text-[var(--control-active-fg)]' : 'bg-[var(--control-inactive-bg)] border border-[var(--control-inactive-border)] hover:bg-[var(--control-hover-bg)] text-[var(--control-inactive-fg)]'}`}
           >
             <HistoryIcon className="w-3.5 h-3.5" />
             <span>History</span>
@@ -482,7 +482,7 @@ export default function App() {
             href={inNight ? '/' : '/apps/night'}
             aria-label={inNight ? 'Back to frequency map' : 'Night service'}
             aria-pressed={inNight}
-            className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${inNight ? 'bg-[var(--accent-bg)] border border-[var(--accent-border)] text-[var(--accent)]' : 'bg-[var(--bg-panel)] border border-[var(--border-primary)] hover:bg-[var(--bg-btn-hover)] text-[var(--text-secondary)]'}`}
+            className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${inNight ? 'bg-[var(--control-active-bg)] border border-[var(--control-active-border)] text-[var(--control-active-fg)]' : 'bg-[var(--control-inactive-bg)] border border-[var(--control-inactive-border)] hover:bg-[var(--control-hover-bg)] text-[var(--control-inactive-fg)]'}`}
           >
             <Moon className="w-3.5 h-3.5" />
             <span>Night Service</span>
