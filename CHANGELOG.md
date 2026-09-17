@@ -16,6 +16,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Improved enhanced colour distinction with a shared, higher-contrast palette for frequency tiers across map views.
 - Improved filter button readability by keeping inactive minutes and time-period options at normal text contrast.
 - Made selected minutes and time-period options visually obvious with a filled high-contrast state.
+- Kept the regular filter appearance by reserving the filled high-contrast button state for Enhanced colour distinction mode.
+- Applied the same normal-versus-enhanced button treatment inside filter menus for consistent controls.
 - Added a colour-blind friendly appearance setting with a clearer route palette and frequency-based line weights.
 - Google Analytics no longer loses the initial page view while privacy consent and the tracking script are initializing.
 - Added a visible Feedback email link beside the map attribution for launch-period comments and feature requests.
