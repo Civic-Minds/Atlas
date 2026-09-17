@@ -1,6 +1,6 @@
 # Frequent-Service Research Pilot
 
-**Status:** 52 of 200 agency reviews complete
+**Status:** 56 of 200 agency reviews complete
 **Checked:** 2026-09-16  
 **Purpose:** Compare what agencies officially call “frequent” with what their current GTFS schedules provide.
 
@@ -17,7 +17,7 @@ The comparison columns mean:
 - `extended15`: no gap over 15 minutes from 7am–midnight
 - `extended30`: no gap over 30 minutes from 7am–midnight
 
-The authoritative review tracker is the [structured agency catalog](frequent-service-catalog.json). It contains 52 completed records and 148 planned records. This is evidence-gathering work: the catalog documents the landscape and does not by itself change Atlas's production frequency definitions. A record may have an Atlas comparison marked `not_run` when the agency has no Atlas configuration or the comparison was not part of the source review.
+The authoritative review tracker is the [structured agency catalog](frequent-service-catalog.json). It contains 56 completed records and 144 planned records. This is evidence-gathering work: the catalog documents the landscape and does not by itself change Atlas's production frequency definitions. A record may have an Atlas comparison marked `not_run` when the agency has no Atlas configuration or the comparison was not part of the source review.
 
 ## Results
 
@@ -138,4 +138,4 @@ Column order is `daytime15 / daytime30 / extended15 / extended30`, using the sam
 
 ## Next step
 
-Review the 148 planned agencies using the catalog's fixed source and time boundary. Keep this memo as the qualitative summary and update the structured catalog after each agency. The result is intended to document that Atlas did the research; any change to Atlas's product definition is a separate decision. Continue the STM and TransLink stop/corridor follow-up separately because the route-pattern comparison alone is not enough for corridor-based definitions.
+Review the 144 planned agencies using the catalog's fixed source and time boundary. Keep this memo as the qualitative summary and update the structured catalog after each agency. The result is intended to document that Atlas did the research; any change to Atlas's product definition is a separate decision. Continue the STM and TransLink stop/corridor follow-up separately because the route-pattern comparison alone is not enough for corridor-based definitions.
