@@ -1,6 +1,6 @@
 # Frequent-Service Research Pilot
 
-**Status:** 216 of 216 agency reviews complete
+**Status:** 216 of 266 agency reviews complete
 **Checked:** 2026-09-16  
 **Purpose:** Compare what agencies officially call “frequent” with what their current GTFS schedules provide.
 
@@ -17,7 +17,7 @@ The comparison columns mean:
 - `extended15`: no gap over 15 minutes from 7am–midnight
 - `extended30`: no gap over 30 minutes from 7am–midnight
 
-The authoritative review tracker is the [structured agency catalog](frequent-service-catalog.json). It contains 216 completed records and no planned records: 70 agencies with documented numeric definitions, 41 with qualitative or named service definitions, and 105 where no formal frequent-service definition was located. This is evidence-gathering work: the catalog documents the landscape and does not by itself change Atlas's production frequency definitions. A record may have an Atlas comparison marked `not_run` when the agency has no Atlas configuration or the comparison was not part of the source review.
+The authoritative review tracker is the [structured agency catalog](frequent-service-catalog.json). It contains 216 completed records and 50 planned records for the first 50-agency expansion batch: 70 agencies with documented numeric definitions, 41 with qualitative or named service definitions, and 105 where no formal frequent-service definition was located. This is evidence-gathering work: the catalog documents the landscape and does not by itself change Atlas's production frequency definitions. A record may have an Atlas comparison marked `not_run` when the agency has no Atlas configuration or the comparison was not part of the source review.
 
 ## Results
 
@@ -138,4 +138,4 @@ Column order is `daytime15 / daytime30 / extended15 / extended30`, using the sam
 
 ## Current expansion
 
-The first 200 records were reviewed using the fixed source and time boundary, and the first sixteen records of the 400-agency expansion are now complete. The result documents that Atlas did the research; it does not change Atlas's production frequency definitions. Continue the STM and TransLink stop/corridor follow-up separately because the route-pattern comparison alone is not enough for corridor-based definitions. Any change to Atlas's product definition is a separate decision.
+The first 200 records were reviewed using the fixed source and time boundary, and the first sixteen records of the 400-agency expansion are now complete. The next 50-agency batch is queued from Atlas's inventory of unique North American agency feeds. The result documents that Atlas did the research; it does not change Atlas's production frequency definitions. Continue the STM and TransLink stop/corridor follow-up separately because the route-pattern comparison alone is not enough for corridor-based definitions. Any change to Atlas's product definition is a separate decision.
