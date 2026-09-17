@@ -72,8 +72,8 @@ const PANEL = `absolute top-10 right-0 ${FLOATING_CARD} p-2 ${PANEL_ENTER_TOP} f
 const compactOptBtn = (active: boolean) =>
   `h-7 px-2.5 flex items-center justify-center text-[11px] font-bold rounded-full border transition-colors ${
     active
-      ? 'bg-[var(--accent-bg)] border-[var(--accent-border)] text-[var(--accent)]'
-      : 'border-[var(--border-primary)] text-[var(--text-primary)] hover:text-[var(--accent)]'
+      ? 'bg-[var(--text-primary)] border-[var(--text-primary)] text-[var(--bg-app)]'
+      : 'border-[var(--text-muted)] text-[var(--text-primary)] hover:border-[var(--text-primary)] hover:text-[var(--accent)]'
   }`;
 
 const rowBtn = (active: boolean) =>
