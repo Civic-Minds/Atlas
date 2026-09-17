@@ -1,6 +1,7 @@
 import React, { useMemo, useRef, useEffect, useCallback, useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { getTierColor, getFareColor } from '../../utils/colors';
+import { useColorVision } from '../../context/ColorVisionContext';
 import type { ShapeProperties, TimePeriod, DayType, HoveredBranch, ViewportBounds } from '../../hooks/useIntervalStats';
 import type { Agency, FareOverride } from '../../App';
 import { useLiveAdherence, agencyHeadwayDelta, agencyTripSummary } from '../../hooks/useLiveAdherence';
@@ -131,6 +132,8 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   searchEnterRef,
   onSearchRouteHover,
 }) => {
+  const { colorVisionFriendly } = useColorVision();
+  const colorMode = colorVisionFriendly ? 'friendly' : 'default';
   const nonCorridorLayers = useMemo(() => {
     const result: Record<string, GeoJSON.FeatureCollection> = {};
     for (const [slug, fc] of Object.entries(layers)) {
@@ -780,7 +783,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
           if (f) {
             const p = f.properties as any;
             const facts = buildRouteFacts(p, slug);
-            return { key: facts.key, shortName: facts.shortName, longName: facts.longName ?? '', agencyName: shortenAgencyName(facts.agencyName), color: getTierColor(p.tier) };
+            return { key: facts.key, shortName: facts.shortName, longName: facts.longName ?? '', agencyName: shortenAgencyName(facts.agencyName), color: getTierColor(p.tier, colorMode) };
           }
         }
         return { key, shortName: key, longName: '', agencyName: '', color: 'var(--text-dim)' };
@@ -1033,7 +1036,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                   {routeBaseFare != null ? (
                     <span
                       className="text-sm font-black px-2.5 py-0.5 rounded-full text-white"
-                      style={{ background: getFareColor(routeBaseFare) }}
+                      style={{ background: getFareColor(routeBaseFare, colorMode) }}
                     >
                       ${routeBaseFare.toFixed(2)}
                     </span>
@@ -1080,7 +1083,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                     {baseFare != null ? (
                       <span
                         className="text-sm font-black px-2 py-0.5 rounded-full text-white"
-                        style={{ background: getFareColor(baseFare) }}
+                        style={{ background: getFareColor(baseFare, colorMode) }}
                       >
                         ${baseFare.toFixed(2)}
                       </span>

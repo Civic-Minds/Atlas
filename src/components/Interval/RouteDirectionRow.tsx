@@ -3,6 +3,7 @@ import { getTierColor } from '../../utils/colors';
 import { fmtHeadwayRange } from '../../utils/format';
 import { shouldShowBranchHeadwayRange } from '../../utils/routeCardTrunk';
 import { headwayToTierColor } from './HeadwaySparkline';
+import { useColorVision } from '../../context/ColorVisionContext';
 import { HeadwayBadge } from './cardUi';
 
 interface Props {
@@ -34,11 +35,13 @@ interface Props {
  * so there's one place to change instead of hunting across SidebarControls.
  */
 export default function RouteDirectionRow({ label, headway, colorHeadway, headwayLabel, trunkHeadway, headwaySuffix, subLabel, live, limited, limitedHint, dimmed, onHoverStart, onHoverEnd, branchHovered, branchDimmed, onClick }: Props) {
+  const { colorVisionFriendly } = useColorVision();
+  const colorMode = colorVisionFriendly ? 'friendly' : 'default';
   const interactive = !!(onHoverStart && onHoverEnd);
   const clickable = !!onClick;
   const faded = dimmed || branchDimmed;
   const showRange = shouldShowBranchHeadwayRange(trunkHeadway, headway);
-  const dotColor = limited ? getTierColor(null) : headwayToTierColor(showRange ? trunkHeadway! : (colorHeadway ?? headway));
+  const dotColor = limited ? getTierColor(null, colorMode) : headwayToTierColor(showRange ? trunkHeadway! : (colorHeadway ?? headway), colorMode);
   const rangeText = showRange && headway != null && trunkHeadway != null
     ? fmtHeadwayRange(trunkHeadway, headway)
     : null;
@@ -46,7 +49,7 @@ export default function RouteDirectionRow({ label, headway, colorHeadway, headwa
   if (limitedHint) {
     return (
       <div className="flex items-start gap-1.5 text-[10px]">
-        <span className="w-2 h-2 rounded-full shrink-0 mt-0.5" style={{ background: getTierColor(null) }} />
+        <span className="w-2 h-2 rounded-full shrink-0 mt-0.5" style={{ background: getTierColor(null, colorMode) }} />
         <span className="font-bold text-[var(--text-primary)] leading-snug">{label}</span>
         <span className="ml-1.5 text-[8px] font-bold text-[var(--text-legend)] border border-[var(--border-primary)] rounded-full px-1.5 py-px whitespace-nowrap">limited</span>
       </div>
