@@ -300,6 +300,12 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
         <div className="flex items-center gap-1 rounded-full border border-[var(--border-primary)] p-0.5">
           {([15, 30] as const).map(value => <button key={value} onClick={() => setResearchFrequency(value)} className={compactOptBtn(researchFrequency === value)} aria-pressed={researchFrequency === value}>{value} min</button>)}
         </div>
+        {researchFrequency === 30 && (
+          <div className="hidden xl:flex items-center gap-2 text-[9px] font-bold text-[var(--text-muted)]" aria-label="30-minute view legend">
+            <span className="flex items-center gap-1"><span className="inline-block h-1 rounded-full" style={{ background: getTierColor('15', colorMode), width: 12 }} />≤15 min</span>
+            <span className="flex items-center gap-1"><span className="inline-block h-0.5 rounded-full" style={{ background: getTierColor('30', colorMode), width: 12 }} />16–30 min</span>
+          </div>
+        )}
         <div className="flex items-center gap-1 rounded-full border border-[var(--border-primary)] p-0.5">
           {([['daytime', '7am–7pm'], ['extended', '7am–midnight']] as const).map(([value, label]) => <button key={value} onClick={() => setResearchWindow(value)} className={compactOptBtn(researchWindow === value)} aria-pressed={researchWindow === value}>{label}</button>)}
         </div>

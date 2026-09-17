@@ -4,7 +4,7 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import type { MapboxOverlay } from '@deck.gl/mapbox';
 import { LocateFixed, Plus, Minus, Link2, Flag } from 'lucide-react';
 import { routeKey } from '../../hooks/useIntervalStats';
-import { HEADWAY_TIERS, getHeadwayTiers, NIGHT_SERVICE_COLOR, buildFareColorExpression, buildDefaultRouteLineOpacityExpression, buildFocusedRouteLineOpacityExpression, buildZoomHeadwayGateExpression, type ColorVisionMode } from '../../utils/colors';
+import { HEADWAY_TIERS, getHeadwayTiers, getTierColor, NIGHT_SERVICE_COLOR, buildFareColorExpression, buildDefaultRouteLineOpacityExpression, buildFocusedRouteLineOpacityExpression, buildZoomHeadwayGateExpression, type ColorVisionMode } from '../../utils/colors';
 import { getRegionalView, saveView, getSavedView, getAgencyBounds } from '../../utils/regionView';
 import { useViewport } from '../../context/ViewportContext';
 import { useHistoryMapOverlay } from '../../context/HistoryMapOverlay';
@@ -27,10 +27,12 @@ import { computeFrequencySegmentOverlay, buildPartialMatchFilterExpression, broa
 import { buildSharedHoverSegments } from '../../utils/sharedHoverSegments';
 import { getMapContextAgenciesFromFeatures, isMapContextOutsideClick, type MapContextAgency } from '../../utils/mapContext';
 import { MapContextPanel } from './MapContextPanel';
-import { frequentServiceFeatureKey, frequentServiceQueryKey, type FrequentServiceFrequency, type FrequentServiceWindow } from '../../../shared/frequentService';
+import { frequentServiceBand, frequentServiceFeatureKey, frequentServiceQueryKey, type FrequentServiceFrequency, type FrequentServiceWindow } from '../../../shared/frequentService';
 import { effectiveMode } from '../../../shared/modes';
 
 const CORRIDOR_BAND_COLOR = '#64748b';
+const FREQUENT_15_COLOR = HEADWAY_TIERS.find(tier => tier.max === 15)?.color ?? '#3da44d';
+const FREQUENT_30_COLOR = HEADWAY_TIERS.find(tier => tier.max === 30)?.color ?? '#e07b2a';
 
 /** Smallest-bbox agency containing a point — prefers a local agency over an overlapping regional one. */
 // Many agencies fall back to a fixed-size padding box around their center rather than a real
@@ -670,7 +672,13 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     return Object.values(layers ?? {}).flatMap(collection => collection.features.filter(feature => {
       const props = feature.properties as Record<string, any> | null;
       return feature.geometry.type === 'LineString' && props?.day === frequentServiceDays[0] && qualifyingKeys.has(frequentServiceFeatureKey(props));
-    }));
+    }).map(feature => ({
+      ...feature,
+      properties: {
+        ...(feature.properties ?? {}),
+        frequentServiceBand: frequentServiceBand(feature.properties as Record<string, any>, frequentServiceWindow, frequentServiceFrequency),
+      },
+    })));
   }, [frequentServiceDays, frequentServiceFrequency, frequentServiceWindow, layers, selectedModes]);
 
   useLayoutEffect(() => {
@@ -851,8 +859,13 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         type: 'line',
         source: 'frequent-service-routes',
         paint: {
-          'line-color': '#f59e0b',
-          'line-width': ['interpolate', ['linear'], ['zoom'], 8, 2, 11, 2.5, 14, 3.2, 17, 4.5],
+          'line-color': ['match', ['get', 'frequentServiceBand'], '15', FREQUENT_15_COLOR, FREQUENT_30_COLOR],
+          'line-width': ['interpolate', ['linear'], ['zoom'],
+            8, ['match', ['get', 'frequentServiceBand'], '15', 3.2, 2.0],
+            11, ['match', ['get', 'frequentServiceBand'], '15', 3.8, 2.5],
+            14, ['match', ['get', 'frequentServiceBand'], '15', 4.6, 3.2],
+            17, ['match', ['get', 'frequentServiceBand'], '15', 6.0, 4.5],
+          ],
           'line-opacity': 0.9,
         },
         layout: { 'line-cap': 'round', 'line-join': 'round', visibility: 'none' },
@@ -1558,6 +1571,18 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       }
 
       if (hasRoutes) map.setPaintProperty('routes-layer', 'line-color', lineColorExpr);
+      if (frequentServiceView && map.getLayer('frequent-service-routes-layer')) {
+        map.setPaintProperty('frequent-service-routes-layer', 'line-color', [
+          'match', ['get', 'frequentServiceBand'], '15', getTierColor('15', colorMode), getTierColor('30', colorMode),
+        ]);
+        map.setPaintProperty('frequent-service-routes-layer', 'line-width', [
+          'interpolate', ['linear'], ['zoom'],
+          8, ['match', ['get', 'frequentServiceBand'], '15', 3.2, 2.0],
+          11, ['match', ['get', 'frequentServiceBand'], '15', 3.8, 2.5],
+          14, ['match', ['get', 'frequentServiceBand'], '15', 4.6, 3.2],
+          17, ['match', ['get', 'frequentServiceBand'], '15', 6.0, 4.5],
+        ]);
+      }
 
       // Opacity based on route state (focused vs dimmed).
       // When a route is selected we keep other lines visible and clickable

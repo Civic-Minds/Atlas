@@ -9,6 +9,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Added a beta-only Frequent Service research view for comparing 15- and 30-minute service across selected days and time spans.
 - Frequent Service research now reuses the existing mode filter so users can compare frequency by bus, rail, subway, or other modes.
 - Frequent Service research exposes its two frequency thresholds inline for faster comparison.
+- Frequent Service's 30-minute view now distinguishes ≤15-minute routes from the 16–30-minute group using the shared frequency colours and line weights.
 - Frequent Service research exposes its two service spans inline for faster comparison.
 - Frequent Service research keeps the shared Settings panel available for route and feed visibility controls.
 - Added a colour-blind friendly appearance setting with a clearer route palette and frequency-based line weights.
