@@ -2283,20 +2283,34 @@
         44.9,
         -63.27
       ],
-      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-nova-scotia-halifax-transit-gtfs-734.zip?alt=media",
-      "lastFeedExpiry": "20260823",
-      "lastFeedVersion": "2026_05_May_20260428",
-      "lastRefreshedAt": "2026-08-07",
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-734/mdb-734-202608240120/mdb-734-202608240120.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-734/mdb-734-202608240120/mdb-734-202608240120.zip",
+      "lastFeedExpiry": "20261129",
+      "lastFeedVersion": "2026_08_August_20260806",
+      "lastRefreshedAt": "2026-09-17",
       "cities": [
         "Dartmouth, Nova Scotia",
         "Halifax, Nova Scotia",
         "Lower Sackville, Nova Scotia"
       ],
-      "lastFeedCheckAt": "20260907",
-      "expiredFeedCheckCount": 2,
-      "expiredFeedCheckSince": "20260622",
-      "expiredFeedCheckExpiry": "20260823",
-      "timezone": "America/Halifax"
+      "lastFeedCheckAt": "20260917",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20261129",
+      "timezone": "America/Halifax",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 361
+        },
+        "checkedAt": "2026-09-17"
+      }
     },
     {
       "slug": "codiac",
@@ -6591,11 +6605,11 @@
         34.05,
         -118.24
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-29/mdb-29-202606070210/mdb-29-202606070210.zip",
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-29/mdb-29-202609090113/mdb-29-202609090113.zip",
       "lastFeedExpiry": "20261212",
       "lastFeedVersion": "",
       "region": "California",
-      "lastRefreshedAt": "2026-09-07",
+      "lastRefreshedAt": "2026-09-17",
       "supplementalFeedUrls": [
         "https://gitlab.com/LACMTA/gtfs_rail/raw/master/gtfs_rail.zip"
       ],
@@ -6611,7 +6625,7 @@
         "North Hills, California",
         "North Hollywood, California"
       ],
-      "lastFeedCheckAt": "20260907",
+      "lastFeedCheckAt": "20260917",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
       "expiredFeedCheckExpiry": "20270401",
@@ -6628,9 +6642,10 @@
           "routeHeadwayMismatches": 3,
           "featureCount": 1002
         },
-        "checkedAt": "2026-09-07"
+        "checkedAt": "2026-09-17"
       },
-      "timezone": "America/Los_Angeles"
+      "timezone": "America/Los_Angeles",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-29/mdb-29-202609090113/mdb-29-202609090113.zip"
     },
     {
       "slug": "metrolink",
@@ -8595,7 +8610,7 @@
         25.7617,
         -80.1918
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-331/mdb-331-202604250046/mdb-331-202604250046.zip",
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-331/mdb-331-202608010003/mdb-331-202608010003.zip",
       "lastFeedExpiry": "20271231",
       "lastFeedVersion": null,
       "region": "Florida",
@@ -8616,7 +8631,8 @@
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
       "expiredFeedCheckExpiry": "20271231",
-      "timezone": "America/New_York"
+      "timezone": "America/New_York",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-331/mdb-331-202608010003/mdb-331-202608010003.zip"
     },
     {
       "slug": "broward-transit",
