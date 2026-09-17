@@ -1,0 +1,228 @@
+{
+  "catalogVersion": 1,
+  "checkedAt": "2026-09-17",
+  "targetAgencyCount": 25,
+  "scope": "North American public-transit agencies",
+  "reviewProtocol": {
+    "officialSources": [
+      "system_map",
+      "frequent_network_page",
+      "service_guidelines",
+      "planning_document",
+      "route_service_page"
+    ],
+    "stopAfterOfficialSources": 5,
+    "stopAfterMinutes": 45,
+    "noDefinitionRule": "Record no_definition_found after the search boundary; never infer an agency definition from Atlas's benchmark."
+  },
+  "agencies": [
+    {
+      "agencyId": "ttc",
+      "agencyName": "Toronto Transit Commission",
+      "country": "Canada",
+      "region": "Ontario",
+      "reviewStatus": "definition_found",
+      "tierCoverage": "documented",
+      "reviewedAt": "2026-09-16",
+      "sources": [
+        { "url": "https://cdn.ttc.ca/-/media/Project/TTC/DevProto/Images/Home/Routes-and-Schedules/Landing-page-pdfs/TTC_SystemMap.pdf?rev=88203dbcf60c47738cf9acc980c45cad", "type": "system_map" }
+      ],
+      "tiers": [
+        { "label": "10-Minute Network", "thresholdMinutes": 10, "span": "6am–1am Monday–Saturday; Sunday starts later", "days": "7 days", "geography": "network", "mode": "bus and rail", "kind": "frequency" }
+      ],
+      "atlasComparison": { "status": "dry_run_completed", "metric": "route-pattern/day", "quality": "degraded" },
+      "confidence": "explicit",
+      "notes": "The agency definition is map-facing and stricter than Atlas's 15-minute benchmark."
+    },
+    {
+      "agencyId": "calgary",
+      "agencyName": "Calgary Transit",
+      "country": "Canada",
+      "region": "Alberta",
+      "reviewStatus": "no_definition_found",
+      "tierCoverage": "negative_result",
+      "reviewedAt": "2026-09-16",
+      "sources": [
+        { "url": "https://www.calgarytransit.com/content/dam/transit/rider-information/System%20Map%20Dec%202025.pdf", "type": "system_map" },
+        { "url": "https://www.calgarytransit.com/plans---projects/long-term-strategic-plans/service-guidelines.html", "type": "service_guidelines" }
+      ],
+      "tiers": [],
+      "atlasComparison": { "status": "dry_run_completed", "metric": "route-pattern/day", "quality": "healthy" },
+      "confidence": "not_found",
+      "noDefinitionReason": "No named rider-facing frequent-network threshold was located in the reviewed official materials. This does not mean Calgary has no frequent service."
+    },
+    {
+      "agencyId": "translink-vancouver",
+      "agencyName": "TransLink Vancouver",
+      "country": "Canada",
+      "region": "British Columbia",
+      "reviewStatus": "definition_found",
+      "tierCoverage": "documented",
+      "reviewedAt": "2026-09-16",
+      "sources": [
+        { "url": "https://www.translink.ca/plans-and-projects/projects/frequent-transit-network", "type": "frequent_network_page" }
+      ],
+      "tiers": [
+        { "label": "Frequent Transit Network", "thresholdMinutes": 15, "span": "6am weekdays; 7am Saturday; 8am Sunday until 9pm", "days": "7 days", "geography": "corridor/network", "mode": "bus and SkyTrain", "kind": "frequency" }
+      ],
+      "atlasComparison": { "status": "dry_run_completed", "metric": "route-pattern/day", "quality": "degraded" },
+      "confidence": "explicit",
+      "notes": "Corridor and multimodal definition; not directly equivalent to Atlas's route-level terminal test."
+    },
+    {
+      "agencyId": "stm-montreal",
+      "agencyName": "Société de transport de Montréal",
+      "country": "Canada",
+      "region": "Quebec",
+      "reviewStatus": "definition_found",
+      "tierCoverage": "documented",
+      "reviewedAt": "2026-09-16",
+      "sources": [
+        { "url": "https://www.stm.info/fr/infos/reseaux/le-reseau-des-bus-et-les-horaires-expliques/lignes-frequentes", "type": "frequent_network_page" }
+      ],
+      "tiers": [
+        { "label": "All-day frequent routes", "thresholdMinutes": 12, "thresholdText": "Usually 2–12 minutes", "span": "6am–8pm weekdays", "days": "Monday–Friday", "geography": "route", "mode": "bus", "kind": "frequency" },
+        { "label": "Peak frequent routes", "thresholdMinutes": 12, "thresholdText": "Usually 2–12 minutes", "span": "Approximately 6:30–9:30am and 3–6pm in the busiest direction", "days": "Monday–Friday", "geography": "route", "mode": "bus", "kind": "frequency" }
+      ],
+      "atlasComparison": { "status": "dry_run_completed", "metric": "route-pattern/day", "quality": "healthy", "caveat": "Zero weekday matches under the endpoint rule requires stop/corridor follow-up." },
+      "confidence": "explicit_with_caveat"
+    },
+    {
+      "agencyId": "septa",
+      "agencyName": "SEPTA Philadelphia",
+      "country": "United States",
+      "region": "Pennsylvania",
+      "reviewStatus": "definition_found",
+      "tierCoverage": "documented",
+      "reviewedAt": "2026-09-16",
+      "sources": [
+        { "url": "https://wwww.septa.org/maps/", "type": "system_map" },
+        { "url": "https://wwww.septa.org/initiatives/bus/maps-signs/", "type": "frequent_network_page" }
+      ],
+      "tiers": [
+        { "label": "Frequent Red", "thresholdMinutes": 15, "span": "6am–9pm weekdays; enhanced weekend service", "days": "weekdays plus enhanced weekends", "geography": "route/network", "mode": "bus", "kind": "frequency" }
+      ],
+      "atlasComparison": { "status": "dry_run_completed", "metric": "route-pattern/day", "quality": "review" },
+      "confidence": "explicit"
+    },
+    {
+      "agencyId": "victoria",
+      "agencyName": "BC Transit (Victoria)",
+      "country": "Canada",
+      "region": "British Columbia",
+      "reviewStatus": "definition_found",
+      "tierCoverage": "documented",
+      "reviewedAt": "2026-09-17",
+      "sources": [
+        { "url": "https://www.bctransit.com/wp-content/uploads/591/806/6983_VIC_RG-v5.pdf", "type": "system_map" }
+      ],
+      "tiers": [
+        { "label": "RapidBus", "thresholdMinutes": 15, "span": "7am–10pm", "days": "7 days", "geography": "corridor/product", "mode": "bus", "kind": "frequency" },
+        { "label": "Frequent Route", "thresholdMinutes": 15, "span": "7am–7pm", "days": "Monday–Friday", "geography": "route/product", "mode": "bus", "kind": "frequency" },
+        { "label": "Regional Route", "thresholdText": "15–60 minutes; limited stops", "span": "not specified", "days": "not specified", "geography": "route/product", "mode": "bus", "kind": "service_class" },
+        { "label": "Local Route", "thresholdText": "20–120 minutes", "span": "not specified", "days": "not specified", "geography": "route/product", "mode": "bus", "kind": "service_class" }
+      ],
+      "atlasComparison": { "status": "dry_run_completed", "metric": "route-pattern/day", "quality": "review" },
+      "confidence": "explicit"
+    },
+    {
+      "agencyId": "edmonton",
+      "agencyName": "Edmonton Transit Service",
+      "country": "Canada",
+      "region": "Alberta",
+      "reviewStatus": "definition_found",
+      "tierCoverage": "documented",
+      "reviewedAt": "2026-09-17",
+      "sources": [
+        { "url": "https://www.edmonton.ca/sites/default/files/public-files/ETS-Day-Map-May-2025.pdf?cb=1750622712", "type": "system_map" },
+        { "url": "https://www.edmonton.ca/ets/riding-ets/ets/riding-ets", "type": "route_service_page" }
+      ],
+      "tiers": [
+        { "label": "Frequent Route", "thresholdMinutes": 15, "thresholdText": "15 minutes or better most times of the day", "span": "most times of day", "days": "not specified", "geography": "route", "mode": "bus", "kind": "frequency" },
+        { "label": "Rapid Route", "thresholdText": "Rapid service label; no numeric threshold located", "span": "not specified", "days": "not specified", "geography": "route", "mode": "bus", "kind": "service_class" },
+        { "label": "Express Service", "thresholdText": "Express/limited-stop label", "span": "not specified", "days": "not specified", "geography": "route", "mode": "bus", "kind": "service_class" }
+      ],
+      "atlasComparison": { "status": "dry_run_completed", "metric": "route-pattern/day", "quality": "review" },
+      "confidence": "explicit_with_qualitative_tiers"
+    },
+    {
+      "agencyId": "winnipeg",
+      "agencyName": "Winnipeg Transit",
+      "country": "Canada",
+      "region": "Manitoba",
+      "reviewStatus": "definition_found",
+      "tierCoverage": "documented",
+      "reviewedAt": "2026-09-17",
+      "sources": [
+        { "url": "https://www.winnipeg.ca/services-programs/transportation-roads-parking/transit/understanding-network", "type": "frequent_network_page" }
+      ],
+      "tiers": [
+        { "label": "Rapid Transit Lines", "thresholdText": "4–10 peak; 5–10 off-peak; 10–30 nights/weekends", "span": "period-based", "days": "includes nights/weekends", "geography": "primary network", "mode": "bus", "kind": "frequency" },
+        { "label": "Frequent Express Lines", "thresholdText": "5–15 peak; 10–15 off-peak; 10–30 nights/weekends", "span": "period-based", "days": "includes nights/weekends", "geography": "primary network", "mode": "bus", "kind": "frequency" },
+        { "label": "Frequent Lines", "thresholdText": "10–15 peak/off-peak; 10–30 nights/weekends", "span": "period-based", "days": "includes nights/weekends", "geography": "primary network", "mode": "bus", "kind": "frequency" },
+        { "label": "Direct Lines", "thresholdText": "10–20 peak/off-peak; 15–30 nights/weekends", "span": "period-based", "days": "includes nights/weekends", "geography": "primary network", "mode": "bus", "kind": "frequency" },
+        { "label": "Connector Routes", "thresholdText": "15–30 peak/off-peak; 20–60 nights/weekends", "span": "period-based", "days": "includes nights/weekends", "geography": "feeder network", "mode": "bus", "kind": "service_class" },
+        { "label": "Community Routes", "thresholdText": "30–60 minutes", "span": "period-based", "days": "not specified", "geography": "feeder network", "mode": "bus", "kind": "service_class" },
+        { "label": "Limited-Span Service", "thresholdText": "Service as needed; limited hours, often peak-only", "span": "limited span", "days": "varies", "geography": "route/product", "mode": "bus", "kind": "service_class" }
+      ],
+      "atlasComparison": { "status": "dry_run_completed", "metric": "route-pattern/day", "quality": "review" },
+      "confidence": "explicit"
+    },
+    {
+      "agencyId": "kingcountymetro",
+      "agencyName": "King County Metro (Seattle)",
+      "country": "United States",
+      "region": "Washington",
+      "reviewStatus": "definition_found",
+      "tierCoverage": "documented",
+      "reviewedAt": "2026-09-17",
+      "sources": [
+        { "url": "https://kingcounty.gov/en/-/media/king-county/depts/metro/maps/system/09142024/metro-system-map-central", "type": "system_map" }
+      ],
+      "tiers": [
+        { "label": "Frequent all-day route", "thresholdMinutes": 15, "span": "until 6pm", "days": "Monday–Friday", "geography": "route/corridor", "mode": "bus", "kind": "frequency" },
+        { "label": "RapidRide", "thresholdText": "Rapid transit product; numeric threshold not normalized", "span": "product-specific", "days": "product-specific", "geography": "route/corridor", "mode": "bus", "kind": "service_class" },
+        { "label": "Peak-only route", "thresholdText": "Peak-only service category", "span": "peak periods", "days": "varies", "geography": "route", "mode": "bus", "kind": "service_class" }
+      ],
+      "atlasComparison": { "status": "dry_run_completed", "metric": "route-pattern/day", "quality": "degraded", "caveat": "Feed was expired at time of dry run." },
+      "confidence": "explicit_with_corridor_caveat"
+    },
+    {
+      "agencyId": "miami-dade-transit",
+      "agencyName": "Miami-Dade Transit",
+      "country": "United States",
+      "region": "Florida",
+      "reviewStatus": "definition_found",
+      "tierCoverage": "documented",
+      "reviewedAt": "2026-09-17",
+      "sources": [
+        { "url": "https://www.miamidade.gov/transit/library/better-bus-network-resilence-plan.pdf", "type": "planning_document" }
+      ],
+      "tiers": [
+        { "label": "10 minutes or less", "thresholdMinutes": 10, "span": "weekday midday", "days": "Monday–Friday", "geography": "network map", "mode": "bus", "kind": "frequency" },
+        { "label": "15 minutes", "thresholdMinutes": 15, "span": "weekday midday", "days": "Monday–Friday", "geography": "network map", "mode": "bus", "kind": "frequency" },
+        { "label": "20 minutes", "thresholdMinutes": 20, "span": "weekday midday", "days": "Monday–Friday", "geography": "network map", "mode": "bus", "kind": "frequency" },
+        { "label": "30 minutes", "thresholdMinutes": 30, "span": "weekday midday", "days": "Monday–Friday", "geography": "network map", "mode": "bus", "kind": "frequency" },
+        { "label": "40–60 minutes", "thresholdText": "40–60 minute band", "span": "weekday midday", "days": "Monday–Friday", "geography": "network map", "mode": "bus", "kind": "frequency" },
+        { "label": "MAX / Rapid", "thresholdText": "Limited-stop product; not itself a headway tier", "span": "some routes all-day, others peak", "days": "product-specific", "geography": "route/product", "mode": "bus", "kind": "service_class" }
+      ],
+      "atlasComparison": { "status": "dry_run_completed", "metric": "route-pattern/day", "quality": "review" },
+      "confidence": "explicit"
+    },
+    { "agencyId": "ottawa", "agencyName": "OC Transpo", "country": "Canada", "region": "Ontario", "reviewStatus": "planned" },
+    { "agencyId": "york-region", "agencyName": "York Region Transit", "country": "Canada", "region": "Ontario", "reviewStatus": "planned" },
+    { "agencyId": "miway", "agencyName": "MiWay", "country": "Canada", "region": "Ontario", "reviewStatus": "planned" },
+    { "agencyId": "mbta", "agencyName": "MBTA", "country": "United States", "region": "Massachusetts", "reviewStatus": "planned" },
+    { "agencyId": "la-metro", "agencyName": "Los Angeles Metro", "country": "United States", "region": "California", "reviewStatus": "planned" },
+    { "agencyId": "sound-transit", "agencyName": "Sound Transit", "country": "United States", "region": "Washington", "reviewStatus": "planned" },
+    { "agencyId": "wmata", "agencyName": "Washington Metropolitan Area Transit Authority", "country": "United States", "region": "District of Columbia / Maryland / Virginia", "reviewStatus": "planned" },
+    { "agencyId": "cta", "agencyName": "Chicago Transit Authority", "country": "United States", "region": "Illinois", "reviewStatus": "planned" },
+    { "agencyId": "trimet", "agencyName": "TriMet", "country": "United States", "region": "Oregon", "reviewStatus": "planned" },
+    { "agencyId": "rtd-denver", "agencyName": "RTD Denver", "country": "United States", "region": "Colorado", "reviewStatus": "planned" },
+    { "agencyId": "uta", "agencyName": "Utah Transit Authority", "country": "United States", "region": "Utah", "reviewStatus": "planned" },
+    { "agencyId": "vta", "agencyName": "Santa Clara Valley Transportation Authority", "country": "United States", "region": "California", "reviewStatus": "planned" },
+    { "agencyId": "sdmts", "agencyName": "San Diego Metropolitan Transit System", "country": "United States", "region": "California", "reviewStatus": "planned" },
+    { "agencyId": "halifax", "agencyName": "Halifax Transit", "country": "Canada", "region": "Nova Scotia", "reviewStatus": "planned" },
+    { "agencyId": "bart", "agencyName": "Bay Area Rapid Transit", "country": "United States", "region": "California", "reviewStatus": "planned" }
+  ]
+}

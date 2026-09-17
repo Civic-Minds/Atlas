@@ -22,7 +22,7 @@ There's no single accepted industry number. Transit agencies and advocacy groups
 
 ## Survey findings
 
-Collected 2026-07-29 from agency system maps / published frequent-network materials (Ryan + session notes). Where an agency publishes multiple tiers, **most-frequent tier** is treated as their "frequent" definition.
+Collected 2026-07-29 from agency system maps / published frequent-network materials (Ryan + session notes). This historical summary used the most-frequent tier as a shorthand. The current [structured agency catalog](research/frequent-service-catalog.json) is authoritative and preserves every published tier separately.
 
 ### Published definitions
 
