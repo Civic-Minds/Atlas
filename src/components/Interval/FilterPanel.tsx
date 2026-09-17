@@ -57,13 +57,13 @@ export function getHiddenFeedAgencies(agencies: Agency[]): Agency[] {
 function Toggle({ on }: { on: boolean }) {
   return (
     <span
-      className={`relative inline-flex h-5 w-9 shrink-0 rounded-full transition-colors ${TRANSITION_BASE} ${
+      className={`relative inline-flex h-6 w-11 shrink-0 rounded-full transition-colors ${TRANSITION_BASE} ${
         on ? 'bg-[var(--accent)]' : 'bg-[var(--border-primary)]'
       }`}
     >
       <span
-        className={`absolute top-1 h-3 w-3 rounded-full bg-white shadow-sm transition-transform ${TRANSITION_BASE} ${
-          on ? 'translate-x-5' : 'translate-x-1'
+        className={`absolute top-1 h-4 w-4 rounded-full bg-white shadow-sm transition-transform ${TRANSITION_BASE} ${
+          on ? 'translate-x-6' : 'translate-x-1'
         }`}
       />
     </span>
@@ -123,6 +123,15 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
     } else {
       setVisible(false);
     }
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') close();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, [open]);
 
   useEffect(() => {
@@ -272,6 +281,9 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
           <div
             className={`${DROPDOWN_PANEL} ${dropdownAnim(visible)}`}
             onClick={e => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="settings-panel-title"
           >
             <div className="flex items-center justify-between px-5 py-2 border-b border-[var(--border-primary)] shrink-0">
               <div className="flex items-center gap-1.5">
@@ -284,7 +296,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                     <ArrowLeft className="w-3.5 h-3.5" />
                   </button>
                 )}
-                <h2 className="text-xs font-black text-[var(--text-primary)]">
+                <h2 id="settings-panel-title" className="text-xs font-black text-[var(--text-primary)]">
                   {view === 'hidden-routes'
                     ? 'Hidden routes'
                     : view === 'degraded-feeds'
@@ -471,6 +483,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                   <button
                     onClick={() => setLightMode(v => !v)}
                     aria-label="Toggle light/dark mode"
+                    aria-pressed={!lightMode}
                     className="shrink-0"
                   >
                     <Toggle on={!lightMode} />

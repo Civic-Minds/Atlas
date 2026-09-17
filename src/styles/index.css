@@ -16,7 +16,7 @@ html {
   --border-primary: rgba(0, 0, 0, 0.1);
   --text-primary: #111827;
   --text-muted: #6b7280;
-  --text-dim: #9ca3af;
+  --text-dim: #767676;
   --bg-stat: rgba(0, 0, 0, 0.05);
   --bg-btn: rgba(0, 0, 0, 0.05);
   --bg-btn-hover: rgba(0, 0, 0, 0.1);
@@ -42,7 +42,7 @@ html {
   --border-primary: rgba(255, 255, 255, 0.1);
   --text-primary: #ffffff;
   --text-muted: rgba(255, 255, 255, 0.4);
-  --text-dim: rgba(255, 255, 255, 0.3);
+  --text-dim: rgba(255, 255, 255, 0.55);
   --bg-stat: rgba(255, 255, 255, 0.05);
   --bg-btn: rgba(255, 255, 255, 0.05);
   --bg-btn-hover: rgba(255, 255, 255, 0.1);
@@ -67,6 +67,22 @@ button {
 
 button:disabled {
   cursor: not-allowed;
+}
+
+:where(button, a, input, select, textarea):focus-visible {
+  outline: 2px solid var(--accent) !important;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 /* Hide MapLibre default attribution — custom MapAttribution pill is the source of truth */
