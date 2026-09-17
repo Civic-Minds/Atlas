@@ -28,6 +28,7 @@ import { syncUrlParams } from './utils/syncUrlParams';
 import AppUpdateBanner from './components/AppUpdateBanner';
 import type { FeedQuality } from '../shared/feedQuality';
 import { trackEvent, trackPageView } from './lib/analytics';
+import { parseFrequentServiceDays, type FrequentServiceFrequency, type FrequentServiceWindow } from '../shared/frequentService';
 
 export interface FareOverride {
   adult?: number;      // base card/electronic fare (fallback when GeoJSON baseFare is absent)
@@ -113,6 +114,7 @@ const APP_TO_PATH: Record<AppId, string> = {
 export default function App() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  const inFrequentService = pathname === '/research/frequent-service';
   const routedApp: AppId = PATH_TO_APP[pathname] ?? 'frequency';
   // Direct URL access (e.g. /apps/live) would otherwise bypass the LIVE_ENABLED / HISTORY_ENABLED /
   // CORRIDORS_ENABLED gate below -- fall back to the frequency map, and correct the URL so it
@@ -251,6 +253,20 @@ export default function App() {
   });
 
   const [layers, setLayers] = useState<Record<string, GeoJSON.FeatureCollection>>({});
+  const [frequentServiceDays, setFrequentServiceDays] = useState(() => {
+    const days = parseFrequentServiceDays(new URLSearchParams(window.location.search).get('days'));
+    return days.length ? days : ['Weekday' as const];
+  });
+  const [frequentServiceFrequency, setFrequentServiceFrequency] = useState<FrequentServiceFrequency>(() => new URLSearchParams(window.location.search).get('frequency') === '30' ? 30 : 15);
+  const [frequentServiceWindow, setFrequentServiceWindow] = useState<FrequentServiceWindow>(() => new URLSearchParams(window.location.search).get('window') === 'extended' ? 'extended' : 'daytime');
+
+  useEffect(() => {
+    syncUrlParams({
+      days: frequentServiceDays.length === 1 && frequentServiceDays[0] === 'Weekday' ? null : frequentServiceDays.join(','),
+      frequency: frequentServiceFrequency === 15 ? null : String(frequentServiceFrequency),
+      window: frequentServiceWindow === 'daytime' ? null : frequentServiceWindow,
+    });
+  }, [frequentServiceDays, frequentServiceFrequency, frequentServiceWindow]);
 
   const inFrequency = activeApp === 'frequency';
   const inHistory = activeApp === 'history';
@@ -488,6 +504,9 @@ export default function App() {
             <span>Night Service</span>
           </a>
         )}
+        {BETA_BUILD && (
+          <a href={inFrequentService ? '/' : '/research/frequent-service'} aria-label={inFrequentService ? 'Back to frequency map' : 'Frequent service research'} aria-pressed={inFrequentService} className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold ${inFrequentService ? 'bg-[var(--accent-bg)] border border-[var(--accent-border)] text-[var(--accent)]' : 'bg-[var(--bg-panel)] border border-[var(--border-primary)] hover:bg-[var(--bg-btn-hover)] text-[var(--text-secondary)]'}`}>Frequent Service</a>
+        )}
 
         </div>
       </div>
@@ -563,10 +582,17 @@ export default function App() {
               resetViewKey={resetViewKey}
               showUi={inFrequency}
               showSelectionUi={inLive}
-              showRouteLayers={inFrequency || inLive || inHistory || inFares || inCorridors || inNight}
+              showRouteLayers={inFrequency || inLive || inHistory || inFares || inCorridors || inNight || inFrequentService}
               liveRoutesOnly={inLive}
               fareView={inFares}
               nightServiceView={inNight}
+              frequentServiceView={inFrequentService}
+              frequentServiceDays={frequentServiceDays}
+              frequentServiceFrequency={frequentServiceFrequency}
+              frequentServiceWindow={frequentServiceWindow}
+              setFrequentServiceDays={setFrequentServiceDays}
+              setFrequentServiceFrequency={setFrequentServiceFrequency}
+              setFrequentServiceWindow={setFrequentServiceWindow}
               showMapContext={BETA_BUILD}
               showMatchPercentage={BETA_BUILD}
               filterToAgencies={inHistory || inFares}

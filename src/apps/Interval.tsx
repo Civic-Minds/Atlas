@@ -23,6 +23,7 @@ import { resolveRouteSelectionForDay } from '../utils/routeSelection';
 import { syncUrlParams } from '../utils/syncUrlParams';
 import { searchOverlayHidesPanel } from '../utils/format';
 import { trackEvent } from '../lib/analytics';
+import type { FrequentServiceFrequency, FrequentServiceWindow } from '../../shared/frequentService';
 
 // Versioned because the original preference could accidentally persist only
 // agencies in the current viewport when the bulk "All" action was used.
@@ -61,6 +62,13 @@ interface Props {
   headerPortalContainer?: Element | null;
   fareView?: boolean;
   nightServiceView?: boolean;
+  frequentServiceView?: boolean;
+  frequentServiceDays?: DayType[];
+  frequentServiceFrequency?: FrequentServiceFrequency;
+  frequentServiceWindow?: FrequentServiceWindow;
+  setFrequentServiceDays?: (days: DayType[]) => void;
+  setFrequentServiceFrequency?: (frequency: FrequentServiceFrequency) => void;
+  setFrequentServiceWindow?: (window: FrequentServiceWindow) => void;
   showMapContext?: boolean;
   showMatchPercentage?: boolean;
   sidebarLeft?: number;
@@ -80,7 +88,7 @@ function readSavedAgenciesOff(): Set<string> {
   }
 }
 
-export default function Interval({ agencies, allAgencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, filterToAgencies = false, onHistoryRouteClick, onDirectFromStop, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, onSelectionActiveChange, headerPortalContainer, fareView = false, nightServiceView = false, showMapContext = false, showMatchPercentage = false, sidebarLeft, searchBarWidth, searchEnterRef, hideLowQuality, setHideLowQuality, feedQualityEnabled = false }: Props) {
+export default function Interval({ agencies, allAgencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, filterToAgencies = false, onHistoryRouteClick, onDirectFromStop, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, onSelectionActiveChange, headerPortalContainer, fareView = false, nightServiceView = false, frequentServiceView = false, frequentServiceDays = ['Weekday'], frequentServiceFrequency = 15, frequentServiceWindow = 'daytime', setFrequentServiceDays, setFrequentServiceFrequency, setFrequentServiceWindow, showMapContext = false, showMatchPercentage = false, sidebarLeft, searchBarWidth, searchEnterRef, hideLowQuality, setHideLowQuality, feedQualityEnabled = false }: Props) {
   const [searchParams] = useSearchParams();
   const [mapContextOpen, setMapContextOpen] = useState(false);
   const [mapContextView, setMapContextView] = useState<'agencies' | 'routes'>('routes');
@@ -517,6 +525,11 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
         setSelectedAgencySlug={setSelectedAgencySlug}
         fareView={fareView}
         nightServiceView={nightServiceView}
+        frequentServiceView={frequentServiceView}
+        frequentServiceDays={frequentServiceDays}
+        frequentServiceFrequency={frequentServiceFrequency}
+        frequentServiceWindow={frequentServiceWindow}
+        selectedModes={selectedModes}
         initialMapCenter={initialMapCenter}
         onTileLoadingChange={setIsTilesLoading}
         setQuery={setQuery}
@@ -642,6 +655,13 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
               selectedAgencies={selectedAgencies}
               setSelectedAgencies={setSelectedAgencies}
               bounds={bounds}
+              researchMode={frequentServiceView}
+              researchDays={frequentServiceDays}
+              setResearchDays={setFrequentServiceDays}
+              researchFrequency={frequentServiceFrequency}
+              setResearchFrequency={setFrequentServiceFrequency}
+              researchWindow={frequentServiceWindow}
+              setResearchWindow={setFrequentServiceWindow}
             />
           </div>
           {!hideFilterPanel && (

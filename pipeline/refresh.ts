@@ -22,6 +22,7 @@ import JSZip from 'jszip';
 import { processGtfsBuffer, GtfsValidationError, type GtfsPreprocess } from './process-core.js';
 import { buildAgencyIndex } from './agencyIndex.js';
 import { buildNightServiceIndex, extractNightServiceRoutes, type NightServiceRouteEntry } from './nightServiceIndex.js';
+import { buildFrequentServiceIndex, extractFrequentServiceRoutes, type FrequentServiceRouteEntry } from './frequentServiceIndex.js';
 import type { HeadwayByPeriod } from '../shared/config.js';
 import { R2_PUBLIC_URL } from '../shared/config.js';
 import { parseCsv } from './parseGtfs.js';
@@ -242,6 +243,7 @@ async function refreshAgency(
   manualBaseFareOverride?: number,
   logger?: { log: (msg: string) => void },
   nightServiceCollector?: NightServiceRouteEntry[],
+  frequentServiceCollector?: FrequentServiceRouteEntry[],
 ): Promise<RefreshAgencyResult> {
   if (!agency.feedUrl) {
     return { summary: 'skipped (no feedUrl)' };
@@ -486,6 +488,13 @@ async function refreshAgency(
       ...extractNightServiceRoutes(agency.slug, agency.name, agency.region ?? null, parsedFeatures),
     );
   }
+  if (frequentServiceCollector) {
+    const parsedFeatures = (JSON.parse(geojson) as GeoJsonFc).features as
+      Parameters<typeof extractFrequentServiceRoutes>[3];
+    frequentServiceCollector.push(
+      ...extractFrequentServiceRoutes(agency.slug, agency.name, agency.region ?? null, parsedFeatures),
+    );
+  }
 
   const kb = Math.round(Buffer.byteLength(geojson) / 1024);
   return {
@@ -542,6 +551,7 @@ async function main() {
   let uploads = 0;
   let countryLaunchSkips = 0;
   const allNightServiceRoutes: NightServiceRouteEntry[] = [];
+  const allFrequentServiceRoutes: FrequentServiceRouteEntry[] = [];
   const refreshedHiddenRoutes = new Map<string, HiddenRouteRecord[]>();
   const tasks = targets.map(agency => async () => {
     let logBuffer = '';
@@ -562,7 +572,7 @@ async function main() {
           return;
         }
       }
-      const result = await refreshAgency(agency, fareOverrides[agency.slug]?.adult ?? agency.fare, logger, allNightServiceRoutes);
+      const result = await refreshAgency(agency, fareOverrides[agency.slug]?.adult ?? agency.fare, logger, allNightServiceRoutes, allFrequentServiceRoutes);
       const summary = result.summary;
       if (!summary.startsWith('skipped') && !summary.includes('expired, skipped')) {
         uploads++;
@@ -650,6 +660,13 @@ async function main() {
       console.log(`  night-service.json → R2 (${nightServiceIndex.routeCount} routes across ${nightServiceIndex.agencyCount} agencies)`);
     } catch (e) {
       console.warn(`  [warn] night-service.json R2 write failed — ${e instanceof Error ? e.message : e}`);
+    }
+    try {
+      const frequentServiceIndex = buildFrequentServiceIndex(allFrequentServiceRoutes);
+      await r2Put('atlas/frequent-service.json', JSON.stringify(frequentServiceIndex));
+      console.log(`  frequent-service.json → R2 (${frequentServiceIndex.routeCount} routes across ${frequentServiceIndex.agencyCount} agencies)`);
+    } catch (e) {
+      console.warn(`  [warn] frequent-service.json write failed — ${e instanceof Error ? e.message : e}`);
     }
   }
 }

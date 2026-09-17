@@ -10,6 +10,7 @@ import { agencyDisplayParts } from '../../utils/format';
 import { bboxInViewport } from '../../utils/agencySearch';
 import { FILTER_MODES } from '../../../shared/modes';
 import { DAY_TYPES, getNowDay, type DayType } from '../../../shared/dayTypes';
+import type { FrequentServiceFrequency, FrequentServiceWindow } from '../../../shared/frequentService';
 
 export { getNowDay };
 
@@ -26,6 +27,13 @@ interface FilterChipsProps {
   selectedAgencies: Set<string>;
   setSelectedAgencies: React.Dispatch<React.SetStateAction<Set<string>>>;
   bounds: ViewportBounds | null;
+  researchMode?: boolean;
+  researchDays?: DayType[];
+  setResearchDays?: (days: DayType[]) => void;
+  researchFrequency?: FrequentServiceFrequency;
+  setResearchFrequency?: (frequency: FrequentServiceFrequency) => void;
+  researchWindow?: FrequentServiceWindow;
+  setResearchWindow?: (window: FrequentServiceWindow) => void;
 }
 
 const MODES = FILTER_MODES;
@@ -218,6 +226,13 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
   selectedAgencies,
   setSelectedAgencies,
   bounds,
+  researchMode = false,
+  researchDays = ['Weekday'],
+  setResearchDays,
+  researchFrequency = 15,
+  setResearchFrequency,
+  researchWindow = 'daytime',
+  setResearchWindow,
 }) => {
   const [openChip, setOpenChip] = useState<ChipId | null>(null);
   const [agencyQuery, setAgencyQuery] = useState('');
@@ -262,6 +277,38 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
   const toggle = (id: ChipId) => setOpenChip(c => c === id ? null : id);
 
   const hasActiveCoreFilter = maxHeadway !== Infinity || period !== 'all' || selectedModes.size > 0;
+
+  if (researchMode && setResearchDays && setResearchFrequency && setResearchWindow) {
+    const researchButton = (active: boolean) => rowBtn(active);
+    const toggleResearchDay = (selected: DayType) => {
+      const next = researchDays.includes(selected)
+        ? researchDays.filter(dayType => dayType !== selected)
+        : [...researchDays, selected];
+      if (next.length > 0) setResearchDays(DAY_TYPES.filter(dayType => next.includes(dayType)));
+    };
+    return (
+      <div ref={rowRef} className="flex items-center gap-2">
+        <div className="relative">
+          <button onClick={() => toggle('day')} className={chipClass(true)}>Day<Dot show /></button>
+          {openChip === 'day' && <div className={`${PANEL} w-40`}>
+            {DAY_TYPES.map(dayType => <button key={dayType} onClick={() => toggleResearchDay(dayType)} className={researchButton(researchDays.includes(dayType))}>{dayType}</button>)}
+          </div>}
+        </div>
+        <div className="flex items-center gap-1 rounded-full border border-[var(--border-primary)] p-0.5">
+          {([15, 30] as const).map(value => <button key={value} onClick={() => setResearchFrequency(value)} className={compactOptBtn(researchFrequency === value)} aria-pressed={researchFrequency === value}>{value} min</button>)}
+        </div>
+        <div className="flex items-center gap-1 rounded-full border border-[var(--border-primary)] p-0.5">
+          {([['daytime', '7am–7pm'], ['extended', '7am–midnight']] as const).map(([value, label]) => <button key={value} onClick={() => setResearchWindow(value)} className={compactOptBtn(researchWindow === value)} aria-pressed={researchWindow === value}>{label}</button>)}
+        </div>
+        <div className="relative">
+          <button onClick={() => toggle('mode')} className={chipClass(selectedModes.size > 0)}>Mode<Dot show={selectedModes.size > 0} /></button>
+          {openChip === 'mode' && <div className={`${PANEL} w-36`}>
+            {MODES.map(mode => <button key={mode.id} onClick={() => toggleMode(mode.id)} className={researchButton(selectedModes.has(mode.id))}>{mode.label}</button>)}
+          </div>}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div ref={rowRef} className="flex items-center gap-2">
