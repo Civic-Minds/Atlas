@@ -29,6 +29,7 @@ import AppUpdateBanner from './components/AppUpdateBanner';
 import type { FeedQuality } from '../shared/feedQuality';
 import { trackEvent, trackPageView } from './lib/analytics';
 import { parseFrequentServiceDays, type FrequentServiceFrequency, type FrequentServiceWindow } from '../shared/frequentService';
+import FrequentServiceStory from './apps/FrequentServiceStory';
 
 export interface FareOverride {
   adult?: number;      // base card/electronic fare (fallback when GeoJSON baseFare is absent)
@@ -113,8 +114,14 @@ const APP_TO_PATH: Record<AppId, string> = {
 
 export default function App() {
   const navigate = useNavigate();
-  const { pathname } = useLocation();
-  const inFrequentService = pathname === '/research/frequent-service';
+  const { pathname, search } = useLocation();
+  const frequentServiceParams = new URLSearchParams(search);
+  const frequentServiceMapView = pathname === '/research/frequent-service' && (
+    frequentServiceParams.get('view') === 'map'
+    || ['days', 'frequency', 'window', 'lat', 'lon', 'z', 'route', 'stop', 'h', 'headway', 'max'].some(key => frequentServiceParams.has(key))
+  );
+  const inFrequentServiceStory = pathname === '/research/frequent-service' && !frequentServiceMapView;
+  const inFrequentService = frequentServiceMapView;
   const routedApp: AppId = PATH_TO_APP[pathname] ?? 'frequency';
   // Direct URL access (e.g. /apps/live) would otherwise bypass the LIVE_ENABLED / HISTORY_ENABLED /
   // CORRIDORS_ENABLED gate below -- fall back to the frequency map, and correct the URL so it
@@ -409,13 +416,13 @@ export default function App() {
         <button
           type="button"
           onClick={() => {
-            if (activeApp !== 'frequency') {
+            if (inFrequentServiceStory || activeApp !== 'frequency') {
               navigate('/');
             } else {
               setResetViewKey(k => k + 1);
             }
           }}
-          aria-label={activeApp !== 'frequency' ? 'Back to frequency map' : 'Reset map view'}
+          aria-label={inFrequentServiceStory || activeApp !== 'frequency' ? 'Back to frequency map' : 'Reset map view'}
           className="w-8 h-8 bg-[var(--accent)] rounded-full flex items-center justify-center shrink-0 shadow-2xl hover:opacity-80 transition-opacity"
         >
           <MapIcon className="w-3.5 h-3.5 text-white" />
@@ -426,7 +433,7 @@ export default function App() {
           <span className="text-[8px] sm:text-[10px] text-[var(--text-dim)]">by Civic Minds</span>
         </div>
 
-        <div className="flex items-center gap-2 flex-1 min-w-0 lg:flex-none">
+        {!inFrequentServiceStory && <div className="flex items-center gap-2 flex-1 min-w-0 lg:flex-none">
         <div className="flex-1 min-w-0 sm:flex">
         <div ref={searchBarRef} className={`${SEARCH_BAR_WIDTH} relative ${PILL_SURFACE} pl-1 pr-3`}>
           <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--text-dim)] pointer-events-none" />
@@ -508,7 +515,7 @@ export default function App() {
           <a href={inFrequentService ? '/' : '/research/frequent-service'} aria-label={inFrequentService ? 'Back to frequency map' : 'Frequent service research'} aria-pressed={inFrequentService} className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold ${inFrequentService ? 'bg-[var(--accent-bg)] border border-[var(--accent-border)] text-[var(--accent)]' : 'bg-[var(--bg-panel)] border border-[var(--border-primary)] hover:bg-[var(--bg-btn-hover)] text-[var(--text-secondary)]'}`}>Frequent Service</a>
         )}
 
-        </div>
+        </div>}
       </div>
       {/* Portal target for Interval's right header (FilterChips + Now + FilterPanel) */}
       <div className="flex items-center gap-2 pointer-events-auto">
@@ -564,7 +571,9 @@ export default function App() {
           </div>
         ) : (
           <ErrorBoundary label="The map encountered an error.">
-          <>
+          {inFrequentServiceStory ? (
+            <FrequentServiceStory onExploreMap={() => navigate('/research/frequent-service?view=map')} />
+          ) : <>
             <Interval
               agencies={
                 inHistory && historyAgencySlugs 
@@ -656,7 +665,7 @@ export default function App() {
                 </React.Suspense>
               </div>
             )}
-          </>
+          </>}
           </ErrorBoundary>
         )}
       </main>

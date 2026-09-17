@@ -56,6 +56,17 @@ function sortedNumberCounts(values) {
   return Object.fromEntries([...counts.entries()].sort(([a], [b]) => Number(a) - Number(b)));
 }
 
+function uniqueAgencyThresholdCounts(records) {
+  const counts = new Map();
+  for (const agency of records) {
+    const values = new Set(agency.evidence
+      .filter((evidence) => evidence.namedFrequency && evidence.numericFrequency)
+      .flatMap((evidence) => evidence.publishedThresholdMinutes));
+    for (const value of values) counts.set(value, (counts.get(value) ?? 0) + 1);
+  }
+  return Object.fromEntries([...counts.entries()].sort(([a], [b]) => Number(a) - Number(b)));
+}
+
 const agencies = catalog.agencies.map((agency) => {
   const category = classifyAgency(agency);
   const evidence = agency.tiers.flatMap((tier, tierIndex) => {
@@ -133,6 +144,7 @@ const analysis = {
     agencyCount: namedNumericAgencies.length,
     observationCount: namedNumericEvidence.length,
     publishedThresholdMinutes: sortedNumberCounts(namedNumericEvidence.flatMap((evidence) => evidence.publishedThresholdMinutes)),
+    agencyCountsByPublishedThreshold: uniqueAgencyThresholdCounts(namedNumericAgencies),
   },
   namedFrequentEvidence: {
     agencyCount: agencies.filter((agency) => agency.evidence.some((evidence) => evidence.namedFrequency)).length,
