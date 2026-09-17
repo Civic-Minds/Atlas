@@ -12,6 +12,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Frequent Service's 30-minute view now distinguishes ≤15-minute routes from the 16–30-minute group using the shared frequency colours and line weights.
 - Frequent Service research exposes its two service spans inline for faster comparison.
 - Frequent Service research keeps the shared Settings panel available for route and feed visibility controls.
+- Fixed a misleading “outside the active frequency filter” notice when selecting routes from the Frequent Service research map.
 - Added a colour-blind friendly appearance setting with a clearer route palette and frequency-based line weights.
 - Google Analytics no longer loses the initial page view while privacy consent and the tracking script are initializing.
 - Added a visible Feedback email link beside the map attribution for launch-period comments and feature requests.

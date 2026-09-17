@@ -340,7 +340,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   });
 
   const selectedRouteOutOfFilter = useMemo(() => {
-    if (!selectedRoute || maxHeadway === Infinity) return false;
+    if (!selectedRoute || frequentServiceView || maxHeadway === Infinity) return false;
     const { agencySlug: slug, routeId, routeBranch } = splitRouteKey(selectedRoute);
     const features = layers[slug]?.features.filter(f => {
       const p = f.properties as ShapeProperties;
@@ -361,7 +361,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
       showCorridorBand: false,
       selectedRoute: null,
     }, routesForStop);
-  }, [day, hideSpan, layers, livePollingOnly, maxHeadway, period, routesForStop, selectedAgencies, selectedModes, selectedRoute]);
+  }, [day, frequentServiceView, hideSpan, layers, livePollingOnly, maxHeadway, period, routesForStop, selectedAgencies, selectedModes, selectedRoute]);
 
   useEffect(() => { try { localStorage.setItem('atlas_pref_headway', String(maxHeadway)); } catch {} }, [maxHeadway]);
   useEffect(() => { try { localStorage.setItem('atlas_pref_day', day); } catch {} }, [day]);
