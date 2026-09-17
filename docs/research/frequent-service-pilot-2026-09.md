@@ -1,6 +1,6 @@
 # Frequent-Service Research Pilot
 
-**Status:** Initial five-agency pilot  
+**Status:** Ten-agency pilot; second round added
 **Checked:** 2026-09-16  
 **Purpose:** Compare what agencies officially call “frequent” with what their current GTFS schedules provide.
 
@@ -67,16 +67,73 @@ Sources: [SEPTA Maps](https://wwww.septa.org/maps/) and [New Maps and Signs for 
 
 This is close to Atlas’s 15-minute research rule, but the official span extends two hours later than the current 7am–7pm daytime window.
 
+## Round 2: cataloguing every published tier
+
+The second round deliberately records all service tiers shown in the agencies' materials. A tier is not reduced to a single “frequent” value when the agency publishes separate products, time bands, or map classes.
+
+### Tier catalog
+
+| Agency | Published tier / label | Official threshold or meaning | Span / days | Geography / mode | Confidence |
+|---|---|---|---|---|---|
+| BC Transit (Victoria) | RapidBus | ≤15 min | 7am–10pm, 7 days | Corridor/product; bus | Explicit |
+| BC Transit (Victoria) | Frequent Route | ≤15 min | 7am–7pm, Monday–Friday | Route/product; bus | Explicit |
+| BC Transit (Victoria) | Regional Route | 15–60 min; limited stops | Not specified in map legend | Route/product; bus | Explicit |
+| BC Transit (Victoria) | Local Route | 20–120 min | Not specified in map legend | Route/product; bus | Explicit |
+| Edmonton Transit Service | Frequent Route | ≤15 min most times of day | Not specified | Route category; bus | Explicit, soft span |
+| Edmonton Transit Service | Rapid Route | Rapid service label; no numeric threshold in reviewed map legend | Not specified | Route category; bus | Label explicit; threshold not found |
+| Edmonton Transit Service | Express Service | Express/limited-stop label; not a frequency tier | Not specified | Route category; bus | Explicit distinction |
+| Winnipeg Transit | Rapid Transit Lines | 4–10 min peak; 5–10 min off-peak; 10–30 min nights/weekends | Period-based | Primary network; bus | Explicit |
+| Winnipeg Transit | Frequent Express Lines | 5–15 min peak; 10–15 min off-peak; 10–30 min nights/weekends | Period-based | Primary network; bus | Explicit |
+| Winnipeg Transit | Frequent Lines | 10–15 min peak/off-peak; 10–30 min nights/weekends | Period-based | Primary network; bus | Explicit |
+| Winnipeg Transit | Direct Lines | 10–20 min peak; 10–20 min off-peak; 15–30 min nights/weekends | Period-based | Primary network; bus | Explicit |
+| Winnipeg Transit | Connector Routes | 15–30 min peak/off-peak; 20–60 min nights/weekends | Period-based | Feeder network; bus | Explicit |
+| Winnipeg Transit | Community Routes | 30–60 min | Period-based | Feeder network; bus | Explicit |
+| Winnipeg Transit | Limited-Span Service | Service as needed; limited hours, often peak-only | Limited span | Route/product; bus | Explicit, non-frequency tier |
+| King County Metro | Frequent all-day route | ≤15 min until 6pm Monday–Friday | Weekday daytime | Route/corridor; bus | Explicit |
+| King County Metro | RapidRide | Rapid transit product; reviewed map distinguishes it from frequent all-day routes | Product-specific | Route/corridor; bus | Product explicit; threshold not normalized |
+| King County Metro | Peak-only route | Peak-only service category | Peak periods | Route category; bus | Explicit, non-frequency tier |
+| Miami-Dade Transit | 10 minutes or less | ≤10 min weekday midday | Map shows midday; peak and span are separate | Network map; bus | Explicit |
+| Miami-Dade Transit | 15 minutes | ≤15 min weekday midday | Map shows midday; peak and span are separate | Network map; bus | Explicit |
+| Miami-Dade Transit | 20 minutes | 20 min weekday midday band | Map shows midday | Network map; bus | Explicit |
+| Miami-Dade Transit | 30 minutes | 30 min weekday midday band | Map shows midday | Network map; bus | Explicit |
+| Miami-Dade Transit | 40–60 minutes | 40–60 min weekday midday band | Map shows midday | Network map; bus | Explicit |
+| Miami-Dade Transit | MAX / Rapid | Limited-stop product; not itself a headway tier | Some routes all-day, others peak | Route/product; bus | Explicit distinction |
+
+### Round 2 Atlas comparison
+
+| Agency | Weekday | Saturday | Sunday | Feed / quality note |
+|---|---:|---:|---:|---|
+| BC Transit (Victoria) | 2 / 17 / 0 / 7 | 0 / 11 / 0 / 7 | 0 / 7 / 0 / 4 | 2,703 features; review 80/100 |
+| Edmonton Transit Service | 6 / 124 / 4 / 35 | 6 / 36 / 6 / 35 | 6 / 26 / 6 / 26 | 7,225 features; review 90/100 |
+| Winnipeg Transit | 15 / 55 / 1 / 24 | 1 / 27 / 0 / 19 | 1 / 13 / 0 / 6 | 4,213 features; review 90/100 |
+| King County Metro | 0 / 0 / 0 / 0 | 7 / 64 / 1 / 46 | 4 / 60 / 0 / 47 | 7,147 features; degraded 25/100; feed expired |
+| Miami-Dade Transit | 15 / 53 / 3 / 16 | 14 / 42 / 3 / 18 | 9 / 24 / 3 / 10 | 7,535 features; review 90/100 |
+
+Column order is `daytime15 / daytime30 / extended15 / extended30`, using the same route-pattern/day unit as Round 1. These are dry-run results only; no agency data was published.
+
+### Round 2 sources and interpretation
+
+**BC Transit (Victoria).** The [Victoria Regional Guide](https://www.bctransit.com/wp-content/uploads/591/806/6983_VIC_RG-v5.pdf) explicitly separates RapidBus, Frequent Route, Regional Route, and Local Route. RapidBus and Frequent Route both use a 15-minute threshold but have different spans and days; Regional and Local are broader service bands, not frequent tiers.
+
+**Edmonton.** The [ETS day map](https://www.edmonton.ca/sites/default/files/public-files/ETS-Day-Map-May-2025.pdf?cb=1750622712) labels “Frequent Route — 15 min. or better most times of the day” and separately labels Rapid Route and Express Service. The [Riding ETS guidance](https://www.edmonton.ca/ets/riding-ets/ets/riding-ets) provides supporting context of five-minute weekday peak service and roughly 10–15-minute off-peak service, but this should not be silently substituted for the map's route classification.
+
+**Winnipeg.** The City’s current [Understanding the network](https://www.winnipeg.ca/services-programs/transportation-roads-parking/transit/understanding-network) page defines the Primary Network as Rapid Transit, Frequent Express, Frequent, and Direct lines, with separate Connector, Community, and Limited Span classes. Its period bands make clear that “frequent” does not mean one uniform number across the whole day.
+
+**King County Metro.** The [Metro system map](https://kingcounty.gov/en/-/media/king-county/depts/metro/maps/system/09142024/metro-system-map-central) labels RapidRide, frequent all-day, all-day, and peak-only service. Its frequent all-day example is every 15 minutes or less until 6pm Monday–Friday; multiple routes can combine to create frequent service on a corridor. That is a corridor/service-map concept, not necessarily a route-level all-day guarantee.
+
+**Miami-Dade.** The official [Better Bus Network report](https://www.miamidade.gov/transit/library/better-bus-network-resilence-plan.pdf) publishes weekday-midday bands of 10 minutes or less, 15, 20, 30, and 40–60 minutes. It separately identifies peak routes, Express Service, and MAX/Rapid products, so those labels should be catalogued alongside frequency bands rather than merged with them.
+
 ## Findings
 
-1. There is no single universal agency definition. The pilot includes a strict 10-minute network, a 15-minute corridor network, a 2–12-minute two-tier bus product, a 15-minute map category, and a negative publication result.
+1. There is no single universal agency definition. Across ten agencies, the pilot includes 10-, 12-, 15-, 20-, 30-, and 40–60-minute bands, period-specific ranges, and named products whose maps do not supply a numeric threshold.
 2. “Frequent” often describes corridors or a customer-facing network, not an entire route in both directions. Atlas’s route-level terminal test is therefore a useful comparable metric but not a direct reproduction of every agency’s definition.
 3. The service span matters as much as the threshold. The sample ranges from 6am–8pm to 6am–1am, with different weekend rules.
 4. STM is the first concrete sign that the current endpoint-based comparison can undercount an agency’s official frequent network. It needs a stop/corridor comparison before the metric is used for qualitative conclusions.
-5. The Frequent Service research view should distinguish two concepts:
+5. Published tiers should be catalogued as first-class records rather than collapsed into one agency threshold. Each record should preserve the label, numeric threshold or qualitative meaning, hours, days, geography, mode, source URL, checked date, and confidence.
+6. The Frequent Service research view should distinguish two concepts:
    - **Official frequent network:** what the agency publishes.
    - **Atlas comparable metric:** the same rule applied consistently across agencies.
 
 ## Next step
 
-Before expanding to all agencies, add an agency-specific research record with source URL, definition type, threshold, span, days, mode scope, and geography scope. Then test the official STM list and TransLink corridors against stop-level or corridor-level Atlas results. Only after that should the five-agency method be scaled.
+Keep this memo as the qualitative source record, then move the tier catalog into a small structured data file when we start comparing agencies in the product. The next analytical work is still to test the official STM list and TransLink corridors against stop-level or corridor-level Atlas results; the route-pattern comparison alone is not enough for corridor-based definitions.
