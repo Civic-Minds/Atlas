@@ -1,6 +1,6 @@
 # Frequent-Service Research Pilot
 
-**Status:** Ten-agency pilot complete; 15-agency expansion queued
+**Status:** 25-agency review complete
 **Checked:** 2026-09-16  
 **Purpose:** Compare what agencies officially call “frequent” with what their current GTFS schedules provide.
 
@@ -17,7 +17,7 @@ The comparison columns mean:
 - `extended15`: no gap over 15 minutes from 7am–midnight
 - `extended30`: no gap over 30 minutes from 7am–midnight
 
-The authoritative review tracker is the [structured agency catalog](frequent-service-catalog.json). It currently contains 10 completed records and 15 explicitly planned records toward the 25-agency target. A planned record is not counted as reviewed.
+The authoritative review tracker is the [structured agency catalog](frequent-service-catalog.json). It contains all 25 reviewed records. A record may still have an Atlas comparison marked `not_run` when the agency has no Atlas configuration or the comparison was not part of the source review.
 
 ## Results
 
@@ -138,4 +138,4 @@ Column order is `daytime15 / daytime30 / extended15 / extended30`, using the sam
 
 ## Next step
 
-Review the 15 planned agencies using the catalog's fixed source and time boundary. Keep this memo as the qualitative summary and update the structured catalog after each agency. The next analytical work is still to test the official STM list and TransLink corridors against stop-level or corridor-level Atlas results; the route-pattern comparison alone is not enough for corridor-based definitions.
+Keep the structured catalog current as agency maps and service guidelines change. The next analytical work is still to test the official STM list and TransLink corridors against stop-level or corridor-level Atlas results; the route-pattern comparison alone is not enough for corridor-based definitions.

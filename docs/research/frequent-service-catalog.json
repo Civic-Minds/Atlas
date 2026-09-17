@@ -209,20 +209,295 @@
       "atlasComparison": { "status": "dry_run_completed", "metric": "route-pattern/day", "quality": "review" },
       "confidence": "explicit"
     },
-    { "agencyId": "ottawa", "agencyName": "OC Transpo", "country": "Canada", "region": "Ontario", "reviewStatus": "planned" },
-    { "agencyId": "york-region", "agencyName": "York Region Transit", "country": "Canada", "region": "Ontario", "reviewStatus": "planned" },
-    { "agencyId": "miway", "agencyName": "MiWay", "country": "Canada", "region": "Ontario", "reviewStatus": "planned" },
-    { "agencyId": "mbta", "agencyName": "MBTA", "country": "United States", "region": "Massachusetts", "reviewStatus": "planned" },
-    { "agencyId": "la-metro", "agencyName": "Los Angeles Metro", "country": "United States", "region": "California", "reviewStatus": "planned" },
-    { "agencyId": "sound-transit", "agencyName": "Sound Transit", "country": "United States", "region": "Washington", "reviewStatus": "planned" },
-    { "agencyId": "wmata", "agencyName": "Washington Metropolitan Area Transit Authority", "country": "United States", "region": "District of Columbia / Maryland / Virginia", "reviewStatus": "planned" },
-    { "agencyId": "cta", "agencyName": "Chicago Transit Authority", "country": "United States", "region": "Illinois", "reviewStatus": "planned" },
-    { "agencyId": "trimet", "agencyName": "TriMet", "country": "United States", "region": "Oregon", "reviewStatus": "planned" },
-    { "agencyId": "rtd-denver", "agencyName": "RTD Denver", "country": "United States", "region": "Colorado", "reviewStatus": "planned" },
-    { "agencyId": "uta", "agencyName": "Utah Transit Authority", "country": "United States", "region": "Utah", "reviewStatus": "planned" },
-    { "agencyId": "vta", "agencyName": "Santa Clara Valley Transportation Authority", "country": "United States", "region": "California", "reviewStatus": "planned" },
-    { "agencyId": "sdmts", "agencyName": "San Diego Metropolitan Transit System", "country": "United States", "region": "California", "reviewStatus": "planned" },
-    { "agencyId": "halifax", "agencyName": "Halifax Transit", "country": "Canada", "region": "Nova Scotia", "reviewStatus": "planned" },
-    { "agencyId": "bart", "agencyName": "Bay Area Rapid Transit", "country": "United States", "region": "California", "reviewStatus": "planned" }
+    {
+      "agencyId": "ottawa",
+      "agencyName": "OC Transpo",
+      "country": "Canada",
+      "region": "Ontario",
+      "reviewStatus": "definition_found",
+      "tierCoverage": "documented",
+      "reviewedAt": "2026-09-17",
+      "sources": [
+        { "url": "https://www.octranspo.com/en/our-services/bus-o-train-network/", "type": "frequent_network_page" },
+        { "url": "https://www.octranspo.com/images/files/maps/network_maps/NWTB_System_Map_2025_%28MASTER%29_BRT_27April2025_V1.pdf", "type": "system_map" }
+      ],
+      "tiers": [
+        { "label": "Frequent", "thresholdMinutes": 15, "span": "6am–6pm weekdays", "days": "7 days; map says all periods", "geography": "route", "mode": "bus", "kind": "frequency" },
+        { "label": "Connexion", "thresholdText": "Connection to O-Train; weekday peak periods only", "span": "weekday peak", "days": "weekdays", "geography": "route/product", "mode": "bus", "kind": "service_class" },
+        { "label": "Local", "thresholdText": "Custom routing to local destinations", "span": "varies", "days": "varies", "geography": "route/product", "mode": "bus", "kind": "service_class" },
+        { "label": "Limited", "thresholdText": "Does not operate in all time periods or every day", "span": "limited", "days": "varies", "geography": "route/product", "mode": "bus", "kind": "service_class" }
+      ],
+      "atlasComparison": { "status": "not_run", "reason": "Research catalog review; GTFS comparison is a follow-up." },
+      "confidence": "explicit"
+    },
+    {
+      "agencyId": "york-region",
+      "agencyName": "York Region Transit",
+      "country": "Canada",
+      "region": "Ontario",
+      "reviewStatus": "qualitative_definition_only",
+      "tierCoverage": "documented",
+      "reviewedAt": "2026-09-17",
+      "sources": [
+        { "url": "https://www.yrt.ca/en/schedules-and-maps/resources/Documents/system-maps/YRT_FrequentTransitMap_May2025.pdf", "type": "system_map" },
+        { "url": "https://www.yrt.ca/en/schedules-and-maps/resources/YRT-SystemMap_Web_Aug2025.pdf", "type": "system_map" }
+      ],
+      "tiers": [
+        { "label": "Frequent Transit Network Tier 1", "thresholdText": "Frequent network tier; numeric headway not stated in reviewed map", "span": "not specified", "days": "not specified", "geography": "network/corridor", "mode": "bus", "kind": "service_class" },
+        { "label": "Frequent Transit Network Tier 2", "thresholdText": "Frequent network tier; numeric headway not stated in reviewed map", "span": "not specified", "days": "not specified", "geography": "network/corridor", "mode": "bus", "kind": "service_class" },
+        { "label": "Viva", "thresholdText": "Rapid transit product", "span": "varies", "days": "varies", "geography": "route/product", "mode": "bus", "kind": "service_class" }
+      ],
+      "atlasComparison": { "status": "not_run", "reason": "Research catalog review; numeric comparison requires schedule-level interpretation." },
+      "confidence": "qualitative_only"
+    },
+    {
+      "agencyId": "miway",
+      "agencyName": "MiWay",
+      "country": "Canada",
+      "region": "Ontario",
+      "reviewStatus": "no_definition_found",
+      "tierCoverage": "negative_result",
+      "reviewedAt": "2026-09-17",
+      "sources": [
+        { "url": "https://www.mississauga.ca/miway-transit/maps/transit-system-maps/", "type": "system_map" },
+        { "url": "https://www.mississauga.ca/miway-transit/maps/miway-route-maps/", "type": "route_service_page" }
+      ],
+      "tiers": [],
+      "atlasComparison": { "status": "not_run", "reason": "No agency definition to compare; independent GTFS benchmark can be added later." },
+      "confidence": "not_found",
+      "noDefinitionReason": "Official maps distinguish weekday, weekend, local, and express service but no named frequent-service threshold was located within the review boundary."
+    },
+    {
+      "agencyId": "mbta",
+      "agencyName": "MBTA",
+      "country": "United States",
+      "region": "Massachusetts",
+      "reviewStatus": "definition_found",
+      "tierCoverage": "documented",
+      "reviewedAt": "2026-09-17",
+      "sources": [
+        { "url": "https://mbta.getanchor.io/maps.html", "type": "system_map" }
+      ],
+      "tiers": [
+        { "label": "Frequent Bus Routes", "thresholdMinutes": 15, "thresholdText": "Arrive every 15 minutes or better", "span": "not specified on reviewed map page", "days": "not specified", "geography": "route/network", "mode": "bus", "kind": "frequency" }
+      ],
+      "atlasComparison": { "status": "not_run", "reason": "Research catalog review; GTFS comparison is a follow-up." },
+      "confidence": "explicit_but_source_mirror"
+    },
+    {
+      "agencyId": "la-metro",
+      "agencyName": "Los Angeles Metro",
+      "country": "United States",
+      "region": "California",
+      "reviewStatus": "definition_found",
+      "tierCoverage": "documented",
+      "reviewedAt": "2026-09-17",
+      "sources": [
+        { "url": "https://www.metro.net/riding/schedules/", "type": "system_map" },
+        { "url": "https://cdn.beta.metro.net/wp-content/uploads/2026/05/04165451/26-1718_SysOverview_HiFreq_online_DCR.pdf", "type": "system_map" }
+      ],
+      "tiers": [
+        { "label": "Frequent Service Network", "thresholdMinutes": 15, "span": "6am–6pm", "days": "weekdays", "geography": "network", "mode": "bus and rail", "kind": "frequency" },
+        { "label": "Less frequent service", "thresholdText": "Below 15 minutes; map line weight distinction", "span": "varies", "days": "varies", "geography": "route/network", "mode": "bus and rail", "kind": "service_class" }
+      ],
+      "atlasComparison": { "status": "not_run", "reason": "Research catalog review; GTFS comparison is a follow-up." },
+      "confidence": "explicit"
+    },
+    {
+      "agencyId": "sound-transit",
+      "agencyName": "Sound Transit",
+      "country": "United States",
+      "region": "Washington",
+      "reviewStatus": "qualitative_definition_only",
+      "tierCoverage": "documented",
+      "reviewedAt": "2026-09-17",
+      "sources": [
+        { "url": "https://www.soundtransit.org/sites/default/files/documents/2025-service-plan.pdf", "type": "planning_document" }
+      ],
+      "tiers": [
+        { "label": "Frequent all-day service", "thresholdMinutes": 15, "thresholdText": "Approximately every 15 minutes on weekdays or better", "span": "not fully specified in reviewed source", "days": "weekdays", "geography": "route", "mode": "bus", "kind": "frequency" },
+        { "label": "All-day service", "thresholdMinutes": 30, "span": "not specified", "days": "weekdays", "geography": "route", "mode": "bus", "kind": "frequency" },
+        { "label": "Peak hour service", "thresholdText": "Peak hours only", "span": "weekday peak", "days": "weekdays", "geography": "route", "mode": "bus", "kind": "service_class" }
+      ],
+      "atlasComparison": { "status": "not_run", "reason": "Research catalog review; GTFS comparison is a follow-up." },
+      "confidence": "explicit_with_approximation"
+    },
+    {
+      "agencyId": "wmata",
+      "agencyName": "Washington Metropolitan Area Transit Authority",
+      "country": "United States",
+      "region": "District of Columbia / Maryland / Virginia",
+      "reviewStatus": "definition_found",
+      "tierCoverage": "documented",
+      "reviewedAt": "2026-09-17",
+      "sources": [
+        { "url": "https://www.wmata.com/ride/maps.html?alerts-widget-next-train-all=G02", "type": "system_map" }
+      ],
+      "tiers": [
+        { "label": "Frequent service", "thresholdMinutes": 12, "thresholdText": "Every 12 minutes or less", "span": "7am–9pm", "days": "not specified on map page", "geography": "route/network", "mode": "bus", "kind": "frequency" },
+        { "label": "Frequent service secondary", "thresholdMinutes": 20, "thresholdText": "Every 20 minutes or less", "span": "7am–9pm", "days": "not specified on map page", "geography": "route/network", "mode": "bus", "kind": "frequency" }
+      ],
+      "atlasComparison": { "status": "not_run", "reason": "Research catalog review; GTFS comparison is a follow-up." },
+      "confidence": "explicit_tiered"
+    },
+    {
+      "agencyId": "cta",
+      "agencyName": "Chicago Transit Authority",
+      "country": "United States",
+      "region": "Illinois",
+      "reviewStatus": "definition_found",
+      "tierCoverage": "documented",
+      "reviewedAt": "2026-09-17",
+      "sources": [
+        { "url": "https://lapi.transitchicago.com/frequent/", "type": "frequent_network_page" }
+      ],
+      "tiers": [
+        { "label": "Frequent Network", "thresholdMinutes": 10, "span": "6am–9pm weekdays; 9am–9pm weekends", "days": "7 days", "geography": "network", "mode": "bus", "kind": "frequency" }
+      ],
+      "atlasComparison": { "status": "not_run", "reason": "Research catalog review; GTFS comparison is a follow-up." },
+      "confidence": "explicit"
+    },
+    {
+      "agencyId": "trimet",
+      "agencyName": "TriMet",
+      "country": "United States",
+      "region": "Oregon",
+      "reviewStatus": "definition_found",
+      "tierCoverage": "documented",
+      "reviewedAt": "2026-09-17",
+      "sources": [
+        { "url": "https://www.trimet.org/howtoride/index.htm", "type": "frequent_network_page" },
+        { "url": "https://www.trimet.org/schedules/frequentservice.htm", "type": "frequent_network_page" }
+      ],
+      "tiers": [
+        { "label": "Frequent Service bus", "thresholdMinutes": 15, "span": "most of the day", "days": "7 days", "geography": "corridor/route", "mode": "bus", "kind": "frequency" },
+        { "label": "FX2 Frequent Express", "thresholdMinutes": 12, "span": "most of the day", "days": "7 days", "geography": "corridor/route", "mode": "bus", "kind": "frequency" },
+        { "label": "MAX Frequent Service", "thresholdMinutes": 15, "span": "most of the day", "days": "7 days", "geography": "line", "mode": "light rail", "kind": "frequency" }
+      ],
+      "atlasComparison": { "status": "not_run", "reason": "Research catalog review; GTFS comparison is a follow-up." },
+      "confidence": "explicit"
+    },
+    {
+      "agencyId": "rtd-denver",
+      "agencyName": "RTD Denver",
+      "country": "United States",
+      "region": "Colorado",
+      "reviewStatus": "qualitative_definition_only",
+      "tierCoverage": "documented",
+      "reviewedAt": "2026-09-17",
+      "sources": [
+        { "url": "https://www.rtd-denver.com/service-development/faqs", "type": "service_guidelines" },
+        { "url": "https://www.rtd-denver.com/es/community/news/2026/10-things-you-didn-t-know-about-the-a-line-as-it-reaches-a-decade-of-service", "type": "route_service_page" }
+      ],
+      "tiers": [
+        { "label": "Frequent service benchmark", "thresholdMinutes": 15, "thresholdText": "15-minute standards appear in service-development material; no single current named frequent network located", "span": "product-specific", "days": "product-specific", "geography": "route", "mode": "bus and rail", "kind": "frequency" },
+        { "label": "A Line", "thresholdMinutes": 15, "span": "6am–8pm; 30 minutes afterward", "days": "not specified in reviewed source", "geography": "line", "mode": "commuter rail", "kind": "frequency" }
+      ],
+      "atlasComparison": { "status": "not_run", "reason": "Research catalog review; GTFS comparison is a follow-up." },
+      "confidence": "qualitative_only"
+    },
+    {
+      "agencyId": "uta",
+      "agencyName": "Utah Transit Authority",
+      "country": "United States",
+      "region": "Utah",
+      "reviewStatus": "definition_found",
+      "tierCoverage": "documented",
+      "reviewedAt": "2026-09-17",
+      "sources": [
+        { "url": "https://vehiclelocator.rideuta.com/Services/Go-Route", "type": "frequent_network_page" },
+        { "url": "https://www.rideuta.com/-/media/Files/Current-Projects/Five-Year-Service-Plan/UTA_Five_Year_Service_Plan2023_FINAL.pdf", "type": "system_map" }
+      ],
+      "tiers": [
+        { "label": "Frequent bus / Go Route", "thresholdMinutes": 15, "span": "daytime Monday–Saturday; 30 minutes late night and Sunday", "days": "7 days", "geography": "route/network", "mode": "bus", "kind": "frequency" },
+        { "label": "Frequent rail", "thresholdText": "TRAX 15–30; FrontRunner 30 peak/60 off-peak", "span": "product-specific", "days": "product-specific", "geography": "line", "mode": "rail", "kind": "frequency" },
+        { "label": "Regular bus", "thresholdText": "30 minutes or more", "span": "varies", "days": "varies", "geography": "route", "mode": "bus", "kind": "service_class" },
+        { "label": "Limited bus", "thresholdText": "Limited service", "span": "varies", "days": "varies", "geography": "route", "mode": "bus", "kind": "service_class" }
+      ],
+      "atlasComparison": { "status": "not_run", "reason": "Research catalog review; GTFS comparison is a follow-up." },
+      "confidence": "explicit_tiered"
+    },
+    {
+      "agencyId": "vta",
+      "agencyName": "Santa Clara Valley Transportation Authority",
+      "country": "United States",
+      "region": "California",
+      "reviewStatus": "qualitative_definition_only",
+      "tierCoverage": "documented",
+      "reviewedAt": "2026-09-17",
+      "sources": [
+        { "url": "https://www.vta.org/about/vta-transit-service-guidelines", "type": "service_guidelines" },
+        { "url": "https://www.vta.org/projects/transit-service-plan", "type": "planning_document" }
+      ],
+      "tiers": [
+        { "label": "Rapid bus", "thresholdText": "Frequent limited-stop product; numeric threshold not stated in current reviewed page", "span": "varies", "days": "varies", "geography": "route/product", "mode": "bus", "kind": "service_class" },
+        { "label": "Frequent bus", "thresholdMinutes": 15, "thresholdText": "15-minute frequent routes referenced in service planning", "span": "route-specific; weekend improvements are separately planned", "days": "route-specific", "geography": "route", "mode": "bus", "kind": "frequency" },
+        { "label": "Local bus", "thresholdText": "Local service category", "span": "varies", "days": "varies", "geography": "route", "mode": "bus", "kind": "service_class" },
+        { "label": "Express bus", "thresholdText": "Direct commute-hour service", "span": "peak", "days": "weekdays", "geography": "route", "mode": "bus", "kind": "service_class" }
+      ],
+      "atlasComparison": { "status": "not_run", "reason": "Research catalog review; GTFS comparison is a follow-up." },
+      "confidence": "qualitative_with_numeric_context"
+    },
+    {
+      "agencyId": "sdmts",
+      "agencyName": "San Diego Metropolitan Transit System",
+      "country": "United States",
+      "region": "California",
+      "reviewStatus": "qualitative_definition_only",
+      "tierCoverage": "documented",
+      "reviewedAt": "2026-09-17",
+      "sources": [
+        { "url": "https://www.sdmts.com/getting-around/maps-and-schedules", "type": "system_map" },
+        { "url": "https://www.sdmts.com/sites/default/files/attachments/mts_designingfortransit_2018-02-02web.pdf", "type": "system_map" }
+      ],
+      "tiers": [
+        { "label": "Frequent", "thresholdText": "Map line class; numeric threshold not stated in reviewed current map", "span": "not specified", "days": "not specified", "geography": "route/network", "mode": "bus", "kind": "service_class" },
+        { "label": "Standard", "thresholdText": "Map line class", "span": "varies", "days": "varies", "geography": "route/network", "mode": "bus", "kind": "service_class" },
+        { "label": "Limited", "thresholdText": "Map line class", "span": "limited", "days": "varies", "geography": "route/network", "mode": "bus", "kind": "service_class" },
+        { "label": "Rapid", "thresholdText": "Bus rapid transit product", "span": "varies", "days": "varies", "geography": "route/product", "mode": "bus", "kind": "service_class" }
+      ],
+      "atlasComparison": { "status": "not_run", "reason": "Research catalog review; numeric comparison is not justified without a published threshold." },
+      "confidence": "qualitative_only"
+    },
+    {
+      "agencyId": "halifax",
+      "agencyName": "Halifax Transit",
+      "country": "Canada",
+      "region": "Nova Scotia",
+      "reviewStatus": "definition_found",
+      "tierCoverage": "documented",
+      "reviewedAt": "2026-09-17",
+      "sources": [
+        { "url": "https://www.halifax.ca/transportation/halifax-transit/moving-forward-together/part-6-measuring-success", "type": "service_guidelines" }
+      ],
+      "tiers": [
+        { "label": "Corridor Routes", "thresholdText": "5–15 minutes peak; 10–30 off-peak, Saturday, and Sunday", "span": "period-based", "days": "7 days", "geography": "corridor", "mode": "bus", "kind": "frequency" },
+        { "label": "Local Routes", "thresholdText": "15–30 peak; 30–60 off-peak/weekends", "span": "period-based", "days": "7 days", "geography": "route", "mode": "bus", "kind": "service_class" },
+        { "label": "Express Routes", "thresholdText": "10–30 minutes peak only", "span": "peak", "days": "weekdays", "geography": "route", "mode": "bus", "kind": "service_class" },
+        { "label": "Regional Express Routes", "thresholdText": "10–30 minutes peak only", "span": "peak", "days": "weekdays", "geography": "route", "mode": "bus", "kind": "service_class" },
+        { "label": "Rural Routes", "thresholdText": "No minimum service-frequency guideline", "span": "varies", "days": "varies", "geography": "route", "mode": "bus", "kind": "service_class" }
+      ],
+      "atlasComparison": { "status": "not_run", "reason": "Research catalog review; GTFS comparison is a follow-up." },
+      "confidence": "explicit_guideline"
+    },
+    {
+      "agencyId": "bart",
+      "agencyName": "Bay Area Rapid Transit",
+      "country": "United States",
+      "region": "California",
+      "reviewStatus": "qualitative_definition_only",
+      "tierCoverage": "documented",
+      "reviewedAt": "2026-09-17",
+      "sources": [
+        { "url": "https://www.bart.gov/news/articles/2021/news20210603", "type": "service_guidelines" },
+        { "url": "https://www.bart.gov/news/articles/2021/news20210729", "type": "service_guidelines" }
+      ],
+      "tiers": [
+        { "label": "Core service", "thresholdText": "15-minute frequencies on all lines during much of the weekday daytime in reviewed service-change material", "span": "5am–8pm in reviewed source", "days": "weekday; weekend varies", "geography": "network/core", "mode": "rail", "kind": "frequency" },
+        { "label": "Evening service", "thresholdText": "30-minute frequencies in reviewed service-change material", "span": "8pm–midnight in reviewed source", "days": "weekday", "geography": "network", "mode": "rail", "kind": "frequency" }
+      ],
+      "atlasComparison": { "status": "not_run", "reason": "Research catalog review; current service map comparison is a follow-up." },
+      "confidence": "qualitative_with_historical_service_context"
+    }
   ]
 }

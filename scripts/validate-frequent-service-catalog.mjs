@@ -23,7 +23,7 @@ for (const agency of catalog.agencies) {
 }
 
 const reviewed = catalog.agencies.filter((agency) => agency.reviewStatus !== 'planned');
-if (reviewed.length !== 10) failures.push(`expected 10 completed records, found ${reviewed.length}`);
+if (reviewed.length !== 25) failures.push(`expected 25 completed records, found ${reviewed.length}`);
 
 if (failures.length > 0) {
   console.error(failures.map((failure) => `- ${failure}`).join('\n'));
