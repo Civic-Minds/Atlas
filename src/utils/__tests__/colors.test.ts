@@ -40,7 +40,7 @@ describe('colour-blind-friendly palette', () => {
   it('keeps each frequency tier mapped to a distinct friendly colour', () => {
     const colors = ['10', '15', '20', '30', '60', 'infrequent'].map(tier => getTierColor(tier, 'friendly'));
     expect(new Set(colors).size).toBe(colors.length);
-    expect(colors).toEqual(['#13294b', '#244c66', '#3c6f73', '#5e8b72', '#9a8a45', '#c8a900']);
+    expect(colors).toEqual(['#0072b2', '#009e73', '#56b4e9', '#e69f00', '#cc79a7', '#4d4d4d']);
   });
 
   it('uses the friendly status and fare colours when enabled', () => {

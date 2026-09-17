@@ -9,14 +9,18 @@ export interface StatusColor {
 
 export type ColorVisionMode = 'default' | 'friendly';
 
-/** A colour-blind-friendly palette with distinct hues and darker text-safe fills. */
+/**
+ * A high-contrast palette based on Okabe-Ito's colour-universal design work.
+ * Frequency order is carried by the legend and line weight as well as colour;
+ * the palette is not intended to be the only cue.
+ */
 export const COLOR_VISION_HEADWAY_TIERS: HeadwayTier[] = [
-  { max: 10, color: '#13294b', label: '≤10m' },
-  { max: 15, color: '#244c66', label: '≤15m' },
-  { max: 20, color: '#3c6f73', label: '≤20m' },
-  { max: 30, color: '#5e8b72', label: '≤30m' },
-  { max: 60, color: '#9a8a45', label: '≤60m' },
-  { max: Infinity, color: '#c8a900', label: 'Infrequent' },
+  { max: 10, color: '#0072b2', label: '≤10m' },
+  { max: 15, color: '#009e73', label: '≤15m' },
+  { max: 20, color: '#56b4e9', label: '≤20m' },
+  { max: 30, color: '#e69f00', label: '≤30m' },
+  { max: 60, color: '#cc79a7', label: '≤60m' },
+  { max: Infinity, color: '#4d4d4d', label: 'Infrequent' },
 ];
 
 export const COLOR_VISION_STATUS_COLORS: Record<'early' | 'late' | 'on_time' | 'no_data', StatusColor> = {
