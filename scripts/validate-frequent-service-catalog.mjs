@@ -5,7 +5,7 @@ const catalog = JSON.parse(fs.readFileSync(path, 'utf8'));
 const failures = [];
 const statuses = new Set(['planned', 'definition_found', 'qualitative_definition_only', 'no_definition_found', 'blocked']);
 
-if (catalog.targetAgencyCount !== 25) failures.push('targetAgencyCount must be 25');
+if (catalog.targetAgencyCount !== 200) failures.push('targetAgencyCount must be 200');
 if (catalog.agencies.length !== catalog.targetAgencyCount) failures.push('agency count must match targetAgencyCount');
 
 const ids = new Set();
@@ -14,7 +14,11 @@ for (const agency of catalog.agencies) {
   ids.add(agency.agencyId);
   if (!statuses.has(agency.reviewStatus)) failures.push(`${agency.agencyId}: invalid reviewStatus`);
 
-  if (agency.reviewStatus === 'planned') continue;
+  if (agency.reviewStatus === 'planned') {
+    if (!Number.isInteger(agency.researchBatch) || agency.researchBatch < 2) failures.push(`${agency.agencyId}: planned records need a researchBatch of 2 or greater`);
+    if (!agency.country || !agency.region) failures.push(`${agency.agencyId}: planned records need country and region`);
+    continue;
+  }
   if (!agency.reviewedAt) failures.push(`${agency.agencyId}: reviewed records need reviewedAt`);
   if (!Array.isArray(agency.sources) || agency.sources.length === 0) failures.push(`${agency.agencyId}: reviewed records need at least one source`);
   if (!Array.isArray(agency.tiers)) failures.push(`${agency.agencyId}: reviewed records need a tiers array`);
@@ -23,11 +27,13 @@ for (const agency of catalog.agencies) {
 }
 
 const reviewed = catalog.agencies.filter((agency) => agency.reviewStatus !== 'planned');
-if (reviewed.length !== 25) failures.push(`expected 25 completed records, found ${reviewed.length}`);
+const planned = catalog.agencies.filter((agency) => agency.reviewStatus === 'planned');
+if (reviewed.length + planned.length !== catalog.targetAgencyCount) failures.push('reviewed plus planned records must equal targetAgencyCount');
+if (process.env.REQUIRE_COMPLETE === '1' && planned.length > 0) failures.push(`${planned.length} planned records remain`);
 
 if (failures.length > 0) {
   console.error(failures.map((failure) => `- ${failure}`).join('\n'));
   process.exit(1);
 }
 
-console.log(`Valid frequent-service catalog: ${catalog.agencies.length} agencies (${reviewed.length} completed, ${catalog.agencies.length - reviewed.length} planned)`);
+console.log(`Valid frequent-service catalog: ${catalog.agencies.length} agencies (${reviewed.length} completed, ${planned.length} planned)`);
