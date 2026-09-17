@@ -483,13 +483,13 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                   <div className="flex items-center gap-3 min-w-0">
                     <span className="w-4 h-4 shrink-0 text-center text-[10px] font-black text-[var(--text-dim)]">◈</span>
                     <div className="min-w-0">
-                      <p className="text-[11px] font-bold text-[var(--text-primary)] leading-tight">Enhanced colour distinction</p>
+                      <p className="text-[11px] font-bold text-[var(--text-primary)] leading-tight">High contrast mode</p>
                       <p className="text-[10px] text-[var(--text-muted)] mt-1 leading-relaxed">Uses clearer colours and line weights to make routes easier to tell apart.</p>
                     </div>
                   </div>
                   <button
                     onClick={() => setColorVisionFriendly(v => !v)}
-                    aria-label="Toggle enhanced colour distinction"
+                    aria-label="Toggle high contrast mode"
                     className="shrink-0"
                   >
                     <Toggle on={colorVisionFriendly} />
