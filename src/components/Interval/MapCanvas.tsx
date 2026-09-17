@@ -4,7 +4,7 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import type { MapboxOverlay } from '@deck.gl/mapbox';
 import { LocateFixed, Plus, Minus, Link2, Flag } from 'lucide-react';
 import { routeKey } from '../../hooks/useIntervalStats';
-import { HEADWAY_TIERS, NIGHT_SERVICE_COLOR, buildFareColorExpression, buildDefaultRouteLineOpacityExpression, buildFocusedRouteLineOpacityExpression, buildZoomHeadwayGateExpression } from '../../utils/colors';
+import { HEADWAY_TIERS, getHeadwayTiers, NIGHT_SERVICE_COLOR, buildFareColorExpression, buildDefaultRouteLineOpacityExpression, buildFocusedRouteLineOpacityExpression, buildZoomHeadwayGateExpression, type ColorVisionMode } from '../../utils/colors';
 import { getRegionalView, saveView, getSavedView, getAgencyBounds } from '../../utils/regionView';
 import { useViewport } from '../../context/ViewportContext';
 import { useHistoryMapOverlay } from '../../context/HistoryMapOverlay';
@@ -18,6 +18,7 @@ import { registerProtocol, getAtlasPmtilesUrl, getMapStyle } from '../../lib/map
 import { getAgencyBbox } from '../../hooks/useAgencyData';
 import { Z_PANEL, FLOATING_CARD } from '../../styles';
 import { LIVE_POLLING_ROUTES } from '../../../shared/livePollingConfig';
+import { useColorVision } from '../../context/ColorVisionContext';
 import { tileEffectiveHeadwayExpr, tileRouteKeyExpr } from '../../../shared/tileFilterExprs';
 import { syncUrlParams } from '../../utils/syncUrlParams';
 import { buildFocusedRoutePaint } from '../../utils/routeFocus';
@@ -128,20 +129,37 @@ function buildHighlightPaint(keys: string[]): any {
 }
 
 /** Color route lines from the same effective headway metric used by filtering. */
-function buildEffectiveHeadwayColorExpression(period: TimePeriod): any {
+function buildEffectiveHeadwayColorExpression(period: TimePeriod, mode: ColorVisionMode): any {
   const headway = tileEffectiveHeadwayExpr(period);
   const expression: any[] = ['case'];
-  for (const tier of HEADWAY_TIERS) {
+  const tiers = getHeadwayTiers(mode);
+  for (const tier of tiers) {
     if (tier.max === Infinity) break;
     expression.push(['<=', headway, tier.max], tier.color);
   }
-  expression.push(HEADWAY_TIERS[HEADWAY_TIERS.length - 1].color);
+  expression.push(tiers[tiers.length - 1].color);
   return expression;
 }
 
-function localRouteHeadwayColor(headway: unknown): string {
+function localRouteHeadwayColor(headway: unknown, mode: ColorVisionMode): string {
   const value = typeof headway === 'number' && Number.isFinite(headway) ? headway : Infinity;
-  return HEADWAY_TIERS.find(tier => value <= tier.max)?.color ?? HEADWAY_TIERS[HEADWAY_TIERS.length - 1].color;
+  const tiers = getHeadwayTiers(mode);
+  return tiers.find(tier => value <= tier.max)?.color ?? tiers[tiers.length - 1].color;
+}
+
+function buildFriendlyRouteWidthExpression(headwayExpr: unknown): any {
+  const widthForZoom = (base: number) => ['case',
+    ['<=', headwayExpr, 10], base + 0.8,
+    ['<=', headwayExpr, 15], base + 0.5,
+    ['<=', headwayExpr, 20], base + 0.25,
+    base,
+  ];
+  return ['interpolate', ['linear'], ['zoom'],
+    8, widthForZoom(1.5),
+    11, widthForZoom(2),
+    14, widthForZoom(2.5),
+    17, widthForZoom(3.5),
+  ];
 }
 
 interface MapCanvasProps {
@@ -266,6 +284,8 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   sidebarLeft,
   searchBarWidth,
 }) => {
+  const { colorVisionFriendly } = useColorVision();
+  const colorMode: ColorVisionMode = colorVisionFriendly ? 'friendly' : 'default';
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const [pmtilesRoutesAvailable, setPmtilesRoutesAvailable] = useState<boolean | null>(null);
@@ -398,13 +418,13 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
           properties: {
             ...properties,
             agencySlug: properties.agencySlug ?? slug,
-            localHeadwayColor: localRouteHeadwayColor(periodHeadway ?? properties.headway),
+            localHeadwayColor: localRouteHeadwayColor(periodHeadway ?? properties.headway, colorMode),
           },
         }];
       });
     });
     return { type: 'FeatureCollection', features };
-  }, [agencies, filteredLayers, layers, mapFilteredLayers, period, pmtilesRouteAgencies]);
+  }, [agencies, filteredLayers, layers, mapFilteredLayers, period, pmtilesRouteAgencies, colorMode]);
 
   useEffect(() => {
     onMapContextAgencyCountChange?.(mapContextAgencies.length);
@@ -612,11 +632,11 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       return { segments: [], partialMatches: [] };
     }
     return computeFrequencySegmentOverlay(filteredLayers, period, maxHeadway);
-  }, [filteredLayers, period, maxHeadway, showRouteLayers, fareView, nightServiceView, frequentServiceView]);
+  }, [filteredLayers, period, maxHeadway, showRouteLayers, fareView, nightServiceView, frequentServiceView, colorMode]);
 
   const sharedHoverSegments = useMemo(
-    () => buildSharedHoverSegments(layers, selectedRoute, hoveredBranch, day),
-    [layers, selectedRoute, hoveredBranch, day],
+    () => buildSharedHoverSegments(layers, selectedRoute, hoveredBranch, day, colorMode),
+    [layers, selectedRoute, hoveredBranch, day, colorMode],
   );
 
   const nightServiceFeatures = useMemo(() => {
@@ -1528,13 +1548,13 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       // Apply color paint styling — fare view if requested and baseFare present, else tier
       let lineColorExpr: any;
       if (fareView) {
-        lineColorExpr = buildFareColorExpression();
+        lineColorExpr = buildFareColorExpression(colorMode);
       } else if (nightServiceView) {
         lineColorExpr = NIGHT_SERVICE_COLOR;
       } else if (frequentServiceView) {
         lineColorExpr = '#f59e0b';
       } else {
-        lineColorExpr = buildEffectiveHeadwayColorExpression(period);
+        lineColorExpr = buildEffectiveHeadwayColorExpression(period, colorMode);
       }
 
       if (hasRoutes) map.setPaintProperty('routes-layer', 'line-color', lineColorExpr);
@@ -1614,13 +1634,9 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
           14, ['case', servingMatch, 3.0, DIM_WIDTH],
         ]);
       } else {
-        setRouteLayerPaint(map, 'line-width', [
-          'interpolate', ['linear'], ['zoom'],
-          8, 1.5,
-          11, 2.0,
-          14, 2.5,
-          17, 3.5,
-        ]);
+        setRouteLayerPaint(map, 'line-width', colorVisionFriendly
+          ? buildFriendlyRouteWidthExpression(headwayExpr)
+          : ['interpolate', ['linear'], ['zoom'], 8, 1.5, 11, 2.0, 14, 2.5, 17, 3.5]);
         // Dim routes that only pass the active frequency filter because part of their stops
         // qualify (#317) -- the bright frequency-qualifying-segments-layer overlay above draws
         // the real qualifying stretch on top, so the full-length base line reads as background
@@ -1696,7 +1712,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       }
     }
 
-  }, [mapLoaded, q, selectedRoute, hoveredSearchRoute, hoveredBranch, selectedStop, routesForStop, maxHeadway, zoom, showRouteLayers, liveRoutesOnly, filterToAgencies, agencies, tileFilter, fareView, nightServiceView, frequentServiceView, historyOverlay, layers, frequencySegmentOverlay]);
+  }, [mapLoaded, q, selectedRoute, hoveredSearchRoute, hoveredBranch, selectedStop, routesForStop, maxHeadway, zoom, showRouteLayers, liveRoutesOnly, filterToAgencies, agencies, tileFilter, fareView, nightServiceView, frequentServiceView, historyOverlay, layers, frequencySegmentOverlay, colorMode]);
 
   // Force-reset route paint when selection clears (guards against stuck highlight state).
   useEffect(() => {

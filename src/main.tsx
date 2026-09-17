@@ -8,6 +8,7 @@ import { BETA_BUILD } from '../shared/config';
 import { inject } from '@vercel/analytics';
 import { injectSpeedInsights } from '@vercel/speed-insights';
 import AnalyticsConsent from './components/AnalyticsConsent';
+import { ColorVisionProvider } from './context/ColorVisionContext';
 
 const DiagnosticsPage = React.lazy(() => import('./DiagnosticsPage'));
 const DiagnosticsUnevenPage = React.lazy(() => import('./DiagnosticsUnevenPage'));
@@ -26,9 +27,10 @@ if (BETA_BUILD) {
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <BrowserRouter>
-      <AnalyticsConsent />
-      <React.Suspense fallback={null}>
-        <Routes>
+      <ColorVisionProvider>
+        <AnalyticsConsent />
+        <React.Suspense fallback={null}>
+          <Routes>
           {/* Maintainer-only tools, local dev only -- not gated by DIAGNOSTICS_ENABLED/beta
               anymore. Both load every agency's data at once with no viewport limit, which is
               too heavy to leave reachable on any deployed build. import.meta.env.DEV is false
@@ -45,8 +47,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <Route path="/terms" element={<LegalPage document="terms" />} />
           <Route path="/privacy" element={<LegalPage document="privacy" />} />
           <Route path="/*" element={<App />} />
-        </Routes>
-      </React.Suspense>
+          </Routes>
+        </React.Suspense>
+      </ColorVisionProvider>
     </BrowserRouter>
   </React.StrictMode>
 );

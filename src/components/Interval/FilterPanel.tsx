@@ -9,6 +9,7 @@ import { R2_PUBLIC_URL } from '../../../shared/config';
 import type { Agency } from '../../App';
 import { agencyDisplayParts, formatStoredDate } from '../../utils/format';
 import { qualityStatusLabel } from '../../../shared/feedQuality';
+import { useColorVision } from '../../context/ColorVisionContext';
 
 interface FilterPanelProps {
   lightMode: boolean;
@@ -105,6 +106,8 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
   setHideLowQuality,
   feedQualityEnabled = false,
 }) => {
+  const { colorVisionFriendly, setColorVisionFriendly } = useColorVision();
+  const colorMode = colorVisionFriendly ? 'friendly' : 'default';
   const [open, setOpen] = useState(false);
   const [visible, setVisible] = useState(false);
   const [view, setView] = useState<'settings' | 'hidden-routes' | 'degraded-feeds'>('settings');
@@ -476,6 +479,22 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                     <Toggle on={!lightMode} />
                   </button>
                 </div>
+                <div className="flex items-center justify-between mt-4 pt-4 border-t border-[var(--border-primary)]">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <span className="w-4 h-4 shrink-0 text-center text-[10px] font-black text-[var(--text-dim)]">◈</span>
+                    <div className="min-w-0">
+                      <p className="text-[11px] font-bold text-[var(--text-primary)] leading-tight">Enhanced colour distinction</p>
+                      <p className="text-[10px] text-[var(--text-muted)] mt-1 leading-relaxed">Uses clearer colours and line weights to make routes easier to tell apart.</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setColorVisionFriendly(v => !v)}
+                    aria-label="Toggle enhanced colour distinction"
+                    className="shrink-0"
+                  >
+                    <Toggle on={colorVisionFriendly} />
+                  </button>
+                </div>
               </div>
 
               {/* Filters */}
@@ -534,7 +553,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                   </div>
                   <div className="px-5 pb-3 flex flex-wrap gap-1.5">
                     {HEADWAY_TIERS.map(({ max, label }) => {
-                      const color = isFinite(max) ? getTierColor(String(max)) : 'var(--text-dim)';
+                      const color = isFinite(max) ? getTierColor(String(max), colorMode) : 'var(--text-dim)';
                       const active = maxHeadway === max;
                       return (
                         <button

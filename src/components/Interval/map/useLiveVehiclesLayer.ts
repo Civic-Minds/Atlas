@@ -7,6 +7,7 @@ import type { LiveVehicle } from '../../../context/LiveVehiclesMapOverlay';
 import { cleanRouteShortName } from '../../../utils/format';
 import { escapeHtml } from '../../../lib/escapeHtml';
 import { liveVehiclesFingerprint } from '../../../utils/liveVehiclesFingerprint';
+import { useColorVision } from '../../../context/ColorVisionContext';
 
 /** Exported for unit tests — GTFS-RT text must be escaped before innerHTML. */
 export function vehicleTooltipHtml(v: LiveVehicle): string | null {
@@ -48,6 +49,8 @@ export function useLiveVehiclesLayer(
   deckOverlayRef: React.RefObject<MapboxOverlay | null>,
   mapLoaded: boolean,
 ) {
+  const { colorVisionFriendly } = useColorVision();
+  const colorMode = colorVisionFriendly ? 'friendly' : 'default';
   const { overlay: liveOverlay } = useLiveVehiclesMapOverlay();
   const liveFittedRouteRef = useRef<string | null>(null);
   const lastDeckFpRef = useRef('');
@@ -249,7 +252,7 @@ export function useLiveVehiclesLayer(
           ...f,
           properties: {
             ...f.properties,
-            color: getTierColor((f.properties as { tier?: string | null } | null)?.tier ?? null),
+            color: getTierColor((f.properties as { tier?: string | null } | null)?.tier ?? null, colorMode),
           },
         })),
       });
@@ -281,7 +284,7 @@ export function useLiveVehiclesLayer(
       source.setData({ type: 'FeatureCollection', features: [] });
       if (!routeKey) liveFittedRouteRef.current = null;
     }
-  }, [liveOverlay?.routeFeatures, liveOverlay?.selectedRouteKey, mapLoaded, mapRef]);
+  }, [liveOverlay?.routeFeatures, liveOverlay?.selectedRouteKey, mapLoaded, mapRef, colorMode]);
 
   // Focus vehicle centering — skip if route shape fit will handle positioning
   useEffect(() => {
