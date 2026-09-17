@@ -555,10 +555,81 @@
       "atlasComparison": { "status": "not_run", "reason": "Research catalog review; no numeric agency threshold was available for a direct comparison." },
       "confidence": "qualitative_only"
     },
-    {"agencyId":"fort-mcmurray","agencyName":"Regional Municipality of Wood Buffalo Transit","region":"Alberta","country":"Canada","researchBatch":2,"agencySizeTier":"unclassified","reviewStatus":"planned"},
-    {"agencyId":"campbell-river","agencyName":"BC Transit (Campbell River)","region":"British Columbia","country":"Canada","researchBatch":2,"agencySizeTier":"unclassified","reviewStatus":"planned"},
-    {"agencyId":"comox-valley","agencyName":"BC Transit (Comox Valley)","region":"British Columbia","country":"Canada","researchBatch":2,"agencySizeTier":"unclassified","reviewStatus":"planned"},
-    {"agencyId":"cowichan","agencyName":"BC Transit (Cowichan Valley)","region":"British Columbia","country":"Canada","researchBatch":2,"agencySizeTier":"unclassified","reviewStatus":"planned"},
+    {
+      "agencyId": "fort-mcmurray",
+      "agencyName": "Regional Municipality of Wood Buffalo Transit",
+      "region": "Alberta",
+      "country": "Canada",
+      "reviewStatus": "definition_found",
+      "tierCoverage": "documented",
+      "reviewedAt": "2026-09-18",
+      "sources": [
+        { "url": "https://www.rmwb.ca/news/posts/big-changes-are-coming-to-rmwb-transit-starting-aug-22/", "type": "frequent_network_page" },
+        { "url": "https://www.rmwb.ca/media/dtdbbmwz/rmwb-transit-master-plan-march-28-2023.pdf", "type": "planning_document" }
+      ],
+      "tiers": [
+        { "label": "Core Routes", "thresholdMinutes": 15, "span": "6–9am and 3–6pm weekdays; 25 minutes off-peak", "days": "7 days; weekends 25 minutes", "geography": "route/network", "mode": "bus", "kind": "frequency" },
+        { "label": "Neighbourhood Routes", "thresholdText": "Local connection service; some periods replaced by on-demand", "span": "6am–10pm, varying by route", "days": "varies", "geography": "route", "mode": "bus", "kind": "service_class" },
+        { "label": "Transit On Demand", "thresholdText": "Bookable service", "span": "varies", "days": "varies", "geography": "zone", "mode": "on-demand", "kind": "service_class" }
+      ],
+      "atlasComparison": { "status": "not_run", "reason": "Research catalog review; GTFS comparison is a follow-up." },
+      "confidence": "explicit"
+    },
+    {
+      "agencyId": "campbell-river",
+      "agencyName": "BC Transit (Campbell River)",
+      "region": "British Columbia",
+      "country": "Canada",
+      "reviewStatus": "qualitative_definition_only",
+      "tierCoverage": "partial",
+      "reviewedAt": "2026-09-18",
+      "sources": [
+        { "url": "https://www.bctransit.com/campbell-river/schedules-and-maps/route-overview/?route=1", "type": "route_service_page" },
+        { "url": "https://www.bctransit.com/open-data/", "type": "official_data_service" }
+      ],
+      "tiers": [
+        { "label": "Route 1 service", "thresholdText": "Sample schedule shows approximately 20-minute departures in the morning; no named frequent tier located", "span": "route-specific", "days": "weekday sample", "geography": "route", "mode": "bus", "kind": "service_class" }
+      ],
+      "atlasComparison": { "status": "not_run", "reason": "No agency-wide numeric frequent definition located." },
+      "confidence": "qualitative_only",
+      "notes": "The review records observed schedule context separately from an official agency definition."
+    },
+    {
+      "agencyId": "comox-valley",
+      "agencyName": "BC Transit (Comox Valley)",
+      "region": "British Columbia",
+      "country": "Canada",
+      "reviewStatus": "qualitative_definition_only",
+      "tierCoverage": "documented",
+      "reviewedAt": "2026-09-18",
+      "sources": [
+        { "url": "https://www.bctransit.com/wp-content/uploads/388/809/4501_COM_TF_Report_web.pdf", "type": "planning_document" },
+        { "url": "https://www.bctransit.com/plans-and-projects/comox-valley-transit-exchanges/", "type": "planning_document" }
+      ],
+      "tiers": [
+        { "label": "Frequent Transit Network", "thresholdText": "Named network in planning materials; numeric headway not stated in reviewed sources", "span": "not specified", "days": "not specified", "geography": "network/corridor", "mode": "bus", "kind": "service_class" },
+        { "label": "Local Transit Network", "thresholdText": "Local network class", "span": "not specified", "days": "not specified", "geography": "network", "mode": "bus", "kind": "service_class" }
+      ],
+      "atlasComparison": { "status": "not_run", "reason": "No numeric agency definition located." },
+      "confidence": "qualitative_only"
+    },
+    {
+      "agencyId": "cowichan",
+      "agencyName": "BC Transit (Cowichan Valley)",
+      "region": "British Columbia",
+      "country": "Canada",
+      "reviewStatus": "no_definition_found",
+      "tierCoverage": "negative_result",
+      "reviewedAt": "2026-09-18",
+      "sources": [
+        { "url": "https://www.bctransit.com/cowichan-valley/schedules-and-maps/", "type": "route_service_page" },
+        { "url": "https://www.bctransit.com/wp-content/uploads/319/712/COW201203_CowichanValley_Transit_Future_Plan0.pdf", "type": "planning_document" }
+      ],
+      "tiers": [],
+      "atlasComparison": { "status": "not_run", "reason": "No agency frequent-service definition to compare." },
+      "confidence": "not_found",
+      "noDefinitionReason": "The reviewed official plan describes service as generally one to three hours and explicitly says the existing level is not frequent; no current named frequent tier or threshold was located."
+    },
     {"agencyId":"bc-fraser-valley","agencyName":"BC Transit (Fraser Valley)","region":"British Columbia","country":"Canada","researchBatch":2,"agencySizeTier":"unclassified","reviewStatus":"planned"},
     {"agencyId":"kamloops","agencyName":"BC Transit (Kamloops)","region":"British Columbia","country":"Canada","researchBatch":2,"agencySizeTier":"unclassified","reviewStatus":"planned"},
     {"agencyId":"kelowna","agencyName":"BC Transit (Kelowna)","region":"British Columbia","country":"Canada","researchBatch":2,"agencySizeTier":"unclassified","reviewStatus":"planned"},
