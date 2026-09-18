@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { ArrowDown, ArrowRight, MapPinned } from 'lucide-react';
 import { trackEvent } from '../lib/analytics';
 import { frequentServiceStoryResearchRecord, frequentServiceStoryStats } from '../data/frequentServiceStory';
+import FrequentServicePublishedMapMontage from '../components/FrequentServicePublishedMapMontage';
 import FrequentServiceStoryMap from '../components/FrequentServiceStoryMap';
-import FrequentServiceMapMontage from '../components/FrequentServiceMapMontage';
 import type { Agency } from '../App';
 
 interface Props {
@@ -52,7 +52,9 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
             <p>A line does not tell you whether the next bus is coming in five minutes or thirty, or what happens if you miss a connection. Frequent, reliable service gives people more freedom to travel without planning their day around a timetable.</p>
             <p>Atlas reviewed official transit maps and service definitions from {frequentServiceStoryStats.agenciesReviewed} agencies to compare what “frequent” means in practice.</p>
           </div>
-          <FrequentServiceMapMontage agencies={agencies} />
+          <div className="w-full max-w-5xl text-left">
+            <FrequentServicePublishedMapMontage />
+          </div>
           <a href="#story" className="mt-9 inline-flex items-center gap-2 rounded-full border border-[var(--border-primary)] bg-[var(--bg-panel)] px-4 py-2.5 text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--bg-btn-hover)]">
             Explore the research <ArrowDown className="h-3.5 w-3.5" aria-hidden="true" />
           </a>

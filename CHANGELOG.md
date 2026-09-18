@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- Added an animated montage of real agency-published system-map pages to make the research introduction feel grounded in the source material.
 - Corrected Edmonton’s map finding to the published 15-minute Frequent Route definition.
 - Allowed official rider guides as a labeled evidence source alongside system maps for the manual frequency audit.
 - Corrected the first map-audit findings after visual review: TTC is no-definition, while STM is qualitative-only.
