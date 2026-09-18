@@ -120,7 +120,7 @@ export default function App() {
     frequentServiceParams.get('view') === 'map'
     || ['days', 'frequency', 'window', 'lat', 'lon', 'z', 'route', 'stop', 'h', 'headway', 'max'].some(key => frequentServiceParams.has(key))
   );
-  const inFrequentServiceStory = pathname === '/research/frequent-service' && !frequentServiceMapView;
+  const inFrequentServiceStory = pathname === '/research/frequent-service/story';
   const inFrequentService = frequentServiceMapView;
   const routedApp: AppId = PATH_TO_APP[pathname] ?? 'frequency';
   // Direct URL access (e.g. /apps/live) would otherwise bypass the LIVE_ENABLED / HISTORY_ENABLED /
@@ -416,7 +416,9 @@ export default function App() {
         <button
           type="button"
           onClick={() => {
-            if (inFrequentServiceStory || activeApp !== 'frequency') {
+            if (inFrequentServiceStory) {
+              navigate('/research/frequent-service?view=map');
+            } else if (activeApp !== 'frequency') {
               navigate('/');
             } else {
               setResetViewKey(k => k + 1);
@@ -512,7 +514,10 @@ export default function App() {
           </a>
         )}
         {BETA_BUILD && (
-          <a href={inFrequentService ? '/' : '/research/frequent-service'} aria-label={inFrequentService ? 'Back to frequency map' : 'Frequent service research'} aria-pressed={inFrequentService} className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold ${inFrequentService ? 'bg-[var(--accent-bg)] border border-[var(--accent-border)] text-[var(--accent)]' : 'bg-[var(--bg-panel)] border border-[var(--border-primary)] hover:bg-[var(--bg-btn-hover)] text-[var(--text-secondary)]'}`}>Frequent Service</a>
+          <>
+            <a href={inFrequentService ? '/' : '/research/frequent-service'} aria-label={inFrequentService ? 'Back to frequency map' : 'Frequent service research'} aria-pressed={inFrequentService} className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold ${inFrequentService ? 'bg-[var(--accent-bg)] border border-[var(--accent-border)] text-[var(--accent)]' : 'bg-[var(--bg-panel)] border border-[var(--border-primary)] hover:bg-[var(--bg-btn-hover)] text-[var(--text-secondary)]'}`}>Frequent Service</a>
+            {inFrequentService && <a href="/research/frequent-service/story" className="flex h-8 px-3 items-center rounded-full shrink-0 border border-[var(--border-primary)] bg-[var(--bg-panel)] text-xs font-bold text-[var(--text-secondary)] hover:bg-[var(--bg-btn-hover)]">Story</a>}
+          </>
         )}
 
         </div>}

@@ -5,10 +5,12 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- Split the Frequent Service map and explainer into separate routes: the map is at `/research/frequent-service` and the story is at `/research/frequent-service/story`.
 - Verified SDMTS’s map wording and preserved its 60-minute regular-service note without misclassifying it as frequent service.
 - Verified three additional BC Transit guides without adding unsupported frequent-service thresholds.
 - Verified five more BC Transit maps and guides, including Kelowna’s published 15–30-minute Frequent Route range.
 - Verified Brandon and Fredericton maps without adding unsupported frequent-service definitions.
+- Replaced Whistler’s invalid archived guide with the valid official 12-page guide and verified its map has no named frequent definition.
 - Reframed the research story as a plain-English lesson about coverage, service span, frequency, and the cost of missing a vehicle.
 - Verified VTA’s map-based qualitative Frequent Bus label and restored its missing source link.
 - Reworded the story-map cards so each filtering step explains what it means for riders.

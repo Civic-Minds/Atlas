@@ -27,6 +27,7 @@ export default function FrequentServicePublishedMapMontage() {
   const [reducedMotion, setReducedMotion] = useState(false);
 
   useEffect(() => {
+    if (typeof window.matchMedia !== 'function') return;
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     const update = () => setReducedMotion(mediaQuery.matches);
     update();

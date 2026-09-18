@@ -9,7 +9,7 @@ const agencies = [{ slug: 'ttc', name: 'Toronto Transit Commission' }] as any;
 describe('FrequentServiceStory', () => {
   it('guides readers from the research question through the verified examples', () => {
     render(<FrequentServiceStory agencies={agencies} onExploreMap={() => {}} />);
-    expect(screen.getByRole('heading', { name: 'What does “frequent” actually mean?' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'What happens when you miss the bus?' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'There is no single “frequent.”' })).toBeInTheDocument();
     expect(screen.queryByRole('tab')).not.toBeInTheDocument();
     expect(screen.getByText(/representative frequent-service tier/)).toBeInTheDocument();
@@ -50,15 +50,15 @@ describe('FrequentServiceStory', () => {
     expect(audit.records.filter(record => record.status === 'pending_map_review')).toHaveLength(0);
     expect(frequentServiceStoryStats.agenciesReviewed).toBe(50);
     expect(frequentServiceStoryStats.categoryCounts).toMatchObject({
-      numericDefinition: 10,
-      qualitativeDefinition: 5,
+      numericDefinition: 11,
+      qualitativeDefinition: 4,
       noDefinitionFound: 25,
       mapUnavailable: 10,
     });
     expect(frequentServiceStoryStats.headwayBars).toEqual([
       { minutes: 10, agencies: 1 },
       { minutes: 12, agencies: 1 },
-      { minutes: 15, agencies: 7 },
+      { minutes: 15, agencies: 8 },
       { minutes: 30, agencies: 1 },
     ]);
   });
