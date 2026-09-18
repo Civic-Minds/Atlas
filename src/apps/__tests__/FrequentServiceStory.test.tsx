@@ -15,7 +15,7 @@ describe('FrequentServiceStory', () => {
     expect(screen.getByText('TransLink Vancouver')).toBeInTheDocument();
     expect(screen.getByRole('tab', { name: 'Salt Lake City' })).toBeInTheDocument();
     expect(screen.queryByRole('tab', { name: 'Winnipeg' })).not.toBeInTheDocument();
-    expect(screen.getByText(/Only exact single thresholds/)).toBeInTheDocument();
+    expect(screen.getByText(/representative frequent-service tier/)).toBeInTheDocument();
   });
 
   it('hands readers off to the existing map', () => {
@@ -35,9 +35,9 @@ describe('FrequentServiceStory', () => {
 
   it('keeps the story chart aligned with exact numeric system-map evidence', () => {
     const counts = audit.records
-      .filter(record => record.status === 'numeric_definition_on_map' && Number.isInteger(record.thresholdMinutes))
+      .filter(record => Number.isInteger(record.representativeThresholdMinutes))
       .reduce<Record<string, number>>((result, record) => {
-        result[String(record.thresholdMinutes)] = (result[String(record.thresholdMinutes)] ?? 0) + 1;
+        result[String(record.representativeThresholdMinutes)] = (result[String(record.representativeThresholdMinutes)] ?? 0) + 1;
         return result;
       }, {});
     expect(frequentServiceStoryStats.headwayBars).toEqual([
@@ -47,18 +47,18 @@ describe('FrequentServiceStory', () => {
   });
 
   it('does not mistake unavailable or unnamed maps for numeric definitions', () => {
-    expect(audit.records).toHaveLength(50);
+    expect(audit.records).toHaveLength(100);
     expect(audit.records.filter(record => record.status === 'pending_map_review')).toHaveLength(0);
-    expect(frequentServiceStoryStats.agenciesReviewed).toBe(50);
+    expect(frequentServiceStoryStats.agenciesReviewed).toBe(100);
     expect(frequentServiceStoryStats.categoryCounts).toMatchObject({
-      numericDefinition: 11,
-      qualitativeDefinition: 5,
-      noDefinitionFound: 24,
-      mapUnavailable: 10,
+      numericDefinition: 16,
+      qualitativeDefinition: 6,
+      noDefinitionFound: 34,
+      mapUnavailable: 44,
     });
     expect(frequentServiceStoryStats.headwayBars).toEqual([
-      { minutes: 10, agencies: 1 },
-      { minutes: 15, agencies: 7 },
+      { minutes: 10, agencies: 2 },
+      { minutes: 15, agencies: 12 },
     ]);
   });
 });

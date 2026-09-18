@@ -118,7 +118,7 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
                 Agencies use words like frequent, rapid, trunk, and primary to describe the routes that hold a network together. But those labels can mean a strict 10-minute promise, a 15-minute corridor, a service class that changes at different times of day, or simply a planning goal.
               </p>
               <p className="mt-5 text-base leading-8 text-[var(--text-muted)]">
-                For this first batch, we used official system maps as the evidence boundary—not to replace each agency’s definition, but to understand what a rider can actually see on the map.
+                We used official system maps first, with approved official rider-facing service pages when a current map was unavailable or insufficient—not to replace each agency’s definition, but to record what the agency actually publishes.
               </p>
             </div>
           </section>
@@ -128,7 +128,7 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
               <p className="text-[0.7rem] uppercase tracking-[0.24em] font-black text-[var(--accent)]">Explore the sample</p>
               <h2 id="chart-heading" className="mt-3 text-3xl sm:text-4xl font-black tracking-tight">There is no single “frequent.”</h2>
               <p className="mt-5 text-base leading-8 text-[var(--text-muted)]">
-                Pick an exact threshold to see how agencies turn that number into a map-visible service promise. This chart covers the 8 agencies whose system maps publish one exact numeric threshold; multi-tier ranges remain in the audit instead of being flattened.
+                Pick a representative threshold to see how agencies turn that number into a service promise. This chart covers {frequentServiceStoryStats.namedNumericAgencies} agencies with a defensible representative numeric definition; secondary tiers remain in the audit instead of being flattened.
               </p>
             </div>
             <div className="mt-10" aria-label="Interactive chart showing the number of agencies by the selected published frequent-service threshold">
@@ -151,7 +151,7 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
                   </button>
                 ))}
               </div>
-              <p className="mt-5 text-xs leading-5 text-[var(--text-dim)]">Each agency appears once. Only exact single thresholds from official system maps are shown here; ranges and maps with multiple tiers are preserved in the audit rather than assigned one misleading number.</p>
+              <p className="mt-5 text-xs leading-5 text-[var(--text-dim)]">Each agency appears once. The chart uses the agency’s general or representative frequent-service tier; ranges, dayparts, and secondary tiers remain in the audit rather than being assigned one misleading number.</p>
             </div>
             <div className="mt-10 border-t border-[var(--border-primary)] pt-8" aria-live="polite">
               <p className="text-sm font-bold text-[var(--text-muted)]">{selectedBar?.agencies} agencies · selected published threshold: {selectedMinutes} minutes</p>
@@ -208,10 +208,10 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
               <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-[var(--text-primary)]">How we did this</h2>
               <div className="mt-5 space-y-5 text-sm sm:text-base leading-7 sm:leading-8 text-[var(--text-muted)]">
                 <p><strong className="text-[var(--text-primary)]">Date conducted.</strong> {frequentServiceStoryStats.reviewedAt}.</p>
-                <p><strong className="text-[var(--text-primary)]">Sample.</strong> We reviewed {frequentServiceStoryStats.agenciesReviewed} agencies: {frequentServiceStoryStats.countryCounts.map(item => `${item.agencies} in ${item.country}`).join(', ')}. Of those, {frequentServiceStoryStats.categoryCounts.numericDefinition} published a numeric definition on the map, {frequentServiceStoryStats.categoryCounts.qualitativeDefinition} published a qualitative frequent label, {frequentServiceStoryStats.categoryCounts.noDefinitionFound} had no named definition on the map, and {frequentServiceStoryStats.categoryCounts.mapUnavailable} could not be verified from an accessible current map.</p>
-                <p><strong className="text-[var(--text-primary)]">Review boundary.</strong> For this first batch, only official current system maps and their map legends counted as evidence. Planning documents, route pages, schedules, and service guidelines were used only to locate a map or explain why a source was excluded.</p>
-                <p><strong className="text-[var(--text-primary)]">What counted.</strong> A numeric definition required a frequency value printed on the map. A qualitative definition used a named frequent or high-frequency service on the map without a number. “No definition on map” means the reviewed map had no named definition; it does not mean the agency has no frequent service. “Unavailable” means the current map could not be retrieved or verified.</p>
-                <p><strong className="text-[var(--text-primary)]">How we handled numbers.</strong> We kept published ranges, multiple tiers, times of day, and geography intact. The chart shows only exact single thresholds; ranges and multi-tier definitions remain in the audit and are not converted into a misleading single number.</p>
+                <p><strong className="text-[var(--text-primary)]">Sample.</strong> We reviewed {frequentServiceStoryStats.agenciesReviewed} agencies: {frequentServiceStoryStats.countryCounts.map(item => `${item.agencies} in ${item.country}`).join(', ')}. Of those, {frequentServiceStoryStats.categoryCounts.numericDefinition} published a numeric definition, {frequentServiceStoryStats.categoryCounts.qualitativeDefinition} published a qualitative frequent label, {frequentServiceStoryStats.categoryCounts.noDefinitionFound} had no named definition in the reviewed rider-facing material, and {frequentServiceStoryStats.categoryCounts.mapUnavailable} could not be verified from an accessible current system map.</p>
+                <p><strong className="text-[var(--text-primary)]">Review boundary.</strong> Official current system maps and map legends were preferred. When a map was unavailable or insufficient, an official rider-facing service-definition page was allowed and its source type was recorded. Planning documents, generic schedules, and service standards were not treated as definitions unless they explicitly named the agency’s frequent product.</p>
+                <p><strong className="text-[var(--text-primary)]">What counted.</strong> A numeric definition required the agency to name frequent/high-frequency service and give a frequency value or range. A qualitative definition required the named frequent/high-frequency label without a number. “No definition” means the reviewed official material did not name one; it does not mean the agency has no frequent service. “Unavailable” means the current system map could not be located or verified.</p>
+                <p><strong className="text-[var(--text-primary)]">How we handled numbers.</strong> We recorded every named tier. The chart counts each agency once using its general or representative frequent tier; express, peak-only, rail-only, and other secondary tiers remain in the audit as context.</p>
                 <p><strong className="text-[var(--text-primary)]">Limitations.</strong> This is a source-backed sample, not an exhaustive census of every transit agency or a universal definition of frequent service. It describes the research sample and does not change Atlas’s production frequency definitions.</p>
               </div>
             </div>

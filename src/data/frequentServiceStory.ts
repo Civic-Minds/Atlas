@@ -19,12 +19,12 @@ export interface FrequentServiceStoryExample {
 const storyThresholds = [10, 15];
 const records = audit.records;
 const categoryCounts = {
-  numericDefinition: records.filter(record => record.status === 'numeric_definition_on_map').length,
-  qualitativeDefinition: records.filter(record => record.status === 'qualitative_definition_on_map').length,
-  noDefinitionFound: records.filter(record => record.status === 'no_definition_on_map').length,
+  numericDefinition: records.filter(record => ['numeric_definition_on_map', 'numeric_definition_on_official_page'].includes(record.status)).length,
+  qualitativeDefinition: records.filter(record => ['qualitative_definition_on_map', 'qualitative_definition_on_official_page'].includes(record.status)).length,
+  noDefinitionFound: records.filter(record => ['no_definition_on_map', 'no_definition_on_official_page'].includes(record.status)).length,
   mapUnavailable: records.filter(record => record.status === 'map_unavailable').length,
 };
-const exactNumericRecords = records.filter(record => record.status === 'numeric_definition_on_map' && Number.isInteger(record.thresholdMinutes));
+const representativeNumericRecords = records.filter(record => Number.isInteger(record.representativeThresholdMinutes));
 
 export const frequentServiceStoryStats = {
   agenciesReviewed: records.length,
@@ -34,12 +34,12 @@ export const frequentServiceStoryStats = {
     return counts;
   }, {})).map(([country, agencies]) => ({ country, agencies })),
   categoryCounts,
-  namedNumericAgencies: exactNumericRecords.length,
+  namedNumericAgencies: representativeNumericRecords.length,
   noDefinitionFound: categoryCounts.noDefinitionFound,
   countries: new Set(records.map(record => record.country)).size,
   headwayBars: storyThresholds.map(minutes => ({
     minutes,
-    agencies: exactNumericRecords.filter(record => record.thresholdMinutes === minutes).length,
+    agencies: representativeNumericRecords.filter(record => record.representativeThresholdMinutes === minutes).length,
   })),
 };
 
