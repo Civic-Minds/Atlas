@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- Reframed the research story as a plain-English lesson about coverage, service span, frequency, and the cost of missing a vehicle.
 - Verified VTA’s map-based qualitative Frequent Bus label and restored its missing source link.
 - Reworded the story-map cards so each filtering step explains what it means for riders.
 - Verified TriMet’s current map and retained its 15-minute Frequent Service and 12-minute Frequent Express tiers.

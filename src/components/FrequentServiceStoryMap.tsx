@@ -102,20 +102,20 @@ export default function FrequentServiceStoryMap({ agencies, stage, frequencyMinu
         )}
         <div className="absolute left-5 top-5 z-10 w-[calc(100%-2.5rem)] max-w-md rounded-2xl bg-[var(--bg-app)]/90 p-5 shadow-sm backdrop-blur">
           {stage === 0 && <>
-            <h2 id="network-story-heading" className="text-3xl font-black tracking-tight">Start with every route.</h2>
-            <p className="mt-4 text-base leading-7 text-[var(--text-muted)]">This is every route the agency puts on the map. It shows where transit exists—not how long you might wait.</p>
+            <h2 id="network-story-heading" className="text-3xl font-black tracking-tight">Start with the whole network.</h2>
+            <p className="mt-4 text-base leading-7 text-[var(--text-muted)]">This is coverage: every route that reaches somewhere, whether it comes often or not.</p>
           </>}
           {stage === 1 && <>
             <h2 className="text-3xl font-black tracking-tight">Remove rush-hour-only routes.</h2>
-            <p className="mt-4 text-base leading-7 text-[var(--text-muted)]">Some routes are built for the busiest hours and disappear when demand drops. Useful, yes—but not service you can count on all day.</p>
+            <p className="mt-4 text-base leading-7 text-[var(--text-muted)]">Some routes are built for the busiest hours and disappear when demand drops. Useful for commuters, but not service you can count on all day.</p>
           </>}
           {stage === 2 && <>
-            <h2 className="text-3xl font-black tracking-tight">Keep routes running through the day.</h2>
-            <p className="mt-4 text-base leading-7 text-[var(--text-muted)]">Now we keep routes that continue through the middle of the day. A route is more useful when it is there beyond the commute.</p>
+            <h2 className="text-3xl font-black tracking-tight">Keep routes that run through the day.</h2>
+            <p className="mt-4 text-base leading-7 text-[var(--text-muted)]">Now we keep routes that continue beyond the commute. Service is more useful when it is still there when your trip does not fit rush hour.</p>
           </>}
           {stage === 3 && <>
-            <h2 className="text-3xl font-black tracking-tight">Now show the routes frequent enough to rely on.</h2>
-            <p className="mt-4 text-base leading-7 text-[var(--text-muted)]">Finally, we keep routes that arrive often enough to use without planning your whole trip around a timetable. This is Atlas’s consistent comparison—not every agency’s definition of “frequent.”</p>
+            <h2 className="text-3xl font-black tracking-tight">Now measure how often it comes.</h2>
+            <p className="mt-4 text-base leading-7 text-[var(--text-muted)]">This is frequency, or headway: how long until the next vehicle. When service comes every 10 or 15 minutes, missing one does not have to derail your trip.</p>
           </>}
         </div>
       </div>

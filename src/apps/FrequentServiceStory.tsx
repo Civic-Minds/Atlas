@@ -46,11 +46,11 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
       <article className="mx-auto max-w-6xl px-5 pb-24 pt-16 sm:px-8 sm:pt-20">
         <header className="mx-auto flex min-h-[calc(100dvh-6rem)] max-w-4xl flex-col items-center justify-center text-center">
           <p className="text-[0.7rem] uppercase tracking-[0.24em] font-black text-[var(--accent)]">Atlas research</p>
-          <h1 className="mt-5 text-4xl sm:text-6xl font-black tracking-[-0.045em] leading-[0.98]">What does “frequent” actually mean?</h1>
+          <h1 className="mt-5 text-4xl sm:text-6xl font-black tracking-[-0.045em] leading-[0.98]">What happens when you miss the bus?</h1>
           <div className="mx-auto mt-6 max-w-2xl space-y-4 text-left text-base leading-8 text-[var(--text-muted)] sm:text-lg">
-            <p>A transit line can be on the map and still leave you waiting.</p>
-            <p>Maps show where a route goes. Riders also need to know whether the next vehicle is five minutes away or thirty—and whether missing it changes the whole trip.</p>
-            <p>“Frequent” is supposed to help answer that question, but the word changes by city: 10 minutes in one place, 30 in another, or only during rush hour. We reviewed official transit maps from {frequentServiceStoryStats.agenciesReviewed} agencies to see what those promises actually mean.</p>
+            <p>Miss one when the next vehicle comes in 10 minutes? Annoying, but manageable. Miss one when the next one takes 30? That can change your whole trip.</p>
+            <p>Transit maps show where routes go. Transit planning asks the harder questions: how often does service come, how long does it run, and who is it designed to reach?</p>
+            <p>We reviewed official transit maps from {frequentServiceStoryStats.agenciesReviewed} agencies to show how those decisions turn a network of lines into service people can actually rely on.</p>
           </div>
           <div className="w-full max-w-5xl text-left">
             <FrequentServicePublishedMapMontage />
@@ -75,9 +75,12 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
         <div id="story" className="mx-auto mt-24 max-w-4xl space-y-24 sm:mt-32 sm:space-y-32">
           <section aria-labelledby="why-heading" className="mx-auto w-full max-w-[48rem]">
             <div>
-              <h2 id="why-heading" className="text-3xl sm:text-4xl font-black tracking-tight">A line on a map is not a promise.</h2>
+              <h2 id="why-heading" className="text-3xl sm:text-4xl font-black tracking-tight">Coverage and frequency do different jobs.</h2>
               <p className="mt-5 text-base leading-8 text-[var(--text-muted)]">
-                Agencies use words like frequent, rapid, trunk, and primary to describe the routes that hold a network together. But those labels can mean a strict 10-minute promise, a 15-minute corridor, a service class that changes at different times of day, or simply a planning goal.
+                Coverage asks: can transit reach my neighbourhood? Frequency asks: how long will I wait once it does? A route can be useful for coverage without coming often enough to be useful for a spontaneous trip.
+              </p>
+              <p className="mt-5 text-base leading-8 text-[var(--text-muted)]">
+                Planners often run more service where many people travel, while keeping less-frequent routes so more places stay connected. Good networks need both—but they serve different purposes.
               </p>
               <p className="mt-5 text-base leading-8 text-[var(--text-muted)]">
                 We reviewed current official system maps only. If a map was unavailable, we recorded that result rather than substituting a schedule, planning document, or service-definition page.
