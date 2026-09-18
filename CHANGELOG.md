@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- Verified and archived MBTA’s 2026 Frequent Bus Service map with its 15-minute definition.
+- Added the Atlas light map base layer beneath the story routes so the narrative map has geographic context.
 - Rewrote the research introduction around the rider’s real question: how long will the next vehicle take?
 - Verified MiWay’s current weekday map and archived it; it has route-service types but no named frequent definition.
 - Reduced the empty space after the scroll-driven story map so the next research section arrives sooner.

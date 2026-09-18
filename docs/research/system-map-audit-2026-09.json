@@ -658,29 +658,31 @@
       "status": "numeric_definition_on_map",
       "mapCandidates": [
         {
-          "url": "https://mbta.getanchor.io/maps.html",
+          "url": "https://cdn.mbta.com/sites/default/files/2026-08/2026-08-01-frequent-bus-map.pdf",
           "sourceType": "system_map",
-          "localFile": null
+          "localFile": "mbta-frequent-bus-map.pdf"
         }
       ],
-      "preservedFiles": [],
+      "preservedFiles": [
+        "mbta-frequent-bus-map.pdf"
+      ],
       "mapDate": null,
-      "mapPageOrSection": "Frequent Bus Routes map description",
-      "exactMapWording": "Frequent Bus Routes, which arrive every 15 minutes or better",
+      "mapPageOrSection": "official map page description",
+      "exactMapWording": "This map shows Frequent Bus Routes, which arrive every 15 minutes or better.",
       "thresholdMinutes": 15,
       "thresholdText": "every 15 minutes or better",
       "serviceSpan": null,
       "days": null,
       "geography": null,
       "mode": null,
-      "evidenceNotes": "Official MBTA map page reviewed manually. The page names Frequent Bus Routes and gives the threshold.",
+      "evidenceNotes": "Official MBTA 2026 Frequent Bus Service map and map page visually reviewed. The page defines Frequent Bus Routes as arriving every 15 minutes or better.",
       "reviewBatch": 1,
       "evidenceSourceType": "system_map",
       "reviewSources": [
         {
-          "url": "https://mbta.getanchor.io/maps.html",
+          "url": "https://cdn.mbta.com/sites/default/files/2026-08/2026-08-01-frequent-bus-map.pdf",
           "sourceType": "system_map",
-          "localFile": null
+          "localFile": "mbta-frequent-bus-map.pdf"
         }
       ],
       "definitions": [
@@ -691,11 +693,11 @@
           "thresholdText": "every 15 minutes or better",
           "representative": true,
           "sourceType": "system_map",
-          "sourceUrl": "https://mbta.getanchor.io/maps.html",
-          "localFile": null,
-          "mapPageOrSection": "Frequent Bus Routes map description",
-          "exactWording": "Frequent Bus Routes, which arrive every 15 minutes or better",
-          "evidenceNotes": "Official MBTA map page reviewed manually. The page names Frequent Bus Routes and gives the threshold."
+          "sourceUrl": "https://cdn.mbta.com/sites/default/files/2026-08/2026-08-01-frequent-bus-map.pdf",
+          "localFile": "mbta-frequent-bus-map.pdf",
+          "mapPageOrSection": "official map page description",
+          "exactWording": "This map shows Frequent Bus Routes, which arrive every 15 minutes or better.",
+          "evidenceNotes": "Official MBTA 2026 Frequent Bus Service map and map page visually reviewed. The page defines Frequent Bus Routes as arriving every 15 minutes or better."
         }
       ],
       "representativeThresholdMinutes": 15
