@@ -50,16 +50,16 @@ describe('FrequentServiceStory', () => {
     expect(audit.records.filter(record => record.status === 'pending_map_review')).toHaveLength(0);
     expect(frequentServiceStoryStats.agenciesReviewed).toBe(50);
     expect(frequentServiceStoryStats.categoryCounts).toMatchObject({
-      numericDefinition: 11,
+      numericDefinition: 13,
       qualitativeDefinition: 4,
-      noDefinitionFound: 25,
-      mapUnavailable: 10,
+      noDefinitionFound: 30,
+      mapUnavailable: 3,
     });
     expect(frequentServiceStoryStats.headwayBars).toEqual([
       { minutes: 10, agencies: 1 },
       { minutes: 12, agencies: 1 },
-      { minutes: 15, agencies: 8 },
-      { minutes: 30, agencies: 1 },
+      { minutes: 15, agencies: 9 },
+      { minutes: 30, agencies: 2 },
     ]);
   });
 });
