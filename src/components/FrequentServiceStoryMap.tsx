@@ -15,8 +15,9 @@ function coordinatesFor(feature: StoryFeature): number[][][] {
   return feature.geometry.coordinates;
 }
 
-function projectFeatures(features: StoryFeature[]) {
-  const points = features.flatMap(feature => coordinatesFor(feature).flat());
+function projectFeatures(allFeatures: StoryFeature[], features: StoryFeature[]) {
+  const points = allFeatures.flatMap(feature => coordinatesFor(feature).flat());
+  if (points.length === 0) return '';
   const lons = points.map(([lon]) => lon);
   const lats = points.map(([, lat]) => lat);
   const minLon = Math.min(...lons);
@@ -33,6 +34,26 @@ function projectFeatures(features: StoryFeature[]) {
   return features.map(feature => coordinatesFor(feature)
     .map(line => line.map(([lon, lat], index) => `${index === 0 ? 'M' : 'L'}${x(lon).toFixed(1)},${y(lat).toFixed(1)}`).join(' '))
     .join(' ')).join(' ');
+}
+
+function featuresForStage(features: StoryFeature[], stage: number, frequencyMinutes: 15 | 30) {
+  if (stage === 0) return features;
+  if (stage === 1) {
+    return features.filter(feature => {
+      const properties = feature.properties as { serviceClass?: string } | null;
+      return properties?.serviceClass !== 'time-limited' && properties?.serviceClass !== 'irregular';
+    });
+  }
+  if (stage === 2) {
+    return features.filter(feature => {
+      const properties = feature.properties as { headwayByPeriod?: { midday?: number | null }; researchFrequentService?: { daytime30?: boolean } } | null;
+      return properties?.researchFrequentService?.daytime30 || properties?.headwayByPeriod?.midday != null;
+    });
+  }
+  return features.filter(feature => {
+    const properties = feature.properties as { researchFrequentService?: { daytime15?: boolean; daytime30?: boolean } } | null;
+    return frequencyMinutes === 15 ? properties?.researchFrequentService?.daytime15 : properties?.researchFrequentService?.daytime30;
+  });
 }
 
 export default function FrequentServiceStoryMap({ agencies, stage, frequencyMinutes }: Props) {
@@ -56,33 +77,18 @@ export default function FrequentServiceStoryMap({ agencies, stage, frequencyMinu
     return () => { cancelled = true; };
   }, [toronto]);
 
-  const visibleFeatures = useMemo(() => {
-    if (stage === 0) return features;
-    if (stage === 1) {
-      return features.filter(feature => {
-        const properties = feature.properties as { serviceClass?: string } | null;
-        return properties?.serviceClass !== 'time-limited' && properties?.serviceClass !== 'irregular';
-      });
-    }
-    if (stage === 2) {
-      return features.filter(feature => {
-        const properties = feature.properties as { headwayByPeriod?: { midday?: number | null }; researchFrequentService?: { daytime30?: boolean } } | null;
-        return properties?.researchFrequentService?.daytime30 || properties?.headwayByPeriod?.midday != null;
-      });
-    }
-    return features.filter(feature => {
-      const properties = feature.properties as { researchFrequentService?: { daytime15?: boolean; daytime30?: boolean } } | null;
-      return frequencyMinutes === 15 ? properties?.researchFrequentService?.daytime15 : properties?.researchFrequentService?.daytime30;
-    });
-  }, [features, frequencyMinutes, stage]);
-  const paths = useMemo(() => visibleFeatures.length > 0 ? projectFeatures(visibleFeatures) : '', [visibleFeatures]);
+  const stagePaths = useMemo(() => [0, 1, 2, 3].map(currentStage => projectFeatures(features, featuresForStage(features, currentStage, frequencyMinutes))), [features, frequencyMinutes]);
 
   return (
     <figure className="overflow-hidden rounded-[2rem] border border-[var(--border-primary)] bg-[var(--bg-panel)] shadow-sm">
       <div className="relative aspect-[1.35] min-h-[380px] bg-[var(--bg-app)] lg:min-h-[540px]">
-        {loadState === 'ready' && paths ? (
+        {loadState === 'ready' && stagePaths[0] ? (
           <svg viewBox="0 0 1000 620" className="h-full w-full" role="img" aria-label={stage === 3 ? `Toronto routes with weekday daytime service every ${frequencyMinutes} minutes or better` : 'Toronto routes remaining in the story'}>
-            <path d={paths} fill="none" stroke="var(--accent)" strokeWidth={stage === 3 ? 3.2 : 1.35} strokeLinecap="round" strokeLinejoin="round" opacity={stage === 3 ? 0.9 : 0.38} />
+            <rect width="1000" height="620" fill="var(--bg-app)" />
+            <path d={stagePaths[0]} fill="none" stroke="var(--text-dim)" strokeWidth="1.1" vectorEffect="non-scaling-stroke" strokeLinecap="round" strokeLinejoin="round" opacity={stage === 0 ? 0.34 : 0.16} className="transition-opacity duration-700 ease-out" />
+            {stagePaths.map((path, index) => path && (
+              <path key={index} d={path} fill="none" stroke="var(--accent)" strokeWidth="2.1" vectorEffect="non-scaling-stroke" strokeLinecap="round" strokeLinejoin="round" opacity={stage === index ? 0.88 : 0} className="transition-opacity duration-700 ease-out" />
+            ))}
           </svg>
         ) : (
           <div className="flex h-full items-center justify-center text-sm text-[var(--text-muted)]">

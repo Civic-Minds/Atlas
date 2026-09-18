@@ -6,6 +6,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Stabilized the story-map transition so every stage keeps the same geography, line weight, and persistent network context while the active routes fade between states.
+- Simplified the story-map captions so the scroll narrative is easier to follow.
 - Added a larger Toronto network story that progressively narrows from all routes to regular daytime and 15- or 30-minute service as readers scroll.
 - Scoped the Frequent Service research chart to the first 50 verified system-map audits so its counts cannot include unverified catalog evidence.
 - Kept published frequency ranges from appearing as false standalone thresholds in the research chart.
