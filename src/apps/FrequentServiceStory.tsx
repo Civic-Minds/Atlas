@@ -49,7 +49,7 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
             A transit map can look full of lines and still leave you waiting. We reviewed {frequentServiceStoryStats.agenciesReviewed} agencies in the audit to see how their official system maps describe service people can actually rely on.
           </p>
           <a href="#story" className="mt-9 inline-flex items-center gap-2 rounded-full border border-[var(--border-primary)] bg-[var(--bg-panel)] px-4 py-2.5 text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--bg-btn-hover)]">
-            Read the research <ArrowDown className="h-3.5 w-3.5" aria-hidden="true" />
+            Explore the research <ArrowDown className="h-3.5 w-3.5" aria-hidden="true" />
           </a>
         </header>
 
