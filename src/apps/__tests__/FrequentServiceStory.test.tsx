@@ -9,13 +9,13 @@ describe('FrequentServiceStory', () => {
     render(<FrequentServiceStory onExploreMap={() => {}} />);
 
     expect(screen.getByRole('heading', { name: 'What does “frequent” actually mean?' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: '15 minutes is common. It is not universal.' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'The broad promise is usually 15–30 minutes.' })).toBeInTheDocument();
     expect(screen.getByText('Toronto')).toBeInTheDocument();
     expect(screen.getByText('Toronto Transit Commission')).toBeInTheDocument();
     expect(screen.getByText('Yellowknife')).toBeInTheDocument();
     expect(screen.getByText('Yellowknife Transit')).toBeInTheDocument();
     expect(screen.getByText('No named definition found')).toBeInTheDocument();
-    expect(screen.getByText(/Ordered by published headway/)).toBeInTheDocument();
+    expect(screen.getByText(/Each agency appears once, using the slowest period/)).toBeInTheDocument();
   });
 
   it('hands readers off to the existing map', () => {
@@ -28,17 +28,17 @@ describe('FrequentServiceStory', () => {
 
   it('keeps the story chart aligned with the generated research analysis', () => {
     const analysis = JSON.parse(fs.readFileSync('docs/research/frequent-service-analysis-2026-09.json', 'utf8'));
-    const counts = analysis.namedNumericThresholds.agencyCountsByPublishedThreshold;
-    expect(frequentServiceStoryStats.thresholdBars).toEqual([
-      { minutes: 5, agencies: counts['5'] },
-      { minutes: 6, agencies: counts['6'] },
-      { minutes: 7, agencies: counts['7'] },
+    const counts = analysis.namedNumericThresholds.agencyCountsByMaximumPublishedHeadway;
+    expect(frequentServiceStoryStats.headwayBars).toEqual([
       { minutes: 10, agencies: counts['10'] },
       { minutes: 12, agencies: counts['12'] },
+      { minutes: 14, agencies: counts['14'] },
       { minutes: 15, agencies: counts['15'] },
       { minutes: 20, agencies: counts['20'] },
       { minutes: 30, agencies: counts['30'] },
       { minutes: 60, agencies: counts['60'] },
+      { minutes: 75, agencies: counts['75'] },
+      { minutes: 90, agencies: counts['90'] },
     ]);
   });
 });

@@ -21,7 +21,7 @@ function StoryExample({ example }: { example: FrequentServiceStoryExample }) {
 }
 
 export default function FrequentServiceStory({ onExploreMap }: Props) {
-  const maxBar = Math.max(...frequentServiceStoryStats.thresholdBars.map(bar => bar.agencies));
+  const maxBar = Math.max(...frequentServiceStoryStats.headwayBars.map(bar => bar.agencies));
 
   function exploreMap() {
     trackEvent('frequent_service_story_map_opened');
@@ -67,14 +67,14 @@ export default function FrequentServiceStory({ onExploreMap }: Props) {
 
           <section aria-labelledby="chart-heading" className="rounded-[2rem] border border-[var(--border-primary)] bg-[var(--bg-panel)] p-6 sm:p-10">
             <div className="max-w-2xl">
-              <h2 id="chart-heading" className="text-3xl sm:text-4xl font-black tracking-tight">15 minutes is common. It is not universal.</h2>
+              <h2 id="chart-heading" className="text-3xl sm:text-4xl font-black tracking-tight">The broad promise is usually 15–30 minutes.</h2>
               <p className="mt-5 text-base leading-8 text-[var(--text-muted)]">
-                Of the 500 agencies reviewed, 91 published a named frequent or high-frequency tier with a numeric threshold. Fifteen minutes was the most common value, followed by 30 and 10 minutes.
+                Of the 500 agencies reviewed, 91 published a named frequent or high-frequency tier with a numeric threshold. To avoid confusing a fast peak period with the whole product, this chart uses the slowest published period for each agency’s named tier. Fifteen minutes was most common, followed by 30 minutes.
               </p>
             </div>
-            <div className="mt-10" role="img" aria-label="Bar chart showing the number of agencies publishing each named numeric frequent-service threshold">
+            <div className="mt-10" role="img" aria-label="Bar chart showing the number of agencies by the slowest published period in their named frequent-service product">
               <div className="space-y-4">
-                {frequentServiceStoryStats.thresholdBars.map(bar => (
+                {frequentServiceStoryStats.headwayBars.map(bar => (
                   <div key={bar.minutes} className="grid grid-cols-[4.5rem_1fr_3rem] items-center gap-3 text-sm">
                     <span className="font-black text-[var(--text-primary)]">{bar.minutes} min</span>
                     <div className="h-3 overflow-hidden rounded-full bg-[var(--bg-stat)]">
@@ -84,7 +84,7 @@ export default function FrequentServiceStory({ onExploreMap }: Props) {
                   </div>
                 ))}
               </div>
-              <p className="mt-5 text-xs leading-5 text-[var(--text-dim)]">Ordered by published headway. Bar length shows the number of agencies; the highlighted 15-minute bar is the most common. An agency can appear more than once when it publishes multiple tiers or periods.</p>
+              <p className="mt-5 text-xs leading-5 text-[var(--text-dim)]">Each agency appears once, using the slowest period published for its named frequent product. This prevents a fast peak period from being mistaken for the agency’s all-day promise. The highlighted 15-minute bar is the most common.</p>
             </div>
           </section>
 

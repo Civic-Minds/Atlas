@@ -18,16 +18,16 @@ export const frequentServiceStoryStats = {
   namedNumericAgencies: 91,
   noDefinitionFound: 255,
   countries: 4,
-  thresholdBars: [
-    { minutes: 5, agencies: 6 },
-    { minutes: 6, agencies: 7 },
-    { minutes: 7, agencies: 7 },
-    { minutes: 10, agencies: 13 },
-    { minutes: 12, agencies: 6 },
-    { minutes: 15, agencies: 69 },
-    { minutes: 20, agencies: 13 },
-    { minutes: 30, agencies: 20 },
+  headwayBars: [
+    { minutes: 10, agencies: 3 },
+    { minutes: 12, agencies: 2 },
+    { minutes: 14, agencies: 1 },
+    { minutes: 15, agencies: 50 },
+    { minutes: 20, agencies: 11 },
+    { minutes: 30, agencies: 18 },
     { minutes: 60, agencies: 4 },
+    { minutes: 75, agencies: 1 },
+    { minutes: 90, agencies: 1 },
   ],
 };
 

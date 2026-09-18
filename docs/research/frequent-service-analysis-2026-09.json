@@ -124,6 +124,17 @@
       "60": 4,
       "75": 1,
       "90": 1
+    },
+    "agencyCountsByMaximumPublishedHeadway": {
+      "10": 3,
+      "12": 2,
+      "14": 1,
+      "15": 50,
+      "20": 11,
+      "30": 18,
+      "60": 4,
+      "75": 1,
+      "90": 1
     }
   },
   "namedFrequentEvidence": {
