@@ -10,6 +10,18 @@ const reviewed = {
   'stm-montreal': {
     status: 'no_definition_on_map', mapCandidates: [{ label: 'STM network map 2026', url: 'https://www.stm.info/sites/default/files/media/Stminfo/images/plan_reseau.pdf', sourceType: 'system_map', localFile: 'stm-montreal-1' }], preservedFiles: ['stm-montreal-1'], mapDate: '2026', mapPageOrSection: 'network map legend', evidenceNotes: 'The current official network map was preserved and reviewed. It identifies the network but does not publish a named frequent/high-frequency category or numeric frequent threshold.'
   },
+  septa: {
+    status: 'qualitative_definition_on_map', mapCandidates: [{ label: 'Metro and Frequent Bus Network', url: 'https://wwww.septa.org/wp-content/uploads/page/communication/SEPTA_System-Map_v3-0.pdf', sourceType: 'system_map', localFile: 'septa-2' }], preservedFiles: ['septa-1', 'septa-2'], mapDate: 'February 2025', mapPageOrSection: 'page 1, map legend', exactMapWording: 'Frequent Bus Routes', geography: 'route/network', mode: 'bus', evidenceNotes: 'The preserved official Metro and Frequent Bus Network map labels Frequent Bus Routes but does not state a numeric headway on the map itself. The 15-minute standard remains outside this map-only record.'
+  },
+  victoria: {
+    status: 'numeric_definition_on_map', mapCandidates: [{ label: 'Victoria Regional map', url: 'https://www.bctransit.com/victoria/wp-content/uploads/sites/49/2026/09/vic_rg_sept2026_v2.pdf', sourceType: 'system_map', localFile: 'victoria-2' }], preservedFiles: ['victoria-1', 'victoria-2'], mapDate: 'September 2026', mapPageOrSection: 'map legend and Frequent Route inset', exactMapWording: 'Frequent Route — 15 minute or better service 7:00 a.m.–7:00 p.m., Mon–Fri', thresholdMinutes: 15, thresholdText: '15 minute or better service', serviceSpan: '7 a.m.–7 p.m.', days: 'Monday–Friday', geography: 'route', mode: 'bus', evidenceNotes: 'The current official Victoria regional map directly defines Frequent Route in its legend and repeats the 15-minute-or-better span in the route inset.'
+  },
+  'miami-dade-transit': {
+    status: 'no_definition_on_map', mapCandidates: [{ label: 'Metrobus System Map', url: 'https://www.miamidade.gov/resources/transportation_publicworks/documents/system-maps-web.pdf', sourceType: 'system_map', localFile: 'miami-dade-transit-1' }], preservedFiles: ['miami-dade-transit-1'], mapDate: 'April 2026', mapPageOrSection: 'page 1, frequency legend', exactMapWording: '10 minutes or less; 15 minutes; 20 minutes; 30 minutes; 60 minutes', evidenceNotes: 'The current official system map publishes midday frequency bands and notes that routes can combine for higher frequency, but it does not name a Frequent or High-Frequency category.'
+  },
+  'sound-transit': {
+    status: 'no_definition_on_map', mapCandidates: [{ label: 'Current Sound Transit service map', url: 'https://www.soundtransit.org/sites/default/files/documents/st-current-service-map.pdf', sourceType: 'system_map', localFile: 'sound-transit-1' }], preservedFiles: ['sound-transit-1'], mapDate: 'September 2026', mapPageOrSection: 'page 1, map legend', evidenceNotes: 'The current official service map identifies Link, Sounder, and ST Express services but does not name a frequent/high-frequency category or publish a frequent threshold.'
+  },
   ttc: {
     status: 'numeric_definition_on_map', mapDate: 'September 2025', mapPageOrSection: 'page 1, map legend', exactMapWording: '10-Minute Network', thresholdMinutes: 10, thresholdText: '10-Minute Network', serviceSpan: '6 a.m.–1 a.m. Monday–Saturday; Sunday starts later', days: '7 days', geography: 'network', mode: 'bus and rail', evidenceNotes: 'The system-map legend visibly identifies the 10-Minute Network and its operating span.',
   },
