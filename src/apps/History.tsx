@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { ChevronLeft, ChevronRight, X, Search, TrendingUp } from 'lucide-react';
 import { useHistoryMapOverlay } from '../context/HistoryMapOverlay';
 import { R2_PUBLIC_URL, type HeadwayByPeriod } from '../../shared/config';
-import { FLOATING_CARD, PANEL_ENTER, TRANSITION_SLOW, SEARCH_PILL, SEARCH_FIELD, LIST_ROW, Z_PANEL, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH } from '../styles';
+import { FLOATING_CARD, PANEL_ENTER, TRANSITION_SLOW, PANEL_HELPER, SEARCH_PILL, SEARCH_FIELD, LIST_ROW, Z_PANEL, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH } from '../styles';
 import RouteListRow from '../components/RouteListRow';
 import { shortenAgencyName } from '../utils/format';
 import {
@@ -624,6 +624,9 @@ export default function History({ active, initialAgencySlug, onInfoOpen, query, 
           className={`${FLOATING_CARD} max-h-[calc(100vh-104px)] overflow-y-auto custom-scrollbar transition-[opacity,transform] duration-200 ease-out ${showAgencyChooser || searchFocused ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}
           onMouseDown={e => e.preventDefault()}
         >
+          <p className={PANEL_HELPER}>
+            Compare route frequency across archived schedule snapshots.
+          </p>
           {query === '' && recentSearches.length > 0 ? (
             <>
               <div className="px-4 pt-3 pb-2 border-b border-[var(--border-primary)] flex items-center justify-between">

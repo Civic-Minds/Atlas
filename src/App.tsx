@@ -615,7 +615,7 @@ export default function App() {
             )}
             {BETA_BUILD && (
               <React.Suspense fallback={null}>
-                <NightService active={inNight} sidebarLeft={sidebarLeft} layers={layers} />
+                <NightService active={inNight} sidebarLeft={sidebarLeft} layers={layers} query={deferredQuery} />
               </React.Suspense>
             )}
             {LIVE_ENABLED && liveMounted && (
