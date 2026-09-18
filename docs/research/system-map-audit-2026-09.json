@@ -2,7 +2,7 @@
   "auditVersion": 2,
   "createdAt": "2026-09-18",
   "sourceCatalog": "docs/research/frequent-service-catalog.json",
-  "scope": "First 50 agencies plus 121 additional agencies reviewed individually against current official system maps or approved rider guides on September 18, 2026.",
+  "scope": "First 50 agencies plus 134 additional agencies reviewed individually against current official system maps or approved rider guides on September 18, 2026.",
   "statusRules": {
     "numeric_definition_on_map": "The official system map visibly names frequent/high-frequency service and gives a numeric threshold or range.",
     "qualitative_definition_on_map": "The official system map visibly names frequent/high-frequency service without a numeric threshold.",
@@ -7316,6 +7316,542 @@
         {
           "url": "https://www.mtr.com.hk/en/customer/jp/mtrMap.html",
           "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 172,
+      "agencyId": "calgary-transit",
+      "agencyName": "Calgary Transit",
+      "country": "Canada",
+      "region": "Alberta",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.calgarytransit.com/content/dam/transit/rider-information/System%20Map%20Dec%202025.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "Service Information / MAX frequency tables",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Current official Calgary Transit system map visually reviewed. It publishes intervals for MAX and other routes but does not call them frequent or high-frequency service.",
+      "reviewBatch": 10,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.calgarytransit.com/content/dam/transit/rider-information/System%20Map%20Dec%202025.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 173,
+      "agencyId": "halifax-transit",
+      "agencyName": "Halifax Transit",
+      "country": "Canada",
+      "region": "Nova Scotia",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://cdn.halifax.ca/sites/default/files/documents/transportation/halifax-transit/riders-guide-november-20-2023-version-rev.pdf",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "page 4, How is Halifax Transit Changing?",
+      "exactMapWording": "The revamped transit system allows for new, more direct and frequent routes to make our transit network faster, more reliable and easier to understand.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Current official Halifax Transit rider guide visually reviewed. “Frequent” is descriptive and has no threshold or formal definition.",
+      "reviewBatch": 10,
+      "evidenceSourceType": "rider_guide",
+      "reviewSources": [
+        {
+          "url": "https://cdn.halifax.ca/sites/default/files/documents/transportation/halifax-transit/riders-guide-november-20-2023-version-rev.pdf",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 174,
+      "agencyId": "yrt",
+      "agencyName": "York Region Transit",
+      "country": "Canada",
+      "region": "Ontario",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.yrt.ca/en/schedules-and-maps/resources/Documents/system-maps/YRT-System-Map_Web_Nov2024.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "legend / Services & Availability",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official YRT system map visually reviewed. It identifies regular, limited, express, and Viva services but does not define frequent/high-frequency service.",
+      "reviewBatch": 10,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.yrt.ca/en/schedules-and-maps/resources/Documents/system-maps/YRT-System-Map_Web_Nov2024.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 175,
+      "agencyId": "seattle-dot",
+      "agencyName": "Seattle Department of Transportation",
+      "country": "United States",
+      "region": "Washington",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.seattle.gov/transportation/projects-and-programs/programs/transit-program/seattle-transit-measure/the-frequent-transit-network",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "Frequent Transit Network goals",
+      "exactMapWording": "6AM–7PM: Buses come every 6–10 minutes; Buses come every 10 minutes; Buses come every 15 minutes.",
+      "thresholdMinutes": 15,
+      "thresholdText": "6–15-minute service goals, including every 15 minutes",
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Seattle Frequent Transit Network rider-facing page visually reviewed. It names the network and publishes multiple frequency goals; 15 minutes is the slowest stated tier.",
+      "reviewBatch": 10,
+      "evidenceSourceType": "rider_guide",
+      "reviewSources": [
+        {
+          "url": "https://www.seattle.gov/transportation/projects-and-programs/programs/transit-program/seattle-transit-measure/the-frequent-transit-network",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "definitions": [
+        {
+          "id": "primary",
+          "label": "6AM–7PM: Buses come every 6–10 minutes; Buses come every 10 minutes; Buses come every 15 minutes.",
+          "thresholdMinutes": 15,
+          "thresholdText": "6–15-minute service goals, including every 15 minutes",
+          "representative": true,
+          "sourceType": "rider_guide",
+          "sourceUrl": "https://www.seattle.gov/transportation/projects-and-programs/programs/transit-program/seattle-transit-measure/the-frequent-transit-network",
+          "localFile": null,
+          "mapPageOrSection": "Frequent Transit Network goals",
+          "exactWording": "6AM–7PM: Buses come every 6–10 minutes; Buses come every 10 minutes; Buses come every 15 minutes.",
+          "evidenceNotes": "Official Seattle Frequent Transit Network rider-facing page visually reviewed. It names the network and publishes multiple frequency goals; 15 minutes is the slowest stated tier."
+        }
+      ],
+      "representativeThresholdMinutes": 15,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 176,
+      "agencyId": "sfmta-muni",
+      "agencyName": "SFMTA Muni",
+      "country": "United States",
+      "region": "California",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.sfmta.com/media/37783/download?inline=",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "one-page map legend",
+      "exactMapWording": "Muni Rapid Bus; 10 min or less; Every 10–20 min; Every 20–30 min; 15 minutes or less; 12 minutes or less.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Muni service map visually reviewed. It publishes frequency bands but does not define a category called frequent service.",
+      "reviewBatch": 10,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.sfmta.com/media/37783/download?inline=",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 177,
+      "agencyId": "prt-pittsburgh",
+      "agencyName": "Pittsburgh Regional Transit",
+      "country": "United States",
+      "region": "Pennsylvania",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.rideprt.org/system-map/",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "current interactive system map",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official PRT system map visually reviewed. It exposes routes and trip tools but no frequent-service threshold or named category.",
+      "reviewBatch": 10,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.rideprt.org/system-map/",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 178,
+      "agencyId": "transport-for-ireland-dublin",
+      "agencyName": "Transport for Ireland",
+      "country": "Ireland",
+      "region": "Dublin",
+      "status": "qualitative_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.transportforireland.ie/getting-around/by-bus/phase-6a-e-spine/",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "What is a Spine?",
+      "exactMapWording": "Spines are very frequent routes made up of individual bus services that are timetabled to work together over their common sections.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Transport for Ireland rider guide visually reviewed. Spine is a named qualitative frequent-service category with no numeric threshold in the source.",
+      "reviewBatch": 10,
+      "evidenceSourceType": "rider_guide",
+      "reviewSources": [
+        {
+          "url": "https://www.transportforireland.ie/getting-around/by-bus/phase-6a-e-spine/",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "definitions": [
+        {
+          "id": "primary",
+          "label": "Spines are very frequent routes made up of individual bus services that are timetabled to work together over their common sections.",
+          "thresholdMinutes": null,
+          "thresholdText": null,
+          "representative": true,
+          "sourceType": "rider_guide",
+          "sourceUrl": "https://www.transportforireland.ie/getting-around/by-bus/phase-6a-e-spine/",
+          "localFile": null,
+          "mapPageOrSection": "What is a Spine?",
+          "exactWording": "Spines are very frequent routes made up of individual bus services that are timetabled to work together over their common sections.",
+          "evidenceNotes": "Official Transport for Ireland rider guide visually reviewed. Spine is a named qualitative frequent-service category with no numeric threshold in the source."
+        }
+      ],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 179,
+      "agencyId": "ret-rotterdam",
+      "agencyName": "RET Rotterdam/The Hague",
+      "country": "Netherlands",
+      "region": "South Holland",
+      "status": "qualitative_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://bestanden.ret.nl/user_upload/Documenten/PDF/Kaarten_en_plattegronden/Lijnennetkaart_Metropoolregio_Rotterdam_Den_Haag_jan2026_v1_HiRes.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "page 1 legend",
+      "exactMapWording": "Buslijn met (rolstoeltoegankelijke) halte, rijdt dagelijks frequent.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official 2026 RET regional network map visually reviewed. The map has a named daily-frequent category but does not provide a numeric threshold.",
+      "reviewBatch": 10,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://bestanden.ret.nl/user_upload/Documenten/PDF/Kaarten_en_plattegronden/Lijnennetkaart_Metropoolregio_Rotterdam_Den_Haag_jan2026_v1_HiRes.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [
+        {
+          "id": "primary",
+          "label": "Buslijn met (rolstoeltoegankelijke) halte, rijdt dagelijks frequent.",
+          "thresholdMinutes": null,
+          "thresholdText": null,
+          "representative": true,
+          "sourceType": "system_map",
+          "sourceUrl": "https://bestanden.ret.nl/user_upload/Documenten/PDF/Kaarten_en_plattegronden/Lijnennetkaart_Metropoolregio_Rotterdam_Den_Haag_jan2026_v1_HiRes.pdf",
+          "localFile": null,
+          "mapPageOrSection": "page 1 legend",
+          "exactWording": "Buslijn met (rolstoeltoegankelijke) halte, rijdt dagelijks frequent.",
+          "evidenceNotes": "Official 2026 RET regional network map visually reviewed. The map has a named daily-frequent category but does not provide a numeric threshold."
+        }
+      ],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 180,
+      "agencyId": "bvg-berlin",
+      "agencyName": "BVG Berlin",
+      "country": "Germany",
+      "region": "Berlin",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.bvg.de/dam/jcr:3f8025f2-285b-4fa0-8cef-72def24c6c21/S%2BU-Bahn_03_2026-Internetversion-BVG.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "page 1 map legend",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official BVG March 2026 S+U-Bahn map visually reviewed. It identifies modes and routes but no frequent/high-frequency service class.",
+      "reviewBatch": 10,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.bvg.de/dam/jcr:3f8025f2-285b-4fa0-8cef-72def24c6c21/S%2BU-Bahn_03_2026-Internetversion-BVG.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 181,
+      "agencyId": "stib-brussels",
+      "agencyName": "STIB/MIVB Brussels",
+      "country": "Belgium",
+      "region": "Brussels",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.stib-mivb.be/files/live/sites/STIBMIVB/files/Travel/Plans%20r%C3%A9seau/Plan_Metro_Train.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "page 1 legend",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official STIB metro/train map visually reviewed. It identifies lines, stations, and zones but no frequent-service definition.",
+      "reviewBatch": 10,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.stib-mivb.be/files/live/sites/STIBMIVB/files/Travel/Plans%20r%C3%A9seau/Plan_Metro_Train.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 182,
+      "agencyId": "gvb-amsterdam",
+      "agencyName": "GVB Amsterdam",
+      "country": "Netherlands",
+      "region": "North Holland",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.gvb.nl/en/gvb-maps",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "network map collection / daytime network map",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official GVB network-map collection visually reviewed. It distinguishes daytime, night, rail, metro, and ferry maps but gives no named frequent-service definition.",
+      "reviewBatch": 10,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.gvb.nl/en/gvb-maps",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 183,
+      "agencyId": "tokyo-metro",
+      "agencyName": "Tokyo Metro",
+      "country": "Japan",
+      "region": "Tokyo",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.tokyometro.jp/en/subwaymap/index.html",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "official subway map",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Tokyo Metro subway map visually reviewed. It explains line colors and station numbers but no frequent-service definition.",
+      "reviewBatch": 10,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.tokyometro.jp/en/subwaymap/index.html",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 184,
+      "agencyId": "rapid-kl",
+      "agencyName": "Rapid KL",
+      "country": "Malaysia",
+      "region": "Kuala Lumpur",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://myrapid.com.my/bus-train/rapid-kl/lrt/",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "route map / Train Frequency",
+      "exactMapWording": "Train Frequency tables give line and time-specific intervals such as 3 min and 7 min.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Rapid KL rider information visually reviewed. It publishes line-specific intervals but no named frequent/high-frequency category.",
+      "reviewBatch": 10,
+      "evidenceSourceType": "rider_guide",
+      "reviewSources": [
+        {
+          "url": "https://myrapid.com.my/bus-train/rapid-kl/lrt/",
+          "sourceType": "rider_guide",
           "localFile": null
         }
       ],
