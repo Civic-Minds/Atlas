@@ -1741,7 +1741,7 @@
       "mapCandidates": [],
       "preservedFiles": [],
       "mapDate": null,
-      "mapPageOrSection": "official route-map page",
+      "mapPageOrSection": "official all-routes map and page",
       "exactMapWording": null,
       "thresholdMinutes": null,
       "thresholdText": null,
@@ -1749,7 +1749,7 @@
       "days": null,
       "geography": null,
       "mode": null,
-      "evidenceNotes": "Official Brandon Transit route and map page reviewed manually. It does not name a frequent/high-frequency definition.",
+      "evidenceNotes": "Official Brandon Transit route page and linked all-routes map visually reviewed. The map labels routes but does not name a frequent/high-frequency definition.",
       "reviewBatch": 1,
       "evidenceSourceType": "system_map",
       "reviewSources": [
@@ -1813,7 +1813,7 @@
       "days": null,
       "geography": null,
       "mode": null,
-      "evidenceNotes": "Official Fredericton overall transit map reviewed manually. It does not name a frequent/high-frequency definition.",
+      "evidenceNotes": "Official Fredericton overall transit map visually reviewed. Its route legend does not name a frequent/high-frequency definition.",
       "reviewBatch": 1,
       "evidenceSourceType": "system_map",
       "reviewSources": [
