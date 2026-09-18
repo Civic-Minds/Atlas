@@ -1370,7 +1370,7 @@
       "days": null,
       "geography": null,
       "mode": null,
-      "evidenceNotes": "Current official BC Transit Campbell River rider guide/map reviewed manually. It does not name a frequent/high-frequency definition.",
+      "evidenceNotes": "Current official BC Transit Campbell River rider guide/map visually reviewed. Its route map and legend do not name a frequent/high-frequency definition.",
       "reviewBatch": 1,
       "evidenceSourceType": "system_map",
       "reviewSources": [
@@ -1403,7 +1403,7 @@
       "days": null,
       "geography": null,
       "mode": null,
-      "evidenceNotes": "Current official BC Transit Comox Valley rider guide/map reviewed manually. It does not name a frequent/high-frequency definition.",
+      "evidenceNotes": "Current official BC Transit Comox Valley rider guide/map visually reviewed. Its route maps and legends do not name a frequent/high-frequency definition.",
       "reviewBatch": 1,
       "evidenceSourceType": "system_map",
       "reviewSources": [
@@ -1436,7 +1436,7 @@
       "days": null,
       "geography": null,
       "mode": null,
-      "evidenceNotes": "Current official BC Transit Cowichan Valley rider guide/map reviewed manually. It does not name a frequent/high-frequency definition.",
+      "evidenceNotes": "Current official BC Transit Cowichan Valley rider guide/map visually reviewed. Its system map and legend do not name a frequent/high-frequency definition.",
       "reviewBatch": 1,
       "evidenceSourceType": "system_map",
       "reviewSources": [
