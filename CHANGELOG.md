@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 - Combined BART’s north/south directional variants into one suggested route per line.
 
+<<<<<<< HEAD
 - Repointed Avon Transit to its official 2026 GTFS source so the next refresh can restore current service dates.
 - Recovered OC Transpo’s current GTFS feed through October 2026 so Ottawa schedule data no longer relies on an expired catalog copy.
 - Recovered current GTFS sources for Athens, Davenport, El Monte, JFK AirTrain, Kenosha, Sioux Area Metro, StarMetro, and Waukesha, and separated discontinued DC Streetcar from the source-recovery queue.
@@ -189,7 +190,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Extended High contrast colours to selected rows, secondary filters, report actions, and Night Service.
 - Google Analytics no longer loses the initial page view while privacy consent and the tracking script are initializing.
 - Fixed map route selection showing duplicate Calgary lines when the feed uses multiple internal IDs for one visible route.
-- Added beta map-image export with Atlas typography and attribution for shareable 1600×900 PNGs.
+- Added beta map-image export with stronger Atlas branding and full CARTO/OpenStreetMap attribution for shareable 1600×900 PNGs.
 - Added a visible Feedback email link beside the map attribution for launch-period comments and feature requests.
 - Calgary overnight routes starting near the end of the window (such as LRT 201 and late-night buses) no longer pass as frequent overnight routes on the map or in the filter, and their cards now indicate limited service for routes running only part of the period instead of borrowing daytime frequencies ([#507](https://github.com/Civic-Minds/Atlas/issues/507)).
 - Calgary MAX route cards now show the terminal name without repeating the MAX service branding.
