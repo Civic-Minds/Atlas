@@ -931,14 +931,14 @@
       ],
       "mapDate": null,
       "mapPageOrSection": "service legend",
-      "exactMapWording": "Frequent Service — About every 15 minutes or less most of the day, every day",
+      "exactMapWording": "Frequent Service — About every 15 minutes or less most of the day, every day; Frequent Express Service — About every 12 minutes or less most of the day, every day",
       "thresholdMinutes": 15,
       "thresholdText": "about every 15 minutes or less most of the day, every day",
       "serviceSpan": null,
       "days": null,
       "geography": null,
       "mode": null,
-      "evidenceNotes": "Current official TriMet Frequent Service map reviewed manually. Regular Frequent Service is representative; FX and Rail are retained as secondary named tiers.",
+      "evidenceNotes": "Current official TriMet Frequent Service map visually reviewed. Regular Frequent Service is representative; Frequent Express and Rail are retained as secondary named tiers.",
       "reviewBatch": 1,
       "evidenceSourceType": "system_map",
       "reviewSources": [
@@ -960,7 +960,7 @@
           "localFile": "trimet-system-map.pdf",
           "mapPageOrSection": "service legend",
           "exactWording": "Frequent Service — About every 15 minutes or less most of the day, every day",
-          "evidenceNotes": "Current official TriMet Frequent Service map reviewed manually. Regular Frequent Service is representative; FX and Rail are retained as secondary named tiers."
+          "evidenceNotes": "Current official TriMet Frequent Service map visually reviewed. Regular Frequent Service is representative; Frequent Express and Rail are retained as secondary named tiers."
         },
         {
           "id": "fx",
