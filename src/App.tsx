@@ -177,6 +177,7 @@ export default function App() {
     setInfoHelpContext(null);
   }, []);
   const [selectedAgencySlug, setSelectedAgencySlug] = useState<string | null>(null);
+  const [selectedMapAgencySlug, setSelectedMapAgencySlug] = useState<string | null>(null);
   const [pendingLiveRoute, setPendingLiveRoute] = useState<{ slug: string; routeShortName: string } | null>(null);
   const [pendingHistoryRoute, setPendingHistoryRoute] = useState<{ slug: string; routeShortName: string } | null>(null);
   const [headerPortalEl, setHeaderPortalEl] = useState<Element | null>(null);
@@ -271,7 +272,10 @@ export default function App() {
       .map(route => route.slug)).size,
     [],
   );
-  const showHistoryControl = HISTORY_ENABLED && (inHistory || (historyAgencySlugs != null && [...loadedAgencySlugs].some(slug => historyAgencySlugs.has(slug))));
+  const showHistoryControl = HISTORY_ENABLED && (inHistory || (historyAgencySlugs != null && (
+    (selectedMapAgencySlug != null && historyAgencySlugs.has(selectedMapAgencySlug)) ||
+    [...loadedAgencySlugs].some(slug => historyAgencySlugs.has(slug))
+  )));
   // Always open History on the agency chooser rather than guessing one from
   // whatever the map happens to be showing -- auto-jumping straight to an
   // agency (e.g. TTC, just because the map defaults to Toronto) surprised
@@ -584,6 +588,7 @@ export default function App() {
               day={day}
               setDay={setDay}
               onLayersChange={setLayers}
+              onSelectedMapAgencyChange={setSelectedMapAgencySlug}
               onSelectionActiveChange={setIntervalSelectionActive}
               headerPortalContainer={headerPortalEl}
               sidebarLeft={sidebarLeft}
