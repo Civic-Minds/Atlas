@@ -9,7 +9,6 @@ interface Props {
   researchRecord: {
     agencyId: string;
     agencyName: string;
-    exactMapWording?: string | null;
     representativeThresholdMinutes?: number | null;
   };
 }
@@ -109,11 +108,6 @@ export default function FrequentServiceStoryMap({ agencies, stage, frequencyMinu
         <span>{researchRecord.agencyName}</span>
         <span>{stage === 0 ? 'All route patterns' : stage === 1 ? 'Rush-hour-only patterns removed' : stage === 2 ? 'Routes with sustained daytime service' : `Atlas comparison · weekday daytime · every ${frequencyMinutes} minutes or better`}</span>
       </figcaption>
-      {researchRecord.exactMapWording && (
-        <p className="border-t border-[var(--border-primary)] px-5 py-3 text-xs leading-5 text-[var(--text-muted)]">
-          Published definition in the research audit: “{researchRecord.exactMapWording}”
-        </p>
-      )}
     </figure>
   );
 }
