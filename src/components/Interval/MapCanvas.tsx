@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useLayoutEffect, useRef, useState, useMe
 import * as maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import type { MapboxOverlay } from '@deck.gl/mapbox';
-import { LocateFixed, Plus, Minus, Link2, Flag } from 'lucide-react';
+import { LocateFixed, Plus, Minus, Link2, Flag, Download } from 'lucide-react';
 import { routeKey } from '../../hooks/useIntervalStats';
 import { HEADWAY_TIERS, getHeadwayTiers, getTierColor, getNightServiceColor, buildFareColorExpression, buildDefaultRouteLineOpacityExpression, buildFocusedRouteLineOpacityExpression, buildZoomHeadwayGateExpression, type ColorVisionMode } from '../../utils/colors';
 import { getRegionalView, saveView, getSavedView, getAgencyBounds } from '../../utils/regionView';
@@ -27,6 +27,7 @@ import { computeFrequencySegmentOverlay, buildPartialMatchFilterExpression, broa
 import { buildSharedHoverSegments } from '../../utils/sharedHoverSegments';
 import { getMapContextAgenciesFromFeatures, isMapContextOutsideClick, type MapContextAgency } from '../../utils/mapContext';
 import { MapContextPanel } from './MapContextPanel';
+import MapExportDialog from '../MapExportDialog';
 import { frequentServiceBand, frequentServiceFeatureKey, frequentServiceQueryKey, type FrequentServiceFrequency, type FrequentServiceWindow } from '../../../shared/frequentService';
 import { effectiveMode } from '../../../shared/modes';
 
@@ -231,6 +232,8 @@ interface MapCanvasProps {
   onClearSelection?: () => void;
   sidebarLeft?: number;
   searchBarWidth?: number;
+  exportEnabled?: boolean;
+  exportTitle?: string;
 }
 
 const MapCanvasInner: React.FC<MapCanvasProps> = ({
@@ -285,6 +288,8 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   onClearSelection,
   sidebarLeft,
   searchBarWidth,
+  exportEnabled = false,
+  exportTitle = 'Transit map',
 }) => {
   const { colorVisionFriendly } = useColorVision();
   const colorMode: ColorVisionMode = colorVisionFriendly ? 'friendly' : 'default';
@@ -295,6 +300,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   const [mapLoaded, setMapLoaded] = useState(false);
   const [zoom, setZoom] = useState(11);
   const [mapHint, setMapHint] = useState<string | null>(null);
+  const [exportDialogOpen, setExportDialogOpen] = useState(false);
   const [mapContextMenu, setMapContextMenu] = useState<{ x: number; y: number; lat: number; lon: number } | null>(null);
   const mapContextPanelRef = useRef<HTMLDivElement>(null);
   const hintTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -753,7 +759,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       center: [initialCenter.lon, initialCenter.lat],
       zoom: initialCenter.zoom,
       attributionControl: false,
-      canvasContextAttributes: { antialias: true },
+      canvasContextAttributes: { antialias: true, preserveDrawingBuffer: true },
     });
 
     cleanupMap = map;
@@ -1844,6 +1850,22 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       >
         <LocateFixed className="w-3.5 h-3.5" />
       </button>
+      {exportEnabled && (
+        <button
+          onClick={() => setExportDialogOpen(true)}
+          aria-label="Export map image"
+          className={`absolute bottom-6 right-[3.25rem] ${Z_PANEL} w-8 h-8 flex items-center justify-center rounded-full bg-[var(--bg-panel)] border border-[var(--border-primary)] text-[var(--text-dim)] shadow-lg backdrop-blur-md hover:text-[var(--accent)] hover:border-[var(--accent-border)] transition-colors cursor-pointer pointer-events-auto`}
+        >
+          <Download className="w-3.5 h-3.5" />
+        </button>
+      )}
+      <MapExportDialog
+        open={exportDialogOpen}
+        source={exportDialogOpen ? mapRef.current?.getCanvas() ?? null : null}
+        defaultTitle={exportTitle}
+        lightMode={lightMode}
+        onClose={() => setExportDialogOpen(false)}
+      />
 
     </div>
   );

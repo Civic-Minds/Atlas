@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { useNavigate, useLocation } from 'react-router';
 import { Map as MapIcon, Search, X, Info, History as HistoryIcon, Moon } from 'lucide-react';
 import { PILL_SURFACE, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_HEADER, SIDEBAR_LEFT_FALLBACK, CONTROL_ACTIVE, CONTROL_INACTIVE } from './styles';
-import { R2_PUBLIC_URL, getAgencyArtifactUrls, LIVE_ENABLED, HISTORY_ENABLED, CORRIDORS_ENABLED, BETA_BUILD } from '../shared/config';
+import { R2_PUBLIC_URL, getAgencyArtifactUrls, LIVE_ENABLED, HISTORY_ENABLED, CORRIDORS_ENABLED, BETA_BUILD, MAP_EXPORT_ENABLED } from '../shared/config';
 import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig';
 import Interval from './apps/Interval';
 import type { StopEntry } from './apps/corridor-search';
@@ -611,6 +611,8 @@ export default function App() {
               liveRoutesOnly={inLive}
               fareView={inFares}
               nightServiceView={inNight}
+              exportEnabled={MAP_EXPORT_ENABLED}
+              exportTitle={inNight ? 'Night service' : inHistory ? 'Service history' : inFares ? 'Transit fares' : inLive ? 'Live transit' : 'Transit frequency'}
               frequentServiceView={inFrequentService}
               frequentServiceDays={frequentServiceDays}
               frequentServiceFrequency={frequentServiceFrequency}
