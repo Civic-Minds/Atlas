@@ -16,6 +16,19 @@ export interface FrequentServiceStoryExample {
 
 export const frequentServiceStoryStats = {
   agenciesReviewed: 500,
+  reviewedAt: 'September 16–18, 2026',
+  countryCounts: [
+    { country: 'United States', agencies: 311 },
+    { country: 'France', agencies: 100 },
+    { country: 'Canada', agencies: 88 },
+    { country: 'Mexico', agencies: 1 },
+  ],
+  categoryCounts: {
+    numericDefinition: 205,
+    qualitativeDefinition: 26,
+    formalDefinitionWithoutNamedLabel: 14,
+    noDefinitionFound: 255,
+  },
   namedNumericAgencies: 87,
   noDefinitionFound: 255,
   countries: 4,
