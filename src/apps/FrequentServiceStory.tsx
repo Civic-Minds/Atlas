@@ -56,37 +56,10 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
         <section aria-labelledby="network-story-heading" className="mx-auto mt-24 max-w-6xl sm:mt-32">
           <div className="relative min-w-0 pb-[55vh]">
             <div className="min-w-0 lg:sticky lg:top-24">
-              <FrequentServiceStoryMap agencies={agencies} stage={storyStage} frequencyMinutes={frequencyMinutes} researchRecord={frequentServiceStoryResearchRecord} />
+              <FrequentServiceStoryMap agencies={agencies} stage={storyStage} frequencyMinutes={frequencyMinutes} onFrequencyChange={setFrequencyMinutes} researchRecord={frequentServiceStoryResearchRecord} />
             </div>
-            <div className="relative z-10 -mt-[38vh] pb-8 lg:pb-16">
-              <div className="sticky top-24 z-20 w-full max-w-md rounded-2xl bg-[var(--bg-app)]/90 p-5 shadow-sm backdrop-blur">
-                {storyStage === 0 && <>
-                  <h2 id="network-story-heading" className="mt-3 text-3xl font-black tracking-tight">Start with the whole network.</h2>
-                  <p className="mt-4 text-base leading-7 text-[var(--text-muted)]">A city can have hundreds of lines on its map. That shows where service exists, but not how long you might wait.</p>
-                </>}
-                {storyStage === 1 && <>
-                  <h2 className="mt-3 text-3xl font-black tracking-tight">Remove rush-hour-only routes.</h2>
-                  <p className="mt-4 text-base leading-7 text-[var(--text-muted)]">A route that appears only for the busiest part of the day is useful, but it is not the same promise as regular service.</p>
-                </>}
-                {storyStage === 2 && <>
-                  <h2 className="mt-3 text-3xl font-black tracking-tight">Keep routes with meaningful daytime service.</h2>
-                  <p className="mt-4 text-base leading-7 text-[var(--text-muted)]">The network gets smaller again when we remove routes that do not hold together through the day.</p>
-                </>}
-                {storyStage === 3 && <>
-                  <h2 className="mt-3 text-3xl font-black tracking-tight">Now show the routes frequent enough to rely on.</h2>
-                  <p className="mt-4 text-base leading-7 text-[var(--text-muted)]">This is Atlas’s comparison—not a claim that every agency uses the same definition of “frequent.”</p>
-                  <div className="mt-5 inline-flex rounded-full border border-[var(--border-primary)] bg-[var(--bg-panel)] p-1" role="group" aria-label="Choose the final frequency comparison">
-                    {[15, 30].map(minutes => (
-                      <button key={minutes} type="button" aria-pressed={frequencyMinutes === minutes} onClick={() => setFrequencyMinutes(minutes as 15 | 30)} className={`rounded-full px-4 py-2 text-sm font-black transition-colors ${frequencyMinutes === minutes ? 'bg-[var(--accent)] text-[var(--bg-app)]' : 'text-[var(--text-secondary)] hover:bg-[var(--bg-btn-hover)]'}`}>
-                        {minutes} min
-                      </button>
-                    ))}
-                  </div>
-                </>}
-              </div>
-              <div className="space-y-[55vh] pt-[45vh]" aria-hidden="true">
+            <div className="relative z-10 space-y-[55vh] pb-8 pt-8 lg:pb-16" aria-hidden="true">
                 {[0, 1, 2, 3].map(stage => <div key={stage} ref={step => { storyStepRefs.current[stage] = step; }} data-story-stage={stage} className="h-[20vh]" />)}
-              </div>
             </div>
           </div>
         </section>

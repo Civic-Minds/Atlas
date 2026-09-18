@@ -6,6 +6,7 @@ interface Props {
   agencies: Agency[];
   stage: number;
   frequencyMinutes: 15 | 30;
+  onFrequencyChange: (minutes: 15 | 30) => void;
   researchRecord: {
     agencyId: string;
     agencyName: string;
@@ -61,7 +62,7 @@ function featuresForStage(features: StoryFeature[], stage: number, frequencyMinu
   });
 }
 
-export default function FrequentServiceStoryMap({ agencies, stage, frequencyMinutes, researchRecord }: Props) {
+export default function FrequentServiceStoryMap({ agencies, stage, frequencyMinutes, onFrequencyChange, researchRecord }: Props) {
   const [features, setFeatures] = useState<StoryFeature[]>([]);
   const [loadState, setLoadState] = useState<'loading' | 'ready' | 'error'>('loading');
   const storyAgency = agencies.find(agency => agency.slug === researchRecord.agencyId);
@@ -100,6 +101,31 @@ export default function FrequentServiceStoryMap({ agencies, stage, frequencyMinu
             {loadState === 'error' ? `The ${researchRecord.agencyName} network preview is unavailable.` : `Loading ${researchRecord.agencyName}’s network…`}
           </div>
         )}
+        <div className="absolute left-5 top-5 z-10 w-[calc(100%-2.5rem)] max-w-md rounded-2xl bg-[var(--bg-app)]/90 p-5 shadow-sm backdrop-blur">
+          {stage === 0 && <>
+            <h2 id="network-story-heading" className="text-3xl font-black tracking-tight">Start with the whole network.</h2>
+            <p className="mt-4 text-base leading-7 text-[var(--text-muted)]">A city can have hundreds of lines on its map. That shows where service exists, but not how long you might wait.</p>
+          </>}
+          {stage === 1 && <>
+            <h2 className="text-3xl font-black tracking-tight">Remove rush-hour-only routes.</h2>
+            <p className="mt-4 text-base leading-7 text-[var(--text-muted)]">A route that appears only for the busiest part of the day is useful, but it is not the same promise as regular service.</p>
+          </>}
+          {stage === 2 && <>
+            <h2 className="text-3xl font-black tracking-tight">Keep routes with meaningful daytime service.</h2>
+            <p className="mt-4 text-base leading-7 text-[var(--text-muted)]">The network gets smaller again when we remove routes that do not hold together through the day.</p>
+          </>}
+          {stage === 3 && <>
+            <h2 className="text-3xl font-black tracking-tight">Now show the routes frequent enough to rely on.</h2>
+            <p className="mt-4 text-base leading-7 text-[var(--text-muted)]">This is Atlas’s comparison—not a claim that every agency uses the same definition of “frequent.”</p>
+            <div className="mt-5 inline-flex rounded-full border border-[var(--border-primary)] bg-[var(--bg-panel)] p-1" role="group" aria-label="Choose the final frequency comparison">
+              {[15, 30].map(minutes => (
+                <button key={minutes} type="button" aria-pressed={frequencyMinutes === minutes} onClick={() => onFrequencyChange(minutes as 15 | 30)} className={`rounded-full px-4 py-2 text-sm font-black transition-colors ${frequencyMinutes === minutes ? 'bg-[var(--accent)] text-[var(--bg-app)]' : 'text-[var(--text-secondary)] hover:bg-[var(--bg-btn-hover)]'}`}>
+                  {minutes} min
+                </button>
+              ))}
+            </div>
+          </>}
+        </div>
       </div>
       <figcaption className="flex flex-wrap items-center justify-between gap-2 px-5 py-4 text-xs text-[var(--text-muted)]">
         <span>{researchRecord.agencyName}</span>
