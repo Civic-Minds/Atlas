@@ -619,14 +619,16 @@
       "status": "no_definition_on_map",
       "mapCandidates": [
         {
-          "url": "https://www.mississauga.ca/miway-transit/maps/transit-system-maps/",
+      "url": "https://www.mississauga.ca/wp-content/uploads/sites/6/2026/08/14090129/MT-SystemMap_Sept7_2026_Weekday_Web.pdf",
           "sourceType": "system_map",
-          "localFile": null
+          "localFile": "miway-weekday-system-map.pdf"
         }
       ],
-      "preservedFiles": [],
-      "mapDate": null,
-      "mapPageOrSection": "official system-map page",
+      "preservedFiles": [
+        "miway-weekday-system-map.pdf"
+      ],
+      "mapDate": "September 7, 2026",
+      "mapPageOrSection": "map legend",
       "exactMapWording": null,
       "thresholdMinutes": null,
       "thresholdText": null,
@@ -634,14 +636,14 @@
       "days": null,
       "geography": null,
       "mode": null,
-      "evidenceNotes": "Official MiWay system-map page reviewed manually. The available map material shows routes but no named frequent or high-frequency definition.",
+      "evidenceNotes": "Current official MiWay weekday system map visually reviewed. It shows regular, peak, and express route-service types but no named frequent or high-frequency definition.",
       "reviewBatch": 1,
       "evidenceSourceType": "system_map",
       "reviewSources": [
         {
-          "url": "https://www.mississauga.ca/miway-transit/maps/transit-system-maps/",
+          "url": "https://www.mississauga.ca/wp-content/uploads/sites/6/2026/08/14090129/MT-SystemMap_Sept7_2026_Weekday_Web.pdf",
           "sourceType": "system_map",
-          "localFile": null
+          "localFile": "miway-weekday-system-map.pdf"
         }
       ],
       "definitions": [],

@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- Rewrote the research introduction around the rider’s real question: how long will the next vehicle take?
+- Verified MiWay’s current weekday map and archived it; it has route-service types but no named frequent definition.
+- Reduced the empty space after the scroll-driven story map so the next research section arrives sooner.
+- Added more bottom breathing room to the story-map caption so it matches the card’s visual padding.
 - Preserved Miami’s 10-minute-or-less map band as general frequency evidence without misclassifying it as a named frequent definition.
 - Corrected CTA to its 10-minute Frequent Network definition with weekday and weekend service spans.
 - Added a rapid hard-cut montage of tightly cropped excerpts from 12 real agency-published system-map pages to make the research introduction feel grounded in the source material.
