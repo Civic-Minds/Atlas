@@ -54,24 +54,24 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
         </header>
 
         <section aria-labelledby="network-story-heading" className="mx-auto mt-24 max-w-6xl sm:mt-32">
-          <div className="grid min-w-0 gap-10 pb-[55vh] lg:grid-cols-[minmax(0,1.35fr)_minmax(20rem,0.8fr)] lg:items-start">
+          <div className="relative min-w-0 pb-[55vh]">
             <div className="min-w-0 lg:sticky lg:top-24">
               <FrequentServiceStoryMap agencies={agencies} stage={storyStage} frequencyMinutes={frequencyMinutes} researchRecord={frequentServiceStoryResearchRecord} />
             </div>
-            <div className="min-w-0 space-y-[55vh] px-1 py-8 lg:py-16">
-              <div ref={step => { storyStepRefs.current[0] = step; }} data-story-stage="0" className="max-w-md">
+            <div className="relative z-10 -mt-[34vh] space-y-[55vh] px-5 pb-8 lg:px-10 lg:pb-16">
+              <div ref={step => { storyStepRefs.current[0] = step; }} data-story-stage="0" className="max-w-md rounded-2xl bg-[var(--bg-app)]/90 p-5 shadow-sm backdrop-blur">
                 <h2 id="network-story-heading" className="mt-3 text-3xl font-black tracking-tight">Start with the whole network.</h2>
                 <p className="mt-4 text-base leading-7 text-[var(--text-muted)]">A city can have hundreds of lines on its map. That shows where service exists, but not how long you might wait.</p>
               </div>
-              <div ref={step => { storyStepRefs.current[1] = step; }} data-story-stage="1" className="max-w-md">
+              <div ref={step => { storyStepRefs.current[1] = step; }} data-story-stage="1" className="max-w-md rounded-2xl bg-[var(--bg-app)]/90 p-5 shadow-sm backdrop-blur">
                 <h2 className="mt-3 text-3xl font-black tracking-tight">Remove rush-hour-only routes.</h2>
                 <p className="mt-4 text-base leading-7 text-[var(--text-muted)]">A route that appears only for the busiest part of the day is useful, but it is not the same promise as regular service.</p>
               </div>
-              <div ref={step => { storyStepRefs.current[2] = step; }} data-story-stage="2" className="max-w-md">
+              <div ref={step => { storyStepRefs.current[2] = step; }} data-story-stage="2" className="max-w-md rounded-2xl bg-[var(--bg-app)]/90 p-5 shadow-sm backdrop-blur">
                 <h2 className="mt-3 text-3xl font-black tracking-tight">Keep routes with meaningful daytime service.</h2>
                 <p className="mt-4 text-base leading-7 text-[var(--text-muted)]">The network gets smaller again when we remove routes that do not hold together through the day.</p>
               </div>
-              <div ref={step => { storyStepRefs.current[3] = step; }} data-story-stage="3" className="max-w-md">
+              <div ref={step => { storyStepRefs.current[3] = step; }} data-story-stage="3" className="max-w-md rounded-2xl bg-[var(--bg-app)]/90 p-5 shadow-sm backdrop-blur">
                 <h2 className="mt-3 text-3xl font-black tracking-tight">Now show the routes frequent enough to rely on.</h2>
                 <p className="mt-4 text-base leading-7 text-[var(--text-muted)]">This is Atlas’s comparison—not a claim that every agency uses the same definition of “frequent.”</p>
                 <div className="mt-5 inline-flex rounded-full border border-[var(--border-primary)] bg-[var(--bg-panel)] p-1" role="group" aria-label="Choose the final frequency comparison">
