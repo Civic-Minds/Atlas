@@ -685,11 +685,20 @@
       "agencyName": "Halifax Transit",
       "country": "Canada",
       "region": "Nova Scotia",
-      "status": "pending_map_review",
-      "mapCandidates": [],
-      "preservedFiles": [],
-      "mapDate": null,
-      "mapPageOrSection": null,
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "label": "Halifax Transit Route Map",
+          "url": "https://cdn.halifax.ca/sites/default/files/documents/transportation/halifax-transit/route-map-november-2023-rev.pdf",
+          "sourceType": "system_map",
+          "localFile": "halifax-1"
+        }
+      ],
+      "preservedFiles": [
+        "halifax-1"
+      ],
+      "mapDate": "November 2023",
+      "mapPageOrSection": "map legend",
       "exactMapWording": null,
       "thresholdMinutes": null,
       "thresholdText": null,
@@ -697,7 +706,7 @@
       "days": null,
       "geography": null,
       "mode": null,
-      "evidenceNotes": null
+      "evidenceNotes": "The preserved official route map distinguishes route families and express services but does not name a Frequent or High-Frequency category or publish a frequent threshold."
     },
     {
       "auditOrder": 25,
@@ -754,19 +763,28 @@
       "agencyName": "Medicine Hat Transit",
       "country": "Canada",
       "region": "Alberta",
-      "status": "pending_map_review",
-      "mapCandidates": [],
-      "preservedFiles": [],
-      "mapDate": null,
-      "mapPageOrSection": null,
-      "exactMapWording": null,
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "label": "Medicine Hat regular service route map",
+          "url": "https://www.medicinehat.ca/media/qtcfb2gw/mh-transit-schedule-route-maps_november-2025.pdf",
+          "sourceType": "system_map",
+          "localFile": "medicine-hat-1"
+        }
+      ],
+      "preservedFiles": [
+        "medicine-hat-1"
+      ],
+      "mapDate": "November 2025",
+      "mapPageOrSection": "page 1, map title and legend",
+      "exactMapWording": "REGULAR SERVICE",
       "thresholdMinutes": null,
       "thresholdText": null,
       "serviceSpan": null,
       "days": null,
       "geography": null,
       "mode": null,
-      "evidenceNotes": null
+      "evidenceNotes": "The official route map labels regular service and route information but does not name a frequent/high-frequency category or define a threshold."
     },
     {
       "auditOrder": 28,
@@ -774,19 +792,28 @@
       "agencyName": "Red Deer Transit",
       "country": "Canada",
       "region": "Alberta",
-      "status": "pending_map_review",
-      "mapCandidates": [],
-      "preservedFiles": [],
-      "mapDate": null,
-      "mapPageOrSection": null,
-      "exactMapWording": null,
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "label": "Route Overview Map — all regular transit routes",
+          "url": "https://secure.reddeer.ca/media/reddeerca/city-services/transit/transit-schedules/RegularRouteOverview-FINAL-October-4%2C-2020.pdf",
+          "sourceType": "system_map",
+          "localFile": "red-deer-1"
+        }
+      ],
+      "preservedFiles": [
+        "red-deer-1"
+      ],
+      "mapDate": "July 2020",
+      "mapPageOrSection": "map legend",
+      "exactMapWording": "Route 1 — Gaetz Avenue Rapid Bus",
       "thresholdMinutes": null,
       "thresholdText": null,
       "serviceSpan": null,
       "days": null,
       "geography": null,
       "mode": null,
-      "evidenceNotes": null
+      "evidenceNotes": "The official overview map identifies a Rapid Bus route but does not name a Frequent or High-Frequency category or define a frequent threshold."
     },
     {
       "auditOrder": 29,
