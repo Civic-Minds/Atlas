@@ -36,7 +36,7 @@
         "ttc-system-map.pdf"
       ],
       "mapDate": null,
-      "mapPageOrSection": "route directory and map legend",
+      "mapPageOrSection": "map legend",
       "exactMapWording": null,
       "thresholdMinutes": null,
       "thresholdText": null,
@@ -55,7 +55,8 @@
         }
       ],
       "definitions": [],
-      "representativeThresholdMinutes": null
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
     },
     {
       "auditOrder": 2,
@@ -94,7 +95,8 @@
         }
       ],
       "definitions": [],
-      "representativeThresholdMinutes": null
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
     },
     {
       "auditOrder": 3,
@@ -141,7 +143,8 @@
           "evidenceNotes": "Current official TransLink Frequent Transit Network map reviewed manually."
         }
       ],
-      "representativeThresholdMinutes": 15
+      "representativeThresholdMinutes": 15,
+      "publishedFrequencyBands": null
     },
     {
       "auditOrder": 4,
@@ -184,7 +187,7 @@
           "sourceUrl": "https://www.stm.info/sites/default/files/media/Stminfo/images/plan_reseau.pdf",
           "localFile": "stm-montreal-system-map.pdf",
           "mapPageOrSection": "network map legend",
-          "exactWording": "Fréquentes toute la journée",
+          "exactWording": "Fréquentes toute la journée; Fréquentes en période de pointe",
           "evidenceNotes": "Current official STM network map visually reviewed. The legend names all-day and peak-period frequent routes but publishes no numeric threshold."
         },
         {
@@ -197,11 +200,12 @@
           "sourceUrl": "https://www.stm.info/sites/default/files/media/Stminfo/images/plan_reseau.pdf",
           "localFile": "stm-montreal-system-map.pdf",
           "mapPageOrSection": "network map legend",
-          "exactWording": "Fréquentes en période de pointe",
+          "exactWording": "Fréquentes toute la journée; Fréquentes en période de pointe",
           "evidenceNotes": "Current official STM network map visually reviewed. The legend names all-day and peak-period frequent routes but publishes no numeric threshold."
         }
       ],
-      "representativeThresholdMinutes": null
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
     },
     {
       "auditOrder": 5,
@@ -254,7 +258,8 @@
           "evidenceNotes": "Current official SEPTA system map reviewed manually. It labels Frequent Bus Routes without publishing a number."
         }
       ],
-      "representativeThresholdMinutes": null
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
     },
     {
       "auditOrder": 6,
@@ -316,11 +321,12 @@
           "sourceUrl": "https://www.bctransit.com/victoria/wp-content/uploads/sites/49/2026/09/vic_rg_sept2026_v2.pdf",
           "localFile": "victoria-system-map.pdf",
           "mapPageOrSection": "rider guide p. 11, Route Colours",
-          "exactWording": "Dark orange indicates a RapidBus Line which provides fast, frequent and reliable service between areas of highest demand in the region. Customers can expect buses to arrive at least every 15 minutes between 7:00 a.m. and 10:00 p.m. every day of the week.",
+          "exactWording": "Blue indicates a Frequent Route which provides high density areas with a convenient, reliable and frequent (15 minutes or better between 7:00 a.m. and 7:00 p.m.) transit service Monday–Friday.",
           "evidenceNotes": "Official BC Transit Victoria rider guide visually reviewed. Used by explicit approval as a source exception; this is rider-guide evidence, not standalone system-map evidence."
         }
       ],
-      "representativeThresholdMinutes": 15
+      "representativeThresholdMinutes": 15,
+      "publishedFrequencyBands": null
     },
     {
       "auditOrder": 7,
@@ -373,7 +379,8 @@
           "evidenceNotes": "Current official ETS day map visually reviewed. The legend defines Frequent Route as 15 minutes or better most times of the day."
         }
       ],
-      "representativeThresholdMinutes": 15
+      "representativeThresholdMinutes": 15,
+      "publishedFrequencyBands": null
     },
     {
       "auditOrder": 8,
@@ -404,7 +411,8 @@
         }
       ],
       "definitions": [],
-      "representativeThresholdMinutes": null
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
     },
     {
       "auditOrder": 9,
@@ -457,7 +465,8 @@
           "evidenceNotes": "Current official King County Metro system map reviewed manually."
         }
       ],
-      "representativeThresholdMinutes": 15
+      "representativeThresholdMinutes": 15,
+      "publishedFrequencyBands": null
     },
     {
       "auditOrder": 10,
@@ -556,7 +565,8 @@
           "evidenceNotes": "Current official OC Transpo system map reviewed manually."
         }
       ],
-      "representativeThresholdMinutes": 15
+      "representativeThresholdMinutes": 15,
+      "publishedFrequencyBands": null
     },
     {
       "auditOrder": 12,
@@ -614,7 +624,8 @@
           "evidenceNotes": "Current official YRT Frequent Transit Network map reviewed manually. It names the network but does not publish a numeric threshold on the map."
         }
       ],
-      "representativeThresholdMinutes": null
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
     },
     {
       "auditOrder": 13,
@@ -625,7 +636,7 @@
       "status": "no_definition_on_map",
       "mapCandidates": [
         {
-      "url": "https://www.mississauga.ca/wp-content/uploads/sites/6/2026/08/14090129/MT-SystemMap_Sept7_2026_Weekday_Web.pdf",
+          "url": "https://www.mississauga.ca/wp-content/uploads/sites/6/2026/08/14090129/MT-SystemMap_Sept7_2026_Weekday_Web.pdf",
           "sourceType": "system_map",
           "localFile": "miway-weekday-system-map.pdf"
         }
@@ -653,7 +664,8 @@
         }
       ],
       "definitions": [],
-      "representativeThresholdMinutes": null
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
     },
     {
       "auditOrder": 14,
@@ -706,7 +718,8 @@
           "evidenceNotes": "Official MBTA 2026 Frequent Bus Service map and map page visually reviewed. The page defines Frequent Bus Routes as arriving every 15 minutes or better."
         }
       ],
-      "representativeThresholdMinutes": 15
+      "representativeThresholdMinutes": 15,
+      "publishedFrequencyBands": null
     },
     {
       "auditOrder": 15,
@@ -764,7 +777,8 @@
           "evidenceNotes": "Current official Metro Frequent Service Network map visually reviewed. The map title and legend both identify the 15-minute weekday threshold."
         }
       ],
-      "representativeThresholdMinutes": 15
+      "representativeThresholdMinutes": 15,
+      "publishedFrequencyBands": null
     },
     {
       "auditOrder": 16,
@@ -803,7 +817,8 @@
         }
       ],
       "definitions": [],
-      "representativeThresholdMinutes": null
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
     },
     {
       "auditOrder": 17,
@@ -869,7 +884,8 @@
           "evidenceNotes": "Current official WMATA High Frequency Service Map reviewed manually. Both named frequency tiers are retained; High-Frequency Route is representative."
         }
       ],
-      "representativeThresholdMinutes": 12
+      "representativeThresholdMinutes": 12,
+      "publishedFrequencyBands": null
     },
     {
       "auditOrder": 18,
@@ -916,7 +932,8 @@
           "evidenceNotes": "Official CTA Frequent Network definition supplied during manual review. The definition covers bus routes and specifies separate weekday and weekend spans."
         }
       ],
-      "representativeThresholdMinutes": 10
+      "representativeThresholdMinutes": 10,
+      "publishedFrequencyBands": null
     },
     {
       "auditOrder": 19,
@@ -959,12 +976,12 @@
           "sourceUrl": "https://www.trimet.org/maps/pdf/frequentservice.pdf",
           "localFile": "trimet-system-map.pdf",
           "mapPageOrSection": "service legend",
-          "exactWording": "Frequent Service — About every 15 minutes or less most of the day, every day",
+          "exactWording": "Frequent Service — About every 15 minutes or less most of the day, every day; Frequent Express Service — About every 12 minutes or less most of the day, every day",
           "evidenceNotes": "Current official TriMet Frequent Service map visually reviewed. Regular Frequent Service is representative; Frequent Express and Rail are retained as secondary named tiers."
         },
         {
           "id": "fx",
-          "label": "FX Frequent Express Service",
+          "label": "Frequent Express Service",
           "thresholdMinutes": 12,
           "thresholdText": "about every 12 minutes or less most of the day, every day",
           "representative": false,
@@ -972,8 +989,8 @@
           "sourceUrl": "https://www.trimet.org/maps/pdf/frequentservice.pdf",
           "localFile": "trimet-system-map.pdf",
           "mapPageOrSection": "service legend",
-          "exactWording": "Frequent Service — About every 15 minutes or less most of the day, every day",
-          "evidenceNotes": "Current official TriMet Frequent Service map reviewed manually. Regular Frequent Service is representative; FX and Rail are retained as secondary named tiers."
+          "exactWording": "Frequent Service — About every 15 minutes or less most of the day, every day; Frequent Express Service — About every 12 minutes or less most of the day, every day",
+          "evidenceNotes": "Current official TriMet Frequent Service map visually reviewed. Regular Frequent Service is representative; Frequent Express and Rail are retained as secondary named tiers."
         },
         {
           "id": "rail",
@@ -985,11 +1002,12 @@
           "sourceUrl": "https://www.trimet.org/maps/pdf/frequentservice.pdf",
           "localFile": "trimet-system-map.pdf",
           "mapPageOrSection": "service legend",
-          "exactWording": "Frequent Service — About every 15 minutes or less most of the day, every day",
-          "evidenceNotes": "Current official TriMet Frequent Service map reviewed manually. Regular Frequent Service is representative; FX and Rail are retained as secondary named tiers."
+          "exactWording": "Frequent Service — About every 15 minutes or less most of the day, every day; Frequent Express Service — About every 12 minutes or less most of the day, every day",
+          "evidenceNotes": "Current official TriMet Frequent Service map visually reviewed. Regular Frequent Service is representative; Frequent Express and Rail are retained as secondary named tiers."
         }
       ],
-      "representativeThresholdMinutes": 15
+      "representativeThresholdMinutes": 15,
+      "publishedFrequencyBands": null
     },
     {
       "auditOrder": 20,
@@ -1020,7 +1038,8 @@
         }
       ],
       "definitions": [],
-      "representativeThresholdMinutes": null
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
     },
     {
       "auditOrder": 21,
@@ -1057,7 +1076,8 @@
         }
       ],
       "definitions": [],
-      "representativeThresholdMinutes": null
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
     },
     {
       "auditOrder": 22,
@@ -1107,10 +1127,11 @@
           "localFile": "vta-system-map.pdf",
           "mapPageOrSection": "map legend",
           "exactWording": "Frequent Bus; A thick line indicates frequent service",
-          "evidenceNotes": "Current official VTA system map reviewed manually. It identifies Frequent Bus through line weight but publishes no number."
+          "evidenceNotes": "Current official VTA system map visually reviewed. It identifies Frequent Bus through line weight but publishes no number."
         }
       ],
-      "representativeThresholdMinutes": null
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
     },
     {
       "auditOrder": 23,
@@ -1136,14 +1157,14 @@
       ],
       "mapDate": null,
       "mapPageOrSection": "map legend",
-  "exactMapWording": "Rapid service; Regular service; Limited service. Regular service: operates at a frequency of every 60 minutes or better throughout most of the day on weekdays.",
+      "exactMapWording": "Rapid service; Regular service; Limited service. Regular service: operates at a frequency of every 60 minutes or better throughout most of the day on weekdays.",
       "thresholdMinutes": null,
       "thresholdText": null,
       "serviceSpan": null,
       "days": null,
       "geography": null,
       "mode": null,
-  "evidenceNotes": "Current official MTS regional transit map visually reviewed. The legend names Rapid, Regular, and Limited service; it does not name a frequent/high-frequency definition.",
+      "evidenceNotes": "Current official MTS regional transit map visually reviewed. The legend names Rapid, Regular, and Limited service; it does not name a frequent/high-frequency definition.",
       "reviewBatch": 1,
       "evidenceSourceType": "system_map",
       "reviewSources": [
@@ -1154,7 +1175,8 @@
         }
       ],
       "definitions": [],
-      "representativeThresholdMinutes": null
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
     },
     {
       "auditOrder": 24,
@@ -1187,7 +1209,8 @@
         }
       ],
       "definitions": [],
-      "representativeThresholdMinutes": null
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
     },
     {
       "auditOrder": 25,
@@ -1220,7 +1243,8 @@
         }
       ],
       "definitions": [],
-      "representativeThresholdMinutes": null
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
     },
     {
       "auditOrder": 26,
@@ -1251,7 +1275,8 @@
         }
       ],
       "definitions": [],
-      "representativeThresholdMinutes": null
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
     },
     {
       "auditOrder": 27,
@@ -1284,7 +1309,8 @@
         }
       ],
       "definitions": [],
-      "representativeThresholdMinutes": null
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
     },
     {
       "auditOrder": 28,
@@ -1317,7 +1343,8 @@
         }
       ],
       "definitions": [],
-      "representativeThresholdMinutes": null
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
     },
     {
       "auditOrder": 29,
@@ -1348,7 +1375,8 @@
         }
       ],
       "definitions": [],
-      "representativeThresholdMinutes": null
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
     },
     {
       "auditOrder": 30,
@@ -1372,16 +1400,17 @@
       "mode": null,
       "evidenceNotes": "Current official BC Transit Campbell River rider guide/map visually reviewed. Its route map and legend do not name a frequent/high-frequency definition.",
       "reviewBatch": 1,
-      "evidenceSourceType": "system_map",
+      "evidenceSourceType": "rider_guide",
       "reviewSources": [
         {
           "url": "https://www.bctransit.com/campbell-river/wp-content/uploads/sites/8/2025/09/12586_CAM_RG_web.pdf",
-          "sourceType": "system_map",
+          "sourceType": "rider_guide",
           "localFile": "campbell-river-system-map.pdf"
         }
       ],
       "definitions": [],
-      "representativeThresholdMinutes": null
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
     },
     {
       "auditOrder": 31,
@@ -1405,16 +1434,17 @@
       "mode": null,
       "evidenceNotes": "Current official BC Transit Comox Valley rider guide/map visually reviewed. Its route maps and legends do not name a frequent/high-frequency definition.",
       "reviewBatch": 1,
-      "evidenceSourceType": "system_map",
+      "evidenceSourceType": "rider_guide",
       "reviewSources": [
         {
           "url": "https://www.bctransit.com/comox-valley/wp-content/uploads/sites/13/2026/09/13403-13240_COM_RG_v2.pdf",
-          "sourceType": "system_map",
+          "sourceType": "rider_guide",
           "localFile": "comox-valley-system-map.pdf"
         }
       ],
       "definitions": [],
-      "representativeThresholdMinutes": null
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
     },
     {
       "auditOrder": 32,
@@ -1428,7 +1458,7 @@
         "cowichan-system-map.pdf"
       ],
       "mapDate": null,
-      "mapPageOrSection": "map and route legend",
+      "mapPageOrSection": "system map and legend",
       "exactMapWording": null,
       "thresholdMinutes": null,
       "thresholdText": null,
@@ -1447,7 +1477,8 @@
         }
       ],
       "definitions": [],
-      "representativeThresholdMinutes": null
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
     },
     {
       "auditOrder": 33,
@@ -1471,16 +1502,17 @@
       "mode": null,
       "evidenceNotes": "Current official BC Transit Fraser Valley rider guide/map reviewed manually. It does not name a frequent/high-frequency definition.",
       "reviewBatch": 1,
-      "evidenceSourceType": "system_map",
+      "evidenceSourceType": "rider_guide",
       "reviewSources": [
         {
           "url": "https://www.bctransit.com/central-fraser-valley/wp-content/uploads/sites/9/2026/08/cfv_rg_sept2026.pdf",
-          "sourceType": "system_map",
+          "sourceType": "rider_guide",
           "localFile": "bc-fraser-valley-system-map.pdf"
         }
       ],
       "definitions": [],
-      "representativeThresholdMinutes": null
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
     },
     {
       "auditOrder": 34,
@@ -1504,16 +1536,17 @@
       "mode": null,
       "evidenceNotes": "Current official BC Transit Kamloops rider guide/map reviewed manually. It does not name a frequent/high-frequency definition.",
       "reviewBatch": 1,
-      "evidenceSourceType": "system_map",
+      "evidenceSourceType": "rider_guide",
       "reviewSources": [
         {
           "url": "https://www.bctransit.com/kamloops/wp-content/uploads/sites/23/2026/08/13383_KAM_RG_fall-v6.pdf",
-          "sourceType": "system_map",
+          "sourceType": "rider_guide",
           "localFile": "kamloops-system-map.pdf"
         }
       ],
       "definitions": [],
-      "representativeThresholdMinutes": null
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
     },
     {
       "auditOrder": 35,
@@ -1527,7 +1560,7 @@
         "kelowna-system-map.pdf"
       ],
       "mapDate": null,
-      "mapPageOrSection": "map and route legend",
+      "mapPageOrSection": "route-map legend",
       "exactMapWording": "Frequent Route — 15–30 minute service",
       "thresholdMinutes": 30,
       "thresholdText": "15–30 minute service",
@@ -1537,11 +1570,11 @@
       "mode": null,
       "evidenceNotes": "Current official BC Transit Kelowna route-map legend visually reviewed. The published range is retained and its slowest ordinary period is used as the representative value.",
       "reviewBatch": 1,
-      "evidenceSourceType": "system_map",
+      "evidenceSourceType": "rider_guide",
       "reviewSources": [
         {
           "url": "https://www.bctransit.com/kelowna/wp-content/uploads/sites/24/2026/08/kel_rg_sept2026.pdf",
-          "sourceType": "system_map",
+          "sourceType": "rider_guide",
           "localFile": "kelowna-system-map.pdf"
         }
       ],
@@ -1552,15 +1585,16 @@
           "thresholdMinutes": 30,
           "thresholdText": "15–30 minute service",
           "representative": true,
-          "sourceType": "system_map",
+          "sourceType": "rider_guide",
           "sourceUrl": "https://www.bctransit.com/kelowna/wp-content/uploads/sites/24/2026/08/kel_rg_sept2026.pdf",
           "localFile": "kelowna-system-map.pdf",
-          "mapPageOrSection": "map and route legend",
+          "mapPageOrSection": "route-map legend",
           "exactWording": "Frequent Route — 15–30 minute service",
-          "evidenceNotes": "Current official BC Transit Kelowna rider guide/map reviewed manually. The published range is retained and its slowest ordinary period is used as the representative value."
+          "evidenceNotes": "Current official BC Transit Kelowna route-map legend visually reviewed. The published range is retained and its slowest ordinary period is used as the representative value."
         }
       ],
-      "representativeThresholdMinutes": 30
+      "representativeThresholdMinutes": 30,
+      "publishedFrequencyBands": null
     },
     {
       "auditOrder": 36,
@@ -1580,7 +1614,7 @@
         "nanaimo-system-map.pdf"
       ],
       "mapDate": null,
-      "mapPageOrSection": "map and route legend",
+      "mapPageOrSection": "route-map legend",
       "exactMapWording": null,
       "thresholdMinutes": null,
       "thresholdText": null,
@@ -1590,16 +1624,17 @@
       "mode": null,
       "evidenceNotes": "Current official BC Transit Nanaimo rider guide/map visually reviewed. Its route map and legend do not name a frequent/high-frequency definition.",
       "reviewBatch": 1,
-      "evidenceSourceType": "system_map",
+      "evidenceSourceType": "rider_guide",
       "reviewSources": [
         {
           "url": "https://www.bctransit.com/nanaimo/wp-content/uploads/sites/29/2026/08/nan_rg_sept2026.pdf",
-          "sourceType": "system_map",
+          "sourceType": "rider_guide",
           "localFile": "nanaimo-system-map.pdf"
         }
       ],
       "definitions": [],
-      "representativeThresholdMinutes": null
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
     },
     {
       "auditOrder": 37,
@@ -1613,7 +1648,7 @@
         "pemberton-system-map.pdf"
       ],
       "mapDate": null,
-      "mapPageOrSection": "map and route legend",
+      "mapPageOrSection": "route map and legend",
       "exactMapWording": null,
       "thresholdMinutes": null,
       "thresholdText": null,
@@ -1623,16 +1658,17 @@
       "mode": null,
       "evidenceNotes": "Current official BC Transit Pemberton Valley rider guide/map visually reviewed. Its route map and legend do not name a frequent/high-frequency definition.",
       "reviewBatch": 1,
-      "evidenceSourceType": "system_map",
+      "evidenceSourceType": "rider_guide",
       "reviewSources": [
         {
           "url": "https://www.bctransit.com/pemberton-valley/wp-content/uploads/sites/30/2026/04/12762_PEM_RG_spring-v8.pdf",
-          "sourceType": "system_map",
+          "sourceType": "rider_guide",
           "localFile": "pemberton-system-map.pdf"
         }
       ],
       "definitions": [],
-      "representativeThresholdMinutes": null
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
     },
     {
       "auditOrder": 38,
@@ -1646,7 +1682,7 @@
         "south-okanagan-system-map.pdf"
       ],
       "mapDate": null,
-      "mapPageOrSection": "map and route legend",
+      "mapPageOrSection": "route maps and legend",
       "exactMapWording": null,
       "thresholdMinutes": null,
       "thresholdText": null,
@@ -1656,16 +1692,17 @@
       "mode": null,
       "evidenceNotes": "Current official BC Transit South Okanagan-Similkameen rider guide/map visually reviewed. Its route maps and legend do not name a frequent/high-frequency definition.",
       "reviewBatch": 1,
-      "evidenceSourceType": "system_map",
+      "evidenceSourceType": "rider_guide",
       "reviewSources": [
         {
           "url": "https://www.bctransit.com/south-okanagan-similkameen/wp-content/uploads/sites/43/2026/03/sos_rg_april2026.pdf",
-          "sourceType": "system_map",
+          "sourceType": "rider_guide",
           "localFile": "south-okanagan-system-map.pdf"
         }
       ],
       "definitions": [],
-      "representativeThresholdMinutes": null
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
     },
     {
       "auditOrder": 39,
@@ -1679,7 +1716,7 @@
         "squamish-system-map.pdf"
       ],
       "mapDate": null,
-      "mapPageOrSection": "map and route legend",
+      "mapPageOrSection": "route map and legend",
       "exactMapWording": null,
       "thresholdMinutes": null,
       "thresholdText": null,
@@ -1689,16 +1726,17 @@
       "mode": null,
       "evidenceNotes": "Current official BC Transit Squamish rider guide/map visually reviewed. Its route map and legend do not name a frequent/high-frequency definition.",
       "reviewBatch": 1,
-      "evidenceSourceType": "system_map",
+      "evidenceSourceType": "rider_guide",
       "reviewSources": [
         {
           "url": "https://www.bctransit.com/squamish/wp-content/uploads/sites/44/2026/08/squ_rg_sept2026.pdf",
-          "sourceType": "system_map",
+          "sourceType": "rider_guide",
           "localFile": "squamish-system-map.pdf"
         }
       ],
       "definitions": [],
-      "representativeThresholdMinutes": null
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
     },
     {
       "auditOrder": 40,
@@ -1708,9 +1746,11 @@
       "region": "British Columbia",
       "status": "no_definition_on_map",
       "mapCandidates": [],
-      "preservedFiles": [],
+      "preservedFiles": [
+        "whistler-system-map.pdf"
+      ],
       "mapDate": null,
-      "mapPageOrSection": "map and route legend",
+      "mapPageOrSection": "rider guide p. 4, Whistler Transit System Network map and legend",
       "exactMapWording": null,
       "thresholdMinutes": null,
       "thresholdText": null,
@@ -1718,18 +1758,19 @@
       "days": null,
       "geography": null,
       "mode": null,
-      "evidenceNotes": "Current official BC Transit Whistler rider guide/map reviewed manually. It does not name a frequent/high-frequency definition. The downloaded source was a zero-page PDF and was not retained as evidence.",
+      "evidenceNotes": "Current official BC Transit Whistler rider guide visually reviewed. The system-network map and legend do not name a frequent/high-frequency definition; the previously invalid local copy was replaced with the valid 12-page PDF.",
       "reviewBatch": 1,
-      "evidenceSourceType": "system_map",
+      "evidenceSourceType": "rider_guide",
       "reviewSources": [
         {
           "url": "https://www.bctransit.com/whistler/wp-content/uploads/sites/51/2026/06/whi_rg_july2026.pdf",
-          "sourceType": "system_map",
-          "localFile": null
+          "sourceType": "rider_guide",
+          "localFile": "whistler-system-map.pdf"
         }
       ],
       "definitions": [],
-      "representativeThresholdMinutes": null
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
     },
     {
       "auditOrder": 41,
@@ -1760,7 +1801,8 @@
         }
       ],
       "definitions": [],
-      "representativeThresholdMinutes": null
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
     },
     {
       "auditOrder": 42,
@@ -1768,11 +1810,13 @@
       "agencyName": "Codiac Transpo (Moncton)",
       "country": "Canada",
       "region": "New Brunswick",
-      "status": "map_unavailable",
+      "status": "no_definition_on_map",
       "mapCandidates": [],
-      "preservedFiles": [],
+      "preservedFiles": [
+        "codiac-system-map.pdf"
+      ],
       "mapDate": null,
-      "mapPageOrSection": "official map search",
+      "mapPageOrSection": "system map",
       "exactMapWording": null,
       "thresholdMinutes": null,
       "thresholdText": null,
@@ -1780,18 +1824,19 @@
       "days": null,
       "geography": null,
       "mode": null,
-      "evidenceNotes": "The located Codiac source was a council/planning document, not a current rider-facing system map. It was not accepted as map evidence.",
+      "evidenceNotes": "Current official Codiac Transpo system map visually reviewed. It shows the route network and transfer hubs but does not name a frequent/high-frequency definition.",
       "reviewBatch": 1,
       "evidenceSourceType": "system_map",
       "reviewSources": [
         {
-          "url": "https://www5.moncton.ca/docs/councilmeetings/2026/COTW/2026-01-26-COTW-Agenda-Full.pdf",
+          "url": "https://www5.moncton.ca/docs/codiac/WEB_MAP_CodiacTranpo.pdf",
           "sourceType": "system_map",
-          "localFile": null
+          "localFile": "codiac-system-map.pdf"
         }
       ],
       "definitions": [],
-      "representativeThresholdMinutes": null
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
     },
     {
       "auditOrder": 43,
@@ -1824,7 +1869,8 @@
         }
       ],
       "definitions": [],
-      "representativeThresholdMinutes": null
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
     },
     {
       "auditOrder": 44,
@@ -1836,7 +1882,7 @@
       "mapCandidates": [],
       "preservedFiles": [],
       "mapDate": null,
-      "mapPageOrSection": "official map search",
+      "mapPageOrSection": "official system-map link",
       "exactMapWording": null,
       "thresholdMinutes": null,
       "thresholdText": null,
@@ -1844,18 +1890,19 @@
       "days": null,
       "geography": null,
       "mode": null,
-      "evidenceNotes": "Official Saint John Transit routes page reviewed manually. No current system-map file with a named frequent definition was verified.",
+      "evidenceNotes": "Official Saint John Transit page links to a full system map in ArcGIS, but the linked map currently resolves to an Item Replacement page and no current map could be reviewed.",
       "reviewBatch": 1,
       "evidenceSourceType": "system_map",
       "reviewSources": [
         {
-          "url": "https://saintjohn.ca/en/transit/routes-stops-and-schedules",
+          "url": "https://saintjohn.maps.arcgis.com/apps/MapSeries/index.html?appid=835773aa511845568f56b1aed27f5e0f",
           "sourceType": "system_map",
           "localFile": null
         }
       ],
       "definitions": [],
-      "representativeThresholdMinutes": null
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
     },
     {
       "auditOrder": 45,
@@ -1886,7 +1933,8 @@
         }
       ],
       "definitions": [],
-      "representativeThresholdMinutes": null
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
     },
     {
       "auditOrder": 46,
@@ -1894,11 +1942,13 @@
       "agencyName": "Yellowknife Transit",
       "country": "Canada",
       "region": "Northwest Territories",
-      "status": "map_unavailable",
+      "status": "no_definition_on_map",
       "mapCandidates": [],
-      "preservedFiles": [],
+      "preservedFiles": [
+        "yellowknife-system-map.pdf"
+      ],
       "mapDate": null,
-      "mapPageOrSection": "official map search",
+      "mapPageOrSection": "rider guide p. 1, route map and legend",
       "exactMapWording": null,
       "thresholdMinutes": null,
       "thresholdText": null,
@@ -1906,18 +1956,19 @@
       "days": null,
       "geography": null,
       "mode": null,
-      "evidenceNotes": "Official Yellowknife schedules and maps page reviewed manually. No current system-map file with a named frequent definition was verified.",
+      "evidenceNotes": "Current official Yellowknife Transit rider guide visually reviewed. The route map and legend do not name a frequent/high-frequency definition.",
       "reviewBatch": 1,
-      "evidenceSourceType": "system_map",
+      "evidenceSourceType": "rider_guide",
       "reviewSources": [
         {
-          "url": "https://www.yellowknife.ca/en/living-here/schedules-and-maps.aspx",
-          "sourceType": "system_map",
-          "localFile": null
+          "url": "https://www.yellowknife.ca/2026-transit-riders-guide",
+          "sourceType": "rider_guide",
+          "localFile": "yellowknife-system-map.pdf"
         }
       ],
       "definitions": [],
-      "representativeThresholdMinutes": null
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
     },
     {
       "auditOrder": 47,
@@ -1925,7 +1976,7 @@
       "agencyName": "Barrie Transit",
       "country": "Canada",
       "region": "Ontario",
-      "status": "map_unavailable",
+      "status": "no_definition_on_map",
       "mapCandidates": [
         {
           "url": "https://barrie.legistar.com/View.ashx?GUID=D5A4339A-1E6A-47E7-9785-9685CBE4751A&ID=12027672&M=F",
@@ -1938,9 +1989,11 @@
           "localFile": null
         }
       ],
-      "preservedFiles": [],
+      "preservedFiles": [
+        "barrie-system-map.pdf"
+      ],
       "mapDate": null,
-      "mapPageOrSection": "official map search",
+      "mapPageOrSection": "map title and legend",
       "exactMapWording": null,
       "thresholdMinutes": null,
       "thresholdText": null,
@@ -1948,18 +2001,19 @@
       "days": null,
       "geography": null,
       "mode": null,
-      "evidenceNotes": "The current Barrie Transit Network Map URL was inaccessible during review. No current map with a named frequent definition was verified.",
+      "evidenceNotes": "Current official Barrie Transit Network Map visually reviewed. It labels fixed, express, and on-demand service but does not name a frequent/high-frequency definition.",
       "reviewBatch": 1,
       "evidenceSourceType": "system_map",
       "reviewSources": [
         {
           "url": "https://www.barrie.ca/Transit-Network-Map.pdf",
           "sourceType": "system_map",
-          "localFile": null
+          "localFile": "barrie-system-map.pdf"
         }
       ],
       "definitions": [],
-      "representativeThresholdMinutes": null
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
     },
     {
       "auditOrder": 48,
@@ -1967,11 +2021,13 @@
       "agencyName": "Belleville Transit",
       "country": "Canada",
       "region": "Ontario",
-      "status": "map_unavailable",
+      "status": "no_definition_on_map",
       "mapCandidates": [],
-      "preservedFiles": [],
+      "preservedFiles": [
+        "belleville-system-map.pdf"
+      ],
       "mapDate": null,
-      "mapPageOrSection": "official map search",
+      "mapPageOrSection": "map legend",
       "exactMapWording": null,
       "thresholdMinutes": null,
       "thresholdText": null,
@@ -1979,18 +2035,19 @@
       "days": null,
       "geography": null,
       "mode": null,
-      "evidenceNotes": "Official Belleville Transit routes page reviewed manually. No current system-map file with a named frequent definition was verified.",
+      "evidenceNotes": "Current official Belleville Transit route map and schedule visually reviewed. It labels routes and service information but does not name a frequent/high-frequency definition.",
       "reviewBatch": 1,
       "evidenceSourceType": "system_map",
       "reviewSources": [
         {
-          "url": "https://www.belleville.ca/walk-ride-and-drive/transit/routes-and-schedules/",
+          "url": "https://media-003-ca.cdn.govstack.com/belleville-ca/media/p0wgfebs/new-transit-routes-and-schedules.pdf",
           "sourceType": "system_map",
-          "localFile": null
+          "localFile": "belleville-system-map.pdf"
         }
       ],
       "definitions": [],
-      "representativeThresholdMinutes": null
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
     },
     {
       "auditOrder": 49,
@@ -2004,7 +2061,7 @@
         "brampton-system-map.pdf"
       ],
       "mapDate": null,
-      "mapPageOrSection": "map legend",
+      "mapPageOrSection": "map title and legend",
       "exactMapWording": null,
       "thresholdMinutes": null,
       "thresholdText": null,
@@ -2012,7 +2069,7 @@
       "days": null,
       "geography": null,
       "mode": null,
-      "evidenceNotes": "Official Brampton weekday system map reviewed manually. It shows routes and service information but does not name a frequent/high-frequency definition.",
+      "evidenceNotes": "Official Brampton weekday system map visually reviewed. It shows routes and reduced-service information but does not name a frequent/high-frequency definition.",
       "reviewBatch": 1,
       "evidenceSourceType": "system_map",
       "reviewSources": [
@@ -2023,7 +2080,8 @@
         }
       ],
       "definitions": [],
-      "representativeThresholdMinutes": null
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
     },
     {
       "auditOrder": 50,
@@ -2051,7 +2109,7 @@
       "days": null,
       "geography": null,
       "mode": null,
-      "evidenceNotes": "Current official Burlington system map reviewed manually. It publishes frequency bands but does not name a frequent/high-frequency category, so it is not counted as a named frequent definition.",
+      "evidenceNotes": "Current official Burlington system map visually reviewed. It publishes frequency bands but does not name a frequent/high-frequency category, so it is not counted as a named frequent definition.",
       "reviewBatch": 1,
       "evidenceSourceType": "system_map",
       "reviewSources": [
@@ -2062,7 +2120,8 @@
         }
       ],
       "definitions": [],
-      "representativeThresholdMinutes": null
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
     }
   ],
   "updatedAt": "2026-09-18"
