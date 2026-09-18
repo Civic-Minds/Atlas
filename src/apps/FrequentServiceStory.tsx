@@ -105,13 +105,13 @@ export default function FrequentServiceStory({ onExploreMap }: Props) {
                   <div key={bar.minutes} className="grid grid-cols-[4.5rem_1fr_3rem] items-center gap-3 text-sm">
                     <span className="font-black text-[var(--text-primary)]">{bar.minutes} min</span>
                     <div className="h-3 overflow-hidden rounded-full bg-[var(--bg-stat)]">
-                      <div className="h-full rounded-full bg-[var(--accent)]" style={{ width: `${(bar.agencies / maxBar) * 100}%` }} />
+                      <div className="h-full rounded-full" style={{ width: `${(bar.agencies / maxBar) * 100}%`, backgroundColor: bar.minutes === 15 ? 'var(--accent)' : 'var(--text-muted)' }} />
                     </div>
                     <span className="text-right tabular-nums text-[var(--text-muted)]">{bar.agencies}</span>
                   </div>
                 ))}
               </div>
-              <p className="mt-5 text-xs leading-5 text-[var(--text-dim)]">Agencies publishing this threshold. An agency can appear in more than one bar when it publishes multiple tiers or periods.</p>
+              <p className="mt-5 text-xs leading-5 text-[var(--text-dim)]">Ordered by published headway. Bar length shows the number of agencies; the highlighted 15-minute bar is the most common. An agency can appear more than once when it publishes multiple tiers or periods.</p>
             </div>
           </section>
 

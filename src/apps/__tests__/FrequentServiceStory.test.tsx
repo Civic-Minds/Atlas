@@ -15,7 +15,7 @@ describe('FrequentServiceStory', () => {
     expect(screen.getByText('Yellowknife')).toBeInTheDocument();
     expect(screen.getByText('Yellowknife Transit')).toBeInTheDocument();
     expect(screen.getByText('No named definition found')).toBeInTheDocument();
-    expect(screen.getByText('Agencies publishing this threshold. An agency can appear in more than one bar when it publishes multiple tiers or periods.')).toBeInTheDocument();
+    expect(screen.getByText(/Ordered by published headway/)).toBeInTheDocument();
   });
 
   it('hands readers off to the existing map', () => {
@@ -29,11 +29,16 @@ describe('FrequentServiceStory', () => {
   it('keeps the story chart aligned with the generated research analysis', () => {
     const analysis = JSON.parse(fs.readFileSync('docs/research/frequent-service-analysis-2026-09.json', 'utf8'));
     const counts = analysis.namedNumericThresholds.agencyCountsByPublishedThreshold;
-    expect(frequentServiceStoryStats.thresholdBars.slice(0, 4)).toEqual([
-      { minutes: 15, agencies: counts['15'] },
-      { minutes: 30, agencies: counts['30'] },
+    expect(frequentServiceStoryStats.thresholdBars).toEqual([
+      { minutes: 5, agencies: counts['5'] },
+      { minutes: 6, agencies: counts['6'] },
+      { minutes: 7, agencies: counts['7'] },
       { minutes: 10, agencies: counts['10'] },
+      { minutes: 12, agencies: counts['12'] },
+      { minutes: 15, agencies: counts['15'] },
       { minutes: 20, agencies: counts['20'] },
+      { minutes: 30, agencies: counts['30'] },
+      { minutes: 60, agencies: counts['60'] },
     ]);
   });
 });

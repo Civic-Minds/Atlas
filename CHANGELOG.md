@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Reordered the frequent-service threshold chart numerically and highlighted the most common 15-minute value so the graph reads as a scale.
 - Reworked the Frequent Service story examples into a readable editorial sequence instead of a dashboard-like card grid.
 - Added a guided Frequent Service research story with source-backed North American examples, threshold context, and a handoff into the interactive map.
 - Added a reproducible analysis of the 500-agency frequent-service catalog, separating named definitions from broader numeric frequency tiers so Atlas can make a source-backed sample-specific research claim.
