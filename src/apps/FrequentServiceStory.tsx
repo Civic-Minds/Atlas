@@ -81,10 +81,10 @@ export default function FrequentServiceStory({ onExploreMap }: Props) {
               <p className="text-[0.7rem] uppercase tracking-[0.24em] font-black text-[var(--accent)]">Explore the sample</p>
               <h2 id="chart-heading" className="mt-3 text-3xl sm:text-4xl font-black tracking-tight">There is no single “frequent.”</h2>
               <p className="mt-5 text-base leading-8 text-[var(--text-muted)]">
-                Pick a published threshold to see how agencies turn that number into a real service promise. The chart covers the 88 agencies that explicitly named a frequent or high-frequency tier with a numeric threshold.
+                Pick a published threshold to see how agencies turn that number into a real service promise. The chart covers the 87 agencies that explicitly named a frequent or high-frequency tier with a numeric threshold.
               </p>
             </div>
-            <div className="mt-10" aria-label="Interactive chart showing the number of agencies by the slowest published period in their named frequent-service product">
+            <div className="mt-10" aria-label="Interactive chart showing the number of agencies by the selected published frequent-service threshold">
               <div className="space-y-4">
                 {frequentServiceStoryStats.headwayBars.map(bar => (
                   <button
@@ -104,10 +104,10 @@ export default function FrequentServiceStory({ onExploreMap }: Props) {
                   </button>
                 ))}
               </div>
-              <p className="mt-5 text-xs leading-5 text-[var(--text-dim)]">Each agency appears once, using the slowest period published for its named frequent product. Select a bar to see illustrative examples; these are not every agency in that group.</p>
+              <p className="mt-5 text-xs leading-5 text-[var(--text-dim)]">Each agency appears once. Where the catalog identifies a primary map-facing threshold, that is used; otherwise the slowest period in the named tier is used. Select a bar to see illustrative examples.</p>
             </div>
             <div className="mt-10 border-t border-[var(--border-primary)] pt-8" aria-live="polite">
-              <p className="text-sm font-bold text-[var(--text-muted)]">{selectedBar?.agencies} agencies · slowest published period: {selectedMinutes} minutes</p>
+              <p className="text-sm font-bold text-[var(--text-muted)]">{selectedBar?.agencies} agencies · selected published threshold: {selectedMinutes} minutes</p>
               <p className="mt-2 max-w-2xl text-base leading-7 text-[var(--text-muted)]">
                 The same number can describe a whole network, a corridor, only part of the day, or a tier that drops to a slower service outside peak hours.
               </p>

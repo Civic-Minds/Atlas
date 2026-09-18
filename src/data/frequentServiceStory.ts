@@ -16,17 +16,16 @@ export interface FrequentServiceStoryExample {
 
 export const frequentServiceStoryStats = {
   agenciesReviewed: 500,
-  namedNumericAgencies: 88,
+  namedNumericAgencies: 87,
   noDefinitionFound: 255,
   countries: 4,
   headwayBars: [
     { minutes: 10, agencies: 3 },
     { minutes: 12, agencies: 2 },
     { minutes: 14, agencies: 1 },
-    { minutes: 15, agencies: 51 },
+    { minutes: 15, agencies: 52 },
     { minutes: 20, agencies: 11 },
     { minutes: 30, agencies: 18 },
-    { minutes: 60, agencies: 2 },
   ],
 };
 
@@ -104,23 +103,10 @@ export const frequentServiceStoryExamples: FrequentServiceStoryExample[] = [
     headline: 'A frequent tier with a slower rail period',
     summary: 'UTA labels bus and rail products frequent, but the published periods vary by product and time of day.',
     details: ['15 minutes bus; 30–60 minutes rail', 'FrontRunner reaches 60 minutes off-peak', 'Bus and rail products'],
-    thresholdMinutes: [60],
+    thresholdMinutes: [15],
     sourceLabel: 'UTA Go Route and service plan',
     sourceUrl: 'https://vehiclelocator.rideuta.com/Services/Go-Route',
     tone: 'purple',
-  },
-  {
-    id: 'davenport',
-    city: 'Davenport',
-    agency: 'Davenport CitiBus',
-    scale: 'smaller-system',
-    headline: 'The tier includes 60-minute routes',
-    summary: 'CitiBus calls its route service frequent while publishing either 30- or 60-minute frequencies by route.',
-    details: ['30 or 60 minutes by route', 'Route-specific', 'Fixed-route bus network'],
-    thresholdMinutes: [60],
-    sourceLabel: 'CitiBus system map',
-    sourceUrl: 'https://www.davenportiowa.com/common/pages/GetFile.ashx?key=TiUxAYDb',
-    tone: 'green',
   },
   {
     id: 'yellowknife',

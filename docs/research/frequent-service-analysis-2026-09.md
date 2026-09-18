@@ -75,14 +75,14 @@ This is an Atlas-sample result, not a universal global claim. The catalog contai
 | 120 | 7 agency-tier observations |
 | 180 | 2 agency-tier observations |
 
-122 agencies contain a tier or source text explicitly using “frequent” or “high-frequency.” This named subset is smaller than the full numeric-frequency group because some agencies publish numeric service bands without naming them “frequent.”
+121 agencies contain a tier or source text explicitly using “frequent” or “high-frequency.” This named subset is smaller than the full numeric-frequency group because some agencies publish numeric service bands without naming them “frequent.”
 
-Among the 88 agencies whose named frequent/high-frequency tier also has numeric evidence, the most common published values are 15 minutes, 30 minutes, 10 minutes. These are agency-tier observations, not a claim that every agency uses the same threshold.
+Among the 87 agencies whose named frequent/high-frequency tier also has numeric evidence, the most common published values are 15 minutes, 30 minutes, 10 minutes. These are agency-tier observations, not a claim that every agency uses the same threshold.
 
 | Named numeric threshold | Observations |
 |---:|---:|
 | 15 | 75 agency-tier observations |
-| 30 | 22 agency-tier observations |
+| 30 | 21 agency-tier observations |
 | 10 | 15 agency-tier observations |
 | 20 | 14 agency-tier observations |
 | 6 | 8 agency-tier observations |
@@ -92,13 +92,13 @@ Among the 88 agencies whose named frequent/high-frequency tier also has numeric 
 | 2 | 4 agency-tier observations |
 | 8 | 3 agency-tier observations |
 | 9 | 3 agency-tier observations |
-| 60 | 2 agency-tier observations |
 | 1 | 1 agency-tier observations |
 | 3 | 1 agency-tier observations |
 | 4 | 1 agency-tier observations |
 | 11 | 1 agency-tier observations |
 | 14 | 1 agency-tier observations |
 | 16 | 1 agency-tier observations |
+| 60 | 1 agency-tier observations |
 
 ## Interpretation
 

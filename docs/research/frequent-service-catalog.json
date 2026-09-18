@@ -958,6 +958,7 @@
     },
     {
       "agencyId": "uta",
+      "storyThresholdMinutes": 15,
       "agencyName": "Utah Transit Authority",
       "country": "United States",
       "region": "Utah",
@@ -12352,15 +12353,15 @@
       "reviewedAt": "2026-09-18",
       "sources": [
         {
-          "url": "https://www.davenportiowa.com/common/pages/GetFile.ashx?key=TiUxAYDb",
-          "type": "system_map"
+          "url": "https://www.davenportiowa.com/services/citibus_transit/routes___schedules_-_citibus__print____qc_transit",
+          "type": "route_service_page"
         }
       ],
       "tiers": [
         {
-          "label": "Frequent route service",
+          "label": "Published route frequency bands",
           "thresholdMinutes": 30,
-          "thresholdText": "CitiBus route materials state that routes operate on either 30-minute or 60-minute frequencies.",
+          "thresholdText": "Route materials state that routes operate on either 30-minute or 60-minute frequencies; no rider-facing frequent-service label was found.",
           "span": "route-specific",
           "days": "route-specific",
           "geography": "fixed-route network",
@@ -12368,9 +12369,9 @@
           "kind": "frequency"
         },
         {
-          "label": "Regular route service",
+          "label": "Published route frequency bands",
           "thresholdMinutes": 60,
-          "thresholdText": "CitiBus route materials state that routes operate on either 30-minute or 60-minute frequencies.",
+          "thresholdText": "Route materials state that routes operate on either 30-minute or 60-minute frequencies; no rider-facing frequent-service label was found.",
           "span": "route-specific",
           "days": "route-specific",
           "geography": "fixed-route network",

@@ -89,6 +89,22 @@ function maximumPublishedHeadwayCounts(records) {
   return Object.fromEntries([...counts.entries()].sort(([a], [b]) => Number(a) - Number(b)));
 }
 
+function storyThresholdCounts(records) {
+  const counts = new Map();
+  for (const agency of records) {
+    const override = agency.storyThresholdMinutes;
+    const values = Number.isFinite(override)
+      ? [override]
+      : agency.evidence
+        .filter((evidence) => evidence.namedFrequency && evidence.numericFrequency)
+        .flatMap((evidence) => evidence.publishedThresholdMinutes);
+    if (values.length === 0) continue;
+    const threshold = Number.isFinite(override) ? override : Math.max(...values);
+    counts.set(threshold, (counts.get(threshold) ?? 0) + 1);
+  }
+  return Object.fromEntries([...counts.entries()].sort(([a], [b]) => Number(a) - Number(b)));
+}
+
 const agencies = catalog.agencies.map((agency) => {
   const category = classifyAgency(agency);
   const evidence = agency.tiers.flatMap((tier, tierIndex) => {
@@ -120,6 +136,7 @@ const agencies = catalog.agencies.map((agency) => {
     evidence,
     sourceCount: agency.sources.length,
     sourceUrls: agency.sources.map((source) => source.url),
+    storyThresholdMinutes: agency.storyThresholdMinutes ?? null,
   };
 });
 
@@ -168,6 +185,7 @@ const analysis = {
     publishedThresholdMinutes: sortedNumberCounts(namedNumericEvidence.flatMap((evidence) => evidence.publishedThresholdMinutes)),
     agencyCountsByPublishedThreshold: uniqueAgencyThresholdCounts(namedNumericAgencies),
     agencyCountsByMaximumPublishedHeadway: maximumPublishedHeadwayCounts(namedNumericAgencies),
+    agencyCountsByStoryThreshold: storyThresholdCounts(namedNumericAgencies),
   },
   namedFrequentEvidence: {
     agencyCount: agencies.filter((agency) => agency.evidence.some((evidence) => evidence.namedFrequency)).length,

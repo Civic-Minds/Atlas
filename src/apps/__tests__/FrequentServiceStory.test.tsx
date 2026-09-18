@@ -15,7 +15,7 @@ describe('FrequentServiceStory', () => {
     expect(screen.getByRole('tab', { name: 'Winnipeg' })).toBeInTheDocument();
     expect(screen.getByRole('tab', { name: 'Nanaimo' })).toBeInTheDocument();
     expect(screen.getByRole('tab', { name: 'Asheville' })).toBeInTheDocument();
-    expect(screen.getByText(/Each agency appears once, using the slowest period/)).toBeInTheDocument();
+    expect(screen.getByText(/Each agency appears once/)).toBeInTheDocument();
   });
 
   it('hands readers off to the existing map', () => {
@@ -40,7 +40,7 @@ describe('FrequentServiceStory', () => {
 
   it('keeps the story chart aligned with the generated research analysis', () => {
     const analysis = JSON.parse(fs.readFileSync('docs/research/frequent-service-analysis-2026-09.json', 'utf8'));
-    const counts = analysis.namedNumericThresholds.agencyCountsByMaximumPublishedHeadway;
+    const counts = analysis.namedNumericThresholds.agencyCountsByStoryThreshold;
     expect(frequentServiceStoryStats.headwayBars).toEqual([
       { minutes: 10, agencies: counts['10'] },
       { minutes: 12, agencies: counts['12'] },
@@ -48,7 +48,6 @@ describe('FrequentServiceStory', () => {
       { minutes: 15, agencies: counts['15'] },
       { minutes: 20, agencies: counts['20'] },
       { minutes: 30, agencies: counts['30'] },
-      { minutes: 60, agencies: counts['60'] },
     ]);
   });
 
@@ -59,14 +58,14 @@ describe('FrequentServiceStory', () => {
 
     expect(ddot.evidence.some((evidence: { namedFrequency: boolean }) => evidence.namedFrequency)).toBe(false);
     expect(barta.evidence.some((evidence: { namedFrequency: boolean }) => evidence.namedFrequency)).toBe(false);
-    expect(analysis.namedNumericThresholds.agencyCountsByMaximumPublishedHeadway).toEqual({
+    expect(analysis.namedNumericThresholds.agencyCountsByStoryThreshold).toEqual({
       10: 3,
       12: 2,
       14: 1,
-      15: 51,
+      15: 52,
       20: 11,
       30: 18,
-      60: 2,
     });
+    expect(analysis.agencies.find((agency: { agencyId: string }) => agency.agencyId === 'davenport').evidence.some((evidence: { namedFrequency: boolean }) => evidence.namedFrequency)).toBe(false);
   });
 });
