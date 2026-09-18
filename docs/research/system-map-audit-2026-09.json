@@ -24,7 +24,7 @@
       "agencyName": "Toronto Transit Commission",
       "country": "Canada",
       "region": "Ontario",
-      "status": "pending_map_review",
+      "status": "numeric_definition_on_map",
       "mapCandidates": [
         {
           "url": "https://cdn.ttc.ca/-/media/Project/TTC/DevProto/Images/Home/Routes-and-Schedules/Landing-page-pdfs/TTC_SystemMap.pdf?rev=88203dbcf60c47738cf9acc980c45cad",
@@ -35,16 +35,16 @@
       "preservedFiles": [
         "ttc-1"
       ],
-      "mapDate": null,
-      "mapPageOrSection": null,
-      "exactMapWording": null,
-      "thresholdMinutes": null,
-      "thresholdText": null,
-      "serviceSpan": null,
-      "days": null,
-      "geography": null,
-      "mode": null,
-      "evidenceNotes": null
+      "mapDate": "September 2025",
+      "mapPageOrSection": "page 1, map legend",
+      "exactMapWording": "10-Minute Network",
+      "thresholdMinutes": 10,
+      "thresholdText": "10-Minute Network",
+      "serviceSpan": "6 a.m.–1 a.m. Monday–Saturday; Sunday starts later",
+      "days": "7 days",
+      "geography": "network",
+      "mode": "bus and rail",
+      "evidenceNotes": "The system-map legend visibly identifies the 10-Minute Network and its operating span."
     },
     {
       "auditOrder": 2,
@@ -52,7 +52,7 @@
       "agencyName": "Calgary Transit",
       "country": "Canada",
       "region": "Alberta",
-      "status": "pending_map_review",
+      "status": "no_definition_on_map",
       "mapCandidates": [
         {
           "url": "https://www.calgarytransit.com/content/dam/transit/rider-information/System%20Map%20Dec%202025.pdf",
@@ -63,8 +63,8 @@
       "preservedFiles": [
         "calgary-1"
       ],
-      "mapDate": null,
-      "mapPageOrSection": null,
+      "mapDate": "2025",
+      "mapPageOrSection": "page 1, map legend",
       "exactMapWording": null,
       "thresholdMinutes": null,
       "thresholdText": null,
@@ -72,7 +72,7 @@
       "days": null,
       "geography": null,
       "mode": null,
-      "evidenceNotes": null
+      "evidenceNotes": "The system-map legend lists CTrain, MAX, regular/express routes, and BRT, but no named frequent/high-frequency definition or threshold."
     },
     {
       "auditOrder": 3,
@@ -80,19 +80,28 @@
       "agencyName": "TransLink Vancouver",
       "country": "Canada",
       "region": "British Columbia",
-      "status": "pending_map_review",
-      "mapCandidates": [],
-      "preservedFiles": [],
-      "mapDate": null,
-      "mapPageOrSection": null,
-      "exactMapWording": null,
-      "thresholdMinutes": null,
-      "thresholdText": null,
-      "serviceSpan": null,
-      "days": null,
-      "geography": null,
-      "mode": null,
-      "evidenceNotes": null
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "label": "Frequent Transit Network map",
+          "url": "https://maps.translink.ca/-/media/translink/documents/schedules-and-maps/transit-system-maps/system-maps/frequent_transit_network_of_metro_vancouver_map.pdf",
+          "sourceType": "system_map",
+          "localFile": "translink-vancouver-1"
+        }
+      ],
+      "preservedFiles": [
+        "translink-vancouver-1"
+      ],
+      "mapDate": "Effective September 2025",
+      "mapPageOrSection": "page 1, map legend",
+      "exactMapWording": "The Frequent Transit Network (FTN) is a network of corridors that have transit service every 15 minutes or better",
+      "thresholdMinutes": 15,
+      "thresholdText": "every 15 minutes or better",
+      "serviceSpan": "6 a.m. weekdays; 7 a.m. Saturday; 8 a.m. Sunday; until 9 p.m. daily",
+      "days": "7 days",
+      "geography": "corridor/network",
+      "mode": "bus and SkyTrain",
+      "evidenceNotes": "The preserved official FTN map directly states the 15-minute-or-better definition and shows the service span in the map legend."
     },
     {
       "auditOrder": 4,
@@ -100,11 +109,20 @@
       "agencyName": "Société de transport de Montréal",
       "country": "Canada",
       "region": "Quebec",
-      "status": "pending_map_review",
-      "mapCandidates": [],
-      "preservedFiles": [],
-      "mapDate": null,
-      "mapPageOrSection": null,
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "label": "STM network map 2026",
+          "url": "https://www.stm.info/sites/default/files/media/Stminfo/images/plan_reseau.pdf",
+          "sourceType": "system_map",
+          "localFile": "stm-montreal-1"
+        }
+      ],
+      "preservedFiles": [
+        "stm-montreal-1"
+      ],
+      "mapDate": "2026",
+      "mapPageOrSection": "network map legend",
       "exactMapWording": null,
       "thresholdMinutes": null,
       "thresholdText": null,
@@ -112,7 +130,7 @@
       "days": null,
       "geography": null,
       "mode": null,
-      "evidenceNotes": null
+      "evidenceNotes": "The current official network map was preserved and reviewed. It identifies the network but does not publish a named frequent/high-frequency category or numeric frequent threshold."
     },
     {
       "auditOrder": 5,
@@ -174,7 +192,7 @@
       "agencyName": "Edmonton Transit Service",
       "country": "Canada",
       "region": "Alberta",
-      "status": "pending_map_review",
+      "status": "qualitative_definition_on_map",
       "mapCandidates": [
         {
           "url": "https://www.edmonton.ca/sites/default/files/public-files/ETS-Day-Map-May-2025.pdf?cb=1750622712",
@@ -185,16 +203,16 @@
       "preservedFiles": [
         "edmonton-1"
       ],
-      "mapDate": null,
-      "mapPageOrSection": null,
-      "exactMapWording": null,
+      "mapDate": "May 2025",
+      "mapPageOrSection": "page 1, map legend",
+      "exactMapWording": "Frequent Route",
       "thresholdMinutes": null,
       "thresholdText": null,
       "serviceSpan": null,
       "days": null,
       "geography": null,
       "mode": null,
-      "evidenceNotes": null
+      "evidenceNotes": "The map legend names a Frequent Route but does not publish a numeric threshold beside the label."
     },
     {
       "auditOrder": 8,
@@ -202,19 +220,28 @@
       "agencyName": "Winnipeg Transit",
       "country": "Canada",
       "region": "Manitoba",
-      "status": "pending_map_review",
-      "mapCandidates": [],
-      "preservedFiles": [],
+      "status": "map_unavailable",
+      "mapCandidates": [
+        {
+          "label": "Short Term Network Plan",
+          "url": "https://info.winnipegtransit.com/assets/2793/Short_Term_Network_Plan.pdf",
+          "sourceType": "planning_map",
+          "localFile": "winnipeg-1"
+        }
+      ],
+      "preservedFiles": [
+        "winnipeg-1"
+      ],
       "mapDate": null,
-      "mapPageOrSection": null,
-      "exactMapWording": null,
+      "mapPageOrSection": "page 1, planning-map legend",
+      "exactMapWording": "Frequent Lines — Service every 10–15 minutes",
       "thresholdMinutes": null,
-      "thresholdText": null,
+      "thresholdText": "Service every 10–15 minutes",
       "serviceSpan": null,
       "days": null,
-      "geography": null,
-      "mode": null,
-      "evidenceNotes": null
+      "geography": "network",
+      "mode": "bus",
+      "evidenceNotes": "An official planning map was preserved, but it is not clearly a current rider-facing system map. It is retained for rechecking and excluded from the system-map chart until a current system map is verified."
     },
     {
       "auditOrder": 9,
@@ -222,7 +249,7 @@
       "agencyName": "King County Metro (Seattle)",
       "country": "United States",
       "region": "Washington",
-      "status": "pending_map_review",
+      "status": "numeric_definition_on_map",
       "mapCandidates": [
         {
           "url": "https://kingcounty.gov/en/-/media/king-county/depts/metro/maps/system/09142024/metro-system-map-central",
@@ -233,16 +260,16 @@
       "preservedFiles": [
         "kingcountymetro-1"
       ],
-      "mapDate": null,
-      "mapPageOrSection": null,
-      "exactMapWording": null,
-      "thresholdMinutes": null,
-      "thresholdText": null,
-      "serviceSpan": null,
-      "days": null,
-      "geography": null,
-      "mode": null,
-      "evidenceNotes": null
+      "mapDate": "September 2024",
+      "mapPageOrSection": "page 1, map legend",
+      "exactMapWording": "frequent all-day route (every 15 minutes or less until 6pm Mon–Fri)",
+      "thresholdMinutes": 15,
+      "thresholdText": "every 15 minutes or less until 6pm Mon–Fri",
+      "serviceSpan": "until 6 p.m.",
+      "days": "Monday–Friday",
+      "geography": "route",
+      "mode": "bus",
+      "evidenceNotes": "The system-map legend directly attaches the 15-minute threshold to the frequent all-day route symbol."
     },
     {
       "auditOrder": 10,
@@ -270,7 +297,7 @@
       "agencyName": "OC Transpo",
       "country": "Canada",
       "region": "Ontario",
-      "status": "pending_map_review",
+      "status": "numeric_definition_on_map",
       "mapCandidates": [
         {
           "url": "https://www.octranspo.com/images/files/maps/network_maps/NWTB_System_Map_2025_%28MASTER%29_BRT_27April2025_V1.pdf",
@@ -281,16 +308,16 @@
       "preservedFiles": [
         "ottawa-1"
       ],
-      "mapDate": null,
-      "mapPageOrSection": null,
-      "exactMapWording": null,
-      "thresholdMinutes": null,
-      "thresholdText": null,
-      "serviceSpan": null,
-      "days": null,
-      "geography": null,
-      "mode": null,
-      "evidenceNotes": null
+      "mapDate": "April 2025",
+      "mapPageOrSection": "page 1, map legend",
+      "exactMapWording": "Frequent • Fréquent — Service every 15 minutes or less on weekdays 06:00 to 18:00",
+      "thresholdMinutes": 15,
+      "thresholdText": "Service every 15 minutes or less on weekdays 06:00 to 18:00",
+      "serviceSpan": "06:00–18:00",
+      "days": "weekdays",
+      "geography": "network map routes",
+      "mode": "bus",
+      "evidenceNotes": "The bilingual map legend directly defines the Frequent category and its 15-minute weekday period."
     },
     {
       "auditOrder": 12,
@@ -298,7 +325,7 @@
       "agencyName": "York Region Transit",
       "country": "Canada",
       "region": "Ontario",
-      "status": "pending_map_review",
+      "status": "qualitative_definition_on_map",
       "mapCandidates": [
         {
           "url": "https://www.yrt.ca/en/schedules-and-maps/resources/Documents/system-maps/YRT_FrequentTransitMap_May2025.pdf",
@@ -315,16 +342,16 @@
         "york-region-1",
         "york-region-2"
       ],
-      "mapDate": null,
-      "mapPageOrSection": null,
-      "exactMapWording": null,
+      "mapDate": "May 2025",
+      "mapPageOrSection": "page 1, map title and legend",
+      "exactMapWording": "FREQUENT TRANSIT NETWORK",
       "thresholdMinutes": null,
       "thresholdText": null,
       "serviceSpan": null,
       "days": null,
       "geography": null,
       "mode": null,
-      "evidenceNotes": null
+      "evidenceNotes": "The map names a Frequent Transit Network and FTN tiers but does not state a numeric headway threshold."
     },
     {
       "auditOrder": 13,
@@ -360,7 +387,7 @@
       "agencyName": "MBTA",
       "country": "United States",
       "region": "Massachusetts",
-      "status": "pending_map_review",
+      "status": "numeric_definition_on_map",
       "mapCandidates": [
         {
           "url": "https://mbta.getanchor.io/maps.html",
@@ -372,15 +399,15 @@
         "mbta-1"
       ],
       "mapDate": null,
-      "mapPageOrSection": null,
-      "exactMapWording": null,
-      "thresholdMinutes": null,
-      "thresholdText": null,
+      "mapPageOrSection": "official Frequent Bus Route Map page and map caption",
+      "exactMapWording": "Frequent Bus Routes, which arrive every 15 minutes or better",
+      "thresholdMinutes": 15,
+      "thresholdText": "every 15 minutes or better",
       "serviceSpan": null,
       "days": null,
-      "geography": null,
-      "mode": null,
-      "evidenceNotes": null
+      "geography": "route/network",
+      "mode": "bus",
+      "evidenceNotes": "The preserved official MBTA map page identifies the map as Frequent Bus Route Map and its caption defines the routes as every 15 minutes or better."
     },
     {
       "auditOrder": 15,
@@ -388,14 +415,10 @@
       "agencyName": "Los Angeles Metro",
       "country": "United States",
       "region": "California",
-      "status": "pending_map_review",
+      "status": "numeric_definition_on_map",
       "mapCandidates": [
         {
-          "url": "https://www.metro.net/riding/schedules/",
-          "sourceType": "system_map",
-          "localFile": "la-metro-1"
-        },
-        {
+          "label": "Frequent Service Network",
           "url": "https://cdn.beta.metro.net/wp-content/uploads/2026/05/04165451/26-1718_SysOverview_HiFreq_online_DCR.pdf",
           "sourceType": "system_map",
           "localFile": "la-metro-2"
@@ -405,16 +428,16 @@
         "la-metro-1",
         "la-metro-2"
       ],
-      "mapDate": null,
-      "mapPageOrSection": null,
-      "exactMapWording": null,
-      "thresholdMinutes": null,
-      "thresholdText": null,
-      "serviceSpan": null,
-      "days": null,
-      "geography": null,
-      "mode": null,
-      "evidenceNotes": null
+      "mapDate": "2026",
+      "mapPageOrSection": "page 1, map title and legend",
+      "exactMapWording": "Frequent Service Network — operate every 15 minutes or less from 6am–6pm",
+      "thresholdMinutes": 15,
+      "thresholdText": "15 minutes or less from 6 a.m.–6 p.m.",
+      "serviceSpan": "6 a.m.–6 p.m.",
+      "days": "not specified on reviewed map",
+      "geography": "network",
+      "mode": "bus",
+      "evidenceNotes": "The official map is explicitly titled Frequent Service Network and states the 15-minute threshold in its legend."
     },
     {
       "auditOrder": 16,
@@ -470,19 +493,28 @@
       "agencyName": "Chicago Transit Authority",
       "country": "United States",
       "region": "Illinois",
-      "status": "pending_map_review",
-      "mapCandidates": [],
-      "preservedFiles": [],
-      "mapDate": null,
-      "mapPageOrSection": null,
-      "exactMapWording": null,
+      "status": "qualitative_definition_on_map",
+      "mapCandidates": [
+        {
+          "label": "CTA system map brochure",
+          "url": "https://www.transitchicago.com/assets/1/6/ctamap_SystemMap.pdf",
+          "sourceType": "system_map",
+          "localFile": "cta-1"
+        }
+      ],
+      "preservedFiles": [
+        "cta-1"
+      ],
+      "mapDate": "August 2026",
+      "mapPageOrSection": "page 1, map legend",
+      "exactMapWording": "CTA frequent routes",
       "thresholdMinutes": null,
       "thresholdText": null,
       "serviceSpan": null,
       "days": null,
-      "geography": null,
-      "mode": null,
-      "evidenceNotes": null
+      "geography": "route/network",
+      "mode": "bus",
+      "evidenceNotes": "The official system-map legend includes a CTA frequent routes symbol, but the map does not define it with a numeric headway."
     },
     {
       "auditOrder": 19,
@@ -530,7 +562,7 @@
       "agencyName": "Utah Transit Authority",
       "country": "United States",
       "region": "Utah",
-      "status": "pending_map_review",
+      "status": "numeric_definition_on_map",
       "mapCandidates": [
         {
           "url": "https://www.rideuta.com/-/media/Files/Current-Projects/Five-Year-Service-Plan/UTA_Five_Year_Service_Plan2023_FINAL.pdf",
@@ -541,16 +573,16 @@
       "preservedFiles": [
         "uta-1"
       ],
-      "mapDate": null,
-      "mapPageOrSection": null,
-      "exactMapWording": null,
-      "thresholdMinutes": null,
-      "thresholdText": null,
-      "serviceSpan": null,
-      "days": null,
-      "geography": null,
-      "mode": null,
-      "evidenceNotes": null
+      "mapDate": "2023",
+      "mapPageOrSection": "map pages, route legend",
+      "exactMapWording": "Frequent bus — Runs every 15 minutes",
+      "thresholdMinutes": 15,
+      "thresholdText": "Runs every 15 minutes",
+      "serviceSpan": "shown on map by route/product",
+      "days": "shown on map by route/product",
+      "geography": "route/network",
+      "mode": "bus",
+      "evidenceNotes": "The preserved official UTA map pages label Frequent bus and state Runs every 15 minutes. This is the map-facing definition; slower product-specific periods do not replace it."
     },
     {
       "auditOrder": 22,
@@ -1151,7 +1183,7 @@
       "agencyName": "Burlington Transit",
       "country": "Canada",
       "region": "Ontario",
-      "status": "pending_map_review",
+      "status": "no_definition_on_map",
       "mapCandidates": [
         {
           "url": "https://www.burlington.ca/en/transit/resources/Schedules-and-Routes/Schedules-and-Maps/System-Map---Frequency---2025-Nov.pdf",
@@ -1162,16 +1194,16 @@
       "preservedFiles": [
         "burlington-1"
       ],
-      "mapDate": null,
-      "mapPageOrSection": null,
-      "exactMapWording": null,
+      "mapDate": "November 2025",
+      "mapPageOrSection": "page 1, frequency legend",
+      "exactMapWording": "Every 15 minutes or better daytime; Every 15 minutes or better peak; Every 30 minutes or better off-peak; Every 30–60 minutes or better; Every 45 minutes",
       "thresholdMinutes": null,
       "thresholdText": null,
       "serviceSpan": null,
       "days": null,
       "geography": null,
       "mode": null,
-      "evidenceNotes": null
+      "evidenceNotes": "The map publishes numeric frequency bands, but the reviewed legend does not name a Frequent or High-Frequency category. Retain as numeric service context, not a named frequent definition."
     }
   ]
 }
