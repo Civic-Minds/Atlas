@@ -726,14 +726,14 @@
       ],
       "mapDate": null,
       "mapPageOrSection": "map title and legend",
-      "exactMapWording": "Frequent Service Network every 15 minutes or less from 6am-6pm.",
+      "exactMapWording": "Frequent Service Network (15 min. or better weekdays); A thick line shows a frequency of 15 minutes or better.",
       "thresholdMinutes": 15,
-      "thresholdText": "every 15 minutes or less from 6am–6pm",
-      "serviceSpan": null,
-      "days": null,
+      "thresholdText": "15 minutes or better weekdays",
+      "serviceSpan": "weekday service",
+      "days": "weekdays",
       "geography": null,
       "mode": null,
-      "evidenceNotes": "Current official Metro Frequent Service Network map reviewed manually.",
+      "evidenceNotes": "Current official Metro Frequent Service Network map visually reviewed. The map title and legend both identify the 15-minute weekday threshold.",
       "reviewBatch": 1,
       "evidenceSourceType": "system_map",
       "reviewSources": [
@@ -748,14 +748,14 @@
           "id": "frequent-network",
           "label": "Frequent Service Network",
           "thresholdMinutes": 15,
-          "thresholdText": "every 15 minutes or less from 6am–6pm",
+          "thresholdText": "15 minutes or better weekdays",
           "representative": true,
           "sourceType": "system_map",
           "sourceUrl": "https://cdn.beta.metro.net/wp-content/uploads/2026/05/04165451/26-1718_SysOverview_HiFreq_online_DCR.pdf",
           "localFile": "la-metro-system-map.pdf",
           "mapPageOrSection": "map title and legend",
-          "exactWording": "Frequent Service Network every 15 minutes or less from 6am-6pm.",
-          "evidenceNotes": "Current official Metro Frequent Service Network map reviewed manually."
+          "exactWording": "Frequent Service Network (15 min. or better weekdays); A thick line shows a frequency of 15 minutes or better.",
+          "evidenceNotes": "Current official Metro Frequent Service Network map visually reviewed. The map title and legend both identify the 15-minute weekday threshold."
         }
       ],
       "representativeThresholdMinutes": 15
