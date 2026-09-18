@@ -934,11 +934,20 @@
       "agencyName": "BC Transit (Fraser Valley)",
       "country": "Canada",
       "region": "British Columbia",
-      "status": "pending_map_review",
-      "mapCandidates": [],
-      "preservedFiles": [],
-      "mapDate": null,
-      "mapPageOrSection": null,
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "label": "Central Fraser Valley Rider Guide / system map",
+          "url": "https://www.bctransit.com/central-fraser-valley/wp-content/uploads/sites/9/2026/08/cfv_rg_sept2026.pdf",
+          "sourceType": "system_map",
+          "localFile": "bc-fraser-valley-1"
+        }
+      ],
+      "preservedFiles": [
+        "bc-fraser-valley-1"
+      ],
+      "mapDate": "September 2026",
+      "mapPageOrSection": "system map pages and legend",
       "exactMapWording": null,
       "thresholdMinutes": null,
       "thresholdText": null,
@@ -946,7 +955,7 @@
       "days": null,
       "geography": null,
       "mode": null,
-      "evidenceNotes": null
+      "evidenceNotes": "The official Central Fraser Valley map pages were preserved and reviewed; they do not name a frequent/high-frequency category or define a frequent threshold."
     },
     {
       "auditOrder": 34,
@@ -954,11 +963,20 @@
       "agencyName": "BC Transit (Kamloops)",
       "country": "Canada",
       "region": "British Columbia",
-      "status": "pending_map_review",
-      "mapCandidates": [],
-      "preservedFiles": [],
-      "mapDate": null,
-      "mapPageOrSection": null,
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "label": "Kamloops Rider Guide / system map",
+          "url": "https://www.bctransit.com/kamloops/wp-content/uploads/sites/23/2026/08/13383_KAM_RG_fall-v6.pdf",
+          "sourceType": "system_map",
+          "localFile": "kamloops-1"
+        }
+      ],
+      "preservedFiles": [
+        "kamloops-1"
+      ],
+      "mapDate": "August 2026",
+      "mapPageOrSection": "system map pages and legend",
       "exactMapWording": null,
       "thresholdMinutes": null,
       "thresholdText": null,
@@ -966,7 +984,7 @@
       "days": null,
       "geography": null,
       "mode": null,
-      "evidenceNotes": null
+      "evidenceNotes": "The official Kamloops map pages were preserved and reviewed; they do not name a frequent/high-frequency category or define a frequent threshold."
     },
     {
       "auditOrder": 35,
@@ -974,19 +992,28 @@
       "agencyName": "BC Transit (Kelowna)",
       "country": "Canada",
       "region": "British Columbia",
-      "status": "pending_map_review",
-      "mapCandidates": [],
-      "preservedFiles": [],
-      "mapDate": null,
-      "mapPageOrSection": null,
-      "exactMapWording": null,
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "label": "Kelowna Rider Guide / system map",
+          "url": "https://www.bctransit.com/kelowna/wp-content/uploads/sites/24/2026/08/kel_rg_sept2026.pdf",
+          "sourceType": "system_map",
+          "localFile": "kelowna-1"
+        }
+      ],
+      "preservedFiles": [
+        "kelowna-1"
+      ],
+      "mapDate": "September 2026",
+      "mapPageOrSection": "system map legend",
+      "exactMapWording": "Frequent Route — 15–30 minute service",
       "thresholdMinutes": null,
-      "thresholdText": null,
-      "serviceSpan": null,
-      "days": null,
-      "geography": null,
-      "mode": null,
-      "evidenceNotes": null
+      "thresholdText": "15–30 minute service",
+      "serviceSpan": "not specified in reviewed legend",
+      "days": "not specified in reviewed legend",
+      "geography": "route",
+      "mode": "bus",
+      "evidenceNotes": "The current official Kelowna map directly labels Frequent Route and gives a 15–30-minute service range; it is retained as a range rather than flattened to one threshold."
     },
     {
       "auditOrder": 36,
@@ -994,17 +1021,21 @@
       "agencyName": "BC Transit (Nanaimo)",
       "country": "Canada",
       "region": "British Columbia",
-      "status": "pending_map_review",
+      "status": "no_definition_on_map",
       "mapCandidates": [
         {
-          "url": "https://www.bctransit.com/wp-content/uploads/874/805/nan_map_nanaimo0.pdf",
+          "label": "Nanaimo Rider Guide / system map",
+          "url": "https://www.bctransit.com/nanaimo/wp-content/uploads/sites/29/2026/08/nan_rg_sept2026.pdf",
           "sourceType": "system_map",
-          "localFile": null
+          "localFile": "nanaimo-2"
         }
       ],
-      "preservedFiles": [],
-      "mapDate": null,
-      "mapPageOrSection": null,
+      "preservedFiles": [
+        "nanaimo-1",
+        "nanaimo-2"
+      ],
+      "mapDate": "September 2026",
+      "mapPageOrSection": "system map pages and legend",
       "exactMapWording": null,
       "thresholdMinutes": null,
       "thresholdText": null,
@@ -1012,7 +1043,7 @@
       "days": null,
       "geography": null,
       "mode": null,
-      "evidenceNotes": null
+      "evidenceNotes": "The official Nanaimo map pages were preserved and reviewed; they do not name a frequent/high-frequency category or define a frequent threshold."
     },
     {
       "auditOrder": 37,
