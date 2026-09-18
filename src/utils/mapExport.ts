@@ -108,3 +108,30 @@ export function downloadMapExport(blob: Blob, title: string): void {
   link.click();
   URL.revokeObjectURL(url);
 }
+
+function mapExportFilename(title: string): string {
+  const slug = title.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'atlas-map';
+  return `${slug}.png`;
+}
+
+/** Whether this browser can send a PNG to its native share sheet. */
+export function canShareMapExport(): boolean {
+  if (typeof navigator === 'undefined' || typeof File === 'undefined') return false;
+  if (typeof navigator.share !== 'function' || typeof navigator.canShare !== 'function') return false;
+  try {
+    return navigator.canShare({ files: [new File([''], 'atlas-map.png', { type: 'image/png' })] });
+  } catch {
+    return false;
+  }
+}
+
+/** Share the exported PNG through the device/browser's native share sheet. */
+export async function shareMapExport(blob: Blob, title: string): Promise<void> {
+  if (!canShareMapExport()) throw new Error('This browser cannot share image files');
+  const file = new File([blob], mapExportFilename(title), { type: 'image/png' });
+  await navigator.share({
+    title: `${title.trim() || 'Transit map'} · Atlas`,
+    text: 'Map exported from Atlas by Civic Minds',
+    files: [file],
+  });
+}

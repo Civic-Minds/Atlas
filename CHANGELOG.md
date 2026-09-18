@@ -190,6 +190,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Google Analytics no longer loses the initial page view while privacy consent and the tracking script are initializing.
 - Fixed map route selection showing duplicate Calgary lines when the feed uses multiple internal IDs for one visible route.
 - Fixed the map export control being hidden behind other controls on smaller map views by placing it above zoom controls.
+- Added native image sharing where the browser supports it, while keeping PNG download available everywhere.
 - Added beta map-image export with stronger Atlas branding and full CARTO/OpenStreetMap attribution for shareable 1600×900 PNGs.
 - Added a visible Feedback email link beside the map attribution for launch-period comments and feature requests.
 - Calgary overnight routes starting near the end of the window (such as LRT 201 and late-night buses) no longer pass as frequent overnight routes on the map or in the filter, and their cards now indicate limited service for routes running only part of the period instead of borrowing daytime frequencies ([#507](https://github.com/Civic-Minds/Atlas/issues/507)).
