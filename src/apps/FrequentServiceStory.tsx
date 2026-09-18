@@ -136,9 +136,12 @@ export default function FrequentServiceStory({ onExploreMap }: Props) {
             </div>
           </section>
 
-          <footer className="border-t border-[var(--border-primary)] pt-8 text-xs leading-6 text-[var(--text-dim)]">
-            <p><strong className="text-[var(--text-muted)]">Method.</strong> Atlas reviewed official agency system maps, frequent-network pages, service guidelines, planning documents, and route-service pages. “No definition found” means no named rider-facing definition was located within the review boundary; it does not mean the agency has no frequent service.</p>
-            <p className="mt-3">This research describes Atlas’s 500-agency sample. It does not change Atlas’s production frequency definitions.</p>
+          <footer className="border-t border-[var(--border-primary)] pt-10">
+            <div className="max-w-3xl">
+              <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-[var(--text-primary)]">How we did this</h2>
+              <p className="mt-5 text-sm sm:text-base leading-7 sm:leading-8 text-[var(--text-muted)]">Atlas reviewed official agency system maps, frequent-network pages, service guidelines, planning documents, and route-service pages. “No definition found” means no named rider-facing definition was located within the review boundary; it does not mean the agency has no frequent service.</p>
+              <p className="mt-5 text-sm leading-6 text-[var(--text-dim)]">This research describes Atlas’s 500-agency sample. It does not change Atlas’s production frequency definitions.</p>
+            </div>
           </footer>
         </div>
       </article>
