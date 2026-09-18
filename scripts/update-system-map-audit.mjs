@@ -67,6 +67,18 @@ const reviewed = {
   barrie: {
     status: 'map_unavailable', preservedFiles: ['barrie-1'], mapPageOrSection: 'official map links', evidenceNotes: 'The available preserved Barrie file is a planning/service-change map rather than a verified current rider-facing system map. The current official Transit Network Map link returned an access failure during review, so no system-map definition is inferred.'
   },
+  pemberton: {
+    status: 'no_definition_on_map', mapCandidates: [{ label: 'Pemberton Valley Rider Guide / system map', url: 'https://www.bctransit.com/pemberton-valley/wp-content/uploads/sites/30/2026/04/12762_PEM_RG_spring-v8.pdf', sourceType: 'system_map', localFile: 'pemberton-1' }], preservedFiles: ['pemberton-1'], mapDate: 'April 2026', mapPageOrSection: 'system map pages and legend', evidenceNotes: 'The official Pemberton Valley map pages were preserved and reviewed; they do not name a frequent/high-frequency category or define a frequent threshold.'
+  },
+  'south-okanagan': {
+    status: 'no_definition_on_map', mapCandidates: [{ label: 'South Okanagan-Similkameen Rider Guide / system map', url: 'https://www.bctransit.com/south-okanagan-similkameen/wp-content/uploads/sites/43/2026/03/sos_rg_april2026.pdf', sourceType: 'system_map', localFile: 'south-okanagan-1' }], preservedFiles: ['south-okanagan-1'], mapDate: 'April 2026', mapPageOrSection: 'system map pages and legend', evidenceNotes: 'The official South Okanagan-Similkameen map pages were preserved and reviewed; they do not name a frequent/high-frequency category or define a frequent threshold.'
+  },
+  squamish: {
+    status: 'no_definition_on_map', mapCandidates: [{ label: 'Squamish Rider Guide / system map', url: 'https://www.bctransit.com/squamish/wp-content/uploads/sites/44/2026/08/squ_rg_sept2026.pdf', sourceType: 'system_map', localFile: 'squamish-1' }], preservedFiles: ['squamish-1'], mapDate: 'September 2026', mapPageOrSection: 'system map pages and legend', evidenceNotes: 'The official Squamish map pages were preserved and reviewed; they do not name a frequent/high-frequency category or define a frequent threshold.'
+  },
+  whistler: {
+    status: 'map_unavailable', mapCandidates: [{ label: 'Whistler Rider Guide / system map', url: 'https://www.bctransit.com/whistler/wp-content/uploads/sites/51/2026/06/whi_rg_july2026.pdf', sourceType: 'system_map', localFile: 'whistler-1' }], preservedFiles: ['whistler-1'], mapDate: 'July 2026', mapPageOrSection: 'rider guide map', evidenceNotes: 'The official Whistler PDF link was preserved but returned a zero-page PDF in this review environment, so its map contents could not be verified.'
+  },
   trimet: {
     status: 'numeric_definition_on_map', mapCandidates: [{ label: 'Frequent Service map', url: 'https://www.trimet.org/maps/pdf/frequentservice.pdf', sourceType: 'system_map', localFile: 'trimet-1' }], preservedFiles: ['trimet-1'], mapDate: 'August 2026', mapPageOrSection: 'page 1, service legend', exactMapWording: 'Rail Service — About every 15 minutes or less most of the day, every day; FX Frequent Express Service — About every 12 minutes or less most of the day, every day; Frequent Service — About every 15 minutes or less most of the day, every day', thresholdText: 'Rail and regular Frequent Service: about every 15 minutes or less; Frequent Express: about every 12 minutes or less', serviceSpan: 'most of the day', days: 'every day', geography: 'route/network', mode: 'rail and bus', evidenceNotes: 'The official Frequent Service map publishes separate numeric definitions for rail, regular bus, and Frequent Express. No single threshold is assigned because that would collapse distinct map categories.'
   },

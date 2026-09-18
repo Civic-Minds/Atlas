@@ -1051,11 +1051,20 @@
       "agencyName": "BC Transit (Pemberton Valley)",
       "country": "Canada",
       "region": "British Columbia",
-      "status": "pending_map_review",
-      "mapCandidates": [],
-      "preservedFiles": [],
-      "mapDate": null,
-      "mapPageOrSection": null,
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "label": "Pemberton Valley Rider Guide / system map",
+          "url": "https://www.bctransit.com/pemberton-valley/wp-content/uploads/sites/30/2026/04/12762_PEM_RG_spring-v8.pdf",
+          "sourceType": "system_map",
+          "localFile": "pemberton-1"
+        }
+      ],
+      "preservedFiles": [
+        "pemberton-1"
+      ],
+      "mapDate": "April 2026",
+      "mapPageOrSection": "system map pages and legend",
       "exactMapWording": null,
       "thresholdMinutes": null,
       "thresholdText": null,
@@ -1063,7 +1072,7 @@
       "days": null,
       "geography": null,
       "mode": null,
-      "evidenceNotes": null
+      "evidenceNotes": "The official Pemberton Valley map pages were preserved and reviewed; they do not name a frequent/high-frequency category or define a frequent threshold."
     },
     {
       "auditOrder": 38,
@@ -1071,11 +1080,20 @@
       "agencyName": "BC Transit (South Okanagan-Similkameen)",
       "country": "Canada",
       "region": "British Columbia",
-      "status": "pending_map_review",
-      "mapCandidates": [],
-      "preservedFiles": [],
-      "mapDate": null,
-      "mapPageOrSection": null,
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "label": "South Okanagan-Similkameen Rider Guide / system map",
+          "url": "https://www.bctransit.com/south-okanagan-similkameen/wp-content/uploads/sites/43/2026/03/sos_rg_april2026.pdf",
+          "sourceType": "system_map",
+          "localFile": "south-okanagan-1"
+        }
+      ],
+      "preservedFiles": [
+        "south-okanagan-1"
+      ],
+      "mapDate": "April 2026",
+      "mapPageOrSection": "system map pages and legend",
       "exactMapWording": null,
       "thresholdMinutes": null,
       "thresholdText": null,
@@ -1083,7 +1101,7 @@
       "days": null,
       "geography": null,
       "mode": null,
-      "evidenceNotes": null
+      "evidenceNotes": "The official South Okanagan-Similkameen map pages were preserved and reviewed; they do not name a frequent/high-frequency category or define a frequent threshold."
     },
     {
       "auditOrder": 39,
@@ -1091,11 +1109,20 @@
       "agencyName": "BC Transit (Squamish)",
       "country": "Canada",
       "region": "British Columbia",
-      "status": "pending_map_review",
-      "mapCandidates": [],
-      "preservedFiles": [],
-      "mapDate": null,
-      "mapPageOrSection": null,
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "label": "Squamish Rider Guide / system map",
+          "url": "https://www.bctransit.com/squamish/wp-content/uploads/sites/44/2026/08/squ_rg_sept2026.pdf",
+          "sourceType": "system_map",
+          "localFile": "squamish-1"
+        }
+      ],
+      "preservedFiles": [
+        "squamish-1"
+      ],
+      "mapDate": "September 2026",
+      "mapPageOrSection": "system map pages and legend",
       "exactMapWording": null,
       "thresholdMinutes": null,
       "thresholdText": null,
@@ -1103,7 +1130,7 @@
       "days": null,
       "geography": null,
       "mode": null,
-      "evidenceNotes": null
+      "evidenceNotes": "The official Squamish map pages were preserved and reviewed; they do not name a frequent/high-frequency category or define a frequent threshold."
     },
     {
       "auditOrder": 40,
@@ -1111,11 +1138,20 @@
       "agencyName": "BC Transit (Whistler)",
       "country": "Canada",
       "region": "British Columbia",
-      "status": "pending_map_review",
-      "mapCandidates": [],
-      "preservedFiles": [],
-      "mapDate": null,
-      "mapPageOrSection": null,
+      "status": "map_unavailable",
+      "mapCandidates": [
+        {
+          "label": "Whistler Rider Guide / system map",
+          "url": "https://www.bctransit.com/whistler/wp-content/uploads/sites/51/2026/06/whi_rg_july2026.pdf",
+          "sourceType": "system_map",
+          "localFile": "whistler-1"
+        }
+      ],
+      "preservedFiles": [
+        "whistler-1"
+      ],
+      "mapDate": "July 2026",
+      "mapPageOrSection": "rider guide map",
       "exactMapWording": null,
       "thresholdMinutes": null,
       "thresholdText": null,
@@ -1123,7 +1159,7 @@
       "days": null,
       "geography": null,
       "mode": null,
-      "evidenceNotes": null
+      "evidenceNotes": "The official Whistler PDF link was preserved but returned a zero-page PDF in this review environment, so its map contents could not be verified."
     },
     {
       "auditOrder": 41,
