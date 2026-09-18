@@ -489,27 +489,29 @@
       "agencyName": "Washington Metropolitan Area Transit Authority",
       "country": "United States",
       "region": "District of Columbia / Maryland / Virginia",
-      "status": "pending_map_review",
+      "status": "numeric_definition_on_map",
       "mapCandidates": [
         {
-          "url": "https://www.wmata.com/ride/maps.html?alerts-widget-next-train-all=G02",
+          "label": "District of Columbia High Frequency Service Map",
+          "url": "https://www.wmata.com/schedules/maps/upload/system-map-bus-DC-high-frequency.pdf",
           "sourceType": "system_map",
-          "localFile": "wmata-1"
+          "localFile": "wmata-2"
         }
       ],
       "preservedFiles": [
-        "wmata-1"
+        "wmata-1",
+        "wmata-2"
       ],
-      "mapDate": null,
-      "mapPageOrSection": null,
-      "exactMapWording": null,
+      "mapDate": "June 29, 2025",
+      "mapPageOrSection": "page 1, map legend",
+      "exactMapWording": "High-Frequency Route (Every 12 Minutes or Better); Medium-Frequency Route (Every 20 Minutes or Better)",
       "thresholdMinutes": null,
-      "thresholdText": null,
-      "serviceSpan": null,
-      "days": null,
-      "geography": null,
-      "mode": null,
-      "evidenceNotes": null
+      "thresholdText": "High-frequency: every 12 minutes or better; medium-frequency: every 20 minutes or better",
+      "serviceSpan": "7 a.m.–9 p.m.",
+      "days": "all week",
+      "geography": "route/network",
+      "mode": "bus",
+      "evidenceNotes": "The official high-frequency map defines two numeric service categories and states that the shown frequencies apply all day, all week. No single threshold is assigned because the map distinguishes high- and medium-frequency routes."
     },
     {
       "auditOrder": 18,
@@ -546,19 +548,28 @@
       "agencyName": "TriMet",
       "country": "United States",
       "region": "Oregon",
-      "status": "pending_map_review",
-      "mapCandidates": [],
-      "preservedFiles": [],
-      "mapDate": null,
-      "mapPageOrSection": null,
-      "exactMapWording": null,
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "label": "Frequent Service map",
+          "url": "https://www.trimet.org/maps/pdf/frequentservice.pdf",
+          "sourceType": "system_map",
+          "localFile": "trimet-1"
+        }
+      ],
+      "preservedFiles": [
+        "trimet-1"
+      ],
+      "mapDate": "August 2026",
+      "mapPageOrSection": "page 1, service legend",
+      "exactMapWording": "Rail Service — About every 15 minutes or less most of the day, every day; FX Frequent Express Service — About every 12 minutes or less most of the day, every day; Frequent Service — About every 15 minutes or less most of the day, every day",
       "thresholdMinutes": null,
-      "thresholdText": null,
-      "serviceSpan": null,
-      "days": null,
-      "geography": null,
-      "mode": null,
-      "evidenceNotes": null
+      "thresholdText": "Rail and regular Frequent Service: about every 15 minutes or less; Frequent Express: about every 12 minutes or less",
+      "serviceSpan": "most of the day",
+      "days": "every day",
+      "geography": "route/network",
+      "mode": "rail and bus",
+      "evidenceNotes": "The official Frequent Service map publishes separate numeric definitions for rail, regular bus, and Frequent Express. No single threshold is assigned because that would collapse distinct map categories."
     },
     {
       "auditOrder": 20,
@@ -614,19 +625,28 @@
       "agencyName": "Santa Clara Valley Transportation Authority",
       "country": "United States",
       "region": "California",
-      "status": "pending_map_review",
-      "mapCandidates": [],
-      "preservedFiles": [],
-      "mapDate": null,
-      "mapPageOrSection": null,
-      "exactMapWording": null,
+      "status": "qualitative_definition_on_map",
+      "mapCandidates": [
+        {
+          "label": "VTA Transit Services Map",
+          "url": "https://www.vta.org/sites/default/files/2026-01/ADA-VTA-SystemMap-011226.pdf",
+          "sourceType": "system_map",
+          "localFile": "vta-1"
+        }
+      ],
+      "preservedFiles": [
+        "vta-1"
+      ],
+      "mapDate": "January 2026",
+      "mapPageOrSection": "map legend",
+      "exactMapWording": "Frequent Bus; A thick line indicates frequent service",
       "thresholdMinutes": null,
       "thresholdText": null,
       "serviceSpan": null,
       "days": null,
-      "geography": null,
-      "mode": null,
-      "evidenceNotes": null
+      "geography": "route/network",
+      "mode": "bus",
+      "evidenceNotes": "The current official map labels Frequent Bus and explains the thick-line symbol, but the map does not provide one numeric threshold for the category."
     },
     {
       "auditOrder": 23,
