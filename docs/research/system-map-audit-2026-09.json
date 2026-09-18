@@ -743,19 +743,25 @@
       "agencyName": "Lethbridge Transit",
       "country": "Canada",
       "region": "Alberta",
-      "status": "pending_map_review",
-      "mapCandidates": [],
+      "status": "map_unavailable",
+      "mapCandidates": [
+        {
+          "label": "Lethbridge Transit Network in Transportation Master Plan",
+          "url": "https://www.lethbridge.ca/media/t2wnioeg/tmp_final_fulltechnical_oct25_stamped.pdf",
+          "sourceType": "planning_map"
+        }
+      ],
       "preservedFiles": [],
       "mapDate": null,
-      "mapPageOrSection": null,
-      "exactMapWording": null,
+      "mapPageOrSection": "page 136, planning map",
+      "exactMapWording": "Peak Frequency 30–40 min; Peak Frequency 60 min",
       "thresholdMinutes": null,
       "thresholdText": null,
       "serviceSpan": null,
       "days": null,
       "geography": null,
       "mode": null,
-      "evidenceNotes": null
+      "evidenceNotes": "An official planning document contains a transit network map, but no current rider-facing system map was verified. The planning map is retained as a lead and excluded from system-map evidence."
     },
     {
       "auditOrder": 27,
@@ -841,11 +847,20 @@
       "agencyName": "BC Transit (Campbell River)",
       "country": "Canada",
       "region": "British Columbia",
-      "status": "pending_map_review",
-      "mapCandidates": [],
-      "preservedFiles": [],
-      "mapDate": null,
-      "mapPageOrSection": null,
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "label": "Campbell River Rider Guide / system map",
+          "url": "https://www.bctransit.com/campbell-river/wp-content/uploads/sites/8/2025/09/12586_CAM_RG_web.pdf",
+          "sourceType": "system_map",
+          "localFile": "campbell-river-1"
+        }
+      ],
+      "preservedFiles": [
+        "campbell-river-1"
+      ],
+      "mapDate": "September 2025",
+      "mapPageOrSection": "system map pages and legend",
       "exactMapWording": null,
       "thresholdMinutes": null,
       "thresholdText": null,
@@ -853,7 +868,7 @@
       "days": null,
       "geography": null,
       "mode": null,
-      "evidenceNotes": null
+      "evidenceNotes": "The official Campbell River map pages were preserved and reviewed; they show routes and service information but do not name a frequent/high-frequency category or define a frequent threshold."
     },
     {
       "auditOrder": 31,
@@ -861,11 +876,20 @@
       "agencyName": "BC Transit (Comox Valley)",
       "country": "Canada",
       "region": "British Columbia",
-      "status": "pending_map_review",
-      "mapCandidates": [],
-      "preservedFiles": [],
-      "mapDate": null,
-      "mapPageOrSection": null,
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "label": "Comox Valley Rider Guide / system map",
+          "url": "https://www.bctransit.com/comox-valley/wp-content/uploads/sites/13/2026/09/13403-13240_COM_RG_v2.pdf",
+          "sourceType": "system_map",
+          "localFile": "comox-valley-1"
+        }
+      ],
+      "preservedFiles": [
+        "comox-valley-1"
+      ],
+      "mapDate": "September 2026",
+      "mapPageOrSection": "system map pages and legend",
       "exactMapWording": null,
       "thresholdMinutes": null,
       "thresholdText": null,
@@ -873,7 +897,7 @@
       "days": null,
       "geography": null,
       "mode": null,
-      "evidenceNotes": null
+      "evidenceNotes": "The official Comox Valley map pages were preserved and reviewed; they show routes and service information but do not name a frequent/high-frequency category or define a frequent threshold."
     },
     {
       "auditOrder": 32,
@@ -881,11 +905,20 @@
       "agencyName": "BC Transit (Cowichan Valley)",
       "country": "Canada",
       "region": "British Columbia",
-      "status": "pending_map_review",
-      "mapCandidates": [],
-      "preservedFiles": [],
-      "mapDate": null,
-      "mapPageOrSection": null,
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "label": "Cowichan Valley Rider Guide / system map",
+          "url": "https://www.bctransit.com/cowichan-valley/wp-content/uploads/sites/14/2026/01/cow_rg_jan2025.pdf",
+          "sourceType": "system_map",
+          "localFile": "cowichan-1"
+        }
+      ],
+      "preservedFiles": [
+        "cowichan-1"
+      ],
+      "mapDate": "January 2026",
+      "mapPageOrSection": "system map pages and legend",
       "exactMapWording": null,
       "thresholdMinutes": null,
       "thresholdText": null,
@@ -893,7 +926,7 @@
       "days": null,
       "geography": null,
       "mode": null,
-      "evidenceNotes": null
+      "evidenceNotes": "The official Cowichan Valley map pages were preserved and reviewed; they show routes and express services but do not name a frequent/high-frequency category or define a frequent threshold."
     },
     {
       "auditOrder": 33,
