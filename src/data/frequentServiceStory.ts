@@ -18,6 +18,7 @@ export interface FrequentServiceStoryExample {
 
 const storyThresholds = [10, 15, 30];
 const records = audit.records;
+export const frequentServiceStoryResearchRecord = records.find(record => record.agencyId === 'ttc') ?? records[0];
 const categoryCounts = {
   numericDefinition: records.filter(record => ['numeric_definition_on_map', 'numeric_definition_on_official_page'].includes(record.status)).length,
   qualitativeDefinition: records.filter(record => ['qualitative_definition_on_map', 'qualitative_definition_on_official_page'].includes(record.status)).length,

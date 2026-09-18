@@ -6,6 +6,12 @@ interface Props {
   agencies: Agency[];
   stage: number;
   frequencyMinutes: 15 | 30;
+  researchRecord: {
+    agencyId: string;
+    agencyName: string;
+    exactMapWording?: string | null;
+    representativeThresholdMinutes?: number | null;
+  };
 }
 
 type StoryFeature = GeoJSON.Feature<GeoJSON.LineString | GeoJSON.MultiLineString>;
@@ -56,16 +62,16 @@ function featuresForStage(features: StoryFeature[], stage: number, frequencyMinu
   });
 }
 
-export default function FrequentServiceStoryMap({ agencies, stage, frequencyMinutes }: Props) {
+export default function FrequentServiceStoryMap({ agencies, stage, frequencyMinutes, researchRecord }: Props) {
   const [features, setFeatures] = useState<StoryFeature[]>([]);
   const [loadState, setLoadState] = useState<'loading' | 'ready' | 'error'>('loading');
-  const toronto = agencies.find(agency => agency.slug === 'ttc');
+  const storyAgency = agencies.find(agency => agency.slug === researchRecord.agencyId);
 
   useEffect(() => {
-    if (!toronto) return;
+    if (!storyAgency) return;
     let cancelled = false;
     setLoadState('loading');
-    fetchAgencyGeo(toronto)
+    fetchAgencyGeo(storyAgency)
       .then(data => {
         if (cancelled) return;
         setFeatures(data.features.filter(feature => feature.geometry?.type === 'LineString' || feature.geometry?.type === 'MultiLineString') as StoryFeature[]);
@@ -75,7 +81,7 @@ export default function FrequentServiceStoryMap({ agencies, stage, frequencyMinu
         if (!cancelled) setLoadState('error');
       });
     return () => { cancelled = true; };
-  }, [toronto]);
+  }, [storyAgency]);
 
   const stagePaths = useMemo(() => [0, 1, 2, 3].map(currentStage => projectFeatures(features, featuresForStage(features, currentStage, frequencyMinutes))), [features, frequencyMinutes]);
 
@@ -92,7 +98,7 @@ export default function FrequentServiceStoryMap({ agencies, stage, frequencyMinu
           </svg>
         ) : (
           <div className="flex h-full items-center justify-center text-sm text-[var(--text-muted)]">
-            {loadState === 'error' ? 'The Toronto network preview is unavailable.' : 'Loading Toronto’s network…'}
+            {loadState === 'error' ? `The ${researchRecord.agencyName} network preview is unavailable.` : `Loading ${researchRecord.agencyName}’s network…`}
           </div>
         )}
         <div className="absolute left-5 top-5 rounded-full border border-[var(--border-primary)] bg-[var(--bg-panel)]/90 px-3 py-1.5 text-xs font-black text-[var(--text-primary)] backdrop-blur">
@@ -100,9 +106,14 @@ export default function FrequentServiceStoryMap({ agencies, stage, frequencyMinu
         </div>
       </div>
       <figcaption className="flex flex-wrap items-center justify-between gap-2 px-5 py-4 text-xs text-[var(--text-muted)]">
-        <span>Toronto Transit Commission</span>
-        <span>{stage === 0 ? 'All route patterns' : stage === 1 ? 'Rush-hour-only patterns removed' : stage === 2 ? 'Routes with sustained daytime service' : `Weekday daytime · every ${frequencyMinutes} minutes or better`}</span>
+        <span>{researchRecord.agencyName}</span>
+        <span>{stage === 0 ? 'All route patterns' : stage === 1 ? 'Rush-hour-only patterns removed' : stage === 2 ? 'Routes with sustained daytime service' : `Atlas comparison · weekday daytime · every ${frequencyMinutes} minutes or better`}</span>
       </figcaption>
+      {researchRecord.exactMapWording && (
+        <p className="border-t border-[var(--border-primary)] px-5 py-3 text-xs leading-5 text-[var(--text-muted)]">
+          Published definition in the research audit: “{researchRecord.exactMapWording}”
+        </p>
+      )}
     </figure>
   );
 }

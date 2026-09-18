@@ -1,9 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { ArrowDown, ArrowRight, MapPinned } from 'lucide-react';
 import { trackEvent } from '../lib/analytics';
-import { frequentServiceStoryExamples, frequentServiceStoryStats, type FrequentServiceStoryExample } from '../data/frequentServiceStory';
+import { frequentServiceStoryExamples, frequentServiceStoryResearchRecord, frequentServiceStoryStats, type FrequentServiceStoryExample } from '../data/frequentServiceStory';
 import FrequentServiceStoryMap from '../components/FrequentServiceStoryMap';
-import FrequentServiceAgencyChart from '../components/FrequentServiceAgencyChart';
 import type { Agency } from '../App';
 
 interface Props {
@@ -81,7 +80,7 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
         <section aria-labelledby="network-story-heading" className="mx-auto mt-24 max-w-6xl sm:mt-32">
           <div className="grid min-w-0 gap-10 pb-[55vh] lg:grid-cols-[minmax(0,1.35fr)_minmax(20rem,0.8fr)] lg:items-start">
             <div className="min-w-0 lg:sticky lg:top-8">
-              <FrequentServiceStoryMap agencies={agencies} stage={storyStage} frequencyMinutes={frequencyMinutes} />
+              <FrequentServiceStoryMap agencies={agencies} stage={storyStage} frequencyMinutes={frequencyMinutes} researchRecord={frequentServiceStoryResearchRecord} />
             </div>
             <div className="min-w-0 space-y-[55vh] px-1 py-8 lg:py-16">
               <div ref={step => { storyStepRefs.current[0] = step; }} data-story-stage="0" className="max-w-md">
@@ -181,7 +180,6 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
                 <p className="mt-6 text-sm leading-6 text-[var(--text-muted)]">No featured example in this story uses this threshold.</p>
               )}
             </div>
-            <FrequentServiceAgencyChart />
           </section>
 
           <section aria-labelledby="more-heading" className="mx-auto w-full max-w-[48rem]">
