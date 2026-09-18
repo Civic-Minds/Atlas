@@ -1826,39 +1826,41 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         </div>
       )}
 
-      {/* Zoom Control Overlay */}
-      <div className={`absolute bottom-[59px] right-3 ${Z_PANEL} flex flex-col rounded-full bg-[var(--bg-panel)] border border-[var(--border-primary)] shadow-lg backdrop-blur-md overflow-hidden pointer-events-auto`}>
+      {/* Map controls — one stack keeps the gaps identical at every map size. */}
+      <div className={`absolute bottom-6 right-3 ${Z_PANEL} flex flex-col gap-2 pointer-events-auto`}>
+        {exportEnabled && (
+          <button
+            onClick={() => setExportDialogOpen(true)}
+            aria-label="Export map image"
+            className="box-border !h-8 !w-8 min-h-8 min-w-8 shrink-0 p-0 flex items-center justify-center rounded-full bg-[var(--bg-panel)] border border-[var(--border-primary)] text-[var(--text-dim)] shadow-lg backdrop-blur-md hover:text-[var(--accent)] hover:border-[var(--accent-border)] transition-colors cursor-pointer"
+          >
+            <Download className="w-3.5 h-3.5" />
+          </button>
+        )}
+        <div className="flex flex-col rounded-full bg-[var(--bg-panel)] border border-[var(--border-primary)] shadow-lg backdrop-blur-md overflow-hidden">
+          <button
+            onClick={() => mapRef.current?.zoomIn({ duration: 200 })}
+            aria-label="Zoom in"
+            className="w-8 h-8 flex items-center justify-center text-[var(--text-dim)] border-b border-[var(--border-primary)] hover:text-[var(--accent)] transition-colors cursor-pointer"
+          >
+            <Plus className="w-3.5 h-3.5" />
+          </button>
+          <button
+            onClick={() => mapRef.current?.zoomOut({ duration: 200 })}
+            aria-label="Zoom out"
+            className="w-8 h-8 flex items-center justify-center text-[var(--text-dim)] hover:text-[var(--accent)] transition-colors cursor-pointer"
+          >
+            <Minus className="w-3.5 h-3.5" />
+          </button>
+        </div>
         <button
-          onClick={() => mapRef.current?.zoomIn({ duration: 200 })}
-          aria-label="Zoom in"
-          className="w-8 h-8 flex items-center justify-center text-[var(--text-dim)] border-b border-[var(--border-primary)] hover:text-[var(--accent)] transition-colors cursor-pointer"
+          onClick={locateUser}
+          aria-label="Go to my location"
+          className="w-8 h-8 flex items-center justify-center rounded-full bg-[var(--bg-panel)] border border-[var(--border-primary)] text-[var(--text-dim)] shadow-lg backdrop-blur-md hover:text-[var(--accent)] hover:border-[var(--accent-border)] transition-colors cursor-pointer"
         >
-          <Plus className="w-3.5 h-3.5" />
-        </button>
-        <button
-          onClick={() => mapRef.current?.zoomOut({ duration: 200 })}
-          aria-label="Zoom out"
-          className="w-8 h-8 flex items-center justify-center text-[var(--text-dim)] hover:text-[var(--accent)] transition-colors cursor-pointer"
-        >
-          <Minus className="w-3.5 h-3.5" />
+          <LocateFixed className="w-3.5 h-3.5" />
         </button>
       </div>
-      <button
-        onClick={locateUser}
-        aria-label="Go to my location"
-        className={`absolute bottom-6 right-3 ${Z_PANEL} w-8 h-8 flex items-center justify-center rounded-full bg-[var(--bg-panel)] border border-[var(--border-primary)] text-[var(--text-dim)] shadow-lg backdrop-blur-md hover:text-[var(--accent)] hover:border-[var(--accent-border)] transition-colors cursor-pointer pointer-events-auto`}
-      >
-        <LocateFixed className="w-3.5 h-3.5" />
-      </button>
-      {exportEnabled && (
-        <button
-          onClick={() => setExportDialogOpen(true)}
-          aria-label="Export map image"
-          className={`absolute bottom-[8.75rem] right-3 ${Z_PANEL} box-border !h-8 !w-8 min-h-8 min-w-8 shrink-0 p-0 flex items-center justify-center rounded-full bg-[var(--bg-panel)] border border-[var(--border-primary)] text-[var(--text-dim)] shadow-lg backdrop-blur-md hover:text-[var(--accent)] hover:border-[var(--accent-border)] transition-colors cursor-pointer pointer-events-auto`}
-        >
-          <Download className="w-3.5 h-3.5" />
-        </button>
-      )}
       <MapExportDialog
         open={exportDialogOpen}
         source={exportDialogOpen ? mapRef.current?.getCanvas() ?? null : null}
