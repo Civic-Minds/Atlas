@@ -40,7 +40,7 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
   }
 
   return (
-    <div ref={storyScrollRef} className="h-full overflow-y-auto bg-[var(--bg-app)] text-[var(--text-primary)]">
+    <div ref={storyScrollRef} className="h-full overflow-x-hidden overflow-y-auto bg-[var(--bg-app)] text-[var(--text-primary)]">
       <article className="mx-auto max-w-6xl px-5 pb-24 pt-16 sm:px-8 sm:pt-20">
         <header className="mx-auto max-w-4xl text-center">
           <p className="text-[0.7rem] uppercase tracking-[0.24em] font-black text-[var(--accent)]">Atlas research</p>
@@ -58,20 +58,20 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
             <div className="min-w-0 lg:sticky lg:top-24">
               <FrequentServiceStoryMap agencies={agencies} stage={storyStage} frequencyMinutes={frequencyMinutes} researchRecord={frequentServiceStoryResearchRecord} />
             </div>
-            <div className="relative z-10 -mt-[34vh] space-y-[55vh] px-5 pb-8 lg:px-10 lg:pb-16">
-              <div ref={step => { storyStepRefs.current[0] = step; }} data-story-stage="0" className="max-w-md rounded-2xl bg-[var(--bg-app)]/90 p-5 shadow-sm backdrop-blur">
+            <div className="relative z-10 -mt-[38vh] space-y-[55vh] pb-8 lg:pb-16">
+              <div ref={step => { storyStepRefs.current[0] = step; }} data-story-stage="0" className="w-full max-w-md rounded-2xl bg-[var(--bg-app)]/90 p-5 shadow-sm backdrop-blur">
                 <h2 id="network-story-heading" className="mt-3 text-3xl font-black tracking-tight">Start with the whole network.</h2>
                 <p className="mt-4 text-base leading-7 text-[var(--text-muted)]">A city can have hundreds of lines on its map. That shows where service exists, but not how long you might wait.</p>
               </div>
-              <div ref={step => { storyStepRefs.current[1] = step; }} data-story-stage="1" className="max-w-md rounded-2xl bg-[var(--bg-app)]/90 p-5 shadow-sm backdrop-blur">
+              <div ref={step => { storyStepRefs.current[1] = step; }} data-story-stage="1" className="w-full max-w-md rounded-2xl bg-[var(--bg-app)]/90 p-5 shadow-sm backdrop-blur">
                 <h2 className="mt-3 text-3xl font-black tracking-tight">Remove rush-hour-only routes.</h2>
                 <p className="mt-4 text-base leading-7 text-[var(--text-muted)]">A route that appears only for the busiest part of the day is useful, but it is not the same promise as regular service.</p>
               </div>
-              <div ref={step => { storyStepRefs.current[2] = step; }} data-story-stage="2" className="max-w-md rounded-2xl bg-[var(--bg-app)]/90 p-5 shadow-sm backdrop-blur">
+              <div ref={step => { storyStepRefs.current[2] = step; }} data-story-stage="2" className="w-full max-w-md rounded-2xl bg-[var(--bg-app)]/90 p-5 shadow-sm backdrop-blur">
                 <h2 className="mt-3 text-3xl font-black tracking-tight">Keep routes with meaningful daytime service.</h2>
                 <p className="mt-4 text-base leading-7 text-[var(--text-muted)]">The network gets smaller again when we remove routes that do not hold together through the day.</p>
               </div>
-              <div ref={step => { storyStepRefs.current[3] = step; }} data-story-stage="3" className="max-w-md rounded-2xl bg-[var(--bg-app)]/90 p-5 shadow-sm backdrop-blur">
+              <div ref={step => { storyStepRefs.current[3] = step; }} data-story-stage="3" className="w-full max-w-md rounded-2xl bg-[var(--bg-app)]/90 p-5 shadow-sm backdrop-blur">
                 <h2 className="mt-3 text-3xl font-black tracking-tight">Now show the routes frequent enough to rely on.</h2>
                 <p className="mt-4 text-base leading-7 text-[var(--text-muted)]">This is Atlas’s comparison—not a claim that every agency uses the same definition of “frequent.”</p>
                 <div className="mt-5 inline-flex rounded-full border border-[var(--border-primary)] bg-[var(--bg-panel)] p-1" role="group" aria-label="Choose the final frequency comparison">

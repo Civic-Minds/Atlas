@@ -100,13 +100,10 @@ export default function FrequentServiceStoryMap({ agencies, stage, frequencyMinu
             {loadState === 'error' ? `The ${researchRecord.agencyName} network preview is unavailable.` : `Loading ${researchRecord.agencyName}’s network…`}
           </div>
         )}
-        <div className="absolute left-5 top-5 rounded-full border border-[var(--border-primary)] bg-[var(--bg-panel)]/90 px-3 py-1.5 text-xs font-black text-[var(--text-primary)] backdrop-blur">
-          {stage === 0 ? 'Full network' : stage === 1 ? 'Regular service' : stage === 2 ? 'Daytime service' : `${frequencyMinutes}-minute network`}
-        </div>
       </div>
       <figcaption className="flex flex-wrap items-center justify-between gap-2 px-5 py-4 text-xs text-[var(--text-muted)]">
         <span>{researchRecord.agencyName}</span>
-        <span>{stage === 0 ? 'All route patterns' : stage === 1 ? 'Rush-hour-only patterns removed' : stage === 2 ? 'Routes with sustained daytime service' : `Atlas comparison · weekday daytime · every ${frequencyMinutes} minutes or better`}</span>
+        <span>{stage === 0 ? 'All route patterns' : stage === 1 ? 'Rush-hour-only patterns removed' : stage === 2 ? 'Routes with sustained daytime service' : `Weekday daytime · every ${frequencyMinutes} minutes or better`}</span>
       </figcaption>
     </figure>
   );
