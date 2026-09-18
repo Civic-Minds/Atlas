@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Expanded the Frequent Service research audit to 250 agencies and added verified 30-minute representative tiers to the story chart.
 - Expanded the Frequent Service research audit to 150 agencies while preserving representative and secondary frequency tiers.
 - Added an agency scatter plot to compare published service frequency with daily service span.
 - Expanded the Frequent Service research audit to 100 agencies and counts each agency’s representative frequent-service tier while retaining secondary tiers for context.

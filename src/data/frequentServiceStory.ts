@@ -16,7 +16,7 @@ export interface FrequentServiceStoryExample {
   tone: 'orange' | 'blue' | 'green' | 'purple';
 }
 
-const storyThresholds = [10, 15];
+const storyThresholds = [10, 15, 30];
 const records = audit.records;
 const categoryCounts = {
   numericDefinition: records.filter(record => ['numeric_definition_on_map', 'numeric_definition_on_official_page'].includes(record.status)).length,

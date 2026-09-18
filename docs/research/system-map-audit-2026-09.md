@@ -4,7 +4,7 @@ This is the map-first verification layer for the Frequent Service research story
 
 ## Current sample
 
-The current sample contains the first 150 agencies in catalog order. Records 1–50 are the first batch, records 51–100 are the second batch, and records 101–150 are the third batch. Each record begins as `pending_map_review` and must be updated only after the official system map or an approved official rider-facing definition is reviewed.
+The current sample contains the first 250 agencies in catalog order. Records 1–50 are the first batch, records 51–100 are the second batch, records 101–150 are the third batch, and records 151–250 are the fourth batch. Each record begins as `pending_map_review` and must be updated only after the official system map or an approved official rider-facing definition is reviewed.
 
 ## Evidence standard
 

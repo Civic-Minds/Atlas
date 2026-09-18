@@ -1,8 +1,8 @@
 {
-  "auditVersion": 3,
+  "auditVersion": 4,
   "createdAt": "2026-09-18",
   "sourceCatalog": "docs/research/frequent-service-catalog.json",
-  "scope": "First 150 agencies in catalog order; official system-map evidence first, with approved official rider-facing definitions when the map is insufficient.",
+  "scope": "First 250 agencies in catalog order; official system-map evidence first, with approved official rider-facing definitions when the map is insufficient.",
   "statusRules": {
     "numeric_definition_on_map": "The official system map visibly names frequent/high-frequency service and gives a numeric threshold or range.",
     "qualitative_definition_on_map": "The official system map visibly names frequent/high-frequency service without a numeric threshold.",
@@ -5313,6 +5313,3256 @@
       "reviewSources": [
         {
           "url": "https://www.mountaintransit.org/",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 151,
+      "reviewBatch": 4,
+      "agencyId": "needles",
+      "agencyName": "Needles Area Transit",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://needlestransit.com/about-needles-area-transit/",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 152,
+      "reviewBatch": 4,
+      "agencyId": "nctd",
+      "agencyName": "North County Transit District (NCTD)",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [
+        {
+          "url": "https://gonctd.com/",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://gonctd.com/",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 153,
+      "reviewBatch": 4,
+      "agencyId": "norwalktransit",
+      "agencyName": "Norwalk Transit System",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "planning_document",
+      "reviewSources": [
+        {
+          "url": "https://norwalktransit.com/wp-content/uploads/2025/07/2025-Title-VI-Program-final.pdf",
+          "sourceType": "planning_document",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 154,
+      "reviewBatch": 4,
+      "agencyId": "omnitrans",
+      "agencyName": "OmniTrans (San Bernardino)",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "planning_document",
+      "reviewSources": [
+        {
+          "url": "https://omnitrans.org/agenda-archive/Support%20Documents%20-%20Item%20G3%20-%20FY14%20Management%20%26%20Service%20Elements%2C%20Revised.pdf",
+          "sourceType": "planning_document",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 155,
+      "reviewBatch": 4,
+      "agencyId": "octa",
+      "agencyName": "Orange County Transportation Authority (OCTA)",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://www.octa.net/programs-projects/projects/rail-projects/oc-streetcar/overview",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 156,
+      "reviewBatch": 4,
+      "agencyId": "pvpta",
+      "agencyName": "Palos Verdes Peninsula Transit Authority (PVPTA)",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "planning_document",
+      "reviewSources": [
+        {
+          "url": "https://palosverdes.com/Pvtransit/10-17-2013-Agenda.pdf",
+          "sourceType": "planning_document",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 157,
+      "reviewBatch": 4,
+      "agencyId": "pasadenatransit",
+      "agencyName": "Pasadena Transit",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "planning_document",
+      "reviewSources": [
+        {
+          "url": "https://www.cityofpasadena.net/transportation/wp-content/uploads/sites/20/City-of-Pasadena-TIA-Guidelines.pdf",
+          "sourceType": "planning_document",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 158,
+      "reviewBatch": 4,
+      "agencyId": "petaluma",
+      "agencyName": "Petaluma Transit",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://transit.cityofpetaluma.net/riders-guide/",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 159,
+      "reviewBatch": 4,
+      "agencyId": "raba",
+      "agencyName": "Redding Area Bus Authority",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "planning_document",
+      "reviewSources": [
+        {
+          "url": "https://cms3.revize.com/revize/reddingbusauthority/Document%20Center/About%20Raba/Reports/Transit%20Plans/RABA%20SRTP%20TM1_111822.pdf",
+          "sourceType": "planning_document",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 160,
+      "reviewBatch": 4,
+      "agencyId": "rct",
+      "agencyName": "Redwood Coast Transit (RCT)",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://redwoodcoasttransit.org/",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 161,
+      "reviewBatch": 4,
+      "agencyId": "riovista",
+      "agencyName": "Rio Vista Delta Breeze",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "planning_document",
+      "reviewSources": [
+        {
+          "url": "https://riovista-ca.granicus.com/MetaViewer.php?clip_id=1007&meta_id=55717&view_id=1",
+          "sourceType": "planning_document",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 162,
+      "reviewBatch": 4,
+      "agencyId": "riverside",
+      "agencyName": "Riverside Transit Agency",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://maps.riversidetransit.com/index.php/maps-schedules",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 163,
+      "reviewBatch": 4,
+      "agencyId": "roseville",
+      "agencyName": "Roseville Transit",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://www.roseville.ca.gov/public_works/transit/services_schedules/local.php",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 164,
+      "reviewBatch": 4,
+      "agencyId": "sacrt",
+      "agencyName": "Sacramento Regional Transit (SacRT)",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "planning_document",
+      "reviewSources": [
+        {
+          "url": "https://www.sacrt.com/wp-content/uploads/Appendix-G_Service-Monitoring-Report.pdf",
+          "sourceType": "planning_document",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 165,
+      "reviewBatch": 4,
+      "agencyId": "weta",
+      "agencyName": "San Francisco Bay Area Water Emergency Transportation Authority (WETA)",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://sanfranciscobayferry.com/routes-schedules/",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 166,
+      "reviewBatch": 4,
+      "agencyId": "sfmta",
+      "agencyName": "San Francisco Municipal Transportation Agency (SFMTA - Muni)",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "planning_document",
+      "reviewSources": [
+        {
+          "url": "https://www.sfmta.com/ja/media/6262/download?inline=",
+          "sourceType": "planning_document",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 167,
+      "reviewBatch": 4,
+      "agencyId": "sjrtd",
+      "agencyName": "San Joaquin RTD",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "planning_document",
+      "reviewSources": [
+        {
+          "url": "https://sanjoaquinrtd.com/wp-content/uploads/2020/06/SRTP-2018-Update_FINAL.pdf",
+          "sourceType": "planning_document",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 168,
+      "reviewBatch": 4,
+      "agencyId": "slorta",
+      "agencyName": "San Luis Obispo Regional Transit Authority (SLORTA)",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://www.slorta.org/",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 169,
+      "reviewBatch": 4,
+      "agencyId": "samtrans",
+      "agencyName": "San Mateo County Transit District (samTrans)",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "planning_document",
+      "reviewSources": [
+        {
+          "url": "https://www.samtrans.com/media/36838/download",
+          "sourceType": "planning_document",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 170,
+      "reviewBatch": 4,
+      "agencyId": "sbmtd",
+      "agencyName": "Santa Barbara Metropolitan Transit District (MTD)",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://sbmtd.gov/maps-schedules/",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 171,
+      "reviewBatch": 4,
+      "agencyId": "santaclarita",
+      "agencyName": "Santa Clarita Transit",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "planning_document",
+      "reviewSources": [
+        {
+          "url": "https://santaclaritatransit.com/files/2024/02/Title-VI-2023-Update-merged-opt.pdf",
+          "sourceType": "planning_document",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 172,
+      "reviewBatch": 4,
+      "agencyId": "smat",
+      "agencyName": "Santa Maria Area Transit",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://www.cityofsantamaria.org/services/departments/department-of-public-works/santa-maria-regional-transit-5008",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 173,
+      "reviewBatch": 4,
+      "agencyId": "santarosa",
+      "agencyName": "Santa Rosa CityBus",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "service_guidelines",
+      "reviewSources": [
+        {
+          "url": "https://www.srcity.org/1327/Systemwide-Services-Standards",
+          "sourceType": "service_guidelines",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 174,
+      "reviewBatch": 4,
+      "agencyId": "simi-valley",
+      "agencyName": "Simi Valley Transit",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "planning_document",
+      "reviewSources": [
+        {
+          "url": "https://www.simivalley.org/home/showpublisheddocument/21238/637044153059200000",
+          "sourceType": "planning_document",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 175,
+      "reviewBatch": 4,
+      "agencyId": "siskiyou",
+      "agencyName": "Siskiyou County",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://www.siskiyoucounty.gov/stage",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 176,
+      "reviewBatch": 4,
+      "agencyId": "soltrans",
+      "agencyName": "SolTrans (Vallejo)",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "service_guidelines",
+      "reviewSources": [
+        {
+          "url": "https://www.soltrans.org/news/new-bus-stop-signs-coming-to-soltrans",
+          "sourceType": "service_guidelines",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 177,
+      "reviewBatch": 4,
+      "agencyId": "sonoma-county",
+      "agencyName": "Sonoma County Transit (SCT)",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "planning_document",
+      "reviewSources": [
+        {
+          "url": "https://sctransit.com/wp-content/uploads/2023/03/Title-VI-Final-May-2022-.pdf",
+          "sourceType": "planning_document",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 178,
+      "reviewBatch": 4,
+      "agencyId": "smart-ca",
+      "agencyName": "Sonoma-Marin Area Rail Transit (SMART)",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://www.sonomamarintrain.org/schedules-fares",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 179,
+      "reviewBatch": 4,
+      "agencyId": "stanford",
+      "agencyName": "Stanford Marguerite Shuttle (SMS)",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://transportation.stanford.edu/getting-stanford/marguerite",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 180,
+      "reviewBatch": 4,
+      "agencyId": "start",
+      "agencyName": "Stanislaus Regional Transit (StaRT)",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "planning_document",
+      "reviewSources": [
+        {
+          "url": "https://www.stanrta.org/DocumentCenter/View/90/Title-VI-Plan-PDF",
+          "sourceType": "planning_document",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 181,
+      "reviewBatch": 4,
+      "agencyId": "sunline",
+      "agencyName": "SunLine Transit Agency (Coachella Valley)",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://www.sunline.org/rider-resources/riders-guide",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 182,
+      "reviewBatch": 4,
+      "agencyId": "taft",
+      "agencyName": "Taft Area Transit",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://www.cityoftaft.org/pview.aspx?catID=562&id=5385",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 183,
+      "reviewBatch": 4,
+      "agencyId": "thousand-oaks",
+      "agencyName": "Thousand Oaks Transit",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://www.toaks.gov/index.php?section=transit",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 184,
+      "reviewBatch": 4,
+      "agencyId": "tridelta",
+      "agencyName": "Tri Delta Transit (Antioch)",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://trideltatransit.com/routes/370/",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 185,
+      "reviewBatch": 4,
+      "agencyId": "trinity",
+      "agencyName": "Trinity Transit",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://www.trinitycounty.org/612/Trinity-Transit/timetables/",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 186,
+      "reviewBatch": 4,
+      "agencyId": "tulare-county-transit",
+      "agencyName": "Tulare County Area Transit (TCAT)",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://tcatbus.com/ride/current-ride-guide/",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 187,
+      "reviewBatch": 4,
+      "agencyId": "unioncity",
+      "agencyName": "Union City Transit",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://www.unioncity.org/DocumentCenter/View/13510/Activity-Guide_SU25-FINAL-SMALL-FINAL-FINAL-042520225",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 188,
+      "reviewBatch": 4,
+      "agencyId": "unitrans",
+      "agencyName": "Unitrans (Davis)",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://unitrans.ucdavis.edu/news/regular-service-resumes-wednesday-sept-23",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 189,
+      "reviewBatch": 4,
+      "agencyId": "valley-express",
+      "agencyName": "Valley Express",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://www.valleyexpressbus.org/routes/",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 190,
+      "reviewBatch": 4,
+      "agencyId": "vctc",
+      "agencyName": "Ventura County Transportation Commission (VCTC Intercity)",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://www.goventura.org/ride-vctc/routes-schedules/",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 191,
+      "reviewBatch": 4,
+      "agencyId": "vvta",
+      "agencyName": "Victor Valley Transit Authority (VVTA)",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://vvta.org/",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 192,
+      "reviewBatch": 4,
+      "agencyId": "vine",
+      "agencyName": "VINE Transit (Napa)",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://vinetransit.com/routes/",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 193,
+      "reviewBatch": 4,
+      "agencyId": "visalia",
+      "agencyName": "Visalia Transit",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://www.visalia.gov/transit",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 194,
+      "reviewBatch": 4,
+      "agencyId": "westberkeley",
+      "agencyName": "West Berkeley Shuttle",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [
+        {
+          "url": "https://dac.berkeley.edu/wayfinding/maps",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://dac.berkeley.edu/wayfinding/maps",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 195,
+      "reviewBatch": 4,
+      "agencyId": "westcat",
+      "agencyName": "WestCAT (Pinole)",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://www.westcat.org/home/ServLocalBus",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 196,
+      "reviewBatch": 4,
+      "agencyId": "yolobus",
+      "agencyName": "Yolo County Transportation District (Yolobus)",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://yolobus.com/routes/",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 197,
+      "reviewBatch": 4,
+      "agencyId": "all-points-transit",
+      "agencyName": "All Points Transit (Montrose)",
+      "country": "United States",
+      "region": "Colorado",
+      "status": "map_unavailable",
+      "mapCandidates": [
+        {
+          "url": "https://www.allpointstransit.com/montrose-public-bus/",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.allpointstransit.com/montrose-public-bus/",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 198,
+      "reviewBatch": 4,
+      "agencyId": "avon-transit",
+      "agencyName": "Avon Transit",
+      "country": "United States",
+      "region": "Colorado",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://avon.org/bus",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 199,
+      "reviewBatch": 4,
+      "agencyId": "breck-free-ride",
+      "agencyName": "Breckenridge Free Ride",
+      "country": "United States",
+      "region": "Colorado",
+      "status": "map_unavailable",
+      "mapCandidates": [
+        {
+          "url": "https://www.breckfreeride.com/",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.breckfreeride.com/",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 200,
+      "reviewBatch": 4,
+      "agencyId": "bustang",
+      "agencyName": "Bustang (CDOT)",
+      "country": "United States",
+      "region": "Colorado",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://ridebustang.com/",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 201,
+      "reviewBatch": 4,
+      "agencyId": "abqride",
+      "agencyName": "ABQ RIDE (Albuquerque)",
+      "country": "United States",
+      "region": "New Mexico",
+      "status": "numeric_definition_on_official_page",
+      "mapCandidates": [
+        {
+          "url": "https://www.cabq.gov/transit/services/about-albuquerque-rapid-transit",
+          "sourceType": "frequent_network_page",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "definitions": [
+        {
+          "id": "art-frequent",
+          "label": "Frequent all-day service",
+          "thresholdMinutes": 30,
+          "thresholdText": "approximately every 20–30 minutes",
+          "representative": true,
+          "sourceType": "official_frequent_network_page",
+          "sourceUrl": "https://www.cabq.gov/transit/services/about-albuquerque-rapid-transit",
+          "localFile": null,
+          "mapPageOrSection": "ART service description",
+          "exactWording": "Frequent all-day service. Buses arrive approximately every 20-30 minutes.",
+          "evidenceNotes": "The official ABQ RIDE ART page names frequent all-day service and gives an approximate 20–30 minute range. The page is recorded as official rider-facing evidence because a current system-map definition was not verified."
+        }
+      ],
+      "representativeThresholdMinutes": 30,
+      "mapDate": null,
+      "mapPageOrSection": "ART service description",
+      "exactMapWording": "Frequent all-day service. Buses arrive approximately every 20-30 minutes.",
+      "thresholdMinutes": 30,
+      "thresholdText": "approximately every 20–30 minutes",
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The official ABQ RIDE ART page names frequent all-day service and gives an approximate 20–30 minute range. The page is recorded as official rider-facing evidence because a current system-map definition was not verified.",
+      "evidenceSourceType": "official_frequent_network_page",
+      "reviewSources": [
+        {
+          "url": "https://www.cabq.gov/transit/services/about-albuquerque-rapid-transit",
+          "sourceType": "official_frequent_network_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 202,
+      "reviewBatch": 4,
+      "agencyId": "advance-transit",
+      "agencyName": "Advance Transit (Lebanon, NH)",
+      "country": "United States",
+      "region": "New Hampshire",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://advancetransit.com/media-center/routes-schedules/?page=2",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 203,
+      "reviewBatch": 4,
+      "agencyId": "akron",
+      "agencyName": "Akron Metro Regional Transit Authority",
+      "country": "United States",
+      "region": "Ohio",
+      "status": "map_unavailable",
+      "mapCandidates": [
+        {
+          "url": "https://www.akronmetro.org/Data/Sites/2/pdf/metro-system-map.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.akronmetro.org/Data/Sites/2/pdf/metro-system-map.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 204,
+      "reviewBatch": 4,
+      "agencyId": "albany-ga",
+      "agencyName": "Albany Transit System",
+      "country": "United States",
+      "region": "Georgia",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://www.albanyga.gov/City-Departments/Albany-Transit",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 205,
+      "reviewBatch": 4,
+      "agencyId": "albemarle-county",
+      "agencyName": "Charlottesville Area Transit (CAT)",
+      "country": "United States",
+      "region": "Virginia",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://www.charlottesville.gov/1990/Reading-CAT-Bus-Schedules",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 206,
+      "reviewBatch": 4,
+      "agencyId": "amarillo",
+      "agencyName": "Amarillo City Transit",
+      "country": "United States",
+      "region": "Texas",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://www.amarillo.gov/amarillo-city-transit/",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 207,
+      "reviewBatch": 4,
+      "agencyId": "annapolis",
+      "agencyName": "Annapolis Transit",
+      "country": "United States",
+      "region": "Maryland",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://annapolis.gov/185/Bus-Routes-Schedules",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 208,
+      "reviewBatch": 4,
+      "agencyId": "appleton",
+      "agencyName": "Valley Transit (Appleton/Fox Cities)",
+      "country": "United States",
+      "region": "Wisconsin",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://www.valleytransit.com/rider-info/",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 209,
+      "reviewBatch": 4,
+      "agencyId": "athens-acc",
+      "agencyName": "Athens Clarke County Transit",
+      "country": "United States",
+      "region": "Georgia",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "planning_document",
+      "reviewSources": [
+        {
+          "url": "https://athensclarkecounty.org/DocumentCenter/View/107926/Final-Transit-Development-Plan?bidId=",
+          "sourceType": "planning_document",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 210,
+      "reviewBatch": 4,
+      "agencyId": "athens-oh",
+      "agencyName": "Athens Public Transit",
+      "country": "United States",
+      "region": "Ohio",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://hapcap.org/transportation/athens-public-transit/",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 211,
+      "reviewBatch": 4,
+      "agencyId": "augusta",
+      "agencyName": "Augusta Transit",
+      "country": "United States",
+      "region": "Georgia",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "service_guidelines",
+      "reviewSources": [
+        {
+          "url": "https://www.augustaga.gov/DocumentCenter/View/19838/Augusta-Transit-Title-VI-Plan-May-2024-051024-ADOPTED",
+          "sourceType": "service_guidelines",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 212,
+      "reviewBatch": 4,
+      "agencyId": "b-line",
+      "agencyName": "B-Line (Corpus Christi RTA)",
+      "country": "United States",
+      "region": "Texas",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://www.ccrta.org/services/b-line",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 213,
+      "reviewBatch": 4,
+      "agencyId": "bangor",
+      "agencyName": "Bangor Community Connector",
+      "country": "United States",
+      "region": "Maine",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.bangormaine.gov/DocumentCenter/View/3842/LargeScaleMap---NoSatService---Updated-July-2025-pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [
+        "bangor-1"
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": "route map and schedule PDF",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The current official Bangor Community Connector route/schedule PDF was preserved and reviewed. It shows routes and schedules but does not name a frequent/high-frequency definition.",
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.bangormaine.gov/DocumentCenter/View/3842/LargeScaleMap---NoSatService---Updated-July-2025-pdf",
+          "sourceType": "system_map",
+          "localFile": "bangor-1"
+        }
+      ]
+    },
+    {
+      "auditOrder": 214,
+      "reviewBatch": 4,
+      "agencyId": "barta",
+      "agencyName": "BARTA (Reading)",
+      "country": "United States",
+      "region": "Pennsylvania",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://www.bartabus.com/",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 215,
+      "reviewBatch": 4,
+      "agencyId": "bata",
+      "agencyName": "Bay Area Transportation Authority (Traverse City, MI)",
+      "country": "United States",
+      "region": "Michigan",
+      "status": "map_unavailable",
+      "mapCandidates": [
+        {
+          "url": "https://www.bata.net/userfiles/filemanager/3rqujku199jnr1p4e7bq/",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.bata.net/userfiles/filemanager/3rqujku199jnr1p4e7bq/",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 216,
+      "reviewBatch": 4,
+      "agencyId": "bay-metro",
+      "agencyName": "Bay Metro (Bay City)",
+      "country": "United States",
+      "region": "Michigan",
+      "status": "map_unavailable",
+      "mapCandidates": [
+        {
+          "url": "https://baymetro.com/how-to-ride-metro/",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://baymetro.com/how-to-ride-metro/",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 217,
+      "reviewBatch": 4,
+      "agencyId": "art",
+      "agencyName": "Arlington Transit (ART)",
+      "country": "United States",
+      "region": "Virginia",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "planning_document",
+      "reviewSources": [
+        {
+          "url": "https://drpt.virginia.gov/wp-content/uploads/2024/10/Arlington-Transit-TSP-Updated-2023.pdf",
+          "sourceType": "planning_document",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 218,
+      "reviewBatch": 4,
+      "agencyId": "asheville",
+      "agencyName": "Asheville Rides Transit",
+      "country": "United States",
+      "region": "North Carolina",
+      "status": "qualitative_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://beta.ashevillenc.gov/wp-content/uploads/2018/10/SystemBrochure_2018_Back.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [
+        "asheville-1"
+      ],
+      "definitions": [
+        {
+          "id": "frequent-corridors",
+          "label": "frequent service corridors",
+          "thresholdMinutes": null,
+          "thresholdText": null,
+          "representative": true,
+          "sourceType": "system_map",
+          "sourceUrl": "https://beta.ashevillenc.gov/wp-content/uploads/2018/10/SystemBrochure_2018_Back.pdf",
+          "localFile": "asheville-1",
+          "mapPageOrSection": "map legend",
+          "exactWording": "Use buses along the frequent service corridors.",
+          "evidenceNotes": "The preserved official Asheville Frequent Service Map names frequent service corridors but does not publish a numeric threshold. The map is dated 2018 and is retained as historical evidence rather than presented as a current service promise."
+        }
+      ],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": "map legend",
+      "exactMapWording": "Use buses along the frequent service corridors.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The preserved official Asheville Frequent Service Map names frequent service corridors but does not publish a numeric threshold. The map is dated 2018 and is retained as historical evidence rather than presented as a current service promise.",
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://beta.ashevillenc.gov/wp-content/uploads/2018/10/SystemBrochure_2018_Back.pdf",
+          "sourceType": "system_map",
+          "localFile": "asheville-1"
+        }
+      ]
+    },
+    {
+      "auditOrder": 219,
+      "reviewBatch": 4,
+      "agencyId": "ata",
+      "agencyName": "Area Transportation Authority (ATA)",
+      "country": "United States",
+      "region": "Pennsylvania",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://www.rideata.com/",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 220,
+      "reviewBatch": 4,
+      "agencyId": "bay-transit",
+      "agencyName": "Bay Transit",
+      "country": "United States",
+      "region": "Virginia",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://baytransit.org/",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 221,
+      "reviewBatch": 4,
+      "agencyId": "beach-cities-transit",
+      "agencyName": "Beach Cities Transit (South Bay, CA)",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [
+        {
+          "url": "https://www.redondo.org/Documents/Departments/Community%20Services/Transit/Rider%20Information/BCT_Lft_WebHandout_7x10_230616.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.redondo.org/Documents/Departments/Community%20Services/Transit/Rider%20Information/BCT_Lft_WebHandout_7x10_230616.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 222,
+      "reviewBatch": 4,
+      "agencyId": "beaver-county",
+      "agencyName": "Beaver County Transit Authority",
+      "country": "United States",
+      "region": "Pennsylvania",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "planning_document",
+      "reviewSources": [
+        {
+          "url": "https://www.beavercountypa.gov/getmedia/11151f12-3793-4cbf-985e-83b424bcaeff/Beaver-County-Comp-Plan_6-27-24.pdf",
+          "sourceType": "planning_document",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 223,
+      "reviewBatch": 4,
+      "agencyId": "beeline",
+      "agencyName": "Westchester County Bee-Line System (BeeLine)",
+      "country": "United States",
+      "region": "New York",
+      "status": "map_unavailable",
+      "mapCandidates": [
+        {
+          "url": "https://q-giswww.westchestergov.com/arcgis/rest/services/MappingWestchesterCounty/MapServer/94",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://q-giswww.westchestergov.com/arcgis/rest/services/MappingWestchesterCounty/MapServer/94",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 224,
+      "reviewBatch": 4,
+      "agencyId": "ben-franklin",
+      "agencyName": "Ben Franklin Transit (Tri-Cities, WA)",
+      "country": "United States",
+      "region": "Washington",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://www.bft.org/bus-service/routes-schedules/metro/",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 225,
+      "reviewBatch": 4,
+      "agencyId": "bettendorf",
+      "agencyName": "Bettendorf Transit",
+      "country": "United States",
+      "region": "Iowa",
+      "status": "map_unavailable",
+      "mapCandidates": [
+        {
+          "url": "https://opmapps.iowadot.gov/Transit/Maps/Home/System/587",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://opmapps.iowadot.gov/Transit/Maps/Home/System/587",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 226,
+      "reviewBatch": 4,
+      "agencyId": "billings",
+      "agencyName": "MET Transit (Billings)",
+      "country": "United States",
+      "region": "Montana",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://www.billingsmt.gov/3146/Routes-and-Schedules-Information",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 227,
+      "reviewBatch": 4,
+      "agencyId": "bis-man",
+      "agencyName": "Bis-Man Transit (Bismarck-Mandan)",
+      "country": "United States",
+      "region": "North Dakota",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://bismantransit.com/files/2024/02/1.2024_BMT_Rider_Guide_web.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [
+        "bis-man-1"
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": "rider guide route maps",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The preserved official Bis-Man Transit rider guide contains route maps and schedule information but does not name a frequent/high-frequency definition.",
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://bismantransit.com/files/2024/02/1.2024_BMT_Rider_Guide_web.pdf",
+          "sourceType": "system_map",
+          "localFile": "bis-man-1"
+        }
+      ]
+    },
+    {
+      "auditOrder": 228,
+      "reviewBatch": 4,
+      "agencyId": "blacksburg",
+      "agencyName": "Blacksburg Transit",
+      "country": "United States",
+      "region": "Virginia",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "service_guidelines",
+      "reviewSources": [
+        {
+          "url": "https://ridebt.org/faq",
+          "sourceType": "service_guidelines",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 229,
+      "reviewBatch": 4,
+      "agencyId": "bloomington",
+      "agencyName": "Bloomington Transit",
+      "country": "United States",
+      "region": "Indiana",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://bloomingtontransit.com/maps-and-schedules/",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 230,
+      "reviewBatch": 4,
+      "agencyId": "bowling-green",
+      "agencyName": "City of Bowling Green",
+      "country": "United States",
+      "region": "Kentucky",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://www.bgky.org/transit",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 231,
+      "reviewBatch": 4,
+      "agencyId": "brazos",
+      "agencyName": "Brazos Transit District",
+      "country": "United States",
+      "region": "Texas",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://www.btd.org/fixed-routes/",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 232,
+      "reviewBatch": 4,
+      "agencyId": "bridgeport-gbt",
+      "agencyName": "Greater Bridgeport Transit",
+      "country": "United States",
+      "region": "Connecticut",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "service_guidelines",
+      "reviewSources": [
+        {
+          "url": "https://gogbt.com/wp-content/uploads/GBT-Title-VI-Publication-MAR-2022-Final2-w-cover-and-appendices-2022-03-29.pdf",
+          "sourceType": "service_guidelines",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 233,
+      "reviewBatch": 4,
+      "agencyId": "broome",
+      "agencyName": "Broome County Transit",
+      "country": "United States",
+      "region": "New York",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://www.broomecountyny.gov/transit/aboutus",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 234,
+      "reviewBatch": 4,
+      "agencyId": "broward-transit",
+      "agencyName": "Broward County Transit",
+      "country": "United States",
+      "region": "Florida",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "service_guidelines",
+      "reviewSources": [
+        {
+          "url": "https://www.broward.org/BCT/Documents/TitleVIProgramUpdate2020-2023.pdf",
+          "sourceType": "service_guidelines",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 235,
+      "reviewBatch": 4,
+      "agencyId": "brownsville",
+      "agencyName": "Brownsville Metro",
+      "country": "United States",
+      "region": "Texas",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "service_guidelines",
+      "reviewSources": [
+        {
+          "url": "https://www.brownsvilletx.gov/608/Rider-Guide",
+          "sourceType": "service_guidelines",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 236,
+      "reviewBatch": 4,
+      "agencyId": "bts-or",
+      "agencyName": "Basin Transit Service (BTS)",
+      "country": "United States",
+      "region": "Oregon",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://www.basintransit.com/routes-and-schedules",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 237,
+      "reviewBatch": 4,
+      "agencyId": "burlington-ia",
+      "agencyName": "Burlington Urban Service (BUS)",
+      "country": "United States",
+      "region": "Iowa",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://www.burlingtoniowa.org/2265/Burlington-Urban-Service-BUS",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 238,
+      "reviewBatch": 4,
+      "agencyId": "bustang-outrider",
+      "agencyName": "Bustang Outrider",
+      "country": "United States",
+      "region": "Colorado",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "service_guidelines",
+      "reviewSources": [
+        {
+          "url": "https://www.codot.gov/business/civilrights/titlevi/title-vi-assets/dtr-title-vi-plan_2020.pdf",
+          "sourceType": "service_guidelines",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 239,
+      "reviewBatch": 4,
+      "agencyId": "butler-county-rta",
+      "agencyName": "Butler County Regional Transit Authority",
+      "country": "United States",
+      "region": "Ohio",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "service_guidelines",
+      "reviewSources": [
+        {
+          "url": "https://www.butlercountyrta.com/wp-content/uploads/2023/12/1-BCRTA-Board-Packet-3-20-2024-V-3-signed.pdf",
+          "sourceType": "service_guidelines",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 240,
+      "reviewBatch": 4,
+      "agencyId": "butler-pa",
+      "agencyName": "Butler Transit Authority",
+      "country": "United States",
+      "region": "Pennsylvania",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "service_guidelines",
+      "reviewSources": [
+        {
+          "url": "https://www.butlertransitauthority.com/Files/Admin/PDFs/BTA-Title-VI-2024-27-UPDATES-FROM-TRIENNIAL-with-Resolution.pdf",
+          "sourceType": "service_guidelines",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 241,
+      "reviewBatch": 4,
+      "agencyId": "cambus",
+      "agencyName": "CAMBUS (University of Iowa)",
+      "country": "United States",
+      "region": "Iowa",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://transportation.uiowa.edu/cambus",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 242,
+      "reviewBatch": 4,
+      "agencyId": "camtran",
+      "agencyName": "CamTran",
+      "country": "United States",
+      "region": "Pennsylvania",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://www.camtranbus.com/schedules/camtran-urban-routes/",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 243,
+      "reviewBatch": 4,
+      "agencyId": "capmetro",
+      "agencyName": "Capital Metro (Austin)",
+      "country": "United States",
+      "region": "Texas",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.capmetro.org/ride/plan/schedmap",
+          "sourceType": "frequent_network_page",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "definitions": [
+        {
+          "id": "high-frequency-network",
+          "label": "High-Frequency Network",
+          "thresholdMinutes": 30,
+          "thresholdText": "every 15–30 minutes",
+          "representative": true,
+          "sourceType": "system_map",
+          "sourceUrl": "https://www.capmetro.org/ride/plan/schedmap",
+          "localFile": null,
+          "mapPageOrSection": "High-Frequency Network section",
+          "exactWording": "Our High-Frequency Network gets you around all of Austin - north, south, east & west! The network has 14 routes that operate every 15-30 minutes.",
+          "evidenceNotes": "The official CapMetro system-map page names the High-Frequency Network and publishes a 15–30 minute range. The slowest ordinary period, 30 minutes, is used as the representative chart value while the full range is retained."
+        }
+      ],
+      "representativeThresholdMinutes": 30,
+      "mapDate": null,
+      "mapPageOrSection": "High-Frequency Network section",
+      "exactMapWording": "Our High-Frequency Network gets you around all of Austin - north, south, east & west! The network has 14 routes that operate every 15-30 minutes.",
+      "thresholdMinutes": 30,
+      "thresholdText": "every 15–30 minutes",
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The official CapMetro system-map page names the High-Frequency Network and publishes a 15–30 minute range. The slowest ordinary period, 30 minutes, is used as the representative chart value while the full range is retained.",
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.capmetro.org/ride/plan/schedmap",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 244,
+      "reviewBatch": 4,
+      "agencyId": "carson-circuit",
+      "agencyName": "Carson Circuit",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://ci.carson.ca.us/CommunityServices/Carson_Circuit.aspx",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 245,
+      "reviewBatch": 4,
+      "agencyId": "carta",
+      "agencyName": "Charleston Area Regional Transportation Authority (CARTA)",
+      "country": "United States",
+      "region": "South Carolina",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://ridecarta.com/",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 246,
+      "reviewBatch": 4,
+      "agencyId": "carta-chattanooga",
+      "agencyName": "Chattanooga Area Regional Transportation Authority",
+      "country": "United States",
+      "region": "Tennessee",
+      "status": "map_unavailable",
+      "mapCandidates": [
+        {
+          "url": "https://www.gocarta.org/",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.gocarta.org/",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 247,
+      "reviewBatch": 4,
+      "agencyId": "cascades-east",
+      "agencyName": "Cascades East Transit (Bend, OR)",
+      "country": "United States",
+      "region": "Oregon",
+      "status": "map_unavailable",
+      "mapCandidates": [
+        {
+          "url": "https://cascadeseasttransit.com/",
+          "sourceType": "frequent_network_page",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "frequent_network_page",
+      "reviewSources": [
+        {
+          "url": "https://cascadeseasttransit.com/",
+          "sourceType": "frequent_network_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 248,
+      "reviewBatch": 4,
+      "agencyId": "casper",
+      "agencyName": "Casper Area Transit",
+      "country": "United States",
+      "region": "Wyoming",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://www.casperwy.gov/UserFiles/Servers/Server_62983/File/Casper%20Area%20Transit%20Route%20Map%20and%20Schedule%20-%20Updated%20August%202021.pdf",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 249,
+      "reviewBatch": 4,
+      "agencyId": "cat-harrisburg",
+      "agencyName": "Capital Area Transit (Harrisburg)",
+      "country": "United States",
+      "region": "Pennsylvania",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://www.rabbittransit.org/capital-region/routes/route-7/",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 250,
+      "reviewBatch": 4,
+      "agencyId": "cat-or",
+      "agencyName": "Canby Area Transit (CAT)",
+      "country": "United States",
+      "region": "Oregon",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were checked as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, planning documents, and generic service bands were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://www.canbyoregon.gov/area-transit/page/schedules-and-routes",
           "sourceType": "route_service_page",
           "localFile": null
         }
