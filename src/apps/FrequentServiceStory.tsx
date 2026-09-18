@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowDown, ArrowRight, ExternalLink, MapPinned } from 'lucide-react';
+import { ArrowDown, ArrowRight, MapPinned } from 'lucide-react';
 import { trackEvent } from '../lib/analytics';
 import { frequentServiceStoryExamples, frequentServiceStoryStats, type FrequentServiceStoryExample } from '../data/frequentServiceStory';
 
@@ -8,8 +8,6 @@ interface Props {
 }
 
 function StoryExample({ example }: { example: FrequentServiceStoryExample }) {
-  const detailLabels = ['When', 'Where', 'What the agency calls it'];
-
   return (
     <article className="mt-8 border-t border-[var(--border-primary)] pt-7">
       <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
@@ -18,14 +16,7 @@ function StoryExample({ example }: { example: FrequentServiceStoryExample }) {
       </div>
       <h3 className="mt-3 text-2xl sm:text-3xl font-black tracking-tight text-[var(--text-primary)]">{example.headline}</h3>
       <p className="mt-3 max-w-3xl text-base leading-7 text-[var(--text-muted)]">{example.summary}</p>
-      <div className="mt-6 grid gap-3 sm:grid-cols-3">
-        {example.details.map((detail, index) => (
-          <div key={detail} className="rounded-xl bg-[var(--bg-stat)] p-4">
-            <p className="text-[0.65rem] font-black uppercase tracking-[0.16em] text-[var(--text-dim)]">{detailLabels[index] ?? 'Published detail'}</p>
-            <p className="mt-2 text-sm leading-6 text-[var(--text-primary)]">{detail}</p>
-          </div>
-        ))}
-      </div>
+      <p className="mt-4 max-w-3xl text-sm leading-6 text-[var(--text-secondary)]">{example.details.join(' · ')}</p>
     </article>
   );
 }
@@ -167,25 +158,6 @@ export default function FrequentServiceStory({ onExploreMap }: Props) {
                 <p><strong className="text-[var(--text-primary)]">How we handled numbers.</strong> We kept published ranges and dayparts intact. Agencies are counted once in the chart. When a source identifies a primary map-facing threshold, that takes precedence over a slower product-specific period; otherwise, the slowest period in the named tier is used.</p>
                 <p><strong className="text-[var(--text-primary)]">Limitations.</strong> This is a source-backed sample, not an exhaustive census of every transit agency or a universal definition of frequent service. It describes the research sample and does not change Atlas’s production frequency definitions.</p>
               </div>
-            </div>
-            <div className="mt-10 border-t border-[var(--border-primary)] pt-8">
-              <h2 className="text-xl font-black tracking-tight text-[var(--text-primary)]">Sources for the featured examples</h2>
-              <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--text-muted)]">These are the official materials for the narrative examples on this page—not a complete bibliography of the 500-agency review. The chart and sample totals come from the full research catalog described in the Method.</p>
-              <ul className="mt-5 grid gap-x-8 gap-y-3 sm:grid-cols-2">
-                {frequentServiceStoryExamples.map(example => (
-                  <li key={example.id}>
-                    <a
-                      href={example.sourceUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="inline-flex items-center gap-1.5 text-sm font-bold text-[var(--text-primary)] underline decoration-[var(--border-primary)] underline-offset-4 hover:decoration-current"
-                    >
-                      {example.city} — {example.sourceLabel}
-                      <ExternalLink className="h-3 w-3 shrink-0" aria-hidden="true" />
-                    </a>
-                  </li>
-                ))}
-              </ul>
             </div>
           </footer>
         </div>

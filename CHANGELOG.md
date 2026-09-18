@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Removed the misleading featured-sources list and decorative evidence cards from the research story.
 - Made the research Method’s review date explicit instead of burying it in the sample description.
 - Constrained the research story body and Method text to the same readable line length as the rest of the page.
 - Corrected the research story to use UTA's 15-minute map-facing definition and removed Davenport's unsupported frequent-service claim.
