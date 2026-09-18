@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- Kept the story map narrative below the opening viewport so the research introduction is read first.
 - Made the research story map span the viewport and fit its available height responsively.
 - Reset the Frequent Service research audit to a manually verified, map-only 50-agency sample after removing the invalid bulk-generated audit.
 - Removed the separate agency example tabs; agency examples will be shown through map states instead.
