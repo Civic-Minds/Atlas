@@ -14,6 +14,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Made the research page header opaque so scrolling text cannot show through it.
 - Matched the research Method section to the story’s readable content width.
 - Rebalanced the story map layout so the explanatory copy stays visible beside the map at narrower desktop widths.
+- Made the research story map full-width with overlay narrative panels.
 - Expanded the Frequent Service research audit to 150 agencies while preserving representative and secondary frequency tiers.
 - Expanded the Frequent Service research audit to 100 agencies and counts each agency’s representative frequent-service tier while retaining secondary tiers for context.
 - Kept the story map pinned while switching the final 15- and 30-minute comparisons so the network does not jump with the scroll position.
