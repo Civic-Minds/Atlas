@@ -12,7 +12,7 @@ const frames: MapFrame[] = [
   { agency: 'Edmonton Transit Service', image: '/assets/research/system-maps/edmonton.jpg', source: 'https://www.edmonton.ca/sites/default/files/public-files/ETS-Day-Map-May-2025.pdf' },
   { agency: 'King County Metro', image: '/assets/research/system-maps/seattle.jpg', source: 'https://kingcounty.gov/en/-/media/king-county/depts/metro/maps/system/09142024/metro-system-map-central' },
   { agency: 'OC Transpo', image: '/assets/research/system-maps/ottawa.jpg', source: 'https://www.octranspo.com/images/files/maps/network_maps/NWTB_System_Map_2025_%28MASTER%29_BRT_27April2025_V1.pdf' },
-  { agency: 'Chicago Transit Authority', image: '/assets/research/system-maps/chicago.jpg', source: 'https://www.transitchicago.com/assets/1/6/ctamap_SystemMap.pdf' },
+  { agency: 'SEPTA Philadelphia', image: '/assets/research/system-maps/septa.jpg', source: 'https://www.septa.org/wp-content/uploads/page/communication/SEPTA_System-Map_v3-0.pdf' },
   { agency: 'TriMet', image: '/assets/research/system-maps/portland.jpg', source: 'https://www.trimet.org/maps/pdf/frequentservice.pdf' },
   { agency: 'Washington Metropolitan Area Transit Authority', image: '/assets/research/system-maps/washington.jpg', source: 'https://www.wmata.com/schedules/maps/upload/system-map-bus-DC-high-frequency.pdf' },
 ];
@@ -32,7 +32,7 @@ export default function FrequentServicePublishedMapMontage() {
 
   useEffect(() => {
     if (reducedMotion || !isPlaying) return;
-    const timer = window.setInterval(() => setActiveFrame(frame => (frame + 1) % frames.length), 1800);
+    const timer = window.setInterval(() => setActiveFrame(frame => (frame + 1) % frames.length), 850);
     return () => window.clearInterval(timer);
   }, [isPlaying, reducedMotion]);
 
@@ -40,14 +40,14 @@ export default function FrequentServicePublishedMapMontage() {
 
   return (
     <figure className="mt-10 w-full overflow-hidden rounded-[1.5rem] border border-[var(--border-primary)] bg-[#f4f3ef] shadow-sm">
-      <div className="relative aspect-[16/8] min-h-[15rem] sm:min-h-[20rem]">
+      <div className="relative aspect-[12/7]">
         {frames.map((frame, index) => (
           <img
             key={frame.image}
             src={frame.image}
             alt={index === activeFrame ? `Published system map from ${frame.agency}.` : ''}
             aria-hidden={index !== activeFrame}
-            className="absolute inset-0 h-full w-full object-contain p-3 transition-opacity duration-700 sm:p-5"
+            className="absolute inset-0 h-full w-full object-cover transition-opacity duration-150"
             style={{ opacity: index === activeFrame ? 1 : 0 }}
           />
         ))}
@@ -66,7 +66,7 @@ export default function FrequentServicePublishedMapMontage() {
         </div>
       </div>
       <figcaption className="px-4 py-3 text-xs text-[var(--text-muted)] sm:px-6">
-        Published system maps from agencies in this audit.
+        Quick cuts from real system-map pages published by agencies in this audit.
       </figcaption>
     </figure>
   );
