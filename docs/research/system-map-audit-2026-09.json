@@ -2,7 +2,7 @@
   "auditVersion": 2,
   "createdAt": "2026-09-18",
   "sourceCatalog": "docs/research/frequent-service-catalog.json",
-  "scope": "First 50 agencies in catalog order; official system maps and rider guides.",
+  "scope": "First 50 agencies plus 39 additional agencies reviewed individually against current official system maps or approved rider guides on September 18, 2026.",
   "statusRules": {
     "numeric_definition_on_map": "The official system map visibly names frequent/high-frequency service and gives a numeric threshold or range.",
     "qualitative_definition_on_map": "The official system map visibly names frequent/high-frequency service without a numeric threshold.",
@@ -2154,6 +2154,1748 @@
         }
       ],
       "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 51,
+      "agencyId": "minneapolis-metro",
+      "agencyName": "Metro Transit (Minneapolis–St. Paul)",
+      "country": "United States",
+      "region": "Minnesota",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.metrotransit.org/Data/Sites/1/media/pdfs/system-map.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "page 1, Downtown Map Legend",
+      "exactMapWording": "Frequent Local Buses — Serve all stops and operate at least every 30 min. during middays on weekdays, more often during rush hours. Evening and weekend service may be less frequent.",
+      "thresholdMinutes": 30,
+      "thresholdText": "at least every 30 minutes during weekday middays; more often during rush hours",
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Metro Transit system map visually reviewed. The map explicitly names Frequent Local Buses and gives its weekday midday threshold.",
+      "reviewBatch": 2,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.metrotransit.org/Data/Sites/1/media/pdfs/system-map.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [
+        {
+          "id": "primary",
+          "label": "Frequent Local Buses",
+          "thresholdMinutes": 30,
+          "thresholdText": "at least every 30 minutes during weekday middays; more often during rush hours",
+          "representative": true,
+          "sourceType": "system_map",
+          "sourceUrl": "https://www.metrotransit.org/Data/Sites/1/media/pdfs/system-map.pdf",
+          "localFile": null,
+          "mapPageOrSection": "page 1, Downtown Map Legend",
+          "exactWording": "Frequent Local Buses — Serve all stops and operate at least every 30 min. during middays on weekdays, more often during rush hours. Evening and weekend service may be less frequent.",
+          "evidenceNotes": "Official Metro Transit system map visually reviewed. The map explicitly names Frequent Local Buses and gives its weekday midday threshold."
+        }
+      ],
+      "representativeThresholdMinutes": 30,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 52,
+      "agencyId": "cota-columbus",
+      "agencyName": "Central Ohio Transit Authority",
+      "country": "United States",
+      "region": "Ohio",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.cota.com/timetables/cota-system-map.pdf",
+          "sourceType": "system_map",
+          "localFile": "cota-system-map.pdf"
+        }
+      ],
+      "preservedFiles": [
+        "cota-system-map.pdf"
+      ],
+      "mapDate": null,
+      "mapPageOrSection": "page 1, SERVICE TYPE / frequency legend",
+      "exactMapWording": "FREQUENT — Serving you throughout the day — Departure times are every 15 minutes or less.",
+      "thresholdMinutes": 15,
+      "thresholdText": "every 15 minutes or less throughout the day",
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official COTA system map visually reviewed. The legend explicitly names Frequent service and gives its threshold.",
+      "reviewBatch": 2,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.cota.com/timetables/cota-system-map.pdf",
+          "sourceType": "system_map",
+          "localFile": "cota-system-map.pdf"
+        }
+      ],
+      "definitions": [
+        {
+          "id": "primary",
+          "label": "FREQUENT",
+          "thresholdMinutes": 15,
+          "thresholdText": "every 15 minutes or less throughout the day",
+          "representative": true,
+          "sourceType": "system_map",
+          "sourceUrl": "https://www.cota.com/timetables/cota-system-map.pdf",
+          "localFile": "cota-system-map.pdf",
+          "mapPageOrSection": "page 1, SERVICE TYPE / frequency legend",
+          "exactWording": "FREQUENT — Serving you throughout the day — Departure times are every 15 minutes or less.",
+          "evidenceNotes": "Official COTA system map visually reviewed. The legend explicitly names Frequent service and gives its threshold."
+        }
+      ],
+      "representativeThresholdMinutes": 15,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 53,
+      "agencyId": "indygo",
+      "agencyName": "IndyGo",
+      "country": "United States",
+      "region": "Indiana",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.indygo.net/wp-content/uploads/2026/01/FSM_2506_WebFull.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "page 1, map legend",
+      "exactMapWording": "15-Minute Route; 30-Minute Route; 60-Minute Route",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official IndyGo weekday network map visually reviewed. It publishes frequency bands but does not name a frequent or high-frequency category, so it is not counted as a definition.",
+      "reviewBatch": 2,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.indygo.net/wp-content/uploads/2026/01/FSM_2506_WebFull.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 54,
+      "agencyId": "mcts-milwaukee",
+      "agencyName": "Milwaukee County Transit System",
+      "country": "United States",
+      "region": "Wisconsin",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.ridemcts.com/getattachment/Routes-Schedules/System-Map/2026-MAR-System-Map-Double-Sided.pdf?lang=en-US",
+          "sourceType": "system_map",
+          "localFile": "mcts-system-map.pdf"
+        }
+      ],
+      "preservedFiles": [
+        "mcts-system-map.pdf"
+      ],
+      "mapDate": null,
+      "mapPageOrSection": "page 1, route-frequency legend",
+      "exactMapWording": "Frequent Service — Buses will come every 15 minutes during morning and afternoon peak periods.",
+      "thresholdMinutes": 15,
+      "thresholdText": "every 15 minutes during morning and afternoon peak periods",
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Current Spring 2026 MCTS system map visually reviewed. It explicitly defines Frequent Service and notes that evening and weekend service varies by route.",
+      "reviewBatch": 2,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.ridemcts.com/getattachment/Routes-Schedules/System-Map/2026-MAR-System-Map-Double-Sided.pdf?lang=en-US",
+          "sourceType": "system_map",
+          "localFile": "mcts-system-map.pdf"
+        }
+      ],
+      "definitions": [
+        {
+          "id": "primary",
+          "label": "Frequent Service",
+          "thresholdMinutes": 15,
+          "thresholdText": "every 15 minutes during morning and afternoon peak periods",
+          "representative": true,
+          "sourceType": "system_map",
+          "sourceUrl": "https://www.ridemcts.com/getattachment/Routes-Schedules/System-Map/2026-MAR-System-Map-Double-Sided.pdf?lang=en-US",
+          "localFile": "mcts-system-map.pdf",
+          "mapPageOrSection": "page 1, route-frequency legend",
+          "exactWording": "Frequent Service — Buses will come every 15 minutes during morning and afternoon peak periods.",
+          "evidenceNotes": "Current Spring 2026 MCTS system map visually reviewed. It explicitly defines Frequent Service and notes that evening and weekend service varies by route."
+        }
+      ],
+      "representativeThresholdMinutes": 15,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 55,
+      "agencyId": "wego-nashville",
+      "agencyName": "WeGo Public Transit",
+      "country": "United States",
+      "region": "Tennessee",
+      "status": "qualitative_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.wegotransit.com/assets/1/24/WEB_Nashville_System_Map_Jan_2026.pdf",
+          "sourceType": "system_map",
+          "localFile": "wego-system-map.pdf"
+        }
+      ],
+      "preservedFiles": [
+        "wego-system-map.pdf"
+      ],
+      "mapDate": null,
+      "mapPageOrSection": "page 1 legend and page 2 Route Information table",
+      "exactMapWording": "Frequent Service",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Current January 2026 WeGo system map visually reviewed. It names Frequent Service and lists route-specific 10–30-minute periods, but does not state one universal cutoff.",
+      "reviewBatch": 2,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.wegotransit.com/assets/1/24/WEB_Nashville_System_Map_Jan_2026.pdf",
+          "sourceType": "system_map",
+          "localFile": "wego-system-map.pdf"
+        }
+      ],
+      "definitions": [
+        {
+          "id": "primary",
+          "label": "Frequent Service",
+          "thresholdMinutes": null,
+          "thresholdText": null,
+          "representative": true,
+          "sourceType": "system_map",
+          "sourceUrl": "https://www.wegotransit.com/assets/1/24/WEB_Nashville_System_Map_Jan_2026.pdf",
+          "localFile": "wego-system-map.pdf",
+          "mapPageOrSection": "page 1 legend and page 2 Route Information table",
+          "exactWording": "Frequent Service",
+          "evidenceNotes": "Current January 2026 WeGo system map visually reviewed. It names Frequent Service and lists route-specific 10–30-minute periods, but does not state one universal cutoff."
+        }
+      ],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 56,
+      "agencyId": "jta-jacksonville",
+      "agencyName": "Jacksonville Transportation Authority",
+      "country": "United States",
+      "region": "Florida",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.jtafla.com/media/xt4gbo35/ops-25016-system-map-09-2025.pdf",
+          "sourceType": "system_map",
+          "localFile": "jta-system-map.pdf"
+        }
+      ],
+      "preservedFiles": [
+        "jta-system-map.pdf"
+      ],
+      "mapDate": null,
+      "mapPageOrSection": "page 1, upper-right legend",
+      "exactMapWording": "FREQUENT ROUTES (15–20 min); Core Frequent Route: 15 min.",
+      "thresholdMinutes": 20,
+      "thresholdText": "15–20 minutes; core frequent routes every 15 minutes",
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official JTA system map visually reviewed. It explicitly names Frequent Routes and a Core Frequent Route with numeric intervals.",
+      "reviewBatch": 2,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.jtafla.com/media/xt4gbo35/ops-25016-system-map-09-2025.pdf",
+          "sourceType": "system_map",
+          "localFile": "jta-system-map.pdf"
+        }
+      ],
+      "definitions": [
+        {
+          "id": "primary",
+          "label": "FREQUENT ROUTES (15–20 min); Core Frequent Route: 15 min.",
+          "thresholdMinutes": 20,
+          "thresholdText": "15–20 minutes; core frequent routes every 15 minutes",
+          "representative": true,
+          "sourceType": "system_map",
+          "sourceUrl": "https://www.jtafla.com/media/xt4gbo35/ops-25016-system-map-09-2025.pdf",
+          "localFile": "jta-system-map.pdf",
+          "mapPageOrSection": "page 1, upper-right legend",
+          "exactWording": "FREQUENT ROUTES (15–20 min); Core Frequent Route: 15 min.",
+          "evidenceNotes": "Official JTA system map visually reviewed. It explicitly names Frequent Routes and a Core Frequent Route with numeric intervals."
+        }
+      ],
+      "representativeThresholdMinutes": 20,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 57,
+      "agencyId": "via-san-antonio",
+      "agencyName": "VIA Metropolitan Transit",
+      "country": "United States",
+      "region": "Texas",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.viainfo.net/wp-content/uploads/2024/08/2026_0107-VIA-System-Map.pdf",
+          "sourceType": "system_map",
+          "localFile": "via-san-antonio-system-map.pdf"
+        }
+      ],
+      "preservedFiles": [
+        "via-san-antonio-system-map.pdf"
+      ],
+      "mapDate": null,
+      "mapPageOrSection": "page 1 legend and page 2 service guide",
+      "exactMapWording": "Frequent Service: during midday, buses come every 15 minutes or less or every 20 minutes or less.",
+      "thresholdMinutes": 20,
+      "thresholdText": "every 15 minutes or less or every 20 minutes or less during midday",
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Current January 2026 VIA system map visually reviewed. It explicitly names Frequent Service and gives the published midday bands.",
+      "reviewBatch": 2,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.viainfo.net/wp-content/uploads/2024/08/2026_0107-VIA-System-Map.pdf",
+          "sourceType": "system_map",
+          "localFile": "via-san-antonio-system-map.pdf"
+        }
+      ],
+      "definitions": [
+        {
+          "id": "primary",
+          "label": "Frequent Service: during midday, buses come every 15 minutes or less or every 20 minutes or less.",
+          "thresholdMinutes": 20,
+          "thresholdText": "every 15 minutes or less or every 20 minutes or less during midday",
+          "representative": true,
+          "sourceType": "system_map",
+          "sourceUrl": "https://www.viainfo.net/wp-content/uploads/2024/08/2026_0107-VIA-System-Map.pdf",
+          "localFile": "via-san-antonio-system-map.pdf",
+          "mapPageOrSection": "page 1 legend and page 2 service guide",
+          "exactWording": "Frequent Service: during midday, buses come every 15 minutes or less or every 20 minutes or less.",
+          "evidenceNotes": "Current January 2026 VIA system map visually reviewed. It explicitly names Frequent Service and gives the published midday bands."
+        }
+      ],
+      "representativeThresholdMinutes": 20,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 58,
+      "agencyId": "capmetro-austin",
+      "agencyName": "CapMetro",
+      "country": "United States",
+      "region": "Texas",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.capmetro.org/docs/default-source/plan-your-trip-docs/destination-schedule-book-docs/system_map.pdf?sfvrsn=eb974f8_48",
+          "sourceType": "system_map",
+          "localFile": "capmetro-system-map.pdf"
+        }
+      ],
+      "preservedFiles": [
+        "capmetro-system-map.pdf"
+      ],
+      "mapDate": null,
+      "mapPageOrSection": "map legend and Our Services table",
+      "exactMapWording": "High-Frequency Routes: buses arrive every 15 minutes on weekdays, and every 15–30 minutes early morning, later evening, and weekends.",
+      "thresholdMinutes": 30,
+      "thresholdText": "every 15 minutes on weekdays; every 15–30 minutes early morning, later evening, and weekends",
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official CapMetro bus and rail service map/rider guide visually reviewed. It explicitly names High-Frequency Routes and publishes the weekday and weekend bands.",
+      "reviewBatch": 2,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.capmetro.org/docs/default-source/plan-your-trip-docs/destination-schedule-book-docs/system_map.pdf?sfvrsn=eb974f8_48",
+          "sourceType": "system_map",
+          "localFile": "capmetro-system-map.pdf"
+        }
+      ],
+      "definitions": [
+        {
+          "id": "primary",
+          "label": "High-Frequency Routes: buses arrive every 15 minutes on weekdays, and every 15–30 minutes early morning, later evening, and weekends.",
+          "thresholdMinutes": 30,
+          "thresholdText": "every 15 minutes on weekdays; every 15–30 minutes early morning, later evening, and weekends",
+          "representative": true,
+          "sourceType": "system_map",
+          "sourceUrl": "https://www.capmetro.org/docs/default-source/plan-your-trip-docs/destination-schedule-book-docs/system_map.pdf?sfvrsn=eb974f8_48",
+          "localFile": "capmetro-system-map.pdf",
+          "mapPageOrSection": "map legend and Our Services table",
+          "exactWording": "High-Frequency Routes: buses arrive every 15 minutes on weekdays, and every 15–30 minutes early morning, later evening, and weekends.",
+          "evidenceNotes": "Official CapMetro bus and rail service map/rider guide visually reviewed. It explicitly names High-Frequency Routes and publishes the weekday and weekend bands."
+        }
+      ],
+      "representativeThresholdMinutes": 30,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 59,
+      "agencyId": "thebus-honolulu",
+      "agencyName": "TheBus",
+      "country": "United States",
+      "region": "Hawaii",
+      "status": "qualitative_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.thebus.org/SystemMap/SystemMap20260701.pdf",
+          "sourceType": "system_map",
+          "localFile": "thebus-system-map.pdf"
+        }
+      ],
+      "preservedFiles": [
+        "thebus-system-map.pdf"
+      ],
+      "mapDate": null,
+      "mapPageOrSection": "page 2, TheBus Route Guide",
+      "exactMapWording": "Frequent Urban Routes",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Current July 2026 TheBus system map visually reviewed. It names Frequent Urban Routes and provides route-by-route headways, but does not state the cutoff used to classify them.",
+      "reviewBatch": 2,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.thebus.org/SystemMap/SystemMap20260701.pdf",
+          "sourceType": "system_map",
+          "localFile": "thebus-system-map.pdf"
+        }
+      ],
+      "definitions": [
+        {
+          "id": "primary",
+          "label": "Frequent Urban Routes",
+          "thresholdMinutes": null,
+          "thresholdText": null,
+          "representative": true,
+          "sourceType": "system_map",
+          "sourceUrl": "https://www.thebus.org/SystemMap/SystemMap20260701.pdf",
+          "localFile": "thebus-system-map.pdf",
+          "mapPageOrSection": "page 2, TheBus Route Guide",
+          "exactWording": "Frequent Urban Routes",
+          "evidenceNotes": "Current July 2026 TheBus system map visually reviewed. It names Frequent Urban Routes and provides route-by-route headways, but does not state the cutoff used to classify them."
+        }
+      ],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 60,
+      "agencyId": "houston-metro",
+      "agencyName": "METRO Houston",
+      "country": "United States",
+      "region": "Texas",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://assets-cdn-prod.azureedge.us/assets/docs/default-source/system-map/metro-system-map-2.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "map frequency legend",
+      "exactMapWording": "10, 12, or 15 minute frequency; 30 minute frequency; 60 minute frequency; Peak only service.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Current July 2026 Houston METRO system map visually reviewed. It publishes frequency bands but does not name a frequent or high-frequency category; the red/blue/green route explanation is not labeled frequent service.",
+      "reviewBatch": 2,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://assets-cdn-prod.azureedge.us/assets/docs/default-source/system-map/metro-system-map-2.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 61,
+      "agencyId": "sacrt",
+      "agencyName": "Sacramento Regional Transit District",
+      "country": "United States",
+      "region": "California",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.sacrt.com/wp-content/uploads/SacRT_SystemMap_Effective-August-29-2021-1.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "map legend",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official SacRT system map visually reviewed. Its legend shows routes, stations, and connections but does not name frequent/high-frequency service or publish a threshold.",
+      "reviewBatch": 2,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.sacrt.com/wp-content/uploads/SacRT_SystemMap_Effective-August-29-2021-1.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 62,
+      "agencyId": "cats-charlotte",
+      "agencyName": "Charlotte Area Transit System",
+      "country": "United States",
+      "region": "North Carolina",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.charlottenc.gov/files/sharedassets/cats/cats-images/cats-system-map.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "map legend",
+      "exactMapWording": "Local bus route; Neighborhood bus route; Express route; MetroRAPID route.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Current CATS rider map visually reviewed. It classifies route types but does not define frequent/high-frequency service. An older planning document was not counted.",
+      "reviewBatch": 2,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.charlottenc.gov/files/sharedassets/cats/cats-images/cats-system-map.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 63,
+      "agencyId": "hart-tampa",
+      "agencyName": "Hillsborough Area Regional Transit",
+      "country": "United States",
+      "region": "Florida",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.gohart.org/Style%20Library/goHART/pdfs/service/HART_SYSTEM_MAP_06-2026.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "page 1, map legend",
+      "exactMapWording": "Local Route and Route Number; Limited Express Route and Route Number; HARTFlex Route.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Current June 2026 HART system map visually reviewed. It classifies routes but does not name or define frequent/high-frequency service.",
+      "reviewBatch": 2,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.gohart.org/Style%20Library/goHART/pdfs/service/HART_SYSTEM_MAP_06-2026.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 64,
+      "agencyId": "cincinnati-metro",
+      "agencyName": "Cincinnati Metro",
+      "country": "United States",
+      "region": "Ohio",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.go-metro.com/wp-content/uploads/2025/10/metrosystemmap_October2025.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "page 1, map legend",
+      "exactMapWording": "On weekdays at midday, buses arrive every: 15 Minutes Or Better; 20–35 Minutes; 40–55 Minutes; 60+ Minutes.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Current Cincinnati Metro system map visually reviewed. It publishes generic frequency bands but does not name a frequent/high-frequency category.",
+      "reviewBatch": 2,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.go-metro.com/wp-content/uploads/2025/10/metrosystemmap_October2025.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 65,
+      "agencyId": "broward-county-transit",
+      "agencyName": "Broward County Transit",
+      "country": "United States",
+      "region": "Florida",
+      "status": "map_unavailable",
+      "mapCandidates": [
+        {
+          "url": "https://www.broward.org/BCT?event=1",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "official system map link",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The current official system-map link was located, but the linked CDN PDF failed to load during manual review. Separate future planning material was not counted as a current rider-map definition.",
+      "reviewBatch": 2,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.broward.org/BCT?event=1",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 66,
+      "agencyId": "sfmta",
+      "agencyName": "San Francisco Municipal Transportation Agency",
+      "country": "United States",
+      "region": "California",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.sfmta.com/media/37783/download?inline",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "page 1, San Francisco Transit Map legend",
+      "exactMapWording": "Muni Rapid Bus — 12 minutes or less; Every 10–20 min; Every 20–30 min.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Current June 2025 Muni map visually reviewed. It publishes Rapid Bus and generic frequency bands but does not name or define frequent/high-frequency service.",
+      "reviewBatch": 2,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.sfmta.com/media/37783/download?inline",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 67,
+      "agencyId": "pittsburgh-regional-transit",
+      "agencyName": "Pittsburgh Regional Transit",
+      "country": "United States",
+      "region": "Pennsylvania",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.rideprt.org/system-map/",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "official interactive system map controls and legend",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Current official interactive system map reviewed. It provides weekday/Saturday/Sunday views but no named frequent/high-frequency definition or threshold.",
+      "reviewBatch": 2,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.rideprt.org/system-map/",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 68,
+      "agencyId": "ac-transit",
+      "agencyName": "AC Transit",
+      "country": "United States",
+      "region": "California",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.actransit.org/sites/default/files/2026-09/System%20Overview%20Map%20with%20Insets.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "map legend and line styling",
+      "exactMapWording": "Identify the most heavily served lines through their more vibrant colors and thicker lines.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Current August 2026 AC Transit system overview map visually reviewed. It indicates heavier service graphically but does not name a frequent/high-frequency category or give a threshold.",
+      "reviewBatch": 2,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.actransit.org/sites/default/files/2026-09/System%20Overview%20Map%20with%20Insets.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 69,
+      "agencyId": "nj-transit",
+      "agencyName": "NJ Transit",
+      "country": "United States",
+      "region": "New Jersey",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://content.njtransit.com/sites/default/files/maps/RSM_Geographic_051426.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "page 1, rail map legend",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Current NJ Transit rail system map visually reviewed. It identifies modes, stations, and connections but does not name or define frequent/high-frequency service.",
+      "reviewBatch": 2,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://content.njtransit.com/sites/default/files/maps/RSM_Geographic_051426.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 70,
+      "agencyId": "metro-st-louis",
+      "agencyName": "Metro Transit St. Louis",
+      "country": "United States",
+      "region": "Missouri",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.metrostlouis.org/wp-content/uploads/2025/02/250207_Metro-Missouri-Map-w_Downtown.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "page 1, legend",
+      "exactMapWording": "Full Service; Limited Service.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Current Metro Transit Missouri system map visually reviewed. It names full and limited service but does not define frequent/high-frequency service or give a frequency number.",
+      "reviewBatch": 2,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.metrostlouis.org/wp-content/uploads/2025/02/250207_Metro-Missouri-Map-w_Downtown.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 71,
+      "agencyId": "valley-metro-phoenix",
+      "agencyName": "Valley Metro",
+      "country": "United States",
+      "region": "Arizona",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://vulcan-production.nyc3.cdn.digitaloceanspaces.com/pages/downloads/maps-schedules/system-map/25oct/2_val_msys_frequent_250912.pdf",
+          "sourceType": "system_map",
+          "localFile": "valley-metro-phoenix-system-map.pdf"
+        }
+      ],
+      "preservedFiles": [
+        "valley-metro-phoenix-system-map.pdf"
+      ],
+      "mapDate": null,
+      "mapPageOrSection": "1-page Frequent Service Map footer",
+      "exactMapWording": "Frequent Service Map — Every 15 minutes or better from at least 6 a.m. to 6 p.m. on weekdays.",
+      "thresholdMinutes": 15,
+      "thresholdText": "every 15 minutes or better, at least 6 a.m.–6 p.m. weekdays",
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official October 2025 Valley Metro Frequent Service Map visually reviewed.",
+      "reviewBatch": 3,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://vulcan-production.nyc3.cdn.digitaloceanspaces.com/pages/downloads/maps-schedules/system-map/25oct/2_val_msys_frequent_250912.pdf",
+          "sourceType": "system_map",
+          "localFile": "valley-metro-phoenix-system-map.pdf"
+        }
+      ],
+      "definitions": [
+        {
+          "id": "primary",
+          "label": "Frequent Service Map",
+          "thresholdMinutes": 15,
+          "thresholdText": "every 15 minutes or better, at least 6 a.m.–6 p.m. weekdays",
+          "representative": true,
+          "sourceType": "system_map",
+          "sourceUrl": "https://vulcan-production.nyc3.cdn.digitaloceanspaces.com/pages/downloads/maps-schedules/system-map/25oct/2_val_msys_frequent_250912.pdf",
+          "localFile": "valley-metro-phoenix-system-map.pdf",
+          "mapPageOrSection": "1-page Frequent Service Map footer",
+          "exactWording": "Frequent Service Map — Every 15 minutes or better from at least 6 a.m. to 6 p.m. on weekdays.",
+          "evidenceNotes": "Official October 2025 Valley Metro Frequent Service Map visually reviewed."
+        }
+      ],
+      "representativeThresholdMinutes": 15,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 72,
+      "agencyId": "rtd-denver-batch3",
+      "agencyName": "Regional Transportation District",
+      "country": "United States",
+      "region": "Colorado",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.rtd-denver.com/system-map",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "current rider-facing interactive system map",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Current RTD rider-facing system map reviewed. No named frequent/high-frequency definition was visible.",
+      "reviewBatch": 3,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.rtd-denver.com/system-map",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 73,
+      "agencyId": "mta-maryland",
+      "agencyName": "Maryland Transit Administration",
+      "country": "United States",
+      "region": "Maryland",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://s3.amazonaws.com/mta-website-staging/mta-website-staging/files/System%20Maps/Geographic%20System%20Map_fall2025.pdf",
+          "sourceType": "system_map",
+          "localFile": "mta-maryland-system-map.pdf"
+        }
+      ],
+      "preservedFiles": [
+        "mta-maryland-system-map.pdf"
+      ],
+      "mapDate": null,
+      "mapPageOrSection": "page 1, Route Key and Legend",
+      "exactMapWording": "Solid Lines = Frequent Service — Every 15 minutes or better from morning to evening on weekdays.",
+      "thresholdMinutes": 15,
+      "thresholdText": "every 15 minutes or better from morning to evening on weekdays",
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official fall 2025 BaltimoreLink geographic system map visually reviewed.",
+      "reviewBatch": 3,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://s3.amazonaws.com/mta-website-staging/mta-website-staging/files/System%20Maps/Geographic%20System%20Map_fall2025.pdf",
+          "sourceType": "system_map",
+          "localFile": "mta-maryland-system-map.pdf"
+        }
+      ],
+      "definitions": [
+        {
+          "id": "primary",
+          "label": "Solid Lines = Frequent Service",
+          "thresholdMinutes": 15,
+          "thresholdText": "every 15 minutes or better from morning to evening on weekdays",
+          "representative": true,
+          "sourceType": "system_map",
+          "sourceUrl": "https://s3.amazonaws.com/mta-website-staging/mta-website-staging/files/System%20Maps/Geographic%20System%20Map_fall2025.pdf",
+          "localFile": "mta-maryland-system-map.pdf",
+          "mapPageOrSection": "page 1, Route Key and Legend",
+          "exactWording": "Solid Lines = Frequent Service — Every 15 minutes or better from morning to evening on weekdays.",
+          "evidenceNotes": "Official fall 2025 BaltimoreLink geographic system map visually reviewed."
+        }
+      ],
+      "representativeThresholdMinutes": 15,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 74,
+      "agencyId": "rta-cleveland",
+      "agencyName": "Greater Cleveland Regional Transit Authority",
+      "country": "United States",
+      "region": "Ohio",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.riderta.com/sites/default/files/pdf/maps/System_Map_Main.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "page 1 map and legend",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Current RTA full system map visually reviewed. No named frequent/high-frequency definition appeared.",
+      "reviewBatch": 3,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.riderta.com/sites/default/files/pdf/maps/System_Map_Main.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 75,
+      "agencyId": "ridekc",
+      "agencyName": "RideKC",
+      "country": "United States",
+      "region": "Missouri/Kansas",
+      "status": "map_unavailable",
+      "mapCandidates": [
+        {
+          "url": "https://ridekc.org/assets/uploads/documents/SystemMap.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "page 1 legend",
+      "exactMapWording": "Frequent Bus Service; 12–15 min maximum frequency.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The posted map contains a Frequent Bus Service definition but is explicitly effective January 1, 2018; it was excluded from the current sample rather than treated as current evidence.",
+      "reviewBatch": 3,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://ridekc.org/assets/uploads/documents/SystemMap.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 76,
+      "agencyId": "metro-st-paul",
+      "agencyName": "Metro Transit (St. Paul)",
+      "country": "United States",
+      "region": "Minnesota",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.metrotransit.org/Data/Sites/1/media/news/news_dtstpaul_web.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "page 1",
+      "exactMapWording": "Frequent Local Buses — Serve all stops and operate at least every 30 min. during middays on weekdays, more often during rush hours. Evening and weekend service may be less frequent.",
+      "thresholdMinutes": 30,
+      "thresholdText": "at least every 30 minutes during weekday middays; more often during rush hours",
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official March 2026 Downtown St. Paul system map visually reviewed.",
+      "reviewBatch": 3,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.metrotransit.org/Data/Sites/1/media/news/news_dtstpaul_web.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [
+        {
+          "id": "primary",
+          "label": "Frequent Local Buses",
+          "thresholdMinutes": 30,
+          "thresholdText": "at least every 30 minutes during weekday middays; more often during rush hours",
+          "representative": true,
+          "sourceType": "system_map",
+          "sourceUrl": "https://www.metrotransit.org/Data/Sites/1/media/news/news_dtstpaul_web.pdf",
+          "localFile": null,
+          "mapPageOrSection": "page 1",
+          "exactWording": "Frequent Local Buses — Serve all stops and operate at least every 30 min. during middays on weekdays, more often during rush hours. Evening and weekend service may be less frequent.",
+          "evidenceNotes": "Official March 2026 Downtown St. Paul system map visually reviewed."
+        }
+      ],
+      "representativeThresholdMinutes": 30,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 77,
+      "agencyId": "dart-dallas",
+      "agencyName": "Dallas Area Rapid Transit",
+      "country": "United States",
+      "region": "Texas",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://dartorgcmsblob.dart.org/prod/docs/default-source/dart-maps/dartsystemmap.pdf?sfvrsn=7e6c42e3_25",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "page 1 map legend",
+      "exactMapWording": "15–20 Min Midday Frequency; 30 Min Midday Frequency; 40–60 Min Midday Frequency.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Current DART system map visually reviewed. It publishes generic frequency bands but does not name a frequent/high-frequency category.",
+      "reviewBatch": 3,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://dartorgcmsblob.dart.org/prod/docs/default-source/dart-maps/dartsystemmap.pdf?sfvrsn=7e6c42e3_25",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 78,
+      "agencyId": "metro-omaha",
+      "agencyName": "Metro Transit Omaha",
+      "country": "United States",
+      "region": "Nebraska",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.ometro.com/wp-content/uploads/2020/09/Network_Map_2604.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "page 1 map legend",
+      "exactMapWording": "Regular Route; Express; Connector; Green Circulator; Blue/Yellow Routes.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Current April 2026 Metro network map visually reviewed. No named frequent/high-frequency definition appeared.",
+      "reviewBatch": 3,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.ometro.com/wp-content/uploads/2020/09/Network_Map_2604.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 79,
+      "agencyId": "rta-new-orleans",
+      "agencyName": "RTA New Orleans",
+      "country": "United States",
+      "region": "Louisiana",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.norta.com/RTA/media/Maps/RTA-System-Map-Current.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "pages 1–2 map and symbols",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Current RTA New Orleans transit map visually reviewed. It contains no named frequent/high-frequency definition or frequency threshold.",
+      "reviewBatch": 3,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.norta.com/RTA/media/Maps/RTA-System-Map-Current.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 80,
+      "agencyId": "fresno-fax",
+      "agencyName": "Fresno Area Express",
+      "country": "United States",
+      "region": "California",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.fresno.gov/wp-content/uploads/2026/01/COMPLETE-SCHEDULE-GUIDE-1-26-10w1248.pdf",
+          "sourceType": "system_map",
+          "localFile": "fresno-fax-rider-guide.pdf"
+        }
+      ],
+      "preservedFiles": [
+        "fresno-fax-rider-guide.pdf"
+      ],
+      "mapDate": null,
+      "mapPageOrSection": "page 4, schedule-guide frequency legend",
+      "exactMapWording": "15 MINUTE FREQUENCY (Weekday from 6am to 6pm)",
+      "thresholdMinutes": 15,
+      "thresholdText": "15-minute service weekdays 6 a.m.–6 p.m.",
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official January 2026 Fresno FAX schedule guide visually reviewed. Counted as an approved rider guide under the audit rule.",
+      "reviewBatch": 3,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.fresno.gov/wp-content/uploads/2026/01/COMPLETE-SCHEDULE-GUIDE-1-26-10w1248.pdf",
+          "sourceType": "system_map",
+          "localFile": "fresno-fax-rider-guide.pdf"
+        }
+      ],
+      "definitions": [
+        {
+          "id": "primary",
+          "label": "15 MINUTE FREQUENCY (Weekday from 6am to 6pm)",
+          "thresholdMinutes": 15,
+          "thresholdText": "15-minute service weekdays 6 a.m.–6 p.m.",
+          "representative": true,
+          "sourceType": "system_map",
+          "sourceUrl": "https://www.fresno.gov/wp-content/uploads/2026/01/COMPLETE-SCHEDULE-GUIDE-1-26-10w1248.pdf",
+          "localFile": "fresno-fax-rider-guide.pdf",
+          "mapPageOrSection": "page 4, schedule-guide frequency legend",
+          "exactWording": "15 MINUTE FREQUENCY (Weekday from 6am to 6pm)",
+          "evidenceNotes": "Official January 2026 Fresno FAX schedule guide visually reviewed. Counted as an approved rider guide under the audit rule."
+        }
+      ],
+      "representativeThresholdMinutes": 15,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 81,
+      "agencyId": "mata-memphis",
+      "agencyName": "Memphis Area Transit Authority",
+      "country": "United States",
+      "region": "Tennessee",
+      "status": "qualitative_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.matatransit.com/assets/2/6/MATA-SysMap-Nov21.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "page 1 map legend",
+      "exactMapWording": "Bus Route (High Frequency)",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The current official MATA map link resolves to this rider-facing map, which names High Frequency but gives no number or span.",
+      "reviewBatch": 3,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.matatransit.com/assets/2/6/MATA-SysMap-Nov21.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [
+        {
+          "id": "primary",
+          "label": "Bus Route (High Frequency)",
+          "thresholdMinutes": null,
+          "thresholdText": null,
+          "representative": true,
+          "sourceType": "system_map",
+          "sourceUrl": "https://www.matatransit.com/assets/2/6/MATA-SysMap-Nov21.pdf",
+          "localFile": null,
+          "mapPageOrSection": "page 1 map legend",
+          "exactWording": "Bus Route (High Frequency)",
+          "evidenceNotes": "The current official MATA map link resolves to this rider-facing map, which names High Frequency but gives no number or span."
+        }
+      ],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 82,
+      "agencyId": "embark-oklahoma-city",
+      "agencyName": "EMBARK Oklahoma City",
+      "country": "United States",
+      "region": "Oklahoma",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.embarkok.com/rapid/system-map",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "official RAPID map and frequency graphic",
+      "exactMapWording": "Easy & Frequent Transit Service; BUS DEPARTS EVERY. Weekday periods are 20, 12, and 30 minutes; weekends are 15 minutes daytime and 30 minutes evening.",
+      "thresholdMinutes": 30,
+      "thresholdText": "weekday 12–30-minute bands; weekend 15 minutes daytime and 30 minutes evening",
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official EMBARK RAPID rider-facing map and frequency graphic visually reviewed.",
+      "reviewBatch": 3,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.embarkok.com/rapid/system-map",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [
+        {
+          "id": "primary",
+          "label": "Easy & Frequent Transit Service; BUS DEPARTS EVERY. Weekday periods are 20, 12, and 30 minutes; weekends are 15 minutes daytime and 30 minutes evening.",
+          "thresholdMinutes": 30,
+          "thresholdText": "weekday 12–30-minute bands; weekend 15 minutes daytime and 30 minutes evening",
+          "representative": true,
+          "sourceType": "system_map",
+          "sourceUrl": "https://www.embarkok.com/rapid/system-map",
+          "localFile": null,
+          "mapPageOrSection": "official RAPID map and frequency graphic",
+          "exactWording": "Easy & Frequent Transit Service; BUS DEPARTS EVERY. Weekday periods are 20, 12, and 30 minutes; weekends are 15 minutes daytime and 30 minutes evening.",
+          "evidenceNotes": "Official EMBARK RAPID rider-facing map and frequency graphic visually reviewed."
+        }
+      ],
+      "representativeThresholdMinutes": 30,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 83,
+      "agencyId": "mountain-metro",
+      "agencyName": "Mountain Metro Transit",
+      "country": "United States",
+      "region": "Colorado",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://coloradosprings.gov/document/web-interactive-public-display-map-spring-2026-28x40-final.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "current Spring 2026 map",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Current 2026 Mountain Metro system map visually reviewed. No named frequent/high-frequency definition appeared.",
+      "reviewBatch": 3,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://coloradosprings.gov/document/web-interactive-public-display-map-spring-2026-28x40-final.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 84,
+      "agencyId": "sun-metro-el-paso",
+      "agencyName": "Sun Metro",
+      "country": "United States",
+      "region": "Texas",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://sunmetro.net/assets/documents/sysmap.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "current system map",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Current Sun Metro system map visually reviewed. No named frequent/high-frequency definition appeared.",
+      "reviewBatch": 3,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://sunmetro.net/assets/documents/sysmap.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 85,
+      "agencyId": "auckland-transport",
+      "agencyName": "Auckland Transport",
+      "country": "New Zealand",
+      "region": "Auckland",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://at.govt.nz/media/lwlbsj3q/auckland-transport-central-guide-map-v2.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "page 2, Central Auckland PT Guide",
+      "exactMapWording": "FREQUENT SERVICES — At least every 15 minutes, 7am–7pm, 7 days a week. Frequencies may be lower early mornings and evenings.",
+      "thresholdMinutes": 15,
+      "thresholdText": "at least every 15 minutes, 7 a.m.–7 p.m., 7 days a week",
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Auckland Transport Central Auckland guide/map visually reviewed.",
+      "reviewBatch": 3,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://at.govt.nz/media/lwlbsj3q/auckland-transport-central-guide-map-v2.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [
+        {
+          "id": "primary",
+          "label": "FREQUENT SERVICES",
+          "thresholdMinutes": 15,
+          "thresholdText": "at least every 15 minutes, 7 a.m.–7 p.m., 7 days a week",
+          "representative": true,
+          "sourceType": "system_map",
+          "sourceUrl": "https://at.govt.nz/media/lwlbsj3q/auckland-transport-central-guide-map-v2.pdf",
+          "localFile": null,
+          "mapPageOrSection": "page 2, Central Auckland PT Guide",
+          "exactWording": "FREQUENT SERVICES — At least every 15 minutes, 7am–7pm, 7 days a week. Frequencies may be lower early mornings and evenings.",
+          "evidenceNotes": "Official Auckland Transport Central Auckland guide/map visually reviewed."
+        }
+      ],
+      "representativeThresholdMinutes": 15,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 86,
+      "agencyId": "metlink-wellington",
+      "agencyName": "Metlink",
+      "country": "New Zealand",
+      "region": "Wellington",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.metlink.org.nz/assets/Network-maps/2026/Wellington-Region-Network-Map-July-2026.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "page 1 map legend",
+      "exactMapWording": "Wellington Core and Standard Bus Routes; Wellington Peak-Only Bus Routes.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Current July 2026 Wellington regional network map visually reviewed. It does not define frequent/high-frequency service.",
+      "reviewBatch": 3,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.metlink.org.nz/assets/Network-maps/2026/Wellington-Region-Network-Map-July-2026.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 87,
+      "agencyId": "transport-nsw-sydney",
+      "agencyName": "Transport for NSW",
+      "country": "Australia",
+      "region": "New South Wales",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://transportnsw.info/document/8045/Sydney-All-Day-Frequent-Network.pdf",
+          "sourceType": "system_map",
+          "localFile": "transport-nsw-sydney-frequent-map.pdf"
+        }
+      ],
+      "preservedFiles": [
+        "transport-nsw-sydney-frequent-map.pdf"
+      ],
+      "mapDate": null,
+      "mapPageOrSection": "page 1, All Day Frequent Network",
+      "exactMapWording": "Frequent services operate daily, every 10 minutes or better during the day and every 20 minutes or better early morning and late evening.",
+      "thresholdMinutes": 20,
+      "thresholdText": "every 10 minutes or better during the day; every 20 minutes or better early morning and late evening",
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Sydney All Day Frequent Network map visually reviewed. The slowest ordinary period is retained as the representative value.",
+      "reviewBatch": 3,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://transportnsw.info/document/8045/Sydney-All-Day-Frequent-Network.pdf",
+          "sourceType": "system_map",
+          "localFile": "transport-nsw-sydney-frequent-map.pdf"
+        }
+      ],
+      "definitions": [
+        {
+          "id": "primary",
+          "label": "Frequent services operate daily, every 10 minutes or better during the day and every 20 minutes or better early morning and late evening.",
+          "thresholdMinutes": 20,
+          "thresholdText": "every 10 minutes or better during the day; every 20 minutes or better early morning and late evening",
+          "representative": true,
+          "sourceType": "system_map",
+          "sourceUrl": "https://transportnsw.info/document/8045/Sydney-All-Day-Frequent-Network.pdf",
+          "localFile": "transport-nsw-sydney-frequent-map.pdf",
+          "mapPageOrSection": "page 1, All Day Frequent Network",
+          "exactWording": "Frequent services operate daily, every 10 minutes or better during the day and every 20 minutes or better early morning and late evening.",
+          "evidenceNotes": "Official Sydney All Day Frequent Network map visually reviewed. The slowest ordinary period is retained as the representative value."
+        }
+      ],
+      "representativeThresholdMinutes": 20,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 88,
+      "agencyId": "transperth",
+      "agencyName": "Transperth",
+      "country": "Australia",
+      "region": "Western Australia",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.transperth.wa.gov.au/Portals/0/Asset/Documents/Brochures/Your%20Guide%20to%20Using%20Transperth.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "page 7, rider guide",
+      "exactMapWording": "CAT buses operate every five to 15 minutes depending on the route, time of day and day of the week.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Transperth rider guide visually reviewed. It publishes CAT intervals but does not name a frequent/high-frequency category.",
+      "reviewBatch": 3,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.transperth.wa.gov.au/Portals/0/Asset/Documents/Brochures/Your%20Guide%20to%20Using%20Transperth.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 89,
+      "agencyId": "adelaide-metro",
+      "agencyName": "Adelaide Metro",
+      "country": "Australia",
+      "region": "South Australia",
+      "status": "qualitative_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.adelaidemetro.com.au/__data/assets/pdf_file/0010/1544419/map_adelaide_network_13_10_25_web.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "page 1 network-map copy",
+      "exactMapWording": "Catch fast and frequent services to and from the City at any O-Bahn Interchange.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Adelaide network map visually reviewed. It uses “frequent” descriptively without a numeric threshold; retained as qualitative only.",
+      "reviewBatch": 3,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.adelaidemetro.com.au/__data/assets/pdf_file/0010/1544419/map_adelaide_network_13_10_25_web.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [
+        {
+          "id": "primary",
+          "label": "Catch fast and frequent services to and from the City at any O-Bahn Interchange.",
+          "thresholdMinutes": null,
+          "thresholdText": null,
+          "representative": true,
+          "sourceType": "system_map",
+          "sourceUrl": "https://www.adelaidemetro.com.au/__data/assets/pdf_file/0010/1544419/map_adelaide_network_13_10_25_web.pdf",
+          "localFile": null,
+          "mapPageOrSection": "page 1 network-map copy",
+          "exactWording": "Catch fast and frequent services to and from the City at any O-Bahn Interchange.",
+          "evidenceNotes": "Official Adelaide network map visually reviewed. It uses “frequent” descriptively without a numeric threshold; retained as qualitative only."
+        }
+      ],
       "representativeThresholdMinutes": null,
       "publishedFrequencyBands": null
     }

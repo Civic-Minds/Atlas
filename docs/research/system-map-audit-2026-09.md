@@ -1,10 +1,10 @@
 # System-map verification audit
 
-This is the map-first verification layer for the Frequent Service research story. The first 50 agencies were reviewed individually against current official system maps on September 18, 2026.
+This is the map-first verification layer for the Frequent Service research story. Eighty-nine agencies were reviewed individually against current official system maps or approved rider guides on September 18, 2026.
 
 ## Evidence standard
 
-Only a current official system map or map legend counts as evidence. Official route pages, schedules, planning documents, and service standards were used only to locate a map and were not treated as definitions. Each reviewed map is preserved with the correct `.pdf` or `.png` extension when technically practical.
+Only a current official system map, map legend, or approved rider-guide map counts as evidence. Official route pages, schedules, planning documents, and service standards were used only to locate those materials and were not treated as definitions. Each reviewed source is preserved with the correct `.pdf` or `.png` extension when technically practical.
 
 ## Statuses
 

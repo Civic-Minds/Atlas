@@ -1,6 +1,6 @@
 import audit from '../../docs/research/system-map-audit-2026-09.json';
 
-const storyThresholds = [10, 12, 15, 30];
+const storyThresholds = [10, 12, 15, 20, 30];
 const records = audit.records;
 export const frequentServiceStoryResearchRecord = records.find(record => record.agencyId === 'ttc') ?? records[0];
 const categoryCounts = {
