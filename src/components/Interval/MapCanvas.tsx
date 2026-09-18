@@ -1854,7 +1854,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         <button
           onClick={() => setExportDialogOpen(true)}
           aria-label="Export map image"
-          className={`absolute bottom-[3.25rem] left-3 ${Z_PANEL} w-8 h-8 flex items-center justify-center rounded-full bg-[var(--bg-panel)] border border-[var(--border-primary)] text-[var(--text-dim)] shadow-lg backdrop-blur-md hover:text-[var(--accent)] hover:border-[var(--accent-border)] transition-colors cursor-pointer pointer-events-auto`}
+          className={`absolute bottom-[8.25rem] right-3 ${Z_PANEL} w-8 h-8 flex items-center justify-center rounded-full bg-[var(--bg-panel)] border border-[var(--border-primary)] text-[var(--text-dim)] shadow-lg backdrop-blur-md hover:text-[var(--accent)] hover:border-[var(--accent-border)] transition-colors cursor-pointer pointer-events-auto`}
         >
           <Download className="w-3.5 h-3.5" />
         </button>
