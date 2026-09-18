@@ -21,7 +21,7 @@ import { r2Put, r2Get, r2PutArchive, r2PutArchiveJson, r2GetArchive, rawFeedArch
 import JSZip from 'jszip';
 import { processGtfsBuffer, GtfsValidationError, type GtfsPreprocess } from './process-core.js';
 import { buildAgencyIndex } from './agencyIndex.js';
-import { buildNightServiceIndex, extractNightServiceRoutes, type NightServiceRouteEntry } from './nightServiceIndex.js';
+import { extractNightServiceRoutes, mergeNightServiceIndex, type NightServiceIndexFile, type NightServiceRouteEntry } from './nightServiceIndex.js';
 import type { HeadwayByPeriod } from '../shared/config.js';
 import { R2_PUBLIC_URL } from '../shared/config.js';
 import { parseCsv } from './parseGtfs.js';
@@ -75,6 +75,7 @@ interface RouteSummary {
 
 interface RefreshAgencyResult {
   summary: string;
+  processed?: boolean;
   hiddenRoutes?: HiddenRouteRecord[];
 }
 
@@ -490,6 +491,7 @@ async function refreshAgency(
   const kb = Math.round(Buffer.byteLength(geojson) / 1024);
   return {
     summary: `${featureCount} features, ${kb} KB`,
+    processed: true,
     hiddenRoutes: buildHiddenRoutesForAgency(agency, geojson),
   };
 }
@@ -542,6 +544,16 @@ async function main() {
   let uploads = 0;
   let countryLaunchSkips = 0;
   const allNightServiceRoutes: NightServiceRouteEntry[] = [];
+  const refreshedNightServiceAgencySlugs = new Set<string>();
+  let existingNightServiceIndex: NightServiceIndexFile | null = null;
+  if (onlySlugs.length === 0) {
+    try {
+      const raw = await r2Get('atlas/night-service.json');
+      if (raw) existingNightServiceIndex = JSON.parse(raw) as NightServiceIndexFile;
+    } catch (e) {
+      console.warn(`  [warn] existing night-service.json could not be loaded — ${e instanceof Error ? e.message : e}`);
+    }
+  }
   const refreshedHiddenRoutes = new Map<string, HiddenRouteRecord[]>();
   const tasks = targets.map(agency => async () => {
     let logBuffer = '';
@@ -564,6 +576,7 @@ async function main() {
       }
       const result = await refreshAgency(agency, fareOverrides[agency.slug]?.adult ?? agency.fare, logger, allNightServiceRoutes);
       const summary = result.summary;
+      if (result.processed) refreshedNightServiceAgencySlugs.add(agency.slug);
       if (!summary.startsWith('skipped') && !summary.includes('expired, skipped')) {
         uploads++;
         if (result.hiddenRoutes) refreshedHiddenRoutes.set(agency.slug, result.hiddenRoutes);
@@ -645,7 +658,11 @@ async function main() {
     // night-service data for the agencies it actually touched, and uploading that partial
     // set here would clobber every other agency's entries with nothing.
     try {
-      const nightServiceIndex = buildNightServiceIndex(allNightServiceRoutes);
+      const nightServiceIndex = mergeNightServiceIndex(
+        existingNightServiceIndex,
+        allNightServiceRoutes,
+        refreshedNightServiceAgencySlugs,
+      );
       await r2Put('atlas/night-service.json', JSON.stringify(nightServiceIndex));
       console.log(`  night-service.json → R2 (${nightServiceIndex.routeCount} routes across ${nightServiceIndex.agencyCount} agencies)`);
     } catch (e) {
