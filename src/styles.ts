@@ -66,6 +66,9 @@ export const PANEL_TITLE_BAR = 'flex items-center gap-1.5 px-4 pt-3 pb-2.5 borde
 /** Title text inside PANEL_TITLE_BAR */
 export const PANEL_TITLE = 'text-[10px] font-black text-[var(--text-dim)] tracking-wide';
 
+/** Compact explanatory line beneath a research panel title. */
+export const PANEL_HELPER = 'px-4 pt-2 pb-2 text-[10px] text-[var(--text-dim)] font-bold leading-snug border-b border-[var(--border-primary)]';
+
 /** Back + card title row inside a floating panel */
 export const PANEL_CARD_HEADER = 'flex items-start gap-2 px-4 pt-3 pb-2.5 border-b border-[var(--border-primary)] shrink-0';
 
