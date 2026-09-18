@@ -26,9 +26,9 @@ describe('createMapExport', () => {
     expect(context.drawImage).toHaveBeenCalledWith(
       source,
       0,
-      28.333333333333332,
+      25.3125,
       100,
-      43.333333333333336,
+      49.375,
       0,
       72,
       MAP_EXPORT_WIDTH,
@@ -38,7 +38,7 @@ describe('createMapExport', () => {
   });
 
   it('keeps the export dimensions platform-neutral', () => {
-    expect(MAP_EXPORT_WIDTH).toBe(1200);
-    expect(MAP_EXPORT_HEIGHT).toBe(630);
+    expect(MAP_EXPORT_WIDTH).toBe(1600);
+    expect(MAP_EXPORT_HEIGHT).toBe(900);
   });
 });

@@ -612,7 +612,7 @@ export default function App() {
               fareView={inFares}
               nightServiceView={inNight}
               exportEnabled={MAP_EXPORT_ENABLED}
-              exportTitle={inNight ? 'Night service' : inHistory ? 'Service history' : inFares ? 'Transit fares' : inLive ? 'Live transit' : 'Transit frequency'}
+              exportTitle={inNight ? 'Night Service' : inHistory ? 'Service History' : inFares ? 'Transit Fares' : inLive ? 'Live Transit' : 'Transit Frequency'}
               frequentServiceView={inFrequentService}
               frequentServiceDays={frequentServiceDays}
               frequentServiceFrequency={frequentServiceFrequency}

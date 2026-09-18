@@ -1,5 +1,5 @@
-export const MAP_EXPORT_WIDTH = 1200;
-export const MAP_EXPORT_HEIGHT = 630;
+export const MAP_EXPORT_WIDTH = 1600;
+export const MAP_EXPORT_HEIGHT = 900;
 
 interface MapExportOptions {
   source: HTMLCanvasElement;
@@ -79,21 +79,21 @@ export async function createMapExport({ source, title, lightMode }: MapExportOpt
   context.fillRect(0, canvas.height - footerHeight, canvas.width, footerHeight);
 
   context.fillStyle = colors.foreground;
-  context.font = '800 27px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+  context.font = '800 27px Inter, ui-sans-serif, system-ui, sans-serif';
   context.textBaseline = 'middle';
   context.fillText(fitText(context, title.trim() || 'Transit map', 830), 28, 30);
 
   context.fillStyle = colors.muted;
-  context.font = '600 13px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+  context.font = '600 13px Inter, ui-sans-serif, system-ui, sans-serif';
   context.fillText('Atlas by Civic Minds', 28, 53);
 
   context.textAlign = 'right';
   context.fillStyle = colors.foreground;
-  context.font = '800 14px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+  context.font = '800 14px Inter, ui-sans-serif, system-ui, sans-serif';
   context.fillText('transitatlas.fyi', canvas.width - 28, canvas.height - 19);
   context.textAlign = 'left';
   context.fillStyle = colors.muted;
-  context.font = '500 10px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+  context.font = '500 10px Inter, ui-sans-serif, system-ui, sans-serif';
   context.fillText('Map tiles by CARTO · Data by OpenStreetMap · Current Atlas view', 28, canvas.height - 19);
 
   return canvasToBlob(canvas);
