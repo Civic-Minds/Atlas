@@ -466,7 +466,13 @@
       "country": "United States",
       "region": "Florida",
       "status": "no_definition_on_map",
-      "mapCandidates": [],
+      "mapCandidates": [
+        {
+          "url": "https://www.soundtransit.org/sites/default/files/documents/st-current-service-map.pdf",
+          "sourceType": "system_map",
+          "localFile": "sound-transit-system-map.pdf"
+        }
+      ],
       "preservedFiles": [
         "miami-dade-transit-system-map.pdf"
       ],
@@ -780,7 +786,7 @@
       "days": null,
       "geography": null,
       "mode": null,
-      "evidenceNotes": "Current official Sound Transit service map reviewed manually. It shows services but does not name a frequent/high-frequency definition.",
+      "evidenceNotes": "Current official Sound Transit service map visually reviewed. It shows Link, Sounder, ST Express, Limited Service, and Night Bus but does not name a frequent/high-frequency definition.",
       "reviewBatch": 1,
       "evidenceSourceType": "system_map",
       "reviewSources": [
