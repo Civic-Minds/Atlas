@@ -53,7 +53,7 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
           </a>
         </header>
 
-        <section aria-labelledby="network-story-heading" className="mx-auto mt-24 max-w-6xl sm:mt-32">
+        <section aria-labelledby="network-story-heading" className="relative left-1/2 mt-24 w-screen -translate-x-1/2 sm:mt-32">
           <div className="relative min-w-0 pb-[55vh]">
             <div className="min-w-0 lg:sticky lg:top-24">
               <FrequentServiceStoryMap agencies={agencies} stage={storyStage} frequencyMinutes={frequencyMinutes} researchRecord={frequentServiceStoryResearchRecord} />

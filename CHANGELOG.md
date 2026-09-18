@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- Made the research story map span the viewport and fit its available height responsively.
 
 - Expanded the Frequent Service research audit to 250 agencies and added verified 30-minute representative tiers to the story chart.
 - Connected the story map to the current 250-agency audit and removed the misleading published-span scatter plot until Atlas comparison data is available for it.
