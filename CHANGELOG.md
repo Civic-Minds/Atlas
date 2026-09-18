@@ -9,6 +9,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Expanded the Frequent Service research audit to 250 agencies and added verified 30-minute representative tiers to the story chart.
 - Connected the story map to the current 250-agency audit and removed the misleading published-span scatter plot until Atlas comparison data is available for it.
 - Removed the separate agency example tabs; agency examples will be shown through map states instead.
+- Moved the sticky research map below the global header so it no longer overlaps the Atlas branding.
 - Matched the research Method section to the story’s readable content width.
 - Rebalanced the story map layout so the explanatory copy stays visible beside the map at narrower desktop widths.
 - Expanded the Frequent Service research audit to 150 agencies while preserving representative and secondary frequency tiers.
