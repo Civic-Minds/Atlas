@@ -468,9 +468,9 @@
       "status": "no_definition_on_map",
       "mapCandidates": [
         {
-          "url": "https://www.soundtransit.org/sites/default/files/documents/st-current-service-map.pdf",
+          "url": "https://www.miamidade.gov/resources/transportation_publicworks/documents/system-maps-web.pdf",
           "sourceType": "system_map",
-          "localFile": "sound-transit-system-map.pdf"
+          "localFile": "miami-dade-transit-system-map.pdf"
         }
       ],
       "preservedFiles": [
@@ -773,7 +773,13 @@
       "country": "United States",
       "region": "Washington",
       "status": "no_definition_on_map",
-      "mapCandidates": [],
+      "mapCandidates": [
+        {
+          "url": "https://www.soundtransit.org/sites/default/files/documents/st-current-service-map.pdf",
+          "sourceType": "system_map",
+          "localFile": "sound-transit-system-map.pdf"
+        }
+      ],
       "preservedFiles": [
         "sound-transit-system-map.pdf"
       ],
