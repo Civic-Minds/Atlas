@@ -2,7 +2,7 @@
   "auditVersion": 2,
   "createdAt": "2026-09-18",
   "sourceCatalog": "docs/research/frequent-service-catalog.json",
-  "scope": "First 50 agencies plus 39 additional agencies reviewed individually against current official system maps or approved rider guides on September 18, 2026.",
+  "scope": "First 50 agencies plus 58 additional agencies reviewed individually against current official system maps or approved rider guides on September 18, 2026.",
   "statusRules": {
     "numeric_definition_on_map": "The official system map visibly names frequent/high-frequency service and gives a numeric threshold or range.",
     "qualitative_definition_on_map": "The official system map visibly names frequent/high-frequency service without a numeric threshold.",
@@ -3897,6 +3897,770 @@
         }
       ],
       "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 90,
+      "agencyId": "hamilton-hsr",
+      "agencyName": "Hamilton Street Railway",
+      "country": "Canada",
+      "region": "Ontario",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.hamilton.ca/sites/default/files/2024-12/hsr-system-map-2025.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "map legend",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Current HSR system map visually reviewed. It does not name or define frequent/high-frequency service.",
+      "reviewBatch": 4,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.hamilton.ca/sites/default/files/2024-12/hsr-system-map-2025.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 91,
+      "agencyId": "grand-river-transit",
+      "agencyName": "Grand River Transit",
+      "country": "Canada",
+      "region": "Ontario",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://media-003-ca.cdn.govstack.com/regionofwaterloo-018-ca/media/lshk02rn/fall-2026-system-map_20260907-web.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "page 1 map legend",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Current Fall 2026 GRT system map visually reviewed. It does not name or define frequent/high-frequency service.",
+      "reviewBatch": 4,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://media-003-ca.cdn.govstack.com/regionofwaterloo-018-ca/media/lshk02rn/fall-2026-system-map_20260907-web.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 92,
+      "agencyId": "london-transit",
+      "agencyName": "London Transit Commission",
+      "country": "Canada",
+      "region": "Ontario",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.londontransit.ca/wp-content/uploads/2026/09/LT_SystemMap_SystemUpdate2026_Final_Web.pdf",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "2026 Ride Guide/System Map legend",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Current London rider guide/system map visually reviewed. It does not name or define frequent/high-frequency service.",
+      "reviewBatch": 4,
+      "evidenceSourceType": "rider_guide",
+      "reviewSources": [
+        {
+          "url": "https://www.londontransit.ca/wp-content/uploads/2026/09/LT_SystemMap_SystemUpdate2026_Final_Web.pdf",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 93,
+      "agencyId": "guelph-transit",
+      "agencyName": "Guelph Transit",
+      "country": "Canada",
+      "region": "Ontario",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://guelph.ca/wp-content/uploads/GuelphTransit_SystemMap_2026_09_061.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "map legend",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Current 2026 Guelph system map visually reviewed. It does not name or define frequent/high-frequency service.",
+      "reviewBatch": 4,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://guelph.ca/wp-content/uploads/GuelphTransit_SystemMap_2026_09_061.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 94,
+      "agencyId": "saskatoon-transit",
+      "agencyName": "Saskatoon Transit",
+      "country": "Canada",
+      "region": "Saskatchewan",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://saskatoontransit.ca/files/transit/documents/Routes/System/Routes_2026.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "route legend",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Current August 2026 Saskatoon system map visually reviewed. It does not name or define frequent/high-frequency service.",
+      "reviewBatch": 4,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://saskatoontransit.ca/files/transit/documents/Routes/System/Routes_2026.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 95,
+      "agencyId": "durham-region-transit",
+      "agencyName": "Durham Region Transit",
+      "country": "Canada",
+      "region": "Ontario",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.durham.ca/media/0tahnorz/systemmapsept26v3.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "page 2 map text",
+      "exactMapWording": "On Demand service access conditions are described, but no frequent/high-frequency definition appears.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Current DRT system map visually reviewed. Its distance and overnight on-demand conditions are unrelated to a frequent-service definition.",
+      "reviewBatch": 4,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.durham.ca/media/0tahnorz/systemmapsept26v3.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 96,
+      "agencyId": "brampton-transit",
+      "agencyName": "Brampton Transit",
+      "country": "Canada",
+      "region": "Ontario",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.brampton.ca/EN/residents/Recreation/Documents/Explore-Brampton-Youth-Pass/2025-EBYP_Guide.pdf",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "page 2 rider guide",
+      "exactMapWording": "Brampton Transit On-Demand",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The inspected rider guide names on-demand service but does not define frequent/high-frequency service.",
+      "reviewBatch": 4,
+      "evidenceSourceType": "rider_guide",
+      "reviewSources": [
+        {
+          "url": "https://www.brampton.ca/EN/residents/Recreation/Documents/Explore-Brampton-Youth-Pass/2025-EBYP_Guide.pdf",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 97,
+      "agencyId": "st-laval",
+      "agencyName": "Société de transport de Laval",
+      "country": "Canada",
+      "region": "Quebec",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://cdn.stlaval.ca/pdfs/stl-carte-plan-reseau.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "page 1 system map",
+      "exactMapWording": "Transport à la demande (TAD)",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Current STL system map visually reviewed. It names on-demand service but does not define frequent/high-frequency service.",
+      "reviewBatch": 4,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://cdn.stlaval.ca/pdfs/stl-carte-plan-reseau.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 98,
+      "agencyId": "sto-gatineau",
+      "agencyName": "Société de transport de l’Outaouais",
+      "country": "Canada",
+      "region": "Quebec",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.sto.ca/site/assets/files/2130/carte_reseau.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "page 1 network map",
+      "exactMapWording": "STO À LA DEMANDE",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Current STO network map visually reviewed. It names on-demand service but does not define frequent/high-frequency service.",
+      "reviewBatch": 4,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.sto.ca/site/assets/files/2130/carte_reseau.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 99,
+      "agencyId": "regina-transit",
+      "agencyName": "Regina Transit",
+      "country": "Canada",
+      "region": "Saskatchewan",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.regina.ca/export/sites/Regina.ca/transportation-roads-parking/transit/.galleries/Transit-Route-PDF/Transit-System-Map-2024-March.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "page 1 system map",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Regina system map visually reviewed. It does not name or define frequent/high-frequency service.",
+      "reviewBatch": 4,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.regina.ca/export/sites/Regina.ca/transportation-roads-parking/transit/.galleries/Transit-Route-PDF/Transit-System-Map-2024-March.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 100,
+      "agencyId": "detroit-ddot",
+      "agencyName": "Detroit Department of Transportation",
+      "country": "United States",
+      "region": "Michigan",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://detroitmi.gov/sites/detroitmi.localhost/files/2026-03/DDOT-SystemMap_EffectiveJanuary2026-48x36.5_0.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "map legend",
+      "exactMapWording": "ConnectTen Route; Primary Route; Neighborhood Route; 24/7 route; weekday only",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Current January 2026 DDOT system map visually reviewed. It classifies routes and service span but does not define frequent/high-frequency service.",
+      "reviewBatch": 4,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://detroitmi.gov/sites/detroitmi.localhost/files/2026-03/DDOT-SystemMap_EffectiveJanuary2026-48x36.5_0.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 101,
+      "agencyId": "richmond-grtc",
+      "agencyName": "Greater Richmond Transit Company",
+      "country": "United States",
+      "region": "Virginia",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.ridegrtc.com/wp-content/uploads/2026/03/GRTC-System-Map-2.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "current February 2026 system-map legend",
+      "exactMapWording": "Frequent daily service every 15 minutes (or better) during selected day/evening times; High Frequency Route — Every 15 minutes during weekdays and Saturdays.",
+      "thresholdMinutes": 15,
+      "thresholdText": "every 15 minutes or better during selected day/evening times; weekdays and Saturdays",
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Current February 2026 GRTC system map visually reviewed. Both named frequent/high-frequency definitions are retained; 15 minutes is representative.",
+      "reviewBatch": 4,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.ridegrtc.com/wp-content/uploads/2026/03/GRTC-System-Map-2.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [
+        {
+          "id": "primary",
+          "label": "Frequent daily service every 15 minutes (or better) during selected day/evening times; High Frequency Route",
+          "thresholdMinutes": 15,
+          "thresholdText": "every 15 minutes or better during selected day/evening times; weekdays and Saturdays",
+          "representative": true,
+          "sourceType": "system_map",
+          "sourceUrl": "https://www.ridegrtc.com/wp-content/uploads/2026/03/GRTC-System-Map-2.pdf",
+          "localFile": null,
+          "mapPageOrSection": "current February 2026 system-map legend",
+          "exactWording": "Frequent daily service every 15 minutes (or better) during selected day/evening times; High Frequency Route — Every 15 minutes during weekdays and Saturdays.",
+          "evidenceNotes": "Current February 2026 GRTC system map visually reviewed. Both named frequent/high-frequency definitions are retained; 15 minutes is representative."
+        }
+      ],
+      "representativeThresholdMinutes": 15,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 102,
+      "agencyId": "san-joaquin-rtd",
+      "agencyName": "San Joaquin Regional Transit District",
+      "country": "United States",
+      "region": "California",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://sanjoaquinrtd.com/wp-content/uploads/2025/01/Weekday_System_Map_20250126_24x36.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "January 2025 weekday system map legend",
+      "exactMapWording": "Limited and/or Afternoon Service; Morning Service; Express Routes; Hopper Routes",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official RTD weekday system map visually reviewed. It names route types but does not define frequent/high-frequency service.",
+      "reviewBatch": 4,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://sanjoaquinrtd.com/wp-content/uploads/2025/01/Weekday_System_Map_20250126_24x36.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 103,
+      "agencyId": "golden-empire-transit",
+      "agencyName": "Golden Empire Transit District",
+      "country": "United States",
+      "region": "California",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.kerncog.org/wp-content/uploads/2025/06/GET_SRTP_2025.pdf",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "approved plan map/glossary",
+      "exactMapWording": "high-frequency routes operate along grid corridors",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Approved GET material was inspected, but its descriptive glossary language does not define a rider-facing frequent/high-frequency threshold.",
+      "reviewBatch": 4,
+      "evidenceSourceType": "rider_guide",
+      "reviewSources": [
+        {
+          "url": "https://www.kerncog.org/wp-content/uploads/2025/06/GET_SRTP_2025.pdf",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 104,
+      "agencyId": "dublin-tfi",
+      "agencyName": "Transport for Ireland / Dublin Bus",
+      "country": "Ireland",
+      "region": "Dublin",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.transportforireland.ie/wp-content/uploads/2026/01/Dublin-a3-Overview-ENGLISH_WEB-1.pdf",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "current Dublin overview map and rider material",
+      "exactMapWording": "Spines are very frequent routes",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Current TFI rider-facing materials were reviewed. They use “very frequent” descriptively but do not define it with a threshold.",
+      "reviewBatch": 4,
+      "evidenceSourceType": "rider_guide",
+      "reviewSources": [
+        {
+          "url": "https://www.transportforireland.ie/wp-content/uploads/2026/01/Dublin-a3-Overview-ENGLISH_WEB-1.pdf",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 105,
+      "agencyId": "transport-for-london",
+      "agencyName": "Transport for London",
+      "country": "United Kingdom",
+      "region": "London",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://haveyoursay.tfl.gov.uk/sl14-superloop",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "Superloop rider guide",
+      "exactMapWording": "Frequent route examples are listed at 12–15 minutes, but no universal rider-facing definition is stated.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Current TfL rider material was reviewed. A separate planning definition was excluded because it is not a rider map or guide.",
+      "reviewBatch": 4,
+      "evidenceSourceType": "rider_guide",
+      "reviewSources": [
+        {
+          "url": "https://haveyoursay.tfl.gov.uk/sl14-superloop",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 106,
+      "agencyId": "first-glasgow",
+      "agencyName": "First Bus Glasgow / SPT",
+      "country": "United Kingdom",
+      "region": "Glasgow",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.firstbus.co.uk/uploads/maps/Glasgow_Network_Map_Leaflet.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "map frequency legend",
+      "exactMapWording": "Bus frequency in minutes; up to every 5 minutes daytime",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Current Glasgow map and rider timetable were reviewed. They list intervals but do not name a frequent/high-frequency category.",
+      "reviewBatch": 4,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.firstbus.co.uk/uploads/maps/Glasgow_Network_Map_Leaflet.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 107,
+      "agencyId": "christchurch-metro",
+      "agencyName": "Christchurch Metro",
+      "country": "New Zealand",
+      "region": "Canterbury",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.metroinfo.co.nz/travel-information/high-frequency-routes/",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "high-frequency routes rider guide",
+      "exactMapWording": "The shining stars of the Metro network are our six high frequency routes. Experience the convenience of 10 to 15-minute intervals on weekdays.",
+      "thresholdMinutes": 15,
+      "thresholdText": "10–15-minute intervals on weekdays",
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Christchurch high-frequency rider guide and network map were visually reviewed.",
+      "reviewBatch": 4,
+      "evidenceSourceType": "rider_guide",
+      "reviewSources": [
+        {
+          "url": "https://www.metroinfo.co.nz/travel-information/high-frequency-routes/",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "definitions": [
+        {
+          "id": "primary",
+          "label": "The shining stars of the Metro network are our six high frequency routes. Experience the convenience of 10 to 15-minute intervals on weekdays.",
+          "thresholdMinutes": 15,
+          "thresholdText": "10–15-minute intervals on weekdays",
+          "representative": true,
+          "sourceType": "rider_guide",
+          "sourceUrl": "https://www.metroinfo.co.nz/travel-information/high-frequency-routes/",
+          "localFile": null,
+          "mapPageOrSection": "high-frequency routes rider guide",
+          "exactWording": "The shining stars of the Metro network are our six high frequency routes. Experience the convenience of 10 to 15-minute intervals on weekdays.",
+          "evidenceNotes": "Official Christchurch high-frequency rider guide and network map were visually reviewed."
+        }
+      ],
+      "representativeThresholdMinutes": 15,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 108,
+      "agencyId": "brisbane-translink",
+      "agencyName": "Brisbane Translink",
+      "country": "Australia",
+      "region": "Queensland",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://translink.widen.net/s/ncghcgdtdk/250630-seq-high-frequency-services",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "high-frequency services map",
+      "exactMapWording": "High frequency services — Bus services every 15 minutes or better, Monday to Friday.",
+      "thresholdMinutes": 15,
+      "thresholdText": "every 15 minutes or better, Monday–Friday",
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Brisbane high-frequency services map and rider guide were reviewed.",
+      "reviewBatch": 4,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://translink.widen.net/s/ncghcgdtdk/250630-seq-high-frequency-services",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [
+        {
+          "id": "primary",
+          "label": "High frequency services",
+          "thresholdMinutes": 15,
+          "thresholdText": "every 15 minutes or better, Monday–Friday",
+          "representative": true,
+          "sourceType": "system_map",
+          "sourceUrl": "https://translink.widen.net/s/ncghcgdtdk/250630-seq-high-frequency-services",
+          "localFile": null,
+          "mapPageOrSection": "high-frequency services map",
+          "exactWording": "High frequency services — Bus services every 15 minutes or better, Monday to Friday.",
+          "evidenceNotes": "Official Brisbane high-frequency services map and rider guide were reviewed."
+        }
+      ],
+      "representativeThresholdMinutes": 15,
       "publishedFrequencyBands": null
     }
   ],

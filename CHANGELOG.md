@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
-- Added 39 manually reviewed agencies to the frequency research audit, raising the verified-definition sample from 17 to 34 while keeping unnamed and unavailable maps separate.
+- Added 58 manually reviewed agencies to the frequency research audit, raising the verified-definition sample from 17 to 37 while keeping unnamed and unavailable maps separate.
 - Split the Frequent Service map and explainer into separate routes: the map is at `/research/frequent-service` and the story is at `/research/frequent-service/story`.
 - Verified SDMTS’s map wording and preserved its 60-minute regular-service note without misclassifying it as frequent service.
 - Verified three additional BC Transit guides without adding unsupported frequent-service thresholds.
