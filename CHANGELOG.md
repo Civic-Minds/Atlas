@@ -191,6 +191,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Fixed map route selection showing duplicate Calgary lines when the feed uses multiple internal IDs for one visible route.
 - Night Service and History now share compact research-panel guidance and the same search treatment.
 - Night Service now retains agencies skipped during feed refreshes, keeping its directory aligned with the routes shown on the map ([#516](https://github.com/Civic-Minds/Atlas/issues/516)).
+- Night Service now builds its visible directory from the same route features as the map, so stale index data cannot hide agencies that are shown.
 - Fixed the map export control spacing by grouping it with the zoom and location controls.
 - Added native image sharing where the browser supports it, while keeping PNG download available everywhere.
 - Added beta map-image export with stronger Atlas branding and full CARTO/OpenStreetMap attribution for shareable 1600×900 PNGs.

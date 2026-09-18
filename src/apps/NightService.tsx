@@ -34,6 +34,14 @@ interface NightServiceRouteSummary {
   destinations: string[];
 }
 
+interface NightServiceFeatureProperties {
+  nightService?: boolean;
+  routeShortName?: string | null;
+  routeLongName?: string | null;
+  headsign?: string | null;
+  agencyName?: string | null;
+}
+
 interface NightServiceIndexFile {
   criteria: string;
   agencyCount: number;
@@ -74,17 +82,17 @@ export default function NightService({ active, sidebarLeft, layers, query = '' }
   const [loadState, setLoadState] = useState<'loading' | 'ready' | 'error'>('loading');
   const [filterQuery, setFilterQuery] = useState('');
   const { bounds } = useViewport();
-  const visibleRouteKeys = useMemo(() => {
-    if (!bounds || Object.keys(layers).length === 0) return null;
-    const keys = new Set<string>();
+  const visibleRoutes = useMemo(() => {
+    if (!bounds || Object.keys(layers).length === 0) return [];
+    const routes: Array<{ agencySlug: string; properties: NightServiceFeatureProperties }> = [];
     for (const [agencySlug, collection] of Object.entries(layers)) {
       for (const feature of collection.features) {
-        const properties = feature.properties as { nightService?: boolean; routeShortName?: string | null; routeLongName?: string | null } | null;
+        const properties = feature.properties as NightServiceFeatureProperties | null;
         if (properties?.nightService !== true || !featureIntersectsBounds(feature, bounds)) continue;
-        keys.add(`${agencySlug}::${properties.routeShortName ?? ''}::${properties.routeLongName ?? ''}`);
+        routes.push({ agencySlug, properties });
       }
     }
-    return keys;
+    return routes;
   }, [bounds, layers]);
   const [introDismissed, setIntroDismissed] = useState(() => {
     try { return localStorage.getItem('atlas_pref_night_intro_dismissed') === '1'; } catch { return false; }
@@ -104,25 +112,40 @@ export default function NightService({ active, sidebarLeft, layers, query = '' }
         setData(json);
         setLoadState('ready');
       })
-      .catch(() => setLoadState('error'));
+      .catch(() => {
+        // The map features are authoritative for what is visible. The index only
+        // enriches them with agency regions and destination labels.
+        setData({ criteria: '', agencyCount: 0, routeCount: 0, routes: [] });
+        setLoadState('ready');
+      });
   }, []);
 
   const agencies = useMemo(() => {
     if (!data) return [];
+    const indexRoutes = new Map(data.routes.map(route => [
+      `${route.agencySlug}::${route.routeShortName ?? ''}::${route.routeLongName ?? ''}`,
+      route,
+    ]));
     const byAgency = new Map<string, { agencyName: string; region: string | null; routes: Map<string, NightServiceRouteSummary> }>();
-    for (const route of data.routes) {
-      const routeKey = `${route.agencySlug}::${route.routeShortName ?? ''}::${route.routeLongName ?? ''}`;
-      if (visibleRouteKeys && !visibleRouteKeys.has(routeKey)) continue;
-      const entry = byAgency.get(route.agencySlug) ?? { agencyName: route.agencyName, region: route.region, routes: new Map() };
-      const summaryKey = `${route.routeShortName ?? ''}::${route.routeLongName ?? ''}`;
+    for (const visible of visibleRoutes) {
+      const properties = visible.properties;
+      const routeKey = `${visible.agencySlug}::${properties.routeShortName ?? ''}::${properties.routeLongName ?? ''}`;
+      const indexed = indexRoutes.get(routeKey);
+      const entry = byAgency.get(visible.agencySlug) ?? {
+        agencyName: properties.agencyName ?? indexed?.agencyName ?? visible.agencySlug,
+        region: indexed?.region ?? null,
+        routes: new Map(),
+      };
+      const summaryKey = `${properties.routeShortName ?? ''}::${properties.routeLongName ?? ''}`;
       const summary = entry.routes.get(summaryKey) ?? {
-        routeShortName: route.routeShortName,
-        routeLongName: route.routeLongName,
+        routeShortName: properties.routeShortName ?? indexed?.routeShortName ?? null,
+        routeLongName: properties.routeLongName ?? indexed?.routeLongName ?? null,
         destinations: [],
       };
-      if (route.headsign && !summary.destinations.includes(route.headsign)) summary.destinations.push(route.headsign);
+      const headsign = properties.headsign ?? indexed?.headsign;
+      if (headsign && !summary.destinations.includes(headsign)) summary.destinations.push(headsign);
       entry.routes.set(summaryKey, summary);
-      byAgency.set(route.agencySlug, entry);
+      byAgency.set(visible.agencySlug, entry);
     }
     const q = (filterQuery || query).trim().toLowerCase();
     const list = [...byAgency.entries()].map(([slug, entry]) => ({ slug, ...entry, routes: [...entry.routes.values()] }));
@@ -138,7 +161,7 @@ export default function NightService({ active, sidebarLeft, layers, query = '' }
         ),
       }))
       .filter(agency => agency.agencyName.toLowerCase().includes(q) || agency.routes.length > 0);
-  }, [data, filterQuery, query, visibleRouteKeys]);
+  }, [data, query, visibleRoutes]);
 
   if (!active) return null;
 
