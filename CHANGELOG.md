@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Scoped the Frequent Service research chart to the first 50 verified system-map audits so its counts cannot include unverified catalog evidence.
 - Kept published frequency ranges from appearing as false standalone thresholds in the research chart.
 - Removed the misleading featured-sources list and decorative evidence cards from the research story.
 - Made the research Method’s review date explicit instead of burying it in the sample description.

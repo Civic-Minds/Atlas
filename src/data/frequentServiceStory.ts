@@ -1,5 +1,7 @@
 export type StoryScale = 'large-system' | 'smaller-system' | 'counterexample';
 
+import audit from '../../docs/research/system-map-audit-2026-09.json';
+
 export interface FrequentServiceStoryExample {
   id: string;
   city: string;
@@ -14,31 +16,31 @@ export interface FrequentServiceStoryExample {
   tone: 'orange' | 'blue' | 'green' | 'purple';
 }
 
+const storyThresholds = [10, 15];
+const records = audit.records;
+const categoryCounts = {
+  numericDefinition: records.filter(record => record.status === 'numeric_definition_on_map').length,
+  qualitativeDefinition: records.filter(record => record.status === 'qualitative_definition_on_map').length,
+  noDefinitionFound: records.filter(record => record.status === 'no_definition_on_map').length,
+  mapUnavailable: records.filter(record => record.status === 'map_unavailable').length,
+};
+const exactNumericRecords = records.filter(record => record.status === 'numeric_definition_on_map' && Number.isInteger(record.thresholdMinutes));
+
 export const frequentServiceStoryStats = {
-  agenciesReviewed: 500,
-  reviewedAt: 'September 16–18, 2026',
-  countryCounts: [
-    { country: 'United States', agencies: 311 },
-    { country: 'France', agencies: 100 },
-    { country: 'Canada', agencies: 88 },
-    { country: 'Mexico', agencies: 1 },
-  ],
-  categoryCounts: {
-    numericDefinition: 205,
-    qualitativeDefinition: 26,
-    formalDefinitionWithoutNamedLabel: 14,
-    noDefinitionFound: 255,
-  },
-  namedNumericAgencies: 86,
-  noDefinitionFound: 255,
-  countries: 4,
-  headwayBars: [
-    { minutes: 10, agencies: 3 },
-    { minutes: 12, agencies: 2 },
-    { minutes: 15, agencies: 52 },
-    { minutes: 20, agencies: 11 },
-    { minutes: 30, agencies: 18 },
-  ],
+  agenciesReviewed: records.length,
+  reviewedAt: 'September 18, 2026',
+  countryCounts: Object.entries(records.reduce<Record<string, number>>((counts, record) => {
+    counts[record.country] = (counts[record.country] ?? 0) + 1;
+    return counts;
+  }, {})).map(([country, agencies]) => ({ country, agencies })),
+  categoryCounts,
+  namedNumericAgencies: exactNumericRecords.length,
+  noDefinitionFound: categoryCounts.noDefinitionFound,
+  countries: new Set(records.map(record => record.country)).size,
+  headwayBars: storyThresholds.map(minutes => ({
+    minutes,
+    agencies: exactNumericRecords.filter(record => record.thresholdMinutes === minutes).length,
+  })),
 };
 
 export const frequentServiceStoryExamples: FrequentServiceStoryExample[] = [
@@ -65,7 +67,7 @@ export const frequentServiceStoryExamples: FrequentServiceStoryExample[] = [
     details: ['6am weekdays', '7am Saturday; 8am Sunday', 'Bus and SkyTrain can combine'],
     thresholdMinutes: [15],
     sourceLabel: 'TransLink Frequent Transit Network',
-    sourceUrl: 'https://www.translink.ca/plans-and-projects/projects/frequent-transit-network',
+    sourceUrl: 'https://maps.translink.ca/-/media/translink/documents/schedules-and-maps/transit-system-maps/system-maps/frequent_transit_network_of_metro_vancouver_map.pdf',
     tone: 'blue',
   },
   {
@@ -73,39 +75,13 @@ export const frequentServiceStoryExamples: FrequentServiceStoryExample[] = [
     city: 'Chicago',
     agency: 'Chicago Transit Authority',
     scale: 'large-system',
-    headline: '10 minutes, with a weekend rule',
-    summary: 'Chicago publishes a Frequent Network with different weekday and weekend spans.',
-    details: ['6am–9pm weekdays', '9am–9pm weekends', 'Bus network'],
-    thresholdMinutes: [10],
-    sourceLabel: 'CTA Frequent Network',
-    sourceUrl: 'https://lapi.transitchicago.com/frequent/',
+    headline: 'A frequent-route symbol',
+    summary: 'Chicago’s system-map legend marks CTA frequent routes without publishing a numeric threshold on the map.',
+    details: ['System-map legend', 'Qualitative label', 'Bus network'],
+    thresholdMinutes: [],
+    sourceLabel: 'CTA system map',
+    sourceUrl: 'https://www.transitchicago.com/assets/1/6/ctamap_SystemMap.pdf',
     tone: 'purple',
-  },
-  {
-    id: 'winnipeg',
-    city: 'Winnipeg',
-    agency: 'Winnipeg Transit',
-    scale: 'large-system',
-    headline: 'Frequent is a ladder, not a line',
-    summary: 'Winnipeg publishes several service tiers, with different peak, off-peak, night, and weekend bands.',
-    details: ['Frequent Lines: 10–15 minutes', 'Nights and weekends: 10–30 minutes', 'Connector and community tiers sit below it'],
-    thresholdMinutes: [10, 15, 30],
-    sourceLabel: 'Winnipeg network guide',
-    sourceUrl: 'https://www.winnipeg.ca/services-programs/transportation-roads-parking/transit/understanding-network',
-    tone: 'green',
-  },
-  {
-    id: 'nanaimo',
-    city: 'Nanaimo',
-    agency: 'BC Transit',
-    scale: 'smaller-system',
-    headline: '15–30 minutes can still be “frequent”',
-    summary: 'Nanaimo labels a Frequent Route while publishing a broader 15–30-minute service range.',
-    details: ['Frequent Route product', '15–30-minute published range', 'Local routes: 30–60 minutes'],
-    thresholdMinutes: [15, 30],
-    sourceLabel: 'Nanaimo network materials',
-    sourceUrl: 'https://www.bctransit.com/nanaimo-introduces-transit-network-and-service-changes/',
-    tone: 'blue',
   },
   {
     id: 'uta',
@@ -116,34 +92,8 @@ export const frequentServiceStoryExamples: FrequentServiceStoryExample[] = [
     summary: 'UTA labels bus and rail products frequent, but the published periods vary by product and time of day.',
     details: ['15 minutes bus; 30–60 minutes rail', 'FrontRunner reaches 60 minutes off-peak', 'Bus and rail products'],
     thresholdMinutes: [15],
-    sourceLabel: 'UTA Go Route and service plan',
-    sourceUrl: 'https://vehiclelocator.rideuta.com/Services/Go-Route',
-    tone: 'purple',
-  },
-  {
-    id: 'yellowknife',
-    city: 'Yellowknife',
-    agency: 'Yellowknife Transit',
-    scale: 'smaller-system',
-    headline: 'The context changes the number',
-    summary: 'Yellowknife’s connector and neighbourhood services use a 30-minute starting point, with lower-demand periods extending to an hour.',
-    details: ['30-minute connector at peak commuter times', '30–60-minute neighbourhood service', 'Bus routes'],
-    thresholdMinutes: [30],
-    sourceLabel: 'Yellowknife route information',
-    sourceUrl: 'https://contacts.yellowknife.ca/en/living-here/new_routes.aspx',
-    tone: 'orange',
-  },
-  {
-    id: 'asheville',
-    city: 'Asheville',
-    agency: 'Asheville Rides Transit',
-    scale: 'smaller-system',
-    headline: 'Sometimes the definition is a plan',
-    summary: 'Asheville’s draft network report proposes 15-minute service on selected corridors, while its older map uses a qualitative frequent-service label.',
-    details: ['Selected corridors', 'Proposed network language', 'Older map has no numeric legend'],
-    thresholdMinutes: [15],
-    sourceLabel: 'Asheville network explanation',
-    sourceUrl: 'https://www.ashevillenc.gov/news/the-asheville-rides-transit-art-draft-network-explained/',
+    sourceLabel: 'UTA official map pages',
+    sourceUrl: 'https://www.rideuta.com/-/media/Files/Current-Projects/Five-Year-Service-Plan/UTA_Five_Year_Service_Plan2023_FINAL.pdf',
     tone: 'purple',
   },
   {
