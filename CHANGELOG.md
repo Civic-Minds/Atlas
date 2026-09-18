@@ -6,9 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 - Made the research story map span the viewport and fit its available height responsively.
-
-- Expanded the Frequent Service research audit to 250 agencies and added verified 30-minute representative tiers to the story chart.
-- Connected the story map to the current 250-agency audit and removed the misleading published-span scatter plot until Atlas comparison data is available for it.
+- Reset the Frequent Service research audit to a manually verified, map-only 50-agency sample after removing the invalid bulk-generated audit.
 - Removed the separate agency example tabs; agency examples will be shown through map states instead.
 - Moved the sticky research map below the global header so it no longer overlaps the Atlas branding.
 - Removed the extra published-definition label from the story map card.
@@ -20,18 +18,14 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Simplified the map caption by removing the redundant “Atlas comparison” label.
 - Kept each story-stage narrative panel in the same top-left position while the map changes underneath.
 - Removed the 15- and 30-minute selector from the story map narrative panel.
-- Expanded the Frequent Service research audit to 150 agencies while preserving representative and secondary frequency tiers.
-- Expanded the Frequent Service research audit to 100 agencies and counts each agency’s representative frequent-service tier while retaining secondary tiers for context.
 - Kept the story map pinned while switching the final 15- and 30-minute comparisons so the network does not jump with the scroll position.
 - Stabilized the story-map transition so every stage keeps the same geography, line weight, and persistent network context while the active routes fade between states.
 - Simplified the story-map captions so the scroll narrative is easier to follow.
 - Added a larger Toronto network story that progressively narrows from all routes to regular daytime and 15- or 30-minute service as readers scroll.
-- Scoped the Frequent Service research chart to the first 50 verified system-map audits so its counts cannot include unverified catalog evidence.
 - Kept published frequency ranges from appearing as false standalone thresholds in the research chart.
 - Removed the misleading featured-sources list and decorative evidence cards from the research story.
 - Made the research Method’s review date explicit instead of burying it in the sample description.
 - Constrained the research story body and Method text to the same readable line length as the rest of the page.
-- Corrected the research story to use UTA's 15-minute map-facing definition and removed Davenport's unsupported frequent-service claim.
 - Corrected the research classifier so generic slower-service standards are not presented as named frequent definitions, and added the actual 60-minute examples.
 - Made the Frequent Service research story interactive: select a threshold and agency to compare the timing, scope, and service context behind the number.
 - Corrected the Frequent Service story chart to use each agency's slowest published frequent-service period instead of misleading peak-period values.
