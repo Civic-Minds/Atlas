@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Consolidated Frequent Service story source links into one closing Sources section so the examples read as a story instead of a chain of outbound links.
 - Made the Frequent Service story methodology readable as a real closing section instead of tiny footer text.
 - Removed the unnecessary numbered context cards from the Frequent Service story and replaced them with a direct explanation.
 - Reordered the frequent-service threshold chart numerically and highlighted the most common 15-minute value so the graph reads as a scale.

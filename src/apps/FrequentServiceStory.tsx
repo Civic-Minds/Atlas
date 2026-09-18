@@ -33,15 +33,6 @@ function StoryExample({ example }: { example: FrequentServiceStoryExample }) {
             <li key={detail} className="flex items-start gap-2"><span aria-hidden="true" style={{ color: tone.accent }}>•</span>{detail}</li>
           ))}
         </ul>
-        <a
-          href={example.sourceUrl}
-          target="_blank"
-          rel="noreferrer"
-          className="mt-5 inline-flex items-center gap-1.5 text-xs font-bold text-[var(--text-primary)] underline decoration-[var(--border-primary)] underline-offset-4 hover:decoration-current"
-        >
-          Read {example.sourceLabel}
-          <ExternalLink className="h-3 w-3" aria-hidden="true" />
-        </a>
       </div>
     </article>
   );
@@ -141,6 +132,25 @@ export default function FrequentServiceStory({ onExploreMap }: Props) {
               <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-[var(--text-primary)]">How we did this</h2>
               <p className="mt-5 text-sm sm:text-base leading-7 sm:leading-8 text-[var(--text-muted)]">Atlas reviewed official agency system maps, frequent-network pages, service guidelines, planning documents, and route-service pages. “No definition found” means no named rider-facing definition was located within the review boundary; it does not mean the agency has no frequent service.</p>
               <p className="mt-5 text-sm leading-6 text-[var(--text-dim)]">This research describes Atlas’s 500-agency sample. It does not change Atlas’s production frequency definitions.</p>
+            </div>
+            <div className="mt-10 border-t border-[var(--border-primary)] pt-8">
+              <h2 className="text-xl font-black tracking-tight text-[var(--text-primary)]">Sources</h2>
+              <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">Official materials used for the examples above.</p>
+              <ul className="mt-5 grid gap-x-8 gap-y-3 sm:grid-cols-2">
+                {frequentServiceStoryExamples.map(example => (
+                  <li key={example.id}>
+                    <a
+                      href={example.sourceUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-1.5 text-sm font-bold text-[var(--text-primary)] underline decoration-[var(--border-primary)] underline-offset-4 hover:decoration-current"
+                    >
+                      {example.city} — {example.sourceLabel}
+                      <ExternalLink className="h-3 w-3 shrink-0" aria-hidden="true" />
+                    </a>
+                  </li>
+                ))}
+              </ul>
             </div>
           </footer>
         </div>
