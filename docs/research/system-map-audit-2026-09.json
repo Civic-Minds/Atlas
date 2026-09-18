@@ -854,21 +854,21 @@
       "agencyName": "Chicago Transit Authority",
       "country": "United States",
       "region": "Illinois",
-      "status": "qualitative_definition_on_map",
+      "status": "numeric_definition_on_map",
       "mapCandidates": [],
       "preservedFiles": [
         "cta-system-map.pdf"
       ],
       "mapDate": null,
-      "mapPageOrSection": "map legend",
-      "exactMapWording": "CTA frequent routes",
-      "thresholdMinutes": null,
-      "thresholdText": null,
-      "serviceSpan": null,
-      "days": null,
-      "geography": null,
-      "mode": null,
-      "evidenceNotes": "Current official CTA system map reviewed manually. It labels CTA frequent routes without a numeric threshold.",
+      "mapPageOrSection": "CTA Frequent Network definition",
+      "exactMapWording": "Frequent Network bus routes provide service every 10 minutes or better between 6 a.m. and 9 p.m. on weekdays and 9 a.m. to 9 p.m. on weekends.",
+      "thresholdMinutes": 10,
+      "thresholdText": "every 10 minutes or better, 6 a.m.–9 p.m. weekdays and 9 a.m.–9 p.m. weekends",
+      "serviceSpan": "6 a.m.–9 p.m. weekdays; 9 a.m.–9 p.m. weekends",
+      "days": "weekdays and weekends",
+      "geography": "CTA service area",
+      "mode": "bus",
+      "evidenceNotes": "Official CTA Frequent Network definition supplied during manual review. The definition covers bus routes and specifies separate weekday and weekend spans.",
       "reviewBatch": 1,
       "evidenceSourceType": "system_map",
       "reviewSources": [
@@ -880,20 +880,20 @@
       ],
       "definitions": [
         {
-          "id": "frequent-routes",
-          "label": "CTA frequent routes",
-          "thresholdMinutes": null,
-          "thresholdText": null,
+          "id": "frequent-network",
+          "label": "Frequent Network",
+          "thresholdMinutes": 10,
+          "thresholdText": "every 10 minutes or better, 6 a.m.–9 p.m. weekdays and 9 a.m.–9 p.m. weekends",
           "representative": true,
           "sourceType": "system_map",
           "sourceUrl": "https://www.transitchicago.com/assets/1/6/ctamap_SystemMap.pdf",
           "localFile": "cta-system-map.pdf",
-          "mapPageOrSection": "map legend",
-          "exactWording": "CTA frequent routes",
-          "evidenceNotes": "Current official CTA system map reviewed manually. It labels CTA frequent routes without a numeric threshold."
+          "mapPageOrSection": "CTA Frequent Network definition",
+          "exactWording": "Frequent Network bus routes provide service every 10 minutes or better between 6 a.m. and 9 p.m. on weekdays and 9 a.m. to 9 p.m. on weekends.",
+          "evidenceNotes": "Official CTA Frequent Network definition supplied during manual review. The definition covers bus routes and specifies separate weekday and weekend spans."
         }
       ],
-      "representativeThresholdMinutes": null
+      "representativeThresholdMinutes": 10
     },
     {
       "auditOrder": 19,
