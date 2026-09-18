@@ -2,7 +2,7 @@
   "auditVersion": 2,
   "createdAt": "2026-09-18",
   "sourceCatalog": "docs/research/frequent-service-catalog.json",
-  "scope": "First 50 agencies plus 134 additional agencies reviewed individually against current official system maps or approved rider guides on September 18, 2026.",
+  "scope": "First 50 agencies plus 152 additional agencies reviewed individually against current official system maps or approved rider guides on September 18, 2026.",
   "statusRules": {
     "numeric_definition_on_map": "The official system map visibly names frequent/high-frequency service and gives a numeric threshold or range.",
     "qualitative_definition_on_map": "The official system map visibly names frequent/high-frequency service without a numeric threshold.",
@@ -7851,6 +7851,580 @@
       "reviewSources": [
         {
           "url": "https://myrapid.com.my/bus-train/rapid-kl/lrt/",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 185,
+      "agencyId": "sorta-cincinnati",
+      "agencyName": "SORTA / Cincinnati Metro",
+      "country": "United States",
+      "region": "Ohio",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.go-metro.com/wp-content/uploads/2025/04/metrosystemmap.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "map frequency legend",
+      "exactMapWording": "15 Minutes Or Better; 20–35 Minutes; 40–55 Minutes; 60+ Minutes.",
+      "thresholdMinutes": 15,
+      "thresholdText": "15 minutes or better",
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official SORTA system map visually reviewed. Its frequency legend defines named interval tiers; the 15-minute tier is retained.",
+      "reviewBatch": 11,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.go-metro.com/wp-content/uploads/2025/04/metrosystemmap.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [
+        {
+          "id": "primary",
+          "label": "15 Minutes Or Better; 20–35 Minutes; 40–55 Minutes; 60+ Minutes.",
+          "thresholdMinutes": 15,
+          "thresholdText": "15 minutes or better",
+          "representative": true,
+          "sourceType": "system_map",
+          "sourceUrl": "https://www.go-metro.com/wp-content/uploads/2025/04/metrosystemmap.pdf",
+          "localFile": null,
+          "mapPageOrSection": "map frequency legend",
+          "exactWording": "15 Minutes Or Better; 20–35 Minutes; 40–55 Minutes; 60+ Minutes.",
+          "evidenceNotes": "Official SORTA system map visually reviewed. Its frequency legend defines named interval tiers; the 15-minute tier is retained."
+        }
+      ],
+      "representativeThresholdMinutes": 15,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 186,
+      "agencyId": "san-diego-mts",
+      "agencyName": "San Diego MTS",
+      "country": "United States",
+      "region": "California",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.sdmts.com/sites/default/files/attachments/regional-transit-map.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "service-type legend",
+      "exactMapWording": "Regular service: Operates at a frequency of every 60 minutes or better; Limited service: Operates only selected trips.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official MTS regional map visually reviewed. It labels Rapid, Regular, and Limited service, but does not define Rapid/frequent service.",
+      "reviewBatch": 11,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.sdmts.com/sites/default/files/attachments/regional-transit-map.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 187,
+      "agencyId": "burlington-transit",
+      "agencyName": "Burlington Transit",
+      "country": "Canada",
+      "region": "Ontario",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.burlington.ca/en/transit/resources/Schedules-and-Routes/Schedules-and-Maps/1-Routeguide-2026-March.pdf",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "page 1, Frequent Service",
+      "exactMapWording": "This route operates every 15 minutes or better from approximately 6am to 6pm.",
+      "thresholdMinutes": 15,
+      "thresholdText": "every 15 minutes or better, approximately 6 a.m.–6 p.m.",
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Burlington Transit Route 1 rider guide, effective March 8, 2026, visually reviewed. It explicitly names Frequent Service.",
+      "reviewBatch": 11,
+      "evidenceSourceType": "rider_guide",
+      "reviewSources": [
+        {
+          "url": "https://www.burlington.ca/en/transit/resources/Schedules-and-Routes/Schedules-and-Maps/1-Routeguide-2026-March.pdf",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "definitions": [
+        {
+          "id": "primary",
+          "label": "This route operates every 15 minutes or better from approximately 6am to 6pm.",
+          "thresholdMinutes": 15,
+          "thresholdText": "every 15 minutes or better, approximately 6 a.m.–6 p.m.",
+          "representative": true,
+          "sourceType": "rider_guide",
+          "sourceUrl": "https://www.burlington.ca/en/transit/resources/Schedules-and-Routes/Schedules-and-Maps/1-Routeguide-2026-March.pdf",
+          "localFile": null,
+          "mapPageOrSection": "page 1, Frequent Service",
+          "exactWording": "This route operates every 15 minutes or better from approximately 6am to 6pm.",
+          "evidenceNotes": "Official Burlington Transit Route 1 rider guide, effective March 8, 2026, visually reviewed. It explicitly names Frequent Service."
+        }
+      ],
+      "representativeThresholdMinutes": 15,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 188,
+      "agencyId": "hamilton-street-railway",
+      "agencyName": "Hamilton Street Railway",
+      "country": "Canada",
+      "region": "Ontario",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.hamilton.ca/sites/default/files/2025-08/hsr-route-18-WATERDOWN-aug2025.pdf",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "page 1, route description",
+      "exactMapWording": "Route 18 operates at a 30-minute frequency, seven days a week.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official HSR Route 18 rider guide visually reviewed. It gives a route interval but does not name or define frequent service.",
+      "reviewBatch": 11,
+      "evidenceSourceType": "rider_guide",
+      "reviewSources": [
+        {
+          "url": "https://www.hamilton.ca/sites/default/files/2025-08/hsr-route-18-WATERDOWN-aug2025.pdf",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 189,
+      "agencyId": "tfl-london",
+      "agencyName": "Transport for London",
+      "country": "United Kingdom",
+      "region": "London",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://content.tfl.gov.uk/superloop-map.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "Superloop map title and information panel",
+      "exactMapWording": "London’s Express Bus Service; Superloop is a network of express bus routes.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official TfL Superloop map visually reviewed. Express branding is not a frequent-service definition.",
+      "reviewBatch": 11,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://content.tfl.gov.uk/superloop-map.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 190,
+      "agencyId": "tcl-lyon",
+      "agencyName": "TCL Lyon",
+      "country": "France",
+      "region": "Auvergne-Rhône-Alpes",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.tcl.fr/sites/default/files/2026-08/Plan_des_lignes_fortes_TCL.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "Plan des lignes fortes",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official TCL major-transit-lines map visually reviewed. It identifies strong/main lines and route-specific intervals but no frequent-service definition.",
+      "reviewBatch": 11,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.tcl.fr/sites/default/files/2026-08/Plan_des_lignes_fortes_TCL.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 191,
+      "agencyId": "tpg-geneva",
+      "agencyName": "tpg Geneva",
+      "country": "Switzerland",
+      "region": "Geneva",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.tpg.ch/fr/voyager/planifier-votre-voyage/plans",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "Plans du réseau / Plan tpg diurne 2026",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official tpg 2026 daytime network map visually reviewed. It contains the network but no frequent-service definition.",
+      "reviewBatch": 11,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.tpg.ch/fr/voyager/planifier-votre-voyage/plans",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 192,
+      "agencyId": "atm-milan",
+      "agencyName": "ATM Milan",
+      "country": "Italy",
+      "region": "Lombardy",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.atm.it/it/AltriServizi/Trasporto/Pagine/Mappe.aspx",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "Mappe / Mappa di tutte le linee",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official ATM network-map page visually reviewed. It provides complete and night maps but no frequent-service definition.",
+      "reviewBatch": 11,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.atm.it/it/AltriServizi/Trasporto/Pagine/Mappe.aspx",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 193,
+      "agencyId": "pid-prague-night",
+      "agencyName": "PID Prague",
+      "country": "Czechia",
+      "region": "Prague",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://pid.cz/informace-k-cestovani/nocni-doprava-pid/",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "Noční provoz / night transport guide",
+      "exactMapWording": "Nine tram lines operate at a uniform 30-minute interval; bus lines operate at 30- or 60-minute intervals.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official PID night-service rider guide visually reviewed. It publishes night intervals but does not define a frequent network.",
+      "reviewBatch": 11,
+      "evidenceSourceType": "rider_guide",
+      "reviewSources": [
+        {
+          "url": "https://pid.cz/informace-k-cestovani/nocni-doprava-pid/",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 194,
+      "agencyId": "gold-coast-translink",
+      "agencyName": "Gold Coast Translink",
+      "country": "Australia",
+      "region": "Queensland",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://translink.widen.net/s/wgmww5tjb5/260907-gold-coast-high-frequency",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "Gold Coast High Frequency Services map",
+      "exactMapWording": "Selected buses and trams run every 15 minutes or better, 7am to 7pm, on weekdays.",
+      "thresholdMinutes": 15,
+      "thresholdText": "every 15 minutes or better, 7 a.m.–7 p.m. weekdays",
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Gold Coast High Frequency Services map, effective July 2026, visually reviewed.",
+      "reviewBatch": 11,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://translink.widen.net/s/wgmww5tjb5/260907-gold-coast-high-frequency",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [
+        {
+          "id": "primary",
+          "label": "Selected buses and trams run every 15 minutes or better, 7am to 7pm, on weekdays.",
+          "thresholdMinutes": 15,
+          "thresholdText": "every 15 minutes or better, 7 a.m.–7 p.m. weekdays",
+          "representative": true,
+          "sourceType": "system_map",
+          "sourceUrl": "https://translink.widen.net/s/wgmww5tjb5/260907-gold-coast-high-frequency",
+          "localFile": null,
+          "mapPageOrSection": "Gold Coast High Frequency Services map",
+          "exactWording": "Selected buses and trams run every 15 minutes or better, 7am to 7pm, on weekdays.",
+          "evidenceNotes": "Official Gold Coast High Frequency Services map, effective July 2026, visually reviewed."
+        }
+      ],
+      "representativeThresholdMinutes": 15,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 195,
+      "agencyId": "fukuoka-city-subway",
+      "agencyName": "Fukuoka City Subway",
+      "country": "Japan",
+      "region": "Fukuoka",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://subway.city.fukuoka.lg.jp/eng/route/",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "official route map page",
+      "exactMapWording": "Trains operate between 5:30 am and 0:25 am. Trains will come every 4–8 minutes.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Fukuoka route map page visually reviewed. It gives ordinary train intervals but does not name or define frequent service.",
+      "reviewBatch": 11,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://subway.city.fukuoka.lg.jp/eng/route/",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 196,
+      "agencyId": "toei-subway",
+      "agencyName": "Toei Subway",
+      "country": "Japan",
+      "region": "Tokyo",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.kotsu.metro.tokyo.jp/eng/maps/subway/",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "official route map",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Toei Subway route map visually reviewed. It shows lines, stations, and transfers but no frequent-service category or threshold.",
+      "reviewBatch": 11,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.kotsu.metro.tokyo.jp/eng/maps/subway/",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 197,
+      "agencyId": "transjakarta",
+      "agencyName": "TransJakarta",
+      "country": "Indonesia",
+      "region": "Jakarta",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://transjakarta.co.id/routes",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "Routes / Integration Map",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official TransJakarta integration map visually reviewed. It identifies routes and modes but no frequency category or numeric threshold.",
+      "reviewBatch": 11,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://transjakarta.co.id/routes",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 198,
+      "agencyId": "dotr-mrt3-manila",
+      "agencyName": "DOTr–MRT-3",
+      "country": "Philippines",
+      "region": "Manila",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.dotrmrt3.gov.ph/dotrmrt3-citizen-charter-handbook-2026-1st-edition.pdf",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "2026 Citizen’s Charter, page 91",
+      "exactMapWording": "Ride the train at the platform … 30 minutes per complete direction.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official 2026 Citizen’s Charter visually reviewed. The wording describes a processing/journey time, not service frequency.",
+      "reviewBatch": 11,
+      "evidenceSourceType": "rider_guide",
+      "reviewSources": [
+        {
+          "url": "https://www.dotrmrt3.gov.ph/dotrmrt3-citizen-charter-handbook-2026-1st-edition.pdf",
           "sourceType": "rider_guide",
           "localFile": null
         }
