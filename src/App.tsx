@@ -139,7 +139,6 @@ export default function App() {
   const [agenciesLoadState, setAgenciesLoadState] = useState<'loading' | 'ready' | 'error'>('loading');
   const [historyAgencySlugs, setHistoryAgencySlugs] = useState<Set<string> | null>(null);
   const [historyExploreAgencyCount, setHistoryExploreAgencyCount] = useState<number | null>(null);
-  const [historyAgencyForView, setHistoryAgencyForView] = useState<string | null>(null);
   const [query, setQuery] = useState('');
   // Search scans / map filters / prefetch run from this so keystrokes can
   // paint first. See useDebouncedValue for why this isn't useDeferredValue.
@@ -195,10 +194,6 @@ export default function App() {
   }, [closeInfo]);
   const handleLiveRouteClick = useCallback((slug: string, routeShortName: string) => { setPendingLiveRoute({ slug, routeShortName }); closeInfo(); }, [closeInfo]);
   const handleHistoryRouteClick = useCallback((slug: string, routeShortName: string) => { setPendingHistoryRoute({ slug, routeShortName }); }, []);
-  const handleHistoryAgencyClick = useCallback((slug: string) => {
-    setHistoryAgencyForView(slug);
-    setActiveApp('history');
-  }, []);
   const handleAgencyCardClose = useCallback(() => setSelectedAgencySlug(null), []);
   const handlePendingHandled = useCallback(() => setPendingLiveRoute(null), []);
   const [lightMode, setLightMode] = useState(() => {
@@ -281,6 +276,7 @@ export default function App() {
   // whatever the map happens to be showing -- auto-jumping straight to an
   // agency (e.g. TTC, just because the map defaults to Toronto) surprised
   // users who never actually picked that agency themselves.
+  const historyAgencyForView = null;
   const searchPlaceholder = inFrequency
     ? 'Search routes'
     : inFares ? 'Search agencies'
@@ -288,10 +284,6 @@ export default function App() {
     : inCorridors ? 'Search corridors…'
     : inNight ? 'Search agencies or routes…'
     : 'Search vehicles…';
-
-  useEffect(() => {
-    if (!inHistory) setHistoryAgencyForView(null);
-  }, [inHistory]);
 
   function handleSearchClear() {
     setQuery('');
@@ -579,8 +571,6 @@ export default function App() {
               showMatchPercentage={BETA_BUILD}
               filterToAgencies={inHistory || inFares}
               onHistoryRouteClick={inHistory ? handleHistoryRouteClick : undefined}
-              historyAgencySlugs={historyAgencySlugs}
-              onHistoryAgencyClick={inFrequency ? handleHistoryAgencyClick : undefined}
               onDirectFromStop={inFrequency && CORRIDORS_ENABLED ? handleDirectFromStop : undefined}
               hideFilterPanel={inCorridors || inLive || inHistory || inFares || inNight}
               onInfoOpen={openInfo}

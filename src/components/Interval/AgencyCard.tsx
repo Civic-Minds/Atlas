@@ -1,7 +1,6 @@
 import React, { useMemo, useState, useEffect, forwardRef } from 'react';
-import { History as HistoryIcon } from 'lucide-react';
 import { LIVE_POLLING_ROUTES } from '../../../shared/livePollingConfig';
-import { HISTORY_ENABLED, LIVE_ENABLED } from '../../../shared/config';
+import { LIVE_ENABLED } from '../../../shared/config';
 import type { Agency, FareOverride } from '../../App';
 import type { OpenInfoFn } from '../InfoPanel';
 import type { AgencyLayers } from '../../hooks/useAgencyData';
@@ -229,8 +228,6 @@ interface Props {
   fareView?: boolean;
   fareOverride?: FareOverride;
   onInfoOpen?: OpenInfoFn;
-  historyAvailable?: boolean;
-  onHistoryAgencyClick?: (slug: string) => void;
 }
 
 function RouteListSection({
@@ -282,8 +279,6 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
   fareView,
   fareOverride,
   onInfoOpen,
-  historyAvailable = false,
-  onHistoryAgencyClick,
 }, ref) {
   const routes = useMemo(
     () => getRoutes(layers, agency.slug, day, period, { maxHeadway, selectedModes, hideSpan }),
@@ -425,16 +420,6 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
                 );
               })}
             </div>
-          )}
-          {HISTORY_ENABLED && historyAvailable && onHistoryAgencyClick && (
-            <button
-              type="button"
-              onClick={() => onHistoryAgencyClick(agency.slug)}
-              className="inline-flex items-center gap-1.5 mt-2 text-[10px] font-bold text-[var(--accent)] hover:underline"
-            >
-              <HistoryIcon className="w-3 h-3" />
-              View history
-            </button>
           )}
           </>
           )}
