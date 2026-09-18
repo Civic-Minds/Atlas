@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Night Service route rows now open the normal route card and highlight the selected route on the map.
 - Night Service and History now share compact research-panel guidance and the same search treatment.
 - Night Service now retains agencies skipped during feed refreshes, keeping its directory aligned with the routes shown on the map ([#516](https://github.com/Civic-Minds/Atlas/issues/516)).
 - Night Service now builds its visible directory from the same route features as the map, so stale index data cannot hide agencies that are shown.

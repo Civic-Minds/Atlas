@@ -26,6 +26,7 @@ interface NightServiceRoute {
 }
 
 interface NightServiceRouteSummary {
+  routeId: string | null;
   routeShortName: string | null;
   routeLongName: string | null;
   destinations: string[];
@@ -33,6 +34,7 @@ interface NightServiceRouteSummary {
 
 interface NightServiceFeatureProperties {
   nightService?: boolean;
+  routeId?: string | null;
   routeShortName?: string | null;
   routeLongName?: string | null;
   headsign?: string | null;
@@ -51,6 +53,7 @@ interface Props {
   sidebarLeft?: number;
   layers: Record<string, GeoJSON.FeatureCollection>;
   query: string;
+  onRouteSelect?: (agencySlug: string, routeId: string) => void;
 }
 
 function featureIntersectsBounds(feature: GeoJSON.Feature, bounds: { s: number; w: number; n: number; e: number }): boolean {
@@ -72,7 +75,7 @@ function featureIntersectsBounds(feature: GeoJSON.Feature, bounds: { s: number; 
   return maxLon >= bounds.w && minLon <= bounds.e && maxLat >= bounds.s && minLat <= bounds.n;
 }
 
-export default function NightService({ active, sidebarLeft, layers, query }: Props) {
+export default function NightService({ active, sidebarLeft, layers, query, onRouteSelect }: Props) {
   const [data, setData] = useState<NightServiceIndexFile | null>(null);
   const [loadState, setLoadState] = useState<'loading' | 'ready' | 'error'>('loading');
   const { bounds } = useViewport();
@@ -124,6 +127,7 @@ export default function NightService({ active, sidebarLeft, layers, query }: Pro
       };
       const summaryKey = `${properties.routeShortName ?? ''}::${properties.routeLongName ?? ''}`;
       const summary = entry.routes.get(summaryKey) ?? {
+        routeId: properties.routeId ?? null,
         routeShortName: properties.routeShortName ?? indexed?.routeShortName ?? null,
         routeLongName: properties.routeLongName ?? indexed?.routeLongName ?? null,
         destinations: [],
@@ -181,7 +185,13 @@ export default function NightService({ active, sidebarLeft, layers, query }: Pro
                 <span className="font-normal text-[var(--text-dim)] ml-1">· {agency.routes.length} {agency.routes.length === 1 ? 'route' : 'routes'}</span>
               </div>
               {agency.routes.map(route => (
-                <div key={`${route.routeShortName ?? ''}-${route.routeLongName ?? ''}`} className="px-4 py-2.5 border-b border-[var(--border-primary)] last:border-0">
+                <button
+                  key={`${route.routeShortName ?? ''}-${route.routeLongName ?? ''}`}
+                  type="button"
+                  disabled={!route.routeId || !onRouteSelect}
+                  onClick={() => route.routeId && onRouteSelect?.(agency.slug, route.routeId)}
+                  className="w-full text-left px-4 py-2.5 border-b border-[var(--border-primary)] last:border-0 hover:bg-[var(--surface-hover)] disabled:cursor-default"
+                >
                   <div className="text-xs font-black text-[var(--text-primary)] truncate">
                     {route.routeShortName || route.routeLongName || 'Unnamed route'}
                     {route.routeShortName && route.routeLongName && <span className="font-normal text-[var(--text-dim)]"> — {route.routeLongName}</span>}
@@ -191,7 +201,7 @@ export default function NightService({ active, sidebarLeft, layers, query }: Pro
                       To {route.destinations.join(' · ')}
                     </div>
                   )}
-                </div>
+                </button>
               ))}
             </div>
           ))}
