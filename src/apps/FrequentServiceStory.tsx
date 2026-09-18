@@ -168,8 +168,8 @@ export default function FrequentServiceStory({ onExploreMap }: Props) {
               </div>
             </div>
             <div className="mt-10 border-t border-[var(--border-primary)] pt-8">
-              <h2 className="text-xl font-black tracking-tight text-[var(--text-primary)]">Sources</h2>
-              <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">Official materials used for the examples above.</p>
+              <h2 className="text-xl font-black tracking-tight text-[var(--text-primary)]">Sources for the featured examples</h2>
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--text-muted)]">These are the official materials for the narrative examples on this page—not a complete bibliography of the 500-agency review. The chart and sample totals come from the full research catalog described in the Method.</p>
               <ul className="mt-5 grid gap-x-8 gap-y-3 sm:grid-cols-2">
                 {frequentServiceStoryExamples.map(example => (
                   <li key={example.id}>
