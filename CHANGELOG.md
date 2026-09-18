@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- Corrected the first map-audit findings after visual review: TTC is no-definition, while STM is qualitative-only.
+- Reframed the research introduction around the everyday rider impact of frequent, reliable transit.
 - Kept the story map narrative below the opening viewport so the research introduction is read first.
 - Made the research story map span the viewport and fit its available height responsively.
 - Reset the Frequent Service research audit to a manually verified, map-only 50-agency sample after removing the invalid bulk-generated audit.

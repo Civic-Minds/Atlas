@@ -24,7 +24,7 @@
       "agencyName": "Toronto Transit Commission",
       "country": "Canada",
       "region": "Ontario",
-      "status": "numeric_definition_on_map",
+      "status": "no_definition_on_map",
       "mapCandidates": [
         {
           "url": "https://cdn.ttc.ca/-/media/Project/TTC/DevProto/Images/Home/Routes-and-Schedules/Landing-page-pdfs/TTC_SystemMap.pdf?rev=88203dbcf60c47738cf9acc980c45cad",
@@ -36,15 +36,15 @@
         "ttc-system-map.pdf"
       ],
       "mapDate": null,
-      "mapPageOrSection": "map title and legend",
-      "exactMapWording": "10-Minute Network",
-      "thresholdMinutes": 10,
-      "thresholdText": "10 minutes",
+      "mapPageOrSection": "map legend",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
       "serviceSpan": null,
       "days": null,
       "geography": null,
       "mode": null,
-      "evidenceNotes": "Current official TTC system map reviewed manually. The map names a 10-Minute Network; no additional numeric frequent tier was treated as the representative definition.",
+      "evidenceNotes": "Current official TTC system map visually reviewed. It shows routes, stations, and transit partners but does not name a frequent or high-frequency definition.",
       "reviewBatch": 1,
       "evidenceSourceType": "system_map",
       "reviewSources": [
@@ -54,22 +54,8 @@
           "localFile": "ttc-system-map.pdf"
         }
       ],
-      "definitions": [
-        {
-          "id": "network",
-          "label": "10-Minute Network",
-          "thresholdMinutes": 10,
-          "thresholdText": "10 minutes",
-          "representative": true,
-          "sourceType": "system_map",
-          "sourceUrl": "https://cdn.ttc.ca/-/media/Project/TTC/DevProto/Images/Home/Routes-and-Schedules/Landing-page-pdfs/TTC_SystemMap.pdf?rev=88203dbcf60c47738cf9acc980c45cad",
-          "localFile": "ttc-system-map.pdf",
-          "mapPageOrSection": "map title and legend",
-          "exactWording": "10-Minute Network",
-          "evidenceNotes": "Current official TTC system map reviewed manually. The map names a 10-Minute Network; no additional numeric frequent tier was treated as the representative definition."
-        }
-      ],
-      "representativeThresholdMinutes": 10
+      "definitions": [],
+      "representativeThresholdMinutes": null
     },
     {
       "auditOrder": 2,
@@ -163,21 +149,21 @@
       "agencyName": "Société de transport de Montréal",
       "country": "Canada",
       "region": "Quebec",
-      "status": "no_definition_on_map",
+      "status": "qualitative_definition_on_map",
       "mapCandidates": [],
       "preservedFiles": [
         "stm-montreal-system-map.pdf"
       ],
       "mapDate": null,
       "mapPageOrSection": "network map legend",
-      "exactMapWording": null,
+      "exactMapWording": "Fréquentes toute la journée; Fréquentes en période de pointe",
       "thresholdMinutes": null,
       "thresholdText": null,
       "serviceSpan": null,
       "days": null,
       "geography": null,
       "mode": null,
-      "evidenceNotes": "Current official STM network map reviewed manually. It does not name a frequent or high-frequency definition.",
+      "evidenceNotes": "Current official STM network map visually reviewed. The legend names all-day and peak-period frequent routes but publishes no numeric threshold.",
       "reviewBatch": 1,
       "evidenceSourceType": "system_map",
       "reviewSources": [
@@ -187,7 +173,34 @@
           "localFile": "stm-montreal-system-map.pdf"
         }
       ],
-      "definitions": [],
+      "definitions": [
+        {
+          "id": "frequent-all-day",
+          "label": "Fréquentes toute la journée",
+          "thresholdMinutes": null,
+          "thresholdText": null,
+          "representative": true,
+          "sourceType": "system_map",
+          "sourceUrl": "https://www.stm.info/sites/default/files/media/Stminfo/images/plan_reseau.pdf",
+          "localFile": "stm-montreal-system-map.pdf",
+          "mapPageOrSection": "network map legend",
+          "exactWording": "Fréquentes toute la journée",
+          "evidenceNotes": "Current official STM network map visually reviewed. The legend names all-day and peak-period frequent routes but publishes no numeric threshold."
+        },
+        {
+          "id": "frequent-peak",
+          "label": "Fréquentes en période de pointe",
+          "thresholdMinutes": null,
+          "thresholdText": null,
+          "representative": false,
+          "sourceType": "system_map",
+          "sourceUrl": "https://www.stm.info/sites/default/files/media/Stminfo/images/plan_reseau.pdf",
+          "localFile": "stm-montreal-system-map.pdf",
+          "mapPageOrSection": "network map legend",
+          "exactWording": "Fréquentes en période de pointe",
+          "evidenceNotes": "Current official STM network map visually reviewed. The legend names all-day and peak-period frequent routes but publishes no numeric threshold."
+        }
+      ],
       "representativeThresholdMinutes": null
     },
     {
