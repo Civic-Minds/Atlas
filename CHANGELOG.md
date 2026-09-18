@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Public History now requires 10 distinct years of snapshots, so short archives do not appear as if they offer meaningful long-term history.
 - Fixed the History pill staying hidden when a history-enabled agency's selected route was rendered from map tiles instead of the in-memory map data.
 - Google Analytics no longer loses the initial page view while privacy consent and the tracking script are initializing.
 - Added a visible Feedback email link beside the map attribution for launch-period comments and feature requests.

@@ -5,7 +5,7 @@ import { LIVE_POLLING_ROUTES, liveCoverageForRouteNames, type LiveCoverage } fro
 import { R2_PUBLIC_URL, LIVE_ENABLED, HISTORY_ENABLED, BETA_BUILD } from '../../shared/config';
 import { agencyDisplayParts, formatStoredDate } from '../utils/format';
 import { feedRefreshCountdownLabel, FEED_REFRESH_CADENCE_LABEL, type FeedRefreshMeta } from '../../shared/feedRefresh';
-import { agencyHistoryTier, agencyQualifiesForHistory, agencyQualifiesForHistoryExplore, historyTierAgencyLabel } from '../../shared/historyEligibility';
+import { agencyQualifiesForHistory, agencyQualifiesForHistoryExplore } from '../../shared/historyEligibility';
 import { countriesForAgencies } from '../../shared/regionCountry';
 import type { Agency } from '../App';
 import { isFeedExpired } from '../utils/feedFreshness';
@@ -188,15 +188,6 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
     () => (historyAgencies ?? []).filter(a => agencyQualifiesForHistoryExplore(a as any)).length,
     [historyAgencies],
   );
-
-  const historyTierBySlug = useMemo(() => {
-    const map = new Map<string, 'explore' | 'recent'>();
-    for (const a of historyAgencies ?? []) {
-      const tier = agencyHistoryTier(a as any);
-      if (tier) map.set(a.slug, tier);
-    }
-    return map;
-  }, [historyAgencies]);
 
   const regionsInScope = useMemo(() => {
     const seen = new Set<string>();
@@ -501,7 +492,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                                   )}
                                   {showHistoryBadge && (
                                     <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-[var(--bg-btn)] text-[var(--text-muted)] border border-[var(--border-primary)]">
-                                      {historyTierAgencyLabel(historyTierBySlug.get(a.slug) ?? 'recent')}
+                                      History
                                     </span>
                                   )}
                                 </div>
@@ -742,15 +733,11 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                     <div>
                       <div className="mb-2">
                         <span className="inline-block text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-[var(--bg-btn)] text-[var(--text-muted)] border border-[var(--border-primary)]">
-                          {selectedSlug && historyTierBySlug.get(selectedSlug)
-                            ? historyTierAgencyLabel(historyTierBySlug.get(selectedSlug)!)
-                            : 'History'}
+                          History
                         </span>
                       </div>
                       <p className="text-xs text-[var(--text-dim)]">
-                        {selectedSlug && historyTierBySlug.get(selectedSlug) === 'recent'
-                          ? `Recent frequency snapshots for ${selectedHistory.routes.length} routes${historyYearsText ? ` ${historyYearsText}` : ''}.`
-                          : `Historical frequency data available for ${selectedHistory.routes.length} routes ${historyYearsText}.`}
+                        Historical frequency data available for {selectedHistory.routes.length} routes {historyYearsText}.
                       </p>
                     </div>
                   )}
