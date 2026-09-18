@@ -6,7 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
-- Fixed the map export control being hidden behind other controls on smaller map views by placing it above zoom controls.
+- Fixed the map export control spacing by grouping it with the zoom and location controls.
 - Added native image sharing where the browser supports it, while keeping PNG download available everywhere.
 - Added beta map-image export with stronger Atlas branding and full CARTO/OpenStreetMap attribution for shareable 1600×900 PNGs.
 - Added a visible Feedback email link beside the map attribution for launch-period comments and feature requests.
