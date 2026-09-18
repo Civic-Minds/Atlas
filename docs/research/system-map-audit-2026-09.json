@@ -1,8 +1,8 @@
 {
-  "auditVersion": 2,
+  "auditVersion": 3,
   "createdAt": "2026-09-18",
   "sourceCatalog": "docs/research/frequent-service-catalog.json",
-  "scope": "First 100 agencies in catalog order; official system-map evidence first, with approved official rider-facing definitions when the map is insufficient.",
+  "scope": "First 150 agencies in catalog order; official system-map evidence first, with approved official rider-facing definitions when the map is insufficient.",
   "statusRules": {
     "numeric_definition_on_map": "The official system map visibly names frequent/high-frequency service and gives a numeric threshold or range.",
     "qualitative_definition_on_map": "The official system map visibly names frequent/high-frequency service without a numeric threshold.",
@@ -3663,6 +3663,1657 @@
         {
           "url": "https://www.muni.org/Departments/transit/PeopleMover/Documents/%212021%20Service%20Change/Updated%202021%20Ride%20Guide_TAG.pdf",
           "sourceType": "system_map",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 101,
+      "reviewBatch": 3,
+      "agencyId": "juneau",
+      "agencyName": "Capital Transit (Juneau)",
+      "country": "United States",
+      "region": "Alaska",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were reviewed as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, and planning documents were not used to infer one.",
+      "evidenceSourceType": "planning_document",
+      "reviewSources": [
+        {
+          "url": "https://juneau.org/index.php?entry-id=3072&field-id=11&form-id=22&gf-download=2019%2F12%2FTransit_Plan_FINAL.pdf&hash=9da1384b08114b8e94a3f25ee84e813bd7c0293c65dd428e1593a6b343259106",
+          "sourceType": "planning_document",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 102,
+      "reviewBatch": 3,
+      "agencyId": "mountainline",
+      "agencyName": "Mountain Line (Flagstaff)",
+      "country": "United States",
+      "region": "Arizona",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were reviewed as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, and planning documents were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://mountainline.az.gov/routes/",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 103,
+      "reviewBatch": 3,
+      "agencyId": "sun-tran",
+      "agencyName": "Sun Tran (Tucson)",
+      "country": "United States",
+      "region": "Arizona",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were reviewed as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, and planning documents were not used to infer one.",
+      "evidenceSourceType": "service_guidelines",
+      "reviewSources": [
+        {
+          "url": "https://www.tucsonaz.gov/files/sharedassets/public/v/1/transportation-and-mobility/transit-services/documents/transit-safety-and-security-action-plan_20251216_mc_final.pdf",
+          "sourceType": "service_guidelines",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 104,
+      "reviewBatch": 3,
+      "agencyId": "valleymetro",
+      "agencyName": "Valley Metro (Phoenix)",
+      "country": "United States",
+      "region": "Arizona",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.valleymetro.org/maps-schedules?tab=local-bus",
+          "sourceType": "system_map",
+          "localFile": null
+        },
+        {
+          "url": "https://www.chandleraz.gov/sites/default/files/departments/transportation/2024-Valley-Metro-System-Map.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [
+        "valleymetro-1"
+      ],
+      "definitions": [
+        {
+          "id": "frequent-weekday",
+          "label": "Frequent Service",
+          "thresholdMinutes": 15,
+          "thresholdText": "every 15 minutes or better from at least 6 a.m. to 6 p.m. on weekdays",
+          "representative": true,
+          "sourceType": "system_map",
+          "sourceUrl": "https://vulcan-production.nyc3.cdn.digitaloceanspaces.com/pages/downloads/maps-schedules/system-map/25oct/2_val_msys_frequent_250912.pdf",
+          "localFile": "valleymetro-1",
+          "mapPageOrSection": "map legend",
+          "exactWording": "Every 15 minutes or better from at least 6 a.m. to 6 p.m. on weekdays.",
+          "evidenceNotes": "The preserved official Valley Metro Frequent Service Map names Frequent Service and states the weekday threshold. A second official system-map PDF was also checked for context; the dedicated frequent map was used as the representative source."
+        }
+      ],
+      "representativeThresholdMinutes": 15,
+      "mapDate": null,
+      "mapPageOrSection": "map legend",
+      "exactMapWording": "Every 15 minutes or better from at least 6 a.m. to 6 p.m. on weekdays.",
+      "thresholdMinutes": 15,
+      "thresholdText": "every 15 minutes or better from at least 6 a.m. to 6 p.m. on weekdays",
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The preserved official Valley Metro Frequent Service Map names Frequent Service and states the weekday threshold. A second official system-map PDF was also checked for context; the dedicated frequent map was used as the representative source.",
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://vulcan-production.nyc3.cdn.digitaloceanspaces.com/pages/downloads/maps-schedules/system-map/25oct/2_val_msys_frequent_250912.pdf",
+          "sourceType": "system_map",
+          "localFile": "valleymetro-1"
+        }
+      ]
+    },
+    {
+      "auditOrder": 105,
+      "reviewBatch": 3,
+      "agencyId": "ycat",
+      "agencyName": "Yuma County Area Transit (YCAT)",
+      "country": "United States",
+      "region": "Arizona",
+      "status": "map_unavailable",
+      "mapCandidates": [
+        {
+          "url": "https://www.ycipta.org/system-map.html",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official system-map URL returned 404. The official route and rider pages were checked as leads, but no current official system map with a frequent definition was verified.",
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.ycipta.org/system-map.html",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 106,
+      "reviewBatch": 3,
+      "agencyId": "fort-smith",
+      "agencyName": "City of Fort Smith",
+      "country": "United States",
+      "region": "Arkansas",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were reviewed as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, and planning documents were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://www.fortsmithar.gov/resident-services/transportation-and-mobility/transit-overview-bus-bike-walk-or-ride/transit-routes-schedules-copy",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 107,
+      "reviewBatch": 3,
+      "agencyId": "rockregion",
+      "agencyName": "Rock Region Metro (Little Rock)",
+      "country": "United States",
+      "region": "Arkansas",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were reviewed as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, and planning documents were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://rrmetro.org/bus-schedules/",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 108,
+      "reviewBatch": 3,
+      "agencyId": "actransit",
+      "agencyName": "Alameda-Contra Costa Transit District (AC Transit)",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were reviewed as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, and planning documents were not used to infer one.",
+      "evidenceSourceType": "service_guidelines",
+      "reviewSources": [
+        {
+          "url": "https://www.actransit.org/planning/service-reliability-standards",
+          "sourceType": "service_guidelines",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 109,
+      "reviewBatch": 3,
+      "agencyId": "ace",
+      "agencyName": "Altamont Corridor Express",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were reviewed as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, and planning documents were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://511.org/travel/transit/agencies/altamont-corridor-express-ace",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 110,
+      "reviewBatch": 3,
+      "agencyId": "avta",
+      "agencyName": "Antelope Valley Transit Authority (AVTA)",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were reviewed as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, and planning documents were not used to infer one.",
+      "evidenceSourceType": "planning_document",
+      "reviewSources": [
+        {
+          "url": "https://www.avta.com/userfiles/files/Strategic_Plan_for_Integrated_Transportation_in_the_Antelope_Valley_120820.pdf",
+          "sourceType": "planning_document",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 111,
+      "reviewBatch": 3,
+      "agencyId": "arvin",
+      "agencyName": "Arvin Transit",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were reviewed as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, and planning documents were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://arvin.org/242/Bus-Schedule",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 112,
+      "reviewBatch": 3,
+      "agencyId": "banning",
+      "agencyName": "Banning Connect",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were reviewed as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, and planning documents were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://www.ci.banning.ca.us/351/Bus-Schedules",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 113,
+      "reviewBatch": 3,
+      "agencyId": "basin-transit",
+      "agencyName": "Basin Transit",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were reviewed as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, and planning documents were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://basintransit.ca.gov/",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 114,
+      "reviewBatch": 3,
+      "agencyId": "beaumont-ca",
+      "agencyName": "Beaumont Transit",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were reviewed as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, and planning documents were not used to infer one.",
+      "evidenceSourceType": "planning_document",
+      "reviewSources": [
+        {
+          "url": "https://www.beaumontca.gov/1426/Short-Range-Transit-Plan",
+          "sourceType": "planning_document",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 115,
+      "reviewBatch": 3,
+      "agencyId": "bigbluebus",
+      "agencyName": "Big Blue Bus (Santa Monica)",
+      "country": "United States",
+      "region": "California",
+      "status": "numeric_definition_on_official_page",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [
+        {
+          "id": "high-frequency",
+          "label": "high-frequency routes",
+          "thresholdMinutes": 15,
+          "thresholdText": "every 15 minutes or better most of the day",
+          "representative": true,
+          "sourceType": "official_frequent_network_page",
+          "sourceUrl": "https://www.santamonica.gov/blog/big-blue-bus-provides-10-million-rides-for-the-second-consecutive-year",
+          "localFile": null,
+          "mapPageOrSection": "service description",
+          "exactWording": "More frequent service with the introduction of Big Blue Bus’s network of high-frequency routes, which offer service every 15 minutes or better most of the day.",
+          "evidenceNotes": "The official City of Santa Monica rider-facing announcement names Big Blue Bus high-frequency routes and gives a numeric threshold. No current system-map threshold was verified, so the source is recorded as an official page rather than a map."
+        }
+      ],
+      "representativeThresholdMinutes": 15,
+      "mapDate": null,
+      "mapPageOrSection": "service description",
+      "exactMapWording": "More frequent service with the introduction of Big Blue Bus’s network of high-frequency routes, which offer service every 15 minutes or better most of the day.",
+      "thresholdMinutes": 15,
+      "thresholdText": "every 15 minutes or better most of the day",
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The official City of Santa Monica rider-facing announcement names Big Blue Bus high-frequency routes and gives a numeric threshold. No current system-map threshold was verified, so the source is recorded as an official page rather than a map.",
+      "evidenceSourceType": "official_frequent_network_page",
+      "reviewSources": [
+        {
+          "url": "https://www.santamonica.gov/blog/big-blue-bus-provides-10-million-rides-for-the-second-consecutive-year",
+          "sourceType": "official_frequent_network_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 116,
+      "reviewBatch": 3,
+      "agencyId": "burbankbus",
+      "agencyName": "BurbankBus",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were reviewed as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, and planning documents were not used to infer one.",
+      "evidenceSourceType": "service_guidelines",
+      "reviewSources": [
+        {
+          "url": "https://www.burbankca.gov/documents/d/guest/2025_titlevi_program_update",
+          "sourceType": "service_guidelines",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 117,
+      "reviewBatch": 3,
+      "agencyId": "caltrain",
+      "agencyName": "Caltrain",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were reviewed as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, and planning documents were not used to infer one.",
+      "evidenceSourceType": "service_guidelines",
+      "reviewSources": [
+        {
+          "url": "https://www.caltrain.com/media/36848/download",
+          "sourceType": "service_guidelines",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 118,
+      "reviewBatch": 3,
+      "agencyId": "camarillo",
+      "agencyName": "Camarillo Area Transit",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were reviewed as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, and planning documents were not used to infer one.",
+      "evidenceSourceType": "service_guidelines",
+      "reviewSources": [
+        {
+          "url": "https://www.cityofcamarillo.org/Title%20VI%20Plan%202024.pdf",
+          "sourceType": "service_guidelines",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 119,
+      "reviewBatch": 3,
+      "agencyId": "vacaville",
+      "agencyName": "City Coach (Vacaville)",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were reviewed as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, and planning documents were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://citycoach.com/find-your-route/",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 120,
+      "reviewBatch": 3,
+      "agencyId": "slotransit",
+      "agencyName": "City of San Luis Obispo Transit",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were reviewed as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, and planning documents were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://www.slocity.org/government/department-directory/public-works/slo-transit-bus",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 121,
+      "reviewBatch": 3,
+      "agencyId": "corona",
+      "agencyName": "Corona Cruiser",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were reviewed as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, and planning documents were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://www.coronaca.gov/government/departments-divisions/public-works/public-transit/corona-cruiser?agency_id=43&intent=info",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 122,
+      "reviewBatch": 3,
+      "agencyId": "countyconnection",
+      "agencyName": "County Connection (CCCTA)",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were reviewed as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, and planning documents were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://countyconnection.com/routes/",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 123,
+      "reviewBatch": 3,
+      "agencyId": "culvercitybus",
+      "agencyName": "Culver City Bus",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were reviewed as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, and planning documents were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://www.culvercitybus.com/Maps-and-Schedules",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 124,
+      "reviewBatch": 3,
+      "agencyId": "elmonte",
+      "agencyName": "El Monte Transit",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were reviewed as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, and planning documents were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://www.elmonteca.gov/327/Trolleys",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 125,
+      "reviewBatch": 3,
+      "agencyId": "emerygoround",
+      "agencyName": "Emery Go-Round",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were reviewed as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, and planning documents were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://emerygoround.com/standard-service/",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 126,
+      "reviewBatch": 3,
+      "agencyId": "fast-ca",
+      "agencyName": "Fairfield and Suisun Transit (FAST Transit)",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were reviewed as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, and planning documents were not used to infer one.",
+      "evidenceSourceType": "service_guidelines",
+      "reviewSources": [
+        {
+          "url": "https://fasttransit.org/info-policies/system-description/",
+          "sourceType": "service_guidelines",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 127,
+      "reviewBatch": 3,
+      "agencyId": "foothill",
+      "agencyName": "Foothill Transit",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were reviewed as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, and planning documents were not used to infer one.",
+      "evidenceSourceType": "service_guidelines",
+      "reviewSources": [
+        {
+          "url": "https://www.foothilltransit.org/sites/default/files/2024-10/10-25-2024%20Executive%20Board%20Meeting%20Agenda.pdf",
+          "sourceType": "service_guidelines",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 128,
+      "reviewBatch": 3,
+      "agencyId": "fax",
+      "agencyName": "Fresno Area Express (FAX)",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [
+        {
+          "url": "https://www.fresno.gov/wp-content/uploads/2023/08/COMPLETE-SCHEDULE-GUIDE-FINAL-8-23-SPANISH.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official schedule-guide PDF and service page were inaccessible during review. No current official system map with a frequent definition was verified.",
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.fresno.gov/wp-content/uploads/2023/08/COMPLETE-SCHEDULE-GUIDE-FINAL-8-23-SPANISH.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 129,
+      "reviewBatch": 3,
+      "agencyId": "glendalebeeline",
+      "agencyName": "Glendale Beeline",
+      "country": "United States",
+      "region": "California",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.glendaletransit.com/tools/system-map/",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": "official system-map page",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The official Glendale Beeline system-map page was reviewed. It provides the network map and route information but does not name a frequent/high-frequency definition.",
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.glendaletransit.com/tools/system-map/",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 130,
+      "reviewBatch": 3,
+      "agencyId": "get",
+      "agencyName": "Golden Empire Transit District (GET)",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were reviewed as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, and planning documents were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://www.getbus.org/",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 131,
+      "reviewBatch": 3,
+      "agencyId": "goldengate",
+      "agencyName": "Golden Gate Transit",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were reviewed as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, and planning documents were not used to infer one.",
+      "evidenceSourceType": "planning_document",
+      "reviewSources": [
+        {
+          "url": "https://www.mtc.ca.gov/planning/transportation/regional-transportation-studies/marin-sonoma-coordinated-transit-service-plan-mascots",
+          "sourceType": "planning_document",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 132,
+      "reviewBatch": 3,
+      "agencyId": "gtrans",
+      "agencyName": "GTrans (Gardena Municipal Bus Lines)",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were reviewed as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, and planning documents were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://cityofgardena.org/department-services/",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 133,
+      "reviewBatch": 3,
+      "agencyId": "humboldt",
+      "agencyName": "Humboldt Transit Authority",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were reviewed as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, and planning documents were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://hta.org/",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 134,
+      "reviewBatch": 3,
+      "agencyId": "imperial-valley",
+      "agencyName": "Imperial Valley Transit",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were reviewed as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, and planning documents were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://www.ivtransit.com/",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 135,
+      "reviewBatch": 3,
+      "agencyId": "kern-transit",
+      "agencyName": "Kern Transit",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were reviewed as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, and planning documents were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://kerntransit.org/",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 136,
+      "reviewBatch": 3,
+      "agencyId": "kart",
+      "agencyName": "Kings Area Rural Transit",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were reviewed as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, and planning documents were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://www.kartbus.org/about/",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 137,
+      "reviewBatch": 3,
+      "agencyId": "laguna-beach",
+      "agencyName": "Laguna Beach Transit",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were reviewed as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, and planning documents were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://www.lagunabeachcity.net/live-here/parking-and-transportation/trolleys/",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 138,
+      "reviewBatch": 3,
+      "agencyId": "lassen",
+      "agencyName": "Lassen Rural Bus (LRB)",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were reviewed as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, and planning documents were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://www.lassencares.org/transportation",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 139,
+      "reviewBatch": 3,
+      "agencyId": "lavta",
+      "agencyName": "Livermore Amador Valley Transit Authority",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were reviewed as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, and planning documents were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://www.wheelsbus.com/routes-and-schedules/",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 140,
+      "reviewBatch": 3,
+      "agencyId": "longbeach",
+      "agencyName": "Long Beach Transit",
+      "country": "United States",
+      "region": "California",
+      "status": "qualitative_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://ridelbt.com/wp-content/uploads/2025/02/LBT_SystemMap_Freestanding.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [
+        "longbeach-1"
+      ],
+      "definitions": [
+        {
+          "id": "frequent-lines",
+          "label": "Frequent service",
+          "thresholdMinutes": null,
+          "thresholdText": null,
+          "representative": true,
+          "sourceType": "system_map",
+          "sourceUrl": "https://ridelbt.com/wp-content/uploads/2025/02/LBT_SystemMap_Freestanding.pdf",
+          "localFile": "longbeach-1",
+          "mapPageOrSection": "map legend",
+          "exactWording": "Heavier lines indicate frequent service. Lighter lines indicate less frequent service and route variations.",
+          "evidenceNotes": "The preserved official Long Beach Transit system map distinguishes heavier lines as frequent service but does not publish a numeric threshold."
+        }
+      ],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": "map legend",
+      "exactMapWording": "Heavier lines indicate frequent service. Lighter lines indicate less frequent service and route variations.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The preserved official Long Beach Transit system map distinguishes heavier lines as frequent service but does not publish a numeric threshold.",
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://ridelbt.com/wp-content/uploads/2025/02/LBT_SystemMap_Freestanding.pdf",
+          "sourceType": "system_map",
+          "localFile": "longbeach-1"
+        }
+      ]
+    },
+    {
+      "auditOrder": 141,
+      "reviewBatch": 3,
+      "agencyId": "ladot",
+      "agencyName": "Los Angeles Department of Transportation (LADOT/DASH)",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [
+        {
+          "url": "https://www.ladottransit.com/dashmap/",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official DASH map and service page were blocked by the site during review. No current official system map with a frequent definition was verified.",
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.ladottransit.com/dashmap/",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 142,
+      "reviewBatch": 3,
+      "agencyId": "marintransit",
+      "agencyName": "Marin Transit",
+      "country": "United States",
+      "region": "California",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://marintransit.gov/brochures",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [
+        "marintransit-1"
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": "system map",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The current official Marin Transit system map was preserved and reviewed. It shows the network but does not name a frequent/high-frequency definition.",
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://marintransit.gov/sites/default/files/2026-09/Marin%20System%20Map_April%202026.pdf",
+          "sourceType": "system_map",
+          "localFile": "marintransit-1"
+        }
+      ]
+    },
+    {
+      "auditOrder": 143,
+      "reviewBatch": 3,
+      "agencyId": "mendocino",
+      "agencyName": "Mendocino Transit Authority",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were reviewed as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, and planning documents were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://mendocinotransit.org/maps-and-schedules/",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 144,
+      "reviewBatch": 3,
+      "agencyId": "merced",
+      "agencyName": "Merced County Transit (The Bus)",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were reviewed as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, and planning documents were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://www.mercedthebus.com/128/Bus-Routes-Schedules",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 145,
+      "reviewBatch": 3,
+      "agencyId": "metrolink",
+      "agencyName": "Metrolink",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [
+        {
+          "url": "https://metrolinktrains.com/rider-info/general-info/how-to-ride/",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The official rider page was reviewed, but it did not expose a current system-map file that could be verified as a frequent-service definition. No numeric or qualitative frequent definition was inferred from schedules.",
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://metrolinktrains.com/rider-info/general-info/how-to-ride/",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 146,
+      "reviewBatch": 3,
+      "agencyId": "modesto",
+      "agencyName": "Modesto Area Express",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were reviewed as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, and planning documents were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://www.stanrta.org/155/History-of-StanRTA",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 147,
+      "reviewBatch": 3,
+      "agencyId": "montebello",
+      "agencyName": "Montebello Bus Lines",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were reviewed as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, and planning documents were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://www.montebelloca.gov/departments/transit/maps_schedules",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 148,
+      "reviewBatch": 3,
+      "agencyId": "mst",
+      "agencyName": "Monterey-Salinas Transit (MST)",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were reviewed as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, and planning documents were not used to infer one.",
+      "evidenceSourceType": "service_guidelines",
+      "reviewSources": [
+        {
+          "url": "https://www.mst.org/wp-content/media/SRTP2006-2.pdf",
+          "sourceType": "service_guidelines",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 149,
+      "reviewBatch": 3,
+      "agencyId": "moorpark",
+      "agencyName": "Moorpark City Transit",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were reviewed as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, and planning documents were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://www.moorparkca.gov/223/Transportation",
+          "sourceType": "route_service_page",
+          "localFile": null
+        }
+      ]
+    },
+    {
+      "auditOrder": 150,
+      "reviewBatch": 3,
+      "agencyId": "mountain-transit-ca",
+      "agencyName": "Mountain Transit (Big Bear Lake)",
+      "country": "United States",
+      "region": "California",
+      "status": "map_unavailable",
+      "mapCandidates": [],
+      "preservedFiles": [],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "mapDate": null,
+      "mapPageOrSection": null,
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The catalogued official sources were reviewed as leads. No current official system map with a named frequent/high-frequency definition was verified; schedules, route pages, and planning documents were not used to infer one.",
+      "evidenceSourceType": "route_service_page",
+      "reviewSources": [
+        {
+          "url": "https://www.mountaintransit.org/",
+          "sourceType": "route_service_page",
           "localFile": null
         }
       ]

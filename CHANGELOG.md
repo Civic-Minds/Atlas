@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Expanded the Frequent Service research audit to 150 agencies while preserving representative and secondary frequency tiers.
 - Added an experimental agency dot plot to compare map-published frequency thresholds by service geography.
 - Expanded the Frequent Service research audit to 100 agencies and counts each agency’s representative frequent-service tier while retaining secondary tiers for context.
 - Kept the story map pinned while switching the final 15- and 30-minute comparisons so the network does not jump with the scroll position.
