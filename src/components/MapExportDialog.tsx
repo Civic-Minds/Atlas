@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { Download, X } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Download, Share2, X } from 'lucide-react';
 import { FLOATING_CARD, Z_MODAL_BG, Z_MODAL_TOP } from '../styles';
-import { createMapExport, downloadMapExport } from '../utils/mapExport';
+import { canShareMapExport, createMapExport, downloadMapExport, shareMapExport } from '../utils/mapExport';
 
 interface Props {
   open: boolean;
@@ -14,18 +14,28 @@ interface Props {
 export default function MapExportDialog({ open, source, defaultTitle, lightMode, onClose }: Props) {
   const [exporting, setExporting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [shareSupported, setShareSupported] = useState(false);
+
+  useEffect(() => {
+    if (open) setShareSupported(canShareMapExport());
+  }, [open]);
 
   if (!open) return null;
 
-  const handleExport = async () => {
+  const handleExport = async (mode: 'download' | 'share') => {
     if (!source || exporting) return;
     setExporting(true);
     setError(null);
     try {
       const blob = await createMapExport({ source, title: defaultTitle, lightMode });
-      downloadMapExport(blob, defaultTitle);
+      if (mode === 'share') {
+        await shareMapExport(blob, defaultTitle);
+      } else {
+        downloadMapExport(blob, defaultTitle);
+      }
       onClose();
-    } catch {
+    } catch (shareError) {
+      if (shareError instanceof DOMException && shareError.name === 'AbortError') return;
       setError('The map was not ready. Try again in a moment.');
     } finally {
       setExporting(false);
@@ -58,13 +68,24 @@ export default function MapExportDialog({ open, source, defaultTitle, lightMode,
           <button type="button" onClick={onClose} className="rounded-full px-3 py-2 text-xs font-bold text-[var(--text-muted)] hover:bg-[var(--bg-btn-hover)]">Cancel</button>
           <button
             type="button"
-            onClick={() => void handleExport()}
+            onClick={() => void handleExport('download')}
             disabled={!source || exporting}
             className="flex items-center gap-1.5 rounded-full bg-[var(--accent)] px-3.5 py-2 text-xs font-black text-white disabled:cursor-not-allowed disabled:opacity-50"
           >
             <Download className="h-3.5 w-3.5" />
             {exporting ? 'Preparing…' : 'Download PNG'}
           </button>
+          {shareSupported && (
+            <button
+              type="button"
+              onClick={() => void handleExport('share')}
+              disabled={!source || exporting}
+              className="flex items-center gap-1.5 rounded-full border border-[var(--border-primary)] px-3.5 py-2 text-xs font-black text-[var(--text-primary)] hover:bg-[var(--bg-btn-hover)] disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <Share2 className="h-3.5 w-3.5" />
+              Share image
+            </button>
+          )}
         </div>
       </div>
     </div>
