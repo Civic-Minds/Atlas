@@ -119,7 +119,7 @@ export default function FrequentServiceStoryMap({ agencies, stage, frequencyMinu
           </>}
         </div>
       </div>
-      <figcaption className="flex flex-wrap items-center justify-between gap-2 px-5 py-4 text-xs text-[var(--text-muted)]">
+      <figcaption className="flex flex-wrap items-center justify-between gap-2 px-5 pb-6 pt-4 text-xs text-[var(--text-muted)]">
         <span>{researchRecord.agencyName}</span>
         <span>{stage === 0 ? 'All route patterns' : stage === 1 ? 'Rush-hour-only patterns removed' : stage === 2 ? 'Routes with sustained daytime service' : `Weekday daytime · every ${frequencyMinutes} minutes or better`}</span>
       </figcaption>

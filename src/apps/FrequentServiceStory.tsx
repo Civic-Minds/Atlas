@@ -48,10 +48,9 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
           <p className="text-[0.7rem] uppercase tracking-[0.24em] font-black text-[var(--accent)]">Atlas research</p>
           <h1 className="mt-5 text-4xl sm:text-6xl font-black tracking-[-0.045em] leading-[0.98]">What does “frequent” actually mean?</h1>
           <div className="mx-auto mt-6 max-w-2xl space-y-4 text-left text-base leading-8 text-[var(--text-muted)] sm:text-lg">
-            <p>Most people do not use a transit map just to see where lines exist. They use it to decide whether they can get to work, school, an appointment, or home without waiting forever.</p>
-            <p>Every city draws its network differently. Some maps are dense with lines; others make a small number of routes look important. Looking across those maps is a useful starting point—but the lines alone do not tell us what service a rider can actually rely on.</p>
-            <p>A line does not tell you whether the next bus is coming in five minutes or thirty, or what happens if you miss a connection. Frequent, reliable service gives people more freedom to travel without planning their day around a timetable.</p>
-            <p>Atlas reviewed official transit maps and service definitions from {frequentServiceStoryStats.agenciesReviewed} agencies to compare what “frequent” means in practice.</p>
+            <p>A transit line can be on the map and still leave you waiting.</p>
+            <p>Maps show where a route goes. Riders also need to know whether the next vehicle is five minutes away or thirty—and whether missing it changes the whole trip.</p>
+            <p>“Frequent” is supposed to help answer that question, but the word changes by city: 10 minutes in one place, 30 in another, or only during rush hour. We reviewed official transit maps from {frequentServiceStoryStats.agenciesReviewed} agencies to see what those promises actually mean.</p>
           </div>
           <div className="w-full max-w-5xl text-left">
             <FrequentServicePublishedMapMontage />
@@ -63,7 +62,7 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
         </header>
 
         <section aria-labelledby="network-story-heading" className="relative left-1/2 mt-24 w-screen -translate-x-1/2 px-2 sm:mt-32 sm:px-3">
-          <div className="relative min-w-0 pb-[55vh]">
+          <div className="relative min-w-0 pb-[12vh]">
             <div className="min-w-0 lg:sticky lg:top-24">
               <FrequentServiceStoryMap agencies={agencies} stage={storyStage} frequencyMinutes={frequencyMinutes} researchRecord={frequentServiceStoryResearchRecord} />
             </div>
