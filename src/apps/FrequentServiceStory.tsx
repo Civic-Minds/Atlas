@@ -64,7 +64,7 @@ export default function FrequentServiceStory({ onExploreMap }: Props) {
         </header>
 
         <div id="story" className="mx-auto mt-24 max-w-4xl space-y-24 sm:mt-32 sm:space-y-32">
-          <section aria-labelledby="why-heading" className="mx-auto max-w-3xl">
+          <section aria-labelledby="why-heading" className="mx-auto w-full max-w-[48rem]">
             <div>
               <h2 id="why-heading" className="text-3xl sm:text-4xl font-black tracking-tight">A line on a map is not a promise.</h2>
               <p className="mt-5 text-base leading-8 text-[var(--text-muted)]">
@@ -135,7 +135,7 @@ export default function FrequentServiceStory({ onExploreMap }: Props) {
             </div>
           </section>
 
-          <section aria-labelledby="more-heading" className="mx-auto max-w-3xl">
+          <section aria-labelledby="more-heading" className="mx-auto w-full max-w-[48rem]">
             <div>
               <h2 id="more-heading" className="text-3xl sm:text-4xl font-black tracking-tight">The number is only the beginning.</h2>
               <p className="mt-5 text-base leading-8 text-[var(--text-muted)]">A frequency threshold is attached to a span, a set of days, and a geography. It may describe a route, a corridor, a network, or a product that combines modes. A 15-minute route that stops at 6pm is a different promise from a 15-minute corridor that runs into the evening. That is why we track three things together: headway, service span, and geography.</p>
@@ -157,7 +157,7 @@ export default function FrequentServiceStory({ onExploreMap }: Props) {
           </section>
 
           <footer className="border-t border-[var(--border-primary)] pt-10">
-            <div className="max-w-3xl">
+            <div className="w-full max-w-[48rem]">
               <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-[var(--text-primary)]">How we did this</h2>
               <div className="mt-5 space-y-5 text-sm sm:text-base leading-7 sm:leading-8 text-[var(--text-muted)]">
                 <p><strong className="text-[var(--text-primary)]">Sample.</strong> We reviewed {frequentServiceStoryStats.agenciesReviewed} agencies between {frequentServiceStoryStats.reviewedAt}: {frequentServiceStoryStats.countryCounts.map(item => `${item.agencies} in ${item.country}`).join(', ')}. Of those, {frequentServiceStoryStats.categoryCounts.numericDefinition} published at least one numeric frequency tier, while {frequentServiceStoryStats.categoryCounts.noDefinitionFound} had no named definition located in the reviewed material.</p>
