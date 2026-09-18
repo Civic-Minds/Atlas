@@ -11,6 +11,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Removed the separate agency example tabs; agency examples will be shown through map states instead.
 - Moved the sticky research map below the global header so it no longer overlaps the Atlas branding.
 - Removed the extra published-definition label from the story map card.
+- Made the research page header opaque so scrolling text cannot show through it.
 - Matched the research Method section to the story’s readable content width.
 - Rebalanced the story map layout so the explanatory copy stays visible beside the map at narrower desktop widths.
 - Expanded the Frequent Service research audit to 150 agencies while preserving representative and secondary frequency tiers.
