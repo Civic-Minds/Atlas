@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+
+- Night Service route rows now open the normal route card and highlight the selected route on the map.
 - Combined BART’s north/south directional variants into one suggested route per line.
 
 - Repointed Avon Transit to its official 2026 GTFS source so the next refresh can restore current service dates.

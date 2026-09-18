@@ -50,6 +50,8 @@ interface Props {
   onAgencyCardClose?: () => void;
   pendingLiveRoute?: { slug: string; routeShortName: string } | null;
   onPendingLiveRouteHandled?: () => void;
+  pendingNightRoute?: { slug: string; routeId: string } | null;
+  onPendingNightRouteHandled?: () => void;
   searchFocused?: boolean;
   setSearchFocused?: (focused: boolean) => void;
   hideFilterPanel?: boolean;
@@ -94,7 +96,7 @@ function readSavedAgenciesOff(): Set<string> {
   }
 }
 
-export default function Interval({ agencies, allAgencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, filterToAgencies = false, onHistoryRouteClick, onDirectFromStop, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, onSelectedMapAgencyChange, onSelectionActiveChange, headerPortalContainer, fareView = false, nightServiceView = false, frequentServiceView = false, frequentServiceDays = ['Weekday'], frequentServiceFrequency = 15, frequentServiceWindow = 'daytime', setFrequentServiceDays, setFrequentServiceFrequency, setFrequentServiceWindow, showMapContext = false, showMatchPercentage = false, sidebarLeft, searchBarWidth, searchEnterRef, hideLowQuality, setHideLowQuality, feedQualityEnabled = false, showMapLegend, setShowMapLegend, exportEnabled = false, exportTitle = 'Transit map' }: Props) {
+export default function Interval({ agencies, allAgencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, filterToAgencies = false, onHistoryRouteClick, onDirectFromStop, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, pendingNightRoute, onPendingNightRouteHandled, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, onSelectedMapAgencyChange, onSelectionActiveChange, headerPortalContainer, fareView = false, nightServiceView = false, frequentServiceView = false, frequentServiceDays = ['Weekday'], frequentServiceFrequency = 15, frequentServiceWindow = 'daytime', setFrequentServiceDays, setFrequentServiceFrequency, setFrequentServiceWindow, showMapContext = false, showMatchPercentage = false, sidebarLeft, searchBarWidth, searchEnterRef, hideLowQuality, setHideLowQuality, feedQualityEnabled = false, showMapLegend, setShowMapLegend, exportEnabled = false, exportTitle = 'Transit map' }: Props) {
   const [searchParams] = useSearchParams();
   const [mapContextOpen, setMapContextOpen] = useState(false);
   const [mapContextView, setMapContextView] = useState<'agencies' | 'routes'>('routes');
@@ -408,6 +410,24 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     }
     onPendingLiveRouteHandled?.();
   }, [pendingLiveRoute, layers, day]);
+
+  const prevPendingNightRoute = useRef<typeof pendingNightRoute>(null);
+  useEffect(() => {
+    if (!pendingNightRoute) return;
+    const fc = layers[pendingNightRoute.slug];
+    if (!fc) return;
+    if (pendingNightRoute === prevPendingNightRoute.current) return;
+    prevPendingNightRoute.current = pendingNightRoute;
+    const found = fc.features.find(f => {
+      const p = f.properties as any;
+      return p.routeId === pendingNightRoute.routeId && p.nightService === true;
+    });
+    if (found) {
+      const p = found.properties as any;
+      setSelectedRoute(routeKey({ ...p, agencySlug: p.agencySlug ?? pendingNightRoute.slug } as ShapeProperties));
+    }
+    onPendingNightRouteHandled?.();
+  }, [pendingNightRoute, layers, onPendingNightRouteHandled]);
 
   // Clear map selection states when switching away from the Frequency app
   useEffect(() => {

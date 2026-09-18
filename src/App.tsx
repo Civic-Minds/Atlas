@@ -188,6 +188,7 @@ export default function App() {
   const [selectedAgencySlug, setSelectedAgencySlug] = useState<string | null>(null);
   const [selectedMapAgencySlug, setSelectedMapAgencySlug] = useState<string | null>(null);
   const [pendingLiveRoute, setPendingLiveRoute] = useState<{ slug: string; routeShortName: string } | null>(null);
+  const [pendingNightRoute, setPendingNightRoute] = useState<{ slug: string; routeId: string } | null>(null);
   const [pendingHistoryRoute, setPendingHistoryRoute] = useState<{ slug: string; routeShortName: string } | null>(null);
   const [headerPortalEl, setHeaderPortalEl] = useState<Element | null>(null);
   const headerPortalRef = useCallback((el: HTMLDivElement | null) => { setHeaderPortalEl(el); }, []);
@@ -203,9 +204,11 @@ export default function App() {
     closeInfo();
   }, [closeInfo]);
   const handleLiveRouteClick = useCallback((slug: string, routeShortName: string) => { setPendingLiveRoute({ slug, routeShortName }); closeInfo(); }, [closeInfo]);
+  const handleNightRouteClick = useCallback((slug: string, routeId: string) => { setPendingNightRoute({ slug, routeId }); closeInfo(); }, [closeInfo]);
   const handleHistoryRouteClick = useCallback((slug: string, routeShortName: string) => { setPendingHistoryRoute({ slug, routeShortName }); }, []);
   const handleAgencyCardClose = useCallback(() => setSelectedAgencySlug(null), []);
   const handlePendingHandled = useCallback(() => setPendingLiveRoute(null), []);
+  const handleNightPendingHandled = useCallback(() => setPendingNightRoute(null), []);
   const [lightMode, setLightMode] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('theme') !== 'dark';
@@ -606,7 +609,7 @@ export default function App() {
               onStatsChange={setStats}
               resetViewKey={resetViewKey}
               showUi={inFrequency}
-              showSelectionUi={inLive}
+              showSelectionUi={inLive || inNight}
               showRouteLayers={inFrequency || inLive || inHistory || inFares || inCorridors || inNight || inFrequentService}
               liveRoutesOnly={inLive}
               fareView={inFares}
@@ -632,6 +635,8 @@ export default function App() {
               onAgencyCardClose={handleAgencyCardClose}
               pendingLiveRoute={pendingLiveRoute}
               onPendingLiveRouteHandled={handlePendingHandled}
+              pendingNightRoute={pendingNightRoute}
+              onPendingNightRouteHandled={handleNightPendingHandled}
               searchFocused={searchFocused}
               setSearchFocused={setSearchFocused}
               day={day}
@@ -666,7 +671,7 @@ export default function App() {
             )}
             {BETA_BUILD && (
               <React.Suspense fallback={null}>
-                <NightService active={inNight} sidebarLeft={sidebarLeft} layers={layers} query={deferredQuery} />
+                <NightService active={inNight} sidebarLeft={sidebarLeft} layers={layers} query={deferredQuery} onRouteSelect={handleNightRouteClick} />
               </React.Suspense>
             )}
             {LIVE_ENABLED && liveMounted && (
