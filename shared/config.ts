@@ -44,7 +44,7 @@ export const BETA_R2_PUBLIC_URL = getBetaR2PublicUrl().replace(/\/$/, '');
 // Live and History cover a tiny sliver of agencies with no scaling plan yet (Ryan, 2026-07-29) --
 // off by default until that's resolved. Env-driven rather than a hardcoded constant so production
 // and beta can build the same main commit with different feature exposure.
-function envFlag(name: 'VITE_LIVE_ENABLED' | 'VITE_HISTORY_ENABLED' | 'VITE_CORRIDORS_ENABLED' | 'VITE_BETA_BUILD' | 'VITE_CARD_CLICK_TO_FLAG_ENABLED' | 'VITE_DIAGNOSTICS_ENABLED' | 'VITE_UNEVEN_BANNER_ENABLED'): boolean {
+function envFlag(name: 'VITE_LIVE_ENABLED' | 'VITE_HISTORY_ENABLED' | 'VITE_CORRIDORS_ENABLED' | 'VITE_BETA_BUILD' | 'VITE_CARD_CLICK_TO_FLAG_ENABLED' | 'VITE_DIAGNOSTICS_ENABLED' | 'VITE_UNEVEN_BANNER_ENABLED' | 'VITE_MAP_EXPORT_ENABLED'): boolean {
   // @ts-ignore
   return typeof import.meta !== 'undefined' && import.meta?.env?.[name] === 'true';
 }
@@ -66,6 +66,9 @@ export const UNEVEN_BANNER_ENABLED = envFlag('VITE_UNEVEN_BANNER_ENABLED');
 // Same env-driven pattern as the flags above. Distinguishes the beta deployment in the browser
 // tab title so it doesn't look identical to production.
 export const BETA_BUILD = envFlag('VITE_BETA_BUILD');
+// Public map-image export starts on beta so the browser-rendered output can be checked before
+// exposing it on production. Set VITE_MAP_EXPORT_ENABLED to graduate it independently of beta.
+export const MAP_EXPORT_ENABLED = BETA_BUILD || envFlag('VITE_MAP_EXPORT_ENABLED');
 
 /**
  * Derive the public URLs for an agency's processed artifacts.
