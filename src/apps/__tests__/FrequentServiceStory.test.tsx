@@ -11,10 +11,7 @@ describe('FrequentServiceStory', () => {
     render(<FrequentServiceStory agencies={agencies} onExploreMap={() => {}} />);
     expect(screen.getByRole('heading', { name: 'What does “frequent” actually mean?' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'There is no single “frequent.”' })).toBeInTheDocument();
-    expect(screen.getByRole('tab', { name: 'Vancouver' })).toBeInTheDocument();
-    expect(screen.getByText('TransLink Vancouver')).toBeInTheDocument();
-    expect(screen.getByRole('tab', { name: 'Salt Lake City' })).toBeInTheDocument();
-    expect(screen.queryByRole('tab', { name: 'Winnipeg' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('tab')).not.toBeInTheDocument();
     expect(screen.getByText(/representative frequent-service tier/)).toBeInTheDocument();
   });
 
@@ -25,12 +22,12 @@ describe('FrequentServiceStory', () => {
     expect(onExploreMap).toHaveBeenCalledOnce();
   });
 
-  it('changes the examples when a chart threshold is selected', () => {
+  it('changes the selected threshold without rendering agency tabs', () => {
     render(<FrequentServiceStory agencies={agencies} onExploreMap={() => {}} />);
-    fireEvent.click(screen.getByRole('button', { name: /Show examples for 10-minute service/ }));
-    expect(screen.getByRole('tab', { name: 'Toronto' })).toBeInTheDocument();
-    expect(screen.queryAllByText('Toronto Transit Commission')).not.toHaveLength(0);
-    expect(screen.queryByRole('tab', { name: 'Yellowknife' })).not.toBeInTheDocument();
+    const tenMinuteButton = screen.getByRole('button', { name: /Show examples for 10-minute service/ });
+    fireEvent.click(tenMinuteButton);
+    expect(screen.queryByRole('tab')).not.toBeInTheDocument();
+    expect(tenMinuteButton).toHaveAttribute('aria-pressed', 'true');
   });
 
   it('keeps the story chart aligned with exact numeric system-map evidence', () => {

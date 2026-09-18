@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { ArrowDown, ArrowRight, MapPinned } from 'lucide-react';
 import { trackEvent } from '../lib/analytics';
-import { frequentServiceStoryExamples, frequentServiceStoryResearchRecord, frequentServiceStoryStats, type FrequentServiceStoryExample } from '../data/frequentServiceStory';
+import { frequentServiceStoryResearchRecord, frequentServiceStoryStats } from '../data/frequentServiceStory';
 import FrequentServiceStoryMap from '../components/FrequentServiceStoryMap';
 import type { Agency } from '../App';
 
@@ -10,31 +10,13 @@ interface Props {
   agencies: Agency[];
 }
 
-function StoryExample({ example }: { example: FrequentServiceStoryExample }) {
-  return (
-    <article className="mt-8 border-t border-[var(--border-primary)] pt-7">
-      <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-        <p className="text-xl font-black tracking-tight text-[var(--text-primary)]">{example.city}</p>
-        <p className="text-sm text-[var(--text-muted)]">{example.agency}</p>
-      </div>
-      <h3 className="mt-3 text-2xl sm:text-3xl font-black tracking-tight text-[var(--text-primary)]">{example.headline}</h3>
-      <p className="mt-3 max-w-3xl text-base leading-7 text-[var(--text-muted)]">{example.summary}</p>
-      <p className="mt-4 max-w-3xl text-sm leading-6 text-[var(--text-secondary)]">{example.details.join(' · ')}</p>
-    </article>
-  );
-}
-
 export default function FrequentServiceStory({ onExploreMap, agencies }: Props) {
   const [selectedMinutes, setSelectedMinutes] = useState(15);
-  const [selectedExampleId, setSelectedExampleId] = useState('translink-vancouver');
   const [storyStage, setStoryStage] = useState(0);
   const [frequencyMinutes, setFrequencyMinutes] = useState<15 | 30>(15);
   const storyScrollRef = useRef<HTMLDivElement>(null);
   const storyStepRefs = useRef<Array<HTMLDivElement | null>>([]);
   const maxBar = Math.max(...frequentServiceStoryStats.headwayBars.map(bar => bar.agencies));
-  const selectedBar = frequentServiceStoryStats.headwayBars.find(bar => bar.minutes === selectedMinutes);
-  const selectedExamples = frequentServiceStoryExamples.filter(example => example.thresholdMinutes.includes(selectedMinutes));
-  const selectedExample = selectedExamples.find(example => example.id === selectedExampleId) ?? selectedExamples[0];
 
   useEffect(() => {
     const root = storyScrollRef.current;
@@ -51,12 +33,6 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
     storyStepRefs.current.forEach(step => { if (step) observer.observe(step); });
     return () => observer.disconnect();
   }, []);
-
-  function selectMinutes(minutes: number) {
-    const examples = frequentServiceStoryExamples.filter(example => example.thresholdMinutes.includes(minutes));
-    setSelectedMinutes(minutes);
-    setSelectedExampleId(examples[0]?.id ?? '');
-  }
 
   function exploreMap() {
     trackEvent('frequent_service_story_map_opened');
@@ -139,7 +115,7 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
                     type="button"
                     aria-pressed={selectedMinutes === bar.minutes}
                     aria-label={`Show examples for ${bar.minutes}-minute service (${bar.agencies} agencies)`}
-                    onClick={() => selectMinutes(bar.minutes)}
+                    onClick={() => setSelectedMinutes(bar.minutes)}
                     title={`Show examples for ${bar.minutes}-minute service (${bar.agencies} agencies)`}
                     className="grid w-full grid-cols-[4.5rem_1fr_3rem] items-center gap-3 rounded-lg text-left text-sm outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)]"
                   >
@@ -152,33 +128,6 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
                 ))}
               </div>
               <p className="mt-5 text-xs leading-5 text-[var(--text-dim)]">Each agency appears once. The chart uses the agency’s general or representative frequent-service tier; ranges, dayparts, and secondary tiers remain in the audit rather than being assigned one misleading number.</p>
-            </div>
-            <div className="mt-10 border-t border-[var(--border-primary)] pt-8" aria-live="polite">
-              <p className="text-sm font-bold text-[var(--text-muted)]">{selectedBar?.agencies} agencies · selected published threshold: {selectedMinutes} minutes</p>
-              <p className="mt-2 max-w-2xl text-base leading-7 text-[var(--text-muted)]">
-                The same number can describe a whole network, a corridor, only part of the day, or a tier that drops to a slower service outside peak hours.
-              </p>
-              {selectedExamples.length > 0 ? (
-                <>
-                  <div className="mt-6 flex flex-wrap gap-2" role="tablist" aria-label={`${selectedMinutes}-minute examples`}>
-                    {selectedExamples.map(example => (
-                      <button
-                        key={example.id}
-                        type="button"
-                        role="tab"
-                        aria-selected={selectedExample?.id === example.id}
-                        onClick={() => setSelectedExampleId(example.id)}
-                        className={`rounded-full border px-3 py-2 text-sm font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${selectedExample?.id === example.id ? 'border-[var(--accent)] bg-[var(--accent)] text-[var(--bg-app)]' : 'border-[var(--border-primary)] text-[var(--text-primary)] hover:bg-[var(--bg-btn-hover)]'}`}
-                      >
-                        {example.city}
-                      </button>
-                    ))}
-                  </div>
-                  {selectedExample && <StoryExample example={selectedExample} />}
-                </>
-              ) : (
-                <p className="mt-6 text-sm leading-6 text-[var(--text-muted)]">No featured example in this story uses this threshold.</p>
-              )}
             </div>
           </section>
 
@@ -203,8 +152,8 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
             </div>
           </section>
 
-          <footer className="border-t border-[var(--border-primary)] pt-10">
-            <div className="w-full max-w-[48rem]">
+          <footer className="mx-auto max-w-3xl border-t border-[var(--border-primary)] pt-10">
+            <div className="w-full">
               <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-[var(--text-primary)]">How we did this</h2>
               <div className="mt-5 space-y-5 text-sm sm:text-base leading-7 sm:leading-8 text-[var(--text-muted)]">
                 <p><strong className="text-[var(--text-primary)]">Date conducted.</strong> {frequentServiceStoryStats.reviewedAt}.</p>
