@@ -6,7 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
-- Added beta map-image export with Atlas typography and attribution for shareable 1600×900 PNGs.
+- Added beta map-image export with stronger Atlas branding and full CARTO/OpenStreetMap attribution for shareable 1600×900 PNGs.
 - Added a visible Feedback email link beside the map attribution for launch-period comments and feature requests.
 - Calgary overnight routes starting near the end of the window (such as LRT 201 and late-night buses) no longer pass as frequent overnight routes on the map or in the filter, and their cards now indicate limited service for routes running only part of the period instead of borrowing daytime frequencies ([#507](https://github.com/Civic-Minds/Atlas/issues/507)).
 - Calgary MAX route cards now show the terminal name without repeating the MAX service branding.

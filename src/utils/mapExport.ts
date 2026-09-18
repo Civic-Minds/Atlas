@@ -89,12 +89,12 @@ export async function createMapExport({ source, title, lightMode }: MapExportOpt
 
   context.textAlign = 'right';
   context.fillStyle = colors.foreground;
-  context.font = '800 14px Inter, ui-sans-serif, system-ui, sans-serif';
-  context.fillText('transitatlas.fyi', canvas.width - 28, canvas.height - 19);
+  context.font = '800 13px Inter, ui-sans-serif, system-ui, sans-serif';
+  context.fillText('Atlas by Civic Minds · transitatlas.fyi', canvas.width - 28, canvas.height - 19);
   context.textAlign = 'left';
   context.fillStyle = colors.muted;
   context.font = '500 10px Inter, ui-sans-serif, system-ui, sans-serif';
-  context.fillText('Map tiles by CARTO · Data by OpenStreetMap · Current Atlas view', 28, canvas.height - 19);
+  context.fillText('Map tiles by CARTO, under CC BY 3.0. Data by OpenStreetMap, under ODbL.', 28, canvas.height - 19);
 
   return canvasToBlob(canvas);
 }
