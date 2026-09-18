@@ -13,7 +13,7 @@ interface Props {
 export default function FrequentServiceStory({ onExploreMap, agencies }: Props) {
   const [selectedMinutes, setSelectedMinutes] = useState(15);
   const [storyStage, setStoryStage] = useState(0);
-  const [frequencyMinutes, setFrequencyMinutes] = useState<15 | 30>(15);
+  const frequencyMinutes = 15 as const;
   const storyScrollRef = useRef<HTMLDivElement>(null);
   const storyStepRefs = useRef<Array<HTMLDivElement | null>>([]);
   const maxBar = Math.max(...frequentServiceStoryStats.headwayBars.map(bar => bar.agencies));
@@ -56,7 +56,7 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
         <section aria-labelledby="network-story-heading" className="mx-auto mt-24 max-w-6xl sm:mt-32">
           <div className="relative min-w-0 pb-[55vh]">
             <div className="min-w-0 lg:sticky lg:top-24">
-              <FrequentServiceStoryMap agencies={agencies} stage={storyStage} frequencyMinutes={frequencyMinutes} onFrequencyChange={setFrequencyMinutes} researchRecord={frequentServiceStoryResearchRecord} />
+              <FrequentServiceStoryMap agencies={agencies} stage={storyStage} frequencyMinutes={frequencyMinutes} researchRecord={frequentServiceStoryResearchRecord} />
             </div>
             <div className="relative z-10 space-y-[55vh] pb-8 pt-8 lg:pb-16" aria-hidden="true">
                 {[0, 1, 2, 3].map(stage => <div key={stage} ref={step => { storyStepRefs.current[stage] = step; }} data-story-stage={stage} className="h-[20vh]" />)}

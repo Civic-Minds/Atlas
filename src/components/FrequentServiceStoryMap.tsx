@@ -6,7 +6,6 @@ interface Props {
   agencies: Agency[];
   stage: number;
   frequencyMinutes: 15 | 30;
-  onFrequencyChange: (minutes: 15 | 30) => void;
   researchRecord: {
     agencyId: string;
     agencyName: string;
@@ -62,7 +61,7 @@ function featuresForStage(features: StoryFeature[], stage: number, frequencyMinu
   });
 }
 
-export default function FrequentServiceStoryMap({ agencies, stage, frequencyMinutes, onFrequencyChange, researchRecord }: Props) {
+export default function FrequentServiceStoryMap({ agencies, stage, frequencyMinutes, researchRecord }: Props) {
   const [features, setFeatures] = useState<StoryFeature[]>([]);
   const [loadState, setLoadState] = useState<'loading' | 'ready' | 'error'>('loading');
   const storyAgency = agencies.find(agency => agency.slug === researchRecord.agencyId);
@@ -117,13 +116,6 @@ export default function FrequentServiceStoryMap({ agencies, stage, frequencyMinu
           {stage === 3 && <>
             <h2 className="text-3xl font-black tracking-tight">Now show the routes frequent enough to rely on.</h2>
             <p className="mt-4 text-base leading-7 text-[var(--text-muted)]">This is Atlas’s comparison—not a claim that every agency uses the same definition of “frequent.”</p>
-            <div className="mt-5 inline-flex rounded-full border border-[var(--border-primary)] bg-[var(--bg-panel)] p-1" role="group" aria-label="Choose the final frequency comparison">
-              {[15, 30].map(minutes => (
-                <button key={minutes} type="button" aria-pressed={frequencyMinutes === minutes} onClick={() => onFrequencyChange(minutes as 15 | 30)} className={`rounded-full px-4 py-2 text-sm font-black transition-colors ${frequencyMinutes === minutes ? 'bg-[var(--accent)] text-[var(--bg-app)]' : 'text-[var(--text-secondary)] hover:bg-[var(--bg-btn-hover)]'}`}>
-                  {minutes} min
-                </button>
-              ))}
-            </div>
           </>}
         </div>
       </div>

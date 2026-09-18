@@ -18,6 +18,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Aligned the first narrative panel with the map corner and removed the redundant map-stage pill.
 - Simplified the map caption by removing the redundant “Atlas comparison” label.
 - Kept each story-stage narrative panel in the same top-left position while the map changes underneath.
+- Removed the 15- and 30-minute selector from the story map narrative panel.
 - Expanded the Frequent Service research audit to 150 agencies while preserving representative and secondary frequency tiers.
 - Expanded the Frequent Service research audit to 100 agencies and counts each agency’s representative frequent-service tier while retaining secondary tiers for context.
 - Kept the story map pinned while switching the final 15- and 30-minute comparisons so the network does not jump with the scroll position.
