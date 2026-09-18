@@ -3,6 +3,7 @@ import { ArrowDown, ArrowRight, MapPinned } from 'lucide-react';
 import { trackEvent } from '../lib/analytics';
 import { frequentServiceStoryResearchRecord, frequentServiceStoryStats } from '../data/frequentServiceStory';
 import FrequentServiceStoryMap from '../components/FrequentServiceStoryMap';
+import FrequentServiceMapMontage from '../components/FrequentServiceMapMontage';
 import type { Agency } from '../App';
 
 interface Props {
@@ -45,15 +46,19 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
         <header className="mx-auto flex min-h-[calc(100dvh-6rem)] max-w-4xl flex-col items-center justify-center text-center">
           <p className="text-[0.7rem] uppercase tracking-[0.24em] font-black text-[var(--accent)]">Atlas research</p>
           <h1 className="mt-5 text-4xl sm:text-6xl font-black tracking-[-0.045em] leading-[0.98]">What does “frequent” actually mean?</h1>
-          <p className="mx-auto mt-6 max-w-2xl text-base sm:text-lg leading-8 text-[var(--text-muted)]">
-            A transit map can look full of lines and still leave you waiting. We reviewed {frequentServiceStoryStats.agenciesReviewed} agencies in the audit to see how their official system maps describe service people can actually rely on.
-          </p>
+          <div className="mx-auto mt-6 max-w-2xl space-y-4 text-left text-base leading-8 text-[var(--text-muted)] sm:text-lg">
+            <p>Most people do not use a transit map just to see where lines exist. They use it to decide whether they can get to work, school, an appointment, or home without waiting forever.</p>
+            <p>Every city draws its network differently. Some maps are dense with lines; others make a small number of routes look important. Looking across those maps is a useful starting point—but the lines alone do not tell us what service a rider can actually rely on.</p>
+            <p>A line does not tell you whether the next bus is coming in five minutes or thirty, or what happens if you miss a connection. Frequent, reliable service gives people more freedom to travel without planning their day around a timetable.</p>
+            <p>Atlas reviewed official transit maps and service definitions from {frequentServiceStoryStats.agenciesReviewed} agencies to compare what “frequent” means in practice.</p>
+          </div>
+          <FrequentServiceMapMontage agencies={agencies} />
           <a href="#story" className="mt-9 inline-flex items-center gap-2 rounded-full border border-[var(--border-primary)] bg-[var(--bg-panel)] px-4 py-2.5 text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--bg-btn-hover)]">
             Explore the research <ArrowDown className="h-3.5 w-3.5" aria-hidden="true" />
           </a>
         </header>
 
-        <section aria-labelledby="network-story-heading" className="relative left-1/2 mt-24 w-screen -translate-x-1/2 sm:mt-32">
+        <section aria-labelledby="network-story-heading" className="relative left-1/2 mt-24 w-screen -translate-x-1/2 px-2 sm:mt-32 sm:px-3">
           <div className="relative min-w-0 pb-[55vh]">
             <div className="min-w-0 lg:sticky lg:top-24">
               <FrequentServiceStoryMap agencies={agencies} stage={storyStage} frequencyMinutes={frequencyMinutes} researchRecord={frequentServiceStoryResearchRecord} />

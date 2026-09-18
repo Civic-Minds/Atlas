@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- Allowed official rider guides as a labeled evidence source alongside system maps for the manual frequency audit.
+- Added a responsive montage of real agency network maps to introduce the research story.
 - Corrected the first map-audit findings after visual review: TTC is no-definition, while STM is qualitative-only.
 - Reframed the research introduction around the everyday rider impact of frequent, reliable transit.
 - Kept the story map narrative below the opening viewport so the research introduction is read first.
