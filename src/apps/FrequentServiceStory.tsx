@@ -6,34 +6,16 @@ interface Props {
   onExploreMap: () => void;
 }
 
-const toneStyles = {
-  orange: { accent: '#f97316', soft: 'rgba(249, 115, 22, 0.12)' },
-  blue: { accent: '#38bdf8', soft: 'rgba(56, 189, 248, 0.12)' },
-  green: { accent: '#34d399', soft: 'rgba(52, 211, 153, 0.12)' },
-  purple: { accent: '#c084fc', soft: 'rgba(192, 132, 252, 0.12)' },
-} as const;
-
 function StoryExample({ example }: { example: FrequentServiceStoryExample }) {
-  const tone = toneStyles[example.tone];
-  const scaleLabel = example.scale === 'large-system' ? 'Large system' : example.scale === 'smaller-system' ? 'Smaller system' : 'Counterexample';
   return (
-    <article
-      className="relative border-b border-[var(--border-primary)] py-10 first:border-t sm:grid sm:grid-cols-[minmax(10rem,0.7fr)_minmax(0,1.3fr)] sm:gap-10"
-    >
-      <div className="border-l-4 pl-4 sm:border-l-0 sm:border-t-4 sm:pl-0 sm:pt-4" style={{ borderColor: tone.accent }}>
-        <p className="text-2xl font-black tracking-tight text-[var(--text-primary)]">{example.city}</p>
-        <p className="mt-1 text-xs leading-5 text-[var(--text-muted)]">{example.agency}</p>
-        <p className="mt-4 text-[0.65rem] uppercase tracking-[0.16em] font-black" style={{ color: tone.accent }}>{scaleLabel}</p>
+    <article className="border-b border-[var(--border-primary)] py-10 first:border-t">
+      <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+        <p className="text-xl font-black tracking-tight text-[var(--text-primary)]">{example.city}</p>
+        <p className="text-sm text-[var(--text-muted)]">{example.agency}</p>
       </div>
-      <div className="mt-6 sm:mt-0">
-        <h3 className="text-2xl sm:text-3xl font-black tracking-tight text-[var(--text-primary)]">{example.headline}</h3>
-        <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]">{example.summary}</p>
-        <ul className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-sm text-[var(--text-secondary)]">
-          {example.details.map(detail => (
-            <li key={detail} className="flex items-start gap-2"><span aria-hidden="true" style={{ color: tone.accent }}>•</span>{detail}</li>
-          ))}
-        </ul>
-      </div>
+      <h3 className="mt-3 text-2xl sm:text-3xl font-black tracking-tight text-[var(--text-primary)]">{example.headline}</h3>
+      <p className="mt-4 max-w-3xl text-base leading-7 text-[var(--text-muted)]">{example.summary}</p>
+      <p className="mt-4 max-w-3xl text-sm leading-6 text-[var(--text-secondary)]">{example.details.join(' · ')}</p>
     </article>
   );
 }

@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Simplified the Frequent Service examples into one-column editorial blocks with only the city, takeaway, explanation, and evidence line.
 - Consolidated Frequent Service story source links into one closing Sources section so the examples read as a story instead of a chain of outbound links.
 - Made the Frequent Service story methodology readable as a real closing section instead of tiny footer text.
 - Removed the unnecessary numbered context cards from the Frequent Service story and replaced them with a direct explanation.
