@@ -11520,8 +11520,8 @@
           "kind": "frequency"
         },
         {
-          "label": "LOS B / Frequent service",
-          "thresholdText": "10–14-minute headway; identified as frequent service.",
+          "label": "LOS B service level",
+          "thresholdText": "10–14-minute headway.",
           "span": "not specified",
           "days": "not specified",
           "geography": "system",

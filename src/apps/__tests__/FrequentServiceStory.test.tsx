@@ -44,7 +44,6 @@ describe('FrequentServiceStory', () => {
     expect(frequentServiceStoryStats.headwayBars).toEqual([
       { minutes: 10, agencies: counts['10'] },
       { minutes: 12, agencies: counts['12'] },
-      { minutes: 14, agencies: counts['14'] },
       { minutes: 15, agencies: counts['15'] },
       { minutes: 20, agencies: counts['20'] },
       { minutes: 30, agencies: counts['30'] },
@@ -59,9 +58,8 @@ describe('FrequentServiceStory', () => {
     expect(ddot.evidence.some((evidence: { namedFrequency: boolean }) => evidence.namedFrequency)).toBe(false);
     expect(barta.evidence.some((evidence: { namedFrequency: boolean }) => evidence.namedFrequency)).toBe(false);
     expect(analysis.namedNumericThresholds.agencyCountsByStoryThreshold).toEqual({
-      10: 3,
+      10: 4,
       12: 2,
-      14: 1,
       15: 52,
       20: 11,
       30: 18,
