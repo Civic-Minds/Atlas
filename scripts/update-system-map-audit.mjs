@@ -61,6 +61,12 @@ const reviewed = {
   nanaimo: {
     status: 'no_definition_on_map', mapCandidates: [{ label: 'Nanaimo Rider Guide / system map', url: 'https://www.bctransit.com/nanaimo/wp-content/uploads/sites/29/2026/08/nan_rg_sept2026.pdf', sourceType: 'system_map', localFile: 'nanaimo-2' }], preservedFiles: ['nanaimo-1', 'nanaimo-2'], mapDate: 'September 2026', mapPageOrSection: 'system map pages and legend', evidenceNotes: 'The official Nanaimo map pages were preserved and reviewed; they do not name a frequent/high-frequency category or define a frequent threshold.'
   },
+  miway: {
+    status: 'no_definition_on_map', mapPageOrSection: 'official system-map page', evidenceNotes: 'The preserved official MiWay system-map page provides weekday, express, Saturday, and Sunday maps, but the reviewed map materials do not name a frequent/high-frequency category or define a frequent threshold.'
+  },
+  barrie: {
+    status: 'map_unavailable', preservedFiles: ['barrie-1'], mapPageOrSection: 'official map links', evidenceNotes: 'The available preserved Barrie file is a planning/service-change map rather than a verified current rider-facing system map. The current official Transit Network Map link returned an access failure during review, so no system-map definition is inferred.'
+  },
   trimet: {
     status: 'numeric_definition_on_map', mapCandidates: [{ label: 'Frequent Service map', url: 'https://www.trimet.org/maps/pdf/frequentservice.pdf', sourceType: 'system_map', localFile: 'trimet-1' }], preservedFiles: ['trimet-1'], mapDate: 'August 2026', mapPageOrSection: 'page 1, service legend', exactMapWording: 'Rail Service — About every 15 minutes or less most of the day, every day; FX Frequent Express Service — About every 12 minutes or less most of the day, every day; Frequent Service — About every 15 minutes or less most of the day, every day', thresholdText: 'Rail and regular Frequent Service: about every 15 minutes or less; Frequent Express: about every 12 minutes or less', serviceSpan: 'most of the day', days: 'every day', geography: 'route/network', mode: 'rail and bus', evidenceNotes: 'The official Frequent Service map publishes separate numeric definitions for rail, regular bus, and Frequent Express. No single threshold is assigned because that would collapse distinct map categories.'
   },
