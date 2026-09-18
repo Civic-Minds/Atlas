@@ -15,6 +15,10 @@ const frames: MapFrame[] = [
   { agency: 'SEPTA Philadelphia', image: '/assets/research/system-maps/septa.jpg', source: 'https://www.septa.org/wp-content/uploads/page/communication/SEPTA_System-Map_v3-0.pdf' },
   { agency: 'TriMet', image: '/assets/research/system-maps/portland.jpg', source: 'https://www.trimet.org/maps/pdf/frequentservice.pdf' },
   { agency: 'Washington Metropolitan Area Transit Authority', image: '/assets/research/system-maps/washington.jpg', source: 'https://www.wmata.com/schedules/maps/upload/system-map-bus-DC-high-frequency.pdf' },
+  { agency: 'Société de transport de Montréal', image: '/assets/research/system-maps/montreal.jpg', source: 'https://www.stm.info/sites/default/files/media/Stminfo/images/plan_reseau.pdf' },
+  { agency: 'Los Angeles Metro', image: '/assets/research/system-maps/los-angeles.jpg', source: 'https://cdn.beta.metro.net/wp-content/uploads/2026/05/04165451/26-1718_SysOverview_HiFreq_online_DCR.pdf' },
+  { agency: 'Valley Transportation Authority', image: '/assets/research/system-maps/san-jose.jpg', source: 'https://www.vta.org/sites/default/files/2026-01/ADA-VTA-SystemMap-011226.pdf' },
+  { agency: 'Miami-Dade Transit', image: '/assets/research/system-maps/miami.jpg', source: 'https://www.miamidade.gov/resources/transportation_publicworks/documents/system-maps-web.pdf' },
 ];
 
 export default function FrequentServicePublishedMapMontage() {
