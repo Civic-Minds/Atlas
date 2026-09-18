@@ -1535,7 +1535,7 @@
       "days": null,
       "geography": null,
       "mode": null,
-      "evidenceNotes": "Current official BC Transit Kelowna rider guide/map reviewed manually. The published range is retained and its slowest ordinary period is used as the representative value.",
+      "evidenceNotes": "Current official BC Transit Kelowna route-map legend visually reviewed. The published range is retained and its slowest ordinary period is used as the representative value.",
       "reviewBatch": 1,
       "evidenceSourceType": "system_map",
       "reviewSources": [
@@ -1588,7 +1588,7 @@
       "days": null,
       "geography": null,
       "mode": null,
-      "evidenceNotes": "Current official BC Transit Nanaimo rider guide/map reviewed manually. It does not name a frequent/high-frequency definition.",
+      "evidenceNotes": "Current official BC Transit Nanaimo rider guide/map visually reviewed. Its route map and legend do not name a frequent/high-frequency definition.",
       "reviewBatch": 1,
       "evidenceSourceType": "system_map",
       "reviewSources": [
@@ -1621,7 +1621,7 @@
       "days": null,
       "geography": null,
       "mode": null,
-      "evidenceNotes": "Current official BC Transit Pemberton Valley rider guide/map reviewed manually. It does not name a frequent/high-frequency definition.",
+      "evidenceNotes": "Current official BC Transit Pemberton Valley rider guide/map visually reviewed. Its route map and legend do not name a frequent/high-frequency definition.",
       "reviewBatch": 1,
       "evidenceSourceType": "system_map",
       "reviewSources": [
@@ -1654,7 +1654,7 @@
       "days": null,
       "geography": null,
       "mode": null,
-      "evidenceNotes": "Current official BC Transit South Okanagan-Similkameen rider guide/map reviewed manually. It does not name a frequent/high-frequency definition.",
+      "evidenceNotes": "Current official BC Transit South Okanagan-Similkameen rider guide/map visually reviewed. Its route maps and legend do not name a frequent/high-frequency definition.",
       "reviewBatch": 1,
       "evidenceSourceType": "system_map",
       "reviewSources": [
@@ -1687,7 +1687,7 @@
       "days": null,
       "geography": null,
       "mode": null,
-      "evidenceNotes": "Current official BC Transit Squamish rider guide/map reviewed manually. It does not name a frequent/high-frequency definition.",
+      "evidenceNotes": "Current official BC Transit Squamish rider guide/map visually reviewed. Its route map and legend do not name a frequent/high-frequency definition.",
       "reviewBatch": 1,
       "evidenceSourceType": "system_map",
       "reviewSources": [
