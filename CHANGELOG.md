@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- Expanded the manually reviewed sample to 171 agencies and 56 verified definitions, adding map/guide evidence from Canada, the United States, Australia, and Europe/Asia while keeping unsupported sources out of the totals.
 - Added 92 manually reviewed agencies to the frequency research audit, raising the verified-definition sample from 17 to 50 while keeping unnamed and unavailable maps separate.
 - Split the Frequent Service map and explainer into separate routes: the map is at `/research/frequent-service` and the story is at `/research/frequent-service/story`.
 - Verified SDMTS’s map wording and preserved its 60-minute regular-service note without misclassifying it as frequent service.

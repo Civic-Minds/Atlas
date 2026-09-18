@@ -2,7 +2,7 @@
   "auditVersion": 2,
   "createdAt": "2026-09-18",
   "sourceCatalog": "docs/research/frequent-service-catalog.json",
-  "scope": "First 50 agencies plus 92 additional agencies reviewed individually against current official system maps or approved rider guides on September 18, 2026.",
+  "scope": "First 50 agencies plus 121 additional agencies reviewed individually against current official system maps or approved rider guides on September 18, 2026.",
   "statusRules": {
     "numeric_definition_on_map": "The official system map visibly names frequent/high-frequency service and gives a numeric threshold or range.",
     "qualitative_definition_on_map": "The official system map visibly names frequent/high-frequency service without a numeric threshold.",
@@ -6130,6 +6130,1192 @@
         {
           "url": "https://www.rabbittransit.org/wp-content/uploads/2026/09/Capital-Region-Ride-Guide-8-7-26-webview.pdf",
           "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 143,
+      "agencyId": "ratp-paris",
+      "agencyName": "RATP Paris",
+      "country": "France",
+      "region": "Île-de-France",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.ratp.fr/informer/picts/plans/pdf/reseaux/bus_paris.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "2026 Paris bus map, Fonctionnement legend",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Current 2026 RATP bus map visually reviewed. It describes operating days but does not name or define frequent/high-frequency service.",
+      "reviewBatch": 8,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.ratp.fr/informer/picts/plans/pdf/reseaux/bus_paris.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 144,
+      "agencyId": "tmb-barcelona",
+      "agencyName": "Transports Metropolitans de Barcelona",
+      "country": "Spain",
+      "region": "Catalonia",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://static-web.tmb.cat/en/barcelona-transport/metro-bus-map",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "current metro and bus network maps",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Current TMB metro and bus network maps visually reviewed. Neither names or defines frequent/high-frequency service.",
+      "reviewBatch": 8,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://static-web.tmb.cat/en/barcelona-transport/metro-bus-map",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 145,
+      "agencyId": "hsl-helsinki",
+      "agencyName": "HSL Helsinki",
+      "country": "Finland",
+      "region": "Uusimaa",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.hsl.fi/en/hsl/trunk-route-network",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "Trunk route network rider material",
+      "exactMapWording": "frequent services; frequent headways; metro-like service with frequent headways",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Current HSL trunk-route rider material uses “frequent” descriptively but gives no numeric definition.",
+      "reviewBatch": 8,
+      "evidenceSourceType": "rider_guide",
+      "reviewSources": [
+        {
+          "url": "https://www.hsl.fi/en/hsl/trunk-route-network",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 146,
+      "agencyId": "sl-stockholm",
+      "agencyName": "SL Stockholm",
+      "country": "Sweden",
+      "region": "Stockholm County",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://sl.se/reseplanering/var-trafik/tunnelbanan",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "metro rider guide",
+      "exactMapWording": "Tunnelbanan går ofta; at weekends the metro runs around the clock",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Current SL metro rider guide uses “often/frequently” descriptively but gives no headway definition.",
+      "reviewBatch": 8,
+      "evidenceSourceType": "rider_guide",
+      "reviewSources": [
+        {
+          "url": "https://sl.se/reseplanering/var-trafik/tunnelbanan",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 147,
+      "agencyId": "nx-west-midlands",
+      "agencyName": "NX West Midlands",
+      "country": "United Kingdom",
+      "region": "West Midlands",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://nxbus.co.uk/west-midlands/places-to-go/birmingham-city-centre",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "Birmingham rider page",
+      "exactMapWording": "fast, frequent local travel",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Current NX rider material uses “frequent” descriptively but gives no threshold or complete service-span definition.",
+      "reviewBatch": 8,
+      "evidenceSourceType": "rider_guide",
+      "reviewSources": [
+        {
+          "url": "https://nxbus.co.uk/west-midlands/places-to-go/birmingham-city-centre",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 148,
+      "agencyId": "ptv-melbourne",
+      "agencyName": "Public Transport Victoria",
+      "country": "Australia",
+      "region": "Victoria",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.ptv.vic.gov.au/assets/default-site/footer/about-ptv/improvements-and-projects/bus-and-coach/buses-return-to-grattan-street/PRT-Route-401.pdf",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "page 1 Route 401 rider guide",
+      "exactMapWording": "Limited-stop, high-frequency service running every 2–3 minutes during peak times; 4–6 minute peak frequency on non-university days.",
+      "thresholdMinutes": 6,
+      "thresholdText": "2–3 minutes during peak times; 4–6 minutes on non-university days",
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official PTV Route 401 rider guide visually reviewed. The named high-frequency category and both published headway bands are retained.",
+      "reviewBatch": 8,
+      "evidenceSourceType": "rider_guide",
+      "reviewSources": [
+        {
+          "url": "https://www.ptv.vic.gov.au/assets/default-site/footer/about-ptv/improvements-and-projects/bus-and-coach/buses-return-to-grattan-street/PRT-Route-401.pdf",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "definitions": [
+        {
+          "id": "primary",
+          "label": "Limited-stop, high-frequency service running every 2–3 minutes during peak times; 4–6 minute peak frequency on non-university days.",
+          "thresholdMinutes": 6,
+          "thresholdText": "2–3 minutes during peak times; 4–6 minutes on non-university days",
+          "representative": true,
+          "sourceType": "rider_guide",
+          "sourceUrl": "https://www.ptv.vic.gov.au/assets/default-site/footer/about-ptv/improvements-and-projects/bus-and-coach/buses-return-to-grattan-street/PRT-Route-401.pdf",
+          "localFile": null,
+          "mapPageOrSection": "page 1 Route 401 rider guide",
+          "exactWording": "Limited-stop, high-frequency service running every 2–3 minutes during peak times; 4–6 minute peak frequency on non-university days.",
+          "evidenceNotes": "Official PTV Route 401 rider guide visually reviewed. The named high-frequency category and both published headway bands are retained."
+        }
+      ],
+      "representativeThresholdMinutes": 6,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 149,
+      "agencyId": "taipei-metro",
+      "agencyName": "Taipei Metro",
+      "country": "Taiwan",
+      "region": "Taipei",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://web.metro.taipei/QRCode/TaipeiMetroGuides/TaipeiMetroGuide_English.pdf?t=20211009",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "page 1 Operation Information",
+      "exactMapWording": "Headway; peak, off-peak, after 23:00",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Taipei Metro guide visually reviewed. It publishes headways but does not name a frequent/high-frequency category.",
+      "reviewBatch": 8,
+      "evidenceSourceType": "rider_guide",
+      "reviewSources": [
+        {
+          "url": "https://web.metro.taipei/QRCode/TaipeiMetroGuides/TaipeiMetroGuide_English.pdf?t=20211009",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 150,
+      "agencyId": "smrt-singapore",
+      "agencyName": "SMRT Singapore",
+      "country": "Singapore",
+      "region": "Singapore",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://journey.smrt.com.sg/static/journey/js/helpers/data/network_map_2022_April.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "system-map legend and official rail guidance",
+      "exactMapWording": "Train frequency is 2 to 3 minutes during peak and about 5 to 7 minutes off-peak.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official SMRT map and rail guidance reviewed. They publish intervals but do not define a named frequent/high-frequency category.",
+      "reviewBatch": 8,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://journey.smrt.com.sg/static/journey/js/helpers/data/network_map_2022_April.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 151,
+      "agencyId": "sbs-transit-singapore",
+      "agencyName": "SBS Transit",
+      "country": "Singapore",
+      "region": "Singapore",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.sbstransit.com.sg/system-map",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "current system-map legend",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Current SBS Transit system map visually reviewed. It contains no named frequent/high-frequency category or threshold.",
+      "reviewBatch": 8,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.sbstransit.com.sg/system-map",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 152,
+      "agencyId": "seoul-metro",
+      "agencyName": "Seoul Metro",
+      "country": "South Korea",
+      "region": "Seoul",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://english.seoul.go.kr/policy/transportation/modes-of-transport/subway-map-eng-2500/",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "map legend",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Current Seoul Metro map visually reviewed. It identifies lines, stations, and transfers but no named frequent/high-frequency definition.",
+      "reviewBatch": 8,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://english.seoul.go.kr/policy/transportation/modes-of-transport/subway-map-eng-2500/",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 153,
+      "agencyId": "anchorage-people-mover",
+      "agencyName": "Anchorage People Mover",
+      "country": "United States",
+      "region": "Alaska",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.muni.org/Departments/transit/PeopleMover/Documents/%212025%20Documents/May%20Service%20Change/System%20Map.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "page 1 legend",
+      "exactMapWording": "Frequent Routes — 15 min peak frequency",
+      "thresholdMinutes": 15,
+      "thresholdText": "15-minute peak frequency",
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Anchorage Transit Map, effective May 12, 2025, visually reviewed.",
+      "reviewBatch": 8,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.muni.org/Departments/transit/PeopleMover/Documents/%212025%20Documents/May%20Service%20Change/System%20Map.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [
+        {
+          "id": "primary",
+          "label": "Frequent Routes",
+          "thresholdMinutes": 15,
+          "thresholdText": "15-minute peak frequency",
+          "representative": true,
+          "sourceType": "system_map",
+          "sourceUrl": "https://www.muni.org/Departments/transit/PeopleMover/Documents/%212025%20Documents/May%20Service%20Change/System%20Map.pdf",
+          "localFile": null,
+          "mapPageOrSection": "page 1 legend",
+          "exactWording": "Frequent Routes — 15 min peak frequency",
+          "evidenceNotes": "Official Anchorage Transit Map, effective May 12, 2025, visually reviewed."
+        }
+      ],
+      "representativeThresholdMinutes": 15,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 154,
+      "agencyId": "ccta-green-mountain",
+      "agencyName": "CCTA / Green Mountain Transit",
+      "country": "United States",
+      "region": "Vermont",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://ridegmt.com/wp-content/uploads/August-2026_Burlington.pdf",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "cover and route-map/guide pages",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Current August 2026 Chittenden County bus map and guide visually reviewed. It lists routes and schedules but no frequent/high-frequency definition.",
+      "reviewBatch": 8,
+      "evidenceSourceType": "rider_guide",
+      "reviewSources": [
+        {
+          "url": "https://ridegmt.com/wp-content/uploads/August-2026_Burlington.pdf",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 155,
+      "agencyId": "mountain-transit-big-bear",
+      "agencyName": "Mountain Transit",
+      "country": "United States",
+      "region": "California",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.mountaintransit.org/routes/big-bear-red-line/",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "Big Bear Red Line route guide",
+      "exactMapWording": "The Red Line Trolley runs on a loop",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Current Big Bear Red Line rider material visually reviewed. It describes the loop and schedule but does not name or define frequent service.",
+      "reviewBatch": 8,
+      "evidenceSourceType": "rider_guide",
+      "reviewSources": [
+        {
+          "url": "https://www.mountaintransit.org/routes/big-bear-red-line/",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 156,
+      "agencyId": "kingston-transit",
+      "agencyName": "Kingston Transit",
+      "country": "Canada",
+      "region": "Ontario",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://media-001-ca.cdn.govstack.com/cityofkingston-002-ca/media/1vdljvax/kingstontransit_systemmap_jan2026.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "page 1 system map",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Current January 2026 Kingston Transit system map visually reviewed. It shows routes but no named frequent/high-frequency definition.",
+      "reviewBatch": 8,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://media-001-ca.cdn.govstack.com/cityofkingston-002-ca/media/1vdljvax/kingstontransit_systemmap_jan2026.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 157,
+      "agencyId": "rtc-quebec",
+      "agencyName": "RTC Québec",
+      "country": "Canada",
+      "region": "Quebec",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://cdn.rtcquebec.ca/sites/default/files/2026-07/Carte_Reseau_RTC_E26.pdf",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "Métrobus 805, map and official service notice",
+      "exactMapWording": "Métrobus 805 — une fréquence de passages aux 5 à 15 minutes.",
+      "thresholdMinutes": 15,
+      "thresholdText": "5–15 minute service",
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official RTC summer 2026 network map and rider-facing service notice were visually reviewed. The published range is retained; 15 minutes is the representative slowest interval.",
+      "reviewBatch": 9,
+      "evidenceSourceType": "rider_guide",
+      "reviewSources": [
+        {
+          "url": "https://cdn.rtcquebec.ca/sites/default/files/2026-07/Carte_Reseau_RTC_E26.pdf",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "definitions": [
+        {
+          "id": "primary",
+          "label": "Métrobus 805",
+          "thresholdMinutes": 15,
+          "thresholdText": "5–15 minute service",
+          "representative": true,
+          "sourceType": "rider_guide",
+          "sourceUrl": "https://cdn.rtcquebec.ca/sites/default/files/2026-07/Carte_Reseau_RTC_E26.pdf",
+          "localFile": null,
+          "mapPageOrSection": "Métrobus 805, map and official service notice",
+          "exactWording": "Métrobus 805 — une fréquence de passages aux 5 à 15 minutes.",
+          "evidenceNotes": "Official RTC summer 2026 network map and rider-facing service notice were visually reviewed. The published range is retained; 15 minutes is the representative slowest interval."
+        }
+      ],
+      "representativeThresholdMinutes": 15,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 158,
+      "agencyId": "sts-sherbrooke",
+      "agencyName": "Société de transport de Sherbrooke",
+      "country": "Canada",
+      "region": "Quebec",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.sts.qc.ca/wp-content/uploads/2025/06/Carte-reseau-ete-2025-Web-compressed.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "network map and route labels",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official STS network map visually reviewed. It labels bus and express services but does not name or define frequent/high-frequency service.",
+      "reviewBatch": 9,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.sts.qc.ca/wp-content/uploads/2025/06/Carte-reseau-ete-2025-Web-compressed.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 159,
+      "agencyId": "gova-greater-sudbury",
+      "agencyName": "GOVA Greater Sudbury",
+      "country": "Canada",
+      "region": "Ontario",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.greatersudbury.ca/live/transit/gova-routes-and-schedules/schedule-effective-june-13-2026/all-combined/",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "current routes and schedules page",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official GOVA route and schedule material visually reviewed. Main Line schedules show intervals but no named frequent/high-frequency definition.",
+      "reviewBatch": 9,
+      "evidenceSourceType": "rider_guide",
+      "reviewSources": [
+        {
+          "url": "https://www.greatersudbury.ca/live/transit/gova-routes-and-schedules/schedule-effective-june-13-2026/all-combined/",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 160,
+      "agencyId": "thunder-bay-transit",
+      "agencyName": "Thunder Bay Transit",
+      "country": "Canada",
+      "region": "Ontario",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://pub-thunderbay.escribemeetings.com/filestream.ashx?DocumentId=6057",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "current system map",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Thunder Bay system map visually reviewed. It shows routes and service information but no named frequent/high-frequency definition.",
+      "reviewBatch": 9,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://pub-thunderbay.escribemeetings.com/filestream.ashx?DocumentId=6057",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 161,
+      "agencyId": "bc-transit-prince-george",
+      "agencyName": "BC Transit Prince George",
+      "country": "Canada",
+      "region": "British Columbia",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://lite.bctransit.com/wp-content/uploads/2026/01/prg_rg_jan2026-low.pdf",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "January 2026 rider guide and route map",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Prince George rider guide visually reviewed. It identifies routes and schedules but does not name or define frequent/high-frequency service.",
+      "reviewBatch": 9,
+      "evidenceSourceType": "rider_guide",
+      "reviewSources": [
+        {
+          "url": "https://lite.bctransit.com/wp-content/uploads/2026/01/prg_rg_jan2026-low.pdf",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 162,
+      "agencyId": "metro-rta-akron",
+      "agencyName": "METRO RTA",
+      "country": "United States",
+      "region": "Ohio",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.yourmetrobus.org/Data/Sites/2/pdf/system-map-2025.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "map legend and current rider information",
+      "exactMapWording": "Routes featuring a stopwatch run every 15-minutes during the day.",
+      "thresholdMinutes": 15,
+      "thresholdText": "15-minute service during the day",
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official METRO RTA 2025 system map and current rider information were visually reviewed. The stopwatch legend names the service category and defines its daytime interval.",
+      "reviewBatch": 9,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.yourmetrobus.org/Data/Sites/2/pdf/system-map-2025.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [
+        {
+          "id": "primary",
+          "label": "Routes featuring a stopwatch run every 15-minutes during the day.",
+          "thresholdMinutes": 15,
+          "thresholdText": "15-minute service during the day",
+          "representative": true,
+          "sourceType": "system_map",
+          "sourceUrl": "https://www.yourmetrobus.org/Data/Sites/2/pdf/system-map-2025.pdf",
+          "localFile": null,
+          "mapPageOrSection": "map legend and current rider information",
+          "exactWording": "Routes featuring a stopwatch run every 15-minutes during the day.",
+          "evidenceNotes": "Official METRO RTA 2025 system map and current rider information were visually reviewed. The stopwatch legend names the service category and defines its daytime interval."
+        }
+      ],
+      "representativeThresholdMinutes": 15,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 163,
+      "agencyId": "ruter-oslo",
+      "agencyName": "Ruter",
+      "country": "Norway",
+      "region": "Oslo",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://ruter.no/en/about-our-tickets/ticket-prices/how-prices-are-set",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "current network and service information",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Ruter rider material visually reviewed. It gives route interval examples but does not name or define frequent/high-frequency service.",
+      "reviewBatch": 9,
+      "evidenceSourceType": "rider_guide",
+      "reviewSources": [
+        {
+          "url": "https://ruter.no/en/about-our-tickets/ticket-prices/how-prices-are-set",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 164,
+      "agencyId": "dot-copenhagen",
+      "agencyName": "DOT Copenhagen",
+      "country": "Denmark",
+      "region": "Capital Region",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://dinoffentligetransport.dk/media/hgcfqoor/dot_linjekort_k24_web_rev2_180424.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "current line map and service pages",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official DOT line map and rider material visually reviewed. They show routes and departure examples but no named frequent/high-frequency definition.",
+      "reviewBatch": 9,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://dinoffentligetransport.dk/media/hgcfqoor/dot_linjekort_k24_web_rev2_180424.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 165,
+      "agencyId": "wiener-linien",
+      "agencyName": "Wiener Linien",
+      "country": "Austria",
+      "region": "Vienna",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://tramwm.wienerlinien.at/en/web/guest/hostkangenierer",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "network and service information",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Wiener Linien rider material visually reviewed. It describes service and intervals but does not publish a named frequent/high-frequency cutoff.",
+      "reviewBatch": 9,
+      "evidenceSourceType": "rider_guide",
+      "reviewSources": [
+        {
+          "url": "https://tramwm.wienerlinien.at/en/web/guest/hostkangenierer",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 166,
+      "agencyId": "pid-prague",
+      "agencyName": "PID Prague",
+      "country": "Czechia",
+      "region": "Prague",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://pid.cz/wp-content/uploads/mapy/schemata-trvala/a4_metro.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "metro map and interval information",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official PID map and rider material visually reviewed. It publishes approximate intervals but does not name or define frequent/high-frequency service.",
+      "reviewBatch": 9,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://pid.cz/wp-content/uploads/mapy/schemata-trvala/a4_metro.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 167,
+      "agencyId": "transport-canberra",
+      "agencyName": "Transport Canberra",
+      "country": "Australia",
+      "region": "Australian Capital Territory",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.transport.act.gov.au/__data/assets/pdf_file/0009/2990547/22751_TC_network_map_420x792_2026.pdf",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "current network map and route information",
+      "exactMapWording": "Rapid services are frequent: at least every 15 minutes, 7am–7pm weekdays, and frequently at other times.",
+      "thresholdMinutes": 15,
+      "thresholdText": "at least every 15 minutes, 7 a.m.–7 p.m. weekdays",
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official 2026 Transport Canberra network map and route information were visually reviewed. Rapid is explicitly defined as a frequent service tier.",
+      "reviewBatch": 9,
+      "evidenceSourceType": "rider_guide",
+      "reviewSources": [
+        {
+          "url": "https://www.transport.act.gov.au/__data/assets/pdf_file/0009/2990547/22751_TC_network_map_420x792_2026.pdf",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "definitions": [
+        {
+          "id": "primary",
+          "label": "Rapid services are frequent: at least every 15 minutes, 7am–7pm weekdays, and frequently at other times.",
+          "thresholdMinutes": 15,
+          "thresholdText": "at least every 15 minutes, 7 a.m.–7 p.m. weekdays",
+          "representative": true,
+          "sourceType": "rider_guide",
+          "sourceUrl": "https://www.transport.act.gov.au/__data/assets/pdf_file/0009/2990547/22751_TC_network_map_420x792_2026.pdf",
+          "localFile": null,
+          "mapPageOrSection": "current network map and route information",
+          "exactWording": "Rapid services are frequent: at least every 15 minutes, 7am–7pm weekdays, and frequently at other times.",
+          "evidenceNotes": "Official 2026 Transport Canberra network map and route information were visually reviewed. Rapid is explicitly defined as a frequent service tier."
+        }
+      ],
+      "representativeThresholdMinutes": 15,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 168,
+      "agencyId": "metro-tasmania",
+      "agencyName": "Metro Tasmania",
+      "country": "Australia",
+      "region": "Tasmania",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.metrotas.com.au/timetables/turn-up-and-go/hobart/",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "Turn Up & Go rider pages for Hobart and Launceston",
+      "exactMapWording": "High-frequency services operate every 10 minutes on weekdays between 7am and 7pm.",
+      "thresholdMinutes": 10,
+      "thresholdText": "every 10 minutes, weekdays 7 a.m.–7 p.m.",
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Metro Tasmania Turn Up & Go rider pages were visually reviewed. They define high-frequency service and publish separate weekend/holiday bands.",
+      "reviewBatch": 9,
+      "evidenceSourceType": "rider_guide",
+      "reviewSources": [
+        {
+          "url": "https://www.metrotas.com.au/timetables/turn-up-and-go/hobart/",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "definitions": [
+        {
+          "id": "primary",
+          "label": "High-frequency services operate every 10 minutes on weekdays between 7am and 7pm.",
+          "thresholdMinutes": 10,
+          "thresholdText": "every 10 minutes, weekdays 7 a.m.–7 p.m.",
+          "representative": true,
+          "sourceType": "rider_guide",
+          "sourceUrl": "https://www.metrotas.com.au/timetables/turn-up-and-go/hobart/",
+          "localFile": null,
+          "mapPageOrSection": "Turn Up & Go rider pages for Hobart and Launceston",
+          "exactWording": "High-frequency services operate every 10 minutes on weekdays between 7am and 7pm.",
+          "evidenceNotes": "Official Metro Tasmania Turn Up & Go rider pages were visually reviewed. They define high-frequency service and publish separate weekend/holiday bands."
+        }
+      ],
+      "representativeThresholdMinutes": 10,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 169,
+      "agencyId": "darwin-bus",
+      "agencyName": "Darwin Bus",
+      "country": "Australia",
+      "region": "Northern Territory",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://nt.gov.au/_media/docs/driving,-transport-and-marine/public_transport_and_cycling/public-bus/public_bus_darwin/darwin-public-bus-network-map.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "current Darwin network map",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Darwin public bus network map visually reviewed. It shows routes and service information but no named frequent/high-frequency definition.",
+      "reviewBatch": 9,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://nt.gov.au/_media/docs/driving,-transport-and-marine/public_transport_and_cycling/public-bus/public_bus_darwin/darwin-public-bus-network-map.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 170,
+      "agencyId": "osaka-metro",
+      "agencyName": "Osaka Metro",
+      "country": "Japan",
+      "region": "Osaka",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://subway-tr.osakametro.co.jp/en/guide/routemap.php",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "current network map and rider guide",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Osaka Metro map and rider material visually reviewed. They publish line and station information but no named frequent/high-frequency definition.",
+      "reviewBatch": 9,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://subway-tr.osakametro.co.jp/en/guide/routemap.php",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 171,
+      "agencyId": "mtr-hong-kong",
+      "agencyName": "MTR Hong Kong",
+      "country": "Hong Kong",
+      "region": "Hong Kong",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.mtr.com.hk/en/customer/jp/mtrMap.html",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "network map and train-service information",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official MTR map and train-service information visually reviewed. They publish intervals but do not name or define a frequent/high-frequency category.",
+      "reviewBatch": 9,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.mtr.com.hk/en/customer/jp/mtrMap.html",
+          "sourceType": "system_map",
           "localFile": null
         }
       ],
