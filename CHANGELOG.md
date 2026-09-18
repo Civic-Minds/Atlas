@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- Reworded the story-map cards so each filtering step explains what it means for riders.
 - Verified TriMet’s current map and retained its 15-minute Frequent Service and 12-minute Frequent Express tiers.
 - Corrected the Sound Transit and Miami source links so each audit record points to its own map.
 - Verified Sound Transit’s current service map and confirmed it has no named frequent-service definition.
