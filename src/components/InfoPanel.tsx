@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { X, ExternalLink, Search, Radio, ArrowLeft } from 'lucide-react';
-import { DROPDOWN_PANEL, dropdownAnim, SEARCH_PILL, SEARCH_FIELD, Z_MODAL_BG } from '../styles';
+import { DROPDOWN_PANEL, dropdownAnim, SEARCH_PILL, SEARCH_FIELD, Z_MODAL_BG, CONTROL_ACTIVE, CONTROL_INACTIVE } from '../styles';
 import { LIVE_POLLING_ROUTES, liveCoverageForRouteNames, type LiveCoverage } from '../../shared/livePollingConfig';
 import { R2_PUBLIC_URL, LIVE_ENABLED, HISTORY_ENABLED, BETA_BUILD } from '../../shared/config';
 import { agencyDisplayParts, formatStoredDate } from '../utils/format';
@@ -425,9 +425,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                         onClick={() => setAgencyFeatureFilter(id)}
                         aria-pressed={on}
                         className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition-colors whitespace-nowrap shrink-0 ${
-                          on
-                            ? 'bg-[var(--bg-btn-hover)] text-[var(--text-primary)] border-[var(--text-primary)]'
-                            : 'bg-[var(--bg-app)] text-[var(--text-muted)] border-[var(--border-primary)] hover:text-[var(--text-primary)] hover:border-[var(--text-dim)]'
+                          on ? CONTROL_ACTIVE : CONTROL_INACTIVE
                         }`}
                       >
                         {label}
@@ -450,9 +448,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                         })}
                         aria-pressed={on}
                         className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition-colors whitespace-nowrap shrink-0 ${
-                          on
-                            ? 'bg-[var(--bg-btn-hover)] text-[var(--text-primary)] border-[var(--text-primary)]'
-                            : 'bg-[var(--bg-app)] text-[var(--text-muted)] border-[var(--border-primary)] hover:text-[var(--text-primary)] hover:border-[var(--text-dim)]'
+                          on ? CONTROL_ACTIVE : CONTROL_INACTIVE
                         }`}
                       >
                         {r}

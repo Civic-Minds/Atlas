@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Moon, Search, X } from 'lucide-react';
-import { NIGHT_SERVICE_COLOR } from '../utils/colors';
+import { getNightServiceColor } from '../utils/colors';
+import { useColorVision } from '../context/ColorVisionContext';
 import { useViewport } from '../context/ViewportContext';
 import {
   FLOATING_CARD,
@@ -66,6 +67,8 @@ function featureIntersectsBounds(feature: GeoJSON.Feature, bounds: { s: number; 
 }
 
 export default function NightService({ active, sidebarLeft, layers }: Props) {
+  const { colorVisionFriendly } = useColorVision();
+  const colorMode = colorVisionFriendly ? 'friendly' : 'default';
   const [data, setData] = useState<NightServiceIndexFile | null>(null);
   const [loadState, setLoadState] = useState<'loading' | 'ready' | 'error'>('loading');
   const [filterQuery, setFilterQuery] = useState('');
@@ -164,7 +167,7 @@ export default function NightService({ active, sidebarLeft, layers }: Props) {
               A route counts here only if it has a departure at least every 60 minutes,
               2am to 6am, with no gap at either end of the core overnight window.
             </p>
-            <p className="mt-1.5 text-[10px] font-bold" style={{ color: NIGHT_SERVICE_COLOR }}>
+            <p className="mt-1.5 text-[10px] font-bold" style={{ color: getNightServiceColor(colorMode) }}>
               {data.routeCount} qualifying route patterns across {data.agencyCount} agencies.
             </p>
           </div>

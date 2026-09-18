@@ -4,7 +4,7 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import type { MapboxOverlay } from '@deck.gl/mapbox';
 import { LocateFixed, Plus, Minus, Link2, Flag } from 'lucide-react';
 import { routeKey } from '../../hooks/useIntervalStats';
-import { HEADWAY_TIERS, getHeadwayTiers, NIGHT_SERVICE_COLOR, buildFareColorExpression, buildDefaultRouteLineOpacityExpression, buildFocusedRouteLineOpacityExpression, buildZoomHeadwayGateExpression, type ColorVisionMode } from '../../utils/colors';
+import { HEADWAY_TIERS, getHeadwayTiers, getNightServiceColor, buildFareColorExpression, buildDefaultRouteLineOpacityExpression, buildFocusedRouteLineOpacityExpression, buildZoomHeadwayGateExpression, type ColorVisionMode } from '../../utils/colors';
 import { getRegionalView, saveView, getSavedView, getAgencyBounds } from '../../utils/regionView';
 import { useViewport } from '../../context/ViewportContext';
 import { useHistoryMapOverlay } from '../../context/HistoryMapOverlay';
@@ -776,7 +776,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         type: 'line',
         source: 'night-service-routes',
         paint: {
-          'line-color': NIGHT_SERVICE_COLOR,
+          'line-color': getNightServiceColor(colorMode),
           'line-width': ['interpolate', ['linear'], ['zoom'], 8, 2, 11, 2.5, 14, 3.2, 17, 4.5],
           'line-opacity': 0.9,
         },
@@ -1475,7 +1475,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       if (fareView) {
         lineColorExpr = buildFareColorExpression(colorMode);
       } else if (nightServiceView) {
-        lineColorExpr = NIGHT_SERVICE_COLOR;
+        lineColorExpr = getNightServiceColor(colorMode);
       } else {
         lineColorExpr = buildEffectiveHeadwayColorExpression(period, colorMode);
       }

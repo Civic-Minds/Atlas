@@ -1,5 +1,5 @@
 import React from 'react';
-import { LIST_ROW, LIST_ROW_SPACED, LIST_ROW_PRIMARY, LIST_ROW_DIM } from '../styles';
+import { LIST_ROW, LIST_ROW_SPACED, LIST_ROW_PRIMARY, LIST_ROW_DIM, SELECTION_ACTIVE, SELECTION_ACTIVE_TEXT } from '../styles';
 
 interface RouteListRowProps {
   shortName: string;
@@ -32,11 +32,11 @@ export default function RouteListRow({
       onClick={onClick}
       onMouseEnter={onHoverChange ? () => onHoverChange(true) : undefined}
       onMouseLeave={onHoverChange ? () => onHoverChange(false) : undefined}
-      className={`${variant === 'spaced' ? LIST_ROW_SPACED : LIST_ROW} ${stacked || subtitle ? 'items-start' : ''} ${selected ? 'bg-[var(--accent-bg)]' : ''} ${className ?? ''}`}
+      className={`${variant === 'spaced' ? LIST_ROW_SPACED : LIST_ROW} ${stacked || subtitle ? 'items-start' : ''} ${selected ? SELECTION_ACTIVE : ''} ${className ?? ''}`}
     >
       {stacked ? (
         <div className="min-w-0 flex-1">
-          <p className={`${LIST_ROW_PRIMARY} truncate ${selected ? 'text-[var(--accent)]' : ''}`}>
+          <p className={`${LIST_ROW_PRIMARY} truncate ${selected ? SELECTION_ACTIVE_TEXT : ''}`}>
             <span>{shortName}</span>
             {name && name !== shortName && (
               <span className={`font-normal ${LIST_ROW_DIM} ml-1.5`}>{name}</span>
@@ -47,7 +47,7 @@ export default function RouteListRow({
       ) : (
         <>
           <div className="min-w-0 flex-1">
-            <p className={`${LIST_ROW_PRIMARY} truncate ${selected ? 'text-[var(--accent)]' : ''}`}>
+            <p className={`${LIST_ROW_PRIMARY} truncate ${selected ? SELECTION_ACTIVE_TEXT : ''}`}>
               <span>{shortName}</span>
               {name && name !== shortName && (
                 <span className={`font-normal ${LIST_ROW_DIM} ml-1.5`}>{name}</span>

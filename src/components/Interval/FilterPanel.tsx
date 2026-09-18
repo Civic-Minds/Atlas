@@ -59,7 +59,7 @@ function Toggle({ on }: { on: boolean }) {
   return (
     <span
       className={`relative inline-flex h-6 w-11 shrink-0 rounded-full transition-colors ${TRANSITION_BASE} ${
-        on ? 'bg-[var(--accent)]' : 'bg-[var(--border-primary)]'
+        on ? 'bg-[var(--control-active-bg)]' : 'bg-[var(--control-inactive-border)]'
       }`}
     >
       <span
@@ -345,11 +345,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                               return next;
                             })}
                             aria-pressed={active}
-                            className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition-colors whitespace-nowrap shrink-0 ${
-                              active
-                                ? 'bg-[var(--bg-btn-hover)] text-[var(--text-primary)] border-[var(--text-primary)]'
-                                : 'bg-[var(--bg-app)] text-[var(--text-muted)] border-[var(--border-primary)] hover:text-[var(--text-primary)] hover:border-[var(--text-dim)]'
-                            }`}
+                            className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition-colors whitespace-nowrap shrink-0 ${active ? CONTROL_ACTIVE : CONTROL_INACTIVE}`}
                           >
                             {region}
                           </button>
@@ -416,11 +412,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                             key={status}
                             onClick={() => setDegradedFeedsStatus(status)}
                             aria-pressed={degradedFeedsStatus === status}
-                            className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition-colors whitespace-nowrap ${
-                              degradedFeedsStatus === status
-                                ? 'bg-[var(--bg-btn-hover)] text-[var(--text-primary)] border-[var(--text-primary)]'
-                                : 'bg-[var(--bg-app)] text-[var(--text-muted)] border-[var(--border-primary)] hover:text-[var(--text-primary)] hover:border-[var(--text-dim)]'
-                            }`}
+                            className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition-colors whitespace-nowrap ${degradedFeedsStatus === status ? CONTROL_ACTIVE : CONTROL_INACTIVE}`}
                           >
                             {status === 'all' ? 'All' : qualityStatusLabel(status)}
                           </button>

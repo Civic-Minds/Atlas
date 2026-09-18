@@ -29,6 +29,12 @@ html {
   --control-inactive-border: var(--border-primary);
   --control-inactive-fg: var(--text-primary);
   --control-hover-bg: var(--bg-btn-hover);
+  --selection-active-bg: var(--accent-bg);
+  --selection-active-border: var(--accent-border);
+  --selection-active-fg: var(--accent);
+  --action-primary-bg: var(--accent);
+  --action-primary-border: var(--accent);
+  --action-primary-fg: #ffffff;
   --status-positive: #10b981;
   --status-negative: #ef4444;
   --status-caution: #f59e0b;
@@ -85,6 +91,12 @@ html {
   --control-inactive-border: #4b5563;
   --control-inactive-fg: #111827;
   --control-hover-bg: #e5e7eb;
+  --selection-active-bg: #e5e7eb;
+  --selection-active-border: #111827;
+  --selection-active-fg: #111827;
+  --action-primary-bg: #111827;
+  --action-primary-border: #111827;
+  --action-primary-fg: #ffffff;
   --status-positive: #009e73;
   --status-negative: #d55e00;
   --status-caution: #e69f00;
@@ -100,6 +112,12 @@ html {
   --control-inactive-border: #9ca3af;
   --control-inactive-fg: #ffffff;
   --control-hover-bg: #1f2937;
+  --selection-active-bg: #1f2937;
+  --selection-active-border: #f0f0f0;
+  --selection-active-fg: #ffffff;
+  --action-primary-bg: #f0f0f0;
+  --action-primary-border: #f0f0f0;
+  --action-primary-fg: #111827;
 }
 
 button {

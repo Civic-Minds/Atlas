@@ -9,6 +9,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Improved accessibility with stronger secondary-text contrast, visible keyboard focus, larger settings toggles, reduced-motion support, and clearer Settings semantics.
 - Centralized button and status colours so High contrast mode applies consistently across Atlas screens while normal mode keeps the standard appearance.
 - Standardized screen-level controls on the shared button styles so future High contrast updates cannot drift between views.
+- Extended High contrast colours to selected rows, secondary filters, report actions, and Night Service.
 - Google Analytics no longer loses the initial page view while privacy consent and the tracking script are initializing.
 - Added a visible Feedback email link beside the map attribution for launch-period comments and feature requests.
 - Calgary overnight routes starting near the end of the window (such as LRT 201 and late-night buses) no longer pass as frequent overnight routes on the map or in the filter, and their cards now indicate limited service for routes running only part of the period instead of borrowing daytime frequencies ([#507](https://github.com/Civic-Minds/Atlas/issues/507)).

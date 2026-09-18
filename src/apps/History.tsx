@@ -184,7 +184,7 @@ function RouteHistoryCard({
           {snaps.length >= 2 && (
             <button
               onClick={() => setShowChart(v => !v)}
-              className={`w-7 h-7 flex items-center justify-center rounded-full transition-colors shrink-0 ${showChart ? 'bg-[var(--accent)] text-white' : 'hover:bg-[var(--bg-btn-hover)] text-[var(--text-dim)] hover:text-[var(--text-primary)]'}`}
+              className={`w-7 h-7 flex items-center justify-center rounded-full border transition-colors shrink-0 ${showChart ? CONTROL_ACTIVE : 'hover:bg-[var(--bg-btn-hover)] text-[var(--text-dim)] hover:text-[var(--text-primary)]'}`}
               aria-label="Toggle chart"
             >
               <TrendingUp className="w-3.5 h-3.5" />

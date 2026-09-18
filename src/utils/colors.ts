@@ -126,6 +126,11 @@ export function getFareColor(fare: number | null | undefined, mode: ColorVisionM
 /** Flat line color for Night Service view — every visible route already passed the
  * nightService filter, so (unlike fare/headway) there's no tier to express, just one color. */
 export const NIGHT_SERVICE_COLOR = '#818cf8';
+export const COLOR_VISION_NIGHT_SERVICE_COLOR = '#0072b2';
+
+export function getNightServiceColor(mode: ColorVisionMode = 'default'): string {
+  return mode === 'friendly' ? COLOR_VISION_NIGHT_SERVICE_COLOR : NIGHT_SERVICE_COLOR;
+}
 
 /** MapLibre case expression for fare-based line color. */
 export function buildFareColorExpression(mode: ColorVisionMode = 'default'): unknown[] {

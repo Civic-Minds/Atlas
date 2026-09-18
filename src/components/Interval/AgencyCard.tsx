@@ -4,7 +4,7 @@ import { LIVE_ENABLED } from '../../../shared/config';
 import type { Agency, FareOverride } from '../../App';
 import type { OpenInfoFn } from '../InfoPanel';
 import type { AgencyLayers } from '../../hooks/useAgencyData';
-import { FLOATING_CARD, PANEL_ENTER, CARD_NOTICE_FOOTER, CARD_NOTICE_INLINE, Z_PANEL, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH } from '../../styles';
+import { FLOATING_CARD, PANEL_ENTER, CARD_NOTICE_FOOTER, CARD_NOTICE_INLINE, Z_PANEL, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH, CONTROL_ACTIVE, CONTROL_INACTIVE } from '../../styles';
 import { getFareColor, HEADWAY_TIERS } from '../../utils/colors';
 import { useColorVision } from '../../context/ColorVisionContext';
 import { effectiveMode, GTFS_RAIL_MODE_LABELS, isRailReplacementBus, VIRTUAL_LRT_MODE } from '../../../shared/modes';
@@ -412,13 +412,11 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
                     type="button"
                     onClick={() => setActiveFilter(on ? null : f.key)}
                     className={`text-[9px] font-bold px-2 py-0.5 rounded-full border transition-colors ${
-                      on
-                        ? 'bg-[var(--accent)] text-white border-[var(--accent)]'
-                        : 'bg-[var(--bg-app)] text-[var(--text-secondary)] border-[var(--border-primary)] hover:border-[var(--accent-border)]'
+                      on ? CONTROL_ACTIVE : CONTROL_INACTIVE
                     }`}
                   >
                     {f.label}
-                    <span className={on ? 'text-white/80' : 'text-[var(--text-dim)]'}> {f.count}</span>
+                    <span className={on ? 'opacity-80' : 'text-[var(--text-dim)]'}> {f.count}</span>
                   </button>
                 );
               })}
