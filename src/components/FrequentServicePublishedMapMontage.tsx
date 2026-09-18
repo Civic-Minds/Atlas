@@ -6,7 +6,7 @@ interface MapFrame {
   source: string;
 }
 
-const frames: MapFrame[] = [
+export const publishedMapFrames: MapFrame[] = [
   { agency: 'Toronto Transit Commission', image: '/assets/research/system-maps/toronto.jpg', source: 'https://cdn.ttc.ca/-/media/Project/TTC/DevProto/Images/Home/Routes-and-Schedules/Landing-page-pdfs/TTC_SystemMap.pdf' },
   { agency: 'TransLink Vancouver', image: '/assets/research/system-maps/vancouver.jpg', source: 'https://maps.translink.ca/-/media/translink/documents/schedules-and-maps/transit-system-maps/system-maps/frequent_transit_network_of_metro_vancouver_map.pdf' },
   { agency: 'Edmonton Transit Service', image: '/assets/research/system-maps/edmonton.jpg', source: 'https://www.edmonton.ca/sites/default/files/public-files/ETS-Day-Map-May-2025.pdf' },
@@ -36,16 +36,16 @@ export default function FrequentServicePublishedMapMontage() {
 
   useEffect(() => {
     if (reducedMotion || !isPlaying) return;
-    const timer = window.setInterval(() => setActiveFrame(frame => (frame + 1) % frames.length), 180);
+    const timer = window.setInterval(() => setActiveFrame(frame => (frame + 1) % publishedMapFrames.length), 180);
     return () => window.clearInterval(timer);
   }, [isPlaying, reducedMotion]);
 
-  const current = frames[activeFrame];
+  const current = publishedMapFrames[activeFrame];
 
   return (
     <figure className="mt-10 w-full overflow-hidden rounded-[1.5rem] border border-[var(--border-primary)] bg-[#f4f3ef] shadow-sm">
       <div className="relative aspect-[12/7]">
-        {frames.map((frame, index) => (
+        {publishedMapFrames.map((frame, index) => (
           <img
             key={frame.image}
             src={frame.image}
