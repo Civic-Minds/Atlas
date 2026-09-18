@@ -654,33 +654,30 @@
       "agencyName": "San Diego Metropolitan Transit System",
       "country": "United States",
       "region": "California",
-      "status": "pending_map_review",
+      "status": "no_definition_on_map",
       "mapCandidates": [
         {
-          "url": "https://www.sdmts.com/getting-around/maps-and-schedules",
+          "label": "Regional Transit Map",
+          "url": "https://www.sdmts.com/sites/default/files/attachments/regional-transit-map.pdf",
           "sourceType": "system_map",
-          "localFile": "sdmts-1"
-        },
-        {
-          "url": "https://www.sdmts.com/sites/default/files/attachments/mts_designingfortransit_2018-02-02web.pdf",
-          "sourceType": "system_map",
-          "localFile": "sdmts-2"
+          "localFile": "sdmts-3"
         }
       ],
       "preservedFiles": [
         "sdmts-1",
-        "sdmts-2"
+        "sdmts-2",
+        "sdmts-3"
       ],
-      "mapDate": null,
-      "mapPageOrSection": null,
-      "exactMapWording": null,
+      "mapDate": "September 2025",
+      "mapPageOrSection": "page 1, map legend",
+      "exactMapWording": "Rapid service; Regular service; Limited service",
       "thresholdMinutes": null,
       "thresholdText": null,
       "serviceSpan": null,
       "days": null,
       "geography": null,
       "mode": null,
-      "evidenceNotes": null
+      "evidenceNotes": "The current official regional map distinguishes Rapid, Regular, and Limited service and gives a regular-service frequency note, but it does not name a Frequent or High-Frequency category. A separate planning report was not used as system-map evidence."
     },
     {
       "auditOrder": 24,
@@ -708,19 +705,28 @@
       "agencyName": "Bay Area Rapid Transit",
       "country": "United States",
       "region": "California",
-      "status": "pending_map_review",
-      "mapCandidates": [],
-      "preservedFiles": [],
-      "mapDate": null,
-      "mapPageOrSection": null,
-      "exactMapWording": null,
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "label": "Every day until 9pm 5-Line Service Map",
+          "url": "https://www.bart.gov/sites/default/files/2025-01/BART-system-map-everyday-until-9pm.png",
+          "sourceType": "system_map",
+          "localFile": "bart-1"
+        }
+      ],
+      "preservedFiles": [
+        "bart-1"
+      ],
+      "mapDate": "2025",
+      "mapPageOrSection": "map title and service legend",
+      "exactMapWording": "Every day until 9pm — 5-Line Service",
       "thresholdMinutes": null,
       "thresholdText": null,
       "serviceSpan": null,
       "days": null,
       "geography": null,
       "mode": null,
-      "evidenceNotes": null
+      "evidenceNotes": "The current official BART map describes line coverage by time of day but does not name a frequent/high-frequency category or publish a frequent headway definition."
     },
     {
       "auditOrder": 26,
