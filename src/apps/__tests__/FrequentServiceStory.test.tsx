@@ -10,8 +10,10 @@ describe('FrequentServiceStory', () => {
 
     expect(screen.getByRole('heading', { name: 'What does “frequent” actually mean?' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: '15 minutes is common. It is not universal.' })).toBeInTheDocument();
-    expect(screen.getByText(/Toronto.*Toronto Transit Commission/)).toBeInTheDocument();
-    expect(screen.getByText(/Yellowknife.*Yellowknife Transit/)).toBeInTheDocument();
+    expect(screen.getByText('Toronto')).toBeInTheDocument();
+    expect(screen.getByText('Toronto Transit Commission')).toBeInTheDocument();
+    expect(screen.getByText('Yellowknife')).toBeInTheDocument();
+    expect(screen.getByText('Yellowknife Transit')).toBeInTheDocument();
     expect(screen.getByText('No named definition found')).toBeInTheDocument();
     expect(screen.getByText('Agencies publishing this threshold. An agency can appear in more than one bar when it publishes multiple tiers or periods.')).toBeInTheDocument();
   });

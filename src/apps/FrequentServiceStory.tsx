@@ -15,28 +15,22 @@ const toneStyles = {
 
 function StoryExample({ example }: { example: FrequentServiceStoryExample }) {
   const tone = toneStyles[example.tone];
+  const scaleLabel = example.scale === 'large-system' ? 'Large system' : example.scale === 'smaller-system' ? 'Smaller system' : 'Counterexample';
   return (
     <article
-      className="rounded-[1.75rem] border border-[var(--border-primary)] overflow-hidden"
-      style={{ background: `linear-gradient(135deg, ${tone.soft}, transparent 60%), var(--bg-panel)` }}
+      className="relative border-b border-[var(--border-primary)] py-10 first:border-t sm:grid sm:grid-cols-[minmax(10rem,0.7fr)_minmax(0,1.3fr)] sm:gap-10"
     >
-      <div className="h-1" style={{ backgroundColor: tone.accent }} />
-      <div className="p-5 sm:p-7">
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <p className="text-[0.68rem] uppercase tracking-[0.18em] font-black" style={{ color: tone.accent }}>
-              {example.city} · {example.agency}
-            </p>
-            <h3 className="mt-3 text-xl sm:text-2xl font-black tracking-tight text-[var(--text-primary)]">{example.headline}</h3>
-          </div>
-          <span className="shrink-0 rounded-full border border-[var(--border-primary)] px-2.5 py-1 text-[0.65rem] font-bold text-[var(--text-muted)]">
-            {example.scale === 'large-system' ? 'Large system' : example.scale === 'smaller-system' ? 'Smaller system' : 'Counterexample'}
-          </span>
-        </div>
-        <p className="mt-4 text-sm leading-6 text-[var(--text-muted)]">{example.summary}</p>
-        <ul className="mt-5 grid gap-2 text-xs text-[var(--text-secondary)] sm:grid-cols-3">
+      <div className="border-l-4 pl-4 sm:border-l-0 sm:border-t-4 sm:pl-0 sm:pt-4" style={{ borderColor: tone.accent }}>
+        <p className="text-2xl font-black tracking-tight text-[var(--text-primary)]">{example.city}</p>
+        <p className="mt-1 text-xs leading-5 text-[var(--text-muted)]">{example.agency}</p>
+        <p className="mt-4 text-[0.65rem] uppercase tracking-[0.16em] font-black" style={{ color: tone.accent }}>{scaleLabel}</p>
+      </div>
+      <div className="mt-6 sm:mt-0">
+        <h3 className="text-2xl sm:text-3xl font-black tracking-tight text-[var(--text-primary)]">{example.headline}</h3>
+        <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]">{example.summary}</p>
+        <ul className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-sm text-[var(--text-secondary)]">
           {example.details.map(detail => (
-            <li key={detail} className="rounded-xl bg-[var(--bg-stat)] px-3 py-2 leading-5">{detail}</li>
+            <li key={detail} className="flex items-start gap-2"><span aria-hidden="true" style={{ color: tone.accent }}>•</span>{detail}</li>
           ))}
         </ul>
         <a
@@ -45,7 +39,7 @@ function StoryExample({ example }: { example: FrequentServiceStoryExample }) {
           rel="noreferrer"
           className="mt-5 inline-flex items-center gap-1.5 text-xs font-bold text-[var(--text-primary)] underline decoration-[var(--border-primary)] underline-offset-4 hover:decoration-current"
         >
-          {example.sourceLabel}
+          Read {example.sourceLabel}
           <ExternalLink className="h-3 w-3" aria-hidden="true" />
         </a>
       </div>
@@ -76,8 +70,7 @@ export default function FrequentServiceStory({ onExploreMap }: Props) {
         </header>
 
         <div id="story" className="mx-auto mt-24 max-w-4xl space-y-24 sm:mt-32 sm:space-y-32">
-          <section aria-labelledby="why-heading" className="grid gap-8 sm:grid-cols-[0.8fr_1.2fr] sm:items-start">
-            <p className="text-[0.7rem] uppercase tracking-[0.2em] font-black text-[var(--text-dim)]">01 / The problem</p>
+          <section aria-labelledby="why-heading" className="mx-auto max-w-3xl">
             <div>
               <h2 id="why-heading" className="text-3xl sm:text-4xl font-black tracking-tight">A line on a map is not a promise.</h2>
               <p className="mt-5 text-base leading-8 text-[var(--text-muted)]">
@@ -91,19 +84,17 @@ export default function FrequentServiceStory({ onExploreMap }: Props) {
 
           <section aria-labelledby="examples-heading">
             <div className="max-w-2xl">
-              <p className="text-[0.7rem] uppercase tracking-[0.2em] font-black text-[var(--text-dim)]">02 / The examples</p>
-              <h2 id="examples-heading" className="mt-3 text-3xl sm:text-4xl font-black tracking-tight">There is no single “frequent.”</h2>
+              <h2 id="examples-heading" className="text-3xl sm:text-4xl font-black tracking-tight">There is no single “frequent.”</h2>
               <p className="mt-5 text-base leading-8 text-[var(--text-muted)]">Here is what that looks like across large systems, smaller cities, and one important absence.</p>
             </div>
-            <div className="mt-10 grid gap-5 md:grid-cols-2">
+            <div className="mt-10">
               {frequentServiceStoryExamples.map(example => <StoryExample key={example.id} example={example} />)}
             </div>
           </section>
 
           <section aria-labelledby="chart-heading" className="rounded-[2rem] border border-[var(--border-primary)] bg-[var(--bg-panel)] p-6 sm:p-10">
             <div className="max-w-2xl">
-              <p className="text-[0.7rem] uppercase tracking-[0.2em] font-black text-[var(--text-dim)]">03 / The pattern</p>
-              <h2 id="chart-heading" className="mt-3 text-3xl sm:text-4xl font-black tracking-tight">15 minutes is common. It is not universal.</h2>
+              <h2 id="chart-heading" className="text-3xl sm:text-4xl font-black tracking-tight">15 minutes is common. It is not universal.</h2>
               <p className="mt-5 text-base leading-8 text-[var(--text-muted)]">
                 Of the 500 agencies reviewed, 91 published a named frequent or high-frequency tier with a numeric threshold. Fifteen minutes was the most common value, followed by 30 and 10 minutes.
               </p>
@@ -124,8 +115,7 @@ export default function FrequentServiceStory({ onExploreMap }: Props) {
             </div>
           </section>
 
-          <section aria-labelledby="more-heading" className="grid gap-8 sm:grid-cols-[0.8fr_1.2fr] sm:items-start">
-            <p className="text-[0.7rem] uppercase tracking-[0.2em] font-black text-[var(--text-dim)]">04 / The missing context</p>
+          <section aria-labelledby="more-heading" className="mx-auto max-w-3xl">
             <div>
               <h2 id="more-heading" className="text-3xl sm:text-4xl font-black tracking-tight">The number is only the beginning.</h2>
               <p className="mt-5 text-base leading-8 text-[var(--text-muted)]">A frequency threshold is attached to a span, a set of days, and a geography. It may describe a route, a corridor, a network, or a product that combines modes. A 15-minute route that stops at 6pm is a different promise from a 15-minute corridor that runs into the evening.</p>
@@ -143,8 +133,7 @@ export default function FrequentServiceStory({ onExploreMap }: Props) {
           <section aria-labelledby="atlas-heading" className="rounded-[2rem] border border-[var(--border-primary)] bg-[var(--bg-panel)] p-6 sm:p-10">
             <div className="grid gap-8 sm:grid-cols-[1fr_auto] sm:items-end">
               <div>
-                <p className="text-[0.7rem] uppercase tracking-[0.2em] font-black text-[var(--text-dim)]">05 / Your city</p>
-                <h2 id="atlas-heading" className="mt-3 text-3xl sm:text-4xl font-black tracking-tight">Now find your own network.</h2>
+                <h2 id="atlas-heading" className="text-3xl sm:text-4xl font-black tracking-tight">Now find your own network.</h2>
                 <p className="mt-5 max-w-2xl text-base leading-8 text-[var(--text-muted)]">The research explains the categories. Atlas lets you apply one consistent test to the routes around you. Search for a city, compare 15- and 30-minute service, and see where the useful network actually holds together.</p>
               </div>
               <button type="button" onClick={exploreMap} className="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--accent)] px-5 py-3 text-sm font-black text-[var(--bg-app)] hover:opacity-85 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)]">

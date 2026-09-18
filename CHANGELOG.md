@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Reworked the Frequent Service story examples into a readable editorial sequence instead of a dashboard-like card grid.
 - Added a guided Frequent Service research story with source-backed North American examples, threshold context, and a handoff into the interactive map.
 - Added a reproducible analysis of the 500-agency frequent-service catalog, separating named definitions from broader numeric frequency tiers so Atlas can make a source-backed sample-specific research claim.
 - Added a beta-only Frequent Service research view for comparing 15- and 30-minute service across selected days and time spans.
