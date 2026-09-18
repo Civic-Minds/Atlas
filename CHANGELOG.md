@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Made the research Method’s review date explicit instead of burying it in the sample description.
 - Constrained the research story body and Method text to the same readable line length as the rest of the page.
 - Corrected the research story to use UTA's 15-minute map-facing definition and removed Davenport's unsupported frequent-service claim.
 - Corrected the research classifier so generic slower-service standards are not presented as named frequent definitions, and added the actual 60-minute examples.
