@@ -3,6 +3,7 @@ import { ArrowDown, ArrowRight, MapPinned } from 'lucide-react';
 import { trackEvent } from '../lib/analytics';
 import { frequentServiceStoryExamples, frequentServiceStoryStats, type FrequentServiceStoryExample } from '../data/frequentServiceStory';
 import FrequentServiceStoryMap from '../components/FrequentServiceStoryMap';
+import FrequentServiceAgencyChart from '../components/FrequentServiceAgencyChart';
 import type { Agency } from '../App';
 
 interface Props {
@@ -180,6 +181,7 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
                 <p className="mt-6 text-sm leading-6 text-[var(--text-muted)]">No featured example in this story uses this threshold.</p>
               )}
             </div>
+            <FrequentServiceAgencyChart />
           </section>
 
           <section aria-labelledby="more-heading" className="mx-auto w-full max-w-[48rem]">
