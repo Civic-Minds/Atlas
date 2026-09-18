@@ -79,6 +79,36 @@ const reviewed = {
   whistler: {
     status: 'map_unavailable', mapCandidates: [{ label: 'Whistler Rider Guide / system map', url: 'https://www.bctransit.com/whistler/wp-content/uploads/sites/51/2026/06/whi_rg_july2026.pdf', sourceType: 'system_map', localFile: 'whistler-1' }], preservedFiles: ['whistler-1'], mapDate: 'July 2026', mapPageOrSection: 'rider guide map', evidenceNotes: 'The official Whistler PDF link was preserved but returned a zero-page PDF in this review environment, so its map contents could not be verified.'
   },
+  'rtd-denver': {
+    status: 'map_unavailable', mapCandidates: [{ label: 'RTD system map page', url: 'https://www.rtd-denver.com/system-map', sourceType: 'system_map' }], mapPageOrSection: 'interactive system map page', evidenceNotes: 'The official RTD system-map page is interactive and did not expose a downloadable map or a verifiable frequent-service legend in this review environment. No definition is inferred from route or planning material.'
+  },
+  'fort-mcmurray': {
+    status: 'map_unavailable', mapCandidates: [{ label: '2025–2026 Transit Map', url: 'https://www.rmwb.ca/media/ih4nbvj1/2025-26-transit-student-guide_final.pdf', sourceType: 'system_map' }], mapPageOrSection: 'official transit map link', evidenceNotes: 'The current official map was identified, but its source URL returned 404 during preservation. The older planning map was not used as current system-map evidence.'
+  },
+  brandon: {
+    status: 'no_definition_on_map', mapCandidates: [{ label: 'Brandon Transit routes and schedules', url: 'https://www.brandon.ca/roads-parking-transportation/brandon-transit/routes-and-schedules/', sourceType: 'system_map' }], mapPageOrSection: 'all-routes map page', evidenceNotes: 'The official Brandon Transit map page provides an all-routes map and timing-point materials, but does not name a frequent/high-frequency category or define a frequent threshold.'
+  },
+  codiac: {
+    status: 'map_unavailable', mapCandidates: [{ label: 'Codiac Transpo network restructuring materials', url: 'https://www5.moncton.ca/docs/councilmeetings/2026/COTW/2026-01-26-COTW-Agenda-Full.pdf', sourceType: 'planning_map' }], mapPageOrSection: 'planning document', exactMapWording: 'Frequent Routes — 15-minute or better peak service', thresholdText: '15-minute or better peak service', evidenceNotes: 'The official planning material describes proposed Frequent Routes, but a current rider-facing system map was not verified. It is excluded from system-map evidence.'
+  },
+  fredericton: {
+    status: 'no_definition_on_map', mapCandidates: [{ label: 'Fredericton overall transit map', url: 'https://staging.fredericton.ca/sites/default/files/2023-05/overalltransitmap2023_0.pdf', sourceType: 'system_map', localFile: 'fredericton-1' }], preservedFiles: ['fredericton-1'], mapDate: 'April 2023', mapPageOrSection: 'overall map and legend', evidenceNotes: 'The preserved official overall map does not name a frequent/high-frequency category or define a frequent threshold. Frequency values found in a strategic report were not used.'
+  },
+  'saint-john': {
+    status: 'map_unavailable', mapCandidates: [{ label: 'Saint John full system map', url: 'https://saintjohn.ca/en/transit/routes-stops-and-schedules', sourceType: 'system_map' }], mapPageOrSection: 'Open Data system-map link', evidenceNotes: 'The official routes page points to a full system map through the Open Data portal, but the map itself was not retrievable in this review environment. Frequency figures from an audit report were not used.'
+  },
+  metrobus: {
+    status: 'no_definition_on_map', mapCandidates: [{ label: 'Metrobus system map', url: 'https://www.metrobus.com/system_map.asp', sourceType: 'system_map', localFile: 'metrobus-1' }], preservedFiles: ['metrobus-1'], mapPageOrSection: 'system map page', evidenceNotes: 'The official Metrobus system-map page shows all routes but does not name a frequent/high-frequency category or define a frequent threshold. Separate Metrobus communications were not used as map evidence.'
+  },
+  yellowknife: {
+    status: 'map_unavailable', mapCandidates: [{ label: 'Yellowknife routes and schedules page', url: 'https://www.yellowknife.ca/en/living-here/schedules-and-maps.aspx', sourceType: 'system_map' }], mapPageOrSection: 'official routes and schedules page', evidenceNotes: 'The official page identifies a 2024 Transit Rider’s Guide and three regular routes, but the guide could not be retrieved during review. No frequency definition is inferred from the transportation-plan report.'
+  },
+  belleville: {
+    status: 'map_unavailable', mapCandidates: [{ label: 'Belleville routes and schedules', url: 'https://www.belleville.ca/walk-ride-and-drive/transit/routes-and-schedules/', sourceType: 'system_map' }], mapPageOrSection: 'route-map and schedule page', evidenceNotes: 'The official page provides individual route maps and an interactive GIS map but no retrievable full system map was verified. No frequent definition is inferred.'
+  },
+  brampton: {
+    status: 'no_definition_on_map', mapCandidates: [{ label: 'Brampton weekday system map', url: 'https://www.brampton.ca/EN/residents/transit/plan-your-trip/Documents/Brampton_System_M-F_Sept2022.pdf', sourceType: 'system_map', localFile: 'brampton-1' }], mapPageOrSection: 'system map legend', evidenceNotes: 'The official map shows Züm and Brampton Transit route categories and points to a separate frequency guide, but the map itself does not name or define a frequent/high-frequency category.'
+  },
   trimet: {
     status: 'numeric_definition_on_map', mapCandidates: [{ label: 'Frequent Service map', url: 'https://www.trimet.org/maps/pdf/frequentservice.pdf', sourceType: 'system_map', localFile: 'trimet-1' }], preservedFiles: ['trimet-1'], mapDate: 'August 2026', mapPageOrSection: 'page 1, service legend', exactMapWording: 'Rail Service — About every 15 minutes or less most of the day, every day; FX Frequent Express Service — About every 12 minutes or less most of the day, every day; Frequent Service — About every 15 minutes or less most of the day, every day', thresholdText: 'Rail and regular Frequent Service: about every 15 minutes or less; Frequent Express: about every 12 minutes or less', serviceSpan: 'most of the day', days: 'every day', geography: 'route/network', mode: 'rail and bus', evidenceNotes: 'The official Frequent Service map publishes separate numeric definitions for rail, regular bus, and Frequent Express. No single threshold is assigned because that would collapse distinct map categories.'
   },
