@@ -9,12 +9,12 @@ describe('FrequentServiceStory', () => {
     render(<FrequentServiceStory onExploreMap={() => {}} />);
 
     expect(screen.getByRole('heading', { name: 'What does “frequent” actually mean?' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'The broad promise is usually 15–30 minutes.' })).toBeInTheDocument();
-    expect(screen.getByText('Toronto')).toBeInTheDocument();
-    expect(screen.getByText('Toronto Transit Commission')).toBeInTheDocument();
-    expect(screen.getByText('Yellowknife')).toBeInTheDocument();
-    expect(screen.getByText('Yellowknife Transit')).toBeInTheDocument();
-    expect(screen.getByText('No named definition found')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'There is no single “frequent.”' })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'Vancouver' })).toBeInTheDocument();
+    expect(screen.getByText('TransLink Vancouver')).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'Winnipeg' })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'Nanaimo' })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'Asheville' })).toBeInTheDocument();
     expect(screen.getByText(/Each agency appears once, using the slowest period/)).toBeInTheDocument();
   });
 
@@ -24,6 +24,18 @@ describe('FrequentServiceStory', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /Find your city/i }));
     expect(onExploreMap).toHaveBeenCalledOnce();
+  });
+
+  it('changes the examples when a chart threshold is selected', () => {
+    render(<FrequentServiceStory onExploreMap={() => {}} />);
+
+    fireEvent.click(screen.getByRole('button', { name: /Show examples for 30-minute service/ }));
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Yellowknife' }));
+
+    expect(screen.getByRole('tab', { name: 'Yellowknife' })).toBeInTheDocument();
+    expect(screen.getByText('Yellowknife Transit')).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'Nanaimo' })).toBeInTheDocument();
   });
 
   it('keeps the story chart aligned with the generated research analysis', () => {

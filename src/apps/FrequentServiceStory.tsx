@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { ArrowDown, ArrowRight, ExternalLink, MapPinned } from 'lucide-react';
 import { trackEvent } from '../lib/analytics';
 import { frequentServiceStoryExamples, frequentServiceStoryStats, type FrequentServiceStoryExample } from '../data/frequentServiceStory';
@@ -7,21 +8,41 @@ interface Props {
 }
 
 function StoryExample({ example }: { example: FrequentServiceStoryExample }) {
+  const detailLabels = ['When', 'Where', 'What the agency calls it'];
+
   return (
-    <article className="border-b border-[var(--border-primary)] py-10 first:border-t">
+    <article className="mt-8 border-t border-[var(--border-primary)] pt-7">
       <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
         <p className="text-xl font-black tracking-tight text-[var(--text-primary)]">{example.city}</p>
         <p className="text-sm text-[var(--text-muted)]">{example.agency}</p>
       </div>
       <h3 className="mt-3 text-2xl sm:text-3xl font-black tracking-tight text-[var(--text-primary)]">{example.headline}</h3>
-      <p className="mt-4 max-w-3xl text-base leading-7 text-[var(--text-muted)]">{example.summary}</p>
-      <p className="mt-4 max-w-3xl text-sm leading-6 text-[var(--text-secondary)]">{example.details.join(' · ')}</p>
+      <p className="mt-3 max-w-3xl text-base leading-7 text-[var(--text-muted)]">{example.summary}</p>
+      <div className="mt-6 grid gap-3 sm:grid-cols-3">
+        {example.details.map((detail, index) => (
+          <div key={detail} className="rounded-xl bg-[var(--bg-stat)] p-4">
+            <p className="text-[0.65rem] font-black uppercase tracking-[0.16em] text-[var(--text-dim)]">{detailLabels[index] ?? 'Published detail'}</p>
+            <p className="mt-2 text-sm leading-6 text-[var(--text-primary)]">{detail}</p>
+          </div>
+        ))}
+      </div>
     </article>
   );
 }
 
 export default function FrequentServiceStory({ onExploreMap }: Props) {
+  const [selectedMinutes, setSelectedMinutes] = useState(15);
+  const [selectedExampleId, setSelectedExampleId] = useState('translink-vancouver');
   const maxBar = Math.max(...frequentServiceStoryStats.headwayBars.map(bar => bar.agencies));
+  const selectedBar = frequentServiceStoryStats.headwayBars.find(bar => bar.minutes === selectedMinutes);
+  const selectedExamples = frequentServiceStoryExamples.filter(example => example.thresholdMinutes.includes(selectedMinutes));
+  const selectedExample = selectedExamples.find(example => example.id === selectedExampleId) ?? selectedExamples[0];
+
+  function selectMinutes(minutes: number) {
+    const examples = frequentServiceStoryExamples.filter(example => example.thresholdMinutes.includes(minutes));
+    setSelectedMinutes(minutes);
+    setSelectedExampleId(examples[0]?.id ?? '');
+  }
 
   function exploreMap() {
     trackEvent('frequent_service_story_map_opened');
@@ -55,36 +76,62 @@ export default function FrequentServiceStory({ onExploreMap }: Props) {
             </div>
           </section>
 
-          <section aria-labelledby="examples-heading">
-            <div className="max-w-2xl">
-              <h2 id="examples-heading" className="text-3xl sm:text-4xl font-black tracking-tight">There is no single “frequent.”</h2>
-              <p className="mt-5 text-base leading-8 text-[var(--text-muted)]">Here is what that looks like across large systems, smaller cities, and one important absence.</p>
-            </div>
-            <div className="mt-10">
-              {frequentServiceStoryExamples.map(example => <StoryExample key={example.id} example={example} />)}
-            </div>
-          </section>
-
           <section aria-labelledby="chart-heading" className="rounded-[2rem] border border-[var(--border-primary)] bg-[var(--bg-panel)] p-6 sm:p-10">
             <div className="max-w-2xl">
-              <h2 id="chart-heading" className="text-3xl sm:text-4xl font-black tracking-tight">The broad promise is usually 15–30 minutes.</h2>
+              <p className="text-[0.7rem] uppercase tracking-[0.24em] font-black text-[var(--accent)]">Explore the sample</p>
+              <h2 id="chart-heading" className="mt-3 text-3xl sm:text-4xl font-black tracking-tight">There is no single “frequent.”</h2>
               <p className="mt-5 text-base leading-8 text-[var(--text-muted)]">
-                Of the 500 agencies reviewed, 91 published a named frequent or high-frequency tier with a numeric threshold. To avoid confusing a fast peak period with the whole product, this chart uses the slowest published period for each agency’s named tier. Fifteen minutes was most common, followed by 30 minutes.
+                Pick a published threshold to see how agencies turn that number into a real service promise. The chart covers the 91 agencies that named a frequent or high-frequency tier with a numeric threshold.
               </p>
             </div>
-            <div className="mt-10" role="img" aria-label="Bar chart showing the number of agencies by the slowest published period in their named frequent-service product">
+            <div className="mt-10" aria-label="Interactive chart showing the number of agencies by the slowest published period in their named frequent-service product">
               <div className="space-y-4">
                 {frequentServiceStoryStats.headwayBars.map(bar => (
-                  <div key={bar.minutes} className="grid grid-cols-[4.5rem_1fr_3rem] items-center gap-3 text-sm">
+                  <button
+                    key={bar.minutes}
+                    type="button"
+                    aria-pressed={selectedMinutes === bar.minutes}
+                    aria-label={`Show examples for ${bar.minutes}-minute service (${bar.agencies} agencies)`}
+                    onClick={() => selectMinutes(bar.minutes)}
+                    title={`Show examples for ${bar.minutes}-minute service (${bar.agencies} agencies)`}
+                    className="grid w-full grid-cols-[4.5rem_1fr_3rem] items-center gap-3 rounded-lg text-left text-sm outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)]"
+                  >
                     <span className="font-black text-[var(--text-primary)]">{bar.minutes} min</span>
                     <div className="h-3 overflow-hidden rounded-full bg-[var(--bg-stat)]">
-                      <div className="h-full rounded-full" style={{ width: `${(bar.agencies / maxBar) * 100}%`, backgroundColor: bar.minutes === 15 ? 'var(--accent)' : 'var(--text-muted)' }} />
+                      <div className="h-full rounded-full transition-[width,background-color]" style={{ width: `${(bar.agencies / maxBar) * 100}%`, backgroundColor: selectedMinutes === bar.minutes ? 'var(--accent)' : 'var(--text-muted)' }} />
                     </div>
                     <span className="text-right tabular-nums text-[var(--text-muted)]">{bar.agencies}</span>
-                  </div>
+                  </button>
                 ))}
               </div>
-              <p className="mt-5 text-xs leading-5 text-[var(--text-dim)]">Each agency appears once, using the slowest period published for its named frequent product. This prevents a fast peak period from being mistaken for the agency’s all-day promise. The highlighted 15-minute bar is the most common.</p>
+              <p className="mt-5 text-xs leading-5 text-[var(--text-dim)]">Each agency appears once, using the slowest period published for its named frequent product. Select a bar to see illustrative examples; these are not every agency in that group.</p>
+            </div>
+            <div className="mt-10 border-t border-[var(--border-primary)] pt-8" aria-live="polite">
+              <p className="text-sm font-bold text-[var(--text-muted)]">{selectedBar?.agencies} agencies · slowest published period: {selectedMinutes} minutes</p>
+              <p className="mt-2 max-w-2xl text-base leading-7 text-[var(--text-muted)]">
+                The same number can describe a whole network, a corridor, only part of the day, or a tier that drops to a slower service outside peak hours.
+              </p>
+              {selectedExamples.length > 0 ? (
+                <>
+                  <div className="mt-6 flex flex-wrap gap-2" role="tablist" aria-label={`${selectedMinutes}-minute examples`}>
+                    {selectedExamples.map(example => (
+                      <button
+                        key={example.id}
+                        type="button"
+                        role="tab"
+                        aria-selected={selectedExample?.id === example.id}
+                        onClick={() => setSelectedExampleId(example.id)}
+                        className={`rounded-full border px-3 py-2 text-sm font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${selectedExample?.id === example.id ? 'border-[var(--accent)] bg-[var(--accent)] text-[var(--bg-app)]' : 'border-[var(--border-primary)] text-[var(--text-primary)] hover:bg-[var(--bg-btn-hover)]'}`}
+                      >
+                        {example.city}
+                      </button>
+                    ))}
+                  </div>
+                  {selectedExample && <StoryExample example={selectedExample} />}
+                </>
+              ) : (
+                <p className="mt-6 text-sm leading-6 text-[var(--text-muted)]">No featured example in this story uses this threshold.</p>
+              )}
             </div>
           </section>
 
