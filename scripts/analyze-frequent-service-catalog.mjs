@@ -6,7 +6,11 @@ const markdownPath = 'docs/research/frequent-service-analysis-2026-09.md';
 
 const catalog = JSON.parse(fs.readFileSync(catalogPath, 'utf8'));
 
-const namedFrequencyPattern = /\bfrequent\b|high[- ]frequency|high-frequency|high frequency/i;
+// Only treat an explicit rider-facing product or tier as a named frequent definition.
+// Generic prose such as “no less frequent than every 75 minutes” and labels such as
+// “less frequent route service” describe service levels, but do not define “frequent.”
+const namedFrequencyLabelPattern = /\bfrequent\b|high[- ]frequency/i;
+const namedFrequencyTextPattern = /\bfrequent service\b|\bfrequent network\b|\bfrequent route\b|\bfrequent lines?\b|\b10[- ]minute network\b|\bhigh[- ]frequency\b/i;
 
 function numericValues(tier) {
   const values = [];
@@ -24,7 +28,12 @@ function numericValues(tier) {
 }
 
 function tierHasNamedFrequency(tier) {
-  return namedFrequencyPattern.test(`${tier.label ?? ''} ${tier.thresholdText ?? ''}`);
+  const label = String(tier.label ?? '');
+  const thresholdText = String(tier.thresholdText ?? '');
+  const excludedLabel = /\b(?:less\s+frequent|infrequent)\b/i.test(label);
+  const excludedText = /\b(?:no less|less|in)frequent(?:ly)?\b/i.test(thresholdText);
+  return (namedFrequencyLabelPattern.test(label) && !excludedLabel)
+    || (namedFrequencyTextPattern.test(thresholdText) && !excludedText);
 }
 
 function tierHasNumericFrequency(tier) {

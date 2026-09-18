@@ -22,8 +22,8 @@ This is an Atlas-sample result, not a universal global claim. The catalog contai
 | Agency-level category | Agencies | Share |
 |---|---:|---:|
 | explicit_numeric_definition | 205 | 41.0% |
-| explicit_qualitative_definition | 32 | 6.4% |
-| formal_definition_without_named_frequent_label | 8 | 1.6% |
+| explicit_qualitative_definition | 26 | 5.2% |
+| formal_definition_without_named_frequent_label | 14 | 2.8% |
 | no_definition_found | 255 | 51.0% |
 
 ## Numeric thresholds
@@ -75,9 +75,9 @@ This is an Atlas-sample result, not a universal global claim. The catalog contai
 | 120 | 7 agency-tier observations |
 | 180 | 2 agency-tier observations |
 
-134 agencies contain a tier or source text explicitly using “frequent” or “high-frequency.” This named subset is smaller than the full numeric-frequency group because some agencies publish numeric service bands without naming them “frequent.”
+122 agencies contain a tier or source text explicitly using “frequent” or “high-frequency.” This named subset is smaller than the full numeric-frequency group because some agencies publish numeric service bands without naming them “frequent.”
 
-Among the 91 agencies whose named frequent/high-frequency tier also has numeric evidence, the most common published values are 15 minutes, 30 minutes, 10 minutes. These are agency-tier observations, not a claim that every agency uses the same threshold.
+Among the 88 agencies whose named frequent/high-frequency tier also has numeric evidence, the most common published values are 15 minutes, 30 minutes, 10 minutes. These are agency-tier observations, not a claim that every agency uses the same threshold.
 
 | Named numeric threshold | Observations |
 |---:|---:|
@@ -90,18 +90,15 @@ Among the 91 agencies whose named frequent/high-frequency tier also has numeric 
 | 7 | 7 agency-tier observations |
 | 5 | 6 agency-tier observations |
 | 2 | 4 agency-tier observations |
-| 60 | 4 agency-tier observations |
 | 8 | 3 agency-tier observations |
 | 9 | 3 agency-tier observations |
+| 60 | 2 agency-tier observations |
 | 1 | 1 agency-tier observations |
 | 3 | 1 agency-tier observations |
 | 4 | 1 agency-tier observations |
 | 11 | 1 agency-tier observations |
 | 14 | 1 agency-tier observations |
 | 16 | 1 agency-tier observations |
-| 45 | 1 agency-tier observations |
-| 75 | 1 agency-tier observations |
-| 90 | 1 agency-tier observations |
 
 ## Interpretation
 

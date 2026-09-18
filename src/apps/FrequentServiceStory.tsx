@@ -81,7 +81,7 @@ export default function FrequentServiceStory({ onExploreMap }: Props) {
               <p className="text-[0.7rem] uppercase tracking-[0.24em] font-black text-[var(--accent)]">Explore the sample</p>
               <h2 id="chart-heading" className="mt-3 text-3xl sm:text-4xl font-black tracking-tight">There is no single “frequent.”</h2>
               <p className="mt-5 text-base leading-8 text-[var(--text-muted)]">
-                Pick a published threshold to see how agencies turn that number into a real service promise. The chart covers the 91 agencies that named a frequent or high-frequency tier with a numeric threshold.
+                Pick a published threshold to see how agencies turn that number into a real service promise. The chart covers the 88 agencies that explicitly named a frequent or high-frequency tier with a numeric threshold.
               </p>
             </div>
             <div className="mt-10" aria-label="Interactive chart showing the number of agencies by the slowest published period in their named frequent-service product">

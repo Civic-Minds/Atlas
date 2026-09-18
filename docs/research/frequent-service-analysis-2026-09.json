@@ -23,8 +23,8 @@
     },
     "categories": {
       "explicit_numeric_definition": 205,
-      "explicit_qualitative_definition": 32,
-      "formal_definition_without_named_frequent_label": 8,
+      "explicit_qualitative_definition": 26,
+      "formal_definition_without_named_frequent_label": 14,
       "no_definition_found": 255
     }
   },
@@ -77,8 +77,8 @@
     }
   },
   "namedNumericThresholds": {
-    "agencyCount": 91,
-    "observationCount": 110,
+    "agencyCount": 88,
+    "observationCount": 105,
     "publishedThresholdMinutes": {
       "1": 1,
       "2": 4,
@@ -97,10 +97,7 @@
       "16": 1,
       "20": 14,
       "30": 22,
-      "45": 1,
-      "60": 4,
-      "75": 1,
-      "90": 1
+      "60": 2
     },
     "agencyCountsByPublishedThreshold": {
       "1": 1,
@@ -120,38 +117,32 @@
       "16": 1,
       "20": 13,
       "30": 20,
-      "45": 1,
-      "60": 4,
-      "75": 1,
-      "90": 1
+      "60": 2
     },
     "agencyCountsByMaximumPublishedHeadway": {
       "10": 3,
       "12": 2,
       "14": 1,
-      "15": 50,
+      "15": 51,
       "20": 11,
       "30": 18,
-      "60": 4,
-      "75": 1,
-      "90": 1
+      "60": 2
     }
   },
   "namedFrequentEvidence": {
-    "agencyCount": 134,
-    "observationCount": 172,
+    "agencyCount": 122,
+    "observationCount": 148,
     "byCountry": {
-      "Canada": 41,
-      "France": 13,
+      "Canada": 38,
+      "France": 9,
       "Mexico": 1,
-      "United States": 79
+      "United States": 74
     }
   },
   "serviceContext": {
     "numericDefinitionAgenciesByGeography": {
       "2.9-mile downtown loop": 1,
       "31-line frequent network": 2,
-      "99 B-Line": 1,
       "A line": 1,
       "A-train": 2,
       "A, B, and C": 1,
@@ -203,7 +194,6 @@
       "Epinal city centre": 1,
       "established routes": 1,
       "Eugene Station–UO–Hilyard/30th": 1,
-      "express network": 1,
       "Express Route 27X": 1,
       "express routes": 4,
       "Feeder Route 3/5": 1,
@@ -240,7 +230,7 @@
       "local coverage": 1,
       "Local Frequent routes": 1,
       "local loop": 2,
-      "local network": 3,
+      "local network": 1,
       "local routes": 7,
       "lower-demand coverage areas": 1,
       "Main Avenue Trolley": 1,
@@ -261,7 +251,7 @@
       "Navy Stadium–Annapolis central business district": 1,
       "neighborhood network": 1,
       "neighborhoods, downtowns, and major destinations": 1,
-      "network": 30,
+      "network": 28,
       "network map": 5,
       "network, excluding two neighborhood routes": 1,
       "network/core": 1,
@@ -284,14 +274,12 @@
       "principal bus network": 1,
       "rail network": 3,
       "Rapid and Local Frequent routes": 3,
-      "rapid bus corridors": 1,
       "RAPID NW": 2,
       "Rapid routes": 1,
       "Red Route, Lebanon–West Lebanon": 1,
       "regional backbone network": 1,
       "regional corridor": 1,
       "regional corridors": 1,
-      "regional network": 1,
       "regular fixed routes": 1,
       "regular fixed-route network": 1,
       "regular network": 1,
@@ -310,8 +298,8 @@
       "route network": 10,
       "route planning standard": 1,
       "route/corridor": 3,
-      "route/network": 54,
-      "route/product": 3,
+      "route/network": 52,
+      "route/product": 2,
       "route/service type": 1,
       "route/spine": 1,
       "routes 1, 3, 8, 10, and 11 examples": 1,
@@ -370,13 +358,13 @@
     "numericDefinitionAgenciesByMode": {
       "automated people mover": 7,
       "automated rail": 2,
-      "bus": 434,
+      "bus": 426,
       "bus and ION light rail": 1,
-      "bus and rail": 9,
+      "bus and rail": 8,
       "bus and SkyTrain": 1,
       "bus and streetcar": 1,
       "bus rapid transit": 8,
-      "bus_rapid_transit": 3,
+      "bus_rapid_transit": 2,
       "bus/rail": 5,
       "commuter rail": 3,
       "ferry": 1,
@@ -384,7 +372,6 @@
       "light_rail": 2,
       "metro": 2,
       "rail": 15,
-      "rail and bus": 1,
       "streetcar": 4,
       "tram": 6,
       "tram and bus": 2,
@@ -954,21 +941,6 @@
           "days": "weekdays",
           "geography": "network",
           "mode": "bus and rail"
-        },
-        {
-          "tierIndex": 1,
-          "label": "Less frequent service",
-          "kind": "service_class",
-          "namedFrequency": true,
-          "numericFrequency": false,
-          "publishedThresholdMinutes": [
-            15
-          ],
-          "thresholdText": "Below 15 minutes; map line weight distinction",
-          "span": "varies",
-          "days": "varies",
-          "geography": "route/network",
-          "mode": "bus and rail"
         }
       ],
       "sourceCount": 2,
@@ -1255,19 +1227,6 @@
       "category": "explicit_numeric_definition",
       "evidence": [
         {
-          "tierIndex": 0,
-          "label": "Rapid bus",
-          "kind": "service_class",
-          "namedFrequency": true,
-          "numericFrequency": false,
-          "publishedThresholdMinutes": null,
-          "thresholdText": "Frequent limited-stop product; numeric threshold not stated in current reviewed page",
-          "span": "varies",
-          "days": "varies",
-          "geography": "route/product",
-          "mode": "bus"
-        },
-        {
           "tierIndex": 1,
           "label": "Frequent bus",
           "kind": "frequency",
@@ -1518,24 +1477,8 @@
       "country": "Canada",
       "region": "British Columbia",
       "reviewStatus": "qualitative_definition_only",
-      "category": "explicit_qualitative_definition",
-      "evidence": [
-        {
-          "tierIndex": 0,
-          "label": "Route 1 service",
-          "kind": "service_class",
-          "namedFrequency": true,
-          "numericFrequency": false,
-          "publishedThresholdMinutes": [
-            20
-          ],
-          "thresholdText": "Sample schedule shows approximately 20-minute departures in the morning; no named frequent tier located",
-          "span": "route-specific",
-          "days": "weekday sample",
-          "geography": "route",
-          "mode": "bus"
-        }
-      ],
+      "category": "formal_definition_without_named_frequent_label",
+      "evidence": [],
       "sourceCount": 2,
       "sourceUrls": [
         "https://www.bctransit.com/campbell-river/schedules-and-maps/route-overview/?route=1",
@@ -2250,19 +2193,6 @@
           "days": "not specified",
           "geography": "corridor/network",
           "mode": "rail"
-        },
-        {
-          "tierIndex": 1,
-          "label": "Existing GO network",
-          "kind": "service_class",
-          "namedFrequency": true,
-          "numericFrequency": false,
-          "publishedThresholdMinutes": null,
-          "thresholdText": "System map and schedules are route-specific; no agency-wide frequent threshold located",
-          "span": "route-specific",
-          "days": "varies",
-          "geography": "network",
-          "mode": "rail and bus"
         }
       ],
       "sourceCount": 2,
@@ -3036,22 +2966,8 @@
       "country": "Canada",
       "region": "Quebec",
       "reviewStatus": "qualitative_definition_only",
-      "category": "explicit_qualitative_definition",
-      "evidence": [
-        {
-          "tierIndex": 0,
-          "label": "Service fréquent",
-          "kind": "service_class",
-          "namedFrequency": true,
-          "numericFrequency": false,
-          "publishedThresholdMinutes": null,
-          "thresholdText": "Named frequent-service category on the official network map; no numeric threshold located in the reviewed RTL sources",
-          "span": "not specified",
-          "days": "not specified",
-          "geography": "route/network",
-          "mode": "bus"
-        }
-      ],
+      "category": "formal_definition_without_named_frequent_label",
+      "evidence": [],
       "sourceCount": 2,
       "sourceUrls": [
         "https://old.rtl-longueuil.qc.ca/CMS/MediaFree/file/Carte%20reseau/9906_Carte_RTL_v2024-07-23-compressed.pdf",
@@ -5481,7 +5397,7 @@
           "tierIndex": 3,
           "label": "Minimum regular headway",
           "kind": "frequency",
-          "namedFrequency": true,
+          "namedFrequency": false,
           "numericFrequency": true,
           "publishedThresholdMinutes": [
             60
@@ -5781,19 +5697,6 @@
           "span": "not specified",
           "days": "not specified",
           "geography": "Route 21",
-          "mode": "bus"
-        },
-        {
-          "tierIndex": 1,
-          "label": "Infrequent service",
-          "kind": "frequency",
-          "namedFrequency": true,
-          "numericFrequency": false,
-          "publishedThresholdMinutes": null,
-          "thresholdText": "Stanislaus Regional Transit planning materials describe infrequent service as less frequent than one trip an hour",
-          "span": "not specified",
-          "days": "not specified",
-          "geography": "route/network",
           "mode": "bus"
         }
       ],
@@ -6893,7 +6796,7 @@
           "tierIndex": 2,
           "label": "Less frequent route service",
           "kind": "frequency",
-          "namedFrequency": true,
+          "namedFrequency": false,
           "numericFrequency": true,
           "publishedThresholdMinutes": [
             90
@@ -9293,45 +9196,6 @@
           "days": "route-specific",
           "geography": "BRT corridors",
           "mode": "bus_rapid_transit"
-        },
-        {
-          "tierIndex": 1,
-          "label": "Local service",
-          "kind": "service_class",
-          "namedFrequency": true,
-          "numericFrequency": false,
-          "publishedThresholdMinutes": null,
-          "thresholdText": "Named local bus service; no system-wide frequent threshold located.",
-          "span": "route-specific",
-          "days": "route-specific",
-          "geography": "local network",
-          "mode": "bus"
-        },
-        {
-          "tierIndex": 2,
-          "label": "Regional service",
-          "kind": "service_class",
-          "namedFrequency": true,
-          "numericFrequency": false,
-          "publishedThresholdMinutes": null,
-          "thresholdText": "Named regional bus service; no system-wide frequent threshold located.",
-          "span": "route-specific",
-          "days": "route-specific",
-          "geography": "regional network",
-          "mode": "bus"
-        },
-        {
-          "tierIndex": 3,
-          "label": "Express service",
-          "kind": "service_class",
-          "namedFrequency": true,
-          "numericFrequency": false,
-          "publishedThresholdMinutes": null,
-          "thresholdText": "Named express bus service; no system-wide frequent threshold located.",
-          "span": "route-specific",
-          "days": "route-specific",
-          "geography": "express network",
-          "mode": "bus"
         }
       ],
       "sourceCount": 3,
@@ -9456,22 +9320,8 @@
       "country": "United States",
       "region": "Iowa",
       "reviewStatus": "qualitative_definition_only",
-      "category": "explicit_qualitative_definition",
-      "evidence": [
-        {
-          "tierIndex": 0,
-          "label": "Core routes",
-          "kind": "service_class",
-          "namedFrequency": true,
-          "numericFrequency": false,
-          "publishedThresholdMinutes": null,
-          "thresholdText": "Service standards describe routes serving major origins or destinations and providing basic network service; no single named frequent threshold is published.",
-          "span": "not specified",
-          "days": "not specified",
-          "geography": "core network",
-          "mode": "bus"
-        }
-      ],
+      "category": "formal_definition_without_named_frequent_label",
+      "evidence": [],
       "sourceCount": 2,
       "sourceUrls": [
         "https://www.cyride.com/home/showpublisheddocument/9840/637039033812130000",
@@ -9876,7 +9726,7 @@
           "tierIndex": 0,
           "label": "Peak service standard",
           "kind": "frequency",
-          "namedFrequency": true,
+          "namedFrequency": false,
           "numericFrequency": true,
           "publishedThresholdMinutes": [
             45
@@ -9891,7 +9741,7 @@
           "tierIndex": 1,
           "label": "Off-peak and weekend standard",
           "kind": "frequency",
-          "namedFrequency": true,
+          "namedFrequency": false,
           "numericFrequency": true,
           "publishedThresholdMinutes": [
             75
@@ -12208,19 +12058,6 @@
           "days": "7 days",
           "geography": "frequent network",
           "mode": "bus"
-        },
-        {
-          "tierIndex": 1,
-          "label": "Local",
-          "kind": "service_class",
-          "namedFrequency": true,
-          "numericFrequency": false,
-          "publishedThresholdMinutes": null,
-          "thresholdText": "Neighbourhood service connecting local destinations and frequent routes.",
-          "span": "route-specific",
-          "days": "route-specific",
-          "geography": "local network",
-          "mode": "bus"
         }
       ],
       "sourceCount": 2,
@@ -12363,32 +12200,6 @@
           "span": "published FTN periods",
           "days": "7 days",
           "geography": "regional corridors",
-          "mode": "bus"
-        },
-        {
-          "tierIndex": 1,
-          "label": "RapidBus",
-          "kind": "service_class",
-          "namedFrequency": true,
-          "numericFrequency": false,
-          "publishedThresholdMinutes": null,
-          "thresholdText": "Frequent limited-stop bus service with transit priority.",
-          "span": "route-specific",
-          "days": "route-specific",
-          "geography": "rapid bus corridors",
-          "mode": "bus_rapid_transit"
-        },
-        {
-          "tierIndex": 2,
-          "label": "99 B-Line",
-          "kind": "service_class",
-          "namedFrequency": true,
-          "numericFrequency": false,
-          "publishedThresholdMinutes": null,
-          "thresholdText": "Frequent limited-stop bus service.",
-          "span": "route-specific",
-          "days": "route-specific",
-          "geography": "99 B-Line",
           "mode": "bus"
         },
         {
@@ -13053,7 +12864,7 @@
           "tierIndex": 13,
           "label": "Service Tier 5",
           "kind": "frequency",
-          "namedFrequency": true,
+          "namedFrequency": false,
           "numericFrequency": true,
           "publishedThresholdMinutes": [
             60
@@ -13633,19 +13444,6 @@
           "days": "daily",
           "geography": "tram network",
           "mode": "tram"
-        },
-        {
-          "tierIndex": 1,
-          "label": "Lianes",
-          "kind": "service_class",
-          "namedFrequency": true,
-          "numericFrequency": false,
-          "publishedThresholdMinutes": null,
-          "thresholdText": "High-service lines described as frequent and operating throughout the day.",
-          "span": "varies",
-          "days": "varies",
-          "geography": "network",
-          "mode": "bus"
         }
       ],
       "sourceCount": 2,
@@ -15821,48 +15619,8 @@
       "country": "France",
       "region": "Pays de la Loire",
       "reviewStatus": "qualitative_definition_only",
-      "category": "explicit_qualitative_definition",
-      "evidence": [
-        {
-          "tierIndex": 0,
-          "label": "Lignes structurantes",
-          "kind": "service_class",
-          "namedFrequency": true,
-          "numericFrequency": false,
-          "publishedThresholdMinutes": null,
-          "thresholdText": "Official Agglobus materials identify a structural-line category; no single numeric frequent-service threshold was published.",
-          "span": "varies",
-          "days": "varies",
-          "geography": "network",
-          "mode": "bus"
-        },
-        {
-          "tierIndex": 1,
-          "label": "Lignes urbaines",
-          "kind": "service_class",
-          "namedFrequency": true,
-          "numericFrequency": false,
-          "publishedThresholdMinutes": null,
-          "thresholdText": "Official planning material identifies an urban-line category; no single numeric frequent-service threshold was published.",
-          "span": "varies",
-          "days": "varies",
-          "geography": "urban network",
-          "mode": "bus"
-        },
-        {
-          "tierIndex": 2,
-          "label": "Lignes périurbaines",
-          "kind": "service_class",
-          "namedFrequency": true,
-          "numericFrequency": false,
-          "publishedThresholdMinutes": null,
-          "thresholdText": "Official materials identify a periurban-line category; no single numeric frequent-service threshold was published.",
-          "span": "varies",
-          "days": "varies",
-          "geography": "periurban network",
-          "mode": "bus"
-        }
-      ],
+      "category": "formal_definition_without_named_frequent_label",
+      "evidence": [],
       "sourceCount": 2,
       "sourceUrls": [
         "https://www.agglobus.com/actualites/le-reseau",
@@ -15875,22 +15633,8 @@
       "country": "France",
       "region": "Bourgogne-Franche-Comté",
       "reviewStatus": "qualitative_definition_only",
-      "category": "explicit_qualitative_definition",
-      "evidence": [
-        {
-          "tierIndex": 0,
-          "label": "Ligne forte",
-          "kind": "service_class",
-          "namedFrequency": true,
-          "numericFrequency": false,
-          "publishedThresholdMinutes": null,
-          "thresholdText": "The official delegation report identifies Line 1 as the network's strong line; no single agency-wide frequent-service threshold was published.",
-          "span": "varies",
-          "days": "varies",
-          "geography": "network",
-          "mode": "bus"
-        }
-      ],
+      "category": "formal_definition_without_named_frequent_label",
+      "evidence": [],
       "sourceCount": 2,
       "sourceUrls": [
         "https://www.grandole-mobilites.fr/faq-grandole-mobilites",
@@ -16031,22 +15775,8 @@
       "country": "France",
       "region": "Auvergne-Rhône-Alpes",
       "reviewStatus": "qualitative_definition_only",
-      "category": "explicit_qualitative_definition",
-      "evidence": [
-        {
-          "tierIndex": 0,
-          "label": "Ligne structurante C1",
-          "kind": "service_class",
-          "namedFrequency": true,
-          "numericFrequency": false,
-          "publishedThresholdMinutes": null,
-          "thresholdText": "C1 is officially described as the network's backbone and a structuring line; no single numeric frequent-service threshold was published.",
-          "span": "varies",
-          "days": "varies",
-          "geography": "Valence",
-          "mode": "bus"
-        }
-      ],
+      "category": "formal_definition_without_named_frequent_label",
+      "evidence": [],
       "sourceCount": 2,
       "sourceUrls": [
         "https://www.valenceromansmobilites.fr/bus/connect/",

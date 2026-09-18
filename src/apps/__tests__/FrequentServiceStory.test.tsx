@@ -49,8 +49,24 @@ describe('FrequentServiceStory', () => {
       { minutes: 20, agencies: counts['20'] },
       { minutes: 30, agencies: counts['30'] },
       { minutes: 60, agencies: counts['60'] },
-      { minutes: 75, agencies: counts['75'] },
-      { minutes: 90, agencies: counts['90'] },
     ]);
+  });
+
+  it('does not mistake generic slower service standards for named frequent definitions', () => {
+    const analysis = JSON.parse(fs.readFileSync('docs/research/frequent-service-analysis-2026-09.json', 'utf8'));
+    const ddot = analysis.agencies.find((agency: { agencyId: string }) => agency.agencyId === 'ddot');
+    const barta = analysis.agencies.find((agency: { agencyId: string }) => agency.agencyId === 'barta');
+
+    expect(ddot.evidence.some((evidence: { namedFrequency: boolean }) => evidence.namedFrequency)).toBe(false);
+    expect(barta.evidence.some((evidence: { namedFrequency: boolean }) => evidence.namedFrequency)).toBe(false);
+    expect(analysis.namedNumericThresholds.agencyCountsByMaximumPublishedHeadway).toEqual({
+      10: 3,
+      12: 2,
+      14: 1,
+      15: 51,
+      20: 11,
+      30: 18,
+      60: 2,
+    });
   });
 });

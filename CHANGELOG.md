@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Corrected the research classifier so generic slower-service standards are not presented as named frequent definitions, and added the actual 60-minute examples.
 - Made the Frequent Service research story interactive: select a threshold and agency to compare the timing, scope, and service context behind the number.
 - Corrected the Frequent Service story chart to use each agency's slowest published frequent-service period instead of misleading peak-period values.
 - Simplified the Frequent Service examples into one-column editorial blocks with only the city, takeaway, explanation, and evidence line.
