@@ -479,7 +479,14 @@
       "days": null,
       "geography": null,
       "mode": null,
-      "evidenceNotes": "Current official Metrobus system map reviewed manually. It publishes route-frequency bands but does not name a frequent or high-frequency category.",
+      "publishedFrequencyBands": [
+        "10 minutes or less",
+        "15 minutes",
+        "20 minutes",
+        "30 minutes",
+        "60 minutes"
+      ],
+      "evidenceNotes": "Current official Metrobus system map visually reviewed. It publishes route-frequency bands, including 10 minutes or less, but does not name a frequent or high-frequency category.",
       "reviewBatch": 1,
       "evidenceSourceType": "system_map",
       "reviewSources": [

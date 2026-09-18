@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- Preserved Miami’s 10-minute-or-less map band as general frequency evidence without misclassifying it as a named frequent definition.
 - Corrected CTA to its 10-minute Frequent Network definition with weekday and weekend service spans.
 - Added a rapid hard-cut montage of tightly cropped excerpts from 12 real agency-published system-map pages to make the research introduction feel grounded in the source material.
 - Corrected Edmonton’s map finding to the published 15-minute Frequent Route definition.
