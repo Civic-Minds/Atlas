@@ -2,7 +2,7 @@
   "auditVersion": 2,
   "createdAt": "2026-09-18",
   "sourceCatalog": "docs/research/frequent-service-catalog.json",
-  "scope": "First 50 agencies in catalog order; system-map evidence only.",
+  "scope": "First 50 agencies in catalog order; official system maps and rider guides.",
   "statusRules": {
     "numeric_definition_on_map": "The official system map visibly names frequent/high-frequency service and gives a numeric threshold or range.",
     "qualitative_definition_on_map": "The official system map visibly names frequent/high-frequency service without a numeric threshold.",
@@ -11,8 +11,8 @@
     "pending_map_review": "The map has not yet been reviewed."
   },
   "evidenceRules": [
-    "Only current official system maps count toward the verified chart.",
-    "Official route pages, schedules, planning documents, and general service bands are not substitutes for a system map definition.",
+    "Only current official system maps and rider guides count toward the verified chart.",
+    "Official route pages, schedules, planning documents, and general service bands are not substitutes for a system map or rider-guide definition.",
     "Record the exact map wording and page/legend location; do not paraphrase a definition into existence.",
     "Preserve a local PDF or image with the correct extension whenever technically practical.",
     "A missing current map or missing map definition is a valid result and must not be converted into a numeric definition."
@@ -274,21 +274,21 @@
         "victoria-system-map.pdf"
       ],
       "mapDate": null,
-      "mapPageOrSection": "map legend",
-      "exactMapWording": "Frequent Route which provides ... (15 minutes or better between 7:00 a.m. and 7:00 p.m.) transit service Monday–Friday.",
+      "mapPageOrSection": "rider guide p. 11, Route Colours",
+      "exactMapWording": "Blue indicates a Frequent Route which provides high density areas with a convenient, reliable and frequent (15 minutes or better between 7:00 a.m. and 7:00 p.m.) transit service Monday–Friday.",
       "thresholdMinutes": 15,
       "thresholdText": "15 minutes or better between 7:00 a.m. and 7:00 p.m., Monday–Friday",
       "serviceSpan": null,
       "days": null,
       "geography": null,
       "mode": null,
-      "evidenceNotes": "Current official BC Transit Victoria rider guide/map reviewed manually. Both named frequent tiers are retained; the ordinary Frequent Route is representative.",
+      "evidenceNotes": "Official BC Transit Victoria rider guide visually reviewed. Used by explicit approval as a source exception; this is rider-guide evidence, not standalone system-map evidence.",
       "reviewBatch": 1,
-      "evidenceSourceType": "system_map",
+      "evidenceSourceType": "rider_guide",
       "reviewSources": [
         {
           "url": "https://www.bctransit.com/victoria/wp-content/uploads/sites/49/2026/09/vic_rg_sept2026_v2.pdf",
-          "sourceType": "system_map",
+          "sourceType": "rider_guide",
           "localFile": "victoria-system-map.pdf"
         }
       ],
@@ -299,12 +299,12 @@
           "thresholdMinutes": 15,
           "thresholdText": "15 minutes or better between 7:00 a.m. and 7:00 p.m., Monday–Friday",
           "representative": true,
-          "sourceType": "system_map",
+          "sourceType": "rider_guide",
           "sourceUrl": "https://www.bctransit.com/victoria/wp-content/uploads/sites/49/2026/09/vic_rg_sept2026_v2.pdf",
           "localFile": "victoria-system-map.pdf",
-          "mapPageOrSection": "map legend",
-          "exactWording": "Frequent Route which provides ... (15 minutes or better between 7:00 a.m. and 7:00 p.m.) transit service Monday–Friday.",
-          "evidenceNotes": "Current official BC Transit Victoria rider guide/map reviewed manually. Both named frequent tiers are retained; the ordinary Frequent Route is representative."
+          "mapPageOrSection": "rider guide p. 11, Route Colours",
+          "exactWording": "Blue indicates a Frequent Route which provides high density areas with a convenient, reliable and frequent (15 minutes or better between 7:00 a.m. and 7:00 p.m.) transit service Monday–Friday.",
+          "evidenceNotes": "Official BC Transit Victoria rider guide visually reviewed. Used by explicit approval as a source exception; this is rider-guide evidence, not standalone system-map evidence."
         },
         {
           "id": "rapidbus",
@@ -312,12 +312,12 @@
           "thresholdMinutes": 15,
           "thresholdText": "at least every 15 minutes between 7:00 a.m. and 10:00 p.m. every day",
           "representative": false,
-          "sourceType": "system_map",
+          "sourceType": "rider_guide",
           "sourceUrl": "https://www.bctransit.com/victoria/wp-content/uploads/sites/49/2026/09/vic_rg_sept2026_v2.pdf",
           "localFile": "victoria-system-map.pdf",
-          "mapPageOrSection": "map legend",
-          "exactWording": "Frequent Route which provides ... (15 minutes or better between 7:00 a.m. and 7:00 p.m.) transit service Monday–Friday.",
-          "evidenceNotes": "Current official BC Transit Victoria rider guide/map reviewed manually. Both named frequent tiers are retained; the ordinary Frequent Route is representative."
+          "mapPageOrSection": "rider guide p. 11, Route Colours",
+          "exactWording": "Dark orange indicates a RapidBus Line which provides fast, frequent and reliable service between areas of highest demand in the region. Customers can expect buses to arrive at least every 15 minutes between 7:00 a.m. and 10:00 p.m. every day of the week.",
+          "evidenceNotes": "Official BC Transit Victoria rider guide visually reviewed. Used by explicit approval as a source exception; this is rider-guide evidence, not standalone system-map evidence."
         }
       ],
       "representativeThresholdMinutes": 15
@@ -328,7 +328,7 @@
       "agencyName": "Edmonton Transit Service",
       "country": "Canada",
       "region": "Alberta",
-      "status": "qualitative_definition_on_map",
+      "status": "numeric_definition_on_map",
       "mapCandidates": [
         {
           "url": "https://www.edmonton.ca/sites/default/files/public-files/ETS-Day-Map-May-2025.pdf?cb=1750622712",
@@ -341,14 +341,14 @@
       ],
       "mapDate": null,
       "mapPageOrSection": "map legend",
-      "exactMapWording": "Frequent Route",
-      "thresholdMinutes": null,
-      "thresholdText": null,
+      "exactMapWording": "Frequent Route — 15 minutes or better most times of the day",
+      "thresholdMinutes": 15,
+      "thresholdText": "15 minutes or better most times of the day",
       "serviceSpan": null,
       "days": null,
       "geography": null,
       "mode": null,
-      "evidenceNotes": "Current official ETS day map reviewed manually. It labels Frequent Route but gives no numeric threshold.",
+      "evidenceNotes": "Current official ETS day map visually reviewed. The legend defines Frequent Route as 15 minutes or better most times of the day.",
       "reviewBatch": 1,
       "evidenceSourceType": "system_map",
       "reviewSources": [
@@ -362,18 +362,18 @@
         {
           "id": "frequent-route",
           "label": "Frequent Route",
-          "thresholdMinutes": null,
-          "thresholdText": null,
+          "thresholdMinutes": 15,
+          "thresholdText": "15 minutes or better most times of the day",
           "representative": true,
           "sourceType": "system_map",
           "sourceUrl": "https://www.edmonton.ca/sites/default/files/public-files/ETS-Day-Map-May-2025.pdf?cb=1750622712",
           "localFile": "edmonton-system-map.pdf",
           "mapPageOrSection": "map legend",
-          "exactWording": "Frequent Route",
-          "evidenceNotes": "Current official ETS day map reviewed manually. It labels Frequent Route but gives no numeric threshold."
+          "exactWording": "Frequent Route — 15 minutes or better most times of the day",
+          "evidenceNotes": "Current official ETS day map visually reviewed. The legend defines Frequent Route as 15 minutes or better most times of the day."
         }
       ],
-      "representativeThresholdMinutes": null
+      "representativeThresholdMinutes": 15
     },
     {
       "auditOrder": 8,
