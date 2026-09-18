@@ -388,30 +388,46 @@
       "agencyName": "Winnipeg Transit",
       "country": "Canada",
       "region": "Manitoba",
-      "status": "map_unavailable",
+      "status": "numeric_definition_on_map",
       "mapCandidates": [],
-      "preservedFiles": [],
+      "preservedFiles": [
+        "winnipeg-system-map.pdf"
+      ],
       "mapDate": null,
-      "mapPageOrSection": "official map search",
-      "exactMapWording": null,
-      "thresholdMinutes": null,
-      "thresholdText": null,
+      "mapPageOrSection": "current system-map legend",
+      "exactMapWording": "Frequent — target frequency 10–15 minutes at peak and 10–30 minutes off-peak",
+      "thresholdMinutes": 30,
+      "thresholdText": "10–15 minutes at peak and 10–30 minutes off-peak",
       "serviceSpan": null,
       "days": null,
       "geography": null,
       "mode": null,
-      "evidenceNotes": "The official Winnipeg map candidates located were network-plan maps rather than a current rider-facing system map. They were not accepted as system-map evidence.",
+      "evidenceNotes": "Current official Winnipeg Transit system map visually reviewed. Its legend names Frequent service and publishes 10–15-minute peak and 10–30-minute off-peak target frequencies.",
       "reviewBatch": 1,
       "evidenceSourceType": "system_map",
       "reviewSources": [
         {
-          "url": "https://info.winnipegtransit.com/assets/2793/Short_Term_Network_Plan.pdf",
+          "url": "https://www.winnipeg.ca/media/4770",
           "sourceType": "system_map",
-          "localFile": null
+          "localFile": "winnipeg-system-map.pdf"
         }
       ],
-      "definitions": [],
-      "representativeThresholdMinutes": null,
+      "definitions": [
+        {
+          "id": "frequent",
+          "label": "Frequent",
+          "thresholdMinutes": 30,
+          "thresholdText": "10–15 minutes at peak and 10–30 minutes off-peak",
+          "representative": true,
+          "sourceType": "system_map",
+          "sourceUrl": "https://www.winnipeg.ca/media/4770",
+          "localFile": "winnipeg-system-map.pdf",
+          "mapPageOrSection": "current system-map legend",
+          "exactWording": "Frequent — target frequency 10–15 minutes at peak and 10–30 minutes off-peak",
+          "evidenceNotes": "Current official Winnipeg Transit system map visually reviewed. Its legend names Frequent service and publishes 10–15-minute peak and 10–30-minute off-peak target frequencies."
+        }
+      ],
+      "representativeThresholdMinutes": 30,
       "publishedFrequencyBands": null
     },
     {
@@ -1019,7 +1035,7 @@
       "mapCandidates": [],
       "preservedFiles": [],
       "mapDate": null,
-      "mapPageOrSection": "official system-map page",
+      "mapPageOrSection": "official interactive system map",
       "exactMapWording": null,
       "thresholdMinutes": null,
       "thresholdText": null,
@@ -1027,12 +1043,12 @@
       "days": null,
       "geography": null,
       "mode": null,
-      "evidenceNotes": "Official RTD system-map page reviewed manually. No current downloadable system map with a named frequent definition was verified.",
+      "evidenceNotes": "Official RTD system-map page and linked ArcGIS map were located. The interactive map did not expose a downloadable rider-facing map or a named frequent/high-frequency definition for this audit.",
       "reviewBatch": 1,
       "evidenceSourceType": "system_map",
       "reviewSources": [
         {
-          "url": "https://www.rtd-denver.com/system-map",
+          "url": "https://experience.arcgis.com/experience/4a812ebf793646be945b7d58dcfbb794",
           "sourceType": "system_map",
           "localFile": null
         }
@@ -1047,7 +1063,7 @@
       "agencyName": "Utah Transit Authority",
       "country": "United States",
       "region": "Utah",
-      "status": "map_unavailable",
+      "status": "numeric_definition_on_map",
       "mapCandidates": [
         {
           "url": "https://www.rideuta.com/-/media/Files/Current-Projects/Five-Year-Service-Plan/UTA_Five_Year_Service_Plan2023_FINAL.pdf",
@@ -1055,28 +1071,44 @@
           "localFile": null
         }
       ],
-      "preservedFiles": [],
+      "preservedFiles": [
+        "uta-system-map.pdf"
+      ],
       "mapDate": null,
-      "mapPageOrSection": "official map search",
-      "exactMapWording": null,
-      "thresholdMinutes": null,
-      "thresholdText": null,
+      "mapPageOrSection": "frequency table and Frequent service footnote",
+      "exactMapWording": "Frequent service; Routes marked with the frequent-service symbol run every 15 minutes between 6 a.m. and 7 p.m. Monday–Saturday.",
+      "thresholdMinutes": 15,
+      "thresholdText": "every 15 minutes between 6 a.m. and 7 p.m. Monday–Saturday",
       "serviceSpan": null,
       "days": null,
       "geography": null,
       "mode": null,
-      "evidenceNotes": "The located UTA document is a service plan, not a current official system map. It was not accepted as map evidence.",
+      "evidenceNotes": "Official UTA frequency table visually reviewed. It names Frequent service and defines the daytime Monday–Saturday span as every 15 minutes.",
       "reviewBatch": 1,
       "evidenceSourceType": "system_map",
       "reviewSources": [
         {
-          "url": "https://www.rideuta.com/-/media/Files/Current-Projects/Five-Year-Service-Plan/UTA_Five_Year_Service_Plan2023_FINAL.pdf",
+          "url": "https://www.rideuta.com/-/media/Files/Rider-Tools/Current-System-Maps/Route_FrequencyApr2025.pdf",
           "sourceType": "system_map",
-          "localFile": null
+          "localFile": "uta-system-map.pdf"
         }
       ],
-      "definitions": [],
-      "representativeThresholdMinutes": null,
+      "definitions": [
+        {
+          "id": "frequent-service",
+          "label": "Frequent service",
+          "thresholdMinutes": 15,
+          "thresholdText": "every 15 minutes between 6 a.m. and 7 p.m. Monday–Saturday",
+          "representative": true,
+          "sourceType": "system_map",
+          "sourceUrl": "https://www.rideuta.com/-/media/Files/Rider-Tools/Current-System-Maps/Route_FrequencyApr2025.pdf",
+          "localFile": "uta-system-map.pdf",
+          "mapPageOrSection": "frequency table and Frequent service footnote",
+          "exactWording": "Frequent service; Routes marked with the frequent-service symbol run every 15 minutes between 6 a.m. and 7 p.m. Monday–Saturday.",
+          "evidenceNotes": "Official UTA frequency table visually reviewed. It names Frequent service and defines the daytime Monday–Saturday span as every 15 minutes."
+        }
+      ],
+      "representativeThresholdMinutes": 15,
       "publishedFrequencyBands": null
     },
     {
@@ -1256,7 +1288,7 @@
       "mapCandidates": [],
       "preservedFiles": [],
       "mapDate": null,
-      "mapPageOrSection": "official map search",
+      "mapPageOrSection": "official interactive route map",
       "exactMapWording": null,
       "thresholdMinutes": null,
       "thresholdText": null,
@@ -1264,12 +1296,12 @@
       "days": null,
       "geography": null,
       "mode": null,
-      "evidenceNotes": "The located Lethbridge document is a technical/planning document, not a current rider-facing system map. It was not accepted as map evidence.",
+      "evidenceNotes": "Official Lethbridge Transit interactive route map was located, but it did not expose a downloadable rider-facing system map or a named frequent/high-frequency definition for this audit.",
       "reviewBatch": 1,
       "evidenceSourceType": "system_map",
       "reviewSources": [
         {
-          "url": "https://www.lethbridge.ca/media/t2wnioeg/tmp_final_fulltechnical_oct25_stamped.pdf",
+          "url": "https://myride.lethbridge.ca/RouteMap",
           "sourceType": "system_map",
           "localFile": null
         }
@@ -1352,11 +1384,13 @@
       "agencyName": "Regional Municipality of Wood Buffalo Transit",
       "country": "Canada",
       "region": "Alberta",
-      "status": "map_unavailable",
+      "status": "no_definition_on_map",
       "mapCandidates": [],
-      "preservedFiles": [],
+      "preservedFiles": [
+        "fort-mcmurray-system-map.jpg"
+      ],
       "mapDate": null,
-      "mapPageOrSection": "official map search",
+      "mapPageOrSection": "map legend",
       "exactMapWording": null,
       "thresholdMinutes": null,
       "thresholdText": null,
@@ -1364,14 +1398,14 @@
       "days": null,
       "geography": null,
       "mode": null,
-      "evidenceNotes": "The catalogued official map/guide URL returned 404 and no current official system map was verified.",
+      "evidenceNotes": "Current official RMWB Transit Network Map visually reviewed. It identifies core and neighbourhood routes and on-demand zones but does not name a frequent/high-frequency definition.",
       "reviewBatch": 1,
       "evidenceSourceType": "system_map",
       "reviewSources": [
         {
-          "url": "https://www.rmwb.ca/media/ih4nbvj1/2025-26-transit-student-guide_final.pdf",
+          "url": "https://media-003-ca.cdn.govstack.com/rmwb-017-ca/media/lc1nx01a/rmwb25002-transit-map-web-2.jpg",
           "sourceType": "system_map",
-          "localFile": null
+          "localFile": "fort-mcmurray-system-map.jpg"
         }
       ],
       "definitions": [],
@@ -1914,7 +1948,7 @@
       "mapCandidates": [],
       "preservedFiles": [],
       "mapDate": null,
-      "mapPageOrSection": "official system-map page",
+      "mapPageOrSection": "embedded Fall/Winter system map and legend",
       "exactMapWording": null,
       "thresholdMinutes": null,
       "thresholdText": null,
@@ -1922,7 +1956,7 @@
       "days": null,
       "geography": null,
       "mode": null,
-      "evidenceNotes": "Official Metrobus system-map page reviewed manually. It shows the network but does not name a frequent/high-frequency definition.",
+      "evidenceNotes": "Current official Metrobus embedded system map visually reviewed. Its route legend shows the network and service symbols but does not name a frequent/high-frequency definition.",
       "reviewBatch": 1,
       "evidenceSourceType": "system_map",
       "reviewSources": [

@@ -12,6 +12,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Verified Brandon and Fredericton maps without adding unsupported frequent-service definitions.
 - Replaced Whistler’s invalid archived guide with the valid official 12-page guide and verified its map has no named frequent definition.
 - Verified Codiac, Yellowknife, Barrie, and Belleville maps and corrected them from unavailable to no named frequent definition.
+- Verified UTA’s 15-minute Frequent service table and Fort McMurray’s current network map.
+- Verified Winnipeg’s current map legend and corrected the remaining source links for interactive-map-only agencies.
 - Reframed the research story as a plain-English lesson about coverage, service span, frequency, and the cost of missing a vehicle.
 - Verified VTA’s map-based qualitative Frequent Bus label and restored its missing source link.
 - Reworded the story-map cards so each filtering step explains what it means for riders.
