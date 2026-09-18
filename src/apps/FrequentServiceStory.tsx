@@ -1,10 +1,13 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ArrowDown, ArrowRight, MapPinned } from 'lucide-react';
 import { trackEvent } from '../lib/analytics';
 import { frequentServiceStoryExamples, frequentServiceStoryStats, type FrequentServiceStoryExample } from '../data/frequentServiceStory';
+import FrequentServiceStoryMap from '../components/FrequentServiceStoryMap';
+import type { Agency } from '../App';
 
 interface Props {
   onExploreMap: () => void;
+  agencies: Agency[];
 }
 
 function StoryExample({ example }: { example: FrequentServiceStoryExample }) {
@@ -21,13 +24,33 @@ function StoryExample({ example }: { example: FrequentServiceStoryExample }) {
   );
 }
 
-export default function FrequentServiceStory({ onExploreMap }: Props) {
+export default function FrequentServiceStory({ onExploreMap, agencies }: Props) {
   const [selectedMinutes, setSelectedMinutes] = useState(15);
   const [selectedExampleId, setSelectedExampleId] = useState('translink-vancouver');
+  const [storyStage, setStoryStage] = useState(0);
+  const [frequencyMinutes, setFrequencyMinutes] = useState<15 | 30>(15);
+  const storyScrollRef = useRef<HTMLDivElement>(null);
+  const storyStepRefs = useRef<Array<HTMLDivElement | null>>([]);
   const maxBar = Math.max(...frequentServiceStoryStats.headwayBars.map(bar => bar.agencies));
   const selectedBar = frequentServiceStoryStats.headwayBars.find(bar => bar.minutes === selectedMinutes);
   const selectedExamples = frequentServiceStoryExamples.filter(example => example.thresholdMinutes.includes(selectedMinutes));
   const selectedExample = selectedExamples.find(example => example.id === selectedExampleId) ?? selectedExamples[0];
+
+  useEffect(() => {
+    const root = storyScrollRef.current;
+    if (!root || typeof IntersectionObserver === 'undefined') return;
+    const visibleStages = new Set<number>();
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        const stage = Number((entry.target as HTMLElement).dataset.storyStage);
+        if (entry.isIntersecting) visibleStages.add(stage);
+        else visibleStages.delete(stage);
+      });
+      setStoryStage(Math.max(...visibleStages, 0));
+    }, { root, threshold: 0.35 });
+    storyStepRefs.current.forEach(step => { if (step) observer.observe(step); });
+    return () => observer.disconnect();
+  }, []);
 
   function selectMinutes(minutes: number) {
     const examples = frequentServiceStoryExamples.filter(example => example.thresholdMinutes.includes(minutes));
@@ -41,18 +64,55 @@ export default function FrequentServiceStory({ onExploreMap }: Props) {
   }
 
   return (
-    <div className="h-full overflow-y-auto bg-[var(--bg-app)] text-[var(--text-primary)]">
+    <div ref={storyScrollRef} className="h-full overflow-y-auto bg-[var(--bg-app)] text-[var(--text-primary)]">
       <article className="mx-auto max-w-6xl px-5 pb-24 pt-16 sm:px-8 sm:pt-20">
         <header className="mx-auto max-w-4xl text-center">
           <p className="text-[0.7rem] uppercase tracking-[0.24em] font-black text-[var(--accent)]">Atlas research</p>
           <h1 className="mt-5 text-4xl sm:text-6xl font-black tracking-[-0.045em] leading-[0.98]">What does “frequent” actually mean?</h1>
           <p className="mx-auto mt-6 max-w-2xl text-base sm:text-lg leading-8 text-[var(--text-muted)]">
-            A transit map can look full of lines and still leave you waiting. We reviewed 500 agencies to see how they describe the service people can actually rely on.
+            A transit map can look full of lines and still leave you waiting. We reviewed {frequentServiceStoryStats.agenciesReviewed} agencies in the audit to see how their official system maps describe service people can actually rely on.
           </p>
           <a href="#story" className="mt-9 inline-flex items-center gap-2 rounded-full border border-[var(--border-primary)] bg-[var(--bg-panel)] px-4 py-2.5 text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--bg-btn-hover)]">
             Read the research <ArrowDown className="h-3.5 w-3.5" aria-hidden="true" />
           </a>
         </header>
+
+        <section aria-labelledby="network-story-heading" className="mx-auto mt-24 max-w-6xl sm:mt-32">
+          <div className="grid gap-10 lg:grid-cols-[minmax(0,1.7fr)_minmax(20rem,0.65fr)] lg:items-start">
+            <div className="lg:sticky lg:top-8">
+              <FrequentServiceStoryMap agencies={agencies} stage={storyStage} frequencyMinutes={frequencyMinutes} />
+            </div>
+            <div className="space-y-[55vh] px-1 py-8 lg:py-16">
+              <div ref={step => { storyStepRefs.current[0] = step; }} data-story-stage="0" className="max-w-md">
+                <p className="text-[0.7rem] uppercase tracking-[0.24em] font-black text-[var(--accent)]">Example: Toronto</p>
+                <h2 id="network-story-heading" className="mt-3 text-3xl font-black tracking-tight">Start with the whole network.</h2>
+                <p className="mt-4 text-base leading-7 text-[var(--text-muted)]">A city can have hundreds of lines on its map. That shows where service exists, but not how long you might wait.</p>
+              </div>
+              <div ref={step => { storyStepRefs.current[1] = step; }} data-story-stage="1" className="max-w-md">
+                <p className="text-[0.7rem] uppercase tracking-[0.24em] font-black text-[var(--accent)]">First filter</p>
+                <h2 className="mt-3 text-3xl font-black tracking-tight">Remove rush-hour-only routes.</h2>
+                <p className="mt-4 text-base leading-7 text-[var(--text-muted)]">A route that appears only for the busiest part of the day is useful, but it is not the same promise as regular service.</p>
+              </div>
+              <div ref={step => { storyStepRefs.current[2] = step; }} data-story-stage="2" className="max-w-md">
+                <p className="text-[0.7rem] uppercase tracking-[0.24em] font-black text-[var(--accent)]">Second filter</p>
+                <h2 className="mt-3 text-3xl font-black tracking-tight">Keep routes with meaningful daytime service.</h2>
+                <p className="mt-4 text-base leading-7 text-[var(--text-muted)]">The network gets smaller again when we remove routes that do not hold together through the day.</p>
+              </div>
+              <div ref={step => { storyStepRefs.current[3] = step; }} data-story-stage="3" className="max-w-md">
+                <p className="text-[0.7rem] uppercase tracking-[0.24em] font-black text-[var(--accent)]">Atlas comparison</p>
+                <h2 className="mt-3 text-3xl font-black tracking-tight">Now show the routes frequent enough to rely on.</h2>
+                <p className="mt-4 text-base leading-7 text-[var(--text-muted)]">This is Atlas’s comparison—not a claim that every agency uses the same definition of “frequent.”</p>
+                <div className="mt-5 inline-flex rounded-full border border-[var(--border-primary)] bg-[var(--bg-panel)] p-1" role="group" aria-label="Choose the final frequency comparison">
+                  {[15, 30].map(minutes => (
+                    <button key={minutes} type="button" aria-pressed={frequencyMinutes === minutes} onClick={() => setFrequencyMinutes(minutes as 15 | 30)} className={`rounded-full px-4 py-2 text-sm font-black transition-colors ${frequencyMinutes === minutes ? 'bg-[var(--accent)] text-[var(--bg-app)]' : 'text-[var(--text-secondary)] hover:bg-[var(--bg-btn-hover)]'}`}>
+                      {minutes} min
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
 
         <div id="story" className="mx-auto mt-24 max-w-4xl space-y-24 sm:mt-32 sm:space-y-32">
           <section aria-labelledby="why-heading" className="mx-auto w-full max-w-[48rem]">
@@ -62,7 +122,7 @@ export default function FrequentServiceStory({ onExploreMap }: Props) {
                 Agencies use words like frequent, rapid, trunk, and primary to describe the routes that hold a network together. But those labels can mean a strict 10-minute promise, a 15-minute corridor, a service class with different dayparts, or simply a planning goal.
               </p>
               <p className="mt-5 text-base leading-8 text-[var(--text-muted)]">
-                So we looked at the official maps, service pages, guidelines, and planning documents—not to replace each agency’s definition, but to understand the landscape Atlas is trying to compare.
+                For this first batch, we used official system maps as the evidence boundary—not to replace each agency’s definition, but to understand what a rider can actually see on the map.
               </p>
             </div>
           </section>
@@ -72,7 +132,7 @@ export default function FrequentServiceStory({ onExploreMap }: Props) {
               <p className="text-[0.7rem] uppercase tracking-[0.24em] font-black text-[var(--accent)]">Explore the sample</p>
               <h2 id="chart-heading" className="mt-3 text-3xl sm:text-4xl font-black tracking-tight">There is no single “frequent.”</h2>
               <p className="mt-5 text-base leading-8 text-[var(--text-muted)]">
-                Pick a published threshold to see how agencies turn that number into a real service promise. The chart covers the 87 agencies that explicitly named a frequent or high-frequency tier with a numeric threshold.
+                Pick an exact threshold to see how agencies turn that number into a map-visible service promise. This chart covers the 8 agencies whose system maps publish one exact numeric threshold; multi-tier ranges remain in the audit instead of being flattened.
               </p>
             </div>
             <div className="mt-10" aria-label="Interactive chart showing the number of agencies by the selected published frequent-service threshold">
@@ -95,7 +155,7 @@ export default function FrequentServiceStory({ onExploreMap }: Props) {
                   </button>
                 ))}
               </div>
-              <p className="mt-5 text-xs leading-5 text-[var(--text-dim)]">Each agency appears once. Where the catalog identifies a primary map-facing threshold, that is used; otherwise the slowest period in the named tier is used. Select a bar to see illustrative examples.</p>
+              <p className="mt-5 text-xs leading-5 text-[var(--text-dim)]">Each agency appears once. Only exact single thresholds from official system maps are shown here; ranges and maps with multiple tiers are preserved in the audit rather than assigned one misleading number.</p>
             </div>
             <div className="mt-10 border-t border-[var(--border-primary)] pt-8" aria-live="polite">
               <p className="text-sm font-bold text-[var(--text-muted)]">{selectedBar?.agencies} agencies · selected published threshold: {selectedMinutes} minutes</p>
@@ -152,10 +212,10 @@ export default function FrequentServiceStory({ onExploreMap }: Props) {
               <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-[var(--text-primary)]">How we did this</h2>
               <div className="mt-5 space-y-5 text-sm sm:text-base leading-7 sm:leading-8 text-[var(--text-muted)]">
                 <p><strong className="text-[var(--text-primary)]">Date conducted.</strong> {frequentServiceStoryStats.reviewedAt}.</p>
-                <p><strong className="text-[var(--text-primary)]">Sample.</strong> We reviewed {frequentServiceStoryStats.agenciesReviewed} agencies: {frequentServiceStoryStats.countryCounts.map(item => `${item.agencies} in ${item.country}`).join(', ')}. Of those, {frequentServiceStoryStats.categoryCounts.numericDefinition} published at least one numeric frequency tier, while {frequentServiceStoryStats.categoryCounts.noDefinitionFound} had no named definition located in the reviewed material.</p>
-                <p><strong className="text-[var(--text-primary)]">Review boundary.</strong> We checked official system maps, frequent-network pages, service guidelines, planning documents, and route-service pages. We recorded what the agency publishes—not what Atlas thinks the word “frequent” should mean.</p>
-                <p><strong className="text-[var(--text-primary)]">What counted.</strong> A numeric definition required an agency tier with a published frequency value. A qualitative definition used a named frequent or high-frequency service without a number. “No definition found” means we did not locate a named rider-facing definition within the reviewed material; it does not mean the agency has no frequent service.</p>
-                <p><strong className="text-[var(--text-primary)]">How we handled numbers.</strong> We kept published ranges and dayparts intact. Agencies are counted once in the chart. When a source identifies a primary map-facing threshold, that takes precedence over a slower product-specific period; otherwise, the slowest period in the named tier is used.</p>
+                <p><strong className="text-[var(--text-primary)]">Sample.</strong> We reviewed {frequentServiceStoryStats.agenciesReviewed} agencies: {frequentServiceStoryStats.countryCounts.map(item => `${item.agencies} in ${item.country}`).join(', ')}. Of those, {frequentServiceStoryStats.categoryCounts.numericDefinition} published a numeric definition on the map, {frequentServiceStoryStats.categoryCounts.qualitativeDefinition} published a qualitative frequent label, {frequentServiceStoryStats.categoryCounts.noDefinitionFound} had no named definition on the map, and {frequentServiceStoryStats.categoryCounts.mapUnavailable} could not be verified from an accessible current map.</p>
+                <p><strong className="text-[var(--text-primary)]">Review boundary.</strong> For this first batch, only official current system maps and their map legends counted as evidence. Planning documents, route pages, schedules, and service guidelines were used only to locate a map or explain why a source was excluded.</p>
+                <p><strong className="text-[var(--text-primary)]">What counted.</strong> A numeric definition required a frequency value printed on the map. A qualitative definition used a named frequent or high-frequency service on the map without a number. “No definition on map” means the reviewed map had no named definition; it does not mean the agency has no frequent service. “Unavailable” means the current map could not be retrieved or verified.</p>
+                <p><strong className="text-[var(--text-primary)]">How we handled numbers.</strong> We kept published ranges, multiple tiers, dayparts, and geography intact. The chart shows only exact single thresholds; ranges and multi-tier definitions remain in the audit and are not converted into a misleading single number.</p>
                 <p><strong className="text-[var(--text-primary)]">Limitations.</strong> This is a source-backed sample, not an exhaustive census of every transit agency or a universal definition of frequent service. It describes the research sample and does not change Atlas’s production frequency definitions.</p>
               </div>
             </div>

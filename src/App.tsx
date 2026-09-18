@@ -572,7 +572,7 @@ export default function App() {
         ) : (
           <ErrorBoundary label="The map encountered an error.">
           {inFrequentServiceStory ? (
-            <FrequentServiceStory onExploreMap={() => navigate('/research/frequent-service?view=map')} />
+            <FrequentServiceStory agencies={visibleAgencies} onExploreMap={() => navigate('/research/frequent-service?view=map')} />
           ) : <>
             <Interval
               agencies={

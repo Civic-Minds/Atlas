@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Added a larger Toronto network story that progressively narrows from all routes to regular daytime and 15- or 30-minute service as readers scroll.
 - Scoped the Frequent Service research chart to the first 50 verified system-map audits so its counts cannot include unverified catalog evidence.
 - Kept published frequency ranges from appearing as false standalone thresholds in the research chart.
 - Removed the misleading featured-sources list and decorative evidence cards from the research story.
