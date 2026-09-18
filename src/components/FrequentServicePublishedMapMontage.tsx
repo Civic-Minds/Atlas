@@ -32,7 +32,7 @@ export default function FrequentServicePublishedMapMontage() {
 
   useEffect(() => {
     if (reducedMotion || !isPlaying) return;
-    const timer = window.setInterval(() => setActiveFrame(frame => (frame + 1) % frames.length), 450);
+    const timer = window.setInterval(() => setActiveFrame(frame => (frame + 1) % frames.length), 180);
     return () => window.clearInterval(timer);
   }, [isPlaying, reducedMotion]);
 
@@ -47,7 +47,7 @@ export default function FrequentServicePublishedMapMontage() {
             src={frame.image}
             alt={index === activeFrame ? `Published system map from ${frame.agency}.` : ''}
             aria-hidden={index !== activeFrame}
-            className="absolute inset-0 h-full w-full object-cover transition-opacity duration-75"
+            className="absolute inset-0 h-full w-full object-cover"
             style={{ opacity: index === activeFrame ? 1 : 0 }}
           />
         ))}
