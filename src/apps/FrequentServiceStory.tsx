@@ -118,15 +118,7 @@ export default function FrequentServiceStory({ onExploreMap }: Props) {
           <section aria-labelledby="more-heading" className="mx-auto max-w-3xl">
             <div>
               <h2 id="more-heading" className="text-3xl sm:text-4xl font-black tracking-tight">The number is only the beginning.</h2>
-              <p className="mt-5 text-base leading-8 text-[var(--text-muted)]">A frequency threshold is attached to a span, a set of days, and a geography. It may describe a route, a corridor, a network, or a product that combines modes. A 15-minute route that stops at 6pm is a different promise from a 15-minute corridor that runs into the evening.</p>
-              <div className="mt-7 grid gap-3 sm:grid-cols-3">
-                {['Headway', 'Service span', 'Geography'].map((label, index) => (
-                  <div key={label} className="rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-panel)] p-4">
-                    <span className="text-xs font-black text-[var(--accent)]">0{index + 1}</span>
-                    <p className="mt-8 text-sm font-black">{label}</p>
-                  </div>
-                ))}
-              </div>
+              <p className="mt-5 text-base leading-8 text-[var(--text-muted)]">A frequency threshold is attached to a span, a set of days, and a geography. It may describe a route, a corridor, a network, or a product that combines modes. A 15-minute route that stops at 6pm is a different promise from a 15-minute corridor that runs into the evening. That is why we track three things together: headway, service span, and geography.</p>
             </div>
           </section>
 
