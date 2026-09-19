@@ -2,7 +2,7 @@
   "auditVersion": 2,
   "createdAt": "2026-09-18",
   "sourceCatalog": "docs/research/frequent-service-catalog.json",
-  "scope": "First 50 agencies plus 259 additional agencies reviewed individually against current official system maps or approved rider guides on September 19, 2026.",
+  "scope": "First 50 agencies plus 268 additional agencies reviewed individually against current official system maps or approved rider guides on September 19, 2026.",
   "statusRules": {
     "numeric_definition_on_map": "The official system map visibly names frequent/high-frequency service and gives a numeric threshold or range.",
     "qualitative_definition_on_map": "The official system map visibly names frequent/high-frequency service without a numeric threshold.",
@@ -6233,35 +6233,49 @@
       "agencyName": "HSL Helsinki",
       "country": "Finland",
       "region": "Uusimaa",
-      "status": "no_definition_on_map",
+      "status": "qualitative_definition_on_map",
       "mapCandidates": [
         {
           "url": "https://www.hsl.fi/en/hsl/trunk-route-network",
-          "sourceType": "rider_guide",
+          "sourceType": "system_map",
           "localFile": null
         }
       ],
       "preservedFiles": [],
       "mapDate": null,
-      "mapPageOrSection": "Trunk route network rider material",
-      "exactMapWording": "frequent services; frequent headways; metro-like service with frequent headways",
+      "mapPageOrSection": "current trunk-route map page and heading",
+      "exactMapWording": "Runkolinjat / Stomlinjenät / Trunk routes; a network of frequent services.",
       "thresholdMinutes": null,
       "thresholdText": null,
       "serviceSpan": null,
       "days": null,
       "geography": null,
       "mode": null,
-      "evidenceNotes": "Current HSL trunk-route rider material uses “frequent” descriptively but gives no numeric definition.",
-      "reviewBatch": 8,
-      "evidenceSourceType": "rider_guide",
+      "evidenceNotes": "Current official map evidence was rechecked and the record upgraded.",
+      "reviewBatch": 25,
+      "evidenceSourceType": "system_map",
       "reviewSources": [
         {
           "url": "https://www.hsl.fi/en/hsl/trunk-route-network",
-          "sourceType": "rider_guide",
+          "sourceType": "system_map",
           "localFile": null
         }
       ],
-      "definitions": [],
+      "definitions": [
+        {
+          "id": "frequent",
+          "label": "Trunk routes",
+          "thresholdMinutes": null,
+          "thresholdText": null,
+          "representative": true,
+          "sourceType": "system_map",
+          "sourceUrl": "https://www.hsl.fi/en/hsl/trunk-route-network",
+          "localFile": null,
+          "mapPageOrSection": "current trunk-route map page and heading",
+          "exactWording": "Runkolinjat / Stomlinjenät / Trunk routes; a network of frequent services.",
+          "evidenceNotes": "Current official map evidence was rechecked and the record upgraded."
+        }
+      ],
       "representativeThresholdMinutes": null,
       "publishedFrequencyBands": null
     },
@@ -7727,35 +7741,49 @@
       "agencyName": "STIB/MIVB Brussels",
       "country": "Belgium",
       "region": "Brussels",
-      "status": "no_definition_on_map",
+      "status": "qualitative_definition_on_map",
       "mapCandidates": [
         {
-          "url": "https://www.stib-mivb.be/files/live/sites/STIBMIVB/files/Travel/Plans%20r%C3%A9seau/Plan_Metro_Train.pdf",
+          "url": "https://www.stib-mivb.be/files/live/sites/STIBMIVB/files/Travel/Plans%20r%C3%A9seau/SCHM_Plan_NEXT.pdf",
           "sourceType": "system_map",
           "localFile": null
         }
       ],
       "preservedFiles": [],
       "mapDate": null,
-      "mapPageOrSection": "page 1 legend",
-      "exactMapWording": null,
+      "mapPageOrSection": "map legend, lower-right corner",
+      "exactMapWording": "CHRONO; fréquences élevées / hoge frequentie / high frequencies.",
       "thresholdMinutes": null,
       "thresholdText": null,
       "serviceSpan": null,
       "days": null,
       "geography": null,
       "mode": null,
-      "evidenceNotes": "Official STIB metro/train map visually reviewed. It identifies lines, stations, and zones but no frequent-service definition.",
-      "reviewBatch": 10,
+      "evidenceNotes": "Current official map evidence was rechecked and the record upgraded.",
+      "reviewBatch": 25,
       "evidenceSourceType": "system_map",
       "reviewSources": [
         {
-          "url": "https://www.stib-mivb.be/files/live/sites/STIBMIVB/files/Travel/Plans%20r%C3%A9seau/Plan_Metro_Train.pdf",
+          "url": "https://www.stib-mivb.be/files/live/sites/STIBMIVB/files/Travel/Plans%20r%C3%A9seau/SCHM_Plan_NEXT.pdf",
           "sourceType": "system_map",
           "localFile": null
         }
       ],
-      "definitions": [],
+      "definitions": [
+        {
+          "id": "frequent",
+          "label": "CHRONO",
+          "thresholdMinutes": null,
+          "thresholdText": null,
+          "representative": true,
+          "sourceType": "system_map",
+          "sourceUrl": "https://www.stib-mivb.be/files/live/sites/STIBMIVB/files/Travel/Plans%20r%C3%A9seau/SCHM_Plan_NEXT.pdf",
+          "localFile": null,
+          "mapPageOrSection": "map legend, lower-right corner",
+          "exactWording": "CHRONO; fréquences élevées / hoge frequentie / high frequencies.",
+          "evidenceNotes": "Current official map evidence was rechecked and the record upgraded."
+        }
+      ],
       "representativeThresholdMinutes": null,
       "publishedFrequencyBands": null
     },
@@ -8097,7 +8125,7 @@
       "agencyName": "TCL Lyon",
       "country": "France",
       "region": "Auvergne-Rhône-Alpes",
-      "status": "no_definition_on_map",
+      "status": "qualitative_definition_on_map",
       "mapCandidates": [
         {
           "url": "https://www.tcl.fr/sites/default/files/2026-08/Plan_des_lignes_fortes_TCL.pdf",
@@ -8107,16 +8135,16 @@
       ],
       "preservedFiles": [],
       "mapDate": null,
-      "mapPageOrSection": "Plan des lignes fortes",
-      "exactMapWording": null,
+      "mapPageOrSection": "map title/legend",
+      "exactMapWording": "Plan des lignes fortes; selected strong-line routes show 2 min, 3 min, and 6 min service.",
       "thresholdMinutes": null,
       "thresholdText": null,
       "serviceSpan": null,
       "days": null,
       "geography": null,
       "mode": null,
-      "evidenceNotes": "Official TCL major-transit-lines map visually reviewed. It identifies strong/main lines and route-specific intervals but no frequent-service definition.",
-      "reviewBatch": 11,
+      "evidenceNotes": "Current official map evidence was rechecked and the record upgraded.",
+      "reviewBatch": 25,
       "evidenceSourceType": "system_map",
       "reviewSources": [
         {
@@ -8125,7 +8153,21 @@
           "localFile": null
         }
       ],
-      "definitions": [],
+      "definitions": [
+        {
+          "id": "frequent",
+          "label": "Strong lines",
+          "thresholdMinutes": null,
+          "thresholdText": null,
+          "representative": true,
+          "sourceType": "system_map",
+          "sourceUrl": "https://www.tcl.fr/sites/default/files/2026-08/Plan_des_lignes_fortes_TCL.pdf",
+          "localFile": null,
+          "mapPageOrSection": "map title/legend",
+          "exactWording": "Plan des lignes fortes; selected strong-line routes show 2 min, 3 min, and 6 min service.",
+          "evidenceNotes": "Current official map evidence was rechecked and the record upgraded."
+        }
+      ],
       "representativeThresholdMinutes": null,
       "publishedFrequencyBands": null
     },
@@ -9089,36 +9131,50 @@
       "agencyName": "Transport Victoria",
       "country": "Australia",
       "region": "Victoria",
-      "status": "no_definition_on_map",
+      "status": "numeric_definition_on_map",
       "mapCandidates": [
         {
-          "url": "https://transport.vic.gov.au/plan-a-journey/network-maps/melbourne-public-transport-maps",
+          "url": "https://edge.sitecorecloud.io/stategovernc45d-cftw-production-c9ca/media/Project/TransportWebsite/Forms/DTP2029_Rapid-Bus-Product_Digital_A3_North_FINAL.pdf",
           "sourceType": "system_map",
           "localFile": null
         }
       ],
       "preservedFiles": [],
       "mapDate": null,
-      "mapPageOrSection": "Metropolitan Melbourne public transport maps",
-      "exactMapWording": "This page includes regular and late-night public transport maps.",
-      "thresholdMinutes": null,
-      "thresholdText": null,
+      "mapPageOrSection": "system map, page 1",
+      "exactMapWording": "Your local high frequency bus network; *20 minute frequency for most of the day.",
+      "thresholdMinutes": 20,
+      "thresholdText": "20 minute frequency for most of the day",
       "serviceSpan": null,
       "days": null,
       "geography": null,
       "mode": null,
-      "evidenceNotes": "Official current Melbourne map page visually reviewed. It identifies regular and late-night maps but no frequent-service definition.",
-      "reviewBatch": 13,
+      "evidenceNotes": "Current official map evidence was rechecked and the record upgraded.",
+      "reviewBatch": 25,
       "evidenceSourceType": "system_map",
       "reviewSources": [
         {
-          "url": "https://transport.vic.gov.au/plan-a-journey/network-maps/melbourne-public-transport-maps",
+          "url": "https://edge.sitecorecloud.io/stategovernc45d-cftw-production-c9ca/media/Project/TransportWebsite/Forms/DTP2029_Rapid-Bus-Product_Digital_A3_North_FINAL.pdf",
           "sourceType": "system_map",
           "localFile": null
         }
       ],
-      "definitions": [],
-      "representativeThresholdMinutes": null,
+      "definitions": [
+        {
+          "id": "frequent",
+          "label": "High frequency bus network",
+          "thresholdMinutes": 20,
+          "thresholdText": "20 minute frequency for most of the day",
+          "representative": true,
+          "sourceType": "system_map",
+          "sourceUrl": "https://edge.sitecorecloud.io/stategovernc45d-cftw-production-c9ca/media/Project/TransportWebsite/Forms/DTP2029_Rapid-Bus-Product_Digital_A3_North_FINAL.pdf",
+          "localFile": null,
+          "mapPageOrSection": "system map, page 1",
+          "exactWording": "Your local high frequency bus network; *20 minute frequency for most of the day.",
+          "evidenceNotes": "Current official map evidence was rechecked and the record upgraded."
+        }
+      ],
+      "representativeThresholdMinutes": 20,
       "publishedFrequencyBands": null
     },
     {
@@ -13027,6 +13083,432 @@
         }
       ],
       "representativeThresholdMinutes": 15,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 310,
+      "agencyId": "smart",
+      "agencyName": "SMART Detroit",
+      "country": "United States",
+      "region": "Michigan",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.smartbus.org/ridesmart-fast",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "FAST map and rider information",
+      "exactMapWording": "FAST: SMART’s Frequent, Limited-Stop Service; 15–20 minutes during peak hours; 7 days a week.",
+      "thresholdMinutes": 20,
+      "thresholdText": "15–20 minutes during peak hours",
+      "serviceSpan": null,
+      "days": "7 days/week",
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official SMART FAST map/rider information visually reviewed. The slowest published frequent period is used as the representative threshold.",
+      "reviewBatch": 24,
+      "evidenceSourceType": "rider_guide",
+      "reviewSources": [
+        {
+          "url": "https://www.smartbus.org/ridesmart-fast",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "definitions": [
+        {
+          "id": "frequent",
+          "label": "Frequent, Limited-Stop Service",
+          "thresholdMinutes": 20,
+          "thresholdText": "15–20 minutes during peak hours",
+          "representative": true,
+          "sourceType": "rider_guide",
+          "sourceUrl": "https://www.smartbus.org/ridesmart-fast",
+          "localFile": null,
+          "mapPageOrSection": "FAST map and rider information",
+          "exactWording": "FAST: SMART’s Frequent, Limited-Stop Service; 15–20 minutes during peak hours; 7 days a week.",
+          "evidenceNotes": "Official SMART FAST map/rider information visually reviewed. The slowest published frequent period is used as the representative threshold."
+        }
+      ],
+      "representativeThresholdMinutes": 20,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 311,
+      "agencyId": "kcata",
+      "agencyName": "RideKC / KCATA",
+      "country": "United States",
+      "region": "Missouri/Kansas",
+      "status": "map_unavailable",
+      "mapCandidates": [
+        {
+          "url": "https://ridekc.org/assets/uploads/documents/SystemMap.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "map legend",
+      "exactMapWording": "Frequent Bus Service — 12–15 minutes; map effective January 1, 2018.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The available map is outdated and was excluded from current verified results; no current qualifying map artifact was located.",
+      "reviewBatch": 24,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://ridekc.org/assets/uploads/documents/SystemMap.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 312,
+      "agencyId": "communitytransit",
+      "agencyName": "Community Transit",
+      "country": "United States",
+      "region": "Washington",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.communitytransit.org/docs/default-source/mappdfs/systemmappdfs/mapsystem.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "system map legend, dated 06/26",
+      "exactMapWording": "Swift; Blue, Green, and Orange Lines.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Community Transit system map visually reviewed. It names Swift service but gives no explicit frequent-service definition.",
+      "reviewBatch": 24,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.communitytransit.org/docs/default-source/mappdfs/systemmappdfs/mapsystem.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 313,
+      "agencyId": "gcrta",
+      "agencyName": "Greater Cleveland RTA",
+      "country": "United States",
+      "region": "Ohio",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.riderta.com/systemmap",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "frequency map controls on official interactive system map",
+      "exactMapWording": "15 min or better; 30 min; 40–45; 60",
+      "thresholdMinutes": 15,
+      "thresholdText": "15 min or better",
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Current official map evidence was rechecked and the record upgraded.",
+      "reviewBatch": 25,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.riderta.com/systemmap",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [
+        {
+          "id": "frequent",
+          "label": "Frequent service",
+          "thresholdMinutes": 15,
+          "thresholdText": "15 min or better",
+          "representative": true,
+          "sourceType": "system_map",
+          "sourceUrl": "https://www.riderta.com/systemmap",
+          "localFile": null,
+          "mapPageOrSection": "frequency map controls on official interactive system map",
+          "exactWording": "15 min or better; 30 min; 40–45; 60",
+          "evidenceNotes": "Current official map evidence was rechecked and the record upgraded."
+        }
+      ],
+      "representativeThresholdMinutes": 15,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 314,
+      "agencyId": "cdta",
+      "agencyName": "Capital District Transportation Authority",
+      "country": "United States",
+      "region": "New York",
+      "status": "map_unavailable",
+      "mapCandidates": [
+        {
+          "url": "https://www.cdta.org/service-area-map",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "current service-area map page",
+      "exactMapWording": "The accessible PDF is labeled 2016–17 System Map & Rider Guide.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The current map page does not expose a current downloadable legend; the old PDF was excluded from current results.",
+      "reviewBatch": 24,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.cdta.org/service-area-map",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 315,
+      "agencyId": "cincinnatimetro",
+      "agencyName": "Metro Regional Transit Authority",
+      "country": "United States",
+      "region": "Ohio",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.go-metro.com/wp-content/uploads/2025/04/metrosystemmap.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "legend, upper-left/center",
+      "exactMapWording": "On weekdays at midday, buses arrive every: 15 Minutes Or Better.",
+      "thresholdMinutes": 15,
+      "thresholdText": "15 minutes or better",
+      "serviceSpan": "weekday midday",
+      "days": "weekdays",
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Metro Regional system map visually reviewed.",
+      "reviewBatch": 25,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.go-metro.com/wp-content/uploads/2025/04/metrosystemmap.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [
+        {
+          "id": "frequent",
+          "label": "Frequent service",
+          "thresholdMinutes": 15,
+          "thresholdText": "15 minutes or better",
+          "representative": true,
+          "sourceType": "system_map",
+          "sourceUrl": "https://www.go-metro.com/wp-content/uploads/2025/04/metrosystemmap.pdf",
+          "localFile": null,
+          "mapPageOrSection": "legend, upper-left/center",
+          "exactWording": "On weekdays at midday, buses arrive every: 15 Minutes Or Better.",
+          "evidenceNotes": "Official Metro Regional system map visually reviewed."
+        }
+      ],
+      "representativeThresholdMinutes": 15,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 316,
+      "agencyId": "rgrta",
+      "agencyName": "Regional Transit Service",
+      "country": "United States",
+      "region": "New York",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.myrts.com/Portals/0/Documents/RTS%20System%20Map%209-1-2025.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "map legend, page 1",
+      "exactMapWording": "Frequent Service; Every 15 minutes Mon-Fri 6am-6pm. Every 30 minutes at other times.",
+      "thresholdMinutes": 30,
+      "thresholdText": "every 15 minutes Mon-Fri 6am-6pm; every 30 minutes at other times",
+      "serviceSpan": "6am–6pm weekdays and other times",
+      "days": "Monday–Friday plus other times",
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official RTS system map visually reviewed. The slowest published frequent-service period is used as the representative threshold.",
+      "reviewBatch": 25,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.myrts.com/Portals/0/Documents/RTS%20System%20Map%209-1-2025.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [
+        {
+          "id": "frequent",
+          "label": "Frequent Service",
+          "thresholdMinutes": 30,
+          "thresholdText": "every 15 minutes Mon-Fri 6am-6pm; every 30 minutes at other times",
+          "representative": true,
+          "sourceType": "system_map",
+          "sourceUrl": "https://www.myrts.com/Portals/0/Documents/RTS%20System%20Map%209-1-2025.pdf",
+          "localFile": null,
+          "mapPageOrSection": "map legend, page 1",
+          "exactWording": "Frequent Service; Every 15 minutes Mon-Fri 6am-6pm. Every 30 minutes at other times.",
+          "evidenceNotes": "Official RTS system map visually reviewed. The slowest published frequent-service period is used as the representative threshold."
+        }
+      ],
+      "representativeThresholdMinutes": 30,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 317,
+      "agencyId": "octranspo",
+      "agencyName": "OC Transpo",
+      "country": "Canada",
+      "region": "Ontario",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.octranspo.com/images/files/maps/network_maps/New_service_map_ROUTE_REVIEW_2024_%28MASTER%29_19Aug2024.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "map legend, bottom centre",
+      "exactMapWording": "Frequent • Fréquent; Service every 15 minutes or less on weekdays 06:00 to 18:00. Operating 7 days/week in all time periods.",
+      "thresholdMinutes": 15,
+      "thresholdText": "every 15 minutes or less",
+      "serviceSpan": "06:00–18:00 weekdays",
+      "days": "7 days/week in all time periods",
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official OC Transpo network map visually reviewed.",
+      "reviewBatch": 25,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.octranspo.com/images/files/maps/network_maps/New_service_map_ROUTE_REVIEW_2024_%28MASTER%29_19Aug2024.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [
+        {
+          "id": "frequent",
+          "label": "Frequent",
+          "thresholdMinutes": 15,
+          "thresholdText": "every 15 minutes or less",
+          "representative": true,
+          "sourceType": "system_map",
+          "sourceUrl": "https://www.octranspo.com/images/files/maps/network_maps/New_service_map_ROUTE_REVIEW_2024_%28MASTER%29_19Aug2024.pdf",
+          "localFile": null,
+          "mapPageOrSection": "map legend, bottom centre",
+          "exactWording": "Frequent • Fréquent; Service every 15 minutes or less on weekdays 06:00 to 18:00. Operating 7 days/week in all time periods.",
+          "evidenceNotes": "Official OC Transpo network map visually reviewed."
+        }
+      ],
+      "representativeThresholdMinutes": 15,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 318,
+      "agencyId": "jta",
+      "agencyName": "Jacksonville Transportation Authority",
+      "country": "United States",
+      "region": "Florida",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.jtafla.com/media/xt4gbo35/ops-25016-system-map-09-2025.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "legend, upper-right",
+      "exactMapWording": "FREQUENT ROUTES (15–20 min); Weekdays 6:30 am to 6:00 pm; Core Frequent Route: 15 min; Combined Frequent Routes: 15–20 min.",
+      "thresholdMinutes": 20,
+      "thresholdText": "15–20 minutes",
+      "serviceSpan": "6:30am–6pm",
+      "days": "weekdays",
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official JTA system map visually reviewed. The slowest published frequent tier is used as the representative threshold.",
+      "reviewBatch": 25,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.jtafla.com/media/xt4gbo35/ops-25016-system-map-09-2025.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [
+        {
+          "id": "frequent",
+          "label": "Frequent Routes",
+          "thresholdMinutes": 20,
+          "thresholdText": "15–20 minutes",
+          "representative": true,
+          "sourceType": "system_map",
+          "sourceUrl": "https://www.jtafla.com/media/xt4gbo35/ops-25016-system-map-09-2025.pdf",
+          "localFile": null,
+          "mapPageOrSection": "legend, upper-right",
+          "exactWording": "FREQUENT ROUTES (15–20 min); Weekdays 6:30 am to 6:00 pm; Core Frequent Route: 15 min; Combined Frequent Routes: 15–20 min.",
+          "evidenceNotes": "Official JTA system map visually reviewed. The slowest published frequent tier is used as the representative threshold."
+        }
+      ],
+      "representativeThresholdMinutes": 20,
       "publishedFrequencyBands": null
     }
   ],
