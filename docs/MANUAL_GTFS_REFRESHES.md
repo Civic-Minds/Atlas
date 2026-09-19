@@ -64,7 +64,8 @@ agency identity and service dates extending beyond the audit date.
 | --- | --- |
 | `albany-ga`, `cheyenne`, `ecat`, `riovista`, `saint-hyacinthe` | The agency is active, but no current public static GTFS ZIP was found. |
 | `amarillo`, `fred-transit` | An official or catalog URL was found, but download access returned an authorization or server error. |
-| `avon-transit`, `blacksburg`, `cat-savannah`, `emta`, `guelph`, `qline`, `rts`, `sacrt`, `rockregion`, `taft`, `tillamook`, `wichita`, `xpress-ga` | A matching feed was found, but its service window ended before or at the audit date. |
+| `avon-transit`, `blacksburg`, `cat-savannah`, `emta`, `qline`, `rts`, `sacrt`, `rockregion`, `taft`, `tillamook`, `wichita`, `xpress-ga` | A matching feed was found, but its service window ended before or at the audit date. |
+| `guelph` | A current September 2026 feed was downloadable from a Google Drive mirror and identified Guelph Transit, but the City’s published feed URL is still stale and the mirror’s official provenance is not yet established. |
 | `b-line` | A current California B-Line feed was found, but this Atlas slug is the Corpus Christi RTA B-Line and the agency identities do not match. |
 | `evansville`, `glendalebeeline`, `green-bay`, `mcts` | Catalog metadata shows a newer schedule, but the official download could not be directly validated from this environment. |
 | `fast-ca`, `unioncity`, `vacaville` | The current regional feed is behind an API key, so no public static ZIP was verified. |
