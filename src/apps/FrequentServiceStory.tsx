@@ -44,7 +44,7 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
   return (
     <div ref={storyScrollRef} className="h-full overflow-x-hidden overflow-y-auto bg-[var(--bg-app)] text-[var(--text-primary)]">
       <article className="mx-auto max-w-6xl px-5 pb-24 pt-16 sm:px-8 sm:pt-20">
-        <header className="mx-auto flex min-h-[calc(100dvh-6rem)] max-w-4xl flex-col items-center justify-center text-center">
+        <header className="mx-auto max-w-4xl text-center">
           <p className="text-[0.7rem] uppercase tracking-[0.24em] font-black text-[var(--accent)]">Atlas research</p>
           <h1 className="mt-5 text-4xl sm:text-6xl font-black tracking-[-0.045em] leading-[0.98]">What happens when you miss the bus?</h1>
           <div className="mx-auto mt-6 max-w-2xl space-y-4 text-left text-base leading-8 text-[var(--text-muted)] sm:text-lg">
