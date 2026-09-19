@@ -9661,6 +9661,216 @@
       ],
       "representativeThresholdMinutes": 15,
       "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 229,
+      "agencyId": "kyoto-city-transportation",
+      "agencyName": "Kyoto Municipal Transportation Bureau",
+      "country": "Japan",
+      "region": "Kyoto",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.city.kyoto.lg.jp/kotsu/cmsfiles/contents/0000019/19770/rosenzu%28map%29260320.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": "Effective March 20, 2026",
+      "mapPageOrSection": "map title and legend",
+      "exactMapWording": "京都市バス・地下鉄路線図; Kyoto City bus and subway route map",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": "Kyoto",
+      "mode": "bus and subway",
+      "evidenceNotes": "Current official Kyoto City Bus and Subway route map, effective March 20, 2026, was visually reviewed. The legend identifies bus, subway, route, and service-area symbols but does not name a frequent or high-frequency definition.",
+      "reviewBatch": 16,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.city.kyoto.lg.jp/kotsu/page/0000019770.html",
+          "sourceType": "system_map",
+          "localFile": null
+        },
+        {
+          "url": "https://www.city.kyoto.lg.jp/kotsu/cmsfiles/contents/0000019/19770/rosenzu%28map%29260320.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 230,
+      "agencyId": "nagoya-subway",
+      "agencyName": "Nagoya City Transportation Bureau",
+      "country": "Japan",
+      "region": "Aichi",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.kotsu.city.nagoya.jp/rp/Jassets/pdf/subway/rosenzu/subwaymap.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "map title and line legend",
+      "exactMapWording": "地下鉄案内図; Subway Network",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": "Nagoya",
+      "mode": "subway",
+      "evidenceNotes": "Current official Nagoya City Transportation Bureau Subway Network map was visually reviewed. It names the six subway lines, stations, and transfer symbols but does not name a frequent or high-frequency definition.",
+      "reviewBatch": 16,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.kotsu.city.nagoya.jp/rp/subway/routemap.html",
+          "sourceType": "system_map",
+          "localFile": null
+        },
+        {
+          "url": "https://www.kotsu.city.nagoya.jp/rp/Jassets/pdf/subway/rosenzu/subwaymap.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 231,
+      "agencyId": "busan-metro",
+      "agencyName": "Busan Transportation Corporation",
+      "country": "South Korea",
+      "region": "Busan",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www2.humetro.busan.kr/homepage/default/page/subLocation.do?menu_no=1001010102",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "official route-map page and Busan Metro Tourist Map",
+      "exactMapWording": "부산도시철도 관광 노선도; Busan Metro Tourist Map",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": "Busan",
+      "mode": "metro",
+      "evidenceNotes": "Current official Busan Transportation Corporation route-map page and its displayed Busan Metro Tourist Map were visually reviewed. The map shows lines, stations, transfers, and tourist locations but does not name a frequent or high-frequency definition.",
+      "reviewBatch": 16,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www2.humetro.busan.kr/homepage/default/page/subLocation.do?menu_no=1001010102",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 232,
+      "agencyId": "kaohsiung-metro",
+      "agencyName": "Kaohsiung Rapid Transit Corporation",
+      "country": "Taiwan",
+      "region": "Kaohsiung",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.krtc.com.tw/eng/KLRT/guide_map",
+          "sourceType": "system_map",
+          "localFile": null
+        },
+        {
+          "url": "https://www.krtc.com.tw/ReadFile/?p=GuideMapEn&n=30ef7d49da3a4a1ebea25a9ce3d0ee87.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": "Updated July 15, 2026",
+      "mapPageOrSection": "Operation Lines and Legend",
+      "exactMapWording": "Operation Lines; Legend; Red Line (Gangshan Station - Siaogang); Orange Line (Hamasen - Daliao); LRT",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": "Kaohsiung",
+      "mode": "metro and LRT",
+      "evidenceNotes": "Current official KRTC English system map, updated July 15, 2026, was visually reviewed. It identifies operation lines, stations, interchanges, and map symbols but does not name a frequent or high-frequency definition.",
+      "reviewBatch": 16,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.krtc.com.tw/eng/KLRT/guide_map",
+          "sourceType": "system_map",
+          "localFile": null
+        },
+        {
+          "url": "https://www.krtc.com.tw/ReadFile/?p=GuideMapEn&n=30ef7d49da3a4a1ebea25a9ce3d0ee87.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 233,
+      "agencyId": "delhi-metro",
+      "agencyName": "Delhi Metro Rail Corporation",
+      "country": "India",
+      "region": "Delhi NCR",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://delhimetrorail.com/static/media/DMRC-Network-Map_Jan2026_Hindi-English-13.03.2026.147097c4.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": "As on March 2026",
+      "mapPageOrSection": "map title, operational-network table, and legend",
+      "exactMapWording": "DMRC OPERATIONAL NETWORK; OPERATIONAL NETWORK (Ph-I, II, III & IV); Line No.; Length (KM); Stations",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": "Delhi NCR",
+      "mode": "metro",
+      "evidenceNotes": "Current official DMRC Operational Network map, marked as on March 2026, was visually reviewed. It publishes line, length, station, phase, and interchange information but does not name a frequent or high-frequency definition.",
+      "reviewBatch": 16,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://delhimetrorail.com/static/media/DMRC-Network-Map_Jan2026_Hindi-English-13.03.2026.147097c4.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
     }
   ],
   "updatedAt": "2026-09-19"
