@@ -6665,6 +6665,44 @@
       "definitions": [],
       "representativeThresholdMinutes": null,
       "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 154,
+      "agencyId": "saskatoon",
+      "agencyName": "Saskatoon Transit",
+      "country": "Canada",
+      "region": "Saskatchewan",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://saskatoontransit.ca/files/transit/documents/Routes/System/Routes_2026.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": "2026",
+      "mapPageOrSection": "one-page system route map and legend",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": "Saskatoon Transit network",
+      "mode": "Bus",
+      "evidenceNotes": "Current official Saskatoon Transit system map reviewed. It identifies routes and service-type legend items but does not name or define frequent/high-frequency service on the map.",
+      "reviewBatch": 11,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://saskatoontransit.ca/files/transit/documents/Routes/System/Routes_2026.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
     }
   ],
   "updatedAt": "2026-09-19"
