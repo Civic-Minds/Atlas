@@ -30,7 +30,6 @@ import type { FeedQuality } from '../shared/feedQuality';
 import { trackEvent, trackPageView } from './lib/analytics';
 import { parseFrequentServiceDays, type FrequentServiceFrequency, type FrequentServiceWindow } from '../shared/frequentService';
 import FrequentServiceStory from './apps/FrequentServiceStory';
-import FrequentServiceChartLab from './apps/FrequentServiceChartLab';
 
 export interface FareOverride {
   adult?: number;      // base card/electronic fare (fallback when GeoJSON baseFare is absent)
@@ -122,7 +121,6 @@ export default function App() {
     || ['days', 'frequency', 'window', 'lat', 'lon', 'z', 'route', 'stop', 'h', 'headway', 'max'].some(key => frequentServiceParams.has(key))
   );
   const inFrequentServiceStory = pathname === '/research/frequent-service/story';
-  const inFrequentServiceChartLab = pathname === '/research/frequent-service/chart-lab';
   const inFrequentService = frequentServiceMapView;
   const routedApp: AppId = PATH_TO_APP[pathname] ?? 'frequency';
   // Direct URL access (e.g. /apps/live) would otherwise bypass the LIVE_ENABLED / HISTORY_ENABLED /
@@ -578,9 +576,7 @@ export default function App() {
           </div>
         ) : (
           <ErrorBoundary label="The map encountered an error.">
-          {inFrequentServiceChartLab ? (
-            <FrequentServiceChartLab />
-          ) : inFrequentServiceStory ? (
+          {inFrequentServiceStory ? (
             <FrequentServiceStory agencies={visibleAgencies} onExploreMap={() => navigate('/research/frequent-service?view=map')} />
           ) : <>
             <Interval
