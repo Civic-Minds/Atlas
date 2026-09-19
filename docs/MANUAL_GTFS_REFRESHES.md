@@ -1,7 +1,7 @@
 # Manual GTFS refresh queue
 
-Snapshot from the expired-source audit on 2026-09-19. The audit checked 98
-remaining expired production snapshots: 40 now have newer sources, 44 remain genuinely
+Snapshot from the expired-source audit on 2026-09-19. The audit checked 86
+remaining expired production snapshots: 40 now have newer sources, 42 remain genuinely
 expired, and these four have no verified replacement that Atlas could currently
 download automatically.
 
@@ -28,7 +28,6 @@ do not replace any of these with an older archived ZIP.
 | `cat-savannah` | 20250727 |
 | `cheyenne` | 20250914 |
 | `davenport` | 20241231 |
-| `dc-streetcar` | 20250630 |
 | `ecat` | 20221101 |
 | `elmonte` | 20251031 |
 | `emta` | 20231101 |
@@ -64,19 +63,26 @@ do not replace any of these with an older archived ZIP.
 | `wichita` | 20260814 |
 | `xpress-ga` | 20250705 |
 
-DC Streetcar is listed for historical audit completeness, but DDOT ended service
-on 2026-03-31. It should not receive a replacement feed.
+## Discontinued or merged services
+
+These agencies remain in the historical audit output but should not receive a
+replacement feed:
+
+- `dc-streetcar`: DDOT ended DC Streetcar service on 2026-03-31.
+
+- `glensfallstransit`: Greater Glens Falls Transit was merged into CDTA on
+  2024-01-01; the old independent feed is no longer the right source.
 
 ## Verified replacements awaiting refresh
 
-The following 51 agencies have a current ZIP with matching agency identity and
+The following 53 agencies have a current ZIP with matching agency identity and
 can be refreshed using the configured or automatically derived source:
 
 `abqride`, `arvin`, `avta`, `carson-circuit`, `carta-chattanooga`, `clemson-cat`, `duke`, `eugene-ltd`, `gold-coast`, `goldengate`, `goraleigh`, `grand-junction`, `indygo`, `mont-tremblant`, `mountainmetro`,
 `culvercitybus`, `imperial-valley`, `kingcountymetro`, `mata`, `marta`, `montebello`, `mst`, `nice`, `omahametro`, `pace-bus`, `pgc-the-bus`, `regina`, `ripta`,
 `riverside`, `rtc`, `rtcwashoe`, `santafetrails`, `saskatoon`, `sdmts`, `skagittransit`, `psta`, `rct`,
-`communitytransit`, `everetttransit`, `intercitytransit`, `soundtransit`, `torrance-transit`,
-`theride`, `valley-express`, `votran`, `vvta`, `wmata`, `wrta`, `yolobus`, `youngstown-wrta`, `sun-metro`.
+`communitytransit`, `everetttransit`, `intercitytransit`, `kenosha`, `soundtransit`, `torrance-transit`,
+`theride`, `valley-express`, `votran`, `vvta`, `waukesha-metro`, `wmata`, `wrta`, `yolobus`, `youngstown-wrta`, `sun-metro`.
 
 Refreshing these agencies writes to live R2 and must be authorized separately.
 
