@@ -6,9 +6,11 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Made the chart lab’s agency plot readable by giving every agency its own labeled row instead of stacking dots without a meaningful vertical axis.
 - Added a temporary Frequent Service chart lab to compare cumulative thresholds with agency-level definition distributions before choosing a story chart.
 - Restored the story introduction’s natural top placement so the title is not forced into a vertically centered hero.
 - Frequent Service story-map captions now stay inside the viewport instead of being clipped below the sticky map.
+- Reviewed current Trinity Metro and NORTA system maps, preserving Trinity Metro’s 15-minute numeric band separately from NORTA’s no-definition finding.
 - Reviewed current DART and METRO Houston system-map frequency bands, adding their explicit 15-minute numeric definitions to the North American audit.
 - Reviewed current Capital Metro and VIA frequency maps, adding their explicit 15-minute numeric definitions to the North American audit.
 - Reviewed Spokane Transit Authority’s current system map, adding its 15-minute weekday frequent-service definition to the North American audit.
