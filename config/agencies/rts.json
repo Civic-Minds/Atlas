@@ -11,10 +11,11 @@
     29.85,
     -82
   ],
-  "feedUrl": "https://files.mobilitydatabase.org/mdb-2412/latest.zip",
+  "feedUrl": "https://go-rts.com/wp-content/uploads/2026/08/RTSGTFS_Fall2026-1.zip",
   "region": "Florida",
-  "lastFeedExpiry": "20250817",
-  "lastFeedVersion": "2501",
+  "lastFeedExpiry": "20270502",
+  "lastFeedVersion": "Updated: Aug 24, 2026, 6:35 AM",
+  "mdbFeedUrl": "https://go-rts.com/wp-content/uploads/2026/08/RTSGTFS_Fall2026-1.zip",
   "lastRefreshedAt": "20260811",
   "websiteUrl": "http://www.go-rts.com/",
   "cities": [
