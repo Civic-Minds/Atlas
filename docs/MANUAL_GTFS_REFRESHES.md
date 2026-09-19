@@ -58,7 +58,8 @@ agency identity and service dates extending beyond the audit date.
 | Agencies | Finding |
 | --- | --- |
 | `albany-ga`, `cheyenne`, `ecat`, `riovista`, `saint-hyacinthe` | The agency is active, but no current public static GTFS ZIP was found. |
-| `amarillo`, `fred-transit` | An official or catalog URL was found, but download access returned an authorization or server error. |
+| `amarillo` | An official or catalog URL was found, but download access returned an authorization or server error. |
+| `fred-transit` | The official page still publishes a CY2026 GTFS, but the documented PDF URL returns HTTP 403 here and the Virginia ArcGIS clearinghouse item is no longer accessible; no current ZIP was verified. |
 | `avon-transit`, `cat-savannah`, `rockregion`, `taft`, `tillamook`, `wichita`, `xpress-ga` | A matching feed was found, but its service window ended before or at the audit date. |
 | `qline` | QLINE is still operating, but the matching feed identifies Qline Detroit and ends 2025-12-31; no newer static schedule was verified. |
 | `b-line` | A current California B-Line feed was found, but this Atlas slug is the Corpus Christi RTA B-Line and the agency identities do not match. |
