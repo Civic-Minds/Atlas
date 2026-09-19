@@ -1,7 +1,7 @@
 # Manual GTFS refresh queue
 
 Snapshot from the expired-source audit on 2026-09-19. The audit checked 98
-remaining expired production snapshots: 40 now have newer sources, 48 remain genuinely
+remaining expired production snapshots: 40 now have newer sources, 46 remain genuinely
 expired, and these four have no verified replacement that Atlas could currently
 download automatically.
 
@@ -12,7 +12,7 @@ download automatically.
 | SFMTA / Muni | Configured current and fallback candidates could not be verified as a usable current feed | Confirm the current Muni GTFS source and refresh the catalog URL |
 | West Berkeley Shuttle | Cal-ITP URL does not return a usable ZIP and the catalog copy is expired | Confirm whether the shuttle still operates and locate its current feed |
 
-The 48 agencies below remain candidates for source recovery. The read-only audit
+The 46 agencies below remain candidates for source recovery. The read-only audit
 found no current usable schedule among their configured or automatically derived
 Mobility Database candidates. Start with agencies whose snapshots ended in 2026;
 do not replace any of these with an older archived ZIP.
@@ -54,9 +54,7 @@ do not replace any of these with an older archived ZIP.
 | `rts` | 20250817 |
 | `sacrt` | 20260613 |
 | `saint-hyacinthe` | 20241231 |
-| `saskatoon` | 20250830 |
 | `sioux-falls` | 20240403 |
-| `skagittransit` | 20251024 |
 | `starmetro` | 20240901 |
 | `taft` | 20220101 |
 | `theride` | 20260822 |
@@ -73,12 +71,12 @@ on 2026-03-31. It should not receive a replacement feed.
 
 ## Verified replacements awaiting refresh
 
-The following 47 agencies have a current ZIP with matching agency identity and
+The following 49 agencies have a current ZIP with matching agency identity and
 can be refreshed using the configured or automatically derived source:
 
 `abqride`, `arvin`, `avta`, `carson-circuit`, `carta-chattanooga`, `clemson-cat`, `duke`, `eugene-ltd`, `gold-coast`, `goldengate`, `goraleigh`, `grand-junction`, `indygo`, `mont-tremblant`, `mountainmetro`,
 `culvercitybus`, `imperial-valley`, `kingcountymetro`, `mata`, `marta`, `montebello`, `mst`, `nice`, `omahametro`, `pace-bus`, `pgc-the-bus`, `regina`, `ripta`,
-`riverside`, `rtc`, `rtcwashoe`, `santafetrails`, `sdmts`, `psta`, `rct`,
+`riverside`, `rtc`, `rtcwashoe`, `santafetrails`, `saskatoon`, `sdmts`, `skagittransit`, `psta`, `rct`,
 `communitytransit`, `everetttransit`, `intercitytransit`, `soundtransit`, `torrance-transit`,
 `votran`, `vvta`, `wmata`, `wrta`, `yolobus`, `youngstown-wrta`, `sun-metro`.
 
