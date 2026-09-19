@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- Made selected-route dimming more visible in High Contrast mode so the focus state does not rely on colour alone.
 
 - Improved accessibility with stronger secondary-text contrast, visible keyboard focus, larger settings toggles, reduced-motion support, and clearer Settings semantics.
 - Centralized button and status colours so High contrast mode applies consistently across Atlas screens while normal mode keeps the standard appearance.

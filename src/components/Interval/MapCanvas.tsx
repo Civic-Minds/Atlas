@@ -1526,7 +1526,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
             'case', branchMatch, 3.5, routeMatch, 1.5, DIM_WIDTH,
           ]);
         } else {
-          setRouteLayerPaint(map, 'line-opacity', buildFocusedRouteLineOpacityExpression(routeMatch, headwayExpr) as any);
+          setRouteLayerPaint(map, 'line-opacity', buildFocusedRouteLineOpacityExpression(routeMatch, headwayExpr, colorMode) as any);
           setRouteLayerPaint(map, 'line-width', [
             'interpolate', ['linear'], ['zoom'],
             8, ['case', routeMatch, 3.5, 1.5],
@@ -1538,7 +1538,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       } else if (hoveredSearchRoute) {
         // Hovering a search result: spotlight that route, fade the rest
         const hoverMatch: any = routeKeyMatchExpression(hoveredSearchRoute);
-        setRouteLayerPaint(map, 'line-opacity', buildFocusedRouteLineOpacityExpression(hoverMatch, headwayExpr) as any);
+        setRouteLayerPaint(map, 'line-opacity', buildFocusedRouteLineOpacityExpression(hoverMatch, headwayExpr, colorMode) as any);
         setRouteLayerPaint(map, 'line-width', [
           'interpolate', ['linear'], ['zoom'],
           8, ['case', hoverMatch, 3.5, 1.5],

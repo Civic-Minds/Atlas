@@ -83,4 +83,19 @@ describe('buildFocusedRouteLineOpacityExpression', () => {
       ['case', ['>', ['get', 'headway'], 20], 0, 0.7],
     ]);
   });
+
+  it('dims background routes more strongly in the accessible palette', () => {
+    const expression = buildFocusedRouteLineOpacityExpression(
+      ['==', ['get', 'routeId'], 'selected'],
+      ['get', 'headway'],
+      'friendly',
+    );
+
+    expect(expression[4]).toEqual([
+      'case',
+      ['==', ['get', 'routeId'], 'selected'],
+      1,
+      ['case', ['>', ['get', 'headway'], 20], 0, 0.3],
+    ]);
+  });
 });
