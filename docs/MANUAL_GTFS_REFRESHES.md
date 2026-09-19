@@ -3,7 +3,8 @@
 Snapshot from the expired-source audit on 2026-09-19. The audit checked 99
 expired production snapshots: 18 had newer sources, 77 remained genuinely
 expired, and these four had no verified replacement that Atlas could currently
-download automatically.
+download automatically. A follow-up source review verified seven additional
+current feeds, leaving 70 agencies still unresolved.
 
 | Agency | Why it needs manual work | Next action |
 | --- | --- | --- |
@@ -12,19 +13,21 @@ download automatically.
 | SFMTA / Muni | Configured current and fallback candidates could not be verified as a usable current feed | Confirm the current Muni GTFS source and refresh the catalog URL |
 | West Berkeley Shuttle | Cal-ITP URL does not return a usable ZIP and the catalog copy is expired | Confirm whether the shuttle still operates and locate its current feed |
 
-The other 77 expired agencies remain candidates for source recovery, but the
+The other 70 expired agencies remain candidates for source recovery, but the
 audit found no current usable schedule among their configured or automatically
 derived Mobility Database candidates. Start with agencies whose snapshots ended
 in 2026; do not replace any of these with an older archived ZIP.
 
 ## Verified replacements awaiting refresh
 
-The following 18 agencies have a current ZIP with matching agency identity and
+The following 25 agencies have a current ZIP with matching agency identity and
 can be refreshed using the configured or automatically derived source:
 
 `abqride`, `eugene-ltd`, `goldengate`, `goraleigh`, `mont-tremblant`,
 `montebello`, `mst`, `nice`, `omahametro`, `pace-bus`, `pgc-the-bus`, `ripta`,
-`riverside`, `rtcwashoe`, `sdmts`, `wmata`, `yolobus`, `youngstown-wrta`.
+`riverside`, `rtcwashoe`, `santafetrails`, `sdmts`, `psta`, `rct`,
+`communitytransit`, `everetttransit`, `intercitytransit`, `soundtransit`,
+`wmata`, `yolobus`, `youngstown-wrta`.
 
 Refreshing these agencies writes to live R2 and must be authorized separately.
 
