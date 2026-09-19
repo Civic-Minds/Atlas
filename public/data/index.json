@@ -3380,7 +3380,7 @@
         42.262,
         -71.802
       ],
-      "feedUrl": "http://data.trilliumtransit.com/gtfs/wrta-ma-us/wrta-ma-us.zip",
+      "feedUrl": "https://gtfs.wrta.cadavl.com/WRTA/GTFS/GTFS_WRTA.zip",
       "lastFeedExpiry": "20260811",
       "lastFeedVersion": null,
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-massachusetts-worcester-regional-transit-authority-wrta-gtfs-432.zip?alt=media",
@@ -6761,7 +6761,7 @@
         34.2396,
         -119.2042
       ],
-      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-gold-coast-transit-south-coast-area-transit-gtfs-32.zip?alt=media",
+      "feedUrl": "https://www.gctd.org/wp-content/uploads/2021/06/GCTD_GTFS.zip",
       "bbox": [
         34,
         -119.5,
