@@ -16132,7 +16132,7 @@
         39.0871,
         -108.5512
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-161/latest.zip",
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/grandvalleytransit-co-us/grandvalleytransit-co-us--flex-v2.zip",
       "lastFeedExpiry": "20251105",
       "lastFeedVersion": "Nov_05_2024",
       "lastRefreshedAt": "20260811",
