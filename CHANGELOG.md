@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- Added the population-coverage interpretation to the Frequent Service story so the threshold comparison explains its practical meaning.
 - Added population coverage evidence to the Frequent Service story, comparing 15- and 30-minute thresholds across Canada and the United States.
 - Fixed the Frequent Service story so filtering only removes routes as the explanation progresses.
 - Added 92 manually reviewed agencies to the frequency research audit, raising the verified-definition sample from 17 to 50 while keeping unnamed and unavailable maps separate.
