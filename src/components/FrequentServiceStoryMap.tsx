@@ -41,23 +41,26 @@ function projectFeatures(allFeatures: StoryFeature[], features: StoryFeature[]) 
     .join(' ')).join(' ');
 }
 
-function featuresForStage(features: StoryFeature[], stage: number, frequencyMinutes: 15 | 30) {
+function isNotRushHourOnly(feature: StoryFeature): boolean {
+  const properties = feature.properties as { serviceClass?: string } | null;
+  return properties?.serviceClass !== 'time-limited' && properties?.serviceClass !== 'irregular';
+}
+
+function runsThroughTheDay(feature: StoryFeature): boolean {
+  const properties = feature.properties as { headwayByPeriod?: { midday?: number | null }; researchFrequentService?: { daytime30?: boolean } } | null;
+  return properties?.researchFrequentService?.daytime30 === true || properties?.headwayByPeriod?.midday != null;
+}
+
+export function featuresForStage(features: StoryFeature[], stage: number, frequencyMinutes: 15 | 30) {
   if (stage === 0) return features;
-  if (stage === 1) {
-    return features.filter(feature => {
-      const properties = feature.properties as { serviceClass?: string } | null;
-      return properties?.serviceClass !== 'time-limited' && properties?.serviceClass !== 'irregular';
-    });
-  }
-  if (stage === 2) {
-    return features.filter(feature => {
-      const properties = feature.properties as { headwayByPeriod?: { midday?: number | null }; researchFrequentService?: { daytime30?: boolean } } | null;
-      return properties?.researchFrequentService?.daytime30 || properties?.headwayByPeriod?.midday != null;
-    });
-  }
-  return features.filter(feature => {
+  const daytimeFeatures = features.filter(feature => isNotRushHourOnly(feature) && runsThroughTheDay(feature));
+  if (stage === 1) return features.filter(isNotRushHourOnly);
+  if (stage === 2) return daytimeFeatures;
+  return daytimeFeatures.filter(feature => {
     const properties = feature.properties as { researchFrequentService?: { daytime15?: boolean; daytime30?: boolean } } | null;
-    return frequencyMinutes === 15 ? properties?.researchFrequentService?.daytime15 : properties?.researchFrequentService?.daytime30;
+    return frequencyMinutes === 15
+      ? properties?.researchFrequentService?.daytime15 === true
+      : properties?.researchFrequentService?.daytime30 === true;
   });
 }
 
