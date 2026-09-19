@@ -15015,12 +15015,12 @@
         37.1452,
         -80.4053
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-1189/latest.zip",
-      "lastFeedExpiry": "20260731",
-      "lastFeedVersion": null,
+      "feedUrl": "https://www.bt4uclassic.org/gtfs/google_transit.zip",
+      "lastFeedExpiry": "20261031",
+      "lastFeedVersion": "FY27 Blacksburg 1.6A",
       "lastRefreshedAt": "20260811",
       "region": "Virginia",
-      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1189/latest.zip",
+      "mdbFeedUrl": "https://www.bt4uclassic.org/gtfs/google_transit.zip",
       "bbox": [
         37.1065,
         -80.4734,
