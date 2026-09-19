@@ -1,7 +1,7 @@
 # Manual GTFS refresh queue
 
 Snapshot from the expired-source audit on 2026-09-19. The audit checked 99
-expired production snapshots: 37 now have newer sources, 58 remain genuinely
+expired production snapshots: 40 now have newer sources, 55 remain genuinely
 expired, and these four have no verified replacement that Atlas could currently
 download automatically.
 
@@ -12,7 +12,7 @@ download automatically.
 | SFMTA / Muni | Configured current and fallback candidates could not be verified as a usable current feed | Confirm the current Muni GTFS source and refresh the catalog URL |
 | West Berkeley Shuttle | Cal-ITP URL does not return a usable ZIP and the catalog copy is expired | Confirm whether the shuttle still operates and locate its current feed |
 
-The 58 agencies below remain candidates for source recovery. The read-only audit
+The 55 agencies below remain candidates for source recovery. The read-only audit
 found no current usable schedule among their configured or automatically derived
 Mobility Database candidates. Start with agencies whose snapshots ended in 2026;
 do not replace any of these with an older archived ZIP.
@@ -65,29 +65,26 @@ do not replace any of these with an older archived ZIP.
 | `sioux-falls` | 20240403 |
 | `skagittransit` | 20251024 |
 | `starmetro` | 20240901 |
-| `sun-metro` | 20260613 |
 | `taft` | 20220101 |
 | `theride` | 20260822 |
 | `tillamook` | 20260901 |
 | `unioncity` | 20230927 |
 | `vacaville` | 20260630 |
 | `valley-express` | 20250815 |
-| `votran` | 20220223 |
-| `vvta` | 20250329 |
 | `waukesha-metro` | 20250601 |
 | `wichita` | 20260814 |
 | `xpress-ga` | 20250705 |
 
 ## Verified replacements awaiting refresh
 
-The following 37 agencies have a current ZIP with matching agency identity and
+The following 40 agencies have a current ZIP with matching agency identity and
 can be refreshed using the configured or automatically derived source:
 
 `abqride`, `carta-chattanooga`, `eugene-ltd`, `gold-coast`, `goldengate`, `goraleigh`, `grand-junction`, `mont-tremblant`,
 `culvercitybus`, `imperial-valley`, `kingcountymetro`, `mata`, `marta`, `montebello`, `mst`, `nice`, `omahametro`, `pace-bus`, `pgc-the-bus`, `regina`, `ripta`,
 `riverside`, `rtc`, `rtcwashoe`, `santafetrails`, `sdmts`, `psta`, `rct`,
 `communitytransit`, `everetttransit`, `intercitytransit`, `soundtransit`, `torrance-transit`,
-`wmata`, `wrta`, `yolobus`, `youngstown-wrta`.
+`votran`, `vvta`, `wmata`, `wrta`, `yolobus`, `youngstown-wrta`, `sun-metro`.
 
 Refreshing these agencies writes to live R2 and must be authorized separately.
 
