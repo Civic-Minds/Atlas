@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- Reviewed GCRTA’s current system map and recorded its lack of a named frequency definition, expanding the North American audit to 138 agencies.
 - Reviewed OC Transpo, COTA, and York Region Transit, expanding the North American audit to 137 agencies while preserving numeric and qualitative definitions separately.
 - Corrected TransLink’s audit evidence to cite its official Frequent Transit Network system map rather than the supporting webpage.
 - Added TransLink and LA Metro to the North American frequency-definition audit.

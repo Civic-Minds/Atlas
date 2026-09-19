@@ -6409,6 +6409,44 @@
       ],
       "representativeThresholdMinutes": null,
       "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 148,
+      "agencyId": "gcrta",
+      "agencyName": "Greater Cleveland Regional Transit Authority (GCRTA)",
+      "country": "United States",
+      "region": "Ohio",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.riderta.com/sites/default/files/pdf/maps/System_Map_Main.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": "2023",
+      "mapPageOrSection": "one-page county system map",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": "Greater Cleveland system map",
+      "mode": "Bus and rail",
+      "evidenceNotes": "Current official GCRTA printable system map reviewed. It identifies routes and rail lines but does not name or define frequent/high-frequency service on the map.",
+      "reviewBatch": 9,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.riderta.com/sites/default/files/pdf/maps/System_Map_Main.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
     }
   ],
   "updatedAt": "2026-09-19"
