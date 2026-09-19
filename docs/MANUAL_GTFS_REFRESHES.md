@@ -1,7 +1,7 @@
 # Manual GTFS refresh queue
 
-Snapshot from the expired-source audit on 2026-09-19. The audit checked 80
-remaining expired production snapshots: 40 now have newer sources, 36 remain genuinely
+Snapshot from the expired-source audit on 2026-09-19. The audit checked 79
+remaining expired production snapshots: 40 now have newer sources, 35 remain genuinely
 expired, and these four have no verified replacement that Atlas could currently
 download automatically.
 
