@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - Frequent Service story-map captions now stay inside the viewport instead of being clipped below the sticky map.
+- Reviewed GO Transit’s current regional system map, recording its network evidence without inventing a named frequent-service definition.
 - Reviewed Saskatoon Transit’s current system map, recording its network evidence without inventing a named frequent-service definition.
 - Reviewed Hamilton Street Railway’s current system map, recording its network evidence without inventing a named frequent-service definition.
 - Reviewed current Durham Region Transit and Grand River Transit system maps, recording their published route information without inventing named frequent-service definitions.

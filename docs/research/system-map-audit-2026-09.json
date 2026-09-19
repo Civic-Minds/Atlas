@@ -6703,6 +6703,44 @@
       "definitions": [],
       "representativeThresholdMinutes": null,
       "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 155,
+      "agencyId": "go",
+      "agencyName": "GO Transit",
+      "country": "Canada",
+      "region": "Ontario",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://assets.metrolinx.com/image/upload/Documents/GO/system-map.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": "July 2026",
+      "mapPageOrSection": "one-page regional system map",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": "GO Transit regional rail network",
+      "mode": "Regional rail",
+      "evidenceNotes": "Current official GO Transit system map reviewed. It identifies the regional rail network but does not name or define frequent/high-frequency service on the map.",
+      "reviewBatch": 11,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://assets.metrolinx.com/image/upload/Documents/GO/system-map.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
     }
   ],
   "updatedAt": "2026-09-19"
