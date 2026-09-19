@@ -59,7 +59,8 @@ agency identity and service dates extending beyond the audit date.
 | --- | --- |
 | `albany-ga`, `cheyenne`, `ecat`, `riovista`, `saint-hyacinthe` | The agency is active, but no current public static GTFS ZIP was found. |
 | `amarillo`, `fred-transit` | An official or catalog URL was found, but download access returned an authorization or server error. |
-| `avon-transit`, `cat-savannah`, `qline`, `rockregion`, `taft`, `tillamook`, `wichita`, `xpress-ga` | A matching feed was found, but its service window ended before or at the audit date. |
+| `avon-transit`, `cat-savannah`, `rockregion`, `taft`, `tillamook`, `wichita`, `xpress-ga` | A matching feed was found, but its service window ended before or at the audit date. |
+| `qline` | QLINE is still operating, but the matching feed identifies Qline Detroit and ends 2025-12-31; no newer static schedule was verified. |
 | `b-line` | A current California B-Line feed was found, but this Atlas slug is the Corpus Christi RTA B-Line and the agency identities do not match. |
 | `evansville`, `glendalebeeline`, `green-bay`, `mcts` | Catalog metadata shows a newer schedule, but the official download could not be directly validated from this environment. |
 | `fast-ca`, `unioncity`, `vacaville` | The current regional feed is behind an API key, so no public static ZIP was verified. |
