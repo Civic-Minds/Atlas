@@ -2,7 +2,7 @@
   "auditVersion": 2,
   "createdAt": "2026-09-18",
   "sourceCatalog": "docs/research/frequent-service-catalog.json",
-  "scope": "First 50 agencies plus 200 additional agencies reviewed individually against current official system maps or approved rider guides on September 19, 2026.",
+  "scope": "First 50 agencies plus 205 additional agencies reviewed individually against current official system maps or approved rider guides on September 19, 2026.",
   "statusRules": {
     "numeric_definition_on_map": "The official system map visibly names frequent/high-frequency service and gives a numeric threshold or range.",
     "qualitative_definition_on_map": "The official system map visibly names frequent/high-frequency service without a numeric threshold.",
@@ -10568,6 +10568,196 @@
           "url": "https://www.mmmocl.co.in/project-brief.html",
           "sourceType": "system_map",
           "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 251,
+      "agencyId": "namma-metro-bengaluru",
+      "agencyName": "Namma Metro (Bengaluru)",
+      "country": "India",
+      "region": "Karnataka",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://english.bmrc.co.in/schematic-route-map/",
+          "sourceType": "system_map",
+          "localFile": "namma-metro-route-map.jpg"
+        }
+      ],
+      "preservedFiles": ["namma-metro-route-map.jpg"],
+      "mapDate": null,
+      "mapPageOrSection": "route-map legend",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": "metro",
+      "evidenceNotes": "Current official BMRCL schematic route map manually reviewed. It shows Purple, Green, and Yellow line routes plus station and interchange symbols, but does not name frequent or high-frequency service.",
+      "reviewBatch": 19,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://english.bmrc.co.in/schematic-route-map/",
+          "sourceType": "system_map",
+          "localFile": "namma-metro-route-map.jpg"
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 252,
+      "agencyId": "hyderabad-metro",
+      "agencyName": "Hyderabad Metro Rail",
+      "country": "India",
+      "region": "Telangana",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://ltmetro.com/wp-content/uploads/2025/01/HMRRouteMap_new.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "map legend",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": "metro",
+      "evidenceNotes": "Current official Hyderabad Metro Rail network map manually reviewed. It shows the Blue, Red, and Green lines, stations, interchanges, and service-related symbols, but does not name frequent or high-frequency service. The official PDF was accessible for visual review but could not be preserved locally after repeated connection resets.",
+      "reviewBatch": 19,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://ltmetro.com/wp-content/uploads/2025/01/HMRRouteMap_new.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 253,
+      "agencyId": "chennai-metro",
+      "agencyName": "Chennai Metro Rail",
+      "country": "India",
+      "region": "Tamil Nadu",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://chennaimetrorail.org/wp-content/uploads/2025/02/Phase-I-II-Map-Updated-Map-18.12.2024-PHASE-1-2-MAP.pdf",
+          "sourceType": "system_map",
+          "localFile": "chennai-metro-phase-i-ii-map.pdf"
+        }
+      ],
+      "preservedFiles": ["chennai-metro-phase-i-ii-map.pdf"],
+      "mapDate": "2024-12-18",
+      "mapPageOrSection": "map legend",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": "metro",
+      "evidenceNotes": "Current official Chennai Metro Rail Phase I & II map manually reviewed. Its legend names five corridors and station/depot types, but does not name frequent or high-frequency service.",
+      "reviewBatch": 19,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://chennaimetrorail.org/wp-content/uploads/2025/02/Phase-I-II-Map-Updated-Map-18.12.2024-PHASE-1-2-MAP.pdf",
+          "sourceType": "system_map",
+          "localFile": "chennai-metro-phase-i-ii-map.pdf"
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 254,
+      "agencyId": "bts-skytrain-bangkok",
+      "agencyName": "BTS SkyTrain Bangkok",
+      "country": "Thailand",
+      "region": "Bangkok",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.bts.co.th/btsroutes/btsroutes.pdf",
+          "sourceType": "system_map",
+          "localFile": "bts-bangkok-route-map.pdf"
+        }
+      ],
+      "preservedFiles": ["bts-bangkok-route-map.pdf"],
+      "mapDate": null,
+      "mapPageOrSection": "map legend",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": "06:00-24:00 hrs.",
+      "days": null,
+      "geography": null,
+      "mode": "metro",
+      "evidenceNotes": "Current official BTS SkyTrain route map manually reviewed. It includes a service-hours legend ('06:00-24:00 hrs.') and line/interchange symbols, but does not name frequent or high-frequency service or give a frequency threshold.",
+      "reviewBatch": 19,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.bts.co.th/btsroutes/btsroutes.pdf",
+          "sourceType": "system_map",
+          "localFile": "bts-bangkok-route-map.pdf"
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 255,
+      "agencyId": "bangkok-mrt-bem",
+      "agencyName": "Bangkok MRT / BEM",
+      "country": "Thailand",
+      "region": "Bangkok",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://metro.bemplc.co.th/MRT-System-Map?lang=en",
+          "sourceType": "system_map",
+          "localFile": "bangkok-mrt-blue-map.jpg"
+        }
+      ],
+      "preservedFiles": ["bangkok-mrt-blue-map.jpg", "bangkok-mrt-purple-map.jpg"],
+      "mapDate": "2023-06-22",
+      "mapPageOrSection": "Blue Line and Purple Line map legends",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": "metro",
+      "evidenceNotes": "Current official BEM MRT system-map page manually reviewed, including its Blue Line and Purple Line map images. The legends identify routes, stations, interchanges, and other rail connections, but do not name frequent or high-frequency service. The served map images are marked 'Update 22/06/2023 by BEM'.",
+      "reviewBatch": 19,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://metro.bemplc.co.th/MRT-System-Map?lang=en",
+          "sourceType": "system_map",
+          "localFile": "bangkok-mrt-blue-map.jpg"
         }
       ],
       "definitions": [],

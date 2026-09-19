@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- Added five manually inspected Asia-Pacific metro maps—Bengaluru, Hyderabad, Chennai, Bangkok BTS, and Bangkok MRT—without treating their route maps as frequent-service definitions; the audit now covers 255 agencies with 70 verified definitions.
 - Added 12 unique map/guide reviews and upgraded Oakville’s current map evidence; the audit now covers 250 agencies with 70 verified definitions.
 - Fixed Night Service route flags so one branch cannot make a different route pattern appear to cover the full overnight window.
 - Added 10 manually checked international system maps from Asia-Pacific and Europe; the audit now covers 238 agencies while keeping the verified-definition sample at 68.
