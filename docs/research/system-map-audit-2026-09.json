@@ -2,7 +2,7 @@
   "auditVersion": 2,
   "createdAt": "2026-09-18",
   "sourceCatalog": "docs/research/frequent-service-catalog.json",
-  "scope": "First 50 agencies plus 283 additional agencies reviewed individually against current official system maps or approved rider guides on September 19, 2026.",
+  "scope": "First 50 agencies plus 286 additional agencies reviewed individually against current official system maps or approved rider guides on September 19, 2026.",
   "statusRules": {
     "numeric_definition_on_map": "The official system map visibly names frequent/high-frequency service and gives a numeric threshold or range.",
     "qualitative_definition_on_map": "The official system map visibly names frequent/high-frequency service without a numeric threshold.",
@@ -14191,6 +14191,162 @@
       ],
       "definitions": [],
       "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 334,
+      "agencyId": "cota",
+      "agencyName": "Central Ohio Transit Authority",
+      "country": "United States",
+      "region": "Ohio",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.cota.com/timetables/cota-system-map.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "one-page map, SERVICE TYPE / frequency legend",
+      "exactMapWording": "FREQUENT — Serving you throughout the day — Departure times are every 15 minutes or less",
+      "thresholdMinutes": 15,
+      "thresholdText": "every 15 minutes or less",
+      "serviceSpan": "throughout the day",
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official COTA system map visually reviewed.",
+      "reviewBatch": 27,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.cota.com/timetables/cota-system-map.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [
+        {
+          "id": "frequent",
+          "label": "Frequent",
+          "thresholdMinutes": 15,
+          "thresholdText": "every 15 minutes or less",
+          "representative": true,
+          "sourceType": "system_map",
+          "sourceUrl": "https://www.cota.com/timetables/cota-system-map.pdf",
+          "localFile": null,
+          "mapPageOrSection": "one-page map, SERVICE TYPE / frequency legend",
+          "exactWording": "FREQUENT — Serving you throughout the day — Departure times are every 15 minutes or less",
+          "evidenceNotes": "Official COTA system map visually reviewed."
+        }
+      ],
+      "representativeThresholdMinutes": 15,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 335,
+      "agencyId": "capmetro",
+      "agencyName": "CapMetro",
+      "country": "United States",
+      "region": "Texas",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.capmetro.org/ride/plan/schedmap",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "High-Frequency Network map section",
+      "exactMapWording": "Our High-Frequency Network ... has 14 routes that operate every 15-30 minutes from 6 a.m. to 8 p.m., 7 days a week",
+      "thresholdMinutes": 30,
+      "thresholdText": "every 15–30 minutes",
+      "serviceSpan": "6 a.m.–8 p.m.",
+      "days": "7 days/week",
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official CapMetro rider-facing High-Frequency Network map/page visually reviewed. The slowest published period is used as representative.",
+      "reviewBatch": 27,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.capmetro.org/ride/plan/schedmap",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [
+        {
+          "id": "frequent",
+          "label": "High-Frequency Network",
+          "thresholdMinutes": 30,
+          "thresholdText": "every 15–30 minutes",
+          "representative": true,
+          "sourceType": "system_map",
+          "sourceUrl": "https://www.capmetro.org/ride/plan/schedmap",
+          "localFile": null,
+          "mapPageOrSection": "High-Frequency Network map section",
+          "exactWording": "Our High-Frequency Network ... has 14 routes that operate every 15-30 minutes from 6 a.m. to 8 p.m., 7 days a week",
+          "evidenceNotes": "Official CapMetro rider-facing High-Frequency Network map/page visually reviewed. The slowest published period is used as representative."
+        }
+      ],
+      "representativeThresholdMinutes": 30,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 336,
+      "agencyId": "bctransit-victoria",
+      "agencyName": "BC Transit Victoria",
+      "country": "Canada",
+      "region": "British Columbia",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.bctransit.com/victoria/wp-content/uploads/sites/49/2026/09/vic_rg_sept2026_v2.pdf",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "Rider’s Guide page 11, Route Colours; also current system map legend",
+      "exactMapWording": "Frequent Route — 15 minutes or better between 7:00 a.m. and 7:00 p.m. Monday–Friday.",
+      "thresholdMinutes": 15,
+      "thresholdText": "15 minutes or better",
+      "serviceSpan": "7:00 a.m.–7:00 p.m.",
+      "days": "Monday–Friday",
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Current BC Transit Victoria rider guide and system map visually reviewed.",
+      "reviewBatch": 27,
+      "evidenceSourceType": "rider_guide",
+      "reviewSources": [
+        {
+          "url": "https://www.bctransit.com/victoria/wp-content/uploads/sites/49/2026/09/vic_rg_sept2026_v2.pdf",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "definitions": [
+        {
+          "id": "frequent",
+          "label": "Frequent Route",
+          "thresholdMinutes": 15,
+          "thresholdText": "15 minutes or better",
+          "representative": true,
+          "sourceType": "rider_guide",
+          "sourceUrl": "https://www.bctransit.com/victoria/wp-content/uploads/sites/49/2026/09/vic_rg_sept2026_v2.pdf",
+          "localFile": null,
+          "mapPageOrSection": "Rider’s Guide page 11, Route Colours; also current system map legend",
+          "exactWording": "Frequent Route — 15 minutes or better between 7:00 a.m. and 7:00 p.m. Monday–Friday.",
+          "evidenceNotes": "Current BC Transit Victoria rider guide and system map visually reviewed."
+        }
+      ],
+      "representativeThresholdMinutes": 15,
       "publishedFrequencyBands": null
     }
   ],
