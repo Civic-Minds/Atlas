@@ -90,8 +90,7 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
 
           <section aria-labelledby="chart-heading" className="rounded-[2rem] border border-[var(--border-primary)] bg-[var(--bg-panel)] p-6 sm:p-10">
             <div className="max-w-2xl">
-              <p className="text-[0.7rem] uppercase tracking-[0.24em] font-black text-[var(--accent)]">Explore the sample</p>
-              <h2 id="chart-heading" className="mt-3 text-3xl sm:text-4xl font-black tracking-tight">There is no single “frequent.”</h2>
+              <h2 id="chart-heading" className="text-3xl sm:text-4xl font-black tracking-tight">There is no single “frequent.”</h2>
               <p className="mt-5 text-base leading-8 text-[var(--text-muted)]">
                 Pick a representative threshold to see how agencies turn that number into a service promise. This chart covers {frequentServiceStoryStats.namedNumericAgencies} agencies with a defensible representative numeric definition; secondary tiers remain in the audit instead of being flattened.
               </p>
@@ -129,8 +128,7 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
 
           <section aria-labelledby="population-heading" className="rounded-[2rem] border border-[var(--border-primary)] bg-[var(--bg-panel)] p-6 sm:p-10">
             <div className="max-w-2xl">
-              <p className="text-[0.7rem] uppercase tracking-[0.24em] font-black text-[var(--accent)]">A population test</p>
-              <h2 id="population-heading" className="mt-3 text-3xl sm:text-4xl font-black tracking-tight">The threshold changes who can rely on the network.</h2>
+              <h2 id="population-heading" className="text-3xl sm:text-4xl font-black tracking-tight">The threshold changes who can rely on the network.</h2>
               <p className="mt-5 text-base leading-8 text-[var(--text-muted)]">
                 We applied the same test to Atlas route data and population geography: a 10-minute walk to weekday service running from 7am to 7pm. The stricter 15-minute threshold reaches far fewer people than the broader 30-minute threshold.
               </p>
