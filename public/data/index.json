@@ -6738,9 +6738,9 @@
         33.8432,
         -118.2573
       ],
-      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-carson-circuit-gtfs-298.zip?alt=media",
-      "lastFeedExpiry": "20211111",
-      "lastFeedVersion": "UTC: 22-Dec-2020 20:26",
+      "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11488/CarsonGTFS.zip",
+      "lastFeedExpiry": "20261126",
+      "lastFeedVersion": "20231127",
       "lastRefreshedAt": "20260811",
       "cities": [
         "Carson, California",
@@ -6932,9 +6932,9 @@
         34.6012,
         -118.1182
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-214/mdb-214-202406071534/mdb-214-202406071534.zip",
-      "lastFeedExpiry": "20210801",
-      "lastFeedVersion": "20210503",
+      "feedUrl": "https://www.avta.com/userfiles/files/AVTA_GTFS.zip",
+      "lastFeedExpiry": "20270228",
+      "lastFeedVersion": "20260709",
       "region": "California",
       "lastRefreshedAt": "20260811",
       "websiteUrl": "http://www.avta.com",

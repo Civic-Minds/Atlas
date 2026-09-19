@@ -1,7 +1,7 @@
 # Manual GTFS refresh queue
 
 Snapshot from the expired-source audit on 2026-09-19. The audit checked 98
-remaining expired production snapshots: 40 now have newer sources, 54 remain genuinely
+remaining expired production snapshots: 40 now have newer sources, 52 remain genuinely
 expired, and these four have no verified replacement that Atlas could currently
 download automatically.
 
@@ -12,7 +12,7 @@ download automatically.
 | SFMTA / Muni | Configured current and fallback candidates could not be verified as a usable current feed | Confirm the current Muni GTFS source and refresh the catalog URL |
 | West Berkeley Shuttle | Cal-ITP URL does not return a usable ZIP and the catalog copy is expired | Confirm whether the shuttle still operates and locate its current feed |
 
-The 55 agencies below remain candidates for source recovery. The read-only audit
+The 52 agencies below remain candidates for source recovery. The read-only audit
 found no current usable schedule among their configured or automatically derived
 Mobility Database candidates. Start with agencies whose snapshots ended in 2026;
 do not replace any of these with an older archived ZIP.
@@ -23,10 +23,8 @@ do not replace any of these with an older archived ZIP.
 | `amarillo` | 20211231 |
 | `athens-oh` | 20241231 |
 | `avon-transit` | 20250413 |
-| `avta` | 20210801 |
 | `b-line` | 20250531 |
 | `blacksburg` | 20260731 |
-| `carson-circuit` | 20211111 |
 | `cat-savannah` | 20250727 |
 | `cheyenne` | 20250914 |
 | `clemson-cat` | 20200101 |
@@ -76,10 +74,10 @@ do not replace any of these with an older archived ZIP.
 
 ## Verified replacements awaiting refresh
 
-The following 41 agencies have a current ZIP with matching agency identity and
+The following 43 agencies have a current ZIP with matching agency identity and
 can be refreshed using the configured or automatically derived source:
 
-`abqride`, `arvin`, `carta-chattanooga`, `eugene-ltd`, `gold-coast`, `goldengate`, `goraleigh`, `grand-junction`, `mont-tremblant`,
+`abqride`, `arvin`, `avta`, `carson-circuit`, `carta-chattanooga`, `eugene-ltd`, `gold-coast`, `goldengate`, `goraleigh`, `grand-junction`, `mont-tremblant`,
 `culvercitybus`, `imperial-valley`, `kingcountymetro`, `mata`, `marta`, `montebello`, `mst`, `nice`, `omahametro`, `pace-bus`, `pgc-the-bus`, `regina`, `ripta`,
 `riverside`, `rtc`, `rtcwashoe`, `santafetrails`, `sdmts`, `psta`, `rct`,
 `communitytransit`, `everetttransit`, `intercitytransit`, `soundtransit`, `torrance-transit`,

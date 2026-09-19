@@ -5,9 +5,9 @@
     33.8432,
     -118.2573
   ],
-  "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-carson-circuit-gtfs-298.zip?alt=media",
-  "lastFeedExpiry": "20211111",
-  "lastFeedVersion": "UTC: 22-Dec-2020 20:26",
+  "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11488/CarsonGTFS.zip",
+  "lastFeedExpiry": "20261126",
+  "lastFeedVersion": "20231127",
   "lastRefreshedAt": "20260811",
   "cities": [
     "Carson, California",
