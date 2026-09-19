@@ -11754,10 +11754,10 @@
         30.543,
         -84.202
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-344/latest.zip",
+      "feedUrl": "https://www.talgov.com/Uploads/Public/documents/starmetro/GTFS.zip",
       "region": "Florida",
-      "lastFeedExpiry": "20240901",
-      "lastFeedVersion": "UTC: 07-May-2024 20:44",
+      "lastFeedExpiry": "20270101",
+      "lastFeedVersion": "26-05-02 SUM_20260728",
       "lastRefreshedAt": "20260811",
       "websiteUrl": "http://www.talgov.com/starmetro",
       "cities": [
