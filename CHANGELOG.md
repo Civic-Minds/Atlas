@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Reviewed four additional Canadian map sources: UP Express, T3 Transit, and two exo sectors; UP Express publishes 15-minute departures, while the others do not name a frequent-service definition.
 - Reviewed four additional Canadian system maps: Owen Sound Transit, Ride CK, Railway City Transit, and Stratford Transit; none names a frequent-service definition.
 - Reviewed four additional Canadian agency sources, including Milton Transit; Niagara, Oakville, and Simcoe LINX were recorded as unavailable because no current system map could be accessed.
 - Reviewed four additional Canadian agency sources, including current Cornwall and Greater Sudbury route maps; Thunder Bay and Whitehorse were recorded as unavailable because no current system map could be accessed.
