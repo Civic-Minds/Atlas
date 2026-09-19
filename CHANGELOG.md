@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Reviewed three additional U.S. system-map sources: LADOT/DASH, Cheyenne Transit, and Janesville Transit; none names a frequent-service definition on its map.
 - Reviewed three additional U.S. regional map sources, including DCTA and Kitsap Transit; NFTA-Metro was recorded as unavailable because no current system map could be accessed.
 - Reviewed three additional Canadian map sources, including Orillia and Montréal STM; Timmins was recorded as unavailable because its official map page was blocked during review.
 - Reviewed three additional U.S. system-map sources, including current Marin Transit and Glendale Beeline maps; YCAT was recorded as unavailable because its current page exposes only a 2014 map.
