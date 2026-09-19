@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- Added five more map/guide checks, including DASH Alexandria’s explicit 15-minute definition; the audit now covers 203 agencies with 63 verified definitions.
 - Added 14 more manually checked agencies, including Burlington, Cincinnati, and Gold Coast; the verified sample now has 62 definitions, with interval-only sources kept separate.
 - Added 13 more manually checked agencies to the frequency audit, including Seattle, Dublin, and Rotterdam’s named frequent-service categories; the verified sample now has 59 definitions.
 - Expanded the manually reviewed sample to 171 agencies and 56 verified definitions, adding map/guide evidence from Canada, the United States, Australia, and Europe/Asia while keeping unsupported sources out of the totals.

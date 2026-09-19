@@ -2,7 +2,7 @@
   "auditVersion": 2,
   "createdAt": "2026-09-18",
   "sourceCatalog": "docs/research/frequent-service-catalog.json",
-  "scope": "First 50 agencies plus 152 additional agencies reviewed individually against current official system maps or approved rider guides on September 18, 2026.",
+  "scope": "First 50 agencies plus 161 additional agencies reviewed individually against current official system maps or approved rider guides on September 18, 2026.",
   "statusRules": {
     "numeric_definition_on_map": "The official system map visibly names frequent/high-frequency service and gives a numeric threshold or range.",
     "qualitative_definition_on_map": "The official system map visibly names frequent/high-frequency service without a numeric threshold.",
@@ -8426,6 +8426,210 @@
         {
           "url": "https://www.dotrmrt3.gov.ph/dotrmrt3-citizen-charter-handbook-2026-1st-edition.pdf",
           "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 199,
+      "agencyId": "metrobus-st-johns",
+      "agencyName": "Metrobus",
+      "country": "Canada",
+      "region": "Newfoundland and Labrador",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://metrobus.com/system_map.asp",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "Service at a glance / Fall-Winter System Map",
+      "exactMapWording": "View which routes service various key locations throughout our service area.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Metrobus system-map page visually reviewed. It provides network coverage information but no named frequent-service definition.",
+      "reviewBatch": 12,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://metrobus.com/system_map.asp",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 200,
+      "agencyId": "brantford-transit",
+      "agencyName": "Brantford Transit",
+      "country": "Canada",
+      "region": "Ontario",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.brantford.ca/transportation/brantford-transit/transit-route-changes/",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "planned changes by route",
+      "exactMapWording": "Increased frequency will return this fall, with peak service every 20 minutes; Sunday service will operate every 45 minutes.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Brantford Transit route-change rider material visually reviewed. It gives route-specific intervals but does not define a named frequent-service category.",
+      "reviewBatch": 12,
+      "evidenceSourceType": "rider_guide",
+      "reviewSources": [
+        {
+          "url": "https://www.brantford.ca/transportation/brantford-transit/transit-route-changes/",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 201,
+      "agencyId": "stl-laval",
+      "agencyName": "Société de transport de Laval",
+      "country": "Canada",
+      "region": "Quebec",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://stlaval.ca/en/schedule/bus",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "Bus Schedules / complete network map",
+      "exactMapWording": "View next trips in real time, full schedules, routes, current network alerts, and connections.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official STL network-map and schedule page visually reviewed. It provides network and schedule access but no named frequent-service definition.",
+      "reviewBatch": 12,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://stlaval.ca/en/schedule/bus",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 202,
+      "agencyId": "dash-alexandria",
+      "agencyName": "DASH Alexandria",
+      "country": "United States",
+      "region": "Virginia",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.dashbus.com/newnetwork/",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "frequency map guidance",
+      "exactMapWording": "Frequent service is 15 minutes or less, 6am–7pm weekdays and 7am–6pm weekends.",
+      "thresholdMinutes": 15,
+      "thresholdText": "15 minutes or less, 6 a.m.–7 p.m. weekdays and 7 a.m.–6 p.m. weekends",
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official DASH frequent-service network guidance visually reviewed. It explicitly defines the threshold and weekday/weekend spans; the page identifies the network as FY2022, so the date caveat is retained.",
+      "reviewBatch": 12,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.dashbus.com/newnetwork/",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [
+        {
+          "id": "primary",
+          "label": "Frequent service is 15 minutes or less, 6am–7pm weekdays and 7am–6pm weekends.",
+          "thresholdMinutes": 15,
+          "thresholdText": "15 minutes or less, 6 a.m.–7 p.m. weekdays and 7 a.m.–6 p.m. weekends",
+          "representative": true,
+          "sourceType": "system_map",
+          "sourceUrl": "https://www.dashbus.com/newnetwork/",
+          "localFile": null,
+          "mapPageOrSection": "frequency map guidance",
+          "exactWording": "Frequent service is 15 minutes or less, 6am–7pm weekdays and 7am–6pm weekends.",
+          "evidenceNotes": "Official DASH frequent-service network guidance visually reviewed. It explicitly defines the threshold and weekday/weekend spans; the page identifies the network as FY2022, so the date caveat is retained."
+        }
+      ],
+      "representativeThresholdMinutes": 15,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 203,
+      "agencyId": "nfta-metro-buffalo",
+      "agencyName": "NFTA-Metro Buffalo",
+      "country": "United States",
+      "region": "New York",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://metro.nfta.com/getting-around/system-maps",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "system maps overview",
+      "exactMapWording": "System maps cover Standard, Frequent, and Express fixed routes.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official NFTA system-map page visually reviewed. It confirms a Frequent category but supplies no threshold, span, or day definition in the current map materials.",
+      "reviewBatch": 12,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://metro.nfta.com/getting-around/system-maps",
+          "sourceType": "system_map",
           "localFile": null
         }
       ],
