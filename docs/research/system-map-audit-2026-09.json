@@ -6551,6 +6551,82 @@
       ],
       "representativeThresholdMinutes": 15,
       "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 151,
+      "agencyId": "drt",
+      "agencyName": "Durham Region Transit",
+      "country": "Canada",
+      "region": "Ontario",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.durham.ca/media/0tahnorz/systemmapsept26v3.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": "September 2026",
+      "mapPageOrSection": "two-page system map and route-frequency table",
+      "exactMapWording": "Route Frequency; Operates at least every 20 minutes, weekdays, from AM peak through PM peak; Operates at least every 30 minutes at other times; Operates at least every 15 minutes during certain times, operates at least every 30 minute at other times.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": "Varies by route and time period",
+      "days": "Weekdays and weekends, depending on route",
+      "geography": "Durham Region Transit network",
+      "mode": "Bus",
+      "evidenceNotes": "Current official DRT system map visually reviewed. It publishes route-frequency bands and spans, including 10-, 12-, 15-, 20-, and 30-minute routes, but does not name a frequent-service category or define frequent service.",
+      "reviewBatch": 11,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.durham.ca/media/0tahnorz/systemmapsept26v3.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": ["10 minutes", "12 minutes", "15 minutes", "20 minutes", "30 minutes", "30–60 minutes", "60 minutes", "90 minutes"]
+    },
+    {
+      "auditOrder": 152,
+      "agencyId": "grt",
+      "agencyName": "Grand River Transit (Waterloo Region)",
+      "country": "Canada",
+      "region": "Ontario",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://media-003-ca.cdn.govstack.com/regionofwaterloo-018-ca/media/lshk02rn/fall-2026-system-map_20260907-web.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": "September 2026",
+      "mapPageOrSection": "one-page system-map legend",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": "Kitchener, Waterloo, Cambridge, and township GRT network",
+      "mode": "Bus and light rail",
+      "evidenceNotes": "Current official GRT system map visually reviewed. It identifies bus, iXpress, express, late-night, and ION routes but does not name or define frequent/high-frequency service on the map.",
+      "reviewBatch": 11,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://media-003-ca.cdn.govstack.com/regionofwaterloo-018-ca/media/lshk02rn/fall-2026-system-map_20260907-web.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
     }
   ],
   "updatedAt": "2026-09-19"
