@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Reviewed four additional U.S. agency map sources; RiverCities, Tillamook, Mount Adams, and Sunset Empire were recorded as unavailable because their official map pages could not be accessed.
 - Reviewed four additional U.S. transit map sources, including COAST and DART First State; Coralville and South Portland were recorded as unavailable because no current system map could be accessed.
 - Reviewed three additional U.S. system-map sources: LADOT/DASH, Cheyenne Transit, and Janesville Transit; none names a frequent-service definition on its map.
 - Reviewed three additional U.S. regional map sources, including DCTA and Kitsap Transit; NFTA-Metro was recorded as unavailable because no current system map could be accessed.
