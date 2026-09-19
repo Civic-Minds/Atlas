@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Reviewed six additional U.S. system maps, including DASH, GRTC, JTA, and Valley Metro, and recorded three numeric definitions, two no-definition findings, and one unavailable map.
 - Reviewed six additional North American system maps, including Long Beach Transit, Bangor Community Connector, and Citilink, and recorded their definition or no-definition findings.
 - Reviewed five additional Canadian transit system maps, including RTC Québec and RTL Longueuil, and recorded their frequent-service definitions or no-definition findings.
 - Made the chart lab’s agency plot readable by giving every agency its own labeled row instead of stacking dots without a meaningful vertical axis.
