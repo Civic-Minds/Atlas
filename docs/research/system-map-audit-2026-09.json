@@ -2,7 +2,7 @@
   "auditVersion": 2,
   "createdAt": "2026-09-18",
   "sourceCatalog": "docs/research/frequent-service-catalog.json",
-  "scope": "First 50 agencies plus 210 additional agencies reviewed individually against current official system maps or approved rider guides on September 19, 2026.",
+  "scope": "First 50 agencies plus 229 additional agencies reviewed individually against current official system maps or approved rider guides on September 19, 2026.",
   "statusRules": {
     "numeric_definition_on_map": "The official system map visibly names frequent/high-frequency service and gives a numeric threshold or range.",
     "qualitative_definition_on_map": "The official system map visibly names frequent/high-frequency service without a numeric threshold.",
@@ -10588,7 +10588,9 @@
           "localFile": "namma-metro-route-map.jpg"
         }
       ],
-      "preservedFiles": ["namma-metro-route-map.jpg"],
+      "preservedFiles": [
+        "namma-metro-route-map.jpg"
+      ],
       "mapDate": null,
       "mapPageOrSection": "route-map legend",
       "exactMapWording": null,
@@ -10664,7 +10666,9 @@
           "localFile": "chennai-metro-phase-i-ii-map.pdf"
         }
       ],
-      "preservedFiles": ["chennai-metro-phase-i-ii-map.pdf"],
+      "preservedFiles": [
+        "chennai-metro-phase-i-ii-map.pdf"
+      ],
       "mapDate": "2024-12-18",
       "mapPageOrSection": "map legend",
       "exactMapWording": null,
@@ -10702,7 +10706,9 @@
           "localFile": "bts-bangkok-route-map.pdf"
         }
       ],
-      "preservedFiles": ["bts-bangkok-route-map.pdf"],
+      "preservedFiles": [
+        "bts-bangkok-route-map.pdf"
+      ],
       "mapDate": null,
       "mapPageOrSection": "map legend",
       "exactMapWording": null,
@@ -10740,7 +10746,10 @@
           "localFile": "bangkok-mrt-blue-map.jpg"
         }
       ],
-      "preservedFiles": ["bangkok-mrt-blue-map.jpg", "bangkok-mrt-purple-map.jpg"],
+      "preservedFiles": [
+        "bangkok-mrt-blue-map.jpg",
+        "bangkok-mrt-purple-map.jpg"
+      ],
       "mapDate": "2023-06-22",
       "mapPageOrSection": "Blue Line and Purple Line map legends",
       "exactMapWording": null,
@@ -10771,7 +10780,13 @@
       "country": "Portugal",
       "region": "Porto",
       "status": "no_definition_on_map",
-      "mapCandidates": [{"url": "https://www.metrodoporto.pt/metrodoporto/uploads/document/file/471/mapa_de_rede.pdf", "sourceType": "system_map", "localFile": null}],
+      "mapCandidates": [
+        {
+          "url": "https://www.metrodoporto.pt/metrodoporto/uploads/document/file/471/mapa_de_rede.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
       "preservedFiles": [],
       "mapDate": null,
       "mapPageOrSection": "network map legend",
@@ -10785,7 +10800,13 @@
       "evidenceNotes": "Current official Metro do Porto network map manually reviewed. It shows lines A-F, stations, and interchanges but does not name frequent or high-frequency service.",
       "reviewBatch": 21,
       "evidenceSourceType": "system_map",
-      "reviewSources": [{"url": "https://www.metrodoporto.pt/metrodoporto/uploads/document/file/471/mapa_de_rede.pdf", "sourceType": "system_map", "localFile": null}],
+      "reviewSources": [
+        {
+          "url": "https://www.metrodoporto.pt/metrodoporto/uploads/document/file/471/mapa_de_rede.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
       "definitions": [],
       "representativeThresholdMinutes": null,
       "publishedFrequencyBands": null
@@ -10797,7 +10818,13 @@
       "country": "France",
       "region": "Occitanie",
       "status": "no_definition_on_map",
-      "mapCandidates": [{"url": "https://www.tisseo.fr/sites/default/files/media/plan-detaille-reseau.pdf", "sourceType": "system_map", "localFile": null}],
+      "mapCandidates": [
+        {
+          "url": "https://www.tisseo.fr/sites/default/files/media/plan-detaille-reseau.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
       "preservedFiles": [],
       "mapDate": "2026-07-17",
       "mapPageOrSection": "map legend",
@@ -10811,7 +10838,13 @@
       "evidenceNotes": "Current official Tisséo network map manually reviewed; the PDF title is dated 17-07-26. The legend identifies network modes and routes but does not name frequent or high-frequency service.",
       "reviewBatch": 21,
       "evidenceSourceType": "system_map",
-      "reviewSources": [{"url": "https://www.tisseo.fr/sites/default/files/media/plan-detaille-reseau.pdf", "sourceType": "system_map", "localFile": null}],
+      "reviewSources": [
+        {
+          "url": "https://www.tisseo.fr/sites/default/files/media/plan-detaille-reseau.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
       "definitions": [],
       "representativeThresholdMinutes": null,
       "publishedFrequencyBands": null
@@ -10823,7 +10856,13 @@
       "country": "Portugal",
       "region": "Lisbon",
       "status": "no_definition_on_map",
-      "mapCandidates": [{"url": "https://www.carris.pt/media/dpqax3t0/af_diagrama_vertical_4fev_2025_site.pdf", "sourceType": "system_map", "localFile": null}],
+      "mapCandidates": [
+        {
+          "url": "https://www.carris.pt/media/dpqax3t0/af_diagrama_vertical_4fev_2025_site.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
       "preservedFiles": [],
       "mapDate": "2025-02-04",
       "mapPageOrSection": "Simbologia / network legend",
@@ -10837,7 +10876,13 @@
       "evidenceNotes": "Official CARRIS network diagram manually reviewed. The legend identifies bus, tram, lifts, funiculars, terminals, and other operators but does not name frequent or high-frequency service.",
       "reviewBatch": 21,
       "evidenceSourceType": "system_map",
-      "reviewSources": [{"url": "https://www.carris.pt/media/dpqax3t0/af_diagrama_vertical_4fev_2025_site.pdf", "sourceType": "system_map", "localFile": null}],
+      "reviewSources": [
+        {
+          "url": "https://www.carris.pt/media/dpqax3t0/af_diagrama_vertical_4fev_2025_site.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
       "definitions": [],
       "representativeThresholdMinutes": null,
       "publishedFrequencyBands": null
@@ -10849,7 +10894,13 @@
       "country": "Italy",
       "region": "Naples",
       "status": "no_definition_on_map",
-      "mapCandidates": [{"url": "https://www2.anm.it/images/stories/mappa_rete_aprile_2025_web.pdf", "sourceType": "system_map", "localFile": null}],
+      "mapCandidates": [
+        {
+          "url": "https://www2.anm.it/images/stories/mappa_rete_aprile_2025_web.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
       "preservedFiles": [],
       "mapDate": "2025-04",
       "mapPageOrSection": "integrated rail network legend",
@@ -10863,7 +10914,13 @@
       "evidenceNotes": "Current official ANM integrated rail-network map manually reviewed. The legend identifies metro lines, funiculars, regional rail, stations, and interchanges but does not name frequent or high-frequency service.",
       "reviewBatch": 21,
       "evidenceSourceType": "system_map",
-      "reviewSources": [{"url": "https://www2.anm.it/images/stories/mappa_rete_aprile_2025_web.pdf", "sourceType": "system_map", "localFile": null}],
+      "reviewSources": [
+        {
+          "url": "https://www2.anm.it/images/stories/mappa_rete_aprile_2025_web.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
       "definitions": [],
       "representativeThresholdMinutes": null,
       "publishedFrequencyBands": null
@@ -10875,7 +10932,13 @@
       "country": "Spain",
       "region": "Andalusia",
       "status": "map_unavailable",
-      "mapCandidates": [{"url": "https://metromalaga.es/?sector=publicidad-y-formacion", "sourceType": "system_map", "localFile": null}],
+      "mapCandidates": [
+        {
+          "url": "https://metromalaga.es/?sector=publicidad-y-formacion",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
       "preservedFiles": [],
       "mapDate": null,
       "mapPageOrSection": null,
@@ -10889,7 +10952,791 @@
       "evidenceNotes": "Current official Metro de Málaga site manually reviewed. It exposes an interactive route planner and station list, but no accessible current system map or approved rider-guide definition was available for review; no frequency claim recorded.",
       "reviewBatch": 21,
       "evidenceSourceType": "system_map",
-      "reviewSources": [{"url": "https://metromalaga.es/?sector=publicidad-y-formacion", "sourceType": "system_map", "localFile": null}],
+      "reviewSources": [
+        {
+          "url": "https://metromalaga.es/?sector=publicidad-y-formacion",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 261,
+      "agencyId": "chilliwack-transit",
+      "agencyName": "Chilliwack Transit",
+      "country": "Canada",
+      "region": "British Columbia",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.bctransit.com/chilliwack/wp-content/uploads/sites/10/2026/06/chw_rg_june2026.pdf",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "June 28, 2026 rider guide map",
+      "exactMapWording": "Limited Service.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Chilliwack rider guide visually reviewed. It shows routes and limited service but no named frequent/high-frequency definition.",
+      "reviewBatch": 20,
+      "evidenceSourceType": "rider_guide",
+      "reviewSources": [
+        {
+          "url": "https://www.bctransit.com/chilliwack/wp-content/uploads/sites/10/2026/06/chw_rg_june2026.pdf",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 262,
+      "agencyId": "vernon-regional-transit",
+      "agencyName": "Vernon Regional Transit",
+      "country": "Canada",
+      "region": "British Columbia",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.bctransit.com/vernon/wp-content/uploads/sites/53/2026/01/ver_rg_jan2026.pdf",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "January 4, 2026 rider guide, Route 97 Okanagan",
+      "exactMapWording": "Frequent weekday UBC Okanagan service to Downtown Kelowna — 6:30 am–6:30 pm 15 min; 6:30 pm–1:45 am 30 min.",
+      "thresholdMinutes": 30,
+      "thresholdText": "15 minutes daytime and 30 minutes evening, weekdays",
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Vernon rider guide visually reviewed. The named frequent service is the regional Route 97 Okanagan, not the local Vernon routes; 30 minutes is the slowest stated ordinary band.",
+      "reviewBatch": 20,
+      "evidenceSourceType": "rider_guide",
+      "reviewSources": [
+        {
+          "url": "https://www.bctransit.com/vernon/wp-content/uploads/sites/53/2026/01/ver_rg_jan2026.pdf",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "definitions": [
+        {
+          "id": "primary",
+          "label": "Frequent weekday UBC Okanagan service to Downtown Kelowna",
+          "thresholdMinutes": 30,
+          "thresholdText": "15 minutes daytime and 30 minutes evening, weekdays",
+          "representative": true,
+          "sourceType": "rider_guide",
+          "sourceUrl": "https://www.bctransit.com/vernon/wp-content/uploads/sites/53/2026/01/ver_rg_jan2026.pdf",
+          "localFile": null,
+          "mapPageOrSection": "January 4, 2026 rider guide, Route 97 Okanagan",
+          "exactWording": "Frequent weekday UBC Okanagan service to Downtown Kelowna — 6:30 am–6:30 pm 15 min; 6:30 pm–1:45 am 30 min.",
+          "evidenceNotes": "Official Vernon rider guide visually reviewed. The named frequent service is the regional Route 97 Okanagan, not the local Vernon routes; 30 minutes is the slowest stated ordinary band."
+        }
+      ],
+      "representativeThresholdMinutes": 30,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 263,
+      "agencyId": "quesnel-transit",
+      "agencyName": "Quesnel Transit",
+      "country": "Canada",
+      "region": "British Columbia",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.bctransit.com/quesnel/wp-content/uploads/sites/32/2026/06/qnl_rg_june2026.pdf",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "June 29, 2026 rider guide map",
+      "exactMapWording": "Limited Service.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Quesnel rider guide visually reviewed. It lists routes and limited service but no named frequent/high-frequency definition.",
+      "reviewBatch": 20,
+      "evidenceSourceType": "rider_guide",
+      "reviewSources": [
+        {
+          "url": "https://www.bctransit.com/quesnel/wp-content/uploads/sites/32/2026/06/qnl_rg_june2026.pdf",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 264,
+      "agencyId": "port-alberni-transit",
+      "agencyName": "Port Alberni Transit",
+      "country": "Canada",
+      "region": "British Columbia",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.bctransit.com/port-alberni/wp-content/uploads/sites/35/2025/09/pal_rg_sept2025.pdf",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "September 2, 2025 rider guide map",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Port Alberni rider guide visually reviewed. It identifies routes but no named frequent/high-frequency definition.",
+      "reviewBatch": 20,
+      "evidenceSourceType": "rider_guide",
+      "reviewSources": [
+        {
+          "url": "https://www.bctransit.com/port-alberni/wp-content/uploads/sites/35/2025/09/pal_rg_sept2025.pdf",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 265,
+      "agencyId": "powell-river-transit",
+      "agencyName": "Powell River Transit",
+      "country": "Canada",
+      "region": "British Columbia",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.bctransit.com/powell-river/wp-content/uploads/sites/37/2026/09/pow_rg_sept2026.pdf",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "September 8, 2026 rider guide map",
+      "exactMapWording": "Fixed; Rural; Limited; OnDemand.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Powell River rider guide visually reviewed. It labels service types but no named frequent/high-frequency definition.",
+      "reviewBatch": 20,
+      "evidenceSourceType": "rider_guide",
+      "reviewSources": [
+        {
+          "url": "https://www.bctransit.com/powell-river/wp-content/uploads/sites/37/2026/09/pow_rg_sept2026.pdf",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 266,
+      "agencyId": "cherriots",
+      "agencyName": "Cherriots",
+      "country": "United States",
+      "region": "Oregon",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.cherriots.org/media/doc/cherriots-system-map-park-and-rides-2024-01-04.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "system map legend",
+      "exactMapWording": "Frequent service — 15 minutes during most of the day.",
+      "thresholdMinutes": 15,
+      "thresholdText": "15-minute service during most of the day",
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Cherriots system map visually reviewed. It names frequent service and publishes the numeric threshold.",
+      "reviewBatch": 20,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.cherriots.org/media/doc/cherriots-system-map-park-and-rides-2024-01-04.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [
+        {
+          "id": "primary",
+          "label": "Frequent service",
+          "thresholdMinutes": 15,
+          "thresholdText": "15-minute service during most of the day",
+          "representative": true,
+          "sourceType": "system_map",
+          "sourceUrl": "https://www.cherriots.org/media/doc/cherriots-system-map-park-and-rides-2024-01-04.pdf",
+          "localFile": null,
+          "mapPageOrSection": "system map legend",
+          "exactWording": "Frequent service — 15 minutes during most of the day.",
+          "evidenceNotes": "Official Cherriots system map visually reviewed. It names frequent service and publishes the numeric threshold."
+        }
+      ],
+      "representativeThresholdMinutes": 15,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 267,
+      "agencyId": "the-comet-columbia",
+      "agencyName": "The COMET",
+      "country": "United States",
+      "region": "South Carolina",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://catchthecometsc.gov/wp-content/uploads/2026/01/COMET-System-Map-INT-Jan2026-prf1.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "January 2026 map legend",
+      "exactMapWording": "Frequent Service (30 min. or less).",
+      "thresholdMinutes": 30,
+      "thresholdText": "30 minutes or less",
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official January 2026 COMET system map visually reviewed. It explicitly names Frequent Service and gives the threshold.",
+      "reviewBatch": 20,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://catchthecometsc.gov/wp-content/uploads/2026/01/COMET-System-Map-INT-Jan2026-prf1.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [
+        {
+          "id": "primary",
+          "label": "Frequent Service (30 min. or less).",
+          "thresholdMinutes": 30,
+          "thresholdText": "30 minutes or less",
+          "representative": true,
+          "sourceType": "system_map",
+          "sourceUrl": "https://catchthecometsc.gov/wp-content/uploads/2026/01/COMET-System-Map-INT-Jan2026-prf1.pdf",
+          "localFile": null,
+          "mapPageOrSection": "January 2026 map legend",
+          "exactWording": "Frequent Service (30 min. or less).",
+          "evidenceNotes": "Official January 2026 COMET system map visually reviewed. It explicitly names Frequent Service and gives the threshold."
+        }
+      ],
+      "representativeThresholdMinutes": 30,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 268,
+      "agencyId": "ride-on-montgomery",
+      "agencyName": "Ride On",
+      "country": "United States",
+      "region": "Maryland",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://assets.montgomerycountymd.gov/files/July_2025_System_Map.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "July 2025 system map",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Ride On system map visually reviewed. It does not name or define a frequent/high-frequency category.",
+      "reviewBatch": 20,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://assets.montgomerycountymd.gov/files/July_2025_System_Map.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 269,
+      "agencyId": "hampton-roads-transit",
+      "agencyName": "Hampton Roads Transit",
+      "country": "United States",
+      "region": "Virginia",
+      "status": "map_unavailable",
+      "mapCandidates": [
+        {
+          "url": "https://gohrt.com/system-map/",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "current official system-map page",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The current official system-map page did not expose a reviewable map payload; planning documents were excluded.",
+      "reviewBatch": 20,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://gohrt.com/system-map/",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 270,
+      "agencyId": "cts-strasbourg",
+      "agencyName": "CTS Strasbourg",
+      "country": "France",
+      "region": "Grand Est",
+      "status": "qualitative_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.cts-strasbourg.eu/export/sites/default/.galleries/Documents/Plan-Detaille-reseau-CTS.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "network map, edition 11/2025",
+      "exactMapWording": "Fonctionnement de 4h30 à 0h30 … Dichte Taktfolge / High Frequency; + fréquent + fluide + facile; Amplitude et fréquence variables selon la ligne.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official CTS network map visually reviewed. It names high-frequency service but gives no numeric threshold.",
+      "reviewBatch": 20,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.cts-strasbourg.eu/export/sites/default/.galleries/Documents/Plan-Detaille-reseau-CTS.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [
+        {
+          "id": "primary",
+          "label": "Fonctionnement de 4h30 à 0h30 … Dichte Taktfolge / High Frequency; + fréquent + fluide + facile; Amplitude et fréquence variables selon la ligne.",
+          "thresholdMinutes": null,
+          "thresholdText": null,
+          "representative": true,
+          "sourceType": "system_map",
+          "sourceUrl": "https://www.cts-strasbourg.eu/export/sites/default/.galleries/Documents/Plan-Detaille-reseau-CTS.pdf",
+          "localFile": null,
+          "mapPageOrSection": "network map, edition 11/2025",
+          "exactWording": "Fonctionnement de 4h30 à 0h30 … Dichte Taktfolge / High Frequency; + fréquent + fluide + facile; Amplitude et fréquence variables selon la ligne.",
+          "evidenceNotes": "Official CTS network map visually reviewed. It names high-frequency service but gives no numeric threshold."
+        }
+      ],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 271,
+      "agencyId": "lvb-leipzig",
+      "agencyName": "LVB Leipzig",
+      "country": "Germany",
+      "region": "Saxony",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://files.l.de/lde-typo3/Leipziger/Verkehrsbetriebe/Fahrtinfos/Netzplan/2025-LVB-LNP-Tag-ab-141225.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "day network map valid December 14, 2025",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official LVB day network map visually reviewed. It shows routes and zones but no frequent-service definition.",
+      "reviewBatch": 20,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://files.l.de/lde-typo3/Leipziger/Verkehrsbetriebe/Fahrtinfos/Netzplan/2025-LVB-LNP-Tag-ab-141225.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 272,
+      "agencyId": "vbb-berlin-brandenburg",
+      "agencyName": "VBB Berlin–Brandenburg",
+      "country": "Germany",
+      "region": "Berlin-Brandenburg",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.vbb.de/fileadmin/user_upload/VBB/Dokumente/Liniennetze/berlin-s-u-schnellbahn-tarifbereich-abc.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "S+U-Bahn map valid June 14, 2026",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official VBB map visually reviewed. It shows network, stations, and fare areas but no frequent-service definition.",
+      "reviewBatch": 20,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.vbb.de/fileadmin/user_upload/VBB/Dokumente/Liniennetze/berlin-s-u-schnellbahn-tarifbereich-abc.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 273,
+      "agencyId": "tallinn-public-transport",
+      "agencyName": "Tallinn Public Transport",
+      "country": "Estonia",
+      "region": "Tallinn",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://web.visittallinn.ee/eng/visitor/plan/transport/public-transport",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "Tallinn Public Transport Map 2026",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Approved Tallinn rider guide/map page visually reviewed. It identifies bus, trolleybus, and tram routes but no frequent-service definition.",
+      "reviewBatch": 20,
+      "evidenceSourceType": "rider_guide",
+      "reviewSources": [
+        {
+          "url": "https://web.visittallinn.ee/eng/visitor/plan/transport/public-transport",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 274,
+      "agencyId": "metro-sevilla",
+      "agencyName": "Metro de Sevilla",
+      "country": "Spain",
+      "region": "Andalusia",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.metro-sevilla.es/mapa-y-trayectos",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "current map and legend",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Metro de Sevilla map page visually reviewed. It shows lines, stations, connections, and accessibility symbols but no frequent-service definition.",
+      "reviewBatch": 20,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.metro-sevilla.es/mapa-y-trayectos",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 275,
+      "agencyId": "kochimetro",
+      "agencyName": "Kochi Metro Rail",
+      "country": "India",
+      "region": "Kerala",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://corporate.kochimetro.org/the-project",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "integrated public transport map",
+      "exactMapWording": "Integrated Public Transport Map; station and interchange labels.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Kochi Metro map visually reviewed. It shows the integrated network but no frequent-service definition.",
+      "reviewBatch": 20,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://corporate.kochimetro.org/the-project",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 276,
+      "agencyId": "nagpur-metro",
+      "agencyName": "Nagpur Metro",
+      "country": "India",
+      "region": "Maharashtra",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://mahametro.org/route_maps.html",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "official route-map page",
+      "exactMapWording": "Alignment 1 North–South Corridor; Alignment 2 East–West Corridor.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Nagpur Metro route map visually reviewed. It shows corridors and stations but no frequent-service definition.",
+      "reviewBatch": 20,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://mahametro.org/route_maps.html",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 277,
+      "agencyId": "pune-metro",
+      "agencyName": "Pune Metro",
+      "country": "India",
+      "region": "Maharashtra",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://mahametro.org/route_maps.html",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "official route-map page",
+      "exactMapWording": "Line 1 PCMC–Swargate; Line 2 Vanaz–Ramwadi.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Pune Metro route map visually reviewed. It shows lines and stations but no frequent-service definition.",
+      "reviewBatch": 20,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://mahametro.org/route_maps.html",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 278,
+      "agencyId": "dhaka-mrt-line-6",
+      "agencyName": "Dhaka MRT Line 6",
+      "country": "Bangladesh",
+      "region": "Dhaka",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://dmtcl.gov.bd/pages/static-pages/6922ddb2933eb65569e15eb8",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "MRT Line-6 Route Map",
+      "exactMapWording": "MRT Line-6 Route Map; station list and interchange symbols.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official DMTCL route map visually reviewed. It shows stations and the line network but no frequent-service definition.",
+      "reviewBatch": 20,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://dmtcl.gov.bd/pages/static-pages/6922ddb2933eb65569e15eb8",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 279,
+      "agencyId": "kolkata-metro",
+      "agencyName": "Metro Railway Kolkata",
+      "country": "India",
+      "region": "West Bengal",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://mtp.indianrailways.gov.in/uploads/files/1709894160765-DMM%20MRK%202024.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "map page 4",
+      "exactMapWording": "MAP OF METRO RAILWAY, KOLKATA; Corridor Colours for Metro Network in Kolkata.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Indian Railways Kolkata Metro map visually reviewed. It shows corridors and line colors but no frequent-service definition.",
+      "reviewBatch": 20,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://mtp.indianrailways.gov.in/uploads/files/1709894160765-DMM%20MRK%202024.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
       "definitions": [],
       "representativeThresholdMinutes": null,
       "publishedFrequencyBands": null
