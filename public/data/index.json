@@ -21072,10 +21072,10 @@
         39.6314,
         -106.5222
       ],
-      "feedUrl": "https://data.trilliumtransit.com/gtfs/avon-co-us/avon-co-us.zip",
-      "lastFeedExpiry": "20250413",
-      "lastFeedVersion": "UTC: 20-Nov-2024 17:07",
-      "lastRefreshedAt": "2026-08-18",
+      "feedUrl": "https://www.avon.org/DocumentCenter/View/25051/TownOfAvon_gtfs",
+      "lastFeedExpiry": "20261125",
+      "lastFeedVersion": "1",
+      "lastRefreshedAt": "2026-09-19",
       "cities": [
         "Avon, Colorado",
         "Beaver Creek, Colorado"
@@ -21086,7 +21086,7 @@
         "score": 55,
         "reasons": [
           "1 validation warning.",
-          "The feed schedule has expired."
+          "The configured source has not been processed into the current Atlas artifact yet."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -21097,10 +21097,10 @@
         },
         "checkedAt": "2026-08-18"
       },
-      "lastFeedCheckAt": "20260907",
-      "expiredFeedCheckCount": 2,
-      "expiredFeedCheckSince": "20260622",
-      "expiredFeedCheckExpiry": "20250413"
+      "lastFeedCheckAt": "20260919",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20261125"
     },
     {
       "slug": "timmins",

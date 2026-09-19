@@ -12,7 +12,7 @@ download automatically.
 | SFMTA / Muni | The official ZIP downloads, but its service calendar ends 2026-08-28 and no later feed was verified | Confirm the next Muni GTFS release and refresh the catalog URL |
 | West Berkeley Shuttle | Cal-ITP URL does not return a usable ZIP and the catalog copy is expired | Confirm whether the shuttle still operates and locate its current feed |
 
-The 28 agencies below remain candidates for source recovery. The read-only audit
+The 27 agencies below remain candidates for source recovery. The read-only audit
 found no current usable schedule among their configured or automatically derived
 Mobility Database candidates. Start with agencies whose snapshots ended in 2026;
 do not replace any of these with an older archived ZIP.
@@ -21,7 +21,6 @@ do not replace any of these with an older archived ZIP.
 | --- | --- |
 | `albany-ga` | 20240630 |
 | `amarillo` | 20211231 |
-| `avon-transit` | 20250413 |
 | `b-line` | 20250531 |
 | `cat-savannah` | 20250727 |
 | `cheyenne` | 20250914 |
@@ -61,7 +60,7 @@ agency identity and service dates extending beyond the audit date.
 | `ecat` | ECAT remains active, but the Florida Transit Data Exchange’s latest ECAT post is from February 2022 and no newer public static ZIP was found. |
 | `amarillo` | An official or catalog URL was found, but download access returned an authorization or server error. |
 | `fred-transit` | The official page still publishes a CY2026 GTFS, but the documented PDF URL returns HTTP 403 here and the Virginia ArcGIS clearinghouse item is no longer accessible; no current ZIP was verified. |
-| `avon-transit`, `cat-savannah`, `rockregion`, `taft`, `wichita`, `xpress-ga` | A matching feed was found, but its service window ended before or at the audit date. |
+| `cat-savannah`, `rockregion`, `taft`, `wichita`, `xpress-ga` | A matching feed was found, but its service window ended before or at the audit date. |
 | `tillamook` | The current matching feed ends 2026-09-01, while the official district site shows service continuing and expanding in 2026; no later static feed was verified. |
 | `grt` | The official endpoint is reachable, but the current file was generated in February 2026 and its calendar ends 2026-04-24; the agency’s published schedules are newer. |
 | `qline` | QLINE is still operating, but the matching feed identifies Qline Detroit and ends 2025-12-31; no newer static schedule was verified. |
@@ -87,10 +86,10 @@ replacement feed:
 
 ## Verified replacements awaiting refresh
 
-The following 66 agencies have a current ZIP with matching agency identity and
+The following 67 agencies have a current ZIP with matching agency identity and
 can be refreshed using the configured or automatically derived source:
 
-`abqride`, `arvin`, `athens-oh`, `avta`, `blacksburg`, `carson-circuit`, `carta-chattanooga`, `clemson-cat`, `davenport`, `duke`, `elmonte`, `emta`, `eugene-ltd`, `gold-coast`, `goldengate`, `goraleigh`, `grand-junction`, `indygo`, `jfk-airtrain`, `mont-tremblant`, `mountainmetro`, `rts`, `sacrt`,
+`abqride`, `arvin`, `athens-oh`, `avon-transit`, `avta`, `blacksburg`, `carson-circuit`, `carta-chattanooga`, `clemson-cat`, `davenport`, `duke`, `elmonte`, `emta`, `eugene-ltd`, `gold-coast`, `goldengate`, `goraleigh`, `grand-junction`, `indygo`, `jfk-airtrain`, `mont-tremblant`, `mountainmetro`, `rts`, `sacrt`,
 `culvercitybus`, `imperial-valley`, `kingcountymetro`, `mata`, `marta`, `montebello`, `mst`, `nice`, `omahametro`, `pace-bus`, `pgc-the-bus`, `regina`, `ripta`,
 `riverside`, `rtc`, `rtcwashoe`, `santafetrails`, `saskatoon`, `sdmts`, `sioux-falls`, `skagittransit`, `starmetro`, `psta`, `rct`,
 `communitytransit`, `everetttransit`, `guelph`, `intercitytransit`, `kenosha`, `nctd`, `octranspo`, `soundtransit`, `torrance-transit`,
