@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- Reviewed Cincinnati Metro’s current regional system map, adding its 15-minute weekday-midday definition to the North American audit.
 - Reviewed Metro Transit’s current Twin Cities system map, adding its 30-minute weekday-midday frequent-service definition to the North American audit.
 - Reviewed GCRTA’s current system map and recorded its lack of a named frequency definition, expanding the North American audit to 138 agencies.
 - Reviewed OC Transpo, COTA, and York Region Transit, expanding the North American audit to 137 agencies while preserving numeric and qualitative definitions separately.

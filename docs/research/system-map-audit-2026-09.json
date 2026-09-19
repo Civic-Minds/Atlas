@@ -6499,6 +6499,58 @@
       ],
       "representativeThresholdMinutes": 30,
       "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 150,
+      "agencyId": "cincinnatimetro",
+      "agencyName": "Cincinnati Metro (SORTA)",
+      "country": "United States",
+      "region": "Ohio",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.go-metro.com/wp-content/uploads/2025/04/metrosystemmap.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": "August 2024",
+      "mapPageOrSection": "one-page regional system-map legend",
+      "exactMapWording": "On weekdays at midday, buses arrive every: 17 — 15 Minutes Or Better",
+      "thresholdMinutes": 15,
+      "thresholdText": "15 minutes or better",
+      "serviceSpan": "Weekday midday",
+      "days": "Weekdays",
+      "geography": "Cincinnati and Southwest Ohio regional system map",
+      "mode": "Bus",
+      "evidenceNotes": "Current official Cincinnati Metro regional system map visually reviewed. Its legend defines the 15-minute-or-better midday route category and distinguishes slower and rush-hour services.",
+      "reviewBatch": 10,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.go-metro.com/wp-content/uploads/2025/04/metrosystemmap.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [
+        {
+          "id": "fifteen-minutes-or-better",
+          "label": "15 Minutes Or Better",
+          "thresholdMinutes": 15,
+          "thresholdText": "15 minutes or better",
+          "representative": true,
+          "sourceType": "system_map",
+          "sourceUrl": "https://www.go-metro.com/wp-content/uploads/2025/04/metrosystemmap.pdf",
+          "localFile": null,
+          "mapPageOrSection": "one-page regional system-map legend",
+          "exactWording": "On weekdays at midday, buses arrive every: 17 — 15 Minutes Or Better",
+          "evidenceNotes": "Current official Cincinnati Metro regional system map visually reviewed."
+        }
+      ],
+      "representativeThresholdMinutes": 15,
+      "publishedFrequencyBands": null
     }
   ],
   "updatedAt": "2026-09-19"
