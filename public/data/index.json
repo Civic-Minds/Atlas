@@ -2705,9 +2705,9 @@
         42.2808,
         -83.743
       ],
-      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-michigan-ann-arbor-area-transportation-authority-theride-gtfs-415.zip?alt=media",
-      "lastFeedExpiry": "20260822",
-      "lastFeedVersion": null,
+      "feedUrl": "https://www.theride.org/sites/default/files/google/google_transit.zip",
+      "lastFeedExpiry": "20270130",
+      "lastFeedVersion": "S1000302",
       "lastRefreshedAt": "2026-08-10",
       "cities": [
         "Ann Arbor, Michigan",
