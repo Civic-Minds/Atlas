@@ -6911,6 +6911,74 @@
       "definitions": [],
       "representativeThresholdMinutes": null,
       "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 161,
+      "agencyId": "london",
+      "agencyName": "London Transit",
+      "country": "Canada",
+      "region": "Ontario",
+      "status": "no_definition_on_map",
+      "mapCandidates": [{
+        "url": "https://www.londontransit.ca/wp-content/uploads/2025/08/LT_SystemMap_SystemUpdate2025_Final_Web.pdf",
+        "sourceType": "system_map",
+        "localFile": null
+      }],
+      "preservedFiles": [],
+      "mapDate": "June 2025",
+      "mapPageOrSection": "system map, route guide, and route information box",
+      "exactMapWording": "In congested areas of the map, this thick line indicates multiple routes traveling on the same road.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": "London Transit network",
+      "mode": "Bus",
+      "evidenceNotes": "Official London Transit system map reviewed. It includes route information and service notes but does not name or define frequent/high-frequency service on the map.",
+      "reviewBatch": 13,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [{
+        "url": "https://www.londontransit.ca/wp-content/uploads/2025/08/LT_SystemMap_SystemUpdate2025_Final_Web.pdf",
+        "sourceType": "system_map",
+        "localFile": null
+      }],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 162,
+      "agencyId": "windsor",
+      "agencyName": "Transit Windsor",
+      "country": "Canada",
+      "region": "Ontario",
+      "status": "no_definition_on_map",
+      "mapCandidates": [{
+        "url": "https://www.citywindsor.ca/documents/residents/transit-windsor/routes-and-schedules/System%20Map%20August%202025%2036x48.pdf",
+        "sourceType": "system_map",
+        "localFile": null
+      }],
+      "preservedFiles": [],
+      "mapDate": "August 2025",
+      "mapPageOrSection": "system map and route service-type legend",
+      "exactMapWording": "Primary Route; Primary Route Intermittent Service; Secondary Route; Local Route; Express Route; Regional Route",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": "Transit Windsor network",
+      "mode": "Bus",
+      "evidenceNotes": "Official Transit Windsor system map reviewed. It classifies route service types but does not name or define frequent/high-frequency service on the map.",
+      "reviewBatch": 13,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [{
+        "url": "https://www.citywindsor.ca/documents/residents/transit-windsor/routes-and-schedules/System%20Map%20August%202025%2036x48.pdf",
+        "sourceType": "system_map",
+        "localFile": null
+      }],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
     }
   ],
   "updatedAt": "2026-09-19"
