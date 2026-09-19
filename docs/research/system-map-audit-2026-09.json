@@ -6136,7 +6136,111 @@
       "definitions": [],
       "representativeThresholdMinutes": null,
       "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 143,
+      "agencyId": "translink",
+      "agencyName": "TransLink (Vancouver)",
+      "country": "Canada",
+      "region": "British Columbia",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.translink.ca/plans-and-projects/projects/frequent-transit-network",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "Frequent Transit Network page",
+      "exactMapWording": "Metro Vancouver’s Frequent Transit Network (FTN) is a network of corridors where transit service runs at least every 15 minutes in both directions throughout the day and into the evening, every day of the week.",
+      "thresholdMinutes": 15,
+      "thresholdText": "At least every 15 minutes",
+      "serviceSpan": "Until 9 p.m. daily; starts at 6 a.m. weekdays, 7 a.m. Saturdays, and 8 a.m. Sundays",
+      "days": "Every day",
+      "geography": "Metro Vancouver Frequent Transit Network corridors",
+      "mode": "Bus or SkyTrain",
+      "evidenceNotes": "Current official TransLink Frequent Transit Network page reviewed. It defines the network numerically and describes the service span and days.",
+      "reviewBatch": 8,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.translink.ca/plans-and-projects/projects/frequent-transit-network",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [
+        {
+          "id": "primary",
+          "label": "Frequent Transit Network",
+          "thresholdMinutes": 15,
+          "thresholdText": "At least every 15 minutes",
+          "representative": true,
+          "sourceType": "system_map",
+          "sourceUrl": "https://www.translink.ca/plans-and-projects/projects/frequent-transit-network",
+          "localFile": null,
+          "mapPageOrSection": "Frequent Transit Network page",
+          "exactWording": "At least every 15 minutes in both directions throughout the day and into the evening, every day of the week.",
+          "evidenceNotes": "Current official TransLink Frequent Transit Network page reviewed."
+        }
+      ],
+      "representativeThresholdMinutes": 15,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 144,
+      "agencyId": "lacmta",
+      "agencyName": "Los Angeles County Metropolitan Transportation Authority (LA Metro)",
+      "country": "United States",
+      "region": "California",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://cdn.beta.metro.net/wp-content/uploads/2025/06/06110811/25-1604_SysOverview_HiFreq_online_DCR.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": "June 2025",
+      "mapPageOrSection": "one-page Frequent Service Network map legend",
+      "exactMapWording": "This map shows all rail lines, plus bus lines that operate every 15 minutes or less from 6am-6pm.",
+      "thresholdMinutes": 15,
+      "thresholdText": "Every 15 minutes or less",
+      "serviceSpan": "6am–6pm",
+      "days": "Weekdays",
+      "geography": "Los Angeles County Metro frequent service network",
+      "mode": "Bus and rail",
+      "evidenceNotes": "Current LA Metro Frequent Service Network map reviewed. The legend defines the network as rail plus bus lines operating every 15 minutes or less from 6am to 6pm on weekdays.",
+      "reviewBatch": 8,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://cdn.beta.metro.net/wp-content/uploads/2025/06/06110811/25-1604_SysOverview_HiFreq_online_DCR.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [
+        {
+          "id": "primary",
+          "label": "Frequent Service Network",
+          "thresholdMinutes": 15,
+          "thresholdText": "Every 15 minutes or less",
+          "representative": true,
+          "sourceType": "system_map",
+          "sourceUrl": "https://cdn.beta.metro.net/wp-content/uploads/2025/06/06110811/25-1604_SysOverview_HiFreq_online_DCR.pdf",
+          "localFile": null,
+          "mapPageOrSection": "one-page map legend",
+          "exactWording": "Bus lines that operate every 15 minutes or less from 6am-6pm.",
+          "evidenceNotes": "Current LA Metro Frequent Service Network map reviewed."
+        }
+      ],
+      "representativeThresholdMinutes": 15,
+      "publishedFrequencyBands": null
     }
   ],
-  "updatedAt": "2026-09-18"
+  "updatedAt": "2026-09-19"
 }
