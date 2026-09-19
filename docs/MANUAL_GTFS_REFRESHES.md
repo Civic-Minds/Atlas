@@ -56,7 +56,8 @@ agency identity and service dates extending beyond the audit date.
 
 | Agencies | Finding |
 | --- | --- |
-| `albany-ga`, `cheyenne`, `saint-hyacinthe` | The agency is active, but no current public static GTFS ZIP was found. |
+| `cheyenne`, `saint-hyacinthe` | The agency is active, but no current public static GTFS ZIP was found. |
+| `albany-ga` | Albany Transit remains active, but its official National RTAP feed ends 2024-06-30 and the city site publishes schedules without a newer GTFS ZIP. |
 | `ecat` | ECAT remains active, but the Florida Transit Data Exchange’s latest ECAT post is from February 2022 and no newer public static ZIP was found. |
 | `amarillo` | An official or catalog URL was found, but download access returned an authorization or server error. |
 | `fred-transit` | The official page still publishes a CY2026 GTFS, but the documented PDF URL returns HTTP 403 here and the Virginia ArcGIS clearinghouse item is no longer accessible; no current ZIP was verified. |
