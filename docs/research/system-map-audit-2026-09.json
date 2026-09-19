@@ -6627,6 +6627,44 @@
       "definitions": [],
       "representativeThresholdMinutes": null,
       "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 153,
+      "agencyId": "hamilton",
+      "agencyName": "Hamilton Street Railway",
+      "country": "Canada",
+      "region": "Ontario",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.hamilton.ca/sites/default/files/2024-12/hsr-system-map-2025.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": "2025",
+      "mapPageOrSection": "system map and route directory",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": "Hamilton Street Railway network",
+      "mode": "Bus",
+      "evidenceNotes": "Current official HSR system map and route directory reviewed. It shows the complete route network and route information but does not name or define frequent/high-frequency service on the map.",
+      "reviewBatch": 11,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.hamilton.ca/sites/default/files/2024-12/hsr-system-map-2025.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
     }
   ],
   "updatedAt": "2026-09-19"
