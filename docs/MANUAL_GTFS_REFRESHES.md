@@ -39,7 +39,6 @@ do not replace any of these with an older archived ZIP.
 | `hocts` | 20211231 |
 | `mcts` | 20250823 |
 | `moose-jaw` | 20240331 |
-| `nctd` | 20250517 |
 | `octranspo` | 20260829 |
 | `path` | 20260601 |
 | `qline` | 20251231 |
@@ -65,7 +64,7 @@ agency identity and service dates extending beyond the audit date.
 | --- | --- |
 | `albany-ga`, `cheyenne`, `ecat`, `riovista`, `saint-hyacinthe` | The agency is active, but no current public static GTFS ZIP was found. |
 | `amarillo`, `fred-transit` | An official or catalog URL was found, but download access returned an authorization or server error. |
-| `avon-transit`, `blacksburg`, `cat-savannah`, `emta`, `guelph`, `nctd`, `qline`, `rts`, `sacrt`, `rockregion`, `taft`, `tillamook`, `wichita`, `xpress-ga` | A matching feed was found, but its service window ended before or at the audit date. |
+| `avon-transit`, `blacksburg`, `cat-savannah`, `emta`, `guelph`, `qline`, `rts`, `sacrt`, `rockregion`, `taft`, `tillamook`, `wichita`, `xpress-ga` | A matching feed was found, but its service window ended before or at the audit date. |
 | `b-line` | A current California B-Line feed was found, but this Atlas slug is the Corpus Christi RTA B-Line and the agency identities do not match. |
 | `evansville`, `glendalebeeline`, `green-bay`, `mcts` | Catalog metadata shows a newer schedule, but the official download could not be directly validated from this environment. |
 | `fast-ca`, `unioncity`, `vacaville` | The current regional feed is behind an API key, so no public static ZIP was verified. |
@@ -86,13 +85,13 @@ replacement feed:
 
 ## Verified replacements awaiting refresh
 
-The following 59 agencies have a current ZIP with matching agency identity and
+The following 60 agencies have a current ZIP with matching agency identity and
 can be refreshed using the configured or automatically derived source:
 
 `abqride`, `arvin`, `athens-oh`, `avta`, `carson-circuit`, `carta-chattanooga`, `clemson-cat`, `davenport`, `duke`, `elmonte`, `eugene-ltd`, `gold-coast`, `goldengate`, `goraleigh`, `grand-junction`, `indygo`, `jfk-airtrain`, `mont-tremblant`, `mountainmetro`,
 `culvercitybus`, `imperial-valley`, `kingcountymetro`, `mata`, `marta`, `montebello`, `mst`, `nice`, `omahametro`, `pace-bus`, `pgc-the-bus`, `regina`, `ripta`,
 `riverside`, `rtc`, `rtcwashoe`, `santafetrails`, `saskatoon`, `sdmts`, `sioux-falls`, `skagittransit`, `starmetro`, `psta`, `rct`,
-`communitytransit`, `everetttransit`, `intercitytransit`, `kenosha`, `soundtransit`, `torrance-transit`,
+`communitytransit`, `everetttransit`, `intercitytransit`, `kenosha`, `nctd`, `soundtransit`, `torrance-transit`,
 `theride`, `valley-express`, `votran`, `vvta`, `waukesha-metro`, `wmata`, `wrta`, `yolobus`, `youngstown-wrta`, `sun-metro`.
 
 Refreshing these agencies writes to live R2 and must be authorized separately.
