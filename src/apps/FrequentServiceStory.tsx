@@ -116,7 +116,7 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
                   </button>
                 ))}
               </div>
-              <p className="mt-5 text-xs leading-5 text-[var(--text-dim)]">Each agency appears once. The chart uses the agency’s general or representative frequent-service tier; ranges, dayparts, and secondary tiers remain in the audit rather than being assigned one misleading number.</p>
+              <p className="mt-5 text-xs leading-5 text-[var(--text-dim)]">Each agency appears once. The chart uses the agency’s general or representative frequent-service tier; ranges, time periods, and secondary tiers remain in the audit rather than being assigned one misleading number.</p>
             </div>
           </section>
 
