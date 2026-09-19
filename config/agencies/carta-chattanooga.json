@@ -11,7 +11,7 @@
     35.3,
     -85
   ],
-  "feedUrl": "https://files.mobilitydatabase.org/mdb-2082/latest.zip",
+  "feedUrl": "https://raw.githubusercontent.com/gocarta/gtfs/refs/heads/master/gtfs_current.zip",
   "region": "Tennessee",
   "lastRefreshedAt": "20260811",
   "lastFeedExpiry": "20260110",
