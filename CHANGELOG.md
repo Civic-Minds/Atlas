@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Reviewed four additional transit map sources: current SunLine and Moose Jaw maps had no named frequent-service definition; current Fort Smith and Rock Region Metro map sources were unavailable.
 - Reviewed two additional U.S. system maps: current Imperial Valley Transit and GTrans maps show their networks but name no frequent-service definition.
 - Reviewed two additional U.S. map sources: Merced’s system map is still listed as coming soon, and Humboldt’s current static map was not accessible.
 - Reviewed two additional U.S. map sources: AVTA’s current map had no named frequent-service definition; ACE’s current static map was unavailable.
