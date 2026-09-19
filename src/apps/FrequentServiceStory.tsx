@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { ArrowDown, ArrowRight, MapPinned } from 'lucide-react';
 import { trackEvent } from '../lib/analytics';
-import { frequentServiceStoryResearchRecord, frequentServiceStoryStats } from '../data/frequentServiceStory';
+import { frequentServiceCoverageStats, frequentServiceStoryResearchRecord, frequentServiceStoryStats } from '../data/frequentServiceStory';
 import FrequentServicePublishedMapMontage from '../components/FrequentServicePublishedMapMontage';
 import FrequentServicePublishedMapCollage from '../components/FrequentServicePublishedMapCollage';
 import FrequentServiceStoryMap from '../components/FrequentServiceStoryMap';
@@ -125,6 +125,40 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
               <h2 id="more-heading" className="text-3xl sm:text-4xl font-black tracking-tight">The number is only the beginning.</h2>
               <p className="mt-5 text-base leading-8 text-[var(--text-muted)]">A frequency threshold is attached to a span, a set of days, and a geography. It may describe a route, a corridor, a network, or a product that combines modes. A 15-minute route that stops at 6pm is a different promise from a 15-minute corridor that runs into the evening. That is why we track three things together: headway, service span, and geography.</p>
             </div>
+          </section>
+
+          <section aria-labelledby="population-heading" className="rounded-[2rem] border border-[var(--border-primary)] bg-[var(--bg-panel)] p-6 sm:p-10">
+            <div className="max-w-2xl">
+              <p className="text-[0.7rem] uppercase tracking-[0.24em] font-black text-[var(--accent)]">A population test</p>
+              <h2 id="population-heading" className="mt-3 text-3xl sm:text-4xl font-black tracking-tight">The threshold changes who can rely on the network.</h2>
+              <p className="mt-5 text-base leading-8 text-[var(--text-muted)]">
+                We applied the same test to Atlas route data and population geography: a 10-minute walk to weekday service running from 7am to 7pm. The stricter 15-minute threshold reaches far fewer people than the broader 30-minute threshold.
+              </p>
+            </div>
+            <div className="mt-8 overflow-x-auto">
+              <table className="w-full min-w-[34rem] text-left text-sm">
+                <caption className="sr-only">Population within a ten-minute walk of frequent transit by headway threshold</caption>
+                <thead className="border-b border-[var(--border-primary)] text-xs uppercase tracking-[0.14em] text-[var(--text-dim)]">
+                  <tr>
+                    <th className="pb-3 pr-4 font-black">Country</th>
+                    <th className="pb-3 pr-4 font-black">15 min</th>
+                    <th className="pb-3 pr-4 font-black">30 min</th>
+                    <th className="pb-3 font-black">Scope</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {frequentServiceCoverageStats.map(row => (
+                    <tr key={row.country} className="border-b border-[var(--border-primary)] last:border-0">
+                      <th scope="row" className="py-4 pr-4 font-black text-[var(--text-primary)]">{row.country}</th>
+                      <td className="py-4 pr-4 tabular-nums text-[var(--text-muted)]">{row.fifteenMinute}</td>
+                      <td className="py-4 pr-4 tabular-nums text-[var(--text-muted)]">{row.thirtyMinute}</td>
+                      <td className="py-4 text-[var(--text-muted)]">{row.metros} · {row.fifteenMinuteMetros} at 15 min</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p className="mt-5 text-xs leading-5 text-[var(--text-dim)]">Each country’s percentages use the same population base at both thresholds. Canada uses 2021 Statistics Canada dissemination areas; the United States uses 2020 Census block groups.</p>
           </section>
 
           <section aria-labelledby="atlas-heading" className="rounded-[2rem] border border-[var(--border-primary)] bg-[var(--bg-panel)] p-6 sm:p-10">
