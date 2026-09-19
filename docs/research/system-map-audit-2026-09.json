@@ -2,7 +2,7 @@
   "auditVersion": 2,
   "createdAt": "2026-09-18",
   "sourceCatalog": "docs/research/frequent-service-catalog.json",
-  "scope": "First 50 agencies plus 175 additional agencies reviewed individually against current official system maps or approved rider guides on September 18, 2026.",
+  "scope": "First 50 agencies plus 182 additional agencies reviewed individually against current official system maps or approved rider guides on September 19, 2026.",
   "statusRules": {
     "numeric_definition_on_map": "The official system map visibly names frequent/high-frequency service and gives a numeric threshold or range.",
     "qualitative_definition_on_map": "The official system map visibly names frequent/high-frequency service without a numeric threshold.",
@@ -9092,7 +9092,315 @@
       "definitions": [],
       "representativeThresholdMinutes": null,
       "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 216,
+      "agencyId": "go-transit",
+      "agencyName": "GO Transit",
+      "country": "Canada",
+      "region": "Ontario",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://assets.metrolinx.com/image/upload/Documents/GO/system-map.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "map legend",
+      "exactMapWording": "Regular service; Limited service; Union Pearson Express — Operates every 15 minutes.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official GO Transit system map visually reviewed. It shows regular, limited, and express services but no named frequent/high-frequency category.",
+      "reviewBatch": 14,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://assets.metrolinx.com/image/upload/Documents/GO/system-map.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 217,
+      "agencyId": "transit-windsor",
+      "agencyName": "Transit Windsor",
+      "country": "Canada",
+      "region": "Ontario",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.citywindsor.ca/documents/residents/transit-windsor/Transit-System-Map-24-x-32-2024.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "map legend",
+      "exactMapWording": "Primary Route; Primary Route Intermittent Service; Secondary Route; Secondary Route Intermittent Service; Local Route; Express Route; Regional Route.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Transit Windsor system map visually reviewed. It lists route types but no named frequent/high-frequency definition or threshold.",
+      "reviewBatch": 14,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.citywindsor.ca/documents/residents/transit-windsor/Transit-System-Map-24-x-32-2024.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 218,
+      "agencyId": "timmins-transit",
+      "agencyName": "Timmins Transit",
+      "country": "Canada",
+      "region": "Ontario",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.timmins.ca/our_services/timmins_transit/timmins_transit_on-demand",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "15-Minute Frequency section",
+      "exactMapWording": "A conventional bus travels to and coming from Porcupine and South Porcupine every 15 minutes. Weekdays approximately 6:40 a.m. to 10:50 p.m.; Saturdays 6:40 a.m. to 10:50 p.m.; Sundays 8:40 a.m. to 6:50 p.m.",
+      "thresholdMinutes": 15,
+      "thresholdText": "every 15 minutes with published weekday, Saturday, and Sunday spans",
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Timmins Transit rider-facing service page visually reviewed. It explicitly names a 15-Minute Frequency service and gives the span.",
+      "reviewBatch": 14,
+      "evidenceSourceType": "rider_guide",
+      "reviewSources": [
+        {
+          "url": "https://www.timmins.ca/our_services/timmins_transit/timmins_transit_on-demand",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "definitions": [
+        {
+          "id": "primary",
+          "label": "A conventional bus travels to and coming from Porcupine and South Porcupine every 15 minutes. Weekdays approximately 6:40 a.m. to 10:50 p.m.; Saturdays 6:40 a.m. to 10:50 p.m.; Sundays 8:40 a.m. to 6:50 p.m.",
+          "thresholdMinutes": 15,
+          "thresholdText": "every 15 minutes with published weekday, Saturday, and Sunday spans",
+          "representative": true,
+          "sourceType": "rider_guide",
+          "sourceUrl": "https://www.timmins.ca/our_services/timmins_transit/timmins_transit_on-demand",
+          "localFile": null,
+          "mapPageOrSection": "15-Minute Frequency section",
+          "exactWording": "A conventional bus travels to and coming from Porcupine and South Porcupine every 15 minutes. Weekdays approximately 6:40 a.m. to 10:50 p.m.; Saturdays 6:40 a.m. to 10:50 p.m.; Sundays 8:40 a.m. to 6:50 p.m.",
+          "evidenceNotes": "Official Timmins Transit rider-facing service page visually reviewed. It explicitly names a 15-Minute Frequency service and gives the span."
+        }
+      ],
+      "representativeThresholdMinutes": 15,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 219,
+      "agencyId": "sault-ste-marie-transit",
+      "agencyName": "Sault Ste. Marie Transit",
+      "country": "Canada",
+      "region": "Ontario",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://saultstemarie.ca/wp-content/uploads/2026/05/2026-TRANSIT-LOOPS_-NEW-NAMES_WALL-MAP_36x48_06May2026.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "2026 system map legend",
+      "exactMapWording": "SSM TRANSIT ROUTE MAP; HILLSIDE; CITYWIDE; WESTSIDE; EASTSIDE.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official 2026 Sault Ste. Marie system map visually reviewed. It identifies routes but no named frequent/high-frequency definition.",
+      "reviewBatch": 14,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://saultstemarie.ca/wp-content/uploads/2026/05/2026-TRANSIT-LOOPS_-NEW-NAMES_WALL-MAP_36x48_06May2026.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 220,
+      "agencyId": "cornwall-transit",
+      "agencyName": "Cornwall Transit",
+      "country": "Canada",
+      "region": "Ontario",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://media-003-ca.cdn.govstack.com/cornwall-ca/media/aixlatr4/transit-map-oct_2025-revised-final.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "legend/page 1",
+      "exactMapWording": "Regular Service / Service Régulier; Start of half hour service; Start of one hour service.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Cornwall Transit map and schedule PDF visually reviewed. Timetable notes are not a named frequent-service category.",
+      "reviewBatch": 14,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://media-003-ca.cdn.govstack.com/cornwall-ca/media/aixlatr4/transit-map-oct_2025-revised-final.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 221,
+      "agencyId": "atac-rome",
+      "agencyName": "ATAC Rome",
+      "country": "Italy",
+      "region": "Lazio",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.atac.roma.it/docs/default-source/pubblicazioni/carta-della-qualit%C3%A0-dei-servizi-di-tpl-anno-2024.pdf?sfvrsn=e0a379b1_8",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "Carta della Qualità, urban lines frequency categories",
+      "exactMapWording": "Urbane — Linee a frequenza alta, media o bassa; alta frequenza.",
+      "thresholdMinutes": 15,
+      "thresholdText": "named high-frequency urban category with published interval bands",
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official ATAC service charter visually reviewed. The high-frequency urban category is retained; express service was excluded.",
+      "reviewBatch": 14,
+      "evidenceSourceType": "rider_guide",
+      "reviewSources": [
+        {
+          "url": "https://www.atac.roma.it/docs/default-source/pubblicazioni/carta-della-qualit%C3%A0-dei-servizi-di-tpl-anno-2024.pdf?sfvrsn=e0a379b1_8",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "definitions": [
+        {
+          "id": "primary",
+          "label": "Urbane",
+          "thresholdMinutes": 15,
+          "thresholdText": "named high-frequency urban category with published interval bands",
+          "representative": true,
+          "sourceType": "rider_guide",
+          "sourceUrl": "https://www.atac.roma.it/docs/default-source/pubblicazioni/carta-della-qualit%C3%A0-dei-servizi-di-tpl-anno-2024.pdf?sfvrsn=e0a379b1_8",
+          "localFile": null,
+          "mapPageOrSection": "Carta della Qualità, urban lines frequency categories",
+          "exactWording": "Urbane — Linee a frequenza alta, media o bassa; alta frequenza.",
+          "evidenceNotes": "Official ATAC service charter visually reviewed. The high-frequency urban category is retained; express service was excluded."
+        }
+      ],
+      "representativeThresholdMinutes": 15,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 222,
+      "agencyId": "gtt-turin",
+      "agencyName": "GTT Turin",
+      "country": "Italy",
+      "region": "Piedmont",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://gtt.to.it/cms/risorse/cdm.pdf",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "Carta della Mobilità 2025, priority lines",
+      "exactMapWording": "Linee prioritarie; intervalli di passaggio compresi tra 5 e 8 minuti circa.",
+      "thresholdMinutes": 8,
+      "thresholdText": "priority lines with approximately 5–8-minute intervals",
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official GTT mobility charter visually reviewed. It names the priority-line tier and gives its interval range; 8 minutes is the representative slowest interval.",
+      "reviewBatch": 14,
+      "evidenceSourceType": "rider_guide",
+      "reviewSources": [
+        {
+          "url": "https://gtt.to.it/cms/risorse/cdm.pdf",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "definitions": [
+        {
+          "id": "primary",
+          "label": "Linee prioritarie; intervalli di passaggio compresi tra 5 e 8 minuti circa.",
+          "thresholdMinutes": 8,
+          "thresholdText": "priority lines with approximately 5–8-minute intervals",
+          "representative": true,
+          "sourceType": "rider_guide",
+          "sourceUrl": "https://gtt.to.it/cms/risorse/cdm.pdf",
+          "localFile": null,
+          "mapPageOrSection": "Carta della Mobilità 2025, priority lines",
+          "exactWording": "Linee prioritarie; intervalli di passaggio compresi tra 5 e 8 minuti circa.",
+          "evidenceNotes": "Official GTT mobility charter visually reviewed. It names the priority-line tier and gives its interval range; 8 minutes is the representative slowest interval."
+        }
+      ],
+      "representativeThresholdMinutes": 8,
+      "publishedFrequencyBands": null
     }
   ],
-  "updatedAt": "2026-09-18"
+  "updatedAt": "2026-09-19"
 }
