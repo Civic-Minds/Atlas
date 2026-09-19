@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Reviewed three additional Canadian map sources, including Orillia and Montréal STM; Timmins was recorded as unavailable because its official map page was blocked during review.
 - Reviewed three additional U.S. system-map sources, including current Marin Transit and Glendale Beeline maps; YCAT was recorded as unavailable because its current page exposes only a 2014 map.
 - Reviewed six additional U.S. transit map sources, including CAT Savannah, JFK AirTrain, and The Kauai Bus, and recorded five no-definition findings plus one unavailable map.
 - Reviewed six additional U.S. system maps, including DASH, GRTC, JTA, and Valley Metro, and recorded three numeric definitions, two no-definition findings, and one unavailable map.
