@@ -1,10 +1,9 @@
 # Manual GTFS refresh queue
 
 Snapshot from the expired-source audit on 2026-09-19. The audit checked 99
-expired production snapshots: 18 had newer sources, 77 remained genuinely
-expired, and these four had no verified replacement that Atlas could currently
-download automatically. A follow-up source review verified nine additional
-current feeds, leaving 65 agencies still unresolved.
+expired production snapshots: 30 now have newer sources, 65 remain genuinely
+expired, and these four have no verified replacement that Atlas could currently
+download automatically.
 
 | Agency | Why it needs manual work | Next action |
 | --- | --- | --- |
@@ -13,10 +12,78 @@ current feeds, leaving 65 agencies still unresolved.
 | SFMTA / Muni | Configured current and fallback candidates could not be verified as a usable current feed | Confirm the current Muni GTFS source and refresh the catalog URL |
 | West Berkeley Shuttle | Cal-ITP URL does not return a usable ZIP and the catalog copy is expired | Confirm whether the shuttle still operates and locate its current feed |
 
-The other 65 expired agencies remain candidates for source recovery, but the
-audit found no current usable schedule among their configured or automatically
-derived Mobility Database candidates. Start with agencies whose snapshots ended
-in 2026; do not replace any of these with an older archived ZIP.
+The 65 agencies below remain candidates for source recovery. The read-only audit
+found no current usable schedule among their configured or automatically derived
+Mobility Database candidates. Start with agencies whose snapshots ended in 2026;
+do not replace any of these with an older archived ZIP.
+
+| Agency slug | Latest candidate expiry |
+| --- | --- |
+| `albany-ga` | 20240630 |
+| `amarillo` | 20211231 |
+| `arvin` | 20211231 |
+| `athens-oh` | 20241231 |
+| `avon-transit` | 20250413 |
+| `avta` | 20210801 |
+| `b-line` | 20250531 |
+| `blacksburg` | 20260731 |
+| `carson-circuit` | 20211111 |
+| `carta-chattanooga` | 20260110 |
+| `cat-savannah` | 20250727 |
+| `cheyenne` | 20250914 |
+| `clemson-cat` | 20200101 |
+| `culvercitybus` | 20260712 |
+| `davenport` | 20241231 |
+| `dc-streetcar` | 20250630 |
+| `duke` | 20250810 |
+| `ecat` | 20221101 |
+| `elmonte` | 20251031 |
+| `emta` | 20231101 |
+| `evansville` | 20250115 |
+| `fast-ca` | 20260630 |
+| `fred-transit` | 20250331 |
+| `glendalebeeline` | 20220831 |
+| `glensfallstransit` | 20231231 |
+| `grand-junction` | 20251105 |
+| `green-bay` | 20201231 |
+| `grt` | 20260426 |
+| `guelph` | 20250830 |
+| `hocts` | 20211231 |
+| `imperial-valley` | 20251231 |
+| `indygo` | 20250607 |
+| `jfk-airtrain` | 20211231 |
+| `kenosha` | 20240901 |
+| `kingcountymetro` | 20260828 |
+| `mata` | 20250310 |
+| `mcts` | 20250823 |
+| `moose-jaw` | 20240331 |
+| `mountainmetro` | 20250927 |
+| `nctd` | 20250517 |
+| `octranspo` | 20260829 |
+| `path` | 20260601 |
+| `qline` | 20251231 |
+| `riovista` | 20250131 |
+| `rockregion` | 20251019 |
+| `rts` | 20250817 |
+| `sacrt` | 20260613 |
+| `saint-hyacinthe` | 20241231 |
+| `saskatoon` | 20250830 |
+| `sioux-falls` | 20240403 |
+| `skagittransit` | 20251024 |
+| `starmetro` | 20240901 |
+| `sun-metro` | 20260613 |
+| `taft` | 20220101 |
+| `theride` | 20260822 |
+| `tillamook` | 20260901 |
+| `torrance-transit` | 20240113 |
+| `unioncity` | 20230927 |
+| `vacaville` | 20260630 |
+| `valley-express` | 20250815 |
+| `votran` | 20220223 |
+| `vvta` | 20250329 |
+| `waukesha-metro` | 20250601 |
+| `wichita` | 20260814 |
+| `xpress-ga` | 20250705 |
 
 ## Verified replacements awaiting refresh
 
