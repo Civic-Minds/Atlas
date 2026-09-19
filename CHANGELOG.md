@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Reviewed three additional large North American transit systems: Des Moines and Grand Rapids publish frequency bands without naming a frequent tier; Rochester’s current map explicitly defines Frequent Service as every 15 minutes on weekday daytime routes.
 - Reviewed three additional large North American transit systems: Tampa, Albuquerque, and Oklahoma City; their current maps publish route types or frequency bands but no named frequent-service definition.
 - Reviewed four additional large North American transit systems: current Detroit, Charlotte, Broward County, and Hampton Roads maps do not name a frequent-service definition.
 - Reviewed seven additional North American system-map sources: Beaumont, Camarillo, San Luis Obispo, Corona, El Monte, FAST, and Foothill Transit; none names a frequent-service definition.

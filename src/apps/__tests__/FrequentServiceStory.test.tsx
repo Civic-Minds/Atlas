@@ -12,7 +12,7 @@ describe('FrequentServiceStory', () => {
     expect(screen.getByRole('heading', { name: 'What happens when you miss the bus?' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'There is no single “frequent.”' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'The threshold changes who can rely on the network.' })).toBeInTheDocument();
-    expect(screen.getByText(/from 232 agencies/)).toBeInTheDocument();
+    expect(screen.getByText(/from 235 agencies/)).toBeInTheDocument();
     expect(screen.getByText('8.72%')).toBeInTheDocument();
     expect(screen.getByText(/30-minute service reaches about 2.6 times as many people in Canada/)).toBeInTheDocument();
     expect(screen.queryByRole('tab')).not.toBeInTheDocument();
@@ -53,20 +53,20 @@ describe('FrequentServiceStory', () => {
   });
 
   it('does not mistake unavailable or unnamed maps for numeric definitions', () => {
-    expect(audit.records).toHaveLength(285);
+    expect(audit.records).toHaveLength(288);
     expect(audit.records.filter(record => record.status === 'pending_map_review')).toHaveLength(0);
-    expect(frequentServiceStoryStats.agenciesReviewed).toBe(275);
+    expect(frequentServiceStoryStats.agenciesReviewed).toBe(278);
     expect(frequentServiceStoryStats.categoryCounts).toMatchObject({
-      numericDefinition: 52,
+      numericDefinition: 54,
       qualitativeDefinition: 15,
-      noDefinitionFound: 165,
+      noDefinitionFound: 166,
       mapUnavailable: 43,
     });
     expect(frequentServiceStoryStats.headwayBars).toEqual([
       { minutes: 5, agencies: 1 },
       { minutes: 10, agencies: 1 },
       { minutes: 12, agencies: 2 },
-      { minutes: 15, agencies: 33 },
+      { minutes: 15, agencies: 35 },
       { minutes: 20, agencies: 4 },
       { minutes: 30, agencies: 11 },
     ]);
