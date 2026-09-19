@@ -698,10 +698,11 @@
         45.52,
         -75.343
       ],
-      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-ottawa-carleton-regional-transit-commission-oc-transpo-gtfs-2154.zip?alt=media",
-      "lastFeedExpiry": "20260829",
-      "lastFeedVersion": "S1000499-",
-      "lastRefreshedAt": "2026-08-07",
+      "feedUrl": "https://oct-gtfs-emasagcnfmcgeham.z01.azurefd.net/public-access/GTFSExport.zip",
+      "lastFeedExpiry": "20261018",
+      "lastFeedVersion": "S1000518",
+      "mdbFeedUrl": "https://oct-gtfs-emasagcnfmcgeham.z01.azurefd.net/public-access/GTFSExport.zip",
+      "lastRefreshedAt": "20260919",
       "cities": [
         "Nepean, Ontario",
         "Orléans, Ontario",
@@ -713,7 +714,7 @@
         "Hull, Quebec",
         "Gatineau, Quebec"
       ],
-      "lastFeedCheckAt": "20260907",
+      "lastFeedCheckAt": "20260919",
       "expiredFeedCheckCount": 1,
       "expiredFeedCheckSince": "20260622",
       "expiredFeedCheckExpiry": "20260829",

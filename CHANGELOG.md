@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Recovered OC Transpo’s current GTFS feed through October 2026 so Ottawa schedule data no longer relies on an expired catalog copy.
 - Recovered current GTFS sources for Athens, Davenport, El Monte, JFK AirTrain, Kenosha, Sioux Area Metro, StarMetro, and Waukesha, and separated discontinued DC Streetcar from the source-recovery queue.
 - Recovered the current North County Transit District GTFS source so NCTD no longer relies on an expired archive.
 - Recovered the City of Guelph’s current GTFS source so Guelph Transit no longer relies on an expired archive.

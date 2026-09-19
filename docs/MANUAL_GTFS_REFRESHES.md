@@ -12,7 +12,7 @@ download automatically.
 | SFMTA / Muni | Configured current and fallback candidates could not be verified as a usable current feed | Confirm the current Muni GTFS source and refresh the catalog URL |
 | West Berkeley Shuttle | Cal-ITP URL does not return a usable ZIP and the catalog copy is expired | Confirm whether the shuttle still operates and locate its current feed |
 
-The 29 agencies below remain candidates for source recovery. The read-only audit
+The 28 agencies below remain candidates for source recovery. The read-only audit
 found no current usable schedule among their configured or automatically derived
 Mobility Database candidates. Start with agencies whose snapshots ended in 2026;
 do not replace any of these with an older archived ZIP.
@@ -36,7 +36,6 @@ do not replace any of these with an older archived ZIP.
 | `hocts` | 20211231 |
 | `mcts` | 20250823 |
 | `moose-jaw` | 20240331 |
-| `octranspo` | 20260829 |
 | `path` | 20260601 |
 | `qline` | 20251231 |
 | `riovista` | 20250131 |
@@ -71,7 +70,6 @@ agency identity and service dates extending beyond the audit date.
 | `fast-ca`, `unioncity`, `vacaville` | The current regional feed is behind an API key, so no public static ZIP was verified. |
 | `hocts` | The configured feed remains expired and malformed; no newer matching HOCTS feed was found. |
 | `moose-jaw` | The official city feed is available, but its schedule is stale. |
-| `octranspo` | The official static feed requires developer registration/API access. |
 | `path` | Only realtime data was found; no current static schedule ZIP was verified. |
 
 ## Discontinued or merged services
@@ -86,13 +84,13 @@ replacement feed:
 
 ## Verified replacements awaiting refresh
 
-The following 65 agencies have a current ZIP with matching agency identity and
+The following 66 agencies have a current ZIP with matching agency identity and
 can be refreshed using the configured or automatically derived source:
 
 `abqride`, `arvin`, `athens-oh`, `avta`, `blacksburg`, `carson-circuit`, `carta-chattanooga`, `clemson-cat`, `davenport`, `duke`, `elmonte`, `emta`, `eugene-ltd`, `gold-coast`, `goldengate`, `goraleigh`, `grand-junction`, `indygo`, `jfk-airtrain`, `mont-tremblant`, `mountainmetro`, `rts`, `sacrt`,
 `culvercitybus`, `imperial-valley`, `kingcountymetro`, `mata`, `marta`, `montebello`, `mst`, `nice`, `omahametro`, `pace-bus`, `pgc-the-bus`, `regina`, `ripta`,
 `riverside`, `rtc`, `rtcwashoe`, `santafetrails`, `saskatoon`, `sdmts`, `sioux-falls`, `skagittransit`, `starmetro`, `psta`, `rct`,
-`communitytransit`, `everetttransit`, `guelph`, `intercitytransit`, `kenosha`, `nctd`, `soundtransit`, `torrance-transit`,
+`communitytransit`, `everetttransit`, `guelph`, `intercitytransit`, `kenosha`, `nctd`, `octranspo`, `soundtransit`, `torrance-transit`,
 `theride`, `valley-express`, `votran`, `vvta`, `waukesha-metro`, `wmata`, `wrta`, `yolobus`, `youngstown-wrta`, `sun-metro`.
 
 Refreshing these agencies writes to live R2 and must be authorized separately.
