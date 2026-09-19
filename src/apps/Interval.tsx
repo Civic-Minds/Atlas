@@ -7,6 +7,7 @@ import type { ViewportBounds, TimePeriod, DayType } from '../hooks/useIntervalSt
 import { useNearbyRoutes } from '../hooks/useNearbyRoutes';
 import { MapCanvas } from '../components/Interval/MapCanvas';
 import { MapAttribution } from '../components/Interval/MapAttribution';
+import { PersistentMapLegend } from '../components/Interval/PersistentMapLegend';
 import { SidebarControls } from '../components/Interval/SidebarControls';
 import { NearbyRoutesPanel } from '../components/Interval/NearbyRoutesPanel';
 import { FilterPanel } from '../components/Interval/FilterPanel';
@@ -70,6 +71,8 @@ interface Props {
   hideLowQuality: boolean;
   setHideLowQuality: (v: boolean | ((prev: boolean) => boolean)) => void;
   feedQualityEnabled?: boolean;
+  showMapLegend: boolean;
+  setShowMapLegend: (v: boolean | ((prev: boolean) => boolean)) => void;
 }
 
 function readSavedAgenciesOff(): Set<string> {
@@ -81,7 +84,7 @@ function readSavedAgenciesOff(): Set<string> {
   }
 }
 
-export default function Interval({ agencies, allAgencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, filterToAgencies = false, onHistoryRouteClick, onDirectFromStop, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, onSelectedMapAgencyChange, onSelectionActiveChange, headerPortalContainer, fareView = false, nightServiceView = false, showMapContext = false, showMatchPercentage = false, sidebarLeft, searchBarWidth, searchEnterRef, hideLowQuality, setHideLowQuality, feedQualityEnabled = false }: Props) {
+export default function Interval({ agencies, allAgencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, filterToAgencies = false, onHistoryRouteClick, onDirectFromStop, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, onSelectedMapAgencyChange, onSelectionActiveChange, headerPortalContainer, fareView = false, nightServiceView = false, showMapContext = false, showMatchPercentage = false, sidebarLeft, searchBarWidth, searchEnterRef, hideLowQuality, setHideLowQuality, feedQualityEnabled = false, showMapLegend, setShowMapLegend }: Props) {
   const [searchParams] = useSearchParams();
   const [mapContextOpen, setMapContextOpen] = useState(false);
   const [mapContextView, setMapContextView] = useState<'agencies' | 'routes'>('routes');
@@ -533,6 +536,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
 
       <MapAttribution />
 
+      {showMapLegend && !fareView && !nightServiceView && <PersistentMapLegend />}
+
       {((stats && (stats.total > 0 || !isLoading)) || isLoading || isTilesLoading || failedSlugs.size > 0) && (
         <div className={`absolute bottom-6 right-14 ${Z_PANEL} flex gap-2 transition-all ${TRANSITION_SLOW} ${showUi ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
           {(isLoading || isTilesLoading) && (
@@ -676,6 +681,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
               hideLowQuality={hideLowQuality}
               setHideLowQuality={setHideLowQuality}
               feedQualityEnabled={feedQualityEnabled}
+              showMapLegend={showMapLegend}
+              setShowMapLegend={setShowMapLegend}
             />
           )}
         </div>,
