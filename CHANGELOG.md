@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- Added 10 manually checked international system maps from Asia-Pacific and Europe; the audit now covers 238 agencies while keeping the verified-definition sample at 68.
 - Added five current European system-map reviews—Munich, Hamburg, Frankfurt, Linz, and Marseille—with generic intervals rejected as frequency definitions.
 - Added six current map reviews and corrected AC Transit’s 2026 frequency legend; the audit now covers 228 agencies with 68 verified definitions.
 - Added seven manually checked agencies, including Rome, Turin, and Timmins; the audit now covers 222 agencies with 66 verified definitions.
