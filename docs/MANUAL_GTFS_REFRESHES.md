@@ -1,7 +1,7 @@
 # Manual GTFS refresh queue
 
-Snapshot from the expired-source audit on 2026-09-19. The audit checked 79
-remaining expired production snapshots: 40 now have newer sources, 35 remain genuinely
+Snapshot from the expired-source audit on 2026-09-19. The audit checked 78
+remaining expired production snapshots: 40 now have newer sources, 34 remain genuinely
 expired, and these four have no verified replacement that Atlas could currently
 download automatically.
 
@@ -12,7 +12,7 @@ download automatically.
 | SFMTA / Muni | Configured current and fallback candidates could not be verified as a usable current feed | Confirm the current Muni GTFS source and refresh the catalog URL |
 | West Berkeley Shuttle | Cal-ITP URL does not return a usable ZIP and the catalog copy is expired | Confirm whether the shuttle still operates and locate its current feed |
 
-The 35 agencies below remain candidates for source recovery. The read-only audit
+The 33 agencies below remain candidates for source recovery. The read-only audit
 found no current usable schedule among their configured or automatically derived
 Mobility Database candidates. Start with agencies whose snapshots ended in 2026;
 do not replace any of these with an older archived ZIP.
