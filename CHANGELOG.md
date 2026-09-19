@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- Added 25 manually checked agencies from Canada, the US, Japan, and South Korea; the audit now covers 304 agencies with 74 verified definitions.
 - Added 19 manually checked agencies from Canada, the US, Europe, India, and Bangladesh; the audit now covers 279 agencies with 74 verified definitions.
 - Added five manually checked European system maps from Portugal, France, and Italy; the audit now covers 260 agencies while keeping the verified-definition sample at 70.
 - Added five manually inspected Asia-Pacific metro maps—Bengaluru, Hyderabad, Chennai, Bangkok BTS, and Bangkok MRT—without treating their route maps as frequent-service definitions; the audit now covers 255 agencies with 70 verified definitions.
