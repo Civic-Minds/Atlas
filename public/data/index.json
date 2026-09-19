@@ -2224,7 +2224,7 @@
         50.52,
         -104.44
       ],
-      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-saskatchewan-city-of-regina-gtfs-715.zip?alt=media",
+      "feedUrl": "https://opengis.regina.ca/reginagtfs/google_transit.zip",
       "lastFeedExpiry": "20260822",
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-08-10",
@@ -8536,7 +8536,7 @@
         33.749,
         -84.388
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-368/mdb-368-202604190110/mdb-368-202604190110.zip",
+      "feedUrl": "https://www.itsmarta.com/google_transit_feed/google_transit.zip",
       "lastFeedExpiry": "20260821",
       "lastFeedVersion": null,
       "region": "Georgia",
