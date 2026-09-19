@@ -6447,6 +6447,58 @@
       "definitions": [],
       "representativeThresholdMinutes": null,
       "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 149,
+      "agencyId": "metro-transit",
+      "agencyName": "Metro Transit (Minneapolis–Saint Paul)",
+      "country": "United States",
+      "region": "Minnesota",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.metrotransit.org/Data/Sites/1/media/pdfs/system-map.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": "August 2025",
+      "mapPageOrSection": "one-page Twin Cities system-map legend",
+      "exactMapWording": "Frequent Local Buses: Serve all stops and operate at least every 30 min. during middays on weekdays, more often during rush hours. Evening and weekend service may be less frequent.",
+      "thresholdMinutes": 30,
+      "thresholdText": "At least every 30 minutes during weekday middays",
+      "serviceSpan": "Weekday middays; more often during rush hours",
+      "days": "Weekdays for the defined 30-minute midday service",
+      "geography": "Twin Cities Metropolitan Area local bus network",
+      "mode": "Bus",
+      "evidenceNotes": "Current official Metro Transit Twin Cities system map visually reviewed. Its legend defines Frequent Local Buses numerically and distinguishes the weekday midday span from rush-hour, evening, and weekend service.",
+      "reviewBatch": 10,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.metrotransit.org/Data/Sites/1/media/pdfs/system-map.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [
+        {
+          "id": "frequent-local-buses",
+          "label": "Frequent Local Buses",
+          "thresholdMinutes": 30,
+          "thresholdText": "At least every 30 minutes during weekday middays",
+          "representative": true,
+          "sourceType": "system_map",
+          "sourceUrl": "https://www.metrotransit.org/Data/Sites/1/media/pdfs/system-map.pdf",
+          "localFile": null,
+          "mapPageOrSection": "one-page system-map legend",
+          "exactWording": "Serve all stops and operate at least every 30 min. during middays on weekdays, more often during rush hours. Evening and weekend service may be less frequent.",
+          "evidenceNotes": "Current official Metro Transit Twin Cities system map visually reviewed."
+        }
+      ],
+      "representativeThresholdMinutes": 30,
+      "publishedFrequencyBands": null
     }
   ],
   "updatedAt": "2026-09-19"
