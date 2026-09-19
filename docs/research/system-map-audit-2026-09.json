@@ -7059,6 +7059,52 @@
       }],
       "representativeThresholdMinutes": null,
       "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 165,
+      "agencyId": "spokane",
+      "agencyName": "Spokane Transit Authority",
+      "country": "United States",
+      "region": "Washington",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [{
+        "url": "https://www.spokanetransit.com/wp-content/uploads/2025/09/F_SPO_Msys_FullLayout_WEB_Z250808.pdf",
+        "sourceType": "system_map",
+        "localFile": null
+      }],
+      "preservedFiles": [],
+      "mapDate": "September 2025",
+      "mapPageOrSection": "system map route-type legend",
+      "exactMapWording": "Local service at frequent intervals: every 15 minutes on Weekdays and every 15-60 minutes on Weekends.",
+      "thresholdMinutes": 15,
+      "thresholdText": "every 15 minutes on Weekdays; every 15-60 minutes on Weekends",
+      "serviceSpan": "Weekdays and weekends",
+      "days": "Weekdays and weekends",
+      "geography": "Spokane Transit Authority network",
+      "mode": "Bus",
+      "evidenceNotes": "Current official STA system map reviewed. Its legend names Frequent Routes and publishes a 15-minute weekday definition plus a 15-60-minute weekend range.",
+      "reviewBatch": 13,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [{
+        "url": "https://www.spokanetransit.com/wp-content/uploads/2025/09/F_SPO_Msys_FullLayout_WEB_Z250808.pdf",
+        "sourceType": "system_map",
+        "localFile": null
+      }],
+      "definitions": [{
+        "id": "frequent-routes",
+        "label": "Frequent Routes",
+        "thresholdMinutes": 15,
+        "thresholdText": "every 15 minutes on Weekdays and every 15-60 minutes on Weekends",
+        "representative": true,
+        "sourceType": "system_map",
+        "sourceUrl": "https://www.spokanetransit.com/wp-content/uploads/2025/09/F_SPO_Msys_FullLayout_WEB_Z250808.pdf",
+        "localFile": null,
+        "mapPageOrSection": "system map route-type legend",
+        "exactWording": "Local service at frequent intervals: every 15 minutes on Weekdays and every 15-60 minutes on Weekends.",
+        "evidenceNotes": "Current official STA system map reviewed."
+      }],
+      "representativeThresholdMinutes": 15,
+      "publishedFrequencyBands": ["15 minutes on weekdays", "15-60 minutes on weekends", "30-60 minutes"]
     }
   ],
   "updatedAt": "2026-09-19"
