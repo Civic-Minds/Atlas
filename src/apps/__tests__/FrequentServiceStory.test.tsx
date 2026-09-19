@@ -45,18 +45,19 @@ describe('FrequentServiceStory', () => {
       { minutes: 15, agencies: counts['15'] },
       { minutes: 20, agencies: counts['20'] },
       { minutes: 30, agencies: counts['30'] },
+      { minutes: 60, agencies: counts['60'] },
     ]);
   });
 
   it('does not mistake unavailable or unnamed maps for numeric definitions', () => {
-    expect(audit.records).toHaveLength(238);
+    expect(audit.records).toHaveLength(250);
     expect(audit.records.filter(record => record.status === 'pending_map_review')).toHaveLength(0);
-    expect(frequentServiceStoryStats.agenciesReviewed).toBe(238);
+    expect(frequentServiceStoryStats.agenciesReviewed).toBe(250);
     expect(frequentServiceStoryStats.categoryCounts).toMatchObject({
-      numericDefinition: 54,
+      numericDefinition: 56,
       qualitativeDefinition: 14,
-      noDefinitionFound: 165,
-      mapUnavailable: 5,
+      noDefinitionFound: 174,
+      mapUnavailable: 6,
     });
     expect(frequentServiceStoryStats.headwayBars).toEqual([
       { minutes: 6, agencies: 1 },
@@ -65,7 +66,8 @@ describe('FrequentServiceStory', () => {
       { minutes: 12, agencies: 1 },
       { minutes: 15, agencies: 34 },
       { minutes: 20, agencies: 5 },
-      { minutes: 30, agencies: 10 },
+      { minutes: 30, agencies: 11 },
+      { minutes: 60, agencies: 1 },
     ]);
   });
 });

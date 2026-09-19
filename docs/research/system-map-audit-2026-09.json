@@ -2,7 +2,7 @@
   "auditVersion": 2,
   "createdAt": "2026-09-18",
   "sourceCatalog": "docs/research/frequent-service-catalog.json",
-  "scope": "First 50 agencies plus 188 additional agencies reviewed individually against current official system maps or approved rider guides on September 19, 2026.",
+  "scope": "First 50 agencies plus 200 additional agencies reviewed individually against current official system maps or approved rider guides on September 19, 2026.",
   "statusRules": {
     "numeric_definition_on_map": "The official system map visibly names frequent/high-frequency service and gives a numeric threshold or range.",
     "qualitative_definition_on_map": "The official system map visibly names frequent/high-frequency service without a numeric threshold.",
@@ -8657,7 +8657,7 @@
       "agencyName": "Oakville Transit",
       "country": "Canada",
       "region": "Ontario",
-      "status": "no_definition_on_map",
+      "status": "numeric_definition_on_map",
       "mapCandidates": [
         {
           "url": "https://www.oakvilletransit.ca/getmedia/280bb767-50e9-4b50-8818-128a2eb2ba14/transit-system-map-september-2026.pdf",
@@ -8667,16 +8667,16 @@
       ],
       "preservedFiles": [],
       "mapDate": null,
-      "mapPageOrSection": "page 1 legend",
-      "exactMapWording": "Wider lines indicate more frequent service; 15 Minutes; 20 Minutes; 30 Minutes; 60 Minutes.",
-      "thresholdMinutes": null,
-      "thresholdText": null,
+      "mapPageOrSection": "page 1, Bus Routes legend",
+      "exactMapWording": "Wider lines indicate more frequent service. During the mid-day, a bus comes every… 15 Minutes; 20 Minutes; 30 Minutes; 60 Minutes; Rush Hours Only.",
+      "thresholdMinutes": 60,
+      "thresholdText": "published 15-, 20-, 30-, and 60-minute bands; 60 minutes is the slowest published band",
       "serviceSpan": null,
       "days": null,
       "geography": null,
       "mode": null,
-      "evidenceNotes": "Official September 2026 Oakville Transit system map visually reviewed. It shows relative frequency and interval labels but no named frequent-service definition or span.",
-      "reviewBatch": 13,
+      "evidenceNotes": "Official September 2026 Oakville Transit system map visually reviewed again. The map explicitly connects line emphasis to more frequent service and publishes numeric bands; the slowest band is retained as representative.",
+      "reviewBatch": 18,
       "evidenceSourceType": "system_map",
       "reviewSources": [
         {
@@ -8685,8 +8685,22 @@
           "localFile": null
         }
       ],
-      "definitions": [],
-      "representativeThresholdMinutes": null,
+      "definitions": [
+        {
+          "id": "primary",
+          "label": "More frequent service bands",
+          "thresholdMinutes": 60,
+          "thresholdText": "published 15-, 20-, 30-, and 60-minute bands; 60 minutes is the slowest published band",
+          "representative": true,
+          "sourceType": "system_map",
+          "sourceUrl": "https://www.oakvilletransit.ca/getmedia/280bb767-50e9-4b50-8818-128a2eb2ba14/transit-system-map-september-2026.pdf",
+          "localFile": null,
+          "mapPageOrSection": "page 1, Bus Routes legend",
+          "exactWording": "Wider lines indicate more frequent service. During the mid-day, a bus comes every… 15 Minutes; 20 Minutes; 30 Minutes; 60 Minutes; Rush Hours Only.",
+          "evidenceNotes": "Official September 2026 Oakville Transit system map visually reviewed again. The map explicitly connects line emphasis to more frequent service and publishes numeric bands; the slowest band is retained as representative."
+        }
+      ],
+      "representativeThresholdMinutes": 60,
       "publishedFrequencyBands": null
     },
     {
@@ -9871,8 +9885,8 @@
       "definitions": [],
       "representativeThresholdMinutes": null,
       "publishedFrequencyBands": null
-    }
-    ,{
+    },
+    {
       "auditOrder": 234,
       "agencyId": "mvv-munich",
       "agencyName": "Münchner Verkehrs- und Tarifverbund (MVV)",
@@ -9929,7 +9943,9 @@
           "localFile": "hvv-hamburg-usar-map.pdf"
         }
       ],
-      "preservedFiles": ["hvv-hamburg-usar-map.pdf"],
+      "preservedFiles": [
+        "hvv-hamburg-usar-map.pdf"
+      ],
       "mapDate": "Stand: 01.06.2026",
       "mapPageOrSection": "map title and legend",
       "exactMapWording": "Schnellbahn-/Regionalverkehr; Rapid Transit / Regional Rail; Nachtverkehr / Night service",
@@ -9972,7 +9988,9 @@
           "localFile": "vgf-frankfurt-network-map.pdf"
         }
       ],
-      "preservedFiles": ["vgf-frankfurt-network-map.pdf"],
+      "preservedFiles": [
+        "vgf-frankfurt-network-map.pdf"
+      ],
       "mapDate": "Gültig ab 14.12.2025; Stand 11/2025",
       "mapPageOrSection": "map title and legend",
       "exactMapWording": "METROBUS; EXPRESSBUS; verkehrt nur zeitweise / not in full-time operation",
@@ -10015,7 +10033,9 @@
           "localFile": "linz-ag-network-map.pdf"
         }
       ],
-      "preservedFiles": ["linz-ag-network-map.pdf"],
+      "preservedFiles": [
+        "linz-ag-network-map.pdf"
+      ],
       "mapDate": "Gültig ab August 2026",
       "mapPageOrSection": "map title and Zeichenerklärung",
       "exactMapWording": "VERKEHRSLINIENPLAN; Schnellbus; Stadtteillinien; Streckenabschnitt mit eingeschränktem Betrieb",
@@ -10053,7 +10073,9 @@
           "localFile": "rtm-marseille-network-map.pdf"
         }
       ],
-      "preservedFiles": ["rtm-marseille-network-map.pdf"],
+      "preservedFiles": [
+        "rtm-marseille-network-map.pdf"
+      ],
       "mapDate": "Édition septembre 2026",
       "mapPageOrSection": "LÉGENDE CARTE and network map",
       "exactMapWording": "LÉGENDE CARTE; Métro M1–M2; Tram T1–T3; Lignes de bus; Réseau de soirée jusqu'à 1h",
@@ -10076,6 +10098,476 @@
           "url": "https://api.rtm.fr/fiche-horaires/rtm_plan_reseau.pdf",
           "sourceType": "system_map",
           "localFile": "rtm-marseille-network-map.pdf"
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 239,
+      "agencyId": "stlevis",
+      "agencyName": "Société de transport de Lévis",
+      "country": "Canada",
+      "region": "Quebec",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.stlevis.ca/sites/default/files/public/assets/parcours/brochures/carte_reseau_e-2022.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "page 1 map legend",
+      "exactMapWording": "Lignes à haute fréquence (parcours Lévisien). Service fréquent aux 30 minutes (ou mieux) sur chacun des axes structurants du réseau, jusqu’à 23h00 en semaine.",
+      "thresholdMinutes": 30,
+      "thresholdText": "every 30 minutes or better, until 11 p.m. weekdays",
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official STLévis network map visually reviewed. It names high-frequency lines and gives the threshold and weekday span.",
+      "reviewBatch": 18,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.stlevis.ca/sites/default/files/public/assets/parcours/brochures/carte_reseau_e-2022.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [
+        {
+          "id": "primary",
+          "label": "Lignes à haute fréquence (parcours Lévisien). Service fréquent aux 30 minutes (ou mieux) sur chacun des axes structurants du réseau, jusqu’à 23h00 en semaine.",
+          "thresholdMinutes": 30,
+          "thresholdText": "every 30 minutes or better, until 11 p.m. weekdays",
+          "representative": true,
+          "sourceType": "system_map",
+          "sourceUrl": "https://www.stlevis.ca/sites/default/files/public/assets/parcours/brochures/carte_reseau_e-2022.pdf",
+          "localFile": null,
+          "mapPageOrSection": "page 1 map legend",
+          "exactWording": "Lignes à haute fréquence (parcours Lévisien). Service fréquent aux 30 minutes (ou mieux) sur chacun des axes structurants du réseau, jusqu’à 23h00 en semaine.",
+          "evidenceNotes": "Official STLévis network map visually reviewed. It names high-frequency lines and gives the threshold and weekday span."
+        }
+      ],
+      "representativeThresholdMinutes": 30,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 240,
+      "agencyId": "sttr-trois-rivieres",
+      "agencyName": "Société de transport de Trois-Rivières",
+      "country": "Canada",
+      "region": "Quebec",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://sttr.qc.ca/app/uploads/2021/08/sttr-guide-initiation-vf.pdf",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "page 13, Questions fréquemment posées",
+      "exactMapWording": "De façon générale, la fréquence est de 35 minutes en semaine pendant le jour et de 65 minutes les soirs et les fins de semaine.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official STTR rider guide visually reviewed. It gives general intervals but does not name a frequent/high-frequency category.",
+      "reviewBatch": 18,
+      "evidenceSourceType": "rider_guide",
+      "reviewSources": [
+        {
+          "url": "https://sttr.qc.ca/app/uploads/2021/08/sttr-guide-initiation-vf.pdf",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 241,
+      "agencyId": "vbz-zurich",
+      "agencyName": "VBZ Zürich",
+      "country": "Switzerland",
+      "region": "Zurich",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.zvv.ch/content/dam/fahrgastinfo/netzpl%C3%A4ne/stadt-zuerich.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "city network map legend",
+      "exactMapWording": "Tram; Bus; S-Bahn; Cable car/funicular; boat.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official 2026 Zurich city network map visually reviewed. It identifies modes but no frequent-service definition.",
+      "reviewBatch": 18,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.zvv.ch/content/dam/fahrgastinfo/netzpl%C3%A4ne/stadt-zuerich.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 242,
+      "agencyId": "vasttrafik-goteborg",
+      "agencyName": "Västtrafik Göteborg",
+      "country": "Sweden",
+      "region": "Västra Götaland",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.vasttrafik.se/globalassets/media/kartor/linjenatskartor/sparvagn/sparvagn_stombuss_bat_juni_2026.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "June 2026 tram, trunk-bus and ferry map",
+      "exactMapWording": "TRAM LINES, TRUNK BUS LINES AND FERRIES; Stombussar/Trunk buses.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Västtrafik map visually reviewed. It labels trunk buses but gives no frequent-service threshold.",
+      "reviewBatch": 18,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.vasttrafik.se/globalassets/media/kartor/linjenatskartor/sparvagn/sparvagn_stombuss_bat_juni_2026.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 243,
+      "agencyId": "de-lijn-antwerp",
+      "agencyName": "De Lijn Antwerp",
+      "country": "Belgium",
+      "region": "Antwerp",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://assets.ctfassets.net/32fmeyn9t08i/1VjEPfZ9lyf3MBie4MqR9d/dfb45cf19051d5a34bb1aef0f602d988/A1_Netplannen_VVR_20260701_Antwerpen.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "network map legend, valid July 1, 2026",
+      "exactMapWording": "BUSLIJNEN; TRAMLIJNEN; Snelbus.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official De Lijn Antwerp map visually reviewed. It distinguishes bus, tram, and express bus but no frequent-service definition.",
+      "reviewBatch": 18,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://assets.ctfassets.net/32fmeyn9t08i/1VjEPfZ9lyf3MBie4MqR9d/dfb45cf19051d5a34bb1aef0f602d988/A1_Netplannen_VVR_20260701_Antwerpen.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 244,
+      "agencyId": "oasa-athens",
+      "agencyName": "OASA Athens",
+      "country": "Greece",
+      "region": "Athens",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.oasa.gr/wp-content/uploads/2023/04/Transport-for-Athens_tousrist_pocket_map_GR.pdf",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "official tourist pocket map",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official OASA pocket map visually reviewed. It shows metro, tram, bus, trolleybus, and airport express services but no frequent-service definition.",
+      "reviewBatch": 18,
+      "evidenceSourceType": "rider_guide",
+      "reviewSources": [
+        {
+          "url": "https://www.oasa.gr/wp-content/uploads/2023/04/Transport-for-Athens_tousrist_pocket_map_GR.pdf",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 245,
+      "agencyId": "metrovalencia",
+      "agencyName": "Metrovalencia",
+      "country": "Spain",
+      "region": "Valencia",
+      "status": "map_unavailable",
+      "mapCandidates": [
+        {
+          "url": "https://www.metrovalencia.es/wp-content/uploads/2025/02/Plan-movilidad-FASE4-Metro-zonaNorte-a-ValenciaSud-y-nuevas-conexiones-BusMetro-zonaSur-.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "provisional network map",
+      "exactMapWording": "Mapa provisional; lines will be updated as services become operational.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "The latest located official map is explicitly provisional and not current enough for this audit; no current map was accepted.",
+      "reviewBatch": 18,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.metrovalencia.es/wp-content/uploads/2025/02/Plan-movilidad-FASE4-Metro-zonaNorte-a-ValenciaSud-y-nuevas-conexiones-BusMetro-zonaSur-.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 246,
+      "agencyId": "bangkok-mrt",
+      "agencyName": "Bangkok MRT / BEM",
+      "country": "Thailand",
+      "region": "Bangkok",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://metro.bemplc.co.th/MRT-System-Map?lang=en",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "official MRT route map",
+      "exactMapWording": "Route Map; Download Route Map of MRT Blue Line and MRT Purple Line.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Bangkok MRT route map visually reviewed. It identifies lines, stations, and interchanges but no frequent-service definition.",
+      "reviewBatch": 18,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://metro.bemplc.co.th/MRT-System-Map?lang=en",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 247,
+      "agencyId": "daejeon-metro",
+      "agencyName": "Daejeon Metro",
+      "country": "South Korea",
+      "region": "Daejeon",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.djtc.kr/kor/page.do?menuIdx=39",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "English route map",
+      "exactMapWording": "노선도 / Route Map; Line 1 station network and interchange symbols.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Daejeon route map visually reviewed. It shows the station network but no frequent-service definition.",
+      "reviewBatch": 18,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.djtc.kr/kor/page.do?menuIdx=39",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 248,
+      "agencyId": "taichung-metro",
+      "agencyName": "Taichung Metro",
+      "country": "Taiwan",
+      "region": "Taichung",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.tmrt.com.tw/metro-life/map",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "Green Line route map",
+      "exactMapWording": "台中捷運綠線路線圖 / TMRT Green Line Route Map.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Taichung Metro map visually reviewed. It identifies route and station symbols but no frequent-service definition.",
+      "reviewBatch": 18,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.tmrt.com.tw/metro-life/map",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 249,
+      "agencyId": "shenzhen-metro",
+      "agencyName": "Shenzhen Metro",
+      "country": "China",
+      "region": "Shenzhen",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.szmc.net/SMARTC/upload/file/20250627/1750986736853070484.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "2025 network map legend",
+      "exactMapWording": "Lines 1–20; tram; SkyShuttle; transfer stations; ordinary stations; railway station; airport.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Shenzhen Metro network map visually reviewed. It identifies modes, lines, and transfer symbols but no frequent-service definition.",
+      "reviewBatch": 18,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.szmc.net/SMARTC/upload/file/20250627/1750986736853070484.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 250,
+      "agencyId": "maha-mumbai-metro",
+      "agencyName": "Maha Mumbai Metro",
+      "country": "India",
+      "region": "Mumbai",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.mmmocl.co.in/project-brief.html",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "Map of Metro Network",
+      "exactMapWording": "Map of Metro Network.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Maha Mumbai Metro network map visually reviewed. It shows lines, stations, and network totals but no frequent-service definition.",
+      "reviewBatch": 18,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.mmmocl.co.in/project-brief.html",
+          "sourceType": "system_map",
+          "localFile": null
         }
       ],
       "definitions": [],
