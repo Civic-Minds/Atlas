@@ -12,6 +12,7 @@ describe('FrequentServiceStory', () => {
     expect(screen.getByRole('heading', { name: 'What happens when you miss the bus?' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'There is no single “frequent.”' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'The threshold changes who can rely on the network.' })).toBeInTheDocument();
+    expect(screen.getByText(/from 137 agencies/)).toBeInTheDocument();
     expect(screen.getByText('8.72%')).toBeInTheDocument();
     expect(screen.getByText(/30-minute service reaches about 2.6 times as many people in Canada/)).toBeInTheDocument();
     expect(screen.queryByRole('tab')).not.toBeInTheDocument();

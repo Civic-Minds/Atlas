@@ -13,6 +13,7 @@ const representativeNumericRecords = records.filter(record => Number.isInteger(r
 
 export const frequentServiceStoryStats = {
   agenciesReviewed: records.length,
+  agenciesWithUsableEvidence: records.length - categoryCounts.mapUnavailable,
   reviewedAt: 'September 18, 2026',
   countryCounts: Object.entries(records.reduce<Record<string, number>>((counts, record) => {
     counts[record.country] = (counts[record.country] ?? 0) + 1;

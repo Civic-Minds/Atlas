@@ -50,7 +50,7 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
           <div className="mx-auto mt-6 max-w-2xl space-y-4 text-left text-base leading-8 text-[var(--text-muted)] sm:text-lg">
             <p>Miss one when the next vehicle comes in 10 minutes? Annoying, but manageable. Miss one when the next one takes 30? That can change your whole trip.</p>
             <p>Transit maps show where routes go. Transit planning asks the harder questions: how often does service come, how long does it run, and who is it designed to reach?</p>
-            <p>We reviewed official transit maps from {frequentServiceStoryStats.agenciesReviewed} agencies to show how those decisions turn a network of lines into service people can actually rely on.</p>
+            <p>We reviewed official transit maps and approved rider guides from {frequentServiceStoryStats.agenciesWithUsableEvidence} agencies to show how those decisions turn a network of lines into service people can actually rely on.</p>
           </div>
           <div className="w-full max-w-5xl text-left">
             <FrequentServicePublishedMapMontage />
