@@ -50,14 +50,14 @@ describe('FrequentServiceStory', () => {
   });
 
   it('does not mistake unavailable or unnamed maps for numeric definitions', () => {
-    expect(audit.records).toHaveLength(255);
+    expect(audit.records).toHaveLength(260);
     expect(audit.records.filter(record => record.status === 'pending_map_review')).toHaveLength(0);
-    expect(frequentServiceStoryStats.agenciesReviewed).toBe(255);
+    expect(frequentServiceStoryStats.agenciesReviewed).toBe(260);
     expect(frequentServiceStoryStats.categoryCounts).toMatchObject({
       numericDefinition: 56,
       qualitativeDefinition: 14,
-      noDefinitionFound: 179,
-      mapUnavailable: 6,
+      noDefinitionFound: 183,
+      mapUnavailable: 7,
     });
     expect(frequentServiceStoryStats.headwayBars).toEqual([
       { minutes: 6, agencies: 1 },
