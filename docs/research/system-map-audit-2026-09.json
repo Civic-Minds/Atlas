@@ -2,7 +2,7 @@
   "auditVersion": 2,
   "createdAt": "2026-09-18",
   "sourceCatalog": "docs/research/frequent-service-catalog.json",
-  "scope": "First 50 agencies plus 268 additional agencies reviewed individually against current official system maps or approved rider guides on September 19, 2026.",
+  "scope": "First 50 agencies plus 283 additional agencies reviewed individually against current official system maps or approved rider guides on September 19, 2026.",
   "statusRules": {
     "numeric_definition_on_map": "The official system map visibly names frequent/high-frequency service and gives a numeric threshold or range.",
     "qualitative_definition_on_map": "The official system map visibly names frequent/high-frequency service without a numeric threshold.",
@@ -13509,6 +13509,688 @@
         }
       ],
       "representativeThresholdMinutes": 20,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 319,
+      "agencyId": "metro-west-yorkshire",
+      "agencyName": "West Yorkshire Metro",
+      "country": "United Kingdom",
+      "region": "West Yorkshire",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.wymetro.com/media/9541/core-network-and-city-centre-screen-final.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "system map title/legend",
+      "exactMapWording": "every 15 mins or better",
+      "thresholdMinutes": 15,
+      "thresholdText": "every 15 mins or better",
+      "serviceSpan": "Mon–Sat daytime, evenings, and Sundays shown in frequency panel",
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Leeds Core Network map visually reviewed. Printed footer says correct at time of printing 2 April 2023.",
+      "reviewBatch": 26,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.wymetro.com/media/9541/core-network-and-city-centre-screen-final.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [
+        {
+          "id": "frequent",
+          "label": "Core Network",
+          "thresholdMinutes": 15,
+          "thresholdText": "every 15 mins or better",
+          "representative": true,
+          "sourceType": "system_map",
+          "sourceUrl": "https://www.wymetro.com/media/9541/core-network-and-city-centre-screen-final.pdf",
+          "localFile": null,
+          "mapPageOrSection": "system map title/legend",
+          "exactWording": "every 15 mins or better",
+          "evidenceNotes": "Official Leeds Core Network map visually reviewed. Printed footer says correct at time of printing 2 April 2023."
+        }
+      ],
+      "representativeThresholdMinutes": 15,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 320,
+      "agencyId": "tfwm-west-midlands",
+      "agencyName": "Transport for West Midlands",
+      "country": "United Kingdom",
+      "region": "West Midlands",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.tfwm.org.uk/media/emthfzaq/solihull-area-map-20260104.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "system-map visual key",
+      "exactMapWording": "High frequency bus services (10 minutes or less daytime)",
+      "thresholdMinutes": 10,
+      "thresholdText": "10 minutes or less daytime",
+      "serviceSpan": "daytime",
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Solihull area map visually reviewed.",
+      "reviewBatch": 26,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.tfwm.org.uk/media/emthfzaq/solihull-area-map-20260104.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [
+        {
+          "id": "frequent",
+          "label": "High frequency bus services",
+          "thresholdMinutes": 10,
+          "thresholdText": "10 minutes or less daytime",
+          "representative": true,
+          "sourceType": "system_map",
+          "sourceUrl": "https://www.tfwm.org.uk/media/emthfzaq/solihull-area-map-20260104.pdf",
+          "localFile": null,
+          "mapPageOrSection": "system-map visual key",
+          "exactWording": "High frequency bus services (10 minutes or less daytime)",
+          "evidenceNotes": "Official Solihull area map visually reviewed."
+        }
+      ],
+      "representativeThresholdMinutes": 10,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 321,
+      "agencyId": "tfgm-greater-manchester",
+      "agencyName": "Transport for Greater Manchester / Bee Network",
+      "country": "United Kingdom",
+      "region": "Greater Manchester",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://tfgm.com/maps",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "12 minutes or less bus and tram map",
+      "exactMapWording": "12 minutes or less bus and tram map; daytime buses and tram services that run every 12 minutes or less",
+      "thresholdMinutes": 12,
+      "thresholdText": "12 minutes or less",
+      "serviceSpan": "daytime",
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official TfGM high-frequency map page visually reviewed.",
+      "reviewBatch": 26,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://tfgm.com/maps",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [
+        {
+          "id": "frequent",
+          "label": "12 minutes or less bus and tram services",
+          "thresholdMinutes": 12,
+          "thresholdText": "12 minutes or less",
+          "representative": true,
+          "sourceType": "system_map",
+          "sourceUrl": "https://tfgm.com/maps",
+          "localFile": null,
+          "mapPageOrSection": "12 minutes or less bus and tram map",
+          "exactWording": "12 minutes or less bus and tram map; daytime buses and tram services that run every 12 minutes or less",
+          "evidenceNotes": "Official TfGM high-frequency map page visually reviewed."
+        }
+      ],
+      "representativeThresholdMinutes": 12,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 322,
+      "agencyId": "naolib-nantes",
+      "agencyName": "Naolib / Nantes Métropole",
+      "country": "France",
+      "region": "Pays de la Loire",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://naolib.fr/fr/se-deplacer-la-nuit",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "approved rider guide, evening/night service section",
+      "exactMapWording": "Les lignes chronobus circulent avec une fréquence de 15 minutes; 30 minutes after 22:30.",
+      "thresholdMinutes": 30,
+      "thresholdText": "15 minutes evening; 30 minutes after 22:30",
+      "serviceSpan": "20:30–22:30 and later night periods",
+      "days": "Monday–Sunday with later Friday/Saturday service",
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Naolib rider guide visually reviewed. The slowest published Chronobus period is used as representative.",
+      "reviewBatch": 26,
+      "evidenceSourceType": "rider_guide",
+      "reviewSources": [
+        {
+          "url": "https://naolib.fr/fr/se-deplacer-la-nuit",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "definitions": [
+        {
+          "id": "frequent",
+          "label": "Chronobus",
+          "thresholdMinutes": 30,
+          "thresholdText": "15 minutes evening; 30 minutes after 22:30",
+          "representative": true,
+          "sourceType": "rider_guide",
+          "sourceUrl": "https://naolib.fr/fr/se-deplacer-la-nuit",
+          "localFile": null,
+          "mapPageOrSection": "approved rider guide, evening/night service section",
+          "exactWording": "Les lignes chronobus circulent avec une fréquence de 15 minutes; 30 minutes after 22:30.",
+          "evidenceNotes": "Official Naolib rider guide visually reviewed. The slowest published Chronobus period is used as representative."
+        }
+      ],
+      "representativeThresholdMinutes": 30,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 323,
+      "agencyId": "ilevia-lille",
+      "agencyName": "ilévia / Lille Métropole",
+      "country": "France",
+      "region": "Hauts-de-France",
+      "status": "qualitative_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://nouveaureseaubus.ilevia.fr/",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "2026 network rider guide and official network map legend",
+      "exactMapWording": "13 lignes à fréquence renforcée; LIANES URBAINES",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official ilévia rider guide/map visually reviewed. It names reinforced-frequency lines but publishes no class-wide number.",
+      "reviewBatch": 26,
+      "evidenceSourceType": "rider_guide",
+      "reviewSources": [
+        {
+          "url": "https://nouveaureseaubus.ilevia.fr/",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "definitions": [
+        {
+          "id": "frequent",
+          "label": "Lianes / reinforced-frequency lines",
+          "thresholdMinutes": null,
+          "thresholdText": null,
+          "representative": false,
+          "sourceType": "rider_guide",
+          "sourceUrl": "https://nouveaureseaubus.ilevia.fr/",
+          "localFile": null,
+          "mapPageOrSection": "2026 network rider guide and official network map legend",
+          "exactWording": "13 lignes à fréquence renforcée; LIANES URBAINES",
+          "evidenceNotes": "Official ilévia rider guide/map visually reviewed. It names reinforced-frequency lines but publishes no class-wide number."
+        }
+      ],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 324,
+      "agencyId": "newcastle-transport",
+      "agencyName": "Newcastle Transport",
+      "country": "Australia",
+      "region": "New South Wales",
+      "status": "qualitative_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://transportnsw.info/document/6095/22068_kdh_newcastle_network_map_web.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "map legend, effective 3 April 2022",
+      "exactMapWording": "Frequent bus route",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Newcastle Transport network map visually reviewed. It names frequent bus routes but publishes no threshold.",
+      "reviewBatch": 26,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://transportnsw.info/document/6095/22068_kdh_newcastle_network_map_web.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [
+        {
+          "id": "frequent",
+          "label": "Frequent bus route",
+          "thresholdMinutes": null,
+          "thresholdText": null,
+          "representative": false,
+          "sourceType": "system_map",
+          "sourceUrl": "https://transportnsw.info/document/6095/22068_kdh_newcastle_network_map_web.pdf",
+          "localFile": null,
+          "mapPageOrSection": "map legend, effective 3 April 2022",
+          "exactWording": "Frequent bus route",
+          "evidenceNotes": "Official Newcastle Transport network map visually reviewed. It names frequent bus routes but publishes no threshold."
+        }
+      ],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 325,
+      "agencyId": "busways-central-coast",
+      "agencyName": "Busways Central Coast",
+      "country": "Australia",
+      "region": "New South Wales",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://transportnsw.info/document/6484/Busways%20Central%20Coast%20Network%20Map.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "map legend, effective 23 March 2026",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Busways Central Coast map visually reviewed. No named frequent-service definition.",
+      "reviewBatch": 26,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://transportnsw.info/document/6484/Busways%20Central%20Coast%20Network%20Map.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 326,
+      "agencyId": "tweed-transit",
+      "agencyName": "Tweed bus network",
+      "country": "Australia",
+      "region": "New South Wales",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://transportnsw.info/document/8757/The-Tweed-Network-Map-June-2026.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "map legend, June 2026",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Tweed network map visually reviewed. No named frequent-service definition.",
+      "reviewBatch": 26,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://transportnsw.info/document/8757/The-Tweed-Network-Map-June-2026.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 327,
+      "agencyId": "coffs-harbour-bus",
+      "agencyName": "Coffs Harbour Busways",
+      "country": "Australia",
+      "region": "New South Wales",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://transportnsw.info/document/6915/Coffs%20Harbour%20Bus%20Network.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "map legend",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Coffs Harbour network map visually reviewed. No named frequent-service definition.",
+      "reviewBatch": 26,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://transportnsw.info/document/6915/Coffs%20Harbour%20Bus%20Network.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 328,
+      "agencyId": "sunshine-coast-translink",
+      "agencyName": "Translink Sunshine Coast",
+      "country": "Australia",
+      "region": "Queensland",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://translink.widen.net/s/qkbxpsx6gz/251213-sunshine-coast-network-map",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "key/map legend, effective December 2025",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Sunshine Coast network map visually reviewed. No named frequent-service definition.",
+      "reviewBatch": 26,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://translink.widen.net/s/qkbxpsx6gz/251213-sunshine-coast-network-map",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 329,
+      "agencyId": "longbeach",
+      "agencyName": "Long Beach Transit",
+      "country": "United States",
+      "region": "California",
+      "status": "qualitative_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://ridelbt.com/wp-content/uploads/2025/02/LBT_SystemMap_Freestanding.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "page 1 map legend",
+      "exactMapWording": "Heavier lines indicate frequent service.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Long Beach Transit system map visually reviewed. It names frequent service but publishes no threshold.",
+      "reviewBatch": 26,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://ridelbt.com/wp-content/uploads/2025/02/LBT_SystemMap_Freestanding.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [
+        {
+          "id": "frequent",
+          "label": "Frequent service",
+          "thresholdMinutes": null,
+          "thresholdText": null,
+          "representative": false,
+          "sourceType": "system_map",
+          "sourceUrl": "https://ridelbt.com/wp-content/uploads/2025/02/LBT_SystemMap_Freestanding.pdf",
+          "localFile": null,
+          "mapPageOrSection": "page 1 map legend",
+          "exactWording": "Heavier lines indicate frequent service.",
+          "evidenceNotes": "Official Long Beach Transit system map visually reviewed. It names frequent service but publishes no threshold."
+        }
+      ],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 330,
+      "agencyId": "fax",
+      "agencyName": "Fresno Area Express",
+      "country": "United States",
+      "region": "California",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.fresno.gov/wp-content/uploads/2026/01/COMPLETE-SCHEDULE-GUIDE-1-26-10w1248.pdf",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "PDF page 4, Route 9 map legend",
+      "exactMapWording": "15 MINUTE FREQUENCY (Weekday from 6am to 6pm)",
+      "thresholdMinutes": 15,
+      "thresholdText": "15 minute frequency",
+      "serviceSpan": "6am–6pm",
+      "days": "weekdays",
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official FAX schedule guide/map visually reviewed.",
+      "reviewBatch": 26,
+      "evidenceSourceType": "rider_guide",
+      "reviewSources": [
+        {
+          "url": "https://www.fresno.gov/wp-content/uploads/2026/01/COMPLETE-SCHEDULE-GUIDE-1-26-10w1248.pdf",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "definitions": [
+        {
+          "id": "frequent",
+          "label": "15 minute frequency",
+          "thresholdMinutes": 15,
+          "thresholdText": "15 minute frequency",
+          "representative": true,
+          "sourceType": "rider_guide",
+          "sourceUrl": "https://www.fresno.gov/wp-content/uploads/2026/01/COMPLETE-SCHEDULE-GUIDE-1-26-10w1248.pdf",
+          "localFile": null,
+          "mapPageOrSection": "PDF page 4, Route 9 map legend",
+          "exactWording": "15 MINUTE FREQUENCY (Weekday from 6am to 6pm)",
+          "evidenceNotes": "Official FAX schedule guide/map visually reviewed."
+        }
+      ],
+      "representativeThresholdMinutes": 15,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 331,
+      "agencyId": "bata",
+      "agencyName": "Bay Area Transportation Authority",
+      "country": "United States",
+      "region": "Michigan",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.bata.net/userfiles/filemanager/3b85viywp8n2vjkvnup0/",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "page 1 Bayline frequency panel",
+      "exactMapWording": "Buses run about every",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Bayline map/guide visually reviewed. It gives intervals but does not name frequent or high-frequency service.",
+      "reviewBatch": 26,
+      "evidenceSourceType": "rider_guide",
+      "reviewSources": [
+        {
+          "url": "https://www.bata.net/userfiles/filemanager/3b85viywp8n2vjkvnup0/",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 332,
+      "agencyId": "marintransit",
+      "agencyName": "Marin Transit",
+      "country": "United States",
+      "region": "California",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://marintransit.gov/sites/default/files/2026-09/Marin%20System%20Map_April%202026.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "page 1 upper-right legend",
+      "exactMapWording": "Marin Transit Local Routes; Marin Transit Community Shuttles; West Marin Stagecoach",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Marin Transit system map visually reviewed. No named frequent-service definition.",
+      "reviewBatch": 26,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://marintransit.gov/sites/default/files/2026-09/Marin%20System%20Map_April%202026.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 333,
+      "agencyId": "connect-transit",
+      "agencyName": "Connect Transit",
+      "country": "United States",
+      "region": "Illinois",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://connect-transit.com/file/4563/Rider%20Guide%2008-26.pdf",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "PDF page 4 Route Frequency table",
+      "exactMapWording": "15 MINUTE FREQUENCY; 30 MINUTE FREQUENCY; 60 MINUTE FREQUENCY",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Connect Transit rider guide visually reviewed. It gives generic route intervals but no named frequent/high-frequency network.",
+      "reviewBatch": 26,
+      "evidenceSourceType": "rider_guide",
+      "reviewSources": [
+        {
+          "url": "https://connect-transit.com/file/4563/Rider%20Guide%2008-26.pdf",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
       "publishedFrequencyBands": null
     }
   ],
