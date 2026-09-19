@@ -6741,6 +6741,108 @@
       "definitions": [],
       "representativeThresholdMinutes": null,
       "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 156,
+      "agencyId": "guelph",
+      "agencyName": "Guelph Transit",
+      "country": "Canada",
+      "region": "Ontario",
+      "status": "no_definition_on_map",
+      "mapCandidates": [{
+        "url": "https://guelph.ca/wp-content/uploads/GuelphTransit_SystemMap.pdf",
+        "sourceType": "system_map",
+        "localFile": null
+      }],
+      "preservedFiles": [],
+      "mapDate": "September 2025",
+      "mapPageOrSection": "system map and route legend",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": "Guelph Transit network",
+      "mode": "Bus",
+      "evidenceNotes": "Current official Guelph Transit system map reviewed. It identifies routes and university service but does not name or define frequent/high-frequency service on the map.",
+      "reviewBatch": 12,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [{
+        "url": "https://guelph.ca/wp-content/uploads/GuelphTransit_SystemMap.pdf",
+        "sourceType": "system_map",
+        "localFile": null
+      }],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 157,
+      "agencyId": "kingston",
+      "agencyName": "Kingston Transit",
+      "country": "Canada",
+      "region": "Ontario",
+      "status": "no_definition_on_map",
+      "mapCandidates": [{
+        "url": "https://www.cityofkingston.ca/media/by4dmbhn/transit-systemmaps-may2025.pdf",
+        "sourceType": "system_map",
+        "localFile": null
+      }],
+      "preservedFiles": [],
+      "mapDate": "May 2025",
+      "mapPageOrSection": "system map and route legend",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": "Kingston Transit network",
+      "mode": "Bus",
+      "evidenceNotes": "Current official Kingston Transit system map reviewed. It identifies routes, transfer points, and park-and-ride locations but does not name or define frequent/high-frequency service on the map.",
+      "reviewBatch": 12,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [{
+        "url": "https://www.cityofkingston.ca/media/by4dmbhn/transit-systemmaps-may2025.pdf",
+        "sourceType": "system_map",
+        "localFile": null
+      }],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 158,
+      "agencyId": "regina",
+      "agencyName": "Regina Transit",
+      "country": "Canada",
+      "region": "Saskatchewan",
+      "status": "no_definition_on_map",
+      "mapCandidates": [{
+        "url": "https://www.regina.ca/export/sites/Regina.ca/transportation-roads-parking/transit/.galleries/Transit-Route-PDF/Transit-System-Map-2024-March.pdf",
+        "sourceType": "system_map",
+        "localFile": null
+      }],
+      "preservedFiles": [],
+      "mapDate": "March 2024",
+      "mapPageOrSection": "system map and route legend",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": "Regina Transit network",
+      "mode": "Bus",
+      "evidenceNotes": "Current official City of Regina transit system map link reviewed. It identifies the full route system but does not name or define frequent/high-frequency service on the map.",
+      "reviewBatch": 12,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [{
+        "url": "https://www.regina.ca/export/sites/Regina.ca/transportation-roads-parking/transit/.galleries/Transit-Route-PDF/Transit-System-Map-2024-March.pdf",
+        "sourceType": "system_map",
+        "localFile": null
+      }],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
     }
   ],
   "updatedAt": "2026-09-19"
