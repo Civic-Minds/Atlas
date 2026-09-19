@@ -9872,6 +9872,216 @@
       "representativeThresholdMinutes": null,
       "publishedFrequencyBands": null
     }
+    ,{
+      "auditOrder": 234,
+      "agencyId": "mvv-munich",
+      "agencyName": "Münchner Verkehrs- und Tarifverbund (MVV)",
+      "country": "Germany",
+      "region": "Bavaria",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://mastermind.redaktion.mvv-muenchen.de/fileadmin/mediapool/03-Plaene_Bahnhoefe/Netzplaene/Downloads_2026/2026_layout_SUR_M_12.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": "Januar 2026",
+      "mapPageOrSection": "map title and legend",
+      "exactMapWording": "S-Bahn; U-Bahn; RegionalZug / Suburban train; Underground; Regional train",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": "Munich and MVV zones M–12",
+      "mode": "regional rail, metro, and suburban rail",
+      "evidenceNotes": "Current official MVV 2026 network map was visually reviewed. Its legend identifies modes and the network geography but does not name a frequent or high-frequency definition. Generic route intervals were rejected.",
+      "reviewBatch": 17,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://redaktion.mvv-muenchen.de/plaene-bahnhoefe/plaene/index.html",
+          "sourceType": "system_map",
+          "localFile": null
+        },
+        {
+          "url": "https://mastermind.redaktion.mvv-muenchen.de/fileadmin/mediapool/03-Plaene_Bahnhoefe/Netzplaene/Downloads_2026/2026_layout_SUR_M_12.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 235,
+      "agencyId": "hvv-hamburg",
+      "agencyName": "Hamburger Verkehrsverbund (hvv)",
+      "country": "Germany",
+      "region": "Hamburg",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.hvv.de/resource/blob/120104/3ff58f395fa6e8d4818231b0573b0bc6/hvv_usar-plan.pdf",
+          "sourceType": "system_map",
+          "localFile": "hvv-hamburg-usar-map.pdf"
+        }
+      ],
+      "preservedFiles": ["hvv-hamburg-usar-map.pdf"],
+      "mapDate": "Stand: 01.06.2026",
+      "mapPageOrSection": "map title and legend",
+      "exactMapWording": "Schnellbahn-/Regionalverkehr; Rapid Transit / Regional Rail; Nachtverkehr / Night service",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": "Hamburg and surrounding region",
+      "mode": "rapid transit and regional rail",
+      "evidenceNotes": "Current official hvv U/S/A/R map was visually reviewed. It labels rapid transit, regional rail, and night service but does not name a frequent or high-frequency definition. Generic route intervals were rejected.",
+      "reviewBatch": 17,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.hvv.de/de/plaene",
+          "sourceType": "system_map",
+          "localFile": null
+        },
+        {
+          "url": "https://www.hvv.de/resource/blob/120104/3ff58f395fa6e8d4818231b0573b0bc6/hvv_usar-plan.pdf",
+          "sourceType": "system_map",
+          "localFile": "hvv-hamburg-usar-map.pdf"
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 236,
+      "agencyId": "vgf-frankfurt",
+      "agencyName": "Verkehrsgesellschaft Frankfurt am Main (VGF)",
+      "country": "Germany",
+      "region": "Hesse",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.vgf-ffm.de/fileadmin/VGF/Tickets__Tarife__Plaene/Fahrplaene/Documents/Liniennetzplan_Frankfurt_2026.pdf",
+          "sourceType": "system_map",
+          "localFile": "vgf-frankfurt-network-map.pdf"
+        }
+      ],
+      "preservedFiles": ["vgf-frankfurt-network-map.pdf"],
+      "mapDate": "Gültig ab 14.12.2025; Stand 11/2025",
+      "mapPageOrSection": "map title and legend",
+      "exactMapWording": "METROBUS; EXPRESSBUS; verkehrt nur zeitweise / not in full-time operation",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": "Frankfurt am Main and adjacent network",
+      "mode": "suburban rail, metro, tram, and bus",
+      "evidenceNotes": "Current official VGF Frankfurt 2026 network map was visually reviewed. The legend distinguishes Metrobus, Expressbus, and limited-operation service but does not name a frequent or high-frequency definition. Generic route intervals were rejected.",
+      "reviewBatch": 17,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.vgf-ffm.de/de/tickets-tarife-plane/linienplane",
+          "sourceType": "system_map",
+          "localFile": null
+        },
+        {
+          "url": "https://www.vgf-ffm.de/fileadmin/VGF/Tickets__Tarife__Plaene/Fahrplaene/Documents/Liniennetzplan_Frankfurt_2026.pdf",
+          "sourceType": "system_map",
+          "localFile": "vgf-frankfurt-network-map.pdf"
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 237,
+      "agencyId": "linz-ag-linz",
+      "agencyName": "LINZ AG LINIEN",
+      "country": "Austria",
+      "region": "Upper Austria",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.linzag.at/media/dokumente/linien_1/infomaterial_1/linien-linienfahrplan.pdf",
+          "sourceType": "system_map",
+          "localFile": "linz-ag-network-map.pdf"
+        }
+      ],
+      "preservedFiles": ["linz-ag-network-map.pdf"],
+      "mapDate": "Gültig ab August 2026",
+      "mapPageOrSection": "map title and Zeichenerklärung",
+      "exactMapWording": "VERKEHRSLINIENPLAN; Schnellbus; Stadtteillinien; Streckenabschnitt mit eingeschränktem Betrieb",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": "Linz",
+      "mode": "tram, trolleybus, bus, and regional rail connections",
+      "evidenceNotes": "Current official LINZ AG VerkehrsLinienplan was visually reviewed. The legend names Schnellbus and other route categories but does not name a frequent or high-frequency definition. Generic route intervals were rejected.",
+      "reviewBatch": 17,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.linzag.at/media/dokumente/linien_1/infomaterial_1/linien-linienfahrplan.pdf",
+          "sourceType": "system_map",
+          "localFile": "linz-ag-network-map.pdf"
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 238,
+      "agencyId": "rtm-marseille",
+      "agencyName": "Régie des Transports Métropolitains (RTM)",
+      "country": "France",
+      "region": "Provence-Alpes-Côte d'Azur",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://api.rtm.fr/fiche-horaires/rtm_plan_reseau.pdf",
+          "sourceType": "system_map",
+          "localFile": "rtm-marseille-network-map.pdf"
+        }
+      ],
+      "preservedFiles": ["rtm-marseille-network-map.pdf"],
+      "mapDate": "Édition septembre 2026",
+      "mapPageOrSection": "LÉGENDE CARTE and network map",
+      "exactMapWording": "LÉGENDE CARTE; Métro M1–M2; Tram T1–T3; Lignes de bus; Réseau de soirée jusqu'à 1h",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": "Marseille",
+      "mode": "metro, tram, bus, and maritime lines",
+      "evidenceNotes": "Current official RTM network map was visually reviewed. It identifies modes, routes, and a night network but does not name a frequent or high-frequency definition. Generic route intervals were rejected.",
+      "reviewBatch": 17,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.rtm.fr/plans",
+          "sourceType": "system_map",
+          "localFile": null
+        },
+        {
+          "url": "https://api.rtm.fr/fiche-horaires/rtm_plan_reseau.pdf",
+          "sourceType": "system_map",
+          "localFile": "rtm-marseille-network-map.pdf"
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    }
   ],
   "updatedAt": "2026-09-19"
 }
