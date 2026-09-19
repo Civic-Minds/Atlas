@@ -9,6 +9,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Added a temporary Frequent Service chart lab to compare cumulative thresholds with agency-level definition distributions before choosing a story chart.
 - Restored the story introduction’s natural top placement so the title is not forced into a vertically centered hero.
 - Frequent Service story-map captions now stay inside the viewport instead of being clipped below the sticky map.
+- Reviewed current DART and METRO Houston system-map frequency bands, adding their explicit 15-minute numeric definitions to the North American audit.
 - Reviewed current Capital Metro and VIA frequency maps, adding their explicit 15-minute numeric definitions to the North American audit.
 - Reviewed Spokane Transit Authority’s current system map, adding its 15-minute weekday frequent-service definition to the North American audit.
 - Reviewed current Sound Transit and Pierce Transit maps, preserving Pierce’s qualitative “Frequent” definition separately from Sound Transit’s no-definition finding.
