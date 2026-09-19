@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Reviewed four additional North American map sources: L’Inter and Arvin had no named frequent-service definition; current Banning and Basin static maps were unavailable.
 - Reviewed five additional Canadian agency sources: current official pages for exo Trains, REM, Saint-Jean-sur-Richelieu, Sherbrooke, and Saint-Hyacinthe did not expose accessible current static system maps.
 - Reviewed four additional Canadian map sources: STLévis had no named frequent-service definition; current static maps for three exo sectors were unavailable.
 - Reviewed four additional transit map sources: current SunLine and Moose Jaw maps had no named frequent-service definition; current Fort Smith and Rock Region Metro map sources were unavailable.
