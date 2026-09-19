@@ -9,14 +9,14 @@
 - `pipeline/refresh.ts` now tries the configured feed, explicit `mdbFeedUrl`, and an automatically derived Mobility Database `latest.zip` fallback. If the configured feed downloads but is expired, a dated current fallback can replace it; an undated fallback does not replace known expired data.
 - The expired-source audit now uses the shared helper. Added coverage for deriving a latest fallback from a dated Mobility Database URL.
 - Verification passed: 99 test files, 655 tests, and both TypeScript checks.
-- The latest read-only audit found 40 newer sources, 37 genuinely expired agencies, and 4 manual-review cases (`augusta`, `lavta`, `sfmta`, `westberkeley`).
-- Current-source research has recovered and documented 58 agencies so far, including Athens, Davenport, JFK AirTrain, Kenosha, Sioux Area Metro, StarMetro, and Waukesha. DC Streetcar is discontinued; Greater Glens Falls Transit was merged into CDTA.
+- The latest read-only audit found 40 newer sources, 36 genuinely expired agencies, and 4 manual-review cases (`augusta`, `lavta`, `sfmta`, `westberkeley`).
+- Current-source research has recovered and documented 59 agencies so far, including Athens, Davenport, El Monte, JFK AirTrain, Kenosha, Sioux Area Metro, StarMetro, and Waukesha. DC Streetcar is discontinued; Greater Glens Falls Transit was merged into CDTA.
 - No live R2 refresh, PMTiles rebuild, or push has been performed. The research goal remains active; continue checking the unresolved queue rather than declaring completion.
 
 ## Resume next
 
-1. Continue investigating the 37 genuinely expired agencies and the 4 manual-review cases; configure only validated current feeds.
-2. Prepare targeted refresh commands for the 58 verified replacements, but ask separately before running them because they write to live R2.
+1. Continue investigating the 36 genuinely expired agencies and the 4 manual-review cases; configure only validated current feeds.
+2. Prepare targeted refresh commands for the 59 verified replacements, but ask separately before running them because they write to live R2.
 
 # Atlas — Handoff (2026-09-03, Live pause and Vercel deployment fix)
 
