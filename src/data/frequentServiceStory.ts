@@ -1,7 +1,8 @@
 import audit from '../../docs/research/system-map-audit-2026-09.json';
 
-const storyThresholds = [6, 8, 10, 12, 15, 20, 30, 45, 60];
-const records = audit.records;
+const storyThresholds = [10, 12, 15, 20, 30, 60];
+const storyCountries = new Set(['Canada', 'United States']);
+const records = audit.records.filter(record => storyCountries.has(record.country));
 export const frequentServiceStoryResearchRecord = records.find(record => record.agencyId === 'ttc') ?? records[0];
 const categoryCounts = {
   numericDefinition: records.filter(record => record.status === 'numeric_definition_on_map').length,
@@ -13,7 +14,8 @@ const representativeNumericRecords = records.filter(record => Number.isInteger(r
 
 export const frequentServiceStoryStats = {
   agenciesReviewed: records.length,
-  reviewedAt: 'September 19, 2026',
+  reviewedAt: 'September 18–19, 2026',
+  fullAuditAgencies: audit.records.length,
   countryCounts: Object.entries(records.reduce<Record<string, number>>((counts, record) => {
     counts[record.country] = (counts[record.country] ?? 0) + 1;
     return counts;

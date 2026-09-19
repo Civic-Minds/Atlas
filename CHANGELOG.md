@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- Limited the public frequency story to Atlas-supported Canada and US agencies and corrected the research date to September 18–19, 2026; the broader international audit remains archived separately.
 - Deduplicated 14 agency aliases and completed the research sample at 100 unique verified agencies across 337 audit records, adding 15 unique agencies and correcting two existing classifications.
 - Added eight manually checked definitions from the UK, France, Australia, and the US; the audit now covers 333 agencies with 97 verified definitions.
 - Added six verified North American and Australia-Pacific definitions and corrected three previously under-classified European maps; the audit now covers 318 agencies with 89 verified definitions.

@@ -32,20 +32,18 @@ describe('FrequentServiceStory', () => {
 
   it('keeps the story chart aligned with exact numeric system-map evidence', () => {
     const counts = audit.records
+      .filter(record => ['Canada', 'United States'].includes(record.country))
       .filter(record => Number.isInteger(record.representativeThresholdMinutes))
       .reduce<Record<string, number>>((result, record) => {
         result[String(record.representativeThresholdMinutes)] = (result[String(record.representativeThresholdMinutes)] ?? 0) + 1;
         return result;
       }, {});
     expect(frequentServiceStoryStats.headwayBars).toEqual([
-      { minutes: 6, agencies: counts['6'] },
-      { minutes: 8, agencies: counts['8'] },
       { minutes: 10, agencies: counts['10'] },
       { minutes: 12, agencies: counts['12'] },
       { minutes: 15, agencies: counts['15'] },
       { minutes: 20, agencies: counts['20'] },
       { minutes: 30, agencies: counts['30'] },
-      { minutes: 45, agencies: counts['45'] },
       { minutes: 60, agencies: counts['60'] },
     ]);
   });
@@ -53,22 +51,24 @@ describe('FrequentServiceStory', () => {
   it('does not mistake unavailable or unnamed maps for numeric definitions', () => {
     expect(audit.records).toHaveLength(337);
     expect(audit.records.filter(record => record.status === 'pending_map_review')).toHaveLength(0);
-    expect(frequentServiceStoryStats.agenciesReviewed).toBe(337);
+    expect(frequentServiceStoryStats.agenciesReviewed).toBe(202);
+    expect(frequentServiceStoryStats.fullAuditAgencies).toBe(337);
+    expect(frequentServiceStoryStats.countryCounts).toEqual([
+      { country: 'Canada', agencies: 82 },
+      { country: 'United States', agencies: 120 },
+    ]);
     expect(frequentServiceStoryStats.categoryCounts).toMatchObject({
-      numericDefinition: 75,
-      qualitativeDefinition: 25,
-      noDefinitionFound: 227,
-      mapUnavailable: 10,
+      numericDefinition: 50,
+      qualitativeDefinition: 12,
+      noDefinitionFound: 132,
+      mapUnavailable: 8,
     });
     expect(frequentServiceStoryStats.headwayBars).toEqual([
-      { minutes: 6, agencies: 1 },
-      { minutes: 8, agencies: 1 },
-      { minutes: 10, agencies: 6 },
-      { minutes: 12, agencies: 3 },
-      { minutes: 15, agencies: 41 },
-      { minutes: 20, agencies: 7 },
-      { minutes: 30, agencies: 14 },
-      { minutes: 45, agencies: 1 },
+      { minutes: 10, agencies: 1 },
+      { minutes: 12, agencies: 1 },
+      { minutes: 15, agencies: 30 },
+      { minutes: 20, agencies: 5 },
+      { minutes: 30, agencies: 12 },
       { minutes: 60, agencies: 1 },
     ]);
   });

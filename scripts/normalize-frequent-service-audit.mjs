@@ -61,7 +61,7 @@ audit.records = audit.records
   }))
   .map((record, index) => ({ ...record, auditOrder: index + 1 }));
 
-audit.scope = 'First 50 agencies plus 272 additional unique agencies reviewed individually against current official system maps or approved rider guides on September 19, 2026.';
+audit.scope = 'First 50 agencies plus 272 additional unique agencies reviewed individually against current official system maps or approved rider guides on September 18–19, 2026.';
 audit.updatedAt = '2026-09-19';
 fs.writeFileSync(auditPath, `${JSON.stringify(audit, null, 2)}\n`);
 console.log(`Merged ${mergedIds.size} duplicate records; ${audit.records.length} unique audit records remain.`);
