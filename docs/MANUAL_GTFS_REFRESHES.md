@@ -41,7 +41,6 @@ do not replace any of these with an older archived ZIP.
 | `qline` | 20251231 |
 | `riovista` | 20250131 |
 | `rockregion` | 20251019 |
-| `sacrt` | 20260613 |
 | `saint-hyacinthe` | 20241231 |
 | `taft` | 20220101 |
 | `tillamook` | 20260901 |
@@ -60,7 +59,7 @@ agency identity and service dates extending beyond the audit date.
 | --- | --- |
 | `albany-ga`, `cheyenne`, `ecat`, `riovista`, `saint-hyacinthe` | The agency is active, but no current public static GTFS ZIP was found. |
 | `amarillo`, `fred-transit` | An official or catalog URL was found, but download access returned an authorization or server error. |
-| `avon-transit`, `cat-savannah`, `qline`, `sacrt`, `rockregion`, `taft`, `tillamook`, `wichita`, `xpress-ga` | A matching feed was found, but its service window ended before or at the audit date. |
+| `avon-transit`, `cat-savannah`, `qline`, `rockregion`, `taft`, `tillamook`, `wichita`, `xpress-ga` | A matching feed was found, but its service window ended before or at the audit date. |
 | `b-line` | A current California B-Line feed was found, but this Atlas slug is the Corpus Christi RTA B-Line and the agency identities do not match. |
 | `evansville`, `glendalebeeline`, `green-bay`, `mcts` | Catalog metadata shows a newer schedule, but the official download could not be directly validated from this environment. |
 | `fast-ca`, `unioncity`, `vacaville` | The current regional feed is behind an API key, so no public static ZIP was verified. |
@@ -81,10 +80,10 @@ replacement feed:
 
 ## Verified replacements awaiting refresh
 
-The following 64 agencies have a current ZIP with matching agency identity and
+The following 65 agencies have a current ZIP with matching agency identity and
 can be refreshed using the configured or automatically derived source:
 
-`abqride`, `arvin`, `athens-oh`, `avta`, `blacksburg`, `carson-circuit`, `carta-chattanooga`, `clemson-cat`, `davenport`, `duke`, `elmonte`, `emta`, `eugene-ltd`, `gold-coast`, `goldengate`, `goraleigh`, `grand-junction`, `indygo`, `jfk-airtrain`, `mont-tremblant`, `mountainmetro`, `rts`,
+`abqride`, `arvin`, `athens-oh`, `avta`, `blacksburg`, `carson-circuit`, `carta-chattanooga`, `clemson-cat`, `davenport`, `duke`, `elmonte`, `emta`, `eugene-ltd`, `gold-coast`, `goldengate`, `goraleigh`, `grand-junction`, `indygo`, `jfk-airtrain`, `mont-tremblant`, `mountainmetro`, `rts`, `sacrt`,
 `culvercitybus`, `imperial-valley`, `kingcountymetro`, `mata`, `marta`, `montebello`, `mst`, `nice`, `omahametro`, `pace-bus`, `pgc-the-bus`, `regina`, `ripta`,
 `riverside`, `rtc`, `rtcwashoe`, `santafetrails`, `saskatoon`, `sdmts`, `sioux-falls`, `skagittransit`, `starmetro`, `psta`, `rct`,
 `communitytransit`, `everetttransit`, `guelph`, `intercitytransit`, `kenosha`, `nctd`, `soundtransit`, `torrance-transit`,
