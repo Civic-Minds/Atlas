@@ -1,5 +1,5 @@
 
-# Atlas — Handoff (2026-09-19, GTFS fallback repair)
+# Atlas — Handoff (2026-09-19, GTFS fallback repair and expired-feed research)
 
 ## Current state
 
@@ -9,14 +9,14 @@
 - `pipeline/refresh.ts` now tries the configured feed, explicit `mdbFeedUrl`, and an automatically derived Mobility Database `latest.zip` fallback. If the configured feed downloads but is expired, a dated current fallback can replace it; an undated fallback does not replace known expired data.
 - The expired-source audit now uses the shared helper. Added coverage for deriving a latest fallback from a dated Mobility Database URL.
 - Verification passed: 99 test files, 655 tests, and both TypeScript checks.
-- Read-only audit completed at `2026-09-19T19:24:23Z`: 18 newer sources found, 77 genuinely expired, and 4 manual-review cases (`augusta`, `lavta`, `sfmta`, `westberkeley`).
-- The 18 newer sources were rechecked at `2026-09-19`: every candidate had a current service end date and matching agency identity; they are ready for targeted refresh.
-- The fallback repair, tests, manual queue update, changelog, and this handoff are committed locally; no live R2 refresh, PMTiles rebuild, or push has been performed.
+- The latest read-only audit found 40 newer sources, 37 genuinely expired agencies, and 4 manual-review cases (`augusta`, `lavta`, `sfmta`, `westberkeley`).
+- Current-source research has recovered and documented 58 agencies so far, including Athens, Davenport, JFK AirTrain, Kenosha, Sioux Area Metro, StarMetro, and Waukesha. DC Streetcar is discontinued; Greater Glens Falls Transit was merged into CDTA.
+- No live R2 refresh, PMTiles rebuild, or push has been performed. The research goal remains active; continue checking the unresolved queue rather than declaring completion.
 
 ## Resume next
 
-1. Prepare targeted refresh commands for the 18 newer-source agencies, but ask separately before running them because they write to live R2.
-2. Investigate current official URLs for the remaining 77 genuinely expired agencies, starting with the 40 that expired during 2026; keep the 4 manual-review cases documented.
+1. Continue investigating the 37 genuinely expired agencies and the 4 manual-review cases; configure only validated current feeds.
+2. Prepare targeted refresh commands for the 58 verified replacements, but ask separately before running them because they write to live R2.
 
 # Atlas — Handoff (2026-09-03, Live pause and Vercel deployment fix)
 
