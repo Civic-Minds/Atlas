@@ -39,7 +39,6 @@ do not replace any of these with an older archived ZIP.
 | `grt` | 20260426 |
 | `guelph` | 20250830 |
 | `hocts` | 20211231 |
-| `kenosha` | 20240901 |
 | `mcts` | 20250823 |
 | `moose-jaw` | 20240331 |
 | `nctd` | 20250517 |
@@ -55,7 +54,6 @@ do not replace any of these with an older archived ZIP.
 | `tillamook` | 20260901 |
 | `unioncity` | 20230927 |
 | `vacaville` | 20260630 |
-| `waukesha-metro` | 20250601 |
 | `wichita` | 20260814 |
 | `xpress-ga` | 20250705 |
 
