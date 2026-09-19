@@ -33,3 +33,8 @@ export const frequentServiceCoverageStats = [
   { country: 'Canada', populationBase: '24.98M', fifteenMinute: '8.72%', thirtyMinute: '22.98%', metros: '37 CMAs', fifteenMinuteMetros: '13' },
   { country: 'United States', populationBase: '207.31M', fifteenMinute: '6.03%', thirtyMinute: '13.63%', metros: '124 metros', fifteenMinuteMetros: '62' },
 ] as const;
+
+export const frequentServiceCoverageInterpretation = {
+  canadaThirtyToFifteenRatio: '2.6',
+  unitedStatesThirtyToFifteenRatio: '2.3',
+};
