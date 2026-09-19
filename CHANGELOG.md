@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Reviewed two additional U.S. map sources: Merced’s system map is still listed as coming soon, and Humboldt’s current static map was not accessible.
 - Reviewed two additional U.S. map sources: AVTA’s current map had no named frequent-service definition; ACE’s current static map was unavailable.
 - Reviewed two additional U.S. map sources: County Connection’s current system map had no named frequent-service definition; Kern Transit’s current static map was unavailable.
 - Reviewed four additional U.S. map sources: current OCTA, Golden Gate Transit, and Norwalk Transit maps had no named frequent-service definition; LAVTA’s current static map was unavailable.
