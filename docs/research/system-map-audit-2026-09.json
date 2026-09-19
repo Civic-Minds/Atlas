@@ -2,7 +2,7 @@
   "auditVersion": 2,
   "createdAt": "2026-09-18",
   "sourceCatalog": "docs/research/frequent-service-catalog.json",
-  "scope": "First 50 agencies plus 161 additional agencies reviewed individually against current official system maps or approved rider guides on September 18, 2026.",
+  "scope": "First 50 agencies plus 175 additional agencies reviewed individually against current official system maps or approved rider guides on September 18, 2026.",
   "statusRules": {
     "numeric_definition_on_map": "The official system map visibly names frequent/high-frequency service and gives a numeric threshold or range.",
     "qualitative_definition_on_map": "The official system map visibly names frequent/high-frequency service without a numeric threshold.",
@@ -8629,6 +8629,462 @@
       "reviewSources": [
         {
           "url": "https://metro.nfta.com/getting-around/system-maps",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 204,
+      "agencyId": "oakville-transit",
+      "agencyName": "Oakville Transit",
+      "country": "Canada",
+      "region": "Ontario",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.oakvilletransit.ca/getmedia/280bb767-50e9-4b50-8818-128a2eb2ba14/transit-system-map-september-2026.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "page 1 legend",
+      "exactMapWording": "Wider lines indicate more frequent service; 15 Minutes; 20 Minutes; 30 Minutes; 60 Minutes.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official September 2026 Oakville Transit system map visually reviewed. It shows relative frequency and interval labels but no named frequent-service definition or span.",
+      "reviewBatch": 13,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.oakvilletransit.ca/getmedia/280bb767-50e9-4b50-8818-128a2eb2ba14/transit-system-map-september-2026.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 205,
+      "agencyId": "milton-transit",
+      "agencyName": "Milton Transit",
+      "country": "Canada",
+      "region": "Ontario",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.milton.ca/en/living-in-milton/resources/Transit/Route-Schedules/IRM_Fall-2026/Milton_Transit_Ride_Guide_July2026-Proof2.pdf",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "page 1 legend",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official July 2026 Milton Transit rider guide visually reviewed. It shows routes and points of interest but no named frequent/high-frequency definition.",
+      "reviewBatch": 13,
+      "evidenceSourceType": "rider_guide",
+      "reviewSources": [
+        {
+          "url": "https://www.milton.ca/en/living-in-milton/resources/Transit/Route-Schedules/IRM_Fall-2026/Milton_Transit_Ride_Guide_July2026-Proof2.pdf",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 206,
+      "agencyId": "niagara-region-transit",
+      "agencyName": "Niagara Region Transit",
+      "country": "Canada",
+      "region": "Ontario",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://nrtransit.ca/media/t2jpxu25/nrt-intermunicipal-route-map.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "page 1 intermunicipal route map",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Niagara Region Transit map visually reviewed. It identifies routes, hubs, and connections but no named frequency category, threshold, or span.",
+      "reviewBatch": 13,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://nrtransit.ca/media/t2jpxu25/nrt-intermunicipal-route-map.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 207,
+      "agencyId": "peterborough-transit",
+      "agencyName": "Peterborough Transit",
+      "country": "Canada",
+      "region": "Ontario",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://media-002-ca.cdn.govstack.com/memorialcentre-011-ca/media/t3xmvfja/regular-routes-2.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "page 1 Regular Routes map",
+      "exactMapWording": "Regular Routes; Night Route Indicator.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Peterborough Transit map visually reviewed. It identifies regular and night routes but no named frequent/high-frequency definition.",
+      "reviewBatch": 13,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://media-002-ca.cdn.govstack.com/memorialcentre-011-ca/media/t3xmvfja/regular-routes-2.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 208,
+      "agencyId": "strathcona-county-transit",
+      "agencyName": "Strathcona County Transit",
+      "country": "Canada",
+      "region": "Alberta",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://storagecdn.strathcona.ca/files/files/trn-2026-local-map-effective-aug30.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "page 1 local map",
+      "exactMapWording": "LOCAL ROUTES.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Strathcona County map, effective August 30, 2026, visually reviewed. It identifies local routes but no named frequent/high-frequency category or threshold.",
+      "reviewBatch": 13,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://storagecdn.strathcona.ca/files/files/trn-2026-local-map-effective-aug30.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 209,
+      "agencyId": "metropolitano-lisboa",
+      "agencyName": "Metropolitano de Lisboa",
+      "country": "Portugal",
+      "region": "Lisbon",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.metrolisboa.pt/wp-content/uploads/2026/01/DiagramadaRede_acessibilidades_2026_V22jan.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "one-page legend",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official 2026 Lisbon Metro network diagram visually reviewed. It identifies lines and accessibility symbols but no frequent-service definition.",
+      "reviewBatch": 13,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.metrolisboa.pt/wp-content/uploads/2026/01/DiagramadaRede_acessibilidades_2026_V22jan.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 210,
+      "agencyId": "metro-madrid",
+      "agencyName": "Metro de Madrid",
+      "country": "Spain",
+      "region": "Madrid",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://crtm.es/media/cdmlk0gq/serie_1a_planometro_mar2026.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "page 1 key/legend",
+      "exactMapWording": "Metro line; Light rail line.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official March 2026 Madrid map visually reviewed. Mode labels are not a frequent-service definition.",
+      "reviewBatch": 13,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://crtm.es/media/cdmlk0gq/serie_1a_planometro_mar2026.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 211,
+      "agencyId": "bkk-budapest",
+      "agencyName": "BKK Budapest",
+      "country": "Hungary",
+      "region": "Budapest",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://bkk.hu/en/visiting-budapest/travel-options/",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "Daytime transport",
+      "exactMapWording": "Frequent metro trains, trams, trolleybuses and buses.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official BKK rider guide visually reviewed. “Frequent” is generic descriptive prose with no named category or threshold.",
+      "reviewBatch": 13,
+      "evidenceSourceType": "rider_guide",
+      "reviewSources": [
+        {
+          "url": "https://bkk.hu/en/visiting-budapest/travel-options/",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 212,
+      "agencyId": "metro-bilbao",
+      "agencyName": "Metro Bilbao",
+      "country": "Spain",
+      "region": "Basque Country",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://cms.metrobilbao.eus/sites/default/files/2025-03/METRO%20accesibilidad-cast_2.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "network-map section",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Metro Bilbao network/accessibility map visually reviewed. It identifies routes, accessibility, and connections but no frequent-service definition.",
+      "reviewBatch": 13,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://cms.metrobilbao.eus/sites/default/files/2025-03/METRO%20accesibilidad-cast_2.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 213,
+      "agencyId": "skm-warszawa",
+      "agencyName": "SKM Warszawa",
+      "country": "Poland",
+      "region": "Warsaw",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.skm.warszawa.pl/en/information-for-passengers/maps/",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "SKM connection network scheme",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official current SKM Warszawa map visually reviewed. It shows routes, zones, and disruptions but no frequent-service definition.",
+      "reviewBatch": 13,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.skm.warszawa.pl/en/information-for-passengers/maps/",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 214,
+      "agencyId": "singapore-lta",
+      "agencyName": "Singapore LTA",
+      "country": "Singapore",
+      "region": "Singapore",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.lta.gov.sg/content/dam/ltagov/getting_around/public_transport/rail_network/pdf/SM_EN_%28Ver210726%29_CCL6.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "2026 rail system map legend",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Singapore rail system map visually reviewed. It provides the network but no named frequent-service definition.",
+      "reviewBatch": 13,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.lta.gov.sg/content/dam/ltagov/getting_around/public_transport/rail_network/pdf/SM_EN_%28Ver210726%29_CCL6.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 215,
+      "agencyId": "transport-victoria-melbourne",
+      "agencyName": "Transport Victoria",
+      "country": "Australia",
+      "region": "Victoria",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://transport.vic.gov.au/plan-a-journey/network-maps/melbourne-public-transport-maps",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "Metropolitan Melbourne public transport maps",
+      "exactMapWording": "This page includes regular and late-night public transport maps.",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official current Melbourne map page visually reviewed. It identifies regular and late-night maps but no frequent-service definition.",
+      "reviewBatch": 13,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://transport.vic.gov.au/plan-a-journey/network-maps/melbourne-public-transport-maps",
           "sourceType": "system_map",
           "localFile": null
         }
