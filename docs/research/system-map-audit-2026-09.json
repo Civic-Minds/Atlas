@@ -6240,6 +6240,175 @@
       ],
       "representativeThresholdMinutes": 15,
       "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 145,
+      "agencyId": "octranspo",
+      "agencyName": "OC Transpo (Ottawa)",
+      "country": "Canada",
+      "region": "Ontario",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.octranspo.com/images/files/maps/network_maps/OC-TRANSPO_system-map.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": "December 2025",
+      "mapPageOrSection": "one-page bilingual system-map legend",
+      "exactMapWording": "Frequent: service every 15 minutes or less on weekdays 6 a.m. to 6 p.m.; operating 7 days/week all time periods",
+      "thresholdMinutes": 15,
+      "thresholdText": "Every 15 minutes or less",
+      "serviceSpan": "Weekdays 6 a.m.–6 p.m.; operating 7 days/week all time periods",
+      "days": "Weekdays for 15-minute service; all days for service span",
+      "geography": "Ottawa network frequent routes",
+      "mode": "Bus",
+      "evidenceNotes": "Current official OC Transpo system map visually reviewed. The legend defines Frequent routes numerically and gives the weekday and all-day operating span.",
+      "reviewBatch": 9,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.octranspo.com/images/files/maps/network_maps/OC-TRANSPO_system-map.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [
+        {
+          "id": "frequent",
+          "label": "Frequent",
+          "thresholdMinutes": 15,
+          "thresholdText": "Every 15 minutes or less",
+          "representative": true,
+          "sourceType": "system_map",
+          "sourceUrl": "https://www.octranspo.com/images/files/maps/network_maps/OC-TRANSPO_system-map.pdf",
+          "localFile": null,
+          "mapPageOrSection": "one-page bilingual system-map legend",
+          "exactWording": "Service every 15 minutes or less on weekdays 6 a.m. to 6 p.m.; operating 7 days/week all time periods",
+          "evidenceNotes": "Current official OC Transpo system map visually reviewed."
+        }
+      ],
+      "representativeThresholdMinutes": 15,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 146,
+      "agencyId": "cota",
+      "agencyName": "Central Ohio Transit Authority (COTA)",
+      "country": "United States",
+      "region": "Ohio",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.cota.com/timetables/cota-system-map.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "one-page system-map frequency legend",
+      "exactMapWording": "Frequent: serving you throughout the day; departure times are every 15 minutes or less",
+      "thresholdMinutes": 15,
+      "thresholdText": "Every 15 minutes or less",
+      "serviceSpan": "Throughout the day",
+      "days": null,
+      "geography": "Central Ohio system map frequent service lines",
+      "mode": "Bus",
+      "evidenceNotes": "Current official COTA system map visually reviewed. Its frequency legend defines Frequent service numerically and separately identifies standard and rush-hour service.",
+      "reviewBatch": 9,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.cota.com/timetables/cota-system-map.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [
+        {
+          "id": "frequent",
+          "label": "Frequent",
+          "thresholdMinutes": 15,
+          "thresholdText": "Every 15 minutes or less",
+          "representative": true,
+          "sourceType": "system_map",
+          "sourceUrl": "https://www.cota.com/timetables/cota-system-map.pdf",
+          "localFile": null,
+          "mapPageOrSection": "one-page system-map frequency legend",
+          "exactWording": "Serving you throughout the day; departure times are every 15 minutes or less",
+          "evidenceNotes": "Current official COTA system map visually reviewed."
+        }
+      ],
+      "representativeThresholdMinutes": 15,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 147,
+      "agencyId": "yrt",
+      "agencyName": "York Region Transit",
+      "country": "Canada",
+      "region": "Ontario",
+      "status": "qualitative_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.yrt.ca/en/schedules-and-maps/resources/Documents/system-maps/YRT_FrequentTransitMap_May2025.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": "May 2025",
+      "mapPageOrSection": "one-page Frequent Transit Network map legend",
+      "exactMapWording": "Frequent Transit Network (FTN); FTN (Tier 2); FTN (Tier 1)",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": "York Region Frequent Transit Network corridors",
+      "mode": "Bus",
+      "evidenceNotes": "Current official YRT Frequent Transit Network map visually reviewed. It identifies Tier 1 and Tier 2 FTN corridors but does not publish a numeric frequency threshold on the map.",
+      "reviewBatch": 9,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.yrt.ca/en/schedules-and-maps/resources/Documents/system-maps/YRT_FrequentTransitMap_May2025.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [
+        {
+          "id": "ftn-tier-1",
+          "label": "FTN (Tier 1)",
+          "thresholdMinutes": null,
+          "thresholdText": null,
+          "representative": true,
+          "sourceType": "system_map",
+          "sourceUrl": "https://www.yrt.ca/en/schedules-and-maps/resources/Documents/system-maps/YRT_FrequentTransitMap_May2025.pdf",
+          "localFile": null,
+          "mapPageOrSection": "one-page map legend",
+          "exactWording": "FTN (Tier 1)",
+          "evidenceNotes": "Current official YRT Frequent Transit Network map visually reviewed."
+        },
+        {
+          "id": "ftn-tier-2",
+          "label": "FTN (Tier 2)",
+          "thresholdMinutes": null,
+          "thresholdText": null,
+          "representative": false,
+          "sourceType": "system_map",
+          "sourceUrl": "https://www.yrt.ca/en/schedules-and-maps/resources/Documents/system-maps/YRT_FrequentTransitMap_May2025.pdf",
+          "localFile": null,
+          "mapPageOrSection": "one-page map legend",
+          "exactWording": "FTN (Tier 2)",
+          "evidenceNotes": "Current official YRT Frequent Transit Network map visually reviewed."
+        }
+      ],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
     }
   ],
   "updatedAt": "2026-09-19"
