@@ -15760,12 +15760,12 @@
         43.542,
         -96.7354
       ],
-      "feedUrl": "http://data.trilliumtransit.com/gtfs/siouxareametro-sd-us/siouxareametro-sd-us.zip",
-      "lastFeedExpiry": "20240403",
-      "lastFeedVersion": "UTC: 01-Nov-2023 21:05",
+      "feedUrl": "https://s3.amazonaws.com/etatransit.gtfs/siouxareametro.etaspot.net/gtfs.zip",
+      "lastFeedExpiry": "20270914",
+      "lastFeedVersion": "95",
       "lastRefreshedAt": "20260811",
       "region": "South Dakota",
-      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-192/latest.zip",
+      "mdbFeedUrl": "https://s3.amazonaws.com/etatransit.gtfs/siouxareametro.etaspot.net/gtfs.zip",
       "bbox": [
         43.4802,
         -96.8308,
