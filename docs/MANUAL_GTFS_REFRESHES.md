@@ -1,14 +1,32 @@
 # Manual GTFS refresh queue
 
-Snapshot from the expired-source audit on 2026-08-24. These agencies have no
-verified replacement that Atlas can currently download automatically.
+Snapshot from the expired-source audit on 2026-09-19. The audit checked 99
+expired production snapshots: 18 had newer sources, 77 remained genuinely
+expired, and these four had no verified replacement that Atlas could currently
+download automatically.
 
 | Agency | Why it needs manual work | Next action |
 | --- | --- | --- |
-| Augusta Transit | Official archive URL returns 404; Mobility Database copy is expired | Find a current agency feed or request one from Augusta Transit |
-| LAVTA / Wheels | Official ZIP exists but service ended 2026-04-30 | Find the current Wheels schedule export |
-| PVTA | Official ZIP is current, but the site returns HTTP 403 to Atlas | Ask PVTA to allow automated downloads or provide an accessible mirror |
-| West Berkeley Shuttle | Cal-ITP URL returns HTML instead of a ZIP; catalog copy is expired | Confirm whether the shuttle still operates and locate its current feed |
+| Augusta Transit | Official archive URL is unavailable and the Mobility Database copy is expired | Find a current agency feed or request one from Augusta Transit |
+| LAVTA / Wheels | Configured sources are expired, including the April 2026 schedule | Find the current Wheels schedule export |
+| SFMTA / Muni | Configured current and fallback candidates could not be verified as a usable current feed | Confirm the current Muni GTFS source and refresh the catalog URL |
+| West Berkeley Shuttle | Cal-ITP URL does not return a usable ZIP and the catalog copy is expired | Confirm whether the shuttle still operates and locate its current feed |
+
+The other 77 expired agencies remain candidates for source recovery, but the
+audit found no current usable schedule among their configured or automatically
+derived Mobility Database candidates. Start with agencies whose snapshots ended
+in 2026; do not replace any of these with an older archived ZIP.
+
+## Verified replacements awaiting refresh
+
+The following 18 agencies have a current ZIP with matching agency identity and
+can be refreshed using the configured or automatically derived source:
+
+`abqride`, `eugene-ltd`, `goldengate`, `goraleigh`, `mont-tremblant`,
+`montebello`, `mst`, `nice`, `omahametro`, `pace-bus`, `pgc-the-bus`, `ripta`,
+`riverside`, `rtcwashoe`, `sdmts`, `wmata`, `yolobus`, `youngstown-wrta`.
+
+Refreshing these agencies writes to live R2 and must be authorized separately.
 
 Do not replace these URLs with an older catalog snapshot just to clear the
 warning. Re-run the read-only audit after each source change:

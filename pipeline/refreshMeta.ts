@@ -15,6 +15,17 @@ export function isFeedExpired(feedExpiry: string | null | undefined, todayYmd: s
   return !!feedExpiry && /^\d{8}$/.test(feedExpiry) && feedExpiry < todayYmd;
 }
 
+/** Replace known expired data only with a dated candidate that is current. */
+export function shouldReplaceExpiredFeed(opts: {
+  selectedExpiry: string | null | undefined;
+  candidateExpiry: string | null | undefined;
+  todayYmd: string;
+}): boolean {
+  return isFeedExpired(opts.selectedExpiry, opts.todayYmd)
+    && !!opts.candidateExpiry
+    && !isFeedExpired(opts.candidateExpiry, opts.todayYmd);
+}
+
 /**
  * Stop a scheduled refresh only when every feed part declares an expiry and all
  * of those dates are already past. An undated part is not enough evidence to

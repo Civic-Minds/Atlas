@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { isFeedExpired, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta } from '../refreshMeta.js';
+import { isFeedExpired, shouldReplaceExpiredFeed, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta } from '../refreshMeta.js';
 
 describe('feed expiry checks', () => {
   it('recognizes a feed that ended before the refresh date', () => {
@@ -13,6 +13,24 @@ describe('feed expiry checks', () => {
     expect(shouldSkipAllExpiredFeeds(['20241221', '20260807'], '20260806')).toBe(false);
     expect(shouldSkipAllExpiredFeeds(['20241221', null], '20260806')).toBe(false);
     expect(shouldSkipAllExpiredFeeds([null, undefined], '20260806')).toBe(false);
+  });
+
+  it('replaces an expired source with a dated current fallback', () => {
+    expect(shouldReplaceExpiredFeed({
+      selectedExpiry: '20260801',
+      candidateExpiry: '20261001',
+      todayYmd: '20260919',
+    })).toBe(true);
+    expect(shouldReplaceExpiredFeed({
+      selectedExpiry: '20260801',
+      candidateExpiry: null,
+      todayYmd: '20260919',
+    })).toBe(false);
+    expect(shouldReplaceExpiredFeed({
+      selectedExpiry: '20261001',
+      candidateExpiry: '20261101',
+      todayYmd: '20260919',
+    })).toBe(false);
   });
 });
 

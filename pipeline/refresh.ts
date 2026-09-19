@@ -36,7 +36,7 @@ import {
 } from './overrideAudit.js';
 import { readFeedReviewHistory, shouldReviewNextFeed } from './feedReview.js';
 import { compareStopSnapshots, formatStopAuditLog, type AuditedStop } from './stopAudit.js';
-import { candidateIsOlderThanActive, decideRefreshSkipUnchanged, isFeedExpired, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta } from './refreshMeta.js';
+import { candidateIsOlderThanActive, decideRefreshSkipUnchanged, isFeedExpired, shouldReplaceExpiredFeed, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta } from './refreshMeta.js';
 import {
   COUNTRY_LAUNCH_FLAG,
   isCountryLaunchBlocked,
@@ -50,6 +50,7 @@ import { effectiveFeedExpiry } from './feedFreshness.js';
 import { isActiveProductionFeed } from '../shared/feedAvailability.js';
 import { bumpPublicDataVersion } from './dataVersion.js';
 import { recordFeedCheck, type FeedCheckFields } from './feedCheckTracking.js';
+import { buildFeedCandidates, type FeedCandidate } from './feedSourceCandidates.js';
 
 console.log(`  env: ${LOADED_ENV_FILE} (bucket=${process.env.R2_BUCKET_NAME ?? '?'}${isProductionPublicR2Bucket() ? ' [PRODUCTION]' : ' [non-prod]'})`);
 
@@ -256,27 +257,58 @@ async function refreshAgency(
     }
   };
 
-  let buf: Buffer;
-  try {
-    buf = await downloadFeed(agency.feedUrl);
-    if (buf.length < 4 || buf[0] !== 0x50 || buf[1] !== 0x4b) {
-      throw new Error(`not a zip file (got ${buf.length} bytes starting ${buf.subarray(0, 4).toString('hex')})`);
-    }
-  } catch (primaryErr) {
-    if (!agency.mdbFeedUrl) throw primaryErr;
-    writeLog(`\n  [warn] primary feed failed (${(primaryErr as Error).message}) — trying MDB fallback\n  `);
-    buf = await downloadFeed(agency.mdbFeedUrl);
-  }
-
-  // Sanity check the final buffer (either primary or fallback)
-  if (buf.length < 4 || buf[0] !== 0x50 || buf[1] !== 0x4b) {
-    throw new Error(`not a zip file (got ${buf.length} bytes starting ${buf.subarray(0, 4).toString('hex')})`);
-  }
-
   // Skip processing if the feed hasn't changed since last refresh.
   // Primary key: feed_end_date. Fallback: feed_version (for agencies without feed_info expiry).
-  const { feedExpiry: peekedExpiry, feedVersion: peekedVersion } = await peekFeedInfo(buf);
   const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+  const feedCandidates = buildFeedCandidates(agency.feedUrl, agency.mdbFeedUrl);
+  let buf: Buffer | null = null;
+  let peekedExpiry: string | null = null;
+  let peekedVersion: string | null = null;
+  let selectedCandidate: FeedCandidate | null = null;
+  let firstCandidateError: Error | null = null;
+
+  for (const candidate of feedCandidates) {
+    try {
+      const candidateBuf = await downloadFeed(candidate.url);
+      if (candidateBuf.length < 4 || candidateBuf[0] !== 0x50 || candidateBuf[1] !== 0x4b) {
+        throw new Error(`not a zip file (got ${candidateBuf.length} bytes starting ${candidateBuf.subarray(0, 4).toString('hex')})`);
+      }
+      const metadata = await peekFeedInfo(candidateBuf);
+
+      // Keep the first usable source unless a dated current candidate is found.
+      // An expired primary must yield to a current configured or derived backup,
+      // but an undated backup is not enough evidence to replace known data.
+      if (!buf) {
+        buf = candidateBuf;
+        peekedExpiry = metadata.feedExpiry;
+        peekedVersion = metadata.feedVersion;
+        selectedCandidate = candidate;
+        if (!isFeedExpired(metadata.feedExpiry, today)) break;
+      } else if (shouldReplaceExpiredFeed({
+        selectedExpiry: peekedExpiry,
+        candidateExpiry: metadata.feedExpiry,
+        todayYmd: today,
+      })) {
+        buf = candidateBuf;
+        peekedExpiry = metadata.feedExpiry;
+        peekedVersion = metadata.feedVersion;
+        selectedCandidate = candidate;
+        break;
+      }
+      writeLog(`\n  [warn] ${candidate.kind} feed expired (${metadata.feedExpiry ?? 'unknown'}) — trying next source\n`);
+    } catch (error) {
+      firstCandidateError ??= error instanceof Error ? error : new Error(String(error));
+      writeLog(`\n  [warn] ${candidate.kind} feed failed (${error instanceof Error ? error.message : String(error)}) — trying next source\n`);
+    }
+  }
+
+  if (!buf || !selectedCandidate) {
+    throw firstCandidateError ?? new Error(`no usable feed source for ${agency.slug}`);
+  }
+  if (selectedCandidate.kind !== 'configured' || selectedCandidate.url !== agency.feedUrl) {
+    writeLog(`\n  [info] using ${selectedCandidate.kind} source: ${selectedCandidate.url}\n`);
+  }
+
   recordFeedCheck(agency as FeedCheckFields, { feedExpiry: peekedExpiry, todayYmd: today });
 
   if (isFeedExpired(peekedExpiry, today)) {
