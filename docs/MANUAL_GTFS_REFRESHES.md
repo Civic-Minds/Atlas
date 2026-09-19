@@ -1,7 +1,7 @@
 # Manual GTFS refresh queue
 
-Snapshot from the expired-source audit on 2026-09-19. The audit checked 99
-expired production snapshots: 40 now have newer sources, 55 remain genuinely
+Snapshot from the expired-source audit on 2026-09-19. The audit checked 98
+remaining expired production snapshots: 40 now have newer sources, 54 remain genuinely
 expired, and these four have no verified replacement that Atlas could currently
 download automatically.
 
@@ -21,7 +21,6 @@ do not replace any of these with an older archived ZIP.
 | --- | --- |
 | `albany-ga` | 20240630 |
 | `amarillo` | 20211231 |
-| `arvin` | 20211231 |
 | `athens-oh` | 20241231 |
 | `avon-transit` | 20250413 |
 | `avta` | 20210801 |
@@ -77,10 +76,10 @@ do not replace any of these with an older archived ZIP.
 
 ## Verified replacements awaiting refresh
 
-The following 40 agencies have a current ZIP with matching agency identity and
+The following 41 agencies have a current ZIP with matching agency identity and
 can be refreshed using the configured or automatically derived source:
 
-`abqride`, `carta-chattanooga`, `eugene-ltd`, `gold-coast`, `goldengate`, `goraleigh`, `grand-junction`, `mont-tremblant`,
+`abqride`, `arvin`, `carta-chattanooga`, `eugene-ltd`, `gold-coast`, `goldengate`, `goraleigh`, `grand-junction`, `mont-tremblant`,
 `culvercitybus`, `imperial-valley`, `kingcountymetro`, `mata`, `marta`, `montebello`, `mst`, `nice`, `omahametro`, `pace-bus`, `pgc-the-bus`, `regina`, `ripta`,
 `riverside`, `rtc`, `rtcwashoe`, `santafetrails`, `sdmts`, `psta`, `rct`,
 `communitytransit`, `everetttransit`, `intercitytransit`, `soundtransit`, `torrance-transit`,
