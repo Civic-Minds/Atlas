@@ -7261,6 +7261,32 @@
       "definitions": [],
       "representativeThresholdMinutes": null,
       "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 172,
+      "agencyId": "kcata",
+      "agencyName": "Kansas City Area Transportation Authority",
+      "country": "United States",
+      "region": "Missouri",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [{"url": "https://ridekc.org/assets/uploads/documents/SystemMap.pdf", "sourceType": "system_map", "localFile": null}],
+      "preservedFiles": [],
+      "mapDate": "September 2025",
+      "mapPageOrSection": "regional transit-map service-type legend",
+      "exactMapWording": "Frequent Bus Service — 12–15 minutes",
+      "thresholdMinutes": 12,
+      "thresholdText": "12-15 minutes",
+      "serviceSpan": null,
+      "days": null,
+      "geography": "RideKC regional network",
+      "mode": "Bus and streetcar",
+      "evidenceNotes": "Current official RideKC regional system map reviewed. Its legend defines Frequent Bus Service as 12-15 minutes and separately lists 10-minute streetcar/MAX, 20-30-minute MAX extended, and 30-60-minute regular bus bands.",
+      "reviewBatch": 15,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [{"url": "https://ridekc.org/assets/uploads/documents/SystemMap.pdf", "sourceType": "system_map", "localFile": null}],
+      "definitions": [{"id": "frequent-bus-service", "label": "Frequent Bus Service", "thresholdMinutes": 12, "thresholdText": "12-15 minutes", "representative": true, "sourceType": "system_map", "sourceUrl": "https://ridekc.org/assets/uploads/documents/SystemMap.pdf", "localFile": null, "mapPageOrSection": "regional transit-map service-type legend", "exactWording": "Frequent Bus Service — 12–15 minutes", "evidenceNotes": "Current official RideKC regional system map reviewed."}],
+      "representativeThresholdMinutes": 12,
+      "publishedFrequencyBands": ["10 minutes", "12-15 minutes", "20-30 minutes", "30-60 minutes"]
     }
   ],
   "updatedAt": "2026-09-19"
