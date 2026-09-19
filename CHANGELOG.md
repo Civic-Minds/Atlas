@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+
+- Frequent Service story-map captions now stay inside the viewport instead of being clipped below the sticky map.
 - Reviewed current Durham Region Transit and Grand River Transit system maps, recording their published route information without inventing named frequent-service definitions.
 - Reviewed Cincinnati Metro’s current regional system map, adding its 15-minute weekday-midday definition to the North American audit.
 - Reviewed Metro Transit’s current Twin Cities system map, adding its 30-minute weekday-midday frequent-service definition to the North American audit.

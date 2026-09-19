@@ -88,8 +88,8 @@ export default function FrequentServiceStoryMap({ agencies, stage, frequencyMinu
   const stagePaths = useMemo(() => [0, 1, 2, 3].map(currentStage => projectFeatures(features, featuresForStage(features, currentStage, frequencyMinutes))), [features, frequencyMinutes]);
 
   return (
-    <figure className="overflow-hidden border-y border-[var(--border-primary)] bg-[var(--bg-panel)] shadow-sm sm:rounded-[2rem] sm:border">
-      <div className="relative h-[calc(100dvh-8.75rem)] min-h-0 bg-[var(--bg-app)]">
+    <figure className="flex h-[calc(100dvh-8rem)] min-h-0 flex-col overflow-hidden border-y border-[var(--border-primary)] bg-[var(--bg-panel)] shadow-sm sm:rounded-[2rem] sm:border">
+      <div className="relative min-h-0 flex-1 bg-[var(--bg-app)]">
         {loadState === 'ready' && stagePaths[0] ? (
           <svg viewBox="0 0 1000 620" className="h-full w-full" role="img" aria-label={stage === 3 ? `Toronto routes with weekday daytime service every ${frequencyMinutes} minutes or better` : 'Toronto routes remaining in the story'}>
             <rect width="1000" height="620" fill="var(--bg-app)" />
