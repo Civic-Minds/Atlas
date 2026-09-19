@@ -9,7 +9,7 @@ download automatically.
 | --- | --- | --- |
 | Augusta Transit | Official archive URL is unavailable and the Mobility Database copy is expired | Find a current agency feed or request one from Augusta Transit |
 | LAVTA / Wheels | Configured sources are expired, including the April 2026 schedule | Find the current Wheels schedule export |
-| SFMTA / Muni | Configured current and fallback candidates could not be verified as a usable current feed | Confirm the current Muni GTFS source and refresh the catalog URL |
+| SFMTA / Muni | The official ZIP downloads, but its service calendar ends 2026-08-28 and no later feed was verified | Confirm the next Muni GTFS release and refresh the catalog URL |
 | West Berkeley Shuttle | Cal-ITP URL does not return a usable ZIP and the catalog copy is expired | Confirm whether the shuttle still operates and locate its current feed |
 
 The 28 agencies below remain candidates for source recovery. The read-only audit
