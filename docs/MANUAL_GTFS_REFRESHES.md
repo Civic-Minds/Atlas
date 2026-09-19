@@ -58,20 +58,23 @@ agency identity and service dates extending beyond the audit date.
 | `cheyenne`, `saint-hyacinthe` | The agency is active, but no current public static GTFS ZIP was found. |
 | `albany-ga` | Albany Transit remains active, but its official National RTAP feed ends 2024-06-30 and the city site publishes schedules without a newer GTFS ZIP. |
 | `ecat` | ECAT remains active, but the Florida Transit Data Exchange’s latest ECAT post is from February 2022 and no newer public static ZIP was found. |
-| `amarillo` | An official or catalog URL was found, but download access returned an authorization or server error. |
+| `amarillo` | The official source requires a token and returns HTTP 403 here; the catalog’s latest listed version runs through 2026-12-30, but no current ZIP was directly verified. |
 | `fred-transit` | The official page still publishes a CY2026 GTFS, but the documented PDF URL returns HTTP 403 here and the Virginia ArcGIS clearinghouse item is no longer accessible; no current ZIP was verified. |
-| `cat-savannah`, `rockregion`, `taft`, `wichita`, `xpress-ga` | A matching feed was found, but its service window ended before or at the audit date. |
+| `cat-savannah` | The official `GTFS-1.zip` downloads and identifies Chatham Area Transit, but its feed ends 2026-05-31. |
+| `rockregion` | The official `rrmetro.org/gtfs.zip` downloads, but its current file has no regular calendar service and its exception dates end 2025-10-19. |
+| `taft`, `xpress-ga` | A matching feed was found, but its service window ended before or at the audit date. |
+| `wichita` | The official download works, but the fetched file ends 2026-05-22; Transitland’s latest catalog version ends 2026-08-14. |
 | `tillamook` | The current matching feed ends 2026-09-01, while the official district site shows service continuing and expanding in 2026; no later static feed was verified. |
 | `grt` | The official endpoint is reachable, but the current file was generated in February 2026 and its calendar ends 2026-04-24; the agency’s published schedules are newer. |
 | `qline` | QLINE is still operating, but the matching feed identifies Qline Detroit and ends 2025-12-31; no newer static schedule was verified. |
 | `b-line` | A current California B-Line feed was found, but this Atlas slug is the Corpus Christi RTA B-Line and the agency identities do not match. |
-| `mcts` | Catalog metadata shows a newer schedule, but the official download could not be directly validated from this environment. |
+| `mcts` | Catalog metadata shows a newer schedule, but the official download timed out and could not be directly validated from this environment. |
 | `green-bay` | The catalog points to the official Green Bay document, but its download returns HTTP 403 here and the older alternate host is unavailable; no current ZIP was verified. |
 | `evansville` | The official METS URL has a 2026-06-02–2026-12-31 feed, but its download returns HTTP 403 here; do not configure the unverified archive copy. |
 | `glendalebeeline` | Transitland reports the official Glendale URL has a matching 2026-08-30–2027-10-01 version, but the official download returns HTTP 403 here; do not configure the unverified mirror. |
 | `fast-ca`, `riovista`, `unioncity`, `vacaville` | The current regional feed is behind an API key, so no public static ZIP was verified. |
 | `hocts` | The configured feed remains expired and malformed; no newer matching HOCTS feed was found. |
-| `moose-jaw` | The official city feed is available, but its schedule is stale. |
+| `moose-jaw` | The city still links its official GTFS URL, but the download returns HTTP 403 here; no current ZIP was verified. |
 | `path` | Only realtime data was found; no current static schedule ZIP was verified. |
 
 ## Discontinued or merged services
