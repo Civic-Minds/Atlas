@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Reviewed two additional U.S. map sources: County Connection’s current system map had no named frequent-service definition; Kern Transit’s current static map was unavailable.
 - Reviewed four additional U.S. map sources: current OCTA, Golden Gate Transit, and Norwalk Transit maps had no named frequent-service definition; LAVTA’s current static map was unavailable.
 - Reviewed four additional U.S. map sources: current BurbankBus and Metrolink maps had no agency-specific frequent definition; current Caltrain and Juneau map sources were unavailable.
 - Reviewed four additional Canadian map sources: UP Express, T3 Transit, and two exo sectors; UP Express publishes 15-minute departures, while the others do not name a frequent-service definition.
