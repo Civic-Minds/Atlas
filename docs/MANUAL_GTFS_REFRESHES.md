@@ -61,7 +61,8 @@ agency identity and service dates extending beyond the audit date.
 | `ecat` | ECAT remains active, but the Florida Transit Data Exchange’s latest ECAT post is from February 2022 and no newer public static ZIP was found. |
 | `amarillo` | An official or catalog URL was found, but download access returned an authorization or server error. |
 | `fred-transit` | The official page still publishes a CY2026 GTFS, but the documented PDF URL returns HTTP 403 here and the Virginia ArcGIS clearinghouse item is no longer accessible; no current ZIP was verified. |
-| `avon-transit`, `cat-savannah`, `rockregion`, `taft`, `tillamook`, `wichita`, `xpress-ga` | A matching feed was found, but its service window ended before or at the audit date. |
+| `avon-transit`, `cat-savannah`, `rockregion`, `taft`, `wichita`, `xpress-ga` | A matching feed was found, but its service window ended before or at the audit date. |
+| `tillamook` | The current matching feed ends 2026-09-01, while the official district site shows service continuing and expanding in 2026; no later static feed was verified. |
 | `grt` | The official endpoint is reachable, but the current file was generated in February 2026 and its calendar ends 2026-04-24; the agency’s published schedules are newer. |
 | `qline` | QLINE is still operating, but the matching feed identifies Qline Detroit and ends 2025-12-31; no newer static schedule was verified. |
 | `b-line` | A current California B-Line feed was found, but this Atlas slug is the Corpus Christi RTA B-Line and the agency identities do not match. |
