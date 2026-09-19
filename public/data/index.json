@@ -400,9 +400,9 @@
         43.94,
         -79.75
       ],
-      "feedUrl": "http://guelph.ca/uploads/google/google_transit.zip",
-      "lastFeedExpiry": "20250830",
-      "lastFeedVersion": "2025 May _20250801",
+      "feedUrl": "https://drive.usercontent.google.com/download?id=1SsCgQ0agO_EONavJoOuBPMlbcu2VcUs4&export=download",
+      "lastFeedExpiry": "20270102",
+      "lastFeedVersion": "",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-guelph-transit-gtfs-1300.zip?alt=media",
       "lastRefreshedAt": "20260811",
       "lastFeedCheckAt": "20260907",
