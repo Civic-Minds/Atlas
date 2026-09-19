@@ -12,7 +12,7 @@ download automatically.
 | SFMTA / Muni | Configured current and fallback candidates could not be verified as a usable current feed | Confirm the current Muni GTFS source and refresh the catalog URL |
 | West Berkeley Shuttle | Cal-ITP URL does not return a usable ZIP and the catalog copy is expired | Confirm whether the shuttle still operates and locate its current feed |
 
-The 44 agencies below remain candidates for source recovery. The read-only audit
+The 35 agencies below remain candidates for source recovery. The read-only audit
 found no current usable schedule among their configured or automatically derived
 Mobility Database candidates. Start with agencies whose snapshots ended in 2026;
 do not replace any of these with an older archived ZIP.
@@ -54,6 +54,25 @@ do not replace any of these with an older archived ZIP.
 | `vacaville` | 20260630 |
 | `wichita` | 20260814 |
 | `xpress-ga` | 20250705 |
+
+## Research findings for unresolved agencies
+
+These findings record why a candidate was not configured. A current-looking
+catalog entry is not enough; Atlas needs a downloadable ZIP with the matching
+agency identity and service dates extending beyond the audit date.
+
+| Agencies | Finding |
+| --- | --- |
+| `albany-ga`, `cheyenne`, `ecat`, `riovista`, `saint-hyacinthe` | The agency is active, but no current public static GTFS ZIP was found. |
+| `amarillo`, `fred-transit` | An official or catalog URL was found, but download access returned an authorization or server error. |
+| `avon-transit`, `blacksburg`, `cat-savannah`, `emta`, `guelph`, `nctd`, `qline`, `rts`, `sacrt`, `rockregion`, `taft`, `tillamook`, `wichita`, `xpress-ga` | A matching feed was found, but its service window ended before or at the audit date. |
+| `b-line` | A current California B-Line feed was found, but this Atlas slug is the Corpus Christi RTA B-Line and the agency identities do not match. |
+| `evansville`, `glendalebeeline`, `green-bay`, `mcts` | Catalog metadata shows a newer schedule, but the official download could not be directly validated from this environment. |
+| `fast-ca`, `unioncity`, `vacaville` | The current regional feed is behind an API key, so no public static ZIP was verified. |
+| `hocts` | The configured feed remains expired and malformed; no newer matching HOCTS feed was found. |
+| `moose-jaw` | The official city feed is available, but its schedule is stale. |
+| `octranspo` | The official static feed requires developer registration/API access. |
+| `path` | Only realtime data was found; no current static schedule ZIP was verified. |
 
 ## Discontinued or merged services
 
