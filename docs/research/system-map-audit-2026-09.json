@@ -6843,6 +6843,74 @@
       "definitions": [],
       "representativeThresholdMinutes": null,
       "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 159,
+      "agencyId": "stl",
+      "agencyName": "Société de transport de Laval",
+      "country": "Canada",
+      "region": "Quebec",
+      "status": "no_definition_on_map",
+      "mapCandidates": [{
+        "url": "https://cdn.stlaval.ca/pdfs/stl-carte-plan-reseau.pdf",
+        "sourceType": "system_map",
+        "localFile": null
+      }],
+      "preservedFiles": [],
+      "mapDate": "Current map linked in 2026 network schedules",
+      "mapPageOrSection": "network map and route legend",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": "STL Laval network",
+      "mode": "Bus",
+      "evidenceNotes": "Current official STL network map reviewed. It identifies the bus network and route categories but does not name or define frequent/high-frequency service on the map.",
+      "reviewBatch": 12,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [{
+        "url": "https://cdn.stlaval.ca/pdfs/stl-carte-plan-reseau.pdf",
+        "sourceType": "system_map",
+        "localFile": null
+      }],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 160,
+      "agencyId": "sto",
+      "agencyName": "Société de transport de l’Outaouais",
+      "country": "Canada",
+      "region": "Quebec",
+      "status": "no_definition_on_map",
+      "mapCandidates": [{
+        "url": "https://www.sto.ca/site/assets/files/2130/carte_reseau.pdf",
+        "sourceType": "system_map",
+        "localFile": null
+      }],
+      "preservedFiles": [],
+      "mapDate": "Current map linked in 2026 system information",
+      "mapPageOrSection": "network map and route legend",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": "STO Gatineau and Ottawa network",
+      "mode": "Bus",
+      "evidenceNotes": "Current official STO network map reviewed. It identifies routes, Rapibus service, and transfer points but does not name or define frequent/high-frequency service on the map.",
+      "reviewBatch": 12,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [{
+        "url": "https://www.sto.ca/site/assets/files/2130/carte_reseau.pdf",
+        "sourceType": "system_map",
+        "localFile": null
+      }],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
     }
   ],
   "updatedAt": "2026-09-19"

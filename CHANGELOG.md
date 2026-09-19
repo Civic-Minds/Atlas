@@ -8,6 +8,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 - Restored the story introduction’s natural top placement so the title is not forced into a vertically centered hero.
 - Frequent Service story-map captions now stay inside the viewport instead of being clipped below the sticky map.
+- Reviewed Laval and Gatineau’s current system maps, recording their network evidence without inventing named frequent-service definitions.
 - Reviewed Guelph, Kingston, and Regina system maps, recording their network evidence without inventing named frequent-service definitions.
 - Reviewed GO Transit’s current regional system map, recording its network evidence without inventing a named frequent-service definition.
 - Reviewed Saskatoon Transit’s current system map, recording its network evidence without inventing a named frequent-service definition.
