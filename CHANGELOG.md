@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Reviewed five additional Canadian transit system maps, including RTC Québec and RTL Longueuil, and recorded their frequent-service definitions or no-definition findings.
 - Made the chart lab’s agency plot readable by giving every agency its own labeled row instead of stacking dots without a meaningful vertical axis.
 - Added a temporary Frequent Service chart lab to compare cumulative thresholds with agency-level definition distributions before choosing a story chart.
 - Restored the story introduction’s natural top placement so the title is not forced into a vertically centered hero.
