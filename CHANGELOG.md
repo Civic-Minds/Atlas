@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- Corrected TransLink’s audit evidence to cite its official Frequent Transit Network system map rather than the supporting webpage.
 - Added TransLink and LA Metro to the North American frequency-definition audit.
 - Limited the Frequent Service story’s displayed research sample to Canada and the United States so it matches Atlas’s North American coverage.
 - Centralized the Frequent Service story’s displayed coverage findings and interpretation values in its research data module.

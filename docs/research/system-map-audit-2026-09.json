@@ -6146,27 +6146,27 @@
       "status": "numeric_definition_on_map",
       "mapCandidates": [
         {
-          "url": "https://www.translink.ca/plans-and-projects/projects/frequent-transit-network",
+          "url": "https://www.translink.ca/-/media/translink/documents/schedules-and-maps/transit-system-maps/system-maps/frequent_transit_network_of_metro_vancouver_map.pdf",
           "sourceType": "system_map",
           "localFile": null
         }
       ],
       "preservedFiles": [],
       "mapDate": null,
-      "mapPageOrSection": "Frequent Transit Network page",
-      "exactMapWording": "Metro Vancouver’s Frequent Transit Network (FTN) is a network of corridors where transit service runs at least every 15 minutes in both directions throughout the day and into the evening, every day of the week.",
+      "mapPageOrSection": "one-page Frequent Transit Network map legend",
+      "exactMapWording": "The Frequent Transit Network (FTN) is a network of corridors that have transit service every 15 minutes or better, during at least all of the following times: Monday to Friday 6 a.m. to 9 p.m.; Saturday 7 a.m. to 9 p.m.; Sunday and holidays 8 a.m. to 9 p.m.",
       "thresholdMinutes": 15,
       "thresholdText": "At least every 15 minutes",
-      "serviceSpan": "Until 9 p.m. daily; starts at 6 a.m. weekdays, 7 a.m. Saturdays, and 8 a.m. Sundays",
-      "days": "Every day",
+      "serviceSpan": "Monday to Friday 6 a.m.–9 p.m.; Saturday 7 a.m.–9 p.m.; Sunday and holidays 8 a.m.–9 p.m.",
+      "days": "Weekdays, Saturdays, Sundays, and holidays",
       "geography": "Metro Vancouver Frequent Transit Network corridors",
       "mode": "Bus or SkyTrain",
-      "evidenceNotes": "Current official TransLink Frequent Transit Network page reviewed. It defines the network numerically and describes the service span and days.",
+      "evidenceNotes": "Current official TransLink Frequent Transit Network map reviewed. Its legend defines the network numerically and gives the weekday, Saturday, Sunday, and holiday service spans.",
       "reviewBatch": 8,
       "evidenceSourceType": "system_map",
       "reviewSources": [
         {
-          "url": "https://www.translink.ca/plans-and-projects/projects/frequent-transit-network",
+          "url": "https://www.translink.ca/-/media/translink/documents/schedules-and-maps/transit-system-maps/system-maps/frequent_transit_network_of_metro_vancouver_map.pdf",
           "sourceType": "system_map",
           "localFile": null
         }
@@ -6179,11 +6179,11 @@
           "thresholdText": "At least every 15 minutes",
           "representative": true,
           "sourceType": "system_map",
-          "sourceUrl": "https://www.translink.ca/plans-and-projects/projects/frequent-transit-network",
+          "sourceUrl": "https://www.translink.ca/-/media/translink/documents/schedules-and-maps/transit-system-maps/system-maps/frequent_transit_network_of_metro_vancouver_map.pdf",
           "localFile": null,
-          "mapPageOrSection": "Frequent Transit Network page",
-          "exactWording": "At least every 15 minutes in both directions throughout the day and into the evening, every day of the week.",
-          "evidenceNotes": "Current official TransLink Frequent Transit Network page reviewed."
+          "mapPageOrSection": "one-page map legend",
+          "exactWording": "Transit service every 15 minutes or better, during at least all of the following times: Monday to Friday 6 a.m. to 9 p.m.; Saturday 7 a.m. to 9 p.m.; Sunday and holidays 8 a.m. to 9 p.m.",
+          "evidenceNotes": "Current official TransLink Frequent Transit Network map reviewed."
         }
       ],
       "representativeThresholdMinutes": 15,
