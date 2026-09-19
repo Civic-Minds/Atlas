@@ -443,11 +443,21 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
             const exclusiveSpanNames = exclusiveSpans
               .map(d => branchLabel(group, d.headsign, gi))
               .filter(Boolean);
+            const hasVisibleDirectionRows = groupHasCoreSummary
+              || group.realTier.length > 0
+              || exclusiveSpans.length > 0;
             return (
               <React.Fragment key={group.dirId}>
                 {gi > 0 && showDirectionSections && <CardDivider />}
                 {showDirectionSections && group.boundLabel && (
-                  <CardSectionLabel className="mb-0">{group.boundLabel}</CardSectionLabel>
+                  <>
+                    <CardSectionLabel className="mb-0">{group.boundLabel}</CardSectionLabel>
+                    {!hasVisibleDirectionRows && selectedPeriod && (
+                      <p className="mt-2 mb-2 text-[10px] font-bold text-[var(--text-dim)]">
+                        No {selectedPeriod.label.toLowerCase()} service.
+                      </p>
+                    )}
+                  </>
                 )}
                 {groupHasCoreSummary && groupCoreHeadway != null && (
                   <>
