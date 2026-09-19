@@ -6979,6 +6979,86 @@
       "definitions": [],
       "representativeThresholdMinutes": null,
       "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 163,
+      "agencyId": "soundtransit",
+      "agencyName": "Sound Transit",
+      "country": "United States",
+      "region": "Washington",
+      "status": "no_definition_on_map",
+      "mapCandidates": [{
+        "url": "https://www.soundtransit.org/sites/default/files/documents/st-current-service-map.pdf",
+        "sourceType": "system_map",
+        "localFile": null
+      }],
+      "preservedFiles": [],
+      "mapDate": "March 2026",
+      "mapPageOrSection": "current service map and legend",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": "Sound Transit regional network",
+      "mode": "Bus, light rail, and commuter rail",
+      "evidenceNotes": "Current official Sound Transit service map reviewed. It identifies Link, Sounder, and ST Express service but does not name or define a frequent-service category on the map.",
+      "reviewBatch": 13,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [{
+        "url": "https://www.soundtransit.org/sites/default/files/documents/st-current-service-map.pdf",
+        "sourceType": "system_map",
+        "localFile": null
+      }],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 164,
+      "agencyId": "piercetransit",
+      "agencyName": "Pierce Transit",
+      "country": "United States",
+      "region": "Washington",
+      "status": "qualitative_definition_on_map",
+      "mapCandidates": [{
+        "url": "https://piercetransit.org/wp-content/uploads/System-Maps/sysmap-0326.pdf",
+        "sourceType": "system_map",
+        "localFile": null
+      }],
+      "preservedFiles": [],
+      "mapDate": "March 2026",
+      "mapPageOrSection": "system map route-types legend",
+      "exactMapWording": "Frequent — Trunk routes run earlier, later and more often along major streets",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": "Earlier, later, and more often; no numeric threshold stated",
+      "days": null,
+      "geography": "Pierce Transit service area",
+      "mode": "Bus",
+      "evidenceNotes": "Current official Pierce Transit system map visually reviewed. Its route-types legend names Frequent service and describes it qualitatively, without publishing a numeric headway threshold.",
+      "reviewBatch": 13,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [{
+        "url": "https://piercetransit.org/wp-content/uploads/System-Maps/sysmap-0326.pdf",
+        "sourceType": "system_map",
+        "localFile": null
+      }],
+      "definitions": [{
+        "id": "frequent",
+        "label": "Frequent",
+        "thresholdMinutes": null,
+        "thresholdText": null,
+        "representative": true,
+        "sourceType": "system_map",
+        "sourceUrl": "https://piercetransit.org/wp-content/uploads/System-Maps/sysmap-0326.pdf",
+        "localFile": null,
+        "mapPageOrSection": "system map route-types legend",
+        "exactWording": "Frequent — Trunk routes run earlier, later and more often along major streets",
+        "evidenceNotes": "Current official Pierce Transit system map visually reviewed."
+      }],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
     }
   ],
   "updatedAt": "2026-09-19"
