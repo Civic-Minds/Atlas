@@ -7897,7 +7897,7 @@
         35.1217,
         -89.9687
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-2352/mdb-2352-202502100036/mdb-2352-202502100036.zip",
+      "feedUrl": "https://gtfs.mata.cadavl.com/MATA/GTFS/GTFS_MATA.zip",
       "lastFeedExpiry": "20250310",
       "lastFeedVersion": null,
       "region": "Tennessee",
@@ -16719,7 +16719,7 @@
         33.4744,
         -115.3224
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/tld-5547/tld-5547-202501020017/tld-5547-202501020017.zip",
+      "feedUrl": "https://schedule.ivtransit.com/gtfs/data.zip",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-5547/tld-5547-202501020017/tld-5547-202501020017.zip",
       "lastRefreshedAt": "20260811",
       "lastFeedExpiry": "20251231",
