@@ -56,7 +56,7 @@ agency identity and service dates extending beyond the audit date.
 
 | Agencies | Finding |
 | --- | --- |
-| `albany-ga`, `cheyenne`, `ecat`, `riovista`, `saint-hyacinthe` | The agency is active, but no current public static GTFS ZIP was found. |
+| `albany-ga`, `cheyenne`, `ecat`, `saint-hyacinthe` | The agency is active, but no current public static GTFS ZIP was found. |
 | `amarillo` | An official or catalog URL was found, but download access returned an authorization or server error. |
 | `fred-transit` | The official page still publishes a CY2026 GTFS, but the documented PDF URL returns HTTP 403 here and the Virginia ArcGIS clearinghouse item is no longer accessible; no current ZIP was verified. |
 | `avon-transit`, `cat-savannah`, `rockregion`, `taft`, `tillamook`, `wichita`, `xpress-ga` | A matching feed was found, but its service window ended before or at the audit date. |
@@ -67,7 +67,7 @@ agency identity and service dates extending beyond the audit date.
 | `green-bay` | The catalog points to the official Green Bay document, but its download returns HTTP 403 here and the older alternate host is unavailable; no current ZIP was verified. |
 | `evansville` | The official METS URL has a 2026-06-02–2026-12-31 feed, but its download returns HTTP 403 here; do not configure the unverified archive copy. |
 | `glendalebeeline` | Transitland reports the official Glendale URL has a matching 2026-08-30–2027-10-01 version, but the official download returns HTTP 403 here; do not configure the unverified mirror. |
-| `fast-ca`, `unioncity`, `vacaville` | The current regional feed is behind an API key, so no public static ZIP was verified. |
+| `fast-ca`, `riovista`, `unioncity`, `vacaville` | The current regional feed is behind an API key, so no public static ZIP was verified. |
 | `hocts` | The configured feed remains expired and malformed; no newer matching HOCTS feed was found. |
 | `moose-jaw` | The official city feed is available, but its schedule is stale. |
 | `path` | Only realtime data was found; no current static schedule ZIP was verified. |
