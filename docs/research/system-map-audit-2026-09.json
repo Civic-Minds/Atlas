@@ -7287,6 +7287,32 @@
       "definitions": [{"id": "frequent-bus-service", "label": "Frequent Bus Service", "thresholdMinutes": 12, "thresholdText": "12-15 minutes", "representative": true, "sourceType": "system_map", "sourceUrl": "https://ridekc.org/assets/uploads/documents/SystemMap.pdf", "localFile": null, "mapPageOrSection": "regional transit-map service-type legend", "exactWording": "Frequent Bus Service — 12–15 minutes", "evidenceNotes": "Current official RideKC regional system map reviewed."}],
       "representativeThresholdMinutes": 12,
       "publishedFrequencyBands": ["10 minutes", "12-15 minutes", "20-30 minutes", "30-60 minutes"]
+    },
+    {
+      "auditOrder": 173,
+      "agencyId": "omahametro",
+      "agencyName": "Omaha Metro",
+      "country": "United States",
+      "region": "Nebraska",
+      "status": "no_definition_on_map",
+      "mapCandidates": [{"url": "https://www.ometro.com/wp-content/uploads/2020/09/Network_Map_2604.pdf", "sourceType": "system_map", "localFile": null}],
+      "preservedFiles": [],
+      "mapDate": "Current network map linked in 2026 schedules",
+      "mapPageOrSection": "network map and route legend",
+      "exactMapWording": null,
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": "Omaha Metro network",
+      "mode": "Bus and rapid bus",
+      "evidenceNotes": "Official Omaha Metro network map reviewed. It identifies fixed, express, and connector routes but does not name or define a frequent/high-frequency service category on the map.",
+      "reviewBatch": 16,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [{"url": "https://www.ometro.com/wp-content/uploads/2020/09/Network_Map_2604.pdf", "sourceType": "system_map", "localFile": null}],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
     }
   ],
   "updatedAt": "2026-09-19"
