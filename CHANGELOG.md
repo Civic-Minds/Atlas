@@ -5,8 +5,9 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- Limited the Frequent Service story’s displayed research sample to Canada and the United States so it matches Atlas’s North American coverage.
 - Centralized the Frequent Service story’s displayed coverage findings and interpretation values in its research data module.
-- Clarified the story introduction to distinguish 137 agencies with usable map evidence from the 5 unavailable records in the 142-agency review sample.
+- Clarified the story introduction to distinguish 127 North American agencies with usable map evidence from the 5 unavailable records in the 132-agency North American sample.
 - Added the population-coverage interpretation to the Frequent Service story so the threshold comparison explains its practical meaning.
 - Added population coverage evidence to the Frequent Service story, comparing 15- and 30-minute thresholds across Canada and the United States.
 - Fixed the Frequent Service story so filtering only removes routes as the explanation progresses.

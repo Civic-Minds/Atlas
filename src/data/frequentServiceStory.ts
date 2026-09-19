@@ -1,7 +1,7 @@
 import audit from '../../docs/research/system-map-audit-2026-09.json';
 
 const storyThresholds = [10, 12, 15, 20, 30];
-const records = audit.records;
+const records = audit.records.filter(record => record.country === 'Canada' || record.country === 'United States');
 export const frequentServiceStoryResearchRecord = records.find(record => record.agencyId === 'ttc') ?? records[0];
 const categoryCounts = {
   numericDefinition: records.filter(record => record.status === 'numeric_definition_on_map').length,

@@ -12,7 +12,7 @@ describe('FrequentServiceStory', () => {
     expect(screen.getByRole('heading', { name: 'What happens when you miss the bus?' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'There is no single “frequent.”' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'The threshold changes who can rely on the network.' })).toBeInTheDocument();
-    expect(screen.getByText(/from 137 agencies/)).toBeInTheDocument();
+    expect(screen.getByText(/from 127 agencies/)).toBeInTheDocument();
     expect(screen.getByText('8.72%')).toBeInTheDocument();
     expect(screen.getByText(/30-minute service reaches about 2.6 times as many people in Canada/)).toBeInTheDocument();
     expect(screen.queryByRole('tab')).not.toBeInTheDocument();
@@ -36,6 +36,7 @@ describe('FrequentServiceStory', () => {
 
   it('keeps the story chart aligned with exact numeric system-map evidence', () => {
     const counts = audit.records
+      .filter(record => record.country === 'Canada' || record.country === 'United States')
       .filter(record => Number.isInteger(record.representativeThresholdMinutes))
       .reduce<Record<string, number>>((result, record) => {
         result[String(record.representativeThresholdMinutes)] = (result[String(record.representativeThresholdMinutes)] ?? 0) + 1;
@@ -53,18 +54,18 @@ describe('FrequentServiceStory', () => {
   it('does not mistake unavailable or unnamed maps for numeric definitions', () => {
     expect(audit.records).toHaveLength(142);
     expect(audit.records.filter(record => record.status === 'pending_map_review')).toHaveLength(0);
-    expect(frequentServiceStoryStats.agenciesReviewed).toBe(142);
+    expect(frequentServiceStoryStats.agenciesReviewed).toBe(132);
     expect(frequentServiceStoryStats.categoryCounts).toMatchObject({
-      numericDefinition: 38,
-      qualitativeDefinition: 12,
-      noDefinitionFound: 87,
+      numericDefinition: 34,
+      qualitativeDefinition: 11,
+      noDefinitionFound: 82,
       mapUnavailable: 5,
     });
     expect(frequentServiceStoryStats.headwayBars).toEqual([
       { minutes: 10, agencies: 1 },
       { minutes: 12, agencies: 1 },
-      { minutes: 15, agencies: 21 },
-      { minutes: 20, agencies: 5 },
+      { minutes: 15, agencies: 18 },
+      { minutes: 20, agencies: 4 },
       { minutes: 30, agencies: 10 },
     ]);
   });
