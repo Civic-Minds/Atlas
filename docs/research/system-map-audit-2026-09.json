@@ -2,7 +2,7 @@
   "auditVersion": 2,
   "createdAt": "2026-09-18",
   "sourceCatalog": "docs/research/frequent-service-catalog.json",
-  "scope": "First 50 agencies plus 229 additional agencies reviewed individually against current official system maps or approved rider guides on September 19, 2026.",
+  "scope": "First 50 agencies plus 239 additional agencies reviewed individually against current official system maps or approved rider guides on September 19, 2026.",
   "statusRules": {
     "numeric_definition_on_map": "The official system map visibly names frequent/high-frequency service and gives a numeric threshold or range.",
     "qualitative_definition_on_map": "The official system map visibly names frequent/high-frequency service without a numeric threshold.",
@@ -11735,6 +11735,426 @@
           "url": "https://mtp.indianrailways.gov.in/uploads/files/1709894160765-DMM%20MRK%202024.pdf",
           "sourceType": "system_map",
           "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 280,
+      "agencyId": "lpp-ljubljana",
+      "agencyName": "Ljubljanski potniški promet (LPP)",
+      "country": "Slovenia",
+      "region": "Ljubljana",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.lpp.si/sites/www.jhl.si/files/dokumenti/shema_dnevnih_linij_september_2025_web.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": "2025-09",
+      "mapPageOrSection": "daily-lines map legend",
+      "exactMapWording": "Shema dnevnih linij LPP",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": "Ljubljana network",
+      "mode": "bus",
+      "evidenceNotes": "Current official LPP daily-lines map visually reviewed. It shows routes, zones, and map symbols but does not name a frequent or high-frequency definition. No timetable intervals were used.",
+      "reviewBatch": 21,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.lpp.si/sites/www.jhl.si/files/dokumenti/shema_dnevnih_linij_september_2025_web.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 281,
+      "agencyId": "zet-zagreb",
+      "agencyName": "ZET Zagreb",
+      "country": "Croatia",
+      "region": "Zagreb",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.zet.hr/UserDocsImages/Prilozi/PDF/Mre%C5%BEe%20tramvajskih%20linija%202018-dnevne%20i%20no%C4%87ne/tram%20mre%C5%BEa%20dnevna%20A3nocne_WEB_RADOVI%20BRANIMIROVAZAPRU%C4%90E.pdf?vel=1564066",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": "2026-04-07",
+      "mapPageOrSection": "map legend and daily/night route panels",
+      "exactMapWording": "MREŽA TRAMVAJSKIH LINIJA / TRAM LINES; DNEVNE TRAMVAJSKE LINIJE / DAILY TRAM ROUTES; NOĆNE TRAMVAJSKE LINIJE / NIGHT TRAM ROUTES",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": "The map notes that lines 1, 3, and 8 do not operate Saturdays, Sundays, or public holidays.",
+      "geography": "Zagreb tram network",
+      "mode": "tram",
+      "evidenceNotes": "Current official ZET tram-network map visually reviewed. It distinguishes daily and night routes and lists a service-day exception but does not name a frequent or high-frequency definition. No timetable intervals were used.",
+      "reviewBatch": 21,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.zet.hr/UserDocsImages/Prilozi/PDF/Mre%C5%BEe%20tramvajskih%20linija%202018-dnevne%20i%20no%C4%87ne/tram%20mre%C5%BEa%20dnevna%20A3nocne_WEB_RADOVI%20BRANIMIROVAZAPRU%C4%90E.pdf?vel=1564066",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 282,
+      "agencyId": "dpb-bratislava",
+      "agencyName": "Dopravný podnik Bratislava",
+      "country": "Slovakia",
+      "region": "Bratislava",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://dpba.blob.core.windows.net/media/Default/Dokumenty/Mapy%20spojov/20260901-1_260909_083252.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": "2026-09-01",
+      "mapPageOrSection": "map legend",
+      "exactMapWording": "BRATISLAVA — LINKY MHD / LINE NETWORK / LINIENNETZ; main bus route; other bus route; limited service",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": "Bratislava network",
+      "mode": "bus, trolleybus, and tram",
+      "evidenceNotes": "Current official DPB line-network map visually reviewed. Its legend classifies electric lines, main/other bus routes, and limited service, but does not name a frequent or high-frequency definition or attach a headway threshold. No generic interval was promoted.",
+      "reviewBatch": 21,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://dpba.blob.core.windows.net/media/Default/Dokumenty/Mapy%20spojov/20260901-1_260909_083252.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 283,
+      "agencyId": "stb-bucharest",
+      "agencyName": "Societatea de Transport București (STB) / TPBI",
+      "country": "Romania",
+      "region": "Bucharest–Ilfov",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://tpbi.ro/file/2024/12/Harta-retelei-de-transport-public-24.12.2024.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        },
+        {
+          "url": "https://tpbi.ro/harta-retelei-de-transport-public/",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": "2024-12-24",
+      "mapPageOrSection": "general public-transport network map",
+      "exactMapWording": "Harta rețelei de transport public; Rețeaua de autobuze; Rețeaua de tramvaie; Rețeaua de troleibuze; Harta liniilor de noapte; Harta liniilor metropolitane",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": "Bucharest–Ilfov network",
+      "mode": "bus, trolleybus, tram, and metropolitan lines",
+      "evidenceNotes": "Current TPBI map page and its linked official general network map were visually reviewed through the STB/TPBI rider-facing map surface. They show mode-specific networks and night/metropolitan layers but do not name a frequent or high-frequency definition. No generic interval was used.",
+      "reviewBatch": 21,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://tpbi.ro/file/2024/12/Harta-retelei-de-transport-public-24.12.2024.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        },
+        {
+          "url": "https://tpbi.ro/harta-retelei-de-transport-public/",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 284,
+      "agencyId": "metro-sofia",
+      "agencyName": "Metropolitan Sofia",
+      "country": "Bulgaria",
+      "region": "Sofia",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.metropolitan.bg/shema/dejstvashto-metro",
+          "sourceType": "system_map",
+          "localFile": null
+        },
+        {
+          "url": "https://www.metropolitan.bg/shema/karta-metro",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "operating-metro scheme and metro map",
+      "exactMapWording": "Схема на действащите участъци от метрото в София / Scheme of the operating sections of the Sofia Metro; Карта на Софийското метро / Sofia Metro map",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": "Sofia metro network",
+      "mode": "metro",
+      "evidenceNotes": "Current official Metropolitan Sofia operating-metro scheme and map page visually reviewed. They show four operating lines, stations, and interchange/network information but no frequent or high-frequency definition. The operator's separate minimum-interval statement was rejected because it is not on the system map.",
+      "reviewBatch": 21,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.metropolitan.bg/shema/dejstvashto-metro",
+          "sourceType": "system_map",
+          "localFile": null
+        },
+        {
+          "url": "https://www.metropolitan.bg/shema/karta-metro",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 285,
+      "agencyId": "sapporo-municipal-transportation",
+      "agencyName": "Sapporo Municipal Transportation Bureau",
+      "country": "Japan",
+      "region": "Hokkaido",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.city.sapporo.jp/st/route_konaizu/index.html",
+          "sourceType": "system_map",
+          "localFile": "sapporo-subway-route-map.jpg"
+        }
+      ],
+      "preservedFiles": ["sapporo-subway-route-map.jpg"],
+      "mapDate": "2024-12-04",
+      "mapPageOrSection": "subway route map image and page legend",
+      "exactMapWording": "地下鉄路線図 (Subway Route Map); 南北線; 東西線; 東豊線",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": "subway",
+      "evidenceNotes": "Current official Sapporo Transportation Bureau route-map page and map image manually reviewed. The map names subway lines and station symbols but does not name a frequent or high-frequency definition.",
+      "reviewBatch": 21,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.city.sapporo.jp/st/route_konaizu/index.html",
+          "sourceType": "system_map",
+          "localFile": "sapporo-subway-route-map.jpg"
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 286,
+      "agencyId": "sendai-subway",
+      "agencyName": "Sendai Subway",
+      "country": "Japan",
+      "region": "Miyagi",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.kotsu.city.sendai.jp/subway/station/",
+          "sourceType": "system_map",
+          "localFile": "sendai-subway-route-map.pdf"
+        }
+      ],
+      "preservedFiles": ["sendai-subway-route-map.pdf"],
+      "mapDate": null,
+      "mapPageOrSection": "official subway route map",
+      "exactMapWording": "路線図; 仙台市地下鉄; 南北線; 東西線",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": "subway",
+      "evidenceNotes": "Current official Sendai City Transportation Bureau subway route-map page and linked PDF manually reviewed. It shows the Nanboku and Tozai lines, stations, and connections but does not name a frequent or high-frequency definition.",
+      "reviewBatch": 21,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.kotsu.city.sendai.jp/subway/station/",
+          "sourceType": "system_map",
+          "localFile": "sendai-subway-route-map.pdf"
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 287,
+      "agencyId": "kobe-city-transportation",
+      "agencyName": "Kobe City Transportation Bureau",
+      "country": "Japan",
+      "region": "Hyogo",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://kotsu.city.kobe.lg.jp/subway/route-map/",
+          "sourceType": "system_map",
+          "localFile": null
+        },
+        {
+          "url": "https://kotsu.city.kobe.lg.jp/wp-content/uploads/01_/6lev57ea5zuz/20260400-b-map.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": "2026-04-01",
+      "mapPageOrSection": "official subway route-map page and combined city-bus/subway map",
+      "exactMapWording": "地下鉄路線図; 市バス・地下鉄 路線図; 西神・山手線; 海岸線",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": "bus and subway",
+      "evidenceNotes": "Current official Kobe City Transportation Bureau route-map page and dated 2026-04-01 combined map manually reviewed. It shows subway lines, city-bus route categories, and operating notes but does not name a frequent or high-frequency definition.",
+      "reviewBatch": 21,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://kotsu.city.kobe.lg.jp/subway/route-map/",
+          "sourceType": "system_map",
+          "localFile": null
+        },
+        {
+          "url": "https://kotsu.city.kobe.lg.jp/wp-content/uploads/01_/6lev57ea5zuz/20260400-b-map.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 288,
+      "agencyId": "hiroden-hiroshima",
+      "agencyName": "Hiroshima Electric Railway",
+      "country": "Japan",
+      "region": "Hiroshima",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.hiroden.co.jp/train/route-guide/route-map.html",
+          "sourceType": "system_map",
+          "localFile": "hiroshima-hiroden-route-map.pdf"
+        }
+      ],
+      "preservedFiles": ["hiroshima-hiroden-route-map.pdf"],
+      "mapDate": "2026-07-01",
+      "mapPageOrSection": "広島電車路線案内図, map legend",
+      "exactMapWording": "広島電車路線図; 路線番号; 運行区間",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": "streetcar",
+      "evidenceNotes": "Current official Hiroshima Electric Railway route-map page and the linked map dated 2026-07-01 manually reviewed. The map names lines, route numbers, and operating sections but does not name a frequent or high-frequency definition.",
+      "reviewBatch": 21,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.hiroden.co.jp/train/route-guide/route-map.html",
+          "sourceType": "system_map",
+          "localFile": "hiroshima-hiroden-route-map.pdf"
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 289,
+      "agencyId": "yokohama-municipal-transportation",
+      "agencyName": "Yokohama Municipal Transportation Bureau",
+      "country": "Japan",
+      "region": "Kanagawa",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.city.yokohama.lg.jp/kotsu/sub/",
+          "sourceType": "system_map",
+          "localFile": null
+        },
+        {
+          "url": "https://www.city.yokohama.lg.jp/city-info/yokohamashi/gaiyo/kiroku/shiseikiroku2025.files/0261_20260106.pdf",
+          "sourceType": "system_map",
+          "localFile": "yokohama-transport-profile-map.pdf"
+        }
+      ],
+      "preservedFiles": ["yokohama-transport-profile-map.pdf"],
+      "mapDate": "2026-01-06",
+      "mapPageOrSection": "municipal subway route-map page; official transport profile, subway section",
+      "exactMapWording": "市営地下鉄路線図; ブルーライン; グリーンライン; 快速停車駅",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": "bus and subway",
+      "evidenceNotes": "Current official Yokohama Municipal Transportation Bureau subway route-map page and 2026 official transport profile manually reviewed. The map identifies Blue/Green lines and rapid-stop stations; it does not name a frequent or high-frequency definition.",
+      "reviewBatch": 21,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.city.yokohama.lg.jp/kotsu/sub/",
+          "sourceType": "system_map",
+          "localFile": null
+        },
+        {
+          "url": "https://www.city.yokohama.lg.jp/city-info/yokohamashi/gaiyo/kiroku/shiseikiroku2025.files/0261_20260106.pdf",
+          "sourceType": "system_map",
+          "localFile": "yokohama-transport-profile-map.pdf"
         }
       ],
       "definitions": [],
