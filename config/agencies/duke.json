@@ -5,9 +5,9 @@
     36.0028,
     -78.9325
   ],
-  "feedUrl": "http://data.trilliumtransit.com/gtfs/duke-nc-us/duke-nc-us.zip",
-  "lastFeedExpiry": "20250810",
-  "lastFeedVersion": "UTC: 05-May-2025 09:20",
+  "feedUrl": "https://duke.transloc.com/Secure/Admin/Reports/GTFSDownload.aspx",
+  "lastFeedExpiry": "20501230",
+  "lastFeedVersion": null,
   "lastRefreshedAt": "20260811",
   "region": "North Carolina",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-378/latest.zip",
