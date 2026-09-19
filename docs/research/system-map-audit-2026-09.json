@@ -2,7 +2,7 @@
   "auditVersion": 2,
   "createdAt": "2026-09-18",
   "sourceCatalog": "docs/research/frequent-service-catalog.json",
-  "scope": "First 50 agencies plus 254 additional agencies reviewed individually against current official system maps or approved rider guides on September 19, 2026.",
+  "scope": "First 50 agencies plus 259 additional agencies reviewed individually against current official system maps or approved rider guides on September 19, 2026.",
   "statusRules": {
     "numeric_definition_on_map": "The official system map visibly names frequent/high-frequency service and gives a numeric threshold or range.",
     "qualitative_definition_on_map": "The official system map visibly names frequent/high-frequency service without a numeric threshold.",
@@ -12767,6 +12767,266 @@
       ],
       "definitions": [],
       "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 305,
+      "agencyId": "dash",
+      "agencyName": "DASH / Alexandria Transit Company",
+      "country": "United States",
+      "region": "Virginia",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.dashbus.com/wp-content/uploads/Ride-Guide-August-2025.pdf",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "system map legend, printed pages 2–3",
+      "exactMapWording": "DASH Frequent Routes — Every 15 minutes or better, all day, seven days per week",
+      "thresholdMinutes": 15,
+      "thresholdText": "every 15 minutes or better, all day, seven days per week",
+      "serviceSpan": "all day",
+      "days": "seven days per week",
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official DASH rider guide/system map visually reviewed. The legend explicitly defines DASH Frequent Routes.",
+      "reviewBatch": 23,
+      "evidenceSourceType": "rider_guide",
+      "reviewSources": [
+        {
+          "url": "https://www.dashbus.com/wp-content/uploads/Ride-Guide-August-2025.pdf",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "definitions": [
+        {
+          "id": "frequent",
+          "label": "DASH Frequent Routes",
+          "thresholdMinutes": 15,
+          "thresholdText": "every 15 minutes or better, all day, seven days per week",
+          "representative": true,
+          "sourceType": "rider_guide",
+          "sourceUrl": "https://www.dashbus.com/wp-content/uploads/Ride-Guide-August-2025.pdf",
+          "localFile": null,
+          "mapPageOrSection": "system map legend, printed pages 2–3",
+          "exactWording": "DASH Frequent Routes — Every 15 minutes or better, all day, seven days per week",
+          "evidenceNotes": "Official DASH rider guide/system map visually reviewed. The legend explicitly defines DASH Frequent Routes."
+        }
+      ],
+      "representativeThresholdMinutes": 15,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 306,
+      "agencyId": "valleymetro",
+      "agencyName": "Valley Metro",
+      "country": "United States",
+      "region": "Arizona",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://vulcan-production.nyc3.cdn.digitaloceanspaces.com/pages/downloads/maps-schedules/system-map/25oct/2_val_msys_frequent_250912.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "map title/subtitle and legend, page 1",
+      "exactMapWording": "Every 15 minutes or better from at least 6 a.m. to 6 p.m. on weekdays.",
+      "thresholdMinutes": 15,
+      "thresholdText": "every 15 minutes or better from at least 6 a.m. to 6 p.m. on weekdays",
+      "serviceSpan": "at least 6 a.m.–6 p.m.",
+      "days": "weekdays",
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Valley Metro Frequent Service map visually reviewed.",
+      "reviewBatch": 23,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://vulcan-production.nyc3.cdn.digitaloceanspaces.com/pages/downloads/maps-schedules/system-map/25oct/2_val_msys_frequent_250912.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [
+        {
+          "id": "frequent",
+          "label": "Frequent Service",
+          "thresholdMinutes": 15,
+          "thresholdText": "every 15 minutes or better from at least 6 a.m. to 6 p.m. on weekdays",
+          "representative": true,
+          "sourceType": "system_map",
+          "sourceUrl": "https://vulcan-production.nyc3.cdn.digitaloceanspaces.com/pages/downloads/maps-schedules/system-map/25oct/2_val_msys_frequent_250912.pdf",
+          "localFile": null,
+          "mapPageOrSection": "map title/subtitle and legend, page 1",
+          "exactWording": "Every 15 minutes or better from at least 6 a.m. to 6 p.m. on weekdays.",
+          "evidenceNotes": "Official Valley Metro Frequent Service map visually reviewed."
+        }
+      ],
+      "representativeThresholdMinutes": 15,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 307,
+      "agencyId": "sun-tran",
+      "agencyName": "Sun Tran",
+      "country": "United States",
+      "region": "Arizona",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.suntran.com/wp-content/uploads/ftn-2025-poster.png",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "full-page frequency-network poster",
+      "exactMapWording": "FREQUENT TRANSIT NETWORK ROUTES — Service every 20 minutes or less!",
+      "thresholdMinutes": 20,
+      "thresholdText": "every 20 minutes or less",
+      "serviceSpan": "7 a.m.–6 p.m.",
+      "days": "Monday–Friday",
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Sun Tran frequency-network map image visually reviewed.",
+      "reviewBatch": 23,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.suntran.com/wp-content/uploads/ftn-2025-poster.png",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [
+        {
+          "id": "frequent",
+          "label": "Frequent Transit Network",
+          "thresholdMinutes": 20,
+          "thresholdText": "every 20 minutes or less",
+          "representative": true,
+          "sourceType": "system_map",
+          "sourceUrl": "https://www.suntran.com/wp-content/uploads/ftn-2025-poster.png",
+          "localFile": null,
+          "mapPageOrSection": "full-page frequency-network poster",
+          "exactWording": "FREQUENT TRANSIT NETWORK ROUTES — Service every 20 minutes or less!",
+          "evidenceNotes": "Official Sun Tran frequency-network map image visually reviewed."
+        }
+      ],
+      "representativeThresholdMinutes": 20,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 308,
+      "agencyId": "bigbluebus",
+      "agencyName": "Big Blue Bus",
+      "country": "United States",
+      "region": "California",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.bigbluebus.com/Routes-and-Schedules/PdfHandler.ashx/R12/little-blue-book.pdf",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "route map legend, printed page 47 / PDF page 1",
+      "exactMapWording": "FREQUENT SERVICE 15 MINUTES OR BETTER",
+      "thresholdMinutes": 15,
+      "thresholdText": "15 minutes or better",
+      "serviceSpan": "weekday midday trips",
+      "days": "weekdays",
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Official Big Blue Bus route guide visually reviewed. The map legend explicitly labels Frequent Service.",
+      "reviewBatch": 23,
+      "evidenceSourceType": "rider_guide",
+      "reviewSources": [
+        {
+          "url": "https://www.bigbluebus.com/Routes-and-Schedules/PdfHandler.ashx/R12/little-blue-book.pdf",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "definitions": [
+        {
+          "id": "frequent",
+          "label": "Frequent Service",
+          "thresholdMinutes": 15,
+          "thresholdText": "15 minutes or better",
+          "representative": true,
+          "sourceType": "rider_guide",
+          "sourceUrl": "https://www.bigbluebus.com/Routes-and-Schedules/PdfHandler.ashx/R12/little-blue-book.pdf",
+          "localFile": null,
+          "mapPageOrSection": "route map legend, printed page 47 / PDF page 1",
+          "exactWording": "FREQUENT SERVICE 15 MINUTES OR BETTER",
+          "evidenceNotes": "Official Big Blue Bus route guide visually reviewed. The map legend explicitly labels Frequent Service."
+        }
+      ],
+      "representativeThresholdMinutes": 15,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 309,
+      "agencyId": "grtc",
+      "agencyName": "GRTC",
+      "country": "United States",
+      "region": "Virginia",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.ridegrtc.com/wp-content/uploads/2026/03/GRTC-System-Map-2.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "system-map legend, page 1",
+      "exactMapWording": "Frequent daytime service every 15 minutes (or better) during weekday and evening times.",
+      "thresholdMinutes": 15,
+      "thresholdText": "every 15 minutes (or better)",
+      "serviceSpan": "daytime and evening",
+      "days": "weekday and evening times",
+      "geography": null,
+      "mode": null,
+      "evidenceNotes": "Current official GRTC system map visually reviewed.",
+      "reviewBatch": 23,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.ridegrtc.com/wp-content/uploads/2026/03/GRTC-System-Map-2.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [
+        {
+          "id": "frequent",
+          "label": "Frequent daytime service",
+          "thresholdMinutes": 15,
+          "thresholdText": "every 15 minutes (or better)",
+          "representative": true,
+          "sourceType": "system_map",
+          "sourceUrl": "https://www.ridegrtc.com/wp-content/uploads/2026/03/GRTC-System-Map-2.pdf",
+          "localFile": null,
+          "mapPageOrSection": "system-map legend, page 1",
+          "exactWording": "Frequent daytime service every 15 minutes (or better) during weekday and evening times.",
+          "evidenceNotes": "Current official GRTC system map visually reviewed."
+        }
+      ],
+      "representativeThresholdMinutes": 15,
       "publishedFrequencyBands": null
     }
   ],
