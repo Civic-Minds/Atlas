@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
-- Reached 100 manually verified frequency definitions, with current map or rider-guide evidence recorded across 336 agencies and broader international coverage.
+- Deduplicated 14 agency aliases and completed the research sample at 100 unique verified agencies across 337 audit records, adding 15 unique agencies and correcting two existing classifications.
 - Added eight manually checked definitions from the UK, France, Australia, and the US; the audit now covers 333 agencies with 97 verified definitions.
 - Added six verified North American and Australia-Pacific definitions and corrected three previously under-classified European maps; the audit now covers 318 agencies with 89 verified definitions.
 - Added five manually checked US system maps and rider guides with explicit frequent-service definitions; the audit now covers 309 agencies with 79 verified definitions.

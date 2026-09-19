@@ -45,29 +45,43 @@ describe('FrequentServiceStory', () => {
       { minutes: 15, agencies: counts['15'] },
       { minutes: 20, agencies: counts['20'] },
       { minutes: 30, agencies: counts['30'] },
+      { minutes: 45, agencies: counts['45'] },
       { minutes: 60, agencies: counts['60'] },
     ]);
   });
 
   it('does not mistake unavailable or unnamed maps for numeric definitions', () => {
-    expect(audit.records).toHaveLength(336);
+    expect(audit.records).toHaveLength(337);
     expect(audit.records.filter(record => record.status === 'pending_map_review')).toHaveLength(0);
-    expect(frequentServiceStoryStats.agenciesReviewed).toBe(336);
+    expect(frequentServiceStoryStats.agenciesReviewed).toBe(337);
     expect(frequentServiceStoryStats.categoryCounts).toMatchObject({
-      numericDefinition: 79,
-      qualitativeDefinition: 21,
-      noDefinitionFound: 226,
+      numericDefinition: 75,
+      qualitativeDefinition: 25,
+      noDefinitionFound: 227,
       mapUnavailable: 10,
     });
     expect(frequentServiceStoryStats.headwayBars).toEqual([
       { minutes: 6, agencies: 1 },
       { minutes: 8, agencies: 1 },
-      { minutes: 10, agencies: 3 },
-      { minutes: 12, agencies: 2 },
-      { minutes: 15, agencies: 46 },
-      { minutes: 20, agencies: 9 },
-      { minutes: 30, agencies: 16 },
+      { minutes: 10, agencies: 6 },
+      { minutes: 12, agencies: 3 },
+      { minutes: 15, agencies: 41 },
+      { minutes: 20, agencies: 7 },
+      { minutes: 30, agencies: 14 },
+      { minutes: 45, agencies: 1 },
       { minutes: 60, agencies: 1 },
     ]);
+  });
+
+  it('keeps the audit canonical and unique after alias merging', () => {
+    const canonicalIds = audit.records.map(record => record.canonicalAgencyId);
+    expect(canonicalIds.every(Boolean)).toBe(true);
+    expect(new Set(canonicalIds).size).toBe(audit.records.length);
+
+    const verified = audit.records.filter(record =>
+      record.status === 'numeric_definition_on_map' || record.status === 'qualitative_definition_on_map',
+    );
+    expect(verified).toHaveLength(100);
+    expect(new Set(verified.map(record => record.canonicalAgencyId)).size).toBe(100);
   });
 });
