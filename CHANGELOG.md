@@ -6,7 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
-- Recovered current GTFS sources for Davenport, Kenosha, and Waukesha, and separated discontinued DC Streetcar from the source-recovery queue.
+- Recovered current GTFS sources for Davenport, JFK AirTrain, Kenosha, and Waukesha, and separated discontinued DC Streetcar from the source-recovery queue.
 - Weekly GTFS refreshes now fall back to current Mobility Database feeds when a configured source is dated or expired.
 - Night Service now retains agencies skipped during feed refreshes, keeping its directory aligned with the routes shown on the map ([#516](https://github.com/Civic-Minds/Atlas/issues/516)).
 - Night Service and History now share compact research-panel guidance and the same search treatment.

@@ -1,7 +1,7 @@
 # Manual GTFS refresh queue
 
-Snapshot from the expired-source audit on 2026-09-19. The audit checked 85
-remaining expired production snapshots: 40 now have newer sources, 41 remain genuinely
+Snapshot from the expired-source audit on 2026-09-19. The audit checked 84
+remaining expired production snapshots: 40 now have newer sources, 40 remain genuinely
 expired, and these four have no verified replacement that Atlas could currently
 download automatically.
 
@@ -39,7 +39,6 @@ do not replace any of these with an older archived ZIP.
 | `grt` | 20260426 |
 | `guelph` | 20250830 |
 | `hocts` | 20211231 |
-| `jfk-airtrain` | 20211231 |
 | `kenosha` | 20240901 |
 | `mcts` | 20250823 |
 | `moose-jaw` | 20240331 |
@@ -74,10 +73,10 @@ replacement feed:
 
 ## Verified replacements awaiting refresh
 
-The following 54 agencies have a current ZIP with matching agency identity and
+The following 55 agencies have a current ZIP with matching agency identity and
 can be refreshed using the configured or automatically derived source:
 
-`abqride`, `arvin`, `avta`, `carson-circuit`, `carta-chattanooga`, `clemson-cat`, `davenport`, `duke`, `eugene-ltd`, `gold-coast`, `goldengate`, `goraleigh`, `grand-junction`, `indygo`, `mont-tremblant`, `mountainmetro`,
+`abqride`, `arvin`, `avta`, `carson-circuit`, `carta-chattanooga`, `clemson-cat`, `davenport`, `duke`, `eugene-ltd`, `gold-coast`, `goldengate`, `goraleigh`, `grand-junction`, `indygo`, `jfk-airtrain`, `mont-tremblant`, `mountainmetro`,
 `culvercitybus`, `imperial-valley`, `kingcountymetro`, `mata`, `marta`, `montebello`, `mst`, `nice`, `omahametro`, `pace-bus`, `pgc-the-bus`, `regina`, `ripta`,
 `riverside`, `rtc`, `rtcwashoe`, `santafetrails`, `saskatoon`, `sdmts`, `skagittransit`, `psta`, `rct`,
 `communitytransit`, `everetttransit`, `intercitytransit`, `kenosha`, `soundtransit`, `torrance-transit`,
