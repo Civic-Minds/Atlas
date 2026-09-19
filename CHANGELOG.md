@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Reviewed seven additional North American system-map sources: Beaumont, Camarillo, San Luis Obispo, Corona, El Monte, FAST, and Foothill Transit; none names a frequent-service definition.
 - Reviewed four additional North American map sources: L’Inter and Arvin had no named frequent-service definition; current Banning and Basin static maps were unavailable.
 - Reviewed five additional Canadian agency sources: current official pages for exo Trains, REM, Saint-Jean-sur-Richelieu, Sherbrooke, and Saint-Hyacinthe did not expose accessible current static system maps.
 - Reviewed four additional Canadian map sources: STLévis had no named frequent-service definition; current static maps for three exo sectors were unavailable.
