@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Reviewed three additional large North American transit systems: Tampa, Albuquerque, and Oklahoma City; their current maps publish route types or frequency bands but no named frequent-service definition.
 - Reviewed four additional large North American transit systems: current Detroit, Charlotte, Broward County, and Hampton Roads maps do not name a frequent-service definition.
 - Reviewed seven additional North American system-map sources: Beaumont, Camarillo, San Luis Obispo, Corona, El Monte, FAST, and Foothill Transit; none names a frequent-service definition.
 - Reviewed four additional North American map sources: L’Inter and Arvin had no named frequent-service definition; current Banning and Basin static maps were unavailable.
