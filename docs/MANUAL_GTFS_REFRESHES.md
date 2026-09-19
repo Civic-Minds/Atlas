@@ -62,7 +62,8 @@ agency identity and service dates extending beyond the audit date.
 | `avon-transit`, `cat-savannah`, `rockregion`, `taft`, `tillamook`, `wichita`, `xpress-ga` | A matching feed was found, but its service window ended before or at the audit date. |
 | `qline` | QLINE is still operating, but the matching feed identifies Qline Detroit and ends 2025-12-31; no newer static schedule was verified. |
 | `b-line` | A current California B-Line feed was found, but this Atlas slug is the Corpus Christi RTA B-Line and the agency identities do not match. |
-| `evansville`, `glendalebeeline`, `green-bay`, `mcts` | Catalog metadata shows a newer schedule, but the official download could not be directly validated from this environment. |
+| `evansville`, `green-bay`, `mcts` | Catalog metadata shows a newer schedule, but the official download could not be directly validated from this environment. |
+| `glendalebeeline` | Transitland reports the official Glendale URL has a matching 2026-08-30–2027-10-01 version, but the official download returns HTTP 403 here; do not configure the unverified mirror. |
 | `fast-ca`, `unioncity`, `vacaville` | The current regional feed is behind an API key, so no public static ZIP was verified. |
 | `hocts` | The configured feed remains expired and malformed; no newer matching HOCTS feed was found. |
 | `moose-jaw` | The official city feed is available, but its schedule is stale. |
