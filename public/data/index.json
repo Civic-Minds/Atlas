@@ -11027,9 +11027,9 @@
         39.7921,
         -86.153
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/ntd-50050/ntd-50050-202503060058/ntd-50050-202503060058.zip",
-      "lastFeedExpiry": "20250607",
-      "lastFeedVersion": "20250305",
+      "feedUrl": "https://realtime.indygo.net/InfoPoint/gtfs-zip.ashx",
+      "lastFeedExpiry": "20261010",
+      "lastFeedVersion": "20260730",
       "region": "Indiana",
       "lastRefreshedAt": "20260811",
       "websiteUrl": "http://www.indygo.net",
