@@ -2,7 +2,7 @@
   "auditVersion": 2,
   "createdAt": "2026-09-18",
   "sourceCatalog": "docs/research/frequent-service-catalog.json",
-  "scope": "First 50 agencies plus 182 additional agencies reviewed individually against current official system maps or approved rider guides on September 19, 2026.",
+  "scope": "First 50 agencies plus 178 additional agencies reviewed individually against current official system maps or approved rider guides on September 19, 2026.",
   "statusRules": {
     "numeric_definition_on_map": "The official system map visibly names frequent/high-frequency service and gives a numeric threshold or range.",
     "qualitative_definition_on_map": "The official system map visibly names frequent/high-frequency service without a numeric threshold.",
@@ -2935,7 +2935,7 @@
       "agencyName": "AC Transit",
       "country": "United States",
       "region": "California",
-      "status": "no_definition_on_map",
+      "status": "numeric_definition_on_map",
       "mapCandidates": [
         {
           "url": "https://www.actransit.org/sites/default/files/2026-09/System%20Overview%20Map%20with%20Insets.pdf",
@@ -2945,16 +2945,16 @@
       ],
       "preservedFiles": [],
       "mapDate": null,
-      "mapPageOrSection": "map legend and line styling",
-      "exactMapWording": "Identify the most heavily served lines through their more vibrant colors and thicker lines.",
-      "thresholdMinutes": null,
-      "thresholdText": null,
+      "mapPageOrSection": "current map frequency legend",
+      "exactMapWording": "10–15 minutes; 16–30 minutes; 31 minutes or less frequently; bus lines that together provide more frequent service in overlapping sections.",
+      "thresholdMinutes": 15,
+      "thresholdText": "10–15-minute frequent band; overlapping lines can provide more frequent service",
       "serviceSpan": null,
       "days": null,
       "geography": null,
       "mode": null,
-      "evidenceNotes": "Current August 2026 AC Transit system overview map visually reviewed. It indicates heavier service graphically but does not name a frequent/high-frequency category or give a threshold.",
-      "reviewBatch": 2,
+      "evidenceNotes": "Current August 2026 AC Transit system overview map visually reviewed again. The map provides explicit frequency bands and identifies overlapping lines that provide more frequent service; 15 minutes is the representative frequent band.",
+      "reviewBatch": 15,
       "evidenceSourceType": "system_map",
       "reviewSources": [
         {
@@ -2963,8 +2963,22 @@
           "localFile": null
         }
       ],
-      "definitions": [],
-      "representativeThresholdMinutes": null,
+      "definitions": [
+        {
+          "id": "primary",
+          "label": "Frequent service bands",
+          "thresholdMinutes": 15,
+          "thresholdText": "10–15-minute frequent band; overlapping lines can provide more frequent service",
+          "representative": true,
+          "sourceType": "system_map",
+          "sourceUrl": "https://www.actransit.org/sites/default/files/2026-09/System%20Overview%20Map%20with%20Insets.pdf",
+          "localFile": null,
+          "mapPageOrSection": "current map frequency legend",
+          "exactWording": "10–15 minutes; 16–30 minutes; 31 minutes or less frequently; bus lines that together provide more frequent service in overlapping sections.",
+          "evidenceNotes": "Current August 2026 AC Transit system overview map visually reviewed again. The map provides explicit frequency bands and identifies overlapping lines that provide more frequent service; 15 minutes is the representative frequent band."
+        }
+      ],
+      "representativeThresholdMinutes": 15,
       "publishedFrequencyBands": null
     },
     {
@@ -9399,6 +9413,253 @@
         }
       ],
       "representativeThresholdMinutes": 8,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 223,
+      "agencyId": "golden-gate-transit",
+      "agencyName": "Golden Gate Transit",
+      "country": "United States",
+      "region": "California",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.goldengate.org/assets/1/6/sept-2026-transitguide_optimized-for-web.pdf",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": "Effective September 13, 2026",
+      "mapPageOrSection": "Transit Guide page 6, Fare Zone/Service Area Map legend",
+      "exactMapWording": "FARE ZONE/SERVICE AREA MAP; Commute Routes; Regional Routes; Ferry Routes",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": null,
+      "mode": "bus and ferry",
+      "evidenceNotes": "Current official Fall 2026 Golden Gate Transit Guide reviewed. The service-area map legend identifies Commute Routes, Regional Routes, and Ferry Routes but does not name a frequent or high-frequency definition.",
+      "reviewBatch": 15,
+      "evidenceSourceType": "rider_guide",
+      "reviewSources": [
+        {
+          "url": "https://www.goldengate.org/assets/1/6/sept-2026-transitguide_optimized-for-web.pdf",
+          "sourceType": "rider_guide",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 224,
+      "agencyId": "sunline",
+      "agencyName": "SunLine Transit Agency",
+      "country": "United States",
+      "region": "California",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.sunline.org/images/2026/06/System%20Map%20Sept%202026.jpg",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": "September 6, 2026",
+      "mapPageOrSection": "system map title and route legend",
+      "exactMapWording": "SYSTEM MAP - MAPA DEL SISTEMA; September 6, 2026 - 6 de septiembre de 2026; Route/Ruta; Transfer Points/Puntos de Transferencia; Routes at Transfer Points/Rutas en Puntos de Transferencia; Transit Hub/Centro de Transito",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": "Coachella Valley",
+      "mode": "bus",
+      "evidenceNotes": "Current official SunLine September 2026 system map reviewed. It identifies routes, transfer points, and a transit hub but does not name a frequent or high-frequency definition.",
+      "reviewBatch": 15,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.sunline.org/images/2026/06/System%20Map%20Sept%202026.jpg",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 225,
+      "agencyId": "everett-transit",
+      "agencyName": "Everett Transit",
+      "country": "United States",
+      "region": "Washington",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://everetttransit.org/ImageRepository/Document?documentID=3112",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": "September 2026",
+      "mapPageOrSection": "system map title, Routes panel, and Map key",
+      "exactMapWording": "SYSTEM MAP; September 2026; Routes; Map key; Parking available; Point of interest; Street",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": "Everett, Mukilteo, and south Everett",
+      "mode": "bus",
+      "evidenceNotes": "Current official Everett Transit September 2026 system map reviewed. It lists routes and map symbols but does not name a frequent or high-frequency definition.",
+      "reviewBatch": 15,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://everetttransit.org/ImageRepository/Document?documentID=3112",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 226,
+      "agencyId": "santa-rosa-citybus",
+      "agencyName": "Santa Rosa CityBus",
+      "country": "United States",
+      "region": "California",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://srcitybus.org/wp-content/uploads/2026/01/August-10-2025-Web-Map-and-Schedule.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": "Effective August 10, 2025; current map linked from official Static System Map page",
+      "mapPageOrSection": "map legend and frequency timetable header",
+      "exactMapWording": "Legend | Leyenda; Routes | Rutas; Frecuencia Entre Semana",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": "Santa Rosa",
+      "mode": "bus",
+      "evidenceNotes": "Current official Santa Rosa CityBus static system map page and linked map/schedule reviewed. The map labels routes and timetable frequency headings but does not name a frequent or high-frequency definition.",
+      "reviewBatch": 15,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://srcitybus.org/static-system-map/",
+          "sourceType": "system_map",
+          "localFile": null
+        },
+        {
+          "url": "https://srcitybus.org/wp-content/uploads/2026/01/August-10-2025-Web-Map-and-Schedule.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 227,
+      "agencyId": "yakima-transit",
+      "agencyName": "Yakima Transit",
+      "country": "United States",
+      "region": "Washington",
+      "status": "no_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://yakimatransit.org/system-map/",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": null,
+      "mapPageOrSection": "System Map page / Transit Map link",
+      "exactMapWording": "System Map; Transit Map",
+      "thresholdMinutes": null,
+      "thresholdText": null,
+      "serviceSpan": null,
+      "days": null,
+      "geography": "Yakima",
+      "mode": "bus",
+      "evidenceNotes": "Current official Yakima Transit System Map page reviewed. It links the current Transit Map but does not name a frequent or high-frequency definition.",
+      "reviewBatch": 15,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://yakimatransit.org/system-map/",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [],
+      "representativeThresholdMinutes": null,
+      "publishedFrequencyBands": null
+    },
+    {
+      "auditOrder": 228,
+      "agencyId": "big-blue-bus",
+      "agencyName": "Big Blue Bus",
+      "country": "United States",
+      "region": "California",
+      "status": "numeric_definition_on_map",
+      "mapCandidates": [
+        {
+          "url": "https://www.bigbluebus.com/Routes-and-Schedules/PdfHandler.ashx/system-map.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "preservedFiles": [],
+      "mapDate": "2026-04-05",
+      "mapPageOrSection": "current system map frequency legend",
+      "exactMapWording": "FREQUENT SERVICE — 15 MINUTES OR BETTER. Applies to weekday midday trips only.",
+      "thresholdMinutes": 15,
+      "thresholdText": "15 minutes or better, weekday midday trips",
+      "serviceSpan": "weekday midday",
+      "days": "weekdays",
+      "geography": null,
+      "mode": "bus",
+      "evidenceNotes": "Official Big Blue Bus system map, effective April 5, 2026, visually reviewed.",
+      "reviewBatch": 15,
+      "evidenceSourceType": "system_map",
+      "reviewSources": [
+        {
+          "url": "https://www.bigbluebus.com/Routes-and-Schedules/PdfHandler.ashx/system-map.pdf",
+          "sourceType": "system_map",
+          "localFile": null
+        }
+      ],
+      "definitions": [
+        {
+          "id": "primary",
+          "label": "Frequent Service",
+          "thresholdMinutes": 15,
+          "thresholdText": "15 minutes or better, weekday midday trips",
+          "representative": true,
+          "sourceType": "system_map",
+          "sourceUrl": "https://www.bigbluebus.com/Routes-and-Schedules/PdfHandler.ashx/system-map.pdf",
+          "localFile": null,
+          "mapPageOrSection": "current system map frequency legend",
+          "exactWording": "FREQUENT SERVICE — 15 MINUTES OR BETTER. Applies to weekday midday trips only.",
+          "evidenceNotes": "Official Big Blue Bus system map, effective April 5, 2026, visually reviewed."
+        }
+      ],
+      "representativeThresholdMinutes": 15,
       "publishedFrequencyBands": null
     }
   ],

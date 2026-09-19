@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- Added six current map reviews and corrected AC Transit’s 2026 frequency legend; the audit now covers 228 agencies with 68 verified definitions.
 - Added seven manually checked agencies, including Rome, Turin, and Timmins; the audit now covers 222 agencies with 66 verified definitions.
 - Added 12 more manually checked agencies from Canada, Europe, and Asia-Pacific; the audit now covers 215 agencies while keeping the verified-definition count at 63.
 - Added five more map/guide checks, including DASH Alexandria’s explicit 15-minute definition; the audit now covers 203 agencies with 63 verified definitions.
