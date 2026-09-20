@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- Combined BART’s north/south directional variants into one suggested route per line.
 
 - Repointed Avon Transit to its official 2026 GTFS source so the next refresh can restore current service dates.
 - Recovered OC Transpo’s current GTFS feed through October 2026 so Ottawa schedule data no longer relies on an expired catalog copy.
