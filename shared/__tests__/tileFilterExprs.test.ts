@@ -115,6 +115,12 @@ describe('tileEffectiveHeadwayExpr', () => {
     expect(compiled.filter(ctx, feat({ hph_late: 5 }) as any)).toBe(true);
   });
 
+  it('fails closed instead of using all-day data when period properties are absent', () => {
+    const compiled = compileFilter(periodFilter('late', 30));
+    const ctx = { zoom: 10 };
+    expect(compiled.filter(ctx, feat({ headway: 5, worstDirectionHeadway: 5 }) as any)).toBe(false);
+  });
+
   it('uses active cadence for sustained periods that cover the window, but coverage when unsustained or exceeding frequent tiers', () => {
     const compiled = compileFilter(periodFilter('late', 10));
     const ctx = { zoom: 10 };

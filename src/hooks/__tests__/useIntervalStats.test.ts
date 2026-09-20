@@ -464,7 +464,7 @@ describe('useIntervalStats', () => {
     expect(result.current.filteredLayers['test']?.features.length).toBe(1);
   });
 
-  it('tileFilter uses flat period keys and all-day fallback (PMTiles-safe)', () => {
+  it('tileFilter uses flat period keys and fails closed without period data', () => {
     const layers: AgencyLayers = {
       'test': {
         type: 'FeatureCollection',
@@ -489,8 +489,8 @@ describe('useIntervalStats', () => {
     const { result } = renderHook(() => useIntervalStats(layers, filters));
     const tf = JSON.stringify(result.current.tileFilter);
     // Flat period keys (post-PMTiles-build), not nested object access
+    expect(tf).toContain('wdpch_midday');
     expect(tf).toContain('wdph_midday');
-    expect(tf).toContain('worstDirectionHeadway');
     expect(tf).not.toContain('minStopHeadwayByPeriod');
   });
 

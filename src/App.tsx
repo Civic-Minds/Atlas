@@ -114,12 +114,11 @@ const APP_TO_PATH: Record<AppId, string> = {
 
 export default function App() {
   const navigate = useNavigate();
-  const { pathname, search } = useLocation();
-  const frequentServiceParams = new URLSearchParams(search);
-  const frequentServiceMapView = pathname === '/research/frequent-service' && (
-    frequentServiceParams.get('view') === 'map'
-    || ['days', 'frequency', 'window', 'lat', 'lon', 'z', 'route', 'stop', 'h', 'headway', 'max'].some(key => frequentServiceParams.has(key))
-  );
+  const { pathname } = useLocation();
+  // The map route is the map regardless of which map-state parameters are in the URL.
+  // Requiring one of the filter parameters made links such as ?p=overnight render the
+  // normal frequency controls and left the research controls out of the header.
+  const frequentServiceMapView = pathname === '/research/frequent-service';
   const inFrequentServiceStory = pathname === '/research/frequent-service/story';
   const inFrequentService = frequentServiceMapView;
   const routedApp: AppId = PATH_TO_APP[pathname] ?? 'frequency';
@@ -192,6 +191,8 @@ export default function App() {
   const [pendingHistoryRoute, setPendingHistoryRoute] = useState<{ slug: string; routeShortName: string } | null>(null);
   const [headerPortalEl, setHeaderPortalEl] = useState<Element | null>(null);
   const headerPortalRef = useCallback((el: HTMLDivElement | null) => { setHeaderPortalEl(el); }, []);
+  const [frequentServiceFilterPortalEl, setFrequentServiceFilterPortalEl] = useState<Element | null>(null);
+  const frequentServiceFilterPortalRef = useCallback((el: HTMLDivElement | null) => { setFrequentServiceFilterPortalEl(el); }, []);
 
   const headerLeftRef = useRef<HTMLDivElement>(null);
   const searchBarRef = useRef<HTMLDivElement>(null);
@@ -549,6 +550,11 @@ export default function App() {
         </button>
       </div>
       </div>
+      {inFrequentService && (
+        <div className={`absolute top-[4.5rem] left-6 right-6 ${Z_HEADER} flex justify-center pointer-events-none`}>
+          <div ref={frequentServiceFilterPortalRef} className="flex items-center gap-2 pointer-events-auto" />
+        </div>
+      )}
       {BETA_BUILD && <AppUpdateBanner />}
 
       <main className="absolute inset-0 overflow-hidden">
@@ -608,14 +614,14 @@ export default function App() {
               setQuery={setQuery}
               onStatsChange={setStats}
               resetViewKey={resetViewKey}
-              showUi={inFrequency}
+              showUi={inFrequency || inFrequentService}
               showSelectionUi={inLive || inNight}
               showRouteLayers={inFrequency || inLive || inHistory || inFares || inCorridors || inNight || inFrequentService}
               liveRoutesOnly={inLive}
               fareView={inFares}
               nightServiceView={inNight}
-              exportEnabled={MAP_EXPORT_ENABLED}
-              exportTitle={inNight ? 'Night Service' : inHistory ? 'Service History' : inFares ? 'Transit Fares' : inLive ? 'Live Transit' : 'Transit Frequency'}
+              exportEnabled={MAP_EXPORT_ENABLED || inFrequentService}
+              exportTitle={inFrequentService ? 'Frequent Service' : inNight ? 'Night Service' : inHistory ? 'Service History' : inFares ? 'Transit Fares' : inLive ? 'Live Transit' : 'Transit Frequency'}
               frequentServiceView={inFrequentService}
               frequentServiceDays={frequentServiceDays}
               frequentServiceFrequency={frequentServiceFrequency}
@@ -628,7 +634,7 @@ export default function App() {
               filterToAgencies={inHistory || inFares}
               onHistoryRouteClick={inHistory ? handleHistoryRouteClick : undefined}
               onDirectFromStop={inFrequency && CORRIDORS_ENABLED ? handleDirectFromStop : undefined}
-              hideFilterPanel={inCorridors || inLive || inHistory || inFares || inNight}
+              hideFilterPanel={inCorridors || inLive || inHistory || inFares || inNight || inFrequentService}
               onInfoOpen={openInfo}
               selectedAgencySlug={selectedAgencySlug}
               setSelectedAgencySlug={setSelectedAgencySlug}
@@ -645,6 +651,7 @@ export default function App() {
               onSelectedMapAgencyChange={setSelectedMapAgencySlug}
               onSelectionActiveChange={setIntervalSelectionActive}
               headerPortalContainer={headerPortalEl}
+              researchFilterPortalContainer={frequentServiceFilterPortalEl}
               sidebarLeft={sidebarLeft}
               searchBarWidth={searchBarWidth}
               searchEnterRef={searchEnterRef}

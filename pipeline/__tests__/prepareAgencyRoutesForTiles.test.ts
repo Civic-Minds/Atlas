@@ -58,4 +58,24 @@ describe('prepareAgencyRouteFeaturesForTiles', () => {
       expect(f.properties?.wdph_midday).toBe(10);
     }
   });
+
+  it('derives legacy full-window coverage from max-gap data before building tiles', () => {
+    const features = [
+      lineFeat({
+        routeShortName: '95', day: 'Weekday', directionId: 0, tier: 'regular', headway: 12,
+        headwayByPeriod: { evening: 12, overnight: null },
+        maxGapByPeriod: { evening: 12, overnight: 177 },
+      }),
+      lineFeat({
+        routeShortName: '95', day: 'Weekday', directionId: 1, tier: 'regular', headway: 12,
+        headwayByPeriod: { evening: 12, overnight: null },
+        maxGapByPeriod: { evening: 12, overnight: 207 },
+      }),
+    ];
+
+    const routes = prepareAgencyRouteFeaturesForTiles(features, 'ttc');
+    expect(routes[0].properties?.wdpch_overnight).toBe(207);
+    expect(routes[0].properties?.hph_overnight).toBe(999999);
+    expect(routes[1].properties?.wdpch_overnight).toBe(207);
+  });
 });
