@@ -4,7 +4,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router';
 import App from './App';
 import LegalPage from './LegalPage';
 import './styles/index.css';
-import { BETA_BUILD } from '../shared/config';
+import { FEATURES } from '../shared/config';
 import { inject } from '@vercel/analytics';
 import { injectSpeedInsights } from '@vercel/speed-insights';
 import AnalyticsConsent from './components/AnalyticsConsent';
@@ -20,7 +20,7 @@ if (import.meta.env.PROD) {
   injectSpeedInsights();
 }
 
-if (BETA_BUILD) {
+if (FEATURES.beta) {
   document.title = `[Beta] ${document.title}`;
 }
 

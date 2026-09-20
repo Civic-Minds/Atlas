@@ -5,7 +5,7 @@ import { CardReportButton, FlaggableValue, type CardReportButtonHandle } from '.
 
 vi.mock('../../../../shared/config', async (importOriginal) => {
   const actual = await importOriginal<typeof import('../../../../shared/config')>();
-  return { ...actual, CARD_CLICK_TO_FLAG_ENABLED: true };
+  return { ...actual, FEATURES: { ...actual.FEATURES, cardClickToFlag: true } };
 });
 
 function Harness({ reason }: { reason: string }) {

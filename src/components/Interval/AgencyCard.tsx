@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect, forwardRef } from 'react';
 import { LIVE_POLLING_ROUTES } from '../../../shared/livePollingConfig';
-import { LIVE_ENABLED } from '../../../shared/config';
+import { FEATURES } from '../../../shared/config';
 import type { Agency, FareOverride } from '../../App';
 import type { OpenInfoFn } from '../InfoPanel';
 import type { AgencyLayers } from '../../hooks/useAgencyData';
@@ -245,7 +245,7 @@ function RouteListSection({
   return (
     <div className="py-1">
       {routes.map(r => {
-        const isLive = LIVE_ENABLED && liveShortNames.has(r.shortName);
+        const isLive = FEATURES.live && liveShortNames.has(r.shortName);
         const key = `${r.agencySlug}::${r.routeId}`;
         return (
           <div key={r.routeId} className="px-3 py-1 hover:bg-[var(--bg-btn-hover)] transition-colors">

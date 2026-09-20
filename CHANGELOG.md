@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Centralized feature exposure so beta navigation, routes, data, and controls use one registry.
 - Unified Frequent Service's beta gate so production hides its navigation and redirects direct route access.
 - Restored Frequent Service's dedicated 15/30-minute and 7am–7pm/7am–midnight controls, map export access, and strict period filtering.
 - Selected routes now keep normal background-route visibility while the chosen route is highlighted.

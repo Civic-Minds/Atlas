@@ -19,7 +19,7 @@ import {
   type CardReportButtonHandle,
 } from '../cardUi';
 import { CARD_NOTICE, CARD_NOTICE_FOOTER } from '../../../styles';
-import { BETA_BUILD, SPARKLINE_HOURS, TIME_PERIODS, UNEVEN_BANNER_ENABLED, formatPeriodRangeLong, periodKeyForHour } from '../../../../shared/config';
+import { FEATURES, SPARKLINE_HOURS, TIME_PERIODS, formatPeriodRangeLong, periodKeyForHour } from '../../../../shared/config';
 import { hasDirectionPeriodService, routeCardCoverageText, routeCardDisplayHeadway, routeCardDisplayHeadwayRange } from '../../../utils/effectiveHeadway';
 import { buildRouteServiceSummary, metricValueForPeriod } from '../../../utils/routeFacts';
 import { unevenPeriodMaxGap } from '../../../utils/routeCardUneven';
@@ -174,7 +174,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   // the direction's real service is even — that gap is not the rider message. When
   // the card already has a qualifying combined trunk summary, do not contradict it
   // with an individual branch's terminal gap (#381).
-  const unevenGap = UNEVEN_BANNER_ENABLED ? unevenPeriodMaxGap(directionGroups, period) : 0;
+  const unevenGap = FEATURES.unevenBanner ? unevenPeriodMaxGap(directionGroups, period) : 0;
 
   // Largest multi-branch direction group — same branches as WESTBOUND/EASTBOUND rows.
   const primaryMultiBranch = directionGroups
@@ -356,7 +356,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
               period={period}
               onPeriodChange={p => setPeriod(p as TimePeriod)}
               onHourHover={setHoveredHour}
-              allowExpand={BETA_BUILD}
+              allowExpand={FEATURES.beta}
               reserveStackedLegendSpace={hasTrunkSparkline}
               title={`${currentRoute.routeShortName ?? 'Route'}${currentRoute.routeLongName ? ` — ${currentRoute.routeLongName}` : ''}`}
             />

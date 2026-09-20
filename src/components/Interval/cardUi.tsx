@@ -5,7 +5,7 @@ import { fmtHeadway } from '../../utils/format';
 import { headwayToTierColor } from './HeadwaySparkline';
 import { CARD_NOTICE, CARD_NOTICE_ACTION, FLOATING_CARD, PANEL_ENTER_LEFT, SIDEBAR_PANEL_WIDTH, ACTION_PRIMARY } from '../../styles';
 import { openAtlasIssueReport } from '../../utils/reportIssue';
-import { CARD_CLICK_TO_FLAG_ENABLED } from '../../../shared/config';
+import { FEATURES } from '../../../shared/config';
 import { useColorVision } from '../../context/ColorVisionContext';
 
 export { default as CardDirectionRow } from './RouteDirectionRow';
@@ -387,7 +387,7 @@ export function FlaggableValue({ reason, reportRef, children, className = 'inlin
   const [reportModeActive, setReportModeActive] = React.useState(false);
 
   React.useEffect(() => {
-    if (!CARD_CLICK_TO_FLAG_ENABLED) return;
+    if (!FEATURES.cardClickToFlag) return;
     const onReportMode = (event: Event) => {
       const detail = (event as CustomEvent<{ reportRef: unknown; active: boolean }>).detail;
       if (detail?.reportRef === reportRef) setReportModeActive(detail.active);
@@ -396,7 +396,7 @@ export function FlaggableValue({ reason, reportRef, children, className = 'inlin
     return () => window.removeEventListener(REPORT_MODE_EVENT, onReportMode);
   }, [reportRef]);
 
-  if (!CARD_CLICK_TO_FLAG_ENABLED || !reportModeActive) return <>{children}</>;
+  if (!FEATURES.cardClickToFlag || !reportModeActive) return <>{children}</>;
   return (
     <button
       type="button"

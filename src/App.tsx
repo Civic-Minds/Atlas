@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { useNavigate, useLocation } from 'react-router';
 import { Map as MapIcon, Search, X, Info, History as HistoryIcon, Moon } from 'lucide-react';
 import { PILL_SURFACE, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_HEADER, SIDEBAR_LEFT_FALLBACK, CONTROL_ACTIVE, CONTROL_INACTIVE } from './styles';
-import { R2_PUBLIC_URL, getAgencyArtifactUrls, LIVE_ENABLED, HISTORY_ENABLED, CORRIDORS_ENABLED, BETA_BUILD, FREQUENT_SERVICE_ENABLED, MAP_EXPORT_ENABLED } from '../shared/config';
+import { R2_PUBLIC_URL, getAgencyArtifactUrls, FEATURES } from '../shared/config';
 import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig';
 import Interval from './apps/Interval';
 import type { StopEntry } from './apps/corridor-search';
@@ -120,17 +120,17 @@ export default function App() {
   // normal frequency controls and left the research controls out of the header.
   const isFrequentServiceMapRoute = pathname === '/research/frequent-service';
   const isFrequentServiceStoryRoute = pathname === '/research/frequent-service/story';
-  const frequentServiceMapView = FREQUENT_SERVICE_ENABLED && isFrequentServiceMapRoute;
-  const inFrequentServiceStory = FREQUENT_SERVICE_ENABLED && isFrequentServiceStoryRoute;
+  const frequentServiceMapView = FEATURES.frequentService && isFrequentServiceMapRoute;
+  const inFrequentServiceStory = FEATURES.frequentService && isFrequentServiceStoryRoute;
   const inFrequentService = frequentServiceMapView;
   const routedApp: AppId = PATH_TO_APP[pathname] ?? 'frequency';
   // Direct URL access (e.g. /apps/live) would otherwise bypass the LIVE_ENABLED / HISTORY_ENABLED /
   // CORRIDORS_ENABLED gate below -- fall back to the frequency map, and correct the URL so it
   // doesn't lie about what's actually showing.
-  const gated = (routedApp === 'live' && !LIVE_ENABLED) || (routedApp === 'history' && !HISTORY_ENABLED)
-    || (routedApp === 'corridors' && !CORRIDORS_ENABLED)
-    || (routedApp === 'night' && !BETA_BUILD)
-    || ((isFrequentServiceMapRoute || isFrequentServiceStoryRoute) && !FREQUENT_SERVICE_ENABLED);
+  const gated = (routedApp === 'live' && !FEATURES.live) || (routedApp === 'history' && !FEATURES.history)
+    || (routedApp === 'corridors' && !FEATURES.corridors)
+    || (routedApp === 'night' && !FEATURES.beta)
+    || ((isFrequentServiceMapRoute || isFrequentServiceStoryRoute) && !FEATURES.frequentService);
   const activeApp: AppId = gated ? 'frequency' : routedApp;
 
   useEffect(() => {
@@ -220,22 +220,22 @@ export default function App() {
     return true;
   });
   const [hideLowQuality, setHideLowQuality] = useState(() => {
-    if (!BETA_BUILD || typeof window === 'undefined') return false;
+    if (!FEATURES.beta || typeof window === 'undefined') return false;
     const urlValue = new URLSearchParams(window.location.search).get('quality');
     if (urlValue != null) return urlValue === '1';
     return localStorage.getItem('atlas_pref_hide_low_quality') === 'true';
   });
   const [showMapLegend, setShowMapLegend] = useState(() => (
-    BETA_BUILD && typeof window !== 'undefined' && localStorage.getItem('atlas_pref_map_legend') === 'true'
+    FEATURES.beta && typeof window !== 'undefined' && localStorage.getItem('atlas_pref_map_legend') === 'true'
   ));
 
   useEffect(() => {
-    if (BETA_BUILD) localStorage.setItem('atlas_pref_hide_low_quality', String(hideLowQuality));
-    syncUrlParams({ quality: BETA_BUILD && hideLowQuality ? '1' : null });
+    if (FEATURES.beta) localStorage.setItem('atlas_pref_hide_low_quality', String(hideLowQuality));
+    syncUrlParams({ quality: FEATURES.beta && hideLowQuality ? '1' : null });
   }, [hideLowQuality]);
 
   useEffect(() => {
-    if (BETA_BUILD) localStorage.setItem('atlas_pref_map_legend', String(showMapLegend));
+    if (FEATURES.beta) localStorage.setItem('atlas_pref_map_legend', String(showMapLegend));
   }, [showMapLegend]);
 
   const visibleAgencies = useMemo(
@@ -300,7 +300,7 @@ export default function App() {
     () => new Set(Object.keys(layers).map(slug => slug.endsWith('-corridors') ? slug.slice(0, -10) : slug)),
     [layers],
   );
-  const showLiveControl = LIVE_ENABLED && (inLive || [...loadedAgencySlugs].some(slug =>
+  const showLiveControl = FEATURES.live && (inLive || [...loadedAgencySlugs].some(slug =>
     LIVE_POLLING_ROUTES.some(route => route.slug === slug && (!route.apiKeyParamEnvVar && !route.apiKeyHeaderEnvVar || route.active)),
   ));
   const liveAgencyCount = useMemo(
@@ -309,7 +309,7 @@ export default function App() {
       .map(route => route.slug)).size,
     [],
   );
-  const showHistoryControl = HISTORY_ENABLED && (inHistory || (historyAgencySlugs != null && (
+  const showHistoryControl = FEATURES.history && (inHistory || (historyAgencySlugs != null && (
     (selectedMapAgencySlug != null && historyAgencySlugs.has(selectedMapAgencySlug)) ||
     [...loadedAgencySlugs].some(slug => historyAgencySlugs.has(slug))
   )));
@@ -380,7 +380,7 @@ export default function App() {
       })
       .then((data: { agencies: Agency[] }) => {
         const enriched = data.agencies
-          .filter((a: Agency) => !a.staged && (!a.hiddenInProduction || import.meta.env.DEV || (BETA_BUILD && a.betaOnly)))
+          .filter((a: Agency) => !a.staged && (!a.hiddenInProduction || import.meta.env.DEV || (FEATURES.beta && a.betaOnly)))
           .map((a: Agency) => {
             if (!a.url) {
               const arts = getAgencyArtifactUrls(a.slug, { betaOnly: a.betaOnly });
@@ -520,7 +520,7 @@ export default function App() {
 
         <span className="w-px h-4 bg-[var(--border-primary)] shrink-0" aria-hidden="true" />
 
-        {BETA_BUILD && (
+        {FEATURES.beta && (
           <a
             href={inNight ? '/' : '/apps/night'}
             aria-label={inNight ? 'Back to frequency map' : 'Night service'}
@@ -531,7 +531,7 @@ export default function App() {
             <span>Night Service</span>
           </a>
         )}
-        {FREQUENT_SERVICE_ENABLED && (
+        {FEATURES.frequentService && (
           <>
             <a href={inFrequentService ? '/' : '/research/frequent-service'} aria-label={inFrequentService ? 'Back to frequency map' : 'Frequent service research'} aria-pressed={inFrequentService} className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold ${inFrequentService ? 'bg-[var(--accent-bg)] border border-[var(--accent-border)] text-[var(--accent)]' : 'bg-[var(--bg-panel)] border border-[var(--border-primary)] hover:bg-[var(--bg-btn-hover)] text-[var(--text-secondary)]'}`}>Frequent Service</a>
             {inFrequentService && <a href="/research/frequent-service/story" className="flex h-8 px-3 items-center rounded-full shrink-0 border border-[var(--border-primary)] bg-[var(--bg-panel)] text-xs font-bold text-[var(--text-secondary)] hover:bg-[var(--bg-btn-hover)]">Story</a>}
@@ -558,7 +558,7 @@ export default function App() {
           <div ref={frequentServiceFilterPortalRef} className="flex items-center gap-2 pointer-events-auto" />
         </div>
       )}
-      {BETA_BUILD && <AppUpdateBanner />}
+      {FEATURES.beta && <AppUpdateBanner />}
 
       <main className="absolute inset-0 overflow-hidden">
         {agenciesLoadState === 'loading' ? (
@@ -580,7 +580,7 @@ export default function App() {
                   })
                   .then((data: { agencies: Agency[] }) => {
                     const enriched = data.agencies
-                      .filter((a: Agency) => !a.staged && (!a.hiddenInProduction || import.meta.env.DEV || (BETA_BUILD && a.betaOnly)))
+                      .filter((a: Agency) => !a.staged && (!a.hiddenInProduction || import.meta.env.DEV || (FEATURES.beta && a.betaOnly)))
                       .map((a: Agency) => {
                         if (!a.url) {
                           const arts = getAgencyArtifactUrls(a.slug, { betaOnly: a.betaOnly });
@@ -623,7 +623,7 @@ export default function App() {
               liveRoutesOnly={inLive}
               fareView={inFares}
               nightServiceView={inNight}
-              exportEnabled={MAP_EXPORT_ENABLED || inFrequentService}
+              exportEnabled={FEATURES.mapExport || inFrequentService}
               exportTitle={inFrequentService ? 'Frequent Service' : inNight ? 'Night Service' : inHistory ? 'Service History' : inFares ? 'Transit Fares' : inLive ? 'Live Transit' : 'Transit Frequency'}
               frequentServiceView={inFrequentService}
               frequentServiceDays={frequentServiceDays}
@@ -632,11 +632,11 @@ export default function App() {
               setFrequentServiceDays={setFrequentServiceDays}
               setFrequentServiceFrequency={setFrequentServiceFrequency}
               setFrequentServiceWindow={setFrequentServiceWindow}
-              showMapContext={BETA_BUILD}
-              showMatchPercentage={BETA_BUILD}
+              showMapContext={FEATURES.beta}
+              showMatchPercentage={FEATURES.beta}
               filterToAgencies={inHistory || inFares}
               onHistoryRouteClick={inHistory ? handleHistoryRouteClick : undefined}
-              onDirectFromStop={inFrequency && CORRIDORS_ENABLED ? handleDirectFromStop : undefined}
+              onDirectFromStop={inFrequency && FEATURES.corridors ? handleDirectFromStop : undefined}
               hideFilterPanel={inCorridors || inLive || inHistory || inFares || inNight || inFrequentService}
               onInfoOpen={openInfo}
               selectedAgencySlug={selectedAgencySlug}
@@ -660,11 +660,11 @@ export default function App() {
               searchEnterRef={searchEnterRef}
               hideLowQuality={hideLowQuality}
               setHideLowQuality={setHideLowQuality}
-              feedQualityEnabled={BETA_BUILD}
+              feedQualityEnabled={FEATURES.beta}
               showMapLegend={showMapLegend}
               setShowMapLegend={setShowMapLegend}
             />
-            {CORRIDORS_ENABLED && (
+            {FEATURES.corridors && (
               <React.Suspense fallback={null}>
                 <Corridors
                   agencies={visibleAgencies}
@@ -674,17 +674,17 @@ export default function App() {
                 />
               </React.Suspense>
             )}
-            {HISTORY_ENABLED && (
+            {FEATURES.history && (
               <React.Suspense fallback={null}>
                 <History key={inHistory ? 'history' : 'no-history'} active={inHistory} initialAgencySlug={historyAgencyForView} onInfoOpen={openInfo} query={deferredQuery} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} sidebarLeft={sidebarLeft} />
               </React.Suspense>
             )}
-            {BETA_BUILD && (
+            {FEATURES.beta && (
               <React.Suspense fallback={null}>
                 <NightService active={inNight} sidebarLeft={sidebarLeft} layers={layers} query={deferredQuery} onRouteSelect={handleNightRouteClick} />
               </React.Suspense>
             )}
-            {LIVE_ENABLED && liveMounted && (
+            {FEATURES.live && liveMounted && (
               <div className={`absolute inset-0 ${Z_MAP_OVERLAY} pointer-events-none transition-opacity ${TRANSITION_SLOW} ${inLive ? 'opacity-100' : 'opacity-0'}`}>
                 <React.Suspense fallback={null}>
                   <LiveVehicles

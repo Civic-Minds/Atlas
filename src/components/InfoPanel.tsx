@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { X, ExternalLink, Search, Radio, ArrowLeft } from 'lucide-react';
 import { DROPDOWN_PANEL, dropdownAnim, SEARCH_PILL, SEARCH_FIELD, Z_MODAL_BG, CONTROL_ACTIVE, CONTROL_INACTIVE } from '../styles';
 import { LIVE_POLLING_ROUTES, liveCoverageForRouteNames, type LiveCoverage } from '../../shared/livePollingConfig';
-import { R2_PUBLIC_URL, LIVE_ENABLED, HISTORY_ENABLED, BETA_BUILD } from '../../shared/config';
+import { R2_PUBLIC_URL, FEATURES } from '../../shared/config';
 import { agencyDisplayParts, formatStoredDate } from '../utils/format';
 import { feedRefreshCountdownLabel, FEED_REFRESH_CADENCE_LABEL, type FeedRefreshMeta } from '../../shared/feedRefresh';
 import { agencyQualifiesForHistory, agencyQualifiesForHistoryExplore } from '../../shared/historyEligibility';
@@ -245,7 +245,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
     ['all', 'All'],
     ['live', 'Live'],
     ['history', 'History'],
-    ...(BETA_BUILD ? [['outdated', 'Outdated'] as [AgencyListFilter, string]] : []),
+    ...(FEATURES.beta ? [['outdated', 'Outdated'] as [AgencyListFilter, string]] : []),
   ];
 
   const selectedAgency = selectedSlug ? agencies.find(a => a.slug === selectedSlug) : null;
@@ -343,9 +343,9 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                 <p className="text-[10px] font-bold text-[var(--text-muted)] mb-2">Data</p>
                 <p className="text-xs text-[var(--text-dim)] leading-relaxed mb-3">
                   Covering {agencies.length} transit agencies.
-                  {LIVE_ENABLED && HISTORY_ENABLED && ` See live vehicle positions on ${totalLiveAgencies}, or check History on ${totalHistoryExploreAgencies}+ agencies.`}
-                  {LIVE_ENABLED && !HISTORY_ENABLED && ` See live vehicle positions on ${totalLiveAgencies}.`}
-                  {!LIVE_ENABLED && HISTORY_ENABLED && ` Check History on ${totalHistoryExploreAgencies}+ agencies.`}
+                  {FEATURES.live && FEATURES.history && ` See live vehicle positions on ${totalLiveAgencies}, or check History on ${totalHistoryExploreAgencies}+ agencies.`}
+                  {FEATURES.live && !FEATURES.history && ` See live vehicle positions on ${totalLiveAgencies}.`}
+                  {!FEATURES.live && FEATURES.history && ` Check History on ${totalHistoryExploreAgencies}+ agencies.`}
                 </p>
                 <button type="button" onClick={() => window.dispatchEvent(new Event('atlas:privacy-settings'))} className="text-xs text-[var(--accent)] hover:underline">Privacy settings</button>
                 <div className="space-y-2">
@@ -459,8 +459,8 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                         {list.map(a => {
                           const hasLive = liveBySlug.has(a.slug);
                           const hasHistory = historyBySlug.has(a.slug);
-                          const showLiveBadge = LIVE_ENABLED && hasLive;
-                          const showHistoryBadge = HISTORY_ENABLED && hasHistory;
+                          const showLiveBadge = FEATURES.live && hasLive;
+                          const showHistoryBadge = FEATURES.history && hasHistory;
                           const { primary, secondary } = agencyDisplayParts(a.name, a.cities, a.displayArea);
                           const listLabel = secondary ? `${primary} · ${secondary}` : primary;
                           return (

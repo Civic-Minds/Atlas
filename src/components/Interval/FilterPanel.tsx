@@ -5,7 +5,7 @@ import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
 import { FILTER_MODES } from '../../../shared/modes';
 import { DAY_TYPES } from '../../../shared/dayTypes';
 import { PERIOD_LABELS } from '../../hooks/useIntervalStats';
-import { BETA_BUILD, R2_PUBLIC_URL } from '../../../shared/config';
+import { FEATURES, R2_PUBLIC_URL } from '../../../shared/config';
 import type { Agency } from '../../App';
 import { agencyDisplayParts, formatStoredDate } from '../../utils/format';
 import { qualityStatusLabel } from '../../../shared/feedQuality';
@@ -506,7 +506,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                 </div>
               </div>
 
-              {BETA_BUILD && (
+              {FEATURES.beta && (
                 <div className="px-5 pt-1 pb-3">
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex items-start gap-3 min-w-0">

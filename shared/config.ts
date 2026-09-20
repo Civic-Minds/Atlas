@@ -66,11 +66,29 @@ export const UNEVEN_BANNER_ENABLED = envFlag('VITE_UNEVEN_BANNER_ENABLED');
 // Same env-driven pattern as the flags above. Distinguishes the beta deployment in the browser
 // tab title so it doesn't look identical to production.
 export const BETA_BUILD = envFlag('VITE_BETA_BUILD');
-// Frequent Service is a beta-only app for now. Keep its navigation and direct routes on one gate.
-export const FREQUENT_SERVICE_ENABLED = BETA_BUILD;
 // Public map-image export starts on beta so the browser-rendered output can be checked before
 // exposing it on production. Set VITE_MAP_EXPORT_ENABLED to graduate it independently of beta.
-export const MAP_EXPORT_ENABLED = BETA_BUILD || envFlag('VITE_MAP_EXPORT_ENABLED');
+const MAP_EXPORT_ENV_ENABLED = envFlag('VITE_MAP_EXPORT_ENABLED');
+
+/**
+ * Single source of truth for feature exposure. Consumers should use this registry for navigation,
+ * routes, data, and controls instead of checking environment flags independently.
+ */
+export const FEATURES = {
+  beta: BETA_BUILD,
+  live: LIVE_ENABLED,
+  history: HISTORY_ENABLED,
+  corridors: CORRIDORS_ENABLED,
+  frequentService: BETA_BUILD,
+  mapExport: BETA_BUILD || MAP_EXPORT_ENV_ENABLED,
+  cardClickToFlag: CARD_CLICK_TO_FLAG_ENABLED,
+  diagnostics: DIAGNOSTICS_ENABLED,
+  unevenBanner: UNEVEN_BANNER_ENABLED,
+} as const;
+
+// Compatibility aliases for modules not yet migrated to the registry.
+export const FREQUENT_SERVICE_ENABLED = FEATURES.frequentService;
+export const MAP_EXPORT_ENABLED = FEATURES.mapExport;
 
 /**
  * Derive the public URLs for an agency's processed artifacts.
