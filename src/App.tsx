@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { useNavigate, useLocation } from 'react-router';
 import { Map as MapIcon, Search, X, Info, History as HistoryIcon, Moon } from 'lucide-react';
 import { PILL_SURFACE, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_HEADER, SIDEBAR_LEFT_FALLBACK, CONTROL_ACTIVE, CONTROL_INACTIVE } from './styles';
-import { R2_PUBLIC_URL, getAgencyArtifactUrls, LIVE_ENABLED, HISTORY_ENABLED, CORRIDORS_ENABLED, BETA_BUILD, MAP_EXPORT_ENABLED } from '../shared/config';
+import { R2_PUBLIC_URL, getAgencyArtifactUrls, LIVE_ENABLED, HISTORY_ENABLED, CORRIDORS_ENABLED, BETA_BUILD, FREQUENT_SERVICE_ENABLED, MAP_EXPORT_ENABLED } from '../shared/config';
 import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig';
 import Interval from './apps/Interval';
 import type { StopEntry } from './apps/corridor-search';
@@ -118,8 +118,10 @@ export default function App() {
   // The map route is the map regardless of which map-state parameters are in the URL.
   // Requiring one of the filter parameters made links such as ?p=overnight render the
   // normal frequency controls and left the research controls out of the header.
-  const frequentServiceMapView = pathname === '/research/frequent-service';
-  const inFrequentServiceStory = pathname === '/research/frequent-service/story';
+  const isFrequentServiceMapRoute = pathname === '/research/frequent-service';
+  const isFrequentServiceStoryRoute = pathname === '/research/frequent-service/story';
+  const frequentServiceMapView = FREQUENT_SERVICE_ENABLED && isFrequentServiceMapRoute;
+  const inFrequentServiceStory = FREQUENT_SERVICE_ENABLED && isFrequentServiceStoryRoute;
   const inFrequentService = frequentServiceMapView;
   const routedApp: AppId = PATH_TO_APP[pathname] ?? 'frequency';
   // Direct URL access (e.g. /apps/live) would otherwise bypass the LIVE_ENABLED / HISTORY_ENABLED /
@@ -127,7 +129,8 @@ export default function App() {
   // doesn't lie about what's actually showing.
   const gated = (routedApp === 'live' && !LIVE_ENABLED) || (routedApp === 'history' && !HISTORY_ENABLED)
     || (routedApp === 'corridors' && !CORRIDORS_ENABLED)
-    || (routedApp === 'night' && !BETA_BUILD);
+    || (routedApp === 'night' && !BETA_BUILD)
+    || ((isFrequentServiceMapRoute || isFrequentServiceStoryRoute) && !FREQUENT_SERVICE_ENABLED);
   const activeApp: AppId = gated ? 'frequency' : routedApp;
 
   useEffect(() => {
@@ -528,7 +531,7 @@ export default function App() {
             <span>Night Service</span>
           </a>
         )}
-        {BETA_BUILD && (
+        {FREQUENT_SERVICE_ENABLED && (
           <>
             <a href={inFrequentService ? '/' : '/research/frequent-service'} aria-label={inFrequentService ? 'Back to frequency map' : 'Frequent service research'} aria-pressed={inFrequentService} className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold ${inFrequentService ? 'bg-[var(--accent-bg)] border border-[var(--accent-border)] text-[var(--accent)]' : 'bg-[var(--bg-panel)] border border-[var(--border-primary)] hover:bg-[var(--bg-btn-hover)] text-[var(--text-secondary)]'}`}>Frequent Service</a>
             {inFrequentService && <a href="/research/frequent-service/story" className="flex h-8 px-3 items-center rounded-full shrink-0 border border-[var(--border-primary)] bg-[var(--bg-panel)] text-xs font-bold text-[var(--text-secondary)] hover:bg-[var(--bg-btn-hover)]">Story</a>}

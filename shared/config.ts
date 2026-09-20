@@ -66,6 +66,8 @@ export const UNEVEN_BANNER_ENABLED = envFlag('VITE_UNEVEN_BANNER_ENABLED');
 // Same env-driven pattern as the flags above. Distinguishes the beta deployment in the browser
 // tab title so it doesn't look identical to production.
 export const BETA_BUILD = envFlag('VITE_BETA_BUILD');
+// Frequent Service is a beta-only app for now. Keep its navigation and direct routes on one gate.
+export const FREQUENT_SERVICE_ENABLED = BETA_BUILD;
 // Public map-image export starts on beta so the browser-rendered output can be checked before
 // exposing it on production. Set VITE_MAP_EXPORT_ENABLED to graduate it independently of beta.
 export const MAP_EXPORT_ENABLED = BETA_BUILD || envFlag('VITE_MAP_EXPORT_ENABLED');
