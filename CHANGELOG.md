@@ -83,6 +83,26 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Added the population-coverage interpretation to the Frequent Service story so the threshold comparison explains its practical meaning.
 - Added population coverage evidence to the Frequent Service story, comparing 15- and 30-minute thresholds across Canada and the United States.
 - Fixed the Frequent Service story so filtering only removes routes as the explanation progresses.
+- Limited the public frequency story to Atlas-supported Canada and US agencies and corrected the research date to September 18–19, 2026; the broader international audit remains archived separately.
+- Deduplicated 14 agency aliases and completed the research sample at 100 unique verified agencies across 337 audit records, adding 15 unique agencies and correcting two existing classifications.
+- Added eight manually checked definitions from the UK, France, Australia, and the US; the audit now covers 333 agencies with 97 verified definitions.
+- Added six verified North American and Australia-Pacific definitions and corrected three previously under-classified European maps; the audit now covers 318 agencies with 89 verified definitions.
+- Added five manually checked US system maps and rider guides with explicit frequent-service definitions; the audit now covers 309 agencies with 79 verified definitions.
+- Added 25 manually checked agencies from Canada, the US, Japan, and South Korea; the audit now covers 304 agencies with 74 verified definitions.
+- Added 19 manually checked agencies from Canada, the US, Europe, India, and Bangladesh; the audit now covers 279 agencies with 74 verified definitions.
+- Added five manually checked European system maps from Portugal, France, and Italy; the audit now covers 260 agencies while keeping the verified-definition sample at 70.
+- Added five manually inspected Asia-Pacific metro maps—Bengaluru, Hyderabad, Chennai, Bangkok BTS, and Bangkok MRT—without treating their route maps as frequent-service definitions; the audit now covers 255 agencies with 70 verified definitions.
+- Added 12 unique map/guide reviews and upgraded Oakville’s current map evidence; the audit now covers 250 agencies with 70 verified definitions.
+- Fixed Night Service route flags so one branch cannot make a different route pattern appear to cover the full overnight window.
+- Added 10 manually checked international system maps from Asia-Pacific and Europe; the audit now covers 238 agencies while keeping the verified-definition sample at 68.
+- Added five current European system-map reviews—Munich, Hamburg, Frankfurt, Linz, and Marseille—with generic intervals rejected as frequency definitions.
+- Added six current map reviews and corrected AC Transit’s 2026 frequency legend; the audit now covers 228 agencies with 68 verified definitions.
+- Added seven manually checked agencies, including Rome, Turin, and Timmins; the audit now covers 222 agencies with 66 verified definitions.
+- Added 12 more manually checked agencies from Canada, Europe, and Asia-Pacific; the audit now covers 215 agencies while keeping the verified-definition count at 63.
+- Added five more map/guide checks, including DASH Alexandria’s explicit 15-minute definition; the audit now covers 203 agencies with 63 verified definitions.
+- Added 14 more manually checked agencies, including Burlington, Cincinnati, and Gold Coast; the verified sample now has 62 definitions, with interval-only sources kept separate.
+- Added 13 more manually checked agencies to the frequency audit, including Seattle, Dublin, and Rotterdam’s named frequent-service categories; the verified sample now has 59 definitions.
+- Expanded the manually reviewed sample to 171 agencies and 56 verified definitions, adding map/guide evidence from Canada, the United States, Australia, and Europe/Asia while keeping unsupported sources out of the totals.
 - Added 92 manually reviewed agencies to the frequency research audit, raising the verified-definition sample from 17 to 50 while keeping unnamed and unavailable maps separate.
 - Split the Frequent Service map and explainer into separate routes: the map is at `/research/frequent-service` and the story is at `/research/frequent-service/story`.
 - Verified SDMTS’s map wording and preserved its 60-minute regular-service note without misclassifying it as frequent service.

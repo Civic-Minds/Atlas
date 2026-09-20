@@ -641,9 +641,10 @@ export async function processGtfsBuffer(
 
     // Night Service must be evaluated before the daytime stop-headway bail-outs below: a
     // genuinely overnight-only route has no 9am–7pm data, so allStopHw would otherwise be empty
-    // and the feature would exit before ever receiving a true flag. Use the route-level map at
-    // either endpoint on the feature shape so routes that reuse one number for day/night patterns
-    // are evaluated together, while still avoiding unrelated branches that are not on this shape.
+    // and the feature would exit before ever receiving a true flag. Use the same shape/headsign-
+    // scoped map selected for the feature's other metrics. Using the route-level map here can
+    // pool departures from a different branch/pattern and make a route appear to cover the
+    // whole 2am–6am window when this rendered pattern does not (#518).
     const coords = (feature.geometry as { type: 'LineString'; coordinates: number[][] }).coordinates;
     const shapePts: [number, number][] = coords.map(([lon, lat]) => [lat, lon]);
     const nightShapeStops = projectStopsOntoShape([...stopMap.keys()], stopsById, shapePts)
@@ -654,7 +655,7 @@ export async function processGtfsBuffer(
     ].filter((id): id is string => id != null))];
     feature.properties.nightService = hasNightServiceAtShapeEndpoints(
       nightEndpointStopIds,
-      stopMap,
+      metricStopMap,
       stopDepsByGroupNight.get(gKey),
     );
 
