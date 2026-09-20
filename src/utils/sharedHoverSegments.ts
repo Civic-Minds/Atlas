@@ -1,7 +1,7 @@
 import type { ShapeProperties, HoveredBranch, DayType } from '../hooks/useIntervalStats';
 import type { AgencyLayers } from '../hooks/useAgencyData';
 import { clipBetweenStopIndices } from '../apps/corridor-geometry';
-import { headwayToTierColor } from './colors';
+import { headwayToTierColor, type ColorVisionMode } from './colors';
 
 /** Build clipped GeoJSON for the shared section of a hovered multi-branch direction. */
 export function buildSharedHoverSegments(
@@ -9,6 +9,7 @@ export function buildSharedHoverSegments(
   selectedRoute: string | null,
   hoveredBranch: HoveredBranch | null,
   day: DayType,
+  colorMode: ColorVisionMode = 'default',
 ): GeoJSON.Feature<GeoJSON.LineString>[] {
   if (!layers || !selectedRoute || !hoveredBranch?.isCore || (hoveredBranch.sharedStopIds?.length ?? 0) < 2) {
     return [];
@@ -48,7 +49,7 @@ export function buildSharedHoverSegments(
       type: 'Feature',
       geometry: { type: 'LineString', coordinates },
       properties: {
-        color: headwayToTierColor(hoveredBranch.sharedHeadway),
+        color: headwayToTierColor(hoveredBranch.sharedHeadway, colorMode),
         agencySlug,
         routeId,
         directionId: hoveredBranch.directionId,

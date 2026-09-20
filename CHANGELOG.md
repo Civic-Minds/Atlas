@@ -22,6 +22,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Night Service and History now share compact research-panel guidance and the same search treatment.
 - Public History now requires 10 distinct years of snapshots, so short archives do not appear as if they offer meaningful long-term history.
 - Fixed the History pill staying hidden when a history-enabled agency's selected route was rendered from map tiles instead of the in-memory map data.
+- Added a colour-blind friendly appearance setting with a clearer route palette and frequency-based line weights.
 - Google Analytics no longer loses the initial page view while privacy consent and the tracking script are initializing.
 - Fixed map route selection showing duplicate Calgary lines when the feed uses multiple internal IDs for one visible route.
 - Added a visible Feedback email link beside the map attribution for launch-period comments and feature requests.

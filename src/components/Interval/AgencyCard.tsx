@@ -6,6 +6,7 @@ import type { OpenInfoFn } from '../InfoPanel';
 import type { AgencyLayers } from '../../hooks/useAgencyData';
 import { FLOATING_CARD, PANEL_ENTER, CARD_NOTICE_FOOTER, CARD_NOTICE_INLINE, Z_PANEL, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH } from '../../styles';
 import { getFareColor, HEADWAY_TIERS } from '../../utils/colors';
+import { useColorVision } from '../../context/ColorVisionContext';
 import { effectiveMode, GTFS_RAIL_MODE_LABELS, isRailReplacementBus, VIRTUAL_LRT_MODE } from '../../../shared/modes';
 import { agencyDisplayParts, getRouteLabel, titleCase } from '../../utils/format';
 import type { DayType, TimePeriod, ShapeProperties } from '../../hooks/useIntervalStats';
@@ -280,6 +281,8 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
   fareOverride,
   onInfoOpen,
 }, ref) {
+  const { colorVisionFriendly } = useColorVision();
+  const colorMode = colorVisionFriendly ? 'friendly' : 'default';
   const routes = useMemo(
     () => getRoutes(layers, agency.slug, day, period, { maxHeadway, selectedModes, hideSpan }),
     [layers, agency.slug, day, period, maxHeadway, selectedModes, hideSpan],
@@ -364,7 +367,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
                     {baseFare != null ? (
                       <span
                         className="text-sm font-black px-2.5 py-0.5 rounded-full text-white"
-                        style={{ background: getFareColor(baseFare) }}
+                        style={{ background: getFareColor(baseFare, colorMode) }}
                       >
                         ${baseFare.toFixed(2)}
                       </span>

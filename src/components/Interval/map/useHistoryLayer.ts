@@ -3,12 +3,15 @@ import * as maplibregl from 'maplibre-gl';
 import { getTierColor } from '../../../hooks/useIntervalStats';
 import { useHistoryMapOverlay, type HistoryMapStop } from '../../../context/HistoryMapOverlay';
 import { StopCardHtml } from '../../../lib/mapHtml';
+import { useColorVision } from '../../../context/ColorVisionContext';
 
 /** History map layers: route shape, time-scrubber routes, and stop markers. */
 export function useHistoryLayer(
   mapRef: React.RefObject<maplibregl.Map | null>,
   mapLoaded: boolean,
 ) {
+  const { colorVisionFriendly } = useColorVision();
+  const colorMode = colorVisionFriendly ? 'friendly' : 'default';
   const { overlay: historyOverlay } = useHistoryMapOverlay();
   const [expandedStop, setExpandedStop] = useState<string | null>(null);
   const expandedStopRef = useRef<string | null>(null);
@@ -52,13 +55,13 @@ export function useHistoryLayer(
       const features = historyOverlay.historicalRouteGeometries.map(r => ({
         type: 'Feature' as const,
         geometry: { type: 'LineString' as const, coordinates: r.coordinates },
-        properties: { color: getTierColor(String(Math.min(60, Math.ceil(r.headway / 5) * 5))) || '#3b82f6' }
+        properties: { color: getTierColor(String(Math.min(60, Math.ceil(r.headway / 5) * 5)), colorMode) || '#3b82f6' }
       }));
       source.setData({ type: 'FeatureCollection', features });
     } else {
       source.setData({ type: 'FeatureCollection', features: [] });
     }
-  }, [historyOverlay, mapLoaded]);
+  }, [historyOverlay, mapLoaded, colorMode]);
 
   // History stop markers overlay
   useEffect(() => {

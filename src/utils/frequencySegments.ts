@@ -2,7 +2,7 @@ import type { ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
 import type { AgencyLayers } from '../hooks/useAgencyData';
 import type { PeriodKey } from '../../shared/config';
 import { clipBetweenStopIndices, clipLinestring } from '../apps/corridor-geometry';
-import { headwayToTierColor } from './colors';
+import { headwayToTierColor, type ColorVisionMode } from './colors';
 import { effectiveRouteHeadway } from './effectiveHeadway';
 
 /** Identifies one route feature (a single direction/headsign/day shape) for MapLibre filter matching. */
@@ -92,6 +92,7 @@ function addClippedSegments(
   ranges: Array<[number, number]>,
   maxHeadway: number,
   segments: GeoJSON.Feature<GeoJSON.LineString, FrequencySegmentProperties>[],
+  colorMode: ColorVisionMode,
   includeShapeEndpoints = false,
 ): boolean {
   if (feature.geometry.type !== 'LineString' || !p.stopPositions || !p.stopOrder) return false;
@@ -109,7 +110,7 @@ function addClippedSegments(
       type: 'Feature',
       geometry: { type: 'LineString', coordinates: clipped },
       properties: {
-        color: headwayToTierColor(maxHeadway),
+        color: headwayToTierColor(maxHeadway, colorMode),
         agencySlug: p.agencySlug ?? slug,
         routeId: p.routeId,
         routeBranch: (p as any).routeBranch ?? null,
@@ -149,6 +150,7 @@ export function computeFrequencySegmentOverlay(
   layers: AgencyLayers,
   period: TimePeriod,
   maxHeadway: number,
+  colorMode: ColorVisionMode = 'default',
 ): FrequencySegmentOverlay {
   const segments: GeoJSON.Feature<GeoJSON.LineString, FrequencySegmentProperties>[] = [];
   const partialMatches: FrequencySegmentRouteKey[] = [];
@@ -203,7 +205,7 @@ export function computeFrequencySegmentOverlay(
           type: 'Feature',
           geometry: { type: 'LineString', coordinates: clipped },
           properties: {
-            color: headwayToTierColor(repHw),
+            color: headwayToTierColor(repHw, colorMode),
             agencySlug: p.agencySlug ?? slug,
             routeId: p.routeId,
             routeBranch: (p as any).routeBranch ?? null,
@@ -266,7 +268,7 @@ export function computeFrequencySegmentOverlay(
             branchRanges.push([Math.min(...indices), Math.max(...indices)]);
           }
         }
-        if (branchRanges.length > 0 && addClippedSegments(branch.feature, branch.p, slug, branchRanges, maxHeadway, segments, true)) {
+        if (branchRanges.length > 0 && addClippedSegments(branch.feature, branch.p, slug, branchRanges, maxHeadway, segments, colorMode, true)) {
           markPartial(branch.p, slug);
         }
       }

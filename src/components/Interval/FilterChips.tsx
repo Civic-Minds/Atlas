@@ -10,6 +10,7 @@ import { agencyDisplayParts } from '../../utils/format';
 import { bboxInViewport } from '../../utils/agencySearch';
 import { FILTER_MODES } from '../../../shared/modes';
 import { DAY_TYPES, getNowDay, type DayType } from '../../../shared/dayTypes';
+import { useColorVision } from '../../context/ColorVisionContext';
 
 export { getNowDay };
 
@@ -219,6 +220,8 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
   setSelectedAgencies,
   bounds,
 }) => {
+  const { colorVisionFriendly } = useColorVision();
+  const colorMode = colorVisionFriendly ? 'friendly' : 'default';
   const [openChip, setOpenChip] = useState<ChipId | null>(null);
   const [agencyQuery, setAgencyQuery] = useState('');
   const agencySearchRef = useRef<HTMLInputElement>(null);
@@ -279,7 +282,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
               <p className="text-[8px] font-black text-[var(--text-dim)] uppercase tracking-widest mb-1.5">Frequency</p>
               <div className="flex flex-wrap gap-1">
                 {HEADWAY_TIERS.map(({ max, label }) => {
-                  const color = isFinite(max) ? getTierColor(String(max)) : 'var(--text-dim)';
+                  const color = isFinite(max) ? getTierColor(String(max), colorMode) : 'var(--text-dim)';
                   return (
                     <button key={label} onClick={() => setMaxHeadway(max)} className={compactOptBtn(maxHeadway === max)}>
                       <span className="w-1.5 h-1.5 rounded-full mr-1.5 shrink-0" style={{ background: color }} />
@@ -336,7 +339,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
           <div className={`${PANEL} w-36`}>
             {HEADWAY_TIERS.map(({ max, label }) => {
               const isSelected = maxHeadway === max;
-              const color = isFinite(max) ? getTierColor(String(max)) : 'var(--text-dim)';
+              const color = isFinite(max) ? getTierColor(String(max), colorMode) : 'var(--text-dim)';
               return (
                 <button
                   key={label}

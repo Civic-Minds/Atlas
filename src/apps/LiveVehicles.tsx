@@ -10,7 +10,8 @@ import { fetchAgencyGeo } from '../lib/agencyGeo';
 import { PANEL_SHELL, PANEL_ENTER, ICON_BTN, TRANSITION_SLOW, LIST_ROW_PRIMARY, LIST_ROW_DIM, PANEL_SIDEBAR, Z_HEADER, SIDEBAR_LEFT_FALLBACK, PANEL_TITLE_BAR, PANEL_TITLE, PANEL_CARD_HEADER, PANEL_SECTION_HEAD, PANEL_BODY, PANEL_EMPTY, SIDEBAR_PANEL_WIDTH } from '../styles';
 import RouteListRow from '../components/RouteListRow';
 import RouteCardTitle from '../components/RouteCardTitle';
-import { STATUS_COLORS } from '../utils/colors';
+import { getVehicleColors } from '../utils/colors';
+import { useColorVision } from '../context/ColorVisionContext';
 import { cleanRouteShortName, cleanRouteDisplayName, shortenAgencyName, agencyDisplayName, routeListCompanionName, liveVehicleRowLabel, vehicleModeWord } from '../utils/format';
 import { buildRouteServiceSummary, metricValueForPeriod } from '../utils/routeFacts';
 import { periodKeyForHour } from '../../shared/config';
@@ -76,6 +77,8 @@ function BrowseLiveAgenciesLink({ onInfoOpen }: { onInfoOpen?: OpenInfoFn }) {
 const MIN_LIVE_ZOOM = 9;
 
 export default function LiveVehicles({ agencies, lightMode, setLightMode, active, onInfoOpen, query, layers = {}, sidebarLeft, selectionActive = false }: Props) {
+  const { colorVisionFriendly } = useColorVision();
+  const colorMode = colorVisionFriendly ? 'friendly' : 'default';
   const { setOverlay } = useLiveVehiclesMapOverlay();
   const { bounds, zoom } = useViewport();
 
@@ -418,7 +421,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     return groups.map(g => {
       const key = `${g.agencySlug}::${g.routeShortName}`;
       const isSelected = selectedRoute === key;
-      const colors = STATUS_COLORS[g.dominantStatus];
+      const colors = getVehicleColors(g.dominantStatus, colorMode);
       const statusLabel = g.lateCount > 0
         ? `${g.lateCount} late`
         : g.earlyCount > 0
@@ -680,7 +683,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                       ? (vehiclesByDirection?.get(selectedDirection) ?? [])
                       : selectedGroup.vehicles
                     ).map((v, i) => {
-                      const colors = STATUS_COLORS[v.status];
+                      const colors = getVehicleColors(v.status, colorMode);
                       return (
                         <div key={v.id} className="flex items-start justify-between gap-3">
                           <div className="min-w-0">
