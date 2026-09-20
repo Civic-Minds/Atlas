@@ -23,6 +23,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Public History now requires 10 distinct years of snapshots, so short archives do not appear as if they offer meaningful long-term history.
 - Fixed the History pill staying hidden when a history-enabled agency's selected route was rendered from map tiles instead of the in-memory map data.
 - Google Analytics no longer loses the initial page view while privacy consent and the tracking script are initializing.
+- Fixed map route selection showing duplicate Calgary lines when the feed uses multiple internal IDs for one visible route.
 - Added a visible Feedback email link beside the map attribution for launch-period comments and feature requests.
 - Calgary overnight routes starting near the end of the window (such as LRT 201 and late-night buses) no longer pass as frequent overnight routes on the map or in the filter, and their cards now indicate limited service for routes running only part of the period instead of borrowing daytime frequencies ([#507](https://github.com/Civic-Minds/Atlas/issues/507)).
 - Calgary MAX route cards now show the terminal name without repeating the MAX service branding.
