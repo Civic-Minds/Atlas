@@ -1,14 +1,17 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Moon } from 'lucide-react';
+import { Moon, Search, X } from 'lucide-react';
+import { getNightServiceColor } from '../utils/colors';
+import { useColorVision } from '../context/ColorVisionContext';
 import { useViewport } from '../context/ViewportContext';
 import {
   FLOATING_CARD,
   PANEL_ENTER,
   PANEL_TITLE_BAR,
   PANEL_TITLE,
-  PANEL_HELPER,
   PANEL_BODY,
   PANEL_EMPTY,
+  SEARCH_PILL,
+  SEARCH_FIELD,
   Z_PANEL,
   SIDEBAR_LEFT_FALLBACK,
   SIDEBAR_PANEL_WIDTH,
@@ -42,7 +45,7 @@ interface Props {
   active?: boolean;
   sidebarLeft?: number;
   layers: Record<string, GeoJSON.FeatureCollection>;
-  query: string;
+  query?: string;
 }
 
 function featureIntersectsBounds(feature: GeoJSON.Feature, bounds: { s: number; w: number; n: number; e: number }): boolean {
@@ -64,9 +67,12 @@ function featureIntersectsBounds(feature: GeoJSON.Feature, bounds: { s: number; 
   return maxLon >= bounds.w && minLon <= bounds.e && maxLat >= bounds.s && minLat <= bounds.n;
 }
 
-export default function NightService({ active, sidebarLeft, layers, query }: Props) {
+export default function NightService({ active, sidebarLeft, layers, query = '' }: Props) {
+  const { colorVisionFriendly } = useColorVision();
+  const colorMode = colorVisionFriendly ? 'friendly' : 'default';
   const [data, setData] = useState<NightServiceIndexFile | null>(null);
   const [loadState, setLoadState] = useState<'loading' | 'ready' | 'error'>('loading');
+  const [filterQuery, setFilterQuery] = useState('');
   const { bounds } = useViewport();
   const visibleRouteKeys = useMemo(() => {
     if (!bounds || Object.keys(layers).length === 0) return null;
@@ -80,6 +86,14 @@ export default function NightService({ active, sidebarLeft, layers, query }: Pro
     }
     return keys;
   }, [bounds, layers]);
+  const [introDismissed, setIntroDismissed] = useState(() => {
+    try { return localStorage.getItem('atlas_pref_night_intro_dismissed') === '1'; } catch { return false; }
+  });
+  const dismissIntro = () => {
+    setIntroDismissed(true);
+    try { localStorage.setItem('atlas_pref_night_intro_dismissed', '1'); } catch {}
+  };
+
   useEffect(() => {
     fetch(`${R2_PUBLIC_URL}/atlas/night-service.json`, { cache: 'no-store' })
       .then(r => {
@@ -110,7 +124,7 @@ export default function NightService({ active, sidebarLeft, layers, query }: Pro
       entry.routes.set(summaryKey, summary);
       byAgency.set(route.agencySlug, entry);
     }
-    const q = query.trim().toLowerCase();
+    const q = (filterQuery || query).trim().toLowerCase();
     const list = [...byAgency.entries()].map(([slug, entry]) => ({ slug, ...entry, routes: [...entry.routes.values()] }));
     if (!q) return list;
     return list
@@ -124,7 +138,7 @@ export default function NightService({ active, sidebarLeft, layers, query }: Pro
         ),
       }))
       .filter(agency => agency.agencyName.toLowerCase().includes(q) || agency.routes.length > 0);
-  }, [data, query, visibleRouteKeys]);
+  }, [data, filterQuery, query, visibleRouteKeys]);
 
   if (!active) return null;
 
@@ -137,17 +151,56 @@ export default function NightService({ active, sidebarLeft, layers, query }: Pro
           <Moon className="w-3 h-3 text-[var(--text-dim)] shrink-0" />
           <span className={PANEL_TITLE}>Night Service</span>
         </div>
-        <p className={PANEL_HELPER}>
-          At least one departure every 60 minutes, 2am–6am, with no gap at either end of the core overnight window.
-        </p>
+
+        {data && !introDismissed && (
+          <div className="relative px-4 pt-2.5 pb-3 border-b border-[var(--border-primary)]">
+            <button
+              onClick={dismissIntro}
+              aria-label="Dismiss"
+              className="absolute top-2 right-2 text-[var(--text-dim)] hover:text-[var(--text-primary)]"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+            <p className="pr-5 text-[11px] font-black text-[var(--text-primary)] leading-snug">
+              Which routes actually run through the night?
+            </p>
+            <p className="mt-1 pr-5 text-[10px] text-[var(--text-dim)] font-bold leading-snug">
+              A route counts here only if it has a departure at least every 60 minutes,
+              2am to 6am, with no gap at either end of the core overnight window.
+            </p>
+            <p className="mt-1.5 text-[10px] font-bold" style={{ color: getNightServiceColor(colorMode) }}>
+              {data.routeCount} qualifying route patterns across {data.agencyCount} agencies.
+            </p>
+          </div>
+        )}
+        {data && introDismissed && (
+          <p className="px-4 pt-2 pb-1 text-[10px] text-[var(--text-dim)] font-bold leading-snug border-b border-[var(--border-primary)]">
+            {data.criteria}
+          </p>
+        )}
+
+        <div className="p-3 border-b border-[var(--border-primary)] shrink-0">
+          <div className={SEARCH_PILL}>
+            <Search className="w-3.5 h-3.5 text-[var(--text-dim)] shrink-0" />
+            <input
+              className={SEARCH_FIELD}
+              placeholder="Find an agency or route"
+              value={filterQuery}
+              onChange={e => setFilterQuery(e.target.value)}
+            />
+            {filterQuery && (
+              <button onClick={() => setFilterQuery('')} aria-label="Clear search">
+                <X className="w-3.5 h-3.5 text-[var(--text-dim)] hover:text-[var(--text-primary)]" />
+              </button>
+            )}
+          </div>
+        </div>
 
         <div className={PANEL_BODY}>
           {loadState === 'loading' && <p className={PANEL_EMPTY}>Loading…</p>}
           {loadState === 'error' && <p className={PANEL_EMPTY}>Couldn't load night service data.</p>}
           {loadState === 'ready' && agencies.length === 0 && (
-            <p className={PANEL_EMPTY}>
-              {query.trim() ? 'No agencies match that search.' : 'No qualifying agencies in this map area.'}
-            </p>
+            <p className={PANEL_EMPTY}>No agencies match that search.</p>
           )}
           {loadState === 'ready' && agencies.map(agency => (
             <div key={agency.slug}>

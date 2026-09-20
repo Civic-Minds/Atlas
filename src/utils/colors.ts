@@ -126,6 +126,11 @@ export function getFareColor(fare: number | null | undefined, mode: ColorVisionM
 /** Flat line color for Night Service view — every visible route already passed the
  * nightService filter, so (unlike fare/headway) there's no tier to express, just one color. */
 export const NIGHT_SERVICE_COLOR = '#818cf8';
+export const COLOR_VISION_NIGHT_SERVICE_COLOR = '#0072b2';
+
+export function getNightServiceColor(mode: ColorVisionMode = 'default'): string {
+  return mode === 'friendly' ? COLOR_VISION_NIGHT_SERVICE_COLOR : NIGHT_SERVICE_COLOR;
+}
 
 /** MapLibre case expression for fare-based line color. */
 export function buildFareColorExpression(mode: ColorVisionMode = 'default'): unknown[] {
@@ -175,9 +180,13 @@ export function buildDefaultRouteLineOpacityExpression(headwayExpr: unknown, par
 }
 
 /** Keep the normal zoom/headway visibility for background routes while spotlighting one route. */
-export function buildFocusedRouteLineOpacityExpression(routeMatch: unknown, headwayExpr: unknown): unknown[] {
+export function buildFocusedRouteLineOpacityExpression(routeMatch: unknown, headwayExpr: unknown, mode: ColorVisionMode = 'default'): unknown[] {
   const expr: unknown[] = ['interpolate', ['linear'], ['zoom']];
-  for (const [z, opacity] of [[8, 0.7], [11, 0.8], [14, 0.9]] as const) {
+  // The accessible palette is intentionally darker and more saturated. Keep its
+  // background routes visibly quieter when one route is selected so selection
+  // does not rely on colour alone.
+  const backgroundOpacities = mode === 'friendly' ? [0.3, 0.35, 0.4] : [0.7, 0.8, 0.9];
+  for (const [z, opacity] of [[8, backgroundOpacities[0]], [11, backgroundOpacities[1]], [14, backgroundOpacities[2]]] as const) {
     const backgroundOpacity = ['case', ['>', headwayExpr, headwayThresholdForZoom(z)], 0, opacity];
     expr.push(z, ['case', routeMatch, 1.0, backgroundOpacity]);
   }

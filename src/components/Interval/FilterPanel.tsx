@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Settings, X, Sun, Moon, Map as MapIcon, ArrowLeft, Search, ShieldCheck } from 'lucide-react';
-import { ICON_BTN, DROPDOWN_PANEL, SEARCH_FIELD, SEARCH_PILL, dropdownAnim, TRANSITION_BASE, Z_MODAL_TOP } from '../../styles';
+import { ICON_BTN, DROPDOWN_PANEL, SEARCH_FIELD, SEARCH_PILL, CONTROL_ACTIVE, CONTROL_INACTIVE, dropdownAnim, TRANSITION_BASE, Z_MODAL_TOP } from '../../styles';
 import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
 import { FILTER_MODES } from '../../../shared/modes';
 import { DAY_TYPES } from '../../../shared/dayTypes';
@@ -60,13 +60,13 @@ export function getHiddenFeedAgencies(agencies: Agency[]): Agency[] {
 function Toggle({ on }: { on: boolean }) {
   return (
     <span
-      className={`relative inline-flex h-5 w-9 shrink-0 rounded-full transition-colors ${TRANSITION_BASE} ${
-        on ? 'bg-[var(--accent)]' : 'bg-[var(--border-primary)]'
+      className={`relative inline-flex h-6 w-11 shrink-0 rounded-full transition-colors ${TRANSITION_BASE} ${
+        on ? 'bg-[var(--control-active-bg)]' : 'bg-[var(--control-inactive-border)]'
       }`}
     >
       <span
-        className={`absolute top-1 h-3 w-3 rounded-full bg-white shadow-sm transition-transform ${TRANSITION_BASE} ${
-          on ? 'translate-x-5' : 'translate-x-1'
+        className={`absolute top-1 h-4 w-4 rounded-full bg-white shadow-sm transition-transform ${TRANSITION_BASE} ${
+          on ? 'translate-x-6' : 'translate-x-1'
         }`}
       />
     </span>
@@ -117,8 +117,6 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
   const [view, setView] = useState<'settings' | 'hidden-routes' | 'degraded-feeds'>('settings');
   const [hiddenRoutes, setHiddenRoutes] = useState<HiddenRoute[]>([]);
   const [hiddenRoutesLoading, setHiddenRoutesLoading] = useState(false);
-  const [hiddenRoutesLoaded, setHiddenRoutesLoaded] = useState(false);
-  const [hiddenRoutesLoadError, setHiddenRoutesLoadError] = useState(false);
   const [hiddenRoutesQuery, setHiddenRoutesQuery] = useState('');
   const [hiddenRegionFilter, setHiddenRegionFilter] = useState<Set<string>>(new Set());
   const [degradedFeedsQuery, setDegradedFeedsQuery] = useState('');
@@ -135,36 +133,35 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
   }, [open]);
 
   useEffect(() => {
-    if (!open || hiddenRoutesLoaded) return;
+    if (!open) return;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') close();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [open]);
+
+  useEffect(() => {
+    if (view !== 'hidden-routes' || hiddenRoutes.length > 0) return;
     let cancelled = false;
     setHiddenRoutesLoading(true);
-    setHiddenRoutesLoadError(false);
     fetch(`${R2_PUBLIC_URL}/atlas/hidden-routes.json`, { cache: 'no-store' })
       .then(response => response.ok ? response.json() : { routes: [] })
       .then(data => {
         if (!cancelled) setHiddenRoutes(Array.isArray(data?.routes) ? data.routes : []);
       })
       .catch(() => {
-        if (!cancelled) {
-          setHiddenRoutes([]);
-          setHiddenRoutesLoadError(true);
-        }
+        if (!cancelled) setHiddenRoutes([]);
       })
       .finally(() => {
-        if (!cancelled) {
-          setHiddenRoutesLoading(false);
-          setHiddenRoutesLoaded(true);
-        }
+        if (!cancelled) setHiddenRoutesLoading(false);
       });
     return () => { cancelled = true; };
-  }, [open, hiddenRoutesLoaded]);
+  }, [hiddenRoutes.length, view]);
 
   const close = () => {
     setOpen(false);
     setView('settings');
-    setHiddenRoutes([]);
-    setHiddenRoutesLoaded(false);
-    setHiddenRoutesLoadError(false);
     setHiddenRoutesQuery('');
     setHiddenRegionFilter(new Set());
     setDegradedFeedsQuery('');
@@ -291,6 +288,9 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
           <div
             className={`${DROPDOWN_PANEL} ${dropdownAnim(visible)}`}
             onClick={e => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="settings-panel-title"
           >
             <div className="flex items-center justify-between px-5 py-2 border-b border-[var(--border-primary)] shrink-0">
               <div className="flex items-center gap-1.5">
@@ -303,7 +303,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                     <ArrowLeft className="w-3.5 h-3.5" />
                   </button>
                 )}
-                <h2 className="text-xs font-black text-[var(--text-primary)]">
+                <h2 id="settings-panel-title" className="text-xs font-black text-[var(--text-primary)]">
                   {view === 'hidden-routes'
                     ? 'Hidden routes'
                     : view === 'degraded-feeds'
@@ -349,11 +349,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                               return next;
                             })}
                             aria-pressed={active}
-                            className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition-colors whitespace-nowrap shrink-0 ${
-                              active
-                                ? 'bg-[var(--bg-btn-hover)] text-[var(--text-primary)] border-[var(--text-primary)]'
-                                : 'bg-[var(--bg-app)] text-[var(--text-muted)] border-[var(--border-primary)] hover:text-[var(--text-primary)] hover:border-[var(--text-dim)]'
-                            }`}
+                            className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition-colors whitespace-nowrap shrink-0 ${active ? CONTROL_ACTIVE : CONTROL_INACTIVE}`}
                           >
                             {region}
                           </button>
@@ -420,11 +416,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                             key={status}
                             onClick={() => setDegradedFeedsStatus(status)}
                             aria-pressed={degradedFeedsStatus === status}
-                            className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition-colors whitespace-nowrap ${
-                              degradedFeedsStatus === status
-                                ? 'bg-[var(--bg-btn-hover)] text-[var(--text-primary)] border-[var(--text-primary)]'
-                                : 'bg-[var(--bg-app)] text-[var(--text-muted)] border-[var(--border-primary)] hover:text-[var(--text-primary)] hover:border-[var(--text-dim)]'
-                            }`}
+                            className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition-colors whitespace-nowrap ${degradedFeedsStatus === status ? CONTROL_ACTIVE : CONTROL_INACTIVE}`}
                           >
                             {status === 'all' ? 'All' : qualityStatusLabel(status)}
                           </button>
@@ -490,6 +482,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                   <button
                     onClick={() => setLightMode(v => !v)}
                     aria-label="Toggle light/dark mode"
+                    aria-pressed={!lightMode}
                     className="shrink-0"
                   >
                     <Toggle on={!lightMode} />
@@ -499,13 +492,13 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                   <div className="flex items-center gap-3 min-w-0">
                     <span className="w-4 h-4 shrink-0 text-center text-[10px] font-black text-[var(--text-dim)]">◈</span>
                     <div className="min-w-0">
-                      <p className="text-[11px] font-bold text-[var(--text-primary)] leading-tight">Enhanced colour distinction</p>
+                      <p className="text-[11px] font-bold text-[var(--text-primary)] leading-tight">High contrast mode</p>
                       <p className="text-[10px] text-[var(--text-muted)] mt-1 leading-relaxed">Uses clearer colours and line weights to make routes easier to tell apart.</p>
                     </div>
                   </div>
                   <button
                     onClick={() => setColorVisionFriendly(v => !v)}
-                    aria-label="Toggle enhanced colour distinction"
+                    aria-label="Toggle high contrast mode"
                     className="shrink-0"
                   >
                     <Toggle on={colorVisionFriendly} />
@@ -519,8 +512,8 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                     <div className="flex items-start gap-3 min-w-0">
                       <MapIcon className="w-4 h-4 mt-0.5 shrink-0 text-[var(--text-dim)]" />
                       <div className="min-w-0">
-                      <p className="text-[11px] font-bold text-[var(--text-primary)] leading-tight">Persistent map legend</p>
-                      <p className="text-[10px] text-[var(--text-muted)] mt-1 leading-relaxed">Keeps the map key visible while you explore.</p>
+                        <p className="text-[11px] font-bold text-[var(--text-primary)] leading-tight">Persistent map legend</p>
+                        <p className="text-[10px] text-[var(--text-muted)] mt-1 leading-relaxed">Keeps the map key visible while you explore.</p>
                       </div>
                     </div>
                     <button
@@ -541,9 +534,9 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                   <p className="text-[10px] text-[var(--text-muted)] mt-1">These settings apply to the Frequency map.</p>
                 )}
               </div>
-              <div className="px-5 pb-3 flex flex-col">
+              <div className="px-5 pb-3 flex flex-col divide-y divide-[var(--border-primary)]">
                 {settings.map(({ id, icon: Icon, label, description }) => (
-                  <div key={id} className={`flex items-start justify-between gap-4 py-3 last:pb-2 transition-opacity ${TRANSITION_BASE} ${inFrequency ? 'opacity-100' : 'opacity-40'}`}>
+                  <div key={id} className={`flex items-start justify-between gap-4 py-4 last:pb-2 transition-opacity ${TRANSITION_BASE} ${inFrequency ? 'opacity-100' : 'opacity-40'}`}>
                     <div className="flex items-start gap-3 min-w-0">
                       <Icon className="w-4 h-4 mt-0.5 shrink-0 text-[var(--text-dim)]" />
                       <div className="min-w-0">
@@ -555,7 +548,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                               onClick={() => setView('hidden-routes')}
                               className="mt-1 text-[10px] text-[var(--accent)] hover:underline"
                             >
-                              See all hidden routes{hiddenRoutesLoaded && !hiddenRoutesLoadError ? ` (${hiddenRoutes.length.toLocaleString()})` : ''} →
+                              See all hidden routes{hiddenRoutes.length ? ` (${hiddenRoutes.length.toLocaleString()})` : ''} →
                             </button>
                           </>
                         )}
@@ -597,9 +590,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                           key={label}
                           onClick={() => setMaxHeadway?.(max)}
                           className={`h-7 px-2.5 flex items-center justify-center text-[10px] font-bold rounded-full border transition-colors ${
-                            active
-                              ? 'bg-[var(--accent-bg)] border-[var(--accent-border)] text-[var(--accent)]'
-                              : 'border-[var(--border-primary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                            active ? CONTROL_ACTIVE : CONTROL_INACTIVE
                           }`}
                         >
                           <span className="w-1.5 h-1.5 rounded-full mr-1.5 shrink-0" style={{ background: color }} />
@@ -621,9 +612,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                           key={dayType}
                           onClick={() => setDay?.(dayType)}
                           className={`flex-1 h-7 flex items-center justify-center text-[10px] font-bold rounded-full border transition-colors ${
-                            active
-                              ? 'bg-[var(--accent-bg)] border-[var(--accent-border)] text-[var(--accent)]'
-                              : 'border-[var(--border-primary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                            active ? CONTROL_ACTIVE : CONTROL_INACTIVE
                           }`}
                         >
                           {dayType}
@@ -644,9 +633,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                           key={key}
                           onClick={() => setPeriod?.(key)}
                           className={`h-7 px-2.5 flex items-center justify-center text-[10px] font-bold rounded-full border transition-colors ${
-                            active
-                              ? 'bg-[var(--accent-bg)] border-[var(--accent-border)] text-[var(--accent)]'
-                              : 'border-[var(--border-primary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                            active ? CONTROL_ACTIVE : CONTROL_INACTIVE
                           }`}
                         >
                           {label}
@@ -672,9 +659,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                             setSelectedModes(next);
                           }}
                           className={`h-7 px-2.5 flex items-center justify-center text-[10px] font-bold rounded-full border transition-colors ${
-                            active
-                              ? 'bg-[var(--accent-bg)] border-[var(--accent-border)] text-[var(--accent)]'
-                              : 'border-[var(--border-primary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                            active ? CONTROL_ACTIVE : CONTROL_INACTIVE
                           }`}
                         >
                           {label}

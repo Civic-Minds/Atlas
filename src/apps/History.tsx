@@ -2,12 +2,14 @@ import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { ChevronLeft, ChevronRight, X, Search, TrendingUp } from 'lucide-react';
 import { useHistoryMapOverlay } from '../context/HistoryMapOverlay';
 import { R2_PUBLIC_URL, type HeadwayByPeriod } from '../../shared/config';
-import { FLOATING_CARD, PANEL_ENTER, TRANSITION_SLOW, PANEL_HELPER, SEARCH_PILL, SEARCH_FIELD, LIST_ROW, Z_PANEL, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH } from '../styles';
+import { FLOATING_CARD, PANEL_ENTER, PANEL_ENTER_TOP, TRANSITION_SLOW, SEARCH_PILL, SEARCH_FIELD, LIST_ROW, CHIP_BASE, Z_PANEL, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH, CONTROL_ACTIVE, CONTROL_INACTIVE } from '../styles';
 import RouteListRow from '../components/RouteListRow';
 import { shortenAgencyName } from '../utils/format';
 import { useColorVision } from '../context/ColorVisionContext';
 import {
+  agencyHistoryTier,
   agencyQualifiesForHistory,
+  type HistoryTier,
 } from '../../shared/historyEligibility';
 
 export interface RouteSnapshot {
@@ -181,7 +183,7 @@ function RouteHistoryCard({
           {snaps.length >= 2 && (
             <button
               onClick={() => setShowChart(v => !v)}
-              className={`w-7 h-7 flex items-center justify-center rounded-full transition-colors shrink-0 ${showChart ? 'bg-[var(--accent)] text-white' : 'hover:bg-[var(--bg-btn-hover)] text-[var(--text-dim)] hover:text-[var(--text-primary)]'}`}
+              className={`w-7 h-7 flex items-center justify-center rounded-full border transition-colors shrink-0 ${showChart ? CONTROL_ACTIVE : 'hover:bg-[var(--bg-btn-hover)] text-[var(--text-dim)] hover:text-[var(--text-primary)]'}`}
               aria-label="Toggle chart"
             >
               <TrendingUp className="w-3.5 h-3.5" />
@@ -251,7 +253,7 @@ function RouteHistoryCard({
             const hw = snapHeadway(snap);
             const isLatest = i === 0;
             const hwColor = isLatest
-              ? worse ? 'text-red-500' : better ? 'text-green-500' : 'text-[var(--text-primary)]'
+              ? worse ? 'text-[var(--status-negative)]' : better ? 'text-[var(--status-positive)]' : 'text-[var(--text-primary)]'
               : 'text-[var(--text-dim)]';
             const delta = i < snaps.length - 1 ? hw - snapHeadway(snaps[i + 1]) : null;
             return (
@@ -261,7 +263,7 @@ function RouteHistoryCard({
                 </span>
                 <div className="flex items-center gap-2">
                   {delta !== null && delta !== 0 && (
-                    <span className={`text-[9px] font-bold ${delta > 0 ? 'text-red-400' : 'text-green-400'}`}>
+                    <span className={`text-[9px] font-bold ${delta > 0 ? 'text-[var(--status-negative)]' : 'text-[var(--status-positive)]'}`}>
                       {delta > 0 ? `+${delta}` : `${delta}`}
                     </span>
                   )}
@@ -273,8 +275,8 @@ function RouteHistoryCard({
         </div>
 
         {summary && (
-          <div className={`mx-4 mt-3 mb-4 rounded-xl px-3 py-2.5 ${summary.worse ? 'bg-red-500/10' : 'bg-green-500/10'}`}>
-            <p className={`text-xs font-bold leading-tight ${summary.worse ? 'text-red-500' : 'text-green-500'}`}>{summary.text}</p>
+          <div className={`mx-4 mt-3 mb-4 rounded-xl px-3 py-2.5 ${summary.worse ? 'bg-[var(--status-negative-bg)]' : 'bg-[var(--status-positive-bg)]'}`}>
+            <p className={`text-xs font-bold leading-tight ${summary.worse ? 'text-[var(--status-negative)]' : 'text-[var(--status-positive)]'}`}>{summary.text}</p>
             <p className="text-[10px] text-[var(--text-muted)] mt-0.5">{summary.subtext}</p>
             <p className="text-[10px] text-[var(--text-dim)] mt-1">Latest archived snapshot: {last.label}</p>
           </div>
@@ -298,6 +300,8 @@ function HistoryAgencyPanel({
   onRouteSelect: (routeShortName: string) => void;
 }) {
   const [routeQuery, setRouteQuery] = useState('');
+  const tier = agencyHistoryTier(agencyHistory) ?? 'recent';
+
   const minYear = useMemo(() => {
     const all = agencyHistory.routes.flatMap(r => r.snapshots.map(s => s.year));
     return all.length ? Math.min(...all) : 0;
@@ -558,14 +562,26 @@ export default function History({ active, initialAgencySlug, onInfoOpen, query, 
     }
   }, []);
 
+  const [depthFilter, setDepthFilter] = useState<'all' | HistoryTier>('all');
+  const [depthFilterOpen, setDepthFilterOpen] = useState(false);
+
   const filtered = useMemo(() => {
     const q = query.toLowerCase();
-    return !q ? historyAgencies : historyAgencies.filter(a =>
+    const byQuery = !q ? historyAgencies : historyAgencies.filter(a =>
       a.name.toLowerCase().includes(q) || a.region.toLowerCase().includes(q)
     );
-  }, [query, historyAgencies]);
+    if (depthFilter === 'all') return byQuery;
+    return byQuery.filter(a => agencyHistoryTier(a) === depthFilter);
+  }, [query, historyAgencies, depthFilter]);
 
-  const sortedAgencies = filtered;
+  /** Deeper-history agencies first when showing both; no visible grouping -- each row's own year range already says how far back it goes. */
+  const sortedAgencies = useMemo(() => {
+    if (depthFilter !== 'all') return filtered;
+    return [...filtered].sort((a, b) => {
+      const rank = (t: HistoryTier | null) => t === 'explore' ? 0 : 1;
+      return rank(agencyHistoryTier(a)) - rank(agencyHistoryTier(b));
+    });
+  }, [filtered, depthFilter]);
 
   const availableYears = useMemo(() => {
     if (!selectedSlug) return [];
@@ -626,9 +642,6 @@ export default function History({ active, initialAgencySlug, onInfoOpen, query, 
           className={`${FLOATING_CARD} max-h-[calc(100vh-104px)] overflow-y-auto custom-scrollbar transition-[opacity,transform] duration-200 ease-out ${showAgencyChooser || searchFocused ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}
           onMouseDown={e => e.preventDefault()}
         >
-          <p className={PANEL_HELPER}>
-            Compare route frequency across archived schedule snapshots.
-          </p>
           {query === '' && recentSearches.length > 0 ? (
             <>
               <div className="px-4 pt-3 pb-2 border-b border-[var(--border-primary)] flex items-center justify-between">
@@ -667,7 +680,38 @@ export default function History({ active, initialAgencySlug, onInfoOpen, query, 
                 </div>
               )}
               {historyData !== null && !historyLoadFailed && (
-                <div className="h-2" />
+                <div className="px-4 pt-3 pb-2 flex items-center justify-end relative">
+                  <button
+                    onClick={() => setDepthFilterOpen(v => !v)}
+                    className={`relative h-8 px-3.5 flex items-center justify-center ${CHIP_BASE} text-xs font-bold transition-colors whitespace-nowrap ${
+                      depthFilter !== 'all'
+                        ? CONTROL_ACTIVE
+                        : CONTROL_INACTIVE
+                    }`}
+                  >
+                    Filter
+                    {depthFilter !== 'all' && (
+                      <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-[var(--accent)] border border-[var(--bg-panel)]" />
+                    )}
+                  </button>
+                  {depthFilterOpen && (
+                    <div className={`absolute top-10 right-4 ${FLOATING_CARD} p-2 ${PANEL_ENTER_TOP} flex flex-col gap-1 w-40 z-10`}>
+                      {(['all', 'explore'] as const).map(opt => (
+                        <button
+                          key={opt}
+                          onClick={() => { setDepthFilter(opt); setDepthFilterOpen(false); }}
+                          className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-[11px] font-bold transition-all border text-left min-w-0 ${
+                            depthFilter === opt
+                              ? CONTROL_ACTIVE
+                              : CONTROL_INACTIVE
+                          }`}
+                        >
+                          {opt === 'all' ? 'All agencies' : '10+ years'}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               )}
               {historyData !== null && !historyLoadFailed && sortedAgencies.length === 0 && (
                 <p className="text-[11px] text-[var(--text-dim)] px-4 py-3">No agencies match.</p>

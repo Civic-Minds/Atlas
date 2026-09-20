@@ -13,6 +13,7 @@ import {
   Z_PANEL,
   SIDEBAR_LEFT_FALLBACK,
   SIDEBAR_PANEL_WIDTH,
+  SELECTION_ACTIVE,
 } from '../styles';
 import {
   buildStopCatalog,
@@ -105,7 +106,7 @@ function StopSuggestions({
             key={`${s.agencySlug}::${s.stopId}`}
             type="button"
             onMouseDown={e => { e.preventDefault(); onSelect(s); }}
-            className={`${LIST_ROW} ${i === highlight ? 'bg-[var(--accent-bg)]' : ''}`}
+            className={`${LIST_ROW} ${i === highlight ? SELECTION_ACTIVE : ''}`}
           >
             <span className={LIST_ROW_PRIMARY}>{s.displayName}</span>
           </button>

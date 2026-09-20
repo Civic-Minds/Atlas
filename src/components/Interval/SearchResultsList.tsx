@@ -1,5 +1,5 @@
 import React from 'react';
-import { PANEL_SECTION_HEAD, LIST_ROW_SPACED, LIST_ROW_PRIMARY, LIST_ROW_DIM } from '../../styles';
+import { PANEL_SECTION_HEAD, LIST_ROW_SPACED, LIST_ROW_PRIMARY, LIST_ROW_DIM, SELECTION_ACTIVE, SELECTION_ACTIVE_TEXT } from '../../styles';
 import type { AgencySearchGroup } from '../../utils/agencySearch';
 import type { RouteSearchResult, StopSearchResult } from '../../utils/searchResults';
 import RouteListRow from '../RouteListRow';
@@ -157,7 +157,7 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
         return (
           <button
             type="button"
-            className={`${LIST_ROW_SPACED} items-start gap-3 ${selectedStop === s.key ? 'bg-[var(--accent-bg)]' : ''}`}
+            className={`${LIST_ROW_SPACED} items-start gap-3 ${selectedStop === s.key ? SELECTION_ACTIVE : ''}`}
             onClick={() => {
               saveRecentSearch(query);
               setQuery('');
@@ -166,7 +166,7 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
             }}
           >
             <div className="min-w-0 flex-1">
-              <p className={`${LIST_ROW_PRIMARY} line-clamp-2 leading-snug ${selectedStop === s.key ? 'text-[var(--accent)]' : ''}`}>{name}</p>
+              <p className={`${LIST_ROW_PRIMARY} line-clamp-2 leading-snug ${selectedStop === s.key ? SELECTION_ACTIVE_TEXT : ''}`}>{name}</p>
               {s.stopCode && <p className={`${LIST_ROW_DIM} truncate mt-0.5`}>Stop {s.stopCode}</p>}
             </div>
             <div className="flex flex-col items-end text-right ml-2 shrink-0 min-w-0 max-w-[34%]">

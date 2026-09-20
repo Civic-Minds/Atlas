@@ -16,10 +16,30 @@ html {
   --border-primary: rgba(0, 0, 0, 0.1);
   --text-primary: #111827;
   --text-muted: #6b7280;
-  --text-dim: #9ca3af;
+  --text-dim: #767676;
+  --text-secondary: #374151;
   --bg-stat: rgba(0, 0, 0, 0.05);
   --bg-btn: rgba(0, 0, 0, 0.05);
   --bg-btn-hover: rgba(0, 0, 0, 0.1);
+  --bg-hover: var(--bg-btn-hover);
+  --control-active-bg: var(--accent-bg);
+  --control-active-border: var(--accent-border);
+  --control-active-fg: var(--accent);
+  --control-inactive-bg: var(--bg-btn);
+  --control-inactive-border: var(--border-primary);
+  --control-inactive-fg: var(--text-primary);
+  --control-hover-bg: var(--bg-btn-hover);
+  --selection-active-bg: var(--accent-bg);
+  --selection-active-border: var(--accent-border);
+  --selection-active-fg: var(--accent);
+  --action-primary-bg: var(--accent);
+  --action-primary-border: var(--accent);
+  --action-primary-fg: #ffffff;
+  --status-positive: #10b981;
+  --status-negative: #ef4444;
+  --status-caution: #f59e0b;
+  --status-positive-bg: rgba(16, 185, 129, 0.1);
+  --status-negative-bg: rgba(239, 68, 68, 0.1);
   --text-legend: #4b5563;
   --dim-route: #cbd5e1;
   /* Accent — change these two lines to retheme the whole app */
@@ -42,10 +62,12 @@ html {
   --border-primary: rgba(255, 255, 255, 0.1);
   --text-primary: #ffffff;
   --text-muted: rgba(255, 255, 255, 0.4);
-  --text-dim: rgba(255, 255, 255, 0.3);
+  --text-dim: rgba(255, 255, 255, 0.55);
+  --text-secondary: rgba(255, 255, 255, 0.8);
   --bg-stat: rgba(255, 255, 255, 0.05);
   --bg-btn: rgba(255, 255, 255, 0.05);
   --bg-btn-hover: rgba(255, 255, 255, 0.1);
+  --bg-hover: var(--bg-btn-hover);
   --text-legend: rgba(255, 255, 255, 0.7);
   --dim-route: #334155;
   /* Accent */
@@ -61,12 +83,65 @@ html {
   --status-danger-border: rgba(239, 68, 68, 0.35);
 }
 
+[data-color-vision='high-contrast'] {
+  --control-active-bg: #111827;
+  --control-active-border: #111827;
+  --control-active-fg: #f0f0f0;
+  --control-inactive-bg: #ffffff;
+  --control-inactive-border: #4b5563;
+  --control-inactive-fg: #111827;
+  --control-hover-bg: #e5e7eb;
+  --selection-active-bg: #e5e7eb;
+  --selection-active-border: #111827;
+  --selection-active-fg: #111827;
+  --action-primary-bg: #111827;
+  --action-primary-border: #111827;
+  --action-primary-fg: #ffffff;
+  --status-positive: #009e73;
+  --status-negative: #d55e00;
+  --status-caution: #e69f00;
+  --status-positive-bg: rgba(0, 158, 115, 0.14);
+  --status-negative-bg: rgba(213, 94, 0, 0.14);
+}
+
+[data-theme='dark'][data-color-vision='high-contrast'] {
+  --control-active-bg: #f0f0f0;
+  --control-active-border: #f0f0f0;
+  --control-active-fg: #111827;
+  --control-inactive-bg: #111827;
+  --control-inactive-border: #9ca3af;
+  --control-inactive-fg: #ffffff;
+  --control-hover-bg: #1f2937;
+  --selection-active-bg: #1f2937;
+  --selection-active-border: #f0f0f0;
+  --selection-active-fg: #ffffff;
+  --action-primary-bg: #f0f0f0;
+  --action-primary-border: #f0f0f0;
+  --action-primary-fg: #111827;
+}
+
 button {
   cursor: pointer;
 }
 
 button:disabled {
   cursor: not-allowed;
+}
+
+:where(button, a, input, select, textarea):focus-visible {
+  outline: 2px solid var(--accent) !important;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 /* Hide MapLibre default attribution — custom MapAttribution pill is the source of truth */

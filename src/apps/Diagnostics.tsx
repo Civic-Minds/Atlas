@@ -7,7 +7,7 @@ import { buildRouteFacts, metricValueForPeriod } from '../utils/routeFacts';
 import { TIME_PERIODS, type PeriodKey } from '../../shared/config';
 import { DAY_TYPES, getNowDay, type DayType } from '../../shared/dayTypes';
 import { FILTER_MODES, effectiveMode } from '../../shared/modes';
-import { SURFACE, FLOATING_CARD } from '../styles';
+import { SURFACE, FLOATING_CARD, CONTROL_ACTIVE, CONTROL_INACTIVE } from '../styles';
 import { CardReportButton } from '../components/Interval/cardUi';
 import { currentAtlasUrl } from '../utils/reportIssue';
 
@@ -59,9 +59,7 @@ function FilterPill({ active, onClick, children }: { active: boolean; onClick: (
       type="button"
       onClick={onClick}
       className={`h-7 px-2.5 flex items-center justify-center text-[10px] font-bold rounded-full border transition-colors ${
-        active
-          ? 'bg-[var(--accent-bg)] border-[var(--accent-border)] text-[var(--accent)]'
-          : 'border-[var(--border-primary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+        active ? CONTROL_ACTIVE : CONTROL_INACTIVE
       }`}
     >
       {children}
@@ -296,7 +294,7 @@ export default function Diagnostics({ agencies }: DiagnosticsProps) {
             {sortedRows.length} rows{isLoading ? ' · loading…' : ''}
           </span>
           {failedSlugs.size > 0 && (
-            <span className="text-[10px] font-bold text-red-500" title={[...failedSlugs].join(', ')}>
+            <span className="text-[10px] font-bold text-[var(--status-negative)]" title={[...failedSlugs].join(', ')}>
               {failedSlugs.size} agenc{failedSlugs.size === 1 ? 'y' : 'ies'} failed to load
             </span>
           )}

@@ -627,18 +627,18 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--text-dim)] shrink-0" />
               ) : vehiclesInViewport > 0 ? (
                 <span className="relative flex h-2 w-2 shrink-0">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--status-positive)] opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--status-positive)]" />
                 </span>
               ) : isLoading ? (
                 <span className="relative flex h-2 w-2 shrink-0">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500" />
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--status-caution)] opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--status-caution)]" />
                 </span>
               ) : hasAnyError ? (
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500 shrink-0" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--status-negative)] shrink-0" />
               ) : hasLiveElsewhere ? (
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500 shrink-0" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--status-caution)] shrink-0" />
               ) : (
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--text-dim)] shrink-0" />
               )}
@@ -795,7 +795,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
             ) : (
               <>
                 {errors.length > 0 && (
-                  <div className="flex items-center gap-1.5 px-4 py-2 border-b border-[var(--border-primary)] text-[10px] font-bold text-amber-500">
+                  <div className="flex items-center gap-1.5 px-4 py-2 border-b border-[var(--border-primary)] text-[10px] font-bold text-[var(--status-caution)]">
                     <WifiOff className="w-3 h-3 shrink-0" />
                     <span className="truncate">
                       {Object.entries(errorBySlug)
