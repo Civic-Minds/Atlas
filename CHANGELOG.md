@@ -16,6 +16,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Recovered RTS Gainesville’s current Fall 2026 GTFS source through May 2027.
 - Recovered SacRT’s current GTFS source through January 2027 after its portal URL changed.
 - Weekly GTFS refreshes now fall back to current Mobility Database feeds when a configured source is dated or expired.
+- Beta users can turn on a persistent map legend from Appearance to keep frequency and route-state meanings visible while exploring.
 - Night Service now retains agencies skipped during feed refreshes, keeping its directory aligned with the routes shown on the map ([#516](https://github.com/Civic-Minds/Atlas/issues/516)).
 - Night Service and History now share compact research-panel guidance and the same search treatment.
 - Public History now requires 10 distinct years of snapshots, so short archives do not appear as if they offer meaningful long-term history.

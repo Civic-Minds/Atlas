@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Settings, X, Sun, Moon, ArrowLeft, Search, ShieldCheck } from 'lucide-react';
+import { Settings, X, Sun, Moon, Map as MapIcon, ArrowLeft, Search, ShieldCheck } from 'lucide-react';
 import { ICON_BTN, DROPDOWN_PANEL, SEARCH_FIELD, SEARCH_PILL, dropdownAnim, TRANSITION_BASE, Z_MODAL_TOP } from '../../styles';
 import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
 import { FILTER_MODES } from '../../../shared/modes';
 import { DAY_TYPES } from '../../../shared/dayTypes';
 import { PERIOD_LABELS } from '../../hooks/useIntervalStats';
-import { R2_PUBLIC_URL } from '../../../shared/config';
+import { BETA_BUILD, R2_PUBLIC_URL } from '../../../shared/config';
 import type { Agency } from '../../App';
 import { agencyDisplayParts, formatStoredDate } from '../../utils/format';
 import { qualityStatusLabel } from '../../../shared/feedQuality';
@@ -37,6 +37,8 @@ interface FilterPanelProps {
   hideLowQuality: boolean;
   setHideLowQuality: (v: boolean | ((prev: boolean) => boolean)) => void;
   feedQualityEnabled?: boolean;
+  showMapLegend: boolean;
+  setShowMapLegend: (v: boolean | ((prev: boolean) => boolean)) => void;
 }
 
 export interface HiddenRoute {
@@ -104,12 +106,16 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
   hideLowQuality,
   setHideLowQuality,
   feedQualityEnabled = false,
+  showMapLegend,
+  setShowMapLegend,
 }) => {
   const [open, setOpen] = useState(false);
   const [visible, setVisible] = useState(false);
   const [view, setView] = useState<'settings' | 'hidden-routes' | 'degraded-feeds'>('settings');
   const [hiddenRoutes, setHiddenRoutes] = useState<HiddenRoute[]>([]);
   const [hiddenRoutesLoading, setHiddenRoutesLoading] = useState(false);
+  const [hiddenRoutesLoaded, setHiddenRoutesLoaded] = useState(false);
+  const [hiddenRoutesLoadError, setHiddenRoutesLoadError] = useState(false);
   const [hiddenRoutesQuery, setHiddenRoutesQuery] = useState('');
   const [hiddenRegionFilter, setHiddenRegionFilter] = useState<Set<string>>(new Set());
   const [degradedFeedsQuery, setDegradedFeedsQuery] = useState('');
@@ -126,26 +132,36 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
   }, [open]);
 
   useEffect(() => {
-    if (view !== 'hidden-routes' || hiddenRoutes.length > 0) return;
+    if (!open || hiddenRoutesLoaded) return;
     let cancelled = false;
     setHiddenRoutesLoading(true);
+    setHiddenRoutesLoadError(false);
     fetch(`${R2_PUBLIC_URL}/atlas/hidden-routes.json`, { cache: 'no-store' })
       .then(response => response.ok ? response.json() : { routes: [] })
       .then(data => {
         if (!cancelled) setHiddenRoutes(Array.isArray(data?.routes) ? data.routes : []);
       })
       .catch(() => {
-        if (!cancelled) setHiddenRoutes([]);
+        if (!cancelled) {
+          setHiddenRoutes([]);
+          setHiddenRoutesLoadError(true);
+        }
       })
       .finally(() => {
-        if (!cancelled) setHiddenRoutesLoading(false);
+        if (!cancelled) {
+          setHiddenRoutesLoading(false);
+          setHiddenRoutesLoaded(true);
+        }
       });
     return () => { cancelled = true; };
-  }, [hiddenRoutes.length, view]);
+  }, [open, hiddenRoutesLoaded]);
 
   const close = () => {
     setOpen(false);
     setView('settings');
+    setHiddenRoutes([]);
+    setHiddenRoutesLoaded(false);
+    setHiddenRoutesLoadError(false);
     setHiddenRoutesQuery('');
     setHiddenRegionFilter(new Set());
     setDegradedFeedsQuery('');
@@ -478,6 +494,27 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                 </div>
               </div>
 
+              {BETA_BUILD && (
+                <div className="px-5 pt-1 pb-3">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex items-start gap-3 min-w-0">
+                      <MapIcon className="w-4 h-4 mt-0.5 shrink-0 text-[var(--text-dim)]" />
+                      <div className="min-w-0">
+                      <p className="text-[11px] font-bold text-[var(--text-primary)] leading-tight">Persistent map legend</p>
+                      <p className="text-[10px] text-[var(--text-muted)] mt-1 leading-relaxed">Keeps the map key visible while you explore.</p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => setShowMapLegend(v => !v)}
+                      aria-label="Toggle persistent map legend"
+                      className="mt-0.5 shrink-0"
+                    >
+                      <Toggle on={showMapLegend} />
+                    </button>
+                  </div>
+                </div>
+              )}
+
               {/* Filters */}
               <div className="border-t border-[var(--border-primary)] px-5 pt-4 pb-1">
                 <p className="text-[9px] font-bold text-[var(--text-dim)]">Filters</p>
@@ -485,9 +522,9 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                   <p className="text-[10px] text-[var(--text-muted)] mt-1">These settings apply to the Frequency map.</p>
                 )}
               </div>
-              <div className="px-5 pb-3 flex flex-col divide-y divide-[var(--border-primary)]">
+              <div className="px-5 pb-3 flex flex-col">
                 {settings.map(({ id, icon: Icon, label, description }) => (
-                  <div key={id} className={`flex items-start justify-between gap-4 py-4 last:pb-2 transition-opacity ${TRANSITION_BASE} ${inFrequency ? 'opacity-100' : 'opacity-40'}`}>
+                  <div key={id} className={`flex items-start justify-between gap-4 py-3 last:pb-2 transition-opacity ${TRANSITION_BASE} ${inFrequency ? 'opacity-100' : 'opacity-40'}`}>
                     <div className="flex items-start gap-3 min-w-0">
                       <Icon className="w-4 h-4 mt-0.5 shrink-0 text-[var(--text-dim)]" />
                       <div className="min-w-0">
@@ -499,7 +536,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                               onClick={() => setView('hidden-routes')}
                               className="mt-1 text-[10px] text-[var(--accent)] hover:underline"
                             >
-                              See all hidden routes{hiddenRoutes.length ? ` (${hiddenRoutes.length.toLocaleString()})` : ''} →
+                              See all hidden routes{hiddenRoutesLoaded && !hiddenRoutesLoadError ? ` (${hiddenRoutes.length.toLocaleString()})` : ''} →
                             </button>
                           </>
                         )}

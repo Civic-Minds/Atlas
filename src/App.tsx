@@ -209,11 +209,18 @@ export default function App() {
     if (urlValue != null) return urlValue === '1';
     return localStorage.getItem('atlas_pref_hide_low_quality') === 'true';
   });
+  const [showMapLegend, setShowMapLegend] = useState(() => (
+    BETA_BUILD && typeof window !== 'undefined' && localStorage.getItem('atlas_pref_map_legend') === 'true'
+  ));
 
   useEffect(() => {
     if (BETA_BUILD) localStorage.setItem('atlas_pref_hide_low_quality', String(hideLowQuality));
     syncUrlParams({ quality: BETA_BUILD && hideLowQuality ? '1' : null });
   }, [hideLowQuality]);
+
+  useEffect(() => {
+    if (BETA_BUILD) localStorage.setItem('atlas_pref_map_legend', String(showMapLegend));
+  }, [showMapLegend]);
 
   const visibleAgencies = useMemo(
     () => hideLowQuality
@@ -597,6 +604,8 @@ export default function App() {
               hideLowQuality={hideLowQuality}
               setHideLowQuality={setHideLowQuality}
               feedQualityEnabled={BETA_BUILD}
+              showMapLegend={showMapLegend}
+              setShowMapLegend={setShowMapLegend}
             />
             {CORRIDORS_ENABLED && (
               <React.Suspense fallback={null}>
