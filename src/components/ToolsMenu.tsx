@@ -38,7 +38,12 @@ export default function ToolsMenu() {
         <div className={`absolute top-10 right-0 w-64 ${FLOATING_CARD} overflow-hidden ${Z_DROPDOWN} py-1.5`}>
           <a
             href="/apps/diagnostics/table"
-            onClick={() => setOpen(false)}
+            onClick={(event) => {
+              // Leave modified clicks to the browser so Command-click/Control-click can open
+              // the diagnostics table in a new tab without the menu state interfering.
+              if (event.metaKey || event.ctrlKey || event.shiftKey || event.button !== 0) return;
+              setOpen(false);
+            }}
             className="w-full flex items-center gap-3 px-3 py-2.5 text-left hover:bg-[var(--bg-hover)] transition-colors"
           >
             <Table2 className="w-5 h-5 text-[var(--text-dim)] shrink-0" />
