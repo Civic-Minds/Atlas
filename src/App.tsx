@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router';
 import { Map as MapIcon, Search, X, Info, History as HistoryIcon, Moon } from 'lucide-react';
-import { PILL_SURFACE, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_HEADER, SIDEBAR_LEFT_FALLBACK, CONTROL_ACTIVE, CONTROL_INACTIVE } from './styles';
+import { PILL_SURFACE, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_HEADER, SIDEBAR_LEFT_FALLBACK, CONTROL_ACTIVE, CONTROL_INACTIVE, APP_TAB_ACTIVE, APP_TAB_INACTIVE } from './styles';
 import { R2_PUBLIC_URL, getAgencyArtifactUrls, FEATURES, FEATURE_ROUTES } from '../shared/config';
 import { isAgencyVisibleInBrowser } from '../shared/agencyVisibility';
 import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig';
@@ -195,8 +195,6 @@ export default function App() {
   const [pendingHistoryRoute, setPendingHistoryRoute] = useState<{ slug: string; routeShortName: string } | null>(null);
   const [headerPortalEl, setHeaderPortalEl] = useState<Element | null>(null);
   const headerPortalRef = useCallback((el: HTMLDivElement | null) => { setHeaderPortalEl(el); }, []);
-  const [frequentServiceFilterPortalEl, setFrequentServiceFilterPortalEl] = useState<Element | null>(null);
-  const frequentServiceFilterPortalRef = useCallback((el: HTMLDivElement | null) => { setFrequentServiceFilterPortalEl(el); }, []);
 
   const headerLeftRef = useRef<HTMLDivElement>(null);
   const searchBarRef = useRef<HTMLDivElement>(null);
@@ -528,17 +526,14 @@ export default function App() {
                 href={inNight ? '/' : '/apps/night'}
                 aria-label={inNight ? 'Back to frequency map' : 'Night service'}
                 aria-pressed={inNight}
-                className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold border focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${inNight ? CONTROL_ACTIVE : CONTROL_INACTIVE}`}
+                className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold border focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${inNight ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
               >
                 <Moon className="w-3.5 h-3.5" />
                 <span>Night Service</span>
               </a>
             )}
             {FEATURES.frequentService && (
-              <>
-                <a href={inFrequentService ? '/' : FEATURE_ROUTES.frequentService.map} aria-label={inFrequentService ? 'Back to frequency map' : 'Frequent service research'} aria-pressed={inFrequentService} className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold ${inFrequentService ? 'bg-[var(--accent-bg)] border border-[var(--accent-border)] text-[var(--accent)]' : 'bg-[var(--bg-panel)] border border-[var(--border-primary)] hover:bg-[var(--bg-btn-hover)] text-[var(--text-secondary)]'}`}>Frequent Service</a>
-                {inFrequentService && <a href={FEATURE_ROUTES.frequentService.story} className="flex h-8 px-3 items-center rounded-full shrink-0 border border-[var(--border-primary)] bg-[var(--bg-panel)] text-xs font-bold text-[var(--text-secondary)] hover:bg-[var(--bg-btn-hover)]">Story</a>}
-              </>
+              <a href={inFrequentService ? '/' : FEATURE_ROUTES.frequentService.map} aria-label={inFrequentService ? 'Back to frequency map' : 'Frequent service research'} aria-pressed={inFrequentService} className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold border focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${inFrequentService ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}>Frequent Service</a>
             )}
           </>
         )}
@@ -558,11 +553,6 @@ export default function App() {
         </button>
       </div>
       </div>
-      {inFrequentService && (
-        <div className={`absolute top-[4.5rem] left-6 right-6 ${Z_HEADER} flex justify-center pointer-events-none`}>
-          <div ref={frequentServiceFilterPortalRef} className="flex items-center gap-2 pointer-events-auto" />
-        </div>
-      )}
       {FEATURES.beta && <AppUpdateBanner />}
 
       <main className="absolute inset-0 overflow-hidden">
@@ -659,7 +649,6 @@ export default function App() {
               onSelectedMapAgencyChange={setSelectedMapAgencySlug}
               onSelectionActiveChange={setIntervalSelectionActive}
               headerPortalContainer={headerPortalEl}
-              researchFilterPortalContainer={frequentServiceFilterPortalEl}
               sidebarLeft={sidebarLeft}
               searchBarWidth={searchBarWidth}
               searchEnterRef={searchEnterRef}

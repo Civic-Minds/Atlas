@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Restored Frequent Service's normal filter-row layout and made app selection visually unambiguous.
 - Removed the empty app separator and unified bottom-map pill typography for clearer controls and attribution.
 - Unified browser agency visibility and feature route metadata so beta data and routes use the same access policy.
 - Centralized feature exposure so beta navigation, routes, data, and controls use one registry.
