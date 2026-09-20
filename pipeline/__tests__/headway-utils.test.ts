@@ -54,7 +54,7 @@ describe('computePeriodCoverageHeadways', () => {
     expect(computePeriodCoverageHeadways([...plain, ...extended])).toMatchObject({ late: 10, overnight: 10 });
   });
 });
-import { adaptiveMedianHeadwayInWindow, computePeriodHeadways, computePeriodMaxGaps, computePeriodSustained, forCrossMidnightWindow, hasGenuineBranchPattern, hasSustainedFrequentService, hasSustainedNightService, headsignOverlapMinHeadway, isSustainedHeadway, medianHeadwayInWindow, nightServiceDepartureTimes, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow } from '../headway-utils';
+import { adaptiveMedianHeadwayInWindow, computePeriodHeadways, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, hasGenuineBranchPattern, hasSustainedFrequentService, hasSustainedNightService, headsignOverlapMinHeadway, isSustainedHeadway, medianHeadwayInWindow, nightServiceDepartureTimes, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow } from '../headway-utils';
 
 describe('medianHeadwayInWindow', () => {
   it('does not expose a sparse two-departure cluster as an hourly headway', () => {
@@ -473,6 +473,26 @@ describe('hasSustainedFrequentService', () => {
   it('respects custom window and gap parameters', () => {
     expect(hasSustainedFrequentService([420, 430, 440], 420, 440, 10)).toBe(true);
     expect(hasSustainedFrequentService([420, 440], 420, 440, 10)).toBe(false);
+  });
+});
+
+describe('computeResearchFrequentService', () => {
+  it('computes each threshold and window independently', () => {
+    const daytime15 = Array.from({ length: 49 }, (_, i) => 420 + i * 15);
+    const extended30 = Array.from({ length: 35 }, (_, i) => 420 + i * 30);
+    expect(computeResearchFrequentService([...daytime15, ...extended30])).toEqual({
+      daytime15: true,
+      daytime30: true,
+      extended15: false,
+      extended30: true,
+    });
+  });
+
+  it('requires coverage at both edges of the selected window', () => {
+    const completeDaytime = Array.from({ length: 25 }, (_, i) => 420 + i * 30);
+    expect(computeResearchFrequentService(completeDaytime).daytime30).toBe(true);
+    expect(computeResearchFrequentService([451, ...completeDaytime.slice(2)]).daytime30).toBe(false);
+    expect(computeResearchFrequentService([...completeDaytime, 1410]).extended30).toBe(false);
   });
 });
 

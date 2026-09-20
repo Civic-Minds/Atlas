@@ -4,7 +4,7 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import type { MapboxOverlay } from '@deck.gl/mapbox';
 import { LocateFixed, Plus, Minus, Link2, Flag } from 'lucide-react';
 import { routeKey } from '../../hooks/useIntervalStats';
-import { HEADWAY_TIERS, getHeadwayTiers, getNightServiceColor, buildFareColorExpression, buildDefaultRouteLineOpacityExpression, buildFocusedRouteLineOpacityExpression, buildZoomHeadwayGateExpression, type ColorVisionMode } from '../../utils/colors';
+import { HEADWAY_TIERS, getHeadwayTiers, getTierColor, getNightServiceColor, buildFareColorExpression, buildDefaultRouteLineOpacityExpression, buildFocusedRouteLineOpacityExpression, buildZoomHeadwayGateExpression, type ColorVisionMode } from '../../utils/colors';
 import { getRegionalView, saveView, getSavedView, getAgencyBounds } from '../../utils/regionView';
 import { useViewport } from '../../context/ViewportContext';
 import { useHistoryMapOverlay } from '../../context/HistoryMapOverlay';
@@ -27,8 +27,12 @@ import { computeFrequencySegmentOverlay, buildPartialMatchFilterExpression, broa
 import { buildSharedHoverSegments } from '../../utils/sharedHoverSegments';
 import { getMapContextAgenciesFromFeatures, isMapContextOutsideClick, type MapContextAgency } from '../../utils/mapContext';
 import { MapContextPanel } from './MapContextPanel';
+import { frequentServiceBand, frequentServiceFeatureKey, frequentServiceQueryKey, type FrequentServiceFrequency, type FrequentServiceWindow } from '../../../shared/frequentService';
+import { effectiveMode } from '../../../shared/modes';
 
 const CORRIDOR_BAND_COLOR = '#64748b';
+const FREQUENT_15_COLOR = HEADWAY_TIERS.find(tier => tier.max === 15)?.color ?? '#3da44d';
+const FREQUENT_30_COLOR = HEADWAY_TIERS.find(tier => tier.max === 30)?.color ?? '#e07b2a';
 
 /** Smallest-bbox agency containing a point — prefers a local agency over an overlapping regional one. */
 // Many agencies fall back to a fixed-size padding box around their center rather than a real
@@ -216,6 +220,11 @@ interface MapCanvasProps {
   setSelectedAgencySlug?: (slug: string | null) => void;
   fareView?: boolean;
   nightServiceView?: boolean;
+  frequentServiceView?: boolean;
+  frequentServiceDays?: DayType[];
+  frequentServiceFrequency?: FrequentServiceFrequency;
+  frequentServiceWindow?: FrequentServiceWindow;
+  selectedModes?: Set<number>;
   initialMapCenter?: { lat: number; lon: number; zoom: number };
   onTileLoadingChange?: (loading: boolean) => void;
   setQuery?: (q: string) => void;
@@ -266,6 +275,11 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   setSelectedAgencySlug,
   fareView = false,
   nightServiceView = false,
+  frequentServiceView = false,
+  frequentServiceDays = ['Weekday'],
+  frequentServiceFrequency = 15,
+  frequentServiceWindow = 'daytime',
+  selectedModes = new Set(),
   initialMapCenter,
   onTileLoadingChange,
   onClearSelection,
@@ -541,6 +555,9 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       if (map.getLayer('night-service-routes-hit-layer')) {
         routeHitLayers.push('night-service-routes-hit-layer');
       }
+      if (map.getLayer('frequent-service-routes-hit-layer')) {
+        routeHitLayers.push('frequent-service-routes-hit-layer');
+      }
       if (map.getLayer('frequency-qualifying-segments-hit-layer')) {
         routeHitLayers.push('frequency-qualifying-segments-hit-layer');
       }
@@ -613,11 +630,11 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   const frequencySegmentOverlay = useMemo(() => {
     // nightServiceView colors routes by a boolean nightService flag, not by headway tier --
     // the #317 overlay is a frequency-filter concept and doesn't apply there.
-    if (!showRouteLayers || fareView || nightServiceView || !filteredLayers) {
+    if (!showRouteLayers || fareView || nightServiceView || frequentServiceView || !filteredLayers) {
       return { segments: [], partialMatches: [] };
     }
-    return computeFrequencySegmentOverlay(filteredLayers, period, maxHeadway, colorMode);
-  }, [filteredLayers, period, maxHeadway, showRouteLayers, fareView, nightServiceView, colorMode]);
+    return computeFrequencySegmentOverlay(filteredLayers, period, maxHeadway);
+  }, [filteredLayers, period, maxHeadway, showRouteLayers, fareView, nightServiceView, frequentServiceView, colorMode]);
 
   const sharedHoverSegments = useMemo(
     () => buildSharedHoverSegments(layers, selectedRoute, hoveredBranch, day, colorMode),
@@ -631,6 +648,38 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       return feature.geometry.type === 'LineString' && properties?.nightService === true;
     }));
   }, [layers]);
+
+  const frequentServiceFeatures = useMemo(() => {
+    const key = frequentServiceQueryKey(frequentServiceFrequency, frequentServiceWindow);
+    const grouped = new Map<string, GeoJSON.Feature[]>();
+    for (const feature of Object.values(layers ?? {}).flatMap(collection => collection.features)) {
+      if (feature.geometry.type !== 'LineString') continue;
+      const props = feature.properties as Record<string, any> | null;
+      if (!props?.day || !frequentServiceDays.includes(props.day) || !props.researchFrequentService?.[key]) continue;
+      if (selectedModes.size > 0 && !selectedModes.has(effectiveMode({
+        routeType: props.routeType,
+        routeLongName: props.routeLongName,
+        routeShortName: props.routeShortName,
+        agencySlug: props.agencySlug,
+      }))) continue;
+      const group = grouped.get(frequentServiceFeatureKey(props)) ?? [];
+      group.push(feature);
+      grouped.set(frequentServiceFeatureKey(props), group);
+    }
+    const qualifyingKeys = new Set([...grouped.entries()]
+      .filter(([, features]) => new Set(features.map(feature => (feature.properties as any)?.day)).size === frequentServiceDays.length)
+      .map(([group]) => group));
+    return Object.values(layers ?? {}).flatMap(collection => collection.features.filter(feature => {
+      const props = feature.properties as Record<string, any> | null;
+      return feature.geometry.type === 'LineString' && props?.day === frequentServiceDays[0] && qualifyingKeys.has(frequentServiceFeatureKey(props));
+    }).map(feature => ({
+      ...feature,
+      properties: {
+        ...(feature.properties ?? {}),
+        frequentServiceBand: frequentServiceBand(feature.properties as Record<string, any>, frequentServiceWindow, frequentServiceFrequency),
+      },
+    })));
+  }, [frequentServiceDays, frequentServiceFrequency, frequentServiceWindow, layers, selectedModes]);
 
   useLayoutEffect(() => {
     frequencySegmentOverlayRef.current = frequencySegmentOverlay;
@@ -667,6 +716,17 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       map.setLayoutProperty('night-service-routes-hit-layer', 'visibility', nightServiceView ? 'visible' : 'none');
     }
   }, [nightServiceFeatures, nightServiceView, mapLoaded]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapLoaded) return;
+    const source = map.getSource('frequent-service-routes') as maplibregl.GeoJSONSource | undefined;
+    if (!source) return;
+    source.setData({ type: 'FeatureCollection', features: frequentServiceFeatures });
+    for (const id of ['frequent-service-routes-layer', 'frequent-service-routes-hit-layer']) {
+      if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', frequentServiceView ? 'visible' : 'none');
+    }
+  }, [frequentServiceFeatures, frequentServiceView, mapLoaded]);
 
   // Initialize MapLibre Map
   useEffect(() => {
@@ -786,6 +846,34 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         id: 'night-service-routes-hit-layer',
         type: 'line',
         source: 'night-service-routes',
+        paint: { 'line-color': '#000000', 'line-width': 18, 'line-opacity': 0 },
+        layout: { 'line-cap': 'round', 'line-join': 'round', visibility: 'none' },
+      });
+
+      map.addSource('frequent-service-routes', {
+        type: 'geojson',
+        data: { type: 'FeatureCollection', features: [] },
+      });
+      map.addLayer({
+        id: 'frequent-service-routes-layer',
+        type: 'line',
+        source: 'frequent-service-routes',
+        paint: {
+          'line-color': ['match', ['get', 'frequentServiceBand'], '15', FREQUENT_15_COLOR, FREQUENT_30_COLOR],
+          'line-width': ['interpolate', ['linear'], ['zoom'],
+            8, ['match', ['get', 'frequentServiceBand'], '15', 3.2, 2.0],
+            11, ['match', ['get', 'frequentServiceBand'], '15', 3.8, 2.5],
+            14, ['match', ['get', 'frequentServiceBand'], '15', 4.6, 3.2],
+            17, ['match', ['get', 'frequentServiceBand'], '15', 6.0, 4.5],
+          ],
+          'line-opacity': 0.9,
+        },
+        layout: { 'line-cap': 'round', 'line-join': 'round', visibility: 'none' },
+      });
+      map.addLayer({
+        id: 'frequent-service-routes-hit-layer',
+        type: 'line',
+        source: 'frequent-service-routes',
         paint: { 'line-color': '#000000', 'line-width': 18, 'line-opacity': 0 },
         layout: { 'line-cap': 'round', 'line-join': 'round', visibility: 'none' },
       });
@@ -1028,18 +1116,18 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     const source = map.getSource('local-routes') as maplibregl.GeoJSONSource | undefined;
     if (!source) return;
     source.setData(localRouteData);
-    const visibility = showRouteLayers && !nightServiceView ? 'visible' : 'none';
+    const visibility = showRouteLayers && !nightServiceView && !frequentServiceView ? 'visible' : 'none';
     if (map.getLayer('local-routes-layer')) map.setLayoutProperty('local-routes-layer', 'visibility', visibility);
     if (map.getLayer('local-routes-hit-layer')) map.setLayoutProperty('local-routes-hit-layer', 'visibility', visibility);
-  }, [localRouteData, mapLoaded, nightServiceView, showRouteLayers]);
+  }, [frequentServiceView, localRouteData, mapLoaded, nightServiceView, showRouteLayers]);
 
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapLoaded) return;
-    const visibility = showRouteLayers && pmtilesRoutesAvailable !== false ? 'visible' : 'none';
+    const visibility = showRouteLayers && !frequentServiceView && !nightServiceView && pmtilesRoutesAvailable !== false ? 'visible' : 'none';
     if (map.getLayer('routes-layer')) map.setLayoutProperty('routes-layer', 'visibility', visibility);
     if (map.getLayer('routes-hit-layer')) map.setLayoutProperty('routes-hit-layer', 'visibility', visibility);
-  }, [mapLoaded, pmtilesRoutesAvailable, showRouteLayers]);
+  }, [frequentServiceView, mapLoaded, nightServiceView, pmtilesRoutesAvailable, showRouteLayers]);
 
   // Single map click handler — avoids layer preventDefault blocking background deselect.
   useEffect(() => {
@@ -1377,6 +1465,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     // changes) they may temporarily not exist. Guard to avoid console spam.
     const hasRoutes = !!map.getLayer('routes-layer');
     const hasLocalRoutes = !!map.getLayer('local-routes-layer');
+    const hasFrequentRoutes = !!map.getLayer('frequent-service-routes-layer');
     const hasRoutesHit = !!map.getLayer('routes-hit-layer');
     const hasStops = !!map.getLayer('stops-layer');
 
@@ -1425,7 +1514,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
             : searchAnyField)
         : null;
       routeFilter = concatFilters(hasFare, searchClause);
-    } else if (nightServiceView) {
+    } else if (nightServiceView || frequentServiceView) {
       // Night Service is rendered from the loaded local GeoJSON overlay below. Keep the
       // global PMTiles route layer empty so it cannot duplicate or hide the local result.
       routeFilter = ['==', ['get', 'agencySlug'], ''];
@@ -1458,7 +1547,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       // Keep the transparent hit target in sync with the route line's zoom/headway
       // visibility gate. Without this, a route with no service in the active period
       // has an invisible but clickable 18px-wide hitbox (e.g. GO 37 at midday).
-      const hitRouteFilter = (!fareView && !nightServiceView)
+      const hitRouteFilter = (!fareView && !nightServiceView && !frequentServiceView)
         ? concatFilters(
             routeFilter,
             selectedRoute
@@ -1469,18 +1558,32 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       map.setFilter('routes-hit-layer', hitRouteFilter as any);
     }
 
-    if (hasRoutes || hasLocalRoutes) {
+    if (hasRoutes || hasLocalRoutes || hasFrequentRoutes) {
       // Apply color paint styling — fare view if requested and baseFare present, else tier
       let lineColorExpr: any;
       if (fareView) {
         lineColorExpr = buildFareColorExpression(colorMode);
       } else if (nightServiceView) {
         lineColorExpr = getNightServiceColor(colorMode);
+      } else if (frequentServiceView) {
+        lineColorExpr = '#f59e0b';
       } else {
         lineColorExpr = buildEffectiveHeadwayColorExpression(period, colorMode);
       }
 
       if (hasRoutes) map.setPaintProperty('routes-layer', 'line-color', lineColorExpr);
+      if (frequentServiceView && map.getLayer('frequent-service-routes-layer')) {
+        map.setPaintProperty('frequent-service-routes-layer', 'line-color', [
+          'match', ['get', 'frequentServiceBand'], '15', getTierColor('15', colorMode), getTierColor('30', colorMode),
+        ]);
+        map.setPaintProperty('frequent-service-routes-layer', 'line-width', [
+          'interpolate', ['linear'], ['zoom'],
+          8, ['match', ['get', 'frequentServiceBand'], '15', 3.2, 2.0],
+          11, ['match', ['get', 'frequentServiceBand'], '15', 3.8, 2.5],
+          14, ['match', ['get', 'frequentServiceBand'], '15', 4.6, 3.2],
+          17, ['match', ['get', 'frequentServiceBand'], '15', 6.0, 4.5],
+        ]);
+      }
 
       // Opacity based on route state (focused vs dimmed).
       // When a route is selected we keep other lines visible and clickable
@@ -1587,6 +1690,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         && !selectedRoute
         && !hoveredSearchRoute
         && !nightServiceView
+        && !frequentServiceView
         && !(selectedStop && routesForStop?.siblingIdsByAgency);
       if (map.getLayer('frequency-qualifying-segments-layer')) {
         map.setLayoutProperty(
@@ -1634,7 +1738,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       }
     }
 
-  }, [mapLoaded, q, selectedRoute, hoveredSearchRoute, hoveredBranch, selectedStop, routesForStop, maxHeadway, zoom, showRouteLayers, liveRoutesOnly, filterToAgencies, agencies, tileFilter, fareView, nightServiceView, historyOverlay, layers, frequencySegmentOverlay, colorMode]);
+  }, [mapLoaded, q, selectedRoute, hoveredSearchRoute, hoveredBranch, selectedStop, routesForStop, maxHeadway, zoom, showRouteLayers, liveRoutesOnly, filterToAgencies, agencies, tileFilter, fareView, nightServiceView, frequentServiceView, historyOverlay, layers, frequencySegmentOverlay, colorMode]);
 
   // Force-reset route paint when selection clears (guards against stuck highlight state).
   useEffect(() => {

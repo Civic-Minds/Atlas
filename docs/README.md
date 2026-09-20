@@ -30,6 +30,8 @@ Use this page as the documentation index. The root [README](../README.md) explai
 - [Research](RESEARCH.md)
 - [Population context](DATA_POPULATION.md)
 - [Frequent network criteria](DATA_FREQUENT_NETWORK.md)
+- [200-agency frequent-service research review](research/frequent-service-pilot-2026-09.md)
+- [Frequent-service agency catalog](research/frequent-service-catalog.json)
 
 ## Contribution and policy
 

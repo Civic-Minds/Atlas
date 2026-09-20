@@ -22,6 +22,19 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Night Service and History now share compact research-panel guidance and the same search treatment.
 - Public History now requires 10 distinct years of snapshots, so short archives do not appear as if they offer meaningful long-term history.
 - Fixed the History pill staying hidden when a history-enabled agency's selected route was rendered from map tiles instead of the in-memory map data.
+- Added a reproducible analysis of the 500-agency frequent-service catalog, separating named definitions from broader numeric frequency tiers so Atlas can make a source-backed sample-specific research claim.
+- Added a beta-only Frequent Service research view for comparing 15- and 30-minute service across selected days and time spans.
+- Frequent Service research now reuses the existing mode filter so users can compare frequency by bus, rail, subway, or other modes.
+- Frequent Service research exposes its two frequency thresholds inline for faster comparison.
+- Frequent Service's 30-minute view now distinguishes ≤15-minute routes from the 16–30-minute group using the shared frequency colours and line weights.
+- Frequent Service research exposes its two service spans inline for faster comparison.
+- Frequent Service research keeps the shared Settings panel available for route and feed visibility controls.
+- Fixed a misleading “outside the active frequency filter” notice when selecting routes from the Frequent Service research map.
+- Improved enhanced colour distinction with a shared, higher-contrast palette for frequency tiers across map views.
+- Improved filter button readability by keeping inactive minutes and time-period options at normal text contrast.
+- Made selected minutes and time-period options visually obvious with a filled high-contrast state.
+- Kept the regular filter appearance by reserving the filled high-contrast button state for Enhanced colour distinction mode.
+- Applied the same normal-versus-enhanced button treatment inside filter menus for consistent controls.
 - Added a colour-blind friendly appearance setting with a clearer route palette and frequency-based line weights.
 - Clarified route cards when a direction has no service in the selected time period.
 

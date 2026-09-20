@@ -50,6 +50,7 @@ export interface ShapeProperties {
    *  properties, not usable for map filters/expressions (#317). */
   stopOrder?: string[];
   stopPositions?: number[];
+  researchFrequentService?: { daytime15: boolean; daytime30: boolean; extended15: boolean; extended30: boolean };
 }
 
 export type AgencyLayers = Record<string, GeoJSON.FeatureCollection>;
