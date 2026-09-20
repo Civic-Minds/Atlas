@@ -534,7 +534,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                   <p className="text-[10px] text-[var(--text-muted)] mt-1">These settings apply to the Frequency map.</p>
                 )}
               </div>
-              <div className="px-5 pb-3 flex flex-col divide-y divide-[var(--border-primary)]">
+              <div className="px-5 pb-3 flex flex-col">
                 {settings.map(({ id, icon: Icon, label, description }) => (
                   <div key={id} className={`flex items-start justify-between gap-4 py-4 last:pb-2 transition-opacity ${TRANSITION_BASE} ${inFrequency ? 'opacity-100' : 'opacity-40'}`}>
                     <div className="flex items-start gap-3 min-w-0">
