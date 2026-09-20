@@ -1,0 +1,40 @@
+import audit from '../../docs/research/system-map-audit-2026-09.json';
+
+const storyThresholds = [5, 10, 12, 15, 20, 30];
+const records = audit.records.filter(record => record.country === 'Canada' || record.country === 'United States');
+export const frequentServiceStoryResearchRecord = records.find(record => record.agencyId === 'ttc') ?? records[0];
+const categoryCounts = {
+  numericDefinition: records.filter(record => record.status === 'numeric_definition_on_map').length,
+  qualitativeDefinition: records.filter(record => record.status === 'qualitative_definition_on_map').length,
+  noDefinitionFound: records.filter(record => record.status === 'no_definition_on_map').length,
+  mapUnavailable: records.filter(record => record.status === 'map_unavailable').length,
+};
+const representativeNumericRecords = records.filter(record => Number.isInteger(record.representativeThresholdMinutes));
+
+export const frequentServiceStoryStats = {
+  agenciesReviewed: records.length,
+  agenciesWithUsableEvidence: records.length - categoryCounts.mapUnavailable,
+  reviewedAt: 'September 18, 2026',
+  countryCounts: Object.entries(records.reduce<Record<string, number>>((counts, record) => {
+    counts[record.country] = (counts[record.country] ?? 0) + 1;
+    return counts;
+  }, {})).map(([country, agencies]) => ({ country, agencies })),
+  categoryCounts,
+  namedNumericAgencies: representativeNumericRecords.length,
+  noDefinitionFound: categoryCounts.noDefinitionFound,
+  countries: new Set(records.map(record => record.country)).size,
+  headwayBars: storyThresholds.map(minutes => ({
+    minutes,
+    agencies: representativeNumericRecords.filter(record => record.representativeThresholdMinutes === minutes).length,
+  })),
+};
+
+export const frequentServiceCoverageStats = [
+  { country: 'Canada', populationBase: '24.98M', fifteenMinute: '8.72%', thirtyMinute: '22.98%', metros: '37 CMAs', fifteenMinuteMetros: '13' },
+  { country: 'United States', populationBase: '207.31M', fifteenMinute: '6.03%', thirtyMinute: '13.63%', metros: '124 metros', fifteenMinuteMetros: '62' },
+] as const;
+
+export const frequentServiceCoverageInterpretation = {
+  canadaThirtyToFifteenRatio: '2.6',
+  unitedStatesThirtyToFifteenRatio: '2.3',
+};

@@ -23,8 +23,8 @@
     },
     "categories": {
       "explicit_numeric_definition": 205,
-      "explicit_qualitative_definition": 32,
-      "formal_definition_without_named_frequent_label": 8,
+      "explicit_qualitative_definition": 26,
+      "formal_definition_without_named_frequent_label": 14,
       "no_definition_found": 255
     }
   },
@@ -77,8 +77,8 @@
     }
   },
   "namedNumericThresholds": {
-    "agencyCount": 91,
-    "observationCount": 110,
+    "agencyCount": 86,
+    "observationCount": 103,
     "publishedThresholdMinutes": {
       "1": 1,
       "2": 4,
@@ -89,35 +89,64 @@
       "7": 7,
       "8": 3,
       "9": 3,
-      "10": 15,
+      "10": 14,
       "11": 1,
       "12": 8,
-      "14": 1,
       "15": 75,
       "16": 1,
       "20": 14,
-      "30": 22,
-      "45": 1,
-      "60": 4,
-      "75": 1,
-      "90": 1
+      "30": 21,
+      "60": 1
+    },
+    "agencyCountsByPublishedThreshold": {
+      "1": 1,
+      "2": 2,
+      "3": 1,
+      "4": 1,
+      "5": 6,
+      "6": 7,
+      "7": 7,
+      "8": 3,
+      "9": 3,
+      "10": 12,
+      "11": 1,
+      "12": 6,
+      "15": 69,
+      "16": 1,
+      "20": 13,
+      "30": 19,
+      "60": 1
+    },
+    "agencyCountsByMaximumPublishedHeadway": {
+      "10": 3,
+      "12": 2,
+      "15": 51,
+      "20": 11,
+      "30": 18,
+      "60": 1
+    },
+    "agencyCountsByStoryThreshold": {
+      "10": 3,
+      "12": 2,
+      "15": 52,
+      "20": 11,
+      "30": 18
     }
   },
   "namedFrequentEvidence": {
-    "agencyCount": 134,
-    "observationCount": 172,
+    "agencyCount": 120,
+    "observationCount": 146,
     "byCountry": {
-      "Canada": 41,
-      "France": 13,
+      "Canada": 38,
+      "France": 9,
       "Mexico": 1,
-      "United States": 79
+      "United States": 72
     }
   },
   "serviceContext": {
     "numericDefinitionAgenciesByGeography": {
       "2.9-mile downtown loop": 1,
       "31-line frequent network": 2,
-      "99 B-Line": 1,
       "A line": 1,
       "A-train": 2,
       "A, B, and C": 1,
@@ -169,7 +198,6 @@
       "Epinal city centre": 1,
       "established routes": 1,
       "Eugene Station–UO–Hilyard/30th": 1,
-      "express network": 1,
       "Express Route 27X": 1,
       "express routes": 4,
       "Feeder Route 3/5": 1,
@@ -206,7 +234,7 @@
       "local coverage": 1,
       "Local Frequent routes": 1,
       "local loop": 2,
-      "local network": 3,
+      "local network": 1,
       "local routes": 7,
       "lower-demand coverage areas": 1,
       "Main Avenue Trolley": 1,
@@ -227,7 +255,7 @@
       "Navy Stadium–Annapolis central business district": 1,
       "neighborhood network": 1,
       "neighborhoods, downtowns, and major destinations": 1,
-      "network": 30,
+      "network": 28,
       "network map": 5,
       "network, excluding two neighborhood routes": 1,
       "network/core": 1,
@@ -250,14 +278,12 @@
       "principal bus network": 1,
       "rail network": 3,
       "Rapid and Local Frequent routes": 3,
-      "rapid bus corridors": 1,
       "RAPID NW": 2,
       "Rapid routes": 1,
       "Red Route, Lebanon–West Lebanon": 1,
       "regional backbone network": 1,
       "regional corridor": 1,
       "regional corridors": 1,
-      "regional network": 1,
       "regular fixed routes": 1,
       "regular fixed-route network": 1,
       "regular network": 1,
@@ -276,8 +302,8 @@
       "route network": 10,
       "route planning standard": 1,
       "route/corridor": 3,
-      "route/network": 54,
-      "route/product": 3,
+      "route/network": 52,
+      "route/product": 2,
       "route/service type": 1,
       "route/spine": 1,
       "routes 1, 3, 8, 10, and 11 examples": 1,
@@ -336,13 +362,13 @@
     "numericDefinitionAgenciesByMode": {
       "automated people mover": 7,
       "automated rail": 2,
-      "bus": 434,
+      "bus": 426,
       "bus and ION light rail": 1,
-      "bus and rail": 9,
+      "bus and rail": 8,
       "bus and SkyTrain": 1,
       "bus and streetcar": 1,
       "bus rapid transit": 8,
-      "bus_rapid_transit": 3,
+      "bus_rapid_transit": 2,
       "bus/rail": 5,
       "commuter rail": 3,
       "ferry": 1,
@@ -350,7 +376,6 @@
       "light_rail": 2,
       "metro": 2,
       "rail": 15,
-      "rail and bus": 1,
       "streetcar": 4,
       "tram": 6,
       "tram and bus": 2,
@@ -385,7 +410,8 @@
       "sourceCount": 1,
       "sourceUrls": [
         "https://cdn.ttc.ca/-/media/Project/TTC/DevProto/Images/Home/Routes-and-Schedules/Landing-page-pdfs/TTC_SystemMap.pdf?rev=88203dbcf60c47738cf9acc980c45cad"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "calgary",
@@ -399,7 +425,8 @@
       "sourceUrls": [
         "https://www.calgarytransit.com/content/dam/transit/rider-information/System%20Map%20Dec%202025.pdf",
         "https://www.calgarytransit.com/plans---projects/long-term-strategic-plans/service-guidelines.html"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "translink-vancouver",
@@ -428,7 +455,8 @@
       "sourceCount": 1,
       "sourceUrls": [
         "https://www.translink.ca/plans-and-projects/projects/frequent-transit-network"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "stm-montreal",
@@ -474,7 +502,8 @@
       "sourceCount": 1,
       "sourceUrls": [
         "https://www.stm.info/fr/infos/reseaux/le-reseau-des-bus-et-les-horaires-expliques/lignes-frequentes"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "septa",
@@ -504,7 +533,8 @@
       "sourceUrls": [
         "https://wwww.septa.org/maps/",
         "https://wwww.septa.org/initiatives/bus/maps-signs/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "victoria",
@@ -548,7 +578,8 @@
       "sourceCount": 1,
       "sourceUrls": [
         "https://www.bctransit.com/wp-content/uploads/591/806/6983_VIC_RG-v5.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "edmonton",
@@ -578,7 +609,8 @@
       "sourceUrls": [
         "https://www.edmonton.ca/sites/default/files/public-files/ETS-Day-Map-May-2025.pdf?cb=1750622712",
         "https://www.edmonton.ca/ets/riding-ets/ets/riding-ets"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "winnipeg",
@@ -663,7 +695,8 @@
       "sourceCount": 1,
       "sourceUrls": [
         "https://www.winnipeg.ca/services-programs/transportation-roads-parking/transit/understanding-network"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "kingcountymetro",
@@ -692,7 +725,8 @@
       "sourceCount": 1,
       "sourceUrls": [
         "https://kingcounty.gov/en/-/media/king-county/depts/metro/maps/system/09142024/metro-system-map-central"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "miami-dade-transit",
@@ -782,7 +816,8 @@
       "sourceCount": 1,
       "sourceUrls": [
         "https://www.miamidade.gov/transit/library/better-bus-network-resilence-plan.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "ottawa",
@@ -812,7 +847,8 @@
       "sourceUrls": [
         "https://www.octranspo.com/en/our-services/bus-o-train-network/",
         "https://www.octranspo.com/images/files/maps/network_maps/NWTB_System_Map_2025_%28MASTER%29_BRT_27April2025_V1.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "york-region",
@@ -853,7 +889,8 @@
       "sourceUrls": [
         "https://www.yrt.ca/en/schedules-and-maps/resources/Documents/system-maps/YRT_FrequentTransitMap_May2025.pdf",
         "https://www.yrt.ca/en/schedules-and-maps/resources/YRT-SystemMap_Web_Aug2025.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "miway",
@@ -867,7 +904,8 @@
       "sourceUrls": [
         "https://www.mississauga.ca/miway-transit/maps/transit-system-maps/",
         "https://www.mississauga.ca/miway-transit/maps/miway-route-maps/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "mbta",
@@ -896,7 +934,8 @@
       "sourceCount": 1,
       "sourceUrls": [
         "https://mbta.getanchor.io/maps.html"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "la-metro",
@@ -920,28 +959,14 @@
           "days": "weekdays",
           "geography": "network",
           "mode": "bus and rail"
-        },
-        {
-          "tierIndex": 1,
-          "label": "Less frequent service",
-          "kind": "service_class",
-          "namedFrequency": true,
-          "numericFrequency": false,
-          "publishedThresholdMinutes": [
-            15
-          ],
-          "thresholdText": "Below 15 minutes; map line weight distinction",
-          "span": "varies",
-          "days": "varies",
-          "geography": "route/network",
-          "mode": "bus and rail"
         }
       ],
       "sourceCount": 2,
       "sourceUrls": [
         "https://www.metro.net/riding/schedules/",
         "https://cdn.beta.metro.net/wp-content/uploads/2026/05/04165451/26-1718_SysOverview_HiFreq_online_DCR.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "sound-transit",
@@ -985,7 +1010,8 @@
       "sourceCount": 1,
       "sourceUrls": [
         "https://www.soundtransit.org/sites/default/files/documents/2025-service-plan.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "wmata",
@@ -1029,7 +1055,8 @@
       "sourceCount": 1,
       "sourceUrls": [
         "https://www.wmata.com/ride/maps.html?alerts-widget-next-train-all=G02"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "cta",
@@ -1058,7 +1085,8 @@
       "sourceCount": 1,
       "sourceUrls": [
         "https://lapi.transitchicago.com/frequent/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "trimet",
@@ -1118,7 +1146,8 @@
       "sourceUrls": [
         "https://www.trimet.org/howtoride/index.htm",
         "https://www.trimet.org/schedules/frequentservice.htm"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "rtd-denver",
@@ -1163,7 +1192,8 @@
       "sourceUrls": [
         "https://www.rtd-denver.com/service-development/faqs",
         "https://www.rtd-denver.com/es/community/news/2026/10-things-you-didn-t-know-about-the-a-line-as-it-reaches-a-decade-of-service"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "uta",
@@ -1210,7 +1240,8 @@
       "sourceUrls": [
         "https://vehiclelocator.rideuta.com/Services/Go-Route",
         "https://www.rideuta.com/-/media/Files/Current-Projects/Five-Year-Service-Plan/UTA_Five_Year_Service_Plan2023_FINAL.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": 15
     },
     {
       "agencyId": "vta",
@@ -1220,19 +1251,6 @@
       "reviewStatus": "qualitative_definition_only",
       "category": "explicit_numeric_definition",
       "evidence": [
-        {
-          "tierIndex": 0,
-          "label": "Rapid bus",
-          "kind": "service_class",
-          "namedFrequency": true,
-          "numericFrequency": false,
-          "publishedThresholdMinutes": null,
-          "thresholdText": "Frequent limited-stop product; numeric threshold not stated in current reviewed page",
-          "span": "varies",
-          "days": "varies",
-          "geography": "route/product",
-          "mode": "bus"
-        },
         {
           "tierIndex": 1,
           "label": "Frequent bus",
@@ -1253,7 +1271,8 @@
       "sourceUrls": [
         "https://www.vta.org/about/vta-transit-service-guidelines",
         "https://www.vta.org/projects/transit-service-plan"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "sdmts",
@@ -1281,7 +1300,8 @@
       "sourceUrls": [
         "https://www.sdmts.com/getting-around/maps-and-schedules",
         "https://www.sdmts.com/sites/default/files/attachments/mts_designingfortransit_2018-02-02web.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "halifax",
@@ -1313,7 +1333,8 @@
       "sourceCount": 1,
       "sourceUrls": [
         "https://www.halifax.ca/transportation/halifax-transit/moving-forward-together/part-6-measuring-success"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "bart",
@@ -1358,7 +1379,8 @@
       "sourceUrls": [
         "https://www.bart.gov/news/articles/2021/news20210603",
         "https://www.bart.gov/news/articles/2021/news20210729"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "lethbridge",
@@ -1405,7 +1427,8 @@
       "sourceUrls": [
         "https://www.lethbridge.ca/media/0nmdnz5c/transit-master-plan-2017.pdf",
         "https://www.lethbridge.ca/media/t2wnioeg/tmp_final_fulltechnical_oct25_stamped.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "medicine-hat",
@@ -1418,7 +1441,8 @@
       "sourceCount": 1,
       "sourceUrls": [
         "https://gis.medicinehat.ca/arcgistest/rest/services/Transit/Transit/FeatureServer"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "red-deer",
@@ -1446,7 +1470,8 @@
       "sourceUrls": [
         "https://secure.reddeer.ca/city-services/transit/routes-and-schedules/regular-routes/",
         "https://www.reddeer.ca/city-government/plans-and-projects/ongoing-plans-and-projects/moving-red-deer-forward/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "fort-mcmurray",
@@ -1476,7 +1501,8 @@
       "sourceUrls": [
         "https://www.rmwb.ca/news/posts/big-changes-are-coming-to-rmwb-transit-starting-aug-22/",
         "https://www.rmwb.ca/media/dtdbbmwz/rmwb-transit-master-plan-march-28-2023.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "campbell-river",
@@ -1484,29 +1510,14 @@
       "country": "Canada",
       "region": "British Columbia",
       "reviewStatus": "qualitative_definition_only",
-      "category": "explicit_qualitative_definition",
-      "evidence": [
-        {
-          "tierIndex": 0,
-          "label": "Route 1 service",
-          "kind": "service_class",
-          "namedFrequency": true,
-          "numericFrequency": false,
-          "publishedThresholdMinutes": [
-            20
-          ],
-          "thresholdText": "Sample schedule shows approximately 20-minute departures in the morning; no named frequent tier located",
-          "span": "route-specific",
-          "days": "weekday sample",
-          "geography": "route",
-          "mode": "bus"
-        }
-      ],
+      "category": "formal_definition_without_named_frequent_label",
+      "evidence": [],
       "sourceCount": 2,
       "sourceUrls": [
         "https://www.bctransit.com/campbell-river/schedules-and-maps/route-overview/?route=1",
         "https://www.bctransit.com/open-data/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "comox-valley",
@@ -1534,7 +1545,8 @@
       "sourceUrls": [
         "https://www.bctransit.com/wp-content/uploads/388/809/4501_COM_TF_Report_web.pdf",
         "https://www.bctransit.com/plans-and-projects/comox-valley-transit-exchanges/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "cowichan",
@@ -1548,7 +1560,8 @@
       "sourceUrls": [
         "https://www.bctransit.com/cowichan-valley/schedules-and-maps/",
         "https://www.bctransit.com/wp-content/uploads/319/712/COW201203_CowichanValley_Transit_Future_Plan0.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "bc-fraser-valley",
@@ -1576,7 +1589,8 @@
       "sourceUrls": [
         "https://www.bctransit.com/wp-content/uploads/841/234/9399_CFV_TFAP_Report_122019.pdf",
         "https://www.bctransit.com/wp-content/uploads/2024/05/2024-05-21-Chilliwack-and-FVRD-TFAP_final.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "kamloops",
@@ -1606,7 +1620,8 @@
       "sourceUrls": [
         "https://www.bctransit.com/wp-content/uploads/479/304/2540_KAM_TF_ExecSummary_0924120.pdf",
         "https://www.bctransit.com/wp-content/uploads/413/874/Kamloops-Transit-Future-Action-Plan-Executive-Summary0.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "kelowna",
@@ -1647,7 +1662,8 @@
       "sourceUrls": [
         "https://www.bctransit.com/government-partnership-improves-kelowna-transit-service/",
         "https://www.bctransit.com/rutland-transit-improvements-support-rapidbus/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "nanaimo",
@@ -1678,7 +1694,8 @@
       "sourceUrls": [
         "https://www.bctransit.com/wp-content/uploads/874/805/nan_map_nanaimo0.pdf",
         "https://www.bctransit.com/nanaimo-introduces-transit-network-and-service-changes/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "pemberton",
@@ -1692,7 +1709,8 @@
       "sourceUrls": [
         "https://www.bctransit.com/pemberton-valley/schedules-and-maps/",
         "https://www.bctransit.com/pemberton-valley/schedules-and-maps/route-overview/?route=100"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "south-okanagan",
@@ -1722,7 +1740,8 @@
       "sourceUrls": [
         "https://www.bctransit.com/wp-content/uploads/40/407/5530_SOK_TF_Report_WEB0.pdf",
         "https://www.bctransit.com/south-okanagan-similkameen/schedules-and-maps/route-overview/?route=1"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "squamish",
@@ -1750,7 +1769,8 @@
       "sourceUrls": [
         "https://engage.bctransit.com/squamish2025?tool=survey_tool",
         "https://www.bctransit.com/squamish/schedules-and-maps/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "whistler",
@@ -1764,7 +1784,8 @@
       "sourceUrls": [
         "https://www.bctransit.com/whistler/schedules-and-maps/",
         "https://www.bctransit.com/whistler/schedules-and-maps/holiday/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "brandon",
@@ -1794,7 +1815,8 @@
       "sourceUrls": [
         "https://council.brandon.ca/Paperless/Uploads/1042/Transit%20Master%20Plan.pdf",
         "https://www.brandon.ca/media/paljh4be/transit_plan.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "codiac",
@@ -1824,7 +1846,8 @@
       "sourceUrls": [
         "https://www5.moncton.ca/docs/councilmeetings/2026/COTW/2026-01-26-COTW-Agenda-Full.pdf",
         "https://www.codiactranspo.ca/moncton-transport/schedules-routes"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "fredericton",
@@ -1884,7 +1907,8 @@
       "sourceUrls": [
         "https://pub-fredericton.escribemeetings.com/filestream.ashx?DocumentId=14694",
         "https://www.fredericton.ca/resident-services/fredericton-transit/schedule-maps"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "saint-john",
@@ -1915,7 +1939,8 @@
       "sourceUrls": [
         "https://saintjohn.ca/sites/default/files/documents/SJT%20Stantec%20Audit%202020.pdf",
         "https://saintjohn.ca/en/transit/transforming-transit"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "metrobus",
@@ -1962,7 +1987,8 @@
       "sourceUrls": [
         "https://www.metrobus.com/PDF/StJohnsTransitReview2019.pdf",
         "https://www.metrobus.com/eNews/June/2026/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "yellowknife",
@@ -2008,7 +2034,8 @@
       "sourceUrls": [
         "https://contacts.yellowknife.ca/en/living-here/new_routes.aspx",
         "https://contacts.yellowknife.ca/en/living-here/schedules-and-maps.aspx"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "barrie",
@@ -2041,7 +2068,8 @@
       "sourceUrls": [
         "https://barrie.legistar.com/View.ashx?GUID=D5A4339A-1E6A-47E7-9785-9685CBE4751A&ID=12027672&M=F",
         "https://www.barrie.ca/Transit-Network-Map.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "belleville",
@@ -2055,7 +2083,8 @@
       "sourceUrls": [
         "https://www.belleville.ca/walk-ride-and-drive/transit/",
         "https://www.belleville.ca/news/posts/belleville-transit-route-and-schedule-updates-take-effect-sept-8/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "brampton",
@@ -2087,7 +2116,8 @@
       "sourceUrls": [
         "https://www1.brampton.ca/EN/residents/transit/plan-your-trip/Documents/BramptonTransit_FrequencyGuide.pdf",
         "https://www1.brampton.ca/EN/residents/transit/plan-your-trip/Pages/Schedules-and-Maps.aspx"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "burlington",
@@ -2117,7 +2147,8 @@
       "sourceUrls": [
         "https://www.burlington.ca/en/transit/resources/Schedules-and-Routes/Schedules-and-Maps/System-Map---Frequency---2025-Nov.pdf",
         "https://www.burlington.ca/en/transit/schedules-and-routes.aspx"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "cornwall",
@@ -2145,7 +2176,8 @@
       "sourceUrls": [
         "https://www.cornwall.ca/en/city-hall/resources/Master-Plans/10.25.17-Cornwall-TMP---Final-Report_Part1.pdf",
         "https://www.cornwall.ca/en/public-safety-transportation/transit/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "drt",
@@ -2192,7 +2224,8 @@
       "sourceUrls": [
         "https://www.durhamregiontransit.com/travelling-with-us/service-guidelines/",
         "https://www.durhamregiontransit.com/en/routes-and-schedules/resources/DRTSystemMap_October2025.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "go",
@@ -2216,26 +2249,14 @@
           "days": "not specified",
           "geography": "corridor/network",
           "mode": "rail"
-        },
-        {
-          "tierIndex": 1,
-          "label": "Existing GO network",
-          "kind": "service_class",
-          "namedFrequency": true,
-          "numericFrequency": false,
-          "publishedThresholdMinutes": null,
-          "thresholdText": "System map and schedules are route-specific; no agency-wide frequent threshold located",
-          "span": "route-specific",
-          "days": "varies",
-          "geography": "network",
-          "mode": "rail and bus"
         }
       ],
       "sourceCount": 2,
       "sourceUrls": [
         "https://www.gotransit.com/en/the-future-and-go/union-station/benefits",
         "https://www.gotransit.com/en/system-map"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "grt",
@@ -2267,7 +2288,8 @@
       "sourceUrls": [
         "https://www.grt.ca/about-grt/plans-and-projects/grt-business-plan/",
         "https://www.grt.ca/en/about-grt/resources/GRT-Business-Plan-2017-2021.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "sudbury",
@@ -2295,7 +2317,8 @@
       "sourceUrls": [
         "https://pub-greatersudbury.escribemeetings.com/filestream.ashx?documentid=3962",
         "https://www.greatersudbury.ca/live/transit/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "guelph",
@@ -2325,7 +2348,8 @@
       "sourceUrls": [
         "https://guelph.ca/wp-content/uploads/Shaping-Guelph-Official-Plan-Amendment-80.pdf",
         "https://guelph.ca/wp-content/uploads/Guelph-Transit-Future-Ready-Action-Plan-Full-10-Year-Implementation-Plan.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "hamilton",
@@ -2358,7 +2382,8 @@
       "sourceUrls": [
         "https://www.hamilton.ca/home-neighbourhood/hsr/hsr-next",
         "https://www.hamilton.ca/home-neighbourhood/hsr/schedule-route-tools/trip-planning-tools"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "kingston",
@@ -2388,7 +2413,8 @@
       "sourceUrls": [
         "https://getinvolved.cityofkingston.ca/kingston-transit-service-standards?tool=news_feed",
         "https://www.kingstontransit.ca/schedules-and-maps/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "london",
@@ -2419,7 +2445,8 @@
       "sourceUrls": [
         "https://www.londontransit.ca/wp-content/uploads/2018/01/RouteStructureGuidline.pdf",
         "https://www.londontransit.ca/enclosure-ii-12-month-assessment-of-2017-service-changes/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "milton",
@@ -2450,7 +2477,8 @@
       "sourceUrls": [
         "https://www.milton.ca/en/living-in-milton/resources/2019_-_2023_Milton_Transit_Services_Review_and_Master_Plan_Update.pdf",
         "https://www.milton.ca/en/living-in-milton/transit-master-plan.aspx"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "niagara",
@@ -2480,7 +2508,8 @@
       "sourceUrls": [
         "https://www.niagararegion.ca/2041/pdf/tmp-transit-strategy.pdf",
         "https://www.niagararegion.ca/priorities/documents/transit-service-and-governance-strategy-final-report.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "north-bay",
@@ -2494,7 +2523,8 @@
       "sourceUrls": [
         "https://northbay.ca/services-payments/north-bay-transit/system-map/",
         "https://northbay.ca/services-payments/north-bay-transit/transit-routes-schedules/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "oakville",
@@ -2541,7 +2571,8 @@
       "sourceUrls": [
         "https://pub-oakville.escribemeetings.com/filestream.ashx?DocumentId=76723",
         "https://www.oakvilletransit.ca/schedules-maps/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "orangeville",
@@ -2555,7 +2586,8 @@
       "sourceUrls": [
         "https://www.orangeville.ca/en/living-here/schedules-and-map.aspx",
         "https://www.orangeville.ca/en/living-here/resources/Documents/Transit/SCHEDULES-Website_2026.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "orillia",
@@ -2569,7 +2601,8 @@
       "sourceUrls": [
         "https://www.orillia.ca/roads-and-environment/getting-around/transit/transit-schedule-and-fares/",
         "https://www.orillia.ca/en/living-here/resources/Transit/Transit-Map---2026---FRONT.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "owen-sound",
@@ -2583,7 +2616,8 @@
       "sourceUrls": [
         "https://www.owensound.ca/living-here/public-transit/city-bus-service/",
         "https://www.owensound.ca/media/fngpjncx/owen-sound-existing-services-web.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "chatham-kent",
@@ -2597,7 +2631,8 @@
       "sourceUrls": [
         "https://www.chatham-kent.ca/transit/travellingwithus/Pages/How-we-Operate.aspx/1000",
         "https://www.chatham-kent.ca/transit/routes/Pages/Inter-Urban-Routes.aspx"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "sarnia",
@@ -2611,7 +2646,8 @@
       "sourceUrls": [
         "https://www.sarnia.ca/living-here/getting-around/sarnia-transit/",
         "https://www.sarnia.ca/app/uploads/2023/03/Sarnia-Tranist-Map-and-Schedule-Effective-March-19-2023.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "simcoe",
@@ -2625,7 +2661,8 @@
       "sourceUrls": [
         "https://simcoe.ca/residents/linx-transit/",
         "https://simcoe.ca/residents/linx-transit/routes-schedules/route-4/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "st-thomas",
@@ -2639,7 +2676,8 @@
       "sourceUrls": [
         "https://www.stthomas.ca/UserFiles/Servers/Server_12189721/File/City%20Hall/Positioned%20for%20Growth/PJR_St.%20Thomas_Final_Feb%202020_app_compressed.pdf",
         "https://stthomas.hosted.civiclive.com/living_here/localmotion/plan_a_trip/routes___schedules"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "stratford",
@@ -2653,7 +2691,8 @@
       "sourceUrls": [
         "https://www.stratford.ca/en/inside-city-hall/resources/INFRASTRUCTURE-SERVICES/ENGINEERING/Transportation-Master-Plan-2023/TMP_App1_Needs_Opportunities.pdf",
         "https://www.stratford.ca/live-here/transportation/transit/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "thunder-bay",
@@ -2667,7 +2706,8 @@
       "sourceUrls": [
         "https://pub-thunderbay.escribemeetings.com/filestream.ashx?DocumentId=6057",
         "https://pub-thunderbay.escribemeetings.com/filestream.ashx?DocumentId=11054"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "timmins",
@@ -2697,7 +2737,8 @@
       "sourceUrls": [
         "https://www.timmins.ca/our_services/timmins_transit/timmins_transit_on-demand",
         "https://www.timmins.ca/our_services/timmins_transit/maps_schedules/101_e_south_porcupine_and_porcupine"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "windsor",
@@ -2762,7 +2803,8 @@
       "sourceUrls": [
         "https://www.citywindsor.ca/Documents/residents/transit-windsor/about-transit/Transit%20Windsor%20-%20More%20Than%20Transit%20-%20Compiled%20Final%20Report.pdf",
         "https://www.citywindsor.ca/newsroom/transit-windsor-expands-service-with-20000-additional-hours"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "upexpress",
@@ -2792,7 +2834,8 @@
       "sourceUrls": [
         "https://www.upexpress.com/en/about-up",
         "https://www.upexpress.com/en/service-alerts"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "t3-transit",
@@ -2806,7 +2849,8 @@
       "sourceUrls": [
         "https://www.t3transit.ca/routes?lang=en",
         "https://www.t3transit.ca/transit-pei-schedules"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "exo-presquile",
@@ -2820,7 +2864,8 @@
       "sourceUrls": [
         "https://exo.quebec/en/customer-service/surveys-consultations/bus-reconfiguration/LaPresquile",
         "https://exo.quebec/fr/service-clientele/sondages-consultations/refonte-autobus"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "exo-laurentides",
@@ -2834,7 +2879,8 @@
       "sourceUrls": [
         "https://exo.quebec/fr/a-propos/medias-publications/communiques-presse/printemps-2026-nouvel-horaire-d-autobus-d-exo-des-le-23-mars-sur-la-couronne-nord",
         "https://exo.quebec/fr/service-clientele/sondages-consultations/refonte-autobus"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "exo-lrrs",
@@ -2848,7 +2894,8 @@
       "sourceUrls": [
         "https://exo.quebec/fr/planifier-trajet/refonte-reseau-autobus/richelain-roussillon",
         "https://exo.quebec/fr/service-clientele/voyagez-101/serviceensoiree"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "exo-sudouest",
@@ -2862,7 +2909,8 @@
       "sourceUrls": [
         "https://exo.quebec/en/customer-service/surveys-consultations/bus-reconfiguration/haut-saint-laurent-sud-ouest",
         "https://exo.quebec/fr/a-propos/medias-publications/communiques-presse/secteurs-Sud-Ouest-et-Haut-Saint-Laurent-nouvelles-etapes"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "exo-terrebonne",
@@ -2876,7 +2924,8 @@
       "sourceUrls": [
         "https://exo.quebec/fr/planifier-trajet/autobus/MRCLM",
         "https://exo.quebec/contents/item/display/87800373"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "exo",
@@ -2890,7 +2939,8 @@
       "sourceUrls": [
         "https://exo.quebec/fr/planifier-trajet/train/mascouche/0/11640?transportTypeBus=autobus",
         "https://exo.quebec/fr/service-clientele/horaires-jours-feries"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "linter",
@@ -2904,7 +2954,8 @@
       "sourceUrls": [
         "https://www.transportlaurentides.ca/inter/",
         "https://www.transportlaurentides.ca/taxibus/trajets-et-horaire/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "mont-tremblant",
@@ -2918,7 +2969,8 @@
       "sourceUrls": [
         "https://vdmt.ca/services/transport-en-commun",
         "https://www.mont-tremblant.ca/fr/quoi-faire/f/298/bus-mont-tremblant"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "rem",
@@ -2963,7 +3015,8 @@
       "sourceUrls": [
         "https://rem.info/sites/default/files/document/Technical-sheets-TRAINS-EN.pdf",
         "https://cdpqinfra.com/sites/cdpqinfrad8/files/medias/pdf/rem_synthese_21112016_en.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "rtc",
@@ -2994,7 +3047,8 @@
       "sourceUrls": [
         "https://cdn.rtcquebec.ca/sites/default/files/2026-02/Affiche_8x11_Notre%20réseau%20se%20transforme_RTC_2026.pdf",
         "https://www.rtcquebec.ca/en/schedules-and-routes/bus-schedule/all-routes"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "rtl",
@@ -3002,27 +3056,14 @@
       "country": "Canada",
       "region": "Quebec",
       "reviewStatus": "qualitative_definition_only",
-      "category": "explicit_qualitative_definition",
-      "evidence": [
-        {
-          "tierIndex": 0,
-          "label": "Service fréquent",
-          "kind": "service_class",
-          "namedFrequency": true,
-          "numericFrequency": false,
-          "publishedThresholdMinutes": null,
-          "thresholdText": "Named frequent-service category on the official network map; no numeric threshold located in the reviewed RTL sources",
-          "span": "not specified",
-          "days": "not specified",
-          "geography": "route/network",
-          "mode": "bus"
-        }
-      ],
+      "category": "formal_definition_without_named_frequent_label",
+      "evidence": [],
       "sourceCount": 2,
       "sourceUrls": [
         "https://old.rtl-longueuil.qc.ca/CMS/MediaFree/file/Carte%20reseau/9906_Carte_RTL_v2024-07-23-compressed.pdf",
         "https://www.rtl-longueuil.qc.ca/en"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "sjsr",
@@ -3036,7 +3077,8 @@
       "sourceUrls": [
         "https://sjsr.ca/transport-collectif/plans-lignes-horaires/",
         "https://sjsr.ca/communiques/a-compter-du-1er-juillet-2025-ajustements-aux-horaires-des-lignes-urbaines-et-du-taxibus/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "sherbrooke",
@@ -3050,7 +3092,8 @@
       "sourceUrls": [
         "https://www.sts.qc.ca/horaires/",
         "https://www.sts.qc.ca/a-propos/la-sts/publications/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "stl",
@@ -3064,7 +3107,8 @@
       "sourceUrls": [
         "https://stlaval.ca/",
         "https://stlaval.ca/horaire/taxi/info"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "stlevis",
@@ -3078,7 +3122,8 @@
       "sourceUrls": [
         "https://www.stlevis.ca/",
         "https://www.stlevis.ca/horaires-et-trajets"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "sto",
@@ -3092,7 +3137,8 @@
       "sourceUrls": [
         "https://www.sto.ca/en/useful-information/the-system/",
         "https://www.sto.ca/site/assets/files/2130/carte_reseau.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "saint-hyacinthe",
@@ -3106,7 +3152,8 @@
       "sourceUrls": [
         "https://www.st-hyacinthe.ca/services-aux-citoyens/transport-collectif/horaire-dautobus",
         "https://www.st-hyacinthe.ca/medias/services-aux-citoyens/PMAD_2025_low.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "moose-jaw",
@@ -3120,7 +3167,8 @@
       "sourceUrls": [
         "https://moosejaw.ca/transit/",
         "https://moosejaw.ca/wp-content/uploads/2024/07/2024-Transportation-Master-Plan.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "prince-albert",
@@ -3134,7 +3182,8 @@
       "sourceUrls": [
         "https://www.citypa.ca/parking-streets-and-transportation/transit/",
         "https://www.citypa.ca/media/w1ela4xz/2024-10-21-transit-map.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "regina",
@@ -3148,7 +3197,8 @@
       "sourceUrls": [
         "https://www.regina.ca/transportation-roads-parking/transit/schedules-routes/",
         "https://www.regina.ca/export/sites/Regina.ca/transportation-roads-parking/transit/.galleries/Transit-Route-PDF/Transit-System-Map-2024-March.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "saskatoon",
@@ -3193,7 +3243,8 @@
       "sourceUrls": [
         "https://saskatoon.ca/sites/default/files/append_1_-_saskatoon_transit_service_standards.pdf",
         "https://saskatoontransit.ca/plan-my-trip/routes-schedules"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "whitehorse",
@@ -3206,7 +3257,8 @@
       "sourceCount": 1,
       "sourceUrls": [
         "https://www.whitehorse.ca/living-in-whitehorse/transit/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "guadalajara",
@@ -3249,7 +3301,8 @@
       "sourceUrls": [
         "https://siteur.gob.mx/index.php/sistemas-de-transporte/mi-tren",
         "https://tequiero.guadalajara.gob.mx/planea-tu-viaje/como-moverte-en-guadalajara"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "anchorage",
@@ -3279,7 +3332,8 @@
       "sourceUrls": [
         "https://www.muni.org/Departments/transit/PeopleMover/Documents/Transit%20on%20the%20Move/20200311_TRANSIT_ON_THE_MOVE_FINAL_PLAN.pdf",
         "https://www.muni.org/Departments/transit/PeopleMover/Documents/%212021%20Service%20Change/Updated%202021%20Ride%20Guide_TAG.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "juneau",
@@ -3307,7 +3361,8 @@
       "sourceUrls": [
         "https://juneau.org/index.php?entry-id=3072&field-id=11&form-id=22&gf-download=2019%2F12%2FTransit_Plan_FINAL.pdf&hash=9da1384b08114b8e94a3f25ee84e813bd7c0293c65dd428e1593a6b343259106",
         "https://juneaucapitaltransit.org/schedules/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "mountainline",
@@ -3370,7 +3425,8 @@
       "sourceUrls": [
         "https://mountainline.az.gov/routes/",
         "https://mountainline.az.gov/wp-content/uploads/2023/01/2023-01-18-Flagstaff-in-Motion_Final-Report.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "sun-tran",
@@ -3417,7 +3473,8 @@
       "sourceUrls": [
         "https://www.tucsonaz.gov/files/sharedassets/public/v/1/transportation-and-mobility/transit-services/documents/transit-safety-and-security-action-plan_20251216_mc_final.pdf",
         "https://www.tucsonaz.gov/files/sharedassets/public/v/1/transportation-and-mobility/transit-services/documents/transit_five_year_strategic_plan_december_2018_-_edits_1.15.2019.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "valleymetro",
@@ -3464,7 +3521,8 @@
         "https://www.valleymetro.org/maps-schedules?tab=local-bus",
         "https://vulcan-production.nyc3.cdn.digitaloceanspaces.com/pages/downloads/maps-schedules/system-map/25oct/2_val_msys_frequent_250912.pdf",
         "https://www.chandleraz.gov/sites/default/files/departments/transportation/2024-Valley-Metro-System-Map.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "ycat",
@@ -3479,7 +3537,8 @@
         "https://www.ycipta.org/system-map.html",
         "https://www.yumaycat.gov/",
         "https://www.ycipta.org/documents/DA2-Transit_Tax_Brochure.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "fort-smith",
@@ -3493,7 +3552,8 @@
       "sourceUrls": [
         "https://www.fortsmithar.gov/resident-services/transportation-and-mobility/transit-overview-bus-bike-walk-or-ride/transit-routes-schedules-copy",
         "https://www.fortsmithar.gov/resident-services/transportation-and-mobility/transit-overview-bus-bike-walk-or-ride"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "rockregion",
@@ -3508,7 +3568,8 @@
         "https://rrmetro.org/bus-schedules/",
         "https://rrmetro.org/welcome/",
         "https://rrmetro.org/about/learn-more/facts/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "actransit",
@@ -3556,7 +3617,8 @@
       "sourceUrls": [
         "https://www.actransit.org/planning/service-reliability-standards",
         "https://www.actransit.org/realign/frequent-scenario"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "ace",
@@ -3570,7 +3632,8 @@
       "sourceUrls": [
         "https://511.org/travel/transit/agencies/altamont-corridor-express-ace",
         "https://cdn.acerail.com/wp-content/uploads/Valley-Rail-Sac-Ext-FEIR-Vol-I-Sept-2020.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "avta",
@@ -3599,7 +3662,8 @@
         "https://www.avta.com/userfiles/files/Strategic_Plan_for_Integrated_Transportation_in_the_Antelope_Valley_120820.pdf",
         "https://www.avta.info/downloads/AVTA_MASTER_RFP_2025-05-Formatted_Reviewed.pdf",
         "https://www.avta.com/local-transit-services.php"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "arvin",
@@ -3614,7 +3678,8 @@
         "https://arvin.org/242/Bus-Schedule",
         "https://www.arvin.org/documentcenter/view/384",
         "https://www.arvin.org/DocumentCenter/View/1019/Transit-Asset-Management-Plan-TAM?bidId="
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "banning",
@@ -3629,7 +3694,8 @@
         "https://www.ci.banning.ca.us/351/Bus-Schedules",
         "https://www.ci.banning.ca.us/356/Dial-A-Ride",
         "https://www.ci.banning.ca.us/DocumentCenter/View/14064/City-of-Banning-Final-ICT-Rollout-Plan"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "basin-transit",
@@ -3644,7 +3710,8 @@
         "https://basintransit.ca.gov/",
         "https://basintransit.ca.gov/routes/yucca-valley-twentynine-palms/",
         "https://basintransit.ca.gov/ada/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "beaumont-ca",
@@ -3658,7 +3725,8 @@
       "sourceUrls": [
         "https://www.beaumontca.gov/1426/Short-Range-Transit-Plan",
         "https://beaumontpd.org/90/Transit"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "bigbluebus",
@@ -3717,7 +3785,8 @@
         "https://www.santamonica.gov/blog/big-blue-bus-provides-10-million-rides-for-the-second-consecutive-year",
         "https://www.santamonica.gov/blog/big-blue-bus-seeks-city-council-approval-for-five-year-service-enhancement-plan",
         "https://www.bigbluebus.com/Routes-and-Schedules/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "burbankbus",
@@ -3778,7 +3847,8 @@
       "sourceUrls": [
         "https://www.burbankca.gov/documents/d/guest/2025_titlevi_program_update",
         "https://www.burbankca.gov/burbankbus"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "caltrain",
@@ -3838,7 +3908,8 @@
       "sourceUrls": [
         "https://www.caltrain.com/media/36848/download",
         "https://www.caltrain.com/news/caltrain-adopts-fy27-operating-budget-and-all-independent-efficiency-report-recommendations"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "camarillo",
@@ -3852,7 +3923,8 @@
       "sourceUrls": [
         "https://www.cityofcamarillo.org/Title%20VI%20Plan%202024.pdf",
         "https://www.goventura.org/wp-content/uploads/2026/03/2026.04.03_Attachment-Item-9K_Final-FY2025-2034-Short-Range-Transit-Plan.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "vacaville",
@@ -3896,7 +3968,8 @@
         "https://citycoach.com/find-your-route/",
         "https://sta.ca.gov/wp-content/uploads/2022/01/SRTP_Vacaville-City-Coach.pdf",
         "https://vacaville.granicus.com/MetaViewer.php?clip_id=1841&meta_id=101599&view_id=2"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "slotransit",
@@ -3910,7 +3983,8 @@
       "sourceUrls": [
         "https://www.slocity.org/government/department-directory/public-works/slo-transit-bus",
         "https://www.slocity.org/Home/Components/News/News/11322/2367?backlist=%2Fservices%2Fcity-news-center"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "corona",
@@ -3924,7 +3998,8 @@
       "sourceUrls": [
         "https://www.coronaca.gov/government/departments-divisions/public-works/public-transit/corona-cruiser?agency_id=43&intent=info",
         "https://pub-corona.escribemeetings.com/filestream.ashx?documentid=5071"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "countyconnection",
@@ -3939,7 +4014,8 @@
         "https://countyconnection.com/routes/",
         "https://countyconnection.com/fact-sheet/",
         "https://countyconnection.com/wp-content/uploads/2021/01/2021-Service-Plan-Public-Hearing-Core.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "culvercitybus",
@@ -3954,7 +4030,8 @@
         "https://www.culvercitybus.com/Maps-and-Schedules",
         "https://culver-city.legistar.com/View.ashx?GUID=3BE4FE3A-EA30-4A1A-9965-1B7499E63E5F&ID=12268888&M=F",
         "https://www.culvercitybus.com/News/Next-Stop"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "elmonte",
@@ -3969,7 +4046,8 @@
         "https://www.elmonteca.gov/327/Trolleys",
         "https://elmonteca.gov/326/Transportation-Division",
         "https://elmonteca.gov/DocumentCenter/View/3726/RFP---2020-Transit-and-Paratransit-Operations"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "emerygoround",
@@ -3983,7 +4061,8 @@
       "sourceUrls": [
         "https://emerygoround.com/standard-service/",
         "https://www.emeryville.org/Services/Getting-Around-Emeryville/Emery-Go-Round"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "fast-ca",
@@ -3998,7 +4077,8 @@
         "https://fasttransit.org/info-policies/system-description/",
         "https://fasttransit.org/",
         "https://es.mtc.ca.gov/sites/default/files/documents/2023-01/FAST_SRTP.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "foothill",
@@ -4028,7 +4108,8 @@
       "sourceUrls": [
         "https://www.foothilltransit.org/sites/default/files/2024-10/10-25-2024%20Executive%20Board%20Meeting%20Agenda.pdf",
         "https://www.foothilltransit.org/sites/default/files/2024-06/FY25%20Adopted%20Business%20Plan%20and%20Budget.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "fax",
@@ -4090,7 +4171,8 @@
         "https://www.fresno.gov/wp-content/uploads/2023/08/COMPLETE-SCHEDULE-GUIDE-FINAL-8-23-SPANISH.pdf",
         "https://www.fresno.gov/news/fax-announces-improvements-to-its-bus-service/",
         "https://www.fresno.gov/transportation/fax/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "glendalebeeline",
@@ -4104,7 +4186,8 @@
       "sourceUrls": [
         "https://www.glendaletransit.com/tools/system-map/beeline-timetables-route-maps",
         "https://www.glendaletransit.com/tools/system-map/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "get",
@@ -4119,7 +4202,8 @@
         "https://www.getbus.org/",
         "https://www.getbus.org/wp-content/uploads/2022/02/84.pdf",
         "https://www.getbus.org/wp-content/uploads/2014/10/Board-Minutes-May-5-2015.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "goldengate",
@@ -4181,7 +4265,8 @@
         "https://www.mtc.ca.gov/planning/transportation/regional-transportation-studies/marin-sonoma-coordinated-transit-service-plan-mascots",
         "https://www.goldengate.org/mascotsplan/",
         "https://www.goldengate.org/bus/schedules-maps/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "gtrans",
@@ -4195,7 +4280,8 @@
       "sourceUrls": [
         "https://cityofgardena.org/department-services/",
         "https://cityofgardena.org/wp-content/uploads/2025/06/07132021-Council-Meeting-Agenda-Packet.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "humboldt",
@@ -4209,7 +4295,8 @@
       "sourceUrls": [
         "https://hta.org/",
         "https://analysis.dds.dot.ca.gov/rt/analysis-name-humboldt-transit-authority/new-speedmaps-analysis-name-humboldt-transit-autho/index.html"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "imperial-valley",
@@ -4224,7 +4311,8 @@
         "https://www.ivtransit.com/",
         "https://www.ivtransit.com/rider-information",
         "https://www.imperialctc.org/assets/documents/transit-and-non-motorized/ICTC-SRTP_FINAL_Report__01172019_v2.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "kern-transit",
@@ -4239,7 +4327,8 @@
         "https://kerntransit.org/",
         "https://kerntransit.org/routes/route-150/",
         "https://kerntransit.org/reports/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "kart",
@@ -4254,7 +4343,8 @@
         "https://www.kartbus.org/about/",
         "https://www.kartbus.org/information/",
         "https://www.kartbus.org/wp-content/uploads/2018/09/Final_ADA_Transit_Design_Standards_Manual.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "laguna-beach",
@@ -4268,7 +4358,8 @@
       "sourceUrls": [
         "https://www.lagunabeachcity.net/live-here/parking-and-transportation/trolleys/",
         "https://www.lagunabeachcity.net/home/showpublisheddocument/21918/638803204302330000"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "lassen",
@@ -4283,7 +4374,8 @@
         "https://www.lassencares.org/transportation",
         "https://www.lassencounty.org/sites/default/files/departments/planning_and_building_services/planning_docs/Appendix%20I%20-%20Updated%20Transportation%20Technical%20Study.pdf",
         "https://dot.ca.gov/-/media/dot-media/programs/rail-mass-transportation/documents/f0009933-ruralexecsummary043010.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "lavta",
@@ -4298,7 +4390,8 @@
         "https://www.wheelsbus.com/routes-and-schedules/",
         "https://www.wheelsbus.com/wp-content/uploads/2019/10/PS-Packet-042720_-File-for-Website.pdf",
         "https://www.wheelsbus.com/wp-content/uploads/2023/11/BOD-Packet-040124.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "longbeach",
@@ -4326,7 +4419,8 @@
       "sourceUrls": [
         "https://ridelbt.com/wp-content/uploads/2025/02/LBT_SystemMap_Freestanding.pdf",
         "https://longbeach.legistar.com/View.ashx?G=C4C9EF84-1F4F-4970-B63A-E2A64495FA07&GUID=A3632F2F-1C5E-40AB-A723-3B82BF23CA06&ID=8453994&M=F"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "ladot",
@@ -4355,7 +4449,8 @@
         "https://www.ladottransit.com/dash/",
         "https://www.ladottransit.com/dashmap/",
         "https://ladot.lacity.gov/sites/default/files/documents/nest-stop-gender-equity-action-plan-06052025.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "marintransit",
@@ -4416,7 +4511,8 @@
         "https://marintransit.gov/sites/default/files/projects/2018/Chapter%201.pdf",
         "https://marintransit.gov/brochures",
         "https://marintransit.gov/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "mendocino",
@@ -4430,7 +4526,8 @@
       "sourceUrls": [
         "https://mendocinotransit.org/maps-and-schedules/",
         "https://www.mendocinocog.org/files/18849c841/MTA%2B2024%2BSRTDP_Final%28web%29.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "merced",
@@ -4445,7 +4542,8 @@
         "https://www.mercedthebus.com/128/Bus-Routes-Schedules",
         "https://www.mcagov.org/DocumentCenter/View/3736/SRTP2022_Final",
         "https://www.mercedthebus.com/268/Safety-Plan"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "metrolink",
@@ -4460,7 +4558,8 @@
         "https://metrolinktrains.com/about/agency/",
         "https://metrolinktrains.com/rider-info/general-info/how-to-ride/",
         "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/323/index.html"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "modesto",
@@ -4475,7 +4574,8 @@
         "https://www.stanrta.org/155/History-of-StanRTA",
         "https://www.modestogov.com/DocumentCenter/View/14726/Five-Year-Transportation-Plan-2019-thru-2023",
         "https://www.stanrta.org/AgendaCenter/ViewFile/Item/44?fileID=2054"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "montebello",
@@ -4490,7 +4590,8 @@
         "https://www.montebelloca.gov/departments/transit/maps_schedules",
         "https://www.montebelloca.gov/UserFiles/Servers/Server_58672/File/Departments/Transportation/Attachment%20A%20-%20Montebello%20FY23-25%20SRTP.pdf",
         "https://planning.lacounty.gov/wp-content/uploads/2023/03/ESGV-Task-3.1-Memo-20210721-002.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "mst",
@@ -4585,7 +4686,8 @@
         "https://www.mst.org/wp-content/media/SRTP2006-2.pdf",
         "https://mst.org/wp-content/media/6-2_Attach-A_MST-FInal-Network-Plan-Feb-2022.pdf",
         "https://mst.org/maps-schedules/overview/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "moorpark",
@@ -4600,7 +4702,8 @@
         "https://www.moorparkca.gov/223/Transportation",
         "https://www.moorparkca.gov/231/Transit-Announcements",
         "https://www.moorparkca.gov/DocumentCenter/View/17734"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "mountain-transit-ca",
@@ -4631,7 +4734,8 @@
         "https://www.mountaintransit.org/",
         "https://www.mountaintransit.org/routes-schedule/",
         "https://citybigbearlake.com/index.php/en/news-and-announcements/523-free-frequent-trolley-service-begins-october-31-2021"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "needles",
@@ -4646,7 +4750,8 @@
         "https://needlestransit.com/about-needles-area-transit/",
         "https://needlestransit.com/routes/needles-deviated-fixed-route/",
         "https://www.transit.dot.gov/ntd/transit-agency-profiles/city-needles"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "nctd",
@@ -4661,7 +4766,8 @@
         "https://gonctd.com/Schedules/",
         "https://gonctd.com/commute/",
         "https://gonctd.com/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "norwalktransit",
@@ -4737,7 +4843,8 @@
         "https://norwalktransit.com/wp-content/uploads/2025/07/2025-Title-VI-Program-final.pdf",
         "https://norwalktransit.com/new-network/",
         "https://norwalktransit.com/schedules-maps/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "omnitrans",
@@ -4784,7 +4891,8 @@
         "https://omnitrans.org/agenda-archive/Support%20Documents%20-%20Item%20G3%20-%20FY14%20Management%20%26%20Service%20Elements%2C%20Revised.pdf",
         "https://omnitrans.org/routes/",
         "https://omnitrans.org/about/about-omnitrans/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "octa",
@@ -4848,7 +4956,8 @@
         "https://www.octa.net/programs-projects/projects/rail-projects/oc-streetcar/overview",
         "https://www.octa.net/news/news-releases/limited-stop-bus-service-comes-to-popular-route-through-little-saigon-with-launch-of-64Xpress",
         "https://www.octa.net/pdf/Connections_Survey_eng_vtn_p.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "pvpta",
@@ -4909,7 +5018,8 @@
         "https://palosverdes.com/Pvtransit/10-17-2013-Agenda.pdf",
         "https://palosverdes.com/pvtransit/index.cfm?pg=spring-summer-schedules",
         "https://www.rpvca.gov/Archive.aspx?ADID=1037"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "pasadenatransit",
@@ -4990,7 +5100,8 @@
         "https://www.cityofpasadena.net/transportation/wp-content/uploads/sites/20/City-of-Pasadena-TIA-Guidelines.pdf",
         "https://www.cityofpasadena.net/pasadena-transit/",
         "https://www.cityofpasadena.net/pasadena-transit/news/august-1-service-change/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "petaluma",
@@ -5005,7 +5116,8 @@
         "https://transit.cityofpetaluma.net/riders-guide/",
         "https://transit.cityofpetaluma.net/transit-service-updates/",
         "https://transit.cityofpetaluma.net/routes/route-10/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "raba",
@@ -5052,7 +5164,8 @@
         "https://cms3.revize.com/revize/reddingbusauthority/Document%20Center/About%20Raba/Reports/Transit%20Plans/RABA%20SRTP%20TM1_111822.pdf",
         "https://srta.ca.gov/DocumentCenter/View/1771/RABA-Short-Range-Transit-Plan-2024-FINAL",
         "https://www.transit.dot.gov/ntd/transit-agency-profiles/redding-area-bus-authority"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "rct",
@@ -5067,7 +5180,8 @@
         "https://redwoodcoasttransit.org/",
         "https://redwoodcoasttransit.org/general-information/",
         "https://redwoodcoasttransit.org/wp-content/uploads/2020/06/RCTA_2018-19-SRTP_Final.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "riovista",
@@ -5082,7 +5196,8 @@
         "https://riovista-ca.granicus.com/MetaViewer.php?clip_id=1007&meta_id=55717&view_id=1",
         "https://www.riovistacity.com/deltabreeze/page/delta-breeze-transit-schedule",
         "https://www.riovistacity.com/airport/page/ground-transportation-rio-vista-delta-breeze"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "riverside",
@@ -5097,7 +5212,8 @@
         "https://maps.riversidetransit.com/index.php/maps-schedules",
         "https://w.riversidetransit.com/index.php/news-a-publications/publications",
         "https://www.riversidetransit.com/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "roseville",
@@ -5112,7 +5228,8 @@
         "https://www.roseville.ca.gov/public_works/transit/services_schedules/local.php",
         "https://www.roseville.ca.gov/public_works/transit/index.php",
         "https://www.pctpa.net/files/ef7db2996/PCTPA%2BSRTP%2BFinal%2BTask%2B2%2BIncorporate%2Band%2BRefine%2BResults%2Bfrom%2BRoseville%2Band%2BPCTPA%2BCOA%27s%2BMemo.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "sacrt",
@@ -5174,7 +5291,8 @@
         "https://www.sacrt.com/wp-content/uploads/Appendix-G_Service-Monitoring-Report.pdf",
         "https://www.sacrt.com/about-us/",
         "https://www.sacrt.com/fares/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "weta",
@@ -5189,7 +5307,8 @@
         "https://sanfranciscobayferry.com/routes-schedules/",
         "https://weta.sanfranciscobayferry.com/sites/default/files/weta-public/publications/2023_SRTP_Report_Final.pdf",
         "https://weta.sanfranciscobayferry.com/sites/weta/currentprojects/DFTX/files/DFTXFinalEISEIR/Chapter%201%20Purpose%20and%20Need.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "sfmta",
@@ -5281,7 +5400,8 @@
         "https://www.sfmta.com/ja/media/6262/download?inline=",
         "https://default.sfplanning.org/publications_reports/TIA_Guidelines.pdf",
         "https://www.sfmta.com/getting-around/muni/routes-stops/weekday-frequency-guide"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "sjrtd",
@@ -5373,7 +5493,8 @@
         "https://sanjoaquinrtd.com/wp-content/uploads/2020/06/SRTP-2018-Update_FINAL.pdf",
         "https://sanjoaquinrtd.com/all-routes/",
         "https://sanjoaquinrtd.com/faq/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "slorta",
@@ -5388,7 +5509,8 @@
         "https://www.slorta.org/",
         "https://www.slorta.org/about-rta/agency-reports/",
         "https://www.slorta.org/schedules-fares/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "samtrans",
@@ -5447,7 +5569,7 @@
           "tierIndex": 3,
           "label": "Minimum regular headway",
           "kind": "frequency",
-          "namedFrequency": true,
+          "namedFrequency": false,
           "numericFrequency": true,
           "publishedThresholdMinutes": [
             60
@@ -5464,7 +5586,8 @@
         "https://www.samtrans.com/media/36838/download",
         "https://www.samtrans.com/media/17555",
         "https://www.samtrans.com/routes"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "sbmtd",
@@ -5479,7 +5602,8 @@
         "https://sbmtd.gov/maps-schedules/",
         "https://sbmtd.gov/fares-passes/",
         "https://santabarbaraca.gov/news/mtd-bring-back-electric-downtown-waterfront-shuttle-service-summer-2026"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "santaclarita",
@@ -5494,7 +5618,8 @@
         "https://santaclaritatransit.com/files/2024/02/Title-VI-2023-Update-merged-opt.pdf",
         "https://santaclaritatransit.com/routes-schedules/",
         "https://santaclaritatransit.com/services/go-santa-clarita/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "smat",
@@ -5509,7 +5634,8 @@
         "https://www.cityofsantamaria.org/services/departments/department-of-public-works/santa-maria-regional-transit-5008",
         "https://www.cityofsantamaria.org/home/showpublisheddocument/31753/639033854496730000",
         "https://www.cityofsantamaria.org/Home/Components/News/News/13280/18"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "santarosa",
@@ -5587,7 +5713,8 @@
         "https://www.srcity.org/1327/Systemwide-Services-Standards",
         "https://srcitybus.org/wp-content/uploads/2025/06/Santa-Rosa-CityBus-Title-VI-Program-2025-Update.pdf",
         "https://www.srcity.org/DocumentCenter/View/20677/FY-2016-25-SRTP--FINAL-161027"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "simi-valley",
@@ -5602,7 +5729,8 @@
         "https://www.simivalley.org/home/showpublisheddocument/21238/637044153059200000",
         "https://www.simivalley.org/departments/public-works/simi-valley-transit",
         "https://simivalley.granicus.com/MetaViewer.php?clip_id=1744&meta_id=106553&view_id=5"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "siskiyou",
@@ -5617,7 +5745,8 @@
         "https://www.siskiyoucounty.gov/stage",
         "https://siskiyoucoltc.org/docs-category/rtip-stip-docs/",
         "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/01/83/index.html"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "soltrans",
@@ -5679,7 +5808,8 @@
         "https://www.soltrans.org/news/new-bus-stop-signs-coming-to-soltrans",
         "https://www.soltrans.org/planning/systemwide-comprehensive-operational-analysis-coa-system-redesign",
         "https://www.soltrans.org/news/new-schedules-maps-and-planning-tool-are-now-available"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "sonoma-county",
@@ -5694,7 +5824,8 @@
         "https://sctransit.com/wp-content/uploads/2023/03/Title-VI-Final-May-2022-.pdf",
         "https://sctransit.com/",
         "https://scta.ca.gov/planning/transit-integration/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "smart-ca",
@@ -5709,7 +5840,8 @@
         "https://www.sonomamarintrain.org/schedules-fares",
         "https://www.sonomamarintrain.org/mascots",
         "https://www.sonomamarintrain.org/sites/default/files/Financial%20Documents/SMART%20Short%20Range%20Transit%20Plan%20-%20Final%2011-17-21.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "stanford",
@@ -5724,7 +5856,8 @@
         "https://transportation.stanford.edu/getting-stanford/marguerite",
         "https://transportation.stanford.edu/getting-stanford/marguerite/marguerite-schedule-impacts",
         "https://transportation-forms.stanford.edu/marguerite/eb/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "start",
@@ -5748,19 +5881,6 @@
           "days": "not specified",
           "geography": "Route 21",
           "mode": "bus"
-        },
-        {
-          "tierIndex": 1,
-          "label": "Infrequent service",
-          "kind": "frequency",
-          "namedFrequency": true,
-          "numericFrequency": false,
-          "publishedThresholdMinutes": null,
-          "thresholdText": "Stanislaus Regional Transit planning materials describe infrequent service as less frequent than one trip an hour",
-          "span": "not specified",
-          "days": "not specified",
-          "geography": "route/network",
-          "mode": "bus"
         }
       ],
       "sourceCount": 3,
@@ -5768,7 +5888,8 @@
         "https://www.stanrta.org/DocumentCenter/View/90/Title-VI-Plan-PDF",
         "https://www.stanrta.org/DocumentCenter/View/1671/COA-Vision-2032-Final-Report?bidId=",
         "https://www.stanrta.org/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "sunline",
@@ -5783,7 +5904,8 @@
         "https://www.sunline.org/rider-resources/riders-guide",
         "https://www.sunline.org/services/sun-bus/routes-and-schedules?language=en",
         "https://www.sunline.org/services/how-to-ride"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "taft",
@@ -5798,7 +5920,8 @@
         "https://www.cityoftaft.org/pview.aspx?catID=562&id=5385",
         "https://www.cityoftaft.org/docview.aspx?docid=50561",
         "https://www.cityoftaft.org/files/documents/TransitBrochure20251386115544111025AM.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "thousand-oaks",
@@ -5813,7 +5936,8 @@
         "https://www.toaks.gov/index.php?section=transit",
         "https://www.goventura.org/wp-content/uploads/2026/03/2026.04.03_Attachment-Item-9K_Final-FY2025-2034-Short-Range-Transit-Plan.pdf",
         "https://www.transit.dot.gov/ntd/transit-agency-profiles/city-thousand-oaks"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "tridelta",
@@ -5875,7 +5999,8 @@
         "https://trideltatransit.com/routes/370/",
         "https://trideltatransit.com/routes/371/",
         "https://www.trideltatransit.com/wp-content/uploads/2024/05/January_24_2024_Board_Packet.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "trinity",
@@ -5890,7 +6015,8 @@
         "https://www.trinitycounty.org/612/Trinity-Transit/timetables/",
         "https://www.trinitycounty.org/DocumentCenter/View/3852/Trinity-County-Short-Range-Transit-Development-Plan-SRTDP-Fiscal-Years-202627-through-203031-PDF?bidId=",
         "https://trinitytransit.org/wp-content/uploads/2023/06/Final-Resolution-2020-Title-VI_11172020.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "tulare-county-transit",
@@ -5905,7 +6031,8 @@
         "https://tcatbus.com/ride/current-ride-guide/",
         "https://tcatbus.com/bus-schedules",
         "https://tularecog.org/tcag/planning/rtp/rtp-20181/county-of-tulare-transit-development-plan/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "unioncity",
@@ -5920,7 +6047,8 @@
         "https://www.unioncity.org/DocumentCenter/View/13510/Activity-Guide_SU25-FINAL-SMALL-FINAL-FINAL-042520225",
         "https://www.unioncity.org/DocumentCenter/View/527/Appendix-I---Traffic-Impact-Analysis-PDF?bidId=",
         "https://www.unioncity.org/DocumentCenter/View/14056/Union-City-Transit-ZEB-Roll-Out-Plan?bidId="
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "unitrans",
@@ -6011,7 +6139,8 @@
         "https://unitrans.ucdavis.edu/news/regular-service-resumes-wednesday-sept-23",
         "https://unitrans.ucdavis.edu/news/spring-finals-and-summer-service-0",
         "https://unitrans.ucdavis.edu/news/new-routes-and-service-changes-start-august-3"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "valley-express",
@@ -6026,7 +6155,8 @@
         "https://www.valleyexpressbus.org/routes/",
         "https://www.goventura.org/wp-content/uploads/2026/06/Valley-Express-2026.pdf",
         "https://www.goventura.org/wp-content/uploads/2025/04/VCTC-SRTP-Draft-Gaps-and-Opportunities-Report-DRAFT.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "vctc",
@@ -6041,7 +6171,8 @@
         "https://www.goventura.org/ride-vctc/routes-schedules/",
         "https://www.goventura.org/ride-vctc/how-to-ride/",
         "https://www.goventura.org/wp-content/uploads/2026/03/2026.04.03_Attachment-Item-9K_Final-FY2025-2034-Short-Range-Transit-Plan.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "vvta",
@@ -6056,7 +6187,8 @@
         "https://vvta.org/",
         "https://vvta.org/ridetime25/",
         "https://vvta.org/wp-content/uploads/2023/01/VVTA-SRTP-September-Final.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "vine",
@@ -6071,7 +6203,8 @@
         "https://vinetransit.com/routes/",
         "https://vinetransit.com/",
         "https://nvta.ca.gov/wp-content/uploads/2023/03/CAC-Agenda-Packet-11-02-22.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "visalia",
@@ -6153,7 +6286,8 @@
         "https://www.visalia.gov/transit",
         "https://www.visalia.gov/DocumentCenter/View/752/2022-Short-Range-Transit-Plan-Final-PDF?bidId=",
         "https://www.visalia.gov/357/Visalia-Transit-Fixed-Routes"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "westberkeley",
@@ -6168,7 +6302,8 @@
         "https://pt.berkeley.edu/transportation-mobility/bear-transit-campus-shuttles",
         "https://pt.berkeley.edu/ac-transit-route-info",
         "https://dac.berkeley.edu/wayfinding/maps"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "westcat",
@@ -6183,7 +6318,8 @@
         "https://www.westcat.org/home/ServLocalBus",
         "https://www.westcat.org/Content/pdf/WCCTA%20BOD%20Packet_November%202024.pdf",
         "https://www.westcat.org/Content/Pdf/WCCTA%20September%202025_Full%20BOD%20Packet.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "yolobus",
@@ -6198,7 +6334,8 @@
         "https://yolobus.com/routes/",
         "https://yolobus.com/wp-content/uploads/2022/04/YoloGo_Final_Report_Web.pdf",
         "https://yolobus.com/gtfs/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "all-points-transit",
@@ -6213,7 +6350,8 @@
         "https://www.allpointstransit.com/schedules/",
         "https://www.allpointstransit.com/montrose-public-bus/",
         "https://www.allpointstransit.com/allpointsgo/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "avon-transit",
@@ -6244,7 +6382,8 @@
         "https://avon.org/bus",
         "https://www.avon.org/2038/Mobility",
         "https://avon.org/ArchiveCenter/ViewFile/Item/4515"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "breck-free-ride",
@@ -6259,7 +6398,8 @@
         "https://www.breckfreeride.com/about-us/service-overview",
         "https://www.breckfreeride.com/",
         "https://www.breckfreeride.com/routes-schedules"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "bustang",
@@ -6274,7 +6414,8 @@
         "https://ridebustang.com/",
         "https://ridebustang.com/routes/south-line/",
         "https://www.codot.gov/travel/bustang"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "abqride",
@@ -6316,7 +6457,8 @@
         "https://www.cabq.gov/transit/services/about-albuquerque-rapid-transit",
         "https://www.cabq.gov/transit/documents/forward-final-report-20250604-1.pdf",
         "https://beta.cabq.gov/transit/routes-and-schedules/bus-routes-and-schedules"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "advance-transit",
@@ -6364,7 +6506,8 @@
         "https://advancetransit.com/media-center/routes-schedules/?page=2",
         "https://advancetransit.com/areas-we-serve/lebanon/",
         "https://advancetransit.com/wp-content/uploads/2023/01/2023.01.23-TDP-Interim-Report.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "akron",
@@ -6412,7 +6555,8 @@
         "https://www.akronmetro.org/Data/Sites/2/pdf/metro_strategicplan_final_11-16-2020.pdf",
         "https://www.akronmetro.org/Data/Sites/2/pdf/metro-system-map.pdf",
         "https://www.akronmetro.org/Data/Sites/2/pdf/how-to-read-schedules-script-metro-rta.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "albany-ga",
@@ -6426,7 +6570,8 @@
       "sourceUrls": [
         "https://www.albanyga.gov/City-Departments/Albany-Transit",
         "https://www.dot.ga.gov/systems/ProjectDocuments/Programs/RegionalTransitDevelopmentPlans/MGRC/MGRC_RPT_ExistingConditions.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "albemarle-county",
@@ -6487,7 +6632,8 @@
         "https://www.charlottesville.gov/1990/Reading-CAT-Bus-Schedules",
         "https://charlottesville.gov/DocumentCenter/View/12166",
         "https://www.charlottesville.gov/481/CAT-Schedules-Maps"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "amarillo",
@@ -6501,7 +6647,8 @@
       "sourceUrls": [
         "https://www.amarillo.gov/amarillo-city-transit/",
         "https://www.amarillo.gov/amarillo-city-transit/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "annapolis",
@@ -6547,7 +6694,8 @@
         "https://annapolis.gov/185/Bus-Routes-Schedules",
         "https://www.annapolis.gov/365/State-Shuttle",
         "https://www.annapolis.gov/2185/Annapolis-Transit-Development-Plan"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "appleton",
@@ -6593,7 +6741,8 @@
         "https://www.valleytransit.com/rider-info/",
         "https://www.valleytransit.com/hours-of-operation/",
         "https://myvalleytransit.com/wp-content/uploads/2020/04/TDP-2020_final.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "athens-acc",
@@ -6639,7 +6788,8 @@
         "https://athensclarkecounty.org/DocumentCenter/View/107926/Final-Transit-Development-Plan?bidId=",
         "https://www.accgov.com/DocumentCenter/View/107651",
         "https://www.accgov.com/transit"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "athens-oh",
@@ -6686,7 +6836,8 @@
       "sourceUrls": [
         "https://hapcap.org/transportation/athens-public-transit/",
         "https://hapcap.org/transportation/athens-public-transit/frequently-asked-questions/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "augusta",
@@ -6786,7 +6937,8 @@
         "https://www.augustaga.gov/DocumentCenter/View/19838/Augusta-Transit-Title-VI-Plan-May-2024-051024-ADOPTED",
         "https://www.augustaga.gov/DocumentCenter/View/18398/Augusta-MPO_Augusta-Transit-Title-VI-Program-2021-09162021-RP",
         "https://www.augustaga.gov/2609/Riding-Augusta-Transit"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "b-line",
@@ -6800,7 +6952,8 @@
       "sourceUrls": [
         "https://www.ccrta.org/services/b-line",
         "https://www.ccrta.org/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "bangor",
@@ -6815,7 +6968,8 @@
         "https://www.bangormaine.gov/250/About-Us",
         "https://www.bangormaine.gov/271/Schedules-Fares",
         "https://www.bangormaine.gov/DocumentCenter/View/3842/LargeScaleMap---NoSatService---Updated-July-2025-pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "barta",
@@ -6859,7 +7013,7 @@
           "tierIndex": 2,
           "label": "Less frequent route service",
           "kind": "frequency",
-          "namedFrequency": true,
+          "namedFrequency": false,
           "numericFrequency": true,
           "publishedThresholdMinutes": [
             90
@@ -6876,7 +7030,8 @@
         "https://www.bartabus.com/",
         "https://www.sctapa.com/wp-content/uploads/2022/04/SCTA-Final-Report.pdf",
         "https://www.bartabus.com/what-were-about/contact/office-locations-and-hours"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "bata",
@@ -6921,7 +7076,8 @@
       "sourceUrls": [
         "https://www.bata.net/",
         "https://www.bata.net/userfiles/filemanager/3rqujku199jnr1p4e7bq/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "bay-metro",
@@ -6936,7 +7092,8 @@
         "https://baymetro.com/services-fares/",
         "https://baymetro.com/routes-schedules/",
         "https://baymetro.com/how-to-ride-metro/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "art",
@@ -7048,7 +7205,8 @@
         "https://drpt.virginia.gov/wp-content/uploads/2024/10/Arlington-Transit-TSP-Updated-2023.pdf",
         "https://www.arlingtontransit.com/routes-schedules/schedules/?day=Weekday&id=240&r=2093",
         "https://www.arlingtontransit.com/about/who-we-are/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "asheville",
@@ -7079,7 +7237,8 @@
         "https://www.ashevillenc.gov/news/the-asheville-rides-transit-art-draft-network-explained/",
         "https://www.ridetheart.com/routes-and-schedules/",
         "https://beta.ashevillenc.gov/wp-content/uploads/2018/10/SystemBrochure_2018_Back.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "ata",
@@ -7093,7 +7252,8 @@
       "sourceUrls": [
         "https://www.rideata.com/",
         "https://www.rideata.com/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "bay-transit",
@@ -7107,7 +7267,8 @@
       "sourceUrls": [
         "https://baytransit.org/",
         "https://drpt.virginia.gov/wp-content/uploads/2026/01/Bay-Transit-TDP-Updated-2025-1.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "beach-cities-transit",
@@ -7121,7 +7282,8 @@
       "sourceUrls": [
         "https://www.redondo.org/Documents/Departments/Community%20Services/Transit/Rider%20Information/BCT_Lft_WebHandout_7x10_230616.pdf",
         "https://redondo.org/Documents/Departments/Community%20Development/Planning/General%20Plan%20And%20Long-Range%20Planning/Circulation%20Element%20Nov%202009%20adpoted%2002.21.12.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "beaver-county",
@@ -7135,7 +7297,8 @@
       "sourceUrls": [
         "https://www.beavercountypa.gov/getmedia/11151f12-3793-4cbf-985e-83b424bcaeff/Beaver-County-Comp-Plan_6-27-24.pdf",
         "https://www.beavercountypa.gov/county-pages/about-us/airport-and-mass-transportation"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "beeline",
@@ -7180,7 +7343,8 @@
       "sourceUrls": [
         "https://planning.westchestergov.com/images/stories/pdfs/wcmfr.pdf",
         "https://q-giswww.westchestergov.com/arcgis/rest/services/MappingWestchesterCounty/MapServer/94"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "ben-franklin",
@@ -7209,7 +7373,8 @@
       "sourceCount": 1,
       "sourceUrls": [
         "https://www.bft.org/bus-service/routes-schedules/metro/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "bettendorf",
@@ -7223,7 +7388,8 @@
       "sourceUrls": [
         "https://www.metroqc.com/213/Bettendorf-Transit",
         "https://opmapps.iowadot.gov/Transit/Maps/Home/System/587"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "billings",
@@ -7237,7 +7403,8 @@
       "sourceUrls": [
         "https://www.billingsmt.gov/3146/Routes-and-Schedules-Information",
         "https://www.billingsmt.gov/DocumentCenter/View/48701/Billings-Transit-Development-Plan-2022"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "bis-man",
@@ -7252,7 +7419,8 @@
         "https://bismantransit.com/routes-and-schedules",
         "https://bismantransit.com/files/2024/02/1.2024_BMT_Rider_Guide_web.pdf",
         "https://bismantransit.com/files/2021/02/Final-Report_05202020.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "blacksburg",
@@ -7284,7 +7452,8 @@
         "https://ridebt.org/faq",
         "https://ridebt.org/14-how-do-i/common",
         "https://drpt.virginia.gov/wp-content/uploads/2026/01/Blacksburg-Transit-TSP-Updated-2024.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "bloomington",
@@ -7333,7 +7502,8 @@
       "sourceUrls": [
         "https://bloomingtontransit.com/maps-and-schedules/",
         "https://bloomington.in.gov/sites/default/files/2017-05/transit_development_full_report.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "bowling-green",
@@ -7347,7 +7517,8 @@
       "sourceUrls": [
         "https://www.bgky.org/transit",
         "https://www.bgky.org/files/DI2IDGbN.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "brazos",
@@ -7377,7 +7548,8 @@
       "sourceUrls": [
         "https://www.btd.org/fixed-routes/",
         "https://www.btd.org/bcs/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "bridgeport-gbt",
@@ -7437,7 +7609,8 @@
       "sourceUrls": [
         "https://gogbt.com/wp-content/uploads/GBT-Title-VI-Publication-MAR-2022-Final2-w-cover-and-appendices-2022-03-29.pdf",
         "https://gogbt.com/routes-and-maps/route-5/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "broome",
@@ -7451,7 +7624,8 @@
       "sourceUrls": [
         "https://www.broomecountyny.gov/transit/aboutus",
         "https://www.broomecountyny.gov/transit"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "broward-transit",
@@ -7527,7 +7701,8 @@
         "https://www.broward.org/BCT/Documents/TitleVIProgramUpdate2020-2023.pdf",
         "https://www.broward.org/BCT/COA/Pages/default.aspx",
         "https://www.broward.org/BCT/Documents/BCT_2023-2032_TDPAnnualUpdate.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "brownsville",
@@ -7572,7 +7747,8 @@
       "sourceUrls": [
         "https://www.brownsvilletx.gov/608/Rider-Guide",
         "https://www.brownsvilletx.gov/617/Bus-Routes"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "bts-or",
@@ -7637,7 +7813,8 @@
       "sourceUrls": [
         "https://www.basintransit.com/routes-and-schedules",
         "https://www.basintransit.com/backend"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "burlington-ia",
@@ -7667,7 +7844,8 @@
       "sourceUrls": [
         "https://www.burlingtoniowa.org/2265/Burlington-Urban-Service-BUS",
         "https://opmapps.iowadot.gov/Transit/Maps/Home/System/097"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "bustang-outrider",
@@ -7682,7 +7860,8 @@
         "https://www.codot.gov/business/civilrights/titlevi/title-vi-assets/dtr-title-vi-plan_2020.pdf",
         "https://www.codot.gov/news/2025/january/bustang-outrider-western-slope-route-changes",
         "https://ridebustang.com/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "butler-county-rta",
@@ -7742,7 +7921,8 @@
       "sourceUrls": [
         "https://www.butlercountyrta.com/wp-content/uploads/2023/12/1-BCRTA-Board-Packet-3-20-2024-V-3-signed.pdf",
         "https://www.butlercountyrta.com/bcrtas-mobility-future/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "butler-pa",
@@ -7793,7 +7973,8 @@
       "sourceCount": 1,
       "sourceUrls": [
         "https://www.butlertransitauthority.com/Files/Admin/PDFs/BTA-Title-VI-2024-27-UPDATES-FROM-TRIENNIAL-with-Resolution.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "cambus",
@@ -7806,7 +7987,8 @@
       "sourceCount": 1,
       "sourceUrls": [
         "https://transportation.uiowa.edu/cambus"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "camtran",
@@ -7820,7 +8002,8 @@
       "sourceUrls": [
         "https://www.camtranbus.com/schedules/camtran-urban-routes/",
         "https://www.camtranbus.com/schedules/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "capmetro",
@@ -7864,7 +8047,8 @@
       "sourceUrls": [
         "https://www.capmetro.org/ride/plan/schedmap",
         "https://www.capmetro.org/docs/default-source/public-involvement-docs/board-meetings-docs/board-agenda-docs/2022-documents/november-2022_board-meeting_agenda-packet.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "carson-circuit",
@@ -7877,7 +8061,8 @@
       "sourceCount": 1,
       "sourceUrls": [
         "https://ci.carson.ca.us/CommunityServices/Carson_Circuit.aspx"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "carta",
@@ -7891,7 +8076,8 @@
       "sourceUrls": [
         "https://ridecarta.com/",
         "https://ridecarta.com/wp-content/uploads/2018/09/CARTA-Agenda-Packet-9.19.18.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "carta-chattanooga",
@@ -7905,7 +8091,8 @@
       "sourceUrls": [
         "https://www.gocarta.org/routes-schedules",
         "https://www.gocarta.org/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "cascades-east",
@@ -7935,7 +8122,8 @@
       "sourceUrls": [
         "https://cascadeseasttransit.com/",
         "https://cascadeseasttransit.com/routes-schedules/all-cities/bend/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "casper",
@@ -7949,7 +8137,8 @@
       "sourceUrls": [
         "https://www.casperwy.gov/UserFiles/Servers/Server_62983/File/Casper%20Area%20Transit%20Route%20Map%20and%20Schedule%20-%20Updated%20August%202021.pdf",
         "https://www.casperwy.gov/UserFiles/Servers/Server_62983/File/Casper%20TSDP%20report%20FINAL.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "cat-harrisburg",
@@ -7963,7 +8152,8 @@
       "sourceUrls": [
         "https://www.rabbittransit.org/capital-region/routes/route-7/",
         "https://www.rabbittransit.org/capital-region/routes/route-17/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "cat-or",
@@ -7978,7 +8168,8 @@
         "https://www.canbyoregon.gov/area-transit/page/schedules-and-routes",
         "https://www.canbyoregon.gov/area-transit/page/route-99x-service",
         "https://www.canbyoregon.gov/area-transit/page/canby-loop"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "cat-savannah",
@@ -7993,7 +8184,8 @@
         "https://catchacat.org/wp-content/uploads/2022/06/CAT-system-map-brochure-2022.pdf",
         "https://catchacat.org/current-schedules/",
         "https://www.catchacat.org/wp-content/uploads/CAT-Master-Transit-Plan-Executive-Summary-20230804.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "cata-lansing",
@@ -8007,7 +8199,8 @@
       "sourceUrls": [
         "https://www.cata.org/news/cata-announces-aug-24-service-changes-following-public-input",
         "https://www.cata.org/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "cata-state-college",
@@ -8021,7 +8214,8 @@
       "sourceUrls": [
         "https://catabus.com/services-schedules/catabus/service-calendar/",
         "https://catabus.com/announcements/blog/catabus-is-returning-to-a-full-service-schedule-on-monday-aug-17-2026/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "cats",
@@ -8083,7 +8277,8 @@
       "sourceUrls": [
         "https://www.charlottenc.gov/files/sharedassets/cats/mtc-meeting-summaries-amp-agendas/agendas-2023/mtc-agenda-packet-for-wednesday-august-23-2023_1.pdf",
         "https://www.charlottenc.gov/files/sharedassets/cats/v/3/tsp/cats-tsp-update-9_11_2025-digital-for-web-1.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "cats-baton",
@@ -8097,7 +8292,8 @@
       "sourceUrls": [
         "https://www.brcats.com/assets/docs/Planning/System_map.pdf",
         "https://www.brcats.com/page/sip"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "ccta",
@@ -8128,7 +8324,8 @@
         "https://ridegmt.com/wp-content/uploads/CCTA_TDP_Final22.pdf",
         "https://ridegmt.com/service-improvements-coming-to-routes-1-and-11-starting-august-25-2025/",
         "https://ridegmt.com/service-reductions/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "cdta",
@@ -8178,7 +8375,8 @@
       "sourceUrls": [
         "https://www.cdta.org/sites/default/files/CDTA%202025%20TDP%20Final%20-%20September%2024%2C%202025%20Compressed%20File%20Size.pdf",
         "https://www.cdta.org/brt"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "cedar-rapids",
@@ -8192,7 +8390,8 @@
       "sourceUrls": [
         "https://cms8.revize.com/revize/cedarrapids/Community%20Development/MPO/Final%20Study%20and%20Appendicies%20Combined.pdf",
         "https://www.cedar-rapids.org/residents/city_buses/index.php"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "centro",
@@ -8244,7 +8443,8 @@
       "sourceUrls": [
         "https://www.centro.org/docs/default-source/board-meeting-minutes/prior-year/july-2025-minutes.pdf?sfvrsn=bca04459_3",
         "https://www.centro.org/routes-schedules"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "chapel-hill-transit",
@@ -8278,7 +8478,8 @@
         "https://engage.chapelhillnc.gov/nsbrt?tool=qanda",
         "https://www.chapelhillnc.gov/Transportation-and-Parking/Bus-Routes-and-Schedules",
         "https://orangecountync.gov/DocumentCenter/View/23130/2022-OC_Transit_Plan_Final"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "chemung-county",
@@ -8292,7 +8493,8 @@
       "sourceUrls": [
         "https://www.chemungcountyny.gov/DocumentCenter/View/19019",
         "https://chemungcountyny.gov/DocumentCenter/View/524/Elmira-Chemung-Transportation-Council-Long-Range-Plan-2035-PDF"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "cherriots",
@@ -8354,7 +8556,8 @@
         "https://www.cherriots.org/media/doc/Service_Guidelines_2020-09-01.pdf",
         "https://www.cherriots.org/media/doc/PACKET1_BD_2018-05-24_vUYV0wA.pdf",
         "https://www.cherriots.org/media/doc/FY2021-22_Approved_Budget.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "cheyenne",
@@ -8368,7 +8571,8 @@
       "sourceUrls": [
         "https://www.cheyennecity.org/Your-Government/Departments/Public-Works/Transit/Fixed-Route-Service",
         "https://www.cheyennecity.org/Your-Government/Departments/Public-Works/Transit/Route-System-Map"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "cincinnatimetro",
@@ -8383,7 +8587,8 @@
         "https://www.go-metro.com/wp-content/uploads/2025/04/metrosystemmap.pdf",
         "https://www.go-metro.com/wp-content/uploads/2024/12/Planning-and-Operations-July-2025.pdf",
         "https://www.go-metro.com/wp-content/uploads/2026/02/Reinventing-Metro-Final-Report.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "citibus",
@@ -8398,7 +8603,8 @@
         "https://citibus.com/faqs/",
         "https://citibus.com/maps-and-schedules/",
         "https://citibus.com/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "citilink-fw",
@@ -8462,7 +8668,8 @@
         "https://fwcitilink.com/wp-content/uploads/2022/11/Citilink-2030-Transit-Development-Plan.pdf",
         "https://fwcitilink.com/wp-content/uploads/2026/03/Citilink-System-Map_March-2026-Update.pdf",
         "https://fwcitilink.com/wp-content/uploads/2025/05/2025-Citilink-Title-VI-Program-with-Exhibits_draft.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "citybus-lafayette",
@@ -8510,7 +8717,8 @@
       "sourceUrls": [
         "https://www.in.gov/citybuslafayette/route/",
         "https://www.in.gov/citybuslafayette/files/04.25-BrdPkt.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "citylink-north",
@@ -8524,7 +8732,8 @@
       "sourceUrls": [
         "https://www.kcgov.us/488/A-B-C-Routes",
         "https://www.kcgov.us/DocumentCenter/View/9286/Kootenai-County-Paratransit-Riders-Policy-2018"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "citylink-peoria",
@@ -8538,7 +8747,8 @@
       "sourceUrls": [
         "https://www.ridecitylink.org/schedules-routes/",
         "https://www.ridecitylink.org/wp-content/uploads/Addendum-1-AE-70.Design.Final_.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "clallamtransit",
@@ -8566,7 +8776,8 @@
       "sourceUrls": [
         "https://www.clallamtransit.com/comprehensiveplan",
         "https://www.clallamcountywa.gov/DocumentCenter/View/25011/Chapter-3102-County-Wide-Comprehensive-Plan--04212026"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "clemson-cat",
@@ -8674,7 +8885,8 @@
         "https://catbus.com/Portals/7/Documents/2020-Maps-Print/Red-Mon-Thurs.pdf?ver=q0D_v5jXsnNneA9yv7Ejtw%3D%3D",
         "https://www.clemsoncity.org/354/Red---CentralClemson",
         "https://www.clemson.edu/centers-institutes/brooks-sports/documents/campus-parking-transit-map.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "coast-nh",
@@ -8689,7 +8901,8 @@
         "https://coastbus.org/services/local-regional-routes",
         "https://coastbus.org/schedules",
         "https://coastbus.org/sites/default/files/pdfs/Title-VI/COAST%20Title%20VI%20Program%202023-2026.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "coast-rta",
@@ -8764,7 +8977,8 @@
       "sourceUrls": [
         "https://coastrta.com/coastrta_system_route_map/",
         "https://coastrta.com/wp-content/uploads/2023/12/Board-Packet-Oct-2023.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "coast-transit-ms",
@@ -8799,7 +9013,8 @@
       "sourceUrls": [
         "https://coasttransit.com/routes-schedules/",
         "https://coasttransit.com/wp-content/uploads/2016/03/CTA-Public-Review-and-Comment-Period-Title-VI-Plan.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "cobblinc",
@@ -8813,7 +9028,8 @@
       "sourceUrls": [
         "https://www.cobbcounty.org/transportation/cobb-linc",
         "https://cloud.communications.cobbcounty.org/Cobbline_250610"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "collier",
@@ -8841,15 +9057,15 @@
         },
         {
           "tierIndex": 1,
-          "label": "LOS B / Frequent service",
+          "label": "LOS B service level",
           "kind": "frequency",
-          "namedFrequency": true,
+          "namedFrequency": false,
           "numericFrequency": true,
           "publishedThresholdMinutes": [
             10,
             14
           ],
-          "thresholdText": "10–14-minute headway; identified as frequent service.",
+          "thresholdText": "10–14-minute headway.",
           "span": "not specified",
           "days": "not specified",
           "geography": "system",
@@ -8924,7 +9140,8 @@
         "https://www.ridecat.com/inside-cat/documents/",
         "https://www.colliermpo.org/wp-content/uploads/2018/11/Comp-Ops-Analysis-COA-2013.pdf",
         "https://www.collier.gov/files/assets/county/v/1/transportation/documents/planning-studies/master-mobility-plan-final-report.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "colts",
@@ -8939,7 +9156,8 @@
         "https://coltsbus.com/mission/",
         "https://coltsbus.com/wp-content/uploads/2024/02/RFP-Fixed-Route-Transportation-Services-2024-1.pdf",
         "https://coltsbus.com/wp-content/uploads/2022/09/FINAL-COLTS-StrategicPlan22.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "columbia-area-transit",
@@ -8953,7 +9171,8 @@
       "sourceUrls": [
         "https://www.ridecatbus.org/about-cat/",
         "https://www.ridecatbus.org/wp-content/uploads/2023/06/Existing-Conditions-Report_Final.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "comet",
@@ -8966,7 +9185,8 @@
       "sourceCount": 1,
       "sourceUrls": [
         "https://catchthecometsc.gov/routes/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "communitytransit",
@@ -9012,7 +9232,8 @@
         "https://www.communitytransit.org/swift",
         "https://www.communitytransit.org/docs/default-source/mappdfs/systemmappdfs/mapsystem.pdf",
         "https://www.communitytransit.org/docs/default-source/pdfs/journey-2050/journey-2050-appendices-compiled.pdf?sfvrsn=3b6dbe24_1"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "concord-kannapolis",
@@ -9101,7 +9322,8 @@
       "sourceUrls": [
         "https://ckrider.com/wp-content/uploads/2019-May-Rider-Transit-2019-Title-VI-Program-Plan-Final.pdf",
         "https://ckrider.com/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "connect-transit",
@@ -9161,7 +9383,8 @@
       "sourceUrls": [
         "https://connect-transit.com/file/62/Bloomington%20Normal%20COA%20Final%20Report%20April%202016.pdf",
         "https://connect-transit.com/file/27/Full%20System%20Map.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "coralville",
@@ -9175,7 +9398,8 @@
       "sourceUrls": [
         "https://coralville.org/166/Bus-Schedules-Route-Maps",
         "https://www.coralville.org/80/Transit-Parking"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "corvallis",
@@ -9189,7 +9413,8 @@
       "sourceUrls": [
         "https://www.corvallisoregon.gov/cts",
         "https://www.corvallisoregon.gov/cts/page/about-corvallis-transit-system"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "cota",
@@ -9235,7 +9460,8 @@
       "sourceUrls": [
         "https://cota.com/riding-cota/fare-overview-2/",
         "https://cota.com/servicechanges/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "ctran",
@@ -9259,45 +9485,6 @@
           "days": "route-specific",
           "geography": "BRT corridors",
           "mode": "bus_rapid_transit"
-        },
-        {
-          "tierIndex": 1,
-          "label": "Local service",
-          "kind": "service_class",
-          "namedFrequency": true,
-          "numericFrequency": false,
-          "publishedThresholdMinutes": null,
-          "thresholdText": "Named local bus service; no system-wide frequent threshold located.",
-          "span": "route-specific",
-          "days": "route-specific",
-          "geography": "local network",
-          "mode": "bus"
-        },
-        {
-          "tierIndex": 2,
-          "label": "Regional service",
-          "kind": "service_class",
-          "namedFrequency": true,
-          "numericFrequency": false,
-          "publishedThresholdMinutes": null,
-          "thresholdText": "Named regional bus service; no system-wide frequent threshold located.",
-          "span": "route-specific",
-          "days": "route-specific",
-          "geography": "regional network",
-          "mode": "bus"
-        },
-        {
-          "tierIndex": 3,
-          "label": "Express service",
-          "kind": "service_class",
-          "namedFrequency": true,
-          "numericFrequency": false,
-          "publishedThresholdMinutes": null,
-          "thresholdText": "Named express bus service; no system-wide frequent threshold located.",
-          "span": "route-specific",
-          "days": "route-specific",
-          "geography": "express network",
-          "mode": "bus"
         }
       ],
       "sourceCount": 3,
@@ -9305,7 +9492,8 @@
         "https://mail.c-tran.com/about-c-tran/transit-matters/1593-value-of-the-vine",
         "https://mail.c-tran.com/about-c-tran/news/news-releases/555-vine-anniversary",
         "https://www.c-tran.com/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "cttransit",
@@ -9351,7 +9539,8 @@
         "https://www.cttransit.com/sites/default/files/schedules/h_62_wkdysched_4.html",
         "https://www.cttransit.com/services",
         "https://oldweb.cttransit.com/about/about-ctfastrak"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "cue-bus",
@@ -9414,7 +9603,8 @@
         "https://www.fairfaxva.gov/Services/CUE-Bus/Schedules-and-Maps",
         "https://www.fairfaxva.gov/files/assets/city/v/1/development/documents/projects/december-23-2024-transportation-impact-analysis.pdf",
         "https://engage.fairfaxva.gov/cue-transit-plan"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "cyride",
@@ -9422,27 +9612,14 @@
       "country": "United States",
       "region": "Iowa",
       "reviewStatus": "qualitative_definition_only",
-      "category": "explicit_qualitative_definition",
-      "evidence": [
-        {
-          "tierIndex": 0,
-          "label": "Core routes",
-          "kind": "service_class",
-          "namedFrequency": true,
-          "numericFrequency": false,
-          "publishedThresholdMinutes": null,
-          "thresholdText": "Service standards describe routes serving major origins or destinations and providing basic network service; no single named frequent threshold is published.",
-          "span": "not specified",
-          "days": "not specified",
-          "geography": "core network",
-          "mode": "bus"
-        }
-      ],
+      "category": "formal_definition_without_named_frequent_label",
+      "evidence": [],
       "sourceCount": 2,
       "sourceUrls": [
         "https://www.cyride.com/home/showpublisheddocument/9840/637039033812130000",
         "https://www.cyride.com/schedules/school-year-schedule"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "dart-first-state",
@@ -9457,7 +9634,8 @@
         "https://www.dartfirststate.com/routes/",
         "https://www.dartfirststate.com/RiderInfo/FAQs/",
         "https://www.dartfirststate.com/services/bus_services.shtml"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "dart",
@@ -9533,7 +9711,8 @@
         "https://www.dart.org/guide/transit-and-use/transit-services",
         "https://www.dart.org/guide/transit-and-use/rail/rail-line-details",
         "https://www.dart.org/about/news-and-events/newsreleases/newsrelease-detail/dart-bus-route-and-golink-enhancements-begin-january-23"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "dash",
@@ -9596,7 +9775,8 @@
         "https://www.dashbus.com/wp-content/uploads/DASH-RideGuide-feb-2025-1.pdf",
         "https://www.dashbus.com/rideguide",
         "https://dashbus.com/wp-content/uploads/FY23-ATC-Transit-Development-Plan-FINAL-ADOPTED-06.08.22_Appendices-1.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "davenport",
@@ -9608,23 +9788,7 @@
       "evidence": [
         {
           "tierIndex": 0,
-          "label": "Frequent route service",
-          "kind": "frequency",
-          "namedFrequency": true,
-          "numericFrequency": true,
-          "publishedThresholdMinutes": [
-            30,
-            60
-          ],
-          "thresholdText": "CitiBus route materials state that routes operate on either 30-minute or 60-minute frequencies.",
-          "span": "route-specific",
-          "days": "route-specific",
-          "geography": "fixed-route network",
-          "mode": "bus"
-        },
-        {
-          "tierIndex": 1,
-          "label": "Regular route service",
+          "label": "Published route frequency bands",
           "kind": "frequency",
           "namedFrequency": false,
           "numericFrequency": true,
@@ -9632,7 +9796,23 @@
             30,
             60
           ],
-          "thresholdText": "CitiBus route materials state that routes operate on either 30-minute or 60-minute frequencies.",
+          "thresholdText": "Route materials state that routes operate on either 30-minute or 60-minute frequencies; no rider-facing frequent-service label was found.",
+          "span": "route-specific",
+          "days": "route-specific",
+          "geography": "fixed-route network",
+          "mode": "bus"
+        },
+        {
+          "tierIndex": 1,
+          "label": "Published route frequency bands",
+          "kind": "frequency",
+          "namedFrequency": false,
+          "numericFrequency": true,
+          "publishedThresholdMinutes": [
+            30,
+            60
+          ],
+          "thresholdText": "Route materials state that routes operate on either 30-minute or 60-minute frequencies; no rider-facing frequent-service label was found.",
           "span": "route-specific",
           "days": "route-specific",
           "geography": "fixed-route network",
@@ -9641,8 +9821,9 @@
       ],
       "sourceCount": 1,
       "sourceUrls": [
-        "https://www.davenportiowa.com/common/pages/GetFile.ashx?key=TiUxAYDb"
-      ]
+        "https://www.davenportiowa.com/services/citibus_transit/routes___schedules_-_citibus__print____qc_transit"
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "dayton",
@@ -9709,7 +9890,8 @@
         "https://www.iriderta.org/2023SystemRedesign",
         "https://www.iriderta.org/about/news-and-media/rta-adjusts-service-beginning-dec-31",
         "https://www.iriderta.org/about/news-and-media/rta-improves-access-jobs-healthcare-upcoming-service-change-0"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "dc-streetcar",
@@ -9754,7 +9936,8 @@
       "sourceUrls": [
         "https://ddot.dc.gov/page/dc-streetcar-end-service-information-and-updates",
         "https://dcstreetcar.com/wp-content/uploads/2020/10/2019-DCS-Design-Criteria-Final.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "dcta",
@@ -9828,7 +10011,8 @@
         "https://www.dcta.net/sites/default/files/2025-04/2025-04-24%20FINAL%20Board%20Meeting%20Agenda%20Packet%20317pm.pdf",
         "https://www.dcta.net/media-center/news/2020/dcta-update-a-train-schedule-and-increase-peak-frequency-effective-september-21",
         "https://www.dcta.net/getting-around"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "ddot",
@@ -9842,7 +10026,7 @@
           "tierIndex": 0,
           "label": "Peak service standard",
           "kind": "frequency",
-          "namedFrequency": true,
+          "namedFrequency": false,
           "numericFrequency": true,
           "publishedThresholdMinutes": [
             45
@@ -9857,7 +10041,7 @@
           "tierIndex": 1,
           "label": "Off-peak and weekend standard",
           "kind": "frequency",
-          "namedFrequency": true,
+          "namedFrequency": false,
           "numericFrequency": true,
           "publishedThresholdMinutes": [
             75
@@ -9892,7 +10076,8 @@
         "https://detroitmi.gov/sites/detroitmi.localhost/files/2018-08/ServiceStandards_18_19_20_FINAL.pdf",
         "https://detroitmi.gov/news/ddot-announces-new-service-expansions-effective-today",
         "https://detroitmi.gov/departments/detroit-department-transportation/bus-schedules"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "decatur",
@@ -9923,7 +10108,8 @@
       "sourceCount": 1,
       "sourceUrls": [
         "https://decaturil.gov/249/Transit"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "dekalb",
@@ -9999,7 +10185,8 @@
       "sourceUrls": [
         "https://www.cityofdekalb.com/DocumentCenter/View/18849/10-Res-2025-022",
         "https://www.cityofdekalb.com/1287/Maps-Schedules"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "des-moines",
@@ -10064,7 +10251,8 @@
       "sourceUrls": [
         "https://www.ridedart.com/sites/default/files/about-dart/DART_TransitOptimizationStudy_FINAL_For%20Print.pdf",
         "https://www.ridedart.com/sites/default/files/media-center/2025%20DART%20Title%20VI%20Program%20for%20Website.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "detroit-people-mover",
@@ -10095,7 +10283,8 @@
       "sourceUrls": [
         "https://www.thepeoplemover.com/about",
         "https://www.thepeoplemover.com/2024-track-improvement-project"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "dubuque",
@@ -10109,7 +10298,8 @@
       "sourceUrls": [
         "https://www.flydbq.com/274/Transit",
         "https://www.cityofdubuque.org/274/Transit"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "duke",
@@ -10159,7 +10349,8 @@
       "sourceCount": 1,
       "sourceUrls": [
         "https://parking.duke.edu/parking-permits/duke-parking-transportation/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "duluth-transit",
@@ -10205,7 +10396,8 @@
         "https://www.duluthtransit.com/wp-content/uploads/2022/11/Title-VI-Plan_2022-Update.pdf",
         "https://www.duluthtransit.com/wp-content/uploads/2019/02/tdp_report.pdf",
         "https://www.duluthtransit.com/home/getting-there/routes-schedules/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "durango-transit",
@@ -10250,7 +10442,8 @@
       "sourceUrls": [
         "https://www.durangoco.gov/DocumentCenter/View/36319/Title-VI-Report-PDF---2025-Update",
         "https://www.durangoco.gov/348/Routes-Maps"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "dutchess",
@@ -10310,7 +10503,8 @@
       "sourceUrls": [
         "https://www.dutchessny.gov/Departments/Public-Works/Docs/DCPT-Title-VI-Plan-Update-2018.pdf",
         "https://www.dutchessny.gov/CMSPrint/DCPT-Route-Modifications-Effective-March-30-2024.htm"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "ecat",
@@ -10371,7 +10565,8 @@
         "https://goecat.com/docs/goecatlibraries/default-document-library/tdp-final-draft-2022-2031.pdf?sfvrsn=25dea0a4_4",
         "https://goecat.com/routes-maps",
         "https://goecat.com/about"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "eco-transit",
@@ -10386,7 +10581,8 @@
         "https://coretransit.org/",
         "https://coretransit.org/about-us/strategic-plan/",
         "https://coretransit.org/alerts/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "embark",
@@ -10462,7 +10658,8 @@
         "https://www.embarkok.com/assets/documents/PROGRAMS-MMPLUSHP/EMBARK_TitleVI_ProgramUpdate_2025-12.24.24.pdf",
         "https://content.govdelivery.com/accounts/OKOKC/bulletins/354cbdc",
         "https://go.embarkok.com/routes/embark%3Art-003/stops/embark%3Art-003%3A1%3A01"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "emta",
@@ -10477,7 +10674,8 @@
         "https://ride-the-e.com/developer-resources/",
         "https://ride-the-e.com/2025-transit-development-plan/",
         "https://ride-the-e.com/languages/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "essex-county",
@@ -10525,7 +10723,8 @@
         "https://canntran.com/wp-content/uploads/2025/06/2025-Proposed-Service-Standards-online.pdf",
         "https://canntran.com/about",
         "https://canntran.com/wp-content/uploads/2020/09/2015-0805-transit_plan-CATA-FINAL.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "eugene-ltd",
@@ -10573,7 +10772,8 @@
         "https://www.ltd.org/plans_and_projects/ltd-system-review/",
         "https://www.ltd.org/wp-content/uploads/2025/08/LTD-System-Review-Final-Report-Plus-Appendix-AB-092524.pdf",
         "https://www.ltd.org/riders-guide/routes-maps-schedules/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "evansville",
@@ -10588,7 +10788,8 @@
         "https://www.in.gov/indot/files/Evansville-MPO-2023-2027_Coordinated_Plan-Reduced.pdf",
         "https://www.evansvillegov.org/egov/documents/1502907435_30167.pdf",
         "https://www.evansvillegov.org/egov/documents/1757428844_75406.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "everetttransit",
@@ -10665,7 +10866,8 @@
         "https://everetttransit.org/DocumentCenter/View/2408/Title-VI-Plan-2023-2026-PDF?bidId=",
         "https://www.everetttransit.org/101/Schedules",
         "https://everetttransit.org/419/Long-Range-Plan-Connecting-Everett-in-20"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "ez-rider",
@@ -10680,7 +10882,8 @@
         "https://www.ez-rider.org/home.html",
         "https://www.ez-rider.org/bus-study",
         "https://www.ez-rider.org/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "fact",
@@ -10695,7 +10898,8 @@
         "https://www.fayettecountypa.org/226/Service-Standards",
         "https://www.fayettecountypa.org/204/FACT-Users-Guide",
         "https://factbus.com/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "fairfax",
@@ -10709,7 +10913,8 @@
       "sourceUrls": [
         "https://www.fairfaxcounty.gov/connector/",
         "https://www.fairfaxcounty.gov/transportation/sites/transportation/files/Assets/Documents/PDF/Transportation%20Projects%2C%20Studies%20and%20Plans/CTP/Fairfax-Connector-Operations-Analysis.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "fast-nc",
@@ -10723,7 +10928,8 @@
       "sourceUrls": [
         "https://www.fayettevillenc.gov/City-Departments/Transit",
         "https://www.fayettevillenc.gov/files/sharedassets/main/v/1/transit/documents/fast-policies-amp-forms/city-of-fayetteville-transit-paratransit-plan-update.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "fort-bend",
@@ -10754,7 +10960,8 @@
       "sourceUrls": [
         "https://www.fortbendcountytx.gov/sites/default/files/2021-12/TitleVIProgram.pdf",
         "https://publictransportation.fortbendcountytx.gov/documents/guideline-08-2025.html"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "fred-transit",
@@ -10801,7 +11008,8 @@
         "https://www.fredericksburgva.gov/DocumentCenter/View/14695/Transportation-Fact-Book",
         "https://www.fredericksburgva.gov/DocumentCenter/View/18678/FREDTransitTDP_2018_2027",
         "https://www.fredericksburgva.gov/2077/Routes"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "freedom-transit",
@@ -10814,7 +11022,8 @@
       "sourceCount": 1,
       "sourceUrls": [
         "https://freedom-transit.org/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "gaston-county",
@@ -10828,7 +11037,8 @@
       "sourceUrls": [
         "https://www.gastongov.com/164/ACCESS---Transportation",
         "https://www.charlottenc.gov/files/sharedassets/cats/v/1/cats-docs/transit-planning/5310/coordinated-plan-2025.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "gcrta",
@@ -10918,7 +11128,8 @@
       "sourceUrls": [
         "https://www.riderta.com/sites/default/files/events/RTASRSPresentation201909.pdf",
         "https://www.riderta.com/systemmap"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "glensfallstransit",
@@ -10932,7 +11143,8 @@
       "sourceUrls": [
         "https://www.cdta.org/node/14960",
         "https://cdta.org/news/glens-falls-meeting"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "gltc",
@@ -10946,7 +11158,8 @@
       "sourceUrls": [
         "https://gltconline.com/general-info/",
         "https://www.gltconline.com/wp-content/uploads/2018/09/GLTC-TDP-Report-withAPPENDICES-FINAL-DRAFT-2018-08-23.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "godurham",
@@ -10977,7 +11190,8 @@
       "sourceUrls": [
         "https://godurhamtransit.org/august-2026-service-changes-2/",
         "https://godurhamtransit.org/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "goraleigh",
@@ -11024,7 +11238,8 @@
         "https://goraleigh.org/previous-service-changes",
         "https://goraleigh.org/sites/default/files/2025-08/_fy26_20title_20vi.pdf-1.pdf",
         "https://goraleigh.org/sites/default/files/maps-schedules/goraleighsystemmap_0.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "gotriangle",
@@ -11071,7 +11286,8 @@
       "sourceUrls": [
         "https://gotriangle.org/first-ever-15-minute-service-beginning-in-august/",
         "https://gotriangle.org/wp-content/uploads/gotriangle_srtp_final_231226.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "gptc",
@@ -11085,7 +11301,8 @@
       "sourceUrls": [
         "https://gptcbus.com/",
         "https://gptcbus.com/routes/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "grand-forks",
@@ -11131,7 +11348,8 @@
       "sourceUrls": [
         "https://cdnsm5-hosted.civiclive.com/UserFiles/Servers/Server_16222865/File/Plans%20and%20Programs/Microtransit/07.2025%20DRAFT%20Microtransit%20Final%20Plan_Draft_PMT%20Review_20250630.pdf",
         "https://www.grandforksgov.com/government/city-departments/cities-area-transit-cat"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "grand-junction",
@@ -11145,7 +11363,8 @@
       "sourceUrls": [
         "https://gvt.mesacounty.us/globalassets/strategic-plan/grand-valley-transit-strategic-plan.pdf",
         "https://gvt.mesacounty.us/routes-schedules"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "greeley",
@@ -11159,7 +11378,8 @@
       "sourceUrls": [
         "https://greeleyco.gov/transit/",
         "https://greeleygov.com/docs/default-source/achieving-community-excellence/f22-07-063---transportation-systems-management-and-operations-plan---rfqb6a3f2fc-d0c2-4075-86fd-c5adf6c640f5.pdf?Status=Master"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "green-bay",
@@ -11173,7 +11393,8 @@
       "sourceUrls": [
         "https://www.greenbaywi.gov/DocumentCenter/View/3192/Standards-Policy---Performance-Standards-PDF?bidId=",
         "https://www.greenbaywi.gov/920/Routes-Schedules"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "greenlink",
@@ -11187,7 +11408,8 @@
       "sourceUrls": [
         "https://www.greenvillesc.gov/rider-information?contentId=f0937d9b-8e15-4007-af33-8a4d85c6c51f",
         "https://www.greenvillesc.gov/1200/~/195561705.css"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "greensboro",
@@ -11248,7 +11470,8 @@
         "https://www.greensboro-nc.gov/home/showpublisheddocument/62573/638824112289200000",
         "https://www.greensboro-nc.gov/departments/transportation/transit/routes",
         "https://www.greensboro-nc.gov/departments/transportation/transit/goboro-final-bus-network"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "greenway",
@@ -11262,7 +11485,8 @@
       "sourceUrls": [
         "https://www.mygreenway.org/",
         "https://www.mygreenway.org/title-vi"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "grovelink",
@@ -11277,7 +11501,8 @@
         "https://rideconnection.org/services/community-connectors/grovelink-east-loop-schedule/",
         "https://rideconnection.org/services/community-connectors/grovelink-saturdays-schedule/",
         "https://rideconnection.org/wp-content/uploads/2024/06/TitleVI_BoardApproved_May2024.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "grtc",
@@ -11355,7 +11580,8 @@
         "https://www.ridegrtc.com/wp-content/uploads/2026/03/GRTC-System-Map-2.pdf",
         "https://www.ridegrtc.com/grtc-services/pulse-brt/",
         "https://www.ridegrtc.com/maps-and-schedules/system-map/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "gwinnett-transit",
@@ -11401,7 +11627,8 @@
       "sourceUrls": [
         "https://www.gwinnettcounty.com/static/upload/bac/52/20220920/ap_70866_2022.09.20___Work_Session_Agenda_Package.pdf",
         "https://www.gwinnettcounty.com/government/departments/transportation/gwinnett-county-transit/routes-schedules"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "hart",
@@ -11479,7 +11706,8 @@
       "sourceUrls": [
         "https://www.gohart.org/Style%20Library/goHART/pdfs/EEO-Compliance/HART_Title_VI_Update_2025-2027_with_Appendices_FINAL_20241206.pdf",
         "https://www.gohart.org/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "hobbs",
@@ -11493,7 +11721,8 @@
       "sourceUrls": [
         "https://www.hobbsnm.gov/schedules.html",
         "https://hobbsnm.gov/hobbs_express.html"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "hocts",
@@ -11507,7 +11736,8 @@
       "sourceUrls": [
         "https://oneidacountyny.gov/departments/planning/transportation/",
         "https://oneidacountyny.gov/departments/planning/transportation/mpo-core-documents/long-range-transportation-plan/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "hrt",
@@ -11538,7 +11768,8 @@
       "sourceUrls": [
         "https://gohrt.com/tsp/final-2024-2033/Dec2022_FinalTSP_Appendices.pdf",
         "https://www.hamptonroads.gov/DocumentCenter/View/1836/Transportation-Challenges-and-Strategies-PDF"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "hub-city-transit",
@@ -11552,7 +11783,8 @@
       "sourceUrls": [
         "https://www.hubcitytransit.com/routes/",
         "https://www.hattiesburgms.com/hct/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "hudsonlink",
@@ -11566,7 +11798,8 @@
       "sourceUrls": [
         "https://www.ridehudsonlink.com/schedules",
         "https://www.ridehudsonlink.com/HudsonLink/media/HudsonLinkSchedulesPDF/181016_HL_RouteMap_24x36.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "huntsville",
@@ -11580,7 +11813,8 @@
       "sourceUrls": [
         "https://www.huntsvilleal.gov/development/streets/public-transportation/orbit/",
         "https://www.huntsvilleal.gov/introducing-orbit-and-access-for-fixed-route-and-paratransit-service/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "indian-river",
@@ -11610,7 +11844,8 @@
       "sourceUrls": [
         "https://www.indianriver.gov/Document%20Center/Services/Planning-and-Development/Planning%20Division/Comprehensive%20Plan/supplement.pdf?t=202312181357230",
         "https://indianriver.gov/Document%20Center/Services/Metropolitan%20Planning%20Organization/%28TDP%29%20-%20TRANSIT%20DEVELOPMENT%20PLAN/TDP_2006.pdf?t=202408131027220"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "indigo",
@@ -11624,7 +11859,8 @@
       "sourceUrls": [
         "https://www.indigobus.com/",
         "https://www.indigobus.com/route-1"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "indygo",
@@ -11671,7 +11907,8 @@
         "https://storymaps.arcgis.com/stories/4176f43c5ea54394821e2b58c46b9e2f",
         "https://indygo.net/wp-content/uploads/2025/02/FSM_2502_Web.pdf",
         "https://www.indygo.net/wp-content/uploads/2024/04/INDYGO-2027-Transit-Network-Combined-Document-2024.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "intercitytransit",
@@ -11702,7 +11939,8 @@
         "https://www.intercitytransit.com/bus-system-redesign-FAQs",
         "https://www.intercitytransit.com/sites/default/files/TransitGuide-JAN2020.pdf",
         "https://www.intercitytransit.com/bus-system-redesign"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "iowa-city",
@@ -11716,7 +11954,8 @@
       "sourceUrls": [
         "https://www.icgov.org/government/departments-and-divisions/transportation/transit",
         "https://www.icgov.org/home/showpublisheddocument/268/638104223643030000"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "islandtransit",
@@ -11730,7 +11969,8 @@
       "sourceUrls": [
         "https://www.islandtransit.org/",
         "https://www.islandcountywa.gov/DocumentCenter/View/12132"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "jackson-ms",
@@ -11744,7 +11984,8 @@
       "sourceUrls": [
         "https://www.jacksonms.gov/transportation/",
         "https://www.jacksonms.gov/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "jacksonville-nc",
@@ -11758,7 +11999,8 @@
       "sourceUrls": [
         "https://www.jacksonvillenc.gov/DocumentCenter/View/11356/ADA-Compliant-City-Route-with-timed-stops-March-2026",
         "https://www.jacksonvillenc.gov/223/Transportation"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "janesville",
@@ -11772,7 +12014,8 @@
       "sourceUrls": [
         "https://www.janesvillewi.gov/departments-services/neighborhood-and-community-services/janesville-transit",
         "https://www.janesvillewi.gov/home/showpublisheddocument/9904/638768702407800000"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "jeffersontransit",
@@ -11802,7 +12045,8 @@
       "sourceUrls": [
         "https://www.jeffersontransit.com/DocumentCenter/View/893/Comprehensive-Operational-Analysis-PDF",
         "https://jeffersontransit.com/?agency_id=jta&intent=info"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "jefftran",
@@ -11816,7 +12060,8 @@
       "sourceUrls": [
         "https://www.jeffersoncitymo.gov/CAMPO2045_MTP_2024_Adopted_05.15.2024.pdf",
         "https://www.jeffersoncitymo.gov/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "jfk-airtrain",
@@ -11935,7 +12180,8 @@
       "sourceUrls": [
         "https://www.jfkairport.com/transportation/airtrain",
         "https://www.jfkairport.com/static/jfk/pdf/jfk-airtrain-brochure-english.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "jta",
@@ -12000,7 +12246,8 @@
         "https://www.jtafla.com/media/xt4gbo35/ops-25016-system-map-09-2025.pdf",
         "https://www.jtafla.com/media/sbffbmhx/title-vi-program-plan-ffy-2023-2025.pdf",
         "https://ride.jtafla.com/transit-services/fixed-route-bus-service/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "kalamazoo",
@@ -12014,7 +12261,8 @@
       "sourceUrls": [
         "https://www.kmetro.com/information/system-facts-history",
         "https://www.kmetro.com/plan-your-trip/routes"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "kaua-i-county",
@@ -12029,7 +12277,8 @@
         "https://www.kauai.gov/Government/Departments-Agencies/Transportation",
         "https://www.kauai.gov/files/assets/public/v/1/office-of-the-mayor/documents/kauai-srtp-final-report-2018.pdf",
         "https://www.kauai.gov/files/content/public/v/23/government/departments-agencies/transportation/bus-schedules/route-800-850-wailua.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "kcata",
@@ -12044,7 +12293,8 @@
         "https://www.ridekc.com/maps_schedules/",
         "https://www.ridekc.com/",
         "https://www.kcata.org/images/uploads/AA_State.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "kenosha",
@@ -12059,7 +12309,8 @@
         "https://www.kenoshatransit.com/",
         "https://www.kenosha.org/images/public-transit/bus-route-map.pdf",
         "https://www.kenosha.org/Document%20Center/Departments/Transit/Published%20Bus%20Schedule/Kenosha%20bus%20schedule%20tab%20sept%202025_final.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "key-west-transit",
@@ -12073,7 +12324,8 @@
       "sourceUrls": [
         "https://www.cityofkeywest-fl.gov/595/Schedules-and-Route-Maps",
         "https://www.cityofkeywest-fl.gov/347/Transportation-KWDoT"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "kitsaptransit",
@@ -12135,7 +12387,8 @@
         "https://www.kitsaptransit.com/uploads/pdf/planning/2024-2029tdpplan.pdf",
         "https://www.kitsaptransit.com/rider-resources/system-map",
         "https://busesandferries.kitsaptransit.org/service/routed-buses/sunday-bus-service"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "knoxville",
@@ -12149,7 +12402,8 @@
       "sourceUrls": [
         "https://www.knoxvilletn.gov/government/city_departments_offices/knoxville_area_transit_KAT",
         "https://www.knoxvilletn.gov/government/opendata/knoxville_area_transit_kat_gtfs_feed"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "octranspo",
@@ -12174,26 +12428,14 @@
           "days": "7 days",
           "geography": "frequent network",
           "mode": "bus"
-        },
-        {
-          "tierIndex": 1,
-          "label": "Local",
-          "kind": "service_class",
-          "namedFrequency": true,
-          "numericFrequency": false,
-          "publishedThresholdMinutes": null,
-          "thresholdText": "Neighbourhood service connecting local destinations and frequent routes.",
-          "span": "route-specific",
-          "days": "route-specific",
-          "geography": "local network",
-          "mode": "bus"
         }
       ],
       "sourceCount": 2,
       "sourceUrls": [
         "https://www.octranspo.com/en/news/article/new-ways-to-bus-is-almost-here-starting-april-27",
         "https://www.octranspo.com/images/files/maps/network_maps/New_service_map_ROUTE_REVIEW_2024_%28MASTER%29_19Aug2024.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "yrt",
@@ -12234,7 +12476,8 @@
       "sourceUrls": [
         "https://www.yrt.ca/en/schedules-and-maps/system-map.aspx",
         "https://www.yrt.ca/en/schedules-and-maps/resources/Documents/system-maps/YRT_FrequentTransitMap_May2025.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "stm",
@@ -12302,7 +12545,8 @@
       "sourceUrls": [
         "https://www.stm.info/en/press/press-releases/2023/stm-introduces-new-name-and-visual-identity-to-make-its-high-frequency-bus-lines-easier-to-identify",
         "https://www.stm.info/sites/default/files/lionel-groulx.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "translink",
@@ -12329,32 +12573,6 @@
           "span": "published FTN periods",
           "days": "7 days",
           "geography": "regional corridors",
-          "mode": "bus"
-        },
-        {
-          "tierIndex": 1,
-          "label": "RapidBus",
-          "kind": "service_class",
-          "namedFrequency": true,
-          "numericFrequency": false,
-          "publishedThresholdMinutes": null,
-          "thresholdText": "Frequent limited-stop bus service with transit priority.",
-          "span": "route-specific",
-          "days": "route-specific",
-          "geography": "rapid bus corridors",
-          "mode": "bus_rapid_transit"
-        },
-        {
-          "tierIndex": 2,
-          "label": "99 B-Line",
-          "kind": "service_class",
-          "namedFrequency": true,
-          "numericFrequency": false,
-          "publishedThresholdMinutes": null,
-          "thresholdText": "Frequent limited-stop bus service.",
-          "span": "route-specific",
-          "days": "route-specific",
-          "geography": "99 B-Line",
           "mode": "bus"
         },
         {
@@ -12389,7 +12607,8 @@
         "https://maps.translink.ca/",
         "https://www.translink.ca/-/media/translink/documents/schedules-and-maps/transit-system-maps/system-maps/frequent_transit_network_of_metro_vancouver_map.pdf",
         "https://www.translink.ca/-/media/translink/documents/plans-and-projects/frequent-transit-network/fast_and_frequent_transit_map.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "nfta",
@@ -12417,7 +12636,8 @@
       "sourceUrls": [
         "https://metro.nfta.com/getting-around/system-maps",
         "https://cms.nfta.com/media/0wfhzrzh/nfta-title-vi-program-2024.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "port-huron",
@@ -12432,7 +12652,8 @@
         "https://bwbus.com/",
         "https://bluewaterareatransit.com/service-area/",
         "https://bluewaterareatransit.com/all-routes/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "qline",
@@ -12445,7 +12666,8 @@
       "sourceCount": 1,
       "sourceUrls": [
         "https://qlinedetroit.com/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "smart",
@@ -12474,7 +12696,8 @@
         "https://www.smartbus.org/ridesmart-fast",
         "https://www.smartbus.org/Portals/0/SMART_Design%20Standards%20Manual.pdf",
         "https://www.smartbus.org/Portals/0/2025-11%20SMART%20Public%20Hearing%20Posters.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "theride",
@@ -12566,7 +12789,8 @@
         "https://www.theride.org/about/projects/theride-2045",
         "https://www.theride.org/media/1665/download?inline=",
         "https://www.theride.org/maps-schedules/route-maps-schedules-library"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "seat",
@@ -12580,7 +12804,8 @@
       "sourceUrls": [
         "https://www.seatbus.org/",
         "https://www.seatbus.org/Media/Seat-Bus-Route-Guide-Zanesville.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "richland-county-oh",
@@ -12593,7 +12818,8 @@
       "sourceCount": 1,
       "sourceUrls": [
         "https://rctbuses.com/bus-schedules-fares/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "tarta",
@@ -12670,7 +12896,8 @@
         "https://tarta.com/media-center/system-redesign-january-25-2026/",
         "https://tarta.com/wp-content/uploads/2022/10/TARTA-State-of-the-System-DRAFT-2-25-22-WEB.pdf",
         "https://tarta.com/wp-content/uploads/2022/09/TARTA-NEXT-Final-Report-DRAFT-09-26-22.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "rgrta",
@@ -12683,7 +12910,8 @@
       "sourceCount": 1,
       "sourceUrls": [
         "https://www.rgrta.com/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "tcat",
@@ -12732,7 +12960,8 @@
         "https://tcatbus.com/wp-content/uploads/ECR-FINAL-DRAFT-Formatted-2021-05-11.pdf",
         "https://tcatbus.com/wp-content/uploads/Appendix-D-Title-VI-Program.pdf",
         "https://tcatbus.com/ride/current-ride-guide/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "sarta",
@@ -12762,7 +12991,8 @@
       "sourceUrls": [
         "https://www.sartaonline.com/wp-content/uploads/2021/10/4-28-21-619.pdf",
         "https://www.sartaonline.com/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "laketran",
@@ -12777,7 +13007,8 @@
         "https://laketran.com/",
         "https://laketran.com/laketran-ridership-up-32-after-service-expansion/",
         "https://laketran.com/wp-content/uploads/2016/04/laketran-access-to-opportunity.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "mta-flint",
@@ -12791,7 +13022,8 @@
       "sourceUrls": [
         "https://www.mtaflint.org/",
         "https://www.mtaflint.org/wp-content/media/Customer_Service_Guide_WEB_8-20REV.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "the-rapid",
@@ -12805,7 +13037,8 @@
       "sourceUrls": [
         "https://www.ridetherapid.org/",
         "https://www.ridetherapid.org/about-us/about-rapid/performance-accountability"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "pvta",
@@ -13019,7 +13252,7 @@
           "tierIndex": 13,
           "label": "Service Tier 5",
           "kind": "frequency",
-          "namedFrequency": true,
+          "namedFrequency": false,
           "numericFrequency": true,
           "publishedThresholdMinutes": [
             60
@@ -13035,7 +13268,8 @@
       "sourceUrls": [
         "https://www.pvta.com/documents/planning/PVTA_CSA_FinalReportAppendicesJune2014.pdf",
         "https://www.pvta.com/documents/performEff/byRoute/Fiscal%20Year%202022.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "wrta",
@@ -13065,7 +13299,8 @@
       "sourceUrls": [
         "https://therta.com/wp-content/uploads/2024/02/Addendum-1-WRTA-RFP-2024-02.pdf",
         "https://therta.com/wp-content/uploads/2026/02/20260211_WRTA_CRTP_Final.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "soundtransit",
@@ -13156,7 +13391,8 @@
       "sourceUrls": [
         "https://www.soundtransit.org/sites/default/files/documents/2018-service-standards-measures.pdf",
         "https://www.soundtransit.org/system-expansion/building-system/modes-service"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "piercetransit",
@@ -13216,7 +13452,8 @@
       "sourceUrls": [
         "https://piercetransit.org/wp-content/uploads/2025/01/SSES-Final-Report-033023.pdf",
         "https://piercetransit.org/2025-annual-report/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "skagittransit",
@@ -13230,7 +13467,8 @@
       "sourceUrls": [
         "https://www.skagittransit.org/about-us/",
         "https://www.skagittransit.org/assets/1/7/Skagit_Transit_July_2025_Board_Packet.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "whatcomtransit",
@@ -13244,7 +13482,8 @@
       "sourceUrls": [
         "https://www.ridewta.com/",
         "https://www.ridewta.com/about-us/plans-and-projects"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "portlandme",
@@ -13258,7 +13497,8 @@
       "sourceUrls": [
         "https://gpmetro.org/",
         "https://gpmetro.org/DocumentCenter"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "southportlandme",
@@ -13272,7 +13512,8 @@
       "sourceUrls": [
         "https://www.southportland.org/departments/transportation/",
         "https://www.southportland.org/departments/transportation/bus-service/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "watertowncitibus",
@@ -13286,7 +13527,8 @@
       "sourceUrls": [
         "https://www.watertown-ny.gov/departments/citibus",
         "https://www.watertown-ny.gov/departments/citibus/CitiBusFAQs"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "wsf",
@@ -13301,7 +13543,8 @@
         "https://wsdot.wa.gov/travel/washington-state-ferries/schedules",
         "https://data.wsdot.wa.gov/geospatial/DOT_TDO/LvlOfService/LvlOfSvcStandardFerry_FGDC.htm",
         "https://wsdot.wa.gov/travel/washington-state-ferries/about-us/washington-state-ferries-planning/planning-publications"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "spokane",
@@ -13384,7 +13627,8 @@
       "sourceUrls": [
         "https://www.spokanetransit.com/files/content/2020_Title_VI_Plan_Working_Draft__wAttachments_PublicDraftREVISED.pdf",
         "https://www.spokanetransit.com/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "rivercities",
@@ -13398,7 +13642,8 @@
       "sourceUrls": [
         "https://www.rivercitiestransit.org/",
         "https://www.rivercitiestransit.org/routes-schedules/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "tillamook",
@@ -13412,7 +13657,8 @@
       "sourceUrls": [
         "https://www.tillamookbus.com/",
         "https://www.tillamookbus.com/routes-schedules"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "mats",
@@ -13426,7 +13672,8 @@
       "sourceUrls": [
         "https://www.mtadams-transit.com/",
         "https://www.mtadams-transit.com/routes-schedules/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "setd",
@@ -13440,7 +13687,8 @@
       "sourceUrls": [
         "https://www.ridethebus.org/",
         "https://www.ridethebus.org/routes-schedules/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "rvtd",
@@ -13531,7 +13779,8 @@
         "https://rvtd.org/wp-content/uploads/2022/03/TITLE-VI-FY-21-24-FINAL.pdf",
         "https://rvtd.org/wp-content/uploads/2021/02/EAGLE-POINT-final-4-5-131.pdf",
         "https://www.rvtd.org/news/servicechanges/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "porto-vecchio",
@@ -13545,7 +13794,8 @@
       "sourceUrls": [
         "https://acitadina.porto-vecchio.corsica/",
         "https://acitadina.fr/wp-content/uploads/2025/01/Annexe-2-Reglement-Interieur.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "angers",
@@ -13575,7 +13825,8 @@
       "sourceUrls": [
         "https://www.irigo.fr/services-accessibilite/le-reseau-irigo/les-lignes-du-reseau-toutes-nos-lignes-de-trams-et-de-bus",
         "https://files.irigo.fr/s3fs-public/fichiers/documents/Irigo_Angers_reseau_urbain_MARS2024.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "dijon",
@@ -13599,26 +13850,14 @@
           "days": "daily",
           "geography": "tram network",
           "mode": "tram"
-        },
-        {
-          "tierIndex": 1,
-          "label": "Lianes",
-          "kind": "service_class",
-          "namedFrequency": true,
-          "numericFrequency": false,
-          "publishedThresholdMinutes": null,
-          "thresholdText": "High-service lines described as frequent and operating throughout the day.",
-          "span": "varies",
-          "days": "varies",
-          "geography": "network",
-          "mode": "bus"
         }
       ],
       "sourceCount": 2,
       "sourceUrls": [
         "https://information.divia.fr/sinformer/bus-et-tram/decouvrir-le-reseau/",
         "https://www.divia.fr/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "tours",
@@ -13651,7 +13890,8 @@
       "sourceUrls": [
         "https://www.filbleu.fr/services/le-reseau-bus-tram",
         "https://www.filbleu.fr/fileadmin/contenu/Horaires_et_trajets/Plans/Plans_2025/202511_Plan_reseau_SubUrbain_travaux_web.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "metz",
@@ -13697,7 +13937,8 @@
       "sourceUrls": [
         "https://metz.fr/actus/2013/131010_reseau_lemet_.php",
         "https://www.lemet.fr/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "amiens",
@@ -13774,7 +14015,8 @@
       "sourceUrls": [
         "https://www.ametis.fr/le-reseau-ametis/",
         "https://www.ametis.fr/telecharger-nos-plans/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "caen",
@@ -13802,7 +14044,8 @@
       "sourceUrls": [
         "https://www.twisto.fr/bus",
         "https://www.twisto.fr/se-deplacer/plan-du-reseau"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "avignon",
@@ -13847,7 +14090,8 @@
       "sourceUrls": [
         "https://www.orizo.fr/tram/",
         "https://tim.orizo.fr/tim/data/pdf/910_11_ORIZO-320x310_20-21Web.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "rennes",
@@ -13861,7 +14105,8 @@
       "sourceUrls": [
         "https://www.star.fr/se-deplacer/plans-du-reseau",
         "https://www.star.fr/reseau-star/bus-metro/ligne"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "beziers",
@@ -13875,7 +14120,8 @@
       "sourceUrls": [
         "https://beemob.fr/",
         "https://beemob.fr/upload/2024hrshiver/LA-Hiv-2024-2312_7836.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "bordeaux",
@@ -13973,7 +14219,8 @@
         "https://www.infotbm.com/fr/lignes_de_bus",
         "https://www.infotbm.com/fr/plans-du-reseau.html",
         "https://aide.infotbm.com/?question=est-frequence-passage-tramway"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "grenoble",
@@ -13987,7 +14234,8 @@
       "sourceUrls": [
         "https://www.reso-m.fr/",
         "https://www.reso-m.fr/cms_viewFile.php?idtf=4604&path=PLAN-Mreso-SUD-2025-07.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "nantes",
@@ -14030,7 +14278,8 @@
       "sourceUrls": [
         "https://naolib.fr/fr/actualites/les-nouveautes-de-la-rentree-2026-2027",
         "https://naolib.fr/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "besancon",
@@ -14061,7 +14310,8 @@
       "sourceUrls": [
         "https://www.ginko.voyage/",
         "https://www.ginko.voyage/se-deplacer/plans-du-reseau/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "bourges",
@@ -14075,7 +14325,8 @@
       "sourceUrls": [
         "https://www.agglobus.com/",
         "https://files.agglobus.com/s3fs-public/documents/Bourges_PlanGeneral_2024-2025.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "nancy",
@@ -14156,7 +14407,8 @@
         "https://www.reseau-stan.com/loffre-de-transport/reseau-bus-et-trolley",
         "https://www.reseau-stan.com/loffre-de-transport/citadines",
         "https://www.reseau-stan.com/fileadmin/user_upload/Parkings_relais/plan_P_R_juillet_24.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "dunkirk",
@@ -14205,7 +14457,8 @@
       "sourceUrls": [
         "https://www.dkbus.com/ftp/documents/4-A4-ULCO.pdf",
         "https://www.dkbus.com/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "le-havre",
@@ -14219,7 +14472,8 @@
       "sourceUrls": [
         "https://www.transports-lia.fr/",
         "https://www.transports-lia.fr/se-deplacer/plans-du-reseau/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "marseille",
@@ -14233,7 +14487,8 @@
       "sourceUrls": [
         "https://www.rtm.fr/",
         "https://www.rtm.fr/sites/default/files/docs/RTM_Rapport_activite_2021_compressed%20%281%29.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "brest",
@@ -14247,7 +14502,8 @@
       "sourceUrls": [
         "https://www.bibus.fr/services/bus",
         "https://mon-reseau-2026.bibus.fr/media/535/download/Bibus_R%C3%A9seau_G%C3%A9n%C3%A9ral_2026_25ke_v20_bd_compressed.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "nimes",
@@ -14261,7 +14517,8 @@
       "sourceUrls": [
         "https://www.tangobus.fr/fr/page",
         "https://www.tangobus.fr/fr/guides-horaires-2026-2027"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "bayonne",
@@ -14275,7 +14532,8 @@
       "sourceUrls": [
         "https://www.txiktxak.fr/",
         "https://2025.txiktxak.fr/fr/questions-frequentes"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "chambery",
@@ -14289,7 +14547,8 @@
       "sourceUrls": [
         "https://www.synchro.grandchambery.fr/",
         "https://www.synchro.grandchambery.fr/se-deplacer/plans-du-reseau/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "le-mans",
@@ -14303,7 +14562,8 @@
       "sourceUrls": [
         "https://www.setram.fr/",
         "https://www.setram.fr/fr/plans"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "belfort",
@@ -14317,7 +14577,8 @@
       "sourceUrls": [
         "https://www.optymo.fr/",
         "https://www.optymo.fr/se-deplacer/plans-du-reseau/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "chartres",
@@ -14330,7 +14591,8 @@
       "sourceCount": 1,
       "sourceUrls": [
         "https://www.filibus.fr/presentation/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "mulhouse",
@@ -14361,7 +14623,8 @@
       "sourceUrls": [
         "https://www.solea.info/bus",
         "https://www.solea.info/sites/default/files/2025-09/SOLEA_dossier_presse_260825.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "beauvais",
@@ -14389,7 +14652,8 @@
       "sourceUrls": [
         "https://www.corolis.fr/nos-services/mieux-connaitre-le-reseau-corolis/",
         "https://www.corolis.fr/se-deplacer/horaires/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "rouen",
@@ -14403,7 +14667,8 @@
       "sourceUrls": [
         "https://www.reseau-astuce.fr/",
         "https://www.reseau-astuce.fr/fr/plans-du-reseau/76"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "nice-fr",
@@ -14418,7 +14683,8 @@
         "https://www.lignesdazur.com/fr/reseau-soiree",
         "https://www.lignesdazur.com/fr/plan-lignes-azur",
         "https://www.lignesdazur.com/sites/default/files/2025-01/10.-chrono-d24032-annexe-deliberation-5-rapport-dorientations-budgetaires-2025.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "lorient",
@@ -14432,7 +14698,8 @@
       "sourceUrls": [
         "https://www.izilo.bzh/vous-izilo/faq/lignes-et-horaires",
         "https://www.izilo.bzh/actualites/reseau/ete-2026-lignes-et-horaires"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "perpignan",
@@ -14499,7 +14766,8 @@
         "https://www.sankeo.com/news/les-nouvelles-lignes-principales-facilitent-les-deplacements/",
         "https://www.sankeo.com/news/sankeo-en-video/",
         "https://www.sankeo.com/news/nouvelle-navette-coeur-de-ville/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "la-rochelle",
@@ -14546,7 +14814,8 @@
       "sourceUrls": [
         "https://yelo.agglo-larochelle.fr/lignes-et-plans/",
         "https://yelo.agglo-larochelle.fr/services/le-reseau-de-bus/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "annecy",
@@ -14616,7 +14885,8 @@
         "https://www.sibra.fr/lignes-rythmo",
         "https://www.sibra.fr/lignes-fortes/",
         "https://www.sibra.fr/app/uploads/2024/04/sibra_plan_poche_400x290_v16_bigbang_web_1.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "cholet",
@@ -14630,7 +14900,8 @@
       "sourceUrls": [
         "https://www.choletbus.fr/se-deplacer/horaires-par-ligne/",
         "https://www.choletbus.fr/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "montbeliard",
@@ -14679,7 +14950,8 @@
         "https://www.evolity.fr/decouvrir-reseau-evolity/acteurs-et-missions/",
         "https://www.evolity.fr/lignes/thns-1/",
         "https://www.evolity.fr/wp-content/uploads/2024/03/evolity-evolity-infos-23-mars-2024.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "orleans",
@@ -14693,7 +14965,8 @@
       "sourceUrls": [
         "https://www.reseau-tao.fr/",
         "https://www.reseau-tao.fr/417-Plans-du-reseau.html"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "reims",
@@ -14795,7 +15068,8 @@
         "https://grandreims-mobilites.fr/upload/PLANS/URBAIN_0225/Plan-reseau-urbain-Fevrier-2025.pdf",
         "https://www.grandreims-mobilites.fr/fr/w48-Plans-du-reseau-.html",
         "https://www.grandreims-mobilites.fr/fr/8GB-Reseau-Periurbain-3A-Lignes-Express.html"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "boulogne-sur-mer",
@@ -14809,7 +15083,8 @@
       "sourceUrls": [
         "https://www.marineo.fr/se-deplacer/bus/plan-reseau",
         "https://www.marineo.fr/decouvrir/guide-mobilite"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "dieppe",
@@ -14823,7 +15098,8 @@
       "sourceUrls": [
         "https://www.stradibus.fr/",
         "https://www.stradibus.fr/se-deplacer/plans/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "toulon",
@@ -14837,7 +15113,8 @@
       "sourceUrls": [
         "https://www.reseaumistral.com/",
         "https://www.reseaumistral.com/se-deplacer/plans/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "quimper",
@@ -14851,7 +15128,8 @@
       "sourceUrls": [
         "https://www.qub-bus.fr/",
         "https://www.qub-bus.fr/se-deplacer/plans/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "toulouse",
@@ -14917,7 +15195,8 @@
         "https://projetsmetro.tisseo.fr/reseau-de-bus",
         "https://projetsmetro.tisseo.fr/actualites/le-lineo-12-ete-inaugure",
         "https://www.projetsmetro.tisseo.fr/sites/default/files/media/downloads/chiffres-cles-2019.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "pau",
@@ -14968,7 +15247,8 @@
       "sourceUrls": [
         "https://www.idelis.fr/decouvrir-idelis/les-lignes-temporis-a-haute-frequence",
         "https://www.idelis.fr/se-deplacer/la-ligne-f-la-ligne-a-haut-niveau-de-service"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "annemasse",
@@ -15015,7 +15295,8 @@
         "https://www.tac-mobilites.fr/nos-services/bus",
         "https://www.tac-mobilites.fr/actualites/maison-de-la-mobilite-et-du-tourisme/se-deplacer-sereinement-grace-aux-transports-en",
         "https://www.tac-mobilites.fr/actualites/le-reseau/une-nouvelle-ligne-4-au-1er-septembre-2025"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "laval",
@@ -15029,7 +15310,8 @@
       "sourceUrls": [
         "https://www.tul-laval.com/",
         "https://www.tul-laval.com/se-deplacer/plans/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "nevers",
@@ -15096,7 +15378,8 @@
       "sourceUrls": [
         "https://www.taneo-bus.fr/le-reseau/presentation",
         "https://www.taneo-bus.fr/services/transport-a-la-demande"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "blois",
@@ -15110,7 +15393,8 @@
       "sourceUrls": [
         "https://www.azalys-blois.fr/",
         "https://www.azalys-blois.fr/se-deplacer/plans/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "troyes",
@@ -15124,7 +15408,8 @@
       "sourceUrls": [
         "https://www.tcat.fr/",
         "https://www.tcat.fr/se-deplacer/plans/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "compiegne",
@@ -15138,7 +15423,8 @@
       "sourceUrls": [
         "https://www.compiegnois.fr/transport-et-mobilite/",
         "https://www.compiegnois.fr/transport-et-mobilite/bus/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "evreux",
@@ -15152,7 +15438,8 @@
       "sourceUrls": [
         "https://www.evreuxportesdenormandie.fr/les-services-et-equipements/transport-et-mobilite/transports-en-commun/",
         "https://evreuxportesdenormandie.fr/uploads/Epublication/6f/945_244_evreux-EPN-lemagazineN30-web.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "aix-en-provence",
@@ -15167,7 +15454,8 @@
         "https://www.aixenbus.fr/",
         "https://www.aixenbus.fr/fr/vZV-Les-nouveautes-de-la-rentree-2026.html",
         "https://www.aixenbus.fr/fr/kQ8-plans.html"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "vannes",
@@ -15182,7 +15470,8 @@
         "https://www.kiceo.fr/le-reseau-kiceo-2/",
         "https://www.kiceo.fr/lignes-urbaines-kiceo/",
         "https://www.kiceo.fr/termineo/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "cahors",
@@ -15197,7 +15486,8 @@
         "https://grandcahors.fr/evidence-gratuit",
         "https://grandcahors.fr/sites/default/files/pdf/S13-024/1_1_DIAGNOSTIC.pdf",
         "https://grandcahors.fr/divoneo?field_categorie_annuaire_target_id=50"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "poitiers",
@@ -15227,7 +15517,8 @@
       "sourceUrls": [
         "https://www.vitalis-poitiers.fr/services/lignes-regulieres/",
         "https://www.grandpoitiers.fr/au-quotidien/deplacements/transports-en-commun/transports-en-commun-de-grand-poitiers"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "clermont",
@@ -15306,7 +15597,8 @@
         "https://www.clermontmetropole.eu/no-cache/fr/actualites-et-agendas/toute-lactualite/detail/actualites/inspire-le-futur-reseau-de-transport-restructure-se-devoile/",
         "https://www.clermontmetropole.eu/no-cache/en/actualites-et-agendas/toute-lactualite/detail/actualites/panorama-du-nouveau-reseau-de-transport-en-commun-4-types-de-lignes/",
         "https://www.clermontmetropole.eu/les-grands-projets/dossier-transports-la-metropole-fait-bouger-les-lignes/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "saint-nazaire",
@@ -15320,7 +15612,8 @@
       "sourceUrls": [
         "https://www.saintnazaireagglo.fr/infos-et-demarches/mobilite/en-bus/",
         "https://www.saintnazaireagglo.fr/actualite/mobilite/ouverture-du-reseau-yceo-samedi-24-janvier/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "beaune",
@@ -15334,7 +15627,8 @@
       "sourceUrls": [
         "https://coteetbus.fr/fr/",
         "https://www.beaune.fr/wp-content/uploads/2025/09/Beaune-724-pages.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "chateauroux",
@@ -15348,7 +15642,8 @@
       "sourceUrls": [
         "https://www.chateauroux-metropole.fr/fileadmin/medias/Les_institutions/Ville_de_Chateauroux/Conseil_municipal/2023/3-2023-197.pdf",
         "https://data.chateauroux-metropole.fr/explore/dataset/reseau-de-bus-urbain_horizon/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "charleville",
@@ -15362,7 +15657,8 @@
       "sourceUrls": [
         "https://www.bustac.fr/se-deplacer/horaires",
         "https://www.bustac.fr/reglement-dutilisation-des-transports"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "creil",
@@ -15376,7 +15672,8 @@
       "sourceUrls": [
         "https://www.oise-mobilite.fr/propos-axo-agglomeration-creil-sud-oise",
         "https://www.oise-mobilite.fr/sites/default/files/2025-06/fh-ligne-c-ete25-du-14-07-au-24-08.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "argentan",
@@ -15389,7 +15686,8 @@
       "sourceCount": 1,
       "sourceUrls": [
         "https://terresdargentan.fr/argentan-intercom-mobilite/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "arles",
@@ -15403,7 +15701,8 @@
       "sourceUrls": [
         "https://www.agglo-accm.fr/assets/pdf/rapports_activites/ACCMRA%202021%20FINAL%20web%20fr.pdf",
         "https://www.agglo-accm.fr/nouvelles-lignes-de-bus-envia.html"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "concarneau",
@@ -15416,7 +15715,8 @@
       "sourceCount": 1,
       "sourceUrls": [
         "https://www.concarneau-cornouaille.bzh/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "carcassonne",
@@ -15431,7 +15731,8 @@
         "https://rtca.carcassonne-agglo.fr/lignes-horaires/",
         "https://rtca.carcassonne-agglo.fr/faq/",
         "https://rtca.carcassonne-agglo.fr/transport-scolaire/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "bergerac",
@@ -15445,7 +15746,8 @@
       "sourceUrls": [
         "https://la-cab.fr/deplacements/transports-urbains-bergeracois-tub/",
         "https://la-cab.fr/depliant-transport-cab/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "lyon",
@@ -15474,7 +15776,8 @@
         "https://www.tcl.fr/se-deplacer/plans-pdf-du-reseau",
         "https://magazine.sytral.fr/aujourdhui-tous-tcl/",
         "https://www.sytral.fr/uploads/Externe/88/641_876_DP_ALLOTISSEMENT_RESEAU_TCL.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "la-roche-sur-yon",
@@ -15489,7 +15792,8 @@
         "https://www.impulsyon.fr/vous-nous/le-reseau-impulsyon",
         "https://www.impulsyon.fr/nos-services/les-lignes-de-nuit-n1-et-n2",
         "https://www.impulsyon.fr/se-deplacer/lignes-horaires-et-plans"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "cosne",
@@ -15503,7 +15807,8 @@
       "sourceUrls": [
         "https://www.coeurdeloire.fr/le-bus-papillon-gratuit-et-maintenant-suivez-le-en-temps-reel/",
         "https://www.coeurdeloire.fr/wp-content/uploads/2024/01/Plan-de-Mobilite-Simplifie-Communaute-de-Communes-Coeur-de-Loire.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "vierzon",
@@ -15517,7 +15822,8 @@
       "sourceUrls": [
         "https://www.ville-vierzon.fr/transports-761.html",
         "https://www.le-vib.com/fr/transport-a-la-demande"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "colmar",
@@ -15593,7 +15899,8 @@
         "https://www.colmar.fr/trace-transports-en-communs-colmar-environs",
         "https://www.colmar.fr/sites/colmar.fr/files/documents/point-294.pdf",
         "https://www.trace-colmar.fr/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "douai",
@@ -15607,7 +15914,8 @@
       "sourceUrls": [
         "https://evasion.douaisis.fr/",
         "https://evasion.douaisis.fr/horaires/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "cherbourg",
@@ -15690,7 +15998,8 @@
       "sourceUrls": [
         "https://www.capcotentin.fr/offre-de-mobilite-2024/",
         "https://plans.capcotentin.fr/fr/plan-du-site/reseau/Cap-Cotentin/35"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "cannes",
@@ -15723,7 +16032,8 @@
         "https://cannes.com/fr/cadre-de-vie/transports/se-deplacer-dans-cannes/prendre-le-bus.html",
         "https://palmdeplacements.fr/le-reseau/",
         "https://www.cannes.com/_resource/Documents/Actualit%C3%A9s/Ann%C3%A9e%202022/Rapport%20d'orientations%20strat%C3%A9giques%20de%20l'Agglom%C3%A9ration%20Cannes%20L%C3%A9rins.pdf?download=true"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "fougeres",
@@ -15738,7 +16048,8 @@
         "https://www.lesurf.fr/",
         "https://www.lesurf.fr/se-deplacer/horaires-de-bus-surf/",
         "https://fougeres-agglo.bzh/les-nouveautes-de-la-rentree-dans-le-reseau-de-transport-urbain/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "castres",
@@ -15752,7 +16063,8 @@
       "sourceUrls": [
         "https://www.ville-castres.fr/transports-stationnement/",
         "https://transport.data.gouv.fr/datasets/offre-de-transport-du-reseau-libellus-gtfs"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "brive",
@@ -15765,7 +16077,8 @@
       "sourceCount": 1,
       "sourceUrls": [
         "https://www.libeo-brive.fr/se-deplacer/lignes-et-horaires"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "saint-etienne",
@@ -15779,7 +16092,8 @@
       "sourceUrls": [
         "https://www.reseau-stas.fr/fr/aide-et-accessibilite/54/horaires-de-ligne/9",
         "https://www.reseau-stas.fr/fr/questions-frequentes/12/stas-fonctionnement-du-reseau/161"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "saumur",
@@ -15787,53 +16101,14 @@
       "country": "France",
       "region": "Pays de la Loire",
       "reviewStatus": "qualitative_definition_only",
-      "category": "explicit_qualitative_definition",
-      "evidence": [
-        {
-          "tierIndex": 0,
-          "label": "Lignes structurantes",
-          "kind": "service_class",
-          "namedFrequency": true,
-          "numericFrequency": false,
-          "publishedThresholdMinutes": null,
-          "thresholdText": "Official Agglobus materials identify a structural-line category; no single numeric frequent-service threshold was published.",
-          "span": "varies",
-          "days": "varies",
-          "geography": "network",
-          "mode": "bus"
-        },
-        {
-          "tierIndex": 1,
-          "label": "Lignes urbaines",
-          "kind": "service_class",
-          "namedFrequency": true,
-          "numericFrequency": false,
-          "publishedThresholdMinutes": null,
-          "thresholdText": "Official planning material identifies an urban-line category; no single numeric frequent-service threshold was published.",
-          "span": "varies",
-          "days": "varies",
-          "geography": "urban network",
-          "mode": "bus"
-        },
-        {
-          "tierIndex": 2,
-          "label": "Lignes périurbaines",
-          "kind": "service_class",
-          "namedFrequency": true,
-          "numericFrequency": false,
-          "publishedThresholdMinutes": null,
-          "thresholdText": "Official materials identify a periurban-line category; no single numeric frequent-service threshold was published.",
-          "span": "varies",
-          "days": "varies",
-          "geography": "periurban network",
-          "mode": "bus"
-        }
-      ],
+      "category": "formal_definition_without_named_frequent_label",
+      "evidence": [],
       "sourceCount": 2,
       "sourceUrls": [
         "https://www.agglobus.com/actualites/le-reseau",
         "https://www.saumurvaldeloire.fr/images/2021-069-DC-B_Sch%C3%A9ma_de_d%C3%A9veloppement_des_mobilit%C3%A9s.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "dole",
@@ -15841,27 +16116,14 @@
       "country": "France",
       "region": "Bourgogne-Franche-Comté",
       "reviewStatus": "qualitative_definition_only",
-      "category": "explicit_qualitative_definition",
-      "evidence": [
-        {
-          "tierIndex": 0,
-          "label": "Ligne forte",
-          "kind": "service_class",
-          "namedFrequency": true,
-          "numericFrequency": false,
-          "publishedThresholdMinutes": null,
-          "thresholdText": "The official delegation report identifies Line 1 as the network's strong line; no single agency-wide frequent-service threshold was published.",
-          "span": "varies",
-          "days": "varies",
-          "geography": "network",
-          "mode": "bus"
-        }
-      ],
+      "category": "formal_definition_without_named_frequent_label",
+      "evidence": [],
       "sourceCount": 2,
       "sourceUrls": [
         "https://www.grandole-mobilites.fr/faq-grandole-mobilites",
         "https://www.grand-dole.fr/fileadmin/GRAND_DOLE_CONNAITRE/DELIBERATIONS_CONSEIL_COMMUNAUTAIRE/2019/27.06.19/8219b_du_27_06_19_RA_DSP_TRANSPORTS_2018___Annexe.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "dreux",
@@ -15875,7 +16137,8 @@
       "sourceUrls": [
         "https://www.linead.fr/",
         "https://bo.remi-centrevaldeloire.fr/sites/default/files/uploads/2026-02/Depliant_MOBILITE_REMI_REGIONAL_A4_36pages.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "epinal",
@@ -15905,7 +16168,8 @@
       "sourceUrls": [
         "https://www.imaginelebus.com/fr/aDE-Presentation-du-reseau.html",
         "https://www.imaginelebus.com/fr/o7X-La-navette-gratuite-de-centre-ville-dE28099Epinal.html"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "laon",
@@ -15919,7 +16183,8 @@
       "sourceUrls": [
         "https://laon.fr/VILLE_LAON_21_WEB/FR/document/CDAC%20LAON%20cmopressed.pdf",
         "https://laon.fr/VILLE_LAON_21_WEB/FR/document/LAONleMAG12.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "coutances",
@@ -15933,7 +16198,8 @@
       "sourceUrls": [
         "https://cosibus.fr/se-deplacer/horaires",
         "https://cosibus.fr/fileadmin/cosibus/documents/Guide_Mobilite_Coutances_Mer_et_Bocages_v.09.23.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "grasse",
@@ -15947,7 +16213,8 @@
       "sourceUrls": [
         "https://sillages.paysdegrasse.fr/",
         "https://www.ville-grasse.fr/regie-des-transports-de-bus-sillages/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "morlaix",
@@ -15961,7 +16228,8 @@
       "sourceUrls": [
         "https://www.lineotim.com/",
         "https://www.lineotim.com/upload/espace_telechargement/Annexe-10-Reglement-Exploitation-Gratuite-2022.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "tarbes",
@@ -15975,7 +16243,8 @@
       "sourceUrls": [
         "https://www.tlp-mobilites.com/horaires-et-plans-des-lignes-de-bus/",
         "https://www.tlp-mobilites.com/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "limoges",
@@ -15989,7 +16258,8 @@
       "sourceUrls": [
         "https://www.stcl.fr/",
         "https://www.stcl.fr/fileadmin/user_upload/Se_deplacer/L_offre_de_transport/Les_transports_a_la_demande/Reglt__-_v11_au_20.08.21.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "valence",
@@ -15997,27 +16267,14 @@
       "country": "France",
       "region": "Auvergne-Rhône-Alpes",
       "reviewStatus": "qualitative_definition_only",
-      "category": "explicit_qualitative_definition",
-      "evidence": [
-        {
-          "tierIndex": 0,
-          "label": "Ligne structurante C1",
-          "kind": "service_class",
-          "namedFrequency": true,
-          "numericFrequency": false,
-          "publishedThresholdMinutes": null,
-          "thresholdText": "C1 is officially described as the network's backbone and a structuring line; no single numeric frequent-service threshold was published.",
-          "span": "varies",
-          "days": "varies",
-          "geography": "Valence",
-          "mode": "bus"
-        }
-      ],
+      "category": "formal_definition_without_named_frequent_label",
+      "evidence": [],
       "sourceCount": 2,
       "sourceUrls": [
         "https://www.valenceromansmobilites.fr/bus/connect/",
         "https://start.valenceromansmobilites.fr/fr/plan-du-site/reseau/CITEA/CITEA"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "vesoul",
@@ -16030,7 +16287,8 @@
       "sourceCount": 1,
       "sourceUrls": [
         "https://www.vesoul.fr/au-quotidien/vbus-transports-en-commun.html"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "vendome",
@@ -16044,7 +16302,8 @@
       "sourceUrls": [
         "https://www.territoiresvendomois.fr/",
         "https://www.remi-centrevaldeloire.fr/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "selestat",
@@ -16058,7 +16317,8 @@
       "sourceUrls": [
         "https://www.elsa-mobilites.fr/lignes-elsa/",
         "https://www.selestat.fr/mon-quotidien/transports-et-deplacements/elsa-mobilites"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "lens",
@@ -16119,7 +16379,8 @@
       "sourceUrls": [
         "https://www.tadao.fr/fr/vax-Le-reseau.html",
         "https://www.tadao.fr/fr/v8z-Foire-aux-questions---Gratuite.html"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "louviers",
@@ -16133,7 +16394,8 @@
       "sourceUrls": [
         "https://www.semo-mobilite.com/",
         "https://transport.data.gouv.fr/datasets/semo-val-de-reuil-louviers-seine-eure-agglo"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "menton",
@@ -16147,7 +16409,8 @@
       "sourceUrls": [
         "https://www.zestbus.fr/les-nouveautes-du-reseau-zestbus-au-06-juillet-2026",
         "https://www.zestbus.fr/zestgo"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "quimperle",
@@ -16161,7 +16424,8 @@
       "sourceUrls": [
         "https://www.quimperle.bzh/vivre-a-quimperle/deplacements/tbk-reseau-de-bus/",
         "https://www.tbk.bzh/horaires"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "albi",
@@ -16208,7 +16472,8 @@
       "sourceUrls": [
         "https://www.libea-mobilites.fr/se-deplacer/le-reseau-de-bus/plans-des-lignes-de-bus/",
         "https://www.libea-mobilites.fr/sites/default/files/2022-12/R%C3%A9sum%C3%A9%20non%20technique_PDU_GrandAlbigeois_VF.pdf"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "mont-de-marsan",
@@ -16222,7 +16487,8 @@
       "sourceUrls": [
         "https://www.transdev.com/reseau/reseaux-urbains/tma",
         "https://bustma.com/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "bourgoin",
@@ -16236,7 +16502,8 @@
       "sourceUrls": [
         "https://www.rubantransport.com/qui-sommes-nous/",
         "https://www.rubantransport.com/lignes-regulieres/"
-      ]
+      ],
+      "storyThresholdMinutes": null
     },
     {
       "agencyId": "chalons",
@@ -16251,7 +16518,8 @@
         "https://www.sitac.net/consulter-un-plan",
         "https://www.chalons-agglo.fr/cac/actualites/transport/des-nouveautes-pour-le-reseau-sitac",
         "https://www.sitac.net/flexitac-le-service-de-transport-a-la-demande"
-      ]
+      ],
+      "storyThresholdMinutes": null
     }
   ]
 }

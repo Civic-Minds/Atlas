@@ -6,7 +6,11 @@ const markdownPath = 'docs/research/frequent-service-analysis-2026-09.md';
 
 const catalog = JSON.parse(fs.readFileSync(catalogPath, 'utf8'));
 
-const namedFrequencyPattern = /\bfrequent\b|high[- ]frequency|high-frequency|high frequency/i;
+// Only treat an explicit rider-facing product or tier as a named frequent definition.
+// Generic prose such as “no less frequent than every 75 minutes” and labels such as
+// “less frequent route service” describe service levels, but do not define “frequent.”
+const namedFrequencyLabelPattern = /\bfrequent\b|high[- ]frequency/i;
+const namedFrequencyTextPattern = /\bfrequent service\b|\bfrequent network\b|\bfrequent route\b|\bfrequent lines?\b|\b10[- ]minute network\b|\bhigh[- ]frequency\b/i;
 
 function numericValues(tier) {
   const values = [];
@@ -24,7 +28,12 @@ function numericValues(tier) {
 }
 
 function tierHasNamedFrequency(tier) {
-  return namedFrequencyPattern.test(`${tier.label ?? ''} ${tier.thresholdText ?? ''}`);
+  const label = String(tier.label ?? '');
+  const thresholdText = String(tier.thresholdText ?? '');
+  const excludedLabel = /\b(?:less\s+frequent|infrequent)\b/i.test(label);
+  const excludedText = /\b(?:no less|less|in)frequent(?:ly)?\b/i.test(thresholdText);
+  return (namedFrequencyLabelPattern.test(label) && !excludedLabel)
+    || (namedFrequencyTextPattern.test(thresholdText) && !excludedText);
 }
 
 function tierHasNumericFrequency(tier) {
@@ -53,6 +62,46 @@ function sortedCounts(values) {
 function sortedNumberCounts(values) {
   const counts = new Map();
   for (const value of values) counts.set(value, (counts.get(value) ?? 0) + 1);
+  return Object.fromEntries([...counts.entries()].sort(([a], [b]) => Number(a) - Number(b)));
+}
+
+function uniqueAgencyThresholdCounts(records) {
+  const counts = new Map();
+  for (const agency of records) {
+    const values = new Set(agency.evidence
+      .filter((evidence) => evidence.namedFrequency && evidence.numericFrequency)
+      .flatMap((evidence) => evidence.publishedThresholdMinutes));
+    for (const value of values) counts.set(value, (counts.get(value) ?? 0) + 1);
+  }
+  return Object.fromEntries([...counts.entries()].sort(([a], [b]) => Number(a) - Number(b)));
+}
+
+function maximumPublishedHeadwayCounts(records) {
+  const counts = new Map();
+  for (const agency of records) {
+    const values = agency.evidence
+      .filter((evidence) => evidence.namedFrequency && evidence.numericFrequency)
+      .flatMap((evidence) => evidence.publishedThresholdMinutes);
+    if (values.length === 0) continue;
+    const maximum = Math.max(...values);
+    counts.set(maximum, (counts.get(maximum) ?? 0) + 1);
+  }
+  return Object.fromEntries([...counts.entries()].sort(([a], [b]) => Number(a) - Number(b)));
+}
+
+function storyThresholdCounts(records) {
+  const counts = new Map();
+  for (const agency of records) {
+    const override = agency.storyThresholdMinutes;
+    const values = Number.isFinite(override)
+      ? [override]
+      : agency.evidence
+        .filter((evidence) => evidence.namedFrequency && evidence.numericFrequency)
+        .flatMap((evidence) => evidence.publishedThresholdMinutes);
+    if (values.length === 0) continue;
+    const threshold = Number.isFinite(override) ? override : Math.max(...values);
+    counts.set(threshold, (counts.get(threshold) ?? 0) + 1);
+  }
   return Object.fromEntries([...counts.entries()].sort(([a], [b]) => Number(a) - Number(b)));
 }
 
@@ -87,6 +136,7 @@ const agencies = catalog.agencies.map((agency) => {
     evidence,
     sourceCount: agency.sources.length,
     sourceUrls: agency.sources.map((source) => source.url),
+    storyThresholdMinutes: agency.storyThresholdMinutes ?? null,
   };
 });
 
@@ -133,6 +183,9 @@ const analysis = {
     agencyCount: namedNumericAgencies.length,
     observationCount: namedNumericEvidence.length,
     publishedThresholdMinutes: sortedNumberCounts(namedNumericEvidence.flatMap((evidence) => evidence.publishedThresholdMinutes)),
+    agencyCountsByPublishedThreshold: uniqueAgencyThresholdCounts(namedNumericAgencies),
+    agencyCountsByMaximumPublishedHeadway: maximumPublishedHeadwayCounts(namedNumericAgencies),
+    agencyCountsByStoryThreshold: storyThresholdCounts(namedNumericAgencies),
   },
   namedFrequentEvidence: {
     agencyCount: agencies.filter((agency) => agency.evidence.some((evidence) => evidence.namedFrequency)).length,
