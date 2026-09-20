@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Removed the empty app separator and unified bottom-map pill typography for clearer controls and attribution.
 - Unified browser agency visibility and feature route metadata so beta data and routes use the same access policy.
 - Centralized feature exposure so beta navigation, routes, data, and controls use one registry.
 - Unified Frequent Service's beta gate so production hides its navigation and redirects direct route access.

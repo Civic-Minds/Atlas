@@ -519,23 +519,27 @@ export default function App() {
           </a>
         )}
 
-        <span className="w-px h-4 bg-[var(--border-primary)] shrink-0" aria-hidden="true" />
-
-        {FEATURES.beta && (
-          <a
-            href={inNight ? '/' : '/apps/night'}
-            aria-label={inNight ? 'Back to frequency map' : 'Night service'}
-            aria-pressed={inNight}
-            className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold border focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${inNight ? CONTROL_ACTIVE : CONTROL_INACTIVE}`}
-          >
-            <Moon className="w-3.5 h-3.5" />
-            <span>Night Service</span>
-          </a>
-        )}
-        {FEATURES.frequentService && (
+        {(FEATURES.beta || FEATURES.frequentService) && (
           <>
-            <a href={inFrequentService ? '/' : FEATURE_ROUTES.frequentService.map} aria-label={inFrequentService ? 'Back to frequency map' : 'Frequent service research'} aria-pressed={inFrequentService} className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold ${inFrequentService ? 'bg-[var(--accent-bg)] border border-[var(--accent-border)] text-[var(--accent)]' : 'bg-[var(--bg-panel)] border border-[var(--border-primary)] hover:bg-[var(--bg-btn-hover)] text-[var(--text-secondary)]'}`}>Frequent Service</a>
-            {inFrequentService && <a href={FEATURE_ROUTES.frequentService.story} className="flex h-8 px-3 items-center rounded-full shrink-0 border border-[var(--border-primary)] bg-[var(--bg-panel)] text-xs font-bold text-[var(--text-secondary)] hover:bg-[var(--bg-btn-hover)]">Story</a>}
+            <span className="w-px h-4 bg-[var(--border-primary)] shrink-0" aria-hidden="true" />
+
+            {FEATURES.beta && (
+              <a
+                href={inNight ? '/' : '/apps/night'}
+                aria-label={inNight ? 'Back to frequency map' : 'Night service'}
+                aria-pressed={inNight}
+                className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold border focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${inNight ? CONTROL_ACTIVE : CONTROL_INACTIVE}`}
+              >
+                <Moon className="w-3.5 h-3.5" />
+                <span>Night Service</span>
+              </a>
+            )}
+            {FEATURES.frequentService && (
+              <>
+                <a href={inFrequentService ? '/' : FEATURE_ROUTES.frequentService.map} aria-label={inFrequentService ? 'Back to frequency map' : 'Frequent service research'} aria-pressed={inFrequentService} className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold ${inFrequentService ? 'bg-[var(--accent-bg)] border border-[var(--accent-border)] text-[var(--accent)]' : 'bg-[var(--bg-panel)] border border-[var(--border-primary)] hover:bg-[var(--bg-btn-hover)] text-[var(--text-secondary)]'}`}>Frequent Service</a>
+                {inFrequentService && <a href={FEATURE_ROUTES.frequentService.story} className="flex h-8 px-3 items-center rounded-full shrink-0 border border-[var(--border-primary)] bg-[var(--bg-panel)] text-xs font-bold text-[var(--text-secondary)] hover:bg-[var(--bg-btn-hover)]">Story</a>}
+              </>
+            )}
           </>
         )}
 
