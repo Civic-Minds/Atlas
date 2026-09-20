@@ -116,6 +116,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
   const [visible, setVisible] = useState(false);
   const [view, setView] = useState<'settings' | 'hidden-routes' | 'degraded-feeds'>('settings');
   const [hiddenRoutes, setHiddenRoutes] = useState<HiddenRoute[]>([]);
+  const [hiddenRoutesLoaded, setHiddenRoutesLoaded] = useState(false);
   const [hiddenRoutesLoading, setHiddenRoutesLoading] = useState(false);
   const [hiddenRoutesQuery, setHiddenRoutesQuery] = useState('');
   const [hiddenRegionFilter, setHiddenRegionFilter] = useState<Set<string>>(new Set());
@@ -142,22 +143,28 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
   }, [open]);
 
   useEffect(() => {
-    if (view !== 'hidden-routes' || hiddenRoutes.length > 0) return;
+    if (!open || hiddenRoutesLoaded) return;
     let cancelled = false;
     setHiddenRoutesLoading(true);
     fetch(`${R2_PUBLIC_URL}/atlas/hidden-routes.json`, { cache: 'no-store' })
       .then(response => response.ok ? response.json() : { routes: [] })
       .then(data => {
-        if (!cancelled) setHiddenRoutes(Array.isArray(data?.routes) ? data.routes : []);
+        if (!cancelled) {
+          setHiddenRoutes(Array.isArray(data?.routes) ? data.routes : []);
+          setHiddenRoutesLoaded(true);
+        }
       })
       .catch(() => {
-        if (!cancelled) setHiddenRoutes([]);
+        if (!cancelled) {
+          setHiddenRoutes([]);
+          setHiddenRoutesLoaded(true);
+        }
       })
       .finally(() => {
         if (!cancelled) setHiddenRoutesLoading(false);
       });
     return () => { cancelled = true; };
-  }, [hiddenRoutes.length, view]);
+  }, [hiddenRoutesLoaded, open]);
 
   const close = () => {
     setOpen(false);
@@ -548,7 +555,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                               onClick={() => setView('hidden-routes')}
                               className="mt-1 text-[10px] text-[var(--accent)] hover:underline"
                             >
-                              See all hidden routes{hiddenRoutes.length ? ` (${hiddenRoutes.length.toLocaleString()})` : ''} →
+                              See all hidden routes{hiddenRoutesLoaded ? ` (${hiddenRoutes.length.toLocaleString()})` : ' (…)'} →
                             </button>
                           </>
                         )}

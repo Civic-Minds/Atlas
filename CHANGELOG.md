@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Settings now loads and shows the hidden-route count alongside its review link.
 - Removed the unintended divider between the irregular-route and degraded-feed settings.
 - Diagnostics table links now preserve Command-click and Control-click new-tab behavior.
 - Restored Frequent Service's normal filter-row layout and made app selection visually unambiguous.
