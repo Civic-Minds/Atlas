@@ -1,4 +1,23 @@
 
+# Atlas — Handoff (2026-09-19, GTFS fallback repair and expired-feed research)
+
+## Current state
+
+- Work is isolated in worktree `/Users/ryan/Developer/Code/Platforms/Atlas-worktrees/gtfs-fallback` on branch `fix/gtfs-fallback`.
+- Main was left untouched; it still has Ryan's unrelated uncommitted changes in `pipeline/process-core.ts` and `pipeline/backfill-norta-history.ts`.
+- Implemented shared feed candidate discovery in `pipeline/feedSourceCandidates.ts`.
+- `pipeline/refresh.ts` now tries the configured feed, explicit `mdbFeedUrl`, and an automatically derived Mobility Database `latest.zip` fallback. If the configured feed downloads but is expired, a dated current fallback can replace it; an undated fallback does not replace known expired data.
+- The expired-source audit now uses the shared helper. Added coverage for deriving a latest fallback from a dated Mobility Database URL.
+- Verification passed: 99 test files, 655 tests, and both TypeScript checks.
+- The latest read-only audit found 40 newer sources, 30 genuinely expired agencies, and 4 manual-review cases (`augusta`, `lavta`, `sfmta`, `westberkeley`).
+- Current-source research has recovered and documented 67 agencies so far, including Athens, Avon, Blacksburg, Davenport, El Monte, EMTA, Guelph, JFK AirTrain, Kenosha, North County Transit District, OC Transpo, RTS Gainesville, SacRT, Sioux Area Metro, StarMetro, and Waukesha. DC Streetcar is discontinued; Greater Glens Falls Transit was merged into CDTA.
+- No live R2 refresh, PMTiles rebuild, or push has been performed. The research goal remains active; continue checking the unresolved queue rather than declaring completion.
+
+## Resume next
+
+1. Continue investigating the 27 remaining recovery candidates, the 30 genuinely expired agencies, and the 4 manual-review cases; configure only validated current feeds.
+2. Prepare targeted refresh commands for the 67 verified replacements, but ask separately before running them because they write to live R2.
+
 # Atlas — Handoff (2026-09-03, Live pause and Vercel deployment fix)
 
 ## Current state

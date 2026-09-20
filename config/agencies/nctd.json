@@ -5,9 +5,10 @@
     33.1545,
     -117.2257
   ],
-  "feedUrl": "https://files.mobilitydatabase.org/mdb-14/mdb-14-202503130030/mdb-14-202503130030.zip",
-  "lastFeedExpiry": "20250517",
-  "lastFeedVersion": "Version_20250205",
+  "feedUrl": "https://lfportal.nctd.org/staticGTFS/google_transit.zip",
+  "mdbFeedUrl": "https://lfportal.nctd.org/staticGTFS/google_transit.zip",
+  "lastFeedExpiry": "20261102",
+  "lastFeedVersion": "2607-GTFS-Sept2026TripAdjustment (2026-09-01)",
   "region": "California",
   "lastRefreshedAt": "20260811",
   "cities": [

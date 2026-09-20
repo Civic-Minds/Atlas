@@ -6,9 +6,10 @@
     42.082,
     -80.0658
   ],
-  "feedUrl": "http://data.trilliumtransit.com/gtfs/eriemta-pa-us/eriemta-pa-us.zip",
-  "lastFeedExpiry": "20231101",
-  "lastFeedVersion": "UTC: 22-Jun-2023 22:03",
+  "feedUrl": "https://emta.availtec.com/InfoPoint/gtfs-zip.ashx",
+  "lastFeedExpiry": "20270213",
+  "lastFeedVersion": "20260910",
+  "mdbFeedUrl": "https://emta.availtec.com/InfoPoint/gtfs-zip.ashx",
   "lastRefreshedAt": "20260811",
   "websiteUrl": "http://www.ride-the-e.com/",
   "cities": [

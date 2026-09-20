@@ -6,6 +6,16 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Repointed Avon Transit to its official 2026 GTFS source so the next refresh can restore current service dates.
+- Recovered OC Transpo’s current GTFS feed through October 2026 so Ottawa schedule data no longer relies on an expired catalog copy.
+- Recovered current GTFS sources for Athens, Davenport, El Monte, JFK AirTrain, Kenosha, Sioux Area Metro, StarMetro, and Waukesha, and separated discontinued DC Streetcar from the source-recovery queue.
+- Recovered the current North County Transit District GTFS source so NCTD no longer relies on an expired archive.
+- Recovered the City of Guelph’s current GTFS source so Guelph Transit no longer relies on an expired archive.
+- Recovered Blacksburg Transit’s current GTFS source so its Fall 2026 service remains available to Atlas.
+- Recovered EMTA’s current GTFS source through February 2027 so Erie schedule data no longer relies on an expired archive.
+- Recovered RTS Gainesville’s current Fall 2026 GTFS source through May 2027.
+- Recovered SacRT’s current GTFS source through January 2027 after its portal URL changed.
+- Weekly GTFS refreshes now fall back to current Mobility Database feeds when a configured source is dated or expired.
 - Night Service now retains agencies skipped during feed refreshes, keeping its directory aligned with the routes shown on the map ([#516](https://github.com/Civic-Minds/Atlas/issues/516)).
 - Night Service and History now share compact research-panel guidance and the same search treatment.
 - Public History now requires 10 distinct years of snapshots, so short archives do not appear as if they offer meaningful long-term history.

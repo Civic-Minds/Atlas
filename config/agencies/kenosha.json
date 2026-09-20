@@ -5,9 +5,10 @@
     42.586,
     -87.8658
   ],
-  "feedUrl": "https://data.trilliumtransit.com/gtfs/kenosha-wi-us/kenosha-wi-us.zip",
-  "lastFeedExpiry": "20240901",
-  "lastFeedVersion": "UTC: 04-Aug-2023 15:47",
+  "feedUrl": "https://kenoshatransit.com/gtfs",
+  "mdbFeedUrl": "https://kenoshatransit.com/gtfs",
+  "lastFeedExpiry": "20991231",
+  "lastFeedVersion": "Route 4 Detour",
   "lastRefreshedAt": "20260811",
   "region": "Wisconsin",
   "bbox": [

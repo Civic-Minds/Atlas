@@ -22,6 +22,21 @@ describe('expired source audit', () => {
     ]);
   });
 
+  it('derives a latest fallback when the configured feed is a dated Mobility Database ZIP', () => {
+    expect(buildFeedCandidates(
+      'https://files.mobilitydatabase.org/mdb-1993/mdb-1993-202605291824/mdb-1993-202605291824.zip',
+    )).toEqual([
+      {
+        kind: 'configured',
+        url: 'https://files.mobilitydatabase.org/mdb-1993/mdb-1993-202605291824/mdb-1993-202605291824.zip',
+      },
+      {
+        kind: 'mdb-latest',
+        url: 'https://files.mobilitydatabase.org/mdb-1993/latest.zip',
+      },
+    ]);
+  });
+
   it('identifies a newer current candidate', () => {
     expect(classifyExpiredCandidates('20260529', '20260824', [{
       kind: 'configured',

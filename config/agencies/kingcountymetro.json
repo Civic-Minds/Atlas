@@ -12,7 +12,7 @@
     47.9,
     -121.8
   ],
-  "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-washington-king-county-metro-gtfs-1330.zip?alt=media",
+  "feedUrl": "https://metro.kingcounty.gov/gtfs/google_transit.zip",
   "lastFeedExpiry": "20260828",
   "lastFeedVersion": "SPR26-160.3-MetroDayShuttleUpdate",
   "lastRefreshedAt": "2026-08-07",
