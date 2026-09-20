@@ -14,4 +14,3 @@
 | Shared utils | `headway-utils.ts`, `geometry.ts`, `route-metadata.ts`, `synthesize-directions.ts` |
 
 Agency-specific GTFS fixes belong in `transforms/` and are wired through `preprocess/run.ts`.
-Multi-agency feeds can set `agencyName` in the agency config to retain only one named GTFS agency and its dependent routes, trips, stops, shapes, and schedules.

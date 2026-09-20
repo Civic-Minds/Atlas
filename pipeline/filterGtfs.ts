@@ -1,39 +1,5 @@
 import type { GtfsData } from '../types/gtfs';
 
-/** Keep only one named agency from a multi-agency feed and its dependencies. */
-export function filterGtfsByAgencyName(gtfs: GtfsData, agencyName: string): GtfsData {
-  const wanted = agencyName.trim().toLowerCase();
-  const agencyIds = new Set(
-    (gtfs.agencies ?? [])
-      .filter(agency => agency.agency_name.trim().toLowerCase() === wanted)
-      .map(agency => agency.agency_id)
-      .filter((id): id is string => !!id),
-  );
-  if (agencyIds.size === 0) throw new Error(`GTFS agency not found: ${agencyName}`);
-  const routes = (gtfs.routes ?? []).filter(route => !!route.agency_id && agencyIds.has(route.agency_id));
-  const routeIds = new Set(routes.map(route => route.route_id));
-  const trips = (gtfs.trips ?? []).filter(trip => routeIds.has(trip.route_id));
-  const tripIds = new Set(trips.map(trip => trip.trip_id));
-  const serviceIds = new Set(trips.map(trip => trip.service_id));
-  const shapeIds = new Set(trips.map(trip => trip.shape_id).filter((id): id is string => !!id));
-  const stopTimes = (gtfs.stopTimes ?? []).filter(stopTime => tripIds.has(stopTime.trip_id));
-  const stopIds = new Set(stopTimes.map(stopTime => stopTime.stop_id));
-  return {
-    ...gtfs,
-    agencies: (gtfs.agencies ?? []).filter(agency => agencyIds.has(agency.agency_id ?? '')),
-    routes,
-    trips,
-    stopTimes,
-    stops: (gtfs.stops ?? []).filter(stop => stopIds.has(stop.stop_id)),
-    shapes: (gtfs.shapes ?? []).filter(shape => shapeIds.has(shape.id)),
-    frequencies: (gtfs.frequencies ?? []).filter(frequency => tripIds.has(frequency.trip_id)),
-    calendar: (gtfs.calendar ?? []).filter(calendar => serviceIds.has(calendar.service_id)),
-    calendarDates: (gtfs.calendarDates ?? []).filter(date => serviceIds.has(date.service_id)),
-    fareAttributes: (gtfs.fareAttributes ?? []).filter(fare => !fare.agency_id || agencyIds.has(fare.agency_id)),
-    fareRules: (gtfs.fareRules ?? []).filter(rule => !rule.route_id || routeIds.has(rule.route_id)),
-  };
-}
-
 /** Keep only the routes belonging to one agency inside a multi-agency feed. */
 export function filterGtfsByAgencyId(gtfs: GtfsData, agencyId: string): GtfsData {
   const routes = (gtfs.routes ?? []).filter(r => String(r.agency_id ?? '') === agencyId);
