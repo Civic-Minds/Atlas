@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { useNavigate, useLocation } from 'react-router';
 import { Map as MapIcon, Search, X, Info, History as HistoryIcon, Moon } from 'lucide-react';
 import { PILL_SURFACE, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_HEADER, SIDEBAR_LEFT_FALLBACK, CONTROL_ACTIVE, CONTROL_INACTIVE } from './styles';
-import { R2_PUBLIC_URL, getAgencyArtifactUrls, FEATURES } from '../shared/config';
+import { R2_PUBLIC_URL, getAgencyArtifactUrls, FEATURES, FEATURE_ROUTES } from '../shared/config';
+import { isAgencyVisibleInBrowser } from '../shared/agencyVisibility';
 import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig';
 import Interval from './apps/Interval';
 import type { StopEntry } from './apps/corridor-search';
@@ -118,8 +119,8 @@ export default function App() {
   // The map route is the map regardless of which map-state parameters are in the URL.
   // Requiring one of the filter parameters made links such as ?p=overnight render the
   // normal frequency controls and left the research controls out of the header.
-  const isFrequentServiceMapRoute = pathname === '/research/frequent-service';
-  const isFrequentServiceStoryRoute = pathname === '/research/frequent-service/story';
+  const isFrequentServiceMapRoute = pathname === FEATURE_ROUTES.frequentService.map;
+  const isFrequentServiceStoryRoute = pathname === FEATURE_ROUTES.frequentService.story;
   const frequentServiceMapView = FEATURES.frequentService && isFrequentServiceMapRoute;
   const inFrequentServiceStory = FEATURES.frequentService && isFrequentServiceStoryRoute;
   const inFrequentService = frequentServiceMapView;
@@ -380,7 +381,7 @@ export default function App() {
       })
       .then((data: { agencies: Agency[] }) => {
         const enriched = data.agencies
-          .filter((a: Agency) => !a.staged && (!a.hiddenInProduction || import.meta.env.DEV || (FEATURES.beta && a.betaOnly)))
+          .filter((a: Agency) => isAgencyVisibleInBrowser(a, { development: import.meta.env.DEV, betaEnabled: FEATURES.beta }))
           .map((a: Agency) => {
             if (!a.url) {
               const arts = getAgencyArtifactUrls(a.slug, { betaOnly: a.betaOnly });
@@ -435,7 +436,7 @@ export default function App() {
           type="button"
           onClick={() => {
             if (inFrequentServiceStory) {
-              navigate('/research/frequent-service?view=map');
+              navigate(`${FEATURE_ROUTES.frequentService.map}?view=map`);
             } else if (activeApp !== 'frequency') {
               navigate('/');
             } else {
@@ -533,8 +534,8 @@ export default function App() {
         )}
         {FEATURES.frequentService && (
           <>
-            <a href={inFrequentService ? '/' : '/research/frequent-service'} aria-label={inFrequentService ? 'Back to frequency map' : 'Frequent service research'} aria-pressed={inFrequentService} className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold ${inFrequentService ? 'bg-[var(--accent-bg)] border border-[var(--accent-border)] text-[var(--accent)]' : 'bg-[var(--bg-panel)] border border-[var(--border-primary)] hover:bg-[var(--bg-btn-hover)] text-[var(--text-secondary)]'}`}>Frequent Service</a>
-            {inFrequentService && <a href="/research/frequent-service/story" className="flex h-8 px-3 items-center rounded-full shrink-0 border border-[var(--border-primary)] bg-[var(--bg-panel)] text-xs font-bold text-[var(--text-secondary)] hover:bg-[var(--bg-btn-hover)]">Story</a>}
+            <a href={inFrequentService ? '/' : FEATURE_ROUTES.frequentService.map} aria-label={inFrequentService ? 'Back to frequency map' : 'Frequent service research'} aria-pressed={inFrequentService} className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold ${inFrequentService ? 'bg-[var(--accent-bg)] border border-[var(--accent-border)] text-[var(--accent)]' : 'bg-[var(--bg-panel)] border border-[var(--border-primary)] hover:bg-[var(--bg-btn-hover)] text-[var(--text-secondary)]'}`}>Frequent Service</a>
+            {inFrequentService && <a href={FEATURE_ROUTES.frequentService.story} className="flex h-8 px-3 items-center rounded-full shrink-0 border border-[var(--border-primary)] bg-[var(--bg-panel)] text-xs font-bold text-[var(--text-secondary)] hover:bg-[var(--bg-btn-hover)]">Story</a>}
           </>
         )}
 
@@ -580,7 +581,7 @@ export default function App() {
                   })
                   .then((data: { agencies: Agency[] }) => {
                     const enriched = data.agencies
-                      .filter((a: Agency) => !a.staged && (!a.hiddenInProduction || import.meta.env.DEV || (FEATURES.beta && a.betaOnly)))
+                      .filter((a: Agency) => isAgencyVisibleInBrowser(a, { development: import.meta.env.DEV, betaEnabled: FEATURES.beta }))
                       .map((a: Agency) => {
                         if (!a.url) {
                           const arts = getAgencyArtifactUrls(a.slug, { betaOnly: a.betaOnly });
@@ -600,7 +601,7 @@ export default function App() {
         ) : (
           <ErrorBoundary label="The map encountered an error.">
           {inFrequentServiceStory ? (
-            <FrequentServiceStory agencies={visibleAgencies} onExploreMap={() => navigate('/research/frequent-service?view=map')} />
+            <FrequentServiceStory agencies={visibleAgencies} onExploreMap={() => navigate(`${FEATURE_ROUTES.frequentService.map}?view=map`)} />
           ) : <>
             <Interval
               agencies={

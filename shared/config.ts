@@ -86,16 +86,19 @@ export const FEATURES = {
   unevenBanner: UNEVEN_BANNER_ENABLED,
 } as const;
 
-// Compatibility aliases for modules not yet migrated to the registry.
-export const FREQUENT_SERVICE_ENABLED = FEATURES.frequentService;
-export const MAP_EXPORT_ENABLED = FEATURES.mapExport;
+export const FEATURE_ROUTES = {
+  frequentService: {
+    map: '/research/frequent-service',
+    story: '/research/frequent-service/story',
+  },
+} as const;
 
 /**
  * Derive the public URLs for an agency's processed artifacts.
  * This removes the need to store repetitive full R2 URLs in index.json.
  */
 export function getAgencyArtifactUrls(slug: string, options?: { betaOnly?: boolean }) {
-  const base = BETA_BUILD && options?.betaOnly ? BETA_R2_PUBLIC_URL : R2_PUBLIC_URL;
+  const base = FEATURES.beta && options?.betaOnly ? BETA_R2_PUBLIC_URL : R2_PUBLIC_URL;
   return {
     url: `${base}/atlas/${slug}.json`,
     stopsUrl: `${base}/atlas/${slug}-stops.json`,
