@@ -10,6 +10,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Removed the unintended divider between the irregular-route and degraded-feed settings.
 - Removed the obsolete local Diagnostics table and its unused navigation surface.
 - Removed the divider between the appearance settings so the controls read as one group.
+- Tightened spacing between the appearance settings for a more compact panel.
 - Restored Frequent Service's normal filter-row layout and made app selection visually unambiguous.
 - Removed the empty app separator and unified bottom-map pill typography for clearer controls and attribution.
 - Unified browser agency visibility and feature route metadata so beta data and routes use the same access policy.
