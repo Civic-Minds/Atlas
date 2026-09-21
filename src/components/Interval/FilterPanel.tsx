@@ -495,7 +495,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                     <Toggle on={!lightMode} />
                   </button>
                 </div>
-                <div className="flex items-center justify-between mt-4 pt-4 border-t border-[var(--border-primary)]">
+                <div className="flex items-center justify-between mt-4 pt-4">
                   <div className="flex items-center gap-3 min-w-0">
                     <span className="w-4 h-4 shrink-0 text-center text-[10px] font-black text-[var(--text-dim)]">◈</span>
                     <div className="min-w-0">
