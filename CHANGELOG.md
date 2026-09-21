@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Remove the unwanted focus box from agency search while preserving keyboard focus styling for controls.
 - Restore compact settings switches so unrelated accessibility styling does not enlarge controls.
 
 - Settings now loads and shows the hidden-route count alongside its review link.
