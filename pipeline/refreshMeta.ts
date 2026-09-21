@@ -8,6 +8,11 @@ export interface FeedMetaFields {
   lastFeedVersion?: string | null;
   lastRawArchiveKey?: string | null;
   lastRefreshedAt?: string | null;
+  lastFeedCheckAt?: string | null;
+  feedRefreshStatus?: 'current' | 'stale';
+  feedRefreshError?: string | null;
+  feedRefreshErrorAt?: string | null;
+  feedRefreshRetryCount?: number;
 }
 
 /** Whether a feed's declared service end date is before the refresh date. */
@@ -61,6 +66,22 @@ export function stampFeedMeta(
   agency.lastFeedExpiry = opts.feedExpiry ?? opts.peekedExpiry ?? null;
   agency.lastFeedVersion = opts.feedVersion ?? opts.peekedVersion ?? null;
   agency.lastRefreshedAt = opts.todayYmd;
+  agency.feedRefreshStatus = 'current';
+  agency.feedRefreshError = null;
+  agency.feedRefreshErrorAt = null;
+  agency.feedRefreshRetryCount = 0;
+}
+
+/** Preserve the last good artifact while recording that a refresh needs another attempt. */
+export function markFeedStale(
+  agency: FeedMetaFields,
+  opts: { reason: string; todayYmd: string },
+): void {
+  agency.lastFeedCheckAt = opts.todayYmd;
+  agency.feedRefreshStatus = 'stale';
+  agency.feedRefreshError = opts.reason;
+  agency.feedRefreshErrorAt = opts.todayYmd;
+  agency.feedRefreshRetryCount = (agency.feedRefreshRetryCount ?? 0) + 1;
 }
 
 /** Never replace a dated active snapshot with an older or undated candidate. */

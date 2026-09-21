@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { isFeedExpired, shouldReplaceExpiredFeed, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta } from '../refreshMeta.js';
+import { isFeedExpired, markFeedStale, shouldReplaceExpiredFeed, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta } from '../refreshMeta.js';
 
 describe('feed expiry checks', () => {
   it('recognizes a feed that ended before the refresh date', () => {
@@ -63,6 +63,48 @@ describe('stampFeedMeta', () => {
     expect(agency.lastFeedExpiry).toBe('20251231');
     expect(agency.lastFeedVersion).toBe('v2');
     expect(agency.lastRefreshedAt).toBe('2026-07-19');
+  });
+
+  it('clears stale state after a successful refresh', () => {
+    const agency = {
+      feedRefreshStatus: 'stale' as const,
+      feedRefreshError: 'HTTP 403',
+      feedRefreshErrorAt: '2026-07-18',
+      feedRefreshRetryCount: 3,
+    };
+    stampFeedMeta(agency, {
+      feedExpiry: '20251231',
+      feedVersion: 'v2',
+      peekedExpiry: null,
+      peekedVersion: null,
+      todayYmd: '2026-07-19',
+    });
+    expect(agency).toMatchObject({
+      feedRefreshStatus: 'current',
+      feedRefreshError: null,
+      feedRefreshErrorAt: null,
+      feedRefreshRetryCount: 0,
+    });
+  });
+
+  it('records stale state without changing the active feed identity', () => {
+    const agency = {
+      lastFeedExpiry: '20261101',
+      lastFeedVersion: '202607301229',
+      lastRefreshedAt: '2026-08-07',
+    };
+    markFeedStale(agency, { reason: 'HTTP 403', todayYmd: '2026-09-21' });
+    markFeedStale(agency, { reason: 'all available feeds expired', todayYmd: '2026-09-28' });
+    expect(agency).toMatchObject({
+      lastFeedExpiry: '20261101',
+      lastFeedVersion: '202607301229',
+      lastRefreshedAt: '2026-08-07',
+      lastFeedCheckAt: '2026-09-28',
+      feedRefreshStatus: 'stale',
+      feedRefreshError: 'all available feeds expired',
+      feedRefreshErrorAt: '2026-09-28',
+      feedRefreshRetryCount: 2,
+    });
   });
 
   it('falls back to peeked values when process did not return feed_info', () => {

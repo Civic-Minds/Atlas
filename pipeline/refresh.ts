@@ -37,7 +37,7 @@ import {
 } from './overrideAudit.js';
 import { readFeedReviewHistory, shouldReviewNextFeed } from './feedReview.js';
 import { compareStopSnapshots, formatStopAuditLog, type AuditedStop } from './stopAudit.js';
-import { candidateIsOlderThanActive, decideRefreshSkipUnchanged, isFeedExpired, shouldReplaceExpiredFeed, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta } from './refreshMeta.js';
+import { candidateIsOlderThanActive, decideRefreshSkipUnchanged, isFeedExpired, markFeedStale, shouldReplaceExpiredFeed, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta } from './refreshMeta.js';
 import {
   COUNTRY_LAUNCH_FLAG,
   isCountryLaunchBlocked,
@@ -78,6 +78,7 @@ interface RouteSummary {
 interface RefreshAgencyResult {
   summary: string;
   processed?: boolean;
+  stale?: boolean;
   hiddenRoutes?: HiddenRouteRecord[];
 }
 
@@ -305,7 +306,10 @@ async function refreshAgency(
   }
 
   if (!buf || !selectedCandidate) {
-    throw firstCandidateError ?? new Error(`no usable feed source for ${agency.slug}`);
+    const reason = firstCandidateError?.message ?? `no usable feed source for ${agency.slug}`;
+    markFeedStale(agency, { reason, todayYmd: today });
+    writeLog(`\n  [warn] refresh unavailable (${reason}) — retaining the last good artifact\n`);
+    return { summary: `stale (feed unavailable: ${reason})`, stale: true };
   }
   if (selectedCandidate.kind !== 'configured' || selectedCandidate.url !== agency.feedUrl) {
     writeLog(`\n  [info] using ${selectedCandidate.kind} source: ${selectedCandidate.url}\n`);
@@ -332,9 +336,20 @@ async function refreshAgency(
   // when all dated parts have ended.
   if (agency.supplementalFeedUrls?.length) {
     for (const suppUrl of agency.supplementalFeedUrls) {
-      const suppBuf = await downloadFeed(suppUrl);
+      let suppBuf: Buffer;
+      try {
+        suppBuf = await downloadFeed(suppUrl);
+      } catch (error) {
+        const reason = `supplemental feed failed (${error instanceof Error ? error.message : String(error)})`;
+        markFeedStale(agency, { reason, todayYmd: today });
+        writeLog(`\n  [warn] ${reason} — retaining the last good artifact\n`);
+        return { summary: `stale (${reason})`, stale: true };
+      }
       if (suppBuf.length < 4 || suppBuf[0] !== 0x50 || suppBuf[1] !== 0x4b) {
-        throw new Error(`not a zip file (got ${suppBuf.length} bytes starting ${suppBuf.subarray(0, 4).toString('hex')})`);
+        const reason = `supplemental feed was not a ZIP (${suppBuf.length} bytes)`;
+        markFeedStale(agency, { reason, todayYmd: today });
+        writeLog(`\n  [warn] ${reason} — retaining the last good artifact\n`);
+        return { summary: `stale (${reason})`, stale: true };
       }
       const { feedExpiry, feedVersion } = await peekFeedInfo(suppBuf);
       supplementalFeeds.push({ url: suppUrl, buf: suppBuf, feedExpiry, feedVersion });
@@ -345,8 +360,10 @@ async function refreshAgency(
     [peekedExpiry, ...supplementalFeeds.map(feed => feed.feedExpiry)],
     today,
   )) {
-    writeLog(`\n  [warn] all feeds ended before refresh date — skipping update\n  `);
-    return { summary: 'all feeds expired, skipped' };
+    const reason = `all available feeds expired (latest ${peekedExpiry ?? 'unknown'})`;
+    markFeedStale(agency, { reason, todayYmd: today });
+    writeLog(`\n  [warn] ${reason} — retaining the last good artifact\n`);
+    return { summary: `stale (${reason})`, stale: true };
   }
 
   if (!forceRefresh && candidateIsOlderThanActive({ candidateExpiry: peekedExpiry, existingExpiry: agency.lastFeedExpiry })) {
@@ -405,7 +422,8 @@ async function refreshAgency(
     if (err instanceof GtfsValidationError) {
       writeLog(`  [warn] GTFS validation failed (${err.report.errors} error(s)) — skipping update\n`);
       // Do not stamp lastFeed* — leave previous metadata so a later good feed can run.
-      return { summary: 'validation failed, skipped' };
+      markFeedStale(agency, { reason: `GTFS validation failed (${err.report.errors} error(s))`, todayYmd: today });
+      return { summary: 'stale (GTFS validation failed)', stale: true };
     }
     throw err;
   }
@@ -458,8 +476,10 @@ async function refreshAgency(
   if (featureCount === 0) {
     // Do not stamp lastFeedExpiry / lastFeedVersion / lastRefreshedAt — that made
     // skip-if-unchanged treat a permanently-empty extract as "healthy" and never retry.
-    writeLog(`  [warn] pipeline produced 0 features — skipping update (flex/microtransit feed?); feed metadata left unchanged\n`);
-    return { summary: '0 features, skipped' };
+    const reason = 'pipeline produced 0 features';
+    writeLog(`  [warn] ${reason} — retaining the last good artifact (flex/microtransit feed?)\n`);
+    markFeedStale(agency, { reason, todayYmd: today });
+    return { summary: `stale (${reason})`, stale: true };
   }
 
   const currentStops = (JSON.parse(stopsMetaJson) as { stops?: AuditedStop[] }).stops ?? [];
@@ -582,6 +602,7 @@ async function main() {
   const countryRegistry = index.agencies as AgencyCountrySource[];
 
   let failures = 0;
+  let stale = 0;
   let uploads = 0;
   let countryLaunchSkips = 0;
   const allNightServiceRoutes: NightServiceRouteEntry[] = [];
@@ -619,7 +640,8 @@ async function main() {
       const result = await refreshAgency(agency, fareOverrides[agency.slug]?.adult ?? agency.fare, logger, allNightServiceRoutes, allFrequentServiceRoutes);
       const summary = result.summary;
       if (result.processed) refreshedNightServiceAgencySlugs.add(agency.slug);
-      if (!summary.startsWith('skipped') && !summary.includes('expired, skipped')) {
+      if (result.stale) stale++;
+      if (result.processed) {
         uploads++;
         if (result.hiddenRoutes) refreshedHiddenRoutes.set(agency.slug, result.hiddenRoutes);
       }
@@ -656,6 +678,9 @@ async function main() {
   if (failures > 0) {
     console.warn(`${failures} agencies failed to refresh (see warnings above). Continuing so action succeeds.`);
     // Do not exit(1) — partial success is normal for weekly refresh (expired feeds etc.)
+  }
+  if (stale > 0) {
+    console.warn(`${stale} agencies are stale and retained their last good artifact.`);
   }
 
   try {
