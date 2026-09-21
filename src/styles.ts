@@ -46,6 +46,9 @@ export const CHIP_BASE = 'bg-[var(--bg-panel)] backdrop-blur-md border rounded-f
 /** Shared mode-aware control states. */
 export const CONTROL_ACTIVE = 'bg-[var(--control-active-bg)] border-[var(--control-active-border)] text-[var(--control-active-fg)]';
 export const CONTROL_INACTIVE = 'bg-[var(--control-inactive-bg)] border-[var(--control-inactive-border)] text-[var(--control-inactive-fg)] hover:bg-[var(--control-hover-bg)]';
+/** App switchers use the same glass pill surface as the filter chips. */
+export const APP_TAB_ACTIVE = 'bg-[var(--control-active-bg)] border-[var(--control-active-border)] text-[var(--control-active-fg)] shadow-lg backdrop-blur-md';
+export const APP_TAB_INACTIVE = 'bg-[var(--bg-panel)] border-[var(--border-primary)] text-[var(--text-primary)] shadow-lg backdrop-blur-md hover:bg-[var(--bg-btn-hover)] hover:text-[var(--accent)]';
 export const SELECTION_ACTIVE = 'bg-[var(--selection-active-bg)] border-l-2 border-[var(--selection-active-border)]';
 export const SELECTION_ACTIVE_TEXT = 'text-[var(--selection-active-fg)]';
 export const ACTION_PRIMARY = 'bg-[var(--action-primary-bg)] border-[var(--action-primary-border)] text-[var(--action-primary-fg)]';

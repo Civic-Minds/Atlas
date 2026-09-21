@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router';
 import { Map as MapIcon, Search, X, Info, History as HistoryIcon, Moon } from 'lucide-react';
-import { PILL_SURFACE, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_HEADER, SIDEBAR_LEFT_FALLBACK, CONTROL_ACTIVE, CONTROL_INACTIVE } from './styles';
+import { PILL_SURFACE, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_HEADER, SIDEBAR_LEFT_FALLBACK, APP_TAB_ACTIVE, APP_TAB_INACTIVE } from './styles';
 import { R2_PUBLIC_URL, getAgencyArtifactUrls, FEATURES, FEATURE_ROUTES } from '../shared/config';
 import { isAgencyVisibleInBrowser } from '../shared/agencyVisibility';
 import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig';
@@ -495,7 +495,7 @@ export default function App() {
           <button
             onClick={() => setActiveApp(inLive ? 'frequency' : 'live')}
             aria-label="Live vehicles"
-            className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold border ${inLive ? CONTROL_ACTIVE : CONTROL_INACTIVE}`}
+            className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold border ${inLive ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
           >
             <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${inLive ? 'bg-[var(--accent)] animate-pulse' : 'bg-[var(--text-dim)]'}`} />
             <span>Live</span>
@@ -508,7 +508,7 @@ export default function App() {
             href={inHistory ? '/' : '/apps/history'}
             aria-label={inHistory ? 'Back to frequency map' : 'Historical service'}
             aria-pressed={inHistory}
-            className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold border focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${inHistory ? CONTROL_ACTIVE : CONTROL_INACTIVE}`}
+            className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold border focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${inHistory ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
           >
             <HistoryIcon className="w-3.5 h-3.5" />
             <span>History</span>
@@ -525,14 +525,14 @@ export default function App() {
                 href={inNight ? '/' : '/apps/night'}
                 aria-label={inNight ? 'Back to frequency map' : 'Night service'}
                 aria-pressed={inNight}
-                className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold border focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${inNight ? CONTROL_ACTIVE : CONTROL_INACTIVE}`}
+                className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold border focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${inNight ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
               >
                 <Moon className="w-3.5 h-3.5" />
                 <span>Night Service</span>
               </a>
             )}
             {FEATURES.frequentService && (
-              <a href={inFrequentService ? '/' : FEATURE_ROUTES.frequentService.map} aria-label={inFrequentService ? 'Back to frequency map' : 'Frequent service research'} aria-pressed={inFrequentService} className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold border focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${inFrequentService ? CONTROL_ACTIVE : CONTROL_INACTIVE}`}>Frequent Service</a>
+              <a href={inFrequentService ? '/' : FEATURE_ROUTES.frequentService.map} aria-label={inFrequentService ? 'Back to frequency map' : 'Frequent service research'} aria-pressed={inFrequentService} className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold border focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${inFrequentService ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}>Frequent Service</a>
             )}
           </>
         )}
