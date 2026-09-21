@@ -44,7 +44,7 @@ export const BETA_R2_PUBLIC_URL = getBetaR2PublicUrl().replace(/\/$/, '');
 // Live and History cover a tiny sliver of agencies with no scaling plan yet (Ryan, 2026-07-29) --
 // off by default until that's resolved. Env-driven rather than a hardcoded constant so production
 // and beta can build the same main commit with different feature exposure.
-function envFlag(name: 'VITE_LIVE_ENABLED' | 'VITE_HISTORY_ENABLED' | 'VITE_CORRIDORS_ENABLED' | 'VITE_BETA_BUILD' | 'VITE_CARD_CLICK_TO_FLAG_ENABLED' | 'VITE_DIAGNOSTICS_ENABLED' | 'VITE_UNEVEN_BANNER_ENABLED' | 'VITE_MAP_EXPORT_ENABLED'): boolean {
+function envFlag(name: 'VITE_LIVE_ENABLED' | 'VITE_HISTORY_ENABLED' | 'VITE_CORRIDORS_ENABLED' | 'VITE_BETA_BUILD' | 'VITE_CARD_CLICK_TO_FLAG_ENABLED' | 'VITE_UNEVEN_BANNER_ENABLED' | 'VITE_MAP_EXPORT_ENABLED'): boolean {
   // @ts-ignore
   return typeof import.meta !== 'undefined' && import.meta?.env?.[name] === 'true';
 }
@@ -56,9 +56,6 @@ export const CORRIDORS_ENABLED = envFlag('VITE_CORRIDORS_ENABLED');
 // Click-to-flag a specific value on a card (frequency, route name, etc.) to report it directly,
 // no typing required. New/unproven interaction -- beta only until it's been used for real.
 export const CARD_CLICK_TO_FLAG_ENABLED = envFlag('VITE_CARD_CLICK_TO_FLAG_ENABLED');
-// Internal route table for spot-checking data quality (/apps/diagnostics). Never meant for the
-// public -- not a "graduating" feature like the others, just kept off the production domain.
-export const DIAGNOSTICS_ENABLED = envFlag('VITE_DIAGNOSTICS_ENABLED');
 // "Service is uneven" route-card banner. The threshold that decides when a period's worst gap
 // is worth surfacing to a rider needed more real-feed tuning than a single main push should
 // carry -- beta only until it's been validated against a lot more agencies (2026-08-08).
@@ -82,7 +79,6 @@ export const FEATURES = {
   frequentService: BETA_BUILD,
   mapExport: BETA_BUILD || MAP_EXPORT_ENV_ENABLED,
   cardClickToFlag: CARD_CLICK_TO_FLAG_ENABLED,
-  diagnostics: DIAGNOSTICS_ENABLED,
   unevenBanner: UNEVEN_BANNER_ENABLED,
 } as const;
 

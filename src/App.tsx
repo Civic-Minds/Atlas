@@ -15,7 +15,6 @@ const History = React.lazy(() => import('./apps/History'));
 const LiveVehicles = React.lazy(() => import('./apps/LiveVehicles'));
 const Corridors = React.lazy(() => import('./apps/Corridors'));
 import type { AppId } from './components/AppDrawer';
-import ToolsMenu from './components/ToolsMenu';
 import { CorridorMapOverlayProvider } from './context/CorridorMapOverlay';
 import { HistoryMapOverlayProvider } from './context/HistoryMapOverlay';
 import { LiveVehiclesMapOverlayProvider } from './context/LiveVehiclesMapOverlay';
@@ -543,7 +542,6 @@ export default function App() {
       {/* Portal target for Interval's right header (FilterChips + Now + FilterPanel) */}
       <div className="flex items-center gap-2 pointer-events-auto">
         <div ref={headerPortalRef} className="flex items-center gap-2" />
-        {import.meta.env.DEV && <ToolsMenu />}
         <button
           onClick={() => openInfo('about')}
           aria-label="About Atlas"

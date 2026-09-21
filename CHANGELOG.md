@@ -8,7 +8,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 - Settings now loads and shows the hidden-route count alongside its review link.
 - Removed the unintended divider between the irregular-route and degraded-feed settings.
-- Diagnostics table links now preserve Command-click and Control-click new-tab behavior.
+- Removed the obsolete local Diagnostics table and its unused navigation surface.
 - Restored Frequent Service's normal filter-row layout and made app selection visually unambiguous.
 - Removed the empty app separator and unified bottom-map pill typography for clearer controls and attribution.
 - Unified browser agency visibility and feature route metadata so beta data and routes use the same access policy.
