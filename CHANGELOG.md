@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - Weekly GTFS refreshes now retain last-good agency data and record stale sources instead of silently treating failed fallbacks as normal skips ([#528](https://github.com/Civic-Minds/Atlas/issues/528)).
+- PMTiles coverage checks now include each agency's center tile so small networks cannot be missed by sparse sampling.
 - Register exo Vallée du Richelieu so route 200 Saint-Hyacinthe–Longueuil can be published in Atlas.
 - Remove the unwanted focus box from agency search while preserving keyboard focus styling for controls.
 - Restore compact settings switches so unrelated accessibility styling does not enlarge controls.

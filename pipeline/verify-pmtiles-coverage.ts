@@ -18,6 +18,7 @@ import { PMTiles } from 'pmtiles';
 import { PbfReader } from 'pbf';
 import { VectorTile } from '@mapbox/vector-tile';
 import { R2_PUBLIC_URL } from '../shared/config.js';
+import { tilesForAgency } from './pmtilesCoverage.js';
 import { runWithConcurrency } from './utils.js';
 
 interface Agency {
@@ -32,79 +33,10 @@ interface Agency {
   pmtilesPending?: boolean;
 }
 
-// Matches the app's own fallback bbox padding (shared/config.ts AGENCY_BBOX_PAD)
-// so agencies without an explicit bbox are sampled over the same area the UI
-// actually treats as their service area.
-const FALLBACK_PAD = { lat: 0.4, lon: 0.5 };
-
 // Cap the sampling zoom — tippecanoe:minzoom for infrequent routes tops out at 11
 // (see shared/config.ts pmtilesMinZoomForHeadway), so any zoom >= 11 will surface
 // every headway tier. We still clamp to the archive's actual maxZoom at runtime.
 const PREFERRED_ZOOM = 12;
-
-// A sparse fixed-point grid (e.g. 9 corner/edge/center points) can miss real
-// route geometry entirely for agencies with only a handful of routes clustered
-// in a small part of their bbox — confirmed false-positive on siskiyou/lassen
-// (see #215). Instead cover every tile in the bbox up to this cap; beyond it
-// (large/statewide agencies) fall back to an evenly-strided grid so total
-// fetch cost stays bounded.
-const MAX_TILES_PER_AGENCY = 100;
-
-function lonLatToTile(lon: number, lat: number, zoom: number): { x: number; y: number } {
-  const n = 2 ** zoom;
-  const latRad = (lat * Math.PI) / 180;
-  const x = Math.floor(((lon + 180) / 360) * n);
-  const y = Math.floor(
-    ((1 - Math.log(Math.tan(latRad) + 1 / Math.cos(latRad)) / Math.PI) / 2) * n,
-  );
-  return {
-    x: Math.min(Math.max(x, 0), n - 1),
-    y: Math.min(Math.max(y, 0), n - 1),
-  };
-}
-
-/**
- * Every tile spanned by an agency's bbox at the sampling zoom, up to
- * MAX_TILES_PER_AGENCY. Larger bboxes fall back to an evenly-strided grid
- * within the cap rather than every tile, to bound total fetch cost.
- */
-function tilesForAgency(agency: Agency, zoom: number): Array<{ x: number; y: number }> {
-  const [centerLat, centerLon] = agency.center;
-  const [s, w, n, e] = agency.bbox ?? [
-    centerLat - FALLBACK_PAD.lat,
-    centerLon - FALLBACK_PAD.lon,
-    centerLat + FALLBACK_PAD.lat,
-    centerLon + FALLBACK_PAD.lon,
-  ];
-  // Tile y increases southward, so north (n) maps to the smaller y.
-  const topLeft = lonLatToTile(w, n, zoom);
-  const bottomRight = lonLatToTile(e, s, zoom);
-  const xMin = Math.min(topLeft.x, bottomRight.x);
-  const xMax = Math.max(topLeft.x, bottomRight.x);
-  const yMin = Math.min(topLeft.y, bottomRight.y);
-  const yMax = Math.max(topLeft.y, bottomRight.y);
-  const width = xMax - xMin + 1;
-  const height = yMax - yMin + 1;
-
-  if (width * height <= MAX_TILES_PER_AGENCY) {
-    const tiles: Array<{ x: number; y: number }> = [];
-    for (let x = xMin; x <= xMax; x++) {
-      for (let y = yMin; y <= yMax; y++) tiles.push({ x, y });
-    }
-    return tiles;
-  }
-
-  const gridDim = Math.max(1, Math.floor(Math.sqrt(MAX_TILES_PER_AGENCY)));
-  const tiles: Array<{ x: number; y: number }> = [];
-  for (let i = 0; i < gridDim; i++) {
-    for (let j = 0; j < gridDim; j++) {
-      const x = xMin + Math.round((i / Math.max(1, gridDim - 1)) * (width - 1));
-      const y = yMin + Math.round((j / Math.max(1, gridDim - 1)) * (height - 1));
-      tiles.push({ x, y });
-    }
-  }
-  return tiles;
-}
 
 async function getZxyWithRetry(
   pmtiles: PMTiles,
