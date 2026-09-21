@@ -6,6 +6,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Restore compact settings switches so unrelated accessibility styling does not enlarge controls.
+
 - Settings now loads and shows the hidden-route count alongside its review link.
 - Removed the unintended divider between the irregular-route and degraded-feed settings.
 - Removed the obsolete local Diagnostics table and its unused navigation surface.

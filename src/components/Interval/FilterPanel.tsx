@@ -60,13 +60,13 @@ export function getHiddenFeedAgencies(agencies: Agency[]): Agency[] {
 function Toggle({ on }: { on: boolean }) {
   return (
     <span
-      className={`relative inline-flex h-6 w-11 shrink-0 rounded-full transition-colors ${TRANSITION_BASE} ${
+      className={`relative inline-flex h-5 w-9 shrink-0 rounded-full transition-colors ${TRANSITION_BASE} ${
         on ? 'bg-[var(--control-active-bg)]' : 'bg-[var(--control-inactive-border)]'
       }`}
     >
       <span
-        className={`absolute top-1 h-4 w-4 rounded-full bg-white shadow-sm transition-transform ${TRANSITION_BASE} ${
-          on ? 'translate-x-6' : 'translate-x-1'
+        className={`absolute top-1 h-3 w-3 rounded-full bg-white shadow-sm transition-transform ${TRANSITION_BASE} ${
+          on ? 'translate-x-5' : 'translate-x-1'
         }`}
       />
     </span>
