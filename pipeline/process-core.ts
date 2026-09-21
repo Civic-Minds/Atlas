@@ -96,6 +96,8 @@ const PERIODS = Object.fromEntries(
 export interface ProcessOptions extends GtfsTransformOptions {
   slug?: string;
   manualBaseFare?: number;
+  /** Skip corridor geometry when a caller only needs route-level history. */
+  skipCorridors?: boolean;
   /**
    * When true, continue after GTFS validation errors (log only).
    * Default false: throw GtfsValidationError so process CLI fails closed.
@@ -951,9 +953,9 @@ export async function processGtfsBuffer(
   const allRailFeed = (gtfs.routes ?? []).length > 0 &&
     (gtfs.routes ?? []).every(r => r.route_type === '2' || r.route_type === 2);
 
-  onStatus?.('Calculating combined corridors...');
+  onStatus?.(options?.skipCorridors ? 'Skipping combined corridors...' : 'Calculating combined corridors...');
   const corridorFeatures: GeoJsonFeature[] = [];
-  if (!allRailFeed) {
+  if (!options?.skipCorridors && !allRailFeed) {
   const dayTypes: DayType[] = [...DAY_TYPES];
   for (const d of dayTypes) {
     const dayCfg = DEFAULT_CRITERIA.dayTypes[d];
