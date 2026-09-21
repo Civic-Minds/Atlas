@@ -1,0 +1,28 @@
+{
+  "slug": "exo-vallee-richelieu",
+  "name": "exo (Vallée du Richelieu)",
+  "region": "Quebec",
+  "center": [
+    45.54,
+    -73.24
+  ],
+  "bbox": [
+    45.4,
+    -73.6,
+    45.7,
+    -72.9
+  ],
+  "feedUrl": "https://exo.quebec/xdata/citvr/google_transit.zip",
+  "lastFeedExpiry": "20270103",
+  "lastFeedVersion": null,
+  "gtfsFares": true,
+  "cities": [
+    "Saint-Hyacinthe, Quebec",
+    "Longueuil, Quebec",
+    "Beloeil, Quebec",
+    "McMasterville, Quebec",
+    "Mont-Saint-Hilaire, Quebec",
+    "Saint-Basile-le-Grand, Quebec"
+  ],
+  "timezone": "America/Montreal"
+}

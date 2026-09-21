@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Register exo Vallée du Richelieu so route 200 Saint-Hyacinthe–Longueuil can be published in Atlas.
 - Remove the unwanted focus box from agency search while preserving keyboard focus styling for controls.
 - Restore compact settings switches so unrelated accessibility styling does not enlarge controls.
 
