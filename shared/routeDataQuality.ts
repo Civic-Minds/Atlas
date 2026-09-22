@@ -10,4 +10,4 @@ export const ROUTE_DATA_QUALITY_WARNING = 'shape-anomaly' as const;
 export type RouteDataQualityWarning = typeof ROUTE_DATA_QUALITY_WARNING;
 
 export const ROUTE_DATA_QUALITY_WARNING_MESSAGE =
-  "Atlas found a problem with this route's map line in the source feed. The line may be incomplete or adjusted.";
+  "Atlas found a problem with this route's shape in the source feed. The route may be incomplete or adjusted.";

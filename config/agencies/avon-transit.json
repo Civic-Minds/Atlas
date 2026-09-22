@@ -7,33 +7,34 @@
     39.6314,
     -106.5222
   ],
-  "feedUrl": "https://data.trilliumtransit.com/gtfs/avon-co-us/avon-co-us.zip",
-  "lastFeedExpiry": "20250413",
-  "lastFeedVersion": "UTC: 20-Nov-2024 17:07",
-  "lastRefreshedAt": "2026-08-18",
+  "feedUrl": "https://www.avon.org/DocumentCenter/View/25051/TownOfAvon_gtfs",
+  "lastFeedExpiry": "20261125",
+  "lastFeedVersion": "1",
+  "lastRefreshedAt": "2026-09-22",
   "cities": [
     "Avon, Colorado",
     "Beaver Creek, Colorado"
   ],
   "timezone": "America/Denver",
   "feedQuality": {
-    "status": "degraded",
-    "score": 55,
-    "reasons": [
-      "1 validation warning.",
-      "The feed schedule has expired."
-    ],
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
     "metrics": {
       "validationErrors": 0,
-      "validationWarnings": 1,
+      "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 16
+      "featureCount": 12
     },
-    "checkedAt": "2026-08-18"
+    "checkedAt": "2026-09-22"
   },
-  "lastFeedCheckAt": "20260907",
-  "expiredFeedCheckCount": 2,
-  "expiredFeedCheckSince": "20260622",
-  "expiredFeedCheckExpiry": "20250413"
+  "lastFeedCheckAt": "20260922",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261125",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

@@ -1,5 +1,5 @@
 import type { PeriodKey } from './config.js';
-import { periodHeadwayFlatKeys } from './pmtilesProps.js';
+import { NO_PERIOD_SERVICE_TILE_VALUE, periodHeadwayFlatKeys } from './pmtilesProps.js';
 import { buildEffectiveModeExpression, VIRTUAL_LRT_MODE } from './modes.js';
 
 type PeriodFilter = PeriodKey | 'all';
@@ -41,19 +41,26 @@ export function tileEffectiveHeadwayExpr(period?: PeriodFilter): unknown[] {
     const [, wdph, hph] = periodHeadwayFlatKeys(period);
     const periodKeys = [wdph, hph];
     const coverageKeys = [`wdpch_${period}`, `pch_${period}`];
+    const periodValue = [
+      'coalesce',
+      ...periodKeys.map((key) => ['get', key]),
+      NO_PERIOD_SERVICE_TILE_VALUE,
+    ];
     const coverage = [
       'case',
       ['has', coverageKeys[0]], ['get', coverageKeys[0]],
       ['has', coverageKeys[1]], ['get', coverageKeys[1]],
       ['any', ...periodKeys.map((key) => ['has', key])],
-      ['coalesce', ...periodKeys.map((key) => ['get', key])],
-      allDay,
+      periodValue,
+      // A period-specific filter must not silently become an all-day filter when
+      // an old or incomplete tile has no period properties at all.
+      NO_PERIOD_SERVICE_TILE_VALUE,
     ];
     const regularPeriod = [
       'case',
       ['has', periodKeys[0]], ['get', periodKeys[0]],
       ['has', periodKeys[1]], ['get', periodKeys[1]],
-      allDay,
+      NO_PERIOD_SERVICE_TILE_VALUE,
     ];
     const qualifiedCadence = [
       'case',
@@ -67,7 +74,8 @@ export function tileEffectiveHeadwayExpr(period?: PeriodFilter): unknown[] {
       // the window (coverage <= 60). If the period is marked unsustained or has no service for most
       // of the window (e.g. Calgary overnight routes starting around 5 AM), use the full-window
       // coverage value so a late-start route cannot pass as frequent or receive a normal tier (#507).
-      // Older tiles have no hps_* flag and retain the coverage-first fallback.
+      // Older or incomplete tiles have no period properties and fail closed rather
+      // than falling back to daytime/all-day values.
       ['has', `hps_${period}`],
       qualifiedCadence,
       coverage,

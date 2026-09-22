@@ -1,14 +1,15 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Settings, X, Sun, Moon, ArrowLeft, Search, ShieldCheck } from 'lucide-react';
-import { ICON_BTN, DROPDOWN_PANEL, SEARCH_FIELD, SEARCH_PILL, dropdownAnim, TRANSITION_BASE, Z_MODAL_TOP } from '../../styles';
+import { Settings, X, Sun, Moon, Map as MapIcon, ArrowLeft, Search, ShieldCheck } from 'lucide-react';
+import { ICON_BTN, DROPDOWN_PANEL, SEARCH_FIELD, SEARCH_PILL, FILTER_OPTION, CONTROL_ACTIVE, CONTROL_INACTIVE, dropdownAnim, TRANSITION_BASE, Z_MODAL_TOP } from '../../styles';
 import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
 import { FILTER_MODES } from '../../../shared/modes';
 import { DAY_TYPES } from '../../../shared/dayTypes';
 import { PERIOD_LABELS } from '../../hooks/useIntervalStats';
-import { R2_PUBLIC_URL } from '../../../shared/config';
+import { FEATURES, R2_PUBLIC_URL } from '../../../shared/config';
 import type { Agency } from '../../App';
 import { agencyDisplayParts, formatStoredDate } from '../../utils/format';
-import { qualityStatusLabel } from '../../../shared/feedQuality';
+import { presentFeedQualityReason, qualityStatusLabel } from '../../../shared/feedQuality';
+import { useColorVision } from '../../context/ColorVisionContext';
 
 interface FilterPanelProps {
   lightMode: boolean;
@@ -37,6 +38,10 @@ interface FilterPanelProps {
   hideLowQuality: boolean;
   setHideLowQuality: (v: boolean | ((prev: boolean) => boolean)) => void;
   feedQualityEnabled?: boolean;
+  showMapLegend: boolean;
+  setShowMapLegend: (v: boolean | ((prev: boolean) => boolean)) => void;
+  dataSaver: boolean;
+  setDataSaver: (v: boolean | ((prev: boolean) => boolean)) => void;
 }
 
 export interface HiddenRoute {
@@ -58,7 +63,7 @@ function Toggle({ on }: { on: boolean }) {
   return (
     <span
       className={`relative inline-flex h-5 w-9 shrink-0 rounded-full transition-colors ${TRANSITION_BASE} ${
-        on ? 'bg-[var(--accent)]' : 'bg-[var(--border-primary)]'
+        on ? 'bg-[var(--toggle-on-bg)]' : 'bg-[var(--toggle-off-bg)]'
       }`}
     >
       <span
@@ -75,7 +80,7 @@ const SETTINGS = [
     id: 'span',
     icon: ({ className }: { className?: string }) => <span className={`w-4 h-4 flex items-center justify-center text-[10px] font-black leading-none shrink-0 ${className ?? ''}`}>≠</span>,
     label: 'Hide irregular routes',
-    description: 'Hides genuinely exceptional service such as school buses, one- or two-trip routes, and demand-responsive shuttles. Scheduled evening service remains visible.',
+    description: 'Hides exceptional services such as school buses, one- or two-trip routes, and demand-responsive shuttles.',
   },
 ] as const;
 
@@ -104,11 +109,18 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
   hideLowQuality,
   setHideLowQuality,
   feedQualityEnabled = false,
+  showMapLegend,
+  setShowMapLegend,
+  dataSaver,
+  setDataSaver,
 }) => {
+  const { colorVisionFriendly, setColorVisionFriendly } = useColorVision();
+  const colorMode = colorVisionFriendly ? 'friendly' : 'default';
   const [open, setOpen] = useState(false);
   const [visible, setVisible] = useState(false);
   const [view, setView] = useState<'settings' | 'hidden-routes' | 'degraded-feeds'>('settings');
   const [hiddenRoutes, setHiddenRoutes] = useState<HiddenRoute[]>([]);
+  const [hiddenRoutesLoaded, setHiddenRoutesLoaded] = useState(false);
   const [hiddenRoutesLoading, setHiddenRoutesLoading] = useState(false);
   const [hiddenRoutesQuery, setHiddenRoutesQuery] = useState('');
   const [hiddenRegionFilter, setHiddenRegionFilter] = useState<Set<string>>(new Set());
@@ -126,22 +138,37 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
   }, [open]);
 
   useEffect(() => {
-    if (view !== 'hidden-routes' || hiddenRoutes.length > 0) return;
+    if (!open) return;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') close();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [open]);
+
+  useEffect(() => {
+    if (!open || hiddenRoutesLoaded) return;
     let cancelled = false;
     setHiddenRoutesLoading(true);
     fetch(`${R2_PUBLIC_URL}/atlas/hidden-routes.json`, { cache: 'no-store' })
       .then(response => response.ok ? response.json() : { routes: [] })
       .then(data => {
-        if (!cancelled) setHiddenRoutes(Array.isArray(data?.routes) ? data.routes : []);
+        if (!cancelled) {
+          setHiddenRoutes(Array.isArray(data?.routes) ? data.routes : []);
+          setHiddenRoutesLoaded(true);
+        }
       })
       .catch(() => {
-        if (!cancelled) setHiddenRoutes([]);
+        if (!cancelled) {
+          setHiddenRoutes([]);
+          setHiddenRoutesLoaded(true);
+        }
       })
       .finally(() => {
         if (!cancelled) setHiddenRoutesLoading(false);
       });
     return () => { cancelled = true; };
-  }, [hiddenRoutes.length, view]);
+  }, [hiddenRoutesLoaded, open]);
 
   const close = () => {
     setOpen(false);
@@ -206,7 +233,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
       .filter(agency => {
         if (!q) return true;
         const quality = agency.feedQuality!;
-        return [agency.name, ...(agency.cities ?? []), agency.displayArea ?? '', quality.status, ...quality.reasons]
+        return [agency.name, ...(agency.cities ?? []), agency.displayArea ?? '', quality.status, ...quality.reasons.map(presentFeedQualityReason)]
           .some(value => value.toLowerCase().includes(q));
       })
       .sort((a, b) => {
@@ -247,7 +274,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
       id: 'quality',
       icon: ShieldCheck,
       label: 'Hide degraded feeds',
-      description: 'Hides feeds that processing marked degraded or unusable. Feeds needing review stay visible.',
+      description: 'Hides agencies with known data-quality problems. Feeds still being reviewed remain visible.',
     }]
     : SETTINGS;
 
@@ -272,6 +299,9 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
           <div
             className={`${DROPDOWN_PANEL} ${dropdownAnim(visible)}`}
             onClick={e => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="settings-panel-title"
           >
             <div className="flex items-center justify-between px-5 py-2 border-b border-[var(--border-primary)] shrink-0">
               <div className="flex items-center gap-1.5">
@@ -284,7 +314,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                     <ArrowLeft className="w-3.5 h-3.5" />
                   </button>
                 )}
-                <h2 className="text-xs font-black text-[var(--text-primary)]">
+                <h2 id="settings-panel-title" className="text-xs font-black text-[var(--text-primary)]">
                   {view === 'hidden-routes'
                     ? 'Hidden routes'
                     : view === 'degraded-feeds'
@@ -330,11 +360,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                               return next;
                             })}
                             aria-pressed={active}
-                            className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition-colors whitespace-nowrap shrink-0 ${
-                              active
-                                ? 'bg-[var(--bg-btn-hover)] text-[var(--text-primary)] border-[var(--text-primary)]'
-                                : 'bg-[var(--bg-app)] text-[var(--text-muted)] border-[var(--border-primary)] hover:text-[var(--text-primary)] hover:border-[var(--text-dim)]'
-                            }`}
+                            className={`${FILTER_OPTION} shrink-0 ${active ? CONTROL_ACTIVE : CONTROL_INACTIVE}`}
                           >
                             {region}
                           </button>
@@ -379,9 +405,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
               ) : view === 'degraded-feeds' ? (
                 <div className="px-5 py-3">
                   <p className="text-[10px] text-[var(--text-muted)] leading-relaxed pb-2">
-                    {hideLowQuality
-                      ? 'These feeds are hidden because processing marked them degraded or unusable.'
-                      : 'These feeds would be hidden when Hide degraded feeds is enabled.'}
+                    Atlas found serious data problems or an expired schedule in these agencies.
                   </p>
                   {hiddenFeedAgencies.length > 0 && (
                     <>
@@ -401,11 +425,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                             key={status}
                             onClick={() => setDegradedFeedsStatus(status)}
                             aria-pressed={degradedFeedsStatus === status}
-                            className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition-colors whitespace-nowrap ${
-                              degradedFeedsStatus === status
-                                ? 'bg-[var(--bg-btn-hover)] text-[var(--text-primary)] border-[var(--text-primary)]'
-                                : 'bg-[var(--bg-app)] text-[var(--text-muted)] border-[var(--border-primary)] hover:text-[var(--text-primary)] hover:border-[var(--text-dim)]'
-                            }`}
+                            className={`${FILTER_OPTION} ${degradedFeedsStatus === status ? CONTROL_ACTIVE : CONTROL_INACTIVE}`}
                           >
                             {status === 'all' ? 'All' : qualityStatusLabel(status)}
                           </button>
@@ -444,7 +464,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                             </p>
                             {quality.reasons.length > 0 && (
                               <ul className="mt-1.5 space-y-0.5 text-[10px] text-[var(--text-muted)] leading-relaxed">
-                                {quality.reasons.map(reason => <li key={reason}>{reason}</li>)}
+                                {quality.reasons.map(reason => <li key={reason}>{presentFeedQualityReason(reason)}</li>)}
                               </ul>
                             )}
                             <p className="mt-1 text-[9px] text-[var(--text-dim)]">Checked {checkedDate}</p>
@@ -461,22 +481,92 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                 <p className="text-[9px] font-bold text-[var(--text-dim)]">Appearance</p>
               </div>
               <div className="px-5 pb-4">
-                <div className="flex items-center justify-between">
+                <div className="flex items-start justify-between gap-4">
                   <div className="flex items-center gap-3 min-w-0">
-                    {lightMode ? <Moon className="w-4 h-4 shrink-0 text-[var(--text-dim)]" /> : <Sun className="w-4 h-4 shrink-0 text-[var(--text-dim)]" />}
-                    <p className="text-[11px] font-bold text-[var(--text-primary)] leading-tight">
-                      {lightMode ? 'Dark mode' : 'Light mode'}
-                    </p>
+                    <Moon className="w-4 h-4 mt-0.5 shrink-0 text-[var(--text-dim)]" />
+                    <div className="min-w-0">
+                      <p className="text-[11px] font-bold text-[var(--text-primary)] leading-tight">Dark mode</p>
+                      <p className="text-[10px] text-[var(--text-muted)] mt-1 leading-relaxed">Applies a dark colour theme across Atlas.</p>
+                    </div>
                   </div>
                   <button
                     onClick={() => setLightMode(v => !v)}
                     aria-label="Toggle light/dark mode"
+                    aria-pressed={!lightMode}
                     className="shrink-0"
                   >
                     <Toggle on={!lightMode} />
                   </button>
                 </div>
+                <div className="flex items-center justify-between mt-2 pt-2">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <span className="w-4 h-4 shrink-0 text-center text-[10px] font-black text-[var(--text-dim)]">◈</span>
+                    <div className="min-w-0">
+                      <p className="text-[11px] font-bold text-[var(--text-primary)] leading-tight">High contrast mode</p>
+                      <p className="text-[10px] text-[var(--text-muted)] mt-1 leading-relaxed">Uses stronger colours and thicker lines to make routes easier to distinguish.</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setColorVisionFriendly(v => !v)}
+                    aria-label="Toggle high contrast mode"
+                    className="shrink-0"
+                  >
+                    <Toggle on={colorVisionFriendly} />
+                  </button>
+                </div>
               </div>
+
+              {FEATURES.beta && (
+                <>
+                  <div className="border-t border-[var(--border-primary)] px-5 pt-4 pb-1">
+                    <p className="text-[9px] font-bold text-[var(--text-dim)]">Map</p>
+                  </div>
+                  <div className="px-5 pb-3">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex items-start gap-3 min-w-0">
+                        <MapIcon className="w-4 h-4 mt-0.5 shrink-0 text-[var(--text-dim)]" />
+                        <div className="min-w-0">
+                          <p className="text-[11px] font-bold text-[var(--text-primary)] leading-tight">Persistent legend</p>
+                          <p className="text-[10px] text-[var(--text-muted)] mt-1 leading-relaxed">Keeps the map legend visible while you explore.</p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => setShowMapLegend(v => !v)}
+                        aria-label="Toggle persistent legend"
+                        className="mt-0.5 shrink-0"
+                      >
+                        <Toggle on={showMapLegend} />
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {FEATURES.beta && (
+                <>
+                  <div className="border-t border-[var(--border-primary)] px-5 pt-4 pb-1">
+                    <p className="text-[9px] font-bold text-[var(--text-dim)]">Data &amp; performance</p>
+                  </div>
+                  <div className="px-5 pb-3">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex items-start gap-3 min-w-0">
+                        <ShieldCheck className="w-4 h-4 mt-0.5 shrink-0 text-[var(--text-dim)]" />
+                        <div className="min-w-0">
+                          <p className="text-[11px] font-bold text-[var(--text-primary)] leading-tight">Data saver</p>
+                          <p className="text-[10px] text-[var(--text-muted)] mt-1 leading-relaxed">Loads fewer networks at once to reduce data use and keep Atlas responsive on slower connections.</p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => setDataSaver(v => !v)}
+                        aria-label="Toggle data saver"
+                        className="mt-0.5 shrink-0"
+                      >
+                        <Toggle on={dataSaver} />
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
 
               {/* Filters */}
               <div className="border-t border-[var(--border-primary)] px-5 pt-4 pb-1">
@@ -485,7 +575,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                   <p className="text-[10px] text-[var(--text-muted)] mt-1">These settings apply to the Frequency map.</p>
                 )}
               </div>
-              <div className="px-5 pb-3 flex flex-col divide-y divide-[var(--border-primary)]">
+              <div className="px-5 pb-3 flex flex-col">
                 {settings.map(({ id, icon: Icon, label, description }) => (
                   <div key={id} className={`flex items-start justify-between gap-4 py-4 last:pb-2 transition-opacity ${TRANSITION_BASE} ${inFrequency ? 'opacity-100' : 'opacity-40'}`}>
                     <div className="flex items-start gap-3 min-w-0">
@@ -499,7 +589,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                               onClick={() => setView('hidden-routes')}
                               className="mt-1 text-[10px] text-[var(--accent)] hover:underline"
                             >
-                              See all hidden routes{hiddenRoutes.length ? ` (${hiddenRoutes.length.toLocaleString()})` : ''} →
+                              See all hidden routes{hiddenRoutesLoaded ? ` (${hiddenRoutes.length.toLocaleString()})` : ' (…)'} →
                             </button>
                           </>
                         )}
@@ -534,16 +624,14 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                   </div>
                   <div className="px-5 pb-3 flex flex-wrap gap-1.5">
                     {HEADWAY_TIERS.map(({ max, label }) => {
-                      const color = isFinite(max) ? getTierColor(String(max)) : 'var(--text-dim)';
+                      const color = isFinite(max) ? getTierColor(String(max), colorMode) : 'var(--text-dim)';
                       const active = maxHeadway === max;
                       return (
                         <button
                           key={label}
                           onClick={() => setMaxHeadway?.(max)}
                           className={`h-7 px-2.5 flex items-center justify-center text-[10px] font-bold rounded-full border transition-colors ${
-                            active
-                              ? 'bg-[var(--accent-bg)] border-[var(--accent-border)] text-[var(--accent)]'
-                              : 'border-[var(--border-primary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                            active ? CONTROL_ACTIVE : CONTROL_INACTIVE
                           }`}
                         >
                           <span className="w-1.5 h-1.5 rounded-full mr-1.5 shrink-0" style={{ background: color }} />
@@ -565,9 +653,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                           key={dayType}
                           onClick={() => setDay?.(dayType)}
                           className={`flex-1 h-7 flex items-center justify-center text-[10px] font-bold rounded-full border transition-colors ${
-                            active
-                              ? 'bg-[var(--accent-bg)] border-[var(--accent-border)] text-[var(--accent)]'
-                              : 'border-[var(--border-primary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                            active ? CONTROL_ACTIVE : CONTROL_INACTIVE
                           }`}
                         >
                           {dayType}
@@ -588,9 +674,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                           key={key}
                           onClick={() => setPeriod?.(key)}
                           className={`h-7 px-2.5 flex items-center justify-center text-[10px] font-bold rounded-full border transition-colors ${
-                            active
-                              ? 'bg-[var(--accent-bg)] border-[var(--accent-border)] text-[var(--accent)]'
-                              : 'border-[var(--border-primary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                            active ? CONTROL_ACTIVE : CONTROL_INACTIVE
                           }`}
                         >
                           {label}
@@ -616,9 +700,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                             setSelectedModes(next);
                           }}
                           className={`h-7 px-2.5 flex items-center justify-center text-[10px] font-bold rounded-full border transition-colors ${
-                            active
-                              ? 'bg-[var(--accent-bg)] border-[var(--accent-border)] text-[var(--accent)]'
-                              : 'border-[var(--border-primary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                            active ? CONTROL_ACTIVE : CONTROL_INACTIVE
                           }`}
                         >
                           {label}

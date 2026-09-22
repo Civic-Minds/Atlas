@@ -17,7 +17,7 @@ import { TIME_PERIODS, SPARKLINE_HOURS, type PeriodKey, type HeadwayByPeriod, ty
 import { DAY_TYPES, type DayType } from '../types/gtfs.js';
 import { ALL_DAYS } from '../shared/dayTypes.js';
 import { t2m } from './transit-utils.js';
-import { adaptiveMedianHeadwayInWindow, computePeriodHeadways, computePeriodHeadwayRanges, computePeriodMaxGaps, computePeriodSustained, forCrossMidnightWindow, hasGenuineBranchPattern, hasSustainedFrequentService, hasSustainedNightService, headsignOverlapMinHeadway, headwayToTier, medianHeadwayInWindow, nightServiceDepartureTimes, NIGHT_SERVICE_WINDOW_END_MIN, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
+import { adaptiveMedianHeadwayInWindow, computePeriodHeadways, computePeriodHeadwayRanges, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, hasGenuineBranchPattern, hasSustainedFrequentService, hasSustainedNightService, headsignOverlapMinHeadway, headwayToTier, medianHeadwayInWindow, nightServiceDepartureTimes, NIGHT_SERVICE_WINDOW_END_MIN, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
 import { computeRouteBaseFares, detectBusSubType } from './route-metadata.js';
 import { buildStopsMeta } from './stopsMeta.js';
 import { clipLineBetweenPositions, clipLineBetweenStops, projectStopsOntoShape, simplifyLine } from './geometry.js';
@@ -608,6 +608,7 @@ export async function processGtfsBuffer(
   for (const [feature, { shortName, dirId, day }] of featureStopHeadwaySlots) {
     // Same reasoning for frequentService (#294 follow-on, see docs/DATA_FREQUENT_NETWORK.md).
     feature.properties.frequentService = false;
+    feature.properties.researchFrequentService = { daytime15: false, daytime30: false, extended15: false, extended30: false };
     const gKey = `${shortName}::${dirId}::${day}`;
     const stopMap = stopDepsByGroup.get(gKey);
     if (!stopMap) {
@@ -640,9 +641,10 @@ export async function processGtfsBuffer(
 
     // Night Service must be evaluated before the daytime stop-headway bail-outs below: a
     // genuinely overnight-only route has no 9am–7pm data, so allStopHw would otherwise be empty
-    // and the feature would exit before ever receiving a true flag. Use the route-level map at
-    // either endpoint on the feature shape so routes that reuse one number for day/night patterns
-    // are evaluated together, while still avoiding unrelated branches that are not on this shape.
+    // and the feature would exit before ever receiving a true flag. Use the same shape/headsign-
+    // scoped map selected for the feature's other metrics. Using the route-level map here can
+    // pool departures from a different branch/pattern and make a route appear to cover the
+    // whole 2am–6am window when this rendered pattern does not (#518).
     const coords = (feature.geometry as { type: 'LineString'; coordinates: number[][] }).coordinates;
     const shapePts: [number, number][] = coords.map(([lon, lat]) => [lat, lon]);
     const nightShapeStops = projectStopsOntoShape([...stopMap.keys()], stopsById, shapePts)
@@ -653,7 +655,7 @@ export async function processGtfsBuffer(
     ].filter((id): id is string => id != null))];
     feature.properties.nightService = hasNightServiceAtShapeEndpoints(
       nightEndpointStopIds,
-      stopMap,
+      metricStopMap,
       stopDepsByGroupNight.get(gKey),
     );
 
@@ -825,6 +827,9 @@ export async function processGtfsBuffer(
     feature.properties.frequentService = (day === 'Weekday' && terminalRawTimes)
       ? hasSustainedFrequentService(terminalRawTimes)
       : false;
+    feature.properties.researchFrequentService = terminalRawTimes
+      ? computeResearchFrequentService(terminalRawTimes)
+      : { daytime15: false, daytime30: false, extended15: false, extended30: false };
     const terminalScopedTimes = railFeature
       ? (headsignTerminalTimes ?? (terminalStopId ? shapeMap?.get(terminalStopId) : undefined))
       : selectTerminalDepartureTimes(

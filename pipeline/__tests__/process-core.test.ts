@@ -94,4 +94,16 @@ describe('hasNightServiceAtShapeEndpoints', () => {
 
     expect(hasNightServiceAtShapeEndpoints(['origin'], routeDepartures, overnightOnly)).toBe(true);
   });
+
+  it('does not let another route pattern make the rendered pattern qualify', () => {
+    const pooledRouteDepartures = new Map([
+      ['origin', [1560, 1620, 1680, 1740, 1800]],
+    ]);
+    const renderedPatternDepartures = new Map([
+      ['origin', [1720, 1780]],
+    ]);
+
+    expect(hasNightServiceAtShapeEndpoints(['origin'], pooledRouteDepartures)).toBe(true);
+    expect(hasNightServiceAtShapeEndpoints(['origin'], renderedPatternDepartures)).toBe(false);
+  });
 });

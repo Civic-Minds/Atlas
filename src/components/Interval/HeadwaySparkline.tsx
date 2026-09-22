@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Maximize2, X } from 'lucide-react';
 import { headwayToTierColor } from '../../utils/colors';
+import { useColorVision } from '../../context/ColorVisionContext';
 export { headwayToTierColor };
 import { periodKeyForHour, isHourInPeriod, SPARKLINE_HOURS, TIME_PERIODS } from '../../../shared/config';
 import { PERIOD_LABELS } from '../../hooks/useIntervalStats';
@@ -73,6 +74,8 @@ interface HourlySparklineProps {
 }
 
 export function HeadwaySparkline({ byHour, stackedByHour, period, onPeriodChange, onPeriodHover, onHourHover, allowExpand = false, reserveStackedLegendSpace = false, title = 'Schedule overview', expanded = false }: HourlySparklineProps) {
+  const { colorVisionFriendly } = useColorVision();
+  const colorMode = colorVisionFriendly ? 'friendly' : 'default';
   const [hoveredPeriod, setHoveredPeriod] = useState<string | null>(null);
   const [hoveredHour, setHoveredHour] = useState<number | null>(null);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -207,7 +210,7 @@ export function HeadwaySparkline({ byHour, stackedByHour, period, onPeriodChange
             const segmentTotalFreq = segments.reduce((sum, segment) => sum + 1 / segment.headway, 0);
             // Hovered-but-inactive bars show their tier color at reduced opacity as a preview
             const barColor = hasValue
-              ? (inActivePeriod || inHovered ? headwayToTierColor(hw) : 'var(--border-primary)')
+              ? (inActivePeriod || inHovered ? headwayToTierColor(hw, colorMode) : 'var(--border-primary)')
               : undefined;
             const opacity = !hasValue ? undefined
               : inActivePeriod ? 'opacity-90'

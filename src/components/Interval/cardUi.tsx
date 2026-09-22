@@ -3,9 +3,10 @@ import { createPortal } from 'react-dom';
 import { ArrowLeft, Flag, Radio, X } from 'lucide-react';
 import { fmtHeadway } from '../../utils/format';
 import { headwayToTierColor } from './HeadwaySparkline';
-import { CARD_NOTICE, CARD_NOTICE_ACTION, FLOATING_CARD, PANEL_ENTER_LEFT, SIDEBAR_PANEL_WIDTH } from '../../styles';
+import { CARD_NOTICE, CARD_NOTICE_ACTION, FLOATING_CARD, PANEL_ENTER_LEFT, SIDEBAR_PANEL_WIDTH, ACTION_PRIMARY } from '../../styles';
 import { openAtlasIssueReport } from '../../utils/reportIssue';
-import { CARD_CLICK_TO_FLAG_ENABLED } from '../../../shared/config';
+import { FEATURES } from '../../../shared/config';
+import { useColorVision } from '../../context/ColorVisionContext';
 
 export { default as CardDirectionRow } from './RouteDirectionRow';
 
@@ -357,12 +358,12 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
                   Submitting copies route diagnostics to your clipboard so you can paste them into GitHub.
                 </p>
               )}
-              {validationError && <p className="text-[10px] font-bold text-red-600" role="alert">{validationError}</p>}
+              {validationError && <p className="text-[10px] font-bold text-[var(--status-negative)]" role="alert">{validationError}</p>}
             </div>
 
             <div className="sticky bottom-0 flex justify-end gap-2 px-4 py-3 bg-[var(--bg-panel)] border-t border-[var(--border-primary)]">
               <button type="button" onClick={reset} className="h-8 px-3 rounded-lg border border-[var(--border-primary)] bg-[var(--bg-app)] text-[10px] font-black text-[var(--text-muted)] hover:border-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors">Cancel</button>
-              {selectedCategory && <button type="submit" className="h-8 px-3 rounded-lg bg-[var(--accent)] text-[10px] font-black text-white hover:opacity-90 transition-opacity">Open GitHub report</button>}
+              {selectedCategory && <button type="submit" className={`h-8 px-3 rounded-lg border text-[10px] font-black hover:opacity-90 transition-opacity ${ACTION_PRIMARY}`}>Open GitHub report</button>}
             </div>
           </form>
         </div>,
@@ -386,7 +387,7 @@ export function FlaggableValue({ reason, reportRef, children, className = 'inlin
   const [reportModeActive, setReportModeActive] = React.useState(false);
 
   React.useEffect(() => {
-    if (!CARD_CLICK_TO_FLAG_ENABLED) return;
+    if (!FEATURES.cardClickToFlag) return;
     const onReportMode = (event: Event) => {
       const detail = (event as CustomEvent<{ reportRef: unknown; active: boolean }>).detail;
       if (detail?.reportRef === reportRef) setReportModeActive(detail.active);
@@ -395,7 +396,7 @@ export function FlaggableValue({ reason, reportRef, children, className = 'inlin
     return () => window.removeEventListener(REPORT_MODE_EVENT, onReportMode);
   }, [reportRef]);
 
-  if (!CARD_CLICK_TO_FLAG_ENABLED || !reportModeActive) return <>{children}</>;
+  if (!FEATURES.cardClickToFlag || !reportModeActive) return <>{children}</>;
   return (
     <button
       type="button"
@@ -437,10 +438,12 @@ export function HeadwayBadge({
   suffix?: string;
   className?: string;
 }) {
+  const { colorVisionFriendly } = useColorVision();
+  const colorMode = colorVisionFriendly ? 'friendly' : 'default';
   return (
     <span className={`inline-flex items-center gap-1 font-black text-[var(--text-primary)] text-[11px] leading-snug shrink-0 ${className}`}>
       {live && <Radio className="w-2.5 h-2.5 text-[var(--accent)] shrink-0" aria-label="Live data available" />}
-      <span className="w-2 h-2 rounded-full shrink-0" style={{ background: headwayToTierColor(colorHeadway ?? headway) }} />
+      <span className="w-2 h-2 rounded-full shrink-0" style={{ background: headwayToTierColor(colorHeadway ?? headway, colorMode) }} />
       <span className="whitespace-nowrap">{label ?? fmtHeadway(headway)}</span>
       {suffix && <span className="text-[9px] font-bold text-[var(--text-dim)] whitespace-nowrap">{suffix}</span>}
     </span>

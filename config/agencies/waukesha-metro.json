@@ -5,11 +5,11 @@
     43.0187,
     -88.1993
   ],
-  "feedUrl": "https://files.mobilitydatabase.org/mdb-396/mdb-396-202501230013/mdb-396-202501230013.zip",
-  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-396/mdb-396-202501230013/mdb-396-202501230013.zip",
+  "feedUrl": "https://mywaukeshametro.com/gtfs",
+  "mdbFeedUrl": "https://mywaukeshametro.com/gtfs",
   "region": "Wisconsin",
-  "lastFeedExpiry": "20250601",
-  "lastFeedVersion": "UTC: 22-Jan-2025 18:29",
+  "lastFeedExpiry": "20991231",
+  "lastFeedVersion": "Fall 2026 9 Detour",
   "lastRefreshedAt": "20260811",
   "websiteUrl": "https://www.waukesha-wi.gov/residents/getting_around/public-transportation.php",
   "cities": [

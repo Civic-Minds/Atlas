@@ -24,6 +24,12 @@ export default defineConfig(({ mode }) => {
     || env.VITE_BETA_R2_PUBLIC_URL
     || DEFAULT_BETA_R2_PUBLIC_URL
   ).replace(/\/$/, '');
+  // Local dry-run artifacts are opt-in so ignored, potentially stale files cannot silently
+  // replace the live R2 data during ordinary localhost testing.
+  const useLocalPreviews = (
+    process.env.VITE_USE_LOCAL_PREVIEWS
+    || env.VITE_USE_LOCAL_PREVIEWS
+  ) === 'true';
   if (process.env.ATLAS_ENV === 'staging' || /pub-5f1c48f86b024c42a8d174a4a5dd69ca/.test(r2Target)) {
     console.log(`[vite] /atlas-data proxy → ${r2Target} (staging)`);
   }
@@ -113,8 +119,7 @@ export default defineConfig(({ mode }) => {
     plugins: [
       react(),
       tailwindcss(),
-      localPmtilesPreview,
-      localAgencyDataPreview,
+      ...(useLocalPreviews ? [localPmtilesPreview, localAgencyDataPreview] : []),
     ],
     build: {
       rollupOptions: {

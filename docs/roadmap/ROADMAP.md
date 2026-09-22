@@ -2,7 +2,7 @@
 
 Atlas is a regional transit atlas for understanding where transit runs frequently, how service changes, and—where available—how it performs in practice. It began in the Greater Golden Horseshoe and is expanding outward.
 
-- **[Vision](../VISION.md)**: Product philosophy — frequency mapping to live performance evidence and long-term accumulation of real service data.
+- **[Vision](../product/VISION.md)**: Product philosophy — frequency mapping to live performance evidence and long-term accumulation of real service data.
 
 **Current focus:** The Frequency Map remains the primary app while beta-gated History and Live work expands. Corridors is contextual/local-only rather than a current production focus.
 
@@ -14,9 +14,9 @@ Atlas is a regional transit atlas for understanding where transit runs frequentl
 ---
 
 ### Reference & Research
-- **[Strategy](../STRATEGY.md)**: competitive landscape and long-term product positioning.
-- **[Research](../RESEARCH.md)**: agency pain points and problem statements informing Atlas's direction.
-- **[Product Decisions](../DECISIONS.md)**: durable product and architecture decisions that apply across Atlas.
+- **[Strategy](../product/STRATEGY.md)**: competitive landscape and long-term product positioning.
+- **[Research](../product/RESEARCH.md)**: agency pain points and problem statements informing Atlas's direction.
+- **[Product Decisions](../product/DECISIONS.md)**: durable product and architecture decisions that apply across Atlas.
 
 Ideas kicked around just for fun, no commitment: [Experiments](./EXPERIMENTS.md).
 

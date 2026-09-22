@@ -5,7 +5,7 @@
     52.1286,
     -106.648
   ],
-  "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-saskatchewan-saskatoon-transit-gtfs-716.zip?alt=media",
+  "feedUrl": "https://apps5.saskatoon.ca/data/gtfs/google_transit.zip",
   "region": "Saskatchewan",
   "bbox": [
     52.03,
@@ -13,7 +13,7 @@
     52.24,
     -106.5
   ],
-  "lastFeedExpiry": "20250830",
+  "lastFeedExpiry": "20270102",
   "lastFeedVersion": null,
   "lastRefreshedAt": "20260811",
   "cities": [

@@ -7,6 +7,7 @@ import type { ViewportBounds, TimePeriod, DayType } from '../hooks/useIntervalSt
 import { useNearbyRoutes } from '../hooks/useNearbyRoutes';
 import { MapCanvas } from '../components/Interval/MapCanvas';
 import { MapAttribution } from '../components/Interval/MapAttribution';
+import { PersistentMapLegend } from '../components/Interval/PersistentMapLegend';
 import { SidebarControls } from '../components/Interval/SidebarControls';
 import { NearbyRoutesPanel } from '../components/Interval/NearbyRoutesPanel';
 import { FilterPanel } from '../components/Interval/FilterPanel';
@@ -23,6 +24,7 @@ import { resolveRouteSelectionForDay } from '../utils/routeSelection';
 import { syncUrlParams } from '../utils/syncUrlParams';
 import { searchOverlayHidesPanel } from '../utils/format';
 import { trackEvent } from '../lib/analytics';
+import type { FrequentServiceFrequency, FrequentServiceWindow } from '../../shared/frequentService';
 import { getRegionalView } from '../utils/regionView';
 
 // Versioned because the original preference could accidentally persist only
@@ -49,6 +51,8 @@ interface Props {
   onAgencyCardClose?: () => void;
   pendingLiveRoute?: { slug: string; routeShortName: string } | null;
   onPendingLiveRouteHandled?: () => void;
+  pendingNightRoute?: { slug: string; routeId: string } | null;
+  onPendingNightRouteHandled?: () => void;
   searchFocused?: boolean;
   setSearchFocused?: (focused: boolean) => void;
   hideFilterPanel?: boolean;
@@ -58,10 +62,18 @@ interface Props {
   day: DayType;
   setDay: (d: DayType) => void;
   onLayersChange?: (layers: Record<string, GeoJSON.FeatureCollection>) => void;
+  onSelectedMapAgencyChange?: (slug: string | null) => void;
   onSelectionActiveChange?: (active: boolean) => void;
   headerPortalContainer?: Element | null;
   fareView?: boolean;
   nightServiceView?: boolean;
+  frequentServiceView?: boolean;
+  frequentServiceDays?: DayType[];
+  frequentServiceFrequency?: FrequentServiceFrequency;
+  frequentServiceWindow?: FrequentServiceWindow;
+  setFrequentServiceDays?: (days: DayType[]) => void;
+  setFrequentServiceFrequency?: (frequency: FrequentServiceFrequency) => void;
+  setFrequentServiceWindow?: (window: FrequentServiceWindow) => void;
   showMapContext?: boolean;
   showMatchPercentage?: boolean;
   sidebarLeft?: number;
@@ -70,6 +82,12 @@ interface Props {
   hideLowQuality: boolean;
   setHideLowQuality: (v: boolean | ((prev: boolean) => boolean)) => void;
   feedQualityEnabled?: boolean;
+  exportEnabled?: boolean;
+  exportTitle?: string;
+  showMapLegend: boolean;
+  setShowMapLegend: (v: boolean | ((prev: boolean) => boolean)) => void;
+  dataSaver: boolean;
+  setDataSaver: (v: boolean | ((prev: boolean) => boolean)) => void;
 }
 
 function readSavedAgenciesOff(): Set<string> {
@@ -81,7 +99,7 @@ function readSavedAgenciesOff(): Set<string> {
   }
 }
 
-export default function Interval({ agencies, allAgencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, filterToAgencies = false, onHistoryRouteClick, onDirectFromStop, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, onSelectionActiveChange, headerPortalContainer, fareView = false, nightServiceView = false, showMapContext = false, showMatchPercentage = false, sidebarLeft, searchBarWidth, searchEnterRef, hideLowQuality, setHideLowQuality, feedQualityEnabled = false }: Props) {
+export default function Interval({ agencies, allAgencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, filterToAgencies = false, onHistoryRouteClick, onDirectFromStop, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, pendingNightRoute, onPendingNightRouteHandled, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, onSelectedMapAgencyChange, onSelectionActiveChange, headerPortalContainer, fareView = false, nightServiceView = false, frequentServiceView = false, frequentServiceDays = ['Weekday'], frequentServiceFrequency = 15, frequentServiceWindow = 'daytime', setFrequentServiceDays, setFrequentServiceFrequency, setFrequentServiceWindow, showMapContext = false, showMatchPercentage = false, sidebarLeft, searchBarWidth, searchEnterRef, hideLowQuality, setHideLowQuality, feedQualityEnabled = false, showMapLegend, setShowMapLegend, dataSaver, setDataSaver, exportEnabled = false, exportTitle = 'Transit map' }: Props) {
   const [searchParams] = useSearchParams();
   const [mapContextOpen, setMapContextOpen] = useState(false);
   const [mapContextView, setMapContextView] = useState<'agencies' | 'routes'>('routes');
@@ -242,6 +260,11 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   const showSidebar = showUi || fareView || selectionUiVisible;
 
   useEffect(() => {
+    const selectedAgency = selectedRoute?.split('::')[0] ?? selectedStop?.split('::')[0] ?? selectedAgencySlug ?? null;
+    onSelectedMapAgencyChange?.(selectedAgency);
+  }, [onSelectedMapAgencyChange, selectedRoute, selectedStop, selectedAgencySlug]);
+
+  useEffect(() => {
     onSelectionActiveChange?.(selectionUiVisible);
   }, [onSelectionActiveChange, selectionUiVisible]);
   const [fareOverrides, setFareOverrides] = useState<Record<string, FareOverride>>({});
@@ -281,6 +304,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     showCorridorBand: false,
     searchQuery: searchFocused ? query : '',
     zoom: mapZoom,
+    dataSaver,
+    selectedAgencySlug,
   });
 
   const selectedCorridorFamily = useMemo(() => {
@@ -338,7 +363,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   });
 
   const selectedRouteOutOfFilter = useMemo(() => {
-    if (!selectedRoute || maxHeadway === Infinity) return false;
+    if (!selectedRoute || frequentServiceView || maxHeadway === Infinity) return false;
     const { agencySlug: slug, routeId, routeBranch } = splitRouteKey(selectedRoute);
     const features = layers[slug]?.features.filter(f => {
       const p = f.properties as ShapeProperties;
@@ -359,7 +384,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
       showCorridorBand: false,
       selectedRoute: null,
     }, routesForStop);
-  }, [day, hideSpan, layers, livePollingOnly, maxHeadway, period, routesForStop, selectedAgencies, selectedModes, selectedRoute]);
+  }, [day, frequentServiceView, hideSpan, layers, livePollingOnly, maxHeadway, period, routesForStop, selectedAgencies, selectedModes, selectedRoute]);
 
   useEffect(() => { try { localStorage.setItem('atlas_pref_headway', String(maxHeadway)); } catch {} }, [maxHeadway]);
   useEffect(() => { try { localStorage.setItem('atlas_pref_day', day); } catch {} }, [day]);
@@ -395,6 +420,24 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     }
     onPendingLiveRouteHandled?.();
   }, [pendingLiveRoute, layers, day]);
+
+  const prevPendingNightRoute = useRef<typeof pendingNightRoute>(null);
+  useEffect(() => {
+    if (!pendingNightRoute) return;
+    const fc = layers[pendingNightRoute.slug];
+    if (!fc) return;
+    if (pendingNightRoute === prevPendingNightRoute.current) return;
+    prevPendingNightRoute.current = pendingNightRoute;
+    const found = fc.features.find(f => {
+      const p = f.properties as any;
+      return p.routeId === pendingNightRoute.routeId && p.nightService === true;
+    });
+    if (found) {
+      const p = found.properties as any;
+      setSelectedRoute(routeKey({ ...p, agencySlug: p.agencySlug ?? pendingNightRoute.slug } as ShapeProperties));
+    }
+    onPendingNightRouteHandled?.();
+  }, [pendingNightRoute, layers, onPendingNightRouteHandled]);
 
   // Clear map selection states when switching away from the Frequency app
   useEffect(() => {
@@ -523,6 +566,13 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
         setSelectedAgencySlug={setSelectedAgencySlug}
         fareView={fareView}
         nightServiceView={nightServiceView}
+        exportEnabled={exportEnabled}
+        exportTitle={exportTitle}
+        frequentServiceView={frequentServiceView}
+        frequentServiceDays={frequentServiceDays}
+        frequentServiceFrequency={frequentServiceFrequency}
+        frequentServiceWindow={frequentServiceWindow}
+        selectedModes={selectedModes}
         initialMapCenter={initialMapCenter}
         onTileLoadingChange={setIsTilesLoading}
         setQuery={setQuery}
@@ -532,6 +582,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
       />
 
       <MapAttribution />
+
+      {showMapLegend && !fareView && !nightServiceView && <PersistentMapLegend />}
 
       {((stats && (stats.total > 0 || !isLoading)) || isLoading || isTilesLoading || failedSlugs.size > 0) && (
         <div className={`absolute bottom-6 right-14 ${Z_PANEL} flex gap-2 transition-all ${TRANSITION_SLOW} ${showUi ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
@@ -648,6 +700,13 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
               selectedAgencies={selectedAgencies}
               setSelectedAgencies={setSelectedAgencies}
               bounds={bounds}
+              researchMode={frequentServiceView}
+              researchDays={frequentServiceDays}
+              setResearchDays={setFrequentServiceDays}
+              researchFrequency={frequentServiceFrequency}
+              setResearchFrequency={setFrequentServiceFrequency}
+              researchWindow={frequentServiceWindow}
+              setResearchWindow={setFrequentServiceWindow}
             />
           </div>
           {!hideFilterPanel && (
@@ -676,6 +735,10 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
               hideLowQuality={hideLowQuality}
               setHideLowQuality={setHideLowQuality}
               feedQualityEnabled={feedQualityEnabled}
+              showMapLegend={showMapLegend}
+              setShowMapLegend={setShowMapLegend}
+              dataSaver={dataSaver}
+              setDataSaver={setDataSaver}
             />
           )}
         </div>,

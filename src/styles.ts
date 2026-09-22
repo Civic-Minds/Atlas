@@ -40,13 +40,27 @@ export const SEARCH_BAR_WIDTH = 'w-full sm:w-72 xl:w-80';
 /** Width constant for panels and cards; matches the responsive search bar on desktop. */
 export const SIDEBAR_PANEL_WIDTH = 'w-[calc(100vw-3rem)] sm:w-72 lg:w-72 xl:w-80 max-w-sm';
 
+/** Shared glass pill geometry; surfaces and borders are supplied by each state. */
+export const GLASS_PILL = 'backdrop-blur-md rounded-full shadow-lg';
 /** Filter chip pill base — border color added dynamically per active state */
-export const CHIP_BASE = 'bg-[var(--bg-panel)] backdrop-blur-md border rounded-full shadow-lg';
+export const CHIP_BASE = `${GLASS_PILL} bg-[var(--bg-panel)] border`;
+
+/** Shared mode-aware control states. */
+export const CONTROL_ACTIVE = 'bg-[var(--control-active-bg)] border-[var(--control-active-border)] text-[var(--control-active-fg)]';
+export const CONTROL_INACTIVE = 'bg-[var(--control-inactive-bg)] border-[var(--control-inactive-border)] text-[var(--control-inactive-fg)] hover:bg-[var(--control-hover-bg)]';
+/** Compact filter option button used across agency, hidden-route, and feed lists. */
+export const FILTER_OPTION = 'px-2.5 py-0.5 rounded-md text-[10px] font-bold border transition-colors whitespace-nowrap';
+/** App switchers use the same glass pill surface as the filter chips. */
+export const APP_TAB_ACTIVE = `${GLASS_PILL} bg-[var(--control-active-bg)] border-[var(--control-active-border)] text-[var(--control-active-fg)]`;
+export const APP_TAB_INACTIVE = `${GLASS_PILL} bg-[var(--bg-panel)] border-[var(--border-primary)] text-[var(--text-primary)] hover:bg-[var(--bg-btn-hover)] hover:text-[var(--accent)]`;
+export const SELECTION_ACTIVE = 'bg-[var(--selection-active-bg)] border-l-2 border-[var(--selection-active-border)]';
+export const SELECTION_ACTIVE_TEXT = 'text-[var(--selection-active-fg)]';
+export const ACTION_PRIMARY = 'bg-[var(--action-primary-bg)] border-[var(--action-primary-border)] text-[var(--action-primary-fg)]';
 
 /** Bottom map HUD badge (routes, coverage, loading, attribution) */
 export const MAP_BADGE = 'flex items-center gap-1.5 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full shadow-2xl px-3';
 export const MAP_BADGE_COUNT = 'text-xs font-black text-[var(--text-primary)]';
-export const MAP_BADGE_LABEL = 'text-[10px] font-bold text-[var(--text-muted)]';
+export const MAP_BADGE_LABEL = 'text-[10px] font-semibold leading-none text-[var(--text-muted)]';
 
 /** Full-width border-b list row — suggestion lists, route lists, any clickable row inside a panel */
 export const LIST_ROW = 'flex items-center justify-between w-full px-4 py-2.5 border-b border-[var(--border-primary)] last:border-0 hover:bg-[var(--bg-btn-hover)] transition-colors text-left group';
@@ -65,6 +79,9 @@ export const PANEL_TITLE_BAR = 'flex items-center gap-1.5 px-4 pt-3 pb-2.5 borde
 
 /** Title text inside PANEL_TITLE_BAR */
 export const PANEL_TITLE = 'text-[10px] font-black text-[var(--text-dim)] tracking-wide';
+
+/** Compact explanatory line beneath a research panel title. */
+export const PANEL_HELPER = 'px-4 pt-2 pb-2 text-[10px] text-[var(--text-dim)] font-bold leading-snug border-b border-[var(--border-primary)]';
 
 /** Back + card title row inside a floating panel */
 export const PANEL_CARD_HEADER = 'flex items-start gap-2 px-4 pt-3 pb-2.5 border-b border-[var(--border-primary)] shrink-0';

@@ -90,3 +90,19 @@ export function buildNightServiceIndex(allRoutes: NightServiceRouteEntry[]): Nig
     routes,
   };
 }
+
+/**
+ * Merge a refresh run into the existing aggregate. Agencies that were actually
+ * processed replace their old entries; agencies skipped by refresh retain the
+ * entries from the last complete artifact so the directory cannot lose them.
+ */
+export function mergeNightServiceIndex(
+  existing: NightServiceIndexFile | null,
+  refreshedRoutes: NightServiceRouteEntry[],
+  refreshedAgencySlugs: ReadonlySet<string>,
+): NightServiceIndexFile {
+  const preservedRoutes = (existing?.routes ?? []).filter(
+    route => !refreshedAgencySlugs.has(route.agencySlug),
+  );
+  return buildNightServiceIndex([...preservedRoutes, ...refreshedRoutes]);
+}

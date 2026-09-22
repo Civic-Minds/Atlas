@@ -5,11 +5,12 @@
     25.7617,
     -80.1918
   ],
-  "feedUrl": "https://files.mobilitydatabase.org/mdb-331/mdb-331-202604250046/mdb-331-202604250046.zip",
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-331/mdb-331-202608010003/mdb-331-202608010003.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-331/mdb-331-202608010003/mdb-331-202608010003.zip",
   "lastFeedExpiry": "20271231",
   "lastFeedVersion": null,
   "region": "Florida",
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "2026-09-17",
   "cities": [
     "North Miami, Florida",
     "Allapattah, Florida",
@@ -22,9 +23,24 @@
     "Flagami, Florida",
     "Coral Gables, Florida"
   ],
-  "lastFeedCheckAt": "20260907",
+  "lastFeedCheckAt": "20260917",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
-  "timezone": "America/New_York"
+  "timezone": "America/New_York",
+  "feedQuality": {
+    "status": "review",
+    "score": 90,
+    "reasons": [
+      "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 1,
+      "featureCount": 579
+    },
+    "checkedAt": "2026-09-17"
+  }
 }

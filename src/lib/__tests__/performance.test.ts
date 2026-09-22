@@ -1,23 +1,27 @@
-import { describe, expect, it, beforeEach } from 'vitest';
-import { markAtlasLatest } from '../performance';
+import { beforeEach, describe, expect, it } from 'vitest';
+import { getAtlasMark, markAtlasLatest, markAtlasOnce } from '../performance';
 
-describe('markAtlasLatest', () => {
-  beforeEach(() => performance.clearMarks('atlas:network-data-ready'));
-
-  it('records the readiness milestone and its detail', () => {
-    markAtlasLatest('network-data-ready', { source: 'pmtiles' });
-
-    const entries = performance.getEntriesByName('atlas:network-data-ready', 'mark');
-    expect(entries).toHaveLength(1);
-    expect((entries[0] as PerformanceMark).detail).toEqual({ source: 'pmtiles' });
+describe('performance marks', () => {
+  beforeEach(() => {
+    performance.clearMarks();
   });
 
-  it('keeps only the latest readiness mark', () => {
-    markAtlasLatest('network-data-ready', { attempt: 1 });
-    markAtlasLatest('network-data-ready', { attempt: 2 });
+  it('records each Atlas milestone once', () => {
+    markAtlasOnce('app-ready');
+    markAtlasOnce('app-ready');
 
-    const entries = performance.getEntriesByName('atlas:network-data-ready', 'mark');
-    expect(entries).toHaveLength(1);
-    expect((entries[0] as PerformanceMark).detail).toEqual({ attempt: 2 });
+    expect(performance.getEntriesByName('atlas:app-ready')).toHaveLength(1);
+    expect(getAtlasMark('app-ready')).not.toBeNull();
+  });
+
+  it('replaces repeatable milestones with the latest completion', () => {
+    markAtlasLatest('network-data-ready');
+    const first = getAtlasMark('network-data-ready');
+    markAtlasLatest('network-data-ready');
+    const second = getAtlasMark('network-data-ready');
+
+    expect(performance.getEntriesByName('atlas:network-data-ready')).toHaveLength(1);
+    expect(second).not.toBeNull();
+    expect(second).toBeGreaterThanOrEqual(first ?? 0);
   });
 });

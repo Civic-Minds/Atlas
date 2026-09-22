@@ -21,7 +21,8 @@ import { r2Put, r2Get, r2PutArchive, r2PutArchiveJson, r2GetArchive, rawFeedArch
 import JSZip from 'jszip';
 import { processGtfsBuffer, GtfsValidationError, type GtfsPreprocess } from './process-core.js';
 import { buildAgencyIndex } from './agencyIndex.js';
-import { buildNightServiceIndex, extractNightServiceRoutes, type NightServiceRouteEntry } from './nightServiceIndex.js';
+import { buildNightServiceIndex, extractNightServiceRoutes, mergeNightServiceIndex, type NightServiceIndexFile, type NightServiceRouteEntry } from './nightServiceIndex.js';
+import { buildFrequentServiceIndex, extractFrequentServiceRoutes, type FrequentServiceRouteEntry } from './frequentServiceIndex.js';
 import type { HeadwayByPeriod } from '../shared/config.js';
 import { R2_PUBLIC_URL } from '../shared/config.js';
 import { parseCsv } from './parseGtfs.js';
@@ -36,7 +37,7 @@ import {
 } from './overrideAudit.js';
 import { readFeedReviewHistory, shouldReviewNextFeed } from './feedReview.js';
 import { compareStopSnapshots, formatStopAuditLog, type AuditedStop } from './stopAudit.js';
-import { candidateIsOlderThanActive, decideRefreshSkipUnchanged, isFeedExpired, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta } from './refreshMeta.js';
+import { candidateIsOlderThanActive, decideRefreshSkipUnchanged, isFeedExpired, markFeedStale, shouldReplaceExpiredFeed, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta } from './refreshMeta.js';
 import {
   COUNTRY_LAUNCH_FLAG,
   isCountryLaunchBlocked,
@@ -50,6 +51,7 @@ import { effectiveFeedExpiry } from './feedFreshness.js';
 import { isActiveProductionFeed } from '../shared/feedAvailability.js';
 import { bumpPublicDataVersion } from './dataVersion.js';
 import { recordFeedCheck, type FeedCheckFields } from './feedCheckTracking.js';
+import { buildFeedCandidates, type FeedCandidate } from './feedSourceCandidates.js';
 
 console.log(`  env: ${LOADED_ENV_FILE} (bucket=${process.env.R2_BUCKET_NAME ?? '?'}${isProductionPublicR2Bucket() ? ' [PRODUCTION]' : ' [non-prod]'})`);
 
@@ -75,6 +77,8 @@ interface RouteSummary {
 
 interface RefreshAgencyResult {
   summary: string;
+  processed?: boolean;
+  stale?: boolean;
   hiddenRoutes?: HiddenRouteRecord[];
 }
 
@@ -242,6 +246,7 @@ async function refreshAgency(
   manualBaseFareOverride?: number,
   logger?: { log: (msg: string) => void },
   nightServiceCollector?: NightServiceRouteEntry[],
+  frequentServiceCollector?: FrequentServiceRouteEntry[],
 ): Promise<RefreshAgencyResult> {
   if (!agency.feedUrl) {
     return { summary: 'skipped (no feedUrl)' };
@@ -255,27 +260,61 @@ async function refreshAgency(
     }
   };
 
-  let buf: Buffer;
-  try {
-    buf = await downloadFeed(agency.feedUrl);
-    if (buf.length < 4 || buf[0] !== 0x50 || buf[1] !== 0x4b) {
-      throw new Error(`not a zip file (got ${buf.length} bytes starting ${buf.subarray(0, 4).toString('hex')})`);
-    }
-  } catch (primaryErr) {
-    if (!agency.mdbFeedUrl) throw primaryErr;
-    writeLog(`\n  [warn] primary feed failed (${(primaryErr as Error).message}) — trying MDB fallback\n  `);
-    buf = await downloadFeed(agency.mdbFeedUrl);
-  }
-
-  // Sanity check the final buffer (either primary or fallback)
-  if (buf.length < 4 || buf[0] !== 0x50 || buf[1] !== 0x4b) {
-    throw new Error(`not a zip file (got ${buf.length} bytes starting ${buf.subarray(0, 4).toString('hex')})`);
-  }
-
   // Skip processing if the feed hasn't changed since last refresh.
   // Primary key: feed_end_date. Fallback: feed_version (for agencies without feed_info expiry).
-  const { feedExpiry: peekedExpiry, feedVersion: peekedVersion } = await peekFeedInfo(buf);
   const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+  const feedCandidates = buildFeedCandidates(agency.feedUrl, agency.mdbFeedUrl);
+  let buf: Buffer | null = null;
+  let peekedExpiry: string | null = null;
+  let peekedVersion: string | null = null;
+  let selectedCandidate: FeedCandidate | null = null;
+  let firstCandidateError: Error | null = null;
+
+  for (const candidate of feedCandidates) {
+    try {
+      const candidateBuf = await downloadFeed(candidate.url);
+      if (candidateBuf.length < 4 || candidateBuf[0] !== 0x50 || candidateBuf[1] !== 0x4b) {
+        throw new Error(`not a zip file (got ${candidateBuf.length} bytes starting ${candidateBuf.subarray(0, 4).toString('hex')})`);
+      }
+      const metadata = await peekFeedInfo(candidateBuf);
+
+      // Keep the first usable source unless a dated current candidate is found.
+      // An expired primary must yield to a current configured or derived backup,
+      // but an undated backup is not enough evidence to replace known data.
+      if (!buf) {
+        buf = candidateBuf;
+        peekedExpiry = metadata.feedExpiry;
+        peekedVersion = metadata.feedVersion;
+        selectedCandidate = candidate;
+        if (!isFeedExpired(metadata.feedExpiry, today)) break;
+      } else if (shouldReplaceExpiredFeed({
+        selectedExpiry: peekedExpiry,
+        candidateExpiry: metadata.feedExpiry,
+        todayYmd: today,
+      })) {
+        buf = candidateBuf;
+        peekedExpiry = metadata.feedExpiry;
+        peekedVersion = metadata.feedVersion;
+        selectedCandidate = candidate;
+        break;
+      }
+      writeLog(`\n  [warn] ${candidate.kind} feed expired (${metadata.feedExpiry ?? 'unknown'}) — trying next source\n`);
+    } catch (error) {
+      firstCandidateError ??= error instanceof Error ? error : new Error(String(error));
+      writeLog(`\n  [warn] ${candidate.kind} feed failed (${error instanceof Error ? error.message : String(error)}) — trying next source\n`);
+    }
+  }
+
+  if (!buf || !selectedCandidate) {
+    const reason = firstCandidateError?.message ?? `no usable feed source for ${agency.slug}`;
+    markFeedStale(agency, { reason, todayYmd: today });
+    writeLog(`\n  [warn] refresh unavailable (${reason}) — retaining the last good artifact\n`);
+    return { summary: `stale (feed unavailable: ${reason})`, stale: true };
+  }
+  if (selectedCandidate.kind !== 'configured' || selectedCandidate.url !== agency.feedUrl) {
+    writeLog(`\n  [info] using ${selectedCandidate.kind} source: ${selectedCandidate.url}\n`);
+  }
+
   recordFeedCheck(agency as FeedCheckFields, { feedExpiry: peekedExpiry, todayYmd: today });
 
   if (isFeedExpired(peekedExpiry, today)) {
@@ -297,9 +336,20 @@ async function refreshAgency(
   // when all dated parts have ended.
   if (agency.supplementalFeedUrls?.length) {
     for (const suppUrl of agency.supplementalFeedUrls) {
-      const suppBuf = await downloadFeed(suppUrl);
+      let suppBuf: Buffer;
+      try {
+        suppBuf = await downloadFeed(suppUrl);
+      } catch (error) {
+        const reason = `supplemental feed failed (${error instanceof Error ? error.message : String(error)})`;
+        markFeedStale(agency, { reason, todayYmd: today });
+        writeLog(`\n  [warn] ${reason} — retaining the last good artifact\n`);
+        return { summary: `stale (${reason})`, stale: true };
+      }
       if (suppBuf.length < 4 || suppBuf[0] !== 0x50 || suppBuf[1] !== 0x4b) {
-        throw new Error(`not a zip file (got ${suppBuf.length} bytes starting ${suppBuf.subarray(0, 4).toString('hex')})`);
+        const reason = `supplemental feed was not a ZIP (${suppBuf.length} bytes)`;
+        markFeedStale(agency, { reason, todayYmd: today });
+        writeLog(`\n  [warn] ${reason} — retaining the last good artifact\n`);
+        return { summary: `stale (${reason})`, stale: true };
       }
       const { feedExpiry, feedVersion } = await peekFeedInfo(suppBuf);
       supplementalFeeds.push({ url: suppUrl, buf: suppBuf, feedExpiry, feedVersion });
@@ -310,8 +360,10 @@ async function refreshAgency(
     [peekedExpiry, ...supplementalFeeds.map(feed => feed.feedExpiry)],
     today,
   )) {
-    writeLog(`\n  [warn] all feeds ended before refresh date — skipping update\n  `);
-    return { summary: 'all feeds expired, skipped' };
+    const reason = `all available feeds expired (latest ${peekedExpiry ?? 'unknown'})`;
+    markFeedStale(agency, { reason, todayYmd: today });
+    writeLog(`\n  [warn] ${reason} — retaining the last good artifact\n`);
+    return { summary: `stale (${reason})`, stale: true };
   }
 
   if (!forceRefresh && candidateIsOlderThanActive({ candidateExpiry: peekedExpiry, existingExpiry: agency.lastFeedExpiry })) {
@@ -370,7 +422,8 @@ async function refreshAgency(
     if (err instanceof GtfsValidationError) {
       writeLog(`  [warn] GTFS validation failed (${err.report.errors} error(s)) — skipping update\n`);
       // Do not stamp lastFeed* — leave previous metadata so a later good feed can run.
-      return { summary: 'validation failed, skipped' };
+      markFeedStale(agency, { reason: `GTFS validation failed (${err.report.errors} error(s))`, todayYmd: today });
+      return { summary: 'stale (GTFS validation failed)', stale: true };
     }
     throw err;
   }
@@ -423,8 +476,10 @@ async function refreshAgency(
   if (featureCount === 0) {
     // Do not stamp lastFeedExpiry / lastFeedVersion / lastRefreshedAt — that made
     // skip-if-unchanged treat a permanently-empty extract as "healthy" and never retry.
-    writeLog(`  [warn] pipeline produced 0 features — skipping update (flex/microtransit feed?); feed metadata left unchanged\n`);
-    return { summary: '0 features, skipped' };
+    const reason = 'pipeline produced 0 features';
+    writeLog(`  [warn] ${reason} — retaining the last good artifact (flex/microtransit feed?)\n`);
+    markFeedStale(agency, { reason, todayYmd: today });
+    return { summary: `stale (${reason})`, stale: true };
   }
 
   const currentStops = (JSON.parse(stopsMetaJson) as { stops?: AuditedStop[] }).stops ?? [];
@@ -486,10 +541,18 @@ async function refreshAgency(
       ...extractNightServiceRoutes(agency.slug, agency.name, agency.region ?? null, parsedFeatures),
     );
   }
+  if (frequentServiceCollector) {
+    const parsedFeatures = (JSON.parse(geojson) as GeoJsonFc).features as
+      Parameters<typeof extractFrequentServiceRoutes>[3];
+    frequentServiceCollector.push(
+      ...extractFrequentServiceRoutes(agency.slug, agency.name, agency.region ?? null, parsedFeatures),
+    );
+  }
 
   const kb = Math.round(Buffer.byteLength(geojson) / 1024);
   return {
     summary: `${featureCount} features, ${kb} KB`,
+    processed: true,
     hiddenRoutes: buildHiddenRoutesForAgency(agency, geojson),
   };
 }
@@ -539,9 +602,21 @@ async function main() {
   const countryRegistry = index.agencies as AgencyCountrySource[];
 
   let failures = 0;
+  let stale = 0;
   let uploads = 0;
   let countryLaunchSkips = 0;
   const allNightServiceRoutes: NightServiceRouteEntry[] = [];
+  const refreshedNightServiceAgencySlugs = new Set<string>();
+  let existingNightServiceIndex: NightServiceIndexFile | null = null;
+  if (onlySlugs.length === 0) {
+    try {
+      const raw = await r2Get('atlas/night-service.json');
+      if (raw) existingNightServiceIndex = JSON.parse(raw) as NightServiceIndexFile;
+    } catch (e) {
+      console.warn(`  [warn] existing night-service.json could not be loaded — ${e instanceof Error ? e.message : e}`);
+    }
+  }
+  const allFrequentServiceRoutes: FrequentServiceRouteEntry[] = [];
   const refreshedHiddenRoutes = new Map<string, HiddenRouteRecord[]>();
   const tasks = targets.map(agency => async () => {
     let logBuffer = '';
@@ -562,9 +637,11 @@ async function main() {
           return;
         }
       }
-      const result = await refreshAgency(agency, fareOverrides[agency.slug]?.adult ?? agency.fare, logger, allNightServiceRoutes);
+      const result = await refreshAgency(agency, fareOverrides[agency.slug]?.adult ?? agency.fare, logger, allNightServiceRoutes, allFrequentServiceRoutes);
       const summary = result.summary;
-      if (!summary.startsWith('skipped') && !summary.includes('expired, skipped')) {
+      if (result.processed) refreshedNightServiceAgencySlugs.add(agency.slug);
+      if (result.stale) stale++;
+      if (result.processed) {
         uploads++;
         if (result.hiddenRoutes) refreshedHiddenRoutes.set(agency.slug, result.hiddenRoutes);
       }
@@ -601,6 +678,9 @@ async function main() {
   if (failures > 0) {
     console.warn(`${failures} agencies failed to refresh (see warnings above). Continuing so action succeeds.`);
     // Do not exit(1) — partial success is normal for weekly refresh (expired feeds etc.)
+  }
+  if (stale > 0) {
+    console.warn(`${stale} agencies are stale and retained their last good artifact.`);
   }
 
   try {
@@ -645,11 +725,22 @@ async function main() {
     // night-service data for the agencies it actually touched, and uploading that partial
     // set here would clobber every other agency's entries with nothing.
     try {
-      const nightServiceIndex = buildNightServiceIndex(allNightServiceRoutes);
+      const nightServiceIndex = mergeNightServiceIndex(
+        existingNightServiceIndex,
+        allNightServiceRoutes,
+        refreshedNightServiceAgencySlugs,
+      );
       await r2Put('atlas/night-service.json', JSON.stringify(nightServiceIndex));
       console.log(`  night-service.json → R2 (${nightServiceIndex.routeCount} routes across ${nightServiceIndex.agencyCount} agencies)`);
     } catch (e) {
       console.warn(`  [warn] night-service.json R2 write failed — ${e instanceof Error ? e.message : e}`);
+    }
+    try {
+      const frequentServiceIndex = buildFrequentServiceIndex(allFrequentServiceRoutes);
+      await r2Put('atlas/frequent-service.json', JSON.stringify(frequentServiceIndex));
+      console.log(`  frequent-service.json → R2 (${frequentServiceIndex.routeCount} routes across ${frequentServiceIndex.agencyCount} agencies)`);
+    } catch (e) {
+      console.warn(`  [warn] frequent-service.json write failed — ${e instanceof Error ? e.message : e}`);
     }
   }
 }

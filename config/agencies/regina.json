@@ -12,7 +12,7 @@
     50.52,
     -104.44
   ],
-  "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-saskatchewan-city-of-regina-gtfs-715.zip?alt=media",
+  "feedUrl": "https://opengis.regina.ca/reginagtfs/google_transit.zip",
   "lastFeedExpiry": "20260822",
   "lastFeedVersion": null,
   "lastRefreshedAt": "2026-08-10",

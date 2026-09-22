@@ -5,12 +5,12 @@
     39.3392,
     -82.1159
   ],
-  "feedUrl": "https://hosted-gtfs-feeds.s3.amazonaws.com/HAPCAP/gtfs.zip",
-  "lastFeedExpiry": "20241231",
-  "lastFeedVersion": "1.0 - Jan 9, 2023",
+  "feedUrl": "https://passio3.com/athenstransit/passioTransit/gtfs/google_transit.zip",
+  "lastFeedExpiry": "20261019",
+  "lastFeedVersion": "20250228",
   "lastRefreshedAt": "20260811",
   "region": "Ohio",
-  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1973/latest.zip",
+  "mdbFeedUrl": "https://passio3.com/athenstransit/passioTransit/gtfs/google_transit.zip",
   "bbox": [
     39.2039,
     -82.2706,

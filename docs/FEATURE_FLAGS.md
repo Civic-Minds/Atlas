@@ -6,11 +6,10 @@ Atlas gates immature features (thin agency coverage, no scaling plan, or genuine
 
 | Flag | Controls | Production | Beta deployment | Why gated |
 |---|---|---|---|---|
-| `LIVE_ENABLED` | Live pill, `/apps/live`, `LiveVehicles.tsx` | off | on | Covers ~5 agencies, 2 routes each, out of 400+. No scaling plan yet. |
-| `HISTORY_ENABLED` | History control, Agency-list History filter and coverage pills, `/apps/history`, `History.tsx` | off | on | Covers a handful of cities out of 400+. Same reason. |
+| `LIVE_ENABLED` | Live pill, `/apps/live`, `LiveVehicles.tsx` | off | on | Covers ~5 agencies, 2 routes each, out of 556 public agencies. No scaling plan yet. |
+| `HISTORY_ENABLED` | History control, Agency-list History filter and coverage pills, `/apps/history`, `History.tsx` | off | on | Covers a handful of cities out of 556 public agencies. Same reason. |
 | `CARD_CLICK_TO_FLAG_ENABLED` | Click-to-flag affordance on card values (`FlaggableValue` in `cardUi.tsx`) | off | on | New, unproven interaction — no route/component split like the others, just a UI behavior to validate before it's in front of everyone. |
 | `CORRIDORS_ENABLED` | `/apps/corridors`, `Corridors.tsx` | off | off | Not good enough as a feature yet (Ryan, 2026-07-28). Its panel is also broken by a CSS bug independent of this flag. |
-| `DIAGNOSTICS_ENABLED` | Tools/wrench menu, `/apps/diagnostics/table`, `DiagnosticsPage.tsx` + `Diagnostics.tsx` | off | on | Internal spot-check tool, never meant for the public production site. It lives in the shared source tree but is unreachable when the production flag is off. |
 | `UNEVEN_BANNER_ENABLED` | "Service is uneven" route-card banner, `RouteCardHeadway.tsx` | off | on | The excess/ratio threshold deciding when a period's worst gap is worth surfacing (#345) needs more real-feed tuning than a single main push should carry. |
 
 ## How it works
@@ -30,6 +29,20 @@ export const LIVE_ENABLED = envFlag('VITE_LIVE_ENABLED');
 # Run this while linked to the beta Vercel project.
 echo "true" | vercel env add VITE_LIVE_ENABLED production
 ```
+
+## Atlas modes
+
+`VITE_ATLAS_MODE` controls agency visibility independently from feature flags:
+
+| Mode | Agency visibility |
+|---|---|
+| `public` | Public agencies only; hidden-in-production agencies stay hidden. |
+| `beta` | Public agencies plus agencies explicitly marked `betaOnly`. |
+| `dev` | All non-staged agencies, including local QA candidates. |
+
+Use `npm run dev:public`, `npm run dev:beta`, or `npm run dev:all` for local testing. The feature flags remain independent, so public-mode localhost can use the public agency catalog while `.env.local` enables new features for testing. If `VITE_ATLAS_MODE` is unset, deployed builds infer `public` or `beta` from `VITE_BETA_BUILD`, while Vite development infers `dev`.
+
+When running locally, open `/apps/diagnostics/performance` to see browser navigation timings, paint timings, Atlas readiness marks, the active mode, and the visible agency count. Use its reload button for a fresh measurement.
 
 **Each flag gates three things**, in `src/App.tsx`:
 1. The pill/button that surfaces the feature.

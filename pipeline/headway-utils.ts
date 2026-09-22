@@ -360,6 +360,26 @@ export const FREQUENT_SERVICE_WINDOW_START_MIN = 7 * 60;
 export const FREQUENT_SERVICE_WINDOW_END_MIN = 19 * 60;
 export const FREQUENT_SERVICE_MAX_GAP_MINUTES = 15;
 
+export const RESEARCH_FREQUENT_SERVICE_DAYTIME_END_MIN = 19 * 60;
+export const RESEARCH_FREQUENT_SERVICE_EXTENDED_END_MIN = 24 * 60;
+export const RESEARCH_FREQUENT_SERVICE_START_MIN = 7 * 60;
+
+export type ResearchFrequentServiceFlags = {
+  daytime15: boolean;
+  daytime30: boolean;
+  extended15: boolean;
+  extended30: boolean;
+};
+
+export function computeResearchFrequentService(departureTimes: number[]): ResearchFrequentServiceFlags {
+  return {
+    daytime15: hasSustainedServiceInWindow(departureTimes, RESEARCH_FREQUENT_SERVICE_START_MIN, RESEARCH_FREQUENT_SERVICE_DAYTIME_END_MIN, 15),
+    daytime30: hasSustainedServiceInWindow(departureTimes, RESEARCH_FREQUENT_SERVICE_START_MIN, RESEARCH_FREQUENT_SERVICE_DAYTIME_END_MIN, 30),
+    extended15: hasSustainedServiceInWindow(departureTimes, RESEARCH_FREQUENT_SERVICE_START_MIN, RESEARCH_FREQUENT_SERVICE_EXTENDED_END_MIN, 15),
+    extended30: hasSustainedServiceInWindow(departureTimes, RESEARCH_FREQUENT_SERVICE_START_MIN, RESEARCH_FREQUENT_SERVICE_EXTENDED_END_MIN, 30),
+  };
+}
+
 /**
  * Does this route have sustained frequent service: at least one departure every
  * maxGapMinutes across the whole 7am-7pm window, with no gap at either edge -- same boundary

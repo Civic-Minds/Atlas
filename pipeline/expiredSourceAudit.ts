@@ -1,9 +1,8 @@
 import { createHash } from 'node:crypto';
+import { buildFeedCandidates, mobilityDatabaseLatestUrl, type FeedCandidate } from './feedSourceCandidates.js';
 
-export interface FeedCandidate {
-  kind: 'configured' | 'mdb-latest';
-  url: string;
-}
+export { buildFeedCandidates, mobilityDatabaseLatestUrl } from './feedSourceCandidates.js';
+export type { FeedCandidate } from './feedSourceCandidates.js';
 
 export interface FeedCandidateResult {
   kind: FeedCandidate['kind'];
@@ -18,30 +17,6 @@ export interface FeedCandidateResult {
   routeCount: number | null;
   stopCount: number | null;
   error?: string;
-}
-
-/** Turn a dated Mobility Database ZIP URL into its current-feed equivalent. */
-export function mobilityDatabaseLatestUrl(url: string): string | null {
-  const match = url.match(
-    /^https:\/\/files\.mobilitydatabase\.org\/([^/]+)\/\1-\d+\/\1-\d+\.zip$/,
-  );
-  return match ? `https://files.mobilitydatabase.org/${match[1]}/latest.zip` : null;
-}
-
-export function buildFeedCandidates(feedUrl?: string | null, mdbFeedUrl?: string | null): FeedCandidate[] {
-  const candidates: FeedCandidate[] = [];
-  const add = (kind: FeedCandidate['kind'], url: string | null | undefined) => {
-    if (!url || candidates.some(candidate => candidate.url === url)) return;
-    candidates.push({ kind, url });
-  };
-
-  add('configured', feedUrl);
-  add('configured', mdbFeedUrl);
-  for (const url of [feedUrl, mdbFeedUrl]) {
-    const latest = url ? mobilityDatabaseLatestUrl(url) : null;
-    if (latest) add('mdb-latest', latest);
-  }
-  return candidates;
 }
 
 export function classifyExpiredCandidates(

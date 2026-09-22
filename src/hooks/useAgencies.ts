@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { Agency } from '../App';
-import { BETA_BUILD, getAgencyArtifactUrls } from '../../shared/config';
+import { getAgencyArtifactUrls, ATLAS_MODE } from '../../shared/config';
+import { isAgencyVisibleInBrowser } from '../../shared/agencyVisibility';
+import { markAtlasOnce } from '../lib/performance';
 
 export type AgenciesLoadState = 'loading' | 'ready' | 'error';
 
@@ -20,7 +22,7 @@ export function useAgencies() {
       })
       .then((data: { agencies: Agency[] }) => {
         const enriched = data.agencies
-          .filter((a: Agency) => !a.staged && (!a.hiddenInProduction || import.meta.env.DEV || (BETA_BUILD && a.betaOnly)))
+          .filter((a: Agency) => isAgencyVisibleInBrowser(a, { mode: ATLAS_MODE }))
           .map((a: Agency) => {
             if (!a.url) {
               const arts = getAgencyArtifactUrls(a.slug, { betaOnly: a.betaOnly });
@@ -29,6 +31,7 @@ export function useAgencies() {
             return a;
           });
         setAgencies(enriched);
+        markAtlasOnce('agency-catalog-ready');
         setAgenciesLoadState('ready');
       })
       .catch(() => setAgenciesLoadState('error'));

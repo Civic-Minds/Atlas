@@ -1,11 +1,11 @@
 import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { X, ExternalLink, Search, Radio, ArrowLeft } from 'lucide-react';
-import { DROPDOWN_PANEL, dropdownAnim, SEARCH_PILL, SEARCH_FIELD, Z_MODAL_BG } from '../styles';
+import { DROPDOWN_PANEL, dropdownAnim, SEARCH_PILL, SEARCH_FIELD, Z_MODAL_BG, CONTROL_ACTIVE, CONTROL_INACTIVE } from '../styles';
 import { LIVE_POLLING_ROUTES, liveCoverageForRouteNames, type LiveCoverage } from '../../shared/livePollingConfig';
-import { R2_PUBLIC_URL, LIVE_ENABLED, HISTORY_ENABLED, BETA_BUILD } from '../../shared/config';
+import { R2_PUBLIC_URL, FEATURES } from '../../shared/config';
 import { agencyDisplayParts, formatStoredDate } from '../utils/format';
 import { feedRefreshCountdownLabel, FEED_REFRESH_CADENCE_LABEL, type FeedRefreshMeta } from '../../shared/feedRefresh';
-import { agencyHistoryTier, agencyQualifiesForHistory, agencyQualifiesForHistoryExplore, historyTierAgencyLabel } from '../../shared/historyEligibility';
+import { agencyQualifiesForHistory, agencyQualifiesForHistoryExplore } from '../../shared/historyEligibility';
 import { countriesForAgencies } from '../../shared/regionCountry';
 import type { Agency } from '../App';
 import { isFeedExpired } from '../utils/feedFreshness';
@@ -189,15 +189,6 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
     [historyAgencies],
   );
 
-  const historyTierBySlug = useMemo(() => {
-    const map = new Map<string, 'explore' | 'recent'>();
-    for (const a of historyAgencies ?? []) {
-      const tier = agencyHistoryTier(a as any);
-      if (tier) map.set(a.slug, tier);
-    }
-    return map;
-  }, [historyAgencies]);
-
   const regionsInScope = useMemo(() => {
     const seen = new Set<string>();
     for (const a of agencies) {
@@ -254,7 +245,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
     ['all', 'All'],
     ['live', 'Live'],
     ['history', 'History'],
-    ...(BETA_BUILD ? [['outdated', 'Outdated'] as [AgencyListFilter, string]] : []),
+    ...(FEATURES.beta ? [['outdated', 'Outdated'] as [AgencyListFilter, string]] : []),
   ];
 
   const selectedAgency = selectedSlug ? agencies.find(a => a.slug === selectedSlug) : null;
@@ -352,11 +343,10 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                 <p className="text-[10px] font-bold text-[var(--text-muted)] mb-2">Data</p>
                 <p className="text-xs text-[var(--text-dim)] leading-relaxed mb-3">
                   Covering {agencies.length} transit agencies.
-                  {LIVE_ENABLED && HISTORY_ENABLED && ` See live vehicle positions on ${totalLiveAgencies}, or check History on ${totalHistoryExploreAgencies}+ agencies.`}
-                  {LIVE_ENABLED && !HISTORY_ENABLED && ` See live vehicle positions on ${totalLiveAgencies}.`}
-                  {!LIVE_ENABLED && HISTORY_ENABLED && ` Check History on ${totalHistoryExploreAgencies}+ agencies.`}
+                  {FEATURES.live && FEATURES.history && ` See live vehicle positions on ${totalLiveAgencies}, or check History on ${totalHistoryExploreAgencies}+ agencies.`}
+                  {FEATURES.live && !FEATURES.history && ` See live vehicle positions on ${totalLiveAgencies}.`}
+                  {!FEATURES.live && FEATURES.history && ` Check History on ${totalHistoryExploreAgencies}+ agencies.`}
                 </p>
-                <button type="button" onClick={() => window.dispatchEvent(new Event('atlas:privacy-settings'))} className="text-xs text-[var(--accent)] hover:underline">Privacy settings</button>
                 <div className="space-y-2">
                   <button
                     onClick={() => setView('agencies')}
@@ -387,10 +377,17 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                 </a>
               </div>
 
+              <div>
+                <p className="text-[10px] font-bold text-[var(--text-muted)] mb-2">Privacy</p>
+                <button type="button" onClick={() => window.dispatchEvent(new Event('atlas:privacy-settings'))} className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group">
+                  <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">Privacy &amp; analytics</span>
+                </button>
+              </div>
+
               <div className="text-[10px] text-[var(--text-dim)] whitespace-nowrap">
                 <a href="/terms" className="hover:text-[var(--accent)] hover:underline">Terms</a>
                 <span className="mx-1.5">·</span>
-                <a href="/privacy" className="hover:text-[var(--accent)] hover:underline">Privacy</a>
+                <a href="/privacy" className="hover:text-[var(--accent)] hover:underline">Privacy policy</a>
                 <span className="mx-1.5">·</span>
                 <span>© 2026 Civic Minds.</span>
               </div>
@@ -425,9 +422,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                         onClick={() => setAgencyFeatureFilter(id)}
                         aria-pressed={on}
                         className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition-colors whitespace-nowrap shrink-0 ${
-                          on
-                            ? 'bg-[var(--bg-btn-hover)] text-[var(--text-primary)] border-[var(--text-primary)]'
-                            : 'bg-[var(--bg-app)] text-[var(--text-muted)] border-[var(--border-primary)] hover:text-[var(--text-primary)] hover:border-[var(--text-dim)]'
+                          on ? CONTROL_ACTIVE : CONTROL_INACTIVE
                         }`}
                       >
                         {label}
@@ -450,9 +445,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                         })}
                         aria-pressed={on}
                         className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition-colors whitespace-nowrap shrink-0 ${
-                          on
-                            ? 'bg-[var(--bg-btn-hover)] text-[var(--text-primary)] border-[var(--text-primary)]'
-                            : 'bg-[var(--bg-app)] text-[var(--text-muted)] border-[var(--border-primary)] hover:text-[var(--text-primary)] hover:border-[var(--text-dim)]'
+                          on ? CONTROL_ACTIVE : CONTROL_INACTIVE
                         }`}
                       >
                         {r}
@@ -472,8 +465,8 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                         {list.map(a => {
                           const hasLive = liveBySlug.has(a.slug);
                           const hasHistory = historyBySlug.has(a.slug);
-                          const showLiveBadge = LIVE_ENABLED && hasLive;
-                          const showHistoryBadge = HISTORY_ENABLED && hasHistory;
+                          const showLiveBadge = FEATURES.live && hasLive;
+                          const showHistoryBadge = FEATURES.history && hasHistory;
                           const { primary, secondary } = agencyDisplayParts(a.name, a.cities, a.displayArea);
                           const listLabel = secondary ? `${primary} · ${secondary}` : primary;
                           return (
@@ -501,7 +494,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                                   )}
                                   {showHistoryBadge && (
                                     <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-[var(--bg-btn)] text-[var(--text-muted)] border border-[var(--border-primary)]">
-                                      {historyTierAgencyLabel(historyTierBySlug.get(a.slug) ?? 'recent')}
+                                      History
                                     </span>
                                   )}
                                 </div>
@@ -694,11 +687,11 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
             <div className="h-full overflow-y-auto px-5 py-4 space-y-4">
               {helpContext?.agencyName && (
                 <p className="text-xs text-[var(--text-primary)] leading-relaxed">
-                  {helpContext.agencyName} has a problem in the source map line for this route.
+                  {helpContext.agencyName} has a problem with this route's shape in the source feed.
                 </p>
               )}
               <p className="text-xs text-[var(--text-dim)] leading-relaxed">
-                Transit agencies publish the map lines Atlas uses to draw routes. Atlas identified a specific problem in this route&apos;s source geometry, so the route stays visible with a warning instead of hiding the entire agency.
+                Transit agencies publish the route shapes Atlas uses to draw routes. Atlas identified a specific problem in this route&apos;s source geometry, so the route stays visible with a warning instead of hiding the entire agency.
               </p>
               <p className="text-xs text-[var(--text-dim)] leading-relaxed">
                 The line may be incomplete or adjusted. The schedule information is separate from the map geometry.
@@ -742,15 +735,11 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                     <div>
                       <div className="mb-2">
                         <span className="inline-block text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-[var(--bg-btn)] text-[var(--text-muted)] border border-[var(--border-primary)]">
-                          {selectedSlug && historyTierBySlug.get(selectedSlug)
-                            ? historyTierAgencyLabel(historyTierBySlug.get(selectedSlug)!)
-                            : 'History'}
+                          History
                         </span>
                       </div>
                       <p className="text-xs text-[var(--text-dim)]">
-                        {selectedSlug && historyTierBySlug.get(selectedSlug) === 'recent'
-                          ? `Recent frequency snapshots for ${selectedHistory.routes.length} routes${historyYearsText ? ` ${historyYearsText}` : ''}.`
-                          : `Historical frequency data available for ${selectedHistory.routes.length} routes ${historyYearsText}.`}
+                        Historical frequency data available for {selectedHistory.routes.length} routes {historyYearsText}.
                       </p>
                     </div>
                   )}

@@ -1,4 +1,4 @@
-import { buildDefaultRouteLineOpacityExpression, buildFocusedRouteLineOpacityExpression, getTierColor, getVehicleStatus } from '../colors';
+import { buildDefaultRouteLineOpacityExpression, buildFocusedRouteLineOpacityExpression, getTierColor, getVehicleStatus, getVehicleColors, getFareColor, getNightServiceColor } from '../colors';
 import { describe, it, expect } from 'vitest';
 
 describe('getTierColor', () => {
@@ -36,6 +36,25 @@ describe('getVehicleStatus', () => {
   });
 });
 
+describe('colour-blind-friendly palette', () => {
+  it('keeps each frequency tier mapped to a distinct friendly colour', () => {
+    const colors = ['10', '15', '20', '30', '60', 'infrequent'].map(tier => getTierColor(tier, 'friendly'));
+    expect(new Set(colors).size).toBe(colors.length);
+    expect(colors).toEqual(['#0072b2', '#009e73', '#56b4e9', '#e69f00', '#cc79a7', '#4d4d4d']);
+  });
+
+  it('uses the friendly status and fare colours when enabled', () => {
+    expect(getVehicleColors('early', 'friendly').border).toBe('#005a8d');
+    expect(getVehicleColors('late', 'friendly').border).toBe('#9e3510');
+    expect(getFareColor(5, 'friendly')).toBe('#c44516');
+  });
+
+  it('uses a distinct accessible Night Service colour when enabled', () => {
+    expect(getNightServiceColor()).toBe('#818cf8');
+    expect(getNightServiceColor('friendly')).toBe('#0072b2');
+  });
+});
+
 describe('buildDefaultRouteLineOpacityExpression', () => {
   it('keeps partial-match dimming inside the top-level zoom expression', () => {
     const expression = buildDefaultRouteLineOpacityExpression(['get', 'headway'], ['==', ['get', 'routeId'], 'partial']);
@@ -62,6 +81,21 @@ describe('buildFocusedRouteLineOpacityExpression', () => {
       ['==', ['get', 'routeId'], 'selected'],
       1,
       ['case', ['>', ['get', 'headway'], 20], 0, 0.7],
+    ]);
+  });
+
+  it('dims background routes more strongly in the accessible palette', () => {
+    const expression = buildFocusedRouteLineOpacityExpression(
+      ['==', ['get', 'routeId'], 'selected'],
+      ['get', 'headway'],
+      'friendly',
+    );
+
+    expect(expression[4]).toEqual([
+      'case',
+      ['==', ['get', 'routeId'], 'selected'],
+      1,
+      ['case', ['>', ['get', 'headway'], 20], 0, 0.3],
     ]);
   });
 });

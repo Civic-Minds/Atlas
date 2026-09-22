@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Search } from 'lucide-react';
 import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
-import { FLOATING_CARD, CHIP_BASE, PANEL_ENTER_TOP } from '../../styles';
+import { FLOATING_CARD, CHIP_BASE, PANEL_ENTER_TOP, FILTER_OPTION, CONTROL_ACTIVE, CONTROL_INACTIVE } from '../../styles';
 import type { Agency } from '../../App';
 import { PERIOD_LABELS, PERIOD_KEYS } from '../../hooks/useIntervalStats';
 import type { TimePeriod, ViewportBounds } from '../../hooks/useIntervalStats';
@@ -10,6 +10,8 @@ import { agencyDisplayParts } from '../../utils/format';
 import { bboxInViewport } from '../../utils/agencySearch';
 import { FILTER_MODES } from '../../../shared/modes';
 import { DAY_TYPES, getNowDay, type DayType } from '../../../shared/dayTypes';
+import type { FrequentServiceFrequency, FrequentServiceWindow } from '../../../shared/frequentService';
+import { useColorVision } from '../../context/ColorVisionContext';
 
 export { getNowDay };
 
@@ -26,6 +28,13 @@ interface FilterChipsProps {
   selectedAgencies: Set<string>;
   setSelectedAgencies: React.Dispatch<React.SetStateAction<Set<string>>>;
   bounds: ViewportBounds | null;
+  researchMode?: boolean;
+  researchDays?: DayType[];
+  setResearchDays?: (days: DayType[]) => void;
+  researchFrequency?: FrequentServiceFrequency;
+  setResearchFrequency?: (frequency: FrequentServiceFrequency) => void;
+  researchWindow?: FrequentServiceWindow;
+  setResearchWindow?: (window: FrequentServiceWindow) => void;
 }
 
 const MODES = FILTER_MODES;
@@ -60,18 +69,22 @@ type ChipId = 'frequency' | 'day' | 'period' | 'mode' | 'agencies' | 'compact';
 
 const PANEL = `absolute top-10 right-0 ${FLOATING_CARD} p-2 ${PANEL_ENTER_TOP} flex flex-col gap-1`;
 
-const compactOptBtn = (active: boolean) =>
+const compactOptBtn = (active: boolean, highContrast = false) =>
   `h-7 px-2.5 flex items-center justify-center text-[11px] font-bold rounded-full border transition-colors ${
     active
-      ? 'bg-[var(--accent-bg)] border-[var(--accent-border)] text-[var(--accent)]'
-      : 'border-[var(--border-primary)] text-[var(--text-dim)] hover:text-[var(--text-primary)]'
+      ? highContrast
+        ? 'bg-[var(--control-active-bg)] border-[var(--control-active-border)] text-[var(--control-active-fg)]'
+        : 'bg-[var(--accent-bg)] border-[var(--accent-border)] text-[var(--accent)]'
+      : 'bg-[var(--control-inactive-bg)] border-[var(--control-inactive-border)] text-[var(--control-inactive-fg)] hover:bg-[var(--control-hover-bg)] hover:border-[var(--control-active-border)] hover:text-[var(--control-active-fg)]'
   }`;
 
-const rowBtn = (active: boolean) =>
+const rowBtn = (active: boolean, highContrast = false) =>
   `w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-[11px] font-bold transition-all border text-left min-w-0 ${
     active
-      ? 'bg-[var(--accent-bg)] border-[var(--accent-border)] text-[var(--accent)]'
-      : 'bg-[var(--bg-btn)] border-[var(--border-primary)] text-[var(--text-dim)] hover:text-[var(--text-primary)]'
+      ? highContrast
+        ? 'bg-[var(--control-active-bg)] border-[var(--control-active-border)] text-[var(--control-active-fg)]'
+        : 'bg-[var(--bg-btn-hover)] border-[var(--text-muted)] text-[var(--text-primary)]'
+      : 'bg-[var(--control-inactive-bg)] border-[var(--control-inactive-border)] text-[var(--control-inactive-fg)] hover:bg-[var(--control-hover-bg)] hover:border-[var(--control-active-border)] hover:text-[var(--control-active-fg)]'
   }`;
 
 interface AgenciesPanelProps {
@@ -82,6 +95,7 @@ interface AgenciesPanelProps {
   agencyQuery: string;
   setAgencyQuery: (q: string) => void;
   agencySearchRef: React.RefObject<HTMLInputElement | null>;
+  highContrast: boolean;
 }
 
 export function applyAgencyBulkSelection(current: Set<string>, allSlugs: string[], enabled: boolean): Set<string> {
@@ -91,7 +105,7 @@ export function applyAgencyBulkSelection(current: Set<string>, allSlugs: string[
   return next;
 }
 
-function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds, agencyQuery, setAgencyQuery, agencySearchRef }: AgenciesPanelProps) {
+function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds, agencyQuery, setAgencyQuery, agencySearchRef, highContrast }: AgenciesPanelProps) {
   const [showAll, setShowAll] = useState(false);
 
   // Build deduplicated groups, tagging each with whether it overlaps the current viewport
@@ -146,7 +160,7 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds
         <button
           onClick={() => setSelectedAgencies(applyAgencyBulkSelection(selectedAgencies, allSlugs, true))}
           disabled={allOn}
-          className="flex-1 text-[10px] font-bold py-0.5 rounded-md border border-[var(--border-primary)] text-[var(--text-dim)] hover:text-[var(--text-primary)] hover:border-[var(--accent-border)] disabled:opacity-30 disabled:cursor-default transition-colors"
+          className={`flex-1 ${FILTER_OPTION} border-[var(--border-primary)] text-[var(--text-dim)] hover:text-[var(--text-primary)] hover:border-[var(--accent-border)] disabled:opacity-30 disabled:cursor-default`}
         >
           All
         </button>
@@ -155,7 +169,7 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds
             setSelectedAgencies(applyAgencyBulkSelection(selectedAgencies, allSlugs, false));
           }}
           disabled={allOff}
-          className="flex-1 text-[10px] font-bold py-0.5 rounded-md border border-[var(--border-primary)] text-[var(--text-dim)] hover:text-[var(--text-primary)] hover:border-[var(--accent-border)] disabled:opacity-30 disabled:cursor-default transition-colors"
+          className={`flex-1 ${FILTER_OPTION} border-[var(--border-primary)] text-[var(--text-dim)] hover:text-[var(--text-primary)] hover:border-[var(--accent-border)] disabled:opacity-30 disabled:cursor-default`}
         >
           None
         </button>
@@ -179,7 +193,7 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds
                     else g.slugs.forEach(s => next.add(s));
                     setSelectedAgencies(next);
                   }}
-                  className={rowBtn(active)}
+                  className={rowBtn(active, highContrast)}
                   aria-label={g.name}
                 >
                   <span className="truncate flex-1 min-w-0">
@@ -218,7 +232,16 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
   selectedAgencies,
   setSelectedAgencies,
   bounds,
+  researchMode = false,
+  researchDays = ['Weekday'],
+  setResearchDays,
+  researchFrequency = 15,
+  setResearchFrequency,
+  researchWindow = 'daytime',
+  setResearchWindow,
 }) => {
+  const { colorVisionFriendly } = useColorVision();
+  const colorMode = colorVisionFriendly ? 'friendly' : 'default';
   const [openChip, setOpenChip] = useState<ChipId | null>(null);
   const [agencyQuery, setAgencyQuery] = useState('');
   const agencySearchRef = useRef<HTMLInputElement>(null);
@@ -243,6 +266,9 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
     setSelectedModes(next);
   };
 
+  // An empty set means no mode restriction, so every mode is active by default.
+  const modeIsActive = (id: number) => selectedModes.size === 0 || selectedModes.has(id);
+
   const toggleAgency = (slug: string) => {
     const next = new Set(selectedAgencies);
     if (next.has(slug)) next.delete(slug); else next.add(slug);
@@ -263,6 +289,44 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
 
   const hasActiveCoreFilter = maxHeadway !== Infinity || period !== 'all' || selectedModes.size > 0;
 
+  if (researchMode && setResearchDays && setResearchFrequency && setResearchWindow) {
+    const researchButton = (active: boolean) => rowBtn(active, colorMode === 'friendly');
+    const toggleResearchDay = (selected: DayType) => {
+      const next = researchDays.includes(selected)
+        ? researchDays.filter(dayType => dayType !== selected)
+        : [...researchDays, selected];
+      if (next.length > 0) setResearchDays(DAY_TYPES.filter(dayType => next.includes(dayType)));
+    };
+    return (
+      <div ref={rowRef} className="flex items-center gap-2">
+        <div className="relative">
+          <button onClick={() => toggle('day')} className={chipClass(true)}>Day<Dot show /></button>
+          {openChip === 'day' && <div className={`${PANEL} w-40`}>
+            {DAY_TYPES.map(dayType => <button key={dayType} onClick={() => toggleResearchDay(dayType)} className={researchButton(researchDays.includes(dayType))}>{dayType}</button>)}
+          </div>}
+        </div>
+        <div className="flex items-center gap-1 rounded-full border border-[var(--border-primary)] p-0.5">
+          {([15, 30] as const).map(value => <button key={value} onClick={() => setResearchFrequency(value)} className={compactOptBtn(researchFrequency === value, colorMode === 'friendly')} aria-pressed={researchFrequency === value}>{value} min</button>)}
+        </div>
+        {researchFrequency === 30 && (
+          <div className="hidden xl:flex items-center gap-2 text-[9px] font-bold text-[var(--text-muted)]" aria-label="30-minute view legend">
+            <span className="flex items-center gap-1"><span className="inline-block h-1 rounded-full" style={{ background: getTierColor('15', colorMode), width: 12 }} />≤15 min</span>
+            <span className="flex items-center gap-1"><span className="inline-block h-0.5 rounded-full" style={{ background: getTierColor('30', colorMode), width: 12 }} />16–30 min</span>
+          </div>
+        )}
+        <div className="flex items-center gap-1 rounded-full border border-[var(--border-primary)] p-0.5">
+          {([['daytime', '7am–7pm'], ['extended', '7am–midnight']] as const).map(([value, label]) => <button key={value} onClick={() => setResearchWindow(value)} className={compactOptBtn(researchWindow === value, colorMode === 'friendly')} aria-pressed={researchWindow === value}>{label}</button>)}
+        </div>
+        <div className="relative">
+          <button onClick={() => toggle('mode')} className={chipClass(selectedModes.size > 0)}>Mode<Dot show={selectedModes.size > 0} /></button>
+          {openChip === 'mode' && <div className={`${PANEL} w-36`}>
+            {MODES.map(mode => <button key={mode.id} onClick={() => toggleMode(mode.id)} className={researchButton(modeIsActive(mode.id))}>{mode.label}</button>)}
+          </div>}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div ref={rowRef} className="flex items-center gap-2">
 
@@ -279,9 +343,9 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
               <p className="text-[8px] font-black text-[var(--text-dim)] uppercase tracking-widest mb-1.5">Frequency</p>
               <div className="flex flex-wrap gap-1">
                 {HEADWAY_TIERS.map(({ max, label }) => {
-                  const color = isFinite(max) ? getTierColor(String(max)) : 'var(--text-dim)';
+                  const color = isFinite(max) ? getTierColor(String(max), colorMode) : 'var(--text-dim)';
                   return (
-                    <button key={label} onClick={() => setMaxHeadway(max)} className={compactOptBtn(maxHeadway === max)}>
+                    <button key={label} onClick={() => setMaxHeadway(max)} className={compactOptBtn(maxHeadway === max, colorMode === 'friendly')}>
                       <span className="w-1.5 h-1.5 rounded-full mr-1.5 shrink-0" style={{ background: color }} />
                       {label === 'Infrequent' ? 'All routes' : label}
                     </button>
@@ -294,7 +358,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
               <p className="text-[8px] font-black text-[var(--text-dim)] uppercase tracking-widest mb-1.5">Day</p>
               <div className="flex gap-1">
                 {DAY_TYPES.map(d => (
-                  <button key={d} onClick={() => setDay(d)} className={compactOptBtn(day === d)}>
+                  <button key={d} onClick={() => setDay(d)} className={compactOptBtn(day === d, colorMode === 'friendly')}>
                     {d === 'Saturday' ? 'Sat' : d === 'Sunday' ? 'Sun' : 'Weekday'}
                   </button>
                 ))}
@@ -305,7 +369,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
               <p className="text-[8px] font-black text-[var(--text-dim)] uppercase tracking-widest mb-1.5">Time</p>
               <div className="flex flex-wrap gap-1">
                 {PERIOD_KEYS.map(p => (
-                  <button key={p} onClick={() => setPeriod(p)} className={compactOptBtn(period === p)}>
+                  <button key={p} onClick={() => setPeriod(p)} className={compactOptBtn(period === p, colorMode === 'friendly')}>
                     {PERIOD_LABELS[p]}
                   </button>
                 ))}
@@ -316,7 +380,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
               <p className="text-[8px] font-black text-[var(--text-dim)] uppercase tracking-widest mb-1.5">Mode</p>
               <div className="flex flex-wrap gap-1">
                 {MODES.map(m => (
-                  <button key={m.id} onClick={() => toggleMode(m.id)} className={compactOptBtn(selectedModes.has(m.id))}>
+                  <button key={m.id} onClick={() => toggleMode(m.id)} className={compactOptBtn(modeIsActive(m.id), colorMode === 'friendly')}>
                     {m.label}
                   </button>
                 ))}
@@ -336,12 +400,12 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
           <div className={`${PANEL} w-36`}>
             {HEADWAY_TIERS.map(({ max, label }) => {
               const isSelected = maxHeadway === max;
-              const color = isFinite(max) ? getTierColor(String(max)) : 'var(--text-dim)';
+              const color = isFinite(max) ? getTierColor(String(max), colorMode) : 'var(--text-dim)';
               return (
                 <button
                   key={label}
                   onClick={() => { setMaxHeadway(max); setOpenChip(null); }}
-                  className={rowBtn(isSelected)}
+                  className={rowBtn(isSelected, colorMode === 'friendly')}
                   aria-label={max === Infinity ? 'Show all routes' : `Every ${max} min or better`}
                 >
                   <span className="w-2 h-2 rounded-full shrink-0" style={{ background: color }} />
@@ -365,7 +429,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
               <button
                 key={d}
                 onClick={() => { setDay(d); setOpenChip(null); }}
-                className={rowBtn(day === d)}
+                className={rowBtn(day === d, colorMode === 'friendly')}
               >
                 {d}
               </button>
@@ -386,7 +450,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
               <button
                 key={p}
                 onClick={() => { setPeriod(p); setOpenChip(null); }}
-                className={`${rowBtn(period === p)} flex items-center justify-between gap-3`}
+                className={`${rowBtn(period === p, colorMode === 'friendly')} flex items-center justify-between gap-3`}
               >
                 <span>{PERIOD_LABELS[p]}</span>
                 <span className="text-[9px] text-[var(--text-dim)] shrink-0">{formatPeriodRange(p)}</span>
@@ -408,7 +472,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
               <button
                 key={m.id}
                 onClick={() => toggleMode(m.id)}
-                className={rowBtn(selectedModes.has(m.id))}
+                className={rowBtn(modeIsActive(m.id), colorMode === 'friendly')}
               >
                 {m.label}
               </button>
@@ -437,6 +501,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
             agencyQuery={agencyQuery}
             setAgencyQuery={setAgencyQuery}
             agencySearchRef={agencySearchRef}
+            highContrast={colorMode === 'friendly'}
           />
         )}
       </div>

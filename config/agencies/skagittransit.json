@@ -12,8 +12,8 @@
     48.7,
     -121.9
   ],
-  "feedUrl": "https://www.skagittransit.org/gtfs/google_transit.zip",
-  "lastFeedExpiry": "20251024",
+  "feedUrl": "https://strweb.skagittransit.org/GTFS/google_transit.zip",
+  "lastFeedExpiry": "20270103",
   "lastFeedVersion": null,
   "lastRefreshedAt": "20260811",
   "cities": [

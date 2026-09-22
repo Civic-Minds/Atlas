@@ -11,7 +11,7 @@
     31.96,
     -106.22
   ],
-  "feedUrl": "https://files.mobilitydatabase.org/mdb-148/latest.zip",
+  "feedUrl": "https://transit.sunmetro.net/google_transit/google_transit.zip",
   "region": "Texas",
   "lastFeedExpiry": "20260613",
   "lastFeedVersion": "November 16, 2025_20260409",

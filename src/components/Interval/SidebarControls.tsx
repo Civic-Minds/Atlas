@@ -1,6 +1,7 @@
 import React, { useMemo, useRef, useEffect, useCallback, useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { getTierColor, getFareColor } from '../../utils/colors';
+import { useColorVision } from '../../context/ColorVisionContext';
 import type { ShapeProperties, TimePeriod, DayType, HoveredBranch, ViewportBounds } from '../../hooks/useIntervalStats';
 import type { Agency, FareOverride } from '../../App';
 import { useLiveAdherence, agencyHeadwayDelta, agencyTripSummary } from '../../hooks/useLiveAdherence';
@@ -10,6 +11,7 @@ import { shortenAgencyName, searchOverlayHidesPanel } from '../../utils/format';
 import { normalizeStopName, type StopEntry } from '../../apps/corridor-search';
 import { labelDirectionGroups, sortDirectionGroupIds } from '../../utils/directionLabel';
 import { routeCardDisplayHeadway, routeListDisplayHeadway } from '../../utils/effectiveHeadway';
+import { combineSuggestedRouteNames, suggestedRouteGroupKey } from '../../utils/routeSuggestion';
 import { dedupeCrossDirectionHeadsigns } from '../../utils/crossDirectionDedup';
 import { searchAgencyGroups, prepareAgencyGroupsForDisplay, SEARCH_AGENCY_DISPLAY_LIMIT, type AgencySearchGroup } from '../../utils/agencySearch';
 import {
@@ -131,6 +133,8 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   searchEnterRef,
   onSearchRouteHover,
 }) => {
+  const { colorVisionFriendly } = useColorVision();
+  const colorMode = colorVisionFriendly ? 'friendly' : 'default';
   const nonCorridorLayers = useMemo(() => {
     const result: Record<string, GeoJSON.FeatureCollection> = {};
     for (const [slug, fc] of Object.entries(layers)) {
@@ -275,31 +279,39 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
 
   // Compute notable routes fallback
   const notableRoutes = useMemo(() => {
-    const routes: Array<{ key: string; shortName: string; longName: string; agencyName: string; headway: number }> = [];
+    const routes = new Map<string, { key: string; shortName: string; longNames: string[]; agencyName: string; headway: number }>();
     for (const [slug, fc] of Object.entries(nonCorridorLayers)) {
       if (!fc?.features) continue;
       for (const f of fc.features) {
         const p = f.properties as ShapeProperties;
         if (!p.routeId || p.stopId || (p.day !== undefined && p.day !== currentDay)) continue;
         const facts = buildRouteFacts(p, slug);
-        const key = facts.key;
-        if (routes.some(r => r.key === key)) continue;
+        const groupKey = `${slug}::${suggestedRouteGroupKey(slug, facts.shortName)}`;
         const routeFeatures = fc.features
           .filter(candidate => {
             const candidateProps = candidate.properties as ShapeProperties;
             return !candidateProps.stopId &&
               (candidateProps.day === undefined || candidateProps.day === currentDay) &&
-              buildRouteFacts(candidateProps, slug).key === key;
+              buildRouteFacts(candidateProps, slug).key === facts.key;
           })
           .map(candidate => candidate.properties as ShapeProperties);
         const headway = routeListDisplayHeadway(routeFeatures, period) ?? 999;
         const shortName = facts.shortName;
         const longName = facts.longName || '';
         const agencyName = shortenAgencyName(facts.agencyName);
-        routes.push({ key, shortName, longName, agencyName, headway });
+        const existing = routes.get(groupKey);
+        if (!existing) {
+          routes.set(groupKey, { key: facts.key, shortName: slug === 'bart' ? suggestedRouteGroupKey(slug, shortName) : shortName, longNames: longName ? [longName] : [], agencyName, headway });
+        } else {
+          if (longName && !existing.longNames.includes(longName)) existing.longNames.push(longName);
+          if (headway < existing.headway) existing.headway = headway;
+        }
       }
     }
-    return routes.sort((a, b) => a.headway - b.headway).slice(0, 5);
+    return [...routes.values()]
+      .map(route => ({ ...route, longName: combineSuggestedRouteNames(route.longNames) ?? '' }))
+      .sort((a, b) => a.headway - b.headway)
+      .slice(0, 5);
   }, [nonCorridorLayers, period, currentDay]);
 
   const suggestedRoutes = useMemo(() => {
@@ -780,7 +792,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
           if (f) {
             const p = f.properties as any;
             const facts = buildRouteFacts(p, slug);
-            return { key: facts.key, shortName: facts.shortName, longName: facts.longName ?? '', agencyName: shortenAgencyName(facts.agencyName), color: getTierColor(p.tier) };
+            return { key: facts.key, shortName: facts.shortName, longName: facts.longName ?? '', agencyName: shortenAgencyName(facts.agencyName), color: getTierColor(p.tier, colorMode) };
           }
         }
         return { key, shortName: key, longName: '', agencyName: '', color: 'var(--text-dim)' };
@@ -1033,7 +1045,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                   {routeBaseFare != null ? (
                     <span
                       className="text-sm font-black px-2.5 py-0.5 rounded-full text-white"
-                      style={{ background: getFareColor(routeBaseFare) }}
+                      style={{ background: getFareColor(routeBaseFare, colorMode) }}
                     >
                       ${routeBaseFare.toFixed(2)}
                     </span>
@@ -1080,7 +1092,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                     {baseFare != null ? (
                       <span
                         className="text-sm font-black px-2 py-0.5 rounded-full text-white"
-                        style={{ background: getFareColor(baseFare) }}
+                        style={{ background: getFareColor(baseFare, colorMode) }}
                       >
                         ${baseFare.toFixed(2)}
                       </span>

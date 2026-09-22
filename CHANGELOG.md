@@ -6,11 +6,234 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
-- Regional and broad map views now expose a readiness signal when PMTiles route data is usable, so load measurements do not wait for deferred agency details.
-
-## [3.2.23] - 2026-09-22
-
+- Regional and broad map views now report readiness when PMTiles route data is available, so performance measurements do not wait for deferred agency details.
+- Benchmarking now recognizes completed loads on older public builds that lack the current performance mark.
+- Standardized filter buttons across agency, hidden-route, and degraded-feed lists.
+- Removed route counts from the Night Service and Frequent Service pills and simplified degraded-feed wording.
+- Degraded-feed explanations now use one shared, rider-facing vocabulary across settings and route details.
+- The About Atlas control now matches Settings and reliably toggles the information panel open or closed.
+- High contrast mode now applies to agency filter rows like the other filter dropdowns.
+- High contrast selections now preserve light-theme surfaces instead of looking like dark-mode rows.
+- Off switches now use a light track in the light theme instead of looking enabled or dark.
+- Mode filter options now appear selected when the default all-modes state is active.
+- Privacy & analytics now uses the same switch control as the main Settings panel, with clearer copy and a Privacy Policy link.
+- Public-mode localhost runs now explicitly disable beta-only live, history, and experimental features so local testing matches the public site.
 - Regional and broad map views now defer detailed agency downloads until city-level zoom, reducing unnecessary network requests while keeping PMTiles overview routes visible.
+- Added a local performance page for comparing public, beta, and dev load timings.
+- Loading progress now counts only the current map session's unique networks, so stale local requests cannot inflate the public-mode total.
+- Beta now includes an opt-in Data Saver mode that limits background agency loading and defers route details until selection.
+- Beta Settings now separate appearance, map, data and performance, and filter controls into clear sections.
+- Local public-mode previews now use the same agency visibility as production while keeping feature testing independent.
+- Match app controls to the same readable glass-pill surface used by the filter controls.
+- Weekly GTFS refreshes now retain last-good agency data and record stale sources instead of silently treating failed fallbacks as normal skips ([#528](https://github.com/Civic-Minds/Atlas/issues/528)).
+- PMTiles coverage checks now include each agency's center tile so small networks cannot be missed by sparse sampling.
+- Register exo Vallée du Richelieu so route 200 Saint-Hyacinthe–Longueuil can be published in Atlas.
+- Remove the unwanted focus box from agency search while preserving keyboard focus styling for controls.
+- Restore compact settings switches so unrelated accessibility styling does not enlarge controls.
+
+- Settings now loads and shows the hidden-route count alongside its review link.
+- Removed the unintended divider between the irregular-route and degraded-feed settings.
+- Removed the obsolete local Diagnostics table and its unused navigation surface.
+- Removed the divider between the appearance settings so the controls read as one group.
+- Tightened spacing between the appearance settings for a more compact panel.
+- Restored Frequent Service's normal filter-row layout and made app selection visually unambiguous.
+- Removed the empty app separator and unified bottom-map pill typography for clearer controls and attribution.
+- Unified browser agency visibility and feature route metadata so beta data and routes use the same access policy.
+- Centralized feature exposure so beta navigation, routes, data, and controls use one registry.
+- Unified Frequent Service's beta gate so production hides its navigation and redirects direct route access.
+- Restored Frequent Service's dedicated 15/30-minute and 7am–7pm/7am–midnight controls, map export access, and strict period filtering.
+- Selected routes now keep normal background-route visibility while the chosen route is highlighted.
+- Night Service route rows now open the normal route card and highlight the selected route on the map.
+- Combined BART’s north/south directional variants into one suggested route per line.
+
+- Repointed Avon Transit to its official 2026 GTFS source so the next refresh can restore current service dates.
+- Recovered OC Transpo’s current GTFS feed through October 2026 so Ottawa schedule data no longer relies on an expired catalog copy.
+- Recovered current GTFS sources for Athens, Davenport, El Monte, JFK AirTrain, Kenosha, Sioux Area Metro, StarMetro, and Waukesha, and separated discontinued DC Streetcar from the source-recovery queue.
+- Recovered the current North County Transit District GTFS source so NCTD no longer relies on an expired archive.
+- Recovered the City of Guelph’s current GTFS source so Guelph Transit no longer relies on an expired archive.
+- Recovered Blacksburg Transit’s current GTFS source so its Fall 2026 service remains available to Atlas.
+- Recovered EMTA’s current GTFS source through February 2027 so Erie schedule data no longer relies on an expired archive.
+- Recovered RTS Gainesville’s current Fall 2026 GTFS source through May 2027.
+- Recovered SacRT’s current GTFS source through January 2027 after its portal URL changed.
+- Weekly GTFS refreshes now fall back to current Mobility Database feeds when a configured source is dated or expired.
+- Beta users can turn on a persistent map legend from Appearance to keep frequency and route-state meanings visible while exploring.
+- Night Service now retains agencies skipped during feed refreshes, keeping its directory aligned with the routes shown on the map ([#516](https://github.com/Civic-Minds/Atlas/issues/516)).
+- Night Service and History now share compact research-panel guidance and the same search treatment.
+- Public History now requires 10 distinct years of snapshots, so short archives do not appear as if they offer meaningful long-term history.
+- Fixed the History pill staying hidden when a history-enabled agency's selected route was rendered from map tiles instead of the in-memory map data.
+- Reviewed the final two large-agency sources: Toledo’s current TARTA map names no frequent-service definition; Lansing’s current CATA map widget was unavailable, so its outdated static map was not used.
+- Reviewed three additional large North American transit systems: Des Moines and Grand Rapids publish frequency bands without naming a frequent tier; Rochester’s current map explicitly defines Frequent Service as every 15 minutes on weekday daytime routes.
+- Reviewed three additional large North American transit systems: Tampa, Albuquerque, and Oklahoma City; their current maps publish route types or frequency bands but no named frequent-service definition.
+- Reviewed four additional large North American transit systems: current Detroit, Charlotte, Broward County, and Hampton Roads maps do not name a frequent-service definition.
+- Reviewed seven additional North American system-map sources: Beaumont, Camarillo, San Luis Obispo, Corona, El Monte, FAST, and Foothill Transit; none names a frequent-service definition.
+- Reviewed four additional North American map sources: L’Inter and Arvin had no named frequent-service definition; current Banning and Basin static maps were unavailable.
+- Reviewed five additional Canadian agency sources: current official pages for exo Trains, REM, Saint-Jean-sur-Richelieu, Sherbrooke, and Saint-Hyacinthe did not expose accessible current static system maps.
+- Reviewed four additional Canadian map sources: STLévis had no named frequent-service definition; current static maps for three exo sectors were unavailable.
+- Reviewed four additional transit map sources: current SunLine and Moose Jaw maps had no named frequent-service definition; current Fort Smith and Rock Region Metro map sources were unavailable.
+- Reviewed two additional U.S. system maps: current Imperial Valley Transit and GTrans maps show their networks but name no frequent-service definition.
+- Reviewed two additional U.S. map sources: Merced’s system map is still listed as coming soon, and Humboldt’s current static map was not accessible.
+- Reviewed two additional U.S. map sources: AVTA’s current map had no named frequent-service definition; ACE’s current static map was unavailable.
+- Reviewed two additional U.S. map sources: County Connection’s current system map had no named frequent-service definition; Kern Transit’s current static map was unavailable.
+- Reviewed four additional U.S. map sources: current OCTA, Golden Gate Transit, and Norwalk Transit maps had no named frequent-service definition; LAVTA’s current static map was unavailable.
+- Reviewed four additional U.S. map sources: current BurbankBus and Metrolink maps had no agency-specific frequent definition; current Caltrain and Juneau map sources were unavailable.
+- Reviewed four additional Canadian map sources: UP Express, T3 Transit, and two exo sectors; UP Express publishes 15-minute departures, while the others do not name a frequent-service definition.
+- Reviewed four additional Canadian system maps: Owen Sound Transit, Ride CK, Railway City Transit, and Stratford Transit; none names a frequent-service definition.
+- Reviewed four additional Canadian agency sources, including Milton Transit; Niagara, Oakville, and Simcoe LINX were recorded as unavailable because no current system map could be accessed.
+- Reviewed four additional Canadian agency sources, including current Cornwall and Greater Sudbury route maps; Thunder Bay and Whitehorse were recorded as unavailable because no current system map could be accessed.
+- Reviewed three additional U.S. agency map sources; current maps for Anchorage People Mover, Mountain Line, and Sun Tran could not be accessed, so they were recorded as unavailable.
+- Reviewed three additional current U.S. system maps: AC Transit, Big Blue Bus, and North County Transit District; none names a frequent-service definition on the map.
+- Reviewed four additional U.S. agency map sources; RiverCities, Tillamook, Mount Adams, and Sunset Empire were recorded as unavailable because their official map pages could not be accessed.
+- Reviewed four additional U.S. transit map sources, including COAST and DART First State; Coralville and South Portland were recorded as unavailable because no current system map could be accessed.
+- Reviewed three additional U.S. system-map sources: LADOT/DASH, Cheyenne Transit, and Janesville Transit; none names a frequent-service definition on its map.
+- Reviewed three additional U.S. regional map sources, including DCTA and Kitsap Transit; NFTA-Metro was recorded as unavailable because no current system map could be accessed.
+- Reviewed three additional Canadian map sources, including Orillia and Montréal STM; Timmins was recorded as unavailable because its official map page was blocked during review.
+- Reviewed three additional U.S. system-map sources, including current Marin Transit and Glendale Beeline maps; YCAT was recorded as unavailable because its current page exposes only a 2014 map.
+- Reviewed six additional U.S. transit map sources, including CAT Savannah, JFK AirTrain, and The Kauai Bus, and recorded five no-definition findings plus one unavailable map.
+- Reviewed six additional U.S. system maps, including DASH, GRTC, JTA, and Valley Metro, and recorded three numeric definitions, two no-definition findings, and one unavailable map.
+- Reviewed six additional North American system maps, including Long Beach Transit, Bangor Community Connector, and Citilink, and recorded their definition or no-definition findings.
+- Reviewed five additional Canadian transit system maps, including RTC Québec and RTL Longueuil, and recorded their frequent-service definitions or no-definition findings.
+- Made the chart lab’s agency plot readable by giving every agency its own labeled row instead of stacking dots without a meaningful vertical axis.
+- Added a temporary Frequent Service chart lab to compare cumulative thresholds with agency-level definition distributions before choosing a story chart.
+- Restored the story introduction’s natural top placement so the title is not forced into a vertically centered hero.
+- Frequent Service story-map captions now stay inside the viewport instead of being clipped below the sticky map.
+- Reviewed Omaha Metro’s current network map, recording its route evidence without inventing a named frequent-service definition.
+- Reviewed RideKC’s current regional system map, adding its 12-15-minute Frequent Bus Service definition to the North American audit.
+- Reviewed current Trinity Metro and NORTA system maps, preserving Trinity Metro’s 15-minute numeric band separately from NORTA’s no-definition finding.
+- Reviewed current DART and METRO Houston system-map frequency bands, adding their explicit 15-minute numeric definitions to the North American audit.
+- Reviewed current Capital Metro and VIA frequency maps, adding their explicit 15-minute numeric definitions to the North American audit.
+- Reviewed Spokane Transit Authority’s current system map, adding its 15-minute weekday frequent-service definition to the North American audit.
+- Reviewed current Sound Transit and Pierce Transit maps, preserving Pierce’s qualitative “Frequent” definition separately from Sound Transit’s no-definition finding.
+- Reviewed London Transit and Transit Windsor’s current system maps, recording their route evidence without inventing named frequent-service definitions.
+- Reviewed Laval and Gatineau’s current system maps, recording their network evidence without inventing named frequent-service definitions.
+- Reviewed Guelph, Kingston, and Regina system maps, recording their network evidence without inventing named frequent-service definitions.
+- Reviewed GO Transit’s current regional system map, recording its network evidence without inventing a named frequent-service definition.
+- Reviewed Saskatoon Transit’s current system map, recording its network evidence without inventing a named frequent-service definition.
+- Reviewed Hamilton Street Railway’s current system map, recording its network evidence without inventing a named frequent-service definition.
+- Reviewed current Durham Region Transit and Grand River Transit system maps, recording their published route information without inventing named frequent-service definitions.
+- Reviewed Cincinnati Metro’s current regional system map, adding its 15-minute weekday-midday definition to the North American audit.
+- Reviewed Metro Transit’s current Twin Cities system map, adding its 30-minute weekday-midday frequent-service definition to the North American audit.
+- Reviewed GCRTA’s current system map and recorded its lack of a named frequency definition, expanding the North American audit to 138 agencies.
+- Reviewed OC Transpo, COTA, and York Region Transit, expanding the North American audit to 137 agencies while preserving numeric and qualitative definitions separately.
+- Corrected TransLink’s audit evidence to cite its official Frequent Transit Network system map rather than the supporting webpage.
+- Added TransLink and LA Metro to the North American frequency-definition audit.
+- Limited the Frequent Service story’s displayed research sample to Canada and the United States so it matches Atlas’s North American coverage.
+- Centralized the Frequent Service story’s displayed coverage findings and interpretation values in its research data module.
+- Clarified the story introduction to distinguish 127 North American agencies with usable map evidence from the 5 unavailable records in the 132-agency North American sample.
+- Added the population-coverage interpretation to the Frequent Service story so the threshold comparison explains its practical meaning.
+- Added population coverage evidence to the Frequent Service story, comparing 15- and 30-minute thresholds across Canada and the United States.
+- Fixed the Frequent Service story so filtering only removes routes as the explanation progresses.
+- Limited the public frequency story to Atlas-supported Canada and US agencies and corrected the research date to September 18–19, 2026; the broader international audit remains archived separately.
+- Deduplicated 14 agency aliases and completed the research sample at 100 unique verified agencies across 337 audit records, adding 15 unique agencies and correcting two existing classifications.
+- Added eight manually checked definitions from the UK, France, Australia, and the US; the audit now covers 333 agencies with 97 verified definitions.
+- Added six verified North American and Australia-Pacific definitions and corrected three previously under-classified European maps; the audit now covers 318 agencies with 89 verified definitions.
+- Added five manually checked US system maps and rider guides with explicit frequent-service definitions; the audit now covers 309 agencies with 79 verified definitions.
+- Added 25 manually checked agencies from Canada, the US, Japan, and South Korea; the audit now covers 304 agencies with 74 verified definitions.
+- Added 19 manually checked agencies from Canada, the US, Europe, India, and Bangladesh; the audit now covers 279 agencies with 74 verified definitions.
+- Added five manually checked European system maps from Portugal, France, and Italy; the audit now covers 260 agencies while keeping the verified-definition sample at 70.
+- Added five manually inspected Asia-Pacific metro maps—Bengaluru, Hyderabad, Chennai, Bangkok BTS, and Bangkok MRT—without treating their route maps as frequent-service definitions; the audit now covers 255 agencies with 70 verified definitions.
+- Added 12 unique map/guide reviews and upgraded Oakville’s current map evidence; the audit now covers 250 agencies with 70 verified definitions.
+- Fixed Night Service route flags so one branch cannot make a different route pattern appear to cover the full overnight window.
+- Added 10 manually checked international system maps from Asia-Pacific and Europe; the audit now covers 238 agencies while keeping the verified-definition sample at 68.
+- Added five current European system-map reviews—Munich, Hamburg, Frankfurt, Linz, and Marseille—with generic intervals rejected as frequency definitions.
+- Added six current map reviews and corrected AC Transit’s 2026 frequency legend; the audit now covers 228 agencies with 68 verified definitions.
+- Added seven manually checked agencies, including Rome, Turin, and Timmins; the audit now covers 222 agencies with 66 verified definitions.
+- Added 12 more manually checked agencies from Canada, Europe, and Asia-Pacific; the audit now covers 215 agencies while keeping the verified-definition count at 63.
+- Added five more map/guide checks, including DASH Alexandria’s explicit 15-minute definition; the audit now covers 203 agencies with 63 verified definitions.
+- Added 14 more manually checked agencies, including Burlington, Cincinnati, and Gold Coast; the verified sample now has 62 definitions, with interval-only sources kept separate.
+- Added 13 more manually checked agencies to the frequency audit, including Seattle, Dublin, and Rotterdam’s named frequent-service categories; the verified sample now has 59 definitions.
+- Expanded the manually reviewed sample to 171 agencies and 56 verified definitions, adding map/guide evidence from Canada, the United States, Australia, and Europe/Asia while keeping unsupported sources out of the totals.
+- Added 92 manually reviewed agencies to the frequency research audit, raising the verified-definition sample from 17 to 50 while keeping unnamed and unavailable maps separate.
+- Split the Frequent Service map and explainer into separate routes: the map is at `/research/frequent-service` and the story is at `/research/frequent-service/story`.
+- Verified SDMTS’s map wording and preserved its 60-minute regular-service note without misclassifying it as frequent service.
+- Verified three additional BC Transit guides without adding unsupported frequent-service thresholds.
+- Verified five more BC Transit maps and guides, including Kelowna’s published 15–30-minute Frequent Route range.
+- Verified Brandon and Fredericton maps without adding unsupported frequent-service definitions.
+- Replaced Whistler’s invalid archived guide with the valid official 12-page guide and verified its map has no named frequent definition.
+- Verified Codiac, Yellowknife, Barrie, and Belleville maps and corrected them from unavailable to no named frequent definition.
+- Verified UTA’s 15-minute Frequent service table and Fort McMurray’s current network map.
+- Verified Winnipeg’s current map legend and corrected the remaining source links for interactive-map-only agencies.
+- Reframed the research story as a plain-English lesson about coverage, service span, frequency, and the cost of missing a vehicle.
+- Verified VTA’s map-based qualitative Frequent Bus label and restored its missing source link.
+- Reworded the story-map cards so each filtering step explains what it means for riders.
+- Verified TriMet’s current map and retained its 15-minute Frequent Service and 12-minute Frequent Express tiers.
+- Corrected the Sound Transit and Miami source links so each audit record points to its own map.
+- Verified Sound Transit’s current service map and confirmed it has no named frequent-service definition.
+- Corrected LA Metro’s recorded wording to match the map’s 15-minute weekday Frequent Service Network label.
+- Verified and archived MBTA’s 2026 Frequent Bus Service map with its 15-minute definition.
+- Rewrote the research introduction around the rider’s real question: how long will the next vehicle take?
+- Verified MiWay’s current weekday map and archived it; it has route-service types but no named frequent definition.
+- Reduced the empty space after the scroll-driven story map so the next research section arrives sooner.
+- Added more bottom breathing room to the story-map caption so it matches the card’s visual padding.
+- Preserved Miami’s 10-minute-or-less map band as general frequency evidence without misclassifying it as a named frequent definition.
+- Corrected CTA to its 10-minute Frequent Network definition with weekday and weekend service spans.
+- Added a rapid hard-cut montage of tightly cropped excerpts from 12 real agency-published system-map pages to make the research introduction feel grounded in the source material.
+- Added an editorial collage prototype beside the montage so the two source-led introductions can be compared before choosing one.
+- Corrected Edmonton’s map finding to the published 15-minute Frequent Route definition.
+- Allowed official rider guides as a labeled evidence source alongside system maps for the manual frequency audit.
+- Corrected the first map-audit findings after visual review: TTC is no-definition, while STM is qualitative-only.
+- Reframed the research introduction around the everyday rider impact of frequent, reliable transit.
+- Kept the story map narrative below the opening viewport so the research introduction is read first.
+- Made the research story map span the viewport and fit its available height responsively.
+- Reset the Frequent Service research audit to a manually verified, map-only 50-agency sample after removing the invalid bulk-generated audit.
+- Removed the separate agency example tabs; agency examples will be shown through map states instead.
+- Moved the sticky research map below the global header so it no longer overlaps the Atlas branding.
+- Removed the extra published-definition label from the story map card.
+- Made the research page header opaque so scrolling text cannot show through it.
+- Matched the research Method section to the story’s readable content width.
+- Rebalanced the story map layout so the explanatory copy stays visible beside the map at narrower desktop widths.
+- Made the research story map full-width with overlay narrative panels.
+- Aligned the first narrative panel with the map corner and removed the redundant map-stage pill.
+- Simplified the map caption by removing the redundant “Atlas comparison” label.
+- Kept each story-stage narrative panel in the same top-left position while the map changes underneath.
+- Removed the 15- and 30-minute selector from the story map narrative panel.
+- Kept the story map pinned while switching the final 15- and 30-minute comparisons so the network does not jump with the scroll position.
+- Stabilized the story-map transition so every stage keeps the same geography, line weight, and persistent network context while the active routes fade between states.
+- Simplified the story-map captions so the scroll narrative is easier to follow.
+- Added a larger Toronto network story that progressively narrows from all routes to regular daytime and 15- or 30-minute service as readers scroll.
+- Kept published frequency ranges from appearing as false standalone thresholds in the research chart.
+- Removed the misleading featured-sources list and decorative evidence cards from the research story.
+- Made the research Method’s review date explicit instead of burying it in the sample description.
+- Constrained the research story body and Method text to the same readable line length as the rest of the page.
+- Corrected the research classifier so generic slower-service standards are not presented as named frequent definitions, and added the actual 60-minute examples.
+- Made the Frequent Service research story interactive: select a threshold and agency to compare the timing, scope, and service context behind the number.
+- Corrected the Frequent Service story chart to use each agency's slowest published frequent-service period instead of misleading peak-period values.
+- Simplified the Frequent Service examples into one-column editorial blocks with only the city, takeaway, explanation, and evidence line.
+- Consolidated Frequent Service story source links into one closing Sources section so the examples read as a story instead of a chain of outbound links.
+- Made the Frequent Service story methodology readable as a real closing section instead of tiny footer text.
+- Removed the unnecessary numbered context cards from the Frequent Service story and replaced them with a direct explanation.
+- Reordered the frequent-service threshold chart numerically and highlighted the most common 15-minute value so the graph reads as a scale.
+- Reworked the Frequent Service story examples into a readable editorial sequence instead of a dashboard-like card grid.
+- Added a guided Frequent Service research story with source-backed North American examples, threshold context, and a handoff into the interactive map.
+- Added a reproducible analysis of the 500-agency frequent-service catalog, separating named definitions from broader numeric frequency tiers so Atlas can make a source-backed sample-specific research claim.
+- Added a beta-only Frequent Service research view for comparing 15- and 30-minute service across selected days and time spans.
+- Frequent Service research now reuses the existing mode filter so users can compare frequency by bus, rail, subway, or other modes.
+- Frequent Service research exposes its two frequency thresholds inline for faster comparison.
+- Frequent Service's 30-minute view now distinguishes ≤15-minute routes from the 16–30-minute group using the shared frequency colours and line weights.
+- Frequent Service research exposes its two service spans inline for faster comparison.
+- Frequent Service research keeps the shared Settings panel available for route and feed visibility controls.
+- Fixed a misleading “outside the active frequency filter” notice when selecting routes from the Frequent Service research map.
+- Improved enhanced colour distinction with a shared, higher-contrast palette for frequency tiers across map views.
+- Improved filter button readability by keeping inactive minutes and time-period options at normal text contrast.
+- Made selected minutes and time-period options visually obvious with a filled high-contrast state.
+- Kept the regular filter appearance by reserving the filled high-contrast button state for Enhanced colour distinction mode.
+- Applied the same normal-versus-enhanced button treatment inside filter menus for consistent controls.
+- Added a colour-blind friendly appearance setting with a clearer route palette and frequency-based line weights.
+- Clarified route cards when a direction has no service in the selected time period.
+
+- Made selected-route dimming more visible in High Contrast mode so the focus state does not rely on colour alone.
+
+- Improved accessibility with stronger secondary-text contrast, visible keyboard focus, larger settings toggles, reduced-motion support, and clearer Settings semantics.
+- Centralized button and status colours so High contrast mode applies consistently across Atlas screens while normal mode keeps the standard appearance.
+- Standardized screen-level controls on the shared button styles so future High contrast updates cannot drift between views.
+- Extended High contrast colours to selected rows, secondary filters, report actions, and Night Service.
+- Google Analytics no longer loses the initial page view while privacy consent and the tracking script are initializing.
+- Fixed map route selection showing duplicate Calgary lines when the feed uses multiple internal IDs for one visible route.
+- Night Service and History now share compact research-panel guidance and the same search treatment.
+- Night Service now retains agencies skipped during feed refreshes, keeping its directory aligned with the routes shown on the map ([#516](https://github.com/Civic-Minds/Atlas/issues/516)).
+- Night Service now builds its visible directory from the same route features as the map, so stale index data cannot hide agencies that are shown.
+- Fixed the map export control spacing by grouping it with the zoom and location controls.
+- Added native image sharing where the browser supports it, while keeping PNG download available everywhere.
+- Added beta map-image export with stronger Atlas branding and full CARTO/OpenStreetMap attribution for shareable 1600×900 PNGs.
 - Added a visible Feedback email link beside the map attribution for launch-period comments and feature requests.
 - Calgary overnight routes starting near the end of the window (such as LRT 201 and late-night buses) no longer pass as frequent overnight routes on the map or in the filter, and their cards now indicate limited service for routes running only part of the period instead of borrowing daytime frequencies ([#507](https://github.com/Civic-Minds/Atlas/issues/507)).
 - Calgary MAX route cards now show the terminal name without repeating the MAX service branding.
@@ -29,6 +252,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Removed the "10+ years of snapshots" internal detail from History's "Explore" section header.
 - Fixed History's agency list not scrolling — the panel had no height limit or scroll behavior, so it just got cut off instead of letting you scroll to agencies further down.
 - Replaced History's "Explore"/"Recent" section labels (sounded like "recently added") with a real Filter control — the agency list is one flat list by default, and the filter lets you narrow to just full- or partial-history agencies using the same plain-language wording already used for the rider-facing badge elsewhere.
+- History now shows how BART's actual trip time has changed year to year, on the routes where the stations and alignment stayed the same long enough to compare fairly (pilot for a future rail-wide rollout).
 
 ## [3.2.22] - 2026-09-03
 

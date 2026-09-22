@@ -113,7 +113,7 @@ We can rename later.
 ## Related Reading
 - [Product Roadmap](../PRODUCT.md)
 - [Technical Roadmap](../TECHNICAL.md)
-- [Research](../../RESEARCH.md) (especially evidence gaps for planning)
+- [Research](../../product/RESEARCH.md) (especially evidence gaps for planning)
 - [History app work](https://github.com/Civic-Minds/Atlas) and recent geometry + scrubber improvements
 
 ---

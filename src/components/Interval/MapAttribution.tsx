@@ -1,7 +1,7 @@
 import { MAP_BADGE, MAP_BADGE_LABEL, Z_PANEL } from '../../styles';
 
 const ATTRIB_LINK =
-  'text-[10px] font-normal leading-none text-[var(--text-dim)] no-underline hover:text-[var(--text-primary)]';
+  `${MAP_BADGE_LABEL} text-[var(--text-dim)] no-underline hover:text-[var(--text-primary)]`;
 
 const FULL_ATTRIBUTION =
   'Map tiles by CARTO, under CC BY 3.0. Data by OpenStreetMap, under ODbL.';
@@ -17,12 +17,12 @@ export function MapAttribution() {
     >
       <a
         href={feedbackHref}
-        className={`${MAP_BADGE} h-8 text-[10px] font-bold text-[var(--text-muted)] no-underline hover:text-[var(--text-primary)]`}
+        className={`${MAP_BADGE} h-8 ${MAP_BADGE_LABEL} no-underline hover:text-[var(--text-primary)]`}
       >
         Feedback
       </a>
       <div className={`${MAP_BADGE} h-8`}>
-        <p className={`${MAP_BADGE_LABEL} whitespace-nowrap leading-none`}>
+        <p className={`${MAP_BADGE_LABEL} whitespace-nowrap`}>
           <a
             href="https://www.openstreetmap.org/copyright"
             target="_blank"

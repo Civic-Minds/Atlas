@@ -2,13 +2,13 @@ import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { ChevronLeft, ChevronRight, X, Search, TrendingUp } from 'lucide-react';
 import { useHistoryMapOverlay } from '../context/HistoryMapOverlay';
 import { R2_PUBLIC_URL, type HeadwayByPeriod } from '../../shared/config';
-import { FLOATING_CARD, PANEL_ENTER, PANEL_ENTER_TOP, TRANSITION_SLOW, SEARCH_PILL, SEARCH_FIELD, LIST_ROW, CHIP_BASE, Z_PANEL, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH } from '../styles';
+import { FLOATING_CARD, PANEL_ENTER, PANEL_ENTER_TOP, TRANSITION_SLOW, SEARCH_PILL, SEARCH_FIELD, LIST_ROW, CHIP_BASE, Z_PANEL, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH, CONTROL_ACTIVE, CONTROL_INACTIVE } from '../styles';
 import RouteListRow from '../components/RouteListRow';
 import { shortenAgencyName } from '../utils/format';
+import { useColorVision } from '../context/ColorVisionContext';
 import {
   agencyHistoryTier,
   agencyQualifiesForHistory,
-  historyTierAgencyLabel,
   type HistoryTier,
 } from '../../shared/historyEligibility';
 
@@ -21,10 +21,19 @@ export interface RouteSnapshot {
   note?: string;
 }
 
+export interface RouteTripDurationSummary {
+  firstLabel: string;
+  firstMinutes: number;
+  lastLabel: string;
+  lastMinutes: number;
+}
+
 export interface RouteHistoryEntry {
   routeShortName: string;
   routeName: string;
   snapshots: RouteSnapshot[];
+  /** Only present when the route's stops/alignment were identical across the compared range. */
+  tripDuration?: RouteTripDurationSummary;
 }
 
 export interface AgencyHistory {
@@ -102,6 +111,7 @@ function RouteHistoryCard({
   region: string;
   onBack: () => void;
 }) {
+  const { colorVisionFriendly } = useColorVision();
   const [showChart, setShowChart] = useState(false);
   const { newestFirst: snaps, oldestFirst: chartSnaps } = routeHistorySnapshots(route);
 
@@ -146,7 +156,7 @@ function RouteHistoryCard({
   const linePath = 'M ' + points.map(p => `${p.x} ${p.y}`).join(' L ');
   const fillPath = `${linePath} L ${points[points.length - 1].x} ${height - 18} L ${points[0].x} ${height - 18} Z`;
 
-  const lineColor = worse ? '#ef4444' : better ? '#10b981' : '#9ca3af';
+  const lineColor = worse ? (colorVisionFriendly ? '#c44516' : '#ef4444') : better ? (colorVisionFriendly ? '#009e73' : '#10b981') : '#9ca3af';
   // x-axis label visibility: always show first and last; intermediate only if they have clearance
   const labelClearance = 34;
   const labelIndices = new Set<number>([0, points.length - 1]);
@@ -182,7 +192,7 @@ function RouteHistoryCard({
           {snaps.length >= 2 && (
             <button
               onClick={() => setShowChart(v => !v)}
-              className={`w-7 h-7 flex items-center justify-center rounded-full transition-colors shrink-0 ${showChart ? 'bg-[var(--accent)] text-white' : 'hover:bg-[var(--bg-btn-hover)] text-[var(--text-dim)] hover:text-[var(--text-primary)]'}`}
+              className={`w-7 h-7 flex items-center justify-center rounded-full border transition-colors shrink-0 ${showChart ? CONTROL_ACTIVE : 'hover:bg-[var(--bg-btn-hover)] text-[var(--text-dim)] hover:text-[var(--text-primary)]'}`}
               aria-label="Toggle chart"
             >
               <TrendingUp className="w-3.5 h-3.5" />
@@ -252,7 +262,7 @@ function RouteHistoryCard({
             const hw = snapHeadway(snap);
             const isLatest = i === 0;
             const hwColor = isLatest
-              ? worse ? 'text-red-500' : better ? 'text-green-500' : 'text-[var(--text-primary)]'
+              ? worse ? 'text-[var(--status-negative)]' : better ? 'text-[var(--status-positive)]' : 'text-[var(--text-primary)]'
               : 'text-[var(--text-dim)]';
             const delta = i < snaps.length - 1 ? hw - snapHeadway(snaps[i + 1]) : null;
             return (
@@ -262,7 +272,7 @@ function RouteHistoryCard({
                 </span>
                 <div className="flex items-center gap-2">
                   {delta !== null && delta !== 0 && (
-                    <span className={`text-[9px] font-bold ${delta > 0 ? 'text-red-400' : 'text-green-400'}`}>
+                    <span className={`text-[9px] font-bold ${delta > 0 ? 'text-[var(--status-negative)]' : 'text-[var(--status-positive)]'}`}>
                       {delta > 0 ? `+${delta}` : `${delta}`}
                     </span>
                   )}
@@ -274,10 +284,21 @@ function RouteHistoryCard({
         </div>
 
         {summary && (
-          <div className={`mx-4 mt-3 mb-4 rounded-xl px-3 py-2.5 ${summary.worse ? 'bg-red-500/10' : 'bg-green-500/10'}`}>
-            <p className={`text-xs font-bold leading-tight ${summary.worse ? 'text-red-500' : 'text-green-500'}`}>{summary.text}</p>
+          <div className={`mx-4 mt-3 mb-4 rounded-xl px-3 py-2.5 ${summary.worse ? 'bg-[var(--status-negative-bg)]' : 'bg-[var(--status-positive-bg)]'}`}>
+            <p className={`text-xs font-bold leading-tight ${summary.worse ? 'text-[var(--status-negative)]' : 'text-[var(--status-positive)]'}`}>{summary.text}</p>
             <p className="text-[10px] text-[var(--text-muted)] mt-0.5">{summary.subtext}</p>
             <p className="text-[10px] text-[var(--text-dim)] mt-1">Latest archived snapshot: {last.label}</p>
+          </div>
+        )}
+
+        {route.tripDuration && (
+          <div className={`mx-4 ${summary ? '' : 'mt-3'} mb-4 rounded-xl px-3 py-2.5 bg-[var(--bg-app)] border border-[var(--border-primary)]`}>
+            <p className="text-xs font-bold leading-tight text-[var(--text-primary)]">
+              Trip time: {route.tripDuration.firstMinutes} min ({route.tripDuration.firstLabel}) → {route.tripDuration.lastMinutes} min ({route.tripDuration.lastLabel})
+            </p>
+            <p className="text-[10px] text-[var(--text-dim)] mt-1">
+              End-to-end scheduled time on a representative weekday trip. Only shown when the route's stops and alignment haven't changed between these years.
+            </p>
           </div>
         )}
       </div>
@@ -684,8 +705,8 @@ export default function History({ active, initialAgencySlug, onInfoOpen, query, 
                     onClick={() => setDepthFilterOpen(v => !v)}
                     className={`relative h-8 px-3.5 flex items-center justify-center ${CHIP_BASE} text-xs font-bold transition-colors whitespace-nowrap ${
                       depthFilter !== 'all'
-                        ? 'border-[var(--accent-border)] text-[var(--accent)]'
-                        : 'border-[var(--border-primary)] text-[var(--text-primary)] hover:text-[var(--accent)]'
+                        ? CONTROL_ACTIVE
+                        : CONTROL_INACTIVE
                     }`}
                   >
                     Filter
@@ -695,17 +716,17 @@ export default function History({ active, initialAgencySlug, onInfoOpen, query, 
                   </button>
                   {depthFilterOpen && (
                     <div className={`absolute top-10 right-4 ${FLOATING_CARD} p-2 ${PANEL_ENTER_TOP} flex flex-col gap-1 w-40 z-10`}>
-                      {(['all', 'explore', 'recent'] as const).map(opt => (
+                      {(['all', 'explore'] as const).map(opt => (
                         <button
                           key={opt}
                           onClick={() => { setDepthFilter(opt); setDepthFilterOpen(false); }}
                           className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-[11px] font-bold transition-all border text-left min-w-0 ${
                             depthFilter === opt
-                              ? 'bg-[var(--accent-bg)] border-[var(--accent-border)] text-[var(--accent)]'
-                              : 'bg-[var(--bg-btn)] border-[var(--border-primary)] text-[var(--text-dim)] hover:text-[var(--text-primary)]'
+                              ? CONTROL_ACTIVE
+                              : CONTROL_INACTIVE
                           }`}
                         >
-                          {opt === 'all' ? 'All agencies' : historyTierAgencyLabel(opt)}
+                          {opt === 'all' ? 'All agencies' : '10+ years'}
                         </button>
                       ))}
                     </div>

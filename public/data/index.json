@@ -30,7 +30,7 @@
         "status": "review",
         "score": 90,
         "reasons": [
-          "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "1 route shows different frequencies at some stops than its overall schedule suggests."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -118,7 +118,7 @@
         "status": "review",
         "score": 80,
         "reasons": [
-          "2 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "2 routes show different frequencies at some stops than their overall schedules suggest."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -190,7 +190,7 @@
         "status": "review",
         "score": 80,
         "reasons": [
-          "2 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+          "2 route lines had unusual geometry and were adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -284,8 +284,8 @@
         "status": "review",
         "score": 60,
         "reasons": [
-          "2 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
-          "2 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "2 route lines had unusual geometry and were adjusted before display.",
+          "2 routes show different frequencies at some stops than their overall schedules suggest."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -338,8 +338,8 @@
         "status": "degraded",
         "score": 40,
         "reasons": [
-          "5 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
-          "12 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "5 route lines had unusual geometry and were adjusted before display.",
+          "12 routes show different frequencies at some stops than their overall schedules suggest."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -400,9 +400,9 @@
         43.94,
         -79.75
       ],
-      "feedUrl": "http://guelph.ca/uploads/google/google_transit.zip",
-      "lastFeedExpiry": "20250830",
-      "lastFeedVersion": "2025 May _20250801",
+      "feedUrl": "https://drive.usercontent.google.com/download?id=1SsCgQ0agO_EONavJoOuBPMlbcu2VcUs4&export=download",
+      "lastFeedExpiry": "20270102",
+      "lastFeedVersion": "",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-guelph-transit-gtfs-1300.zip?alt=media",
       "lastRefreshedAt": "20260811",
       "lastFeedCheckAt": "20260907",
@@ -535,7 +535,7 @@
         "status": "review",
         "score": 90,
         "reasons": [
-          "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "1 route shows different frequencies at some stops than its overall schedule suggests."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -698,10 +698,11 @@
         45.52,
         -75.343
       ],
-      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-ottawa-carleton-regional-transit-commission-oc-transpo-gtfs-2154.zip?alt=media",
-      "lastFeedExpiry": "20260829",
-      "lastFeedVersion": "S1000499-",
-      "lastRefreshedAt": "2026-08-07",
+      "feedUrl": "https://oct-gtfs-emasagcnfmcgeham.z01.azurefd.net/public-access/GTFSExport.zip",
+      "lastFeedExpiry": "20261018",
+      "lastFeedVersion": "S1000518",
+      "mdbFeedUrl": "https://oct-gtfs-emasagcnfmcgeham.z01.azurefd.net/public-access/GTFSExport.zip",
+      "lastRefreshedAt": "20260919",
       "cities": [
         "Nepean, Ontario",
         "Orléans, Ontario",
@@ -713,7 +714,7 @@
         "Hull, Quebec",
         "Gatineau, Quebec"
       ],
-      "lastFeedCheckAt": "20260907",
+      "lastFeedCheckAt": "20260919",
       "expiredFeedCheckCount": 1,
       "expiredFeedCheckSince": "20260622",
       "expiredFeedCheckExpiry": "20260829",
@@ -849,7 +850,7 @@
         "status": "review",
         "score": 90,
         "reasons": [
-          "1 map line was repaired — Atlas fixed unusual route geometry before displaying it."
+          "1 route line had unusual geometry and was adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -927,7 +928,7 @@
         "status": "review",
         "score": 70,
         "reasons": [
-          "3 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+          "3 route lines had unusual geometry and were adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -1050,7 +1051,7 @@
         "status": "review",
         "score": 80,
         "reasons": [
-          "2 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+          "2 route lines had unusual geometry and were adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -1101,8 +1102,8 @@
         "status": "degraded",
         "score": 40,
         "reasons": [
-          "4 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
-          "7 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "4 route lines had unusual geometry and were adjusted before display.",
+          "7 routes show different frequencies at some stops than their overall schedules suggest."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -1150,8 +1151,8 @@
         "status": "review",
         "score": 80,
         "reasons": [
-          "1 map line was repaired — Atlas fixed unusual route geometry before displaying it.",
-          "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "1 route line had unusual geometry and was adjusted before display.",
+          "1 route shows different frequencies at some stops than its overall schedule suggests."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -1245,7 +1246,7 @@
         "status": "review",
         "score": 70,
         "reasons": [
-          "6 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "6 routes show different frequencies at some stops than their overall schedules suggest."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -1374,7 +1375,7 @@
         47,
         -71
       ],
-      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-reseau-de-transport-de-la-capitale-gtfs-757.zip?alt=media",
+      "feedUrl": "https://cdn.rtcquebec.ca/Site_Internet/DonneesOuvertes/googletransit.zip",
       "lastFeedExpiry": "20260821",
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-08-07",
@@ -1469,7 +1470,7 @@
         "status": "review",
         "score": 90,
         "reasons": [
-          "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "1 route shows different frequencies at some stops than its overall schedule suggests."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -1514,7 +1515,7 @@
         "status": "review",
         "score": 70,
         "reasons": [
-          "8 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+          "8 route lines had unusual geometry and were adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -1618,7 +1619,7 @@
         "status": "review",
         "score": 80,
         "reasons": [
-          "2 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "2 routes show different frequencies at some stops than their overall schedules suggest."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -1661,7 +1662,7 @@
         "status": "review",
         "score": 70,
         "reasons": [
-          "5 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+          "5 route lines had unusual geometry and were adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -1909,6 +1910,56 @@
       "timezone": "America/Montreal"
     },
     {
+      "slug": "exo-vallee-richelieu",
+      "name": "exo (Vallée du Richelieu)",
+      "region": "Quebec",
+      "center": [
+        45.54,
+        -73.24
+      ],
+      "bbox": [
+        45.4,
+        -73.6,
+        45.7,
+        -72.9
+      ],
+      "feedUrl": "https://exo.quebec/xdata/citvr/google_transit.zip",
+      "lastFeedExpiry": "20270103",
+      "lastFeedVersion": null,
+      "gtfsFares": true,
+      "cities": [
+        "Saint-Hyacinthe, Quebec",
+        "Longueuil, Quebec",
+        "Beloeil, Quebec",
+        "McMasterville, Quebec",
+        "Mont-Saint-Hilaire, Quebec",
+        "Saint-Basile-le-Grand, Quebec"
+      ],
+      "timezone": "America/Montreal",
+      "lastFeedCheckAt": "20260922",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20270103",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 34
+        },
+        "checkedAt": "2026-09-22"
+      },
+      "lastRefreshedAt": "2026-09-22",
+      "feedRefreshStatus": "current",
+      "feedRefreshError": null,
+      "feedRefreshErrorAt": null,
+      "feedRefreshRetryCount": 0
+    },
+    {
       "slug": "bc-fraser-valley",
       "name": "BC Transit (Fraser Valley)",
       "region": "British Columbia",
@@ -1937,8 +1988,8 @@
         "status": "review",
         "score": 60,
         "reasons": [
-          "16 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
-          "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "16 route lines had unusual geometry and were adjusted before display.",
+          "1 route shows different frequencies at some stops than its overall schedule suggests."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -2013,7 +2064,7 @@
         "status": "review",
         "score": 80,
         "reasons": [
-          "2 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "2 routes show different frequencies at some stops than their overall schedules suggest."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -2067,8 +2118,8 @@
         "score": 30,
         "reasons": [
           "1 schedule-data warning — Atlas found a minor issue while reading the schedule.",
-          "38 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
-          "5 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "38 route lines had unusual geometry and were adjusted before display.",
+          "5 routes show different frequencies at some stops than their overall schedules suggest."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -2155,7 +2206,7 @@
         "status": "review",
         "score": 80,
         "reasons": [
-          "2 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "2 routes show different frequencies at some stops than their overall schedules suggest."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -2224,7 +2275,7 @@
         50.52,
         -104.44
       ],
-      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-saskatchewan-city-of-regina-gtfs-715.zip?alt=media",
+      "feedUrl": "https://opengis.regina.ca/reginagtfs/google_transit.zip",
       "lastFeedExpiry": "20260822",
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-08-10",
@@ -2244,7 +2295,7 @@
         52.1286,
         -106.648
       ],
-      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-saskatchewan-saskatoon-transit-gtfs-716.zip?alt=media",
+      "feedUrl": "https://apps5.saskatoon.ca/data/gtfs/google_transit.zip",
       "region": "Saskatchewan",
       "bbox": [
         52.03,
@@ -2252,7 +2303,7 @@
         52.24,
         -106.5
       ],
-      "lastFeedExpiry": "20250830",
+      "lastFeedExpiry": "20270102",
       "lastFeedVersion": null,
       "lastRefreshedAt": "20260811",
       "cities": [
@@ -2283,20 +2334,34 @@
         44.9,
         -63.27
       ],
-      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-nova-scotia-halifax-transit-gtfs-734.zip?alt=media",
-      "lastFeedExpiry": "20260823",
-      "lastFeedVersion": "2026_05_May_20260428",
-      "lastRefreshedAt": "2026-08-07",
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-734/mdb-734-202608240120/mdb-734-202608240120.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-734/mdb-734-202608240120/mdb-734-202608240120.zip",
+      "lastFeedExpiry": "20261129",
+      "lastFeedVersion": "2026_08_August_20260806",
+      "lastRefreshedAt": "2026-09-17",
       "cities": [
         "Dartmouth, Nova Scotia",
         "Halifax, Nova Scotia",
         "Lower Sackville, Nova Scotia"
       ],
-      "lastFeedCheckAt": "20260907",
-      "expiredFeedCheckCount": 2,
-      "expiredFeedCheckSince": "20260622",
-      "expiredFeedCheckExpiry": "20260823",
-      "timezone": "America/Halifax"
+      "lastFeedCheckAt": "20260917",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20261129",
+      "timezone": "America/Halifax",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 361
+        },
+        "checkedAt": "2026-09-17"
+      }
     },
     {
       "slug": "codiac",
@@ -2329,7 +2394,7 @@
         "status": "review",
         "score": 90,
         "reasons": [
-          "1 map line was repaired — Atlas fixed unusual route geometry before displaying it."
+          "1 route line had unusual geometry and was adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -2465,7 +2530,7 @@
         "status": "review",
         "score": 90,
         "reasons": [
-          "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "1 route shows different frequencies at some stops than its overall schedule suggests."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -2513,7 +2578,7 @@
         "status": "review",
         "score": 90,
         "reasons": [
-          "1 map line was repaired — Atlas fixed unusual route geometry before displaying it."
+          "1 route line had unusual geometry and was adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -2670,7 +2735,7 @@
         "status": "review",
         "score": 90,
         "reasons": [
-          "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "1 route shows different frequencies at some stops than its overall schedule suggests."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -2691,9 +2756,9 @@
         42.2808,
         -83.743
       ],
-      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-michigan-ann-arbor-area-transportation-authority-theride-gtfs-415.zip?alt=media",
-      "lastFeedExpiry": "20260822",
-      "lastFeedVersion": null,
+      "feedUrl": "https://www.theride.org/sites/default/files/google/google_transit.zip",
+      "lastFeedExpiry": "20270130",
+      "lastFeedVersion": "S1000302",
       "lastRefreshedAt": "2026-08-10",
       "cities": [
         "Ann Arbor, Michigan",
@@ -2971,7 +3036,7 @@
         "status": "review",
         "score": 80,
         "reasons": [
-          "2 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "2 routes show different frequencies at some stops than their overall schedules suggest."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -3058,9 +3123,10 @@
         42.082,
         -80.0658
       ],
-      "feedUrl": "http://data.trilliumtransit.com/gtfs/eriemta-pa-us/eriemta-pa-us.zip",
-      "lastFeedExpiry": "20231101",
-      "lastFeedVersion": "UTC: 22-Jun-2023 22:03",
+      "feedUrl": "https://emta.availtec.com/InfoPoint/gtfs-zip.ashx",
+      "lastFeedExpiry": "20270213",
+      "lastFeedVersion": "20260910",
+      "mdbFeedUrl": "https://emta.availtec.com/InfoPoint/gtfs-zip.ashx",
       "lastRefreshedAt": "20260811",
       "websiteUrl": "http://www.ride-the-e.com/",
       "cities": [
@@ -3159,7 +3225,7 @@
         "status": "review",
         "score": 70,
         "reasons": [
-          "16 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+          "16 route lines had unusual geometry and were adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -3255,8 +3321,8 @@
         "status": "degraded",
         "score": 40,
         "reasons": [
-          "71 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
-          "3 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "71 route lines had unusual geometry and were adjusted before display.",
+          "3 routes show different frequencies at some stops than their overall schedules suggest."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -3303,8 +3369,8 @@
         "status": "degraded",
         "score": 40,
         "reasons": [
-          "22 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
-          "13 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "22 route lines had unusual geometry and were adjusted before display.",
+          "13 routes show different frequencies at some stops than their overall schedules suggest."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -3345,7 +3411,7 @@
         "status": "review",
         "score": 80,
         "reasons": [
-          "2 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "2 routes show different frequencies at some stops than their overall schedules suggest."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -3366,7 +3432,7 @@
         42.262,
         -71.802
       ],
-      "feedUrl": "http://data.trilliumtransit.com/gtfs/wrta-ma-us/wrta-ma-us.zip",
+      "feedUrl": "https://gtfs.wrta.cadavl.com/WRTA/GTFS/GTFS_WRTA.zip",
       "lastFeedExpiry": "20260811",
       "lastFeedVersion": null,
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-massachusetts-worcester-regional-transit-authority-wrta-gtfs-432.zip?alt=media",
@@ -3524,7 +3590,7 @@
         "status": "review",
         "score": 90,
         "reasons": [
-          "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "1 route shows different frequencies at some stops than its overall schedule suggests."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -3560,7 +3626,7 @@
         "status": "review",
         "score": 90,
         "reasons": [
-          "1 map line was repaired — Atlas fixed unusual route geometry before displaying it."
+          "1 route line had unusual geometry and was adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -3821,7 +3887,7 @@
         47.9,
         -121.8
       ],
-      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-washington-king-county-metro-gtfs-1330.zip?alt=media",
+      "feedUrl": "https://metro.kingcounty.gov/gtfs/google_transit.zip",
       "lastFeedExpiry": "20260828",
       "lastFeedVersion": "SPR26-160.3-MetroDayShuttleUpdate",
       "lastRefreshedAt": "2026-08-07",
@@ -3857,7 +3923,7 @@
         48.1,
         -121.7
       ],
-      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-washington-sound-transit-gtfs-268.zip?alt=media",
+      "feedUrl": "https://gtfs.sound.obaweb.org/prod/40_gtfs.zip",
       "lastFeedExpiry": "20260829",
       "lastFeedVersion": "SC-Spring-2026.8",
       "lastRefreshedAt": "2026-08-10",
@@ -3944,7 +4010,7 @@
         48.2,
         -121.7
       ],
-      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-washington-community-transit-ct-gtfs-287.zip?alt=media",
+      "feedUrl": "https://www.communitytransit.org/docs/default-source/open-data/gtfs/current.zip",
       "lastFeedExpiry": "20260828",
       "lastFeedVersion": "20260522-20260828",
       "lastRefreshedAt": "2026-08-07",
@@ -3978,7 +4044,7 @@
         48.05,
         -122.1
       ],
-      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-washington-everett-transit-gtfs-3038.zip?alt=media",
+      "feedUrl": "https://gtfs.sound.obaweb.org/prod/97_gtfs.zip",
       "lastFeedExpiry": "20260905",
       "lastFeedVersion": "4fcef50b-1dfc-45aa-8abb-b2eecb95b162",
       "lastRefreshedAt": "2026-08-07",
@@ -4049,7 +4115,7 @@
         47.3,
         -122.5
       ],
-      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-washington-intercity-transit-gtfs-266.zip?alt=media",
+      "feedUrl": "https://gtfs.sound.obaweb.org/prod/19_gtfs.zip",
       "lastFeedExpiry": "20260912",
       "lastFeedVersion": "20260602",
       "lastRefreshedAt": "2026-08-07",
@@ -4077,8 +4143,8 @@
         48.7,
         -121.9
       ],
-      "feedUrl": "https://www.skagittransit.org/gtfs/google_transit.zip",
-      "lastFeedExpiry": "20251024",
+      "feedUrl": "https://strweb.skagittransit.org/GTFS/google_transit.zip",
+      "lastFeedExpiry": "20270103",
       "lastFeedVersion": null,
       "lastRefreshedAt": "20260811",
       "cities": [
@@ -4424,8 +4490,8 @@
         "status": "degraded",
         "score": 40,
         "reasons": [
-          "4 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
-          "9 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "4 route lines had unusual geometry and were adjusted before display.",
+          "9 routes show different frequencies at some stops than their overall schedules suggest."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -4543,7 +4609,7 @@
         "status": "review",
         "score": 70,
         "reasons": [
-          "57 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "57 routes show different frequencies at some stops than their overall schedules suggest."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -5294,7 +5360,7 @@
         "status": "review",
         "score": 70,
         "reasons": [
-          "3 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+          "3 route lines had unusual geometry and were adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -5376,7 +5442,7 @@
         "score": 60,
         "reasons": [
           "1 schedule-data warning — Atlas found a minor issue while reading the schedule.",
-          "7 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+          "7 route lines had unusual geometry and were adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -5426,7 +5492,7 @@
         "status": "review",
         "score": 70,
         "reasons": [
-          "7 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+          "7 route lines had unusual geometry and were adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -5634,8 +5700,8 @@
         "status": "review",
         "score": 60,
         "reasons": [
-          "3 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
-          "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "3 route lines had unusual geometry and were adjusted before display.",
+          "1 route shows different frequencies at some stops than its overall schedule suggests."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -6019,7 +6085,7 @@
         "status": "review",
         "score": 80,
         "reasons": [
-          "2 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+          "2 route lines had unusual geometry and were adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -6046,7 +6112,7 @@
         41.96,
         -123.97
       ],
-      "feedUrl": "http://data.trilliumtransit.com/gtfs/delnorte-ca-us/delnorte-ca-us.zip",
+      "feedUrl": "https://gtfs.remix.com/redwoodcoast.zip",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-redwood-coast-transit-rct-gtfs-20.zip?alt=media",
       "lastFeedExpiry": "20260530",
       "lastFeedVersion": "UTC: 20-Jan-2026 15:30",
@@ -6124,7 +6190,7 @@
         "status": "review",
         "score": 70,
         "reasons": [
-          "4 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+          "4 route lines had unusual geometry and were adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -6168,7 +6234,7 @@
         "status": "review",
         "score": 70,
         "reasons": [
-          "4 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+          "4 route lines had unusual geometry and were adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -6284,10 +6350,10 @@
         38.72,
         -121.09
       ],
-      "feedUrl": "https://www.sacrt.com/wp-content/uploads/google_transit.zip",
-      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-sacramento-regional-transit-gtfs-2137.zip?alt=media",
-      "lastFeedExpiry": "20260613",
-      "lastFeedVersion": "Spring_2026",
+      "feedUrl": "https://apps.sacrt.com/gtfs/srtd/google_transit.zip",
+      "mdbFeedUrl": "https://apps.sacrt.com/gtfs/srtd/google_transit.zip",
+      "lastFeedExpiry": "20270102",
+      "lastFeedVersion": "SEP26 GTFS1",
       "lastRefreshedAt": "20260811",
       "websiteUrl": "http://www.sacrt.com",
       "cities": [
@@ -6387,7 +6453,7 @@
         "score": 80,
         "reasons": [
           "1 schedule-data warning — Atlas found a minor issue while reading the schedule.",
-          "1 map line was repaired — Atlas fixed unusual route geometry before displaying it."
+          "1 route line had unusual geometry and was adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -6462,8 +6528,8 @@
         "status": "review",
         "score": 70,
         "reasons": [
-          "2 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
-          "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "2 route lines had unusual geometry and were adjusted before display.",
+          "1 route shows different frequencies at some stops than its overall schedule suggests."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -6504,7 +6570,7 @@
         "status": "review",
         "score": 90,
         "reasons": [
-          "1 map line was repaired — Atlas fixed unusual route geometry before displaying it."
+          "1 route line had unusual geometry and was adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -6591,11 +6657,11 @@
         34.05,
         -118.24
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-29/mdb-29-202606070210/mdb-29-202606070210.zip",
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-29/mdb-29-202609090113/mdb-29-202609090113.zip",
       "lastFeedExpiry": "20261212",
       "lastFeedVersion": "",
       "region": "California",
-      "lastRefreshedAt": "2026-09-07",
+      "lastRefreshedAt": "2026-09-17",
       "supplementalFeedUrls": [
         "https://gitlab.com/LACMTA/gtfs_rail/raw/master/gtfs_rail.zip"
       ],
@@ -6611,7 +6677,7 @@
         "North Hills, California",
         "North Hollywood, California"
       ],
-      "lastFeedCheckAt": "20260907",
+      "lastFeedCheckAt": "20260917",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
       "expiredFeedCheckExpiry": "20270401",
@@ -6619,7 +6685,7 @@
         "status": "review",
         "score": 70,
         "reasons": [
-          "3 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "3 routes show different frequencies at some stops than their overall schedules suggest."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -6628,9 +6694,10 @@
           "routeHeadwayMismatches": 3,
           "featureCount": 1002
         },
-        "checkedAt": "2026-09-07"
+        "checkedAt": "2026-09-17"
       },
-      "timezone": "America/Los_Angeles"
+      "timezone": "America/Los_Angeles",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-29/mdb-29-202609090113/mdb-29-202609090113.zip"
     },
     {
       "slug": "metrolink",
@@ -6670,7 +6737,7 @@
         33.8586,
         -118.316
       ],
-      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-torrance-transit-gtfs-34.zip?alt=media",
+      "feedUrl": "https://transit.torranceca.gov/home/showpublisheddocument/16673/639196160075870000",
       "lastFeedExpiry": "20240113",
       "lastFeedVersion": "S1000154",
       "lastRefreshedAt": "20260811",
@@ -6723,9 +6790,9 @@
         33.8432,
         -118.2573
       ],
-      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-carson-circuit-gtfs-298.zip?alt=media",
-      "lastFeedExpiry": "20211111",
-      "lastFeedVersion": "UTC: 22-Dec-2020 20:26",
+      "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11488/CarsonGTFS.zip",
+      "lastFeedExpiry": "20261126",
+      "lastFeedVersion": "20231127",
       "lastRefreshedAt": "20260811",
       "cities": [
         "Carson, California",
@@ -6746,7 +6813,7 @@
         34.2396,
         -119.2042
       ],
-      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-gold-coast-transit-south-coast-area-transit-gtfs-32.zip?alt=media",
+      "feedUrl": "https://www.gctd.org/wp-content/uploads/2021/06/GCTD_GTFS.zip",
       "bbox": [
         34,
         -119.5,
@@ -6917,9 +6984,9 @@
         34.6012,
         -118.1182
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-214/mdb-214-202406071534/mdb-214-202406071534.zip",
-      "lastFeedExpiry": "20210801",
-      "lastFeedVersion": "20210503",
+      "feedUrl": "https://www.avta.com/userfiles/files/AVTA_GTFS.zip",
+      "lastFeedExpiry": "20270228",
+      "lastFeedVersion": "20260709",
       "region": "California",
       "lastRefreshedAt": "20260811",
       "websiteUrl": "http://www.avta.com",
@@ -6978,9 +7045,10 @@
         33.1545,
         -117.2257
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-14/mdb-14-202503130030/mdb-14-202503130030.zip",
-      "lastFeedExpiry": "20250517",
-      "lastFeedVersion": "Version_20250205",
+      "feedUrl": "https://lfportal.nctd.org/staticGTFS/google_transit.zip",
+      "mdbFeedUrl": "https://lfportal.nctd.org/staticGTFS/google_transit.zip",
+      "lastFeedExpiry": "20261102",
+      "lastFeedVersion": "2607-GTFS-Sept2026TripAdjustment (2026-09-01)",
       "region": "California",
       "lastRefreshedAt": "20260811",
       "cities": [
@@ -7449,9 +7517,9 @@
         38.845,
         -104.7974
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-2356/mdb-2356-202504260208/mdb-2356-202504260208.zip",
-      "lastFeedExpiry": "20250927",
-      "lastFeedVersion": "2025 (1) Spring_20250421",
+      "feedUrl": "https://coloradosprings.gov/document/googletransit.zip",
+      "lastFeedExpiry": "20261024",
+      "lastFeedVersion": "2026 (1) Spring_20260422",
       "region": "Colorado",
       "lastRefreshedAt": "20260811",
       "websiteUrl": "http://www.mmtransit.com",
@@ -7498,8 +7566,8 @@
         "score": 60,
         "reasons": [
           "1 schedule-data warning — Atlas found a minor issue while reading the schedule.",
-          "1 map line was repaired — Atlas fixed unusual route geometry before displaying it.",
-          "2 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "1 route line had unusual geometry and was adjusted before display.",
+          "2 routes show different frequencies at some stops than their overall schedules suggest."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -7548,8 +7616,8 @@
         "status": "degraded",
         "score": 50,
         "reasons": [
-          "2 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
-          "5 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "2 route lines had unusual geometry and were adjusted before display.",
+          "5 routes show different frequencies at some stops than their overall schedules suggest."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -7591,7 +7659,7 @@
         35.6532,
         -105.9769
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-839/mdb-839-202412160115/mdb-839-202412160115.zip",
+      "feedUrl": "https://passio3.com/santafenm/passioTransit/gtfs/google_transit.zip",
       "lastFeedExpiry": "20260330",
       "lastFeedVersion": "2024-12-14T14:31:44Z",
       "region": "New Mexico",
@@ -7635,8 +7703,8 @@
         "status": "degraded",
         "score": 40,
         "reasons": [
-          "369 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
-          "7 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "369 route lines had unusual geometry and were adjusted before display.",
+          "7 routes show different frequencies at some stops than their overall schedules suggest."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -7683,7 +7751,7 @@
         "status": "review",
         "score": 70,
         "reasons": [
-          "3 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "3 routes show different frequencies at some stops than their overall schedules suggest."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -7755,7 +7823,7 @@
         "status": "review",
         "score": 90,
         "reasons": [
-          "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "1 route shows different frequencies at some stops than its overall schedule suggests."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -7882,7 +7950,7 @@
         35.1217,
         -89.9687
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-2352/mdb-2352-202502100036/mdb-2352-202502100036.zip",
+      "feedUrl": "https://gtfs.mata.cadavl.com/MATA/GTFS/GTFS_MATA.zip",
       "lastFeedExpiry": "20250310",
       "lastFeedVersion": null,
       "region": "Tennessee",
@@ -8130,7 +8198,7 @@
         34.0073,
         -118.4077
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-38/mdb-38-202605300008/mdb-38-202605300008.zip",
+      "feedUrl": "https://web.culvercity.org/gtfs/gtfsexport.zip",
       "lastFeedExpiry": "20260712",
       "lastFeedVersion": "S1000250_2026.01.09",
       "region": "California",
@@ -8350,7 +8418,7 @@
         34.5885,
         -117.2393
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-99/mdb-99-202410070003/mdb-99-202410070003.zip",
+      "feedUrl": "https://api.transloc.com/gtfs/vvta.zip",
       "lastFeedExpiry": "20250329",
       "lastFeedVersion": "2024.09",
       "region": "California",
@@ -8407,9 +8475,9 @@
         34.0689,
         -118.0362
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-103/mdb-103-202403040057/mdb-103-202403040057.zip",
-      "lastFeedExpiry": "20251031",
-      "lastFeedVersion": "UTC: 29-Feb-2024 18:42",
+      "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11664/Google_Transit.zip",
+      "lastFeedExpiry": "20271125",
+      "lastFeedVersion": null,
       "region": "California",
       "lastRefreshedAt": "20260811",
       "websiteUrl": "http://www.ci.el-monte.ca.us/Government/PublicWorks/Transportation.aspx",
@@ -8521,7 +8589,7 @@
         33.749,
         -84.388
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-368/mdb-368-202604190110/mdb-368-202604190110.zip",
+      "feedUrl": "https://www.itsmarta.com/google_transit_feed/google_transit.zip",
       "lastFeedExpiry": "20260821",
       "lastFeedVersion": null,
       "region": "Georgia",
@@ -8595,7 +8663,7 @@
         25.7617,
         -80.1918
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-331/mdb-331-202604250046/mdb-331-202604250046.zip",
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-331/mdb-331-202608010003/mdb-331-202608010003.zip",
       "lastFeedExpiry": "20271231",
       "lastFeedVersion": null,
       "region": "Florida",
@@ -8616,7 +8684,8 @@
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
       "expiredFeedCheckExpiry": "20271231",
-      "timezone": "America/New_York"
+      "timezone": "America/New_York",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-331/mdb-331-202608010003/mdb-331-202608010003.zip"
     },
     {
       "slug": "broward-transit",
@@ -8730,7 +8799,7 @@
         "status": "review",
         "score": 70,
         "reasons": [
-          "7 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "7 routes show different frequencies at some stops than their overall schedules suggest."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -8786,7 +8855,7 @@
         "status": "review",
         "score": 90,
         "reasons": [
-          "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "1 route shows different frequencies at some stops than its overall schedule suggests."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -8917,7 +8986,7 @@
         "status": "review",
         "score": 90,
         "reasons": [
-          "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "1 route shows different frequencies at some stops than its overall schedule suggests."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -9059,8 +9128,8 @@
         "status": "review",
         "score": 60,
         "reasons": [
-          "54 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
-          "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "54 route lines had unusual geometry and were adjusted before display.",
+          "1 route shows different frequencies at some stops than its overall schedule suggests."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -9161,7 +9230,7 @@
         "status": "review",
         "score": 70,
         "reasons": [
-          "4 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "4 routes show different frequencies at some stops than their overall schedules suggest."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -9358,7 +9427,7 @@
         "status": "review",
         "score": 70,
         "reasons": [
-          "4 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "4 routes show different frequencies at some stops than their overall schedules suggest."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -9741,8 +9810,8 @@
         "status": "review",
         "score": 60,
         "reasons": [
-          "1 map line was repaired — Atlas fixed unusual route geometry before displaying it.",
-          "11 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "1 route line had unusual geometry and was adjusted before display.",
+          "11 routes show different frequencies at some stops than their overall schedules suggest."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -10778,7 +10847,7 @@
         "status": "review",
         "score": 90,
         "reasons": [
-          "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "1 route shows different frequencies at some stops than its overall schedule suggests."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -11011,9 +11080,9 @@
         39.7921,
         -86.153
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/ntd-50050/ntd-50050-202503060058/ntd-50050-202503060058.zip",
-      "lastFeedExpiry": "20250607",
-      "lastFeedVersion": "20250305",
+      "feedUrl": "https://realtime.indygo.net/InfoPoint/gtfs-zip.ashx",
+      "lastFeedExpiry": "20261010",
+      "lastFeedVersion": "20260730",
       "region": "Indiana",
       "lastRefreshedAt": "20260811",
       "websiteUrl": "http://www.indygo.net",
@@ -11263,7 +11332,7 @@
         27.8704,
         -82.7219
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-326/mdb-326-202511300039/mdb-326-202511300039.zip",
+      "feedUrl": "https://www.ftis.org/PostFileDownload.aspx?id=1036A0",
       "lastFeedExpiry": "20260606",
       "lastFeedVersion": "S1000242",
       "region": "Florida",
@@ -11346,7 +11415,7 @@
         29.1432,
         -81.0746
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-349/mdb-349-202605300114/mdb-349-202605300114.zip",
+      "feedUrl": "https://www.votran.org/file/6120/google_transit_June-2026.zip",
       "lastFeedExpiry": "20220223",
       "lastFeedVersion": "20210223",
       "region": "Florida",
@@ -11416,7 +11485,7 @@
         "status": "review",
         "score": 70,
         "reasons": [
-          "40 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+          "40 route lines had unusual geometry and were adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -11738,10 +11807,10 @@
         30.543,
         -84.202
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-344/latest.zip",
+      "feedUrl": "https://www.talgov.com/Uploads/Public/documents/starmetro/GTFS.zip",
       "region": "Florida",
-      "lastFeedExpiry": "20240901",
-      "lastFeedVersion": "UTC: 07-May-2024 20:44",
+      "lastFeedExpiry": "20270101",
+      "lastFeedVersion": "26-05-02 SUM_20260728",
       "lastRefreshedAt": "20260811",
       "websiteUrl": "http://www.talgov.com/starmetro",
       "cities": [
@@ -11998,7 +12067,7 @@
         "status": "review",
         "score": 70,
         "reasons": [
-          "3 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+          "3 route lines had unusual geometry and were adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -12064,7 +12133,7 @@
         35.3,
         -85
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-2082/latest.zip",
+      "feedUrl": "https://raw.githubusercontent.com/gocarta/gtfs/refs/heads/master/gtfs_current.zip",
       "region": "Tennessee",
       "lastRefreshedAt": "20260811",
       "lastFeedExpiry": "20260110",
@@ -12389,8 +12458,8 @@
         "score": 50,
         "reasons": [
           "1 schedule-data warning — Atlas found a minor issue while reading the schedule.",
-          "3 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
-          "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "3 route lines had unusual geometry and were adjusted before display.",
+          "1 route shows different frequencies at some stops than its overall schedule suggests."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -12499,8 +12568,8 @@
         "status": "review",
         "score": 60,
         "reasons": [
-          "13 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
-          "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "13 route lines had unusual geometry and were adjusted before display.",
+          "1 route shows different frequencies at some stops than its overall schedule suggests."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -12526,7 +12595,7 @@
         31.96,
         -106.22
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-148/latest.zip",
+      "feedUrl": "https://transit.sunmetro.net/google_transit/google_transit.zip",
       "region": "Texas",
       "lastFeedExpiry": "20260613",
       "lastFeedVersion": "November 16, 2025_20260409",
@@ -12766,10 +12835,11 @@
         29.85,
         -82
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-2412/latest.zip",
+      "feedUrl": "https://go-rts.com/wp-content/uploads/2026/08/RTSGTFS_Fall2026-1.zip",
       "region": "Florida",
-      "lastFeedExpiry": "20250817",
-      "lastFeedVersion": "2501",
+      "lastFeedExpiry": "20270502",
+      "lastFeedVersion": "Updated: Aug 24, 2026, 6:35 AM",
+      "mdbFeedUrl": "https://go-rts.com/wp-content/uploads/2026/08/RTSGTFS_Fall2026-1.zip",
       "lastRefreshedAt": "20260811",
       "websiteUrl": "http://www.go-rts.com/",
       "cities": [
@@ -12924,7 +12994,7 @@
         "score": 60,
         "reasons": [
           "1 schedule-data warning — Atlas found a minor issue while reading the schedule.",
-          "10 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+          "10 route lines had unusual geometry and were adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -13068,7 +13138,7 @@
         "status": "review",
         "score": 70,
         "reasons": [
-          "4 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+          "4 route lines had unusual geometry and were adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -13151,11 +13221,11 @@
         43.0187,
         -88.1993
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-396/mdb-396-202501230013/mdb-396-202501230013.zip",
-      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-396/mdb-396-202501230013/mdb-396-202501230013.zip",
+      "feedUrl": "https://mywaukeshametro.com/gtfs",
+      "mdbFeedUrl": "https://mywaukeshametro.com/gtfs",
       "region": "Wisconsin",
-      "lastFeedExpiry": "20250601",
-      "lastFeedVersion": "UTC: 22-Jan-2025 18:29",
+      "lastFeedExpiry": "20991231",
+      "lastFeedVersion": "Fall 2026 9 Detour",
       "lastRefreshedAt": "20260811",
       "websiteUrl": "https://www.waukesha-wi.gov/residents/getting_around/public-transportation.php",
       "cities": [
@@ -13521,7 +13591,7 @@
         "status": "review",
         "score": 80,
         "reasons": [
-          "2 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "2 routes show different frequencies at some stops than their overall schedules suggest."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -13604,7 +13674,7 @@
         "status": "review",
         "score": 90,
         "reasons": [
-          "1 map line was repaired — Atlas fixed unusual route geometry before displaying it."
+          "1 route line had unusual geometry and was adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -13640,7 +13710,7 @@
         "status": "review",
         "score": 70,
         "reasons": [
-          "3 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "3 routes show different frequencies at some stops than their overall schedules suggest."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -13738,8 +13808,8 @@
         "status": "degraded",
         "score": 50,
         "reasons": [
-          "29 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
-          "2 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "29 route lines had unusual geometry and were adjusted before display.",
+          "2 routes show different frequencies at some stops than their overall schedules suggest."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -13775,7 +13845,7 @@
         "status": "review",
         "score": 70,
         "reasons": [
-          "6 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+          "6 route lines had unusual geometry and were adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -13987,8 +14057,8 @@
         "status": "review",
         "score": 60,
         "reasons": [
-          "41 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
-          "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "41 route lines had unusual geometry and were adjusted before display.",
+          "1 route shows different frequencies at some stops than its overall schedule suggests."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -14047,7 +14117,7 @@
         "status": "review",
         "score": 70,
         "reasons": [
-          "19 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+          "19 route lines had unusual geometry and were adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -14085,7 +14155,7 @@
         "status": "review",
         "score": 70,
         "reasons": [
-          "3 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+          "3 route lines had unusual geometry and were adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -14122,7 +14192,7 @@
         "status": "review",
         "score": 80,
         "reasons": [
-          "2 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+          "2 route lines had unusual geometry and were adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -14627,7 +14697,7 @@
         "status": "review",
         "score": 90,
         "reasons": [
-          "1 map line was repaired — Atlas fixed unusual route geometry before displaying it."
+          "1 route line had unusual geometry and was adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -14774,9 +14844,10 @@
         42.586,
         -87.8658
       ],
-      "feedUrl": "https://data.trilliumtransit.com/gtfs/kenosha-wi-us/kenosha-wi-us.zip",
-      "lastFeedExpiry": "20240901",
-      "lastFeedVersion": "UTC: 04-Aug-2023 15:47",
+      "feedUrl": "https://kenoshatransit.com/gtfs",
+      "mdbFeedUrl": "https://kenoshatransit.com/gtfs",
+      "lastFeedExpiry": "20991231",
+      "lastFeedVersion": "Route 4 Detour",
       "lastRefreshedAt": "20260811",
       "region": "Wisconsin",
       "bbox": [
@@ -14997,12 +15068,12 @@
         37.1452,
         -80.4053
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-1189/latest.zip",
-      "lastFeedExpiry": "20260731",
-      "lastFeedVersion": null,
+      "feedUrl": "https://www.bt4uclassic.org/gtfs/google_transit.zip",
+      "lastFeedExpiry": "20261031",
+      "lastFeedVersion": "FY27 Blacksburg 1.6A",
       "lastRefreshedAt": "20260811",
       "region": "Virginia",
-      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1189/latest.zip",
+      "mdbFeedUrl": "https://www.bt4uclassic.org/gtfs/google_transit.zip",
       "bbox": [
         37.1065,
         -80.4734,
@@ -15087,7 +15158,7 @@
         "status": "review",
         "score": 90,
         "reasons": [
-          "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "1 route shows different frequencies at some stops than its overall schedule suggests."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -15172,7 +15243,7 @@
         "score": 80,
         "reasons": [
           "1 schedule-data warning — Atlas found a minor issue while reading the schedule.",
-          "1 map line was repaired — Atlas fixed unusual route geometry before displaying it."
+          "1 route line had unusual geometry and was adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -15444,8 +15515,8 @@
         "status": "review",
         "score": 70,
         "reasons": [
-          "2 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
-          "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "2 route lines had unusual geometry and were adjusted before display.",
+          "1 route shows different frequencies at some stops than its overall schedule suggests."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -15485,8 +15556,8 @@
         "status": "degraded",
         "score": 50,
         "reasons": [
-          "2 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
-          "4 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "2 route lines had unusual geometry and were adjusted before display.",
+          "4 routes show different frequencies at some stops than their overall schedules suggest."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -15580,7 +15651,7 @@
         "status": "review",
         "score": 70,
         "reasons": [
-          "4 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+          "4 route lines had unusual geometry and were adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -15743,12 +15814,12 @@
         43.542,
         -96.7354
       ],
-      "feedUrl": "http://data.trilliumtransit.com/gtfs/siouxareametro-sd-us/siouxareametro-sd-us.zip",
-      "lastFeedExpiry": "20240403",
-      "lastFeedVersion": "UTC: 01-Nov-2023 21:05",
+      "feedUrl": "https://s3.amazonaws.com/etatransit.gtfs/siouxareametro.etaspot.net/gtfs.zip",
+      "lastFeedExpiry": "20270914",
+      "lastFeedVersion": "95",
       "lastRefreshedAt": "20260811",
       "region": "South Dakota",
-      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-192/latest.zip",
+      "mdbFeedUrl": "https://s3.amazonaws.com/etatransit.gtfs/siouxareametro.etaspot.net/gtfs.zip",
       "bbox": [
         43.4802,
         -96.8308,
@@ -15905,9 +15976,9 @@
         41.5468,
         -90.5769
       ],
-      "feedUrl": "https://data.trilliumtransit.com/gtfs/davenport-ia-us/davenport-ia-us.zip",
-      "lastFeedExpiry": "20241231",
-      "lastFeedVersion": "UTC: 29-May-2024 19:01",
+      "feedUrl": "https://s3.amazonaws.com/etatransit.gtfs/citibuspublic.etaspot.net/gtfs.zip",
+      "lastFeedExpiry": "20270914",
+      "lastFeedVersion": "57",
       "lastRefreshedAt": "20260811",
       "region": "Iowa",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2304/latest.zip",
@@ -16116,7 +16187,7 @@
         39.0871,
         -108.5512
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-161/latest.zip",
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/grandvalleytransit-co-us/grandvalleytransit-co-us--flex-v2.zip",
       "lastFeedExpiry": "20251105",
       "lastFeedVersion": "Nov_05_2024",
       "lastRefreshedAt": "20260811",
@@ -16211,9 +16282,9 @@
         34.6823,
         -82.8532
       ],
-      "feedUrl": "http://data.trilliumtransit.com/gtfs/clemson-sc-us/clemson-sc-us.zip",
-      "lastFeedExpiry": "20200101",
-      "lastFeedVersion": "UTC: 29-Apr-2019 14:52",
+      "feedUrl": "https://catbus.ridesystems.net/Secure/Admin/Reports/GTFSDownload.aspx",
+      "lastFeedExpiry": "20500525",
+      "lastFeedVersion": null,
       "lastRefreshedAt": "20260811",
       "region": "South Carolina",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-798/latest.zip",
@@ -16281,9 +16352,9 @@
         36.0028,
         -78.9325
       ],
-      "feedUrl": "http://data.trilliumtransit.com/gtfs/duke-nc-us/duke-nc-us.zip",
-      "lastFeedExpiry": "20250810",
-      "lastFeedVersion": "UTC: 05-May-2025 09:20",
+      "feedUrl": "https://duke.transloc.com/Secure/Admin/Reports/GTFSDownload.aspx",
+      "lastFeedExpiry": "20501230",
+      "lastFeedVersion": null,
       "lastRefreshedAt": "20260811",
       "region": "North Carolina",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-378/latest.zip",
@@ -16335,12 +16406,12 @@
         39.3392,
         -82.1159
       ],
-      "feedUrl": "https://hosted-gtfs-feeds.s3.amazonaws.com/HAPCAP/gtfs.zip",
-      "lastFeedExpiry": "20241231",
-      "lastFeedVersion": "1.0 - Jan 9, 2023",
+      "feedUrl": "https://passio3.com/athenstransit/passioTransit/gtfs/google_transit.zip",
+      "lastFeedExpiry": "20261019",
+      "lastFeedVersion": "20250228",
       "lastRefreshedAt": "20260811",
       "region": "Ohio",
-      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1973/latest.zip",
+      "mdbFeedUrl": "https://passio3.com/athenstransit/passioTransit/gtfs/google_transit.zip",
       "bbox": [
         39.2039,
         -82.2706,
@@ -16464,10 +16535,10 @@
         40.7289,
         -73.7501
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-522/latest.zip",
-      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-jfk-airtrain-gtfs-522.zip?alt=media",
-      "lastFeedExpiry": "20211231",
-      "lastFeedVersion": null,
+      "feedUrl": "https://s3.amazonaws.com/datatools-511ny/public/AirTrain_JFK.zip",
+      "mdbFeedUrl": "https://s3.amazonaws.com/datatools-511ny/public/AirTrain_JFK.zip",
+      "lastFeedExpiry": "20261231",
+      "lastFeedVersion": "jfk_20112026",
       "lastRefreshedAt": "20260811",
       "timezone": "America/New_York",
       "lastRawArchiveKey": "20211231-d3fb77447fdc2f06",
@@ -16703,7 +16774,7 @@
         33.4744,
         -115.3224
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/tld-5547/tld-5547-202501020017/tld-5547-202501020017.zip",
+      "feedUrl": "https://schedule.ivtransit.com/gtfs/data.zip",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-5547/tld-5547-202501020017/tld-5547-202501020017.zip",
       "lastRefreshedAt": "20260811",
       "lastFeedExpiry": "20251231",
@@ -16990,9 +17061,9 @@
         35.4599,
         -118.7743
       ],
-      "feedUrl": "https://data.trilliumtransit.com/gtfs/arvin-ca-us/arvin-ca-us.zip",
-      "lastFeedExpiry": "20211231",
-      "lastFeedVersion": "UTC: 22-Nov-2021 17:16",
+      "feedUrl": "https://gtfs.remix.com/arvin.zip",
+      "lastFeedExpiry": "20270228",
+      "lastFeedVersion": "Updated: Jan 16, 2026, 8:35 AM",
       "lastRefreshedAt": "20260811",
       "cities": [
         "Bakersfield, California"
@@ -17058,9 +17129,9 @@
         34.4654,
         -118.7353
       ],
-      "feedUrl": "https://data.trilliumtransit.com/gtfs/valleyexpress-ca-us/valleyexpress-ca-us.zip",
-      "lastFeedExpiry": "20250815",
-      "lastFeedVersion": "UTC: 25-Feb-2025 03:38",
+      "feedUrl": "https://www.valleyexpressbus.org/wp-content/uploads/2026/04/Spring-2026-Valley-Express-GTFS.zip",
+      "lastFeedExpiry": "20991231",
+      "lastFeedVersion": "Farebox Test",
       "lastRefreshedAt": "20260811",
       "cities": [
         "Simi Valley, California",
@@ -17210,7 +17281,7 @@
         "status": "review",
         "score": 70,
         "reasons": [
-          "7 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+          "7 route lines had unusual geometry and were adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -20686,7 +20757,7 @@
         "status": "review",
         "score": 70,
         "reasons": [
-          "4 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+          "4 route lines had unusual geometry and were adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -20733,7 +20804,7 @@
         "score": 40,
         "reasons": [
           "3 schedule-data warnings — Atlas found a minor issue while reading the schedule.",
-          "4 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+          "4 route lines had unusual geometry and were adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -20784,7 +20855,7 @@
         "score": 40,
         "reasons": [
           "3 schedule-data warnings — Atlas found a minor issue while reading the schedule.",
-          "4 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+          "4 route lines had unusual geometry and were adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -21051,35 +21122,36 @@
         39.6314,
         -106.5222
       ],
-      "feedUrl": "https://data.trilliumtransit.com/gtfs/avon-co-us/avon-co-us.zip",
-      "lastFeedExpiry": "20250413",
-      "lastFeedVersion": "UTC: 20-Nov-2024 17:07",
-      "lastRefreshedAt": "2026-08-18",
+      "feedUrl": "https://www.avon.org/DocumentCenter/View/25051/TownOfAvon_gtfs",
+      "lastFeedExpiry": "20261125",
+      "lastFeedVersion": "1",
+      "lastRefreshedAt": "2026-09-22",
       "cities": [
         "Avon, Colorado",
         "Beaver Creek, Colorado"
       ],
       "timezone": "America/Denver",
       "feedQuality": {
-        "status": "degraded",
-        "score": 55,
-        "reasons": [
-          "1 validation warning.",
-          "The feed schedule has expired."
-        ],
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
         "metrics": {
           "validationErrors": 0,
-          "validationWarnings": 1,
+          "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
-          "featureCount": 16
+          "featureCount": 12
         },
-        "checkedAt": "2026-08-18"
+        "checkedAt": "2026-09-22"
       },
-      "lastFeedCheckAt": "20260907",
-      "expiredFeedCheckCount": 2,
-      "expiredFeedCheckSince": "20260622",
-      "expiredFeedCheckExpiry": "20250413"
+      "lastFeedCheckAt": "20260922",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20261125",
+      "feedRefreshStatus": "current",
+      "feedRefreshError": null,
+      "feedRefreshErrorAt": null,
+      "feedRefreshRetryCount": 0
     },
     {
       "slug": "timmins",

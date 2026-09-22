@@ -15,7 +15,7 @@
  * snapshots. BASE_HISTORY handles manual case-study data (e.g. GCRTA
  * pre-pipeline snapshots).
  */
-import { readFileSync } from 'fs';
+import { readFileSync, writeFileSync } from 'fs';
 import { resolve } from 'path';
 import { config } from 'dotenv';
 import { r2ListArchive, r2GetArchive, r2Get, r2Put } from './r2.js';
@@ -25,6 +25,8 @@ import { historyRouteKey } from './historyRouteKey.js';
 import type { HeadwayByPeriod } from '../shared/config.js';
 
 config({ path: resolve('.env.local') });
+
+const dryRun = process.argv.includes('--dry-run');
 
 // Manually seeded historical data for agencies with pre-pipeline snapshots.
 // Each entry is written as if it came from atlas-archive: { headway, routeLongName, label? }.
@@ -189,6 +191,45 @@ async function main() {
   const keys = await r2ListArchive('history/');
   console.log(`Found ${keys.length} files in atlas-archive/history/`);
 
+  // 1b. List trip-duration files: trip-duration/{slug}/{routeKey}/{periodKey}.json
+  // (separate prefix from history/ so this can never collide with or overwrite
+  // a headway snapshot file — see pipeline/backfill-bart-trip-duration.ts)
+  const tripDurationKeys = await r2ListArchive('trip-duration/');
+  console.log(`Found ${tripDurationKeys.length} files in atlas-archive/trip-duration/`);
+  const tripDurationRoutes: Record<string, Record<string, Array<{
+    periodKey: string; durationMinutes: number; stopSequence: string[];
+  }>>> = {};
+  const tripDurationTasks: (() => Promise<void>)[] = [];
+  for (const key of tripDurationKeys) {
+    const parts = key.split('/');
+    if (parts.length !== 4 || !parts[3].endsWith('.json')) continue;
+    const [, slug, routeKey, filename] = parts;
+    const periodKey = filename.replace('.json', '');
+    tripDurationTasks.push(async () => {
+      try {
+        const raw = await r2GetArchive(key);
+        if (!raw) return;
+        const data = JSON.parse(raw);
+        if (typeof data.durationMinutes !== 'number' || !Array.isArray(data.stopSequence)) return;
+        if (!tripDurationRoutes[slug]) tripDurationRoutes[slug] = {};
+        if (!tripDurationRoutes[slug][routeKey]) tripDurationRoutes[slug][routeKey] = [];
+        tripDurationRoutes[slug][routeKey].push({
+          periodKey,
+          durationMinutes: data.durationMinutes,
+          stopSequence: data.stopSequence,
+        });
+      } catch (err) {
+        console.error(`Failed to parse: ${key}`, err);
+      }
+    });
+  }
+  await runWithConcurrency(tripDurationTasks, 50);
+  for (const routes of Object.values(tripDurationRoutes)) {
+    for (const entries of Object.values(routes)) {
+      entries.sort((a, b) => getPeriodKeySortValue(a.periodKey) - getPeriodKeySortValue(b.periodKey));
+    }
+  }
+
   // Map: slug → routeShortName → sorted array of change events
   const archiveRoutes: Record<string, Record<string, Array<{
     periodKey: string; headway: number; routeLongName?: string; label?: string;
@@ -333,20 +374,68 @@ async function main() {
         }
       }
 
+      // Independent trip-duration comparison: only attaches when the route's
+      // stop sequence was identical across every archived period being
+      // compared. Never a caveat when unstable -- just omitted, so a rider
+      // never sees a comparison that might be comparing two different
+      // physical alignments (see docs/roadmap/EXPERIMENTS.md).
+      // De-dupe by periodKey (routine weekly refreshes can archive the same
+      // service period more than once) before looking for a stable run.
+      const rawTripDurationEntries = tripDurationRoutes[slug]?.[routeShortName] ?? [];
+      const tripDurationEntries = rawTripDurationEntries.filter((entry, i) =>
+        i === 0 || entry.periodKey !== rawTripDurationEntries[i - 1].periodKey,
+      );
+
+      let tripDuration: { firstLabel: string; firstMinutes: number; lastLabel: string; lastMinutes: number } | undefined;
+      if (tripDurationEntries.length >= 2) {
+        // Requiring the *entire* archive to match is unrealistic -- agencies
+        // relabel stop/platform IDs over a decade+ of history (confirmed:
+        // BART did this around Jan 2026) without the physical alignment
+        // actually changing, and the conservative exact-match rule can't
+        // tell that apart from a real change. So instead of the whole range,
+        // use the longest trailing run of periods (ending at the newest)
+        // that all share an identical stop sequence -- i.e. "how long has
+        // today's alignment been unchanged," which is also the more useful
+        // comparison for a rider than an arbitrary older baseline.
+        let start = tripDurationEntries.length - 1;
+        while (
+          start > 0 &&
+          JSON.stringify(tripDurationEntries[start - 1].stopSequence) === JSON.stringify(tripDurationEntries[start].stopSequence)
+        ) {
+          start--;
+        }
+        const stableRun = tripDurationEntries.slice(start);
+        if (stableRun.length >= 2) {
+          const firstEntry = stableRun[0];
+          const lastEntry = stableRun[stableRun.length - 1];
+          tripDuration = {
+            firstLabel: parsePeriodKey(firstEntry.periodKey).label,
+            firstMinutes: firstEntry.durationMinutes,
+            lastLabel: parsePeriodKey(lastEntry.periodKey).label,
+            lastMinutes: lastEntry.durationMinutes,
+          };
+        }
+      }
+
+      // Always require at least 2 snapshot points structurally -- the History
+      // UI's oldest-vs-newest display needs a real range regardless of
+      // whether a trip-duration comparison also exists for this route.
       if (deduped.length < 2) continue;
 
       // Only include if headway actually changed between first and last in
       // normal change-only mode. Materialized periods are intentionally kept
-      // even when a route's value stayed constant across the archive.
+      // even when a route's value stayed constant across the archive. A
+      // stable trip-duration comparison is also reason enough to keep a
+      // route whose headway itself never changed.
       const first = deduped[0];
       const last = deduped[deduped.length - 1];
-      if (!materializeAllPeriods && first.weekdayHeadwayMin === last.weekdayHeadwayMin) continue;
+      if (!materializeAllPeriods && !tripDuration && first.weekdayHeadwayMin === last.weekdayHeadwayMin) continue;
 
       const routeLongName = currentRoute?.routeLongName
         ?? changes.find(c => c.routeLongName)?.routeLongName
         ?? routeShortName;
 
-      agencyRoutes.push({ routeShortName, routeName: routeLongName, snapshots: deduped });
+      agencyRoutes.push({ routeShortName, routeName: routeLongName, snapshots: deduped, tripDuration });
     }
 
     if (agencyRoutes.length === 0) continue;
@@ -373,6 +462,12 @@ async function main() {
   }
 
   // 5. Write history-config.json to public R2 bucket
+  if (dryRun) {
+    const outPath = resolve('tmp/history-config.dry-run.json');
+    writeFileSync(outPath, JSON.stringify(historyData, null, 2));
+    console.log(`Dry run — wrote ${historyData.length} agencies to ${outPath} instead of R2.`);
+    return;
+  }
   await r2Put('atlas/history-config.json', JSON.stringify(historyData));
   console.log(`Generated ${historyData.length} agencies → atlas/history-config.json (R2)`);
 }

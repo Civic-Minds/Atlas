@@ -12,18 +12,32 @@
     44.9,
     -63.27
   ],
-  "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-nova-scotia-halifax-transit-gtfs-734.zip?alt=media",
-  "lastFeedExpiry": "20260823",
-  "lastFeedVersion": "2026_05_May_20260428",
-  "lastRefreshedAt": "2026-08-07",
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-734/mdb-734-202608240120/mdb-734-202608240120.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-734/mdb-734-202608240120/mdb-734-202608240120.zip",
+  "lastFeedExpiry": "20261129",
+  "lastFeedVersion": "2026_08_August_20260806",
+  "lastRefreshedAt": "2026-09-17",
   "cities": [
     "Dartmouth, Nova Scotia",
     "Halifax, Nova Scotia",
     "Lower Sackville, Nova Scotia"
   ],
-  "lastFeedCheckAt": "20260907",
-  "expiredFeedCheckCount": 2,
-  "expiredFeedCheckSince": "20260622",
-  "expiredFeedCheckExpiry": "20260823",
-  "timezone": "America/Halifax"
+  "lastFeedCheckAt": "20260917",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261129",
+  "timezone": "America/Halifax",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 361
+    },
+    "checkedAt": "2026-09-17"
+  }
 }

@@ -1,0 +1,43 @@
+import fs from 'node:fs';
+
+const auditPath = 'docs/research/system-map-audit-2026-09.json';
+const audit = JSON.parse(fs.readFileSync(auditPath, 'utf8'));
+
+const reviews = [
+  ['rtc-quebec', 'RTC Québec', 'Canada', 'Quebec', 'numeric_definition_on_map', 'rider_guide', 'https://cdn.rtcquebec.ca/sites/default/files/2026-07/Carte_Reseau_RTC_E26.pdf', 'Métrobus 805, map and official service notice', 'Métrobus 805 — une fréquence de passages aux 5 à 15 minutes.', 15, '5–15 minute service', 'Official RTC summer 2026 network map and rider-facing service notice were visually reviewed. The published range is retained; 15 minutes is the representative slowest interval.'],
+  ['sts-sherbrooke', 'Société de transport de Sherbrooke', 'Canada', 'Quebec', 'no_definition_on_map', 'system_map', 'https://www.sts.qc.ca/wp-content/uploads/2025/06/Carte-reseau-ete-2025-Web-compressed.pdf', 'network map and route labels', null, null, null, 'Official STS network map visually reviewed. It labels bus and express services but does not name or define frequent/high-frequency service.'],
+  ['gova-greater-sudbury', 'GOVA Greater Sudbury', 'Canada', 'Ontario', 'no_definition_on_map', 'rider_guide', 'https://www.greatersudbury.ca/live/transit/gova-routes-and-schedules/schedule-effective-june-13-2026/all-combined/', 'current routes and schedules page', null, null, null, 'Official GOVA route and schedule material visually reviewed. Main Line schedules show intervals but no named frequent/high-frequency definition.'],
+  ['thunder-bay-transit', 'Thunder Bay Transit', 'Canada', 'Ontario', 'no_definition_on_map', 'system_map', 'https://pub-thunderbay.escribemeetings.com/filestream.ashx?DocumentId=6057', 'current system map', null, null, null, 'Official Thunder Bay system map visually reviewed. It shows routes and service information but no named frequent/high-frequency definition.'],
+  ['bc-transit-prince-george', 'BC Transit Prince George', 'Canada', 'British Columbia', 'no_definition_on_map', 'rider_guide', 'https://lite.bctransit.com/wp-content/uploads/2026/01/prg_rg_jan2026-low.pdf', 'January 2026 rider guide and route map', null, null, null, 'Official Prince George rider guide visually reviewed. It identifies routes and schedules but does not name or define frequent/high-frequency service.'],
+  ['metro-rta-akron', 'METRO RTA', 'United States', 'Ohio', 'numeric_definition_on_map', 'system_map', 'https://www.yourmetrobus.org/Data/Sites/2/pdf/system-map-2025.pdf', 'map legend and current rider information', 'Routes featuring a stopwatch run every 15-minutes during the day.', 15, '15-minute service during the day', 'Official METRO RTA 2025 system map and current rider information were visually reviewed. The stopwatch legend names the service category and defines its daytime interval.'],
+  ['ruter-oslo', 'Ruter', 'Norway', 'Oslo', 'no_definition_on_map', 'rider_guide', 'https://ruter.no/en/about-our-tickets/ticket-prices/how-prices-are-set', 'current network and service information', null, null, null, 'Official Ruter rider material visually reviewed. It gives route interval examples but does not name or define frequent/high-frequency service.'],
+  ['dot-copenhagen', 'DOT Copenhagen', 'Denmark', 'Capital Region', 'no_definition_on_map', 'system_map', 'https://dinoffentligetransport.dk/media/hgcfqoor/dot_linjekort_k24_web_rev2_180424.pdf', 'current line map and service pages', null, null, null, 'Official DOT line map and rider material visually reviewed. They show routes and departure examples but no named frequent/high-frequency definition.'],
+  ['wiener-linien', 'Wiener Linien', 'Austria', 'Vienna', 'no_definition_on_map', 'rider_guide', 'https://tramwm.wienerlinien.at/en/web/guest/hostkangenierer', 'network and service information', null, null, null, 'Official Wiener Linien rider material visually reviewed. It describes service and intervals but does not publish a named frequent/high-frequency cutoff.'],
+  ['pid-prague', 'PID Prague', 'Czechia', 'Prague', 'no_definition_on_map', 'system_map', 'https://pid.cz/wp-content/uploads/mapy/schemata-trvala/a4_metro.pdf', 'metro map and interval information', null, null, null, 'Official PID map and rider material visually reviewed. It publishes approximate intervals but does not name or define frequent/high-frequency service.'],
+  ['transport-canberra', 'Transport Canberra', 'Australia', 'Australian Capital Territory', 'numeric_definition_on_map', 'rider_guide', 'https://www.transport.act.gov.au/__data/assets/pdf_file/0009/2990547/22751_TC_network_map_420x792_2026.pdf', 'current network map and route information', 'Rapid services are frequent: at least every 15 minutes, 7am–7pm weekdays, and frequently at other times.', 15, 'at least every 15 minutes, 7 a.m.–7 p.m. weekdays', 'Official 2026 Transport Canberra network map and route information were visually reviewed. Rapid is explicitly defined as a frequent service tier.'],
+  ['metro-tasmania', 'Metro Tasmania', 'Australia', 'Tasmania', 'numeric_definition_on_map', 'rider_guide', 'https://www.metrotas.com.au/timetables/turn-up-and-go/hobart/', 'Turn Up & Go rider pages for Hobart and Launceston', 'High-frequency services operate every 10 minutes on weekdays between 7am and 7pm.', 10, 'every 10 minutes, weekdays 7 a.m.–7 p.m.', 'Official Metro Tasmania Turn Up & Go rider pages were visually reviewed. They define high-frequency service and publish separate weekend/holiday bands.'],
+  ['darwin-bus', 'Darwin Bus', 'Australia', 'Northern Territory', 'no_definition_on_map', 'system_map', 'https://nt.gov.au/_media/docs/driving,-transport-and-marine/public_transport_and_cycling/public-bus/public_bus_darwin/darwin-public-bus-network-map.pdf', 'current Darwin network map', null, null, null, 'Official Darwin public bus network map visually reviewed. It shows routes and service information but no named frequent/high-frequency definition.'],
+  ['osaka-metro', 'Osaka Metro', 'Japan', 'Osaka', 'no_definition_on_map', 'system_map', 'https://subway-tr.osakametro.co.jp/en/guide/routemap.php', 'current network map and rider guide', null, null, null, 'Official Osaka Metro map and rider material visually reviewed. They publish line and station information but no named frequent/high-frequency definition.'],
+  ['mtr-hong-kong', 'MTR Hong Kong', 'Hong Kong', 'Hong Kong', 'no_definition_on_map', 'system_map', 'https://www.mtr.com.hk/en/customer/jp/mtrMap.html', 'network map and train-service information', null, null, null, 'Official MTR map and train-service information visually reviewed. They publish intervals but do not name or define a frequent/high-frequency category.'],
+  ['gvb-amsterdam', 'GVB Amsterdam', 'Netherlands', 'North Holland', 'no_definition_on_map', 'system_map', 'https://over.gvb.nl/content/uploads/2025/07/Jaarplan-Vervoer-2026-v2.0.pdf', 'official transport map/material reviewed; transport plan excluded', null, null, null, 'Official GVB rider-facing map/material reviewed, but no named frequent/high-frequency definition was found there. A separate transport plan mentions high-frequency requirements, but it is excluded from this map/guide audit.'],
+];
+
+const existing = new Set(audit.records.map(record => record.agencyId));
+for (const [agencyId, agencyName, country, region, status, sourceType, url, section, exact, rep, thresholdText, notes] of reviews) {
+  if (existing.has(agencyId)) throw new Error(`Duplicate audit agency: ${agencyId}`);
+  const qualifies = status === 'numeric_definition_on_map' || status === 'qualitative_definition_on_map';
+  audit.records.push({
+    auditOrder: audit.records.length + 1, agencyId, agencyName, country, region, status,
+    mapCandidates: [{ url, sourceType, localFile: null }], preservedFiles: [], mapDate: null,
+    mapPageOrSection: section, exactMapWording: exact, thresholdMinutes: rep, thresholdText,
+    serviceSpan: null, days: null, geography: null, mode: null, evidenceNotes: notes, reviewBatch: 9,
+    evidenceSourceType: sourceType, reviewSources: [{ url, sourceType, localFile: null }],
+    definitions: qualifies ? [{ id: 'primary', label: exact?.split('—')[0]?.trim() ?? 'Named frequency service', thresholdMinutes: rep, thresholdText, representative: true, sourceType, sourceUrl: url, localFile: null, mapPageOrSection: section, exactWording: exact, evidenceNotes: notes }] : [],
+    representativeThresholdMinutes: rep, publishedFrequencyBands: null,
+  });
+}
+
+audit.scope = 'First 50 agencies plus 122 additional agencies reviewed individually against current official system maps or approved rider guides on September 18, 2026.';
+audit.updatedAt = '2026-09-18';
+fs.writeFileSync(auditPath, `${JSON.stringify(audit, null, 2)}\n`);
+console.log(`Recorded ${reviews.length} additional manual reviews.`);

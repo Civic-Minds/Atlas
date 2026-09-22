@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router';
 import { Map as MapIcon, Search, X, Info, History as HistoryIcon, Moon } from 'lucide-react';
-import { PILL_SURFACE, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_HEADER, SIDEBAR_LEFT_FALLBACK } from './styles';
-import { R2_PUBLIC_URL, getAgencyArtifactUrls, LIVE_ENABLED, HISTORY_ENABLED, CORRIDORS_ENABLED, BETA_BUILD } from '../shared/config';
+import { PILL_SURFACE, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_HEADER, Z_MODAL_TOP, SIDEBAR_LEFT_FALLBACK, APP_TAB_ACTIVE, APP_TAB_INACTIVE, ICON_BTN } from './styles';
+import { R2_PUBLIC_URL, getAgencyArtifactUrls, FEATURES, FEATURE_ROUTES, ATLAS_MODE } from '../shared/config';
+import { isAgencyVisibleInBrowser } from '../shared/agencyVisibility';
 import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig';
 import Interval from './apps/Interval';
 import type { StopEntry } from './apps/corridor-search';
@@ -14,7 +15,6 @@ const History = React.lazy(() => import('./apps/History'));
 const LiveVehicles = React.lazy(() => import('./apps/LiveVehicles'));
 const Corridors = React.lazy(() => import('./apps/Corridors'));
 import type { AppId } from './components/AppDrawer';
-import ToolsMenu from './components/ToolsMenu';
 import { CorridorMapOverlayProvider } from './context/CorridorMapOverlay';
 import { HistoryMapOverlayProvider } from './context/HistoryMapOverlay';
 import { LiveVehiclesMapOverlayProvider } from './context/LiveVehiclesMapOverlay';
@@ -28,6 +28,9 @@ import { syncUrlParams } from './utils/syncUrlParams';
 import AppUpdateBanner from './components/AppUpdateBanner';
 import type { FeedQuality } from '../shared/feedQuality';
 import { trackEvent, trackPageView } from './lib/analytics';
+import { markAtlasOnce } from './lib/performance';
+import { parseFrequentServiceDays, type FrequentServiceFrequency, type FrequentServiceWindow } from '../shared/frequentService';
+import FrequentServiceStory from './apps/FrequentServiceStory';
 
 export interface FareOverride {
   adult?: number;      // base card/electronic fare (fallback when GeoJSON baseFare is absent)
@@ -111,15 +114,28 @@ const APP_TO_PATH: Record<AppId, string> = {
 };
 
 export default function App() {
+  useEffect(() => {
+    markAtlasOnce('app-ready');
+  }, []);
+
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  // The map route is the map regardless of which map-state parameters are in the URL.
+  // Requiring one of the filter parameters made links such as ?p=overnight render the
+  // normal frequency controls and left the research controls out of the header.
+  const isFrequentServiceMapRoute = pathname === FEATURE_ROUTES.frequentService.map;
+  const isFrequentServiceStoryRoute = pathname === FEATURE_ROUTES.frequentService.story;
+  const frequentServiceMapView = FEATURES.frequentService && isFrequentServiceMapRoute;
+  const inFrequentServiceStory = FEATURES.frequentService && isFrequentServiceStoryRoute;
+  const inFrequentService = frequentServiceMapView;
   const routedApp: AppId = PATH_TO_APP[pathname] ?? 'frequency';
   // Direct URL access (e.g. /apps/live) would otherwise bypass the LIVE_ENABLED / HISTORY_ENABLED /
   // CORRIDORS_ENABLED gate below -- fall back to the frequency map, and correct the URL so it
   // doesn't lie about what's actually showing.
-  const gated = (routedApp === 'live' && !LIVE_ENABLED) || (routedApp === 'history' && !HISTORY_ENABLED)
-    || (routedApp === 'corridors' && !CORRIDORS_ENABLED)
-    || (routedApp === 'night' && !BETA_BUILD);
+  const gated = (routedApp === 'live' && !FEATURES.live) || (routedApp === 'history' && !FEATURES.history)
+    || (routedApp === 'corridors' && !FEATURES.corridors)
+    || (routedApp === 'night' && !FEATURES.beta)
+    || ((isFrequentServiceMapRoute || isFrequentServiceStoryRoute) && !FEATURES.frequentService);
   const activeApp: AppId = gated ? 'frequency' : routedApp;
 
   useEffect(() => {
@@ -176,8 +192,21 @@ export default function App() {
     setInfoOpen(false);
     setInfoHelpContext(null);
   }, []);
+  const toggleInfo = useCallback(() => {
+    setInfoOpen(isOpen => {
+      if (isOpen) {
+        setInfoHelpContext(null);
+        return false;
+      }
+      setInfoTab('about');
+      setInfoFeatureFilter('all');
+      return true;
+    });
+  }, []);
   const [selectedAgencySlug, setSelectedAgencySlug] = useState<string | null>(null);
+  const [selectedMapAgencySlug, setSelectedMapAgencySlug] = useState<string | null>(null);
   const [pendingLiveRoute, setPendingLiveRoute] = useState<{ slug: string; routeShortName: string } | null>(null);
+  const [pendingNightRoute, setPendingNightRoute] = useState<{ slug: string; routeId: string } | null>(null);
   const [pendingHistoryRoute, setPendingHistoryRoute] = useState<{ slug: string; routeShortName: string } | null>(null);
   const [headerPortalEl, setHeaderPortalEl] = useState<Element | null>(null);
   const headerPortalRef = useCallback((el: HTMLDivElement | null) => { setHeaderPortalEl(el); }, []);
@@ -193,9 +222,11 @@ export default function App() {
     closeInfo();
   }, [closeInfo]);
   const handleLiveRouteClick = useCallback((slug: string, routeShortName: string) => { setPendingLiveRoute({ slug, routeShortName }); closeInfo(); }, [closeInfo]);
+  const handleNightRouteClick = useCallback((slug: string, routeId: string) => { setPendingNightRoute({ slug, routeId }); closeInfo(); }, [closeInfo]);
   const handleHistoryRouteClick = useCallback((slug: string, routeShortName: string) => { setPendingHistoryRoute({ slug, routeShortName }); }, []);
   const handleAgencyCardClose = useCallback(() => setSelectedAgencySlug(null), []);
   const handlePendingHandled = useCallback(() => setPendingLiveRoute(null), []);
+  const handleNightPendingHandled = useCallback(() => setPendingNightRoute(null), []);
   const [lightMode, setLightMode] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('theme') !== 'dark';
@@ -203,16 +234,35 @@ export default function App() {
     return true;
   });
   const [hideLowQuality, setHideLowQuality] = useState(() => {
-    if (!BETA_BUILD || typeof window === 'undefined') return false;
+    if (!FEATURES.beta || typeof window === 'undefined') return false;
     const urlValue = new URLSearchParams(window.location.search).get('quality');
     if (urlValue != null) return urlValue === '1';
     return localStorage.getItem('atlas_pref_hide_low_quality') === 'true';
   });
+  const [showMapLegend, setShowMapLegend] = useState(() => (
+    FEATURES.beta && typeof window !== 'undefined' && localStorage.getItem('atlas_pref_map_legend') === 'true'
+  ));
+  const [dataSaver, setDataSaver] = useState(() => (
+    (() => {
+      if (!FEATURES.beta || typeof window === 'undefined') return false;
+      const urlValue = new URLSearchParams(window.location.search).get('dataSaver');
+      if (urlValue != null) return urlValue === '1';
+      return localStorage.getItem('atlas_pref_data_saver') === 'true';
+    })()
+  ));
 
   useEffect(() => {
-    if (BETA_BUILD) localStorage.setItem('atlas_pref_hide_low_quality', String(hideLowQuality));
-    syncUrlParams({ quality: BETA_BUILD && hideLowQuality ? '1' : null });
+    if (FEATURES.beta) localStorage.setItem('atlas_pref_hide_low_quality', String(hideLowQuality));
+    syncUrlParams({ quality: FEATURES.beta && hideLowQuality ? '1' : null });
   }, [hideLowQuality]);
+
+  useEffect(() => {
+    if (FEATURES.beta) localStorage.setItem('atlas_pref_map_legend', String(showMapLegend));
+  }, [showMapLegend]);
+
+  useEffect(() => {
+    if (FEATURES.beta) localStorage.setItem('atlas_pref_data_saver', String(dataSaver));
+  }, [dataSaver]);
 
   const visibleAgencies = useMemo(
     () => hideLowQuality
@@ -251,6 +301,20 @@ export default function App() {
   });
 
   const [layers, setLayers] = useState<Record<string, GeoJSON.FeatureCollection>>({});
+  const [frequentServiceDays, setFrequentServiceDays] = useState(() => {
+    const days = parseFrequentServiceDays(new URLSearchParams(window.location.search).get('days'));
+    return days.length ? days : ['Weekday' as const];
+  });
+  const [frequentServiceFrequency, setFrequentServiceFrequency] = useState<FrequentServiceFrequency>(() => new URLSearchParams(window.location.search).get('frequency') === '30' ? 30 : 15);
+  const [frequentServiceWindow, setFrequentServiceWindow] = useState<FrequentServiceWindow>(() => new URLSearchParams(window.location.search).get('window') === 'extended' ? 'extended' : 'daytime');
+
+  useEffect(() => {
+    syncUrlParams({
+      days: frequentServiceDays.length === 1 && frequentServiceDays[0] === 'Weekday' ? null : frequentServiceDays.join(','),
+      frequency: frequentServiceFrequency === 15 ? null : String(frequentServiceFrequency),
+      window: frequentServiceWindow === 'daytime' ? null : frequentServiceWindow,
+    });
+  }, [frequentServiceDays, frequentServiceFrequency, frequentServiceWindow]);
 
   const inFrequency = activeApp === 'frequency';
   const inHistory = activeApp === 'history';
@@ -262,7 +326,7 @@ export default function App() {
     () => new Set(Object.keys(layers).map(slug => slug.endsWith('-corridors') ? slug.slice(0, -10) : slug)),
     [layers],
   );
-  const showLiveControl = LIVE_ENABLED && (inLive || [...loadedAgencySlugs].some(slug =>
+  const showLiveControl = FEATURES.live && (inLive || [...loadedAgencySlugs].some(slug =>
     LIVE_POLLING_ROUTES.some(route => route.slug === slug && (!route.apiKeyParamEnvVar && !route.apiKeyHeaderEnvVar || route.active)),
   ));
   const liveAgencyCount = useMemo(
@@ -271,7 +335,10 @@ export default function App() {
       .map(route => route.slug)).size,
     [],
   );
-  const showHistoryControl = HISTORY_ENABLED && (inHistory || (historyAgencySlugs != null && [...loadedAgencySlugs].some(slug => historyAgencySlugs.has(slug))));
+  const showHistoryControl = FEATURES.history && (inHistory || (historyAgencySlugs != null && (
+    (selectedMapAgencySlug != null && historyAgencySlugs.has(selectedMapAgencySlug)) ||
+    [...loadedAgencySlugs].some(slug => historyAgencySlugs.has(slug))
+  )));
   // Always open History on the agency chooser rather than guessing one from
   // whatever the map happens to be showing -- auto-jumping straight to an
   // agency (e.g. TTC, just because the map defaults to Toronto) surprised
@@ -339,7 +406,7 @@ export default function App() {
       })
       .then((data: { agencies: Agency[] }) => {
         const enriched = data.agencies
-          .filter((a: Agency) => !a.staged && (!a.hiddenInProduction || import.meta.env.DEV || (BETA_BUILD && a.betaOnly)))
+          .filter((a: Agency) => isAgencyVisibleInBrowser(a, { mode: ATLAS_MODE }))
           .map((a: Agency) => {
             if (!a.url) {
               const arts = getAgencyArtifactUrls(a.slug, { betaOnly: a.betaOnly });
@@ -348,6 +415,7 @@ export default function App() {
             return a;
           });
         setAgencies(enriched);
+        markAtlasOnce('agency-catalog-ready');
         setAgenciesLoadState('ready');
       })
       .catch(() => setAgenciesLoadState('error'));
@@ -388,18 +456,20 @@ export default function App() {
     <LiveVehiclesMapOverlayProvider>
     <div className={`relative h-screen w-screen bg-[var(--bg-app)] text-[var(--text-primary)] font-sans overflow-hidden transition-colors ${TRANSITION_BASE}`}>
       {/* Unified header row — left and right sections share one flex container so they can never overlap */}
-      <div className={`absolute top-6 left-6 right-6 ${Z_HEADER} flex items-center justify-between pointer-events-none`}>
+      <div className={`absolute ${inFrequentServiceStory ? 'top-0 left-0 right-0 bg-[var(--bg-app)] px-6 py-6' : 'top-6 left-6 right-6'} ${infoOpen ? Z_MODAL_TOP : Z_HEADER} flex items-center justify-between pointer-events-none`}>
       <div ref={headerLeftRef} className="flex items-center gap-2 pointer-events-auto flex-1 max-w-[calc(100%-3rem)] sm:max-w-none mr-2 sm:mr-0">
         <button
           type="button"
           onClick={() => {
-            if (activeApp !== 'frequency') {
+            if (inFrequentServiceStory) {
+              navigate(`${FEATURE_ROUTES.frequentService.map}?view=map`);
+            } else if (activeApp !== 'frequency') {
               navigate('/');
             } else {
               setResetViewKey(k => k + 1);
             }
           }}
-          aria-label={activeApp !== 'frequency' ? 'Back to frequency map' : 'Reset map view'}
+          aria-label={inFrequentServiceStory || activeApp !== 'frequency' ? 'Back to frequency map' : 'Reset map view'}
           className="w-8 h-8 bg-[var(--accent)] rounded-full flex items-center justify-center shrink-0 shadow-2xl hover:opacity-80 transition-opacity"
         >
           <MapIcon className="w-3.5 h-3.5 text-white" />
@@ -410,7 +480,7 @@ export default function App() {
           <span className="text-[8px] sm:text-[10px] text-[var(--text-dim)]">by Civic Minds</span>
         </div>
 
-        <div className="flex items-center gap-2 flex-1 min-w-0 lg:flex-none">
+        {!inFrequentServiceStory && <div className="flex items-center gap-2 flex-1 min-w-0 lg:flex-none">
         <div className="flex-1 min-w-0 sm:flex">
         <div ref={searchBarRef} className={`${SEARCH_BAR_WIDTH} relative ${PILL_SURFACE} pl-1 pr-3`}>
           <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--text-dim)] pointer-events-none" />
@@ -454,7 +524,7 @@ export default function App() {
           <button
             onClick={() => setActiveApp(inLive ? 'frequency' : 'live')}
             aria-label="Live vehicles"
-            className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold ${inLive ? 'bg-[var(--accent-bg)] border border-[var(--accent-border)] text-[var(--accent)]' : 'bg-[var(--bg-panel)] border border-[var(--border-primary)] hover:bg-[var(--bg-btn-hover)] text-[var(--text-secondary)]'}`}
+            className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold border ${inLive ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
           >
             <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${inLive ? 'bg-[var(--accent)] animate-pulse' : 'bg-[var(--text-dim)]'}`} />
             <span>Live</span>
@@ -467,7 +537,7 @@ export default function App() {
             href={inHistory ? '/' : '/apps/history'}
             aria-label={inHistory ? 'Back to frequency map' : 'Historical service'}
             aria-pressed={inHistory}
-            className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${inHistory ? 'bg-[var(--accent-bg)] border border-[var(--accent-border)] text-[var(--accent)]' : 'bg-[var(--bg-panel)] border border-[var(--border-primary)] hover:bg-[var(--bg-btn-hover)] text-[var(--text-secondary)]'}`}
+            className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold border focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${inHistory ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
           >
             <HistoryIcon className="w-3.5 h-3.5" />
             <span>History</span>
@@ -475,36 +545,46 @@ export default function App() {
           </a>
         )}
 
-        <span className="w-px h-4 bg-[var(--border-primary)] shrink-0" aria-hidden="true" />
+        {(FEATURES.beta || FEATURES.frequentService) && (
+          <>
+            <span className="w-px h-4 bg-[var(--border-primary)] shrink-0" aria-hidden="true" />
 
-        {BETA_BUILD && (
-          <a
-            href={inNight ? '/' : '/apps/night'}
-            aria-label={inNight ? 'Back to frequency map' : 'Night service'}
-            aria-pressed={inNight}
-            className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${inNight ? 'bg-[var(--accent-bg)] border border-[var(--accent-border)] text-[var(--accent)]' : 'bg-[var(--bg-panel)] border border-[var(--border-primary)] hover:bg-[var(--bg-btn-hover)] text-[var(--text-secondary)]'}`}
-          >
-            <Moon className="w-3.5 h-3.5" />
-            <span>Night Service</span>
-          </a>
+            {FEATURES.beta && (
+              <a
+                href={inNight ? '/' : '/apps/night'}
+                aria-label={inNight ? 'Back to frequency map' : 'Night service'}
+                aria-pressed={inNight}
+                className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold border focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${inNight ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
+              >
+                <Moon className="w-3.5 h-3.5" />
+                <span>Night Service</span>
+              </a>
+            )}
+            {FEATURES.frequentService && (
+              <a href={inFrequentService ? '/' : FEATURE_ROUTES.frequentService.map} aria-label={inFrequentService ? 'Back to frequency map' : 'Frequent service research'} aria-pressed={inFrequentService} className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold border focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${inFrequentService ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}>
+                <span>Frequent Service</span>
+              </a>
+            )}
+          </>
         )}
 
-        </div>
+        </div>}
       </div>
       {/* Portal target for Interval's right header (FilterChips + Now + FilterPanel) */}
       <div className="flex items-center gap-2 pointer-events-auto">
         <div ref={headerPortalRef} className="flex items-center gap-2" />
-        {import.meta.env.DEV && <ToolsMenu />}
         <button
-          onClick={() => openInfo('about')}
+          type="button"
+          onClick={toggleInfo}
           aria-label="About Atlas"
-          className="w-8 h-8 flex items-center justify-center rounded-full bg-[var(--bg-panel)] hover:bg-[var(--bg-btn-hover)] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+          aria-expanded={infoOpen}
+          className={ICON_BTN}
         >
           <Info className="w-4 h-4" />
         </button>
       </div>
       </div>
-      {BETA_BUILD && <AppUpdateBanner />}
+      {FEATURES.beta && <AppUpdateBanner />}
 
       <main className="absolute inset-0 overflow-hidden">
         {agenciesLoadState === 'loading' ? (
@@ -526,7 +606,7 @@ export default function App() {
                   })
                   .then((data: { agencies: Agency[] }) => {
                     const enriched = data.agencies
-                      .filter((a: Agency) => !a.staged && (!a.hiddenInProduction || import.meta.env.DEV || (BETA_BUILD && a.betaOnly)))
+                      .filter((a: Agency) => isAgencyVisibleInBrowser(a, { mode: ATLAS_MODE }))
                       .map((a: Agency) => {
                         if (!a.url) {
                           const arts = getAgencyArtifactUrls(a.slug, { betaOnly: a.betaOnly });
@@ -535,6 +615,7 @@ export default function App() {
                         return a;
                       });
                     setAgencies(enriched);
+                    markAtlasOnce('agency-catalog-ready');
                     setAgenciesLoadState('ready');
                   })
                   .catch(() => setAgenciesLoadState('error'));
@@ -545,7 +626,9 @@ export default function App() {
           </div>
         ) : (
           <ErrorBoundary label="The map encountered an error.">
-          <>
+          {inFrequentServiceStory ? (
+            <FrequentServiceStory agencies={visibleAgencies} onExploreMap={() => navigate(`${FEATURE_ROUTES.frequentService.map}?view=map`)} />
+          ) : <>
             <Interval
               agencies={
                 inHistory && historyAgencySlugs 
@@ -561,29 +644,41 @@ export default function App() {
               setQuery={setQuery}
               onStatsChange={setStats}
               resetViewKey={resetViewKey}
-              showUi={inFrequency}
-              showSelectionUi={inLive}
-              showRouteLayers={inFrequency || inLive || inHistory || inFares || inCorridors || inNight}
+              showUi={inFrequency || inFrequentService}
+              showSelectionUi={inLive || inNight}
+              showRouteLayers={inFrequency || inLive || inHistory || inFares || inCorridors || inNight || inFrequentService}
               liveRoutesOnly={inLive}
               fareView={inFares}
               nightServiceView={inNight}
-              showMapContext={BETA_BUILD}
-              showMatchPercentage={BETA_BUILD}
+              exportEnabled={FEATURES.mapExport || inFrequentService}
+              exportTitle={inFrequentService ? 'Frequent Service' : inNight ? 'Night Service' : inHistory ? 'Service History' : inFares ? 'Transit Fares' : inLive ? 'Live Transit' : 'Transit Frequency'}
+              frequentServiceView={inFrequentService}
+              frequentServiceDays={frequentServiceDays}
+              frequentServiceFrequency={frequentServiceFrequency}
+              frequentServiceWindow={frequentServiceWindow}
+              setFrequentServiceDays={setFrequentServiceDays}
+              setFrequentServiceFrequency={setFrequentServiceFrequency}
+              setFrequentServiceWindow={setFrequentServiceWindow}
+              showMapContext={FEATURES.beta}
+              showMatchPercentage={FEATURES.beta}
               filterToAgencies={inHistory || inFares}
               onHistoryRouteClick={inHistory ? handleHistoryRouteClick : undefined}
-              onDirectFromStop={inFrequency && CORRIDORS_ENABLED ? handleDirectFromStop : undefined}
-              hideFilterPanel={inCorridors || inLive || inHistory || inFares || inNight}
+              onDirectFromStop={inFrequency && FEATURES.corridors ? handleDirectFromStop : undefined}
+              hideFilterPanel={inCorridors || inLive || inHistory || inFares || inNight || inFrequentService}
               onInfoOpen={openInfo}
               selectedAgencySlug={selectedAgencySlug}
               setSelectedAgencySlug={setSelectedAgencySlug}
               onAgencyCardClose={handleAgencyCardClose}
               pendingLiveRoute={pendingLiveRoute}
               onPendingLiveRouteHandled={handlePendingHandled}
+              pendingNightRoute={pendingNightRoute}
+              onPendingNightRouteHandled={handleNightPendingHandled}
               searchFocused={searchFocused}
               setSearchFocused={setSearchFocused}
               day={day}
               setDay={setDay}
               onLayersChange={setLayers}
+              onSelectedMapAgencyChange={setSelectedMapAgencySlug}
               onSelectionActiveChange={setIntervalSelectionActive}
               headerPortalContainer={headerPortalEl}
               sidebarLeft={sidebarLeft}
@@ -591,9 +686,13 @@ export default function App() {
               searchEnterRef={searchEnterRef}
               hideLowQuality={hideLowQuality}
               setHideLowQuality={setHideLowQuality}
-              feedQualityEnabled={BETA_BUILD}
+              feedQualityEnabled={FEATURES.beta}
+              showMapLegend={showMapLegend}
+              setShowMapLegend={setShowMapLegend}
+              dataSaver={dataSaver}
+              setDataSaver={setDataSaver}
             />
-            {CORRIDORS_ENABLED && (
+            {FEATURES.corridors && (
               <React.Suspense fallback={null}>
                 <Corridors
                   agencies={visibleAgencies}
@@ -603,17 +702,17 @@ export default function App() {
                 />
               </React.Suspense>
             )}
-            {HISTORY_ENABLED && (
+            {FEATURES.history && (
               <React.Suspense fallback={null}>
                 <History key={inHistory ? 'history' : 'no-history'} active={inHistory} initialAgencySlug={historyAgencyForView} onInfoOpen={openInfo} query={deferredQuery} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} sidebarLeft={sidebarLeft} />
               </React.Suspense>
             )}
-            {BETA_BUILD && (
+            {FEATURES.beta && (
               <React.Suspense fallback={null}>
-                <NightService active={inNight} sidebarLeft={sidebarLeft} layers={layers} />
+                <NightService active={inNight} sidebarLeft={sidebarLeft} layers={layers} query={deferredQuery} onRouteSelect={handleNightRouteClick} />
               </React.Suspense>
             )}
-            {LIVE_ENABLED && liveMounted && (
+            {FEATURES.live && liveMounted && (
               <div className={`absolute inset-0 ${Z_MAP_OVERLAY} pointer-events-none transition-opacity ${TRANSITION_SLOW} ${inLive ? 'opacity-100' : 'opacity-0'}`}>
                 <React.Suspense fallback={null}>
                   <LiveVehicles
@@ -630,7 +729,7 @@ export default function App() {
                 </React.Suspense>
               </div>
             )}
-          </>
+          </>}
           </ErrorBoundary>
         )}
       </main>

@@ -1,5 +1,6 @@
 import React, { forwardRef } from 'react';
 import { headwayToTierColor } from '../../utils/colors';
+import { useColorVision } from '../../context/ColorVisionContext';
 import { fmtHeadway, titleCase } from '../../utils/format';
 import type { NearbyRoute } from '../../hooks/useNearbyRoutes';
 import { FLOATING_CARD, PANEL_ENTER, PANEL_Z_INDEX, LIST_ROW, PANEL_TITLE_BAR, PANEL_TITLE, PANEL_BODY, PANEL_EMPTY } from '../../styles';
@@ -19,6 +20,8 @@ export const NearbyRoutesPanel = forwardRef<HTMLDivElement, NearbyRoutesPanelPro
   loading = false,
   setSelectedRoute,
 }, ref) {
+  const { colorVisionFriendly } = useColorVision();
+  const colorMode = colorVisionFriendly ? 'friendly' : 'default';
   return (
     <div
       ref={ref}
@@ -53,7 +56,7 @@ export const NearbyRoutesPanel = forwardRef<HTMLDivElement, NearbyRoutesPanelPro
                 <div className="flex items-center gap-2">
                   <span
                     className="w-1.5 h-1.5 rounded-full shrink-0"
-                    style={{ background: headwayToTierColor(r.headway) }}
+                    style={{ background: headwayToTierColor(r.headway, colorMode) }}
                   />
                   <span className="text-[11px] font-black text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors shrink-0">
                     {r.routeShortName}

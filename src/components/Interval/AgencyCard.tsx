@@ -1,11 +1,12 @@
 import React, { useMemo, useState, useEffect, forwardRef } from 'react';
 import { LIVE_POLLING_ROUTES } from '../../../shared/livePollingConfig';
-import { LIVE_ENABLED } from '../../../shared/config';
+import { FEATURES } from '../../../shared/config';
 import type { Agency, FareOverride } from '../../App';
 import type { OpenInfoFn } from '../InfoPanel';
 import type { AgencyLayers } from '../../hooks/useAgencyData';
-import { FLOATING_CARD, PANEL_ENTER, CARD_NOTICE_FOOTER, CARD_NOTICE_INLINE, Z_PANEL, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH } from '../../styles';
+import { FLOATING_CARD, PANEL_ENTER, CARD_NOTICE_FOOTER, CARD_NOTICE_INLINE, Z_PANEL, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH, CONTROL_ACTIVE, CONTROL_INACTIVE } from '../../styles';
 import { getFareColor, HEADWAY_TIERS } from '../../utils/colors';
+import { useColorVision } from '../../context/ColorVisionContext';
 import { effectiveMode, GTFS_RAIL_MODE_LABELS, isRailReplacementBus, VIRTUAL_LRT_MODE } from '../../../shared/modes';
 import { agencyDisplayParts, getRouteLabel, titleCase } from '../../utils/format';
 import type { DayType, TimePeriod, ShapeProperties } from '../../hooks/useIntervalStats';
@@ -244,7 +245,7 @@ function RouteListSection({
   return (
     <div className="py-1">
       {routes.map(r => {
-        const isLive = LIVE_ENABLED && liveShortNames.has(r.shortName);
+        const isLive = FEATURES.live && liveShortNames.has(r.shortName);
         const key = `${r.agencySlug}::${r.routeId}`;
         return (
           <div key={r.routeId} className="px-3 py-1 hover:bg-[var(--bg-btn-hover)] transition-colors">
@@ -280,6 +281,8 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
   fareOverride,
   onInfoOpen,
 }, ref) {
+  const { colorVisionFriendly } = useColorVision();
+  const colorMode = colorVisionFriendly ? 'friendly' : 'default';
   const routes = useMemo(
     () => getRoutes(layers, agency.slug, day, period, { maxHeadway, selectedModes, hideSpan }),
     [layers, agency.slug, day, period, maxHeadway, selectedModes, hideSpan],
@@ -364,7 +367,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
                     {baseFare != null ? (
                       <span
                         className="text-sm font-black px-2.5 py-0.5 rounded-full text-white"
-                        style={{ background: getFareColor(baseFare) }}
+                        style={{ background: getFareColor(baseFare, colorMode) }}
                       >
                         ${baseFare.toFixed(2)}
                       </span>
@@ -409,13 +412,11 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
                     type="button"
                     onClick={() => setActiveFilter(on ? null : f.key)}
                     className={`text-[9px] font-bold px-2 py-0.5 rounded-full border transition-colors ${
-                      on
-                        ? 'bg-[var(--accent)] text-white border-[var(--accent)]'
-                        : 'bg-[var(--bg-app)] text-[var(--text-secondary)] border-[var(--border-primary)] hover:border-[var(--accent-border)]'
+                      on ? CONTROL_ACTIVE : CONTROL_INACTIVE
                     }`}
                   >
                     {f.label}
-                    <span className={on ? 'text-white/80' : 'text-[var(--text-dim)]'}> {f.count}</span>
+                    <span className={on ? 'opacity-80' : 'text-[var(--text-dim)]'}> {f.count}</span>
                   </button>
                 );
               })}
