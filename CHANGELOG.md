@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - Argo on-demand service areas now appear on the regular map for Bradford West Gwillimbury, Caledon, and Brampton Downtown, with dedicated non-frequency agency cards.
+- YRT North-Central general-public On-Request service now appears as a map service area without inventing a route frequency.
 - Degraded-feed explanations now use one shared, rider-facing vocabulary across settings and route details.
 - The About Atlas control now matches Settings and reliably toggles the information panel open or closed.
 - High contrast mode now applies to agency filter rows like the other filter dropdowns.
