@@ -6,8 +6,6 @@ import {
   CALEDON_ON_DEMAND_SERVICE_AREAS,
   BRAMPTON_ON_DEMAND_AGENCY,
   BRAMPTON_ON_DEMAND_SERVICE_AREAS,
-  YRT_NORTH_CENTRAL_ON_DEMAND_AGENCY,
-  YRT_NORTH_CENTRAL_SERVICE_AREA,
 } from '../onDemandServiceAreas';
 
 describe('BWG on-demand service area', () => {
@@ -42,12 +40,4 @@ describe('BWG on-demand service area', () => {
     expect(ring[0]).toEqual(ring.at(-1));
   });
 
-  it('keeps YRT North-Central as a closed general-public service-area polygon', () => {
-    expect(YRT_NORTH_CENTRAL_ON_DEMAND_AGENCY.slug).toBe('yrt-on-demand');
-    expect(YRT_NORTH_CENTRAL_ON_DEMAND_AGENCY.onDemandServiceArea.serviceHours).toContain('5:30 a.m.');
-    const ring = YRT_NORTH_CENTRAL_SERVICE_AREA.geometry.coordinates[0];
-    expect(ring.length).toBeGreaterThan(100);
-    expect(ring[0]).toEqual(ring.at(-1));
-    expect(YRT_NORTH_CENTRAL_SERVICE_AREA.properties?.serviceAreaName).toBe('North-Central');
-  });
 });
