@@ -30,7 +30,7 @@
         "status": "review",
         "score": 90,
         "reasons": [
-          "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "1 route shows different frequencies at some stops than its overall schedule suggests."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -118,7 +118,7 @@
         "status": "review",
         "score": 80,
         "reasons": [
-          "2 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "2 routes show different frequencies at some stops than their overall schedules suggest."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -190,7 +190,7 @@
         "status": "review",
         "score": 80,
         "reasons": [
-          "2 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+          "2 route lines had unusual geometry and were adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -284,8 +284,8 @@
         "status": "review",
         "score": 60,
         "reasons": [
-          "2 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
-          "2 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "2 route lines had unusual geometry and were adjusted before display.",
+          "2 routes show different frequencies at some stops than their overall schedules suggest."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -338,8 +338,8 @@
         "status": "degraded",
         "score": 40,
         "reasons": [
-          "5 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
-          "12 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "5 route lines had unusual geometry and were adjusted before display.",
+          "12 routes show different frequencies at some stops than their overall schedules suggest."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -535,7 +535,7 @@
         "status": "review",
         "score": 90,
         "reasons": [
-          "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "1 route shows different frequencies at some stops than its overall schedule suggests."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -850,7 +850,7 @@
         "status": "review",
         "score": 90,
         "reasons": [
-          "1 map line was repaired — Atlas fixed unusual route geometry before displaying it."
+          "1 route line had unusual geometry and was adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -928,7 +928,7 @@
         "status": "review",
         "score": 70,
         "reasons": [
-          "3 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+          "3 route lines had unusual geometry and were adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -1051,7 +1051,7 @@
         "status": "review",
         "score": 80,
         "reasons": [
-          "2 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+          "2 route lines had unusual geometry and were adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -1102,8 +1102,8 @@
         "status": "degraded",
         "score": 40,
         "reasons": [
-          "4 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
-          "7 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "4 route lines had unusual geometry and were adjusted before display.",
+          "7 routes show different frequencies at some stops than their overall schedules suggest."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -1151,8 +1151,8 @@
         "status": "review",
         "score": 80,
         "reasons": [
-          "1 map line was repaired — Atlas fixed unusual route geometry before displaying it.",
-          "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "1 route line had unusual geometry and was adjusted before display.",
+          "1 route shows different frequencies at some stops than its overall schedule suggests."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -1246,7 +1246,7 @@
         "status": "review",
         "score": 70,
         "reasons": [
-          "6 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "6 routes show different frequencies at some stops than their overall schedules suggest."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -1470,7 +1470,7 @@
         "status": "review",
         "score": 90,
         "reasons": [
-          "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "1 route shows different frequencies at some stops than its overall schedule suggests."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -1515,7 +1515,7 @@
         "status": "review",
         "score": 70,
         "reasons": [
-          "8 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+          "8 route lines had unusual geometry and were adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -1619,7 +1619,7 @@
         "status": "review",
         "score": 80,
         "reasons": [
-          "2 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "2 routes show different frequencies at some stops than their overall schedules suggest."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -1662,7 +1662,7 @@
         "status": "review",
         "score": 70,
         "reasons": [
-          "5 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+          "5 route lines had unusual geometry and were adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -1966,8 +1966,8 @@
         "status": "review",
         "score": 60,
         "reasons": [
-          "16 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
-          "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "16 route lines had unusual geometry and were adjusted before display.",
+          "1 route shows different frequencies at some stops than its overall schedule suggests."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -2042,7 +2042,7 @@
         "status": "review",
         "score": 80,
         "reasons": [
-          "2 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "2 routes show different frequencies at some stops than their overall schedules suggest."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -2096,8 +2096,8 @@
         "score": 30,
         "reasons": [
           "1 schedule-data warning — Atlas found a minor issue while reading the schedule.",
-          "38 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
-          "5 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "38 route lines had unusual geometry and were adjusted before display.",
+          "5 routes show different frequencies at some stops than their overall schedules suggest."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -2184,7 +2184,7 @@
         "status": "review",
         "score": 80,
         "reasons": [
-          "2 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "2 routes show different frequencies at some stops than their overall schedules suggest."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -2372,7 +2372,7 @@
         "status": "review",
         "score": 90,
         "reasons": [
-          "1 map line was repaired — Atlas fixed unusual route geometry before displaying it."
+          "1 route line had unusual geometry and was adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -2508,7 +2508,7 @@
         "status": "review",
         "score": 90,
         "reasons": [
-          "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "1 route shows different frequencies at some stops than its overall schedule suggests."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -2556,7 +2556,7 @@
         "status": "review",
         "score": 90,
         "reasons": [
-          "1 map line was repaired — Atlas fixed unusual route geometry before displaying it."
+          "1 route line had unusual geometry and was adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -2713,7 +2713,7 @@
         "status": "review",
         "score": 90,
         "reasons": [
-          "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "1 route shows different frequencies at some stops than its overall schedule suggests."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -3014,7 +3014,7 @@
         "status": "review",
         "score": 80,
         "reasons": [
-          "2 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "2 routes show different frequencies at some stops than their overall schedules suggest."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -3203,7 +3203,7 @@
         "status": "review",
         "score": 70,
         "reasons": [
-          "16 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+          "16 route lines had unusual geometry and were adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -3299,8 +3299,8 @@
         "status": "degraded",
         "score": 40,
         "reasons": [
-          "71 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
-          "3 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "71 route lines had unusual geometry and were adjusted before display.",
+          "3 routes show different frequencies at some stops than their overall schedules suggest."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -3347,8 +3347,8 @@
         "status": "degraded",
         "score": 40,
         "reasons": [
-          "22 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
-          "13 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "22 route lines had unusual geometry and were adjusted before display.",
+          "13 routes show different frequencies at some stops than their overall schedules suggest."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -3389,7 +3389,7 @@
         "status": "review",
         "score": 80,
         "reasons": [
-          "2 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "2 routes show different frequencies at some stops than their overall schedules suggest."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -3568,7 +3568,7 @@
         "status": "review",
         "score": 90,
         "reasons": [
-          "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "1 route shows different frequencies at some stops than its overall schedule suggests."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -3604,7 +3604,7 @@
         "status": "review",
         "score": 90,
         "reasons": [
-          "1 map line was repaired — Atlas fixed unusual route geometry before displaying it."
+          "1 route line had unusual geometry and was adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -4468,8 +4468,8 @@
         "status": "degraded",
         "score": 40,
         "reasons": [
-          "4 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
-          "9 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "4 route lines had unusual geometry and were adjusted before display.",
+          "9 routes show different frequencies at some stops than their overall schedules suggest."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -4587,7 +4587,7 @@
         "status": "review",
         "score": 70,
         "reasons": [
-          "57 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "57 routes show different frequencies at some stops than their overall schedules suggest."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -5338,7 +5338,7 @@
         "status": "review",
         "score": 70,
         "reasons": [
-          "3 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+          "3 route lines had unusual geometry and were adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -5420,7 +5420,7 @@
         "score": 60,
         "reasons": [
           "1 schedule-data warning — Atlas found a minor issue while reading the schedule.",
-          "7 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+          "7 route lines had unusual geometry and were adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -5470,7 +5470,7 @@
         "status": "review",
         "score": 70,
         "reasons": [
-          "7 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+          "7 route lines had unusual geometry and were adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -5678,8 +5678,8 @@
         "status": "review",
         "score": 60,
         "reasons": [
-          "3 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
-          "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "3 route lines had unusual geometry and were adjusted before display.",
+          "1 route shows different frequencies at some stops than its overall schedule suggests."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -6063,7 +6063,7 @@
         "status": "review",
         "score": 80,
         "reasons": [
-          "2 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+          "2 route lines had unusual geometry and were adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -6168,7 +6168,7 @@
         "status": "review",
         "score": 70,
         "reasons": [
-          "4 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+          "4 route lines had unusual geometry and were adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -6212,7 +6212,7 @@
         "status": "review",
         "score": 70,
         "reasons": [
-          "4 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+          "4 route lines had unusual geometry and were adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -6431,7 +6431,7 @@
         "score": 80,
         "reasons": [
           "1 schedule-data warning — Atlas found a minor issue while reading the schedule.",
-          "1 map line was repaired — Atlas fixed unusual route geometry before displaying it."
+          "1 route line had unusual geometry and was adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -6506,8 +6506,8 @@
         "status": "review",
         "score": 70,
         "reasons": [
-          "2 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
-          "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "2 route lines had unusual geometry and were adjusted before display.",
+          "1 route shows different frequencies at some stops than its overall schedule suggests."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -6548,7 +6548,7 @@
         "status": "review",
         "score": 90,
         "reasons": [
-          "1 map line was repaired — Atlas fixed unusual route geometry before displaying it."
+          "1 route line had unusual geometry and was adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -6663,7 +6663,7 @@
         "status": "review",
         "score": 70,
         "reasons": [
-          "3 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "3 routes show different frequencies at some stops than their overall schedules suggest."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -7544,8 +7544,8 @@
         "score": 60,
         "reasons": [
           "1 schedule-data warning — Atlas found a minor issue while reading the schedule.",
-          "1 map line was repaired — Atlas fixed unusual route geometry before displaying it.",
-          "2 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "1 route line had unusual geometry and was adjusted before display.",
+          "2 routes show different frequencies at some stops than their overall schedules suggest."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -7594,8 +7594,8 @@
         "status": "degraded",
         "score": 50,
         "reasons": [
-          "2 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
-          "5 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "2 route lines had unusual geometry and were adjusted before display.",
+          "5 routes show different frequencies at some stops than their overall schedules suggest."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -7681,8 +7681,8 @@
         "status": "degraded",
         "score": 40,
         "reasons": [
-          "369 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
-          "7 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "369 route lines had unusual geometry and were adjusted before display.",
+          "7 routes show different frequencies at some stops than their overall schedules suggest."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -7729,7 +7729,7 @@
         "status": "review",
         "score": 70,
         "reasons": [
-          "3 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "3 routes show different frequencies at some stops than their overall schedules suggest."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -7801,7 +7801,7 @@
         "status": "review",
         "score": 90,
         "reasons": [
-          "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "1 route shows different frequencies at some stops than its overall schedule suggests."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -8777,7 +8777,7 @@
         "status": "review",
         "score": 70,
         "reasons": [
-          "7 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "7 routes show different frequencies at some stops than their overall schedules suggest."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -8833,7 +8833,7 @@
         "status": "review",
         "score": 90,
         "reasons": [
-          "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "1 route shows different frequencies at some stops than its overall schedule suggests."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -8964,7 +8964,7 @@
         "status": "review",
         "score": 90,
         "reasons": [
-          "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "1 route shows different frequencies at some stops than its overall schedule suggests."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -9106,8 +9106,8 @@
         "status": "review",
         "score": 60,
         "reasons": [
-          "54 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
-          "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "54 route lines had unusual geometry and were adjusted before display.",
+          "1 route shows different frequencies at some stops than its overall schedule suggests."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -9208,7 +9208,7 @@
         "status": "review",
         "score": 70,
         "reasons": [
-          "4 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "4 routes show different frequencies at some stops than their overall schedules suggest."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -9405,7 +9405,7 @@
         "status": "review",
         "score": 70,
         "reasons": [
-          "4 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "4 routes show different frequencies at some stops than their overall schedules suggest."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -9788,8 +9788,8 @@
         "status": "review",
         "score": 60,
         "reasons": [
-          "1 map line was repaired — Atlas fixed unusual route geometry before displaying it.",
-          "11 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "1 route line had unusual geometry and was adjusted before display.",
+          "11 routes show different frequencies at some stops than their overall schedules suggest."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -10825,7 +10825,7 @@
         "status": "review",
         "score": 90,
         "reasons": [
-          "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "1 route shows different frequencies at some stops than its overall schedule suggests."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -11463,7 +11463,7 @@
         "status": "review",
         "score": 70,
         "reasons": [
-          "40 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+          "40 route lines had unusual geometry and were adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -12045,7 +12045,7 @@
         "status": "review",
         "score": 70,
         "reasons": [
-          "3 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+          "3 route lines had unusual geometry and were adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -12436,8 +12436,8 @@
         "score": 50,
         "reasons": [
           "1 schedule-data warning — Atlas found a minor issue while reading the schedule.",
-          "3 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
-          "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "3 route lines had unusual geometry and were adjusted before display.",
+          "1 route shows different frequencies at some stops than its overall schedule suggests."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -12546,8 +12546,8 @@
         "status": "review",
         "score": 60,
         "reasons": [
-          "13 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
-          "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "13 route lines had unusual geometry and were adjusted before display.",
+          "1 route shows different frequencies at some stops than its overall schedule suggests."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -12972,7 +12972,7 @@
         "score": 60,
         "reasons": [
           "1 schedule-data warning — Atlas found a minor issue while reading the schedule.",
-          "10 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+          "10 route lines had unusual geometry and were adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -13116,7 +13116,7 @@
         "status": "review",
         "score": 70,
         "reasons": [
-          "4 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+          "4 route lines had unusual geometry and were adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -13569,7 +13569,7 @@
         "status": "review",
         "score": 80,
         "reasons": [
-          "2 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "2 routes show different frequencies at some stops than their overall schedules suggest."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -13652,7 +13652,7 @@
         "status": "review",
         "score": 90,
         "reasons": [
-          "1 map line was repaired — Atlas fixed unusual route geometry before displaying it."
+          "1 route line had unusual geometry and was adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -13688,7 +13688,7 @@
         "status": "review",
         "score": 70,
         "reasons": [
-          "3 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "3 routes show different frequencies at some stops than their overall schedules suggest."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -13786,8 +13786,8 @@
         "status": "degraded",
         "score": 50,
         "reasons": [
-          "29 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
-          "2 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "29 route lines had unusual geometry and were adjusted before display.",
+          "2 routes show different frequencies at some stops than their overall schedules suggest."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -13823,7 +13823,7 @@
         "status": "review",
         "score": 70,
         "reasons": [
-          "6 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+          "6 route lines had unusual geometry and were adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -14035,8 +14035,8 @@
         "status": "review",
         "score": 60,
         "reasons": [
-          "41 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
-          "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "41 route lines had unusual geometry and were adjusted before display.",
+          "1 route shows different frequencies at some stops than its overall schedule suggests."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -14095,7 +14095,7 @@
         "status": "review",
         "score": 70,
         "reasons": [
-          "19 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+          "19 route lines had unusual geometry and were adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -14133,7 +14133,7 @@
         "status": "review",
         "score": 70,
         "reasons": [
-          "3 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+          "3 route lines had unusual geometry and were adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -14170,7 +14170,7 @@
         "status": "review",
         "score": 80,
         "reasons": [
-          "2 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+          "2 route lines had unusual geometry and were adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -14675,7 +14675,7 @@
         "status": "review",
         "score": 90,
         "reasons": [
-          "1 map line was repaired — Atlas fixed unusual route geometry before displaying it."
+          "1 route line had unusual geometry and was adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -15136,7 +15136,7 @@
         "status": "review",
         "score": 90,
         "reasons": [
-          "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "1 route shows different frequencies at some stops than its overall schedule suggests."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -15221,7 +15221,7 @@
         "score": 80,
         "reasons": [
           "1 schedule-data warning — Atlas found a minor issue while reading the schedule.",
-          "1 map line was repaired — Atlas fixed unusual route geometry before displaying it."
+          "1 route line had unusual geometry and was adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -15493,8 +15493,8 @@
         "status": "review",
         "score": 70,
         "reasons": [
-          "2 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
-          "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "2 route lines had unusual geometry and were adjusted before display.",
+          "1 route shows different frequencies at some stops than its overall schedule suggests."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -15534,8 +15534,8 @@
         "status": "degraded",
         "score": 50,
         "reasons": [
-          "2 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
-          "4 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+          "2 route lines had unusual geometry and were adjusted before display.",
+          "4 routes show different frequencies at some stops than their overall schedules suggest."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -15629,7 +15629,7 @@
         "status": "review",
         "score": 70,
         "reasons": [
-          "4 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+          "4 route lines had unusual geometry and were adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -17259,7 +17259,7 @@
         "status": "review",
         "score": 70,
         "reasons": [
-          "7 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+          "7 route lines had unusual geometry and were adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -20735,7 +20735,7 @@
         "status": "review",
         "score": 70,
         "reasons": [
-          "4 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+          "4 route lines had unusual geometry and were adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -20782,7 +20782,7 @@
         "score": 40,
         "reasons": [
           "3 schedule-data warnings — Atlas found a minor issue while reading the schedule.",
-          "4 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+          "4 route lines had unusual geometry and were adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -20833,7 +20833,7 @@
         "score": 40,
         "reasons": [
           "3 schedule-data warnings — Atlas found a minor issue while reading the schedule.",
-          "4 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+          "4 route lines had unusual geometry and were adjusted before display."
         ],
         "metrics": {
           "validationErrors": 0,
@@ -21114,7 +21114,7 @@
         "score": 55,
         "reasons": [
           "1 validation warning.",
-          "The configured source has not been processed into the current Atlas artifact yet."
+          "This agency's latest schedule data is not available in Atlas yet."
         ],
         "metrics": {
           "validationErrors": 0,

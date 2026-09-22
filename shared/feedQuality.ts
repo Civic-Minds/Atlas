@@ -50,11 +50,11 @@ export function assessFeedQuality(input: FeedQualityInput): FeedQuality {
   }
   if (input.shapeAnomalies > 0) {
     score -= Math.min(30, input.shapeAnomalies * 10);
-    reasons.push(`${input.shapeAnomalies} map line${input.shapeAnomalies === 1 ? ' was' : 's were'} repaired — Atlas fixed unusual route geometry before displaying it.`);
+    reasons.push(`${input.shapeAnomalies} route line${input.shapeAnomalies === 1 ? ' had unusual geometry and was' : 's had unusual geometry and were'} adjusted before display.`);
   }
   if (input.routeHeadwayMismatches > 0) {
     score -= Math.min(30, input.routeHeadwayMismatches * 10);
-    reasons.push(`${input.routeHeadwayMismatches} route frequenc${input.routeHeadwayMismatches === 1 ? 'y needs' : 'ies need'} checking — some stops appear to have more frequent service than the route's overall schedule suggests.`);
+    reasons.push(`${input.routeHeadwayMismatches} route${input.routeHeadwayMismatches === 1 ? ' shows' : 's show'} different frequencies at some stops than ${input.routeHeadwayMismatches === 1 ? 'its overall schedule suggests.' : 'their overall schedules suggest.'}`);
   }
   if (isExpired(input.feedExpiry, checkedAt)) {
     score -= 35;

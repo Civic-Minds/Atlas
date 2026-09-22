@@ -21,7 +21,7 @@
     "score": 55,
     "reasons": [
       "1 validation warning.",
-      "The configured source has not been processed into the current Atlas artifact yet."
+      "This agency's latest schedule data is not available in Atlas yet."
     ],
     "metrics": {
       "validationErrors": 0,

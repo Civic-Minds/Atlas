@@ -488,7 +488,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                     <Moon className="w-4 h-4 mt-0.5 shrink-0 text-[var(--text-dim)]" />
                     <div className="min-w-0">
                       <p className="text-[11px] font-bold text-[var(--text-primary)] leading-tight">Dark mode</p>
-                      <p className="text-[10px] text-[var(--text-muted)] mt-1 leading-relaxed">Uses darker colours across Atlas.</p>
+                      <p className="text-[10px] text-[var(--text-muted)] mt-1 leading-relaxed">Applies a dark colour theme across Atlas.</p>
                     </div>
                   </div>
                   <button
