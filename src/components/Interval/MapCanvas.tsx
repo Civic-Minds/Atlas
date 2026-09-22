@@ -333,6 +333,20 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
 
   const [mapContextAgencies, setMapContextAgencies] = useState<MapContextAgency[]>([]);
 
+  const onDemandServiceAreaData = useMemo<GeoJSON.FeatureCollection<GeoJSON.Polygon>>(() => ({
+    type: 'FeatureCollection',
+    features: agencies
+      .filter(agency => agency.onDemandServiceArea)
+      .map(agency => ({
+        ...agency.onDemandServiceArea!.feature,
+        properties: {
+          ...(agency.onDemandServiceArea!.feature.properties ?? {}),
+          agencySlug: agency.slug,
+          agencyName: agency.name,
+        },
+      })),
+  }), [agencies]);
+
   const updateMapContext = useCallback(() => {
     const map = mapRef.current;
     if (!showMapContext || !map || !mapLoaded) {
@@ -700,6 +714,17 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     source.setData({ type: 'FeatureCollection', features: frequencySegmentOverlay.segments });
   }, [frequencySegmentOverlay, mapLoaded]);
 
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapLoaded) return;
+    const source = map.getSource('on-demand-service-areas') as maplibregl.GeoJSONSource | undefined;
+    if (source) source.setData(onDemandServiceAreaData);
+    const visible = selectedAgencySlug === 'bwg' ? 'visible' : 'none';
+    for (const id of ['on-demand-service-area-fill', 'on-demand-service-area-line']) {
+      if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', visible);
+    }
+  }, [mapLoaded, onDemandServiceAreaData, selectedAgencySlug]);
+
   // A combined-row hover is a clipped local overlay, not a full-route branch match.
   useEffect(() => {
     const map = mapRef.current;
@@ -773,6 +798,33 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       map.addSource('atlas-pmtiles', {
         type: 'vector',
         url: `pmtiles://${getAtlasPmtilesUrl()}`,
+      });
+
+      // Demand-responsive agencies may publish a service boundary without
+      // route shapes. Keep the boundary in its own layer so it is visibly
+      // different from scheduled route geometry.
+      map.addSource('on-demand-service-areas', {
+        type: 'geojson',
+        data: { type: 'FeatureCollection', features: [] },
+      });
+      map.addLayer({
+        id: 'on-demand-service-area-fill',
+        type: 'fill',
+        source: 'on-demand-service-areas',
+        paint: { 'fill-color': '#d8ff65', 'fill-opacity': 0.16 },
+        layout: { visibility: 'none' },
+      });
+      map.addLayer({
+        id: 'on-demand-service-area-line',
+        type: 'line',
+        source: 'on-demand-service-areas',
+        paint: {
+          'line-color': '#d8ff65',
+          'line-width': 2,
+          'line-opacity': 0.95,
+          'line-dasharray': [2, 1.5],
+        },
+        layout: { visibility: 'none' },
       });
 
       // Add route shapes (line) layers

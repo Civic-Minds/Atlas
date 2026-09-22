@@ -194,6 +194,9 @@ export function useAgencyData(
   }, [attemptFetchAgency]);
 
   const queueAgency = useCallback((agency: Agency) => {
+    // Some agencies publish only a service-area boundary (for example,
+    // demand-responsive transit) and have no route GeoJSON artifact to fetch.
+    if (agency.onDemandOnly) return;
     const session = loadSession.current;
     if (!session || session.cancelled) return;
     if (session.loadedSlugs.has(agency.slug) || session.queuedSlugs.has(agency.slug)) return;

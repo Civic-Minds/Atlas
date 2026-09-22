@@ -10,7 +10,7 @@ Permanent blockers only — agencies we cannot add because upstream has no fixed
 
 | Agency | Reason | Notes |
 |--------|--------|-------|
-| Bradford BWG Transit | On-demand only | No fixed-route GTFS; evaluated 2026 |
+| Bradford BWG Transit | Hybrid service; no route feed yet | Argo on-demand coverage is represented by a source-backed service-area prototype; the new Holland fixed route still needs a usable route data source |
 | Cadillac/Wexford Transit Authority | Demand-response only | Door-to-door service; no conventional fixed-route GTFS found; evaluated 2026 |
 | Big Rapids Dial-A-Ride / Mecosta-Osceola Transit Authority | Demand-response only | No conventional local fixed-route GTFS found; evaluated 2026 |
 | Roseview Transit (Richmond, Indiana) | Request-based service | No current public fixed-route GTFS found; evaluated 2026 |
