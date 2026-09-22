@@ -7,7 +7,7 @@
   "scripts": {
     "prepare": "git config core.hooksPath .githooks 2>/dev/null || true",
     "dev": "vite",
-    "dev:public": "VITE_ATLAS_MODE=public vite",
+    "dev:public": "VITE_ATLAS_MODE=public VITE_BETA_BUILD=false VITE_LIVE_ENABLED=false VITE_HISTORY_ENABLED=false VITE_CORRIDORS_ENABLED=false VITE_CARD_CLICK_TO_FLAG_ENABLED=false VITE_UNEVEN_BANNER_ENABLED=false VITE_MAP_EXPORT_ENABLED=false vite",
     "dev:beta": "VITE_ATLAS_MODE=beta VITE_BETA_BUILD=true vite",
     "dev:all": "VITE_ATLAS_MODE=dev vite",
     "dev:api": "npx tsx api-dev-server.ts",
