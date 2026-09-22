@@ -27,11 +27,11 @@ This scope was written when Atlas was much smaller and Ontario was a large share
 
 ## Choosing the first geography (revisited)
 
-The original GTHA choice rested on two separate reasons: it would produce a "geographically compact, readable map," and it matched Atlas's product focus at the time. The second reason no longer holds. Atlas now covers 608 agencies across the US, Canada, and France, and the distribution (from `public/data/index.json`) looks like this:
+The original GTHA choice rested on two separate reasons: it would produce a "geographically compact, readable map," and it matched Atlas's product focus at the time. The second reason no longer holds. The current registry contains 699 agencies; 556 are visible in public mode, with the public catalog currently concentrated in Canada and the United States. The distribution below is based on `public/data/index.json` and the region-to-country lookup in `shared/regionCountry.ts`:
 
-- **United States** — California alone has 93 agencies, more than all of Ontario (26). Other large states: New York (28), Washington (20), Florida (18), Texas (17), Virginia (16). The US is Atlas's largest single-country footprint by a wide margin.
+- **United States** — California alone has 93 agencies, more than all of Ontario (33). Other large states: New York (29), Washington (23), Florida (20), Texas (20), Virginia (17). The US is Atlas's largest single-country footprint by a wide margin.
 - **France** — seven-plus regions with real coverage: Auvergne-Rhône-Alpes (19), Nouvelle-Aquitaine (17), Occitanie (16), Bretagne (15), Provence-Alpes-Côte d'Azur (13), Hauts-de-France (12), Normandie (12), Grand Est (11), plus smaller regions.
-- **Canada** — Ontario (26) is the largest Canadian region, comparable in size to a mid-size US state and well behind California.
+- **Canada** — Ontario (33) is the largest Canadian region, comparable in size to a mid-size US state and well behind California.
 
 The "compact, readable map" reasoning still holds, but it applies equally to a comparable single US metro or French région — it was never a reason unique to GTHA.
 
@@ -39,7 +39,7 @@ The "compact, readable map" reasoning still holds, but it applies equally to a c
 
 | | Canada (GTHA) | US (a comparable metro, e.g. within California) | France (a comparable région, e.g. Auvergne-Rhône-Alpes) |
 |---|---|---|---|
-| Footprint match | Ontario = 26 agencies system-wide, GTHA a subset of that | California alone = 93 agencies, Atlas's largest state footprint | Auvergne-Rhône-Alpes = 19 agencies, Atlas's largest French region |
+| Footprint match | Ontario = 33 agencies system-wide, GTHA a subset of that | California alone = 93 agencies, Atlas's largest state footprint | Auvergne-Rhône-Alpes = 19 agencies, Atlas's largest French region |
 | Population source | StatCan 2021 Census — actual count | Census Bureau ACS 5-year estimates — survey-based, carries margin of error at the tract level | INSEE Filosofi 200m population grid (tax-file derived) or IRIS boundaries |
 | Boundary format / licence | Shapefile; Statistics Canada Open Licence (free, attribution required) | Shapefile / geodatabase (TIGER/Line); US government work, public domain, no licence terms | Shapefile / GeoJSON; Etalab Licence Ouverte (free, attribution required) |
 | Existing tooling | No dedicated Python or JS library found for StatCan boundary+population joins; `cancensus` (R) is the closest maintained option | `pytidycensus` and `pygris` (Python) are purpose-built for ACS+TIGER joins; Census Bureau also publishes pre-joined TIGER+ACS geodatabases directly | No dedicated join library found; would be a from-scratch CSV/shapefile join |
@@ -138,4 +138,4 @@ The experiment is worth continuing if it produces at least one clear, defensible
 
 This document does not commit Atlas to building a demographic or equity product.
 
-[Back to Data](./DATA.md)
+[Back to Data](../DATA.md)

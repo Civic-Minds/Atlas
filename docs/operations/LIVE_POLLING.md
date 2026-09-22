@@ -2,7 +2,7 @@
 
 Reference for Atlas's live GTFS-RT integration status — which agencies are polled, which are parked, and per-agency feed quirks. Split out of `AGENCIES.md` since this is substantial, actively-growing, live-data-integration reference distinct from static coverage.
 
-For where this fits in the platform's future direction, see [Live Data Infrastructure](./roadmap/TECHNICAL.md#live-data-infrastructure).
+For where this fits in the platform's future direction, see [Live Data Infrastructure](../roadmap/TECHNICAL.md#live-data-infrastructure).
 
 **Current status:** Live GTFS-RT archiving is paused while the collection and quality checks are rebuilt. Existing R2 snapshots remain available; no new snapshots are being written.
 
@@ -10,7 +10,7 @@ For where this fits in the platform's future direction, see [Live Data Infrastru
 
 ## Live Polling
 
-Client-side GTFS-RT polling via `/api/live-vehicles`. Runs in the browser while Live Vehicles is open — not a background process. Config lives in [`shared/livePollingConfig.ts`](../shared/livePollingConfig.ts).
+Client-side GTFS-RT polling via `/api/live-vehicles`. Runs in the browser while Live Vehicles is open — not a background process. Config lives in [`shared/livePollingConfig.ts`](../../shared/livePollingConfig.ts).
 
 ### Active
 
@@ -98,4 +98,4 @@ All other agencies: **static** history snapshots only (headway diffs via `atlas-
 
 ---
 
-[Back to Data](./DATA.md)
+[Back to Data](../DATA.md)

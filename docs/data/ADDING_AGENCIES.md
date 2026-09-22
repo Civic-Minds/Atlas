@@ -95,4 +95,4 @@ cp tmp/incremental-pmtiles-build/<slug>/atlas.pmtiles tmp/atlas-pmtiles-preview.
 
 ---
 
-[Back to Data](./DATA.md)
+[Back to Data](../DATA.md)

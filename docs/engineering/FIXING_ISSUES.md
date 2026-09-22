@@ -1,6 +1,7 @@
 # Fixing Issues
 
-The canonical entry point is [`../FIXING_ISSUES.md`](../FIXING_ISSUES.md).
+The canonical entry point is this page. The repository-level working rules in
+`AGENTS.md` point here for Atlas-specific validation guidance.
 
 Choose the detailed runbook that matches the change:
 

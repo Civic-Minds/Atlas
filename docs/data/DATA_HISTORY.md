@@ -29,7 +29,7 @@ Historical snapshots are compiled via two methods:
 | **Burlington Transit** (`burlington`) | `mdb-724` | 2015 - 2026 | 10 years | Backfilled via Mobility Database. |
 | **Community Transit** (`communitytransit`) | N/A | 2016 - 2026 | 11 years | Backfilled via manual archive zips. |
 | **Kingston Transit** (`kingston`) | `mdb-733` | 2016 - 2027 | 10 years | Backfilled via Mobility Database. |
-| **SacRT** (`sacrt`) | N/A | 2012 - 2026 | 8 years | Backfilled via manual archive zips. Span satisfies 10-year goal. |
+| **SacRT** (`sacrt`) | N/A | 2012 - 2026 | 8 years | Backfilled via manual archive zips. The calendar span is long enough for the goal, but the compiled snapshot count still needs to satisfy the 10-distinct-year UI eligibility check. |
 | **Metro Transit** (`metro-transit`) | `mdb-205` | 2016 - 2026 | 11 years | Backfilled (August 2026). Dynamic URLs updated in `index.json`. |
 | **Grand River Transit** (`grt`) | `mdb-721` | 2016 - 2026 | 11 years | Backfilled (August 2026) using deprecated source ID redirect. |
 | **Brampton Transit** (`brampton`) | `mdb-729` | 2016 - 2026 | 11 years | Backfilled (August 2026) using dynamic open data feeds. |
@@ -40,7 +40,7 @@ Historical snapshots are compiled via two methods:
 | **PATH** (`path`) | `mdb-517` | 2015 - 2025 | 11 years | Backfilled via Mobility Database; no earlier MDB coverage. |
 | **STM** (`stm`) | `mdb-2126` | 2013 - 2026 | 14 years | Backfilled via Mobility Database. |
 
-These six (plus GCRTA above) are the rail-mode candidates identified for the trip-time-over-years comparison experiment — see `docs/roadmap/EXPERIMENTS.md`.
+The trip-time-over-years experiment is intended to start with rail because alignments change less often than bus. Candidate selection still needs a separate audit; see the experiment note in `docs/roadmap/EXPERIMENTS.md`.
 
 ---
 

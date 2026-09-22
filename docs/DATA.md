@@ -4,40 +4,40 @@ Atlas is built from publicly available transit data and publishes the processing
 
 ## Current Coverage & Status
 
-- **[Agencies](./AGENCIES.md)**: Current coverage and regions.
-- **[Live Polling](./LIVE_POLLING.md)**: Live GTFS-RT integration status — active/parked agencies, keys in hand, history archiving.
-- **[History Coverage](./DATA_HISTORY.md)**: Historical headway snapshots backfill log, candidate systems, and deferred agencies.
-- **[Known Issues](./KNOWN_ISSUES.md)**: Current data and coverage limitations.
+- **[Agencies](data/AGENCIES.md)**: Current coverage and regions.
+- **[Live Polling](operations/LIVE_POLLING.md)**: Live GTFS-RT integration status — active/parked agencies, keys in hand, history archiving.
+- **[History Coverage](data/DATA_HISTORY.md)**: Historical headway snapshots backfill log, candidate systems, and deferred agencies.
+- **[Known Issues](operations/KNOWN_ISSUES.md)**: Current data and coverage limitations.
 
 ## Expansion Planning
 
-- **[Agency Backlog](./AGENCY_BACKLOG.md)**: Coverage expansion queue and discovery notes.
-- **[International Expansion](./INTERNATIONAL.md)**: Country-by-country research and planning for coverage beyond Canada/US.
+- **[Agency Backlog](data/AGENCY_BACKLOG.md)**: Coverage expansion queue and discovery notes.
+- **[International Expansion](data/INTERNATIONAL.md)**: Country-by-country research and planning for coverage beyond Canada/US.
 
 ## Methodology
 
-- **[Pipeline Methodology](./PIPELINE.md)**: How Atlas processes GTFS and calculates frequency tiers.
+- **[Pipeline Methodology](data/PIPELINE.md)**: How Atlas processes GTFS and calculates frequency tiers.
 - **History archives**: How Atlas selects, sources, and stores historical GTFS service periods.
-- **[Route Service Metrics](./ROUTE_SERVICE_METRICS.md)**: Definitions and display semantics for route-level service metrics.
-- **[Display Naming](./DISPLAY_NAMING.md)**: Definitions and display semantics for agency name shortening and secondary text.
-- **[Population Context](./DATA_POPULATION.md)**: Proposed population-density data layer and its relationship to transit frequency.
-- **[Frequent Network Criteria](./DATA_FREQUENT_NETWORK.md)**: Proposed "Frequent" tool (Night Service's daytime counterpart) and the cross-agency research needed before picking a threshold.
+- **[Route Service Metrics](data/ROUTE_SERVICE_METRICS.md)**: Definitions and display semantics for route-level service metrics.
+- **[Display Naming](data/DISPLAY_NAMING.md)**: Definitions and display semantics for agency name shortening and secondary text.
+- **[Population Context](data/DATA_POPULATION.md)**: Proposed population-density data layer and its relationship to transit frequency.
+- **[Frequent Network Criteria](data/DATA_FREQUENT_NETWORK.md)**: Proposed "Frequent" tool (Night Service's daytime counterpart) and the cross-agency research needed before picking a threshold.
 
 ## Freshness, quality, and operations
 
-- **[Data Principles](./DATA_PRINCIPLES.md)**: How Atlas approaches freshness, review, corrections, and static versus live data.
-- **[Known Issues](./KNOWN_ISSUES.md)**: Feed limitations, data quirks, and known coverage gaps.
-- **[Live Polling](./LIVE_POLLING.md)**: Freshness and coverage details for real-time vehicle and adherence data.
-- **[Adding Agencies](./ADDING_AGENCIES.md)**: Contributor procedure for onboarding one new agency or a small batch.
-- **[Updating the Map](./MAP_UPDATES.md)**: Refreshing feeds and publishing artifacts for already-live agencies.
-- **[Coverage Gap Discovery](./COVERAGE_GAP_DISCOVERY.md)**: Finding new agency candidates and looking up their feeds.
-- **[Fixing Issues](./FIXING_ISSUES.md)**: Scoping a fix to its blast radius and choosing the pipeline/data or UI validation runbook.
+- **[Data Principles](data/DATA_PRINCIPLES.md)**: How Atlas approaches freshness, review, corrections, and static versus live data.
+- **[Known Issues](operations/KNOWN_ISSUES.md)**: Feed limitations, data quirks, and known coverage gaps.
+- **[Live Polling](operations/LIVE_POLLING.md)**: Freshness and coverage details for real-time vehicle and adherence data.
+- **[Adding Agencies](data/ADDING_AGENCIES.md)**: Contributor procedure for onboarding one new agency or a small batch.
+- **[Updating the Map](data/MAP_UPDATES.md)**: Refreshing feeds and publishing artifacts for already-live agencies.
+- **[Coverage Gap Discovery](data/COVERAGE_GAP_DISCOVERY.md)**: Finding new agency candidates and looking up their feeds.
+- **[Fixing Issues](engineering/FIXING_ISSUES.md)**: Scoping a fix to its blast radius and choosing the pipeline/data or UI validation runbook.
 
 ## History Archives
 
 History is a curated static-schedule feature, not an automatic archive of every
 agency. Atlas prioritizes cities where historical feeds can show meaningful
-network or service changes; it does not need to backfill all 400+ cities.
+network or service changes; it does not need to backfill every public agency.
 
 For each selected agency:
 

@@ -36,7 +36,7 @@ Every pull request runs the normal build and a second build with the beta flags 
 
 1. Create an issue when the work needs a durable record.
 2. Branch from current `origin/main` and add the regression test before broadening shared behavior.
-3. Follow [`../FIXING_ISSUES.md`](../FIXING_ISSUES.md) and its scope-specific runbook.
+3. Follow [`FIXING_ISSUES.md`](FIXING_ISSUES.md) and its scope-specific runbook.
 4. Keep immature features behind an environment flag so beta can validate them without branch drift.
 5. Update `[Unreleased]`, commit the logical change, and open a PR into `main`.
 6. Merge only after CI, preview checks, and the required data/UI validation pass.

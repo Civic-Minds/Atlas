@@ -6,7 +6,7 @@ Ongoing data gaps, feed quirks, and platform limitations that are outside our co
 
 ## Missing Agencies
 
-Permanent blockers only — agencies we cannot add because upstream has no fixed-route GTFS or the feed is dead. Actionable adds belong in [`AGENCY_BACKLOG.md`](AGENCY_BACKLOG.md).
+Permanent blockers only — agencies we cannot add because upstream has no fixed-route GTFS or the feed is dead. Actionable adds belong in [`AGENCY_BACKLOG.md`](../data/AGENCY_BACKLOG.md).
 
 | Agency | Reason | Notes |
 |--------|--------|-------|
@@ -61,7 +61,7 @@ GO Transit publishes two overlapping route ID sets per schedule period (e.g. `04
 
 ### Display naming violations
 
-Known violations of the naming rules in [`DISPLAY_NAMING.md`](DISPLAY_NAMING.md), as of 2026-07-16 (found during a Live-feature session, not yet fixed): TransLink shows with no city/province secondary text; Big Blue Bus shows with no city; some agencies get abbreviated inconsistently relative to others in the same list. Worth an audit pass across `SearchResultsList.tsx`, `LiveVehicles.tsx`, `AgencyCard.tsx`, and `History.tsx` — the places agency name + secondary text render together.
+Known violations of the naming rules in [`DISPLAY_NAMING.md`](../data/DISPLAY_NAMING.md), as of 2026-07-16 (found during a Live-feature session, not yet fixed): TransLink shows with no city/province secondary text; Big Blue Bus shows with no city; some agencies get abbreviated inconsistently relative to others in the same list. Worth an audit pass across `SearchResultsList.tsx`, `LiveVehicles.tsx`, `AgencyCard.tsx`, and `History.tsx` — the places agency name + secondary text render together.
 
 ---
 
@@ -121,4 +121,4 @@ UI notice. Needs a dedicated session, not a quick fix.
 
 ---
 
-[Back to Data](./DATA.md)
+[Back to Data](../DATA.md)

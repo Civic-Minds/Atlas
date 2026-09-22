@@ -42,7 +42,7 @@ Why Postgres and not just R2: R2 is a file store, not a query engine. Pattern qu
 
 ## Pipeline & CI
 
-- [ ] **Split weekly feed refresh per country/region**: currently one combined `refresh-feeds.yml` job refreshes all 466 agencies together, so one bad feed can't easily be isolated or re-run independently. Splitting refresh by country wouldn't fully decouple things on its own, though — `build-pmtiles` still merges every agency into one combined tileset regardless of how refresh is split, so this needs a real design (does PMTiles building become incremental/per-region too, or stay combined?) before it's an actionable task. Prompted by considering UK/Europe as a new region to validate.
+- [ ] **Split weekly feed refresh per country/region**: currently one combined `refresh-feeds.yml` job processes the full agency registry in one run, so one bad feed can't easily be isolated or re-run independently. Splitting refresh by country wouldn't fully decouple things on its own, though — `build-pmtiles` still merges every agency into one combined tileset regardless of how refresh is split, so this needs a real design (does PMTiles building become incremental/per-region too, or stay combined?) before it's an actionable task. Prompted by considering UK/Europe as a new region to validate.
 
 ## Data Quality
 

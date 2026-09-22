@@ -24,4 +24,4 @@ Atlas is built from publicly available transit data and publishes the processing
 
 Atlas aims to keep imperfect data useful without presenting it as more current, complete, or precise than it is. Continuity helps users find agencies even when feeds expire; visible review states and corrections help them judge whether the result is trustworthy.
 
-[Back to Data](./DATA.md)
+[Back to Data](../DATA.md)

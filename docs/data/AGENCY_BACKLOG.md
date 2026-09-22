@@ -2,7 +2,7 @@
 
 Prioritized work queue for expanding Atlas static coverage. Machine-generated candidates land in `tmp/gap-candidates.json` via `npm run discover-gaps`; triage rows here.
 
-Permanent blockers (no GTFS, dead feeds, on-demand only) belong in [`KNOWN_ISSUES.md`](KNOWN_ISSUES.md) § Missing Agencies — not this file.
+Permanent blockers (no GTFS, dead feeds, on-demand only) belong in [`KNOWN_ISSUES.md`](../operations/KNOWN_ISSUES.md) § Missing Agencies — not this file.
 
 **Priority axis:** population-weighted — largest uncovered metros first.
 
@@ -304,7 +304,7 @@ Actionable Tier 2 todos exhausted. Remaining items are **blocked** (see above + 
 
 ## France expansion — blocked (no shapes)
 
-Permanent until upstream ships `shapes.txt` on the real network feed. Details in [`KNOWN_ISSUES.md`](./KNOWN_ISSUES.md) § Missing Agencies and [`INTERNATIONAL.md`](./INTERNATIONAL.md) § France.
+Permanent until upstream ships `shapes.txt` on the real network feed. Details in [`KNOWN_ISSUES.md`](../operations/KNOWN_ISSUES.md) § Missing Agencies and [`INTERNATIONAL.md`](./INTERNATIONAL.md) § France.
 
 | Status | Slug | Agency | Region | Notes |
 |--------|------|--------|--------|-------|
@@ -339,4 +339,4 @@ Then process and publish — see [`MAP_UPDATES.md`](./MAP_UPDATES.md) § Batch P
 
 ---
 
-[Back to Agencies](AGENCIES.md) · [Data](DATA.md)
+[Back to Agencies](AGENCIES.md) · [Data](../DATA.md)

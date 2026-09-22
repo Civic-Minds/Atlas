@@ -9,8 +9,8 @@ Two rules, applied together wherever an agency name renders:
 
 Prefer `agencyDisplayName(agencies, slug)` (`src/utils/format.ts`) over a raw `agencies.find(a => a.slug === slug)?.name` lookup — it's the lookup+shorten combined so rule 1 can't be forgotten at a new call site. Rule 2 (secondary text) still needs to be applied explicitly per component, since not every surface has room for a second line.
 
-Known violations of these rules are tracked in [`KNOWN_ISSUES.md`](KNOWN_ISSUES.md) rather than here — this doc is the ruleset, not a bug list.
+Known violations of these rules are tracked in [`KNOWN_ISSUES.md`](../operations/KNOWN_ISSUES.md) rather than here — this doc is the ruleset, not a bug list.
 
 ---
 
-[Back to Data](./DATA.md)
+[Back to Data](../DATA.md)

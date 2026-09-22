@@ -30,7 +30,7 @@ Read by: `pipeline/refresh.ts` only (reads `history/{slug}/latest.json` to detec
 ### atlas-live (private)
 
 Real-time GTFS-RT snapshots from the Cloudflare Worker archiver. Canary cohort is
-**smaller** than the browser Live Vehicles set — see `docs/LIVE_POLLING.md` § History Archiving.
+**smaller** than the browser Live Vehicles set — see `docs/operations/LIVE_POLLING.md` § History Archiving.
 
 - `positions/{slug}/{YYYY-MM-DD}/{unix-seconds}.json` — vehicle-position samples for the five archive agencies, every minute
 - `{slug}/{YYYY-MM-DD}/{unix-seconds}.json` — trip-update delay summaries for the five archive agencies, every 5 minutes

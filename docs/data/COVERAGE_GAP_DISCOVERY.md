@@ -24,4 +24,4 @@ Candidates are written to `tmp/gap-candidates.json`.
 
 ---
 
-[Back to Data](./DATA.md)
+[Back to Data](../DATA.md)

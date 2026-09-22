@@ -2,7 +2,7 @@
 
 Reference for Atlas's static agency coverage — regions covered and agency count.
 
-For display naming rules, see [`DISPLAY_NAMING.md`](DISPLAY_NAMING.md). For live GTFS-RT polling status and history archiving, see [`LIVE_POLLING.md`](LIVE_POLLING.md).
+For display naming rules, see [`DISPLAY_NAMING.md`](DISPLAY_NAMING.md). For live GTFS-RT polling status and history archiving, see [`LIVE_POLLING.md`](../operations/LIVE_POLLING.md).
 
 ---
 
@@ -10,7 +10,7 @@ For display naming rules, see [`DISPLAY_NAMING.md`](DISPLAY_NAMING.md). For live
 
 The current count is generated from `public/data/index.json`; do not maintain a separate hand-count here.
 
-Source of truth: [`public/data/index.json`](../public/data/index.json)
+Source of truth: [`public/data/index.json`](../../public/data/index.json)
 
 **Expansion backlog:** [`AGENCY_BACKLOG.md`](AGENCY_BACKLOG.md) — prioritized agencies to add. Gap discovery: `npm run discover-gaps`.
 
@@ -20,4 +20,4 @@ US: Washington, Oregon, California, Arizona, Nevada, Idaho, Utah, Colorado, New 
 
 ---
 
-[Back to Data](./DATA.md)
+[Back to Data](../DATA.md)

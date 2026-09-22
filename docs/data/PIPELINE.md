@@ -82,14 +82,14 @@ The frontend client uses lazy loading to keep the application fast and responsiv
 
 ## Exceptions and limitations
 
-Feed-specific quirks and current data limitations are documented in [`KNOWN_ISSUES.md`](./KNOWN_ISSUES.md). The pipeline methodology stays here; the issue document records exceptions such as day/night route pairs, commuter-rail shape selection, missing shapes, and the current GTFS-Flex scope.
+Feed-specific quirks and current data limitations are documented in [`KNOWN_ISSUES.md`](../operations/KNOWN_ISSUES.md). The pipeline methodology stays here; the issue document records exceptions such as day/night route pairs, commuter-rail shape selection, missing shapes, and the current GTFS-Flex scope.
 
 ---
 
 ## Maintainer workflows
 
-The command-by-command runbooks live in [`ADDING_AGENCIES.md`](./ADDING_AGENCIES.md) (onboarding), [`MAP_UPDATES.md`](./MAP_UPDATES.md) (refreshing/publishing), [`COVERAGE_GAP_DISCOVERY.md`](./COVERAGE_GAP_DISCOVERY.md) (finding candidates), and [`FIXING_PIPELINE_ISSUES.md`](./FIXING_PIPELINE_ISSUES.md) (validating a pipeline/data fix once a bug is found). This page stays focused on the methodology behind the public map.
+The command-by-command runbooks live in [`ADDING_AGENCIES.md`](./ADDING_AGENCIES.md) (onboarding), [`MAP_UPDATES.md`](./MAP_UPDATES.md) (refreshing/publishing), [`COVERAGE_GAP_DISCOVERY.md`](./COVERAGE_GAP_DISCOVERY.md) (finding candidates), and [`FIXING_PIPELINE_ISSUES.md`](../engineering/FIXING_PIPELINE_ISSUES.md) (validating a pipeline/data fix once a bug is found). This page stays focused on the methodology behind the public map.
 
 ---
 
-[Back to Data](./DATA.md)
+[Back to Data](../DATA.md)

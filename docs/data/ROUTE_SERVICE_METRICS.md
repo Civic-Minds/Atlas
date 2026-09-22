@@ -104,4 +104,4 @@ Any route with multiple branches/destinations works for this check — for examp
 
 ---
 
-[Back to Data](./DATA.md)
+[Back to Data](../DATA.md)
