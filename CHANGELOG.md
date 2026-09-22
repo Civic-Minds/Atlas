@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Regional and broad map views now defer detailed agency downloads until city-level zoom, reducing unnecessary network requests while keeping PMTiles overview routes visible.
 - Added a local performance page for comparing public, beta, and dev load timings.
 - Loading progress now counts only the current map session's unique networks, so stale local requests cannot inflate the public-mode total.
 - Local public-mode previews now use the same agency visibility as production while keeping feature testing independent.

@@ -71,6 +71,11 @@ function buildInitialBounds(): ViewportBounds {
 }
 const INITIAL_BOUNDS = buildInitialBounds();
 const MAX_CONCURRENT_AGENCY_FETCHES = 6;
+export const DETAIL_GEOJSON_MIN_ZOOM = 8;
+
+export function shouldLoadAgencyDetails(zoom: number | undefined, searchQuery: string): boolean {
+  return zoom === undefined || zoom >= DETAIL_GEOJSON_MIN_ZOOM || searchQuery.trim().length > 0;
+}
 
 interface AgencyLoadSession {
   cancelled: boolean;
@@ -113,10 +118,11 @@ function bboxIntersects(
 export function useAgencyData(
   agencies: Agency[],
   bounds: ViewportBounds | null,
-  options?: { showCorridorBand?: boolean; searchQuery?: string },
+  options?: { showCorridorBand?: boolean; searchQuery?: string; zoom?: number },
 ) {
   const showCorridorBand = options?.showCorridorBand ?? false;
   const searchQuery = options?.searchQuery ?? '';
+  const zoom = options?.zoom;
   const [layers, setLayers] = useState<AgencyLayers>({});
   const [loadedCount, setLoadedCount] = useState(0);
   const [requestedCount, setRequestedCount] = useState(0);
@@ -208,9 +214,12 @@ export function useAgencyData(
   useEffect(() => {
     const vp = bounds ?? INITIAL_BOUNDS;
     const slugsToLoad = new Set<string>();
+    const loadVisibleDetails = shouldLoadAgencyDetails(zoom, searchQuery);
 
-    for (const a of agencies) {
-      if (bboxIntersects(getAgencyBbox(a), vp)) slugsToLoad.add(a.slug);
+    if (loadVisibleDetails) {
+      for (const a of agencies) {
+        if (bboxIntersects(getAgencyBbox(a), vp)) slugsToLoad.add(a.slug);
+      }
     }
 
     const q = searchQuery.trim();
@@ -230,7 +239,7 @@ export function useAgencyData(
         return aDistance - bDistance;
       })
       .forEach(queueAgency);
-  }, [agencies, bounds, queueAgency, searchQuery]);
+  }, [agencies, bounds, queueAgency, searchQuery, zoom]);
 
   // When the Corridors band view is active, lazily load per-agency corridor GeoJSON
   // (isCorridor features) for visible agencies that have a corridorsUrl.
@@ -287,12 +296,17 @@ export function useAgencyData(
   }, [agencyLayerCount, agencies, bounds, searchQuery]);
 
   const isLoading = loadedCount < requestedCount;
+  const loadVisibleDetails = shouldLoadAgencyDetails(zoom, searchQuery);
 
   useEffect(() => {
+    if (agencies.length > 0 && !loadVisibleDetails) {
+      markAtlasLatest('network-data-ready', { loadedCount: 0, requestedCount: 0, failedCount: 0, detailDeferred: true });
+      return;
+    }
     if (requestedCount > 0 && !isLoading) {
       markAtlasLatest('network-data-ready', { loadedCount, requestedCount, failedCount: failedSlugs.size });
     }
-  }, [failedSlugs.size, isLoading, loadedCount, requestedCount]);
+  }, [agencies.length, failedSlugs.size, isLoading, loadVisibleDetails, loadedCount, requestedCount]);
 
   return { layers, loadedCount, requestedCount, isLoading, failedSlugs };
 }
