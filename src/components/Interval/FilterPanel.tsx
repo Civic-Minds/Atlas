@@ -519,45 +519,55 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
               </div>
 
               {FEATURES.beta && (
-                <div className="px-5 pt-1 pb-3">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex items-start gap-3 min-w-0">
-                      <MapIcon className="w-4 h-4 mt-0.5 shrink-0 text-[var(--text-dim)]" />
-                      <div className="min-w-0">
-                        <p className="text-[11px] font-bold text-[var(--text-primary)] leading-tight">Persistent map legend</p>
-                        <p className="text-[10px] text-[var(--text-muted)] mt-1 leading-relaxed">Keeps the map key visible while you explore.</p>
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => setShowMapLegend(v => !v)}
-                      aria-label="Toggle persistent map legend"
-                      className="mt-0.5 shrink-0"
-                    >
-                      <Toggle on={showMapLegend} />
-                    </button>
+                <>
+                  <div className="border-t border-[var(--border-primary)] px-5 pt-4 pb-1">
+                    <p className="text-[9px] font-bold text-[var(--text-dim)]">Map</p>
                   </div>
-                </div>
+                  <div className="px-5 pb-3">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex items-start gap-3 min-w-0">
+                        <MapIcon className="w-4 h-4 mt-0.5 shrink-0 text-[var(--text-dim)]" />
+                        <div className="min-w-0">
+                          <p className="text-[11px] font-bold text-[var(--text-primary)] leading-tight">Persistent legend</p>
+                          <p className="text-[10px] text-[var(--text-muted)] mt-1 leading-relaxed">Keeps the map key visible while you explore.</p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => setShowMapLegend(v => !v)}
+                        aria-label="Toggle persistent legend"
+                        className="mt-0.5 shrink-0"
+                      >
+                        <Toggle on={showMapLegend} />
+                      </button>
+                    </div>
+                  </div>
+                </>
               )}
 
               {FEATURES.beta && (
-                <div className="px-5 pt-1 pb-3">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex items-start gap-3 min-w-0">
-                      <ShieldCheck className="w-4 h-4 mt-0.5 shrink-0 text-[var(--text-dim)]" />
-                      <div className="min-w-0">
-                        <p className="text-[11px] font-bold text-[var(--text-primary)] leading-tight">Data saver</p>
-                        <p className="text-[10px] text-[var(--text-muted)] mt-1 leading-relaxed">Loads one nearby network at a time and waits to load extra route details until you ask for them.</p>
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => setDataSaver(v => !v)}
-                      aria-label="Toggle data saver"
-                      className="mt-0.5 shrink-0"
-                    >
-                      <Toggle on={dataSaver} />
-                    </button>
+                <>
+                  <div className="border-t border-[var(--border-primary)] px-5 pt-4 pb-1">
+                    <p className="text-[9px] font-bold text-[var(--text-dim)]">Data &amp; performance</p>
                   </div>
-                </div>
+                  <div className="px-5 pb-3">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex items-start gap-3 min-w-0">
+                        <ShieldCheck className="w-4 h-4 mt-0.5 shrink-0 text-[var(--text-dim)]" />
+                        <div className="min-w-0">
+                          <p className="text-[11px] font-bold text-[var(--text-primary)] leading-tight">Data saver</p>
+                          <p className="text-[10px] text-[var(--text-muted)] mt-1 leading-relaxed">Loads one nearby network at a time and waits to load extra route details until you ask for them.</p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => setDataSaver(v => !v)}
+                        aria-label="Toggle data saver"
+                        className="mt-0.5 shrink-0"
+                      >
+                        <Toggle on={dataSaver} />
+                      </button>
+                    </div>
+                  </div>
+                </>
               )}
 
               {/* Filters */}
