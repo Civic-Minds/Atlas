@@ -169,7 +169,7 @@ interface MapCanvasProps {
   setDisambiguationRoutes: (routes: string[] | null) => void;
   lightMode: boolean;
   matchesQuery: (p: ShapeProperties) => boolean;
-  onBoundsChange: (b: ViewportBounds) => void;
+  onBoundsChange: (b: ViewportBounds, zoom?: number) => void;
   resetViewKey?: number;
   onLocate?: (lat: number, lon: number) => void;
   showMapContext?: boolean;
@@ -973,7 +973,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       // `idle` can deadlock agency loading when a route-tile request is stalled.
       const b = map.getBounds();
       const bounds = { s: b.getSouth(), w: b.getWest(), n: b.getNorth(), e: b.getEast() };
-      onBoundsChangeRef.current(bounds);
+      onBoundsChangeRef.current(bounds, map.getZoom());
       setBoundsAndZoom(bounds, map.getZoom());
       setMapLoaded(true);
     });
@@ -1077,7 +1077,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       });
       const b = map.getBounds();
       const bounds = { s: b.getSouth(), w: b.getWest(), n: b.getNorth(), e: b.getEast() };
-      onBoundsChangeRef.current(bounds);
+      onBoundsChangeRef.current(bounds, z);
       setBoundsAndZoom(bounds, z);
     };
     map.on('moveend', onMove);

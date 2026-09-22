@@ -23,6 +23,7 @@ import { resolveRouteSelectionForDay } from '../utils/routeSelection';
 import { syncUrlParams } from '../utils/syncUrlParams';
 import { searchOverlayHidesPanel } from '../utils/format';
 import { trackEvent } from '../lib/analytics';
+import { getRegionalView } from '../utils/regionView';
 
 // Versioned because the original preference could accidentally persist only
 // agencies in the current viewport when the bulk "All" action was used.
@@ -265,7 +266,11 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     };
   }, [initialMapCenter]);
   const [bounds, setBounds] = useState<ViewportBounds | null>(initialAgencyBounds);
-  const onBoundsChange = useCallback((b: ViewportBounds) => setBounds(b), []);
+  const [mapZoom, setMapZoom] = useState(initialMapCenter?.zoom ?? getRegionalView(agencies).zoom);
+  const onBoundsChange = useCallback((b: ViewportBounds, z?: number) => {
+    setBounds(b);
+    if (z !== undefined) setMapZoom(z);
+  }, []);
   const [userLocation, setUserLocation] = useState<{ lat: number; lon: number } | null>(null);
   const nearbyPanelRef = useRef<HTMLDivElement>(null);
   const onLocate = useCallback((lat: number, lon: number) => setUserLocation({ lat, lon }), []);
@@ -275,6 +280,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   const { layers, loadedCount, requestedCount, isLoading, failedSlugs } = useAgencyData(agencies, bounds, {
     showCorridorBand: false,
     searchQuery: searchFocused ? query : '',
+    zoom: mapZoom,
   });
 
   const selectedCorridorFamily = useMemo(() => {

@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Regional and broad map views now defer detailed agency downloads until city-level zoom, reducing unnecessary network requests while keeping PMTiles overview routes visible.
 - Added a visible Feedback email link beside the map attribution for launch-period comments and feature requests.
 - Calgary overnight routes starting near the end of the window (such as LRT 201 and late-night buses) no longer pass as frequent overnight routes on the map or in the filter, and their cards now indicate limited service for routes running only part of the period instead of borrowing daytime frequencies ([#507](https://github.com/Civic-Minds/Atlas/issues/507)).
 - Calgary MAX route cards now show the terminal name without repeating the MAX service branding.
