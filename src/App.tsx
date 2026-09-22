@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router';
 import { Map as MapIcon, Search, X, Info, History as HistoryIcon, Moon } from 'lucide-react';
-import { PILL_SURFACE, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_HEADER, SIDEBAR_LEFT_FALLBACK, APP_TAB_ACTIVE, APP_TAB_INACTIVE } from './styles';
+import { PILL_SURFACE, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_HEADER, Z_MODAL_TOP, SIDEBAR_LEFT_FALLBACK, APP_TAB_ACTIVE, APP_TAB_INACTIVE } from './styles';
 import { R2_PUBLIC_URL, getAgencyArtifactUrls, FEATURES, FEATURE_ROUTES, ATLAS_MODE } from '../shared/config';
 import { isAgencyVisibleInBrowser } from '../shared/agencyVisibility';
 import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig';
@@ -433,7 +433,7 @@ export default function App() {
     <LiveVehiclesMapOverlayProvider>
     <div className={`relative h-screen w-screen bg-[var(--bg-app)] text-[var(--text-primary)] font-sans overflow-hidden transition-colors ${TRANSITION_BASE}`}>
       {/* Unified header row — left and right sections share one flex container so they can never overlap */}
-      <div className={`absolute ${inFrequentServiceStory ? 'top-0 left-0 right-0 bg-[var(--bg-app)] px-6 py-6' : 'top-6 left-6 right-6'} ${Z_HEADER} flex items-center justify-between pointer-events-none`}>
+      <div className={`absolute ${inFrequentServiceStory ? 'top-0 left-0 right-0 bg-[var(--bg-app)] px-6 py-6' : 'top-6 left-6 right-6'} ${infoOpen ? Z_MODAL_TOP : Z_HEADER} flex items-center justify-between pointer-events-none`}>
       <div ref={headerLeftRef} className="flex items-center gap-2 pointer-events-auto flex-1 max-w-[calc(100%-3rem)] sm:max-w-none mr-2 sm:mr-0">
         <button
           type="button"
@@ -549,8 +549,10 @@ export default function App() {
       <div className="flex items-center gap-2 pointer-events-auto">
         <div ref={headerPortalRef} className="flex items-center gap-2" />
         <button
-          onClick={() => openInfo('about')}
+          onPointerDown={() => { if (infoOpen) closeInfo(); }}
+          onClick={() => { if (!infoOpen) openInfo('about'); }}
           aria-label="About Atlas"
+          aria-expanded={infoOpen}
           className="w-8 h-8 flex items-center justify-center rounded-full bg-[var(--bg-panel)] hover:bg-[var(--bg-btn-hover)] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
         >
           <Info className="w-4 h-4" />
