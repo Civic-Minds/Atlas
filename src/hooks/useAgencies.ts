@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import type { Agency } from '../App';
 import { getAgencyArtifactUrls, ATLAS_MODE } from '../../shared/config';
 import { isAgencyVisibleInBrowser } from '../../shared/agencyVisibility';
+import { markAtlasOnce } from '../lib/performance';
 
 export type AgenciesLoadState = 'loading' | 'ready' | 'error';
 
@@ -30,6 +31,7 @@ export function useAgencies() {
             return a;
           });
         setAgencies(enriched);
+        markAtlasOnce('agency-catalog-ready');
         setAgenciesLoadState('ready');
       })
       .catch(() => setAgenciesLoadState('error'));

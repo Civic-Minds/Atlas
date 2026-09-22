@@ -28,6 +28,7 @@ import { syncUrlParams } from './utils/syncUrlParams';
 import AppUpdateBanner from './components/AppUpdateBanner';
 import type { FeedQuality } from '../shared/feedQuality';
 import { trackEvent, trackPageView } from './lib/analytics';
+import { markAtlasOnce } from './lib/performance';
 import { parseFrequentServiceDays, type FrequentServiceFrequency, type FrequentServiceWindow } from '../shared/frequentService';
 import FrequentServiceStory from './apps/FrequentServiceStory';
 
@@ -113,6 +114,10 @@ const APP_TO_PATH: Record<AppId, string> = {
 };
 
 export default function App() {
+  useEffect(() => {
+    markAtlasOnce('app-ready');
+  }, []);
+
   const navigate = useNavigate();
   const { pathname } = useLocation();
   // The map route is the map regardless of which map-state parameters are in the URL.
@@ -387,6 +392,7 @@ export default function App() {
             return a;
           });
         setAgencies(enriched);
+        markAtlasOnce('agency-catalog-ready');
         setAgenciesLoadState('ready');
       })
       .catch(() => setAgenciesLoadState('error'));
@@ -582,6 +588,7 @@ export default function App() {
                         return a;
                       });
                     setAgencies(enriched);
+                    markAtlasOnce('agency-catalog-ready');
                     setAgenciesLoadState('ready');
                   })
                   .catch(() => setAgenciesLoadState('error'));

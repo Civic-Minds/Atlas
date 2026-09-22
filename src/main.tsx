@@ -11,6 +11,7 @@ import AnalyticsConsent from './components/AnalyticsConsent';
 import { ColorVisionProvider } from './context/ColorVisionContext';
 
 const DiagnosticsUnevenPage = React.lazy(() => import('./DiagnosticsUnevenPage'));
+const DiagnosticsPerformancePage = React.lazy(() => import('./DiagnosticsPerformancePage'));
 
 // Collect page views only from deployed builds; local development should not
 // pollute the production and beta analytics data.
@@ -34,6 +35,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           {import.meta.env.DEV && (
             <>
               <Route path="/apps/diagnostics/uneven-headway" element={<DiagnosticsUnevenPage />} />
+              <Route path="/apps/diagnostics/performance" element={<DiagnosticsPerformancePage />} />
             </>
           )}
           <Route path="/terms" element={<LegalPage document="terms" />} />

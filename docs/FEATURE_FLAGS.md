@@ -42,6 +42,8 @@ echo "true" | vercel env add VITE_LIVE_ENABLED production
 
 Use `npm run dev:public`, `npm run dev:beta`, or `npm run dev:all` for local testing. The feature flags remain independent, so public-mode localhost can use the public agency catalog while `.env.local` enables new features for testing. If `VITE_ATLAS_MODE` is unset, deployed builds infer `public` or `beta` from `VITE_BETA_BUILD`, while Vite development infers `dev`.
 
+When running locally, open `/apps/diagnostics/performance` to see browser navigation timings, paint timings, Atlas readiness marks, the active mode, and the visible agency count. Use its reload button for a fresh measurement.
+
 **Each flag gates three things**, in `src/App.tsx`:
 1. The pill/button that surfaces the feature.
 2. The `routedApp`/`gated` check — direct URL navigation (e.g. typing `/apps/live`) redirects to the frequency map and corrects the URL, rather than silently rendering the full app anyway. Without this, hiding the pill alone doesn't actually restrict access.
