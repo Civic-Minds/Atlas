@@ -80,7 +80,7 @@ const SETTINGS = [
     id: 'span',
     icon: ({ className }: { className?: string }) => <span className={`w-4 h-4 flex items-center justify-center text-[10px] font-black leading-none shrink-0 ${className ?? ''}`}>≠</span>,
     label: 'Hide irregular routes',
-    description: 'Hides genuinely exceptional service such as school buses, one- or two-trip routes, and demand-responsive shuttles. Scheduled evening service remains visible.',
+    description: 'Hides exceptional services such as school buses, one- or two-trip routes, and demand-responsive shuttles.',
   },
 ] as const;
 
@@ -274,7 +274,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
       id: 'quality',
       icon: ShieldCheck,
       label: 'Hide degraded feeds',
-      description: 'Hides feeds that processing marked degraded or unusable. Feeds needing review stay visible.',
+      description: 'Hides agencies with known data-quality problems. Feeds still being reviewed remain visible.',
     }]
     : SETTINGS;
 
@@ -505,7 +505,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                     <span className="w-4 h-4 shrink-0 text-center text-[10px] font-black text-[var(--text-dim)]">◈</span>
                     <div className="min-w-0">
                       <p className="text-[11px] font-bold text-[var(--text-primary)] leading-tight">High contrast mode</p>
-                      <p className="text-[10px] text-[var(--text-muted)] mt-1 leading-relaxed">Uses clearer colours and line weights to make routes easier to tell apart.</p>
+                      <p className="text-[10px] text-[var(--text-muted)] mt-1 leading-relaxed">Uses stronger colours and thicker lines to make routes easier to distinguish.</p>
                     </div>
                   </div>
                   <button
@@ -529,7 +529,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                         <MapIcon className="w-4 h-4 mt-0.5 shrink-0 text-[var(--text-dim)]" />
                         <div className="min-w-0">
                           <p className="text-[11px] font-bold text-[var(--text-primary)] leading-tight">Persistent legend</p>
-                          <p className="text-[10px] text-[var(--text-muted)] mt-1 leading-relaxed">Keeps the map key visible while you explore.</p>
+                          <p className="text-[10px] text-[var(--text-muted)] mt-1 leading-relaxed">Keeps the map legend visible while you explore.</p>
                         </div>
                       </div>
                       <button
@@ -555,7 +555,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                         <ShieldCheck className="w-4 h-4 mt-0.5 shrink-0 text-[var(--text-dim)]" />
                         <div className="min-w-0">
                           <p className="text-[11px] font-bold text-[var(--text-primary)] leading-tight">Data saver</p>
-                          <p className="text-[10px] text-[var(--text-muted)] mt-1 leading-relaxed">Loads one nearby network at a time and waits to load extra route details until you ask for them.</p>
+                          <p className="text-[10px] text-[var(--text-muted)] mt-1 leading-relaxed">Loads fewer networks at once to reduce data use and keep Atlas responsive on slower connections.</p>
                         </div>
                       </div>
                       <button
