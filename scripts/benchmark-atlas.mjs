@@ -141,7 +141,7 @@ async function measurePage(page, scenario, kind, run) {
       readySource = 'legacy-loading-badge';
       break;
     }
-    if (!state.marks.length && !progress && routeCountVisible && Date.now() - new Date(startedAt).getTime() >= 2000) {
+    if (!state.marks.length && !sawLoadingBadge && !progress && routeCountVisible && Date.now() - new Date(startedAt).getTime() >= 8000) {
       completionSignal = 'legacy route-count visible + no loading badge';
       readySource = 'legacy-route-count';
       break;
