@@ -380,14 +380,14 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
               <div>
                 <p className="text-[10px] font-bold text-[var(--text-muted)] mb-2">Privacy</p>
                 <button type="button" onClick={() => window.dispatchEvent(new Event('atlas:privacy-settings'))} className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group">
-                  <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">Privacy settings</span>
+                  <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">Privacy &amp; analytics</span>
                 </button>
               </div>
 
               <div className="text-[10px] text-[var(--text-dim)] whitespace-nowrap">
                 <a href="/terms" className="hover:text-[var(--accent)] hover:underline">Terms</a>
                 <span className="mx-1.5">·</span>
-                <a href="/privacy" className="hover:text-[var(--accent)] hover:underline">Privacy</a>
+                <a href="/privacy" className="hover:text-[var(--accent)] hover:underline">Privacy policy</a>
                 <span className="mx-1.5">·</span>
                 <span>© 2026 Civic Minds.</span>
               </div>

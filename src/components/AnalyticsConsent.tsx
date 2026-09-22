@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
+import { X } from 'lucide-react';
 import { getAnalyticsConsent, initAnalytics, setAnalyticsConsent, type AnalyticsConsent } from '../lib/analytics';
-import { MAP_BADGE, Z_HEADER, Z_MODAL_TOP } from '../styles';
+import { DROPDOWN_PANEL, dropdownAnim, MAP_BADGE, Z_HEADER, Z_MODAL_TOP } from '../styles';
 
 declare global { interface Navigator { globalPrivacyControl?: boolean } }
 
@@ -9,11 +10,30 @@ const STRICT_COUNTRIES = new Set(['AT','BE','BG','HR','CY','CZ','DK','EE','FI','
 function Controls({ onClose }: { onClose: () => void }) {
   const [consent, setConsent] = useState<AnalyticsConsent | null>(getAnalyticsConsent());
   const choose = (value: AnalyticsConsent) => { setAnalyticsConsent(value); setConsent(value); };
-  return <div role="dialog" aria-label="Privacy settings" className={`fixed bottom-6 left-1/2 -translate-x-1/2 ${Z_MODAL_TOP} ${MAP_BADGE} min-h-8 max-w-[calc(100vw-2rem)] whitespace-nowrap text-[10px] font-bold text-[var(--text-muted)]`}>
-    <span>Google Analytics: {consent === 'granted' ? 'on' : 'off'}</span>
-    <button type="button" onClick={() => choose('denied')} className="shrink-0 rounded-full border border-[var(--border-primary)] px-2 py-1 text-[var(--text-primary)] transition-colors hover:border-[var(--accent)]">Off</button>
-    <button type="button" onClick={() => choose('granted')} className="shrink-0 rounded-full bg-[var(--text-primary)] px-2 py-1 text-[var(--bg-header)] transition-colors hover:opacity-80">On</button>
-    <button type="button" aria-label="Close privacy settings" onClick={onClose} className="ml-0.5 shrink-0 text-[var(--text-dim)] hover:text-[var(--text-primary)]">×</button>
+  return <div className={`fixed inset-0 ${Z_MODAL_TOP}`} onClick={onClose}>
+    <div className={`${DROPDOWN_PANEL} ${dropdownAnim(true)}`} onClick={event => event.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="privacy-settings-title">
+      <div className="shrink-0 flex items-center justify-between px-5 border-b border-[var(--border-primary)] h-12">
+        <h2 id="privacy-settings-title" className="text-xs font-black text-[var(--text-primary)]">Privacy &amp; analytics</h2>
+        <button type="button" aria-label="Close privacy and analytics settings" onClick={onClose} className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-[var(--bg-btn-hover)] text-[var(--text-dim)] transition-colors">
+          <X className="w-3.5 h-3.5" />
+        </button>
+      </div>
+      <div className="overflow-y-auto px-5 py-4 space-y-5 text-xs">
+        <p className="leading-relaxed text-[var(--text-dim)]">Google Analytics helps us understand which parts of Atlas people use. Atlas works fully without it.</p>
+        <p className="leading-relaxed text-[var(--text-dim)]">When enabled, Atlas sends page views and basic usage information to Google Analytics. Atlas does not use this information for advertising or account profiling.</p>
+        <div className="space-y-2">
+          <p className="text-[10px] font-black text-[var(--text-muted)]">Google Analytics</p>
+          <div className="flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)]">
+            <span className="font-bold text-[var(--text-primary)]">{consent === 'granted' ? 'On' : 'Off'}</span>
+            <div className="flex gap-2">
+              <button type="button" onClick={() => choose('denied')} className="rounded-full border border-[var(--border-primary)] px-3 py-1.5 font-bold text-[var(--text-primary)] transition-colors hover:border-[var(--accent)]">Off</button>
+              <button type="button" onClick={() => choose('granted')} className="rounded-full bg-[var(--text-primary)] px-3 py-1.5 font-bold text-[var(--bg-header)] transition-colors hover:opacity-80">On</button>
+            </div>
+          </div>
+        </div>
+        <a href="/privacy" className="inline-block text-[var(--accent)] hover:underline">Read the Privacy Policy →</a>
+      </div>
+    </div>
   </div>;
 }
 
