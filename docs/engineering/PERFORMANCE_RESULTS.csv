@@ -1,0 +1,1 @@
+test_date,target,version_or_commit,scenario,run_kind,runs_completed,runs_total,median_initial_map_ms,p75_initial_map_ms,p95_initial_map_ms,timeouts,failed_networks,network_type,approximate_location,device,browser,viewport,download_mbps,upload_mbps,idle_latency_ms,responsiveness_ms,notes
