@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Regional and broad map views now report readiness when PMTiles route data is available, so performance measurements do not wait for deferred agency details.
 - Benchmarking now recognizes completed loads on older public builds that lack the current performance mark.
 - Standardized filter buttons across agency, hidden-route, and degraded-feed lists.
 - Removed route counts from the Night Service and Frequent Service pills and simplified degraded-feed wording.

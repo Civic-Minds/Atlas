@@ -30,6 +30,7 @@ import { MapContextPanel } from './MapContextPanel';
 import MapExportDialog from '../MapExportDialog';
 import { frequentServiceBand, frequentServiceFeatureKey, frequentServiceQueryKey, type FrequentServiceFrequency, type FrequentServiceWindow } from '../../../shared/frequentService';
 import { effectiveMode } from '../../../shared/modes';
+import { markAtlasLatest } from '../../lib/performance';
 
 const CORRIDOR_BAND_COLOR = '#64748b';
 const FREQUENT_15_COLOR = HEADWAY_TIERS.find(tier => tier.max === 15)?.color ?? '#3da44d';
@@ -374,6 +375,13 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
           .map(feature => String(feature.properties?.agencySlug ?? ''))
           .filter(Boolean),
       );
+      if (sourceFeatures.length > 0) {
+        markAtlasLatest('network-data-ready', {
+          source: 'pmtiles',
+          sourceFeatureCount: sourceFeatures.length,
+          renderedFeatureCount: renderedFeatures.length,
+        });
+      }
       setPmtilesRoutesAvailable(sourceFeatures.length > 0);
       setPmtilesRouteAgencies(previous => {
         const previousKey = previous ? [...previous].sort().join('|') : '';
