@@ -97,6 +97,9 @@ export const BWG_ON_DEMAND_AGENCY = {
   cities: ['Bradford, Ontario'],
   displayArea: 'Bradford West Gwillimbury',
   onDemandOnly: true,
+  hiddenInProduction: true,
+  betaOnly: true,
+  rolloutNotice: 'On-demand service-area prototype — source-backed geometry is still being validated.',
   websiteUrl: 'https://www.townofbwg.com/living-in-bwg/roads-and-transit/transit/',
   onDemandServiceArea: {
     features: [BWG_ON_DEMAND_SERVICE_AREA],
@@ -118,6 +121,9 @@ export const CALEDON_ON_DEMAND_AGENCY = {
   cities: ['Caledon, Ontario'],
   displayArea: 'Caledon',
   onDemandOnly: true,
+  hiddenInProduction: true,
+  betaOnly: true,
+  rolloutNotice: 'On-demand service-area prototype — source-backed geometry is still being validated.',
   websiteUrl: 'https://www.caledon.ca/en/town-services/transit.aspx',
   onDemandServiceArea: {
     features: CALEDON_ON_DEMAND_SERVICE_AREAS,
@@ -139,6 +145,9 @@ export const BRAMPTON_ON_DEMAND_AGENCY = {
   cities: ['Brampton, Ontario'],
   displayArea: 'Brampton Downtown',
   onDemandOnly: true,
+  hiddenInProduction: true,
+  betaOnly: true,
+  rolloutNotice: 'On-demand service-area prototype — source-backed geometry is still being validated.',
   websiteUrl: 'https://www.brampton.ca/EN/residents/transit/Pages/Welcome.aspx',
   onDemandServiceArea: {
     features: BRAMPTON_ON_DEMAND_SERVICE_AREAS,
