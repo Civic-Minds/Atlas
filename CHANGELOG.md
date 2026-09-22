@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Privacy settings now use the same compact glass-pill controls as the rest of Atlas and open above the About panel.
 - Public-mode localhost runs now explicitly disable beta-only live, history, and experimental features so local testing matches the public site.
 - Regional and broad map views now defer detailed agency downloads until city-level zoom, reducing unnecessary network requests while keeping PMTiles overview routes visible.
 - Added a local performance page for comparing public, beta, and dev load timings.

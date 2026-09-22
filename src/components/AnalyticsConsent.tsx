@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getAnalyticsConsent, initAnalytics, setAnalyticsConsent, type AnalyticsConsent } from '../lib/analytics';
-import { MAP_BADGE, Z_HEADER } from '../styles';
+import { MAP_BADGE, Z_HEADER, Z_MODAL_TOP } from '../styles';
 
 declare global { interface Navigator { globalPrivacyControl?: boolean } }
 
@@ -9,9 +9,11 @@ const STRICT_COUNTRIES = new Set(['AT','BE','BG','HR','CY','CZ','DK','EE','FI','
 function Controls({ onClose }: { onClose: () => void }) {
   const [consent, setConsent] = useState<AnalyticsConsent | null>(getAnalyticsConsent());
   const choose = (value: AnalyticsConsent) => { setAnalyticsConsent(value); setConsent(value); };
-  return <div className="fixed bottom-4 right-4 z-50 w-[min(22rem,calc(100vw-2rem))] rounded-xl border border-[var(--border-primary)] bg-[var(--bg-header)] p-4 text-xs text-[var(--text-primary)] shadow-xl">
-    <div className="flex items-start justify-between gap-3"><div><p className="font-black">Privacy settings</p><p className="mt-2 leading-relaxed text-[var(--text-dim)]">Google Analytics helps us understand which parts of Atlas people use. Atlas works fully without it.</p></div><button type="button" aria-label="Close privacy settings" onClick={onClose} className="text-[var(--text-dim)]">×</button></div>
-    <div className="mt-3 flex items-center justify-between gap-2"><span className="text-[var(--text-muted)]">Google Analytics: {consent === 'granted' ? 'on' : 'off'}</span><div className="flex gap-2"><button type="button" onClick={() => choose('denied')} className="rounded-lg border border-[var(--border-primary)] px-2.5 py-1.5 font-bold">Off</button><button type="button" onClick={() => choose('granted')} className="rounded-lg bg-[var(--text-primary)] px-2.5 py-1.5 font-bold text-[var(--bg-header)]">On</button></div></div>
+  return <div role="dialog" aria-label="Privacy settings" className={`fixed bottom-6 left-1/2 -translate-x-1/2 ${Z_MODAL_TOP} ${MAP_BADGE} min-h-8 max-w-[calc(100vw-2rem)] whitespace-nowrap text-[10px] font-bold text-[var(--text-muted)]`}>
+    <span>Google Analytics: {consent === 'granted' ? 'on' : 'off'}</span>
+    <button type="button" onClick={() => choose('denied')} className="shrink-0 rounded-full border border-[var(--border-primary)] px-2 py-1 text-[var(--text-primary)] transition-colors hover:border-[var(--accent)]">Off</button>
+    <button type="button" onClick={() => choose('granted')} className="shrink-0 rounded-full bg-[var(--text-primary)] px-2 py-1 text-[var(--bg-header)] transition-colors hover:opacity-80">On</button>
+    <button type="button" aria-label="Close privacy settings" onClick={onClose} className="ml-0.5 shrink-0 text-[var(--text-dim)] hover:text-[var(--text-primary)]">×</button>
   </div>;
 }
 
