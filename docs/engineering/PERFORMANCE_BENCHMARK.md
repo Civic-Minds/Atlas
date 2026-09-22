@@ -24,6 +24,21 @@ finishes loading.
 Record the date, network label, device, browser, map URL, connection speed, and
 latency beside each run. Keep cold-cache and warm-cache results separate.
 
+## Local runner
+
+The committed runner uses the same three URLs, a fixed 1440×900 viewport, a
+fresh browser context for cold runs, and a reused context for warm runs. It
+waits for Atlas's `network-data-ready` signal and for the loading badge to
+disappear, or records a timeout.
+
+```bash
+npm run benchmark -- --target http://localhost:5100 --network "59 cecil wifi nov 2025"
+```
+
+Useful options are `--runs 5`, `--scenario ottawa-city`, `--timeout 60000`,
+`--headed`, and `--output reports/benchmarks/home.json`. Reports are local
+artifacts and should not be committed as application source.
+
 ## Current baseline setup
 
 - Live public deployment: `www.transitatlas.fyi`, deployment commit verified as

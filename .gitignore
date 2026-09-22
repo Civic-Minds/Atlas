@@ -46,6 +46,7 @@ release-notes.txt
 ATLASLOG.md
 
 scratch/
+reports/benchmarks/
 gtfs-test-log.md
 .vercel
 .env*
