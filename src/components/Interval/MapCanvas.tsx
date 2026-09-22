@@ -33,6 +33,7 @@ import { effectiveMode } from '../../../shared/modes';
 import { markAtlasLatest } from '../../lib/performance';
 
 const CORRIDOR_BAND_COLOR = '#64748b';
+const ON_DEMAND_AREA_COLOR = '#64748b';
 const FREQUENT_15_COLOR = HEADWAY_TIERS.find(tier => tier.max === 15)?.color ?? '#3da44d';
 const FREQUENT_30_COLOR = HEADWAY_TIERS.find(tier => tier.max === 30)?.color ?? '#e07b2a';
 
@@ -334,6 +335,19 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
 
   const [mapContextAgencies, setMapContextAgencies] = useState<MapContextAgency[]>([]);
 
+  const onDemandServiceAreaData = useMemo<GeoJSON.FeatureCollection<GeoJSON.Polygon>>(() => ({
+    type: 'FeatureCollection',
+    features: agencies
+      .flatMap(agency => (agency.onDemandServiceArea?.features ?? []).map(feature => ({
+        ...feature,
+        properties: {
+          ...(feature.properties ?? {}),
+          agencySlug: agency.slug,
+          agencyName: agency.name,
+        },
+      }))),
+  }), [agencies]);
+
   const updateMapContext = useCallback(() => {
     const map = mapRef.current;
     if (!showMapContext || !map || !mapLoaded) {
@@ -614,6 +628,19 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         return;
       }
 
+      const serviceAreaHits = map.queryRenderedFeatures(e.point, {
+        layers: ['on-demand-service-area-fill', 'on-demand-service-area-line'],
+      });
+      const serviceAreaSlug = serviceAreaHits[0]?.properties?.agencySlug as string | undefined;
+      if (serviceAreaSlug) {
+        setSelectedRouteRef.current(null);
+        setSelectedStopRef.current(null);
+        setDisambiguationRoutesRef.current(null);
+        setQueryRef.current?.('');
+        setSelectedAgencySlugRef.current?.(serviceAreaSlug);
+        return;
+      }
+
       clearMapSelection();
     };
   });
@@ -709,6 +736,19 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     source.setData({ type: 'FeatureCollection', features: frequencySegmentOverlay.segments });
   }, [frequencySegmentOverlay, mapLoaded]);
 
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapLoaded) return;
+    const source = map.getSource('on-demand-service-areas') as maplibregl.GeoJSONSource | undefined;
+    if (source) source.setData(onDemandServiceAreaData);
+    // Service areas are map context, not selected-route detail: show them on
+    // the regular map whenever the corresponding agency data is available.
+    const visible = onDemandServiceAreaData.features.length > 0 ? 'visible' : 'none';
+    for (const id of ['on-demand-service-area-fill', 'on-demand-service-area-line']) {
+      if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', visible);
+    }
+  }, [mapLoaded, onDemandServiceAreaData, selectedAgencySlug]);
+
   // A combined-row hover is a clipped local overlay, not a full-route branch match.
   useEffect(() => {
     const map = mapRef.current;
@@ -782,6 +822,33 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       map.addSource('atlas-pmtiles', {
         type: 'vector',
         url: `pmtiles://${getAtlasPmtilesUrl()}`,
+      });
+
+      // Demand-responsive agencies may publish a service boundary without
+      // route shapes. Keep the boundary in its own layer so it is visibly
+      // different from scheduled route geometry.
+      map.addSource('on-demand-service-areas', {
+        type: 'geojson',
+        data: { type: 'FeatureCollection', features: [] },
+      });
+      map.addLayer({
+        id: 'on-demand-service-area-fill',
+        type: 'fill',
+        source: 'on-demand-service-areas',
+        paint: { 'fill-color': ON_DEMAND_AREA_COLOR, 'fill-opacity': 0.12 },
+        layout: { visibility: 'none' },
+      });
+      map.addLayer({
+        id: 'on-demand-service-area-line',
+        type: 'line',
+        source: 'on-demand-service-areas',
+        paint: {
+          'line-color': ON_DEMAND_AREA_COLOR,
+          'line-width': 2,
+          'line-opacity': 0.95,
+          'line-dasharray': [2, 1.5],
+        },
+        layout: { visibility: 'none' },
       });
 
       // Add route shapes (line) layers
@@ -1174,7 +1241,10 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
             { layers: routeHitLayers },
           )
         : [];
-      map.getCanvas().style.cursor = stopHits.length > 0 || routeHits.length > 0 ? 'pointer' : '';
+      const serviceAreaHits = map.getLayer('on-demand-service-area-fill')
+        ? map.queryRenderedFeatures(e.point, { layers: ['on-demand-service-area-fill'] })
+        : [];
+      map.getCanvas().style.cursor = stopHits.length > 0 || routeHits.length > 0 || serviceAreaHits.length > 0 ? 'pointer' : '';
     };
     map.on('mousemove', onMouseMove);
     return () => {

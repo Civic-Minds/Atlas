@@ -10,6 +10,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Benchmarking now recognizes completed loads on older public builds that lack the current performance mark.
 - Standardized filter buttons across agency, hidden-route, and degraded-feed lists.
 - Removed route counts from the Night Service and Frequent Service pills and simplified degraded-feed wording.
+- Argo on-demand service areas now appear on the regular map for Bradford West Gwillimbury, Caledon, and Brampton Downtown, with dedicated non-frequency agency cards.
+- On-demand agency cards now use a dedicated booking-first layout instead of resembling fixed-route cards.
 - Degraded-feed explanations now use one shared, rider-facing vocabulary across settings and route details.
 - The About Atlas control now matches Settings and reliably toggles the information panel open or closed.
 - High contrast mode now applies to agency filter rows like the other filter dropdowns.

@@ -397,10 +397,9 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
           ) : (
           <>
           <p className="text-[9px] font-bold text-[var(--text-dim)] mt-1 leading-snug">
-            {[
-              agencyNameSecondary,
-              buildHeaderSummary(visibleRoutes, maxHeadway),
-            ].filter(Boolean).join(' · ')}
+            {agency.onDemandOnly
+              ? [agencyNameSecondary, 'On-demand service'].filter(Boolean).join(' · ')
+              : [agencyNameSecondary, buildHeaderSummary(visibleRoutes, maxHeadway)].filter(Boolean).join(' · ')}
           </p>
           {routeFilters.length > 0 && (
             <div className="flex flex-wrap gap-1.5 mt-2">
@@ -475,7 +474,45 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
       </div>
 
       {!fareView && <div className="flex-1 overflow-y-auto custom-scrollbar">
-        {visibleRoutes.length === 0 ? (
+        {agency.onDemandOnly ? (
+          <div className="px-4 py-4 space-y-4">
+            <div className="rounded-xl border border-[var(--border-primary)] bg-[var(--surface-secondary)] px-3 py-3">
+              <p className="text-[10px] font-black uppercase tracking-wide text-[var(--text-dim)]">Request a ride</p>
+              <p className="text-[11px] leading-relaxed text-[var(--text-muted)] mt-1">
+                Book a shared ride through {agency.name}. Trips are dynamically routed within this service area.
+              </p>
+              {agency.onDemandServiceArea?.bookingUrl && (
+                <a
+                  href={agency.onDemandServiceArea.bookingUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center w-full rounded-lg bg-[var(--accent)] px-3 py-2 mt-3 text-[11px] font-black text-white hover:opacity-90 transition-opacity"
+                >
+                  Book or view service details →
+                </a>
+              )}
+            </div>
+            {agency.onDemandServiceArea?.serviceHours && (
+              <div className="px-1">
+                <p className="text-[9px] font-black uppercase tracking-wide text-[var(--text-dim)]">Service hours</p>
+                <p className="text-[11px] leading-relaxed text-[var(--text-muted)] mt-1">{agency.onDemandServiceArea.serviceHours}</p>
+              </div>
+            )}
+            {agency.onDemandServiceArea?.sourceUrl && (
+              <div className="border-t border-[var(--border-primary)] pt-3 px-1">
+                <p className="text-[9px] font-black uppercase tracking-wide text-[var(--text-dim)]">Service-area boundary</p>
+                <a
+                  href={agency.onDemandServiceArea.sourceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[11px] text-[var(--accent)] hover:underline mt-1 block"
+                >
+                  {agency.onDemandServiceArea.sourceLabel} →
+                </a>
+              </div>
+            )}
+          </div>
+        ) : visibleRoutes.length === 0 ? (
           <p className="px-4 py-4 text-xs text-[var(--text-dim)]">
             {activeFilterLabel ? `No ${activeFilterLabel.toLowerCase()} routes match.` : 'No routes loaded yet.'}
           </p>

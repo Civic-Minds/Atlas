@@ -10,7 +10,7 @@ Permanent blockers only — agencies we cannot add because upstream has no fixed
 
 | Agency | Reason | Notes |
 |--------|--------|-------|
-| Bradford BWG Transit | On-demand only | No fixed-route GTFS; evaluated 2026 |
+| Bradford BWG Transit | Hybrid service; no route feed yet | Argo on-demand coverage is represented by a source-backed service-area prototype; the new Holland fixed route still needs a usable route data source |
 | Cadillac/Wexford Transit Authority | Demand-response only | Door-to-door service; no conventional fixed-route GTFS found; evaluated 2026 |
 | Big Rapids Dial-A-Ride / Mecosta-Osceola Transit Authority | Demand-response only | No conventional local fixed-route GTFS found; evaluated 2026 |
 | Roseview Transit (Richmond, Indiana) | Request-based service | No current public fixed-route GTFS found; evaluated 2026 |
@@ -87,7 +87,7 @@ GO Rail routes have multiple shape variants (local vs express, different termina
 ## Platform Limitations
 
 ### GTFS-Flex / on-demand transit zones
-GTFS-Flex (the extension for demand-responsive transit — `locations.geojson`, stop_times booking windows) is not currently processed into Atlas. Atlas can't display on-demand service zones until the pipeline and map support the spec.
+GTFS-Flex (the extension for demand-responsive transit — `locations.geojson`, stop_times booking windows) is not currently processed into Atlas. A small number of source-backed service-area prototypes can still be displayed from manually curated official geometry, but general on-demand coverage requires pipeline support for GTFS-Flex or another machine-readable source.
 
 ### No amenity data
 GTFS contains almost no stop-level amenity data (shelters, accessibility, real-time displays). Any amenity overlay would require a separate data source (OpenStreetMap, agency open data portals, or manual digitization). No current plan to add this.

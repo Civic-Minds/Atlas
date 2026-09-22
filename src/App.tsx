@@ -31,6 +31,7 @@ import { trackEvent, trackPageView } from './lib/analytics';
 import { markAtlasOnce } from './lib/performance';
 import { parseFrequentServiceDays, type FrequentServiceFrequency, type FrequentServiceWindow } from '../shared/frequentService';
 import FrequentServiceStory from './apps/FrequentServiceStory';
+import { BWG_ON_DEMAND_AGENCY, CALEDON_ON_DEMAND_AGENCY, BRAMPTON_ON_DEMAND_AGENCY } from './data/onDemandServiceAreas';
 
 export interface FareOverride {
   adult?: number;      // base card/electronic fare (fallback when GeoJSON baseFare is absent)
@@ -92,6 +93,16 @@ export interface Agency {
   feedUrl?: string | null;
   mdbFeedUrl?: string;
   supplementalFeedUrls?: string[];
+  /** Agency-level service represented by a boundary rather than route GeoJSON. */
+  onDemandOnly?: boolean;
+  onDemandServiceArea?: {
+    features: GeoJSON.Feature<GeoJSON.Polygon>[];
+    sourceUrl: string;
+    sourceLabel: string;
+    sourceRetrievedAt?: string;
+    serviceHours?: string;
+    bookingUrl?: string;
+  };
 }
 
 const PATH_TO_APP: Record<string, AppId> = {
@@ -405,7 +416,7 @@ export default function App() {
         return r.json();
       })
       .then((data: { agencies: Agency[] }) => {
-        const enriched = data.agencies
+        const enriched = [...data.agencies, BWG_ON_DEMAND_AGENCY, CALEDON_ON_DEMAND_AGENCY, BRAMPTON_ON_DEMAND_AGENCY]
           .filter((a: Agency) => isAgencyVisibleInBrowser(a, { mode: ATLAS_MODE }))
           .map((a: Agency) => {
             if (!a.url) {
