@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Loading progress now counts only the current map session's unique networks, so stale local requests cannot inflate the public-mode total.
 - Local public-mode previews now use the same agency visibility as production while keeping feature testing independent.
 - Match app controls to the same readable glass-pill surface used by the filter controls.
 - Weekly GTFS refreshes now retain last-good agency data and record stale sources instead of silently treating failed fallbacks as normal skips ([#528](https://github.com/Civic-Minds/Atlas/issues/528)).

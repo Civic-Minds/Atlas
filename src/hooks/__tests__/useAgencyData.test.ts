@@ -72,4 +72,30 @@ describe('useAgencyData failure handling', () => {
     expect(result.current.requestedCount).toBe(2);
     expect(result.current.loadedCount).toBe(2);
   });
+
+  it('ignores completions from an agency load session that was replaced', async () => {
+    let resolveOld!: (value: GeoJSON.FeatureCollection) => void;
+    fetchAgencyGeo.mockImplementation((requestedAgency: Agency) => {
+      if (requestedAgency.slug === 'old-agency') {
+        return new Promise<GeoJSON.FeatureCollection>(resolve => { resolveOld = resolve; });
+      }
+      return Promise.resolve(emptyFc);
+    });
+
+    const { result, rerender } = renderHook(
+      ({ agencies }: { agencies: Agency[] }) => useAgencyData(agencies, viewport),
+      { initialProps: { agencies: [agency('old-agency')] } },
+    );
+
+    await waitFor(() => expect(fetchAgencyGeo).toHaveBeenCalledTimes(1));
+    rerender({ agencies: [agency('new-agency')] });
+
+    await waitFor(() => expect(result.current.loadedCount).toBe(1));
+    expect(result.current.requestedCount).toBe(1);
+
+    resolveOld(emptyFc);
+    await waitFor(() => expect(result.current.loadedCount).toBe(1));
+    expect(result.current.requestedCount).toBe(1);
+    expect(result.current.layers['old-agency']).toBeUndefined();
+  });
 });

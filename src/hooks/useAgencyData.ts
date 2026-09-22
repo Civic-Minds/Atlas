@@ -71,6 +71,14 @@ function buildInitialBounds(): ViewportBounds {
 const INITIAL_BOUNDS = buildInitialBounds();
 const MAX_CONCURRENT_AGENCY_FETCHES = 6;
 
+interface AgencyLoadSession {
+  cancelled: boolean;
+  loadedSlugs: Set<string>;
+  queuedSlugs: Set<string>;
+  fetchQueue: Agency[];
+  activeFetches: number;
+}
+
 /** Stamp agencySlug on feature properties once so stats/search can reuse objects without recloning. */
 function stampAgencySlug(data: GeoJSON.FeatureCollection, slug: string): GeoJSON.FeatureCollection {
   for (const f of data.features) {
@@ -112,35 +120,37 @@ export function useAgencyData(
   const [loadedCount, setLoadedCount] = useState(0);
   const [requestedCount, setRequestedCount] = useState(0);
   const [failedSlugs, setFailedSlugs] = useState<Set<string>>(new Set());
-  const loadedSlugs = useRef(new Set<string>());
-  const queuedSlugs = useRef(new Set<string>());
-  const fetchQueue = useRef<Agency[]>([]);
-  const activeFetches = useRef(0);
-  const pumpRef = useRef<() => void>(() => {});
+  const loadSession = useRef<AgencyLoadSession | null>(null);
   const loadedCorridorSlugs = useRef(new Set<string>());
-  const cancelled = useRef(false);
 
   useEffect(() => {
-    cancelled.current = false;
-    loadedSlugs.current = new Set();
-    queuedSlugs.current = new Set();
-    fetchQueue.current = [];
-    activeFetches.current = 0;
+    if (loadSession.current) loadSession.current.cancelled = true;
+    const session: AgencyLoadSession = {
+      cancelled: false,
+      loadedSlugs: new Set(),
+      queuedSlugs: new Set(),
+      fetchQueue: [],
+      activeFetches: 0,
+    };
+    loadSession.current = session;
     loadedCorridorSlugs.current = new Set();
     setLayers({});
     setLoadedCount(0);
     setRequestedCount(0);
     setFailedSlugs(new Set());
-    return () => { cancelled.current = true; };
+    return () => {
+      session.cancelled = true;
+      if (loadSession.current === session) loadSession.current = null;
+    };
   }, [agencies]);
 
   // Fetches an agency, with one automatic retry (e.g. a dropped connection) before
   // giving up. Resolves only once fully settled so the caller's activeFetches/loadedCount
   // bookkeeping counts one agency load, not one per attempt.
-  const attemptFetchAgency = useCallback((agency: Agency, isRetry: boolean): Promise<void> =>
+  const attemptFetchAgency = useCallback((agency: Agency, isRetry: boolean, session: AgencyLoadSession): Promise<void> =>
     fetchAgencyGeo(agency)
       .then(data => {
-        if (cancelled.current) return;
+        if (session.cancelled) return;
         setLayers(prev => ({ ...prev, [agency.slug]: stampAgencySlug(data, agency.slug) }));
         if (isRetry) {
           setFailedSlugs(prev => {
@@ -152,31 +162,33 @@ export function useAgencyData(
         }
       })
       .catch(err => {
+        if (session.cancelled) return;
         console.error(`Failed to load ${agency.slug}${isRetry ? ' (retry)' : ''}`, err);
-        if (!isRetry) return attemptFetchAgency(agency, true);
-        if (!cancelled.current) setFailedSlugs(prev => new Set(prev).add(agency.slug));
+        if (!isRetry) return attemptFetchAgency(agency, true, session);
+        setFailedSlugs(prev => new Set(prev).add(agency.slug));
       }),
     []);
 
-  const pumpFetchQueue = useCallback(() => {
-    while (activeFetches.current < MAX_CONCURRENT_AGENCY_FETCHES && fetchQueue.current.length > 0) {
-      const agency = fetchQueue.current.shift()!;
-      queuedSlugs.current.delete(agency.slug);
-      activeFetches.current++;
+  const pumpFetchQueue = useCallback((session: AgencyLoadSession) => {
+    while (!session.cancelled && session.activeFetches < MAX_CONCURRENT_AGENCY_FETCHES && session.fetchQueue.length > 0) {
+      const agency = session.fetchQueue.shift()!;
+      session.queuedSlugs.delete(agency.slug);
+      session.activeFetches++;
 
-      attemptFetchAgency(agency, false).finally(() => {
-        activeFetches.current--;
-        if (!cancelled.current) setLoadedCount(n => n + 1);
-        pumpRef.current();
+      attemptFetchAgency(agency, false, session).finally(() => {
+        session.activeFetches--;
+        if (session.cancelled) return;
+        setLoadedCount(n => n + 1);
+        pumpFetchQueue(session);
       });
     }
   }, [attemptFetchAgency]);
 
-  pumpRef.current = pumpFetchQueue;
-
   const queueAgency = useCallback((agency: Agency) => {
-    if (loadedSlugs.current.has(agency.slug) || queuedSlugs.current.has(agency.slug)) return;
-    loadedSlugs.current.add(agency.slug);
+    const session = loadSession.current;
+    if (!session || session.cancelled) return;
+    if (session.loadedSlugs.has(agency.slug) || session.queuedSlugs.has(agency.slug)) return;
+    session.loadedSlugs.add(agency.slug);
 
     const cached = getCachedAgencyGeo(agency.slug);
     if (cached) {
@@ -184,11 +196,11 @@ export function useAgencyData(
       return;
     }
 
-    queuedSlugs.current.add(agency.slug);
-    fetchQueue.current.push(agency);
+    session.queuedSlugs.add(agency.slug);
+    session.fetchQueue.push(agency);
     setRequestedCount(n => n + 1);
-    pumpRef.current();
-  }, []);
+    pumpFetchQueue(session);
+  }, [pumpFetchQueue]);
 
   // Load agencies in the viewport, plus search-matched agencies so route search
   // can see GeoJSON beyond the current map bounds (agency search uses the full index).
@@ -223,6 +235,8 @@ export function useAgencyData(
   // (isCorridor features) for visible agencies that have a corridorsUrl.
   useEffect(() => {
     if (!showCorridorBand) return;
+    const session = loadSession.current;
+    if (!session || session.cancelled) return;
     const vp = bounds ?? INITIAL_BOUNDS;
     agencies
       .filter(a => a.corridorsUrl && bboxIntersects(getAgencyBbox(a), vp))
@@ -241,7 +255,7 @@ export function useAgencyData(
         const cUrl = agency.corridorsUrl || arts.corridorsUrl;
         fetchAgencyCorridors(agency.slug, cUrl)
           .then(data => {
-            if (cancelled.current) return;
+            if (session.cancelled || loadSession.current !== session) return;
             setLayers(prev => ({ ...prev, [key]: data }));
           })
           .catch(err => console.error(`Failed to load corridors for ${agency.slug}`, err));
@@ -262,8 +276,9 @@ export function useAgencyData(
     setLayers(prev => {
       const result = pruneAgencyLayers(prev, agencies, vp, pinned, MAX_AGENCY_LAYERS_IN_REACT);
       if (!result) return prev;
+      const session = loadSession.current;
       for (const slug of result.dropped) {
-        loadedSlugs.current.delete(slug);
+        session?.loadedSlugs.delete(slug);
         loadedCorridorSlugs.current.delete(slug);
       }
       return result.layers;
