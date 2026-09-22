@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Removed route counts from the Night Service and Frequent Service pills and simplified degraded-feed wording.
 - Degraded-feed explanations now use one shared, rider-facing vocabulary across settings and route details.
 - The About Atlas control now matches Settings and reliably toggles the information panel open or closed.
 - High contrast mode now applies to agency filter rows like the other filter dropdowns.

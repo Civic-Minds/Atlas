@@ -561,7 +561,9 @@ export default function App() {
               </a>
             )}
             {FEATURES.frequentService && (
-              <a href={inFrequentService ? '/' : FEATURE_ROUTES.frequentService.map} aria-label={inFrequentService ? 'Back to frequency map' : 'Frequent service research'} aria-pressed={inFrequentService} className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold border focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${inFrequentService ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}>Frequent Service</a>
+              <a href={inFrequentService ? '/' : FEATURE_ROUTES.frequentService.map} aria-label={inFrequentService ? 'Back to frequency map' : 'Frequent service research'} aria-pressed={inFrequentService} className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold border focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${inFrequentService ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}>
+                <span>Frequent Service</span>
+              </a>
             )}
           </>
         )}

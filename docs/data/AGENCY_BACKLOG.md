@@ -48,7 +48,7 @@ These candidates were researched but still need processing or a final feed decis
 | done | `breck-free-ride` | Breckenridge Free Ride | Colorado | Current Syncromatics feed, filtered to agency 103 |
 | done | `summit-stage` | Summit Stage | Colorado | Trillium feed |
 | done | `vail-transit` | Vail Transit | Colorado | Agency-hosted GTFS |
-| todo | `avon-transit` | Avon Transit | Colorado | Current public static feed is expired; staged with degraded quality and documented for refresh |
+| done | `avon-transit` | Avon Transit | Colorado | Official 2026 feed refreshed and published; current route data is healthy |
 | done | `timmins` | Timmins Transit | Ontario | Current Metrolinx/Tmix feed |
 
 ## Research sweep (2026-09-08 — active GTFS gap candidates)

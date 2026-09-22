@@ -405,9 +405,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
               ) : view === 'degraded-feeds' ? (
                 <div className="px-5 py-3">
                   <p className="text-[10px] text-[var(--text-muted)] leading-relaxed pb-2">
-                    {hideLowQuality
-                      ? 'These agencies are hidden because Atlas found serious data problems or an expired schedule.'
-                      : 'These agencies would be hidden when Hide degraded feeds is enabled.'}
+                    Atlas found serious data problems or an expired schedule in these agencies.
                   </p>
                   {hiddenFeedAgencies.length > 0 && (
                     <>

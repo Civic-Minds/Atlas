@@ -24,5 +24,27 @@
     "Mont-Saint-Hilaire, Quebec",
     "Saint-Basile-le-Grand, Quebec"
   ],
-  "timezone": "America/Montreal"
+  "timezone": "America/Montreal",
+  "lastFeedCheckAt": "20260922",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270103",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 34
+    },
+    "checkedAt": "2026-09-22"
+  },
+  "lastRefreshedAt": "2026-09-22",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

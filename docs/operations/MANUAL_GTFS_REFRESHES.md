@@ -92,7 +92,7 @@ replacement feed:
 The following 67 agencies have a current ZIP with matching agency identity and
 can be refreshed using the configured or automatically derived source:
 
-`abqride`, `arvin`, `athens-oh`, `avon-transit`, `avta`, `blacksburg`, `carson-circuit`, `carta-chattanooga`, `clemson-cat`, `davenport`, `duke`, `elmonte`, `emta`, `eugene-ltd`, `gold-coast`, `goldengate`, `goraleigh`, `grand-junction`, `indygo`, `jfk-airtrain`, `mont-tremblant`, `mountainmetro`, `rts`, `sacrt`,
+`abqride`, `arvin`, `athens-oh`, `avta`, `blacksburg`, `carson-circuit`, `carta-chattanooga`, `clemson-cat`, `davenport`, `duke`, `elmonte`, `emta`, `eugene-ltd`, `gold-coast`, `goldengate`, `goraleigh`, `grand-junction`, `indygo`, `jfk-airtrain`, `mont-tremblant`, `mountainmetro`, `rts`, `sacrt`,
 `culvercitybus`, `imperial-valley`, `kingcountymetro`, `mata`, `marta`, `montebello`, `mst`, `nice`, `omahametro`, `pace-bus`, `pgc-the-bus`, `regina`, `ripta`,
 `riverside`, `rtc`, `rtcwashoe`, `santafetrails`, `saskatoon`, `sdmts`, `sioux-falls`, `skagittransit`, `starmetro`, `psta`, `rct`,
 `communitytransit`, `everetttransit`, `guelph`, `intercitytransit`, `kenosha`, `nctd`, `octranspo`, `soundtransit`, `torrance-transit`,

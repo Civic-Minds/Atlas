@@ -1935,7 +1935,29 @@
         "Mont-Saint-Hilaire, Quebec",
         "Saint-Basile-le-Grand, Quebec"
       ],
-      "timezone": "America/Montreal"
+      "timezone": "America/Montreal",
+      "lastFeedCheckAt": "20260922",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20270103",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 34
+        },
+        "checkedAt": "2026-09-22"
+      },
+      "lastRefreshedAt": "2026-09-22",
+      "feedRefreshStatus": "current",
+      "feedRefreshError": null,
+      "feedRefreshErrorAt": null,
+      "feedRefreshRetryCount": 0
     },
     {
       "slug": "bc-fraser-valley",
@@ -21103,32 +21125,33 @@
       "feedUrl": "https://www.avon.org/DocumentCenter/View/25051/TownOfAvon_gtfs",
       "lastFeedExpiry": "20261125",
       "lastFeedVersion": "1",
-      "lastRefreshedAt": "2026-09-19",
+      "lastRefreshedAt": "2026-09-22",
       "cities": [
         "Avon, Colorado",
         "Beaver Creek, Colorado"
       ],
       "timezone": "America/Denver",
       "feedQuality": {
-        "status": "degraded",
-        "score": 55,
-        "reasons": [
-          "1 validation warning.",
-          "This agency's latest schedule data is not available in Atlas yet."
-        ],
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
         "metrics": {
           "validationErrors": 0,
-          "validationWarnings": 1,
+          "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
-          "featureCount": 16
+          "featureCount": 12
         },
-        "checkedAt": "2026-08-18"
+        "checkedAt": "2026-09-22"
       },
-      "lastFeedCheckAt": "20260919",
+      "lastFeedCheckAt": "20260922",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261125"
+      "expiredFeedCheckExpiry": "20261125",
+      "feedRefreshStatus": "current",
+      "feedRefreshError": null,
+      "feedRefreshErrorAt": null,
+      "feedRefreshRetryCount": 0
     },
     {
       "slug": "timmins",

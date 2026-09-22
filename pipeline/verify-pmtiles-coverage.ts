@@ -91,7 +91,7 @@ async function main() {
       tileKeys.set(`${x}/${y}`, { x, y });
     }
   }
-  console.log(`${tileKeys.size} unique tiles to fetch (deduped from ${agencies.length} agencies, full-bbox coverage up to ${MAX_TILES_PER_AGENCY} tiles each).`);
+  console.log(`${tileKeys.size} unique tiles to fetch (deduped from ${agencies.length} agencies).`);
 
   // Fetch + decode every unique tile, collecting every agencySlug seen anywhere
   // in the routes layer. An agency's routes must appear in *some* tile globally —
