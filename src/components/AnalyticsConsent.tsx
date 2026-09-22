@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
 import { getAnalyticsConsent, initAnalytics, setAnalyticsConsent, type AnalyticsConsent } from '../lib/analytics';
-import { DROPDOWN_PANEL, dropdownAnim, MAP_BADGE, Z_HEADER, Z_MODAL_TOP } from '../styles';
+import { CONTROL_ACTIVE, CONTROL_INACTIVE, DROPDOWN_PANEL, dropdownAnim, MAP_BADGE, Z_HEADER, Z_MODAL_TOP } from '../styles';
 
 declare global { interface Navigator { globalPrivacyControl?: boolean } }
 
@@ -23,12 +23,9 @@ function Controls({ onClose }: { onClose: () => void }) {
         <p className="leading-relaxed text-[var(--text-dim)]">When enabled, Atlas sends page views and basic usage information to Google Analytics. Atlas does not use this information for advertising or account profiling.</p>
         <div className="space-y-2">
           <p className="text-[10px] font-black text-[var(--text-muted)]">Google Analytics</p>
-          <div className="flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)]">
-            <span className="font-bold text-[var(--text-primary)]">{consent === 'granted' ? 'On' : 'Off'}</span>
-            <div className="flex gap-2">
-              <button type="button" onClick={() => choose('denied')} className="rounded-full border border-[var(--border-primary)] px-3 py-1.5 font-bold text-[var(--text-primary)] transition-colors hover:border-[var(--accent)]">Off</button>
-              <button type="button" onClick={() => choose('granted')} className="rounded-full bg-[var(--text-primary)] px-3 py-1.5 font-bold text-[var(--bg-header)] transition-colors hover:opacity-80">On</button>
-            </div>
+          <div className="flex gap-1.5">
+            <button type="button" onClick={() => choose('denied')} className={`h-7 px-2.5 flex items-center justify-center text-[10px] font-bold rounded-full border transition-colors ${consent === 'denied' ? CONTROL_ACTIVE : CONTROL_INACTIVE}`}>Off</button>
+            <button type="button" onClick={() => choose('granted')} className={`h-7 px-2.5 flex items-center justify-center text-[10px] font-bold rounded-full border transition-colors ${consent === 'granted' ? CONTROL_ACTIVE : CONTROL_INACTIVE}`}>On</button>
           </div>
         </div>
         <a href="/privacy" className="inline-block text-[var(--accent)] hover:underline">Read the Privacy Policy →</a>
