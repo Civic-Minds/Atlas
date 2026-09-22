@@ -19,7 +19,7 @@ function Controls({ onClose }: { onClose: () => void }) {
         </button>
       </div>
       <div className="overflow-y-auto px-5 py-4 space-y-5 text-xs">
-        <p className="leading-relaxed text-[var(--text-dim)]">Google Analytics helps us understand which parts of Atlas people use. Atlas works fully without it.</p>
+        <p className="leading-relaxed text-[var(--text-dim)]">Google Analytics is optional. If enabled, it helps us understand which parts of Atlas people use.</p>
         <p className="leading-relaxed text-[var(--text-dim)]">When enabled, Atlas sends page views and basic usage information to Google Analytics. Atlas does not use this information for advertising or account profiling.</p>
         <div className="space-y-2">
           <p className="text-[10px] font-black text-[var(--text-muted)]">Google Analytics</p>
