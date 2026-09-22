@@ -118,11 +118,13 @@ function bboxIntersects(
 export function useAgencyData(
   agencies: Agency[],
   bounds: ViewportBounds | null,
-  options?: { showCorridorBand?: boolean; searchQuery?: string; zoom?: number },
+  options?: { showCorridorBand?: boolean; searchQuery?: string; zoom?: number; dataSaver?: boolean; selectedAgencySlug?: string | null },
 ) {
   const showCorridorBand = options?.showCorridorBand ?? false;
   const searchQuery = options?.searchQuery ?? '';
   const zoom = options?.zoom;
+  const dataSaver = options?.dataSaver ?? false;
+  const selectedAgencySlug = options?.selectedAgencySlug ?? null;
   const [layers, setLayers] = useState<AgencyLayers>({});
   const [loadedCount, setLoadedCount] = useState(0);
   const [requestedCount, setRequestedCount] = useState(0);
@@ -223,7 +225,7 @@ export function useAgencyData(
     }
 
     const q = searchQuery.trim();
-    if (q) {
+    if (q && !dataSaver) {
       for (const slug of agencySlugsToPrefetchForSearch(agencies, q, bounds)) {
         slugsToLoad.add(slug);
       }
@@ -231,15 +233,26 @@ export function useAgencyData(
 
     const centerLat = (vp.s + vp.n) / 2;
     const centerLon = (vp.w + vp.e) / 2;
-    agencies
+    const sortedAgencies = agencies
       .filter(a => slugsToLoad.has(a.slug))
       .sort((a, b) => {
         const aDistance = Math.hypot(a.center[0] - centerLat, a.center[1] - centerLon);
         const bDistance = Math.hypot(b.center[0] - centerLat, b.center[1] - centerLon);
         return aDistance - bDistance;
-      })
-      .forEach(queueAgency);
-  }, [agencies, bounds, queueAgency, searchQuery, zoom]);
+      });
+
+    if (selectedAgencySlug) {
+      const selected = agencies.find(a => a.slug === selectedAgencySlug);
+      if (selected) {
+        sortedAgencies.unshift(selected);
+      }
+    }
+
+    const uniqueAgencies = sortedAgencies.filter((agency, index, list) => (
+      list.findIndex(candidate => candidate.slug === agency.slug) === index
+    ));
+    (dataSaver ? uniqueAgencies.slice(0, 1) : uniqueAgencies).forEach(queueAgency);
+  }, [agencies, bounds, dataSaver, queueAgency, searchQuery, selectedAgencySlug, zoom]);
 
   // When the Corridors band view is active, lazily load per-agency corridor GeoJSON
   // (isCorridor features) for visible agencies that have a corridorsUrl.

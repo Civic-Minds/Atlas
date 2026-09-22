@@ -38,6 +38,7 @@ if (!scenarios.length) throw new Error('No matching scenarios');
 
 function urlFor(scenario) {
   const params = new URLSearchParams({ h: '10', p: 'evening', lat: scenario.lat, lon: scenario.lon, z: scenario.z });
+  if (hasFlag('data-saver')) params.set('dataSaver', '1');
   return `${target.replace(/\/$/, '')}/?${params}`;
 }
 
@@ -199,6 +200,7 @@ async function run() {
     network,
     device,
     browser: 'Chrome via Playwright',
+    dataSaver: hasFlag('data-saver'),
     viewport: { width: 1440, height: 900 },
     runsPerKind: runs,
     timeoutMs,

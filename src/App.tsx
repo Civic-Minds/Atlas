@@ -242,6 +242,14 @@ export default function App() {
   const [showMapLegend, setShowMapLegend] = useState(() => (
     FEATURES.beta && typeof window !== 'undefined' && localStorage.getItem('atlas_pref_map_legend') === 'true'
   ));
+  const [dataSaver, setDataSaver] = useState(() => (
+    (() => {
+      if (!FEATURES.beta || typeof window === 'undefined') return false;
+      const urlValue = new URLSearchParams(window.location.search).get('dataSaver');
+      if (urlValue != null) return urlValue === '1';
+      return localStorage.getItem('atlas_pref_data_saver') === 'true';
+    })()
+  ));
 
   useEffect(() => {
     if (FEATURES.beta) localStorage.setItem('atlas_pref_hide_low_quality', String(hideLowQuality));
@@ -251,6 +259,10 @@ export default function App() {
   useEffect(() => {
     if (FEATURES.beta) localStorage.setItem('atlas_pref_map_legend', String(showMapLegend));
   }, [showMapLegend]);
+
+  useEffect(() => {
+    if (FEATURES.beta) localStorage.setItem('atlas_pref_data_saver', String(dataSaver));
+  }, [dataSaver]);
 
   const visibleAgencies = useMemo(
     () => hideLowQuality
@@ -675,6 +687,8 @@ export default function App() {
               feedQualityEnabled={FEATURES.beta}
               showMapLegend={showMapLegend}
               setShowMapLegend={setShowMapLegend}
+              dataSaver={dataSaver}
+              setDataSaver={setDataSaver}
             />
             {FEATURES.corridors && (
               <React.Suspense fallback={null}>

@@ -66,7 +66,8 @@ count after loading has settled; otherwise the run is recorded as a timeout.
 npm run benchmark -- --target https://www.transitatlas.fyi --network library-wifi --runs 5 --output reports/benchmarks/public-library.json
 ```
 
-Useful options are `--scenario ottawa-city`, `--timeout 60000`, and `--headed`.
+Useful options are `--scenario ottawa-city`, `--timeout 60000`, `--headed`, and
+`--data-saver` for beta comparisons.
 Reports are detailed local JSON artifacts and remain ignored; copy only the
 summarized results into the tracked CSV described below.
 

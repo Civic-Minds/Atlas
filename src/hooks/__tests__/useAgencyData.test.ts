@@ -98,4 +98,29 @@ describe('useAgencyData failure handling', () => {
     expect(result.current.requestedCount).toBe(1);
     expect(result.current.layers['old-agency']).toBeUndefined();
   });
+
+  it('limits data-saver mode to one nearby agency and prioritizes the selected agency', async () => {
+    fetchAgencyGeo.mockResolvedValue(emptyFc);
+    const agencies = [
+      agency('nearby', 43.65, -79.38),
+      agency('also-nearby', 43.66, -79.37),
+      agency('selected-away', 45.32, -75.69),
+    ];
+
+    const { result, rerender } = renderHook(
+      ({ selectedAgencySlug }: { selectedAgencySlug?: string | null }) => useAgencyData(agencies, viewport, {
+        dataSaver: true,
+        selectedAgencySlug,
+      }),
+      { initialProps: { selectedAgencySlug: null as string | null } },
+    );
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+    expect(fetchAgencyGeo).toHaveBeenCalledTimes(1);
+    expect(fetchAgencyGeo).toHaveBeenCalledWith(expect.objectContaining({ slug: 'nearby' }));
+
+    rerender({ selectedAgencySlug: 'selected-away' });
+    await waitFor(() => expect(fetchAgencyGeo).toHaveBeenCalledTimes(2));
+    expect(fetchAgencyGeo).toHaveBeenLastCalledWith(expect.objectContaining({ slug: 'selected-away' }));
+  });
 });
