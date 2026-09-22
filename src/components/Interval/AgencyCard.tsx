@@ -397,10 +397,9 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
           ) : (
           <>
           <p className="text-[9px] font-bold text-[var(--text-dim)] mt-1 leading-snug">
-            {[
-              agencyNameSecondary,
-              buildHeaderSummary(visibleRoutes, maxHeadway),
-            ].filter(Boolean).join(' · ')}
+            {agency.onDemandOnly
+              ? [agencyNameSecondary, 'On-demand service'].filter(Boolean).join(' · ')
+              : [agencyNameSecondary, buildHeaderSummary(visibleRoutes, maxHeadway)].filter(Boolean).join(' · ')}
           </p>
           {routeFilters.length > 0 && (
             <div className="flex flex-wrap gap-1.5 mt-2">
