@@ -6,7 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
-- The About Atlas button now closes the information panel when clicked while it is already open.
+- The About Atlas control now matches Settings and reliably toggles the information panel open or closed.
 - High contrast mode now applies to agency filter rows like the other filter dropdowns.
 - High contrast selections now preserve light-theme surfaces instead of looking like dark-mode rows.
 - Off switches now use a light track in the light theme instead of looking enabled or dark.
