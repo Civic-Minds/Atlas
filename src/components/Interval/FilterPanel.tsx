@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Settings, X, Sun, Moon, Map as MapIcon, ArrowLeft, Search, ShieldCheck } from 'lucide-react';
-import { ICON_BTN, DROPDOWN_PANEL, SEARCH_FIELD, SEARCH_PILL, CONTROL_ACTIVE, CONTROL_INACTIVE, dropdownAnim, TRANSITION_BASE, Z_MODAL_TOP } from '../../styles';
+import { ICON_BTN, DROPDOWN_PANEL, SEARCH_FIELD, SEARCH_PILL, FILTER_OPTION, CONTROL_ACTIVE, CONTROL_INACTIVE, dropdownAnim, TRANSITION_BASE, Z_MODAL_TOP } from '../../styles';
 import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
 import { FILTER_MODES } from '../../../shared/modes';
 import { DAY_TYPES } from '../../../shared/dayTypes';
@@ -360,7 +360,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                               return next;
                             })}
                             aria-pressed={active}
-                            className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition-colors whitespace-nowrap shrink-0 ${active ? CONTROL_ACTIVE : CONTROL_INACTIVE}`}
+                            className={`${FILTER_OPTION} shrink-0 ${active ? CONTROL_ACTIVE : CONTROL_INACTIVE}`}
                           >
                             {region}
                           </button>
@@ -425,7 +425,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                             key={status}
                             onClick={() => setDegradedFeedsStatus(status)}
                             aria-pressed={degradedFeedsStatus === status}
-                            className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition-colors whitespace-nowrap ${degradedFeedsStatus === status ? CONTROL_ACTIVE : CONTROL_INACTIVE}`}
+                            className={`${FILTER_OPTION} ${degradedFeedsStatus === status ? CONTROL_ACTIVE : CONTROL_INACTIVE}`}
                           >
                             {status === 'all' ? 'All' : qualityStatusLabel(status)}
                           </button>

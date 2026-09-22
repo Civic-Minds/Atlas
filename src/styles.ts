@@ -48,6 +48,8 @@ export const CHIP_BASE = `${GLASS_PILL} bg-[var(--bg-panel)] border`;
 /** Shared mode-aware control states. */
 export const CONTROL_ACTIVE = 'bg-[var(--control-active-bg)] border-[var(--control-active-border)] text-[var(--control-active-fg)]';
 export const CONTROL_INACTIVE = 'bg-[var(--control-inactive-bg)] border-[var(--control-inactive-border)] text-[var(--control-inactive-fg)] hover:bg-[var(--control-hover-bg)]';
+/** Compact filter option button used across agency, hidden-route, and feed lists. */
+export const FILTER_OPTION = 'px-2.5 py-0.5 rounded-md text-[10px] font-bold border transition-colors whitespace-nowrap';
 /** App switchers use the same glass pill surface as the filter chips. */
 export const APP_TAB_ACTIVE = `${GLASS_PILL} bg-[var(--control-active-bg)] border-[var(--control-active-border)] text-[var(--control-active-fg)]`;
 export const APP_TAB_INACTIVE = `${GLASS_PILL} bg-[var(--bg-panel)] border-[var(--border-primary)] text-[var(--text-primary)] hover:bg-[var(--bg-btn-hover)] hover:text-[var(--accent)]`;

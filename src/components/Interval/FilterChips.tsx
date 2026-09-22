@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Search } from 'lucide-react';
 import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
-import { FLOATING_CARD, CHIP_BASE, PANEL_ENTER_TOP, CONTROL_ACTIVE, CONTROL_INACTIVE } from '../../styles';
+import { FLOATING_CARD, CHIP_BASE, PANEL_ENTER_TOP, FILTER_OPTION, CONTROL_ACTIVE, CONTROL_INACTIVE } from '../../styles';
 import type { Agency } from '../../App';
 import { PERIOD_LABELS, PERIOD_KEYS } from '../../hooks/useIntervalStats';
 import type { TimePeriod, ViewportBounds } from '../../hooks/useIntervalStats';
@@ -160,7 +160,7 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds
         <button
           onClick={() => setSelectedAgencies(applyAgencyBulkSelection(selectedAgencies, allSlugs, true))}
           disabled={allOn}
-          className="flex-1 text-[10px] font-bold py-0.5 rounded-md border border-[var(--border-primary)] text-[var(--text-dim)] hover:text-[var(--text-primary)] hover:border-[var(--accent-border)] disabled:opacity-30 disabled:cursor-default transition-colors"
+          className={`flex-1 ${FILTER_OPTION} border-[var(--border-primary)] text-[var(--text-dim)] hover:text-[var(--text-primary)] hover:border-[var(--accent-border)] disabled:opacity-30 disabled:cursor-default`}
         >
           All
         </button>
@@ -169,7 +169,7 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds
             setSelectedAgencies(applyAgencyBulkSelection(selectedAgencies, allSlugs, false));
           }}
           disabled={allOff}
-          className="flex-1 text-[10px] font-bold py-0.5 rounded-md border border-[var(--border-primary)] text-[var(--text-dim)] hover:text-[var(--text-primary)] hover:border-[var(--accent-border)] disabled:opacity-30 disabled:cursor-default transition-colors"
+          className={`flex-1 ${FILTER_OPTION} border-[var(--border-primary)] text-[var(--text-dim)] hover:text-[var(--text-primary)] hover:border-[var(--accent-border)] disabled:opacity-30 disabled:cursor-default`}
         >
           None
         </button>
