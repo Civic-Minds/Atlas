@@ -103,6 +103,9 @@ async function measurePage(page, scenario, kind, run) {
   let readyDetail = null;
   let timedOut = false;
   let completionSignal = null;
+  let readySource = null;
+  let sawLoadingBadge = false;
+  let settledPolls = 0;
 
   await page.goto(url, { waitUntil: 'domcontentloaded', timeout: timeoutMs });
   const deadline = Date.now() + timeoutMs;
@@ -111,21 +114,42 @@ async function measurePage(page, scenario, kind, run) {
     const state = await page.evaluate(() => ({
       body: document.body.innerText,
       marks: performance.getEntriesByName('atlas:network-data-ready').map(entry => ({ startTime: entry.startTime, detail: entry.detail })),
+      catalogReady: performance.getEntriesByName('atlas:agency-catalog-ready').length > 0,
     }));
     const progress = parseProgress(state.body);
     lastProgress = progress ?? lastProgress;
     lastFailures = parseFailures(state.body);
+    if (progress) {
+      sawLoadingBadge = true;
+      settledPolls = 0;
+    } else if (sawLoadingBadge && state.catalogReady) {
+      settledPolls++;
+    }
     if (state.marks.length && !progress) {
       const mark = state.marks.at(-1);
       markMs = mark.startTime;
       readyDetail = mark.detail;
       completionSignal = 'network-data-ready + loading badge absent';
+      readySource = 'network-data-ready';
+      break;
+    }
+    // Older deployed public builds do not have network-data-ready yet. Once
+    // loading has visibly started, use a short quiet period as the fallback.
+    const routeCountVisible = /\d+\s+routes/.test(state.body);
+    if (!state.marks.length && settledPolls >= 4) {
+      completionSignal = 'legacy catalog-ready + loading badge absent';
+      readySource = 'legacy-loading-badge';
+      break;
+    }
+    if (!state.marks.length && !progress && routeCountVisible && Date.now() - new Date(startedAt).getTime() >= 2000) {
+      completionSignal = 'legacy route-count visible + no loading badge';
+      readySource = 'legacy-route-count';
       break;
     }
     await new Promise(resolve => setTimeout(resolve, 250));
   }
 
-  if (markMs === null) timedOut = true;
+  if (markMs === null && !completionSignal) timedOut = true;
   return {
     scenario: scenario.name,
     kind,
@@ -136,6 +160,7 @@ async function measurePage(page, scenario, kind, run) {
     browserWallMs: Math.round(performance.now() - wallStart),
     mapReadyMarkMs: markMs === null ? null : Math.round(markMs),
     readyDetail,
+    readySource,
     completionSignal,
     lastProgress,
     failedNetworks: lastFailures,

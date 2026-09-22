@@ -29,7 +29,8 @@ latency beside each run. Keep cold-cache and warm-cache results separate.
 The committed runner uses the same three URLs, a fixed 1440×900 viewport, a
 fresh browser context for cold runs, and a reused context for warm runs. It
 waits for Atlas's `network-data-ready` signal and for the loading badge to
-disappear, or records a timeout.
+disappear. Older deployed builds without that signal use the visible route
+count after loading has settled; otherwise the run is recorded as a timeout.
 
 ```bash
 npm run benchmark -- --target http://localhost:5100 --network "59 cecil wifi nov 2025"
