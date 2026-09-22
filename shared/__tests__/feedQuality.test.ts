@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { assessFeedQuality } from '../feedQuality';
+import { assessFeedQuality, presentFeedQualityReason } from '../feedQuality';
 
 const healthy = {
   validationErrors: 0,
@@ -26,12 +26,24 @@ describe('assessFeedQuality', () => {
   it('marks expired feeds degraded', () => {
     const result = assessFeedQuality({ ...healthy, feedExpiry: '20260813' });
     expect(result.status).toBe('degraded');
-    expect(result.reasons).toContain('The feed schedule has expired.');
+    expect(result.reasons).toContain('The schedule dates in this feed have passed.');
   });
 
   it('marks feeds with no route output unusable', () => {
     const result = assessFeedQuality({ ...healthy, featureCount: 0 });
     expect(result.status).toBe('unusable');
     expect(result.score).toBe(0);
+  });
+});
+
+describe('presentFeedQualityReason', () => {
+  it('normalizes older persisted route-shape wording', () => {
+    expect(presentFeedQualityReason('369 map lines were repaired — Atlas fixed unusual route geometry before displaying it.'))
+      .toBe('369 route shapes needed adjustment before display.');
+  });
+
+  it('normalizes older persisted frequency wording', () => {
+    expect(presentFeedQualityReason("1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."))
+      .toBe('1 route has stops whose frequency differs from the overall route schedule.');
   });
 });

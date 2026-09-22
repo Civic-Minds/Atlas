@@ -687,11 +687,11 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
             <div className="h-full overflow-y-auto px-5 py-4 space-y-4">
               {helpContext?.agencyName && (
                 <p className="text-xs text-[var(--text-primary)] leading-relaxed">
-                  {helpContext.agencyName} has a problem in the source map line for this route.
+                  {helpContext.agencyName} has a problem with this route's shape in the source feed.
                 </p>
               )}
               <p className="text-xs text-[var(--text-dim)] leading-relaxed">
-                Transit agencies publish the map lines Atlas uses to draw routes. Atlas identified a specific problem in this route&apos;s source geometry, so the route stays visible with a warning instead of hiding the entire agency.
+                Transit agencies publish the route shapes Atlas uses to draw routes. Atlas identified a specific problem in this route&apos;s source geometry, so the route stays visible with a warning instead of hiding the entire agency.
               </p>
               <p className="text-xs text-[var(--text-dim)] leading-relaxed">
                 The line may be incomplete or adjusted. The schedule information is separate from the map geometry.

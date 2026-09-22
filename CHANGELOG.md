@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Degraded-feed explanations now use one shared, rider-facing vocabulary across settings and route details.
 - The About Atlas control now matches Settings and reliably toggles the information panel open or closed.
 - High contrast mode now applies to agency filter rows like the other filter dropdowns.
 - High contrast selections now preserve light-theme surfaces instead of looking like dark-mode rows.

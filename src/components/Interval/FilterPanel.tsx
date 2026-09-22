@@ -8,7 +8,7 @@ import { PERIOD_LABELS } from '../../hooks/useIntervalStats';
 import { FEATURES, R2_PUBLIC_URL } from '../../../shared/config';
 import type { Agency } from '../../App';
 import { agencyDisplayParts, formatStoredDate } from '../../utils/format';
-import { qualityStatusLabel } from '../../../shared/feedQuality';
+import { presentFeedQualityReason, qualityStatusLabel } from '../../../shared/feedQuality';
 import { useColorVision } from '../../context/ColorVisionContext';
 
 interface FilterPanelProps {
@@ -233,7 +233,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
       .filter(agency => {
         if (!q) return true;
         const quality = agency.feedQuality!;
-        return [agency.name, ...(agency.cities ?? []), agency.displayArea ?? '', quality.status, ...quality.reasons]
+        return [agency.name, ...(agency.cities ?? []), agency.displayArea ?? '', quality.status, ...quality.reasons.map(presentFeedQualityReason)]
           .some(value => value.toLowerCase().includes(q));
       })
       .sort((a, b) => {
@@ -406,8 +406,8 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                 <div className="px-5 py-3">
                   <p className="text-[10px] text-[var(--text-muted)] leading-relaxed pb-2">
                     {hideLowQuality
-                      ? 'These feeds are hidden because processing marked them degraded or unusable.'
-                      : 'These feeds would be hidden when Hide degraded feeds is enabled.'}
+                      ? 'These agencies are hidden because Atlas found serious data problems or an expired schedule.'
+                      : 'These agencies would be hidden when Hide degraded feeds is enabled.'}
                   </p>
                   {hiddenFeedAgencies.length > 0 && (
                     <>
@@ -466,7 +466,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                             </p>
                             {quality.reasons.length > 0 && (
                               <ul className="mt-1.5 space-y-0.5 text-[10px] text-[var(--text-muted)] leading-relaxed">
-                                {quality.reasons.map(reason => <li key={reason}>{reason}</li>)}
+                                {quality.reasons.map(reason => <li key={reason}>{presentFeedQualityReason(reason)}</li>)}
                               </ul>
                             )}
                             <p className="mt-1 text-[9px] text-[var(--text-dim)]">Checked {checkedDate}</p>
