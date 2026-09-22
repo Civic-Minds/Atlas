@@ -29,6 +29,8 @@ html {
   --control-inactive-border: var(--border-primary);
   --control-inactive-fg: var(--text-primary);
   --control-hover-bg: var(--bg-btn-hover);
+  --toggle-on-bg: var(--accent);
+  --toggle-off-bg: #d1d5db;
   --selection-active-bg: var(--accent-bg);
   --selection-active-border: var(--accent-border);
   --selection-active-fg: var(--accent);
@@ -68,6 +70,8 @@ html {
   --bg-btn: rgba(255, 255, 255, 0.05);
   --bg-btn-hover: rgba(255, 255, 255, 0.1);
   --bg-hover: var(--bg-btn-hover);
+  --toggle-on-bg: var(--accent);
+  --toggle-off-bg: #4b5563;
   --text-legend: rgba(255, 255, 255, 0.7);
   --dim-route: #334155;
   /* Accent */
@@ -84,13 +88,15 @@ html {
 }
 
 [data-color-vision='high-contrast'] {
-  --control-active-bg: #111827;
+  --control-active-bg: #e5e7eb;
   --control-active-border: #111827;
-  --control-active-fg: #f0f0f0;
+  --control-active-fg: #111827;
   --control-inactive-bg: #ffffff;
   --control-inactive-border: #4b5563;
   --control-inactive-fg: #111827;
-  --control-hover-bg: #e5e7eb;
+  --control-hover-bg: #f3f4f6;
+  --toggle-on-bg: #111827;
+  --toggle-off-bg: #d1d5db;
   --selection-active-bg: #e5e7eb;
   --selection-active-border: #111827;
   --selection-active-fg: #111827;
@@ -112,6 +118,8 @@ html {
   --control-inactive-border: #9ca3af;
   --control-inactive-fg: #ffffff;
   --control-hover-bg: #1f2937;
+  --toggle-on-bg: #f0f0f0;
+  --toggle-off-bg: #4b5563;
   --selection-active-bg: #1f2937;
   --selection-active-border: #f0f0f0;
   --selection-active-fg: #ffffff;

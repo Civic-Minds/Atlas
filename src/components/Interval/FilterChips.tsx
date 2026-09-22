@@ -73,18 +73,18 @@ const compactOptBtn = (active: boolean, highContrast = false) =>
   `h-7 px-2.5 flex items-center justify-center text-[11px] font-bold rounded-full border transition-colors ${
     active
       ? highContrast
-        ? 'bg-[var(--text-primary)] border-[var(--text-primary)] text-[var(--bg-app)]'
+        ? 'bg-[var(--control-active-bg)] border-[var(--control-active-border)] text-[var(--control-active-fg)]'
         : 'bg-[var(--accent-bg)] border-[var(--accent-border)] text-[var(--accent)]'
-      : 'border-[var(--text-muted)] text-[var(--text-primary)] hover:border-[var(--text-primary)] hover:text-[var(--accent)]'
+      : 'bg-[var(--control-inactive-bg)] border-[var(--control-inactive-border)] text-[var(--control-inactive-fg)] hover:bg-[var(--control-hover-bg)] hover:border-[var(--control-active-border)] hover:text-[var(--control-active-fg)]'
   }`;
 
 const rowBtn = (active: boolean, highContrast = false) =>
   `w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-[11px] font-bold transition-all border text-left min-w-0 ${
     active
       ? highContrast
-        ? 'bg-[var(--text-primary)] border-[var(--text-primary)] text-[var(--bg-app)]'
+        ? 'bg-[var(--control-active-bg)] border-[var(--control-active-border)] text-[var(--control-active-fg)]'
         : 'bg-[var(--bg-btn-hover)] border-[var(--text-muted)] text-[var(--text-primary)]'
-      : 'bg-[var(--bg-btn)] border-[var(--border-primary)] text-[var(--text-primary)] hover:border-[var(--text-primary)] hover:text-[var(--accent)]'
+      : 'bg-[var(--control-inactive-bg)] border-[var(--control-inactive-border)] text-[var(--control-inactive-fg)] hover:bg-[var(--control-hover-bg)] hover:border-[var(--control-active-border)] hover:text-[var(--control-active-fg)]'
   }`;
 
 interface AgenciesPanelProps {
@@ -95,6 +95,7 @@ interface AgenciesPanelProps {
   agencyQuery: string;
   setAgencyQuery: (q: string) => void;
   agencySearchRef: React.RefObject<HTMLInputElement | null>;
+  highContrast: boolean;
 }
 
 export function applyAgencyBulkSelection(current: Set<string>, allSlugs: string[], enabled: boolean): Set<string> {
@@ -104,7 +105,7 @@ export function applyAgencyBulkSelection(current: Set<string>, allSlugs: string[
   return next;
 }
 
-function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds, agencyQuery, setAgencyQuery, agencySearchRef }: AgenciesPanelProps) {
+function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds, agencyQuery, setAgencyQuery, agencySearchRef, highContrast }: AgenciesPanelProps) {
   const [showAll, setShowAll] = useState(false);
 
   // Build deduplicated groups, tagging each with whether it overlaps the current viewport
@@ -192,7 +193,7 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds
                     else g.slugs.forEach(s => next.add(s));
                     setSelectedAgencies(next);
                   }}
-                  className={rowBtn(active)}
+                  className={rowBtn(active, highContrast)}
                   aria-label={g.name}
                 >
                   <span className="truncate flex-1 min-w-0">
@@ -265,6 +266,9 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
     setSelectedModes(next);
   };
 
+  // An empty set means no mode restriction, so every mode is active by default.
+  const modeIsActive = (id: number) => selectedModes.size === 0 || selectedModes.has(id);
+
   const toggleAgency = (slug: string) => {
     const next = new Set(selectedAgencies);
     if (next.has(slug)) next.delete(slug); else next.add(slug);
@@ -316,7 +320,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
         <div className="relative">
           <button onClick={() => toggle('mode')} className={chipClass(selectedModes.size > 0)}>Mode<Dot show={selectedModes.size > 0} /></button>
           {openChip === 'mode' && <div className={`${PANEL} w-36`}>
-            {MODES.map(mode => <button key={mode.id} onClick={() => toggleMode(mode.id)} className={researchButton(selectedModes.has(mode.id))}>{mode.label}</button>)}
+            {MODES.map(mode => <button key={mode.id} onClick={() => toggleMode(mode.id)} className={researchButton(modeIsActive(mode.id))}>{mode.label}</button>)}
           </div>}
         </div>
       </div>
@@ -376,7 +380,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
               <p className="text-[8px] font-black text-[var(--text-dim)] uppercase tracking-widest mb-1.5">Mode</p>
               <div className="flex flex-wrap gap-1">
                 {MODES.map(m => (
-                  <button key={m.id} onClick={() => toggleMode(m.id)} className={compactOptBtn(selectedModes.has(m.id), colorMode === 'friendly')}>
+                  <button key={m.id} onClick={() => toggleMode(m.id)} className={compactOptBtn(modeIsActive(m.id), colorMode === 'friendly')}>
                     {m.label}
                   </button>
                 ))}
@@ -468,7 +472,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
               <button
                 key={m.id}
                 onClick={() => toggleMode(m.id)}
-                className={rowBtn(selectedModes.has(m.id), colorMode === 'friendly')}
+                className={rowBtn(modeIsActive(m.id), colorMode === 'friendly')}
               >
                 {m.label}
               </button>
@@ -497,6 +501,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
             agencyQuery={agencyQuery}
             setAgencyQuery={setAgencyQuery}
             agencySearchRef={agencySearchRef}
+            highContrast={colorMode === 'friendly'}
           />
         )}
       </div>

@@ -6,6 +6,10 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- High contrast mode now applies to agency filter rows like the other filter dropdowns.
+- High contrast selections now preserve light-theme surfaces instead of looking like dark-mode rows.
+- Off switches now use a light track in the light theme instead of looking enabled or dark.
+- Mode filter options now appear selected when the default all-modes state is active.
 - Privacy & analytics now uses the same switch control as the main Settings panel, with clearer copy and a Privacy Policy link.
 - Public-mode localhost runs now explicitly disable beta-only live, history, and experimental features so local testing matches the public site.
 - Regional and broad map views now defer detailed agency downloads until city-level zoom, reducing unnecessary network requests while keeping PMTiles overview routes visible.

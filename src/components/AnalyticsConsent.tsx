@@ -8,7 +8,7 @@ declare global { interface Navigator { globalPrivacyControl?: boolean } }
 const STRICT_COUNTRIES = new Set(['AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IE','IT','LV','LT','LU','MT','NL','PL','PT','RO','SK','SI','ES','SE','IS','LI','NO','GB','CH']);
 
 function Toggle({ on }: { on: boolean }) {
-  return <span className={`relative inline-flex h-5 w-9 shrink-0 rounded-full transition-colors ${TRANSITION_BASE} ${on ? 'bg-[var(--control-active-bg)]' : 'bg-[var(--control-inactive-border)]'}`}>
+  return <span className={`relative inline-flex h-5 w-9 shrink-0 rounded-full transition-colors ${TRANSITION_BASE} ${on ? 'bg-[var(--toggle-on-bg)]' : 'bg-[var(--toggle-off-bg)]'}`}>
     <span className={`absolute top-1 h-3 w-3 rounded-full bg-white shadow-sm transition-transform ${TRANSITION_BASE} ${on ? 'translate-x-5' : 'translate-x-1'}`} />
   </span>;
 }

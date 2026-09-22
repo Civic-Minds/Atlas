@@ -61,7 +61,7 @@ function Toggle({ on }: { on: boolean }) {
   return (
     <span
       className={`relative inline-flex h-5 w-9 shrink-0 rounded-full transition-colors ${TRANSITION_BASE} ${
-        on ? 'bg-[var(--control-active-bg)]' : 'bg-[var(--control-inactive-border)]'
+        on ? 'bg-[var(--toggle-on-bg)]' : 'bg-[var(--toggle-off-bg)]'
       }`}
     >
       <span
@@ -479,12 +479,13 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                 <p className="text-[9px] font-bold text-[var(--text-dim)]">Appearance</p>
               </div>
               <div className="px-5 pb-4">
-                <div className="flex items-center justify-between">
+                <div className="flex items-start justify-between gap-4">
                   <div className="flex items-center gap-3 min-w-0">
-                    {lightMode ? <Moon className="w-4 h-4 shrink-0 text-[var(--text-dim)]" /> : <Sun className="w-4 h-4 shrink-0 text-[var(--text-dim)]" />}
-                    <p className="text-[11px] font-bold text-[var(--text-primary)] leading-tight">
-                      {lightMode ? 'Dark mode' : 'Light mode'}
-                    </p>
+                    <Moon className="w-4 h-4 mt-0.5 shrink-0 text-[var(--text-dim)]" />
+                    <div className="min-w-0">
+                      <p className="text-[11px] font-bold text-[var(--text-primary)] leading-tight">Dark mode</p>
+                      <p className="text-[10px] text-[var(--text-muted)] mt-1 leading-relaxed">Uses darker colours across Atlas.</p>
+                    </div>
                   </div>
                   <button
                     onClick={() => setLightMode(v => !v)}
