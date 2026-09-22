@@ -475,22 +475,32 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
 
       {!fareView && <div className="flex-1 overflow-y-auto custom-scrollbar">
         {agency.onDemandOnly ? (
-          <div className="px-4 py-4 space-y-3">
-            <div>
-              <p className="text-xs font-black text-[var(--text-primary)]">On-demand service</p>
+          <div className="px-4 py-4 space-y-4">
+            <div className="rounded-xl border border-[var(--border-primary)] bg-[var(--surface-secondary)] px-3 py-3">
+              <p className="text-[10px] font-black uppercase tracking-wide text-[var(--text-dim)]">Request a ride</p>
               <p className="text-[11px] leading-relaxed text-[var(--text-muted)] mt-1">
-                Service is requested through Argo and dynamically routed within the shaded service area.
+                Book a shared ride through {agency.name}. Trips are dynamically routed within this service area.
               </p>
+              {agency.onDemandServiceArea?.bookingUrl && (
+                <a
+                  href={agency.onDemandServiceArea.bookingUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center w-full rounded-lg bg-[var(--accent)] px-3 py-2 mt-3 text-[11px] font-black text-white hover:opacity-90 transition-opacity"
+                >
+                  Book or view service details →
+                </a>
+              )}
             </div>
             {agency.onDemandServiceArea?.serviceHours && (
-              <div>
-                <p className="text-[9px] font-bold uppercase tracking-wide text-[var(--text-dim)]">Service hours</p>
+              <div className="px-1">
+                <p className="text-[9px] font-black uppercase tracking-wide text-[var(--text-dim)]">Service hours</p>
                 <p className="text-[11px] leading-relaxed text-[var(--text-muted)] mt-1">{agency.onDemandServiceArea.serviceHours}</p>
               </div>
             )}
             {agency.onDemandServiceArea?.sourceUrl && (
-              <div>
-                <p className="text-[9px] font-bold uppercase tracking-wide text-[var(--text-dim)]">Boundary source</p>
+              <div className="border-t border-[var(--border-primary)] pt-3 px-1">
+                <p className="text-[9px] font-black uppercase tracking-wide text-[var(--text-dim)]">Service-area boundary</p>
                 <a
                   href={agency.onDemandServiceArea.sourceUrl}
                   target="_blank"
@@ -500,16 +510,6 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
                   {agency.onDemandServiceArea.sourceLabel} →
                 </a>
               </div>
-            )}
-            {agency.onDemandServiceArea?.bookingUrl && (
-              <a
-                href={agency.onDemandServiceArea.bookingUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[11px] font-bold text-[var(--accent)] hover:underline"
-              >
-                View booking and service details →
-              </a>
             )}
           </div>
         ) : visibleRoutes.length === 0 ? (
