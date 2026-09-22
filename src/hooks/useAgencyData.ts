@@ -7,7 +7,7 @@ import { getSavedView } from '../utils/regionView';
 import { agencySlugsToPrefetchForSearch } from '../utils/agencySearch';
 import { pruneAgencyLayers, MAX_AGENCY_LAYERS_IN_REACT } from './agencyLayerPrune';
 import type { RouteDataQualityWarning } from '../../shared/routeDataQuality';
-import { markAtlasOnce } from '../lib/performance';
+import { markAtlasLatest } from '../lib/performance';
 
 export type { HeadwayByPeriod, HeadwayByPeriodMaxGap, HeadwayByPeriodRange, HeadwayByPeriodSustained };
 export type HeadwayByHour = Partial<Record<number, number | null>>;
@@ -289,8 +289,10 @@ export function useAgencyData(
   const isLoading = loadedCount < requestedCount;
 
   useEffect(() => {
-    if (requestedCount > 0 && !isLoading) markAtlasOnce('network-data-ready');
-  }, [isLoading, requestedCount]);
+    if (requestedCount > 0 && !isLoading) {
+      markAtlasLatest('network-data-ready', { loadedCount, requestedCount, failedCount: failedSlugs.size });
+    }
+  }, [failedSlugs.size, isLoading, loadedCount, requestedCount]);
 
   return { layers, loadedCount, requestedCount, isLoading, failedSlugs };
 }

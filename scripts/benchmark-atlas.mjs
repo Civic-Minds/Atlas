@@ -100,6 +100,7 @@ async function measurePage(page, scenario, kind, run) {
   let lastProgress = null;
   let lastFailures = 0;
   let markMs = null;
+  let readyDetail = null;
   let timedOut = false;
   let completionSignal = null;
 
@@ -109,13 +110,15 @@ async function measurePage(page, scenario, kind, run) {
   while (Date.now() < deadline) {
     const state = await page.evaluate(() => ({
       body: document.body.innerText,
-      marks: performance.getEntriesByName('atlas:network-data-ready').map(entry => entry.startTime),
+      marks: performance.getEntriesByName('atlas:network-data-ready').map(entry => ({ startTime: entry.startTime, detail: entry.detail })),
     }));
     const progress = parseProgress(state.body);
     lastProgress = progress ?? lastProgress;
     lastFailures = parseFailures(state.body);
     if (state.marks.length && !progress) {
-      markMs = state.marks.at(-1);
+      const mark = state.marks.at(-1);
+      markMs = mark.startTime;
+      readyDetail = mark.detail;
       completionSignal = 'network-data-ready + loading badge absent';
       break;
     }
@@ -132,6 +135,7 @@ async function measurePage(page, scenario, kind, run) {
     durationMs: Math.round(markMs ?? (performance.now() - wallStart)),
     browserWallMs: Math.round(performance.now() - wallStart),
     mapReadyMarkMs: markMs === null ? null : Math.round(markMs),
+    readyDetail,
     completionSignal,
     lastProgress,
     failedNetworks: lastFailures,
