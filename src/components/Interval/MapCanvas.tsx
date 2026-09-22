@@ -26,6 +26,7 @@ import { computeFrequencySegmentOverlay, buildPartialMatchFilterExpression, broa
 import { buildSharedHoverSegments } from '../../utils/sharedHoverSegments';
 import { getMapContextAgenciesFromFeatures, isMapContextOutsideClick, type MapContextAgency } from '../../utils/mapContext';
 import { MapContextPanel } from './MapContextPanel';
+import { markAtlasLatest } from '../../lib/performance';
 
 const CORRIDOR_BAND_COLOR = '#64748b';
 
@@ -334,6 +335,14 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
           .map(feature => String(feature.properties?.agencySlug ?? ''))
           .filter(Boolean),
       );
+      if (sourceFeatures.length > 0 && (map.isSourceLoaded('atlas-pmtiles') || renderedFeatures.length > 0)) {
+        markAtlasLatest('network-data-ready', {
+          source: 'pmtiles',
+          sourceFeatureCount: sourceFeatures.length,
+          renderedFeatureCount: renderedFeatures.length,
+          zoom: map.getZoom(),
+        });
+      }
       setPmtilesRoutesAvailable(sourceFeatures.length > 0);
       setPmtilesRouteAgencies(previous => {
         const previousKey = previous ? [...previous].sort().join('|') : '';
