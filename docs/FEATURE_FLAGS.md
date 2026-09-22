@@ -30,6 +30,18 @@ export const LIVE_ENABLED = envFlag('VITE_LIVE_ENABLED');
 echo "true" | vercel env add VITE_LIVE_ENABLED production
 ```
 
+## Atlas modes
+
+`VITE_ATLAS_MODE` controls agency visibility independently from feature flags:
+
+| Mode | Agency visibility |
+|---|---|
+| `public` | Public agencies only; hidden-in-production agencies stay hidden. |
+| `beta` | Public agencies plus agencies explicitly marked `betaOnly`. |
+| `dev` | All non-staged agencies, including local QA candidates. |
+
+Use `npm run dev:public`, `npm run dev:beta`, or `npm run dev:all` for local testing. The feature flags remain independent, so public-mode localhost can use the public agency catalog while `.env.local` enables new features for testing. If `VITE_ATLAS_MODE` is unset, deployed builds infer `public` or `beta` from `VITE_BETA_BUILD`, while Vite development infers `dev`.
+
 **Each flag gates three things**, in `src/App.tsx`:
 1. The pill/button that surfaces the feature.
 2. The `routedApp`/`gated` check — direct URL navigation (e.g. typing `/apps/live`) redirects to the frequency map and corrects the URL, rather than silently rendering the full app anyway. Without this, hiding the pill alone doesn't actually restrict access.

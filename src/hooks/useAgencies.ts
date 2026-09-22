@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { Agency } from '../App';
-import { FEATURES, getAgencyArtifactUrls } from '../../shared/config';
+import { getAgencyArtifactUrls, ATLAS_MODE } from '../../shared/config';
 import { isAgencyVisibleInBrowser } from '../../shared/agencyVisibility';
 
 export type AgenciesLoadState = 'loading' | 'ready' | 'error';
@@ -21,7 +21,7 @@ export function useAgencies() {
       })
       .then((data: { agencies: Agency[] }) => {
         const enriched = data.agencies
-          .filter((a: Agency) => isAgencyVisibleInBrowser(a, { development: import.meta.env.DEV, betaEnabled: FEATURES.beta }))
+          .filter((a: Agency) => isAgencyVisibleInBrowser(a, { mode: ATLAS_MODE }))
           .map((a: Agency) => {
             if (!a.url) {
               const arts = getAgencyArtifactUrls(a.slug, { betaOnly: a.betaOnly });

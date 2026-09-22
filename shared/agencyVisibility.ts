@@ -1,3 +1,5 @@
+import type { AtlasMode } from './config.js';
+
 export interface BrowserAgencyVisibility {
   staged?: boolean;
   hiddenInProduction?: boolean;
@@ -5,8 +7,7 @@ export interface BrowserAgencyVisibility {
 }
 
 export interface AgencyVisibilityContext {
-  development: boolean;
-  betaEnabled: boolean;
+  mode: AtlasMode;
 }
 
 /** Whether an agency belongs in the browser's current agency catalog. */
@@ -15,5 +16,5 @@ export function isAgencyVisibleInBrowser(
   context: AgencyVisibilityContext,
 ): boolean {
   if (agency.staged) return false;
-  return !agency.hiddenInProduction || context.development || (context.betaEnabled && agency.betaOnly === true);
+  return !agency.hiddenInProduction || context.mode === 'dev' || (context.mode === 'beta' && agency.betaOnly === true);
 }

@@ -7,6 +7,9 @@
   "scripts": {
     "prepare": "git config core.hooksPath .githooks 2>/dev/null || true",
     "dev": "vite",
+    "dev:public": "VITE_ATLAS_MODE=public vite",
+    "dev:beta": "VITE_ATLAS_MODE=beta VITE_BETA_BUILD=true vite",
+    "dev:all": "VITE_ATLAS_MODE=dev vite",
     "dev:api": "npx tsx api-dev-server.ts",
     "build": "tsc && vite build",
     "preview": "vite preview",

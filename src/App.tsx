@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { useNavigate, useLocation } from 'react-router';
 import { Map as MapIcon, Search, X, Info, History as HistoryIcon, Moon } from 'lucide-react';
 import { PILL_SURFACE, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_HEADER, SIDEBAR_LEFT_FALLBACK, APP_TAB_ACTIVE, APP_TAB_INACTIVE } from './styles';
-import { R2_PUBLIC_URL, getAgencyArtifactUrls, FEATURES, FEATURE_ROUTES } from '../shared/config';
+import { R2_PUBLIC_URL, getAgencyArtifactUrls, FEATURES, FEATURE_ROUTES, ATLAS_MODE } from '../shared/config';
 import { isAgencyVisibleInBrowser } from '../shared/agencyVisibility';
 import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig';
 import Interval from './apps/Interval';
@@ -378,7 +378,7 @@ export default function App() {
       })
       .then((data: { agencies: Agency[] }) => {
         const enriched = data.agencies
-          .filter((a: Agency) => isAgencyVisibleInBrowser(a, { development: import.meta.env.DEV, betaEnabled: FEATURES.beta }))
+          .filter((a: Agency) => isAgencyVisibleInBrowser(a, { mode: ATLAS_MODE }))
           .map((a: Agency) => {
             if (!a.url) {
               const arts = getAgencyArtifactUrls(a.slug, { betaOnly: a.betaOnly });
@@ -573,7 +573,7 @@ export default function App() {
                   })
                   .then((data: { agencies: Agency[] }) => {
                     const enriched = data.agencies
-                      .filter((a: Agency) => isAgencyVisibleInBrowser(a, { development: import.meta.env.DEV, betaEnabled: FEATURES.beta }))
+                      .filter((a: Agency) => isAgencyVisibleInBrowser(a, { mode: ATLAS_MODE }))
                       .map((a: Agency) => {
                         if (!a.url) {
                           const arts = getAgencyArtifactUrls(a.slug, { betaOnly: a.betaOnly });
