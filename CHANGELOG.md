@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Broad maps now use a smaller simplified route archive and switch to detailed geometry when zoomed in, reducing unnecessary transit-data downloads.
 - Beta and dev now include an On-demand mode filter for the curated service-area prototypes; public production remains unchanged.
 - Regional and broad map views now report readiness when PMTiles route data is available, so performance measurements do not wait for deferred agency details.
 - Benchmarking now recognizes completed loads on older public builds that lack the current performance mark.
