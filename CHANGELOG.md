@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Public first loads no longer fetch disabled History metadata or refresh details until the Info panel is opened.
 - Regional and broad map views now report readiness when PMTiles route data is available, so performance measurements do not wait for deferred agency details.
 - Benchmarking now recognizes completed loads on older public builds that lack the current performance mark.
 - Standardized filter buttons across agency, hidden-route, and degraded-feed lists.

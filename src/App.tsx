@@ -419,6 +419,26 @@ export default function App() {
         setAgenciesLoadState('ready');
       })
       .catch(() => setAgenciesLoadState('error'));
+  }, []);
+
+  // These are only needed by optional UI. Keep them out of the public first load:
+  // public has no History control, and refresh details are shown only in the Info panel.
+  useEffect(() => {
+    if (!FEATURES.history) return;
+    fetch(`${R2_PUBLIC_URL}/atlas/history-config.json`)
+      .then(r => r.json())
+      .then((data: Array<{ slug: string; coverageYears?: number[]; routes?: Array<{ snapshots?: Array<{ year?: number }> }> }>) => {
+        setHistoryAgencySlugs(new Set(data.filter(agencyQualifiesForHistory).map(a => a.slug)));
+        setHistoryExploreAgencyCount(data.filter(agencyQualifiesForHistoryExplore).length);
+      })
+      .catch(() => {
+        setHistoryAgencySlugs(new Set());
+        setHistoryExploreAgencyCount(0);
+      });
+  }, []);
+
+  useEffect(() => {
+    if (!infoOpen || feedRefreshMeta) return;
     Promise.all([
       fetch('/data/feed-refresh.json').then(r => (r.ok ? r.json() : null)),
       fetch(`${R2_PUBLIC_URL}/atlas/feed-refresh-meta.json`).then(r => (r.ok ? r.json() : null)),
@@ -432,17 +452,7 @@ export default function App() {
         }
       })
       .catch(() => {});
-    fetch(`${R2_PUBLIC_URL}/atlas/history-config.json`)
-      .then(r => r.json())
-      .then((data: Array<{ slug: string; coverageYears?: number[]; routes?: Array<{ snapshots?: Array<{ year?: number }> }> }>) => {
-        setHistoryAgencySlugs(new Set(data.filter(agencyQualifiesForHistory).map(a => a.slug)));
-        setHistoryExploreAgencyCount(data.filter(agencyQualifiesForHistoryExplore).length);
-      })
-      .catch(() => {
-        setHistoryAgencySlugs(new Set());
-        setHistoryExploreAgencyCount(0);
-      });
-  }, []);
+  }, [feedRefreshMeta, infoOpen]);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', lightMode ? 'light' : 'dark');
