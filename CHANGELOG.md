@@ -132,6 +132,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Mode filter options now appear selected when the default all-modes state is active.
 - Privacy & analytics now uses the same switch control as the main Settings panel, with clearer copy and a Privacy Policy link.
 - Public-mode localhost runs now explicitly disable beta-only live, history, and experimental features so local testing matches the public site.
+- Add current fallback feeds for CTtransit and Westchester Bee-Line so scheduled refreshes can recover when the primary hosts fail.
+- The initial map load no longer includes the Live Vehicles/Deck.gl module graph, reducing first-load JavaScript for the common map view.
 - Map tiles and route data now publish together only after the release passes coverage checks, preventing frequency filters and route cards from reading different data generations.
 - PMTiles coverage checks now recheck initially missing agencies sequentially, preventing valid small agencies from blocking an otherwise complete release.
 - Selected routes no longer bypass the active map frequency filter.

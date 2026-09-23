@@ -7,6 +7,7 @@
     -72.682
   ],
   "feedUrl": "https://www.cttransit.com/sites/default/files/gtfs/googlect_transit.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-553/latest.zip",
   "lastFeedExpiry": "20270109",
   "lastFeedVersion": null,
   "lastRefreshedAt": "2026-08-10",
