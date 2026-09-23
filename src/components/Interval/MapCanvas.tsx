@@ -8,9 +8,9 @@ import { HEADWAY_TIERS, NIGHT_SERVICE_COLOR, buildFareColorExpression, buildDefa
 import { getRegionalView, saveView, getSavedView, getAgencyBounds } from '../../utils/regionView';
 import { useViewport } from '../../context/ViewportContext';
 import { useHistoryMapOverlay } from '../../context/HistoryMapOverlay';
+import { useLiveVehiclesMapOverlay } from '../../context/LiveVehiclesMapOverlay';
 import { useCorridorLayer } from './map/useCorridorLayer';
 import { useHistoryLayer } from './map/useHistoryLayer';
-import { useLiveVehiclesLayer } from './map/useLiveVehiclesLayer';
 import type { Agency } from '../../App';
 import type { ShapeProperties, ViewportBounds, TimePeriod, HoveredBranch } from '../../hooks/useIntervalStats';
 import type { DayType } from '../../../shared/dayTypes';
@@ -29,6 +29,8 @@ import { MapContextPanel } from './MapContextPanel';
 import { markAtlasLatest } from '../../lib/performance';
 
 const CORRIDOR_BAND_COLOR = '#64748b';
+
+const LiveVehiclesLayer = React.lazy(() => import('./map/LiveVehiclesLayer'));
 
 function MapNoticePill({ children, className = '' }: { children: React.ReactNode; className?: string }) {
   return (
@@ -299,6 +301,12 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
 
   const { setBoundsAndZoom } = useViewport();
   const { overlay: historyOverlay } = useHistoryMapOverlay();
+  const { overlay: liveOverlay } = useLiveVehiclesMapOverlay();
+  const [liveLayerRequested, setLiveLayerRequested] = useState(false);
+
+  useEffect(() => {
+    if (liveOverlay) setLiveLayerRequested(true);
+  }, [liveOverlay]);
 
   const [mapContextAgencies, setMapContextAgencies] = useState<MapContextAgency[]>([]);
 
@@ -1681,10 +1689,11 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     resetRoutesLayerDefaultPaint(map);
   }, [selectedRoute, mapLoaded, historyOverlay]);
 
-  // Overlay layers (corridors, history, live vehicles) — extracted to hooks
+  // Overlay layers (corridors, history) — extracted to hooks. Live Vehicles is
+  // mounted through a lazy boundary so its Deck.gl graph is not part of the
+  // initial frequency-map module graph.
   useCorridorLayer(mapRef, mapLoaded, showCorridorBand || showCorridors, selectedCorridorFamily);
   useHistoryLayer(mapRef, mapLoaded);
-  useLiveVehiclesLayer(mapRef, deckOverlayRef, mapLoaded);
 
   // Clean up deck overlay on unmount
   useEffect(() => {
@@ -1697,6 +1706,12 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     <div style={{ height: '100%', width: '100%', position: 'relative', background: 'var(--bg-app)' }}>
       {/* Map Element */}
       <div ref={mapContainerRef} style={{ height: '100%', width: '100%' }} />
+
+      {liveLayerRequested && (
+        <React.Suspense fallback={null}>
+          <LiveVehiclesLayer mapRef={mapRef} deckOverlayRef={deckOverlayRef} mapLoaded={mapLoaded} />
+        </React.Suspense>
+      )}
 
       {/* Geolocate Button Control Overlay */}
       {mapHint && (

@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- The initial map load no longer includes the Live Vehicles/Deck.gl module graph, reducing first-load JavaScript for the common map view.
 - Map tiles and route data now publish together only after the release passes coverage checks, preventing frequency filters and route cards from reading different data generations.
 - PMTiles coverage checks now recheck initially missing agencies sequentially, preventing valid small agencies from blocking an otherwise complete release.
 - Selected routes no longer bypass the active map frequency filter.
