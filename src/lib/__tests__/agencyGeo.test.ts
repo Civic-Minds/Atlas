@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { clearAgencyGeoCache, fetchAgencyGeo, getCachedAgencyGeo } from '../agencyGeo';
+import { clearDataReleaseCache } from '../dataRelease';
 
 const agency = { slug: 'ttc', name: 'TTC', url: 'https://example.com/ttc.json' };
 const fc = {
@@ -40,6 +41,7 @@ function mockFetch(fcBody: typeof fc = fc) {
 
 afterEach(() => {
   clearAgencyGeoCache();
+  clearDataReleaseCache();
   vi.restoreAllMocks();
 });
 

@@ -29,7 +29,9 @@ export default {
     }
 
     const variant = new URL(request.url).searchParams.get('variant');
-    const filename = variant === 'overview' ? 'atlas-overview.pmtiles' : 'atlas.pmtiles';
+    const release = new URL(request.url).searchParams.get('release');
+    const releasePath = release && /^release-[a-z0-9]+$/.test(release) ? `releases/${release}/` : '';
+    const filename = `${releasePath}${variant === 'overview' ? 'atlas-overview.pmtiles' : 'atlas.pmtiles'}`;
     const range = request.headers.get('range');
     const upstream = await fetch(`${PMTILES_BASE_URL}${filename}`, {
       method: request.method,
