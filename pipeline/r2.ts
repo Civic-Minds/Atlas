@@ -31,7 +31,14 @@ export function getR2Client() {
     credentials: { accessKeyId, secretAccessKey },
     requestChecksumCalculation: 'WHEN_REQUIRED',
     responseChecksumValidation: 'WHEN_REQUIRED',
-    requestHandler: { requestTimeout: 600_000, connectionTimeout: 30_000 },
+    // GitHub Actions runners intermittently fail R2's dual-stack connection
+    // race with AggregateError/ETIMEDOUT. R2 is reachable over IPv4, so keep
+    // the archive pipeline on a single stable address family.
+    requestHandler: {
+      requestTimeout: 600_000,
+      connectionTimeout: 30_000,
+      httpsAgent: { family: 4, keepAlive: true, maxSockets: 10 },
+    },
   });
 }
 
