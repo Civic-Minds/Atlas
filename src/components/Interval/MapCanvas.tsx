@@ -713,33 +713,6 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         url: `pmtiles://${getAtlasPmtilesUrl()}`,
       });
 
-      // Demand-responsive agencies may publish a service boundary without
-      // route shapes. Keep the boundary in its own layer so it is visibly
-      // different from scheduled route geometry.
-      map.addSource('on-demand-service-areas', {
-        type: 'geojson',
-        data: { type: 'FeatureCollection', features: [] },
-      });
-      map.addLayer({
-        id: 'on-demand-service-area-fill',
-        type: 'fill',
-        source: 'on-demand-service-areas',
-        paint: { 'fill-color': ON_DEMAND_AREA_COLOR, 'fill-opacity': 0.12 },
-        layout: { visibility: 'none' },
-      });
-      map.addLayer({
-        id: 'on-demand-service-area-line',
-        type: 'line',
-        source: 'on-demand-service-areas',
-        paint: {
-          'line-color': ON_DEMAND_AREA_COLOR,
-          'line-width': 2,
-          'line-opacity': 0.95,
-          'line-dasharray': [2, 1.5],
-        },
-        layout: { visibility: 'none' },
-      });
-
       // Broad maps use simplified route geometry; detailed geometry takes over
       // once the map is close enough for the extra vertices to matter.
       map.addLayer({
@@ -1093,11 +1066,11 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapLoaded) return;
-    const visibility = showRouteLayers && !frequentServiceView && !nightServiceView && pmtilesRoutesAvailable !== false ? 'visible' : 'none';
+    const visibility = showRouteLayers && !nightServiceView && pmtilesRoutesAvailable !== false ? 'visible' : 'none';
     for (const layerId of ['overview-routes-layer', 'routes-layer', 'overview-routes-hit-layer', 'routes-hit-layer']) {
       if (map.getLayer(layerId)) map.setLayoutProperty(layerId, 'visibility', visibility);
     }
-  }, [frequentServiceView, mapLoaded, nightServiceView, pmtilesRoutesAvailable, showRouteLayers]);
+  }, [mapLoaded, nightServiceView, pmtilesRoutesAvailable, showRouteLayers]);
 
   // Single map click handler — avoids layer preventDefault blocking background deselect.
   useEffect(() => {
@@ -1541,19 +1514,6 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
 
       if (hasRoutes) map.setPaintProperty('routes-layer', 'line-color', lineColorExpr);
       if (hasOverviewRoutes) map.setPaintProperty('overview-routes-layer', 'line-color', lineColorExpr);
-      if (frequentServiceView && map.getLayer('frequent-service-routes-layer')) {
-        map.setPaintProperty('frequent-service-routes-layer', 'line-color', [
-          'match', ['get', 'frequentServiceBand'], '15', getTierColor('15', colorMode), getTierColor('30', colorMode),
-        ]);
-        map.setPaintProperty('frequent-service-routes-layer', 'line-width', [
-          'interpolate', ['linear'], ['zoom'],
-          8, ['match', ['get', 'frequentServiceBand'], '15', 3.2, 2.0],
-          11, ['match', ['get', 'frequentServiceBand'], '15', 3.8, 2.5],
-          14, ['match', ['get', 'frequentServiceBand'], '15', 4.6, 3.2],
-          17, ['match', ['get', 'frequentServiceBand'], '15', 6.0, 4.5],
-        ]);
-      }
-
       // Opacity based on route state (focused vs dimmed).
       // When a route is selected we keep other lines visible and clickable
       // (hit layer still covers them) so the network context stays readable and

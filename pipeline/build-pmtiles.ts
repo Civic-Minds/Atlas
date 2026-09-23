@@ -4,7 +4,6 @@ import { execSync } from 'child_process';
 // loadEnv first so shared/config sees staging R2_PUBLIC_URL
 import { LOADED_ENV_FILE } from './loadEnv.js';
 import { r2Put, r2PutFile } from './r2';
-import { bumpPublicDataVersion } from './dataVersion.js';
 import { getAgencyArtifactUrls, pmtilesMinZoomForHeadway } from '../shared/config.js';
 import { runWithConcurrency } from './utils.js';
 import { prepareAgencyRouteFeaturesForTiles } from './prepareAgencyRoutesForTiles.js';
@@ -293,15 +292,14 @@ async function main() {
     6,
   );
   await r2Put(`${releasePrefix}/manifest.json`, JSON.stringify(releaseManifest, null, 2));
-
-  console.log("Uploading atlas.pmtiles to Cloudflare R2 (streaming)...");
-  await r2PutFile('atlas.pmtiles', pmtilesPath, 'application/octet-stream');
-  await r2PutFile('atlas-overview.pmtiles', overviewRoutesPm, 'application/octet-stream');
-  // The pointer is the public commit: clients never switch to this release until every
-  // agency artifact and both PMTiles archives have uploaded successfully.
-  await r2Put('atlas/release.json', JSON.stringify(releaseManifest, null, 2));
-  await bumpPublicDataVersion(`release ${releaseId}`);
-  console.log("PMTiles uploaded: https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas.pmtiles");
+  // Leave the manifest locally for the coverage check and the final publish step.
+  // The public pointer is intentionally not updated here: a release is not active
+  // until its immutable PMTiles archive passes verification.
+  fs.writeFileSync(
+    path.resolve('tmp/atlas-release-manifest.json'),
+    JSON.stringify(releaseManifest, null, 2),
+  );
+  console.log(`Immutable release uploaded: ${releaseId}. Run coverage verification, then publish the pointer.`);
 
   // Cleanup
   console.log(`Cleaning up temporary files...`);
