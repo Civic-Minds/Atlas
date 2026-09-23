@@ -16,7 +16,7 @@ import type { ShapeProperties, ViewportBounds, TimePeriod, HoveredBranch } from 
 import type { DayType } from '../../../shared/dayTypes';
 import { registerProtocol, getAtlasPmtilesUrl, getAtlasOverviewPmtilesUrl, getMapStyle } from '../../lib/mapStyle';
 import { getAgencyBbox } from '../../hooks/useAgencyData';
-import { Z_PANEL, FLOATING_CARD } from '../../styles';
+import { Z_PANEL, MAP_BADGE } from '../../styles';
 import { LIVE_POLLING_ROUTES } from '../../../shared/livePollingConfig';
 import { useColorVision } from '../../context/ColorVisionContext';
 import { tileEffectiveHeadwayExpr, tileRouteKeyExpr } from '../../../shared/tileFilterExprs';
@@ -36,6 +36,14 @@ const CORRIDOR_BAND_COLOR = '#64748b';
 const ON_DEMAND_AREA_COLOR = '#64748b';
 const FREQUENT_15_COLOR = HEADWAY_TIERS.find(tier => tier.max === 15)?.color ?? '#3da44d';
 const FREQUENT_30_COLOR = HEADWAY_TIERS.find(tier => tier.max === 30)?.color ?? '#e07b2a';
+
+function MapNoticePill({ children, className = '' }: { children: React.ReactNode; className?: string }) {
+  return (
+    <div className={`absolute bottom-6 left-1/2 -translate-x-1/2 ${Z_PANEL} ${MAP_BADGE} h-8 max-w-[calc(100vw-2rem)] pointer-events-none ${className}`}>
+      {children}
+    </div>
+  );
+}
 
 /** Smallest-bbox agency containing a point — prefers a local agency over an overlapping regional one. */
 // Many agencies fall back to a fixed-size padding box around their center rather than a real
@@ -577,10 +585,6 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         return;
       }
 
-      const bbox: [maplibregl.PointLike, maplibregl.PointLike] = [
-        [e.point.x - 12, e.point.y - 12],
-        [e.point.x + 12, e.point.y + 12],
-      ];
       const routeHitLayers = ['overview-routes-hit-layer', 'routes-hit-layer'];
       if (map.getLayer('local-routes-hit-layer')) {
         routeHitLayers.push('local-routes-hit-layer');
@@ -594,7 +598,10 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       if (map.getLayer('frequency-qualifying-segments-hit-layer')) {
         routeHitLayers.push('frequency-qualifying-segments-hit-layer');
       }
-      const routeHits = map.queryRenderedFeatures(bbox, { layers: routeHitLayers });
+      // The hit layers already have an 18px invisible stroke. Query the exact
+      // click point so nearby routes do not get treated as equally clicked just
+      // because they fall inside a larger surrounding box.
+      const routeHits = map.queryRenderedFeatures(e.point, { layers: routeHitLayers });
       if (routeHits.length > 0) {
         const props = routeHits[0].properties;
         const uniqueRouteKeys = dedupeRouteKeysByDisplay(routeHits.map((f: maplibregl.MapGeoJSONFeature) => {
@@ -1273,7 +1280,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       }
       const routeHits = stopHits.length === 0 && (map.getLayer('routes-hit-layer') || map.getLayer('local-routes-hit-layer'))
         ? map.queryRenderedFeatures(
-            [[e.point.x - 12, e.point.y - 12], [e.point.x + 12, e.point.y + 12]],
+            e.point,
             { layers: routeHitLayers },
           )
         : [];
@@ -1893,15 +1900,16 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
 
       {/* Geolocate Button Control Overlay */}
       {mapHint && (
-        <div className={`absolute bottom-6 left-1/2 -translate-x-1/2 ${Z_PANEL} px-3 py-1.5 rounded-full bg-[var(--bg-panel)] border border-[var(--border-primary)] text-xs text-[var(--text-muted)] shadow-lg pointer-events-none`}>
+        <MapNoticePill className="text-xs text-[var(--text-muted)]">
           {mapHint}
-        </div>
+        </MapNoticePill>
       )}
       {zoomOrientCard && (
-        <div className={`absolute bottom-6 left-1/2 -translate-x-1/2 ${Z_PANEL} ${FLOATING_CARD} px-4 py-2.5 pointer-events-none`}>
-          <div className="text-xs font-black text-[var(--text-primary)]">{zoomOrientCard.title}</div>
-          <div className="text-[10px] font-bold text-[var(--text-muted)]">{zoomOrientCard.subtitle}</div>
-        </div>
+        <MapNoticePill className="gap-1.5 text-[10px] font-bold text-[var(--text-muted)]">
+          <span className="text-[var(--text-primary)]">{zoomOrientCard.title}</span>
+          <span aria-hidden="true">·</span>
+          <span>{zoomOrientCard.subtitle}</span>
+        </MapNoticePill>
       )}
 
       {mapContextMenu && (
