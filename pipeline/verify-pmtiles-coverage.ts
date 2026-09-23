@@ -138,7 +138,12 @@ async function main() {
   const agencies = index.agencies || [];
   console.log(`Found ${agencies.length} agencies.`);
 
-  const pmtilesUrl = `${R2_PUBLIC_URL}/atlas.pmtiles`;
+  const localManifestPath = 'tmp/atlas-release-manifest.json';
+  const localManifest = fs.existsSync(localManifestPath)
+    ? JSON.parse(fs.readFileSync(localManifestPath, 'utf8')) as { pmtilesKey?: string }
+    : null;
+  const pmtilesUrl = process.env.PMTILES_URL
+    ?? (localManifest?.pmtilesKey ? `${R2_PUBLIC_URL}/${localManifest.pmtilesKey}` : `${R2_PUBLIC_URL}/atlas.pmtiles`);
   console.log(`Opening PMTiles archive: ${pmtilesUrl}`);
   const pmtiles = new PMTiles(pmtilesUrl);
 

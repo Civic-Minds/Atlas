@@ -49,7 +49,9 @@ describe('useIntervalStats', () => {
   it('keeps selected-route visibility separate from the active filter explanation', () => {
     const route = { routeId: '12', agencySlug: 'kalamazoo', headway: 60, tier: '60' } as any;
     const filters = { ...defaultFilters, maxHeadway: 20, agencies: new Set(['kalamazoo']) };
-    expect(passesRouteFilter(route, 'kalamazoo', { ...filters, selectedRoute: 'kalamazoo::12' }, null)).toBe(true);
+    // Selection opens route details but must never make an out-of-filter route
+    // appear on the map.
+    expect(passesRouteFilter(route, 'kalamazoo', { ...filters, selectedRoute: 'kalamazoo::12' }, null)).toBe(false);
     expect(passesRouteFilter(route, 'kalamazoo', { ...filters, selectedRoute: null }, null)).toBe(false);
   });
 

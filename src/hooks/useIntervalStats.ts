@@ -67,7 +67,7 @@ export interface IntervalFilters {
   day: DayType;
   period: TimePeriod;
   selectedStop: string | null; // stopId
-  selectedRoute?: string | null; // force-include the full geometry of this route even if it doesn't match frequency/agency/etc filters
+  selectedRoute?: string | null; // selected card/route state; never overrides map visibility filters
   bounds?: ViewportBounds | null; // current map viewport; stats are scoped to it when set
   hideSpan?: boolean; // hide routes with no sustained tier (irregular/peak-only/school-run service)
   livePollingOnly?: boolean; // only show routes covered by Atlas's GTFS-RT adherence polling
@@ -111,13 +111,6 @@ export function passesRouteFilter(
   const isCorridor = !!(p as any).isCorridor;
   const corridorRouteIds = (p as any).routeIds as string[] | undefined;
   // routesForStop drives stop-card sidebar and map dimming (sibling stopHeadways match)
-
-  // Explicitly selected route (e.g. from station panel click) should always be visible with full geometry,
-  // bypassing frequency, agency, span, etc. filters.
-  const thisKey = routeKey({ ...p, agencySlug: slug } as any);
-  if (filters.selectedRoute && thisKey === filters.selectedRoute) {
-    return true;
-  }
 
   // Strip -corridors suffix so corridor layers (keyed as "{slug}-corridors") still pass the agency filter.
   const agencySlug = slug.endsWith('-corridors') ? slug.slice(0, -10) : slug;
@@ -478,12 +471,7 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
     // Headway pill — mirrors passesRouteFilter (period, worst-direction, min-stop).
     if (maxHeadway !== Infinity) {
       const hwExpr = tileEffectiveHeadwayExpr(period);
-      if (selectedRoute) {
-        const routeKeyExpr: any = tileRouteKeyExpr();
-        clauses.push(['any', ['==', routeKeyExpr, selectedRoute], ['<=', hwExpr, maxHeadway]]);
-      } else {
-        clauses.push(['<=', hwExpr, maxHeadway]);
-      }
+      clauses.push(['<=', hwExpr, maxHeadway]);
     }
 
     return clauses.length === 1 ? clauses[0] : ['all', ...clauses];
