@@ -173,6 +173,8 @@ async function loadCurrentHeadways(slug: string): Promise<Record<string, {
 
 async function main() {
   console.log('Compiling route history from R2 snapshots...');
+  const verifyOnly = process.argv.includes('--verify-only');
+  if (verifyOnly) console.log('Verify-only mode: production history will not be overwritten.');
 
   if (!process.env.R2_ACCESS_KEY_ID) {
     console.error('Missing R2 credentials. Add R2_* vars to .env.local');
@@ -195,6 +197,12 @@ async function main() {
     headwayByPeriod?: HeadwayByPeriod;
   }>>> = {};
   const coverageBySlug: Record<string, { coverageYears: number[]; materializeAllPeriods?: boolean }> = {};
+  let failedFiles = 0;
+  const failedKeys: string[] = [];
+  const recordFailure = (key: string) => {
+    failedFiles++;
+    failedKeys.push(key);
+  };
 
   const tasks: (() => Promise<void>)[] = [];
   for (const key of keys) {
@@ -212,6 +220,7 @@ async function main() {
             };
           }
         } catch (err) {
+          recordFailure(key);
           console.error(`Failed to parse coverage metadata: ${key}`, err);
         }
       });
@@ -226,7 +235,11 @@ async function main() {
     tasks.push(async () => {
       try {
         const raw = await r2GetArchive(key);
-        if (!raw) return;
+        if (!raw) {
+          recordFailure(key);
+          console.error(`Failed to read: ${key} (object missing)`);
+          return;
+        }
         const data = JSON.parse(raw);
         const h = data.headway;
         if (h == null) return;
@@ -239,6 +252,7 @@ async function main() {
           headwayByPeriod: data.headwayByPeriod ?? undefined,
         });
       } catch (err) {
+        recordFailure(key);
         console.error(`Failed to parse: ${key}`, err);
       }
     });
@@ -250,6 +264,10 @@ async function main() {
     : 10;
   console.log(`Downloading ${tasks.length} history snapshot files in parallel (concurrency ${concurrency})...`);
   await runWithConcurrency(tasks, concurrency);
+  console.log(`History archive summary: ${tasks.length - failedFiles}/${tasks.length} files read successfully; ${failedFiles} failed.`);
+  if (failedFiles > 0) {
+    console.log(`Failed history keys (first 20): ${failedKeys.slice(0, 20).join(', ')}`);
+  }
 
   // 2. Merge BASE_HISTORY manual seeds into archiveRoutes
   for (const agency of BASE_HISTORY) {
@@ -374,6 +392,11 @@ async function main() {
       routes: agencyRoutes,
     });
     console.log(`  ${name}: ${agencyRoutes.length} routes with changes`);
+  }
+
+  if (verifyOnly) {
+    if (failedFiles > 0) process.exitCode = 1;
+    return;
   }
 
   // 5. Write history-config.json to public R2 bucket

@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Add a history-only verification workflow so archive checks do not rebuild or republish the entire map release.
 - Make history archive reads use a stable IPv4 connection path, reducing transient R2 timeouts during rebuilds.
 - Make history rebuilds more reliable by limiting archive downloads, reducing dropped snapshots during temporary storage timeouts.
 - Add current fallback feeds for CTtransit and Westchester Bee-Line so scheduled refreshes can recover when the primary hosts fail.
