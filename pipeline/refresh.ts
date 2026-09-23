@@ -48,7 +48,6 @@ import type { FeedQuality } from '../shared/feedQuality.js';
 import { historyRouteKey } from './historyRouteKey.js';
 import { effectiveFeedExpiry } from './feedFreshness.js';
 import { isActiveProductionFeed } from '../shared/feedAvailability.js';
-import { bumpPublicDataVersion } from './dataVersion.js';
 import { recordFeedCheck, type FeedCheckFields } from './feedCheckTracking.js';
 
 console.log(`  env: ${LOADED_ENV_FILE} (bucket=${process.env.R2_BUCKET_NAME ?? '?'}${isProductionPublicR2Bucket() ? ' [PRODUCTION]' : ' [non-prod]'})`);
@@ -449,9 +448,6 @@ async function refreshAgency(
   // We no longer store the full artifact URLs in index.json (they are derived from slug + R2_PUBLIC_URL).
   // The uploads still happen so the files exist on R2.
   await Promise.all(uploads);
-  // Bust browser IndexedDB and CDN cache keys immediately; do not wait for a frontend deploy.
-  await bumpPublicDataVersion(`refresh ${agency.slug}`);
-
   const stopsSnapshot = JSON.stringify({ generatedAt: new Date().toISOString(), stops: currentStops });
   const stopSnapshotKey = `stops-meta/${agency.slug}/${feedExpiry ?? feedVersion ?? peekedExpiry ?? peekedVersion ?? today}.json`;
   await Promise.all([

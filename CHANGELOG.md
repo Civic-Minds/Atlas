@@ -6,6 +6,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Map tiles and route data now publish through one verified release, preventing frequency filters and route cards from reading different data generations.
+- Selected routes no longer bypass the active map frequency filter.
 - Route clicks now use a tighter hit area and consistent pill-style zoom guidance, reducing false “zoom in” prompts near neighboring routes.
 - Broad maps now use a smaller simplified route archive and switch to detailed geometry when zoomed in, reducing unnecessary transit-data downloads.
 - Regional and broad map views now expose a readiness signal when PMTiles route data is usable, so load measurements do not wait for deferred agency details.

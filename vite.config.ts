@@ -34,13 +34,34 @@ export default defineConfig(({ mode }) => {
   // before ever writing to the live bucket. Falls through to the normal proxy
   // when no override file is present (the common case) -- see docs/ADDING_AGENCIES.md.
   const PMTILES_PREVIEW_PATH = resolve('tmp/atlas-pmtiles-preview.pmtiles');
+  const PREVIEW_MANIFEST_PATH = resolve('tmp/atlas-preview-manifest.json');
+  const PREVIEW_AGENCY_DIR = resolve('tmp/geojson-build/release-agencies');
   const localPmtilesPreview: Plugin = {
     name: 'local-pmtiles-preview',
     configureServer(server) {
       server.middlewares.use((req, res, next) => {
         const pathname = (req.url ?? '').split('?')[0];
+        if (pathname === '/atlas-data/atlas/release.json') {
+          if (!existsSync(PREVIEW_MANIFEST_PATH)) return next();
+          res.setHeader('Content-Type', 'application/json');
+          res.setHeader('Cache-Control', 'no-store');
+          createReadStream(PREVIEW_MANIFEST_PATH).pipe(res);
+          return;
+        }
+        const agencyMatch = /^\/atlas-data\/atlas\/preview-agencies\/([\w-]+\.json)$/.exec(pathname);
+        if (agencyMatch) {
+          const candidate = resolve(PREVIEW_AGENCY_DIR, agencyMatch[1]);
+          if (!existsSync(candidate)) return next();
+          res.setHeader('Content-Type', 'application/json');
+          res.setHeader('Cache-Control', 'no-store');
+          createReadStream(candidate).pipe(res);
+          return;
+        }
         const isOverview = pathname === '/atlas-data/atlas-overview.pmtiles';
         if (pathname !== '/atlas-data/atlas.pmtiles' && !isOverview) return next();
+        // A local PMTiles file without its matching release manifest is unsafe:
+        // it would be paired with live agency JSON and recreate map/card drift.
+        if (!existsSync(PREVIEW_MANIFEST_PATH)) return next();
         const previewPath = isOverview
           ? resolve('tmp/atlas-overview-pmtiles-preview.pmtiles')
           : PMTILES_PREVIEW_PATH;

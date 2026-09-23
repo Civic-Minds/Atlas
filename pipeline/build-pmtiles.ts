@@ -3,7 +3,8 @@ import path from 'path';
 import { execSync } from 'child_process';
 // loadEnv first so shared/config sees staging R2_PUBLIC_URL
 import { LOADED_ENV_FILE } from './loadEnv.js';
-import { r2PutFile } from './r2';
+import { r2Put, r2PutFile } from './r2';
+import { bumpPublicDataVersion } from './dataVersion.js';
 import { getAgencyArtifactUrls, pmtilesMinZoomForHeadway } from '../shared/config.js';
 import { runWithConcurrency } from './utils.js';
 import { prepareAgencyRouteFeaturesForTiles } from './prepareAgencyRoutesForTiles.js';
@@ -87,6 +88,9 @@ async function main() {
 
   const tmpDir = path.resolve('tmp/geojson-build');
   fs.mkdirSync(tmpDir, { recursive: true });
+  const releaseAgencyDir = path.join(tmpDir, 'release-agencies');
+  fs.rmSync(releaseAgencyDir, { recursive: true, force: true });
+  fs.mkdirSync(releaseAgencyDir, { recursive: true });
 
   const allRoutes: Feature[] = [];
   const allStops: Feature[] = [];
@@ -116,6 +120,7 @@ async function main() {
         ? JSON.parse(fs.readFileSync(localPath, 'utf8')) as FeatureCollection
         : await fetchJson(url, 5);
       if (data && data.features) {
+        fs.writeFileSync(path.join(releaseAgencyDir, `${slug}.json`), JSON.stringify(data));
         allRoutes.push(...prepareAgencyRouteFeaturesForTiles(data.features, slug));
       } else if (!data) {
         if (agency.pmtilesPending) {
@@ -133,6 +138,7 @@ async function main() {
         ? JSON.parse(fs.readFileSync(localPath, 'utf8')) as FeatureCollection
         : await fetchJson(stopsUrl);
       if (data) {
+        fs.writeFileSync(path.join(releaseAgencyDir, `${slug}-stops.json`), JSON.stringify(data));
         let stopFeatures: any[] = [];
         if (data.features) {
           // Old GeoJSON format
@@ -163,6 +169,7 @@ async function main() {
         ? JSON.parse(fs.readFileSync(localPath, 'utf8')) as FeatureCollection
         : await fetchJson(corridorsUrl);
       if (data && data.features) {
+        fs.writeFileSync(path.join(releaseAgencyDir, `${slug}-corridors.json`), JSON.stringify(data));
         data.features.forEach(f => {
           f.properties = f.properties || {};
           f.properties.agencySlug = slug;
@@ -247,13 +254,53 @@ async function main() {
   if (dryRun) {
     console.log(`Dry run complete: ${pmtilesPath}`);
     fs.copyFileSync(overviewRoutesPm, overviewPmtilesPath);
+    fs.writeFileSync(
+      path.resolve('tmp/atlas-preview-manifest.json'),
+      JSON.stringify({
+        releaseId: `local-${Date.now().toString(36)}`,
+        pmtilesKey: 'atlas.pmtiles',
+        overviewPmtilesKey: 'atlas-overview.pmtiles',
+        agencyPrefix: 'atlas/preview-agencies',
+        generatedAt: new Date().toISOString(),
+      }, null, 2),
+    );
     console.log(`Dry run overview complete: ${overviewPmtilesPath}`);
     return;
   }
 
+  const releaseId = `release-${Date.now().toString(36)}`;
+  const releasePrefix = `atlas/releases/${releaseId}`;
+  const agencyPrefix = `${releasePrefix}/agencies`;
+  const releaseManifest = {
+    releaseId,
+    generatedAt: new Date().toISOString(),
+    pmtilesKey: `${releasePrefix}/atlas.pmtiles`,
+    overviewPmtilesKey: `${releasePrefix}/atlas-overview.pmtiles`,
+    agencyPrefix,
+  };
+
+  console.log(`Uploading immutable data release ${releaseId}...`);
+  await r2PutFile(releaseManifest.pmtilesKey, pmtilesPath, 'application/octet-stream');
+  await r2PutFile(releaseManifest.overviewPmtilesKey, overviewRoutesPm, 'application/octet-stream');
+  const releaseFiles = fs.readdirSync(releaseAgencyDir).map(filename => ({
+    filename,
+    path: path.join(releaseAgencyDir, filename),
+  }));
+  await runWithConcurrency(
+    releaseFiles.map(({ filename, path: filePath }) => async () => {
+      await r2PutFile(`${agencyPrefix}/${filename}`, filePath, 'application/json');
+    }),
+    6,
+  );
+  await r2Put(`${releasePrefix}/manifest.json`, JSON.stringify(releaseManifest, null, 2));
+
   console.log("Uploading atlas.pmtiles to Cloudflare R2 (streaming)...");
   await r2PutFile('atlas.pmtiles', pmtilesPath, 'application/octet-stream');
   await r2PutFile('atlas-overview.pmtiles', overviewRoutesPm, 'application/octet-stream');
+  // The pointer is the public commit: clients never switch to this release until every
+  // agency artifact and both PMTiles archives have uploaded successfully.
+  await r2Put('atlas/release.json', JSON.stringify(releaseManifest, null, 2));
+  await bumpPublicDataVersion(`release ${releaseId}`);
   console.log("PMTiles uploaded: https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas.pmtiles");
 
   // Cleanup

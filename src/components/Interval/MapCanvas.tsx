@@ -1521,9 +1521,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       const hitRouteFilter = (!fareView && !nightServiceView)
         ? concatFilters(
             routeFilter,
-            selectedRoute
-              ? ['any', routeKeyMatchExpression(selectedRoute), buildZoomHeadwayGateExpression(headwayExpr)]
-              : buildZoomHeadwayGateExpression(headwayExpr),
+            buildZoomHeadwayGateExpression(headwayExpr),
           )
         : routeFilter;
       if (hasRoutesHit) map.setFilter('routes-hit-layer', hitRouteFilter as any);

@@ -3,8 +3,17 @@ import { Protocol, PMTiles } from 'pmtiles';
 import { R2_PUBLIC_URL } from '../../shared/config';
 import { currentAgencyDataVersion, resolveAgencyDataVersion } from './agencyGeo';
 import { RetryingFetchSource } from './pmtilesRetrySource';
+import { dataReleaseAssetUrl, resolveDataRelease, type DataRelease } from './dataRelease';
+
+let activeRelease: DataRelease | null = null;
 
 export function getAtlasPmtilesUrl(): string {
+  if (activeRelease) {
+    if (typeof window !== 'undefined' && import.meta.env.PROD) {
+      return `${window.location.origin}/api/atlas-pmtiles?release=${encodeURIComponent(activeRelease.releaseId)}`;
+    }
+    return dataReleaseAssetUrl(activeRelease, activeRelease.pmtilesKey);
+  }
   // Keep deployed requests same-origin and expose the range headers PMTiles needs.
   const browserUrl = typeof window !== 'undefined' && import.meta.env.PROD
     ? `${window.location.origin}/api/atlas-pmtiles`
@@ -13,6 +22,12 @@ export function getAtlasPmtilesUrl(): string {
 }
 
 export function getAtlasOverviewPmtilesUrl(): string {
+  if (activeRelease) {
+    if (typeof window !== 'undefined' && import.meta.env.PROD) {
+      return `${window.location.origin}/api/atlas-pmtiles?variant=overview&release=${encodeURIComponent(activeRelease.releaseId)}`;
+    }
+    return dataReleaseAssetUrl(activeRelease, activeRelease.overviewPmtilesKey);
+  }
   const browserUrl = typeof window !== 'undefined' && import.meta.env.PROD
     ? `${window.location.origin}/api/atlas-pmtiles?variant=overview`
     : `${R2_PUBLIC_URL}/atlas-overview.pmtiles`;
@@ -23,6 +38,7 @@ const protocol = new Protocol();
 let protocolRegistered = false;
 
 export async function registerProtocol() {
+  activeRelease = await resolveDataRelease();
   await resolveAgencyDataVersion();
   if (!protocolRegistered) {
     maplibregl.addProtocol('pmtiles', protocol.tile);
