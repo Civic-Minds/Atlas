@@ -3419,6 +3419,7 @@
         -72.682
       ],
       "feedUrl": "https://www.cttransit.com/sites/default/files/gtfs/googlect_transit.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-553/latest.zip",
       "lastFeedExpiry": "20270109",
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-08-10",
@@ -9658,6 +9659,7 @@
         -73.6597
       ],
       "feedUrl": "https://westchester-gmv.itoworld.com/production/ito_westchester_county_gtfs.zip",
+      "mdbFeedUrl": "https://s3.amazonaws.com/datatools-511ny/public/Westchester_County_Bee-Line_System.zip",
       "lastFeedExpiry": "20261019",
       "lastFeedVersion": "20260728_180759",
       "lastRefreshedAt": "2026-07-29",

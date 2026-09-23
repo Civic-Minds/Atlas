@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - Make history rebuilds more reliable by limiting archive downloads, reducing dropped snapshots during temporary storage timeouts.
+- Add current fallback feeds for CTtransit and Westchester Bee-Line so scheduled refreshes can recover when the primary hosts fail.
 
 - The initial map load no longer includes the Live Vehicles/Deck.gl module graph, reducing first-load JavaScript for the common map view.
 - Map tiles and route data now publish together only after the release passes coverage checks, preventing frequency filters and route cards from reading different data generations.
