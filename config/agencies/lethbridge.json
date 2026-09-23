@@ -8,15 +8,28 @@
   ],
   "feedUrl": "https://gis.lethbridge.ca/OpenData/DataSets/GTFS_Transit_Data.zip",
   "lastFeedExpiry": "20261231",
-  "lastFeedVersion": "2026-06-15",
+  "lastFeedVersion": "2026-09-04",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-alberta-lethbridge-transit-gtfs-765.zip?alt=media",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-09-23",
   "cities": [
     "Lethbridge, Alberta"
   ],
-  "lastFeedCheckAt": "20260907",
+  "lastFeedCheckAt": "20260923",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
-  "timezone": "America/Denver"
+  "timezone": "America/Denver",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 52
+    },
+    "checkedAt": "2026-09-23"
+  }
 }

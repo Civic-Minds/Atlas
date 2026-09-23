@@ -9,12 +9,12 @@
   "region": "Pennsylvania",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-4553/latest.zip",
   "lastFeedExpiry": "20261231",
-  "lastFeedVersion": "20260903",
-  "lastRefreshedAt": "2026-09-07",
+  "lastFeedVersion": "20260914",
+  "lastRefreshedAt": "2026-09-23",
   "cities": [
     "Scranton, Pennsylvania"
   ],
-  "lastFeedCheckAt": "20260907",
+  "lastFeedCheckAt": "20260923",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
@@ -32,6 +32,6 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 79
     },
-    "checkedAt": "2026-09-07"
+    "checkedAt": "2026-09-23"
   }
 }

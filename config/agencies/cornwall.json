@@ -14,25 +14,27 @@
   ],
   "feedUrl": "https://metrolinx.tmix.se/gtfs/gtfs-cornwall.zip",
   "lastFeedExpiry": "20261231",
-  "lastFeedVersion": "1/20260905 22:00:00/20260906 00:00:00",
+  "lastFeedVersion": "1/20260921 22:00:01/20260922 00:00:00",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-cornwall-transit-gtfs-718.zip?alt=media",
-  "lastRefreshedAt": "2026-09-07",
-  "lastFeedCheckAt": "20260907",
+  "lastRefreshedAt": "2026-09-23",
+  "lastFeedCheckAt": "20260923",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
   "feedQuality": {
-    "status": "healthy",
-    "score": 100,
-    "reasons": [],
+    "status": "review",
+    "score": 70,
+    "reasons": [
+      "4 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+    ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 0,
+      "shapeAnomalies": 4,
       "routeHeadwayMismatches": 0,
-      "featureCount": 20
+      "featureCount": 27
     },
-    "checkedAt": "2026-09-07"
+    "checkedAt": "2026-09-23"
   },
   "timezone": "America/Toronto"
 }

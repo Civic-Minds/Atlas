@@ -20,9 +20,9 @@
     "Olympia, Washington",
     "Lakewood, Washington"
   ],
-  "lastFeedCheckAt": "20260907",
-  "expiredFeedCheckCount": 0,
-  "expiredFeedCheckSince": null,
+  "lastFeedCheckAt": "20260923",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
   "expiredFeedCheckExpiry": "20260912",
   "timezone": "America/Los_Angeles"
 }

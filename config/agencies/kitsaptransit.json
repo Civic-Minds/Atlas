@@ -14,8 +14,8 @@
   ],
   "feedUrl": "http://pride.kitsaptransit.com/gtfs/google_transit.zip",
   "lastFeedExpiry": "20261205",
-  "lastFeedVersion": "S1000068:S1000067",
-  "lastRefreshedAt": "2026-09-07",
+  "lastFeedVersion": "S1000068",
+  "lastRefreshedAt": "2026-09-23",
   "websiteUrl": "http://www.kitsaptransit.com",
   "cities": [
     "Seattle, Washington",
@@ -23,7 +23,7 @@
     "Shoreline, Washington"
   ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1304/mdb-1304-202605200043/mdb-1304-202605200043.zip",
-  "lastFeedCheckAt": "20260907",
+  "lastFeedCheckAt": "20260923",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261205",
@@ -37,8 +37,8 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 156
+      "featureCount": 147
     },
-    "checkedAt": "2026-09-07"
+    "checkedAt": "2026-09-23"
   }
 }

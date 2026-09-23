@@ -9,12 +9,12 @@
   "region": "Illinois",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-50060/latest.zip",
   "lastFeedExpiry": "20261219",
-  "lastFeedVersion": "GTFS Feed 09/08/2026 – 19/12/2026 (Generated: 02/09/2026 12:10:42)",
-  "lastRefreshedAt": "2026-09-07",
+  "lastFeedVersion": "GTFS Feed 09/08/2026 – 19/12/2026 (Generated: 08/09/2026 8:22:54)",
+  "lastRefreshedAt": "2026-09-23",
   "cities": [
     "Champaign, Illinois"
   ],
-  "lastFeedCheckAt": "20260907",
+  "lastFeedCheckAt": "20260923",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261219",
@@ -33,6 +33,6 @@
       "routeHeadwayMismatches": 2,
       "featureCount": 150
     },
-    "checkedAt": "2026-09-07"
+    "checkedAt": "2026-09-23"
   }
 }

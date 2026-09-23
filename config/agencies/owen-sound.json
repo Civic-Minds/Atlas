@@ -24,14 +24,14 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 8
     },
-    "checkedAt": "2026-09-07"
+    "checkedAt": "2026-09-23"
   },
-  "lastFeedExpiry": "20261231",
-  "lastFeedVersion": "1/20260905 22:00:00/20260906 00:00:00",
-  "lastRefreshedAt": "2026-09-07",
-  "lastFeedCheckAt": "20260907",
+  "lastFeedExpiry": "20280115",
+  "lastFeedVersion": "1/20260921 22:00:01/20260922 00:00:00",
+  "lastRefreshedAt": "2026-09-23",
+  "lastFeedCheckAt": "20260923",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261231",
+  "expiredFeedCheckExpiry": "20280115",
   "timezone": "America/Toronto"
 }

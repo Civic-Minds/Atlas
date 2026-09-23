@@ -14,32 +14,31 @@
   ],
   "feedUrl": "https://transportation-forms.stanford.edu/google/google_transit.zip",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-stanford-marguerite-shuttle-sms-gtfs-59.zip?alt=media",
-  "lastFeedExpiry": "20270831",
-  "lastFeedVersion": "2026-09-05T02:44:32Z",
-  "lastRefreshedAt": "2026-09-07",
+  "lastFeedExpiry": "20270926",
+  "lastFeedVersion": "2026-09-15T15:07:04Z+eta151",
+  "lastRefreshedAt": "2026-09-23",
   "cities": [
     "Palo Alto, California",
     "Mountain View, California"
   ],
-  "lastFeedCheckAt": "20260907",
+  "lastFeedCheckAt": "20260923",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20270831",
+  "expiredFeedCheckExpiry": "20270926",
   "feedQuality": {
     "status": "review",
-    "score": 60,
+    "score": 70,
     "reasons": [
-      "3 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
-      "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+      "3 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 3,
-      "routeHeadwayMismatches": 1,
-      "featureCount": 32
+      "routeHeadwayMismatches": 0,
+      "featureCount": 30
     },
-    "checkedAt": "2026-09-07"
+    "checkedAt": "2026-09-23"
   },
   "timezone": "America/Los_Angeles"
 }

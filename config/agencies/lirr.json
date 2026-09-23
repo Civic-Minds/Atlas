@@ -14,8 +14,8 @@
   ],
   "feedUrl": "https://rrgtfsfeeds.s3.amazonaws.com/gtfslirr.zip",
   "lastFeedExpiry": "20261108",
-  "lastFeedVersion": "GO201_26",
-  "lastRefreshedAt": "2026-08-27",
+  "lastFeedVersion": "GO202_26",
+  "lastRefreshedAt": "2026-09-23",
   "cities": [
     "Hempstead, New York",
     "Brentwood, New York",
@@ -28,7 +28,7 @@
     "East Village, New York",
     "Corona, New York"
   ],
-  "lastFeedCheckAt": "20260907",
+  "lastFeedCheckAt": "20260923",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261108",
@@ -36,16 +36,16 @@
     "status": "review",
     "score": 70,
     "reasons": [
-      "4 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+      "5 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 0,
-      "routeHeadwayMismatches": 4,
-      "featureCount": 120
+      "routeHeadwayMismatches": 5,
+      "featureCount": 121
     },
-    "checkedAt": "2026-08-27"
+    "checkedAt": "2026-09-23"
   },
   "timezone": "America/New_York"
 }

@@ -8,9 +8,9 @@
   ],
   "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=45",
   "lastFeedExpiry": "20270331",
-  "lastFeedVersion": "202609070/20260906 21:00:00/20260907 04:00:00",
-  "lastRefreshedAt": "2026-09-07",
-  "lastFeedCheckAt": "20260907",
+  "lastFeedVersion": "202609220/20260921 21:00:00/20260922 04:00:00",
+  "lastRefreshedAt": "2026-09-23",
+  "lastFeedCheckAt": "20260923",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270331",
@@ -25,7 +25,7 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 65
     },
-    "checkedAt": "2026-09-07"
+    "checkedAt": "2026-09-23"
   },
   "timezone": "America/Vancouver"
 }

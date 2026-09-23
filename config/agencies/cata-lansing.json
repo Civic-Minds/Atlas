@@ -8,12 +8,12 @@
   ],
   "feedUrl": "http://developers.cata.org/gtfsdownload.ashx?key=5b4690ed-0a69-4320-897b-7d92def4b96f&data=base",
   "lastFeedExpiry": "20261011",
-  "lastFeedVersion": "26-05 (May04-Oct11)_20260817",
-  "lastRefreshedAt": "2026-08-24",
+  "lastFeedVersion": "26-05 (Aug24-Oct11)_20260917",
+  "lastRefreshedAt": "2026-09-23",
   "cities": [
     "Lansing, Michigan"
   ],
-  "lastFeedCheckAt": "20260907",
+  "lastFeedCheckAt": "20260923",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261011",
@@ -26,9 +26,9 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 131
+      "featureCount": 134
     },
-    "checkedAt": "2026-08-24"
+    "checkedAt": "2026-09-23"
   },
   "timezone": "America/Detroit"
 }

@@ -15,15 +15,28 @@
   "feedUrl": "https://www.spokanetransit.com/gtfs",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-washington-spokane-transit-authority-sta-gtfs-290.zip?alt=media",
   "lastFeedExpiry": "20270116",
-  "lastFeedVersion": "MergedMAYSEP2026v1_20260720",
-  "lastRefreshedAt": "2026-08-07",
+  "lastFeedVersion": "SEPT 2026v3_20260914",
+  "lastRefreshedAt": "2026-09-23",
   "cities": [
     "Spokane, Washington",
     "Spokane Valley, Washington"
   ],
-  "lastFeedCheckAt": "20260907",
+  "lastFeedCheckAt": "20260923",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270116",
-  "timezone": "America/Vancouver"
+  "timezone": "America/Vancouver",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 234
+    },
+    "checkedAt": "2026-09-23"
+  }
 }

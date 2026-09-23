@@ -13,28 +13,28 @@
     -122.3
   ],
   "feedUrl": "https://gtfs.sound.obaweb.org/prod/95_gtfs.zip",
-  "lastFeedExpiry": "20261018",
-  "lastFeedVersion": "PDT: 28-Aug-2026 11:05",
-  "lastRefreshedAt": "2026-09-07",
-  "lastFeedCheckAt": "20260907",
+  "lastFeedExpiry": "20261108",
+  "lastFeedVersion": "PDT: 18-Sep-2026 09:07",
+  "lastRefreshedAt": "2026-09-23",
+  "lastFeedCheckAt": "20260923",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261018",
+  "expiredFeedCheckExpiry": "20261108",
   "timezone": "America/Los_Angeles",
   "feedQuality": {
     "status": "degraded",
     "score": 40,
     "reasons": [
       "4 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
-      "9 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+      "5 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 4,
-      "routeHeadwayMismatches": 9,
+      "routeHeadwayMismatches": 5,
       "featureCount": 54
     },
-    "checkedAt": "2026-09-07"
+    "checkedAt": "2026-09-23"
   }
 }
