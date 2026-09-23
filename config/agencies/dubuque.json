@@ -6,9 +6,9 @@
     -90.69
   ],
   "feedUrl": "https://myride.cityofdubuque.org/gtfs/google_transit.zip",
-  "lastFeedExpiry": "20270705",
-  "lastFeedVersion": "2026-07-26",
-  "lastRefreshedAt": "2026-08-07",
+  "lastFeedExpiry": "20280330",
+  "lastFeedVersion": "09_21_2026",
+  "lastRefreshedAt": "2026-09-23",
   "region": "Iowa",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2083/latest.zip",
   "bbox": [
@@ -20,9 +20,22 @@
   "cities": [
     "Dubuque, Iowa"
   ],
-  "lastFeedCheckAt": "20260907",
+  "lastFeedCheckAt": "20260923",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20270705",
-  "timezone": "America/Chicago"
+  "expiredFeedCheckExpiry": "20280330",
+  "timezone": "America/Chicago",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 26
+    },
+    "checkedAt": "2026-09-23"
+  }
 }

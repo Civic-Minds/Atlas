@@ -8,8 +8,8 @@
   ],
   "feedUrl": "https://www.riderta.com/sites/default/files/gtfs/latest/google_transit.zip",
   "lastFeedExpiry": "20261205",
-  "lastFeedVersion": "2608a",
-  "lastRefreshedAt": "2026-08-10",
+  "lastFeedVersion": "2609b",
+  "lastRefreshedAt": "2026-09-23",
   "cities": [
     "Cleveland, Ohio",
     "Parma, Ohio",
@@ -17,9 +17,22 @@
     "Elyria, Ohio"
   ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-406/mdb-406-202607290022/mdb-406-202607290022.zip",
-  "lastFeedCheckAt": "20260907",
+  "lastFeedCheckAt": "20260923",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261205",
-  "timezone": "America/New_York"
+  "timezone": "America/New_York",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 291
+    },
+    "checkedAt": "2026-09-23"
+  }
 }

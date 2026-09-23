@@ -36,5 +36,9 @@
       "featureCount": 7
     },
     "checkedAt": "2026-09-08"
-  }
+  },
+  "lastFeedCheckAt": "20260923",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270101"
 }

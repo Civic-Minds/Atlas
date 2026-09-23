@@ -8,15 +8,15 @@
   ],
   "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=10",
   "lastFeedExpiry": "20261231",
-  "lastFeedVersion": "202609070/20260906 21:00:00/20260907 04:00:00",
+  "lastFeedVersion": "202609220/20260921 21:00:00/20260922 04:00:00",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-british-columbia-bc-transit-cowichan-valley-regional-transit-system-gtfs-694.zip?alt=media",
-  "lastRefreshedAt": "2026-09-07",
+  "lastRefreshedAt": "2026-09-23",
   "cities": [
     "Saanich, British Columbia",
     "Nanaimo, British Columbia",
     "Victoria, British Columbia"
   ],
-  "lastFeedCheckAt": "20260907",
+  "lastFeedCheckAt": "20260923",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
@@ -31,7 +31,7 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 60
     },
-    "checkedAt": "2026-09-07"
+    "checkedAt": "2026-09-23"
   },
   "timezone": "America/Vancouver"
 }

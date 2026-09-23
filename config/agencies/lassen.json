@@ -14,12 +14,27 @@
   ],
   "feedUrl": "http://data.trilliumtransit.com/gtfs/lassen-ca-us/lassen-ca-us.zip",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-lassen-rural-bus-lrb-gtfs-118.zip?alt=media",
-  "lastFeedExpiry": "20261130",
-  "lastFeedVersion": "UTC: 22-May-2026 15:35",
-  "lastRefreshedAt": "2026-08-07",
-  "lastFeedCheckAt": "20260907",
+  "lastFeedExpiry": "20270501",
+  "lastFeedVersion": "UTC: 14-Sep-2026 21:59",
+  "lastRefreshedAt": "2026-09-23",
+  "lastFeedCheckAt": "20260923",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261130",
-  "timezone": "America/Los_Angeles"
+  "expiredFeedCheckExpiry": "20270501",
+  "timezone": "America/Los_Angeles",
+  "feedQuality": {
+    "status": "review",
+    "score": 90,
+    "reasons": [
+      "1 map line was repaired — Atlas fixed unusual route geometry before displaying it."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 1,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 4
+    },
+    "checkedAt": "2026-09-23"
+  }
 }

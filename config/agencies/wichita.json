@@ -14,9 +14,9 @@
   "cities": [
     "Wichita, Kansas"
   ],
-  "lastFeedCheckAt": "20260907",
-  "expiredFeedCheckCount": 2,
+  "lastFeedCheckAt": "20260923",
+  "expiredFeedCheckCount": 1,
   "expiredFeedCheckSince": "20260622",
-  "expiredFeedCheckExpiry": "20260814",
+  "expiredFeedCheckExpiry": "20260522",
   "timezone": "America/Chicago"
 }

@@ -14,12 +14,12 @@
   "feedUrl": "https://files.mobilitydatabase.org/mdb-2274/latest.zip",
   "region": "Virginia",
   "lastFeedExpiry": "",
-  "lastFeedVersion": "9/07/26,Walmart Changes",
-  "lastRefreshedAt": "2026-09-07",
+  "lastFeedVersion": "9/07/26",
+  "lastRefreshedAt": "2026-09-23",
   "cities": [
     "Roanoke, Virginia"
   ],
-  "lastFeedCheckAt": "20260907",
+  "lastFeedCheckAt": "20260923",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",
@@ -36,9 +36,9 @@
       "validationWarnings": 1,
       "shapeAnomalies": 3,
       "routeHeadwayMismatches": 1,
-      "featureCount": 61
+      "featureCount": 63
     },
-    "checkedAt": "2026-09-07"
+    "checkedAt": "2026-09-23"
   },
   "timezone": "America/New_York"
 }

@@ -14,9 +14,9 @@
   ],
   "feedUrl": "https://feed.ltd.org/TMGTFSRealTimeWebService/GTFS/google_transit.zip",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-oregon-lane-transit-district-ltd-gtfs-131.zip?alt=media",
-  "lastFeedExpiry": "20260905",
-  "lastFeedVersion": "2606a",
-  "lastRefreshedAt": "2026-08-24",
+  "lastFeedExpiry": "20270130",
+  "lastFeedVersion": "2609a",
+  "lastRefreshedAt": "2026-09-23",
   "websiteUrl": "http://www.ltd.org",
   "cities": [
     "Eugene, Oregon",
@@ -24,24 +24,25 @@
   ],
   "timezone": "America/Los_Angeles",
   "lastRawArchiveKey": "20260131-84ccd5ec5befb0c2",
-  "lastFeedCheckAt": "20260907",
-  "expiredFeedCheckCount": 1,
-  "expiredFeedCheckSince": "20260622",
-  "expiredFeedCheckExpiry": "20260131",
+  "lastFeedCheckAt": "20260923",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270130",
   "feedQuality": {
-    "status": "review",
-    "score": 70,
+    "status": "degraded",
+    "score": 30,
     "reasons": [
-      "1 validation warning.",
-      "2 shape corrections needed."
+      "1 schedule-data warning — Atlas found a minor issue while reading the schedule.",
+      "4 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
+      "6 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 1,
-      "shapeAnomalies": 2,
-      "routeHeadwayMismatches": 0,
-      "featureCount": 141
+      "shapeAnomalies": 4,
+      "routeHeadwayMismatches": 6,
+      "featureCount": 145
     },
-    "checkedAt": "2026-08-24"
+    "checkedAt": "2026-09-23"
   }
 }

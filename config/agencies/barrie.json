@@ -20,10 +20,10 @@
   "cities": [
     "Barrie, Ontario"
   ],
-  "lastFeedCheckAt": "20260907",
+  "lastFeedCheckAt": "20260923",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261031",
+  "expiredFeedCheckExpiry": "20261226",
   "feedQuality": {
     "status": "review",
     "score": 90,

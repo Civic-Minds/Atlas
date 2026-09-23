@@ -13,17 +13,17 @@
   ],
   "feedUrl": "https://gtfs.wata.cadavl.com/WATA/GTFS/GTFS_WATA.zip",
   "region": "Virginia",
-  "lastFeedExpiry": "20261008",
+  "lastFeedExpiry": "20261024",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-09-07",
+  "lastRefreshedAt": "2026-09-23",
   "cities": [
     "Newport News, Virginia",
     "Hampton, Virginia"
   ],
-  "lastFeedCheckAt": "20260907",
+  "lastFeedCheckAt": "20260923",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261008",
+  "expiredFeedCheckExpiry": "20261024",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -35,7 +35,7 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 69
     },
-    "checkedAt": "2026-09-07"
+    "checkedAt": "2026-09-23"
   },
   "timezone": "America/New_York"
 }

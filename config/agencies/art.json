@@ -13,17 +13,32 @@
     -77.0491
   ],
   "feedUrl": "https://www.arlingtontransit.com/shared/content/gtfs/art/google_transit.zip",
-  "lastFeedExpiry": "20270531",
-  "lastFeedVersion": "S1000054",
-  "lastRefreshedAt": "2026-08-07",
+  "lastFeedExpiry": "20271231",
+  "lastFeedVersion": "Updated: Sep 14, 2026, 6:20 AM",
+  "lastRefreshedAt": "2026-09-23",
   "cities": [
     "Arlington, Virginia",
     "Washington, District of Columbia",
     "Alexandria, Virginia"
   ],
-  "lastFeedCheckAt": "20260827",
+  "lastFeedCheckAt": "20260923",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20270531",
-  "timezone": "America/New_York"
+  "expiredFeedCheckExpiry": "20271231",
+  "timezone": "America/New_York",
+  "feedQuality": {
+    "status": "review",
+    "score": 80,
+    "reasons": [
+      "2 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 2,
+      "featureCount": 57
+    },
+    "checkedAt": "2026-09-23"
+  }
 }

@@ -150,7 +150,6 @@ export default defineConfig(({ mode }) => {
           // copy instead of re-downloading it on every deploy.
           manualChunks(id) {
             if (id.includes('node_modules/maplibre-gl')) return 'maplibre';
-            if (id.includes('node_modules/@deck.gl')) return 'deck';
           },
         },
       },
