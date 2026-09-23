@@ -54,6 +54,8 @@ export function isRailReplacementBus(p: EffectiveModeInput): boolean {
 }
 
 /** Mode filter chip options (Frequency Map). */
+export const ON_DEMAND_MODE = -1;
+
 export const FILTER_MODES = [
   { id: 1, label: 'Subway' },
   { id: VIRTUAL_LRT_MODE, label: 'LRT' },

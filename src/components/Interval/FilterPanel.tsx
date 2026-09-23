@@ -2,14 +2,18 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Settings, X, Sun, Moon, Map as MapIcon, ArrowLeft, Search, ShieldCheck } from 'lucide-react';
 import { ICON_BTN, DROPDOWN_PANEL, SEARCH_FIELD, SEARCH_PILL, FILTER_OPTION, CONTROL_ACTIVE, CONTROL_INACTIVE, dropdownAnim, TRANSITION_BASE, Z_MODAL_TOP } from '../../styles';
 import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
-import { FILTER_MODES } from '../../../shared/modes';
+import { FILTER_MODES, ON_DEMAND_MODE } from '../../../shared/modes';
 import { DAY_TYPES } from '../../../shared/dayTypes';
 import { PERIOD_LABELS } from '../../hooks/useIntervalStats';
-import { FEATURES, R2_PUBLIC_URL } from '../../../shared/config';
+import { ATLAS_MODE, FEATURES, R2_PUBLIC_URL } from '../../../shared/config';
 import type { Agency } from '../../App';
 import { agencyDisplayParts, formatStoredDate } from '../../utils/format';
 import { presentFeedQualityReason, qualityStatusLabel } from '../../../shared/feedQuality';
 import { useColorVision } from '../../context/ColorVisionContext';
+
+const AVAILABLE_FILTER_MODES = ATLAS_MODE === 'public'
+  ? FILTER_MODES
+  : [...FILTER_MODES, { id: ON_DEMAND_MODE, label: 'On-demand' }];
 
 interface FilterPanelProps {
   lightMode: boolean;
@@ -688,7 +692,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                     <p className="text-[9px] font-bold text-[var(--text-dim)] uppercase tracking-wide">Transit Modes</p>
                   </div>
                   <div className="px-5 pb-3 flex flex-wrap gap-1.5">
-                    {FILTER_MODES.map(({ id, label }) => {
+                    {AVAILABLE_FILTER_MODES.map(({ id, label }) => {
                       const active = selectedModes?.has(id) ?? false;
                       return (
                         <button

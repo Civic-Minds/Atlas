@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { featureFilter } from '@maplibre/maplibre-gl-style-spec';
 import { buildModeFilterClause, tileEffectiveHeadwayExpr } from '../tileFilterExprs';
 import { flattenPeriodHeadwayProps } from '../pmtilesProps';
-import { VIRTUAL_LRT_MODE } from '../modes';
+import { ON_DEMAND_MODE, VIRTUAL_LRT_MODE } from '../modes';
 
 const compileFilter = (filter: unknown) => featureFilter(filter as any, {} as any);
 
@@ -138,5 +138,11 @@ describe('buildModeFilterClause', () => {
   it('compiles bus + LRT mode filter with headway clause', () => {
     const filter = productionLikeFilter(30, new Set([3, VIRTUAL_LRT_MODE]));
     expect(() => compileFilter(filter)).not.toThrow();
+  });
+
+  it('matches no scheduled routes when only on-demand is selected', () => {
+    const filter = buildModeFilterClause(new Set([ON_DEMAND_MODE]));
+    expect(() => compileFilter(filter)).not.toThrow();
+    expect(filter).toEqual(['==', ['get', 'routeId'], '__atlas_no_scheduled_route__']);
   });
 });

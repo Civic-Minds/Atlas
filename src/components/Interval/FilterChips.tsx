@@ -5,10 +5,10 @@ import { FLOATING_CARD, CHIP_BASE, PANEL_ENTER_TOP, FILTER_OPTION, CONTROL_ACTIV
 import type { Agency } from '../../App';
 import { PERIOD_LABELS, PERIOD_KEYS } from '../../hooks/useIntervalStats';
 import type { TimePeriod, ViewportBounds } from '../../hooks/useIntervalStats';
-import { formatPeriodRange, periodKeyForHour } from '../../../shared/config';
+import { ATLAS_MODE, formatPeriodRange, periodKeyForHour } from '../../../shared/config';
 import { agencyDisplayParts } from '../../utils/format';
 import { bboxInViewport } from '../../utils/agencySearch';
-import { FILTER_MODES } from '../../../shared/modes';
+import { FILTER_MODES, ON_DEMAND_MODE } from '../../../shared/modes';
 import { DAY_TYPES, getNowDay, type DayType } from '../../../shared/dayTypes';
 import type { FrequentServiceFrequency, FrequentServiceWindow } from '../../../shared/frequentService';
 import { useColorVision } from '../../context/ColorVisionContext';
@@ -37,7 +37,9 @@ interface FilterChipsProps {
   setResearchWindow?: (window: FrequentServiceWindow) => void;
 }
 
-const MODES = FILTER_MODES;
+const MODES = ATLAS_MODE === 'public'
+  ? FILTER_MODES
+  : [...FILTER_MODES, { id: ON_DEMAND_MODE, label: 'On-demand' }];
 
 export function getNowPeriod(): TimePeriod {
   return periodKeyForHour(new Date().getHours()) ?? 'all';

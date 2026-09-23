@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Beta and dev now include an On-demand mode filter for the curated service-area prototypes; public production remains unchanged.
 - Regional and broad map views now report readiness when PMTiles route data is available, so performance measurements do not wait for deferred agency details.
 - Benchmarking now recognizes completed loads on older public builds that lack the current performance mark.
 - Standardized filter buttons across agency, hidden-route, and degraded-feed lists.

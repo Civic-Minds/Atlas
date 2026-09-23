@@ -29,7 +29,7 @@ import { getMapContextAgenciesFromFeatures, isMapContextOutsideClick, type MapCo
 import { MapContextPanel } from './MapContextPanel';
 import MapExportDialog from '../MapExportDialog';
 import { frequentServiceBand, frequentServiceFeatureKey, frequentServiceQueryKey, type FrequentServiceFrequency, type FrequentServiceWindow } from '../../../shared/frequentService';
-import { effectiveMode } from '../../../shared/modes';
+import { effectiveMode, ON_DEMAND_MODE } from '../../../shared/modes';
 import { markAtlasLatest } from '../../lib/performance';
 
 const CORRIDOR_BAND_COLOR = '#64748b';
@@ -337,7 +337,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
 
   const onDemandServiceAreaData = useMemo<GeoJSON.FeatureCollection<GeoJSON.Polygon>>(() => ({
     type: 'FeatureCollection',
-    features: agencies
+    features: (selectedModes.size === 0 || selectedModes.has(ON_DEMAND_MODE) ? agencies : [])
       .flatMap(agency => (agency.onDemandServiceArea?.features ?? []).map(feature => ({
         ...feature,
         properties: {
@@ -346,7 +346,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
           agencyName: agency.name,
         },
       }))),
-  }), [agencies]);
+  }), [agencies, selectedModes]);
 
   const updateMapContext = useCallback(() => {
     const map = mapRef.current;
@@ -698,12 +698,13 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       if (feature.geometry.type !== 'LineString') continue;
       const props = feature.properties as Record<string, any> | null;
       if (!props?.day || !frequentServiceDays.includes(props.day) || !props.researchFrequentService?.[key]) continue;
-      if (selectedModes.size > 0 && !selectedModes.has(effectiveMode({
+      const routeModes = [...selectedModes].filter(mode => mode !== ON_DEMAND_MODE);
+      if (selectedModes.size > 0 && (routeModes.length === 0 || !routeModes.includes(effectiveMode({
         routeType: props.routeType,
         routeLongName: props.routeLongName,
         routeShortName: props.routeShortName,
         agencySlug: props.agencySlug,
-      }))) continue;
+      })))) continue;
       const group = grouped.get(frequentServiceFeatureKey(props)) ?? [];
       group.push(feature);
       grouped.set(frequentServiceFeatureKey(props), group);

@@ -5,7 +5,7 @@ import { HEADWAY_TIERS, getTierColor } from '../utils/colors';
 import { isLivePollingRoute } from '../utils/livePolling';
 import { TIME_PERIODS, PERIOD_LABELS as PERIOD_LABELS_BY_KEY, PERIOD_KEYS, type PeriodKey } from '../../shared/config';
 import { buildModeFilterClause, tileEffectiveHeadwayExpr, tileRouteKeyExpr } from '../../shared/tileFilterExprs';
-import { effectiveMode } from '../../shared/modes';
+import { effectiveMode, ON_DEMAND_MODE } from '../../shared/modes';
 import { effectiveRouteHeadway } from '../utils/effectiveHeadway';
 import { collectStopHubSiblings } from '../utils/stopHub';
 import { isHiddenByIrregularFilter } from '../../shared/irregularRoutes';
@@ -141,8 +141,10 @@ export function passesRouteFilter(
   // bidirectional routes are acceptable for accuracy.
 
   if (filters.modes.size > 0) {
+    const routeModes = [...filters.modes].filter(mode => mode !== ON_DEMAND_MODE);
+    if (routeModes.length === 0) return false;
     const modeSlug = (p as ShapeProperties).agencySlug ?? agencySlug;
-    if (!filters.modes.has(effectiveMode({
+    if (!routeModes.includes(effectiveMode({
       routeType: p.routeType,
       routeLongName: p.routeLongName,
       agencySlug: modeSlug,

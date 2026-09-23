@@ -1,6 +1,6 @@
 import type { PeriodKey } from './config.js';
 import { NO_PERIOD_SERVICE_TILE_VALUE, periodHeadwayFlatKeys } from './pmtilesProps.js';
-import { buildEffectiveModeExpression, VIRTUAL_LRT_MODE } from './modes.js';
+import { buildEffectiveModeExpression, ON_DEMAND_MODE, VIRTUAL_LRT_MODE } from './modes.js';
 
 type PeriodFilter = PeriodKey | 'all';
 
@@ -87,12 +87,14 @@ export function tileEffectiveHeadwayExpr(period?: PeriodFilter): unknown[] {
 /** Flat per-mode matchers (avoids nested case expr that breaks filter compilation). */
 export function buildModeFilterClause(modes: Set<number>): unknown[] | null {
   if (!modes || modes.size === 0) return null;
+  const routeModes = [...modes].filter(mode => mode !== ON_DEMAND_MODE);
+  if (routeModes.length === 0) return ['==', ['get', 'routeId'], '__atlas_no_scheduled_route__'];
 
   const longName: unknown[] = ['coalesce', ['get', 'routeLongName'], ''];
   const effectiveMode: unknown[] = buildEffectiveModeExpression();
   const parts: unknown[] = [];
 
-  for (const m of modes) {
+  for (const m of routeModes) {
     if (m === VIRTUAL_LRT_MODE) {
       parts.push(['==', effectiveMode, VIRTUAL_LRT_MODE]);
     } else if (m === 0) {
