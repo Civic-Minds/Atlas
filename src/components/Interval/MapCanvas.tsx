@@ -14,7 +14,7 @@ import { useLiveVehiclesLayer } from './map/useLiveVehiclesLayer';
 import type { Agency } from '../../App';
 import type { ShapeProperties, ViewportBounds, TimePeriod, HoveredBranch } from '../../hooks/useIntervalStats';
 import type { DayType } from '../../../shared/dayTypes';
-import { registerProtocol, getAtlasPmtilesUrl, getMapStyle } from '../../lib/mapStyle';
+import { registerProtocol, getAtlasPmtilesUrl, getAtlasOverviewPmtilesUrl, getMapStyle } from '../../lib/mapStyle';
 import { getAgencyBbox } from '../../hooks/useAgencyData';
 import { Z_PANEL, FLOATING_CARD } from '../../styles';
 import { LIVE_POLLING_ROUTES } from '../../../shared/livePollingConfig';
@@ -300,7 +300,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       setMapContextAgencies([]);
       return;
     }
-    const layers = ['routes-layer', 'local-routes-layer'].filter(layer => map.getLayer(layer));
+    const layers = ['overview-routes-layer', 'routes-layer', 'local-routes-layer'].filter(layer => map.getLayer(layer));
     const features = layers.length > 0 ? map.queryRenderedFeatures(undefined, { layers }) : [];
     setMapContextAgencies(getMapContextAgenciesFromFeatures(agencies, features));
   }, [agencies, mapLoaded, showMapContext]);
@@ -326,16 +326,19 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     if (!map || !mapLoaded) return;
 
     const checkRouteTiles = () => {
-      const sourceFeatures = map.querySourceFeatures('atlas-pmtiles', { sourceLayer: 'routes' });
+      const sourceFeatures = [
+        ...map.querySourceFeatures('atlas-overview-pmtiles', { sourceLayer: 'routes' }),
+        ...map.querySourceFeatures('atlas-pmtiles', { sourceLayer: 'routes' }),
+      ];
       const renderedFeatures = map.getLayer('routes-layer')
-        ? map.queryRenderedFeatures(undefined, { layers: ['routes-layer'] })
+        ? map.queryRenderedFeatures(undefined, { layers: ['routes-layer', 'overview-routes-layer'] })
         : [];
       const agencySlugs = new Set(
         renderedFeatures
           .map(feature => String(feature.properties?.agencySlug ?? ''))
           .filter(Boolean),
       );
-      if (sourceFeatures.length > 0 && (map.isSourceLoaded('atlas-pmtiles') || renderedFeatures.length > 0)) {
+      if (sourceFeatures.length > 0 && (map.isSourceLoaded('atlas-overview-pmtiles') || map.isSourceLoaded('atlas-pmtiles') || renderedFeatures.length > 0)) {
         markAtlasLatest('network-data-ready', {
           source: 'pmtiles',
           sourceFeatureCount: sourceFeatures.length,
@@ -355,7 +358,10 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     map.on('idle', checkRouteTiles);
     map.on('moveend', checkRouteTiles);
     const fallbackTimer = window.setTimeout(() => {
-      const sourceFeatures = map.querySourceFeatures('atlas-pmtiles', { sourceLayer: 'routes' });
+      const sourceFeatures = [
+        ...map.querySourceFeatures('atlas-overview-pmtiles', { sourceLayer: 'routes' }),
+        ...map.querySourceFeatures('atlas-pmtiles', { sourceLayer: 'routes' }),
+      ];
       if (sourceFeatures.length === 0) {
         setPmtilesRoutesAvailable(false);
         setPmtilesRouteAgencies(new Set());
@@ -444,7 +450,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   // Beta-only agencies are rendered from the local GeoJSON layer until their routes are in the
   // shared PMTiles archive. Keep focus styling in sync across both route sources.
   const setRouteLayerPaint = (map: maplibregl.Map, property: 'line-opacity' | 'line-width', value: any) => {
-    for (const layerId of ['routes-layer', 'local-routes-layer']) {
+    for (const layerId of ['overview-routes-layer', 'routes-layer', 'local-routes-layer']) {
       if (map.getLayer(layerId)) map.setPaintProperty(layerId, property, value);
     }
   };
@@ -465,12 +471,10 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     const partialMatches = frequencySegmentOverlayRef.current.partialMatches;
     if (partialMatches.length > 0) {
       const partialMatch = buildPartialMatchFilterExpression(partialMatches);
-      if (map.getLayer('routes-layer')) {
-        map.setPaintProperty('routes-layer', 'line-opacity', buildDefaultRouteLineOpacityExpression(headwayExpr, partialMatch) as any);
-      }
+      setRouteLayerPaint(map, 'line-opacity', buildDefaultRouteLineOpacityExpression(headwayExpr, partialMatch) as any);
       if (map.getLayer('local-routes-layer')) map.setPaintProperty('local-routes-layer', 'line-opacity', 0.9);
     } else {
-      if (map.getLayer('routes-layer')) map.setPaintProperty('routes-layer', 'line-opacity', defaultOpacity);
+      setRouteLayerPaint(map, 'line-opacity', defaultOpacity);
       if (map.getLayer('local-routes-layer')) map.setPaintProperty('local-routes-layer', 'line-opacity', 0.9);
     }
   };
@@ -523,7 +527,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         [e.point.x - 12, e.point.y - 12],
         [e.point.x + 12, e.point.y + 12],
       ];
-      const routeHitLayers = ['routes-hit-layer'];
+      const routeHitLayers = ['overview-routes-hit-layer', 'routes-hit-layer'];
       if (map.getLayer('local-routes-hit-layer')) {
         routeHitLayers.push('local-routes-hit-layer');
       }
@@ -693,17 +697,73 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
 
       // Keep PMTiles out of the initial style. A stalled route-tile request must
       // not prevent MapLibre from reaching this point or block local GeoJSON.
+      map.addSource('atlas-overview-pmtiles', {
+        type: 'vector',
+        url: `pmtiles://${getAtlasOverviewPmtilesUrl()}`,
+      });
       map.addSource('atlas-pmtiles', {
         type: 'vector',
         url: `pmtiles://${getAtlasPmtilesUrl()}`,
       });
 
-      // Add route shapes (line) layers
+      // Demand-responsive agencies may publish a service boundary without
+      // route shapes. Keep the boundary in its own layer so it is visibly
+      // different from scheduled route geometry.
+      map.addSource('on-demand-service-areas', {
+        type: 'geojson',
+        data: { type: 'FeatureCollection', features: [] },
+      });
+      map.addLayer({
+        id: 'on-demand-service-area-fill',
+        type: 'fill',
+        source: 'on-demand-service-areas',
+        paint: { 'fill-color': ON_DEMAND_AREA_COLOR, 'fill-opacity': 0.12 },
+        layout: { visibility: 'none' },
+      });
+      map.addLayer({
+        id: 'on-demand-service-area-line',
+        type: 'line',
+        source: 'on-demand-service-areas',
+        paint: {
+          'line-color': ON_DEMAND_AREA_COLOR,
+          'line-width': 2,
+          'line-opacity': 0.95,
+          'line-dasharray': [2, 1.5],
+        },
+        layout: { visibility: 'none' },
+      });
+
+      // Broad maps use simplified route geometry; detailed geometry takes over
+      // once the map is close enough for the extra vertices to matter.
+      map.addLayer({
+        id: 'overview-routes-layer',
+        type: 'line',
+        source: 'atlas-overview-pmtiles',
+        'source-layer': 'routes',
+        maxzoom: 8,
+        paint: {
+          'line-color': '#555555',
+          'line-width': ['interpolate', ['linear'], ['zoom'], 0, 1.0, 7, 1.8],
+          'line-opacity': ['interpolate', ['linear'], ['zoom'], 0, 0.65, 7, 0.8],
+        },
+        layout: { 'line-cap': 'round', 'line-join': 'round' },
+      });
+      map.addLayer({
+        id: 'overview-routes-hit-layer',
+        type: 'line',
+        source: 'atlas-overview-pmtiles',
+        'source-layer': 'routes',
+        maxzoom: 8,
+        paint: { 'line-color': '#000000', 'line-width': 18, 'line-opacity': 0 },
+      });
+
+      // Add detailed route shapes (line) layers
       map.addLayer({
         id: 'routes-layer',
         type: 'line',
         source: 'atlas-pmtiles',
         'source-layer': 'routes',
+        minzoom: 8,
         paint: {
           'line-color': '#555555',
           'line-width': ['interpolate', ['linear'], ['zoom'], 8, 1.5, 11, 2.0, 14, 2.5, 17, 3.5],
@@ -721,6 +781,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         type: 'line',
         source: 'atlas-pmtiles',
         'source-layer': 'routes',
+        minzoom: 8,
         paint: {
           'line-color': '#000000',
           'line-width': 18,
@@ -1025,10 +1086,11 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapLoaded) return;
-    const visibility = showRouteLayers && pmtilesRoutesAvailable !== false ? 'visible' : 'none';
-    if (map.getLayer('routes-layer')) map.setLayoutProperty('routes-layer', 'visibility', visibility);
-    if (map.getLayer('routes-hit-layer')) map.setLayoutProperty('routes-hit-layer', 'visibility', visibility);
-  }, [mapLoaded, pmtilesRoutesAvailable, showRouteLayers]);
+    const visibility = showRouteLayers && !frequentServiceView && !nightServiceView && pmtilesRoutesAvailable !== false ? 'visible' : 'none';
+    for (const layerId of ['overview-routes-layer', 'routes-layer', 'overview-routes-hit-layer', 'routes-hit-layer']) {
+      if (map.getLayer(layerId)) map.setLayoutProperty(layerId, 'visibility', visibility);
+    }
+  }, [frequentServiceView, mapLoaded, nightServiceView, pmtilesRoutesAvailable, showRouteLayers]);
 
   // Single map click handler — avoids layer preventDefault blocking background deselect.
   useEffect(() => {
@@ -1047,7 +1109,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       const stopHits = map.getLayer('stops-layer')
         ? map.queryRenderedFeatures(e.point, { layers: ['stops-layer'] })
         : [];
-      const routeHitLayers = ['routes-hit-layer'];
+      const routeHitLayers = ['overview-routes-hit-layer', 'routes-hit-layer'];
       if (map.getLayer('local-routes-hit-layer')) {
         routeHitLayers.push('local-routes-hit-layer');
       }
@@ -1306,7 +1368,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     }
 
     if (!found && map.getLayer('routes-layer')) {
-      const rendered = map.queryRenderedFeatures(undefined, { layers: ['routes-layer'] })
+      const rendered = map.queryRenderedFeatures(undefined, { layers: ['overview-routes-layer', 'routes-layer'] })
         .filter((f: maplibregl.MapGeoJSONFeature) => routeKey(f.properties as any) === selectedRoute);
       for (const f of rendered) {
         const geom = f.geometry as any;
@@ -1365,6 +1427,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     // In some cases (StrictMode double-invoke, very early effect runs, or future
     // changes) they may temporarily not exist. Guard to avoid console spam.
     const hasRoutes = !!map.getLayer('routes-layer');
+    const hasOverviewRoutes = !!map.getLayer('overview-routes-layer');
     const hasLocalRoutes = !!map.getLayer('local-routes-layer');
     const hasRoutesHit = !!map.getLayer('routes-hit-layer');
     const hasStops = !!map.getLayer('stops-layer');
@@ -1443,7 +1506,8 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     }
 
     if (hasRoutes) map.setFilter('routes-layer', routeFilter as any);
-    if (hasRoutesHit) {
+    if (hasOverviewRoutes) map.setFilter('overview-routes-layer', routeFilter as any);
+    if (hasRoutesHit || map.getLayer('overview-routes-hit-layer')) {
       // Keep the transparent hit target in sync with the route line's zoom/headway
       // visibility gate. Without this, a route with no service in the active period
       // has an invisible but clickable 18px-wide hitbox (e.g. GO 37 at midday).
@@ -1455,7 +1519,8 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
               : buildZoomHeadwayGateExpression(headwayExpr),
           )
         : routeFilter;
-      map.setFilter('routes-hit-layer', hitRouteFilter as any);
+      if (hasRoutesHit) map.setFilter('routes-hit-layer', hitRouteFilter as any);
+      if (map.getLayer('overview-routes-hit-layer')) map.setFilter('overview-routes-hit-layer', hitRouteFilter as any);
     }
 
     if (hasRoutes || hasLocalRoutes) {
@@ -1470,6 +1535,19 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       }
 
       if (hasRoutes) map.setPaintProperty('routes-layer', 'line-color', lineColorExpr);
+      if (hasOverviewRoutes) map.setPaintProperty('overview-routes-layer', 'line-color', lineColorExpr);
+      if (frequentServiceView && map.getLayer('frequent-service-routes-layer')) {
+        map.setPaintProperty('frequent-service-routes-layer', 'line-color', [
+          'match', ['get', 'frequentServiceBand'], '15', getTierColor('15', colorMode), getTierColor('30', colorMode),
+        ]);
+        map.setPaintProperty('frequent-service-routes-layer', 'line-width', [
+          'interpolate', ['linear'], ['zoom'],
+          8, ['match', ['get', 'frequentServiceBand'], '15', 3.2, 2.0],
+          11, ['match', ['get', 'frequentServiceBand'], '15', 3.8, 2.5],
+          14, ['match', ['get', 'frequentServiceBand'], '15', 4.6, 3.2],
+          17, ['match', ['get', 'frequentServiceBand'], '15', 6.0, 4.5],
+        ]);
+      }
 
       // Opacity based on route state (focused vs dimmed).
       // When a route is selected we keep other lines visible and clickable
@@ -1565,9 +1643,11 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
           if (hasRoutes) {
             map.setPaintProperty('routes-layer', 'line-opacity', buildDefaultRouteLineOpacityExpression(headwayExpr, partialMatch) as any);
           }
+          if (hasOverviewRoutes) map.setPaintProperty('overview-routes-layer', 'line-opacity', buildDefaultRouteLineOpacityExpression(headwayExpr, partialMatch) as any);
           if (hasLocalRoutes) map.setPaintProperty('local-routes-layer', 'line-opacity', 0.9);
         } else {
           if (hasRoutes) map.setPaintProperty('routes-layer', 'line-opacity', buildDefaultRouteLineOpacityExpression(headwayExpr) as any);
+          if (hasOverviewRoutes) map.setPaintProperty('overview-routes-layer', 'line-opacity', buildDefaultRouteLineOpacityExpression(headwayExpr) as any);
           if (hasLocalRoutes) map.setPaintProperty('local-routes-layer', 'line-opacity', 0.9);
         }
       }

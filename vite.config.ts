@@ -28,7 +28,7 @@ export default defineConfig(({ mode }) => {
     console.log(`[vite] /atlas-data proxy → ${r2Target} (staging)`);
   }
 
-  // Dev-only: serve a locally dry-run-built atlas.pmtiles (see
+  // Dev-only: serve locally dry-run-built PMTiles archives (see
   // `npm run build-pmtiles-incremental -- <slug> --dry-run`) instead of proxying
   // to production R2, so a not-yet-published agency's map tiles can be previewed
   // before ever writing to the live bucket. Falls through to the normal proxy
@@ -39,9 +39,14 @@ export default defineConfig(({ mode }) => {
     configureServer(server) {
       server.middlewares.use((req, res, next) => {
         const pathname = (req.url ?? '').split('?')[0];
-        if (pathname !== '/atlas-data/atlas.pmtiles' || !existsSync(PMTILES_PREVIEW_PATH)) return next();
+        const isOverview = pathname === '/atlas-data/atlas-overview.pmtiles';
+        if (pathname !== '/atlas-data/atlas.pmtiles' && !isOverview) return next();
+        const previewPath = isOverview
+          ? resolve('tmp/atlas-overview-pmtiles-preview.pmtiles')
+          : PMTILES_PREVIEW_PATH;
+        if (!existsSync(previewPath)) return next();
 
-        const { size } = statSync(PMTILES_PREVIEW_PATH);
+        const { size } = statSync(previewPath);
         const range = req.headers.range;
         res.setHeader('Accept-Ranges', 'bytes');
         res.setHeader('Content-Type', 'application/octet-stream');
@@ -53,7 +58,7 @@ export default defineConfig(({ mode }) => {
 
         if (!range) {
           res.setHeader('Content-Length', String(size));
-          createReadStream(PMTILES_PREVIEW_PATH).pipe(res);
+          createReadStream(previewPath).pipe(res);
           return;
         }
 
@@ -64,7 +69,7 @@ export default defineConfig(({ mode }) => {
         res.statusCode = 206;
         res.setHeader('Content-Range', `bytes ${start}-${end}/${size}`);
         res.setHeader('Content-Length', String(end - start + 1));
-        createReadStream(PMTILES_PREVIEW_PATH, { start, end }).pipe(res);
+        createReadStream(previewPath, { start, end }).pipe(res);
       });
     },
   };
