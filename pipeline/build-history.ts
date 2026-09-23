@@ -244,8 +244,12 @@ async function main() {
     });
   }
 
-  console.log(`Downloading ${tasks.length} history snapshot files in parallel (concurrency 50)...`);
-  await runWithConcurrency(tasks, 50);
+  const configuredConcurrency = Number(process.env.HISTORY_DOWNLOAD_CONCURRENCY ?? 10);
+  const concurrency = Number.isInteger(configuredConcurrency) && configuredConcurrency > 0
+    ? configuredConcurrency
+    : 10;
+  console.log(`Downloading ${tasks.length} history snapshot files in parallel (concurrency ${concurrency})...`);
+  await runWithConcurrency(tasks, concurrency);
 
   // 2. Merge BASE_HISTORY manual seeds into archiveRoutes
   for (const agency of BASE_HISTORY) {

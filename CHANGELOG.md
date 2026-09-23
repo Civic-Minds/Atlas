@@ -6,6 +6,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Make history rebuilds more reliable by limiting archive downloads, reducing dropped snapshots during temporary storage timeouts.
+
 - Map tiles and route data now publish together only after the release passes coverage checks, preventing frequency filters and route cards from reading different data generations.
 - PMTiles coverage checks now recheck initially missing agencies sequentially, preventing valid small agencies from blocking an otherwise complete release.
 - Selected routes no longer bypass the active map frequency filter.
