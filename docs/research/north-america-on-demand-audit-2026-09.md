@@ -158,3 +158,60 @@ Quebec exclusions: STM MUVE is explicitly a pilot; STLévis evidence found was s
 | Codiac Transpo / Dieppe | On-demand transit | Confirmed current general-public service in Dieppe, connected to the Codiac network | [Dieppe on-demand service](https://www.dieppe.ca/en/vivre-ici/transports/transport-a-la-demande/starting-august-23-on-demand-transit/) |
 
 Halifax Transit’s current official material describes microtransit as a plan/potential future pilot, so it is not included. Metrobus/St. John’s ended its on-demand service on January 2, 2026 when it converted the service to fixed Route 29. Yellowknife YKFlex is documented under accessible transit and was not counted as a general-public service. Red Deer remains in exploration/planning. Other Canadian agencies remain under review where current evidence is ambiguous or only specialized service was found.
+
+### Maryland
+
+| Atlas agency | Service | Disposition | Evidence |
+| --- | --- | --- | --- |
+| Montgomery County Ride On | Ride On Flex Zone 918 | Confirmed current general-public service; Rockville and Wheaton/Glenmont zones ended June 30, 2026, but Sandy Spring/White Oak Zone 918 remains active | [Ride On Flex](https://www.montgomerycountymd.gov/dot-transit/flex/), [Zone 918 launch](https://www2.montgomerycountymd.gov/mcgportalapps/Press_Detail.aspx?Item_ID=48253), [zone discontinuation notice](https://www3.montgomerycountymd.gov/311/Solutions.aspx?SolutionId=1-AA6ANW) |
+
+Maryland exclusions: Montgomery County’s former Rockville and Wheaton/Glenmont Flex zones are not represented as current service after their June 30, 2026 discontinuation. MetroAccess and other eligibility-based services were excluded.
+
+### Massachusetts
+
+| Atlas agency | Service | Disposition | Evidence |
+| --- | --- | --- | --- |
+| Worcester Regional Transit Authority | Via-WRTA | Confirmed regular general-public service in parts of Shrewsbury, Northborough, and Westborough | [Via-WRTA](https://therta.com/demand-response/via/), [2025 service-area/fare update](https://therta.com/wp-content/uploads/2026/02/20260211_WRTA_CRTP_Final.pdf) |
+
+Massachusetts exclusions: MBTA’s The RIDE is ADA paratransit and was excluded. PVTA’s NOHO Shuttle was documented as a six-month general-public pilot rather than a confirmed permanent service, and PVTA procurement materials still describe future microtransit as a pilot. The state’s general microtransit page identifies other RTAs, including GATRA, FRTA, and CATA, but those agencies are not in the current Atlas inventory.
+
+### New York
+
+| Atlas agency | Service | Disposition | Evidence |
+| --- | --- | --- | --- |
+| Capital District Transportation Authority | FLEX On Demand | Confirmed regular general-public service in Guilderland, Southern Saratoga County, and Saratoga Springs | [FLEX](https://cdta.org/flex), [current service information](https://www.cdta.org/navigator-app-questions) |
+| Rochester-Genesee Regional Transportation Authority / RTS | RTS On Demand | Confirmed current general-public service in Monroe County and surrounding RTS zones; weekday-only schedule change took effect September 7, 2026 | [Request a trip](https://www.myrts.com/RTS-On-Demand/Request-a-Trip), [September 2026 service change](https://www.myrts.com/blog/Article/442/RTS-On-Demand-Changes-September-2026) |
+| Suffolk County Transit | Suffolk Transit On-Demand | Confirmed regular general-public service in Southampton and East Hampton zones | [On Demand](https://sctbus.org/On-Demand), [current system information](https://sctbus.org/System-Information) |
+| Dutchess County Public Transit | Flex | Confirmed regular general-public service; registration and advance reservation are required, but the service is open to all passengers | [Demand-response information sheet](https://www.dutchessny.gov/Departments/Public-Transit/Docs/Dutchess-County-Public-Transit-Demand-Response-Services-Information-Sheet.pdf), [current fares and service categories](https://www.dutchessny.gov/Departments/Public-Transit/Fares.htm) |
+| Nassau Inter-County Express (NICE Bus) | NICE Mini South Shore | Confirmed current general-public on-demand shared-ride service; Mini MILE is separately labeled a pilot and is not counted as a permanent service | [NICE Mini](https://www.nicebus.com/Passenger-Information/NiceLink), [maps and schedules](https://nicebus.com/Tools/Maps-and-Schedules) |
+
+New York exclusions: Centro’s Call-A-Bus is ADA paratransit, not general-public service; Centro’s other on-demand work was found in planning materials. Dutchess Dial-A-Ride was not counted separately because its registration and sponsoring-community structure are distinct from the countywide public Flex service. NICE Mini MILE is explicitly labeled a pilot, so only the current NICE Mini South Shore service is included.
+
+### Ohio
+
+| Atlas agency | Service | Disposition | Evidence |
+| --- | --- | --- | --- |
+| Central Ohio Transit Authority | COTA//Plus | Confirmed regular general-public service in Grove City, Westerville, and the South Side | [COTA//Plus](https://www.cota.com/services/cota-plus/), [COTA service comparison](https://www.cota.com/services/) |
+
+### Utah
+
+| Atlas agency | Service | Disposition | Evidence |
+| --- | --- | --- | --- |
+| Utah Transit Authority | UTA On Demand | Confirmed regular general-public service across six zones, including the North Utah County zone launched in August 2026 | [UTA On Demand](https://owa.rideuta.com/Services/UTA-On-Demand), [current UTA fares](https://fare.rideuta.com/Fares-And-Passes/Individual-Fares/Current-Fares) |
+
+### Michigan
+
+| Atlas agency | Service | Disposition | Evidence |
+| --- | --- | --- | --- |
+| SMART | SMART Flex | Confirmed regular general-public service in five Metro Detroit zones, with a northern Macomb expansion in 2026 | [SMART Flex](https://www.smartbus.org/Services/Flex-Service), [northern Macomb expansion](https://www.smartbus.org/How-to-Ride/FAQs/ADA/PgrID/671/PageID/1/pid/671/evl/0/categoryid/11/categoryname/highlights) |
+| Mass Transportation Authority (Flint) | Genesee Connect | Confirmed current general-public service in the Hill Road Corridor zone | [Genesee Connect](https://www.mtaflint.org/genesee-connect/), [MTA SmartMove terms](https://www.mtaflint.org/terms-of-use/) |
+| TheRide (Ann Arbor Area Transportation Authority) | FlexRide-East | Confirmed current general-public service in select Ypsilanti Township areas; the former FlexRide-West service no longer operates | [FlexRide](https://www.theride.org/services/flexride) |
+
+### Wisconsin
+
+| Atlas agency | Service | Disposition | Evidence |
+| --- | --- | --- | --- |
+| Green Bay Metro | GBM On Demand | Confirmed regular general-public microtransit service | [GBM On Demand](https://www.greenbaywi.gov/GBM-On-Demand), [current route guide](https://www.greenbaywi.gov/300/Transit-Route-Guide) |
+| Milwaukee County Transit System | FlexRide Milwaukee | Confirmed current public on-demand service in designated neighborhood and employment zones; not ADA-only | [FlexRide Milwaukee](https://www.flexridemke.com/), [transit-hub access](https://www.flexridemke.com/transithubs) |
+
+Ohio exclusions: COTA Mainstream and Mainstream On-Demand are pre-approved paratransit services; only COTA//Plus is included. Michigan’s MTA Your Ride and SMART ADA services were excluded as eligibility-based. TheRide’s former FlexRide-West service is not listed as current.
