@@ -47,7 +47,7 @@ Research date: 2026-09-24. Confirmed against current agency or public-agency pag
 
 ## Canada
 
-Research date: 2026-09-24. The list below includes regular public transit services that can be booked by any rider; specialized accessible services and explicitly temporary pilots are kept out.
+Research date: 2026-09-24. Canada phase: 35 confirmed agency/service records across the Atlas inventory. The list below includes regular public transit services that can be booked by any rider; specialized accessible services and explicitly temporary pilots are kept out.
 
 ### Ontario
 
