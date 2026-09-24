@@ -78,12 +78,13 @@ Ontario exclusions: Brampton Argo is still described as a 12-month pilot; Kingst
 | RTL Longueuil | RTL à la demande | Confirmed regular general-public service | [RTL à la demande](https://www.rtl-longueuil.qc.ca/rtl-demande), [2026 expansion](https://www.rtl-longueuil.qc.ca/liens-utiles/salle-de-presse/service-plus-flexible-rtl-etend-transport-demande-saint-bruno-de-montarville) |
 | STL Laval | Taxi collectif à la demande | Confirmed current general-public service | [Taxi collectif](https://stlaval.ca/horaire/taxi), [service information](https://stlaval.ca/horaire/taxi/info) |
 | Saint-Jean-sur-Richelieu | Taxibus | Confirmed regular general-public service | [Taxibus](https://sjsr.ca/transport-collectif/taxibus/) |
-| exo (Presqu’île sector) | exo à la demande | Confirmed current general-public service | [exo on-demand terms](https://exo.quebec/fr/planifier-trajet/exo-a-la-demande/conditions-utilisation) |
-| exo (Sud-Ouest sector) | exo à la demande | Confirmed current general-public service | [exo on-demand terms](https://exo.quebec/fr/planifier-trajet/exo-a-la-demande/conditions-utilisation) |
-| exo (Laurentides sector) | exo à la demande | Confirmed current general-public service | [exo on-demand terms](https://exo.quebec/fr/planifier-trajet/exo-a-la-demande/conditions-utilisation) |
+| exo (Le Richelain/Roussillon sector) | exo à la demande | Confirmed current general-public service | [Candiac, Delson, Saint-Constant and Sainte-Catherine](https://exo.quebec/fr/planifier-trajet/exo-a-la-demande/candiac-delson-sainte-catherine-saint-constant), [exo on-demand terms](https://exo.quebec/fr/planifier-trajet/exo-a-la-demande/conditions-utilisation) |
+| exo (Sud-Ouest sector) | Taxi collectif / exo à la demande | Confirmed current general-public service | [Sud-Ouest sector](https://exo.quebec/fr/planifier-trajet/autobus/CITSO), [exo on-demand terms](https://exo.quebec/fr/planifier-trajet/exo-a-la-demande/conditions-utilisation) |
+| exo (Laurentides sector) | Taxi collectif / exo à la demande | Confirmed current general-public service | [Laurentides sector](https://exo.quebec/fr/planifier-trajet/autobus/CITLA), [exo on-demand terms](https://exo.quebec/fr/planifier-trajet/exo-a-la-demande/conditions-utilisation) |
+| exo (Vallée-du-Richelieu sector) | exo à la demande | Confirmed current general-public service | [Belœil and McMasterville](https://exo.quebec/fr/planifier-trajet/exo-a-la-demande/beloeil), [exo on-demand overview](https://exo.quebec/fr/planifier-trajet/exo-a-la-demande) |
 | exo (Terrebonne sector) | exo à la demande | Confirmed current general-public service | [Terrebonne](https://exo.quebec/fr/planifier-trajet/exo-a-la-demande/terrebonne) |
 
-Quebec exclusions: STM MUVE is explicitly a pilot; STLévis evidence found was specialized transport, while L’Inter des Laurentides, Mont-Tremblant, Saint-Hyacinthe, and REM did not have sufficiently clear current universal on-demand transit evidence.
+Quebec exclusions: STM MUVE is explicitly a pilot; STLévis evidence found was specialized transport; exo’s Presqu’île and train records did not have sufficiently clear current on-demand service evidence; and L’Inter des Laurentides, Mont-Tremblant, and Saint-Hyacinthe did not have sufficiently clear current universal on-demand transit evidence.
 
 ### British Columbia
 
@@ -99,6 +100,8 @@ Quebec exclusions: STM MUVE is explicitly a pilot; STLévis evidence found was s
 | --- | --- | --- | --- |
 | Calgary Transit | On Demand | Confirmed regular general-public service | [Calgary On Demand](https://www.calgarytransit.com/rider-information/on-demand.html) |
 | Edmonton Transit Service | On Demand Transit | Confirmed regular general-public service | [On Demand Transit](https://www.edmonton.ca/ets/on-demand-transit), [how it works](https://www.edmonton.ca/ets/on-demand-transit-service-overview) |
+| Lethbridge Transit | cityLINK Ride-on-Demand | Confirmed regular general-public service | [Lethbridge Transit](https://www.lethbridge.ca/roads-parking-transit/transit/) |
+| Regional Municipality of Wood Buffalo Transit | Transit On Demand | Confirmed regular general-public service | [Transit On Demand](https://www.rmwb.ca/programs-and-services/transit/transit-on-demand/), [2025 service launch](https://www.rmwb.ca/news/posts/big-changes-are-coming-to-rmwb-transit-starting-aug-22/) |
 
 ### Manitoba, Saskatchewan, and Atlantic Canada
 
@@ -110,4 +113,4 @@ Quebec exclusions: STM MUVE is explicitly a pilot; STLévis evidence found was s
 | Saint John Transit | FLEX | Confirmed regular general-public service | [FLEX service](https://saintjohn.ca/en/transit/flex-service), [current transit overview](https://saintjohn.ca/en/transit) |
 | Codiac Transpo / Dieppe | On-demand transit | Confirmed current general-public service in Dieppe, connected to the Codiac network | [Dieppe on-demand service](https://www.dieppe.ca/en/vivre-ici/transports/transport-a-la-demande/starting-august-23-on-demand-transit/) |
 
-Halifax Transit’s current official material describes microtransit as a plan/potential future pilot, so it is not included. Metrobus/St. John’s ended its on-demand service on January 2, 2026 when it converted the service to fixed Route 29. Other Canadian agencies remain under review where current evidence is ambiguous or only specialized service was found.
+Halifax Transit’s current official material describes microtransit as a plan/potential future pilot, so it is not included. Metrobus/St. John’s ended its on-demand service on January 2, 2026 when it converted the service to fixed Route 29. Yellowknife YKFlex is documented under accessible transit and was not counted as a general-public service. Red Deer remains in exploration/planning. Other Canadian agencies remain under review where current evidence is ambiguous or only specialized service was found.
