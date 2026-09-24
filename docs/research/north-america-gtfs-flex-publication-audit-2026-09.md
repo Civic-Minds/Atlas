@@ -79,6 +79,14 @@ The Metro Transit ZIP was downloaded and validated locally on 2026-09-24. It con
 | --- | --- | --- | --- | --- |
 | King County Metro — Metro Flex | No public GTFS-Flex download confirmed; public open data exists | King County publishes the ordinary Metro GTFS feed and a separate Metro Flex open-data dataset containing service-area geometry. The public GTFS directory does not expose a Flex ZIP alongside the ordinary feed. | Ask Metro’s developer/open-data contact whether the Flex geometry is also available as a GTFS-Flex package or whether the service is intentionally published only as GIS/open-data geometry. | [Metro GTFS directory](https://metro.kingcounty.gov/gtfs/), [King County Metro Flex open data](https://data.kingcounty.gov/w/3jjm-4frb/shwn-npxw?cur=fxqU9OHpgRi&from=u_AVX81Z7j0), [Metro developer resources](https://cdn.kingcounty.gov/uk-ua/dept/metro/rider-tools/mobile-and-web-apps) |
 
+| C-TRAN (Vancouver, WA) — The Current | **GTFS-Flex confirmed** | C-TRAN’s official GTFS request page explicitly offers a separate “GTFS-Flex Data for The Current” download alongside ordinary GTFS. The page requires accepting C-TRAN’s data licence before download. | No request needed beyond accepting the agency’s data licence on the official download page. | [C-TRAN GTFS/Flex data page](https://mail.c-tran.com/about-c-tran/business/c-tran-gtfs-data), [The Current](https://mail.c-tran.com/thecurrent) |
+
+### Colorado
+
+| Atlas agency/service | GTFS-Flex status | Agency/open-data finding | Request path | Evidence |
+| --- | --- | --- | --- | --- |
+| Roaring Fork Transportation Authority — Carbondale Downtowner | No public GTFS-Flex feed found | RFTA publishes ordinary GTFS for its fixed-route timetables and public service information for the Carbondale Downtowner, but no public Flex package was identified. | Ask RFTA through its contact page or customer service at 970-925-8484 for the Downtowner zone and booking-rule data. | [RFTA public GTFS](https://www.rfta.com/public-documents/), [Carbondale Downtowner](https://www.rfta.com/town-of-carbondale-introduces-carbondale-downtowner/), [RFTA contact](https://www.rfta.com/contact-us/) |
+
 ### Utah
 
 | Atlas agency/service | GTFS-Flex status | Agency/open-data finding | Request path | Evidence |
