@@ -133,7 +133,7 @@ export const BWG_ON_DEMAND_AGENCY = {
   onDemandOnly: true,
   hiddenInProduction: true,
   betaOnly: true,
-  rolloutNotice: 'On-demand service-area prototype — source-backed geometry is still being validated.',
+  rolloutNotice: 'Atlas is validating this service-area data before including it in public coverage.',
   websiteUrl: 'https://www.townofbwg.com/living-in-bwg/roads-and-transit/transit/',
   onDemandServiceArea: {
     features: [BWG_ON_DEMAND_SERVICE_AREA],
@@ -157,7 +157,7 @@ export const CALEDON_ON_DEMAND_AGENCY = {
   onDemandOnly: true,
   hiddenInProduction: true,
   betaOnly: true,
-  rolloutNotice: 'On-demand service-area prototype — source-backed geometry is still being validated.',
+  rolloutNotice: 'Atlas is validating this service-area data before including it in public coverage.',
   websiteUrl: 'https://www.caledon.ca/en/town-services/transit.aspx',
   onDemandServiceArea: {
     features: CALEDON_ON_DEMAND_SERVICE_AREAS,
@@ -181,7 +181,7 @@ export const BRAMPTON_ON_DEMAND_AGENCY = {
   onDemandOnly: true,
   hiddenInProduction: true,
   betaOnly: true,
-  rolloutNotice: 'On-demand service-area prototype — source-backed geometry is still being validated.',
+  rolloutNotice: 'Atlas is validating this service-area data before including it in public coverage.',
   websiteUrl: 'https://www.brampton.ca/EN/residents/transit/Pages/Welcome.aspx',
   onDemandServiceArea: {
     features: BRAMPTON_ON_DEMAND_SERVICE_AREAS,

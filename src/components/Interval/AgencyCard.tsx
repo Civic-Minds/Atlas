@@ -404,7 +404,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
           {!agency.onDemandOnly && agency.onDemandServiceArea?.serviceName && (
             <div className="mt-2 border-t border-[var(--border-primary)] pt-2">
               <div className="flex items-baseline justify-between gap-2">
-                <p className="text-[9px] font-black uppercase tracking-wide text-[var(--accent)]">On-demand · beta</p>
+                <p className="text-[9px] font-black uppercase tracking-wide text-[var(--accent)]">On-demand service</p>
                 {agency.onDemandServiceArea.sourceUrl && (
                   <a href={agency.onDemandServiceArea.sourceUrl} target="_blank" rel="noopener noreferrer" className="shrink-0 text-[10px] text-[var(--accent)] hover:underline">
                     Details →
