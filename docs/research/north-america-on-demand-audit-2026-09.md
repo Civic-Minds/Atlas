@@ -78,6 +78,15 @@ Ontario exclusions: Brampton Argo is still described as a 12-month pilot; Kingst
 
 Colorado exclusions: RTD Denver’s current on-demand programs are Access-a-Ride-eligible services, not universal public service. RFTA’s other proposed or grant-funded microtransit areas require separate current rider evidence before being counted.
 
+### Washington
+
+| Atlas agency | Service | Disposition | Evidence |
+| --- | --- | --- | --- |
+| King County Metro | Metro Flex | Confirmed current general-public service; newly expanded zones are separately identified as pilots | [Metro Flex](https://cdn.kingcounty.gov/en/dept/metro/travel-options/metro-flex), [Metro Flex expansion](https://executive.kingcounty.gov/2026/08/24/king-countys-metro-flex-to-launch-in-auburn-and-federal-way-bringing-on-demand-transit-to-more-of-south-king-county/) |
+| C-TRAN (Vancouver, WA) | The Current | Confirmed regular general-public service | [The Current](https://mail.c-tran.com/thecurrent), [current app/service coverage](https://apps.apple.com/us/app/the-current/id1600579620?platform=watch) |
+
+Washington exclusions: Spokane Transit’s STA Link is an explicitly labeled pilot and is not counted. Community Transit’s current Zip Shuttle page also describes the programs as pilots, so it is not counted in the regular-service list.
+
 ### Quebec
 
 | Atlas agency | Service | Disposition | Evidence |
