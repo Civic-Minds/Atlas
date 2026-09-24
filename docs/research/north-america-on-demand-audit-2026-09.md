@@ -87,6 +87,17 @@ Colorado exclusions: RTD Denver’s current on-demand programs are Access-a-Ride
 
 Washington exclusions: Spokane Transit’s STA Link is an explicitly labeled pilot and is not counted. Community Transit’s current Zip Shuttle page also describes the programs as pilots, so it is not counted in the regular-service list.
 
+### Texas
+
+| Atlas agency | Service | Disposition | Evidence |
+| --- | --- | --- | --- |
+| Capital Metro (Austin) | Pickup | Confirmed regular general-public service | [Pickup](https://www.capmetro.org/pickup) |
+| Dallas Area Rapid Transit | GoLink | Confirmed regular general-public service | [GoLink](https://prod.dart.org/guide/transit-and-use/golink), [GoLink rider guide](https://dartorgcmsblob.dart.org/prod/docs/default-source/marketing/golink/golinkbro-digital_eff-091525.pdf?sfvrsn=4854e30e_1) |
+| Trinity Metro (Fort Worth) | Trinity Metro On-Demand / ZIPZONE | Confirmed current general-public service | [On-Demand service change](https://ridetrinitymetro.org/trinity-metro-implementing-multiple-fall-service-changes/), [2024 service update](https://ridetrinitymetro.org/trinity-metro-on-demand-services-sets-ridership-records/) |
+| METRO Houston | METRO curb2curb / Community Connector | Confirmed current general-public service; separate from METROLift paratransit | [METRO curb2curb](https://www.ridemetro.org/riding-metro/transit-services/curb2curb), [On Demand app and service types](https://www.ridemetro.org/riding-metro/apps/on-demand-app) |
+| VIA Metropolitan Transit (San Antonio) | VIA Link | Confirmed regular general-public service | [VIA Link](https://www.viainfo.net/link/), [current VIA service overview](https://www.viainfo.net/) |
+| Denton County Transportation Authority | GoZone | Confirmed regular general-public service | [DCTA getting around](https://www.dcta.net/getting-around), [GoZone service details](https://www.dcta.net/getting-around/gozone-demand), [2026 DCTA update](https://www.dcta.net/media-center/news/2026/multiple-modes-transit-endless-possibilities) |
+
 ### Quebec
 
 | Atlas agency | Service | Disposition | Evidence |
