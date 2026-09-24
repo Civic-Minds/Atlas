@@ -70,6 +70,14 @@ Research date: 2026-09-24. Canada phase: 35 confirmed agency/service records acr
 
 Ontario exclusions: Brampton Argo is still described as a 12-month pilot; Kingston, Orangeville, London, and Thunder Bay evidence is planning, procurement, or pilot material rather than a confirmed regular public service. Simcoe LINX+ and Belleville Mobility Bus are specialized/eligibility-based services.
 
+### Colorado
+
+| Atlas agency | Service | Disposition | Evidence |
+| --- | --- | --- | --- |
+| Roaring Fork Transportation Authority | Carbondale Downtowner | Confirmed regular general-public service | [RFTA 2026 rider guide](https://www.rfta.com/wp-content/uploads/2026/04/RFTA_Rider-Guide_Spring-2026_DIGITAL.pdf) |
+
+Colorado exclusions: RTD Denver’s current on-demand programs are Access-a-Ride-eligible services, not universal public service. RFTA’s other proposed or grant-funded microtransit areas require separate current rider evidence before being counted.
+
 ### Quebec
 
 | Atlas agency | Service | Disposition | Evidence |
