@@ -98,6 +98,15 @@ Washington exclusions: Spokane Transit’s STA Link is an explicitly labeled pil
 | VIA Metropolitan Transit (San Antonio) | VIA Link | Confirmed regular general-public service | [VIA Link](https://www.viainfo.net/link/), [current VIA service overview](https://www.viainfo.net/) |
 | Denton County Transportation Authority | GoZone | Confirmed regular general-public service | [DCTA getting around](https://www.dcta.net/getting-around), [GoZone service details](https://www.dcta.net/getting-around/gozone-demand), [2026 DCTA update](https://www.dcta.net/media-center/news/2026/multiple-modes-transit-endless-possibilities) |
 
+### Florida
+
+| Atlas agency | Service | Disposition | Evidence |
+| --- | --- | --- | --- |
+| LYNX (Central Florida) | NeighborLink | Confirmed regular general-public service | [NeighborLink](https://www.golynx.com/news-events/neighborlink.stml), [April 2026 service change](https://www.golynx.com/news-events/april-2026-service-change.stml) |
+| Pinellas Suncoast Transit Authority | Snapper | Confirmed regular general-public service | [Snapper](https://psta.net/services/snapper/), [PSTA on-demand services](https://psta.net/services/) |
+
+Florida exclusions: HART HyperLINK was discontinued in 2018; PSTA’s Mobility-on-Demand service is limited to PSTA Access users and is excluded as eligibility-based.
+
 ### Quebec
 
 | Atlas agency | Service | Disposition | Evidence |
