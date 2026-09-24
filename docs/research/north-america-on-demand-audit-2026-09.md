@@ -192,6 +192,7 @@ New York exclusions: Centro’s Call-A-Bus is ADA paratransit, not general-publi
 | Atlas agency | Service | Disposition | Evidence |
 | --- | --- | --- | --- |
 | Central Ohio Transit Authority | COTA//Plus | Confirmed regular general-public service in Grove City, Westerville, and the South Side | [COTA//Plus](https://www.cota.com/services/cota-plus/), [COTA service comparison](https://www.cota.com/services/) |
+| Southwest Ohio Regional Transit Authority / Metro | MetroNow! | Confirmed regular general-public service in designated Cincinnati-area zones | [MetroNow!](https://www.go-metro.com/riding-metro/metronow/), [current Metro overview](https://www.go-metro.com/about/) |
 
 ### Utah
 
@@ -239,3 +240,43 @@ Nevada exclusions: RTC Washoe’s FlexRIDE is limited by program policy to rider
 | OmniRide / Potomac and Rappahannock Transportation Commission | OmniRide Connect Microtransit | Confirmed regular general-public service in Manassas/Manassas Park and Quantico/Dumfries/Triangle | [OmniRide microtransit FAQs](https://www.omniride.com/services/connect/microtransit-faqs/) |
 
 Virginia exclusions: Fairfax Connector evidence describes microtransit as planned or exploratory rather than an operating service. RTC Washoe’s eligibility-based FlexRIDE was excluded under Nevada, and ADA/paratransit products across Virginia agencies were excluded.
+
+### Minnesota
+
+| Atlas agency | Service | Disposition | Evidence |
+| --- | --- | --- | --- |
+| Metro Transit (Minneapolis–Saint Paul) | Metro micro | Confirmed permanent general-public service in the North Minneapolis zone; future expansion zones remain separate pilots | [Metro micro FAQ](https://www.metrotransit.org/metro-micro/metro-micro-faq/), [Network Now framework](https://www.metrotransit.org/network-now/network-now-framework/), [current GTFS-Flex feed](https://svc.metrotransit.org/) |
+| Minnesota Valley Transit Authority | MVTA Connect | Confirmed regular general-public service in Apple Valley, Burnsville, Rosemount, Savage, Eagan, Prior Lake, and Shakopee | [MVTA Connect](https://www.mvta.com/connect/), [2025 zone expansion](https://www.mvta.com/news-items/mvta-connect-coming-to-prior-lake-shakopee-starting-jan-13/) |
+
+### Missouri and Kansas City region
+
+| Atlas agency | Service | Disposition | Evidence |
+| --- | --- | --- | --- |
+| Kansas City Area Transportation Authority | RideKC Micro Transit / IRIS | Confirmed current general-public service in designated Kansas City, Johnson County, Wyandotte County, and Leavenworth zones | [RideKC on-demand services](https://ridekc.org/getting-around/services/on-demand-services/), [RideKC services](https://ridekc.org/getting-around/services/), [IRIS trip-planning information](https://ridekc.org/rider-guide/trip-planning-help-iris-navigator/) |
+
+Missouri exclusions: Metro St. Louis materials located describe planning or exploration rather than a current public on-demand operation. RideKC Freedom On-Demand is eligibility-based and was not counted separately from RideKC Micro Transit.
+
+### Georgia
+
+| Atlas agency | Service | Disposition | Evidence |
+| --- | --- | --- | --- |
+| MARTA | MARTA Reach | Confirmed current general-public service across 12 designated zones | [MARTA Reach fleet update](https://itsmarta.com/marta-upgrades-marta-reach-fleet.aspx), [service launch information](https://itsmarta.com/100-days-launch-marta-nextgen.aspx) |
+| Gwinnett County Transit | Ride Gwinnett Microtransit | Confirmed regular general-public service in designated areas of Snellville, Lawrenceville, and Norcross | [Ride Gwinnett Microtransit](https://www.gwinnettcounty.com/government/departments/transportation/gwinnett-county-transit/microtransit) |
+
+Georgia exclusions: Chatham Area Transit’s CAT SMART Transit and CAT Connect are explicitly labeled pilots; CAT Connect is also limited to seniors. MARTA Mobility and other ADA/paratransit services were excluded.
+
+### Tennessee
+
+| Atlas agency | Service | Disposition | Evidence |
+| --- | --- | --- | --- |
+| WeGo Public Transit / Nashville MTA | WeGo Link | Confirmed current general-public service using subsidized on-demand rides to designated transit stops in multiple Davidson County zones | [WeGo Link](https://www.wegotransit.com/ride/transit-services/wego-link/), [2026 service changes](https://www.wegotransit.com/wego-system-changes-go-into-effect-january-4-2026/) |
+
+Tennessee exclusions: WeGo Access and Access on Demand are limited to registered paratransit customers. The Wilson County microtransit material found was planning/pilot material rather than a current regular service.
+
+### Rhode Island and New Jersey
+
+Rhode Island’s RIPTA Flex On Demand is documented as a pilot, so it is excluded under the regular-service criterion. NJ Transit’s MicroLink is a current public service but is explicitly a two-year pilot launched in April 2026, so it is also excluded for now.
+
+### Pennsylvania
+
+Pennsylvania exclusions: SEPTA’s SEPTA Go / SEPTA On-Demand is planned for Spring and Summer 2027, not current service. SEPTA Access and local shared-ride/paratransit programs were excluded. I did not find current official evidence of a qualifying universal on-demand service for the other Pennsylvania agencies in the Atlas inventory during this pass.
