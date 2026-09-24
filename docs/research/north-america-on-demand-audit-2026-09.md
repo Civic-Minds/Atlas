@@ -215,3 +215,27 @@ New York exclusions: Centro’s Call-A-Bus is ADA paratransit, not general-publi
 | Milwaukee County Transit System | FlexRide Milwaukee | Confirmed current public on-demand service in designated neighborhood and employment zones; not ADA-only | [FlexRide Milwaukee](https://www.flexridemke.com/), [transit-hub access](https://www.flexridemke.com/transithubs) |
 
 Ohio exclusions: COTA Mainstream and Mainstream On-Demand are pre-approved paratransit services; only COTA//Plus is included. Michigan’s MTA Your Ride and SMART ADA services were excluded as eligibility-based. TheRide’s former FlexRide-West service is not listed as current.
+
+### Nevada
+
+| Atlas agency | Service | Disposition | Evidence |
+| --- | --- | --- | --- |
+| Regional Transportation Commission of Southern Nevada | RTC OnDemand | Confirmed regular general-public service in West Henderson and the southwest valley | [RTC OnDemand](https://www.rtcsnv.com/rtcondemand/), [current service and booking details](https://www.rtcsnv.com/news/get-connected-with-rtc-ondemand-2/) |
+
+Nevada exclusions: RTC Washoe’s FlexRIDE is limited by program policy to riders age 60+, RTC ACCESS clients, and Washoe County veterans, so it does not meet the general-public criterion.
+
+### North Carolina
+
+| Atlas agency | Service | Disposition | Evidence |
+| --- | --- | --- | --- |
+| Charlotte Area Transit System | CATS Micro | Confirmed regular general-public service in Northern Mecklenburg; a West Boulevard expansion is scheduled for October 5, 2026 | [CATS Micro](https://www.charlottenc.gov/CATS/CATS-Micro), [service-change notice](https://www.charlottenc.gov/CATS/Plans-Projects/Service-Change) |
+| GoRaleigh | MicroLink | Confirmed current general-public service in Rolesville and Fuquay-Varina | [MicroLink](https://goraleigh.org/microlink) |
+| GoDurham | GoDurham Connect | Confirmed current general-public service in North and East Durham zones | [GoDurham Connect](https://godurhamtransit.org/godurham-connect), [microtransit program information](https://godurhamtransit.org/news/godurham-east-durham-connect) |
+
+### Virginia
+
+| Atlas agency | Service | Disposition | Evidence |
+| --- | --- | --- | --- |
+| OmniRide / Potomac and Rappahannock Transportation Commission | OmniRide Connect Microtransit | Confirmed regular general-public service in Manassas/Manassas Park and Quantico/Dumfries/Triangle | [OmniRide microtransit FAQs](https://www.omniride.com/services/connect/microtransit-faqs/) |
+
+Virginia exclusions: Fairfax Connector evidence describes microtransit as planned or exploratory rather than an operating service. RTC Washoe’s eligibility-based FlexRIDE was excluded under Nevada, and ADA/paratransit products across Virginia agencies were excluded.
