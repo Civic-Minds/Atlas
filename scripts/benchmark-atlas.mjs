@@ -169,16 +169,27 @@ async function measurePage(page, scenario, kind, run) {
     const mapTileEntries = entries.filter(entry => (
       entry.name.includes('/api/carto-tiles') || entry.name.includes('basemaps.cartocdn.com')
     ));
+    const pmtilesEntries = entries.filter(entry => (
+      entry.name.includes('atlas.pmtiles') || entry.name.includes('/api/atlas-pmtiles')
+    ));
     return {
       resourceCount: entries.length,
       transferBytes: entries.reduce((total, entry) => total + (entry.transferSize || 0), 0),
       decodedBytes: entries.reduce((total, entry) => total + (entry.decodedBodySize || 0), 0),
       mapTileRequests: mapTileEntries.length,
+      basemapTransferBytes: mapTileEntries.reduce((total, entry) => total + (entry.transferSize || 0), 0),
+      basemapDecodedBytes: mapTileEntries.reduce((total, entry) => total + (entry.decodedBodySize || 0), 0),
+      pmtilesRequests: pmtilesEntries.length,
+      pmtilesTransferBytes: pmtilesEntries.reduce((total, entry) => total + (entry.transferSize || 0), 0),
+      pmtilesDecodedBytes: pmtilesEntries.reduce((total, entry) => total + (entry.decodedBodySize || 0), 0),
     };
   });
-  const mapTileFailures = [...failedRequests.filter(request => request.error !== 'net::ERR_ABORTED'), ...httpErrors]
+  const realFailedRequests = [...failedRequests.filter(request => request.error !== 'net::ERR_ABORTED'), ...httpErrors];
+  const mapTileFailures = realFailedRequests
     .filter(request => request.url.includes('/api/carto-tiles') || request.url.includes('basemaps.cartocdn.com'));
-  const invalid = mapTileFailures.length > 0;
+  const pmtilesFailures = realFailedRequests
+    .filter(request => request.url.includes('atlas.pmtiles') || request.url.includes('/api/atlas-pmtiles'));
+  const invalid = mapTileFailures.length > 0 || pmtilesFailures.length > 0;
   return {
     scenario: scenario.name,
     kind,
@@ -200,6 +211,7 @@ async function measurePage(page, scenario, kind, run) {
     failedRequests,
     httpErrors,
     mapTileFailures: mapTileFailures.length,
+    pmtilesFailures: pmtilesFailures.length,
     ...resourceStats,
     status: timedOut ? 'timeout' : invalid ? 'invalid' : 'complete',
   };
@@ -252,7 +264,7 @@ async function run() {
   }
   for (const result of results) {
     const mapTime = result.mapInitializedMs == null ? 'n/a' : `${result.mapInitializedMs}ms`;
-    console.log(`${result.scenario} ${result.kind} #${result.run}: ${result.status} ${result.durationMs}ms (map ${mapTime})${result.lastProgress ? ` (${result.lastProgress.loaded}/${result.lastProgress.requested})` : ''}${result.failedNetworks ? `, ${result.failedNetworks} failed` : ''}, ${result.mapTileRequests} map tiles, ${result.transferBytes} transferred bytes`);
+    console.log(`${result.scenario} ${result.kind} #${result.run}: ${result.status} ${result.durationMs}ms (map ${mapTime})${result.lastProgress ? ` (${result.lastProgress.loaded}/${result.lastProgress.requested})` : ''}${result.failedNetworks ? `, ${result.failedNetworks} failed` : ''}, ${result.mapTileRequests} basemap tiles/${result.basemapTransferBytes} bytes, ${result.pmtilesRequests} PMTiles ranges/${result.pmtilesTransferBytes} bytes, ${result.transferBytes} total bytes`);
   }
 }
 
