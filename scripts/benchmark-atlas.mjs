@@ -70,6 +70,7 @@ function summarize(results) {
     kind: group[0].kind,
     runs: group.length,
     completed: group.filter(result => result.status === 'complete').length,
+    invalid: group.filter(result => result.status === 'invalid').length,
     timeouts: group.filter(result => result.status === 'timeout').length,
     medianMs: percentile(group.filter(result => result.status === 'complete').map(result => result.durationMs), 50),
     p75Ms: percentile(group.filter(result => result.status === 'complete').map(result => result.durationMs), 75),
@@ -107,6 +108,17 @@ async function measurePage(page, scenario, kind, run) {
   let readySource = null;
   let sawLoadingBadge = false;
   let settledPolls = 0;
+  const failedRequests = [];
+  const httpErrors = [];
+
+  page.on('requestfailed', request => {
+    failedRequests.push({ url: request.url(), error: request.failure()?.errorText ?? 'request failed' });
+  });
+  page.on('response', response => {
+    if (response.status() >= 400) {
+      httpErrors.push({ url: response.url(), status: response.status() });
+    }
+  });
 
   await page.goto(url, { waitUntil: 'domcontentloaded', timeout: timeoutMs });
   const deadline = Date.now() + timeoutMs;
@@ -115,6 +127,7 @@ async function measurePage(page, scenario, kind, run) {
     const state = await page.evaluate(() => ({
       body: document.body.innerText,
       marks: performance.getEntriesByName('atlas:network-data-ready').map(entry => ({ startTime: entry.startTime, detail: entry.detail })),
+      mapReadyMarks: performance.getEntriesByName('atlas:map-ready').map(entry => entry.startTime),
       catalogReady: performance.getEntriesByName('atlas:agency-catalog-ready').length > 0,
     }));
     const progress = parseProgress(state.body);
@@ -126,7 +139,7 @@ async function measurePage(page, scenario, kind, run) {
     } else if (sawLoadingBadge && state.catalogReady) {
       settledPolls++;
     }
-    if (state.marks.length && !progress) {
+    if (state.marks.length && state.mapReadyMarks.length && !progress) {
       const mark = state.marks.at(-1);
       markMs = mark.startTime;
       readyDetail = mark.detail;
@@ -151,6 +164,21 @@ async function measurePage(page, scenario, kind, run) {
   }
 
   if (markMs === null && !completionSignal) timedOut = true;
+  const resourceStats = await page.evaluate(() => {
+    const entries = performance.getEntriesByType('resource');
+    const mapTileEntries = entries.filter(entry => (
+      entry.name.includes('/api/carto-tiles') || entry.name.includes('basemaps.cartocdn.com')
+    ));
+    return {
+      resourceCount: entries.length,
+      transferBytes: entries.reduce((total, entry) => total + (entry.transferSize || 0), 0),
+      decodedBytes: entries.reduce((total, entry) => total + (entry.decodedBodySize || 0), 0),
+      mapTileRequests: mapTileEntries.length,
+    };
+  });
+  const mapTileFailures = [...failedRequests.filter(request => request.error !== 'net::ERR_ABORTED'), ...httpErrors]
+    .filter(request => request.url.includes('/api/carto-tiles') || request.url.includes('basemaps.cartocdn.com'));
+  const invalid = mapTileFailures.length > 0;
   return {
     scenario: scenario.name,
     kind,
@@ -160,12 +188,20 @@ async function measurePage(page, scenario, kind, run) {
     durationMs: Math.round(markMs ?? (performance.now() - wallStart)),
     browserWallMs: Math.round(performance.now() - wallStart),
     mapReadyMarkMs: markMs === null ? null : Math.round(markMs),
+    mapInitializedMs: await page.evaluate(() => {
+      const mark = performance.getEntriesByName('atlas:map-ready').at(-1);
+      return mark ? Math.round(mark.startTime) : null;
+    }),
     readyDetail,
     readySource,
     completionSignal,
     lastProgress,
     failedNetworks: lastFailures,
-    status: timedOut ? 'timeout' : 'complete',
+    failedRequests,
+    httpErrors,
+    mapTileFailures: mapTileFailures.length,
+    ...resourceStats,
+    status: timedOut ? 'timeout' : invalid ? 'invalid' : 'complete',
   };
 }
 
@@ -212,10 +248,11 @@ async function run() {
   await fs.writeFile(outputPath, `${JSON.stringify(report, null, 2)}\n`);
   console.log(`Wrote ${outputPath}`);
   for (const summary of report.summary) {
-    console.log(`${summary.scenario} ${summary.kind}: median=${summary.medianMs ?? 'n/a'}ms p75=${summary.p75Ms ?? 'n/a'}ms p95=${summary.p95Ms ?? 'n/a'}ms (${summary.completed}/${summary.runs} complete)`);
+    console.log(`${summary.scenario} ${summary.kind}: median=${summary.medianMs ?? 'n/a'}ms p75=${summary.p75Ms ?? 'n/a'}ms p95=${summary.p95Ms ?? 'n/a'}ms (${summary.completed}/${summary.runs} complete, ${summary.invalid} invalid)`);
   }
   for (const result of results) {
-    console.log(`${result.scenario} ${result.kind} #${result.run}: ${result.status} ${result.durationMs}ms${result.lastProgress ? ` (${result.lastProgress.loaded}/${result.lastProgress.requested})` : ''}${result.failedNetworks ? `, ${result.failedNetworks} failed` : ''}`);
+    const mapTime = result.mapInitializedMs == null ? 'n/a' : `${result.mapInitializedMs}ms`;
+    console.log(`${result.scenario} ${result.kind} #${result.run}: ${result.status} ${result.durationMs}ms (map ${mapTime})${result.lastProgress ? ` (${result.lastProgress.loaded}/${result.lastProgress.requested})` : ''}${result.failedNetworks ? `, ${result.failedNetworks} failed` : ''}, ${result.mapTileRequests} map tiles, ${result.transferBytes} transferred bytes`);
   }
 }
 

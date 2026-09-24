@@ -1,4 +1,4 @@
-export type AtlasPerformanceMark = 'app-ready' | 'agency-catalog-ready' | 'network-data-ready';
+export type AtlasPerformanceMark = 'app-ready' | 'agency-catalog-ready' | 'map-ready' | 'network-data-ready';
 
 const markName = (name: AtlasPerformanceMark) => `atlas:${name}`;
 

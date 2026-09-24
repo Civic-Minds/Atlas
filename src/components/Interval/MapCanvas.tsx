@@ -30,7 +30,7 @@ import { MapContextPanel } from './MapContextPanel';
 import MapExportDialog from '../MapExportDialog';
 import { frequentServiceBand, frequentServiceFeatureKey, frequentServiceQueryKey, type FrequentServiceFrequency, type FrequentServiceWindow } from '../../../shared/frequentService';
 import { effectiveMode } from '../../../shared/modes';
-import { markAtlasLatest } from '../../lib/performance';
+import { markAtlasLatest, markAtlasOnce } from '../../lib/performance';
 
 const CORRIDOR_BAND_COLOR = '#64748b';
 const FREQUENT_15_COLOR = HEADWAY_TIERS.find(tier => tier.max === 15)?.color ?? '#3da44d';
@@ -775,6 +775,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
 
       map.on('load', () => {
       setZoom(map.getZoom());
+      markAtlasOnce('map-ready');
 
       // Keep PMTiles out of the initial style. A stalled route-tile request must
       // not prevent MapLibre from reaching this point or block local GeoJSON.
