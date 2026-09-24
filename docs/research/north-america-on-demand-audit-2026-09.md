@@ -1,6 +1,6 @@
 # North America on-demand service audit
 
-Status: in progress. Scope is Atlas agencies in North America. A match must be a current, regularly available service that the general public can use. ADA/paratransit-only services, proposals, stale pages, and explicitly active pilots are tracked separately.
+Status: complete. Scope is Atlas agencies in North America. The audit identifies 104 confirmed agency/service records that are current, regularly available, and usable by the general public. ADA/paratransit-only services, proposals, stale pages, and explicitly active pilots are tracked separately or excluded.
 
 ## California
 
