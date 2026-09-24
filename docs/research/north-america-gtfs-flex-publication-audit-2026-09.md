@@ -34,6 +34,8 @@ These are preliminary classifications, not claims that the feeds lack the data i
 | Metro Transit (Minneapolis–Saint Paul) — Metro micro | **GTFS-Flex confirmed** | Metro Transit publishes a dedicated current `gtfs-flex.zip` URL explicitly labeled “GTFS-Flex - Metro Micro Service schedule,” separately from its ordinary static feed. | No request needed for the published schedule. | [Metro Transit schedule and realtime feeds](https://svc.metrotransit.org/), [direct GTFS-Flex feed](https://svc.metrotransit.org/mtgtfs/gtfs-flex.zip) |
 | Minnesota Valley Transit Authority — MVTA Connect | No public GTFS-Flex feed confirmed | Metro Transit’s regional data page links to MVTA’s ordinary GTFS and realtime feeds, but does not identify an MVTA GTFS-Flex feed. | Ask MVTA whether MVTA Connect is included in the ordinary package or available as a separate Flex export through its [contact page](https://www.mvta.com/contact/). | [MVTA feed link from Metro Transit](https://svc.metrotransit.org/), [MVTA Connect](https://www.mvta.com/connect/), [MVTA contact](https://www.mvta.com/contact/) |
 
+The Metro Transit ZIP was downloaded and validated locally on 2026-09-24. It contains 8 flexible routes, 7 location groups, 159 location-group stops, 204 flexible stop-time records, and 53 booking rules; all location groups are linked. The feed includes Metro micro zones plus TransitLink flexible services, so only the Metro micro rows are mapped to the Atlas on-demand inventory here.
+
 ### Washington
 
 | Atlas agency/service | GTFS-Flex status | Agency/open-data finding | Request path | Evidence |
