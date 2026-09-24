@@ -14,6 +14,7 @@ const NightService = React.lazy(() => import('./apps/NightService'));
 const History = React.lazy(() => import('./apps/History'));
 const LiveVehicles = React.lazy(() => import('./apps/LiveVehicles'));
 const Corridors = React.lazy(() => import('./apps/Corridors'));
+const FrequentServiceStory = React.lazy(() => import('./apps/FrequentServiceStory'));
 import type { AppId } from './components/AppDrawer';
 import { CorridorMapOverlayProvider } from './context/CorridorMapOverlay';
 import { HistoryMapOverlayProvider } from './context/HistoryMapOverlay';
@@ -30,7 +31,6 @@ import type { FeedQuality } from '../shared/feedQuality';
 import { trackEvent, trackPageView } from './lib/analytics';
 import { markAtlasOnce } from './lib/performance';
 import { parseFrequentServiceDays, type FrequentServiceFrequency, type FrequentServiceWindow } from '../shared/frequentService';
-import FrequentServiceStory from './apps/FrequentServiceStory';
 
 export interface FareOverride {
   adult?: number;      // base card/electronic fare (fallback when GeoJSON baseFare is absent)
@@ -637,7 +637,9 @@ export default function App() {
         ) : (
           <ErrorBoundary label="The map encountered an error.">
           {inFrequentServiceStory ? (
-            <FrequentServiceStory agencies={visibleAgencies} onExploreMap={() => navigate(`${FEATURE_ROUTES.frequentService.map}?view=map`)} />
+            <React.Suspense fallback={null}>
+              <FrequentServiceStory agencies={visibleAgencies} onExploreMap={() => navigate(`${FEATURE_ROUTES.frequentService.map}?view=map`)} />
+            </React.Suspense>
           ) : <>
             <Interval
               agencies={

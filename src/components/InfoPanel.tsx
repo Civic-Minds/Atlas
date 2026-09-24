@@ -94,11 +94,12 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
   }, [countries]);
 
   useEffect(() => {
+    if (!FEATURES.history || historyAgencies || !open) return;
     fetch(`${R2_PUBLIC_URL}/atlas/history-config.json`)
       .then(r => r.json())
       .then((d: HistoryAgencySummary[]) => setHistoryAgencies(d))
       .catch(() => setHistoryAgencies([]));
-  }, []);
+  }, [historyAgencies, open]);
 
   useEffect(() => {
     if (open) {

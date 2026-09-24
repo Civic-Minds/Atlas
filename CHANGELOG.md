@@ -6,8 +6,9 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
-- Performance benchmarks now separate basemap traffic from PMTiles route-archive traffic, while the local API harness matches the current handlers.
-- Public first loads no longer fetch disabled History metadata or refresh details until the Info panel is opened.
+- Performance benchmarks now separate basemap, PMTiles, and agency-data traffic, while the local API harness matches the current handlers.
+- Public first loads no longer fetch disabled History metadata or refresh details; enabled builds load optional metadata only when needed.
+- The research story now loads separately so its audit data is not part of normal map startup.
 - Regional and broad map views now report readiness when PMTiles route data is available, so performance measurements do not wait for deferred agency details.
 - Benchmarking now recognizes completed loads on older public builds that lack the current performance mark.
 - Standardized filter buttons across agency, hidden-route, and degraded-feed lists.

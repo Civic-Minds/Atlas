@@ -172,6 +172,12 @@ async function measurePage(page, scenario, kind, run) {
     const pmtilesEntries = entries.filter(entry => (
       entry.name.includes('atlas.pmtiles') || entry.name.includes('/api/atlas-pmtiles')
     ));
+    const agencyDataEntries = entries.filter(entry => (
+      entry.name.includes('/atlas/') && /\.json(?:\?|$)/.test(entry.name)
+        && !entry.name.includes('data-version.json')
+        && !entry.name.includes('feed-refresh')
+        && !entry.name.includes('history-config.json')
+    ));
     return {
       resourceCount: entries.length,
       transferBytes: entries.reduce((total, entry) => total + (entry.transferSize || 0), 0),
@@ -182,6 +188,9 @@ async function measurePage(page, scenario, kind, run) {
       pmtilesRequests: pmtilesEntries.length,
       pmtilesTransferBytes: pmtilesEntries.reduce((total, entry) => total + (entry.transferSize || 0), 0),
       pmtilesDecodedBytes: pmtilesEntries.reduce((total, entry) => total + (entry.decodedBodySize || 0), 0),
+      agencyDataRequests: agencyDataEntries.length,
+      agencyDataTransferBytes: agencyDataEntries.reduce((total, entry) => total + (entry.transferSize || 0), 0),
+      agencyDataDecodedBytes: agencyDataEntries.reduce((total, entry) => total + (entry.decodedBodySize || 0), 0),
     };
   });
   const realFailedRequests = [...failedRequests.filter(request => request.error !== 'net::ERR_ABORTED'), ...httpErrors];
@@ -264,7 +273,7 @@ async function run() {
   }
   for (const result of results) {
     const mapTime = result.mapInitializedMs == null ? 'n/a' : `${result.mapInitializedMs}ms`;
-    console.log(`${result.scenario} ${result.kind} #${result.run}: ${result.status} ${result.durationMs}ms (map ${mapTime})${result.lastProgress ? ` (${result.lastProgress.loaded}/${result.lastProgress.requested})` : ''}${result.failedNetworks ? `, ${result.failedNetworks} failed` : ''}, ${result.mapTileRequests} basemap tiles/${result.basemapTransferBytes} bytes, ${result.pmtilesRequests} PMTiles ranges/${result.pmtilesTransferBytes} bytes, ${result.transferBytes} total bytes`);
+    console.log(`${result.scenario} ${result.kind} #${result.run}: ${result.status} ${result.durationMs}ms (map ${mapTime})${result.lastProgress ? ` (${result.lastProgress.loaded}/${result.lastProgress.requested})` : ''}${result.failedNetworks ? `, ${result.failedNetworks} failed` : ''}, ${result.mapTileRequests} basemap/${result.basemapTransferBytes} bytes, ${result.pmtilesRequests} PMTiles/${result.pmtilesTransferBytes} bytes, ${result.agencyDataRequests} agency JSON/${result.agencyDataTransferBytes} bytes, ${result.transferBytes} total bytes`);
   }
 }
 
