@@ -91,6 +91,7 @@ Quebec exclusions: STM MUVE is explicitly a pilot; STLévis evidence found was s
 | --- | --- | --- | --- |
 | Kelowna Regional Transit | OnDemand (Crawford and Lower Mission) | Confirmed regular general-public service | [Kelowna schedules](https://www.bctransit.com/kelowna/schedules-and-maps/), [BC Transit OnDemand](https://www.bctransit.com/ondemand/), [2026 expansion](https://www.bctransit.com/more-access-to-transit-and-ondemand-service-with-expansion-in-kelowna-2025-12-18/) |
 | Squamish Transit | OnDemand | Confirmed current general-public service | [Squamish 2026 holiday schedule](https://www.bctransit.com/squamish/schedules-and-maps/holiday/), [service-area map](https://www.bctransit.com/squamish/wp-content/uploads/sites/44/2026/03/13146_SQU_OnDemand_stops_map-v5.pdf) |
+| Powell River Regional Transit | OnDemand | Confirmed regular general-public service | [OnDemand service](https://www.bctransit.com/powell-river/schedules-and-maps/ondemand/), [September 2026 service update](https://www.bctransit.com/fall-service-in-powell-river-2026-08-25/) |
 
 ### Alberta
 
@@ -106,5 +107,7 @@ Quebec exclusions: STM MUVE is explicitly a pilot; STLévis evidence found was s
 | Winnipeg Transit | On-Request | Confirmed permanent general-public service | [Transit network](https://www.winnipeg.ca/services-programs/transportation-roads-parking/transit/understanding-network), [permanent-service announcement](https://www.winnipeg.ca/news/2024-08-13-winnipeg-transit-request-changing-apps-expanding-service-northwest-winnipeg) |
 | Saskatoon Transit | On-Demand Transit | Confirmed current general-public service | [service launch](https://saskatoontransit.ca/news-releases/point-point-b-transit-launches-new-ondemand-transit-service), [public transit training page](https://saskatoontransit.ca/customer-services/experience-transit) |
 | Fredericton Transit | On-Demand Transit (Routes 18 and 20) | Confirmed regular general-public service | [current transit page](https://www.fredericton.ca/resident-services/fredericton-transit), [launch announcement](https://www.fredericton.ca/city-government/news/city-fredericton-launches-demand-transit-service-routes-18-and-20) |
+| Saint John Transit | FLEX | Confirmed regular general-public service | [FLEX service](https://saintjohn.ca/en/transit/flex-service), [current transit overview](https://saintjohn.ca/en/transit) |
+| Codiac Transpo / Dieppe | On-demand transit | Confirmed current general-public service in Dieppe, connected to the Codiac network | [Dieppe on-demand service](https://www.dieppe.ca/en/vivre-ici/transports/transport-a-la-demande/starting-august-23-on-demand-transit/) |
 
-Halifax Transit’s current official material describes microtransit as a plan/potential future pilot, so it is not included. Other Canadian agencies remain under review where current evidence is ambiguous or only specialized service was found.
+Halifax Transit’s current official material describes microtransit as a plan/potential future pilot, so it is not included. Metrobus/St. John’s ended its on-demand service on January 2, 2026 when it converted the service to fixed Route 29. Other Canadian agencies remain under review where current evidence is ambiguous or only specialized service was found.
