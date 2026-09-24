@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Beta on-demand service details now use a compact agency-card row instead of a large nested panel.
 - Beta/dev on-demand mode now includes source-backed GRT Route 79 zones and HSR myRide stop locations without adding either service to public coverage.
 - Beta and dev now include an On-demand mode filter for the curated service-area prototypes; public production remains unchanged.
 - Regional and broad map views now report readiness when PMTiles route data is available, so performance measurements do not wait for deferred agency details.

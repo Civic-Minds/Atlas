@@ -402,16 +402,18 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
               : [agencyNameSecondary, buildHeaderSummary(visibleRoutes, maxHeadway)].filter(Boolean).join(' · ')}
           </p>
           {!agency.onDemandOnly && agency.onDemandServiceArea?.serviceName && (
-            <div className="mt-2 rounded-lg border border-[var(--border-primary)] bg-[var(--surface-secondary)] px-2.5 py-2">
-              <p className="text-[9px] font-black uppercase tracking-wide text-[var(--accent)]">Beta on-demand service</p>
+            <div className="mt-2 border-t border-[var(--border-primary)] pt-2">
+              <div className="flex items-baseline justify-between gap-2">
+                <p className="text-[9px] font-black uppercase tracking-wide text-[var(--accent)]">On-demand · beta</p>
+                {agency.onDemandServiceArea.sourceUrl && (
+                  <a href={agency.onDemandServiceArea.sourceUrl} target="_blank" rel="noopener noreferrer" className="shrink-0 text-[10px] text-[var(--accent)] hover:underline">
+                    Details →
+                  </a>
+                )}
+              </div>
               <p className="text-[10px] font-bold text-[var(--text-primary)] mt-0.5">{agency.onDemandServiceArea.serviceName}</p>
               {agency.onDemandServiceArea.serviceHours && (
                 <p className="text-[10px] leading-snug text-[var(--text-muted)] mt-0.5">{agency.onDemandServiceArea.serviceHours}</p>
-              )}
-              {agency.onDemandServiceArea.sourceUrl && (
-                <a href={agency.onDemandServiceArea.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-[10px] text-[var(--accent)] hover:underline mt-1 block">
-                  View service details →
-                </a>
               )}
             </div>
           )}
