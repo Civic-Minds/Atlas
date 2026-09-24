@@ -47,4 +47,64 @@ Research date: 2026-09-24. Confirmed against current agency or public-agency pag
 
 ## Canada
 
-Canada screening was completed first. The confirmed agency list and source links will be added here before the North America audit is marked complete.
+Research date: 2026-09-24. The list below includes regular public transit services that can be booked by any rider; specialized accessible services and explicitly temporary pilots are kept out.
+
+### Ontario
+
+| Atlas agency | Service | Disposition | Evidence |
+| --- | --- | --- | --- |
+| Barrie Transit | Transit ON Demand | Confirmed regular general-public service | [Barrie network launch](https://www.barrie.ca/government/news-notices/media-releases/first-phase-barrie-transits-new-network-launches-june-2-additional-transit-demand-zones-beginning), [current service status](https://www.barrie.ca/alerts/tentative-transit-deal-reached) |
+| Belleville Transit | Evening on-demand bus service | Confirmed current general-public service; separate from Mobility Bus | [Belleville transit guide](https://bayofquinte.ca/how-to-use-belleville-transit/), [transit review](https://www.belleville.ca/media/lcujfxrr/2023-08-02_btor_final-report-v02-aoda.pdf) |
+| Ride CK (Chatham-Kent) | OnRequest | Confirmed regular general-public service | [OnRequest](https://www.chatham-kent.ca/transit/routes/urban/Pages/OnRequest-Evenings.aspx) |
+| Cornwall Transit | Riverdale evening on-demand service | Confirmed regular general-public service | [Routes and schedules](https://www.cornwall.ca/en/public-safety-transportation/transit/routes-and-schedules/) |
+| Durham Region Transit | On Demand | Confirmed regular general-public service | [On Demand services](https://www.durhamregiontransit.com/routes-and-schedules/on-demand-and-specialized-services/), [FAQ](https://www.durhamregiontransit.com/travelling-with-us/on-demand-frequently-asked-questions/) |
+| Grand River Transit | Route 79 Breslau / GRT Flex | Confirmed current general-public service | [Route 79](https://www.grt.ca/schedules-and-maps/route-79-breslau/) |
+| Hamilton Street Railway | myRide On-Demand | Confirmed regular general-public service | [myRide On-Demand](https://www.hamilton.ca/home-neighbourhood/hsr/schedule-route-tools/hsr-myride-demand) |
+| Milton Transit | Milton Transit OnDemand | Confirmed regular general-public service | [Milton Transit OnDemand](https://www.milton.ca/en/living-in-milton/milton-transit-ondemand.aspx) |
+| Niagara Transit | NRT OnDemand | Confirmed regular general-public service | [Service changes](https://www.nrtransit.ca/news/streamlined-transit-services/), [policies](https://nrtransit.ca/about-niagara-transit/policies-and-by-laws/) |
+| North Bay Transit | Dynamic Dispatching | Confirmed regular general-public service | [Dynamic Dispatching](https://northbay.ca/services-payments/north-bay-transit/dynamic-dispatching/) |
+| Oakville Transit | Ride On-Demand | Confirmed regular general-public service | [Oakville On-Demand](https://www.oakvilletransit.ca/schedules-maps/oakville-transit-on-demand/), [Ride On-Demand](https://www.oakvilletransit.ca/schedules-maps/oakville-transit-on-demand/ride-on-demand/) |
+| Sarnia Transit | Rides on Demand | Confirmed current general-public service | [Service changes](https://www.sarnia.ca/summer-service-changes/) |
+| Greater Sudbury Transit | GOVA Zone | Confirmed current general-public service; separate from GOVA Plus specialized service | [GOVA Zone update](https://www.greatersudbury.ca/city-hall/news-and-public-notices/2026/update-to-gova-zone-service-takes-effect-july-1/) |
+| York Region Transit | On-Request | Confirmed regular general-public service | [On-Request service](https://www.yrt.ca/en/schedules-and-maps/on-request-service.aspx), [travel tips](https://www.yrt.ca/en/schedules-and-maps/on-request-travel-tips.aspx) |
+
+Ontario exclusions: Brampton Argo is still described as a 12-month pilot; Kingston, Orangeville, London, and Thunder Bay evidence is planning, procurement, or pilot material rather than a confirmed regular public service. Simcoe LINX+ and Belleville Mobility Bus are specialized/eligibility-based services.
+
+### Quebec
+
+| Atlas agency | Service | Disposition | Evidence |
+| --- | --- | --- | --- |
+| RTC Québec | Flexibus | Confirmed regular general-public service | [Flexibus](https://www.rtcquebec.ca/en/flexibus) |
+| RTL Longueuil | RTL à la demande | Confirmed regular general-public service | [RTL à la demande](https://www.rtl-longueuil.qc.ca/rtl-demande), [2026 expansion](https://www.rtl-longueuil.qc.ca/liens-utiles/salle-de-presse/service-plus-flexible-rtl-etend-transport-demande-saint-bruno-de-montarville) |
+| STL Laval | Taxi collectif à la demande | Confirmed current general-public service | [Taxi collectif](https://stlaval.ca/horaire/taxi), [service information](https://stlaval.ca/horaire/taxi/info) |
+| Saint-Jean-sur-Richelieu | Taxibus | Confirmed regular general-public service | [Taxibus](https://sjsr.ca/transport-collectif/taxibus/) |
+| exo (Presqu’île sector) | exo à la demande | Confirmed current general-public service | [exo on-demand terms](https://exo.quebec/fr/planifier-trajet/exo-a-la-demande/conditions-utilisation) |
+| exo (Sud-Ouest sector) | exo à la demande | Confirmed current general-public service | [exo on-demand terms](https://exo.quebec/fr/planifier-trajet/exo-a-la-demande/conditions-utilisation) |
+| exo (Laurentides sector) | exo à la demande | Confirmed current general-public service | [exo on-demand terms](https://exo.quebec/fr/planifier-trajet/exo-a-la-demande/conditions-utilisation) |
+| exo (Terrebonne sector) | exo à la demande | Confirmed current general-public service | [Terrebonne](https://exo.quebec/fr/planifier-trajet/exo-a-la-demande/terrebonne) |
+
+Quebec exclusions: STM MUVE is explicitly a pilot; STLévis evidence found was specialized transport, while L’Inter des Laurentides, Mont-Tremblant, Saint-Hyacinthe, and REM did not have sufficiently clear current universal on-demand transit evidence.
+
+### British Columbia
+
+| Atlas agency | Service | Disposition | Evidence |
+| --- | --- | --- | --- |
+| Kelowna Regional Transit | OnDemand (Crawford and Lower Mission) | Confirmed regular general-public service | [Kelowna schedules](https://www.bctransit.com/kelowna/schedules-and-maps/), [BC Transit OnDemand](https://www.bctransit.com/ondemand/), [2026 expansion](https://www.bctransit.com/more-access-to-transit-and-ondemand-service-with-expansion-in-kelowna-2025-12-18/) |
+| Squamish Transit | OnDemand | Confirmed current general-public service | [Squamish 2026 holiday schedule](https://www.bctransit.com/squamish/schedules-and-maps/holiday/), [service-area map](https://www.bctransit.com/squamish/wp-content/uploads/sites/44/2026/03/13146_SQU_OnDemand_stops_map-v5.pdf) |
+
+### Alberta
+
+| Atlas agency | Service | Disposition | Evidence |
+| --- | --- | --- | --- |
+| Calgary Transit | On Demand | Confirmed regular general-public service | [Calgary On Demand](https://www.calgarytransit.com/rider-information/on-demand.html) |
+| Edmonton Transit Service | On Demand Transit | Confirmed regular general-public service | [On Demand Transit](https://www.edmonton.ca/ets/on-demand-transit), [how it works](https://www.edmonton.ca/ets/on-demand-transit-service-overview) |
+
+### Manitoba, Saskatchewan, and Atlantic Canada
+
+| Atlas agency | Service | Disposition | Evidence |
+| --- | --- | --- | --- |
+| Winnipeg Transit | On-Request | Confirmed permanent general-public service | [Transit network](https://www.winnipeg.ca/services-programs/transportation-roads-parking/transit/understanding-network), [permanent-service announcement](https://www.winnipeg.ca/news/2024-08-13-winnipeg-transit-request-changing-apps-expanding-service-northwest-winnipeg) |
+| Saskatoon Transit | On-Demand Transit | Confirmed current general-public service | [service launch](https://saskatoontransit.ca/news-releases/point-point-b-transit-launches-new-ondemand-transit-service), [public transit training page](https://saskatoontransit.ca/customer-services/experience-transit) |
+| Fredericton Transit | On-Demand Transit (Routes 18 and 20) | Confirmed regular general-public service | [current transit page](https://www.fredericton.ca/resident-services/fredericton-transit), [launch announcement](https://www.fredericton.ca/city-government/news/city-fredericton-launches-demand-transit-service-routes-18-and-20) |
+
+Halifax Transit’s current official material describes microtransit as a plan/potential future pilot, so it is not included. Other Canadian agencies remain under review where current evidence is ambiguous or only specialized service was found.
