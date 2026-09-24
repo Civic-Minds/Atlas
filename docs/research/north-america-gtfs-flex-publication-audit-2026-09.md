@@ -33,3 +33,15 @@ These are preliminary classifications, not claims that the feeds lack the data i
 | --- | --- | --- | --- | --- |
 | Metro Transit (Minneapolis–Saint Paul) — Metro micro | **GTFS-Flex confirmed** | Metro Transit publishes a dedicated current `gtfs-flex.zip` URL explicitly labeled “GTFS-Flex - Metro Micro Service schedule,” separately from its ordinary static feed. | No request needed for the published schedule. | [Metro Transit schedule and realtime feeds](https://svc.metrotransit.org/), [direct GTFS-Flex feed](https://svc.metrotransit.org/mtgtfs/gtfs-flex.zip) |
 | Minnesota Valley Transit Authority — MVTA Connect | No public GTFS-Flex feed confirmed | Metro Transit’s regional data page links to MVTA’s ordinary GTFS and realtime feeds, but does not identify an MVTA GTFS-Flex feed. | Ask MVTA whether MVTA Connect is included in the ordinary package or available as a separate Flex export through its [contact page](https://www.mvta.com/contact/). | [MVTA feed link from Metro Transit](https://svc.metrotransit.org/), [MVTA Connect](https://www.mvta.com/connect/), [MVTA contact](https://www.mvta.com/contact/) |
+
+### Washington
+
+| Atlas agency/service | GTFS-Flex status | Agency/open-data finding | Request path | Evidence |
+| --- | --- | --- | --- | --- |
+| King County Metro — Metro Flex | No public GTFS-Flex download confirmed; public open data exists | King County publishes the ordinary Metro GTFS feed and a separate Metro Flex open-data dataset containing service-area geometry. The public GTFS directory does not expose a Flex ZIP alongside the ordinary feed. | Ask Metro’s developer/open-data contact whether the Flex geometry is also available as a GTFS-Flex package or whether the service is intentionally published only as GIS/open-data geometry. | [Metro GTFS directory](https://metro.kingcounty.gov/gtfs/), [King County Metro Flex open data](https://data.kingcounty.gov/w/3jjm-4frb/shwn-npxw?cur=fxqU9OHpgRi&from=u_AVX81Z7j0), [Metro developer resources](https://cdn.kingcounty.gov/uk-ua/dept/metro/rider-tools/mobile-and-web-apps) |
+
+### Utah
+
+| Atlas agency/service | GTFS-Flex status | Agency/open-data finding | Request path | Evidence |
+| --- | --- | --- | --- | --- |
+| Utah Transit Authority — UTA On Demand | No public GTFS-Flex download confirmed | UTA publishes an open-data portal and ordinary GTFS references. A UTA procurement document confirms that its trip-planning system must support UTA On Demand through an API or GTFS-Flex, but that is not itself a public Flex publication. | Request the UTA On Demand Flex export through [UTA customer service](https://www.rideuta.com/Rider-Info/Contact-Us) or `rideuta@rideuta.com`; UTA also provides a public-records route for data requests. | [UTA trip-planning requirement](https://www.utah.gov/pmn/files/1184939.pdf), [UTA contact](https://www.rideuta.com/Rider-Info/Contact-Us), [UTA terms/open-data reference](https://satellites.rideuta.com/About-UTA/Terms-of-Use) |
