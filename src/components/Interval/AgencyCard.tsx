@@ -401,6 +401,20 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
               ? [agencyNameSecondary, 'On-demand service'].filter(Boolean).join(' · ')
               : [agencyNameSecondary, buildHeaderSummary(visibleRoutes, maxHeadway)].filter(Boolean).join(' · ')}
           </p>
+          {!agency.onDemandOnly && agency.onDemandServiceArea?.serviceName && (
+            <div className="mt-2 rounded-lg border border-[var(--border-primary)] bg-[var(--surface-secondary)] px-2.5 py-2">
+              <p className="text-[9px] font-black uppercase tracking-wide text-[var(--accent)]">Beta on-demand service</p>
+              <p className="text-[10px] font-bold text-[var(--text-primary)] mt-0.5">{agency.onDemandServiceArea.serviceName}</p>
+              {agency.onDemandServiceArea.serviceHours && (
+                <p className="text-[10px] leading-snug text-[var(--text-muted)] mt-0.5">{agency.onDemandServiceArea.serviceHours}</p>
+              )}
+              {agency.onDemandServiceArea.sourceUrl && (
+                <a href={agency.onDemandServiceArea.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-[10px] text-[var(--accent)] hover:underline mt-1 block">
+                  View service details →
+                </a>
+              )}
+            </div>
+          )}
           {routeFilters.length > 0 && (
             <div className="flex flex-wrap gap-1.5 mt-2">
               {routeFilters.map(f => {
@@ -500,7 +514,9 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
             )}
             {agency.onDemandServiceArea?.sourceUrl && (
               <div className="border-t border-[var(--border-primary)] pt-3 px-1">
-                <p className="text-[9px] font-black uppercase tracking-wide text-[var(--text-dim)]">Service-area boundary</p>
+                <p className="text-[9px] font-black uppercase tracking-wide text-[var(--text-dim)]">
+                  {agency.onDemandServiceArea.features.length > 0 ? 'Service-area boundary' : 'Service details'}
+                </p>
                 <a
                   href={agency.onDemandServiceArea.sourceUrl}
                   target="_blank"

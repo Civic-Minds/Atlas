@@ -347,6 +347,18 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         },
       }))),
   }), [agencies, selectedModes]);
+  const onDemandStopData = useMemo<GeoJSON.FeatureCollection<GeoJSON.Point>>(() => ({
+    type: 'FeatureCollection',
+    features: (selectedModes.size === 0 || selectedModes.has(ON_DEMAND_MODE) ? agencies : [])
+      .flatMap(agency => (agency.onDemandServiceArea?.stopFeatures ?? []).map(feature => ({
+        ...feature,
+        properties: {
+          ...(feature.properties ?? {}),
+          agencySlug: agency.slug,
+          agencyName: agency.name,
+        },
+      }))),
+  }), [agencies, selectedModes]);
 
   const updateMapContext = useCallback(() => {
     const map = mapRef.current;
@@ -629,7 +641,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       }
 
       const serviceAreaHits = map.queryRenderedFeatures(e.point, {
-        layers: ['on-demand-service-area-fill', 'on-demand-service-area-line'],
+        layers: ['on-demand-service-area-fill', 'on-demand-service-area-line', 'on-demand-stop-points'],
       });
       const serviceAreaSlug = serviceAreaHits[0]?.properties?.agencySlug as string | undefined;
       if (serviceAreaSlug) {
@@ -742,13 +754,15 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     if (!map || !mapLoaded) return;
     const source = map.getSource('on-demand-service-areas') as maplibregl.GeoJSONSource | undefined;
     if (source) source.setData(onDemandServiceAreaData);
+    const stopSource = map.getSource('on-demand-stop-points') as maplibregl.GeoJSONSource | undefined;
+    if (stopSource) stopSource.setData(onDemandStopData);
     // Service areas are map context, not selected-route detail: show them on
     // the regular map whenever the corresponding agency data is available.
-    const visible = onDemandServiceAreaData.features.length > 0 ? 'visible' : 'none';
-    for (const id of ['on-demand-service-area-fill', 'on-demand-service-area-line']) {
+    const visible = onDemandServiceAreaData.features.length > 0 || onDemandStopData.features.length > 0 ? 'visible' : 'none';
+    for (const id of ['on-demand-service-area-fill', 'on-demand-service-area-line', 'on-demand-stop-points']) {
       if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', visible);
     }
-  }, [mapLoaded, onDemandServiceAreaData, selectedAgencySlug]);
+  }, [mapLoaded, onDemandServiceAreaData, onDemandStopData, selectedAgencySlug]);
 
   // A combined-row hover is a clipped local overlay, not a full-route branch match.
   useEffect(() => {
@@ -848,6 +862,22 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
           'line-width': 2,
           'line-opacity': 0.95,
           'line-dasharray': [2, 1.5],
+        },
+        layout: { visibility: 'none' },
+      });
+      map.addSource('on-demand-stop-points', {
+        type: 'geojson',
+        data: { type: 'FeatureCollection', features: [] },
+      });
+      map.addLayer({
+        id: 'on-demand-stop-points',
+        type: 'circle',
+        source: 'on-demand-stop-points',
+        paint: {
+          'circle-color': ON_DEMAND_AREA_COLOR,
+          'circle-radius': 4,
+          'circle-stroke-color': '#ffffff',
+          'circle-stroke-width': 1.5,
         },
         layout: { visibility: 'none' },
       });
@@ -1243,7 +1273,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
           )
         : [];
       const serviceAreaHits = map.getLayer('on-demand-service-area-fill')
-        ? map.queryRenderedFeatures(e.point, { layers: ['on-demand-service-area-fill'] })
+        ? map.queryRenderedFeatures(e.point, { layers: ['on-demand-service-area-fill', 'on-demand-stop-points'] })
         : [];
       map.getCanvas().style.cursor = stopHits.length > 0 || routeHits.length > 0 || serviceAreaHits.length > 0 ? 'pointer' : '';
     };

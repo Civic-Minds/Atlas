@@ -31,7 +31,7 @@ import { trackEvent, trackPageView } from './lib/analytics';
 import { markAtlasOnce } from './lib/performance';
 import { parseFrequentServiceDays, type FrequentServiceFrequency, type FrequentServiceWindow } from '../shared/frequentService';
 import FrequentServiceStory from './apps/FrequentServiceStory';
-import { BWG_ON_DEMAND_AGENCY, CALEDON_ON_DEMAND_AGENCY, BRAMPTON_ON_DEMAND_AGENCY } from './data/onDemandServiceAreas';
+import { BWG_ON_DEMAND_AGENCY, CALEDON_ON_DEMAND_AGENCY, BRAMPTON_ON_DEMAND_AGENCY, GRT_ROUTE_79_SERVICE_AREA, HAMILTON_MY_RIDE_SERVICE_AREA } from './data/onDemandServiceAreas';
 
 export interface FareOverride {
   adult?: number;      // base card/electronic fare (fallback when GeoJSON baseFare is absent)
@@ -97,11 +97,13 @@ export interface Agency {
   onDemandOnly?: boolean;
   onDemandServiceArea?: {
     features: GeoJSON.Feature<GeoJSON.Polygon>[];
+    stopFeatures?: GeoJSON.Feature<GeoJSON.Point>[];
     sourceUrl: string;
     sourceLabel: string;
     sourceRetrievedAt?: string;
     serviceHours?: string;
     bookingUrl?: string;
+    serviceName?: string;
   };
 }
 
@@ -416,7 +418,16 @@ export default function App() {
         return r.json();
       })
       .then((data: { agencies: Agency[] }) => {
-        const enriched = [...data.agencies, BWG_ON_DEMAND_AGENCY, CALEDON_ON_DEMAND_AGENCY, BRAMPTON_ON_DEMAND_AGENCY]
+        const onDemandBySlug: Record<string, Partial<Agency>> = ATLAS_MODE === 'public' ? {} : {
+          grt: { onDemandServiceArea: GRT_ROUTE_79_SERVICE_AREA },
+          hamilton: { onDemandServiceArea: HAMILTON_MY_RIDE_SERVICE_AREA },
+        };
+        const enriched = [
+          ...data.agencies.map(agency => ({ ...agency, ...(onDemandBySlug[agency.slug] ?? {}) })),
+          BWG_ON_DEMAND_AGENCY,
+          CALEDON_ON_DEMAND_AGENCY,
+          BRAMPTON_ON_DEMAND_AGENCY,
+        ]
           .filter((a: Agency) => isAgencyVisibleInBrowser(a, { mode: ATLAS_MODE }))
           .map((a: Agency) => {
             if (!a.url) {

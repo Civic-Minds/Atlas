@@ -35,6 +35,7 @@
     "build-hidden-routes": "npx tsx pipeline/build-hidden-routes.ts",
     "migrate-archive": "npx tsx pipeline/migrate-gtfs-archive.ts",
     "validate-headsigns": "npx tsx scripts/validate-headsign-split.ts",
+    "validate:gtfs-flex": "node scripts/validate-gtfs-flex.mjs",
     "validate-index": "npx tsx pipeline/validate-index.ts",
     "build:agency-index": "npx tsx scripts/build-agency-index.ts",
     "benchmark": "node scripts/benchmark-atlas.mjs",
