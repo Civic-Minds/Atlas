@@ -273,6 +273,36 @@ Georgia exclusions: Chatham Area Transit’s CAT SMART Transit and CAT Connect a
 
 Tennessee exclusions: WeGo Access and Access on Demand are limited to registered paratransit customers. The Wilson County microtransit material found was planning/pilot material rather than a current regular service.
 
+### Delaware
+
+| Atlas agency | Service | Disposition | Evidence |
+| --- | --- | --- | --- |
+| Delaware Transit Corporation / DART First State | DART Connect | Confirmed current general-public microtransit service in Newark, Georgetown, and Millsboro | [DART Connect](https://www.dartfirststate.com/Programs/dartconnect/), [current DART Connect rider information](https://dartfirststate.com/RiderInfo/Routes/pdfs/winter/rtDC-1.pdf?date=1772643098000) |
+
+### Idaho
+
+| Atlas agency | Service | Disposition | Evidence |
+| --- | --- | --- | --- |
+| Valley Regional Transit | Route 150 Nampa/Caldwell On-Demand | Confirmed regular general-public service at standard bus fare | [VRT On-Demand](https://www.valleyregionaltransit.org/routes/nampa-caldwell-ondemand/), [current route list](https://www.valleyregionaltransit.org/routes/) |
+
+### Iowa
+
+| Atlas agency | Service | Disposition | Evidence |
+| --- | --- | --- | --- |
+| CyRide (Ames) | CyRide On Demand | Confirmed current general-public service on the EASE and Moonlight Express routes | [CyRide On Demand](https://www.cyride.com/schedules/plan-my-trip/cyride-on-demand), [CyRide public-service overview](https://www.cyride.com/) |
+
+### Kansas
+
+| Atlas agency | Service | Disposition | Evidence |
+| --- | --- | --- | --- |
+| Lawrence Transit | Lawrence Transit On Demand | Confirmed regular general-public service within Lawrence city limits for Sunday daytime and overnight periods | [Lawrence Transit On Demand](https://lawrencetransit.org/on-demand/), [current fare/status page](https://lawrencetransit.org/projects/on-demand-fare-proposal/) |
+
+### Louisiana
+
+| Atlas agency | Service | Disposition | Evidence |
+| --- | --- | --- | --- |
+| SporTran | SporTran OnDemand | Confirmed current public on-demand service in Shreveport-Bossier; the agency separately identifies ADA paratransit eligibility for its specialized service | [SporTran OnDemand](https://sportran.org/168/OnDemand-Service), [current zero-fare notice](https://www.sportran.org/8/Fares-Passes) |
+
 ### Rhode Island and New Jersey
 
 Rhode Island’s RIPTA Flex On Demand is documented as a pilot, so it is excluded under the regular-service criterion. NJ Transit’s MicroLink is a current public service but is explicitly a two-year pilot launched in April 2026, so it is also excluded for now.
@@ -280,3 +310,49 @@ Rhode Island’s RIPTA Flex On Demand is documented as a pilot, so it is exclude
 ### Pennsylvania
 
 Pennsylvania exclusions: SEPTA’s SEPTA Go / SEPTA On-Demand is planned for Spring and Summer 2027, not current service. SEPTA Access and local shared-ride/paratransit programs were excluded. I did not find current official evidence of a qualifying universal on-demand service for the other Pennsylvania agencies in the Atlas inventory during this pass.
+
+### Alabama
+
+| Atlas agency | Service | Disposition | Evidence |
+| --- | --- | --- | --- |
+| MAX Transit (Birmingham) | MAX On-Demand | Confirmed current general-public microtransit service in Birmingham-area zones, including East Birmingham and Irondale | [MAX On-Demand](https://maxtransit.org/ondemand/), [Irondale launch](https://maxtransit.org/max-on-demand-expands-services-to-irondale/) |
+
+### Arkansas
+
+| Atlas agency | Service | Disposition | Evidence |
+| --- | --- | --- | --- |
+| Rock Region Metro (Little Rock) | METRO Connect | Confirmed current general-public point-to-point service in designated Little Rock, North Little Rock, and Conway zones | [METRO Connect zones and hours](https://rrmetro.org/services/metro-connect), [East North Little Rock zone](https://rrmetro.org/metro_connect_zones/east-north-little-rock/) |
+
+### Illinois
+
+| Atlas agency | Service | Disposition | Evidence |
+| --- | --- | --- | --- |
+| Madison County Transit | MCT Micro | Confirmed current general-public microtransit service in Collinsville and other designated zones; the Collinsville service became permanent in 2025 | [MCT Micro](https://mct.org/micro/), [permanent-service notice](https://mct.org/january2025/) |
+
+### Maine
+
+| Atlas agency | Service | Disposition | Evidence |
+| --- | --- | --- | --- |
+| Greater Portland Metro | Metro Connect | Confirmed current general-public on-demand service in Falmouth; a Scarborough zone is scheduled to launch in September 2026 and is not counted as current until operating | [Metro Connect](https://www.gpmetro.org/metroconnect-on-demand/), [Scarborough service notice](https://www.gpmetro.org/micro-transit-service-in-scarborough/) |
+
+### New Mexico
+
+| Atlas agency | Service | Disposition | Evidence |
+| --- | --- | --- | --- |
+| North Central Regional Transit District / Blue Bus | MyBlue | Confirmed current general-public on-demand rideshare service in Española, Edgewood, Pojoaque-Nambé, La Cienega, and Taos zones | [MyBlue](https://www.ncrtd.org/myblue/), [MyBlue service description](https://www.ncrtd.org/blog-posts/education/what-is-myblue/) |
+
+### Oklahoma
+
+| Atlas agency | Service | Disposition | Evidence |
+| --- | --- | --- | --- |
+| Tulsa Transit / MetroLink | Broken Arrow Micro-Transit | Confirmed current general-public service in Broken Arrow, operated through the Tulsa-area public transit partnership | [Broken Arrow Micro-Transit](https://www.brokenarrowok.gov/government/community-development/micro-transit) |
+
+### Oregon
+
+| Atlas agency | Service | Disposition | Evidence |
+| --- | --- | --- | --- |
+| TriMet / Washington County partners | SPOT Southwest | Confirmed current general-public on-demand service in Southwest Beaverton and Tigard/River Terrace areas | [TriMet rider update](https://content.govdelivery.com/accounts/ORTRIMET/bulletins/402e25e), [Washington County service information](https://microtransit.washcoopenhouses.org/table/microtransit-pilot-project/proposal) |
+
+Oregon note: the TriMet source confirms SPOT Southwest is operating, while the Washington County project page still uses earlier pilot-study language. The operating announcement is the basis for inclusion; the planning page is retained only as background.
+
+Additional exclusions from this sweep: DART On Demand in Iowa remains explicitly described by DART as a pilot; IndyGo Connect in Indiana is a former pilot rather than a current regular service; and ABQ RIDE Connect in New Mexico was described in planning material as a pilot. Those were not counted.
