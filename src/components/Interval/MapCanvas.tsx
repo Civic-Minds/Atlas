@@ -593,11 +593,24 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       // Service-area clicks take priority over route hitboxes. A route can cross a
       // zone, but clicking inside the visible zone should open the on-demand agency
       // rather than whichever route happens to be nearby.
-      const serviceAreaHitLayers = ['on-demand-service-area-fill', 'on-demand-service-area-line', 'on-demand-stop-points']
+      const serviceAreaHitLayers = ['on-demand-service-area-fill', 'on-demand-service-area-line', 'on-demand-stop-clusters', 'on-demand-stop-points']
         .filter(layerId => map.getLayer(layerId));
       const serviceAreaHits = serviceAreaHitLayers.length > 0
         ? map.queryRenderedFeatures(e.point, { layers: serviceAreaHitLayers })
         : [];
+      const clusterHit = serviceAreaHits.find(feature => feature.layer?.id === 'on-demand-stop-clusters');
+      if (clusterHit) {
+        const clusterId = clusterHit.properties?.cluster_id;
+        const source = map.getSource('on-demand-stop-points') as (maplibregl.GeoJSONSource & {
+          getClusterExpansionZoom: (clusterId: number, callback: (error: Error | null, zoom?: number) => void) => void;
+        }) | undefined;
+        if (source && typeof clusterId === 'number') {
+          source.getClusterExpansionZoom(clusterId, (error, zoom) => {
+            if (!error && zoom != null) map.easeTo({ center: e.lngLat, zoom, duration: 500 });
+          });
+        }
+        return;
+      }
       const serviceAreaSlug = serviceAreaHits[0]?.properties?.agencySlug as string | undefined;
       if (serviceAreaSlug) {
         setSelectedRouteRef.current(null);
@@ -765,7 +778,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     // Service areas are map context, not selected-route detail: show them on
     // the regular map whenever the corresponding agency data is available.
     const visible = onDemandServiceAreaData.features.length > 0 || onDemandStopData.features.length > 0 ? 'visible' : 'none';
-    for (const id of ['on-demand-service-area-fill', 'on-demand-service-area-line', 'on-demand-stop-points']) {
+    for (const id of ['on-demand-service-area-fill', 'on-demand-service-area-line', 'on-demand-stop-clusters', 'on-demand-stop-clusters-count', 'on-demand-stop-points']) {
       if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', visible);
     }
   }, [mapLoaded, onDemandServiceAreaData, onDemandStopData, selectedAgencySlug]);
@@ -874,11 +887,47 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       map.addSource('on-demand-stop-points', {
         type: 'geojson',
         data: { type: 'FeatureCollection', features: [] },
+        cluster: true,
+        clusterMaxZoom: 12,
+        clusterRadius: 45,
+      });
+      map.addLayer({
+        id: 'on-demand-stop-clusters',
+        type: 'circle',
+        source: 'on-demand-stop-points',
+        filter: ['has', 'point_count'],
+        paint: {
+          'circle-color': ON_DEMAND_AREA_COLOR,
+          'circle-radius': ['step', ['get', 'point_count'], 14, 25, 17, 75, 20],
+          'circle-stroke-color': '#ffffff',
+          'circle-stroke-width': 2,
+        },
+        layout: { visibility: 'none' },
+      });
+      map.addLayer({
+        id: 'on-demand-stop-clusters-count',
+        type: 'symbol',
+        source: 'on-demand-stop-points',
+        filter: ['has', 'point_count'],
+        layout: {
+          'text-field': ['concat', 'On-demand · ', ['get', 'point_count_abbreviated'], ' pickup locations'],
+          'text-size': 10,
+          'text-offset': [0, 2.1],
+          'text-anchor': 'top',
+          visibility: 'none',
+        },
+        paint: {
+          'text-color': ON_DEMAND_AREA_COLOR,
+          'text-halo-color': '#ffffff',
+          'text-halo-width': 1.5,
+        },
       });
       map.addLayer({
         id: 'on-demand-stop-points',
         type: 'circle',
         source: 'on-demand-stop-points',
+        minzoom: 12,
+        filter: ['!', ['has', 'point_count']],
         paint: {
           'circle-color': ON_DEMAND_AREA_COLOR,
           'circle-radius': 4,
@@ -1279,7 +1328,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
           )
         : [];
       const serviceAreaHits = map.getLayer('on-demand-service-area-fill')
-        ? map.queryRenderedFeatures(e.point, { layers: ['on-demand-service-area-fill', 'on-demand-stop-points'] })
+        ? map.queryRenderedFeatures(e.point, { layers: ['on-demand-service-area-fill', 'on-demand-stop-clusters', 'on-demand-stop-points'] })
         : [];
       map.getCanvas().style.cursor = stopHits.length > 0 || routeHits.length > 0 || serviceAreaHits.length > 0 ? 'pointer' : '';
     };
