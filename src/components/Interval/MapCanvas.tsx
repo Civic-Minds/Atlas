@@ -373,10 +373,14 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       .map(coordinate => map.project(coordinate))
       .filter(point => point.x >= 0 && point.x <= width && point.y >= 0 && point.y <= height);
     if (visiblePoints.length === 0) return null;
-    return visiblePoints.reduce(
+    const center = visiblePoints.reduce(
       (sum, point) => ({ x: sum.x + point.x / visiblePoints.length, y: sum.y + point.y / visiblePoints.length }),
       { x: 0, y: 0 },
     );
+    return {
+      x: Math.min(Math.max(100, center.x), width - 100),
+      y: Math.min(Math.max(40, center.y), height - 40),
+    };
   }, [mapLoaded, onDemandStopData, zoom]);
 
   const updateMapContext = useCallback(() => {
@@ -1967,7 +1971,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       )}
       {onDemandLabelPosition && (
         <div
-          className={`absolute ${Z_PANEL} inline-flex items-center gap-1.5 rounded-full bg-[var(--bg-panel)] border border-[var(--border-primary)] px-3 py-1.5 text-[10px] font-bold text-[var(--text-muted)] shadow-lg backdrop-blur-md pointer-events-none -translate-x-1/2 -translate-y-1/2`}
+          className={`absolute ${Z_PANEL} inline-flex items-center gap-1.5 whitespace-nowrap rounded-full bg-[var(--bg-panel)] border border-[var(--border-primary)] px-3 py-1.5 text-[10px] font-bold text-[var(--text-muted)] shadow-lg backdrop-blur-md pointer-events-none -translate-x-1/2 -translate-y-1/2`}
           style={{ left: onDemandLabelPosition.x, top: onDemandLabelPosition.y }}
         >
           <span className="w-2 h-2 rounded-full shrink-0" style={{ background: ON_DEMAND_AREA_COLOR }} aria-hidden="true" />
