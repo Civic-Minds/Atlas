@@ -297,6 +297,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   const colorMode: ColorVisionMode = colorVisionFriendly ? 'friendly' : 'default';
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
+  const onDemandLabelMarkersRef = useRef<Map<string, maplibregl.Marker>>(new Map());
   const [pmtilesRoutesAvailable, setPmtilesRoutesAvailable] = useState<boolean | null>(null);
   const [pmtilesRouteAgencies, setPmtilesRouteAgencies] = useState<Set<string> | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
@@ -360,28 +361,65 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       }))),
   }), [agencies, selectedModes]);
 
-  const onDemandLabelPosition = useMemo(() => {
+  const onDemandLabelAnchors = useMemo(() => {
+    const grouped = new Map<string, [number, number][]>();
+    for (const feature of onDemandStopData.features) {
+      const coordinate = feature.geometry.coordinates;
+      const slug = String(feature.properties?.agencySlug ?? '');
+      if (!slug || coordinate.length < 2) continue;
+      const points = grouped.get(slug) ?? [];
+      points.push([coordinate[0], coordinate[1]]);
+      grouped.set(slug, points);
+    }
+    return [...grouped.entries()].map(([slug, coordinates]) => ({
+      slug,
+      coordinate: coordinates.reduce(
+        ([sumLongitude, sumLatitude], [longitude, latitude]) => [
+          sumLongitude + longitude / coordinates.length,
+          sumLatitude + latitude / coordinates.length,
+        ],
+        [0, 0],
+      ) as [number, number],
+    }));
+  }, [onDemandStopData]);
+
+  useEffect(() => {
     const map = mapRef.current;
-    if (!map || !mapLoaded || onDemandStopData.features.length === 0) return null;
-    const coordinates = onDemandStopData.features
-      .map(feature => feature.geometry.coordinates)
-      .filter((coordinate): coordinate is [number, number] => coordinate.length >= 2)
-      .map(([longitude, latitude]) => [longitude, latitude] as [number, number]);
-    if (coordinates.length === 0) return null;
-    const { width, height } = map.getCanvas();
-    const visiblePoints = coordinates
-      .map(coordinate => map.project(coordinate))
-      .filter(point => point.x >= 0 && point.x <= width && point.y >= 0 && point.y <= height);
-    if (visiblePoints.length === 0) return null;
-    const center = visiblePoints.reduce(
-      (sum, point) => ({ x: sum.x + point.x / visiblePoints.length, y: sum.y + point.y / visiblePoints.length }),
-      { x: 0, y: 0 },
-    );
-    return {
-      x: Math.min(Math.max(100, center.x), width - 100),
-      y: Math.min(Math.max(40, center.y), height - 40),
+    if (!map || !mapLoaded) return;
+    for (const marker of onDemandLabelMarkersRef.current.values()) marker.remove();
+    onDemandLabelMarkersRef.current.clear();
+    for (const { slug, coordinate } of onDemandLabelAnchors) {
+      const element = document.createElement('div');
+      element.setAttribute('aria-hidden', 'true');
+      element.style.cssText = [
+        'display:flex',
+        'align-items:center',
+        'gap:6px',
+        'white-space:nowrap',
+        'pointer-events:none',
+        'background:var(--bg-panel)',
+        'border:1px solid var(--border-primary)',
+        'border-radius:9999px',
+        'padding:6px 12px',
+        'font:700 10px var(--font-sans, sans-serif)',
+        'color:var(--text-muted)',
+        'box-shadow:0 4px 12px rgb(0 0 0 / 0.16)',
+        'backdrop-filter:blur(8px)',
+      ].join(';');
+      const dot = document.createElement('span');
+      dot.style.cssText = `width:8px;height:8px;border-radius:9999px;background:${ON_DEMAND_AREA_COLOR};flex:none`;
+      const label = document.createElement('span');
+      label.textContent = 'On-demand service area';
+      element.append(dot, label);
+      onDemandLabelMarkersRef.current.set(slug, new maplibregl.Marker({ element, anchor: 'center' })
+        .setLngLat({ lng: coordinate[0], lat: coordinate[1] })
+        .addTo(map));
+    }
+    return () => {
+      for (const marker of onDemandLabelMarkersRef.current.values()) marker.remove();
+      onDemandLabelMarkersRef.current.clear();
     };
-  }, [mapLoaded, onDemandStopData, zoom]);
+  }, [mapLoaded, onDemandLabelAnchors]);
 
   const updateMapContext = useCallback(() => {
     const map = mapRef.current;
@@ -1967,15 +2005,6 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         <div className={`absolute bottom-6 left-1/2 -translate-x-1/2 ${Z_PANEL} ${FLOATING_CARD} px-4 py-2.5 pointer-events-none`}>
           <div className="text-xs font-black text-[var(--text-primary)]">{zoomOrientCard.title}</div>
           <div className="text-[10px] font-bold text-[var(--text-muted)]">{zoomOrientCard.subtitle}</div>
-        </div>
-      )}
-      {onDemandLabelPosition && (
-        <div
-          className={`absolute ${Z_PANEL} inline-flex items-center gap-1.5 whitespace-nowrap rounded-full bg-[var(--bg-panel)] border border-[var(--border-primary)] px-3 py-1.5 text-[10px] font-bold text-[var(--text-muted)] shadow-lg backdrop-blur-md pointer-events-none -translate-x-1/2 -translate-y-1/2`}
-          style={{ left: onDemandLabelPosition.x, top: onDemandLabelPosition.y }}
-        >
-          <span className="w-2 h-2 rounded-full shrink-0" style={{ background: ON_DEMAND_AREA_COLOR }} aria-hidden="true" />
-          On-demand service area
         </div>
       )}
 
