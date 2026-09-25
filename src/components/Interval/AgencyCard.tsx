@@ -514,6 +514,11 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
                 <p className="text-[11px] leading-relaxed text-[var(--text-muted)] mt-1">{agency.onDemandServiceArea.serviceHours}</p>
               </div>
             )}
+            {agency.onDemandServiceArea?.stopFeatures && agency.onDemandServiceArea.stopFeatures.length > 0 && (
+              <p className="px-1 text-[11px] leading-relaxed text-[var(--text-muted)]">
+                These are virtual pickup locations for a booked on-demand service, not a fixed route.
+              </p>
+            )}
             {agency.onDemandServiceArea?.sourceUrl && (
               <div className="border-t border-[var(--border-primary)] pt-3 px-1">
                 <p className="text-[9px] font-black uppercase tracking-wide text-[var(--text-dim)]">

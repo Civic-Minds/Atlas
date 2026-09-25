@@ -6,7 +6,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
--GTFS-Flex pickup locations now cluster at regional zoom and expand into individual points when you zoom in.
+-GTFS-Flex pickup locations now cluster into compact numbered markers at regional zoom and expand into individual points when you zoom in.
+-On-demand pickup cards now explain that virtual stops belong to a booked service rather than a fixed route.
 -On-demand service areas now take priority over nearby route lines when clicked.
 -Responsive headers now group Night Service and Frequent Service under More when space is tight, keeping map filters visible.
 -On-demand cards now distinguish Atlas validation status from the transit agency’s service name.
