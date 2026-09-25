@@ -589,6 +589,25 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         [e.point.x - 12, e.point.y - 12],
         [e.point.x + 12, e.point.y + 12],
       ];
+
+      // Service-area clicks take priority over route hitboxes. A route can cross a
+      // zone, but clicking inside the visible zone should open the on-demand agency
+      // rather than whichever route happens to be nearby.
+      const serviceAreaHitLayers = ['on-demand-service-area-fill', 'on-demand-service-area-line', 'on-demand-stop-points']
+        .filter(layerId => map.getLayer(layerId));
+      const serviceAreaHits = serviceAreaHitLayers.length > 0
+        ? map.queryRenderedFeatures(e.point, { layers: serviceAreaHitLayers })
+        : [];
+      const serviceAreaSlug = serviceAreaHits[0]?.properties?.agencySlug as string | undefined;
+      if (serviceAreaSlug) {
+        setSelectedRouteRef.current(null);
+        setSelectedStopRef.current(null);
+        setDisambiguationRoutesRef.current(null);
+        setQueryRef.current?.('');
+        setSelectedAgencySlugRef.current?.(serviceAreaSlug);
+        return;
+      }
+
       const routeHitLayers = ['routes-hit-layer'];
       if (map.getLayer('local-routes-hit-layer')) {
         routeHitLayers.push('local-routes-hit-layer');
@@ -637,19 +656,6 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
           setQueryRef.current?.('');
           if (wasSelected) resetRoutesLayerDefaultPaint(map);
         }
-        return;
-      }
-
-      const serviceAreaHits = map.queryRenderedFeatures(e.point, {
-        layers: ['on-demand-service-area-fill', 'on-demand-service-area-line', 'on-demand-stop-points'],
-      });
-      const serviceAreaSlug = serviceAreaHits[0]?.properties?.agencySlug as string | undefined;
-      if (serviceAreaSlug) {
-        setSelectedRouteRef.current(null);
-        setSelectedStopRef.current(null);
-        setDisambiguationRoutesRef.current(null);
-        setQueryRef.current?.('');
-        setSelectedAgencySlugRef.current?.(serviceAreaSlug);
         return;
       }
 
