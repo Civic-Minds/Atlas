@@ -898,7 +898,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         filter: ['has', 'point_count'],
         paint: {
           'circle-color': ON_DEMAND_AREA_COLOR,
-          'circle-radius': ['step', ['get', 'point_count'], 14, 25, 17, 75, 20],
+          'circle-radius': ['step', ['get', 'point_count'], 12, 25, 15, 75, 18],
           'circle-stroke-color': '#ffffff',
           'circle-stroke-width': 2,
         },
@@ -910,10 +910,9 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         source: 'on-demand-stop-points',
         filter: ['has', 'point_count'],
         layout: {
-          'text-field': ['concat', 'On-demand · ', ['get', 'point_count_abbreviated'], ' pickup locations'],
+          'text-field': ['get', 'point_count_abbreviated'],
           'text-size': 10,
-          'text-offset': [0, 2.1],
-          'text-anchor': 'top',
+          'text-anchor': 'center',
           visibility: 'none',
         },
         paint: {
