@@ -31,7 +31,7 @@ import { trackEvent, trackPageView } from './lib/analytics';
 import { markAtlasOnce } from './lib/performance';
 import { parseFrequentServiceDays, type FrequentServiceFrequency, type FrequentServiceWindow } from '../shared/frequentService';
 import FrequentServiceStory from './apps/FrequentServiceStory';
-import { BWG_ON_DEMAND_AGENCY, CALEDON_ON_DEMAND_AGENCY, BRAMPTON_ON_DEMAND_AGENCY, GRT_ROUTE_79_SERVICE_AREA, HAMILTON_MY_RIDE_SERVICE_AREA } from './data/onDemandServiceAreas';
+import { BWG_ON_DEMAND_AGENCY, CALEDON_ON_DEMAND_AGENCY, BRAMPTON_ON_DEMAND_AGENCY, C_TRAN_CURRENT_SERVICE_AREA, GRT_ROUTE_79_SERVICE_AREA, HAMILTON_MY_RIDE_SERVICE_AREA, METRO_MICRO_SERVICE_AREA } from './data/onDemandServiceAreas';
 
 export interface FareOverride {
   adult?: number;      // base card/electronic fare (fallback when GeoJSON baseFare is absent)
@@ -96,7 +96,7 @@ export interface Agency {
   /** Agency-level service represented by a boundary rather than route GeoJSON. */
   onDemandOnly?: boolean;
   onDemandServiceArea?: {
-    features: GeoJSON.Feature<GeoJSON.Polygon>[];
+    features: GeoJSON.Feature<GeoJSON.Polygon | GeoJSON.MultiPolygon>[];
     stopFeatures?: GeoJSON.Feature<GeoJSON.Point>[];
     sourceUrl: string;
     sourceLabel: string;
@@ -430,8 +430,10 @@ export default function App() {
       })
       .then((data: { agencies: Agency[] }) => {
         const onDemandBySlug: Record<string, Partial<Agency>> = ATLAS_MODE === 'public' ? {} : {
+          ctran: { onDemandServiceArea: C_TRAN_CURRENT_SERVICE_AREA },
           grt: { onDemandServiceArea: GRT_ROUTE_79_SERVICE_AREA },
           hamilton: { onDemandServiceArea: HAMILTON_MY_RIDE_SERVICE_AREA },
+          'metro-transit': { onDemandServiceArea: METRO_MICRO_SERVICE_AREA },
         };
         const enriched = [
           ...data.agencies.map(agency => ({ ...agency, ...(onDemandBySlug[agency.slug] ?? {}) })),

@@ -1,5 +1,8 @@
 import type { GeoJSON } from 'geojson';
 import { HSR_MY_RIDE_STOP_FEATURES } from './hsrMyRideStops';
+import { METRO_MICRO_FLEX_FEATURES } from './metroMicroFlexData';
+import { C_TRAN_CURRENT_FLEX_FEATURES } from './ctranCurrentFlexData';
+import { C_TRAN_CURRENT_FLEX_STOPS } from './ctranCurrentFlexStops';
 
 /**
  * Agency-owned service-area geometry for services that do not publish route
@@ -119,6 +122,27 @@ export const GRT_ROUTE_79_SERVICE_AREA = {
   serviceHours: 'Monday–Friday: 6–10 a.m., 2–6 p.m., and 10:45–11:45 p.m.',
   bookingUrl: GRT_ROUTE_79_SOURCE_URL,
   serviceName: 'Route 79 Breslau On-Demand',
+};
+
+export const METRO_MICRO_SERVICE_AREA = {
+  features: METRO_MICRO_FLEX_FEATURES,
+  sourceUrl: 'https://svc.metrotransit.org/mtgtfs/gtfs-flex.zip',
+  sourceLabel: 'Metro Transit GTFS-Flex feed',
+  sourceRetrievedAt: '2026-09-24',
+  serviceHours: 'Hours vary by Metro micro zone; the current zone and booking details are provided by Metro Transit.',
+  bookingUrl: 'https://www.metrotransit.org/metro-micro/',
+  serviceName: 'Metro micro',
+};
+
+export const C_TRAN_CURRENT_SERVICE_AREA = {
+  features: C_TRAN_CURRENT_FLEX_FEATURES,
+  stopFeatures: C_TRAN_CURRENT_FLEX_STOPS,
+  sourceUrl: 'https://www.c-tran.com/images/Google/TheCurrent_GTFSFlex.zip',
+  sourceLabel: 'C-TRAN GTFS-Flex feed and official service-area layers',
+  sourceRetrievedAt: '2026-09-24',
+  serviceHours: 'Service hours vary by zone; The Current operates six published service zones.',
+  bookingUrl: 'https://www.c-tran.com/thecurrent',
+  serviceName: 'The Current',
 };
 
 export const BWG_ON_DEMAND_AGENCY = {

@@ -9,6 +9,8 @@ import {
   GRT_ROUTE_79_SERVICE_AREAS,
   GRT_ROUTE_79_SERVICE_AREA,
   HAMILTON_MY_RIDE_SERVICE_AREA,
+  C_TRAN_CURRENT_SERVICE_AREA,
+  METRO_MICRO_SERVICE_AREA,
 } from '../onDemandServiceAreas';
 import { HSR_MY_RIDE_STOP_FEATURES } from '../hsrMyRideStops';
 
@@ -60,6 +62,18 @@ describe('BWG on-demand service area', () => {
     expect(HAMILTON_MY_RIDE_SERVICE_AREA.stopFeatures).toBe(HSR_MY_RIDE_STOP_FEATURES);
     expect(HSR_MY_RIDE_STOP_FEATURES).toHaveLength(138);
     expect(HSR_MY_RIDE_STOP_FEATURES.every(feature => feature.geometry.type === 'Point')).toBe(true);
+  });
+
+  it('keeps the published Metro micro Flex zones source-backed', () => {
+    expect(METRO_MICRO_SERVICE_AREA.features).toHaveLength(5);
+    expect(METRO_MICRO_SERVICE_AREA.sourceUrl).toBe('https://svc.metrotransit.org/mtgtfs/gtfs-flex.zip');
+    expect(METRO_MICRO_SERVICE_AREA.features.every(feature => feature.geometry.type === 'MultiPolygon' || feature.geometry.type === 'Polygon')).toBe(true);
+  });
+
+  it('keeps The Current service areas and virtual stops source-backed', () => {
+    expect(C_TRAN_CURRENT_SERVICE_AREA.features).toHaveLength(7);
+    expect(C_TRAN_CURRENT_SERVICE_AREA.stopFeatures).toHaveLength(27);
+    expect(C_TRAN_CURRENT_SERVICE_AREA.sourceUrl).toBe('https://www.c-tran.com/images/Google/TheCurrent_GTFSFlex.zip');
   });
 
 });

@@ -335,7 +335,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
 
   const [mapContextAgencies, setMapContextAgencies] = useState<MapContextAgency[]>([]);
 
-  const onDemandServiceAreaData = useMemo<GeoJSON.FeatureCollection<GeoJSON.Polygon>>(() => ({
+  const onDemandServiceAreaData = useMemo<GeoJSON.FeatureCollection<GeoJSON.Polygon | GeoJSON.MultiPolygon>>(() => ({
     type: 'FeatureCollection',
     features: (selectedModes.size === 0 || selectedModes.has(ON_DEMAND_MODE) ? agencies : [])
       .flatMap(agency => (agency.onDemandServiceArea?.features ?? []).map(feature => ({
@@ -359,6 +359,25 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         },
       }))),
   }), [agencies, selectedModes]);
+
+  const onDemandLabelPosition = useMemo(() => {
+    const map = mapRef.current;
+    if (!map || !mapLoaded || onDemandStopData.features.length === 0) return null;
+    const coordinates = onDemandStopData.features
+      .map(feature => feature.geometry.coordinates)
+      .filter((coordinate): coordinate is [number, number] => coordinate.length >= 2)
+      .map(([longitude, latitude]) => [longitude, latitude] as [number, number]);
+    if (coordinates.length === 0) return null;
+    const { width, height } = map.getCanvas();
+    const visiblePoints = coordinates
+      .map(coordinate => map.project(coordinate))
+      .filter(point => point.x >= 0 && point.x <= width && point.y >= 0 && point.y <= height);
+    if (visiblePoints.length === 0) return null;
+    return visiblePoints.reduce(
+      (sum, point) => ({ x: sum.x + point.x / visiblePoints.length, y: sum.y + point.y / visiblePoints.length }),
+      { x: 0, y: 0 },
+    );
+  }, [mapLoaded, onDemandStopData, zoom]);
 
   const updateMapContext = useCallback(() => {
     const map = mapRef.current;
@@ -1944,6 +1963,15 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         <div className={`absolute bottom-6 left-1/2 -translate-x-1/2 ${Z_PANEL} ${FLOATING_CARD} px-4 py-2.5 pointer-events-none`}>
           <div className="text-xs font-black text-[var(--text-primary)]">{zoomOrientCard.title}</div>
           <div className="text-[10px] font-bold text-[var(--text-muted)]">{zoomOrientCard.subtitle}</div>
+        </div>
+      )}
+      {onDemandLabelPosition && (
+        <div
+          className={`absolute ${Z_PANEL} inline-flex items-center gap-1.5 rounded-full bg-[var(--bg-panel)] border border-[var(--border-primary)] px-3 py-1.5 text-[10px] font-bold text-[var(--text-muted)] shadow-lg backdrop-blur-md pointer-events-none -translate-x-1/2 -translate-y-1/2`}
+          style={{ left: onDemandLabelPosition.x, top: onDemandLabelPosition.y }}
+        >
+          <span className="w-2 h-2 rounded-full shrink-0" style={{ background: ON_DEMAND_AREA_COLOR }} aria-hidden="true" />
+          On-demand service area
         </div>
       )}
 

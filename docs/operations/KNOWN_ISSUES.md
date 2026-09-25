@@ -87,10 +87,12 @@ GO Rail routes have multiple shape variants (local vs express, different termina
 ## Platform Limitations
 
 ### GTFS-Flex / on-demand transit zones
-GTFS-Flex is now supported in the beta/dev on-demand view for two agency submissions:
+GTFS-Flex is now supported in the beta/dev on-demand view for four agency submissions:
 
 - **Hamilton Street Railway myRide Waterdown** — the submitted feed provides 138 on-demand stops, two location groups, and booking windows. It does not provide a service-area polygon, so Atlas displays the submitted stop locations without inventing a boundary.
 - **Grand River Transit Route 79 Breslau** — the submission provides four agency-exported service-area polygons. Atlas displays those polygons with the official Route 79 service details.
+- **Metro Transit Metro micro** — the current official GTFS-Flex feed provides five Metro micro zone geometries. Atlas displays those zones and excludes the separate TransitLink zones from the Metro micro service card.
+- **C-TRAN The Current** — the agency publishes GTFS-Flex and official ArcGIS service-area/virtual-stop layers. Atlas displays the seven published service areas and 27 virtual stops; the ZIP is currently protected by the agency’s Cloudflare challenge, so the map uses the agency’s published geometry layers until the feed can be fetched directly.
 
 These services remain beta/dev-only. They are not included in public agency or route coverage, and they are not treated as fixed-route frequency data. General GTFS-Flex ingestion still needs broader feed fixtures and pipeline coverage before public release.
 
