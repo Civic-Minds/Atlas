@@ -404,7 +404,9 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
           {!agency.onDemandOnly && agency.onDemandServiceArea?.serviceName && (
             <div className="mt-2 border-t border-[var(--border-primary)] pt-2">
               <div className="flex items-baseline justify-between gap-2">
-                <p className="text-[9px] font-black uppercase tracking-wide text-[var(--accent)]">On-demand service</p>
+                <span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-[9px] font-black uppercase tracking-wide ${CONTROL_INACTIVE}`}>
+                  On-demand service area
+                </span>
                 {agency.onDemandServiceArea.sourceUrl && (
                   <a href={agency.onDemandServiceArea.sourceUrl} target="_blank" rel="noopener noreferrer" className="shrink-0 text-[10px] text-[var(--accent)] hover:underline">
                     Details →
@@ -492,6 +494,9 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
       {!fareView && <div className="flex-1 overflow-y-auto custom-scrollbar">
         {agency.onDemandOnly ? (
           <div className="px-4 py-4 space-y-4">
+            <span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-[9px] font-black uppercase tracking-wide ${CONTROL_INACTIVE}`}>
+              On-demand service area
+            </span>
             <div className="rounded-xl border border-[var(--border-primary)] bg-[var(--surface-secondary)] px-3 py-3">
               <p className="text-[10px] font-black uppercase tracking-wide text-[var(--text-dim)]">Request a ride</p>
               <p className="text-[11px] leading-relaxed text-[var(--text-muted)] mt-1">
