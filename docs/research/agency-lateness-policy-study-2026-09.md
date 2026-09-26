@@ -4,7 +4,7 @@
 - Sample seed: `20260926`
 - Sample: 80 agencies — Canada 20, United States 40, France 20
 - Scope: fixed-route scheduled service only; on-demand, paratransit, and reservation-window policies are excluded from the Atlas comparison
-- Status: sample initialized; 30 of 80 agencies have verified official source sets
+- Status: sample initialized; 32 of 80 agencies have verified official source sets
 
 ## Method
 
@@ -70,7 +70,7 @@ The reviewed agencies show that these are different concepts: schedule-adherence
 | Jefferson Transit | United States | Washington | small | bus | static_scheduled | United States / qualitative_definition_only | not_found | definition_found |
 | Laguna Beach Transit | United States | California | small | bus | static_scheduled | United States / no_definition_found | not_reviewed | not_reviewed |
 | Augusta Transit | United States | Georgia | unknown | bus | static_scheduled | United States / definition_found | definition_found | definition_found |
-| Blacksburg Transit | United States | Virginia | small | bus | static_scheduled | United States / qualitative_definition_only | not_reviewed | not_reviewed |
+| Blacksburg Transit | United States | Virginia | small | bus | static_scheduled | United States / qualitative_definition_only | not_found | not_found |
 | City of Bowling Green | United States | — | small | bus | static_scheduled | United States / no_definition_found | not_reviewed | not_reviewed |
 | Durango Transit | United States | Colorado | small | mixed | static_scheduled | United States / definition_found | not_reviewed | not_reviewed |
 | Kitsap Transit | United States | Washington | medium | bus | static_scheduled | United States / qualitative_definition_only | not_reviewed | not_reviewed |
@@ -86,7 +86,7 @@ The reviewed agencies show that these are different concepts: schedule-adherence
 | Santa Clarita Transit | United States | California | medium | bus | static_scheduled | United States / no_definition_found | not_reviewed | not_reviewed |
 | CityBus of Greater Lafayette | United States | Indiana | medium | bus | static_scheduled | United States / definition_found | not_reviewed | not_reviewed |
 | NFTA (Buffalo) | United States | New York | large | bus | static_scheduled | United States / qualitative_definition_only | definition_found | not_found |
-| Charleston Area Regional Transportation Authority (CARTA) | United States | South Carolina | medium | mixed | static_scheduled | United States / no_definition_found | not_reviewed | not_reviewed |
+| Charleston Area Regional Transportation Authority (CARTA) | United States | South Carolina | medium | mixed | static_scheduled | United States / no_definition_found | definition_found | definition_found |
 | Bustang Outrider | United States | Colorado | small | bus | static_scheduled | United States / definition_found | not_reviewed | not_reviewed |
 | Indian River Transit | United States | Florida | medium | bus | static_scheduled | United States / qualitative_definition_only | not_reviewed | not_reviewed |
 | Camarillo Area Transit | United States | California | small | bus | static_scheduled | United States / no_definition_found | not_reviewed | not_reviewed |

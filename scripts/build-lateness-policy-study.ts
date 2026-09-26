@@ -221,6 +221,27 @@ const VERIFIED: Record<string, {
     },
     sources: [{ id: 'trace-colmar-commitments', url: 'https://www.trace-colmar.fr/nous-connaitre/notre-raison-detre/nos-engagements/', title: 'Trace Colmar Service Commitments', publisher: 'Trace Colmar / Colmar Agglomération', sourceType: 'service-standard', accessedAt: '2026-09-26', pagesOrSections: 'Démarche qualité / Ponctualité-régularité' }],
   },
+  carta: {
+    schedule: {
+      definition: 'CARTA defines on-time performance as a vehicle completing a scheduled run from 1 minute early through 10 minutes late, with no early running accepted, and a 90% systemwide or route-level standard.',
+      notes: [],
+      sourceIds: ['carta-title-vi-2024'],
+    },
+    headway: {
+      definition: 'CARTA publishes route-level service-frequency standards, such as 60- or 90-minute headways, but the reviewed policy does not define an allowed deviation or bunching threshold.',
+      notes: ['This is a scheduled frequency standard, not a headway-reliability tolerance.'],
+      sourceIds: ['carta-title-vi-2024'],
+    },
+    sources: [{ id: 'carta-title-vi-2024', url: 'https://ridecarta.com/wp-content/uploads/2024/06/CARTA-Agenda-Packet-6-12-2024.pdf', title: 'CARTA Agenda Packet', publisher: 'Charleston Area Regional Transportation Authority', sourceType: 'title-vi-service-monitoring', accessedAt: '2026-09-26', pagesOrSections: 'On-time performance and vehicle headway standards' }],
+  },
+  blacksburg: {
+    schedule: {
+      definition: null,
+      notes: ['The reviewed official budget reports Blacksburg Transit on-time performance targets and results but does not state the minute window used to classify a trip as on time.'],
+      sourceIds: ['blacksburg-budget-2026-27'],
+    },
+    sources: [{ id: 'blacksburg-budget-2026-27', url: 'https://www.blacksburg.gov/home/showpublisheddocument/14127/639089269708361176', title: 'FY 2026-27 Proposed Budget', publisher: 'Town of Blacksburg', sourceType: 'budget', accessedAt: '2026-09-26', pagesOrSections: 'Transit Department / On-Time Performance' }],
+  },
   sunline: {
     schedule: {
       definition: 'SunLine defines on-time as a trip departing a timepoint from 0 minutes early to 3 minutes late, with a 90% target for all services. Other SunLine reports use a 0-to-5-minute window with an 85% minimum target, so the source set records both versions.',
