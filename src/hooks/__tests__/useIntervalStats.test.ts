@@ -515,6 +515,18 @@ describe('useIntervalStats', () => {
     expect(JSON.stringify(result.current.tileFilter)).toContain('15');
   });
 
+  it('keeps the active period filter when Frequency is set to All', () => {
+    const { result } = renderHook(() => useIntervalStats({}, {
+      ...defaultFilters,
+      agencies: new Set(['ttc']),
+      maxHeadway: Infinity,
+      period: 'overnight' as const,
+    }));
+    const tf = JSON.stringify(result.current.tileFilter);
+    expect(tf).toContain('hph_overnight');
+    expect(tf).toContain('999998');
+  });
+
   it('period filter falls back to headwayByHour if period data is missing', () => {
     const layers: AgencyLayers = {
       'test': {

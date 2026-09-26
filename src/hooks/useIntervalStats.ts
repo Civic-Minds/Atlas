@@ -5,6 +5,7 @@ import { HEADWAY_TIERS, getTierColor } from '../utils/colors';
 import { isLivePollingRoute } from '../utils/livePolling';
 import { TIME_PERIODS, PERIOD_LABELS as PERIOD_LABELS_BY_KEY, PERIOD_KEYS, type PeriodKey } from '../../shared/config';
 import { buildModeFilterClause, tileEffectiveHeadwayExpr, tileRouteKeyExpr } from '../../shared/tileFilterExprs';
+import { NO_PERIOD_SERVICE_TILE_VALUE } from '../../shared/pmtilesProps';
 import { effectiveMode, ON_DEMAND_MODE } from '../../shared/modes';
 import { effectiveRouteHeadway } from '../utils/effectiveHeadway';
 import { collectStopHubSiblings } from '../utils/stopHub';
@@ -478,13 +479,17 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
     if (modeClause) clauses.push(modeClause);
 
     // Headway pill — mirrors passesRouteFilter (period, worst-direction, min-stop).
-    if (maxHeadway !== Infinity) {
+    // A period filter must still exclude routes with no service when Frequency is set
+    // to All. Use a threshold just below the no-service sentinel so real headways pass
+    // without turning the period filter into an all-day filter.
+    if (maxHeadway !== Infinity || (period && period !== 'all')) {
       const hwExpr = tileEffectiveHeadwayExpr(period);
+      const threshold = maxHeadway === Infinity ? NO_PERIOD_SERVICE_TILE_VALUE - 1 : maxHeadway;
       if (selectedRoute) {
         const routeKeyExpr: any = tileRouteKeyExpr();
-        clauses.push(['any', ['==', routeKeyExpr, selectedRoute], ['<=', hwExpr, maxHeadway]]);
+        clauses.push(['any', ['==', routeKeyExpr, selectedRoute], ['<=', hwExpr, threshold]]);
       } else {
-        clauses.push(['<=', hwExpr, maxHeadway]);
+        clauses.push(['<=', hwExpr, threshold]);
       }
     }
 

@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Overnight and other period filters now remain active even when Frequency is set to All.
 - On-demand cards now use neutral Atlas source labels instead of rider-facing booking or boundary language.
 - On-demand service areas now follow their published operating days and time windows.
 - Beta-only rollout notices now use one shared message explaining which versions include the service.
