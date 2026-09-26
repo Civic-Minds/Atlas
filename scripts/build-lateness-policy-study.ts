@@ -160,6 +160,38 @@ const VERIFIED: Record<string, {
       { id: 'miway-2025-asset-plan', url: 'https://www.mississauga.ca/wp-content/uploads/2025/06/03145826/2025-Corporate-Asset-Management-Plan.pdf', title: '2025 Corporate Asset Management Plan', publisher: 'City of Mississauga', sourceType: 'asset-plan', accessedAt: '2026-09-26', pagesOrSections: 'Transit’s Level of Service' },
     ],
   },
+  piercetransit: {
+    schedule: {
+      definition: 'Pierce Transit’s current fixed-route definition considers a bus on time when it is up to 1 minute early and up to 5 minutes late; the agency strives for 90% on-time performance in its Stream program standards.',
+      notes: ['Older Title VI materials use a 0-to-4-minute window; the study records the current and historical definitions separately.'],
+      sourceIds: ['pierce-stream-standards', 'pierce-reliability-appendix'],
+    },
+    headway: {
+      definition: 'Pierce Transit’s Stream program standards consider a bus late when the gap is more than 3 minutes longer than the intended headway.',
+      notes: ['This is an explicit headway-management tolerance for higher-frequency service, distinct from schedule adherence.'],
+      sourceIds: ['pierce-stream-standards'],
+    },
+    sources: [
+      { id: 'pierce-stream-standards', url: 'https://piercetransit.org/wp-content/uploads/2025/01/Appendix-C-Program-Standards.pdf', title: 'Stream Program Standards', publisher: 'Pierce Transit', sourceType: 'service-standard', accessedAt: '2026-09-26', pagesOrSections: 'Reliability / On-Time Performance / Headway Management' },
+      { id: 'pierce-reliability-appendix', url: 'https://piercetransit.org/wp-content/uploads/2024/12/Appendix-A-H-Version-2.pdf', title: 'Reliability Appendix', publisher: 'Pierce Transit', sourceType: 'reliability-standard', accessedAt: '2026-09-26', pagesOrSections: 'Fixed-route reliability' },
+    ],
+  },
+  tcat: {
+    schedule: {
+      definition: 'TCAT defines on-time performance as 0 to 5 minutes late in the reviewed board performance report, with an average on-time target of 90%.',
+      notes: ['The reviewed source does not state an early-departure allowance.'],
+      sourceIds: ['tcat-board-minutes-2021'],
+    },
+    sources: [{ id: 'tcat-board-minutes-2021', url: 'https://tcatbus.com/wp-content/uploads/2021.06.24_Minutes-4.pdf', title: 'TCAT Board Minutes', publisher: 'Tompkins Consolidated Area Transit', sourceType: 'board-minutes', accessedAt: '2026-09-26', pagesOrSections: 'Systems Report / On-time Performance' }],
+  },
+  collier: {
+    schedule: {
+      definition: 'Collier Area Transit’s fixed-route service standard allows local, express, and trolley buses to be up to 5 minutes late, with a 95% on-time goal.',
+      notes: ['The same table separately lists a paratransit standard; that service is excluded from this study.'],
+      sourceIds: ['collier-service-standards'],
+    },
+    sources: [{ id: 'collier-service-standards', url: 'https://www.colliercountyfl.gov/home/showdocument?id=93262', title: 'System-Wide Service Standards', publisher: 'Collier Area Transit / Collier County', sourceType: 'service-standard', accessedAt: '2026-09-26', pagesOrSections: 'On-Time Performance' }],
+  },
   sunline: {
     schedule: {
       definition: 'SunLine defines on-time as a trip departing a timepoint from 0 minutes early to 3 minutes late, with a 90% target for all services. Other SunLine reports use a 0-to-5-minute window with an 85% minimum target, so the source set records both versions.',

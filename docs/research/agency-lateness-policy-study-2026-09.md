@@ -4,7 +4,7 @@
 - Sample seed: `20260926`
 - Sample: 80 agencies — Canada 20, United States 40, France 20
 - Scope: fixed-route scheduled service only; on-demand, paratransit, and reservation-window policies are excluded from the Atlas comparison
-- Status: sample initialized; 24 of 80 agencies have verified official source sets
+- Status: sample initialized; 27 of 80 agencies have verified official source sets
 
 ## Method
 
@@ -70,13 +70,13 @@ The current pipeline baseline is a minimum 5-minute grace, a 15% grace component
 | Durango Transit | United States | Colorado | small | mixed | static_scheduled | United States / definition_found | not_reviewed | not_reviewed |
 | Kitsap Transit | United States | Washington | medium | bus | static_scheduled | United States / qualitative_definition_only | not_reviewed | not_reviewed |
 | Chemung County C-TRAN | United States | New York | small | bus | static_scheduled | United States / no_definition_found | not_reviewed | not_reviewed |
-| Pierce Transit | United States | Washington | medium | bus | static_scheduled | United States / definition_found | not_reviewed | not_reviewed |
+| Pierce Transit | United States | Washington | medium | bus | static_scheduled | United States / definition_found | definition_found | definition_found |
 | Palos Verdes Peninsula Transit Authority (PVPTA) | United States | California | small | mixed | static_scheduled | United States / qualitative_definition_only | not_reviewed | not_reviewed |
 | WestCAT (Pinole) | United States | California | small | bus | static_scheduled | United States / no_definition_found | not_reviewed | not_reviewed |
 | Everett Transit | United States | Washington | medium | bus | static_scheduled | United States / definition_found | not_reviewed | not_reviewed |
 | Regional Transportation District (RTD Denver) | United States | Colorado | large | mixed | static_scheduled | United States / qualitative_definition_only | definition_found | not_found |
 | Kalamazoo Metro Transit | United States | Michigan | medium | rail | static_scheduled | United States / no_definition_found | not_reviewed | not_reviewed |
-| Tompkins Consolidated Area Transit | United States | New York | medium | bus | static_scheduled | United States / definition_found | not_reviewed | not_reviewed |
+| Tompkins Consolidated Area Transit | United States | New York | medium | bus | static_scheduled | United States / definition_found | definition_found | not_found |
 | Antelope Valley Transit Authority (AVTA) | United States | California | medium | mixed | static_scheduled | United States / qualitative_definition_only | not_reviewed | not_reviewed |
 | Santa Clarita Transit | United States | California | medium | bus | static_scheduled | United States / no_definition_found | not_reviewed | not_reviewed |
 | CityBus of Greater Lafayette | United States | Indiana | medium | bus | static_scheduled | United States / definition_found | not_reviewed | not_reviewed |
@@ -85,7 +85,7 @@ The current pipeline baseline is a minimum 5-minute grace, a 15% grace component
 | Bustang Outrider | United States | Colorado | small | bus | static_scheduled | United States / definition_found | not_reviewed | not_reviewed |
 | Indian River Transit | United States | Florida | medium | bus | static_scheduled | United States / qualitative_definition_only | not_reviewed | not_reviewed |
 | Camarillo Area Transit | United States | California | small | bus | static_scheduled | United States / no_definition_found | not_reviewed | not_reviewed |
-| Collier Area Transit (Naples) | United States | Florida | medium | bus | static_scheduled | United States / definition_found | not_reviewed | not_reviewed |
+| Collier Area Transit (Naples) | United States | Florida | medium | bus | static_scheduled | United States / definition_found | definition_found | not_found |
 | Clallam Transit System | United States | Washington | small | bus | static_scheduled | United States / qualitative_definition_only | not_reviewed | not_reviewed |
 | Grand Valley Transit | United States | Colorado | small | bus | static_scheduled | United States / no_definition_found | not_reviewed | not_reviewed |
 | Ben Franklin Transit (Tri-Cities, WA) | United States | Washington | medium | bus | static_scheduled | United States / definition_found | not_reviewed | not_reviewed |
