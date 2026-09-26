@@ -424,7 +424,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                     return (
                       <button
                         key={id}
-                        onClick={() => setAgencyFeatureFilter(id)}
+                        onClick={() => setAgencyFeatureFilter(current => current === id ? 'all' : id)}
                         aria-pressed={on}
                         className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition-colors whitespace-nowrap shrink-0 ${
                           on ? `${CONTROL_ACTIVE} shadow-sm ring-1 ring-[var(--control-active-border)]` : CONTROL_INACTIVE
