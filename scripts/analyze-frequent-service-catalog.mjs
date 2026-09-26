@@ -1,8 +1,8 @@
 import fs from 'node:fs';
 
-const catalogPath = 'docs/research/frequent-service-catalog.json';
-const jsonPath = 'docs/research/frequent-service-analysis-2026-09.json';
-const markdownPath = 'docs/research/frequent-service-analysis-2026-09.md';
+const catalogPath = 'docs/research/frequent-service-research-2026-09/frequent-service-catalog.json';
+const jsonPath = 'docs/research/frequent-service-research-2026-09/frequent-service-analysis-2026-09.json';
+const markdownPath = 'docs/research/frequent-service-research-2026-09/frequent-service-analysis-2026-09.md';
 
 const catalog = JSON.parse(fs.readFileSync(catalogPath, 'utf8'));
 
