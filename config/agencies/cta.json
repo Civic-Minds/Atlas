@@ -1,6 +1,7 @@
 {
   "slug": "cta",
   "name": "Chicago Transit Authority (CTA)",
+  "websiteUrl": "http://transitchicago.com",
   "center": [
     41.8781,
     -87.6298

@@ -1,6 +1,7 @@
 {
   "slug": "sto",
   "name": "STO (Gatineau)",
+  "websiteUrl": "http://www.sto.ca",
   "region": "Quebec",
   "center": [
     45.487,

@@ -1,6 +1,7 @@
 {
   "slug": "fredericton",
   "name": "Fredericton Transit",
+  "websiteUrl": "https://www.fredericton.ca/en/transit",
   "region": "New Brunswick",
   "center": [
     45.9636,

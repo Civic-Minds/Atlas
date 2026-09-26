@@ -1,6 +1,7 @@
 {
   "slug": "nashvillemta",
   "name": "Nashville MTA WeGo Public Transit",
+  "websiteUrl": "http://www.wegotransit.com",
   "center": [
     36.16,
     -86.78

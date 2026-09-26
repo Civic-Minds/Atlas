@@ -1,6 +1,7 @@
 {
   "slug": "saskatoon",
   "name": "Saskatoon Transit",
+  "websiteUrl": "http://transit.saskatoon.ca",
   "center": [
     52.1286,
     -106.648

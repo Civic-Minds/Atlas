@@ -1,6 +1,7 @@
 {
   "slug": "cota",
   "name": "Central Ohio Transit Authority (COTA)",
+  "websiteUrl": "http://www.cota.com",
   "region": "Ohio",
   "center": [
     39.96,

@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Added 458 more official agency website links from published GTFS metadata, so outdated-feed notices can direct users to current agency information across the registry.
 - Added official website links for 53 expired-feed agencies recovered from their published GTFS metadata, so outdated-feed notices can point riders to current schedules.
 - Omaha Metro outdated-feed notices now link to the agency’s official website.
 - Outdated-feed notices now explain schedule periods, check history, and refresh timing in clearer language.

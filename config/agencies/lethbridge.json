@@ -1,6 +1,7 @@
 {
   "slug": "lethbridge",
   "name": "Lethbridge Transit",
+  "websiteUrl": "https://LethbridgeTransit.ca",
   "region": "Alberta",
   "center": [
     49.694,

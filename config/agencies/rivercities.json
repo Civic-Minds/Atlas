@@ -1,6 +1,7 @@
 {
   "slug": "rivercities",
   "name": "RiverCities Transit",
+  "websiteUrl": "http://rctransit.org",
   "center": [
     45.9434,
     -122.8418

@@ -1,6 +1,7 @@
 {
   "slug": "njt-rail",
   "name": "NJ Transit Rail",
+  "websiteUrl": "http://www.njtransit.com/",
   "region": "New Jersey",
   "center": [
     40.7,

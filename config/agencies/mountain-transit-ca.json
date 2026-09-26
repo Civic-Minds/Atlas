@@ -1,6 +1,7 @@
 {
   "slug": "mountain-transit-ca",
   "name": "Mountain Transit (Big Bear Lake)",
+  "websiteUrl": "http://www.mountaintransit.org/?referrer=gtfs",
   "region": "California",
   "center": [
     34.24,

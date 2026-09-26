@@ -1,6 +1,7 @@
 {
   "slug": "humboldt",
   "name": "Humboldt Transit Authority",
+  "websiteUrl": "https://hta.org/agencies/redwood-transit-system/?referrer=gtfs",
   "center": [
     40.7249,
     -124.0976

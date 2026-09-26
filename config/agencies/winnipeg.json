@@ -1,6 +1,7 @@
 {
   "slug": "winnipeg",
   "name": "Winnipeg Transit",
+  "websiteUrl": "https://winnipegtransit.com",
   "region": "Manitoba",
   "center": [
     49.8951,

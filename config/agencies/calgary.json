@@ -1,6 +1,7 @@
 {
   "slug": "calgary",
   "name": "Calgary Transit",
+  "websiteUrl": "http://www.calgarytransit.com",
   "region": "Alberta",
   "center": [
     51.0447,

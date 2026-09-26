@@ -1,6 +1,7 @@
 {
   "slug": "bart",
   "name": "Bay Area Rapid Transit (BART)",
+  "websiteUrl": "https://www.bart.gov/",
   "center": [
     37.768,
     -122.2314

@@ -1,6 +1,7 @@
 {
   "slug": "burlington",
   "name": "Burlington Transit",
+  "websiteUrl": "https://www.burlingtontransit.ca/en/index.aspx",
   "region": "Ontario",
   "center": [
     43.3255,

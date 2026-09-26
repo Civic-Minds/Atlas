@@ -1,6 +1,7 @@
 {
   "slug": "kern-transit",
   "name": "Kern Transit",
+  "websiteUrl": "http://kerntransit.org/?referrer=gtfs",
   "region": "California",
   "center": [
     35.3802,

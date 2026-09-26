@@ -1,6 +1,7 @@
 {
   "slug": "drt",
   "name": "Durham Region Transit",
+  "websiteUrl": "https://www.durhamregiontransit.com",
   "region": "Ontario",
   "center": [
     43.9,

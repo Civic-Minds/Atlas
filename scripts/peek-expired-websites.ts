@@ -21,6 +21,7 @@ const index = JSON.parse(readFileSync(indexPath, 'utf8')) as {
 const expired = index.agencies.filter(
   a => a.lastFeedExpiry?.length === 8 && a.lastFeedExpiry < today,
 );
+const targets = process.argv.includes('--all') ? index.agencies : expired;
 
 async function peekWebsite(feedUrl: string): Promise<string | null> {
   try {
@@ -52,13 +53,13 @@ async function main() {
     slug: string;
     name: string;
     region?: string;
-    lastFeedExpiry: string;
+  lastFeedExpiry: string | null | undefined;
     websiteUrl: string | null;
     feedUrl: string | null | undefined;
   }> = [];
 
   await runWithConcurrency(
-    expired.map(agency => async () => {
+    targets.map(agency => async () => {
       let websiteUrl: string | null = null;
       if (agency.feedUrl) websiteUrl = await peekWebsite(agency.feedUrl);
       if (!websiteUrl && agency.mdbFeedUrl) websiteUrl = await peekWebsite(agency.mdbFeedUrl);
@@ -75,9 +76,9 @@ async function main() {
     8,
   );
 
-  results.sort((a, b) => a.lastFeedExpiry.localeCompare(b.lastFeedExpiry));
+  results.sort((a, b) => (a.lastFeedExpiry ?? '').localeCompare(b.lastFeedExpiry ?? ''));
   mkdirSync(resolve('tmp'), { recursive: true });
-  const outPath = resolve('tmp/expired-agencies-websites.json');
+  const outPath = resolve('tmp', process.argv.includes('--all') ? 'agency-websites.json' : 'expired-agencies-websites.json');
   writeFileSync(outPath, JSON.stringify(results, null, 2) + '\n');
   const withUrl = results.filter(r => r.websiteUrl).length;
   console.log(`\n${withUrl}/${results.length} have website from GTFS → ${outPath}`);

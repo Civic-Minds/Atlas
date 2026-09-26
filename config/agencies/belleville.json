@@ -1,6 +1,7 @@
 {
   "slug": "belleville",
   "name": "Belleville Transit",
+  "websiteUrl": "https://www.belleville.ca/residents/page/transit",
   "region": "Ontario",
   "center": [
     44.163,

@@ -1,6 +1,7 @@
 {
   "slug": "davenport",
   "name": "Davenport CitiBus",
+  "websiteUrl": "https://www.davenportiowa.com/services/citibus_transit",
   "center": [
     41.5468,
     -90.5769

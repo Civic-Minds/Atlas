@@ -1,6 +1,7 @@
 {
   "slug": "hobbs",
   "name": "City of Hobbs Transit",
+  "websiteUrl": "https://www.hobbsnm.org/hobbs_express.html",
   "region": "New Mexico",
   "center": [
     32.7,

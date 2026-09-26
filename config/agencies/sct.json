@@ -1,6 +1,7 @@
 {
   "slug": "sct",
   "name": "Suffolk County Transit (SCT)",
+  "websiteUrl": "https://sctbus.org/",
   "region": "New York",
   "center": [
     40.85,

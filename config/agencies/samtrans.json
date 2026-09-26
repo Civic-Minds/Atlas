@@ -1,6 +1,7 @@
 {
   "slug": "samtrans",
   "name": "San Mateo County Transit District (samTrans)",
+  "websiteUrl": "http://www.samtrans.com",
   "center": [
     37.5672,
     -122.3439

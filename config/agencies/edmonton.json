@@ -1,6 +1,7 @@
 {
   "slug": "edmonton",
   "name": "Edmonton Transit Service (ETS)",
+  "websiteUrl": "http://www.takeets.com",
   "region": "Alberta",
   "center": [
     53.5461,

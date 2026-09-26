@@ -1,6 +1,7 @@
 {
   "slug": "stratford",
   "name": "Stratford Transit",
+  "websiteUrl": "https://www.stratford.ca/en/live-here/transit.aspx",
   "region": "Ontario",
   "center": [
     43.3688,
