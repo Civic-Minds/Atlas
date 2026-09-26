@@ -6,6 +6,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Selected agency status and region filters now use a high-contrast filled state so active filters are unmistakable.
+- Removed the unnecessary “Combine filters” helper text from the agency filter row.
 - Added 458 more official agency website links from published GTFS metadata, so outdated-feed notices can direct users to current agency information across the registry.
 - Added official website links for 53 expired-feed agencies recovered from their published GTFS metadata, so outdated-feed notices can point riders to current schedules.
 - Omaha Metro outdated-feed notices now link to the agency’s official website.

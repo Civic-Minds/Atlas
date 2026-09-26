@@ -438,7 +438,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                         aria-pressed={on}
                         title={id === 'all' ? 'Clear status filters' : 'Combine with other filters'}
                         className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition-colors whitespace-nowrap shrink-0 ${
-                          on ? `${CONTROL_ACTIVE} shadow-sm ring-1 ring-[var(--control-active-border)]` : CONTROL_INACTIVE
+                          on ? 'bg-[var(--text-primary)] border-[var(--text-primary)] text-[var(--bg-panel)] shadow-sm' : CONTROL_INACTIVE
                         }`}
                       >
                         {label}
@@ -448,7 +448,6 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                   {regionsInScope.length > 0 && (
                     <span className="w-px h-3.5 shrink-0 bg-[var(--border-primary)] mx-0.5" aria-hidden />
                   )}
-                  <span className="text-[10px] text-[var(--text-dim)] whitespace-nowrap">Combine filters</span>
                   {regionsInScope.map(r => {
                     const on = regionFilter.has(r);
                     return (
@@ -462,7 +461,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                         })}
                         aria-pressed={on}
                         className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition-colors whitespace-nowrap shrink-0 ${
-                          on ? CONTROL_ACTIVE : CONTROL_INACTIVE
+                          on ? 'bg-[var(--text-primary)] border-[var(--text-primary)] text-[var(--bg-panel)] shadow-sm' : CONTROL_INACTIVE
                         }`}
                       >
                         {r}
