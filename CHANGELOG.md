@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Route cards now load public agency details through the site proxy instead of failing on cross-origin data requests.
 - Overnight and other period filters now remain active even when Frequency is set to All.
 - On-demand cards now use neutral Atlas source labels instead of rider-facing booking or boundary language.
 - On-demand service areas now follow their published operating days and time windows.
