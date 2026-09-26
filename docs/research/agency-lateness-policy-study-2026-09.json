@@ -1,6 +1,6 @@
 {
   "studyVersion": "2026-09-26.v1",
-  "checkedAt": "2026-09-26T22:52:58.730Z",
+  "checkedAt": "2026-09-26T22:55:55.510Z",
   "sampleSeed": 20260926,
   "targetAgencyCount": 80,
   "sampleQuotas": {
@@ -421,18 +421,47 @@
         "customer pickup window"
       ],
       "schedulePunctuality": {
-        "status": "not_reviewed",
+        "status": "not_found",
         "definition": null,
-        "sourceIds": [],
-        "notes": []
+        "sourceIds": [
+          "st-thomas-tmp",
+          "st-thomas-ride-guide"
+        ],
+        "notes": [
+          "The reviewed official transportation plan discusses measuring schedule adherence and on-time performance but does not publish a minute-level fixed-route lateness window. The rider guide also distinguishes regular conventional service from on-demand and parallel service."
+        ]
       },
       "headwayReliability": {
-        "status": "not_reviewed",
+        "status": "not_found",
         "definition": null,
-        "sourceIds": [],
-        "notes": []
+        "sourceIds": [
+          "st-thomas-tmp",
+          "st-thomas-ride-guide"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
       },
-      "sources": [],
+      "sources": [
+        {
+          "id": "st-thomas-tmp",
+          "url": "https://www.stthomas.ca/UserFiles/Servers/Server_12189721/File/City%20Hall/Environmental%20Services/TMP/StThomas_TMP_20211126.pdf",
+          "title": "St. Thomas Transportation Master Plan",
+          "publisher": "City of St. Thomas",
+          "sourceType": "transportation-master-plan",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Transit priority / schedule adherence"
+        },
+        {
+          "id": "st-thomas-ride-guide",
+          "url": "https://www.stthomas.ca/UserFiles/Servers/Server_12189721/File/Living%20Here/Transportation/Ride%20Guide%20One%20Page.pdf",
+          "title": "Railway City Transit Ride Guide",
+          "publisher": "City of St. Thomas",
+          "sourceType": "rider-guide",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Schedules and service types"
+        }
+      ],
       "notes": []
     },
     {
@@ -828,18 +857,46 @@
         "customer pickup window"
       ],
       "schedulePunctuality": {
-        "status": "not_reviewed",
+        "status": "not_found",
         "definition": null,
-        "sourceIds": [],
-        "notes": []
+        "sourceIds": [
+          "moose-jaw-fixed-route"
+        ],
+        "notes": [
+          "The official fixed-route page publishes scheduled service hours and routes, but no minute-level lateness or schedule-adherence tolerance. The separate paratransit pickup rule is excluded."
+        ]
       },
       "headwayReliability": {
-        "status": "not_reviewed",
-        "definition": null,
-        "sourceIds": [],
-        "notes": []
+        "status": "definition_found",
+        "definition": "Moose Jaw says its four fixed routes converge downtown every 40 minutes, but does not state an allowed headway deviation or bunching threshold.",
+        "sourceIds": [
+          "moose-jaw-faq",
+          "moose-jaw-fixed-route"
+        ],
+        "notes": [
+          "This is a published scheduled frequency, not a reliability tolerance."
+        ]
       },
-      "sources": [],
+      "sources": [
+        {
+          "id": "moose-jaw-fixed-route",
+          "url": "https://moosejaw.ca/transit/fixed-route-service/",
+          "title": "Moose Jaw Fixed Route Service",
+          "publisher": "City of Moose Jaw",
+          "sourceType": "fixed-route-service-page",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Regular Fixed Route Service"
+        },
+        {
+          "id": "moose-jaw-faq",
+          "url": "https://moosejaw.ca/faqs/",
+          "title": "City of Moose Jaw FAQ",
+          "publisher": "City of Moose Jaw",
+          "sourceType": "service-information",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Transit transfers and schedules"
+        }
+      ],
       "notes": []
     },
     {
@@ -1969,18 +2026,36 @@
         "customer pickup window"
       ],
       "schedulePunctuality": {
-        "status": "not_reviewed",
-        "definition": null,
-        "sourceIds": [],
-        "notes": []
+        "status": "definition_found",
+        "definition": "Everett Transit defines fixed-route on-time service as departing no earlier than the scheduled time and no later than 5 minutes after it.",
+        "sourceIds": [
+          "everett-title-vi-2023"
+        ],
+        "notes": [
+          "The source separately discusses paratransit; that service is excluded from the Atlas comparison."
+        ]
       },
       "headwayReliability": {
-        "status": "not_reviewed",
-        "definition": null,
-        "sourceIds": [],
-        "notes": []
+        "status": "definition_found",
+        "definition": "Everett Transit publishes maximum fixed-route headways of 30 minutes in peak periods and 60 minutes at midday, evening, and weekends. Its schedule-adherence targets are 85% for peak service at 10–30-minute headways and 95% for other listed periods/headway bands.",
+        "sourceIds": [
+          "everett-title-vi-2023"
+        ],
+        "notes": [
+          "These are service-frequency and adherence targets, not a minute-level headway-deviation tolerance."
+        ]
       },
-      "sources": [],
+      "sources": [
+        {
+          "id": "everett-title-vi-2023",
+          "url": "https://everetttransit.org/DocumentCenter/View/2408/Title-VI-Plan-2023-2026-PDF?bidId=",
+          "title": "Everett Transit Title VI Plan 2023–2026",
+          "publisher": "Everett Transit",
+          "sourceType": "title-vi-plan",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Vehicle Headway; On-time Performance"
+        }
+      ],
       "notes": []
     },
     {
@@ -2857,18 +2932,36 @@
         "customer pickup window"
       ],
       "schedulePunctuality": {
-        "status": "not_reviewed",
+        "status": "not_found",
         "definition": null,
-        "sourceIds": [],
-        "notes": []
+        "sourceIds": [
+          "bibus-quality"
+        ],
+        "notes": [
+          "Bibus commits to monitoring regularity and punctuality for scheduled transit, but the reviewed public quality page does not state a minute-level on-time window. The reservation-based ACCEMO punctuality rule is excluded."
+        ]
       },
       "headwayReliability": {
-        "status": "not_reviewed",
+        "status": "not_found",
         "definition": null,
-        "sourceIds": [],
-        "notes": []
+        "sourceIds": [
+          "bibus-quality"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
       },
-      "sources": [],
+      "sources": [
+        {
+          "id": "bibus-quality",
+          "url": "https://www.bibus.fr/bibus-et-vous/qui-sommes-nous/notre-demarche-qualite",
+          "title": "Bibus Quality Approach",
+          "publisher": "Bibus / Brest métropole",
+          "sourceType": "quality-policy",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Qualité de service"
+        }
+      ],
       "notes": []
     },
     {

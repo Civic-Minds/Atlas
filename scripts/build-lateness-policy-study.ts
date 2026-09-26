@@ -44,8 +44,8 @@ type StudyRecord = {
 };
 
 const VERIFIED: Record<string, {
-  schedule: { definition: string; notes: string[]; sourceIds: string[] };
-  headway?: { definition: string; notes: string[]; sourceIds: string[] };
+  schedule: { definition: string | null; status?: 'definition_found' | 'not_found'; notes: string[]; sourceIds: string[] };
+  headway?: { definition: string | null; status?: 'definition_found' | 'not_found'; notes: string[]; sourceIds: string[] };
   sources: StudyRecord['sources'];
 }> = {
   stl: {
@@ -340,6 +340,58 @@ const VERIFIED: Record<string, {
     },
     sources: [{ id: 'clallam-coa', url: 'https://irp.cdn-website.com/0eaf265e/files/uploaded/Clallam%20Transit%20COA%20Final%20Report%2008.10.2021%20PRINT%20READY.pdf', title: 'Clallam Transit Comprehensive Operations Analysis', publisher: 'Clallam Transit System', sourceType: 'operations-analysis', accessedAt: '2026-09-26', pagesOrSections: 'Service Performance / On-Time Performance' }],
   },
+  everetttransit: {
+    schedule: {
+      definition: 'Everett Transit defines fixed-route on-time service as departing no earlier than the scheduled time and no later than 5 minutes after it.',
+      notes: ['The source separately discusses paratransit; that service is excluded from the Atlas comparison.'],
+      sourceIds: ['everett-title-vi-2023'],
+    },
+    headway: {
+      definition: 'Everett Transit publishes maximum fixed-route headways of 30 minutes in peak periods and 60 minutes at midday, evening, and weekends. Its schedule-adherence targets are 85% for peak service at 10–30-minute headways and 95% for other listed periods/headway bands.',
+      notes: ['These are service-frequency and adherence targets, not a minute-level headway-deviation tolerance.'],
+      sourceIds: ['everett-title-vi-2023'],
+    },
+    sources: [{ id: 'everett-title-vi-2023', url: 'https://everetttransit.org/DocumentCenter/View/2408/Title-VI-Plan-2023-2026-PDF?bidId=', title: 'Everett Transit Title VI Plan 2023–2026', publisher: 'Everett Transit', sourceType: 'title-vi-plan', accessedAt: '2026-09-26', pagesOrSections: 'Vehicle Headway; On-time Performance' }],
+  },
+  'st-thomas': {
+    schedule: {
+      definition: null,
+      status: 'not_found',
+      notes: ['The reviewed official transportation plan discusses measuring schedule adherence and on-time performance but does not publish a minute-level fixed-route lateness window. The rider guide also distinguishes regular conventional service from on-demand and parallel service.'],
+      sourceIds: ['st-thomas-tmp', 'st-thomas-ride-guide'],
+    },
+    sources: [
+      { id: 'st-thomas-tmp', url: 'https://www.stthomas.ca/UserFiles/Servers/Server_12189721/File/City%20Hall/Environmental%20Services/TMP/StThomas_TMP_20211126.pdf', title: 'St. Thomas Transportation Master Plan', publisher: 'City of St. Thomas', sourceType: 'transportation-master-plan', accessedAt: '2026-09-26', pagesOrSections: 'Transit priority / schedule adherence' },
+      { id: 'st-thomas-ride-guide', url: 'https://www.stthomas.ca/UserFiles/Servers/Server_12189721/File/Living%20Here/Transportation/Ride%20Guide%20One%20Page.pdf', title: 'Railway City Transit Ride Guide', publisher: 'City of St. Thomas', sourceType: 'rider-guide', accessedAt: '2026-09-26', pagesOrSections: 'Schedules and service types' },
+    ],
+  },
+  'moose-jaw': {
+    schedule: {
+      definition: null,
+      status: 'not_found',
+      notes: ['The official fixed-route page publishes scheduled service hours and routes, but no minute-level lateness or schedule-adherence tolerance. The separate paratransit pickup rule is excluded.'],
+      sourceIds: ['moose-jaw-fixed-route'],
+    },
+    headway: {
+      definition: 'Moose Jaw says its four fixed routes converge downtown every 40 minutes, but does not state an allowed headway deviation or bunching threshold.',
+      status: 'definition_found',
+      notes: ['This is a published scheduled frequency, not a reliability tolerance.'],
+      sourceIds: ['moose-jaw-faq', 'moose-jaw-fixed-route'],
+    },
+    sources: [
+      { id: 'moose-jaw-fixed-route', url: 'https://moosejaw.ca/transit/fixed-route-service/', title: 'Moose Jaw Fixed Route Service', publisher: 'City of Moose Jaw', sourceType: 'fixed-route-service-page', accessedAt: '2026-09-26', pagesOrSections: 'Regular Fixed Route Service' },
+      { id: 'moose-jaw-faq', url: 'https://moosejaw.ca/faqs/', title: 'City of Moose Jaw FAQ', publisher: 'City of Moose Jaw', sourceType: 'service-information', accessedAt: '2026-09-26', pagesOrSections: 'Transit transfers and schedules' },
+    ],
+  },
+  brest: {
+    schedule: {
+      definition: null,
+      status: 'not_found',
+      notes: ['Bibus commits to monitoring regularity and punctuality for scheduled transit, but the reviewed public quality page does not state a minute-level on-time window. The reservation-based ACCEMO punctuality rule is excluded.'],
+      sourceIds: ['bibus-quality'],
+    },
+    sources: [{ id: 'bibus-quality', url: 'https://www.bibus.fr/bibus-et-vous/qui-sommes-nous/notre-demarche-qualite', title: 'Bibus Quality Approach', publisher: 'Bibus / Brest métropole', sourceType: 'quality-policy', accessedAt: '2026-09-26', pagesOrSections: 'Qualité de service' }],
+  },
   longbeach: {
     schedule: {
       definition: 'Long Beach Transit measures on-time performance as buses departing between 1 minute before and 5 minutes after scheduled time, with a goal above 85%.',
@@ -566,10 +618,10 @@ function main() {
       serviceScope: 'static_scheduled',
       excludedPolicyScopes: ['on-demand', 'paratransit', 'reservation-window', 'customer pickup window'],
       schedulePunctuality: verified
-        ? { status: verified.schedule.definition ? 'definition_found' : 'not_found', definition: verified.schedule.definition, sourceIds: verified.schedule.sourceIds, notes: verified.schedule.notes }
+        ? { status: verified.schedule.status ?? (verified.schedule.definition ? 'definition_found' : 'not_found'), definition: verified.schedule.definition, sourceIds: verified.schedule.sourceIds, notes: verified.schedule.notes }
         : { status: 'not_reviewed', definition: null, sourceIds: [], notes: [] },
       headwayReliability: verified?.headway
-        ? { status: 'definition_found', definition: verified.headway.definition, sourceIds: verified.headway.sourceIds, notes: verified.headway.notes }
+        ? { status: verified.headway.status ?? (verified.headway.definition ? 'definition_found' : 'not_found'), definition: verified.headway.definition, sourceIds: verified.headway.sourceIds, notes: verified.headway.notes }
         : verified
           ? { status: 'not_found', definition: null, sourceIds: verified.schedule.sourceIds, notes: ['The reviewed official source set did not state a headway or service-spacing reliability rule.'] }
           : { status: 'not_reviewed', definition: null, sourceIds: [], notes: [] },

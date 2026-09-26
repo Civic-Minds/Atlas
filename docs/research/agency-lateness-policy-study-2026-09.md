@@ -4,7 +4,7 @@
 - Sample seed: `20260926`
 - Sample: 80 agencies — Canada 20, United States 40, France 20
 - Scope: fixed-route scheduled service only; on-demand, paratransit, and reservation-window policies are excluded from the Atlas comparison
-- Status: sample initialized; 43 of 80 agencies have verified official source sets
+- Status: sample initialized; 47 of 80 agencies have verified official source sets
 
 ## Method
 
@@ -42,7 +42,7 @@ The reviewed agencies show that these are different concepts: schedule-adherence
 | Owen Sound Transit | Canada | Ontario | small | bus | static_scheduled | Canada / no_definition_found | not_found | not_found |
 | Guelph Transit | Canada | Ontario | medium | bus | static_scheduled | Canada / definition_found | definition_found | not_found |
 | Barrie Transit | Canada | Ontario | medium | bus | static_scheduled | Canada / qualitative_definition_only | definition_found | not_found |
-| St. Thomas Transit | Canada | Ontario | small | bus | static_scheduled | Canada / no_definition_found | not_reviewed | not_reviewed |
+| St. Thomas Transit | Canada | Ontario | small | bus | static_scheduled | Canada / no_definition_found | not_found | not_found |
 | Grand River Transit (Waterloo Region) | Canada | Ontario | large | bus | static_scheduled | Canada / definition_found | definition_found | not_found |
 | BC Transit (Comox Valley) | Canada | British Columbia | small | bus | static_scheduled | Canada / qualitative_definition_only | definition_found | not_found |
 | Ville de Saint-Hyacinthe | Canada | Quebec | small | bus | static_scheduled | Canada / no_definition_found | not_reviewed | not_reviewed |
@@ -51,7 +51,7 @@ The reviewed agencies show that these are different concepts: schedule-adherence
 | MiWay (Mississauga) | Canada | Ontario | large | bus | static_scheduled | Canada / no_definition_found | definition_found | not_found |
 | Metrobus (St. John's) | Canada | Newfoundland | medium | rail | static_scheduled | Canada / definition_found | definition_found | not_found |
 | RTL (Longueuil) | Canada | Quebec | large | bus | static_scheduled | Canada / qualitative_definition_only | definition_found | not_found |
-| Moose Jaw Transit | Canada | Saskatchewan | small | bus | static_scheduled | Canada / no_definition_found | not_reviewed | not_reviewed |
+| Moose Jaw Transit | Canada | Saskatchewan | small | bus | static_scheduled | Canada / no_definition_found | not_found | definition_found |
 | GO Transit | Canada | Ontario | medium | mixed | static_scheduled | Canada / definition_found | definition_found | not_found |
 | Cornwall Transit | Canada | Ontario | small | bus | static_scheduled | Canada / qualitative_definition_only | not_found | not_found |
 | Bloomington Transit | United States | Indiana | medium | bus | static_scheduled | United States / definition_found | not_reviewed | not_reviewed |
@@ -78,7 +78,7 @@ The reviewed agencies show that these are different concepts: schedule-adherence
 | Pierce Transit | United States | Washington | medium | bus | static_scheduled | United States / definition_found | definition_found | definition_found |
 | Palos Verdes Peninsula Transit Authority (PVPTA) | United States | California | small | mixed | static_scheduled | United States / qualitative_definition_only | definition_found | definition_found |
 | WestCAT (Pinole) | United States | California | small | bus | static_scheduled | United States / no_definition_found | definition_found | definition_found |
-| Everett Transit | United States | Washington | medium | bus | static_scheduled | United States / definition_found | not_reviewed | not_reviewed |
+| Everett Transit | United States | Washington | medium | bus | static_scheduled | United States / definition_found | definition_found | definition_found |
 | Regional Transportation District (RTD Denver) | United States | Colorado | large | mixed | static_scheduled | United States / qualitative_definition_only | definition_found | not_found |
 | Kalamazoo Metro Transit | United States | Michigan | medium | rail | static_scheduled | United States / no_definition_found | not_reviewed | not_reviewed |
 | Tompkins Consolidated Area Transit | United States | New York | medium | bus | static_scheduled | United States / definition_found | definition_found | not_found |
@@ -101,7 +101,7 @@ The reviewed agencies show that these are different concepts: schedule-adherence
 | Twisto (Caen) | France | Normandie | medium | bus | static_scheduled | France / qualitative_definition_only | not_reviewed | not_reviewed |
 | Trace (Colmar) | France | Grand Est | medium | bus | static_scheduled | France / definition_found | definition_found | not_found |
 | Vesoul | France | Bourgogne-Franche-Comté | unknown | bus | static_scheduled | France / no_definition_found | not_reviewed | not_reviewed |
-| Bibus (Brest) | France | Bretagne | medium | bus | static_scheduled | France / qualitative_definition_only | not_reviewed | not_reviewed |
+| Bibus (Brest) | France | Bretagne | medium | bus | static_scheduled | France / qualitative_definition_only | not_found | not_found |
 | Fil Bleu (Tours) | France | Centre-Val de Loire | medium | bus | static_scheduled | France / definition_found | not_reviewed | not_reviewed |
 | Laon urbain | France | Hauts-de-France | small | bus | static_scheduled | France / no_definition_found | not_reviewed | not_reviewed |
 | Saumur Agglobus | France | Pays de la Loire | medium | bus | static_scheduled | France / qualitative_definition_only | not_reviewed | not_reviewed |
