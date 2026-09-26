@@ -943,9 +943,9 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         minzoom: 9,
         paint: {
           'circle-color': ON_DEMAND_AREA_COLOR,
-          'circle-radius': 4,
+          'circle-radius': ['interpolate', ['linear'], ['zoom'], 9, 2, 12, 3.5, 15, 5],
           'circle-stroke-color': '#ffffff',
-          'circle-stroke-width': 1.5,
+          'circle-stroke-width': ['interpolate', ['linear'], ['zoom'], 9, 0.75, 12, 1.25, 15, 1.5],
         },
         layout: { visibility: 'none' },
       });
