@@ -17,7 +17,7 @@ export const BWG_ON_DEMAND_SERVICE_AREA: GeoJSON.Feature<GeoJSON.Polygon> = {
     agencySlug: 'bwg',
     serviceType: 'on-demand',
     sourceUrl: 'https://www.rideargo.com/cities/bwg#scroll-offset',
-    sourceLabel: 'Argo service-area map',
+    sourceLabel: 'Official Argo source map',
   },
   geometry: {
     type: 'Polygon',
@@ -80,9 +80,9 @@ function polygonFeature(
 }
 
 const CALEDON_SOURCE_URL = 'https://www.rideargo.com/cities/caledon#scroll-offset';
-const CALEDON_SOURCE_LABEL = 'Argo Caledon service-area map';
+const CALEDON_SOURCE_LABEL = 'Official Argo source map';
 const BRAMPTON_SOURCE_URL = 'https://www.rideargo.com/cities/brampton#scroll-offset';
-const BRAMPTON_SOURCE_LABEL = 'Argo Brampton service-area map';
+const BRAMPTON_SOURCE_LABEL = 'Official Argo source map';
 
 export const CALEDON_ON_DEMAND_SERVICE_AREAS: GeoJSON.Feature<GeoJSON.Polygon>[] = [
   polygonFeature('caledon', CALEDON_SOURCE_URL, CALEDON_SOURCE_LABEL, [[-79.706173, 43.838852], [-79.69836, 43.844772], [-79.694961, 43.847711], [-79.694861, 43.849112], [-79.694482, 43.850188], [-79.696899, 43.851416], [-79.700155, 43.856246], [-79.713441, 43.879364], [-79.713662, 43.880796], [-79.715427, 43.884083], [-79.718223, 43.88785], [-79.728447, 43.906875], [-79.732716, 43.903382], [-79.734629, 43.903965], [-79.735068, 43.902318], [-79.741902, 43.896802], [-79.750138, 43.895106], [-79.75477, 43.89182], [-79.749624, 43.887846], [-79.76786, 43.870567], [-79.758377, 43.868553], [-79.74757, 43.869242], [-79.706173, 43.838852]]),
@@ -114,11 +114,6 @@ export const HAMILTON_MY_RIDE_SERVICE_AREA = {
   serviceHours: 'On-demand trips operate within Waterdown; booking windows and availability are confirmed in the HSR myRide app or by phone.',
   bookingUrl: 'https://www.hamilton.ca/home-neighbourhood/hsr/schedule-route-tools/hsr-myride-demand',
   serviceName: 'myRide Waterdown On-Demand',
-  availability: {
-    Weekday: ['amPeak', 'midday', 'pmPeak', 'evening', 'late', 'overnight'],
-    Saturday: ['amPeak', 'midday', 'pmPeak', 'evening', 'late'],
-    Sunday: ['amPeak', 'midday', 'pmPeak', 'evening', 'late'],
-  } satisfies OnDemandAvailability,
 };
 
 export const GRT_ROUTE_79_SERVICE_AREA = {
@@ -130,7 +125,11 @@ export const GRT_ROUTE_79_SERVICE_AREA = {
   bookingUrl: GRT_ROUTE_79_SOURCE_URL,
   serviceName: 'Route 79 Breslau On-Demand',
   availability: {
-    Weekday: ['amPeak', 'pmPeak', 'evening', 'late'],
+    Weekday: [
+      { startHour: 6, endHour: 10 },
+      { startHour: 14, endHour: 18 },
+      { startHour: 22.75, endHour: 23.75 },
+    ],
     Saturday: [],
     Sunday: [],
   } satisfies OnDemandAvailability,
@@ -179,8 +178,8 @@ export const BWG_ON_DEMAND_AGENCY = {
     serviceHours: 'Mon–Fri 6:30 a.m.–7:30 p.m.; Sat 7:30 a.m.–7:30 p.m.; no Sunday service',
     bookingUrl: 'https://www.rideargo.com/cities/bwg#scroll-offset',
     availability: {
-      Weekday: ['amPeak', 'midday', 'pmPeak', 'evening'],
-      Saturday: ['amPeak', 'midday', 'pmPeak', 'evening'],
+      Weekday: [{ startHour: 6.5, endHour: 19.5 }],
+      Saturday: [{ startHour: 7.5, endHour: 19.5 }],
       Sunday: [],
     } satisfies OnDemandAvailability,
   },
@@ -208,9 +207,9 @@ export const CALEDON_ON_DEMAND_AGENCY = {
     serviceHours: 'Mon–Fri 5:30 a.m.–8:00 p.m.; Sat–Sun 7:00 a.m.–7:00 p.m.',
     bookingUrl: CALEDON_SOURCE_URL,
     availability: {
-      Weekday: ['amPeak', 'midday', 'pmPeak', 'evening'],
-      Saturday: ['amPeak', 'midday', 'pmPeak'],
-      Sunday: ['amPeak', 'midday', 'pmPeak'],
+      Weekday: [{ startHour: 5.5, endHour: 20 }],
+      Saturday: [{ startHour: 7, endHour: 19 }],
+      Sunday: [{ startHour: 7, endHour: 19 }],
     } satisfies OnDemandAvailability,
   },
 };
@@ -237,7 +236,7 @@ export const BRAMPTON_ON_DEMAND_AGENCY = {
     serviceHours: 'Mon–Fri 5:30 a.m.–9:30 p.m.; no Saturday or Sunday service',
     bookingUrl: BRAMPTON_SOURCE_URL,
     availability: {
-      Weekday: ['amPeak', 'midday', 'pmPeak', 'evening'],
+      Weekday: [{ startHour: 5.5, endHour: 21.5 }],
       Saturday: [],
       Sunday: [],
     } satisfies OnDemandAvailability,
