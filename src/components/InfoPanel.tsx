@@ -560,7 +560,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                   {helpContext.expDateStr ? ` ended ${helpContext.expDateStr}` : ' may no longer be current'}.
                   {helpContext.lastRefreshedAt && formatStoredDate(helpContext.lastRefreshedAt)
                     ? helpContext.expiredFeedCheckCount != null && helpContext.expiredFeedCheckSince && helpContext.lastFeedCheckAt && formatStoredDate(helpContext.lastFeedCheckAt)
-                      ? ` Atlas has checked the feed ${helpContext.expiredFeedCheckCount === 1 ? 'once' : `${helpContext.expiredFeedCheckCount} times`} since then. Automatic tracking started on ${formatStoredDate(helpContext.expiredFeedCheckSince)}, and Atlas last checked it on ${formatStoredDate(helpContext.lastFeedCheckAt)}.`
+                      ? ` Atlas started checking this feed on ${formatStoredDate(helpContext.expiredFeedCheckSince)}. Since the schedule expired, we have checked it ${helpContext.expiredFeedCheckCount === 1 ? 'once' : `${helpContext.expiredFeedCheckCount} times`}, most recently on ${formatStoredDate(helpContext.lastFeedCheckAt)}.`
                       : ` Atlas last successfully refreshed the feed on ${formatStoredDate(helpContext.lastRefreshedAt)}.`
                     : ''}
                 </p>
