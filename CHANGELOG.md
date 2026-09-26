@@ -6,6 +6,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Agency detail requests now use the public data origin while beta-only requests stay on the beta data bucket.
+- Hosted builds now fetch public agency artifacts directly from the public data origin instead of routing large files through Vercel.
 - History agency rows now use the exact shared agency-browser styling.
 - History agency cards now distinguish archived routes from the full current network.
 - History year slider interactions no longer pan or zoom the map underneath them.

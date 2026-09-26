@@ -21,9 +21,6 @@ const getR2PublicUrl = (): string => {
     // @ts-ignore
     return import.meta.env.VITE_R2_PUBLIC_URL;
   }
-  // Hosted builds use the Vercel same-origin proxy so agency detail requests do
-  // not depend on CORS headers from the data bucket.
-  if (typeof window !== 'undefined') return `${window.location.origin}/atlas-data`;
   return DEFAULT_R2_PUBLIC_URL;
 };
 
