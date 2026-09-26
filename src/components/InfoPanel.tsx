@@ -51,6 +51,11 @@ export type OpenInfoOptions = {
 };
 export type OpenInfoFn = (tab?: Tab, opts?: OpenInfoOptions) => void;
 
+function scheduleNoticeLabel(agencyName: string): string {
+  const { primary, secondary } = agencyDisplayParts(agencyName);
+  return secondary ? `The ${primary} schedule for ${secondary}` : `${primary}'s schedule`;
+}
+
 export function liveRouteLabel(r: { displayRouteShortName: string; displayName?: string }): string {
   if (r.displayName) return r.displayName;
   const n = parseInt(r.displayRouteShortName, 10);
@@ -551,12 +556,12 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
             <div className="h-full overflow-y-auto px-5 py-4 space-y-4">
               {helpContext?.agencyName && (
                 <p className="text-xs text-[var(--text-primary)] leading-relaxed">
-                  {helpContext.agencyName}&apos;s schedule
+                  {scheduleNoticeLabel(helpContext.agencyName)}
                   {helpContext.expDateStr ? ` ended ${helpContext.expDateStr}` : ' may no longer be current'}.
                   {helpContext.lastRefreshedAt && formatStoredDate(helpContext.lastRefreshedAt)
                     ? helpContext.expiredFeedCheckCount != null && helpContext.expiredFeedCheckSince && helpContext.lastFeedCheckAt && formatStoredDate(helpContext.lastFeedCheckAt)
-                      ? ` Atlas has checked this feed ${helpContext.expiredFeedCheckCount} time${helpContext.expiredFeedCheckCount === 1 ? '' : 's'} since it expired; automatic tracking began on ${formatStoredDate(helpContext.expiredFeedCheckSince)}. The latest check was ${formatStoredDate(helpContext.lastFeedCheckAt)}.`
-                      : ` Atlas last successfully refreshed this feed on ${formatStoredDate(helpContext.lastRefreshedAt)}.`
+                      ? ` Atlas has checked the feed ${helpContext.expiredFeedCheckCount === 1 ? 'once' : `${helpContext.expiredFeedCheckCount} times`} since then. Automatic tracking started on ${formatStoredDate(helpContext.expiredFeedCheckSince)}, and Atlas last checked it on ${formatStoredDate(helpContext.lastFeedCheckAt)}.`
+                      : ` Atlas last successfully refreshed the feed on ${formatStoredDate(helpContext.lastRefreshedAt)}.`
                     : ''}
                 </p>
               )}

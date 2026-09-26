@@ -8,6 +8,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 - Social previews now use a wide 1200×630 Atlas image so shared links render as proper cards on LinkedIn.
 - Preview builds now keep beta data access without exposing the Night Service and Frequent Service research apps.
+- Expired-schedule notices now explain the service area and tracking history in plain sentences.
 -Clicking a GTFS-Flex pickup location now opens a dedicated on-demand service card instead of the regular agency card.
 - On-demand pickup dots now shrink at regional zoom and grow as you zoom in.
 - GTFS-Flex pickup locations now remain as individual virtual stops without extra map labels.
