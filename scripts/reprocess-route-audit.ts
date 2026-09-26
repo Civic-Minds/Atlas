@@ -5,7 +5,7 @@
  *
  * Usage:
  *   npm run audit:reprocess -- --slugs=go,ttc
- *   npm run audit:reprocess -- --out-dir=tmp/route-accuracy-reprocess-2026-09-26
+ *   npm run audit:reprocess -- --out-dir=tmp/route-accuracy-reprocess-2026-09-26 --resume
  */
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -23,7 +23,9 @@ const root = resolve(import.meta.dirname, '..');
 const index = JSON.parse(readFileSync(resolve(root, 'public/data/index.json'), 'utf8')) as { agencies: Agency[] };
 const requested = process.argv.find(arg => arg.startsWith('--slugs='))?.slice(8).split(',').filter(Boolean);
 const outDir = resolve(process.argv.find(arg => arg.startsWith('--out-dir='))?.slice(10) ?? `tmp/route-accuracy-reprocess-${new Date().toISOString().slice(0, 10)}`);
+const resume = process.argv.includes('--resume');
 const agencies = index.agencies.filter(agency => (!requested || requested.includes(agency.slug)) && (agency.feedUrl || agency.mdbFeedUrl));
+type ManifestEntry = Record<string, unknown> & { slug: string; status: string };
 
 async function fetchFeed(url: string): Promise<Buffer> {
   const response = await fetch(url, {
@@ -53,8 +55,18 @@ function processOptions(slug: string): ProcessOptions {
 async function main() {
   if (agencies.length === 0) throw new Error('No eligible agencies found');
   mkdirSync(outDir, { recursive: true });
-  const manifest: Array<Record<string, unknown>> = [];
+  const manifestPath = resolve(outDir, 'manifest.json');
+  const existing = resume && existsSync(manifestPath)
+    ? JSON.parse(readFileSync(manifestPath, 'utf8')) as { agencies?: ManifestEntry[] }
+    : {};
+  const manifest = new Map<string, ManifestEntry>((existing.agencies ?? []).map(entry => [entry.slug, entry]));
+  const writeCheckpoint = () => writeFileSync(manifestPath, `${JSON.stringify({ generatedAt: new Date().toISOString(), agencyCount: agencies.length, complete: agencies.every(agency => manifest.has(agency.slug)), agencies: [...manifest.values()] }, null, 2)}\n`);
+  writeCheckpoint();
   for (const agency of agencies) {
+    if (resume && manifest.get(agency.slug)?.status === 'ok' && existsSync(resolve(outDir, `${agency.slug}.json`))) {
+      console.log(`Skipping ${agency.slug} (already complete)`);
+      continue;
+    }
     const startedAt = new Date().toISOString();
     process.stdout.write(`Reprocessing ${agency.slug}...\n`);
     try {
@@ -62,15 +74,18 @@ async function main() {
       const buffer = await fetchFeed(feedUrl);
       const result = await processGtfsBuffer(buffer, message => process.stdout.write(`  ${message}\n`), processOptions(agency.slug));
       writeFileSync(resolve(outDir, `${agency.slug}.json`), result.geojson);
-      manifest.push({ slug: agency.slug, name: agency.name, feedUrl, startedAt, completedAt: new Date().toISOString(), status: 'ok', featureCount: result.featureCount, feedVersion: result.feedVersion, feedExpiry: result.feedExpiry, feedQuality: result.feedQuality });
+      manifest.set(agency.slug, { slug: agency.slug, name: agency.name, feedUrl, startedAt, completedAt: new Date().toISOString(), status: 'ok', featureCount: result.featureCount, feedVersion: result.feedVersion, feedExpiry: result.feedExpiry, feedQuality: result.feedQuality });
+      writeCheckpoint();
     } catch (error) {
-      manifest.push({ slug: agency.slug, name: agency.name, startedAt, completedAt: new Date().toISOString(), status: 'error', error: error instanceof Error ? error.message : String(error) });
+      manifest.set(agency.slug, { slug: agency.slug, name: agency.name, startedAt, completedAt: new Date().toISOString(), status: 'error', error: error instanceof Error ? error.message : String(error) });
+      writeCheckpoint();
       console.error(`  failed: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
-  writeFileSync(resolve(outDir, 'manifest.json'), `${JSON.stringify({ generatedAt: new Date().toISOString(), agencyCount: agencies.length, agencies: manifest }, null, 2)}\n`);
+  writeCheckpoint();
   console.log(`\nWrote local audit data to ${outDir}`);
-  console.log(`Succeeded: ${manifest.filter(item => item.status === 'ok').length}; failed: ${manifest.filter(item => item.status === 'error').length}`);
+  const entries = [...manifest.values()];
+  console.log(`Succeeded: ${entries.filter(item => item.status === 'ok').length}; failed: ${entries.filter(item => item.status === 'error').length}`);
 }
 
 main().catch(error => { console.error(error); process.exitCode = 1; });
