@@ -266,6 +266,22 @@ const VERIFIED: Record<string, {
     },
     sources: [{ id: 'westcat-title-vi-2025', url: 'https://www.westcat.org/Content/pdf/WCCTA_Feb2025_Full_BODPacket.pdf', title: 'WestCAT Title VI Program', publisher: 'Western Contra Costa Transit Authority', sourceType: 'title-vi-program', accessedAt: '2026-09-26', pagesOrSections: 'Policy Headways and Periods of Operation; On-Time Performance Standards' }],
   },
+  'port-huron': {
+    schedule: {
+      definition: 'Blue Water Area Transportation Commission considers a fixed-route vehicle on time when it departs a scheduled timepoint no more than 1 minute early and no more than 5 minutes late, with an on-time objective of at least 80%.',
+      notes: [],
+      sourceIds: ['bwatc-title-vi'],
+    },
+    sources: [{ id: 'bwatc-title-vi', url: 'https://bwbus.com/wp-content/uploads/BWATC-Title-VI-program-updated-3-24-15-002.pdf', title: 'BWATC Title VI Program', publisher: 'Blue Water Area Transportation Commission', sourceType: 'title-vi-program', accessedAt: '2026-09-26', pagesOrSections: 'On-time Performance Standards' }],
+  },
+  kitsaptransit: {
+    schedule: {
+      definition: 'Kitsap Transit’s fixed-route bus and ferry standard measures on-time performance as arrivals at a transit station within 5 minutes of the posted schedule, with a 95% minimum by time of day in the reviewed Title VI program.',
+      notes: ['The agency’s on-demand pickup-window policy is excluded.'],
+      sourceIds: ['kitsap-title-vi'],
+    },
+    sources: [{ id: 'kitsap-title-vi', url: 'https://www.kitsaptransit.com/uploads/pdf/projects/kitsaptransittitleviprogram.pdf', title: 'Kitsap Transit Title VI Program', publisher: 'Kitsap Transit', sourceType: 'title-vi-program', accessedAt: '2026-09-26', pagesOrSections: 'On-Time Performance Standard' }],
+  },
   sunline: {
     schedule: {
       definition: 'SunLine defines on-time as a trip departing a timepoint from 0 minutes early to 3 minutes late, with a 90% target for all services. Other SunLine reports use a 0-to-5-minute window with an 85% minimum target, so the source set records both versions.',

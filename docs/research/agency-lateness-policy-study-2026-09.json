@@ -1,6 +1,6 @@
 {
   "studyVersion": "2026-09-26.v1",
-  "checkedAt": "2026-09-26T22:49:36.438Z",
+  "checkedAt": "2026-09-26T22:50:10.534Z",
   "sampleSeed": 20260926,
   "targetAgencyCount": 80,
   "sampleQuotas": {
@@ -1349,18 +1349,34 @@
         "customer pickup window"
       ],
       "schedulePunctuality": {
-        "status": "not_reviewed",
-        "definition": null,
-        "sourceIds": [],
+        "status": "definition_found",
+        "definition": "Blue Water Area Transportation Commission considers a fixed-route vehicle on time when it departs a scheduled timepoint no more than 1 minute early and no more than 5 minutes late, with an on-time objective of at least 80%.",
+        "sourceIds": [
+          "bwatc-title-vi"
+        ],
         "notes": []
       },
       "headwayReliability": {
-        "status": "not_reviewed",
+        "status": "not_found",
         "definition": null,
-        "sourceIds": [],
-        "notes": []
+        "sourceIds": [
+          "bwatc-title-vi"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
       },
-      "sources": [],
+      "sources": [
+        {
+          "id": "bwatc-title-vi",
+          "url": "https://bwbus.com/wp-content/uploads/BWATC-Title-VI-program-updated-3-24-15-002.pdf",
+          "title": "BWATC Title VI Program",
+          "publisher": "Blue Water Area Transportation Commission",
+          "sourceType": "title-vi-program",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "On-time Performance Standards"
+        }
+      ],
       "notes": []
     },
     {
@@ -1659,18 +1675,36 @@
         "customer pickup window"
       ],
       "schedulePunctuality": {
-        "status": "not_reviewed",
-        "definition": null,
-        "sourceIds": [],
-        "notes": []
+        "status": "definition_found",
+        "definition": "Kitsap Transit’s fixed-route bus and ferry standard measures on-time performance as arrivals at a transit station within 5 minutes of the posted schedule, with a 95% minimum by time of day in the reviewed Title VI program.",
+        "sourceIds": [
+          "kitsap-title-vi"
+        ],
+        "notes": [
+          "The agency’s on-demand pickup-window policy is excluded."
+        ]
       },
       "headwayReliability": {
-        "status": "not_reviewed",
+        "status": "not_found",
         "definition": null,
-        "sourceIds": [],
-        "notes": []
+        "sourceIds": [
+          "kitsap-title-vi"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
       },
-      "sources": [],
+      "sources": [
+        {
+          "id": "kitsap-title-vi",
+          "url": "https://www.kitsaptransit.com/uploads/pdf/projects/kitsaptransittitleviprogram.pdf",
+          "title": "Kitsap Transit Title VI Program",
+          "publisher": "Kitsap Transit",
+          "sourceType": "title-vi-program",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "On-Time Performance Standard"
+        }
+      ],
       "notes": []
     },
     {
