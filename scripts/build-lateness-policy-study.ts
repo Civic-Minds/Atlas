@@ -213,6 +213,14 @@ const VERIFIED: Record<string, {
     },
     sources: [{ id: 'rtl-quality-standards', url: 'https://www.rtl-longueuil.qc.ca/fr-CA/rtl/historique/', title: 'RTL Quality Standards', publisher: 'Réseau de transport de Longueuil', sourceType: 'quality-standard', accessedAt: '2026-09-26', pagesOrSections: 'Normes de qualité / Ponctualité du service' }],
   },
+  colmar: {
+    schedule: {
+      definition: 'Trace Colmar defines punctuality and regularity as the bus passing between H−1 and H+3 minutes.',
+      notes: [],
+      sourceIds: ['trace-colmar-commitments'],
+    },
+    sources: [{ id: 'trace-colmar-commitments', url: 'https://www.trace-colmar.fr/nous-connaitre/notre-raison-detre/nos-engagements/', title: 'Trace Colmar Service Commitments', publisher: 'Trace Colmar / Colmar Agglomération', sourceType: 'service-standard', accessedAt: '2026-09-26', pagesOrSections: 'Démarche qualité / Ponctualité-régularité' }],
+  },
   sunline: {
     schedule: {
       definition: 'SunLine defines on-time as a trip departing a timepoint from 0 minutes early to 3 minutes late, with a 90% target for all services. Other SunLine reports use a 0-to-5-minute window with an 85% minimum target, so the source set records both versions.',

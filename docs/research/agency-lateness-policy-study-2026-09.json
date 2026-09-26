@@ -1,6 +1,6 @@
 {
   "studyVersion": "2026-09-26.v1",
-  "checkedAt": "2026-09-26T22:47:29.872Z",
+  "checkedAt": "2026-09-26T22:48:10.150Z",
   "sampleSeed": 20260926,
   "targetAgencyCount": 80,
   "sampleQuotas": {
@@ -2550,18 +2550,34 @@
         "customer pickup window"
       ],
       "schedulePunctuality": {
-        "status": "not_reviewed",
-        "definition": null,
-        "sourceIds": [],
+        "status": "definition_found",
+        "definition": "Trace Colmar defines punctuality and regularity as the bus passing between H−1 and H+3 minutes.",
+        "sourceIds": [
+          "trace-colmar-commitments"
+        ],
         "notes": []
       },
       "headwayReliability": {
-        "status": "not_reviewed",
+        "status": "not_found",
         "definition": null,
-        "sourceIds": [],
-        "notes": []
+        "sourceIds": [
+          "trace-colmar-commitments"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
       },
-      "sources": [],
+      "sources": [
+        {
+          "id": "trace-colmar-commitments",
+          "url": "https://www.trace-colmar.fr/nous-connaitre/notre-raison-detre/nos-engagements/",
+          "title": "Trace Colmar Service Commitments",
+          "publisher": "Trace Colmar / Colmar Agglomération",
+          "sourceType": "service-standard",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Démarche qualité / Ponctualité-régularité"
+        }
+      ],
       "notes": []
     },
     {

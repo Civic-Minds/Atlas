@@ -4,7 +4,7 @@
 - Sample seed: `20260926`
 - Sample: 80 agencies — Canada 20, United States 40, France 20
 - Scope: fixed-route scheduled service only; on-demand, paratransit, and reservation-window policies are excluded from the Atlas comparison
-- Status: sample initialized; 29 of 80 agencies have verified official source sets
+- Status: sample initialized; 30 of 80 agencies have verified official source sets
 
 ## Method
 
@@ -99,7 +99,7 @@ The reviewed agencies show that these are different concepts: schedule-adherence
 | Vitalis (Poitiers) | France | Nouvelle-Aquitaine | large | bus | static_scheduled | France / definition_found | not_reviewed | not_reviewed |
 | TIC (Compiègne) | France | Hauts-de-France | small | bus | static_scheduled | France / no_definition_found | not_reviewed | not_reviewed |
 | Twisto (Caen) | France | Normandie | medium | bus | static_scheduled | France / qualitative_definition_only | not_reviewed | not_reviewed |
-| Trace (Colmar) | France | Grand Est | medium | bus | static_scheduled | France / definition_found | not_reviewed | not_reviewed |
+| Trace (Colmar) | France | Grand Est | medium | bus | static_scheduled | France / definition_found | definition_found | not_found |
 | Vesoul | France | Bourgogne-Franche-Comté | unknown | bus | static_scheduled | France / no_definition_found | not_reviewed | not_reviewed |
 | Bibus (Brest) | France | Bretagne | medium | bus | static_scheduled | France / qualitative_definition_only | not_reviewed | not_reviewed |
 | Fil Bleu (Tours) | France | Centre-Val de Loire | medium | bus | static_scheduled | France / definition_found | not_reviewed | not_reviewed |
