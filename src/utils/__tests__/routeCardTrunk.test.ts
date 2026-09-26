@@ -48,6 +48,15 @@ describe('routeCardTrunk', () => {
     expect(shouldShowTrunkSummary(hsrWestBranches, 'evening')).toBe(true);
   });
 
+  it('allows an explicitly coded branch family with two shared stops', () => {
+    const branches = hsrWestBranches.slice(0, 2).map((branch, index) => ({
+      ...branch,
+      routeVariant: index === 0 ? '47' : '47A',
+      stopOrder: index === 0 ? ['a', 'm', 'b'] : ['x', 'm', 'b', 'y'],
+    }));
+    expect(shouldShowTrunkSummary(branches, 'pmPeak')).toBe(true);
+  });
+
   it('does not combine infrequent drop-off-only branches into the core', () => {
     const branches = [
       { ...hsrWestBranches[0], headway: 15, headwayByPeriod: { pmPeak: 15 } },

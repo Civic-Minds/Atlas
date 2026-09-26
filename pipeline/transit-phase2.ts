@@ -298,6 +298,7 @@ export function applyAnalysisCriteria(
                 : raw.warnings,
             daysIncluded: [raw.day],
             headsign: raw.headsign,
+            routeVariant: raw.routeVariant,
             shapeId: raw.shapeId,
             routeVariant: raw.routeVariant,
             ...resourceStats
@@ -406,6 +407,7 @@ export function applyAnalysisCriteria(
             warnings: allWarnings.length > 0 ? allWarnings : undefined,
             daysIncluded,
             headsign: rep.headsign,
+            routeVariant: rep.routeVariant,
             shapeId: rep.shapeId,
             routeVariant: rep.routeVariant,
             ...resourceStats

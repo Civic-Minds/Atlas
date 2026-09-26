@@ -8,6 +8,15 @@ export function routeCardDisplayHeadway(p: ShapeProperties, period: TimePeriod):
   // service. Keep limited branches out of normal route-card/list cadence rows.
   if (p.tier === 'span') return null;
 
+  // An infrequent branch can have a numeric median while still being too uneven
+  // to promise a regular cadence. Treat a materially larger longest gap as
+  // limited service for the active period.
+  if (period !== 'all' && p.tier === 'infrequent') {
+    const median = p.headwayByPeriod?.[period] ?? p.headway ?? null;
+    const longestGap = p.maxGapByPeriod?.[period];
+    if (median != null && longestGap != null && longestGap > median * 1.5) return null;
+  }
+
   // A period median marked as unsustained still describes the active period. Display that
   // period's cadence, never the all-day headline. Coverage data remains available to the
   // filter and the limited-service treatment elsewhere on the card.
