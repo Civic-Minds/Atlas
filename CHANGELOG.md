@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Agency rows no longer show distracting browser tooltips on hover.
 - Agency browsing now supports combining Live, History, Outdated, and region filters, with a visible hint that filters can be combined.
 - Agency status filters can now be clicked again to return to All agencies.
 - Agency status filters now have a clearer active state and no longer repeat the active status badge on every result row.

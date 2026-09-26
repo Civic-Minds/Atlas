@@ -493,7 +493,6 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                               key={a.slug}
                               onClick={() => { onAgencySelect?.(a.slug); onClose(); }}
                               className={AGENCY_LIST_ROW}
-                              title={a.name !== listLabel ? a.name : undefined}
                             >
                               <span className={AGENCY_LIST_PRIMARY}>
                                 {primary}
