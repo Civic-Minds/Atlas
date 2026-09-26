@@ -1,6 +1,7 @@
 {
   "slug": "rtc",
   "name": "RTC (Québec)",
+  "websiteUrl": "https://www.rtcquebec.ca",
   "region": "Quebec",
   "center": [
     46.8139,

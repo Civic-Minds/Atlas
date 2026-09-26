@@ -354,6 +354,7 @@
     {
       "slug": "grt",
       "name": "Grand River Transit (Waterloo Region)",
+      "websiteUrl": "http://www.grt.ca",
       "searchAliases": [
         "Kitchener",
         "Waterloo",
@@ -1364,6 +1365,7 @@
     {
       "slug": "rtc",
       "name": "RTC (Québec)",
+      "websiteUrl": "https://www.rtcquebec.ca",
       "region": "Quebec",
       "center": [
         46.8139,
@@ -1678,6 +1680,7 @@
     {
       "slug": "saint-hyacinthe",
       "name": "Ville de Saint-Hyacinthe",
+      "websiteUrl": "https://www.st-hyacinthe.ca/services-aux-citoyens/transport-collectif",
       "region": "Quebec",
       "center": [
         45.6335,
@@ -2264,6 +2267,7 @@
     {
       "slug": "regina",
       "name": "Regina Transit",
+      "websiteUrl": "http://www.regina.ca",
       "region": "Saskatchewan",
       "center": [
         50.4452,
@@ -3427,6 +3431,7 @@
     {
       "slug": "wrta",
       "name": "Worcester Regional Transit Authority",
+      "websiteUrl": "https://therta.com/",
       "region": "Massachusetts",
       "center": [
         42.262,
@@ -3876,6 +3881,7 @@
     {
       "slug": "kingcountymetro",
       "name": "King County Metro (Seattle)",
+      "websiteUrl": "https://kingcounty.gov/en/dept/metro",
       "center": [
         47.5,
         -122.3
@@ -3912,6 +3918,7 @@
     {
       "slug": "soundtransit",
       "name": "Sound Transit (Seattle)",
+      "websiteUrl": "https://www.soundtransit.org",
       "center": [
         47.5,
         -122.1
@@ -3999,6 +4006,7 @@
     {
       "slug": "communitytransit",
       "name": "Community Transit (Everett)",
+      "websiteUrl": "https://www.communitytransit.org/",
       "center": [
         47.9,
         -122.1
@@ -4033,6 +4041,7 @@
     {
       "slug": "everetttransit",
       "name": "Everett Transit",
+      "websiteUrl": "http://www.everetttransit.org/",
       "center": [
         47.97,
         -122.2
@@ -4104,6 +4113,7 @@
     {
       "slug": "intercitytransit",
       "name": "Intercity Transit (Olympia)",
+      "websiteUrl": "https://www.intercitytransit.com/",
       "center": [
         47.05,
         -122.9
@@ -4162,6 +4172,7 @@
     {
       "slug": "whatcomtransit",
       "name": "Whatcom Transportation Authority",
+      "websiteUrl": "https://www.ridewta.com/",
       "center": [
         48.75,
         -122.47
@@ -4359,6 +4370,7 @@
     {
       "slug": "hocts",
       "name": "HOCTS (Utica-Rome)",
+      "websiteUrl": "https://www.ocgov.net/oneida/planning/hocts",
       "center": [
         43.1,
         -75.23
@@ -4386,6 +4398,7 @@
     {
       "slug": "glensfallstransit",
       "name": "Greater Glens Falls Transit",
+      "websiteUrl": "https://gftransit.org/",
       "center": [
         43.3742,
         -73.667
@@ -4877,6 +4890,7 @@
     {
       "slug": "tillamook",
       "name": "Tillamook County Transportation District",
+      "websiteUrl": "https://nwconnector.org/agencies/tillamook-county-transportation-district/",
       "center": [
         45.4496,
         -123.3437
@@ -5056,6 +5070,7 @@
     {
       "slug": "sfmta",
       "name": "San Francisco Municipal Transportation Agency (SFMTA - Muni)",
+      "websiteUrl": "http://www.sfmta.com",
       "center": [
         37.7584,
         -122.4354
@@ -5294,6 +5309,7 @@
     {
       "slug": "goldengate",
       "name": "Golden Gate Transit",
+      "websiteUrl": "http://www.goldengate.org",
       "center": [
         37.9841,
         -122.5174
@@ -5810,6 +5826,7 @@
     {
       "slug": "westberkeley",
       "name": "West Berkeley Shuttle",
+      "websiteUrl": "http://westberkeleyshuttle.net/",
       "center": [
         37.8543,
         -122.2864
@@ -6377,6 +6394,7 @@
     {
       "slug": "yolobus",
       "name": "Yolo County Transportation District (Yolobus)",
+      "websiteUrl": "http://avl.yctd.org/",
       "center": [
         38.6169,
         -121.682
@@ -6733,6 +6751,7 @@
     {
       "slug": "torrance-transit",
       "name": "Torrance Transit",
+      "websiteUrl": "http://Transit.TorranceCA.gov",
       "center": [
         33.8586,
         -118.316
@@ -6809,6 +6828,7 @@
     {
       "slug": "gold-coast",
       "name": "Gold Coast Transit District (Oxnard)",
+      "websiteUrl": "http://www.goldcoasttransit.org",
       "center": [
         34.2396,
         -119.2042
@@ -7011,6 +7031,7 @@
     {
       "slug": "sdmts",
       "name": "Metropolitan Transit System (San Diego MTS)",
+      "websiteUrl": "http://www.sdmts.com",
       "center": [
         32.72,
         -117.16
@@ -7072,6 +7093,7 @@
     {
       "slug": "riverside",
       "name": "Riverside Transit Agency",
+      "websiteUrl": "http://www.riversidetransit.com",
       "center": [
         33.98,
         -117.37
@@ -7248,6 +7270,7 @@
     {
       "slug": "mst",
       "name": "Monterey-Salinas Transit (MST)",
+      "websiteUrl": "http://www.mst.org",
       "center": [
         36.6,
         -121.89
@@ -7417,6 +7440,7 @@
     {
       "slug": "rtcwashoe",
       "name": "Regional Transportation Commission of Washoe County (RTC Washoe)",
+      "websiteUrl": "http://www.rtcwashoe.com",
       "center": [
         39.53,
         -119.81
@@ -7633,6 +7657,7 @@
     {
       "slug": "abqride",
       "name": "ABQ RIDE (Albuquerque)",
+      "websiteUrl": "https://abqride.com",
       "center": [
         35.09,
         -106.65
@@ -7720,6 +7745,7 @@
     {
       "slug": "dart",
       "name": "Dallas Area Rapid Transit (DART)",
+      "websiteUrl": "https://www.dart.org",
       "center": [
         32.78,
         -96.8
@@ -7898,6 +7924,7 @@
     {
       "slug": "rockregion",
       "name": "Rock Region Metro (Little Rock)",
+      "websiteUrl": "https://rrmetro.org/",
       "center": [
         34.7362,
         -92.3139
@@ -7946,6 +7973,7 @@
     {
       "slug": "mata",
       "name": "Memphis Area Transit Authority",
+      "websiteUrl": "http://www.matatransit.com",
       "center": [
         35.1217,
         -89.9687
@@ -8066,6 +8094,7 @@
     {
       "slug": "mcts",
       "name": "Milwaukee County Transit System (MCTS)",
+      "websiteUrl": "http://www.ridemcts.com",
       "center": [
         43.0481,
         -87.9598
@@ -8195,6 +8224,7 @@
     {
       "slug": "culvercitybus",
       "name": "Culver City Bus",
+      "websiteUrl": "https://www.culvercity.org/how-do-i/find/culver-city-bus",
       "center": [
         34.0073,
         -118.4077
@@ -8249,6 +8279,7 @@
     {
       "slug": "montebello",
       "name": "Montebello Bus Lines",
+      "websiteUrl": "http://www.ridembl.com/",
       "center": [
         34.01,
         -118.11
@@ -8290,6 +8321,7 @@
     {
       "slug": "glendalebeeline",
       "name": "Glendale Beeline",
+      "websiteUrl": "http://glendalebeeline.com/",
       "center": [
         34.1695,
         -118.2399
@@ -8556,6 +8588,7 @@
     {
       "slug": "pace-bus",
       "name": "Pace Bus (Chicago suburbs)",
+      "websiteUrl": "https://www.pacebus.com",
       "center": [
         41.9,
         -87.8
@@ -8586,6 +8619,7 @@
     {
       "slug": "marta",
       "name": "MARTA (Atlanta)",
+      "websiteUrl": "https://www.itsmarta.com",
       "center": [
         33.749,
         -84.388
@@ -9634,6 +9668,7 @@
     {
       "slug": "nice",
       "name": "Nassau Inter-County Express (NICE Bus)",
+      "websiteUrl": "http://www.nicebus.com",
       "region": "New York",
       "center": [
         40.73,
@@ -11042,6 +11077,7 @@
     {
       "slug": "goraleigh",
       "name": "GoRaleigh (Capital Area Transit)",
+      "websiteUrl": "http://www.GoRaleigh.org",
       "center": [
         35.78,
         -78.64
@@ -11295,6 +11331,7 @@
     {
       "slug": "ripta",
       "name": "Rhode Island Public Transit Authority (RIPTA)",
+      "websiteUrl": "http://www.ripta.com/",
       "center": [
         41.82,
         -71.42
@@ -11373,6 +11410,7 @@
     {
       "slug": "palm-tran",
       "name": "Palm Tran (West Palm Beach)",
+      "websiteUrl": "http://www.palmtran.org",
       "center": [
         26.7,
         -80.1
@@ -11619,6 +11657,7 @@
     {
       "slug": "pgc-the-bus",
       "name": "Prince George's County (The Bus)",
+      "websiteUrl": "https://www.princegeorgescountymd.gov/1120/Countys-TheBus",
       "center": [
         38.85,
         -76.85
@@ -11668,6 +11707,7 @@
     {
       "slug": "fred-transit",
       "name": "Fredericksburg Regional Transit",
+      "websiteUrl": "http://www.ridefred.com/",
       "center": [
         38.3204,
         -77.4867
@@ -12139,6 +12179,7 @@
     {
       "slug": "carta-chattanooga",
       "name": "Chattanooga Area Regional Transportation Authority",
+      "websiteUrl": "http://www.gocarta.org",
       "center": [
         37.9735,
         -122.5732
@@ -12630,6 +12671,7 @@
     {
       "slug": "b-line",
       "name": "B-Line (Corpus Christi RTA)",
+      "websiteUrl": "https://www.ccrta.org/",
       "center": [
         27.7446,
         -97.3736
@@ -13025,6 +13067,7 @@
     {
       "slug": "rfta",
       "name": "Roaring Fork Transportation Authority (RFTA)",
+      "websiteUrl": "http://www.rfta.com/",
       "center": [
         39.4,
         -107.1
@@ -13431,6 +13474,7 @@
     {
       "slug": "wichita",
       "name": "Wichita Transit",
+      "websiteUrl": "http://www.wichitatransit.org",
       "region": "Kansas",
       "center": [
         37.69,
@@ -13566,6 +13610,7 @@
     {
       "slug": "augusta",
       "name": "Augusta Transit",
+      "websiteUrl": "http://www.augustaga.gov/",
       "center": [
         33.4594,
         -82.0294
@@ -14758,6 +14803,7 @@
     {
       "slug": "collier",
       "name": "Collier Area Transit (Naples)",
+      "websiteUrl": "https://ridecat.com/",
       "region": "Florida",
       "center": [
         26.14,
@@ -14827,6 +14873,7 @@
     {
       "slug": "evansville",
       "name": "METS (Evansville)",
+      "websiteUrl": "https://www.evansvillegov.org/city/department/index.php?structureid=225",
       "center": [
         37.9812,
         -87.5622
@@ -15682,6 +15729,7 @@
     {
       "slug": "juneau",
       "name": "Capital Transit (Juneau)",
+      "websiteUrl": "https://juneaucapitaltransit.org/",
       "center": [
         58.3,
         -134.42
@@ -16114,6 +16162,7 @@
     {
       "slug": "albany-ga",
       "name": "Albany Transit System",
+      "websiteUrl": "http://www.albanyga.gov/about-us/city-departments/albany-transit-system",
       "center": [
         31.5827,
         -84.1616
@@ -16199,6 +16248,7 @@
     {
       "slug": "grand-junction",
       "name": "Grand Valley Transit",
+      "websiteUrl": "https://gvt.mesacounty.us/para-transit-ada/",
       "center": [
         39.0871,
         -108.5512
@@ -16696,6 +16746,7 @@
     {
       "slug": "cheyenne",
       "name": "Cheyenne Transit Program",
+      "websiteUrl": "https://cheyennecity.org/Transit",
       "region": "Wyoming",
       "center": [
         41.1364,
@@ -16779,6 +16830,7 @@
     {
       "slug": "imperial-valley",
       "name": "Imperial Valley Transit",
+      "websiteUrl": "http://www.ivtransit.com/",
       "region": "California",
       "center": [
         32.8402,
@@ -17191,6 +17243,7 @@
     {
       "slug": "taft",
       "name": "Taft Area Transit",
+      "websiteUrl": "https://www.cityoftaft.org/pview.aspx?id=5385&catid=563",
       "region": "California",
       "center": [
         35.1036,

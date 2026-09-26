@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Added official website links for 53 expired-feed agencies recovered from their published GTFS metadata, so outdated-feed notices can point riders to current schedules.
 - Omaha Metro outdated-feed notices now link to the agency’s official website.
 - Outdated-feed notices now explain schedule periods, check history, and refresh timing in clearer language.
 - Expired-feed notices now use consistent numeric check counts, including “1 time” for a single check.

@@ -1,6 +1,7 @@
 {
   "slug": "wichita",
   "name": "Wichita Transit",
+  "websiteUrl": "http://www.wichitatransit.org",
   "region": "Kansas",
   "center": [
     37.69,
