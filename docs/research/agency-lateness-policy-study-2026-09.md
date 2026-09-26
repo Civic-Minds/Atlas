@@ -4,7 +4,7 @@
 - Sample seed: `20260926`
 - Sample: 80 agencies — Canada 20, United States 40, France 20
 - Scope: fixed-route scheduled service only; on-demand, paratransit, and reservation-window policies are excluded from the Atlas comparison
-- Status: sample initialized; 27 of 80 agencies have verified official source sets
+- Status: sample initialized; 28 of 80 agencies have verified official source sets
 
 ## Method
 
@@ -77,7 +77,7 @@ The current pipeline baseline is a minimum 5-minute grace, a 15% grace component
 | Regional Transportation District (RTD Denver) | United States | Colorado | large | mixed | static_scheduled | United States / qualitative_definition_only | definition_found | not_found |
 | Kalamazoo Metro Transit | United States | Michigan | medium | rail | static_scheduled | United States / no_definition_found | not_reviewed | not_reviewed |
 | Tompkins Consolidated Area Transit | United States | New York | medium | bus | static_scheduled | United States / definition_found | definition_found | not_found |
-| Antelope Valley Transit Authority (AVTA) | United States | California | medium | mixed | static_scheduled | United States / qualitative_definition_only | not_reviewed | not_reviewed |
+| Antelope Valley Transit Authority (AVTA) | United States | California | medium | mixed | static_scheduled | United States / qualitative_definition_only | definition_found | definition_found |
 | Santa Clarita Transit | United States | California | medium | bus | static_scheduled | United States / no_definition_found | not_reviewed | not_reviewed |
 | CityBus of Greater Lafayette | United States | Indiana | medium | bus | static_scheduled | United States / definition_found | not_reviewed | not_reviewed |
 | NFTA (Buffalo) | United States | New York | large | bus | static_scheduled | United States / qualitative_definition_only | definition_found | not_found |

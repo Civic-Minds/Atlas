@@ -192,6 +192,19 @@ const VERIFIED: Record<string, {
     },
     sources: [{ id: 'collier-service-standards', url: 'https://www.colliercountyfl.gov/home/showdocument?id=93262', title: 'System-Wide Service Standards', publisher: 'Collier Area Transit / Collier County', sourceType: 'service-standard', accessedAt: '2026-09-26', pagesOrSections: 'On-Time Performance' }],
   },
+  avta: {
+    schedule: {
+      definition: 'AVTA’s operating specification treats a trip as late when it departs a designated timepoint at least 10 minutes late or at least half the scheduled headway late, whichever threshold is smaller; it also penalizes early departures and requires at least 85% on-time performance.',
+      notes: ['The specification uses a headway-scaled lateness threshold rather than one fixed minute window.'],
+      sourceIds: ['avta-master-rfp-2025'],
+    },
+    headway: {
+      definition: 'AVTA defines a missed trip for service-quality enforcement as a scheduled trip not operated, and uses the smaller of half the route headway or 10 minutes as a late-trip threshold.',
+      notes: ['This is an enforcement threshold, not a statement that every observed headway must remain within that amount.'],
+      sourceIds: ['avta-master-rfp-2025'],
+    },
+    sources: [{ id: 'avta-master-rfp-2025', url: 'https://www.avta.com/downloads/AVTA_MASTER_RFP_2025-05-Formatted_Reviewed.pdf', title: 'AVTA Master RFP', publisher: 'Antelope Valley Transit Authority', sourceType: 'operating-specification', accessedAt: '2026-09-26', pagesOrSections: 'Schedule and Operations Related Liquidated Damages' }],
+  },
   sunline: {
     schedule: {
       definition: 'SunLine defines on-time as a trip departing a timepoint from 0 minutes early to 3 minutes late, with a 90% target for all services. Other SunLine reports use a 0-to-5-minute window with an 85% minimum target, so the source set records both versions.',

@@ -1,6 +1,6 @@
 {
   "studyVersion": "2026-09-26.v1",
-  "checkedAt": "2026-09-26T22:45:28.177Z",
+  "checkedAt": "2026-09-26T22:46:16.443Z",
   "sampleSeed": 20260926,
   "targetAgencyCount": 80,
   "sampleQuotas": {
@@ -1957,18 +1957,36 @@
         "customer pickup window"
       ],
       "schedulePunctuality": {
-        "status": "not_reviewed",
-        "definition": null,
-        "sourceIds": [],
-        "notes": []
+        "status": "definition_found",
+        "definition": "AVTA’s operating specification treats a trip as late when it departs a designated timepoint at least 10 minutes late or at least half the scheduled headway late, whichever threshold is smaller; it also penalizes early departures and requires at least 85% on-time performance.",
+        "sourceIds": [
+          "avta-master-rfp-2025"
+        ],
+        "notes": [
+          "The specification uses a headway-scaled lateness threshold rather than one fixed minute window."
+        ]
       },
       "headwayReliability": {
-        "status": "not_reviewed",
-        "definition": null,
-        "sourceIds": [],
-        "notes": []
+        "status": "definition_found",
+        "definition": "AVTA defines a missed trip for service-quality enforcement as a scheduled trip not operated, and uses the smaller of half the route headway or 10 minutes as a late-trip threshold.",
+        "sourceIds": [
+          "avta-master-rfp-2025"
+        ],
+        "notes": [
+          "This is an enforcement threshold, not a statement that every observed headway must remain within that amount."
+        ]
       },
-      "sources": [],
+      "sources": [
+        {
+          "id": "avta-master-rfp-2025",
+          "url": "https://www.avta.com/downloads/AVTA_MASTER_RFP_2025-05-Formatted_Reviewed.pdf",
+          "title": "AVTA Master RFP",
+          "publisher": "Antelope Valley Transit Authority",
+          "sourceType": "operating-specification",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Schedule and Operations Related Liquidated Damages"
+        }
+      ],
       "notes": []
     },
     {
