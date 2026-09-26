@@ -35,6 +35,17 @@ describe('effectiveRouteHeadway', () => {
     expect(routeListDisplayHeadway([p], 'midday')).toBeNull();
   });
 
+  it('does not show a regular cadence for a sparse infrequent branch', () => {
+    const p = {
+      ...base,
+      tier: 'infrequent',
+      headway: 43,
+      headwayByPeriod: { amPeak: 43 },
+      maxGapByPeriod: { amPeak: 70 },
+    } as ShapeProperties;
+    expect(routeCardDisplayHeadway(p, 'amPeak')).toBeNull();
+  });
+
   it('routeCardDisplayHeadway uses the same route-level metric as the filter', () => {
     const p = {
       ...base,

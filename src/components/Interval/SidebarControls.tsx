@@ -448,6 +448,13 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   const liveRouteShortName = liveAgencySlug ? currentRoute?.routeShortName ?? null : null;
   const { data: liveData, status: liveStatus } = useLiveAdherence(liveAgencySlug, liveRouteShortName);
 
+  const directionLabelOverrides = useMemo(() => {
+    if (!currentRoute) return undefined;
+    const slug = (currentRoute as any).agencySlug as string | undefined;
+    const agency = slug ? agencies.find(a => a.slug === slug) : undefined;
+    return agency?.directionLabels?.[currentRoute.routeShortName ?? ''];
+  }, [agencies, currentRoute]);
+
   // Group directions by directionId so outbound/inbound are visually separated,
   // and collapse multiple span patterns in the same group into one row.
   const directionGroups = useMemo(() => {
@@ -481,7 +488,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       const seen = new Map<string, ShapeProperties>();
       for (const d of g.realTier) {
         // Normalize for dedup (post-clean from data) to handle any remaining variants
-        const key = (d.headsign ?? '').trim().toLowerCase();
+        const key = `${(d.headsign ?? '').trim().toLowerCase()}::${(d.routeVariant ?? '').trim().toLowerCase()}`;
         const existing = seen.get(key);
         const branchValue = metricValueForPeriod(buildRouteServiceSummary(d).branch, period) ?? Infinity;
         const existingValue = existing ? metricValueForPeriod(buildRouteServiceSummary(existing).branch, period) ?? Infinity : Infinity;
@@ -492,7 +499,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     const groups = Array.from(map.values());
     if (groups.length > 1 && routeFeatures.length > 0) {
       const dirIds = groups.map(g => g.dirId);
-      const boundLabels = labelDirectionGroups(routeFeatures, dirIds);
+      const boundLabels = labelDirectionGroups(routeFeatures, dirIds, directionLabelOverrides);
       for (const g of groups) {
         const label = boundLabels.get(g.dirId);
         if (label) g.boundLabel = label;
@@ -504,7 +511,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       dedupeCrossDirectionHeadsigns(groups, routeFeatures);
     }
     return groups;
-  }, [currentRoute, period]);
+  }, [currentRoute, directionLabelOverrides, period]);
 
   const liveRouteInfo = useMemo(() => {
     if (!currentRoute) return null;

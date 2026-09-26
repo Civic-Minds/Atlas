@@ -30,7 +30,7 @@ const EXCLUDED_VARIANT_FAMILIES = new Set<string>([
 
 export interface VariantFamily {
   base: string;
-  members: { shortName: string; routeId: string; headway: number | null }[];
+  members: { shortName: string; routeId: string; headway: number | null; routeVariant?: string }[];
   /** Combined frequency where the variants overlap: 1 / Σ(1/hᵢ). */
   combinedHeadwayMin: number | null;
 }
@@ -51,6 +51,40 @@ export function findVariantFamily(
   if (!m) return null;
   const base = m[1];
   if (agencySlug && EXCLUDED_VARIANT_FAMILIES.has(`${agencySlug}::${base}`)) return null;
+
+  // Some feeds keep one route number for the whole family and put the rider-facing
+  // branch code on trips instead. GO 47 is the concrete case: route_short_name stays
+  // "47", while trips carry 47A/47B/47D/47G in route_variant.
+  const explicitByVariant = new Map<string, { routeId: string; best: number | null }>();
+  for (const p of agencyFeatures) {
+    if (p.routeShortName !== shortName) continue;
+    const variant = p.routeVariant?.trim();
+    if (!variant || !p.routeId) continue;
+    const hw = effectiveRouteHeadway(p, period);
+    const cur = explicitByVariant.get(variant);
+    if (!cur) explicitByVariant.set(variant, { routeId: String(p.routeId), best: hw });
+    else if (hw != null && (cur.best == null || hw < cur.best)) cur.best = hw;
+  }
+  if (explicitByVariant.size >= 2) {
+    const members = [...explicitByVariant.entries()]
+      .map(([routeVariant, value]) => ({
+        shortName: routeVariant,
+        routeVariant,
+        routeId: value.routeId,
+        headway: value.best,
+      }))
+      .sort((a, b) => a.shortName.localeCompare(b.shortName, undefined, { numeric: true }));
+    let inv = 0;
+    let counted = 0;
+    for (const member of members) {
+      if (member.headway != null && member.headway > 0) { inv += 1 / member.headway; counted++; }
+    }
+    return {
+      base,
+      members,
+      combinedHeadwayMin: counted >= 2 && inv > 0 ? Math.round(1 / inv) : null,
+    };
+  }
 
   const byShort = new Map<string, { routeId: string; best: number | null; shapes: ShapeProperties[] }>();
   for (const p of agencyFeatures) {

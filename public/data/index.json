@@ -330,6 +330,12 @@
         "Barrie, Ontario"
       ],
       "timezone": "America/Toronto",
+      "directionLabels": {
+        "47": {
+          "0": "Eastbound",
+          "1": "Westbound"
+        }
+      },
       "lastFeedCheckAt": "20260907",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,

@@ -18,6 +18,18 @@ describe('findVariantFamily', () => {
     expect(family?.members.map(m => m.shortName).sort()).toEqual(['1', '1A', '1B']);
   });
 
+  it('groups GO-style trip branch codes when route_short_name is shared', () => {
+    const features = [
+      { ...feature('47', '47', 60), routeVariant: '47', directionId: 1 },
+      { ...feature('47', '47', 45), routeVariant: '47A', directionId: 1 },
+      { ...feature('47', '47', 45), routeVariant: '47D', directionId: 1 },
+      { ...feature('12', '12', 5), routeVariant: '47A', directionId: 1 },
+    ] as ShapeProperties[];
+    const family = findVariantFamily(features, '47', 'midday', 'go');
+    expect(family?.members.map(m => m.shortName)).toEqual(['47', '47A', '47D']);
+    expect(family?.combinedHeadwayMin).toBe(16);
+  });
+
   it('does not group excluded agency/base pairs even when names match the pattern (#294)', () => {
     const features = [
       feature('16', '1A', 20),
