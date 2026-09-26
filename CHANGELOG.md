@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- History agency rows now use the exact shared agency-browser styling.
 - History agency cards now distinguish archived routes from the full current network.
 - History year slider interactions no longer pan or zoom the map underneath them.
 - History agency rows now match the borderless agency browser styling.

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { ChevronLeft, ChevronRight, X, Search, TrendingUp } from 'lucide-react';
 import { useHistoryMapOverlay } from '../context/HistoryMapOverlay';
 import { R2_PUBLIC_URL, type HeadwayByPeriod } from '../../shared/config';
-import { FLOATING_CARD, PANEL_ENTER, TRANSITION_SLOW, SEARCH_PILL, SEARCH_FIELD, LIST_ROW, Z_PANEL, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH, CONTROL_ACTIVE } from '../styles';
+import { FLOATING_CARD, PANEL_ENTER, TRANSITION_SLOW, SEARCH_PILL, SEARCH_FIELD, LIST_ROW, AGENCY_LIST_ROW, AGENCY_LIST_PRIMARY, Z_PANEL, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH, CONTROL_ACTIVE } from '../styles';
 import RouteListRow from '../components/RouteListRow';
 import { shortenAgencyName } from '../utils/format';
 import { useColorVision } from '../context/ColorVisionContext';
@@ -710,21 +710,22 @@ export default function History({ active, initialAgencySlug, onInfoOpen, query, 
                 <div key={region}>
                   <p className="px-4 pt-3 pb-1 text-[10px] font-bold text-[var(--text-dim)]">{region}</p>
                   {agencies.map(agency => (
-                    <RouteListRow
+                    <button
                       key={agency.slug}
-                      shortName={shortenAgencyName(agency.name)}
-                      subtitle={
-                        <p className="text-[9px] text-[var(--text-dim)] mt-0.5">
-                          {agency.routes.length} route{agency.routes.length !== 1 ? 's' : ''}
-                        </p>
-                      }
                       onClick={() => {
                         saveRecentSearch(query);
                         setSelectedSlug(agency.slug);
                       }}
-                      variant="spaced"
-                      right={<ChevronRight className="w-3.5 h-3.5 text-[var(--text-dim)] group-hover:text-[var(--accent)] transition-colors shrink-0" />}
-                    />
+                      className={AGENCY_LIST_ROW}
+                    >
+                      <span className="min-w-0">
+                        <span className={AGENCY_LIST_PRIMARY}>{shortenAgencyName(agency.name)}</span>
+                        <span className="block text-[10px] text-[var(--text-muted)]">
+                          {agency.routes.length} route{agency.routes.length !== 1 ? 's' : ''}
+                        </span>
+                      </span>
+                      <ChevronRight className="w-3.5 h-3.5 text-[var(--text-dim)] shrink-0" />
+                    </button>
                   ))}
                 </div>
               ))}
