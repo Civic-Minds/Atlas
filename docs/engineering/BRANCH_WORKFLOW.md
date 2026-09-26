@@ -1,6 +1,6 @@
 # Branch and Deployment Workflow
 
-Atlas has one source branch and two deployments. The `main` branch is the source of truth for both production and beta; beta is a Vercel environment, not a second code branch.
+Atlas has one source branch and three deployments. The `main` branch is the source of truth for Public, Preview, and Beta; deployment mode is a Vercel environment setting, not a code branch.
 
 ## Branches
 
@@ -19,16 +19,17 @@ git pull --ff-only origin main
 git switch -c fix/short-description
 ```
 
-## Beta and production
+## Deployments
 
-Both Vercel projects build the same `main` commit:
+All Vercel projects build the same `main` commit:
 
-| Deployment | Vercel project | Environment | Beta flags |
+| Deployment | Mode | Update policy | Purpose |
 |---|---|---|---|
-| Production | `atlas` | Production | off unless deliberately graduated |
-| Beta | `atlas-beta` | Production | on for approved testing |
+| Public | `public` | Automatic from `main` | Public site |
+| Preview | `preview` | Automatic from `main` | Stable outreach/demo link for agencies |
+| Beta | `beta` | Manual promotion from `main` | Experimental feature validation |
 
-Keep differences between the deployments in project-scoped Vercel environment variables, not source branches. `VITE_BETA_BUILD=true` labels beta builds; it is not a source-code fork.
+Keep differences between the deployments in project-scoped Vercel environment variables, not source branches. `VITE_ATLAS_MODE` is the source of truth; legacy `VITE_BETA_BUILD` and `VITE_PREVIEW_BUILD` values are compatibility fallbacks only.
 
 Every pull request runs the normal build and a second build with the beta flags enabled. A green beta build proves that the same source can serve both deployments; it does not approve a feature for production.
 
@@ -40,6 +41,12 @@ Every pull request runs the normal build and a second build with the beta flags 
 4. Keep immature features behind an environment flag so beta can validate them without branch drift.
 5. Update `[Unreleased]`, commit the logical change, and open a PR into `main`.
 6. Merge only after CI, preview checks, and the required data/UI validation pass.
+
+## Deployment verification
+
+Run `npm run verify:deployments` after a deployment change or when a hosted site appears stale. It checks that each hostname serves its app shell and the matching mode-specific catalog rather than falling back to `index.json`. The check accepts `ATLAS_PUBLIC_URL`, `ATLAS_PREVIEW_URL`, and `ATLAS_BETA_URL` overrides for protected or temporary hostnames.
+
+For Preview, also open the outreach URL and verify the current on-demand demo manually. The catalog check catches stale builds; the browser check confirms the map overlay and route interactions.
 
 When a beta feature is ready for everyone, graduate its production environment flag in a separate, deliberate change. Do not merge a beta branch to achieve that.
 

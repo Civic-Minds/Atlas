@@ -56,11 +56,11 @@ All product work lands on `main`. The beta deployment follows the same commit as
 
 ## Deployment separation
 
-Keep two Vercel deployments pointed at the same repository and `main` branch:
+Keep three Vercel deployments pointed at the same repository and `main` branch:
 
-1. Production (`www.transitatlas.fyi`): `VITE_ATLAS_MODE=public`.
-2. Preview (`preview.transitatlas.fyi`): `VITE_ATLAS_MODE=preview`.
-3. Beta (`beta.transitatlas.fyi`): `VITE_ATLAS_MODE=beta`.
+1. Production (`www.transitatlas.fyi`): `VITE_ATLAS_MODE=public`, automatic from `main`.
+2. Preview (`preview.transitatlas.fyi`): `VITE_ATLAS_MODE=preview`, automatic from `main`; this is the stable outreach link for agency contacts.
+3. Beta (`beta.transitatlas.fyi`): `VITE_ATLAS_MODE=beta`, manually promoted from a validated `main` deployment.
 
 The beta deployment may be a separate Vercel project so both sites can automatically rebuild from `main` with different environment values. Do not restore a long-lived beta Git branch just to hold these settings. If beta access ever needs to be limited to named testers, add access control at the deployment boundary; do not make the production client guess whether a user is allowed to see an internal tool.
 
@@ -68,11 +68,11 @@ The beta deployment may be a separate Vercel project so both sites can automatic
 
 The production project and beta project must be separate because Vercel environment variables are project-scoped; there is no supported way to inject beta flags into one deployment while leaving another deployment of that project unchanged.
 
-1. Create or use the beta Vercel project and set its production branch to `main`.
-2. Add the beta-only `VITE_*` variables to that project's Production environment. Keep the production project's Production environment unset or `false`.
-3. Deploy the beta project and verify its generated deployment URL while it is still private/protected.
-4. Attach `beta.transitatlas.fyi` to the beta project, verify the public hostname, then remove that hostname from the old branch-based project.
-5. Keep the old beta project/branch available until the new hostname and production site have both been checked; retire it only after the cutover is confirmed.
+1. Create or use the Preview and Beta Vercel projects and set both production branches to `main`.
+2. Set `VITE_ATLAS_MODE=preview` in the Preview project and `VITE_ATLAS_MODE=beta` plus approved beta flags in the Beta project. Keep the production project on `public`.
+3. Deploy each project and verify the generated deployment URL with `npm run verify:deployments` using temporary hostname overrides.
+4. Attach the stable domains, verify them again, and confirm Preview shows the current on-demand outreach demo.
+5. Keep the old branch-based project available until both stable hostnames are confirmed; retire it only after the cutover is complete.
 
 The beta project currently uses the Vite framework/output configuration (`dist`). A Vercel deployment can show a successful `npm run build` and still fail afterward if its Output Directory is incorrectly set to `build`.
 

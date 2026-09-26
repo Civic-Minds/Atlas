@@ -43,6 +43,7 @@
     "benchmark": "node scripts/benchmark-atlas.mjs",
     "record-feed-review": "npx tsx scripts/record-feed-review.ts",
     "verify:live-contract": "npx tsx scripts/verify-live-contract.ts",
+    "verify:deployments": "node scripts/verify-deployments.mjs",
     "sync-feed-refresh-meta": "npx tsx scripts/sync-feed-refresh-meta.ts",
     "audit-frequency": "npx tsx scripts/audit-frequency.ts",
     "audit-feed-freshness": "npx tsx scripts/audit-feed-freshness.ts",
