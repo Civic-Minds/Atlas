@@ -149,6 +149,17 @@ const VERIFIED: Record<string, {
     },
     sources: [{ id: 'hart-kpi-dashboard', url: 'https://www.gohart.org/Pages/AboutUS-KPI.aspx', title: 'HART Planning and Performance Indicators', publisher: 'Hillsborough Area Regional Transit', sourceType: 'performance-dashboard', accessedAt: '2026-09-26', pagesOrSections: 'On Time Performance at Timepoints' }],
   },
+  miway: {
+    schedule: {
+      definition: 'MiWay’s 2024 asset-management plan defines a bus as on time when it is between 1 minute early and 5 minutes late. A later 2025 plan reports a methodology change to 2 minutes early and 4 minutes late, so both periods are recorded.',
+      notes: ['The agency has changed its measurement window; the study does not collapse the two definitions into one current rule.'],
+      sourceIds: ['miway-2024-asset-plan', 'miway-2025-asset-plan'],
+    },
+    sources: [
+      { id: 'miway-2024-asset-plan', url: 'https://www.mississauga.ca/wp-content/uploads/2024/06/27113648/2024-corporate-asset-management-plan.pdf', title: '2024 Corporate Asset Management Plan', publisher: 'City of Mississauga', sourceType: 'asset-plan', accessedAt: '2026-09-26', pagesOrSections: 'Transit / On-Time Performance' },
+      { id: 'miway-2025-asset-plan', url: 'https://www.mississauga.ca/wp-content/uploads/2025/06/03145826/2025-Corporate-Asset-Management-Plan.pdf', title: '2025 Corporate Asset Management Plan', publisher: 'City of Mississauga', sourceType: 'asset-plan', accessedAt: '2026-09-26', pagesOrSections: 'Transit’s Level of Service' },
+    ],
+  },
   sunline: {
     schedule: {
       definition: 'SunLine defines on-time as a trip departing a timepoint from 0 minutes early to 3 minutes late, with a 90% target for all services. Other SunLine reports use a 0-to-5-minute window with an 85% minimum target, so the source set records both versions.',
