@@ -14,6 +14,7 @@ describe('isAgencyVisibleInBrowser', () => {
 
   it('shows hidden agencies only in dev or beta when marked beta-only', () => {
     expect(isAgencyVisibleInBrowser({ hiddenInProduction: true }, { mode: 'dev' })).toBe(true);
+    expect(isAgencyVisibleInBrowser({ hiddenInProduction: true, betaOnly: true }, { mode: 'preview' })).toBe(true);
     expect(isAgencyVisibleInBrowser({ hiddenInProduction: true, betaOnly: true }, { mode: 'beta' })).toBe(true);
     expect(isAgencyVisibleInBrowser({ hiddenInProduction: true, betaOnly: true }, production)).toBe(false);
     expect(isAgencyVisibleInBrowser({ hiddenInProduction: true }, { mode: 'beta' })).toBe(false);

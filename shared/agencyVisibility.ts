@@ -16,5 +16,5 @@ export function isAgencyVisibleInBrowser(
   context: AgencyVisibilityContext,
 ): boolean {
   if (agency.staged) return false;
-  return !agency.hiddenInProduction || context.mode === 'dev' || (context.mode === 'beta' && agency.betaOnly === true);
+  return !agency.hiddenInProduction || context.mode === 'dev' || ((context.mode === 'preview' || context.mode === 'beta') && agency.betaOnly === true);
 }
