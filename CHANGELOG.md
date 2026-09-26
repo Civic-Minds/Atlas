@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Omaha Metro outdated-feed notices now link to the agency’s official website.
 - Outdated-feed notices now explain schedule periods, check history, and refresh timing in clearer language.
 - Expired-feed notices now use consistent numeric check counts, including “1 time” for a single check.
 - Agency rows no longer show distracting browser tooltips on hover.
