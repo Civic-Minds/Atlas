@@ -46,6 +46,38 @@ const VERIFIED: Record<string, {
   headway?: { definition: string; notes: string[]; sourceIds: string[] };
   sources: StudyRecord['sources'];
 }> = {
+  brampton: {
+    schedule: {
+      definition: 'Brampton defines an on-time bus as service delivered between 3 minutes early and 5 minutes late from the scheduled time, with a 90% target.',
+      notes: [],
+      sourceIds: ['brampton-otp'],
+    },
+    sources: [{ id: 'brampton-otp', url: 'https://performancedashboard.brampton.ca/transit-mobility/transit-on-time-performance/', title: 'Transit On-Time Performance', publisher: 'City of Brampton', sourceType: 'performance-dashboard', accessedAt: '2026-09-26', pagesOrSections: 'How is this measured?' }],
+  },
+  grt: {
+    schedule: {
+      definition: 'Grand River Transit requires no early departures and allows 0–3 minutes late for 90–95% of service, depending on route type and time period; express routes have a 95% target, while other routes have a 90% weekday-peak and 95% off-peak target.',
+      notes: ['This is a time-period and route-type-specific policy, not one network-wide percentage.'],
+      sourceIds: ['grt-business-plan'],
+    },
+    sources: [{ id: 'grt-business-plan', url: 'https://www.regionofwaterloo.ca/en/regional-government/resources/PW/APA2015-0811.pdf', title: 'GRT Business Plan On-Time Performance Service Standard', publisher: 'Region of Waterloo', sourceType: 'service-standard', accessedAt: '2026-09-26', pagesOrSections: 'Appendix A, On-time Performance' }],
+  },
+  hamilton: {
+    schedule: {
+      definition: 'Hamilton HSR defines on-time service as no more than 2 minutes early and no more than 5 minutes late compared with the published schedule.',
+      notes: [],
+      sourceIds: ['hamilton-otp'],
+    },
+    sources: [{ id: 'hamilton-otp', url: 'https://www.hamilton.ca/index.php/search?page=1251%2C78%2C699%2C167%2C3%2C216%2C44', title: 'HSR Bus On Time Service', publisher: 'City of Hamilton', sourceType: 'service-definition', accessedAt: '2026-09-26', pagesOrSections: 'HSR Bus On Time Service search result' }],
+  },
+  london: {
+    schedule: {
+      definition: 'London’s rapid-transit planning report treats timepoints within 0–5 minutes of scheduled departures as on time; later departures are late. It also identifies trips departing more than 20 minutes after their first scheduled departure as missed trips.',
+      notes: ['This source is a rapid-transit planning report rather than a complete conventional-bus network policy.'],
+      sourceIds: ['london-rapid-transit'],
+    },
+    sources: [{ id: 'london-rapid-transit', url: 'https://london.ca/sites/default/files/2026-04/Rapid%20Transit%20Readiness%20and%20Route%20Planning%20Report%20-%20May%202026.pdf', title: 'Rapid Transit Readiness & Route Planning', publisher: 'City of London', sourceType: 'planning-report', accessedAt: '2026-09-26', pagesOrSections: 'Monitoring and Key Performance Indicators' }],
+  },
   niagara: {
     schedule: {
       definition: 'Niagara’s fixed-route guideline says vehicles should be no more than 1 minute early and no more than 5 minutes late at published timing points, 90% of the time; buses should not depart early from published timing points.',

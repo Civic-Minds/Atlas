@@ -4,7 +4,7 @@
 - Sample seed: `20260926`
 - Sample: 80 agencies — Canada 20, United States 40, France 20
 - Scope: schedule punctuality and headway/frequency reliability, recorded separately
-- Status: sample initialized; 7 agency schedule-policy records have verified official sources
+- Status: sample initialized; 11 agency schedule-policy records have verified official sources
 
 ## Method
 
@@ -38,7 +38,7 @@ The current pipeline baseline is a minimum 5-minute grace, a 15% grace component
 | Guelph Transit | Canada | Ontario | medium | bus | Canada / definition_found | not_reviewed | not_reviewed |
 | Barrie Transit | Canada | Ontario | medium | bus | Canada / qualitative_definition_only | not_reviewed | not_reviewed |
 | St. Thomas Transit | Canada | Ontario | small | bus | Canada / no_definition_found | not_reviewed | not_reviewed |
-| Grand River Transit (Waterloo Region) | Canada | Ontario | large | bus | Canada / definition_found | not_reviewed | not_reviewed |
+| Grand River Transit (Waterloo Region) | Canada | Ontario | large | bus | Canada / definition_found | definition_found | not_reviewed |
 | BC Transit (Comox Valley) | Canada | British Columbia | small | bus | Canada / qualitative_definition_only | not_reviewed | not_reviewed |
 | Ville de Saint-Hyacinthe | Canada | Quebec | small | bus | Canada / no_definition_found | not_reviewed | not_reviewed |
 | UP Express (Toronto) | Canada | Ontario | small | bus | Canada / definition_found | not_reviewed | not_reviewed |

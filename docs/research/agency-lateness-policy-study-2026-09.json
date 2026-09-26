@@ -1,6 +1,6 @@
 {
   "studyVersion": "2026-09-26.v1",
-  "checkedAt": "2026-09-26T22:35:15.123Z",
+  "checkedAt": "2026-09-26T22:36:06.899Z",
   "sampleSeed": 20260926,
   "targetAgencyCount": 80,
   "sampleQuotas": {
@@ -271,10 +271,14 @@
       "sizeBand": "large",
       "modeFamily": "bus",
       "schedulePunctuality": {
-        "status": "not_reviewed",
-        "definition": null,
-        "sourceIds": [],
-        "notes": []
+        "status": "definition_found",
+        "definition": "Grand River Transit requires no early departures and allows 0–3 minutes late for 90–95% of service, depending on route type and time period; express routes have a 95% target, while other routes have a 90% weekday-peak and 95% off-peak target.",
+        "sourceIds": [
+          "grt-business-plan"
+        ],
+        "notes": [
+          "This is a time-period and route-type-specific policy, not one network-wide percentage."
+        ]
       },
       "headwayReliability": {
         "status": "not_reviewed",
@@ -282,7 +286,17 @@
         "sourceIds": [],
         "notes": []
       },
-      "sources": [],
+      "sources": [
+        {
+          "id": "grt-business-plan",
+          "url": "https://www.regionofwaterloo.ca/en/regional-government/resources/PW/APA2015-0811.pdf",
+          "title": "GRT Business Plan On-Time Performance Service Standard",
+          "publisher": "Region of Waterloo",
+          "sourceType": "service-standard",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Appendix A, On-time Performance"
+        }
+      ],
       "notes": []
     },
     {
