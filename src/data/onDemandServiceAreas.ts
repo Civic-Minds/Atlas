@@ -4,6 +4,7 @@ import { METRO_MICRO_FLEX_FEATURES } from './metroMicroFlexData';
 import { C_TRAN_CURRENT_FLEX_FEATURES } from './ctranCurrentFlexData';
 import { C_TRAN_CURRENT_FLEX_STOPS } from './ctranCurrentFlexStops';
 import type { OnDemandAvailability } from '../../shared/onDemandAvailability';
+import { BETA_ROLLOUT_NOTICE } from '../../shared/rolloutNotice';
 
 /**
  * Agency-owned service-area geometry for services that do not publish route
@@ -168,7 +169,7 @@ export const BWG_ON_DEMAND_AGENCY = {
   onDemandOnly: true,
   hiddenInProduction: true,
   betaOnly: true,
-  rolloutNotice: 'This service is currently available only in Atlas preview and beta. It is not included in the public version.',
+  rolloutNotice: BETA_ROLLOUT_NOTICE,
   websiteUrl: 'https://www.townofbwg.com/living-in-bwg/roads-and-transit/transit/',
   onDemandServiceArea: {
     features: [BWG_ON_DEMAND_SERVICE_AREA],
@@ -192,7 +193,7 @@ export const CALEDON_ON_DEMAND_AGENCY = {
   onDemandOnly: true,
   hiddenInProduction: true,
   betaOnly: true,
-  rolloutNotice: 'This service is currently available only in Atlas preview and beta. It is not included in the public version.',
+  rolloutNotice: BETA_ROLLOUT_NOTICE,
   websiteUrl: 'https://www.caledon.ca/en/town-services/transit.aspx',
   onDemandServiceArea: {
     features: CALEDON_ON_DEMAND_SERVICE_AREAS,
@@ -216,7 +217,7 @@ export const BRAMPTON_ON_DEMAND_AGENCY = {
   onDemandOnly: true,
   hiddenInProduction: true,
   betaOnly: true,
-  rolloutNotice: 'This service is currently available only in Atlas preview and beta. It is not included in the public version.',
+  rolloutNotice: BETA_ROLLOUT_NOTICE,
   websiteUrl: 'https://www.brampton.ca/EN/residents/transit/Pages/Welcome.aspx',
   onDemandServiceArea: {
     features: BRAMPTON_ON_DEMAND_SERVICE_AREAS,

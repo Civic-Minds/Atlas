@@ -13,7 +13,6 @@
   "lastRefreshedAt": "2026-08-15",
   "hiddenInProduction": true,
   "betaOnly": true,
-  "rolloutNotice": "This service is currently available only in Atlas preview and beta. It is not included in the public version.",
   "rolloutIssueUrl": "https://github.com/Civic-Minds/Atlas/issues/389",
   "pmtilesPending": true,
   "websiteUrl": "https://www.lemet.fr/",

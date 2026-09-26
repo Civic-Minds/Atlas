@@ -15,6 +15,7 @@ import { routeListDisplayHeadway } from '../../utils/effectiveHeadway';
 import { CARD_TITLE, CardDirectionRow, CardHelpNotice, CardReportButton } from './cardUi';
 import { buildRouteFacts } from '../../utils/routeFacts';
 import { currentAtlasUrl } from '../../utils/reportIssue';
+import { getRolloutNotice } from '../../../shared/rolloutNotice';
 
 interface RouteRow {
   routeId: string;
@@ -338,6 +339,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
     () => agencyDisplayParts(agency.name, agency.cities, agency.displayArea),
     [agency.name, agency.cities, agency.displayArea],
   );
+  const rolloutNotice = getRolloutNotice(agency);
 
   if (onDemandFocus && agency.onDemandServiceArea) {
     const service = agency.onDemandServiceArea;
@@ -485,15 +487,15 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
           )}
           </>
           )}
-          {(agency.feedReviewStatus === 'review' || agency.overrideNote || agency.rolloutNotice) && onInfoOpen && (
+          {(agency.feedReviewStatus === 'review' || agency.overrideNote || rolloutNotice) && onInfoOpen && (
             <div className={`${CARD_NOTICE_FOOTER} space-y-1`}>
-              {agency.rolloutNotice && (
+              {rolloutNotice && (
                 <CardHelpNotice
-                  message={agency.rolloutNotice}
+                  message={rolloutNotice}
                   onLearnMore={() => onInfoOpen('about', {
                     helpTopic: 'beta-rollout',
                     agencyName: agency.name,
-                    rolloutNotice: agency.rolloutNotice,
+                    rolloutNotice,
                     rolloutIssueUrl: agency.rolloutIssueUrl,
                   })}
                 />
