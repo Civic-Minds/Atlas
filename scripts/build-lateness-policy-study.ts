@@ -128,6 +128,27 @@ const VERIFIED: Record<string, {
     },
     sources: [{ id: 'tcl-customer-charter', url: 'https://www.tcl.fr/sites/default/files/2019-07/CHARTE%2BCLIENTS%2BTCL.PDF', title: 'TCL Customer Charter', publisher: 'TCL / SYTRAL Mobilités', sourceType: 'customer-charter', accessedAt: '2026-09-26', pagesOrSections: 'Punctuality and regularity of lines' }],
   },
+  augusta: {
+    schedule: {
+      definition: 'Augusta Transit considers a vehicle on time when it departs a scheduled time point no more than 1 minute early and no more than 5 minutes late, with an objective of at least 90%.',
+      notes: [],
+      sourceIds: ['augusta-title-vi-2024'],
+    },
+    headway: {
+      definition: 'Augusta Transit publishes policy headways by route family and period, including 40-minute peak headways and 40- to 80-minute base or evening headways, but does not state an allowed deviation from those headways.',
+      notes: ['This is a scheduled service standard, not a headway-regularity tolerance.'],
+      sourceIds: ['augusta-title-vi-2024'],
+    },
+    sources: [{ id: 'augusta-title-vi-2024', url: 'https://www.augustaga.gov/DocumentCenter/View/19838/Augusta-Transit-Title-VI-Plan-May-2024-051024-ADOPTED', title: 'Augusta Transit Title VI Plan', publisher: 'Augusta-Richmond County', sourceType: 'title-vi-plan', accessedAt: '2026-09-26', pagesOrSections: 'Vehicle Headway; On-Time Performance' }],
+  },
+  hart: {
+    schedule: {
+      definition: 'HART’s published KPI defines on-time performance at timepoints as departures from 1 minute early through 5 minutes late.',
+      notes: ['The source describes the metric but does not provide a systemwide percentage target in the reviewed page.'],
+      sourceIds: ['hart-kpi-dashboard'],
+    },
+    sources: [{ id: 'hart-kpi-dashboard', url: 'https://www.gohart.org/Pages/AboutUS-KPI.aspx', title: 'HART Planning and Performance Indicators', publisher: 'Hillsborough Area Regional Transit', sourceType: 'performance-dashboard', accessedAt: '2026-09-26', pagesOrSections: 'On Time Performance at Timepoints' }],
+  },
   sunline: {
     schedule: {
       definition: 'SunLine defines on-time as a trip departing a timepoint from 0 minutes early to 3 minutes late, with a 90% target for all services. Other SunLine reports use a 0-to-5-minute window with an 85% minimum target, so the source set records both versions.',

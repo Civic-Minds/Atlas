@@ -1,6 +1,6 @@
 {
   "studyVersion": "2026-09-26.v1",
-  "checkedAt": "2026-09-26T22:43:35.271Z",
+  "checkedAt": "2026-09-26T22:44:16.281Z",
   "sampleSeed": 20260926,
   "targetAgencyCount": 80,
   "sampleQuotas": {
@@ -1332,18 +1332,36 @@
         "customer pickup window"
       ],
       "schedulePunctuality": {
-        "status": "not_reviewed",
-        "definition": null,
-        "sourceIds": [],
-        "notes": []
+        "status": "definition_found",
+        "definition": "HART’s published KPI defines on-time performance at timepoints as departures from 1 minute early through 5 minutes late.",
+        "sourceIds": [
+          "hart-kpi-dashboard"
+        ],
+        "notes": [
+          "The source describes the metric but does not provide a systemwide percentage target in the reviewed page."
+        ]
       },
       "headwayReliability": {
-        "status": "not_reviewed",
+        "status": "not_found",
         "definition": null,
-        "sourceIds": [],
-        "notes": []
+        "sourceIds": [
+          "hart-kpi-dashboard"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
       },
-      "sources": [],
+      "sources": [
+        {
+          "id": "hart-kpi-dashboard",
+          "url": "https://www.gohart.org/Pages/AboutUS-KPI.aspx",
+          "title": "HART Planning and Performance Indicators",
+          "publisher": "Hillsborough Area Regional Transit",
+          "sourceType": "performance-dashboard",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "On Time Performance at Timepoints"
+        }
+      ],
       "notes": []
     },
     {
@@ -1440,18 +1458,34 @@
         "customer pickup window"
       ],
       "schedulePunctuality": {
-        "status": "not_reviewed",
-        "definition": null,
-        "sourceIds": [],
+        "status": "definition_found",
+        "definition": "Augusta Transit considers a vehicle on time when it departs a scheduled time point no more than 1 minute early and no more than 5 minutes late, with an objective of at least 90%.",
+        "sourceIds": [
+          "augusta-title-vi-2024"
+        ],
         "notes": []
       },
       "headwayReliability": {
-        "status": "not_reviewed",
-        "definition": null,
-        "sourceIds": [],
-        "notes": []
+        "status": "definition_found",
+        "definition": "Augusta Transit publishes policy headways by route family and period, including 40-minute peak headways and 40- to 80-minute base or evening headways, but does not state an allowed deviation from those headways.",
+        "sourceIds": [
+          "augusta-title-vi-2024"
+        ],
+        "notes": [
+          "This is a scheduled service standard, not a headway-regularity tolerance."
+        ]
       },
-      "sources": [],
+      "sources": [
+        {
+          "id": "augusta-title-vi-2024",
+          "url": "https://www.augustaga.gov/DocumentCenter/View/19838/Augusta-Transit-Title-VI-Plan-May-2024-051024-ADOPTED",
+          "title": "Augusta Transit Title VI Plan",
+          "publisher": "Augusta-Richmond County",
+          "sourceType": "title-vi-plan",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Vehicle Headway; On-Time Performance"
+        }
+      ],
       "notes": []
     },
     {

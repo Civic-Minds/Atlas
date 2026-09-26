@@ -4,7 +4,7 @@
 - Sample seed: `20260926`
 - Sample: 80 agencies — Canada 20, United States 40, France 20
 - Scope: fixed-route scheduled service only; on-demand, paratransit, and reservation-window policies are excluded from the Atlas comparison
-- Status: sample initialized; 21 of 80 agencies have verified official source sets
+- Status: sample initialized; 23 of 80 agencies have verified official source sets
 
 ## Method
 
@@ -61,10 +61,10 @@ The current pipeline baseline is a minimum 5-minute grace, a 15% grace component
 | Westchester County Bee-Line System (BeeLine) | United States | New York | unknown | bus | static_scheduled | United States / definition_found | not_reviewed | not_reviewed |
 | Capital Transit (Juneau) | United States | Alaska | small | bus | static_scheduled | United States / qualitative_definition_only | not_reviewed | not_reviewed |
 | Blue Water Area Transit (Port Huron) | United States | Michigan | small | bus | static_scheduled | United States / no_definition_found | not_reviewed | not_reviewed |
-| Hillsborough Area Regional Transit (HART) | United States | Florida | medium | mixed | static_scheduled | United States / definition_found | not_reviewed | not_reviewed |
+| Hillsborough Area Regional Transit (HART) | United States | Florida | medium | mixed | static_scheduled | United States / definition_found | definition_found | not_found |
 | Jefferson Transit | United States | Washington | small | bus | static_scheduled | United States / qualitative_definition_only | not_found | definition_found |
 | Laguna Beach Transit | United States | California | small | bus | static_scheduled | United States / no_definition_found | not_reviewed | not_reviewed |
-| Augusta Transit | United States | Georgia | unknown | bus | static_scheduled | United States / definition_found | not_reviewed | not_reviewed |
+| Augusta Transit | United States | Georgia | unknown | bus | static_scheduled | United States / definition_found | definition_found | definition_found |
 | Blacksburg Transit | United States | Virginia | small | bus | static_scheduled | United States / qualitative_definition_only | not_reviewed | not_reviewed |
 | City of Bowling Green | United States | — | small | bus | static_scheduled | United States / no_definition_found | not_reviewed | not_reviewed |
 | Durango Transit | United States | Colorado | small | mixed | static_scheduled | United States / definition_found | not_reviewed | not_reviewed |
