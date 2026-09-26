@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- On-demand rollout notices now clearly explain which versions include the service.
 - On-demand selections now use the standard Atlas card design and shareable `ondemand=` URL state.
 - On-demand overlays now respect selected agencies, days, and time periods instead of appearing outside their published service windows.
 - Deployment mode is now one explicit public/preview/beta/dev setting, keeping labels, agency visibility, and feature access aligned.
