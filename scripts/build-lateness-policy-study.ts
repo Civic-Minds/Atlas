@@ -319,6 +319,27 @@ const VERIFIED: Record<string, {
     },
     sources: [{ id: 'cats-title-vi-2021', url: 'https://www.brcats.com/assets/docs/Communications/7_30_2021_CATS_Title_VI_Program_Final.pdf', title: 'CATS Title VI Program', publisher: 'Capital Area Transit System', sourceType: 'title-vi-program', accessedAt: '2026-09-26', pagesOrSections: 'Service Standards and Policies' }],
   },
+  pvpta: {
+    schedule: {
+      definition: 'Palos Verdes Peninsula Transit Authority considers a vehicle on time when it departs a scheduled timepoint no more than 1 minute early and no more than 5 minutes late, with a 90% objective.',
+      notes: [],
+      sourceIds: ['pvpta-service-standards'],
+    },
+    headway: {
+      definition: 'PVPTA publishes scheduled route frequencies of 15 and 30 minutes, with hourly service on Route 225–226, but does not define an allowed deviation or bunching threshold.',
+      notes: ['This is a scheduled frequency standard, not a headway-reliability tolerance.'],
+      sourceIds: ['pvpta-service-standards'],
+    },
+    sources: [{ id: 'pvpta-service-standards', url: 'https://palosverdes.com/pvtransit/10-17-2013-Agenda.pdf', title: 'PVPTA Service Standards and Policies', publisher: 'Palos Verdes Peninsula Transit Authority', sourceType: 'service-standard', accessedAt: '2026-09-26', pagesOrSections: 'Vehicle Headway; On-Time Performance' }],
+  },
+  clallamtransit: {
+    schedule: {
+      definition: 'Clallam Transit’s reviewed operations analysis classifies service trips as on time from 0 to 5 minutes, with early trips before 0 minutes and late trips after 5 minutes.',
+      notes: ['The source reports observed performance separately and does not state a target percentage.'],
+      sourceIds: ['clallam-coa'],
+    },
+    sources: [{ id: 'clallam-coa', url: 'https://irp.cdn-website.com/0eaf265e/files/uploaded/Clallam%20Transit%20COA%20Final%20Report%2008.10.2021%20PRINT%20READY.pdf', title: 'Clallam Transit Comprehensive Operations Analysis', publisher: 'Clallam Transit System', sourceType: 'operations-analysis', accessedAt: '2026-09-26', pagesOrSections: 'Service Performance / On-Time Performance' }],
+  },
   longbeach: {
     schedule: {
       definition: 'Long Beach Transit measures on-time performance as buses departing between 1 minute before and 5 minutes after scheduled time, with a goal above 85%.',

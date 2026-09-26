@@ -4,7 +4,7 @@
 - Sample seed: `20260926`
 - Sample: 80 agencies — Canada 20, United States 40, France 20
 - Scope: fixed-route scheduled service only; on-demand, paratransit, and reservation-window policies are excluded from the Atlas comparison
-- Status: sample initialized; 41 of 80 agencies have verified official source sets
+- Status: sample initialized; 43 of 80 agencies have verified official source sets
 
 ## Method
 
@@ -76,7 +76,7 @@ The reviewed agencies show that these are different concepts: schedule-adherence
 | Kitsap Transit | United States | Washington | medium | bus | static_scheduled | United States / qualitative_definition_only | definition_found | not_found |
 | Chemung County C-TRAN | United States | New York | small | bus | static_scheduled | United States / no_definition_found | not_reviewed | not_reviewed |
 | Pierce Transit | United States | Washington | medium | bus | static_scheduled | United States / definition_found | definition_found | definition_found |
-| Palos Verdes Peninsula Transit Authority (PVPTA) | United States | California | small | mixed | static_scheduled | United States / qualitative_definition_only | not_reviewed | not_reviewed |
+| Palos Verdes Peninsula Transit Authority (PVPTA) | United States | California | small | mixed | static_scheduled | United States / qualitative_definition_only | definition_found | definition_found |
 | WestCAT (Pinole) | United States | California | small | bus | static_scheduled | United States / no_definition_found | definition_found | definition_found |
 | Everett Transit | United States | Washington | medium | bus | static_scheduled | United States / definition_found | not_reviewed | not_reviewed |
 | Regional Transportation District (RTD Denver) | United States | Colorado | large | mixed | static_scheduled | United States / qualitative_definition_only | definition_found | not_found |
@@ -91,7 +91,7 @@ The reviewed agencies show that these are different concepts: schedule-adherence
 | Indian River Transit | United States | Florida | medium | bus | static_scheduled | United States / qualitative_definition_only | not_reviewed | not_reviewed |
 | Camarillo Area Transit | United States | California | small | bus | static_scheduled | United States / no_definition_found | not_reviewed | not_reviewed |
 | Collier Area Transit (Naples) | United States | Florida | medium | bus | static_scheduled | United States / definition_found | definition_found | not_found |
-| Clallam Transit System | United States | Washington | small | bus | static_scheduled | United States / qualitative_definition_only | not_reviewed | not_reviewed |
+| Clallam Transit System | United States | Washington | small | bus | static_scheduled | United States / qualitative_definition_only | definition_found | not_found |
 | Grand Valley Transit | United States | Colorado | small | bus | static_scheduled | United States / no_definition_found | not_reviewed | not_reviewed |
 | Ben Franklin Transit (Tri-Cities, WA) | United States | Washington | medium | bus | static_scheduled | United States / definition_found | definition_found | not_found |
 | TAC (Charleville) | France | Grand Est | medium | bus | static_scheduled | France / no_definition_found | not_reviewed | not_reviewed |

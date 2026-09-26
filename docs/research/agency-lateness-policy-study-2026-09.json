@@ -1,6 +1,6 @@
 {
   "studyVersion": "2026-09-26.v1",
-  "checkedAt": "2026-09-26T22:52:01.594Z",
+  "checkedAt": "2026-09-26T22:52:58.730Z",
   "sampleSeed": 20260926,
   "targetAgencyCount": 80,
   "sampleQuotas": {
@@ -1877,18 +1877,34 @@
         "customer pickup window"
       ],
       "schedulePunctuality": {
-        "status": "not_reviewed",
-        "definition": null,
-        "sourceIds": [],
+        "status": "definition_found",
+        "definition": "Palos Verdes Peninsula Transit Authority considers a vehicle on time when it departs a scheduled timepoint no more than 1 minute early and no more than 5 minutes late, with a 90% objective.",
+        "sourceIds": [
+          "pvpta-service-standards"
+        ],
         "notes": []
       },
       "headwayReliability": {
-        "status": "not_reviewed",
-        "definition": null,
-        "sourceIds": [],
-        "notes": []
+        "status": "definition_found",
+        "definition": "PVPTA publishes scheduled route frequencies of 15 and 30 minutes, with hourly service on Route 225–226, but does not define an allowed deviation or bunching threshold.",
+        "sourceIds": [
+          "pvpta-service-standards"
+        ],
+        "notes": [
+          "This is a scheduled frequency standard, not a headway-reliability tolerance."
+        ]
       },
-      "sources": [],
+      "sources": [
+        {
+          "id": "pvpta-service-standards",
+          "url": "https://palosverdes.com/pvtransit/10-17-2013-Agenda.pdf",
+          "title": "PVPTA Service Standards and Policies",
+          "publisher": "Palos Verdes Peninsula Transit Authority",
+          "sourceType": "service-standard",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Vehicle Headway; On-Time Performance"
+        }
+      ],
       "notes": []
     },
     {
@@ -2478,18 +2494,36 @@
         "customer pickup window"
       ],
       "schedulePunctuality": {
-        "status": "not_reviewed",
-        "definition": null,
-        "sourceIds": [],
-        "notes": []
+        "status": "definition_found",
+        "definition": "Clallam Transit’s reviewed operations analysis classifies service trips as on time from 0 to 5 minutes, with early trips before 0 minutes and late trips after 5 minutes.",
+        "sourceIds": [
+          "clallam-coa"
+        ],
+        "notes": [
+          "The source reports observed performance separately and does not state a target percentage."
+        ]
       },
       "headwayReliability": {
-        "status": "not_reviewed",
+        "status": "not_found",
         "definition": null,
-        "sourceIds": [],
-        "notes": []
+        "sourceIds": [
+          "clallam-coa"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
       },
-      "sources": [],
+      "sources": [
+        {
+          "id": "clallam-coa",
+          "url": "https://irp.cdn-website.com/0eaf265e/files/uploaded/Clallam%20Transit%20COA%20Final%20Report%2008.10.2021%20PRINT%20READY.pdf",
+          "title": "Clallam Transit Comprehensive Operations Analysis",
+          "publisher": "Clallam Transit System",
+          "sourceType": "operations-analysis",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Service Performance / On-Time Performance"
+        }
+      ],
       "notes": []
     },
     {
