@@ -48,6 +48,49 @@ const VERIFIED: Record<string, {
   headway?: { definition: string; notes: string[]; sourceIds: string[] };
   sources: StudyRecord['sources'];
 }> = {
+  stl: {
+    schedule: {
+      definition: 'STL Laval commits to regular-route service being no more than 2 minutes early and no more than 5 minutes late. Its 2025 performance indicator uses a customer boarding window of 30 seconds early to 5 minutes 30 seconds late and a 90.5% target.',
+      notes: ['The public quality commitment and the performance-indicator calculation use slightly different windows; both are recorded. The paratransit 30-minute pickup window is excluded.'],
+      sourceIds: ['stl-quality-commitment', 'stl-performance-indicators'],
+    },
+    sources: [
+      { id: 'stl-quality-commitment', url: 'https://stlaval.ca/engagement-qualite', title: 'STL Quality Commitment', publisher: 'STL Laval', sourceType: 'customer-commitment', accessedAt: '2026-09-26', pagesOrSections: 'Réseau régulier / Ponctualité' },
+      { id: 'stl-performance-indicators', url: 'https://stlaval.ca/gouvernance/indicateurs', title: 'STL Performance Indicators', publisher: 'STL Laval', sourceType: 'performance-dashboard', accessedAt: '2026-09-26', pagesOrSections: 'Ponctualité du service – Transport régulier' },
+    ],
+  },
+  'comox-valley': {
+    schedule: {
+      definition: 'BC Transit defines on-time departures at timing points as no more than 1 minute early and no more than 3 minutes late.',
+      notes: ['The reviewed source is a BC Transit service-design standard published for the Kamloops system; it is recorded as an operator-level reference, not a Comox Valley-specific performance target.'],
+      sourceIds: ['bc-transit-service-design-standards'],
+    },
+    sources: [{ id: 'bc-transit-service-design-standards', url: 'https://www.bctransit.com/wp-content/uploads/142/723/2022-01-24-KAM-SDSPG-final0.pdf', title: 'Service Design Standards', publisher: 'BC Transit', sourceType: 'service-standard', accessedAt: '2026-09-26', pagesOrSections: '5.4 On-time Performance' }],
+  },
+  kelowna: {
+    schedule: {
+      definition: 'BC Transit defines on-time departures at timing points as no more than 1 minute early and no more than 3 minutes late.',
+      notes: ['The reviewed source is a BC Transit service-design standard published for the Kamloops system; it is recorded as an operator-level reference, not a Kelowna-specific performance target.'],
+      sourceIds: ['bc-transit-service-design-standards'],
+    },
+    sources: [{ id: 'bc-transit-service-design-standards', url: 'https://www.bctransit.com/wp-content/uploads/142/723/2022-01-24-KAM-SDSPG-final0.pdf', title: 'Service Design Standards', publisher: 'BC Transit', sourceType: 'service-standard', accessedAt: '2026-09-26', pagesOrSections: '5.4 On-time Performance' }],
+  },
+  metrobus: {
+    schedule: {
+      definition: 'Metrobus service standards require fixed-route services to depart timed or scheduled stops from 0 minutes early to 3 minutes late at least 85% of the time.',
+      notes: ['The same source separately lists a customer pickup-window standard for dynamic on-demand service; that policy is excluded from this study.'],
+      sourceIds: ['metrobus-transit-review'],
+    },
+    sources: [{ id: 'metrobus-transit-review', url: 'https://www.metrobus.com/pdf/StJohnsTransitReview2019.pdf', title: 'St. John’s Transit Review', publisher: 'City of St. John’s / Metrobus', sourceType: 'service-standard', accessedAt: '2026-09-26', pagesOrSections: 'Table 18: On-time Performance Standards' }],
+  },
+  upexpress: {
+    schedule: {
+      definition: 'Metrolinx measures UP Express on-time performance as arrival within 5 minutes of the targeted journey time.',
+      notes: ['This is a journey-arrival measure rather than a departure-headway rule.'],
+      sourceIds: ['metrolinx-business-plan-2025-26'],
+    },
+    sources: [{ id: 'metrolinx-business-plan-2025-26', url: 'https://assets.metrolinx.com/image/upload/v1764160191/Documents/2025-26_Business_Plan_English.pdf', title: '2025-26 Metrolinx Business Plan', publisher: 'Metrolinx', sourceType: 'business-plan', accessedAt: '2026-09-26', pagesOrSections: 'On-Time Performance' }],
+  },
   sunline: {
     schedule: {
       definition: 'SunLine defines on-time as a trip departing a timepoint from 0 minutes early to 3 minutes late, with a 90% target for all services. Other SunLine reports use a 0-to-5-minute window with an 85% minimum target, so the source set records both versions.',

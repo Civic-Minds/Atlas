@@ -4,7 +4,7 @@
 - Sample seed: `20260926`
 - Sample: 80 agencies — Canada 20, United States 40, France 20
 - Scope: fixed-route scheduled service only; on-demand, paratransit, and reservation-window policies are excluded from the Atlas comparison
-- Status: sample initialized; 12 of 80 agencies have verified official source sets
+- Status: sample initialized; 17 of 80 agencies have verified official source sets
 
 ## Method
 
@@ -31,7 +31,7 @@ The current pipeline baseline is a minimum 5-minute grace, a 15% grace component
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Niagara Transit | Canada | Ontario | medium | bus | static_scheduled | Canada / definition_found | definition_found | not_found |
 | Greater Sudbury Transit | Canada | Ontario | medium | bus | static_scheduled | Canada / qualitative_definition_only | definition_found | not_found |
-| STL (Laval) | Canada | Quebec | large | bus | static_scheduled | Canada / no_definition_found | not_reviewed | not_reviewed |
+| STL (Laval) | Canada | Quebec | large | bus | static_scheduled | Canada / no_definition_found | definition_found | not_found |
 | Burlington Transit | Canada | Ontario | medium | bus | static_scheduled | Canada / definition_found | not_reviewed | not_reviewed |
 | Red Deer Transit | Canada | Alberta | medium | bus | static_scheduled | Canada / qualitative_definition_only | not_found | not_found |
 | Owen Sound Transit | Canada | Ontario | small | bus | static_scheduled | Canada / no_definition_found | not_reviewed | not_reviewed |
@@ -39,12 +39,12 @@ The current pipeline baseline is a minimum 5-minute grace, a 15% grace component
 | Barrie Transit | Canada | Ontario | medium | bus | static_scheduled | Canada / qualitative_definition_only | definition_found | not_found |
 | St. Thomas Transit | Canada | Ontario | small | bus | static_scheduled | Canada / no_definition_found | not_reviewed | not_reviewed |
 | Grand River Transit (Waterloo Region) | Canada | Ontario | large | bus | static_scheduled | Canada / definition_found | definition_found | not_found |
-| BC Transit (Comox Valley) | Canada | British Columbia | small | bus | static_scheduled | Canada / qualitative_definition_only | not_reviewed | not_reviewed |
+| BC Transit (Comox Valley) | Canada | British Columbia | small | bus | static_scheduled | Canada / qualitative_definition_only | definition_found | not_found |
 | Ville de Saint-Hyacinthe | Canada | Quebec | small | bus | static_scheduled | Canada / no_definition_found | not_reviewed | not_reviewed |
-| UP Express (Toronto) | Canada | Ontario | small | bus | static_scheduled | Canada / definition_found | not_reviewed | not_reviewed |
-| BC Transit (Kelowna) | Canada | British Columbia | medium | bus | static_scheduled | Canada / qualitative_definition_only | not_reviewed | not_reviewed |
+| UP Express (Toronto) | Canada | Ontario | small | bus | static_scheduled | Canada / definition_found | definition_found | not_found |
+| BC Transit (Kelowna) | Canada | British Columbia | medium | bus | static_scheduled | Canada / qualitative_definition_only | definition_found | not_found |
 | MiWay (Mississauga) | Canada | Ontario | large | bus | static_scheduled | Canada / no_definition_found | not_reviewed | not_reviewed |
-| Metrobus (St. John's) | Canada | Newfoundland | medium | rail | static_scheduled | Canada / definition_found | not_reviewed | not_reviewed |
+| Metrobus (St. John's) | Canada | Newfoundland | medium | rail | static_scheduled | Canada / definition_found | definition_found | not_found |
 | RTL (Longueuil) | Canada | Quebec | large | bus | static_scheduled | Canada / qualitative_definition_only | not_reviewed | not_reviewed |
 | Moose Jaw Transit | Canada | Saskatchewan | small | bus | static_scheduled | Canada / no_definition_found | not_reviewed | not_reviewed |
 | GO Transit | Canada | Ontario | medium | mixed | static_scheduled | Canada / definition_found | definition_found | not_found |
