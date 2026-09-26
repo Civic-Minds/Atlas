@@ -91,6 +91,35 @@ const VERIFIED: Record<string, {
     },
     sources: [{ id: 'metrolinx-business-plan-2025-26', url: 'https://assets.metrolinx.com/image/upload/v1764160191/Documents/2025-26_Business_Plan_English.pdf', title: '2025-26 Metrolinx Business Plan', publisher: 'Metrolinx', sourceType: 'business-plan', accessedAt: '2026-09-26', pagesOrSections: 'On-Time Performance' }],
   },
+  jeffersontransit: {
+    schedule: {
+      definition: null,
+      notes: ['The reviewed operational analysis reports route-level on-time percentages but does not define the minute window used to classify a trip as on time.'],
+      sourceIds: ['jefferson-operational-analysis'],
+    },
+    headway: {
+      definition: 'The operational analysis specifies a 30-minute peak-period headway and a consistent 30-minute headway for selected shuttle service, but does not define an allowed headway deviation or bunching threshold.',
+      notes: ['This is a scheduled service-design interval, not an observed headway-reliability tolerance.'],
+      sourceIds: ['jefferson-operational-analysis'],
+    },
+    sources: [{ id: 'jefferson-operational-analysis', url: 'https://www.jeffersontransit.com/DocumentCenter/View/893/Comprehensive-Operational-Analysis-PDF', title: '2025 Comprehensive Operational Analysis', publisher: 'Jefferson Transit', sourceType: 'operations-analysis', accessedAt: '2026-09-26', pagesOrSections: 'Service guidelines and on-time performance tables' }],
+  },
+  'owen-sound': {
+    schedule: {
+      definition: null,
+      notes: ['The reviewed city notice discusses a 30-minute peak schedule and timing adjustments but does not define an acceptable early/late window or an on-time target.'],
+      sourceIds: ['owen-sound-timing-pilot'],
+    },
+    sources: [{ id: 'owen-sound-timing-pilot', url: 'https://www.owensound.ca/news-and-public-notices/posts/city-to-pilot-minor-timing-changes-for-owen-sound-transit/', title: 'City to Pilot Minor Timing Changes for Owen Sound Transit', publisher: 'City of Owen Sound', sourceType: 'service-change-notice', accessedAt: '2026-09-26', pagesOrSections: 'On-time performance and 30-minute schedule' }],
+  },
+  cornwall: {
+    schedule: {
+      definition: null,
+      notes: ['The transit master plan documents observed early and late running, including trips more than 10 minutes late, and recommends schedule refinement; it does not define an official tolerance or target.'],
+      sourceIds: ['cornwall-transit-master-plan'],
+    },
+    sources: [{ id: 'cornwall-transit-master-plan', url: 'https://www.cornwall.ca/en/city-hall/resources/Master-Plans/10.25.17-Cornwall-TMP---Final-Report_Part1.pdf', title: 'Cornwall Transit Master Plan', publisher: 'City of Cornwall', sourceType: 'transit-master-plan', accessedAt: '2026-09-26', pagesOrSections: '9.1.1 Improve On-Time Performance/Adherence to Schedule' }],
+  },
   sunline: {
     schedule: {
       definition: 'SunLine defines on-time as a trip departing a timepoint from 0 minutes early to 3 minutes late, with a 90% target for all services. Other SunLine reports use a 0-to-5-minute window with an 85% minimum target, so the source set records both versions.',

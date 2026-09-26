@@ -4,7 +4,7 @@
 - Sample seed: `20260926`
 - Sample: 80 agencies — Canada 20, United States 40, France 20
 - Scope: fixed-route scheduled service only; on-demand, paratransit, and reservation-window policies are excluded from the Atlas comparison
-- Status: sample initialized; 17 of 80 agencies have verified official source sets
+- Status: sample initialized; 20 of 80 agencies have verified official source sets
 
 ## Method
 
@@ -34,7 +34,7 @@ The current pipeline baseline is a minimum 5-minute grace, a 15% grace component
 | STL (Laval) | Canada | Quebec | large | bus | static_scheduled | Canada / no_definition_found | definition_found | not_found |
 | Burlington Transit | Canada | Ontario | medium | bus | static_scheduled | Canada / definition_found | not_reviewed | not_reviewed |
 | Red Deer Transit | Canada | Alberta | medium | bus | static_scheduled | Canada / qualitative_definition_only | not_found | not_found |
-| Owen Sound Transit | Canada | Ontario | small | bus | static_scheduled | Canada / no_definition_found | not_reviewed | not_reviewed |
+| Owen Sound Transit | Canada | Ontario | small | bus | static_scheduled | Canada / no_definition_found | not_found | not_found |
 | Guelph Transit | Canada | Ontario | medium | bus | static_scheduled | Canada / definition_found | definition_found | not_found |
 | Barrie Transit | Canada | Ontario | medium | bus | static_scheduled | Canada / qualitative_definition_only | definition_found | not_found |
 | St. Thomas Transit | Canada | Ontario | small | bus | static_scheduled | Canada / no_definition_found | not_reviewed | not_reviewed |
@@ -48,7 +48,7 @@ The current pipeline baseline is a minimum 5-minute grace, a 15% grace component
 | RTL (Longueuil) | Canada | Quebec | large | bus | static_scheduled | Canada / qualitative_definition_only | not_reviewed | not_reviewed |
 | Moose Jaw Transit | Canada | Saskatchewan | small | bus | static_scheduled | Canada / no_definition_found | not_reviewed | not_reviewed |
 | GO Transit | Canada | Ontario | medium | mixed | static_scheduled | Canada / definition_found | definition_found | not_found |
-| Cornwall Transit | Canada | Ontario | small | bus | static_scheduled | Canada / qualitative_definition_only | not_reviewed | not_reviewed |
+| Cornwall Transit | Canada | Ontario | small | bus | static_scheduled | Canada / qualitative_definition_only | not_found | not_found |
 | Bloomington Transit | United States | Indiana | medium | bus | static_scheduled | United States / definition_found | not_reviewed | not_reviewed |
 | Santa Rosa CityBus | United States | California | unknown | bus | static_scheduled | United States / qualitative_definition_only | not_reviewed | not_reviewed |
 | SunLine Transit Agency (Coachella Valley) | United States | California | medium | bus | static_scheduled | United States / no_definition_found | definition_found | not_found |
@@ -62,7 +62,7 @@ The current pipeline baseline is a minimum 5-minute grace, a 15% grace component
 | Capital Transit (Juneau) | United States | Alaska | small | bus | static_scheduled | United States / qualitative_definition_only | not_reviewed | not_reviewed |
 | Blue Water Area Transit (Port Huron) | United States | Michigan | small | bus | static_scheduled | United States / no_definition_found | not_reviewed | not_reviewed |
 | Hillsborough Area Regional Transit (HART) | United States | Florida | medium | mixed | static_scheduled | United States / definition_found | not_reviewed | not_reviewed |
-| Jefferson Transit | United States | Washington | small | bus | static_scheduled | United States / qualitative_definition_only | not_reviewed | not_reviewed |
+| Jefferson Transit | United States | Washington | small | bus | static_scheduled | United States / qualitative_definition_only | not_found | definition_found |
 | Laguna Beach Transit | United States | California | small | bus | static_scheduled | United States / no_definition_found | not_reviewed | not_reviewed |
 | Augusta Transit | United States | Georgia | unknown | bus | static_scheduled | United States / definition_found | not_reviewed | not_reviewed |
 | Blacksburg Transit | United States | Virginia | small | bus | static_scheduled | United States / qualitative_definition_only | not_reviewed | not_reviewed |
