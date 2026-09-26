@@ -324,16 +324,24 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
       {(() => {
         const HOURS = SPARKLINE_HOURS;
         const hoveredSingleBranch = hoveredBranch?.headsign != null;
-        const sparklineDirs = hoveredSingleBranch
+        const defaultSparklineDirs = sparklineSourceDirections(currentRoute.directions, primaryMultiBranch?.realTier);
+        const hoveredSparklineDirs = hoveredSingleBranch
           ? currentRoute.directions.filter(
             d => dirIdNum(d.directionId) === dirIdNum(hoveredBranch.directionId) && d.headsign === hoveredBranch.headsign,
           )
-          : sparklineSourceDirections(currentRoute.directions, primaryMultiBranch?.realTier);
+          : defaultSparklineDirs;
         const hasTrunkSparkline = !!primaryMultiBranch && shouldShowTrunkSummary(primaryMultiBranch.realTier, period);
         const showTrunkSparkline = !hoveredSingleBranch && hasTrunkSparkline;
-        const merged = showTrunkSparkline
+        const defaultMerged = showTrunkSparkline
           ? trunkSparklineByHour(primaryMultiBranch!.realTier, HOURS)
-          : sparklineHeadwayByHour(sparklineDirs, HOURS);
+          : sparklineHeadwayByHour(defaultSparklineDirs, HOURS);
+        const hoveredMerged = showTrunkSparkline
+          ? defaultMerged
+          : sparklineHeadwayByHour(hoveredSparklineDirs, HOURS);
+        // A hovered destination can have no hourly data in the active period.
+        // Falling back to the route chart keeps the chart mounted, so its layout
+        // does not shift under the pointer and cause hover flicker (#550).
+        const merged = HOURS.some(h => hoveredMerged[h] != null) ? hoveredMerged : defaultMerged;
         const stackedByHour = showTrunkSparkline
           ? Object.fromEntries(HOURS.map(h => [h, primaryMultiBranch!.realTier
               .map((branch, i) => ({
