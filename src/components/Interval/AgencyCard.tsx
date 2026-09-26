@@ -229,6 +229,7 @@ interface Props {
   fareView?: boolean;
   fareOverride?: FareOverride;
   onInfoOpen?: OpenInfoFn;
+  onDemandFocus?: boolean;
 }
 
 function RouteListSection({
@@ -280,6 +281,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
   fareView,
   fareOverride,
   onInfoOpen,
+  onDemandFocus = false,
 }, ref) {
   const { colorVisionFriendly } = useColorVision();
   const colorMode = colorVisionFriendly ? 'friendly' : 'default';
@@ -336,6 +338,53 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
     () => agencyDisplayParts(agency.name, agency.cities, agency.displayArea),
     [agency.name, agency.cities, agency.displayArea],
   );
+
+  if (onDemandFocus && agency.onDemandServiceArea) {
+    const service = agency.onDemandServiceArea;
+    return (
+      <div
+        ref={ref}
+        data-report-anchor="true"
+        className={`absolute top-20 left-6 sm:left-[var(--sidebar-left)] ${Z_PANEL} ${SIDEBAR_PANEL_WIDTH} ${FLOATING_CARD} ${PANEL_ENTER} overflow-hidden`}
+        style={{
+          '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px`,
+          ...(searchBarWidth ? { width: `${searchBarWidth}px`, maxWidth: 'none' } : {}),
+        } as React.CSSProperties}
+      >
+        <div className="px-4 pt-4 pb-3 border-b border-[var(--border-primary)]">
+          <p className={`${CARD_TITLE} mb-0`}>{service.serviceName ?? agencyNamePrimary}</p>
+          <p className="text-[9px] font-bold text-[var(--text-dim)] mt-1">On-demand service · {agencyNamePrimary}</p>
+        </div>
+        <div className="px-4 py-4 space-y-4">
+          <div className="rounded-xl border border-[var(--border-primary)] bg-[var(--surface-secondary)] px-3 py-3">
+            <p className="text-[10px] font-black uppercase tracking-wide text-[var(--text-dim)]">Virtual pickup locations</p>
+            <p className="text-[11px] leading-relaxed text-[var(--text-muted)] mt-1">
+              Book a ride through this service area. These locations are virtual stops for on-demand trips, not a fixed route.
+            </p>
+            {service.bookingUrl && (
+              <a href={service.bookingUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center w-full rounded-lg bg-[var(--accent)] px-3 py-2 mt-3 text-[11px] font-black text-white hover:opacity-90 transition-opacity">
+                Book or view service details →
+              </a>
+            )}
+          </div>
+          {service.serviceHours && (
+            <div className="px-1">
+              <p className="text-[9px] font-black uppercase tracking-wide text-[var(--text-dim)]">Service hours</p>
+              <p className="text-[11px] leading-relaxed text-[var(--text-muted)] mt-1">{service.serviceHours}</p>
+            </div>
+          )}
+          {service.sourceUrl && (
+            <div className="border-t border-[var(--border-primary)] pt-3 px-1">
+              <p className="text-[9px] font-black uppercase tracking-wide text-[var(--text-dim)]">Service details</p>
+              <a href={service.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-[11px] text-[var(--accent)] hover:underline mt-1 block">
+                {service.sourceLabel} →
+              </a>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div

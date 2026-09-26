@@ -128,6 +128,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   });
   const [selectedRoute, setSelectedRoute] = useState<string | null>(() => searchParams.get('route'));
   const [selectedStop, setSelectedStop] = useState<string | null>(() => searchParams.get('stop'));
+  const [onDemandStopAgencySlug, setOnDemandStopAgencySlug] = useState<string | null>(null);
 
   useEffect(() => {
     if (!selectedRoute) return;
@@ -155,6 +156,11 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   const [disambiguationRoutes, setDisambiguationRoutes] = useState<string[] | null>(null);
   const [hoveredBranch, setHoveredBranchState] = useState<HoveredBranch | null>(null);
   const hoverTimeoutRef = useRef<number | null>(null);
+
+  const handleOnDemandStopClick = useCallback((slug: string) => {
+    setOnDemandStopAgencySlug(slug);
+    setSelectedAgencySlug?.(null);
+  }, [setSelectedAgencySlug]);
 
   // An agency selection replaces route disambiguation. Keeping both active
   // leaves two sidebar cards competing for the same space.
@@ -190,14 +196,15 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   const agencyCardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!selectedAgencySlug || selectedRoute || selectedStop) return;
+    if ((!selectedAgencySlug && !onDemandStopAgencySlug) || selectedRoute || selectedStop) return;
     const onPointerDown = (e: PointerEvent) => {
       if (agencyCardRef.current?.contains(e.target as Node)) return;
+      setOnDemandStopAgencySlug(null);
       onAgencyCardClose?.();
     };
     document.addEventListener('pointerdown', onPointerDown, true);
     return () => document.removeEventListener('pointerdown', onPointerDown, true);
-  }, [selectedAgencySlug, selectedRoute, selectedStop, onAgencyCardClose]);
+  }, [selectedAgencySlug, onDemandStopAgencySlug, selectedRoute, selectedStop, onAgencyCardClose]);
 
   useEffect(() => {
     if (searchFocused && !prevSearchFocused.current) {
@@ -445,12 +452,13 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
       setSelectedRoute(null);
       setSelectedStop(null);
       setDisambiguationRoutes(null);
+      setOnDemandStopAgencySlug(null);
       setSelectedAgencySlug?.(null);
     }
   }, [showUi, showSelectionUi]);
 
-  useEffect(() => { if (selectedRoute) onAgencyCardClose?.(); }, [selectedRoute]);
-  useEffect(() => { if (selectedStop) onAgencyCardClose?.(); }, [selectedStop]);
+  useEffect(() => { if (selectedRoute) { setOnDemandStopAgencySlug(null); onAgencyCardClose?.(); } }, [selectedRoute, onAgencyCardClose]);
+  useEffect(() => { if (selectedStop) { setOnDemandStopAgencySlug(null); onAgencyCardClose?.(); } }, [selectedStop, onAgencyCardClose]);
   useEffect(() => { setHoveredBranch(null); }, [selectedRoute]);
 
   const clearMapSelection = useCallback(() => {
@@ -458,6 +466,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     setSelectedStop(null);
     setDisambiguationRoutes(null);
     setHoveredBranch(null);
+    setOnDemandStopAgencySlug(null);
     onAgencyCardClose?.();
   }, [onAgencyCardClose]);
 
@@ -483,12 +492,12 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key !== 'Escape') return;
-      if (!selectedRoute && !selectedStop && !disambiguationRoutes?.length && !selectedAgencySlug) return;
+      if (!selectedRoute && !selectedStop && !disambiguationRoutes?.length && !selectedAgencySlug && !onDemandStopAgencySlug) return;
       clearMapSelection();
     };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [selectedRoute, selectedStop, disambiguationRoutes, selectedAgencySlug, clearMapSelection]);
+  }, [selectedRoute, selectedStop, disambiguationRoutes, selectedAgencySlug, onDemandStopAgencySlug, clearMapSelection]);
 
   // Sync selected route and stop to URL — replaceState via shared merge so
   // concurrent writers (day, map center, filters) don't clobber each other.
@@ -564,6 +573,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
         tileFilter={tileFilter}
         selectedAgencySlug={selectedAgencySlug}
         setSelectedAgencySlug={setSelectedAgencySlug}
+        onOnDemandStopClick={handleOnDemandStopClick}
         fareView={fareView}
         nightServiceView={nightServiceView}
         exportEnabled={exportEnabled}
@@ -652,6 +662,29 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
           )}
         </div>
       )}
+
+      {(showUi || fareView || showSelectionUi) && onDemandStopAgencySlug && !selectedRoute && !selectedStop && !disambiguationRoutes?.length && !searchOverlayHidesPanel(searchFocused, query) && (() => {
+        const agency = agencies.find(a => a.slug === onDemandStopAgencySlug);
+        return agency ? (
+          <AgencyCard
+            ref={agencyCardRef}
+            agency={agency}
+            layers={layers}
+            day={day}
+            period={period}
+            maxHeadway={maxHeadway}
+            selectedModes={selectedModes}
+            hideSpan={hideSpan}
+            onRouteSelect={() => {}}
+            sidebarLeft={sidebarLeft}
+            searchBarWidth={searchBarWidth}
+            fareView={false}
+            fareOverride={fareOverrides[agency.slug]}
+            onInfoOpen={onInfoOpen}
+            onDemandFocus
+          />
+        ) : null;
+      })()}
 
       {(showUi || fareView || showSelectionUi) && selectedAgencySlug && !selectedRoute && !selectedStop && !disambiguationRoutes?.length && !searchOverlayHidesPanel(searchFocused, query) && (() => {
         const agency = agencies.find(a => a.slug === selectedAgencySlug);

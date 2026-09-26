@@ -221,6 +221,7 @@ interface MapCanvasProps {
   tileFilter?: any;
   selectedAgencySlug?: string | null;
   setSelectedAgencySlug?: (slug: string | null) => void;
+  onOnDemandStopClick?: (slug: string) => void;
   fareView?: boolean;
   nightServiceView?: boolean;
   frequentServiceView?: boolean;
@@ -278,6 +279,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   tileFilter,
   selectedAgencySlug,
   setSelectedAgencySlug,
+  onOnDemandStopClick,
   fareView = false,
   nightServiceView = false,
   frequentServiceView = false,
@@ -496,6 +498,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   const fareViewRef = useRef(fareView);
   const setSelectedAgencySlugRef = useRef(setSelectedAgencySlug);
   const selectedAgencySlugRef = useRef(selectedAgencySlug);
+  const onOnDemandStopClickRef = useRef(onOnDemandStopClick);
   const onBoundsChangeRef = useRef(onBoundsChange);
   const onTileLoadingChangeRef = useRef(onTileLoadingChange);
   const onClearSelectionRef = useRef(onClearSelection);
@@ -604,7 +607,11 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         setSelectedStopRef.current(null);
         setDisambiguationRoutesRef.current(null);
         setQueryRef.current?.('');
-        setSelectedAgencySlugRef.current?.(serviceAreaSlug);
+        if (serviceAreaHits[0]?.layer?.id === 'on-demand-stop-points') {
+          onOnDemandStopClickRef.current?.(serviceAreaSlug);
+        } else {
+          setSelectedAgencySlugRef.current?.(serviceAreaSlug);
+        }
         return;
       }
 
@@ -671,6 +678,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     onHistoryRouteClickRef.current = onHistoryRouteClick;
     fareViewRef.current = fareView;
     setSelectedAgencySlugRef.current = setSelectedAgencySlug;
+    onOnDemandStopClickRef.current = onOnDemandStopClick;
     selectedAgencySlugRef.current = selectedAgencySlug;
     onBoundsChangeRef.current = onBoundsChange;
     onTileLoadingChangeRef.current = onTileLoadingChange;

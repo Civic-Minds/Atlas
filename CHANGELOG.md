@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+-Clicking a GTFS-Flex pickup location now opens a dedicated on-demand service card instead of the regular agency card.
 - On-demand pickup dots now shrink at regional zoom and grow as you zoom in.
 - GTFS-Flex pickup locations now remain as individual virtual stops without extra map labels.
 - On-demand pickup cards now explain that virtual stops belong to a booked service rather than a fixed route.
