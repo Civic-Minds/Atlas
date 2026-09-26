@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { Agency } from '../App';
-import { getAgencyArtifactUrls, ATLAS_MODE } from '../../shared/config';
+import { getAgencyArtifactUrls, getAgencyCatalogUrl, ATLAS_MODE } from '../../shared/config';
 import { isAgencyVisibleInBrowser } from '../../shared/agencyVisibility';
 import { markAtlasOnce } from '../lib/performance';
 
@@ -15,7 +15,7 @@ export function useAgencies() {
 
   const load = useCallback(() => {
     setAgenciesLoadState('loading');
-    fetch('/data/index.json')
+    fetch(getAgencyCatalogUrl())
       .then(r => {
         if (!r.ok) throw new Error(`HTTP ${r.status}`);
         return r.json();

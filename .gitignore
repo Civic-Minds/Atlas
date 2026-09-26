@@ -54,6 +54,10 @@ public/data/*.json
 !public/data/index.json
 !public/data/index.schema.json
 !public/data/feed-refresh.json
+!public/data/catalog-public.json
+!public/data/catalog-preview.json
+!public/data/catalog-beta.json
+!public/data/catalog-dev.json
 
 # Wrangler local dev state and captured feed samples
 workers/**/.wrangler/

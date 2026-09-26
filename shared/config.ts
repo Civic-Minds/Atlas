@@ -77,6 +77,10 @@ export const ATLAS_MODE = getAtlasMode();
 export const BETA_BUILD = ATLAS_MODE !== 'public';
 export const PREVIEW_BUILD = ATLAS_MODE === 'preview';
 export const RESEARCH_APPS_ENABLED = ATLAS_MODE === 'beta' || ATLAS_MODE === 'dev';
+
+export function getAgencyCatalogUrl(mode: AtlasMode = ATLAS_MODE): string {
+  return `/data/catalog-${mode}.json`;
+}
 // Public map-image export starts on beta so the browser-rendered output can be checked before
 // exposing it on production. Set VITE_MAP_EXPORT_ENABLED to graduate it independently of beta.
 const MAP_EXPORT_ENV_ENABLED = envFlag('VITE_MAP_EXPORT_ENABLED');
