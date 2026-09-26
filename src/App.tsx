@@ -32,6 +32,7 @@ import { markAtlasOnce } from './lib/performance';
 import { parseFrequentServiceDays, type FrequentServiceFrequency, type FrequentServiceWindow } from '../shared/frequentService';
 import FrequentServiceStory from './apps/FrequentServiceStory';
 import { BWG_ON_DEMAND_AGENCY, CALEDON_ON_DEMAND_AGENCY, BRAMPTON_ON_DEMAND_AGENCY, C_TRAN_CURRENT_SERVICE_AREA, GRT_ROUTE_79_SERVICE_AREA, HAMILTON_MY_RIDE_SERVICE_AREA, METRO_MICRO_SERVICE_AREA } from './data/onDemandServiceAreas';
+import type { OnDemandAvailability } from '../shared/onDemandAvailability';
 
 export interface FareOverride {
   adult?: number;      // base card/electronic fare (fallback when GeoJSON baseFare is absent)
@@ -104,6 +105,7 @@ export interface Agency {
     serviceHours?: string;
     bookingUrl?: string;
     serviceName?: string;
+    availability?: OnDemandAvailability;
   };
 }
 

@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- On-demand overlays now respect selected agencies, days, and time periods instead of appearing outside their published service windows.
 - Deployment mode is now one explicit public/preview/beta/dev setting, keeping labels, agency visibility, and feature access aligned.
 - Preview route clicks now open cards for beta-only agencies instead of showing geometry without agency data.
 - Social previews now use a wide 1200×630 Atlas image so shared links render as proper cards on LinkedIn.

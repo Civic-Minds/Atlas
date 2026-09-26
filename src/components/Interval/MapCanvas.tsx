@@ -31,6 +31,7 @@ import MapExportDialog from '../MapExportDialog';
 import { frequentServiceBand, frequentServiceFeatureKey, frequentServiceQueryKey, type FrequentServiceFrequency, type FrequentServiceWindow } from '../../../shared/frequentService';
 import { effectiveMode, ON_DEMAND_MODE } from '../../../shared/modes';
 import { markAtlasLatest } from '../../lib/performance';
+import { isOnDemandActive } from '../../../shared/onDemandAvailability';
 
 const CORRIDOR_BAND_COLOR = '#64748b';
 const ON_DEMAND_AREA_COLOR = '#64748b';
@@ -229,6 +230,7 @@ interface MapCanvasProps {
   frequentServiceFrequency?: FrequentServiceFrequency;
   frequentServiceWindow?: FrequentServiceWindow;
   selectedModes?: Set<number>;
+  selectedAgencies?: Set<string>;
   initialMapCenter?: { lat: number; lon: number; zoom: number };
   onTileLoadingChange?: (loading: boolean) => void;
   setQuery?: (q: string) => void;
@@ -287,6 +289,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   frequentServiceFrequency = 15,
   frequentServiceWindow = 'daytime',
   selectedModes = new Set(),
+  selectedAgencies,
   initialMapCenter,
   onTileLoadingChange,
   onClearSelection,
@@ -337,9 +340,13 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
 
   const [mapContextAgencies, setMapContextAgencies] = useState<MapContextAgency[]>([]);
 
+  const onDemandAgencies = useMemo(() => agencies.filter(agency =>
+    (selectedAgencies?.has(agency.slug) ?? true)
+    && isOnDemandActive(agency.onDemandServiceArea?.availability, day, period),
+  ), [agencies, day, period, selectedAgencies]);
   const onDemandServiceAreaData = useMemo<GeoJSON.FeatureCollection<GeoJSON.Polygon | GeoJSON.MultiPolygon>>(() => ({
     type: 'FeatureCollection',
-    features: (selectedModes.size === 0 || selectedModes.has(ON_DEMAND_MODE) ? agencies : [])
+    features: (selectedModes.size === 0 || selectedModes.has(ON_DEMAND_MODE) ? onDemandAgencies : [])
       .flatMap(agency => (agency.onDemandServiceArea?.features ?? []).map(feature => ({
         ...feature,
         properties: {
@@ -348,10 +355,10 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
           agencyName: agency.name,
         },
       }))),
-  }), [agencies, selectedModes]);
+  }), [onDemandAgencies, selectedModes]);
   const onDemandStopData = useMemo<GeoJSON.FeatureCollection<GeoJSON.Point>>(() => ({
     type: 'FeatureCollection',
-    features: (selectedModes.size === 0 || selectedModes.has(ON_DEMAND_MODE) ? agencies : [])
+    features: (selectedModes.size === 0 || selectedModes.has(ON_DEMAND_MODE) ? onDemandAgencies : [])
       .flatMap(agency => (agency.onDemandServiceArea?.stopFeatures ?? []).map(feature => ({
         ...feature,
         properties: {
@@ -360,7 +367,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
           agencyName: agency.name,
         },
       }))),
-  }), [agencies, selectedModes]);
+  }), [onDemandAgencies, selectedModes]);
 
   const updateMapContext = useCallback(() => {
     const map = mapRef.current;

@@ -583,6 +583,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
         frequentServiceFrequency={frequentServiceFrequency}
         frequentServiceWindow={frequentServiceWindow}
         selectedModes={selectedModes}
+        selectedAgencies={selectedAgencies}
         initialMapCenter={initialMapCenter}
         onTileLoadingChange={setIsTilesLoading}
         setQuery={setQuery}

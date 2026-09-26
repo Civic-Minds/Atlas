@@ -3,6 +3,7 @@ import { HSR_MY_RIDE_STOP_FEATURES } from './hsrMyRideStops';
 import { METRO_MICRO_FLEX_FEATURES } from './metroMicroFlexData';
 import { C_TRAN_CURRENT_FLEX_FEATURES } from './ctranCurrentFlexData';
 import { C_TRAN_CURRENT_FLEX_STOPS } from './ctranCurrentFlexStops';
+import type { OnDemandAvailability } from '../../shared/onDemandAvailability';
 
 /**
  * Agency-owned service-area geometry for services that do not publish route
@@ -112,6 +113,11 @@ export const HAMILTON_MY_RIDE_SERVICE_AREA = {
   serviceHours: 'On-demand trips operate within Waterdown; booking windows and availability are confirmed in the HSR myRide app or by phone.',
   bookingUrl: 'https://www.hamilton.ca/home-neighbourhood/hsr/schedule-route-tools/hsr-myride-demand',
   serviceName: 'myRide Waterdown On-Demand',
+  availability: {
+    Weekday: ['amPeak', 'midday', 'pmPeak', 'evening', 'late', 'overnight'],
+    Saturday: ['amPeak', 'midday', 'pmPeak', 'evening', 'late'],
+    Sunday: ['amPeak', 'midday', 'pmPeak', 'evening', 'late'],
+  } satisfies OnDemandAvailability,
 };
 
 export const GRT_ROUTE_79_SERVICE_AREA = {
@@ -122,6 +128,11 @@ export const GRT_ROUTE_79_SERVICE_AREA = {
   serviceHours: 'Monday–Friday: 6–10 a.m., 2–6 p.m., and 10:45–11:45 p.m.',
   bookingUrl: GRT_ROUTE_79_SOURCE_URL,
   serviceName: 'Route 79 Breslau On-Demand',
+  availability: {
+    Weekday: ['amPeak', 'pmPeak', 'evening', 'late'],
+    Saturday: [],
+    Sunday: [],
+  } satisfies OnDemandAvailability,
 };
 
 export const METRO_MICRO_SERVICE_AREA = {
