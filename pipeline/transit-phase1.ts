@@ -50,7 +50,7 @@ function expandFrequencies(frequencies: GtfsFrequency[] | undefined): Map<string
  */
 function buildTripDepartures(
     gtfs: GtfsData
-): Map<string, { depTime: number; routeId: string; dirId: string; serviceId: string; missingDir: boolean; shapeId: string | null; headsign: string | null }> {
+): Map<string, { depTime: number; routeId: string; dirId: string; serviceId: string; missingDir: boolean; shapeId: string | null; headsign: string | null; routeVariant: string | null }> {
     const { trips, stopTimes } = gtfs;
 
     const tripFirstDep = new Map<string, number>();
@@ -83,7 +83,7 @@ function buildTripDepartures(
 
     const freqExpanded = expandFrequencies(gtfs.frequencies);
 
-    const result = new Map<string, { depTime: number; routeId: string; dirId: string; serviceId: string; missingDir: boolean; shapeId: string | null; headsign: string | null }>();
+    const result = new Map<string, { depTime: number; routeId: string; dirId: string; serviceId: string; missingDir: boolean; shapeId: string | null; headsign: string | null; routeVariant: string | null }>();
     for (const trip of trips) {
         let headsign = trip.trip_headsign?.trim() || null;
         if (!headsign) {
@@ -100,6 +100,7 @@ function buildTripDepartures(
             missingDir: !trip.direction_id?.trim(),
             shapeId: trip.shape_id ?? null,
             headsign: headsign,
+            routeVariant: trip.route_variant?.trim() || null,
         };
 
         const freqDeps = freqExpanded.get(trip.trip_id);
@@ -152,7 +153,7 @@ export function computeRawDepartures(gtfs: GtfsData, referenceDate?: string, sha
         if (activeServiceIds.size === 0) continue;
 
         const grouped = new Map<string, {
-            routeId: string; dirId: string; headsign?: string; shapeId?: string;
+            routeId: string; dirId: string; headsign?: string; shapeId?: string; routeVariant?: string;
             times: number[]; serviceIds: Set<string>; missingDir: boolean;
         }>();
 
@@ -160,9 +161,7 @@ export function computeRawDepartures(gtfs: GtfsData, referenceDate?: string, sha
             if (!activeServiceIds.has(data.serviceId)) continue;
             // Split by headsign and physical shape so two branches with the same displayed
             // destination cannot be interleaved into a falsely short frequency.
-            const key = (data.headsign)
-                ? `${data.routeId}::${data.dirId}::${data.headsign}::${data.shapeId ?? ''}`
-                : `${data.routeId}::${data.dirId}::${data.shapeId ?? ''}`;
+            const key = `${data.routeId}::${data.dirId}::${data.headsign ?? ''}::${data.shapeId ?? ''}::${data.routeVariant ?? ''}`;
             const baseKey = `${data.routeId}::${data.dirId}`;
             if (shapeFilter) {
                 // Prefer headsign-specific filter when available (handles genuine headsign
@@ -179,6 +178,7 @@ export function computeRawDepartures(gtfs: GtfsData, referenceDate?: string, sha
                 dirId: data.dirId,
                 headsign: data.headsign || undefined,
                 shapeId: data.shapeId || undefined,
+                routeVariant: data.routeVariant || undefined,
                 times: [],
                 serviceIds: new Set(),
                 missingDir: false,
@@ -190,7 +190,7 @@ export function computeRawDepartures(gtfs: GtfsData, referenceDate?: string, sha
         }
 
         for (const [, group] of grouped) {
-            const { routeId, dirId, headsign, shapeId } = group;
+            const { routeId, dirId, headsign, shapeId, routeVariant } = group;
             const departureTimes = deduplicateDepartures(group.times);
             if (departureTimes.length < 2) continue;
 
@@ -211,6 +211,7 @@ export function computeRawDepartures(gtfs: GtfsData, referenceDate?: string, sha
                 route: routeId,
                 dir: dirId,
                 headsign,
+                routeVariant,
                 day,
                 routeType,
                 modeName: getModeName(routeType),

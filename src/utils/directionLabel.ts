@@ -78,9 +78,16 @@ export function directionGroupTerminalLon(features: GeoJSON.Feature[], dirId: nu
 export function labelDirectionGroups(
   features: GeoJSON.Feature[],
   dirIds: number[],
+  overrides?: Record<string, string>,
 ): Map<number, string> {
   const labels = new Map<number, string>();
-  const ends = dirIds
+  for (const dirId of dirIds) {
+    const label = overrides?.[String(dirId)]?.trim();
+    if (label) labels.set(dirId, label);
+  }
+  const remainingDirIds = dirIds.filter(dirId => !labels.has(dirId));
+  if (remainingDirIds.length === 0) return labels;
+  const ends = remainingDirIds
     .map(dirId => ({ dirId, end: directionGroupMeanEnd(features, dirId) }))
     .filter((x): x is { dirId: number; end: LonLat } => x.end != null);
 

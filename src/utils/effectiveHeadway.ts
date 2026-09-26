@@ -7,6 +7,14 @@ export function routeCardDisplayHeadway(p: ShapeProperties, period: TimePeriod):
   // A numeric gap inside a short-turn/peak-only cluster is not sustained route
   // service. Keep limited branches out of normal route-card/list cadence rows.
   if (p.tier === 'span') return null;
+  // An infrequent branch can still have a numeric median, but that median is
+  // misleading when the longest scheduled gap is materially larger. Show the
+  // branch as limited service instead of promising a regular cadence.
+  if (period !== 'all' && p.tier === 'infrequent') {
+    const median = p.headwayByPeriod?.[period] ?? p.headway ?? null;
+    const longestGap = p.maxGapByPeriod?.[period];
+    if (median != null && longestGap != null && longestGap > median * 1.5) return null;
+  }
   const coverage = p.worstDirectionPeriodCoverageHeadway ?? p.periodCoverageHeadway;
   const covVal = coverage && period !== 'all' ? coverage[period] : undefined;
 

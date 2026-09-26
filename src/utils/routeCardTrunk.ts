@@ -118,7 +118,11 @@ export function shouldShowTrunkSummary(branches: ShapeProperties[], period: Time
   const withRealStops = sustainedBranches.filter(d => (d.stopOrder?.length ?? 0) >= 2);
   if (withRealStops.length >= 2) {
     const shared = sharedStopIdsForBranches(withRealStops);
-    if (shared.length < MIN_SHARED_STOPS_FOR_TRUNK) return false;
+    // Some feeds publish an explicit branch code on trips but only retain two
+    // common stops in the derived feature (GO 47 is the concrete case). The
+    // code is stronger evidence than the old three-stop geometry minimum.
+    const hasExplicitBranches = withRealStops.some(d => d.routeVariant?.trim());
+    if (shared.length < (hasExplicitBranches ? 2 : MIN_SHARED_STOPS_FOR_TRUNK)) return false;
     if (!sharesOrderedTrunk(withRealStops[0], withRealStops[1], shared)) return false;
   }
   const periodKey = period !== 'all' ? period : 'midday';

@@ -29,6 +29,8 @@ export interface ShapeProperties {
   headwayByHour?: HeadwayByHour;
   routeShortName: string | null;
   routeLongName: string | null;
+  /** Optional agency/feed-provided branch or variant identifier. */
+  routeVariant?: string | null;
   agencyName?: string;
   headsign?: string | null;
   busSubType?: 'brt' | 'express' | 'coach' | 'local';

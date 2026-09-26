@@ -108,6 +108,8 @@ export interface Agency {
     serviceName?: string;
     availability?: OnDemandAvailability;
   };
+  /** Agency-published direction names keyed by route short name and GTFS direction_id. */
+  directionLabels?: Record<string, Record<string, string>>;
 }
 
 const PATH_TO_APP: Record<string, AppId> = {
