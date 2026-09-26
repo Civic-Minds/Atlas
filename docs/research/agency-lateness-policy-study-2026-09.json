@@ -1,6 +1,6 @@
 {
   "studyVersion": "2026-09-26.v1",
-  "checkedAt": "2026-09-26T22:50:10.534Z",
+  "checkedAt": "2026-09-26T22:50:51.488Z",
   "sampleSeed": 20260926,
   "targetAgencyCount": 80,
   "sampleQuotas": {
@@ -984,18 +984,34 @@
         "customer pickup window"
       ],
       "schedulePunctuality": {
-        "status": "not_reviewed",
-        "definition": null,
-        "sourceIds": [],
+        "status": "definition_found",
+        "definition": "Santa Rosa CityBus defines on-time at scheduled timepoints as arriving within 5 minutes of the scheduled time and not leaving early, with a 90% minimum standard.",
+        "sourceIds": [
+          "santa-rosa-srttp"
+        ],
         "notes": []
       },
       "headwayReliability": {
-        "status": "not_reviewed",
+        "status": "not_found",
         "definition": null,
-        "sourceIds": [],
-        "notes": []
+        "sourceIds": [
+          "santa-rosa-srttp"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
       },
-      "sources": [],
+      "sources": [
+        {
+          "id": "santa-rosa-srttp",
+          "url": "https://srcitybus.org/wp-content/uploads/2023/11/FY-2016-25-SRTP-FINAL-161027.pdf",
+          "title": "Short Range Transit Plan",
+          "publisher": "City of Santa Rosa / Santa Rosa CityBus",
+          "sourceType": "transit-plan",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Route On-Time Performance"
+        }
+      ],
       "notes": []
     },
     {
@@ -2121,18 +2137,36 @@
         "customer pickup window"
       ],
       "schedulePunctuality": {
-        "status": "not_reviewed",
-        "definition": null,
-        "sourceIds": [],
-        "notes": []
+        "status": "definition_found",
+        "definition": "CityBus of Greater Lafayette sets an 85% fixed-route on-time standard: arrivals must be no more than 5 minutes late and buses must not depart early.",
+        "sourceIds": [
+          "citybus-service-standards"
+        ],
+        "notes": [
+          "The reviewed service standard includes separate demand-response and FLEX services; those are excluded."
+        ]
       },
       "headwayReliability": {
-        "status": "not_reviewed",
+        "status": "not_found",
         "definition": null,
-        "sourceIds": [],
-        "notes": []
+        "sourceIds": [
+          "citybus-service-standards"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
       },
-      "sources": [],
+      "sources": [
+        {
+          "id": "citybus-service-standards",
+          "url": "https://www.in.gov/citybuslafayette/files/04.25-BrdPkt.pdf",
+          "title": "CityBus Service Standards",
+          "publisher": "Greater Lafayette Public Transportation Corporation",
+          "sourceType": "service-standard",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "On-Time Performance & Reliability"
+        }
+      ],
       "notes": []
     },
     {

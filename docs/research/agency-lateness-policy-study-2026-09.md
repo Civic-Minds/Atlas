@@ -4,7 +4,7 @@
 - Sample seed: `20260926`
 - Sample: 80 agencies — Canada 20, United States 40, France 20
 - Scope: fixed-route scheduled service only; on-demand, paratransit, and reservation-window policies are excluded from the Atlas comparison
-- Status: sample initialized; 36 of 80 agencies have verified official source sets
+- Status: sample initialized; 38 of 80 agencies have verified official source sets
 
 ## Method
 
@@ -55,7 +55,7 @@ The reviewed agencies show that these are different concepts: schedule-adherence
 | GO Transit | Canada | Ontario | medium | mixed | static_scheduled | Canada / definition_found | definition_found | not_found |
 | Cornwall Transit | Canada | Ontario | small | bus | static_scheduled | Canada / qualitative_definition_only | not_found | not_found |
 | Bloomington Transit | United States | Indiana | medium | bus | static_scheduled | United States / definition_found | not_reviewed | not_reviewed |
-| Santa Rosa CityBus | United States | California | unknown | bus | static_scheduled | United States / qualitative_definition_only | not_reviewed | not_reviewed |
+| Santa Rosa CityBus | United States | California | unknown | bus | static_scheduled | United States / qualitative_definition_only | definition_found | not_found |
 | SunLine Transit Agency (Coachella Valley) | United States | California | medium | bus | static_scheduled | United States / no_definition_found | definition_found | not_found |
 | Central Ohio Transit Authority (COTA) | United States | Ohio | large | mixed | static_scheduled | United States / definition_found | definition_found | not_found |
 | Long Beach Transit | United States | California | medium | bus | static_scheduled | United States / qualitative_definition_only | not_reviewed | not_reviewed |
@@ -84,7 +84,7 @@ The reviewed agencies show that these are different concepts: schedule-adherence
 | Tompkins Consolidated Area Transit | United States | New York | medium | bus | static_scheduled | United States / definition_found | definition_found | not_found |
 | Antelope Valley Transit Authority (AVTA) | United States | California | medium | mixed | static_scheduled | United States / qualitative_definition_only | definition_found | definition_found |
 | Santa Clarita Transit | United States | California | medium | bus | static_scheduled | United States / no_definition_found | not_reviewed | not_reviewed |
-| CityBus of Greater Lafayette | United States | Indiana | medium | bus | static_scheduled | United States / definition_found | not_reviewed | not_reviewed |
+| CityBus of Greater Lafayette | United States | Indiana | medium | bus | static_scheduled | United States / definition_found | definition_found | not_found |
 | NFTA (Buffalo) | United States | New York | large | bus | static_scheduled | United States / qualitative_definition_only | definition_found | not_found |
 | Charleston Area Regional Transportation Authority (CARTA) | United States | South Carolina | medium | mixed | static_scheduled | United States / no_definition_found | definition_found | definition_found |
 | Bustang Outrider | United States | Colorado | small | bus | static_scheduled | United States / definition_found | not_reviewed | not_reviewed |

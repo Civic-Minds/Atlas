@@ -282,7 +282,7 @@ const VERIFIED: Record<string, {
     },
     sources: [{ id: 'kitsap-title-vi', url: 'https://www.kitsaptransit.com/uploads/pdf/projects/kitsaptransittitleviprogram.pdf', title: 'Kitsap Transit Title VI Program', publisher: 'Kitsap Transit', sourceType: 'title-vi-program', accessedAt: '2026-09-26', pagesOrSections: 'On-Time Performance Standard' }],
   },
-  citybus-lafayette: {
+  'citybus-lafayette': {
     schedule: {
       definition: 'CityBus of Greater Lafayette sets an 85% fixed-route on-time standard: arrivals must be no more than 5 minutes late and buses must not depart early.',
       notes: ['The reviewed service standard includes separate demand-response and FLEX services; those are excluded.'],
