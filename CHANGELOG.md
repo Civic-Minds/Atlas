@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Zoom guidance now uses the same compact pill treatment as other map notices.
 - Route-card sparklines now stay stable when hovering a destination without data for the active period.
 - Expanded schedule charts now sit over the current map with a direction selector instead of hiding the underlying screen.
 - Hourly schedule tooltips no longer label every estimate as a 90-minute window when the underlying calculation may use 60 or 90 minutes.

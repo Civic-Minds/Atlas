@@ -16,7 +16,7 @@ import type { ShapeProperties, ViewportBounds, TimePeriod, HoveredBranch } from 
 import type { DayType } from '../../../shared/dayTypes';
 import { registerProtocol, getAtlasPmtilesUrl, getMapStyle } from '../../lib/mapStyle';
 import { getAgencyBbox } from '../../hooks/useAgencyData';
-import { Z_PANEL, FLOATING_CARD } from '../../styles';
+import { Z_PANEL, PILL_SURFACE } from '../../styles';
 import { LIVE_POLLING_ROUTES } from '../../../shared/livePollingConfig';
 import { useColorVision } from '../../context/ColorVisionContext';
 import { tileEffectiveHeadwayExpr, tileRouteKeyExpr } from '../../../shared/tileFilterExprs';
@@ -1909,9 +1909,10 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         </div>
       )}
       {zoomOrientCard && (
-        <div className={`absolute bottom-6 left-1/2 -translate-x-1/2 ${Z_PANEL} ${FLOATING_CARD} px-4 py-2.5 pointer-events-none`}>
-          <div className="text-xs font-black text-[var(--text-primary)]">{zoomOrientCard.title}</div>
-          <div className="text-[10px] font-bold text-[var(--text-muted)]">{zoomOrientCard.subtitle}</div>
+        <div className={`absolute bottom-6 left-1/2 -translate-x-1/2 ${Z_PANEL} ${PILL_SURFACE} h-auto max-w-[calc(100vw-2rem)] px-4 py-2 pointer-events-none whitespace-nowrap`}>
+          <span className="text-xs font-black text-[var(--text-primary)]">{zoomOrientCard.title}</span>
+          <span className="mx-1.5 text-xs text-[var(--text-muted)]">•</span>
+          <span className="text-xs font-bold text-[var(--text-muted)]">{zoomOrientCard.subtitle}</span>
         </div>
       )}
 
