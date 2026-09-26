@@ -4,7 +4,7 @@
 - Sample seed: `20260926`
 - Sample: 80 agencies — Canada 20, United States 40, France 20
 - Scope: fixed-route scheduled service only; on-demand, paratransit, and reservation-window policies are excluded from the Atlas comparison
-- Status: sample initialized; 14 agency schedule-policy records have verified official sources
+- Status: sample initialized; 12 of 80 agencies have verified official source sets
 
 ## Method
 
@@ -29,16 +29,16 @@ The current pipeline baseline is a minimum 5-minute grace, a 15% grace component
 
 | Agency | Country | Region | Size | Mode | Scope | Selection stratum | Schedule policy | Headway policy |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Niagara Transit | Canada | Ontario | medium | bus | static_scheduled | Canada / definition_found | definition_found | not_reviewed |
-| Greater Sudbury Transit | Canada | Ontario | medium | bus | static_scheduled | Canada / qualitative_definition_only | definition_found | not_reviewed |
+| Niagara Transit | Canada | Ontario | medium | bus | static_scheduled | Canada / definition_found | definition_found | not_found |
+| Greater Sudbury Transit | Canada | Ontario | medium | bus | static_scheduled | Canada / qualitative_definition_only | definition_found | not_found |
 | STL (Laval) | Canada | Quebec | large | bus | static_scheduled | Canada / no_definition_found | not_reviewed | not_reviewed |
 | Burlington Transit | Canada | Ontario | medium | bus | static_scheduled | Canada / definition_found | not_reviewed | not_reviewed |
-| Red Deer Transit | Canada | Alberta | medium | bus | static_scheduled | Canada / qualitative_definition_only | not_found | not_reviewed |
+| Red Deer Transit | Canada | Alberta | medium | bus | static_scheduled | Canada / qualitative_definition_only | not_found | not_found |
 | Owen Sound Transit | Canada | Ontario | small | bus | static_scheduled | Canada / no_definition_found | not_reviewed | not_reviewed |
-| Guelph Transit | Canada | Ontario | medium | bus | static_scheduled | Canada / definition_found | definition_found | not_reviewed |
-| Barrie Transit | Canada | Ontario | medium | bus | static_scheduled | Canada / qualitative_definition_only | definition_found | not_reviewed |
+| Guelph Transit | Canada | Ontario | medium | bus | static_scheduled | Canada / definition_found | definition_found | not_found |
+| Barrie Transit | Canada | Ontario | medium | bus | static_scheduled | Canada / qualitative_definition_only | definition_found | not_found |
 | St. Thomas Transit | Canada | Ontario | small | bus | static_scheduled | Canada / no_definition_found | not_reviewed | not_reviewed |
-| Grand River Transit (Waterloo Region) | Canada | Ontario | large | bus | static_scheduled | Canada / definition_found | definition_found | not_reviewed |
+| Grand River Transit (Waterloo Region) | Canada | Ontario | large | bus | static_scheduled | Canada / definition_found | definition_found | not_found |
 | BC Transit (Comox Valley) | Canada | British Columbia | small | bus | static_scheduled | Canada / qualitative_definition_only | not_reviewed | not_reviewed |
 | Ville de Saint-Hyacinthe | Canada | Quebec | small | bus | static_scheduled | Canada / no_definition_found | not_reviewed | not_reviewed |
 | UP Express (Toronto) | Canada | Ontario | small | bus | static_scheduled | Canada / definition_found | not_reviewed | not_reviewed |
@@ -47,16 +47,16 @@ The current pipeline baseline is a minimum 5-minute grace, a 15% grace component
 | Metrobus (St. John's) | Canada | Newfoundland | medium | rail | static_scheduled | Canada / definition_found | not_reviewed | not_reviewed |
 | RTL (Longueuil) | Canada | Quebec | large | bus | static_scheduled | Canada / qualitative_definition_only | not_reviewed | not_reviewed |
 | Moose Jaw Transit | Canada | Saskatchewan | small | bus | static_scheduled | Canada / no_definition_found | not_reviewed | not_reviewed |
-| GO Transit | Canada | Ontario | medium | mixed | static_scheduled | Canada / definition_found | definition_found | not_reviewed |
+| GO Transit | Canada | Ontario | medium | mixed | static_scheduled | Canada / definition_found | definition_found | not_found |
 | Cornwall Transit | Canada | Ontario | small | bus | static_scheduled | Canada / qualitative_definition_only | not_reviewed | not_reviewed |
 | Bloomington Transit | United States | Indiana | medium | bus | static_scheduled | United States / definition_found | not_reviewed | not_reviewed |
 | Santa Rosa CityBus | United States | California | unknown | bus | static_scheduled | United States / qualitative_definition_only | not_reviewed | not_reviewed |
-| SunLine Transit Agency (Coachella Valley) | United States | California | medium | bus | static_scheduled | United States / no_definition_found | not_reviewed | not_reviewed |
-| Central Ohio Transit Authority (COTA) | United States | Ohio | large | mixed | static_scheduled | United States / definition_found | definition_found | not_reviewed |
+| SunLine Transit Agency (Coachella Valley) | United States | California | medium | bus | static_scheduled | United States / no_definition_found | definition_found | not_found |
+| Central Ohio Transit Authority (COTA) | United States | Ohio | large | mixed | static_scheduled | United States / definition_found | definition_found | not_found |
 | Long Beach Transit | United States | California | medium | bus | static_scheduled | United States / qualitative_definition_only | not_reviewed | not_reviewed |
 | Capital Area Transit System (Baton Rouge) | United States | Louisiana | medium | bus | static_scheduled | United States / no_definition_found | not_reviewed | not_reviewed |
 | Butler County Regional Transit Authority | United States | Ohio | medium | mixed | static_scheduled | United States / definition_found | not_reviewed | not_reviewed |
-| Los Angeles Department of Transportation (LADOT/DASH) | United States | California | large | bus | static_scheduled | United States / qualitative_definition_only | definition_found | not_reviewed |
+| Los Angeles Department of Transportation (LADOT/DASH) | United States | California | large | bus | static_scheduled | United States / qualitative_definition_only | definition_found | not_found |
 | Ventura County Transportation Commission (VCTC Intercity) | United States | California | small | mixed | static_scheduled | United States / no_definition_found | not_reviewed | not_reviewed |
 | Westchester County Bee-Line System (BeeLine) | United States | New York | unknown | bus | static_scheduled | United States / definition_found | not_reviewed | not_reviewed |
 | Capital Transit (Juneau) | United States | Alaska | small | bus | static_scheduled | United States / qualitative_definition_only | not_reviewed | not_reviewed |
@@ -74,13 +74,13 @@ The current pipeline baseline is a minimum 5-minute grace, a 15% grace component
 | Palos Verdes Peninsula Transit Authority (PVPTA) | United States | California | small | mixed | static_scheduled | United States / qualitative_definition_only | not_reviewed | not_reviewed |
 | WestCAT (Pinole) | United States | California | small | bus | static_scheduled | United States / no_definition_found | not_reviewed | not_reviewed |
 | Everett Transit | United States | Washington | medium | bus | static_scheduled | United States / definition_found | not_reviewed | not_reviewed |
-| Regional Transportation District (RTD Denver) | United States | Colorado | large | mixed | static_scheduled | United States / qualitative_definition_only | definition_found | not_reviewed |
+| Regional Transportation District (RTD Denver) | United States | Colorado | large | mixed | static_scheduled | United States / qualitative_definition_only | definition_found | not_found |
 | Kalamazoo Metro Transit | United States | Michigan | medium | rail | static_scheduled | United States / no_definition_found | not_reviewed | not_reviewed |
 | Tompkins Consolidated Area Transit | United States | New York | medium | bus | static_scheduled | United States / definition_found | not_reviewed | not_reviewed |
 | Antelope Valley Transit Authority (AVTA) | United States | California | medium | mixed | static_scheduled | United States / qualitative_definition_only | not_reviewed | not_reviewed |
 | Santa Clarita Transit | United States | California | medium | bus | static_scheduled | United States / no_definition_found | not_reviewed | not_reviewed |
 | CityBus of Greater Lafayette | United States | Indiana | medium | bus | static_scheduled | United States / definition_found | not_reviewed | not_reviewed |
-| NFTA (Buffalo) | United States | New York | large | bus | static_scheduled | United States / qualitative_definition_only | definition_found | not_reviewed |
+| NFTA (Buffalo) | United States | New York | large | bus | static_scheduled | United States / qualitative_definition_only | definition_found | not_found |
 | Charleston Area Regional Transportation Authority (CARTA) | United States | South Carolina | medium | mixed | static_scheduled | United States / no_definition_found | not_reviewed | not_reviewed |
 | Bustang Outrider | United States | Colorado | small | bus | static_scheduled | United States / definition_found | not_reviewed | not_reviewed |
 | Indian River Transit | United States | Florida | medium | bus | static_scheduled | United States / qualitative_definition_only | not_reviewed | not_reviewed |

@@ -48,6 +48,17 @@ const VERIFIED: Record<string, {
   headway?: { definition: string; notes: string[]; sourceIds: string[] };
   sources: StudyRecord['sources'];
 }> = {
+  sunline: {
+    schedule: {
+      definition: 'SunLine defines on-time as a trip departing a timepoint from 0 minutes early to 3 minutes late, with a 90% target for all services. Other SunLine reports use a 0-to-5-minute window with an 85% minimum target, so the source set records both versions.',
+      notes: ['The agency has changed or reported different standards across documents; this is not normalized into one rule.'],
+      sourceIds: ['sunline-service-quality', 'sunline-otp-report'],
+    },
+    sources: [
+      { id: 'sunline-service-quality', url: 'https://www.sunline.org/images/Agendas/Strategic_Planning-Operational_Committee_May_27_2020-web.pdf', title: 'Service Quality Standards', publisher: 'SunLine Transit Agency', sourceType: 'service-standard', accessedAt: '2026-09-26', pagesOrSections: 'On-time Performance' },
+      { id: 'sunline-otp-report', url: 'https://www.sunline.org/images/BoD_Finance_Audit_Committee_Agenda_23_Apr_2018_0.pdf', title: 'On-Time Performance Percent by Line', publisher: 'SunLine Transit Agency', sourceType: 'performance-report', accessedAt: '2026-09-26', pagesOrSections: 'On Time' },
+    ],
+  },
   barrie: {
     schedule: {
       definition: 'Barrie reports fixed-route on-time performance as trips between 3 minutes early and 5 minutes late from schedule; its asset plan lists a fixed-route performance value and a separate on-demand value.',
@@ -259,7 +270,9 @@ function main() {
         : { status: 'not_reviewed', definition: null, sourceIds: [], notes: [] },
       headwayReliability: verified?.headway
         ? { status: 'definition_found', definition: verified.headway.definition, sourceIds: verified.headway.sourceIds, notes: verified.headway.notes }
-        : { status: 'not_reviewed', definition: null, sourceIds: [], notes: [] },
+        : verified
+          ? { status: 'not_found', definition: null, sourceIds: verified.schedule.sourceIds, notes: ['The reviewed official source set did not state a headway or service-spacing reliability rule.'] }
+          : { status: 'not_reviewed', definition: null, sourceIds: [], notes: [] },
       sources: verified?.sources ?? [],
       notes: [],
     };
@@ -285,7 +298,7 @@ function main() {
     `- Sample seed: \`${SEED}\``,
     '- Sample: 80 agencies — Canada 20, United States 40, France 20',
     '- Scope: fixed-route scheduled service only; on-demand, paratransit, and reservation-window policies are excluded from the Atlas comparison',
-    `- Status: sample initialized; ${Object.keys(VERIFIED).length} agency schedule-policy records have verified official sources`,
+    `- Status: sample initialized; ${records.filter(record => record.sources.length > 0).length} of 80 agencies have verified official source sets`,
     '',
     '## Method', '',
     'This exploratory study records how agencies themselves define lateness, on-time performance, acceptable headway, bunching, and service reliability for fixed-route scheduled service. On-demand, paratransit, and reservation-window policies may be noted as separate context but do not influence the Atlas frequency comparison. The study does not change Atlas production logic.',
