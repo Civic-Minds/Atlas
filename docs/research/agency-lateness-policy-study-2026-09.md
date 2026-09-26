@@ -4,7 +4,7 @@
 - Sample seed: `20260926`
 - Sample: 80 agencies — Canada 20, United States 40, France 20
 - Scope: fixed-route scheduled service only; on-demand, paratransit, and reservation-window policies are excluded from the Atlas comparison
-- Status: sample initialized; 11 agency schedule-policy records have verified official sources
+- Status: sample initialized; 14 agency schedule-policy records have verified official sources
 
 ## Method
 
@@ -33,10 +33,10 @@ The current pipeline baseline is a minimum 5-minute grace, a 15% grace component
 | Greater Sudbury Transit | Canada | Ontario | medium | bus | static_scheduled | Canada / qualitative_definition_only | definition_found | not_reviewed |
 | STL (Laval) | Canada | Quebec | large | bus | static_scheduled | Canada / no_definition_found | not_reviewed | not_reviewed |
 | Burlington Transit | Canada | Ontario | medium | bus | static_scheduled | Canada / definition_found | not_reviewed | not_reviewed |
-| Red Deer Transit | Canada | Alberta | medium | bus | static_scheduled | Canada / qualitative_definition_only | not_reviewed | not_reviewed |
+| Red Deer Transit | Canada | Alberta | medium | bus | static_scheduled | Canada / qualitative_definition_only | not_found | not_reviewed |
 | Owen Sound Transit | Canada | Ontario | small | bus | static_scheduled | Canada / no_definition_found | not_reviewed | not_reviewed |
-| Guelph Transit | Canada | Ontario | medium | bus | static_scheduled | Canada / definition_found | not_reviewed | not_reviewed |
-| Barrie Transit | Canada | Ontario | medium | bus | static_scheduled | Canada / qualitative_definition_only | not_reviewed | not_reviewed |
+| Guelph Transit | Canada | Ontario | medium | bus | static_scheduled | Canada / definition_found | definition_found | not_reviewed |
+| Barrie Transit | Canada | Ontario | medium | bus | static_scheduled | Canada / qualitative_definition_only | definition_found | not_reviewed |
 | St. Thomas Transit | Canada | Ontario | small | bus | static_scheduled | Canada / no_definition_found | not_reviewed | not_reviewed |
 | Grand River Transit (Waterloo Region) | Canada | Ontario | large | bus | static_scheduled | Canada / definition_found | definition_found | not_reviewed |
 | BC Transit (Comox Valley) | Canada | British Columbia | small | bus | static_scheduled | Canada / qualitative_definition_only | not_reviewed | not_reviewed |

@@ -48,6 +48,30 @@ const VERIFIED: Record<string, {
   headway?: { definition: string; notes: string[]; sourceIds: string[] };
   sources: StudyRecord['sources'];
 }> = {
+  barrie: {
+    schedule: {
+      definition: 'Barrie reports fixed-route on-time performance as trips between 3 minutes early and 5 minutes late from schedule; its asset plan lists a fixed-route performance value and a separate on-demand value.',
+      notes: ['The fixed-route and on-demand metrics are explicitly separate.'],
+      sourceIds: ['barrie-asset-plan'],
+    },
+    sources: [{ id: 'barrie-asset-plan', url: 'https://www.barrie.ca/Corporate-Asset-Management-Plan.pdf', title: 'Corporate Asset Management Plan', publisher: 'City of Barrie', sourceType: 'asset-plan', accessedAt: '2026-09-26', pagesOrSections: 'Quality & Reliability' }],
+  },
+  guelph: {
+    schedule: {
+      definition: 'Guelph’s reported on-time criterion in transit advisory materials is 2 minutes early to 5 minutes late.',
+      notes: ['The source is a transit advisory committee performance report, not a current formal service standard.'],
+      sourceIds: ['guelph-tac'],
+    },
+    sources: [{ id: 'guelph-tac', url: 'https://guelph.ca/wp-content/uploads/TAC_Minutes_051619.pdf', title: 'Transit Advisory Committee Minutes', publisher: 'City of Guelph', sourceType: 'committee-minutes', accessedAt: '2026-09-26', pagesOrSections: 'On-time performance (April 2019)' }],
+  },
+  'red-deer': {
+    schedule: {
+      definition: null,
+      notes: ['Red Deer publishes an 85% on-time target but the reviewed report does not state the minute window used to classify a bus as on time.'],
+      sourceIds: ['red-deer-report-card'],
+    },
+    sources: [{ id: 'red-deer-report-card', url: 'https://www.reddeer.ca/media/reddeerca/city-government/mayor-and-city-council/strategic-plan/Q4-2023-Report-Card.pdf', title: 'Q4 2023 Report Card', publisher: 'City of Red Deer', sourceType: 'performance-report', accessedAt: '2026-09-26', pagesOrSections: 'Committed to Positive Customer Experience' }],
+  },
   brampton: {
     schedule: {
       definition: 'Brampton defines an on-time bus as service delivered between 3 minutes early and 5 minutes late from the scheduled time, with a 90% target.',
@@ -231,7 +255,7 @@ function main() {
       serviceScope: 'static_scheduled',
       excludedPolicyScopes: ['on-demand', 'paratransit', 'reservation-window', 'customer pickup window'],
       schedulePunctuality: verified
-        ? { status: 'definition_found', definition: verified.schedule.definition, sourceIds: verified.schedule.sourceIds, notes: verified.schedule.notes }
+        ? { status: verified.schedule.definition ? 'definition_found' : 'not_found', definition: verified.schedule.definition, sourceIds: verified.schedule.sourceIds, notes: verified.schedule.notes }
         : { status: 'not_reviewed', definition: null, sourceIds: [], notes: [] },
       headwayReliability: verified?.headway
         ? { status: 'definition_found', definition: verified.headway.definition, sourceIds: verified.headway.sourceIds, notes: verified.headway.notes }
