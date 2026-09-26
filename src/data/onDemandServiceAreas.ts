@@ -178,6 +178,11 @@ export const BWG_ON_DEMAND_AGENCY = {
     sourceRetrievedAt: '2026-09-22',
     serviceHours: 'Mon–Fri 6:30 a.m.–7:30 p.m.; Sat 7:30 a.m.–7:30 p.m.; no Sunday service',
     bookingUrl: 'https://www.rideargo.com/cities/bwg#scroll-offset',
+    availability: {
+      Weekday: ['amPeak', 'midday', 'pmPeak', 'evening'],
+      Saturday: ['amPeak', 'midday', 'pmPeak', 'evening'],
+      Sunday: [],
+    } satisfies OnDemandAvailability,
   },
 };
 
@@ -202,6 +207,11 @@ export const CALEDON_ON_DEMAND_AGENCY = {
     sourceRetrievedAt: '2026-09-22',
     serviceHours: 'Mon–Fri 5:30 a.m.–8:00 p.m.; Sat–Sun 7:00 a.m.–7:00 p.m.',
     bookingUrl: CALEDON_SOURCE_URL,
+    availability: {
+      Weekday: ['amPeak', 'midday', 'pmPeak', 'evening'],
+      Saturday: ['amPeak', 'midday', 'pmPeak'],
+      Sunday: ['amPeak', 'midday', 'pmPeak'],
+    } satisfies OnDemandAvailability,
   },
 };
 
@@ -226,5 +236,10 @@ export const BRAMPTON_ON_DEMAND_AGENCY = {
     sourceRetrievedAt: '2026-09-22',
     serviceHours: 'Mon–Fri 5:30 a.m.–9:30 p.m.; no Saturday or Sunday service',
     bookingUrl: BRAMPTON_SOURCE_URL,
+    availability: {
+      Weekday: ['amPeak', 'midday', 'pmPeak', 'evening'],
+      Saturday: [],
+      Sunday: [],
+    } satisfies OnDemandAvailability,
   },
 };

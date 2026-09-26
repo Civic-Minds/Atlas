@@ -13,6 +13,7 @@ import {
   METRO_MICRO_SERVICE_AREA,
 } from '../onDemandServiceAreas';
 import { HSR_MY_RIDE_STOP_FEATURES } from '../hsrMyRideStops';
+import { isOnDemandActive } from '../../../shared/onDemandAvailability';
 
 describe('BWG on-demand service area', () => {
   it('keeps the captured Argo polygon closed and non-trivial', () => {
@@ -44,6 +45,13 @@ describe('BWG on-demand service area', () => {
     expect(BRAMPTON_ON_DEMAND_AGENCY.slug).toBe('brampton-argo');
     const ring = BRAMPTON_ON_DEMAND_SERVICE_AREAS[0].geometry.coordinates[0];
     expect(ring[0]).toEqual(ring.at(-1));
+  });
+
+  it('filters Argo services to their published operating windows', () => {
+    expect(isOnDemandActive(BRAMPTON_ON_DEMAND_AGENCY.onDemandServiceArea.availability, 'Weekday', 'evening')).toBe(true);
+    expect(isOnDemandActive(BRAMPTON_ON_DEMAND_AGENCY.onDemandServiceArea.availability, 'Weekday', 'overnight')).toBe(false);
+    expect(isOnDemandActive(BRAMPTON_ON_DEMAND_AGENCY.onDemandServiceArea.availability, 'Saturday', 'midday')).toBe(false);
+    expect(isOnDemandActive(CALEDON_ON_DEMAND_AGENCY.onDemandServiceArea.availability, 'Sunday', 'pmPeak')).toBe(true);
   });
 
   it('keeps the four GRT Route 79 submission polygons closed and labelled', () => {

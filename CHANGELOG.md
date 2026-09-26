@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- On-demand service areas now follow their published operating days and time windows.
 - Beta-only rollout notices now use one shared message explaining which versions include the service.
 - On-demand selections now use the standard Atlas card design and shareable `ondemand=` URL state.
 - On-demand overlays now respect selected agencies, days, and time periods instead of appearing outside their published service windows.
