@@ -56,6 +56,7 @@ const PERIOD_OVERVIEW_BANDS = TIME_PERIODS.map(period => {
 interface HourlySparklineProps {
   byHour: HeadwayByHour;
   stackedByHour?: Record<number, { label: string; headway: number; color: string }[]>;
+  directionOptions?: { key: string; label: string; byHour: HeadwayByHour }[];
   period?: string;
   onPeriodChange?: (period: string) => void;
   onPeriodHover?: (period: string | null) => void;
@@ -69,12 +70,13 @@ interface HourlySparklineProps {
   expanded?: boolean;
 }
 
-export function HeadwaySparkline({ byHour, stackedByHour, period, onPeriodChange, onPeriodHover, onHourHover, allowExpand = false, reserveStackedLegendSpace = false, title = 'Schedule overview', expanded = false }: HourlySparklineProps) {
+export function HeadwaySparkline({ byHour, stackedByHour, directionOptions, period, onPeriodChange, onPeriodHover, onHourHover, allowExpand = false, reserveStackedLegendSpace = false, title = 'Schedule overview', expanded = false }: HourlySparklineProps) {
   const { colorVisionFriendly } = useColorVision();
   const colorMode = colorVisionFriendly ? 'friendly' : 'default';
   const [hoveredPeriod, setHoveredPeriod] = useState<string | null>(null);
   const [hoveredHour, setHoveredHour] = useState<number | null>(null);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [expandedDirection, setExpandedDirection] = useState('all');
 
   useEffect(() => {
     if (!isExpanded) return;
@@ -91,7 +93,9 @@ export function HeadwaySparkline({ byHour, stackedByHour, period, onPeriodChange
   }, [isExpanded]);
 
   const H = expanded ? 150 : 28;
-  const valids = HOURS.map(h => byHour[h]).filter((v): v is number => v != null);
+  const selectedExpandedDirection = expanded ? directionOptions?.find(option => option.key === expandedDirection) : undefined;
+  const displayedByHour = selectedExpandedDirection?.byHour ?? byHour;
+  const valids = HOURS.map(h => displayedByHour[h]).filter((v): v is number => v != null);
   if (valids.length === 0) return null;
 
   const maxFreq = Math.max(...valids.map(v => 1 / v));
@@ -189,7 +193,7 @@ export function HeadwaySparkline({ byHour, stackedByHour, period, onPeriodChange
         ))}
         <div className="relative z-10 flex items-end gap-px">
           {HOURS.map(h => {
-            const hw = byHour[h];
+            const hw = displayedByHour[h];
             const hasValue = hw != null;
             const freq = hw ? 1 / hw : 0;
             const barH = hasValue
@@ -266,8 +270,8 @@ export function HeadwaySparkline({ byHour, stackedByHour, period, onPeriodChange
       </div>
       {expanded && (
         <div className="mt-3 min-h-5 text-center text-[10px] font-bold text-[var(--text-muted)]" aria-live="polite">
-          {hoveredHour != null && byHour[hoveredHour] != null
-            ? formatHourTitle(hoveredHour, byHour[hoveredHour]!)
+          {hoveredHour != null && displayedByHour[hoveredHour] != null
+            ? formatHourTitle(hoveredHour, displayedByHour[hoveredHour]!)
             : 'Hover over an hour to inspect its scheduled headway window.'}
         </div>
       )}
@@ -276,7 +280,7 @@ export function HeadwaySparkline({ byHour, stackedByHour, period, onPeriodChange
           role="dialog"
           aria-modal="true"
           aria-label={`${title} full-day schedule`}
-          className="fixed inset-0 z-[1700] flex items-center justify-center bg-[var(--bg-app)]/90 p-4 backdrop-blur-sm"
+          className="fixed inset-0 z-[1700] flex items-center justify-center bg-[var(--bg-app)]/60 p-4 backdrop-blur-sm"
           onMouseDown={event => { if (event.target === event.currentTarget) setIsExpanded(false); }}
         >
           <div className="w-full max-w-6xl max-h-[calc(100vh-2rem)] overflow-y-auto rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-panel)] p-5 shadow-2xl">
@@ -296,9 +300,24 @@ export function HeadwaySparkline({ byHour, stackedByHour, period, onPeriodChange
                 <X className="w-4 h-4" />
               </button>
             </div>
+            {directionOptions && directionOptions.length > 1 && (
+              <div className="mt-4 flex flex-wrap gap-2" role="tablist" aria-label="Schedule direction">
+                {directionOptions.map(option => (
+                  <button
+                    key={option.key}
+                    type="button"
+                    role="tab"
+                    aria-selected={expandedDirection === option.key}
+                    onClick={() => setExpandedDirection(option.key)}
+                    className={`rounded-full border px-3 py-1.5 text-[10px] font-bold transition-colors ${expandedDirection === option.key ? 'border-[var(--text-primary)] bg-[var(--text-primary)] text-[var(--bg-panel)]' : 'border-[var(--border-primary)] bg-[var(--bg-btn)] text-[var(--text-dim)] hover:text-[var(--text-primary)]'}`}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            )}
             <HeadwaySparkline
-              byHour={byHour}
-              stackedByHour={stackedByHour}
+              byHour={displayedByHour}
               period="all"
               onPeriodChange={() => {}}
               onPeriodHover={onPeriodHover}

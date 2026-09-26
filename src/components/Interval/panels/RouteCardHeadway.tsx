@@ -343,6 +343,14 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
               }))
               .filter((segment): segment is { label: string; headway: number; color: string } => segment.headway != null)]))
           : undefined;
+        const directionOptions = [
+          { key: 'all', label: 'All directions', byHour: merged },
+          ...displayGroups.map((group, index) => ({
+            key: `direction-${group.dirId}`,
+            label: group.boundLabel ?? `Direction ${index + 1}`,
+            byHour: sparklineHeadwayByHour(group.realTier, HOURS),
+          })),
+        ];
         const hasAny = HOURS.some(h => merged[h] != null);
         if (!hasAny) return null;
         return (
@@ -350,6 +358,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
             <HeadwaySparkline
               byHour={merged}
               stackedByHour={stackedByHour}
+              directionOptions={directionOptions}
               period={period}
               onPeriodChange={p => setPeriod(p as TimePeriod)}
               onHourHover={setHoveredHour}
