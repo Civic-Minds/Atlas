@@ -7,8 +7,8 @@ date. This audit downloaded and checked candidate feeds without changing feed
 configuration, writing refreshed data, or starting a pipeline action.
 
 - 47 pass Atlas's local processing check, including hidden production record `nice-fr`
-- 23 remain genuinely expired with no verified current replacement
-- 3 now have verified replacement feeds: `fred-transit`, `grt`, and
+- 22 remain genuinely expired with no verified current replacement
+- 4 now have verified replacement feeds: `fred-transit`, `grt`, `path`, and
   `whatcomtransit`
 - 4 need manual source review: `augusta`, `lavta`, `sfmta`, and `westberkeley`
 - 1 newer source is not publishable: `snowmass-village` has stops but no routes,
@@ -53,7 +53,7 @@ download automatically.
 | SFMTA / Muni | The official ZIP downloads, but its service calendar ends 2026-08-28 and no later feed was verified | Confirm the next Muni GTFS release and refresh the catalog URL |
 | West Berkeley Shuttle | Cal-ITP URL does not return a usable ZIP and the catalog copy is expired | Confirm whether the shuttle still operates and locate its current feed |
 
-The 23 agencies below remain candidates for source recovery. The read-only audit
+The 22 agencies below remain candidates for source recovery. The read-only audit
 and follow-up research found no current usable replacement among their configured,
 official, or automatically derived candidates. Start with agencies whose snapshots
 ended in 2026; do not replace any of these with an older archived ZIP.
@@ -73,7 +73,6 @@ ended in 2026; do not replace any of these with an older archived ZIP.
 | `hocts` | 20211231 |
 | `mcts` | 20250823 |
 | `moose-jaw` | 20240331 |
-| `path` | 20260601 |
 | `qline` | 20251231 |
 | `riovista` | 20250131 |
 | `rockregion` | 20251019 |
@@ -86,7 +85,7 @@ ended in 2026; do not replace any of these with an older archived ZIP.
 
 ## Follow-up source findings — 2026-09-26
 
-Three current sources were found and passed Atlas's local processing check. These
+Four current sources were found and passed Atlas's local processing check. These
 are documented for a later, separately authorized refresh; this audit did not
 change agency configuration or write refreshed artifacts.
 
@@ -94,6 +93,7 @@ change agency configuration or write refreshed artifacts.
 | --- | --- | --- |
 | `fred-transit` | `https://www.fredericksburgva.gov/DocumentCenter/View/31122/FXBGO-GTFS---CY2026` | Official CY2026 feed; processed successfully. The feed has no `feed_info.txt` expiry, so the official publication date is the active-date evidence. |
 | `grt` | `https://webapps.regionofwaterloo.ca/api/grt-routes/api/staticfeeds/0` | Official GRT endpoint; processed successfully. The feed has no `feed_info.txt` expiry, so the official open-data page is the active-source evidence. |
+| `path` | `https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/14843/PATHGTFS.zip` | Current PATH feed; processed successfully through 2026-11-14. It was directly downloadable without a token from this environment. |
 | `whatcomtransit` | `https://github.com/whatcomtrans/publicwtadata/raw/master/GTFS/wta_gtfs_latest.zip` | Current public agency repository feed; processed successfully through 2027-02-06. |
 
 Other candidate URLs checked during this pass were not publishable replacements:
@@ -135,7 +135,6 @@ agency identity and service dates extending beyond the audit date.
 | `fast-ca`, `riovista`, `unioncity`, `vacaville` | The current regional feed is behind an API key, so no public static ZIP was verified. |
 | `hocts` | The configured feed remains expired and malformed; no newer matching HOCTS feed was found. |
 | `moose-jaw` | The city still links its official GTFS URL and it downloads, but the feed still ends 2024-03-31; no current replacement was verified. |
-| `path` | Only realtime data was found; no current static schedule ZIP was verified. |
 
 ## Discontinued or merged services
 
