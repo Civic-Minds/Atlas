@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Hourly schedule tooltips no longer label every estimate as a 90-minute window when the underlying calculation may use 60 or 90 minutes.
 - Reduced initial loading by serving smaller mode-specific agency catalogs and deferring the information panel and research story bundles until they are needed.
 - Disabled the paused Live vehicle feature in beta and local builds so its pill and coverage claims do not appear while Live is unavailable.
 - Removed the unverified combined-frequency number from experimental route-variant notices so opposite directions are not presented as one shared interval.

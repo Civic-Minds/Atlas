@@ -14,10 +14,6 @@ const HOURS = SPARKLINE_HOURS;
 // Label positions: 6a, 12p, 6p, 12a
 const HOUR_LABELS: Record<number, string> = { 6: '6a', 12: '12p', 18: '6p', 24: '12a' };
 
-// Each bar covers a 90-min window (h:00-(h+1):30), not a strict hour -- see
-// docs/ROUTE_SERVICE_METRICS.md's "headwayByHour" section for why. The bar position/label
-// reads like a precise hour, so spell out the real window on hover rather than let it imply
-// more precision than the underlying data has.
 function formatClock(totalMinutes: number): string {
   const h24 = Math.floor(totalMinutes / 60) % 24;
   const m = totalMinutes % 60;
@@ -26,8 +22,8 @@ function formatClock(totalMinutes: number): string {
   return `${h12}:${String(m).padStart(2, '0')}${period}`;
 }
 
-function formatHourWindowTitle(h: number, headway: number): string {
-  return `${formatClock(h * 60)}–${formatClock(h * 60 + 90)}: every ${headway} min`;
+function formatHourTitle(h: number, headway: number): string {
+  return `${formatClock(h * 60)}: every ${headway} min`;
 }
 
 const HOUR_TO_PERIOD: Record<number, string> = Object.fromEntries(
@@ -220,7 +216,7 @@ export function HeadwaySparkline({ byHour, stackedByHour, period, onPeriodChange
               <div
                 key={h}
                 className="flex-1 min-w-0 flex flex-col items-center"
-                title={hasValue ? formatHourWindowTitle(h, hw) : undefined}
+                title={hasValue ? formatHourTitle(h, hw) : undefined}
               >
                 <div style={{ height: H }} className="flex items-end justify-center w-full">
                   {hasValue && (
@@ -271,7 +267,7 @@ export function HeadwaySparkline({ byHour, stackedByHour, period, onPeriodChange
       {expanded && (
         <div className="mt-3 min-h-5 text-center text-[10px] font-bold text-[var(--text-muted)]" aria-live="polite">
           {hoveredHour != null && byHour[hoveredHour] != null
-            ? formatHourWindowTitle(hoveredHour, byHour[hoveredHour]!)
+            ? formatHourTitle(hoveredHour, byHour[hoveredHour]!)
             : 'Hover over an hour to inspect its scheduled headway window.'}
         </div>
       )}
