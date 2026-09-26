@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Agency status filters now have a clearer active state and no longer repeat the active status badge on every result row.
 - Preview analytics now use the shared measurement property with an explicit deployment-mode label, so outreach usage is counted without being confused with Public traffic.
 - Map export dialogs now use one primary action, remove the redundant title field and cancel button, and show the correct preparation state for download versus sharing.
 - Route cards now distinguish limited or irregular service from no service when coverage data shows departures.

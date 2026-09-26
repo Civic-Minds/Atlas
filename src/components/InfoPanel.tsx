@@ -427,7 +427,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                         onClick={() => setAgencyFeatureFilter(id)}
                         aria-pressed={on}
                         className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition-colors whitespace-nowrap shrink-0 ${
-                          on ? CONTROL_ACTIVE : CONTROL_INACTIVE
+                          on ? `${CONTROL_ACTIVE} shadow-sm ring-1 ring-[var(--control-active-border)]` : CONTROL_INACTIVE
                         }`}
                       >
                         {label}
@@ -470,8 +470,10 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                         {list.map(a => {
                           const hasLive = liveBySlug.has(a.slug);
                           const hasHistory = historyBySlug.has(a.slug);
-                          const showLiveBadge = FEATURES.live && hasLive;
-                          const showHistoryBadge = FEATURES.history && hasHistory;
+                          // The active status filter already explains why these rows are present.
+                          // Repeating that same status on every row makes the filter feel inactive.
+                          const showLiveBadge = FEATURES.live && hasLive && agencyFeatureFilter !== 'live';
+                          const showHistoryBadge = FEATURES.history && hasHistory && agencyFeatureFilter !== 'history';
                           const { primary, secondary } = agencyDisplayParts(a.name, a.cities, a.displayArea);
                           const listLabel = secondary ? `${primary} · ${secondary}` : primary;
                           return (
