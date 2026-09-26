@@ -242,6 +242,30 @@ const VERIFIED: Record<string, {
     },
     sources: [{ id: 'blacksburg-budget-2026-27', url: 'https://www.blacksburg.gov/home/showpublisheddocument/14127/639089269708361176', title: 'FY 2026-27 Proposed Budget', publisher: 'Town of Blacksburg', sourceType: 'budget', accessedAt: '2026-09-26', pagesOrSections: 'Transit Department / On-Time Performance' }],
   },
+  'ben-franklin': {
+    schedule: {
+      definition: 'Ben Franklin Transit’s fixed-route standard treats a bus as early when it departs more than 1 minute before schedule and late when it arrives more than 5 minutes after schedule; earlier planning documents describe a 1-minute-early to 5-minute-late, 90% informal target.',
+      notes: ['The 2025 service-standard wording and earlier planning target are recorded separately. Demand-response windows are excluded.'],
+      sourceIds: ['bft-service-standards-2025', 'bft-tdp-2021-26'],
+    },
+    sources: [
+      { id: 'bft-service-standards-2025', url: 'https://www.bft.org/wp-content/uploads/2025/07/Board-Packet-2025-07-17-REVISED-1.pdf', title: 'Systemwide Service Standards', publisher: 'Ben Franklin Transit', sourceType: 'service-standard', accessedAt: '2026-09-26', pagesOrSections: 'Fixed Route On-Time Performance' },
+      { id: 'bft-tdp-2021-26', url: 'https://www.bft.org/assets/1/6/2021-2026_bft_transit_development_plan.pdf', title: '2021-2026 Transit Development Plan', publisher: 'Ben Franklin Transit', sourceType: 'transit-development-plan', accessedAt: '2026-09-26', pagesOrSections: 'Local Performance Measures and Targets' },
+    ],
+  },
+  westcat: {
+    schedule: {
+      definition: 'WestCAT considers Express and Local fixed-route vehicles on time when they depart a scheduled timepoint from 5 minutes early through 5 minutes late; Regional Transbay Commute service uses the same early window and allows up to 15 minutes late. Each has a 90% objective.',
+      notes: [],
+      sourceIds: ['westcat-title-vi-2025'],
+    },
+    headway: {
+      definition: 'WestCAT publishes route-family headway standards by period, ranging from 20-minute peak Express or Regional service to 60-minute night or base service, but does not state an allowed deviation or bunching threshold.',
+      notes: ['This is a scheduled frequency standard, not a headway-reliability tolerance.'],
+      sourceIds: ['westcat-title-vi-2025'],
+    },
+    sources: [{ id: 'westcat-title-vi-2025', url: 'https://www.westcat.org/Content/pdf/WCCTA_Feb2025_Full_BODPacket.pdf', title: 'WestCAT Title VI Program', publisher: 'Western Contra Costa Transit Authority', sourceType: 'title-vi-program', accessedAt: '2026-09-26', pagesOrSections: 'Policy Headways and Periods of Operation; On-Time Performance Standards' }],
+  },
   sunline: {
     schedule: {
       definition: 'SunLine defines on-time as a trip departing a timepoint from 0 minutes early to 3 minutes late, with a 90% target for all services. Other SunLine reports use a 0-to-5-minute window with an 85% minimum target, so the source set records both versions.',

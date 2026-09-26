@@ -1,6 +1,6 @@
 {
   "studyVersion": "2026-09-26.v1",
-  "checkedAt": "2026-09-26T22:48:52.557Z",
+  "checkedAt": "2026-09-26T22:49:36.438Z",
   "sampleSeed": 20260926,
   "targetAgencyCount": 80,
   "sampleQuotas": {
@@ -1807,18 +1807,34 @@
         "customer pickup window"
       ],
       "schedulePunctuality": {
-        "status": "not_reviewed",
-        "definition": null,
-        "sourceIds": [],
+        "status": "definition_found",
+        "definition": "WestCAT considers Express and Local fixed-route vehicles on time when they depart a scheduled timepoint from 5 minutes early through 5 minutes late; Regional Transbay Commute service uses the same early window and allows up to 15 minutes late. Each has a 90% objective.",
+        "sourceIds": [
+          "westcat-title-vi-2025"
+        ],
         "notes": []
       },
       "headwayReliability": {
-        "status": "not_reviewed",
-        "definition": null,
-        "sourceIds": [],
-        "notes": []
+        "status": "definition_found",
+        "definition": "WestCAT publishes route-family headway standards by period, ranging from 20-minute peak Express or Regional service to 60-minute night or base service, but does not state an allowed deviation or bunching threshold.",
+        "sourceIds": [
+          "westcat-title-vi-2025"
+        ],
+        "notes": [
+          "This is a scheduled frequency standard, not a headway-reliability tolerance."
+        ]
       },
-      "sources": [],
+      "sources": [
+        {
+          "id": "westcat-title-vi-2025",
+          "url": "https://www.westcat.org/Content/pdf/WCCTA_Feb2025_Full_BODPacket.pdf",
+          "title": "WestCAT Title VI Program",
+          "publisher": "Western Contra Costa Transit Authority",
+          "sourceType": "title-vi-program",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Policy Headways and Periods of Operation; On-Time Performance Standards"
+        }
+      ],
       "notes": []
     },
     {
@@ -2404,18 +2420,47 @@
         "customer pickup window"
       ],
       "schedulePunctuality": {
-        "status": "not_reviewed",
-        "definition": null,
-        "sourceIds": [],
-        "notes": []
+        "status": "definition_found",
+        "definition": "Ben Franklin Transit’s fixed-route standard treats a bus as early when it departs more than 1 minute before schedule and late when it arrives more than 5 minutes after schedule; earlier planning documents describe a 1-minute-early to 5-minute-late, 90% informal target.",
+        "sourceIds": [
+          "bft-service-standards-2025",
+          "bft-tdp-2021-26"
+        ],
+        "notes": [
+          "The 2025 service-standard wording and earlier planning target are recorded separately. Demand-response windows are excluded."
+        ]
       },
       "headwayReliability": {
-        "status": "not_reviewed",
+        "status": "not_found",
         "definition": null,
-        "sourceIds": [],
-        "notes": []
+        "sourceIds": [
+          "bft-service-standards-2025",
+          "bft-tdp-2021-26"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
       },
-      "sources": [],
+      "sources": [
+        {
+          "id": "bft-service-standards-2025",
+          "url": "https://www.bft.org/wp-content/uploads/2025/07/Board-Packet-2025-07-17-REVISED-1.pdf",
+          "title": "Systemwide Service Standards",
+          "publisher": "Ben Franklin Transit",
+          "sourceType": "service-standard",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Fixed Route On-Time Performance"
+        },
+        {
+          "id": "bft-tdp-2021-26",
+          "url": "https://www.bft.org/assets/1/6/2021-2026_bft_transit_development_plan.pdf",
+          "title": "2021-2026 Transit Development Plan",
+          "publisher": "Ben Franklin Transit",
+          "sourceType": "transit-development-plan",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Local Performance Measures and Targets"
+        }
+      ],
       "notes": []
     },
     {

@@ -4,7 +4,7 @@
 - Sample seed: `20260926`
 - Sample: 80 agencies — Canada 20, United States 40, France 20
 - Scope: fixed-route scheduled service only; on-demand, paratransit, and reservation-window policies are excluded from the Atlas comparison
-- Status: sample initialized; 32 of 80 agencies have verified official source sets
+- Status: sample initialized; 34 of 80 agencies have verified official source sets
 
 ## Method
 
@@ -77,7 +77,7 @@ The reviewed agencies show that these are different concepts: schedule-adherence
 | Chemung County C-TRAN | United States | New York | small | bus | static_scheduled | United States / no_definition_found | not_reviewed | not_reviewed |
 | Pierce Transit | United States | Washington | medium | bus | static_scheduled | United States / definition_found | definition_found | definition_found |
 | Palos Verdes Peninsula Transit Authority (PVPTA) | United States | California | small | mixed | static_scheduled | United States / qualitative_definition_only | not_reviewed | not_reviewed |
-| WestCAT (Pinole) | United States | California | small | bus | static_scheduled | United States / no_definition_found | not_reviewed | not_reviewed |
+| WestCAT (Pinole) | United States | California | small | bus | static_scheduled | United States / no_definition_found | definition_found | definition_found |
 | Everett Transit | United States | Washington | medium | bus | static_scheduled | United States / definition_found | not_reviewed | not_reviewed |
 | Regional Transportation District (RTD Denver) | United States | Colorado | large | mixed | static_scheduled | United States / qualitative_definition_only | definition_found | not_found |
 | Kalamazoo Metro Transit | United States | Michigan | medium | rail | static_scheduled | United States / no_definition_found | not_reviewed | not_reviewed |
@@ -93,7 +93,7 @@ The reviewed agencies show that these are different concepts: schedule-adherence
 | Collier Area Transit (Naples) | United States | Florida | medium | bus | static_scheduled | United States / definition_found | definition_found | not_found |
 | Clallam Transit System | United States | Washington | small | bus | static_scheduled | United States / qualitative_definition_only | not_reviewed | not_reviewed |
 | Grand Valley Transit | United States | Colorado | small | bus | static_scheduled | United States / no_definition_found | not_reviewed | not_reviewed |
-| Ben Franklin Transit (Tri-Cities, WA) | United States | Washington | medium | bus | static_scheduled | United States / definition_found | not_reviewed | not_reviewed |
+| Ben Franklin Transit (Tri-Cities, WA) | United States | Washington | medium | bus | static_scheduled | United States / definition_found | definition_found | not_found |
 | TAC (Charleville) | France | Grand Est | medium | bus | static_scheduled | France / no_definition_found | not_reviewed | not_reviewed |
 | RTM (Marseille) | France | Provence-Alpes-Côte d'Azur | large | bus | static_scheduled | France / qualitative_definition_only | not_reviewed | not_reviewed |
 | Vitalis (Poitiers) | France | Nouvelle-Aquitaine | large | bus | static_scheduled | France / definition_found | not_reviewed | not_reviewed |
