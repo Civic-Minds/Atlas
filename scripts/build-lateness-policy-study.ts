@@ -282,6 +282,22 @@ const VERIFIED: Record<string, {
     },
     sources: [{ id: 'kitsap-title-vi', url: 'https://www.kitsaptransit.com/uploads/pdf/projects/kitsaptransittitleviprogram.pdf', title: 'Kitsap Transit Title VI Program', publisher: 'Kitsap Transit', sourceType: 'title-vi-program', accessedAt: '2026-09-26', pagesOrSections: 'On-Time Performance Standard' }],
   },
+  citybus-lafayette: {
+    schedule: {
+      definition: 'CityBus of Greater Lafayette sets an 85% fixed-route on-time standard: arrivals must be no more than 5 minutes late and buses must not depart early.',
+      notes: ['The reviewed service standard includes separate demand-response and FLEX services; those are excluded.'],
+      sourceIds: ['citybus-service-standards'],
+    },
+    sources: [{ id: 'citybus-service-standards', url: 'https://www.in.gov/citybuslafayette/files/04.25-BrdPkt.pdf', title: 'CityBus Service Standards', publisher: 'Greater Lafayette Public Transportation Corporation', sourceType: 'service-standard', accessedAt: '2026-09-26', pagesOrSections: 'On-Time Performance & Reliability' }],
+  },
+  santarosa: {
+    schedule: {
+      definition: 'Santa Rosa CityBus defines on-time at scheduled timepoints as arriving within 5 minutes of the scheduled time and not leaving early, with a 90% minimum standard.',
+      notes: [],
+      sourceIds: ['santa-rosa-srttp'],
+    },
+    sources: [{ id: 'santa-rosa-srttp', url: 'https://srcitybus.org/wp-content/uploads/2023/11/FY-2016-25-SRTP-FINAL-161027.pdf', title: 'Short Range Transit Plan', publisher: 'City of Santa Rosa / Santa Rosa CityBus', sourceType: 'transit-plan', accessedAt: '2026-09-26', pagesOrSections: 'Route On-Time Performance' }],
+  },
   sunline: {
     schedule: {
       definition: 'SunLine defines on-time as a trip departing a timepoint from 0 minutes early to 3 minutes late, with a 90% target for all services. Other SunLine reports use a 0-to-5-minute window with an 85% minimum target, so the source set records both versions.',
