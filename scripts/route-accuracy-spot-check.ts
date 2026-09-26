@@ -137,12 +137,11 @@ function chooseAgencies(agencies: Agency[], random: () => number): Agency[] {
   const regions = shuffle([...groups.keys()], random);
   const pools = new Map([...groups.entries()].map(([region, list]) => [region, shuffle(list, random)]));
   const selected: Agency[] = [];
-  while (selected.length < 20 && regions.length > 0) {
+  while (regions.length > 0) {
     for (const region of [...regions]) {
       const list = pools.get(region)!;
       if (list.length === 0) { regions.splice(regions.indexOf(region), 1); continue; }
       selected.push(list.shift()!);
-      if (selected.length >= 20) break;
     }
   }
   return selected;
@@ -198,12 +197,14 @@ async function main() {
   const allRows: any[] = [];
   const failures: string[] = [];
   for (const agency of agencies) {
+    if (allRows.length >= 80) break;
     process.stdout.write(`Auditing ${agency.name}...\n`);
     try {
       const artifact = JSON.parse(readFileSync(resolve(DATA_DIR, `${agency.slug}.json`), 'utf8')) as { features: JsonFeature[] };
       const selected = chooseRoutes(routeGroups(artifact.features), random);
       if (selected.length < 4) throw new Error(`only ${selected.length} route candidates`);
-      allRows.push(...await auditAgency(agency, selected));
+      const rows = await auditAgency(agency, selected);
+      allRows.push(...rows);
     } catch (error) {
       failures.push(`${agency.slug}: ${error instanceof Error ? error.message : String(error)}`);
     }
