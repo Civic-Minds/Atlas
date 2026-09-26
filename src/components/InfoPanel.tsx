@@ -438,7 +438,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                         aria-pressed={on}
                         title={id === 'all' ? 'Clear status filters' : 'Combine with other filters'}
                         className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition-colors whitespace-nowrap shrink-0 ${
-                          on ? 'bg-[var(--text-primary)] border-[var(--text-primary)] text-[var(--bg-panel)] shadow-sm' : CONTROL_INACTIVE
+                          on ? `${CONTROL_ACTIVE} font-black shadow-sm ring-1 ring-[var(--control-active-border)]` : CONTROL_INACTIVE
                         }`}
                       >
                         {label}
@@ -461,7 +461,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                         })}
                         aria-pressed={on}
                         className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition-colors whitespace-nowrap shrink-0 ${
-                          on ? 'bg-[var(--text-primary)] border-[var(--text-primary)] text-[var(--bg-panel)] shadow-sm' : CONTROL_INACTIVE
+                          on ? `${CONTROL_ACTIVE} font-black shadow-sm ring-1 ring-[var(--control-active-border)]` : CONTROL_INACTIVE
                         }`}
                       >
                         {r}
