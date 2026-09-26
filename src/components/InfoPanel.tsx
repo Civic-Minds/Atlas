@@ -85,7 +85,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
   const [query, setQuery] = useState('');
   const [regionFilter, setRegionFilter] = useState<Set<string>>(() => new Set());
-  const [agencyFeatureFilter, setAgencyFeatureFilter] = useState<AgencyListFilter>('all');
+  const [agencyFeatureFilters, setAgencyFeatureFilters] = useState<Set<AgencyListFilter>>(() => new Set());
   const [visible, setVisible] = useState(false);
   const [historyAgencies, setHistoryAgencies] = useState<HistoryAgencySummary[] | null>(null);
   const searchInputRef = React.useRef<HTMLInputElement>(null);
@@ -143,10 +143,10 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
         : helpContext?.topic === 'route-data-quality' ? 'route-data-quality'
         : tabToView(defaultTab ?? 'about'),
       );
-      setAgencyFeatureFilter(featureFilter);
+      setAgencyFeatureFilters(featureFilter === 'all' ? new Set() : new Set([featureFilter]));
       setSelectedSlug(null);
     } else {
-      setQuery(''); setRegionFilter(new Set()); setSelectedSlug(null); setAgencyFeatureFilter('all');
+      setQuery(''); setRegionFilter(new Set()); setSelectedSlug(null); setAgencyFeatureFilters(new Set());
     }
   }, [open, defaultTab, featureFilter, helpContext]);
 
@@ -197,13 +197,15 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
   const regionsInScope = useMemo(() => {
     const seen = new Set<string>();
     for (const a of agencies) {
-      if (agencyFeatureFilter === 'live' && !liveBySlug.has(a.slug)) continue;
-      if (agencyFeatureFilter === 'history' && !historyBySlug.has(a.slug)) continue;
-      if (agencyFeatureFilter === 'outdated' && !isFeedExpired(a.lastFeedExpiry)) continue;
+      if (agencyFeatureFilters.size > 0 && ![...agencyFeatureFilters].some(filter =>
+        (filter === 'live' && liveBySlug.has(a.slug))
+        || (filter === 'history' && historyBySlug.has(a.slug))
+        || (filter === 'outdated' && isFeedExpired(a.lastFeedExpiry))
+      )) continue;
       seen.add(a.region ?? 'Other');
     }
     return [...seen].sort();
-  }, [agencies, agencyFeatureFilter, liveBySlug, historyBySlug]);
+  }, [agencies, agencyFeatureFilters, liveBySlug, historyBySlug]);
 
   useEffect(() => {
     if (regionFilter.size === 0) return;
@@ -214,16 +216,18 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
   const filtered = useMemo(() => {
     const q = query.toLowerCase().trim();
     return agencies.filter(a => {
-      if (agencyFeatureFilter === 'live' && !liveBySlug.has(a.slug)) return false;
-      if (agencyFeatureFilter === 'history' && !historyBySlug.has(a.slug)) return false;
-      if (agencyFeatureFilter === 'outdated' && !isFeedExpired(a.lastFeedExpiry)) return false;
+      if (agencyFeatureFilters.size > 0 && ![...agencyFeatureFilters].some(filter =>
+        (filter === 'live' && liveBySlug.has(a.slug))
+        || (filter === 'history' && historyBySlug.has(a.slug))
+        || (filter === 'outdated' && isFeedExpired(a.lastFeedExpiry))
+      )) return false;
       if (regionFilter.size > 0 && !regionFilter.has(a.region ?? 'Other')) return false;
       if (!q) return true;
       return a.name.toLowerCase().includes(q)
         || a.slug.includes(q)
         || (a.cities ?? []).some(city => city.toLowerCase().includes(q));
     });
-  }, [agencies, query, regionFilter, agencyFeatureFilter, liveBySlug, historyBySlug]);
+  }, [agencies, query, regionFilter, agencyFeatureFilters, liveBySlug, historyBySlug]);
 
   const byRegion = useMemo(() => {
     const map = new Map<string, Agency[]>();
@@ -420,12 +424,19 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                 </div>
                 <div className="flex gap-1.5 overflow-x-auto items-center [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none' }}>
                   {agencyFilterOptions.map(([id, label]) => {
-                    const on = agencyFeatureFilter === id;
+                    const on = id === 'all' ? agencyFeatureFilters.size === 0 : agencyFeatureFilters.has(id);
                     return (
                       <button
                         key={id}
-                        onClick={() => setAgencyFeatureFilter(current => current === id ? 'all' : id)}
+                        onClick={() => setAgencyFeatureFilters(current => {
+                          if (id === 'all') return new Set();
+                          const next = new Set(current);
+                          if (next.has(id)) next.delete(id);
+                          else next.add(id);
+                          return next;
+                        })}
                         aria-pressed={on}
+                        title={id === 'all' ? 'Clear status filters' : 'Combine with other filters'}
                         className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition-colors whitespace-nowrap shrink-0 ${
                           on ? `${CONTROL_ACTIVE} shadow-sm ring-1 ring-[var(--control-active-border)]` : CONTROL_INACTIVE
                         }`}
@@ -437,6 +448,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                   {regionsInScope.length > 0 && (
                     <span className="w-px h-3.5 shrink-0 bg-[var(--border-primary)] mx-0.5" aria-hidden />
                   )}
+                  <span className="text-[10px] text-[var(--text-dim)] whitespace-nowrap">Combine filters</span>
                   {regionsInScope.map(r => {
                     const on = regionFilter.has(r);
                     return (
@@ -472,8 +484,8 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                           const hasHistory = historyBySlug.has(a.slug);
                           // The active status filter already explains why these rows are present.
                           // Repeating that same status on every row makes the filter feel inactive.
-                          const showLiveBadge = FEATURES.live && hasLive && agencyFeatureFilter !== 'live';
-                          const showHistoryBadge = FEATURES.history && hasHistory && agencyFeatureFilter !== 'history';
+                          const showLiveBadge = FEATURES.live && hasLive && !agencyFeatureFilters.has('live');
+                          const showHistoryBadge = FEATURES.history && hasHistory && !agencyFeatureFilters.has('history');
                           const { primary, secondary } = agencyDisplayParts(a.name, a.cities, a.displayArea);
                           const listLabel = secondary ? `${primary} · ${secondary}` : primary;
                           return (
