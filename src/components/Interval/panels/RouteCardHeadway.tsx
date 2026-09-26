@@ -165,9 +165,8 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
     group.realTier.some(direction => routeCardDisplayHeadway(direction, period) != null) ||
     group.span.length > 0,
   );
-  const hasPartialPeriodService = selectedPeriod != null && !hasPeriodService && directionGroups.some(group =>
-    group.realTier.some(direction => hasDirectionPeriodService(direction, period)) ||
-    group.span.some(direction => hasDirectionPeriodService(direction, period)),
+  const hasPartialPeriodService = selectedPeriod != null && !hasPeriodService && currentRoute.directions.some(direction =>
+    hasDirectionPeriodService(direction, period),
   );
   // Only primary patterns per direction drive the uneven banner. A rare short-turn
   // branch (TTC 63 midday "to St Clair") can show a multi-hour max gap even when

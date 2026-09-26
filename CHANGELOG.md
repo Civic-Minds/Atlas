@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Route cards now distinguish limited or irregular service from no service when coverage data shows departures.
 - Zoom guidance now uses the same compact pill treatment as other map notices.
 - Route-card sparklines now stay stable when hovering a destination without data for the active period.
 - Expanded schedule charts now sit over the current map with a direction selector instead of hiding the underlying screen.
