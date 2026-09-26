@@ -1,6 +1,37 @@
 # Manual GTFS refresh queue
 
-Snapshot from the expired-source audit on 2026-09-19. The audit checked 74
+## Latest read-only audit — 2026-09-26
+
+The registry contains 80 records whose schedules were expired before the audit
+date. This audit downloaded and checked candidate feeds without changing feed
+configuration, writing refreshed data, or starting a pipeline action.
+
+- 48 have a newer source candidate, including hidden production record `nice-fr`
+- 28 remain genuinely expired with no verified current replacement
+- 4 need manual source review: `augusta`, `lavta`, `sfmta`, and `westberkeley`
+
+The 48 newer-source records are candidates for a coordinated refresh only. Each
+still needs agency identity and active-date review before configuration changes
+or refresh authorization. The 2026-09-19 snapshot below is historical and
+superseded by this audit.
+
+Newer source candidates: `abqride`, `carta-chattanooga`, `collier`,
+`communitytransit`, `culvercitybus`, `dart`, `eugene-ltd`, `everetttransit`,
+`gold-coast`, `goldengate`, `goraleigh`, `grand-junction`, `imperial-valley`,
+`intercitytransit`, `juneau`, `kingcountymetro`, `marta`, `mata`,
+`mont-tremblant`, `montebello`, `mst`, `nice`, `nice-fr`, `omahametro`,
+`pace-bus`, `palm-tran`, `pgc-the-bus`, `psta`, `rct`, `regina`, `rfta`,
+`ripta`, `riverside`, `rtc`, `rtcwashoe`, `santafetrails`, `sdmts`,
+`snowmass-village`, `soundtransit`, `sun-metro`, `tillamook`, `torrance-transit`,
+`votran`, `vvta`, `wmata`, `wrta`, `yolobus`, and `youngstown-wrta`.
+
+Genuinely expired: `albany-ga`, `amarillo`, `b-line`, `cat-savannah`,
+`cheyenne`, `dc-streetcar`, `ecat`, `evansville`, `fast-ca`, `fred-transit`,
+`glendalebeeline`, `glensfallstransit`, `green-bay`, `grt`, `hocts`, `mcts`,
+`moose-jaw`, `path`, `qline`, `riovista`, `rockregion`, `saint-hyacinthe`,
+`taft`, `unioncity`, `vacaville`, `whatcomtransit`, `wichita`, and `xpress-ga`.
+
+Historical snapshot from the expired-source audit on 2026-09-19. The audit checked 74
 remaining expired production snapshots: 40 now have newer sources, 30 remain genuinely
 expired, and these four have no verified replacement that Atlas could currently
 download automatically.
