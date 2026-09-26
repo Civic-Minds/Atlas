@@ -1,6 +1,6 @@
 {
   "studyVersion": "2026-09-26.v1",
-  "checkedAt": "2026-09-26T22:36:06.899Z",
+  "checkedAt": "2026-09-26T22:36:55.744Z",
   "sampleSeed": 20260926,
   "targetAgencyCount": 80,
   "sampleQuotas": {
@@ -25,6 +25,13 @@
       "selectionStratum": "Canada / definition_found",
       "sizeBand": "medium",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "definition_found",
         "definition": "Niagara’s fixed-route guideline says vehicles should be no more than 1 minute early and no more than 5 minutes late at published timing points, 90% of the time; buses should not depart early from published timing points.",
@@ -62,6 +69,13 @@
       "selectionStratum": "Canada / qualitative_definition_only",
       "sizeBand": "medium",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "definition_found",
         "definition": "Greater Sudbury’s service standard targets 90% schedule adherence, with buses on time when no more than 3 minutes late; buses should not leave published time points early.",
@@ -109,6 +123,13 @@
       "selectionStratum": "Canada / no_definition_found",
       "sizeBand": "large",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -132,6 +153,13 @@
       "selectionStratum": "Canada / definition_found",
       "sizeBand": "medium",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -155,6 +183,13 @@
       "selectionStratum": "Canada / qualitative_definition_only",
       "sizeBand": "medium",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -178,6 +213,13 @@
       "selectionStratum": "Canada / no_definition_found",
       "sizeBand": "small",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -201,6 +243,13 @@
       "selectionStratum": "Canada / definition_found",
       "sizeBand": "medium",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -224,6 +273,13 @@
       "selectionStratum": "Canada / qualitative_definition_only",
       "sizeBand": "medium",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -247,6 +303,13 @@
       "selectionStratum": "Canada / no_definition_found",
       "sizeBand": "small",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -270,6 +333,13 @@
       "selectionStratum": "Canada / definition_found",
       "sizeBand": "large",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "definition_found",
         "definition": "Grand River Transit requires no early departures and allows 0–3 minutes late for 90–95% of service, depending on route type and time period; express routes have a 95% target, while other routes have a 90% weekday-peak and 95% off-peak target.",
@@ -307,6 +377,13 @@
       "selectionStratum": "Canada / qualitative_definition_only",
       "sizeBand": "small",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -330,6 +407,13 @@
       "selectionStratum": "Canada / no_definition_found",
       "sizeBand": "small",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -353,6 +437,13 @@
       "selectionStratum": "Canada / definition_found",
       "sizeBand": "small",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -376,6 +467,13 @@
       "selectionStratum": "Canada / qualitative_definition_only",
       "sizeBand": "medium",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -399,6 +497,13 @@
       "selectionStratum": "Canada / no_definition_found",
       "sizeBand": "large",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -422,6 +527,13 @@
       "selectionStratum": "Canada / definition_found",
       "sizeBand": "medium",
       "modeFamily": "rail",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -445,6 +557,13 @@
       "selectionStratum": "Canada / qualitative_definition_only",
       "sizeBand": "large",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -468,6 +587,13 @@
       "selectionStratum": "Canada / no_definition_found",
       "sizeBand": "small",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -491,6 +617,13 @@
       "selectionStratum": "Canada / definition_found",
       "sizeBand": "medium",
       "modeFamily": "mixed",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "definition_found",
         "definition": "GO defines train on-time performance as arrival at the terminating destination within 5 minutes of schedule for journeys under 90 minutes, or within 10 minutes for journeys over 90 minutes.",
@@ -528,6 +661,13 @@
       "selectionStratum": "Canada / qualitative_definition_only",
       "sizeBand": "small",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -551,6 +691,13 @@
       "selectionStratum": "United States / definition_found",
       "sizeBand": "medium",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -574,6 +721,13 @@
       "selectionStratum": "United States / qualitative_definition_only",
       "sizeBand": "unknown",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -597,6 +751,13 @@
       "selectionStratum": "United States / no_definition_found",
       "sizeBand": "medium",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -620,6 +781,13 @@
       "selectionStratum": "United States / definition_found",
       "sizeBand": "large",
       "modeFamily": "mixed",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "definition_found",
         "definition": "COTA considers a vehicle late when it arrives 5 minutes or more after the scheduled time.",
@@ -657,6 +825,13 @@
       "selectionStratum": "United States / qualitative_definition_only",
       "sizeBand": "medium",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -680,6 +855,13 @@
       "selectionStratum": "United States / no_definition_found",
       "sizeBand": "medium",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -703,6 +885,13 @@
       "selectionStratum": "United States / definition_found",
       "sizeBand": "medium",
       "modeFamily": "mixed",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -726,6 +915,13 @@
       "selectionStratum": "United States / qualitative_definition_only",
       "sizeBand": "large",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "definition_found",
         "definition": "LADOT publishes an 85% on-time performance standard for DASH and Commuter Express, but the reviewed source does not provide a minute-based early/late window.",
@@ -763,6 +959,13 @@
       "selectionStratum": "United States / no_definition_found",
       "sizeBand": "small",
       "modeFamily": "mixed",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -786,6 +989,13 @@
       "selectionStratum": "United States / definition_found",
       "sizeBand": "unknown",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -809,6 +1019,13 @@
       "selectionStratum": "United States / qualitative_definition_only",
       "sizeBand": "small",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -832,6 +1049,13 @@
       "selectionStratum": "United States / no_definition_found",
       "sizeBand": "small",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -855,6 +1079,13 @@
       "selectionStratum": "United States / definition_found",
       "sizeBand": "medium",
       "modeFamily": "mixed",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -878,6 +1109,13 @@
       "selectionStratum": "United States / qualitative_definition_only",
       "sizeBand": "small",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -901,6 +1139,13 @@
       "selectionStratum": "United States / no_definition_found",
       "sizeBand": "small",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -924,6 +1169,13 @@
       "selectionStratum": "United States / definition_found",
       "sizeBand": "unknown",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -947,6 +1199,13 @@
       "selectionStratum": "United States / qualitative_definition_only",
       "sizeBand": "small",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -970,6 +1229,13 @@
       "selectionStratum": "United States / no_definition_found",
       "sizeBand": "small",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -993,6 +1259,13 @@
       "selectionStratum": "United States / definition_found",
       "sizeBand": "small",
       "modeFamily": "mixed",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -1016,6 +1289,13 @@
       "selectionStratum": "United States / qualitative_definition_only",
       "sizeBand": "medium",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -1039,6 +1319,13 @@
       "selectionStratum": "United States / no_definition_found",
       "sizeBand": "small",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -1062,6 +1349,13 @@
       "selectionStratum": "United States / definition_found",
       "sizeBand": "medium",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -1085,6 +1379,13 @@
       "selectionStratum": "United States / qualitative_definition_only",
       "sizeBand": "small",
       "modeFamily": "mixed",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -1108,6 +1409,13 @@
       "selectionStratum": "United States / no_definition_found",
       "sizeBand": "small",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -1131,6 +1439,13 @@
       "selectionStratum": "United States / definition_found",
       "sizeBand": "medium",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -1154,6 +1469,13 @@
       "selectionStratum": "United States / qualitative_definition_only",
       "sizeBand": "large",
       "modeFamily": "mixed",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "definition_found",
         "definition": "RTD considers a vehicle on time when it is less than 1 minute early or no more than 5 minutes late at a stop or station.",
@@ -1191,6 +1513,13 @@
       "selectionStratum": "United States / no_definition_found",
       "sizeBand": "medium",
       "modeFamily": "rail",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -1214,6 +1543,13 @@
       "selectionStratum": "United States / definition_found",
       "sizeBand": "medium",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -1237,6 +1573,13 @@
       "selectionStratum": "United States / qualitative_definition_only",
       "sizeBand": "medium",
       "modeFamily": "mixed",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -1260,6 +1603,13 @@
       "selectionStratum": "United States / no_definition_found",
       "sizeBand": "medium",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -1283,6 +1633,13 @@
       "selectionStratum": "United States / definition_found",
       "sizeBand": "medium",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -1306,6 +1663,13 @@
       "selectionStratum": "United States / qualitative_definition_only",
       "sizeBand": "large",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "definition_found",
         "definition": "NFTA’s Title VI program says fixed-route service is on time when it departs a scheduled stop up to 2 minutes early or up to 5 minutes late. An earlier performance report defines Metro Bus arrivals as less than 2 minutes early and less than 4 minutes late, and Metro Rail as less than 1 minute late.",
@@ -1353,6 +1717,13 @@
       "selectionStratum": "United States / no_definition_found",
       "sizeBand": "medium",
       "modeFamily": "mixed",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -1376,6 +1747,13 @@
       "selectionStratum": "United States / definition_found",
       "sizeBand": "small",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -1399,6 +1777,13 @@
       "selectionStratum": "United States / qualitative_definition_only",
       "sizeBand": "medium",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -1422,6 +1807,13 @@
       "selectionStratum": "United States / no_definition_found",
       "sizeBand": "small",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -1445,6 +1837,13 @@
       "selectionStratum": "United States / definition_found",
       "sizeBand": "medium",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -1468,6 +1867,13 @@
       "selectionStratum": "United States / qualitative_definition_only",
       "sizeBand": "small",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -1491,6 +1897,13 @@
       "selectionStratum": "United States / no_definition_found",
       "sizeBand": "small",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -1514,6 +1927,13 @@
       "selectionStratum": "United States / definition_found",
       "sizeBand": "medium",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -1537,6 +1957,13 @@
       "selectionStratum": "France / no_definition_found",
       "sizeBand": "medium",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -1560,6 +1987,13 @@
       "selectionStratum": "France / qualitative_definition_only",
       "sizeBand": "large",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -1583,6 +2017,13 @@
       "selectionStratum": "France / definition_found",
       "sizeBand": "large",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -1606,6 +2047,13 @@
       "selectionStratum": "France / no_definition_found",
       "sizeBand": "small",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -1629,6 +2077,13 @@
       "selectionStratum": "France / qualitative_definition_only",
       "sizeBand": "medium",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -1652,6 +2107,13 @@
       "selectionStratum": "France / definition_found",
       "sizeBand": "medium",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -1675,6 +2137,13 @@
       "selectionStratum": "France / no_definition_found",
       "sizeBand": "unknown",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -1698,6 +2167,13 @@
       "selectionStratum": "France / qualitative_definition_only",
       "sizeBand": "medium",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -1721,6 +2197,13 @@
       "selectionStratum": "France / definition_found",
       "sizeBand": "medium",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -1744,6 +2227,13 @@
       "selectionStratum": "France / no_definition_found",
       "sizeBand": "small",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -1767,6 +2257,13 @@
       "selectionStratum": "France / qualitative_definition_only",
       "sizeBand": "medium",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -1790,6 +2287,13 @@
       "selectionStratum": "France / definition_found",
       "sizeBand": "medium",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -1813,6 +2317,13 @@
       "selectionStratum": "France / no_definition_found",
       "sizeBand": "unknown",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -1836,6 +2347,13 @@
       "selectionStratum": "France / qualitative_definition_only",
       "sizeBand": "medium",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -1859,6 +2377,13 @@
       "selectionStratum": "France / definition_found",
       "sizeBand": "medium",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -1882,6 +2407,13 @@
       "selectionStratum": "France / no_definition_found",
       "sizeBand": "medium",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -1905,6 +2437,13 @@
       "selectionStratum": "France / qualitative_definition_only",
       "sizeBand": "large",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -1928,6 +2467,13 @@
       "selectionStratum": "France / definition_found",
       "sizeBand": "large",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -1951,6 +2497,13 @@
       "selectionStratum": "France / no_definition_found",
       "sizeBand": "medium",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,
@@ -1974,6 +2527,13 @@
       "selectionStratum": "France / qualitative_definition_only",
       "sizeBand": "large",
       "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
       "schedulePunctuality": {
         "status": "not_reviewed",
         "definition": null,

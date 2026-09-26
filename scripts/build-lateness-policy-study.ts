@@ -35,6 +35,8 @@ type StudyRecord = {
   selectionStratum: string;
   sizeBand: 'small' | 'medium' | 'large' | 'unknown';
   modeFamily: 'bus' | 'rail' | 'mixed' | 'unknown';
+  serviceScope: 'static_scheduled';
+  excludedPolicyScopes: string[];
   schedulePunctuality: { status: 'not_reviewed' | 'definition_found' | 'not_found' | 'inaccessible'; definition: string | null; sourceIds: string[]; notes: string[] };
   headwayReliability: { status: 'not_reviewed' | 'definition_found' | 'not_found' | 'inaccessible'; definition: string | null; sourceIds: string[]; notes: string[] };
   sources: Array<{ id: string; url: string; title: string; publisher: string; sourceType: string; accessedAt: string; pagesOrSections: string | null }>;
@@ -226,6 +228,8 @@ function main() {
       selectionStratum: `${country} / ${catalogBySlug.get(agency.slug)?.reviewStatus ?? 'not_in_catalog'}`,
       sizeBand: sizeBand(featureCount),
       modeFamily: modeFamily(agency.slug, agency.name),
+      serviceScope: 'static_scheduled',
+      excludedPolicyScopes: ['on-demand', 'paratransit', 'reservation-window', 'customer pickup window'],
       schedulePunctuality: verified
         ? { status: 'definition_found', definition: verified.schedule.definition, sourceIds: verified.schedule.sourceIds, notes: verified.schedule.notes }
         : { status: 'not_reviewed', definition: null, sourceIds: [], notes: [] },
@@ -256,11 +260,11 @@ function main() {
     `- Study version: \`${study.studyVersion}\``,
     `- Sample seed: \`${SEED}\``,
     '- Sample: 80 agencies — Canada 20, United States 40, France 20',
-    '- Scope: schedule punctuality and headway/frequency reliability, recorded separately',
+    '- Scope: fixed-route scheduled service only; on-demand, paratransit, and reservation-window policies are excluded from the Atlas comparison',
     `- Status: sample initialized; ${Object.keys(VERIFIED).length} agency schedule-policy records have verified official sources`,
     '',
     '## Method', '',
-    'This exploratory study records how agencies themselves define lateness, on-time performance, acceptable headway, bunching, and service reliability. It does not treat an agency frequency promise as an on-time rule, and it does not change Atlas production logic.',
+    'This exploratory study records how agencies themselves define lateness, on-time performance, acceptable headway, bunching, and service reliability for fixed-route scheduled service. On-demand, paratransit, and reservation-window policies may be noted as separate context but do not influence the Atlas frequency comparison. The study does not change Atlas production logic.',
     '',
     'Each agency must end with either an official definition, an explicit no-definition-found result, or an inaccessible-source result. Sources must include a URL, title, publisher, access date, and page or section when applicable.',
     '',
@@ -276,9 +280,9 @@ function main() {
     '- LADOT publishes an 85% on-time performance target but no minute-based late-trip window in the reviewed source.',
     '',
     '## Sample', '',
-    '| Agency | Country | Region | Size | Mode | Selection stratum | Schedule policy | Headway policy |',
-    '| --- | --- | --- | --- | --- | --- | --- | --- |',
-    ...records.map(record => `| ${record.name} | ${record.country} | ${record.region ?? '—'} | ${record.sizeBand} | ${record.modeFamily} | ${record.selectionStratum} | ${record.schedulePunctuality.status} | ${record.headwayReliability.status} |`),
+    '| Agency | Country | Region | Size | Mode | Scope | Selection stratum | Schedule policy | Headway policy |',
+    '| --- | --- | --- | --- | --- | --- | --- | --- | --- |',
+    ...records.map(record => `| ${record.name} | ${record.country} | ${record.region ?? '—'} | ${record.sizeBand} | ${record.modeFamily} | ${record.serviceScope} | ${record.selectionStratum} | ${record.schedulePunctuality.status} | ${record.headwayReliability.status} |`),
     '',
     '## Research ledger', '',
     'The structured ledger is [agency-lateness-policy-study-2026-09.json](agency-lateness-policy-study-2026-09.json). The official-source review must replace each `not_reviewed` status with `definition_found`, `not_found`, or `inaccessible` and add source-backed notes.',
