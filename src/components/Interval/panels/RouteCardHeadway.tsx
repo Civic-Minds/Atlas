@@ -316,7 +316,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           />
         </div>
       </SidebarCardHeaderBlock>
-      {variantFamily && (
+      {FEATURES.beta && variantFamily && (
         <p className="text-[10px] text-[var(--text-dim)] -mt-1 mb-3">
           Includes variants {variantFamily.members.map(m => m.shortName).join(', ')}
           {variantFamily.combinedHeadwayMin != null && (
