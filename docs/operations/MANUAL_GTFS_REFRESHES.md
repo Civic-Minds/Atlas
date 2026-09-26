@@ -6,13 +6,15 @@ The registry contains 80 records whose schedules were expired before the audit
 date. This audit downloaded and checked candidate feeds without changing feed
 configuration, writing refreshed data, or starting a pipeline action.
 
-- 48 have a newer source candidate, including hidden production record `nice-fr`
+- 47 pass Atlas's local processing check, including hidden production record `nice-fr`
 - 28 remain genuinely expired with no verified current replacement
 - 4 need manual source review: `augusta`, `lavta`, `sfmta`, and `westberkeley`
+- 1 newer source is not publishable: `snowmass-village` has stops but no routes,
+  trips, stop times, or calendar service
 
-The 48 newer-source records are candidates for a coordinated refresh only. Each
-still needs agency identity and active-date review before configuration changes
-or refresh authorization. The 2026-09-19 snapshot below is historical and
+The 47 passing feeds are candidates for a coordinated refresh only. Each still
+needs agency identity and active-date review before refresh authorization. The
+2026-09-19 snapshot below is historical and
 superseded by this audit.
 
 Newer source candidates: `abqride`, `carta-chattanooga`, `collier`,
@@ -22,7 +24,7 @@ Newer source candidates: `abqride`, `carta-chattanooga`, `collier`,
 `mont-tremblant`, `montebello`, `mst`, `nice`, `nice-fr`, `omahametro`,
 `pace-bus`, `palm-tran`, `pgc-the-bus`, `psta`, `rct`, `regina`, `rfta`,
 `ripta`, `riverside`, `rtc`, `rtcwashoe`, `santafetrails`, `sdmts`,
-`snowmass-village`, `soundtransit`, `sun-metro`, `tillamook`, `torrance-transit`,
+`soundtransit`, `sun-metro`, `tillamook`, `torrance-transit`,
 `votran`, `vvta`, `wmata`, `wrta`, `yolobus`, and `youngstown-wrta`.
 
 Genuinely expired: `albany-ga`, `amarillo`, `b-line`, `cat-savannah`,
@@ -30,6 +32,12 @@ Genuinely expired: `albany-ga`, `amarillo`, `b-line`, `cat-savannah`,
 `glendalebeeline`, `glensfallstransit`, `green-bay`, `grt`, `hocts`, `mcts`,
 `moose-jaw`, `path`, `qline`, `riovista`, `rockregion`, `saint-hyacinthe`,
 `taft`, `unioncity`, `vacaville`, `whatcomtransit`, `wichita`, and `xpress-ga`.
+
+Manual-review findings: `augusta` still has only an authenticated Transitland
+source; `lavta`'s official endpoint is unavailable and its latest accessible
+copy ends 2026-04-30; `sfmta`'s official feed is reachable but ends 2026-08-28;
+and `westberkeley` still has no valid downloadable GTFS, although current city
+documents confirm that the shuttle operates. None is safe to refresh yet.
 
 Historical snapshot from the expired-source audit on 2026-09-19. The audit checked 74
 remaining expired production snapshots: 40 now have newer sources, 30 remain genuinely

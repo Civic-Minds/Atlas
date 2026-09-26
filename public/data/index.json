@@ -7168,7 +7168,7 @@
         32.72,
         -117.16
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-13/mdb-13-202605270056/mdb-13-202605270056.zip",
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-13/latest.zip",
       "lastFeedExpiry": "20260905",
       "lastFeedVersion": "2601 unmerged v2 merged with Generated on 20260521 @ 1307142",
       "region": "California",
@@ -7231,7 +7231,7 @@
         33.98,
         -117.37
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-98/mdb-98-202605110136/mdb-98-202605110136.zip",
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-98/latest.zip",
       "lastFeedExpiry": "20260912",
       "lastFeedVersion": "S1000245",
       "region": "California",
@@ -7414,7 +7414,7 @@
         36.6,
         -121.89
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-56/mdb-56-202606240122/mdb-56-202606240122.zip",
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-56/latest.zip",
       "lastFeedExpiry": "20260828",
       "lastFeedVersion": "202602v33",
       "region": "California",
@@ -7589,7 +7589,7 @@
         39.53,
         -119.81
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-120/mdb-120-202605290123/mdb-120-202605290123.zip",
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-120/latest.zip",
       "lastFeedExpiry": "20260904",
       "lastFeedVersion": "1",
       "region": "Nevada",
@@ -7811,7 +7811,7 @@
         35.09,
         -106.65
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-166/mdb-166-202606060001/mdb-166-202606060001.zip",
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-166/latest.zip",
       "lastFeedExpiry": "20260904",
       "lastFeedVersion": "2026-05_20260605",
       "region": "New Mexico",
@@ -8336,7 +8336,7 @@
         41.26,
         -96
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-2261/mdb-2261-202604230118/mdb-2261-202604230118.zip",
+      "feedUrl": "https://www.ometro.com/wp-content/uploads/GTFSRT/google_transit.zip",
       "lastFeedExpiry": "20260829",
       "lastFeedVersion": "OMAHA 2604 V1",
       "region": "Nebraska",
@@ -8446,7 +8446,7 @@
         34.01,
         -118.11
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-2201/mdb-2201-202606270133/mdb-2201-202606270133.zip",
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2201/latest.zip",
       "lastFeedExpiry": "20260906",
       "lastFeedVersion": "20260626",
       "region": "California",
@@ -8762,7 +8762,7 @@
         41.9,
         -87.8
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-2347/mdb-2347-202605290102/mdb-2347-202605290102.zip",
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2347/latest.zip",
       "lastFeedExpiry": "20260829",
       "lastFeedVersion": "20260531",
       "region": "Illinois",
@@ -9870,7 +9870,7 @@
         40.8642,
         -73.4087
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-521/mdb-521-202606070009/mdb-521-202606070009.zip",
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-521/latest.zip",
       "lastFeedExpiry": "20260912",
       "lastFeedVersion": "",
       "lastRefreshedAt": "2026-08-07",
@@ -11299,7 +11299,7 @@
         35.78,
         -78.64
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-2074/mdb-2074-202607010046/mdb-2074-202607010046.zip",
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2074/latest.zip",
       "lastFeedExpiry": "20260831",
       "lastFeedVersion": "S1000094",
       "region": "North Carolina",
@@ -11558,7 +11558,7 @@
         41.82,
         -71.42
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-624/mdb-624-202606210030/mdb-624-202606210030.zip",
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-624/latest.zip",
       "lastFeedExpiry": "20260828",
       "lastFeedVersion": null,
       "region": "Rhode Island",
@@ -11638,7 +11638,7 @@
         26.7,
         -80.1
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-332/mdb-332-202605190002/mdb-332-202605190002.zip",
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-332/latest.zip",
       "lastFeedExpiry": "20260919",
       "lastFeedVersion": "20260511",
       "region": "Florida",
@@ -11891,7 +11891,7 @@
         38.85,
         -76.85
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-477/mdb-477-202605010139/mdb-477-202605010139.zip",
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-477/latest.zip",
       "lastFeedExpiry": "20260901",
       "lastFeedVersion": "UTC: 30-Apr-2026 18:15",
       "region": "Maryland",
