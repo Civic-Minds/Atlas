@@ -6,7 +6,7 @@ Atlas gates immature features (thin agency coverage, no scaling plan, or genuine
 
 | Flag | Controls | Production | Beta deployment | Why gated |
 |---|---|---|---|---|
-| `LIVE_ENABLED` | Live pill, `/apps/live`, `LiveVehicles.tsx` | off | on | Covers ~5 agencies, 2 routes each, out of 556 public agencies. No scaling plan yet. |
+| `LIVE_ENABLED` | Live pill, `/apps/live`, `LiveVehicles.tsx` | off | off | Live vehicle coverage is paused everywhere until the data pipeline and scope are ready. |
 | `HISTORY_ENABLED` | History control, Agency-list History filter and coverage pills, `/apps/history`, `History.tsx` | off | on | Covers a handful of cities out of 556 public agencies. Same reason. |
 | `CARD_CLICK_TO_FLAG_ENABLED` | Click-to-flag affordance on card values (`FlaggableValue` in `cardUi.tsx`) | off | on | New, unproven interaction — no route/component split like the others, just a UI behavior to validate before it's in front of everyone. |
 | `CORRIDORS_ENABLED` | `/apps/corridors`, `Corridors.tsx` | off | off | Not good enough as a feature yet (Ryan, 2026-07-28). Its panel is also broken by a CSS bug independent of this flag. |
@@ -26,10 +26,7 @@ export const LIVE_ENABLED = envFlag('VITE_LIVE_ENABLED');
 
 **Why env vars, not a `const true`/`false`:** production and beta use the same `main` commit. Only their Vercel build environments differ, so a feature can be tested on beta without creating a second code branch or repeatedly merging two divergent trees. Configure beta-only values on the beta deployment/project, not in source control:
 
-```bash
-# Run this while linked to the beta Vercel project.
-echo "true" | vercel env add VITE_LIVE_ENABLED production
-```
+Live is currently unset/false in every deployment. Do not add a beta override until the Live feature is intentionally re-enabled.
 
 ## Atlas modes
 
@@ -51,7 +48,7 @@ When running locally, open `/apps/diagnostics/performance` to see browser naviga
 2. The `routedApp`/`gated` check — direct URL navigation (e.g. typing `/apps/live`) redirects to the frequency map and corrects the URL, rather than silently rendering the full app anyway. Without this, hiding the pill alone doesn't actually restrict access.
 3. The component import itself where bundle isolation matters. A boolean check alone can still ship a component's JS in the bundle, so sensitive/internal tools should remain unreachable from production as well as hidden from its navigation.
 
-Local dev (`.env.local`) sets all three to `"true"` so localhost keeps showing everything.
+Local dev keeps experimental features available for QA, but Live is currently explicitly disabled everywhere.
 
 ## Iterating on a gated feature
 
