@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { effectiveRouteHeadway, hasDirectionPeriodService, routeCardDisplayHeadway, routeListDisplayHeadway } from '../effectiveHeadway';
+import { effectiveRouteHeadway, hasDirectionPeriodService, routeCardCoverageText, routeCardDisplayHeadway, routeListDisplayHeadway } from '../effectiveHeadway';
 import type { ShapeProperties } from '../../hooks/useIntervalStats';
 
 describe('effectiveRouteHeadway', () => {
@@ -11,6 +11,15 @@ describe('effectiveRouteHeadway', () => {
     routeShortName: '510',
     routeLongName: 'Spadina',
   };
+
+  it('explains a longer full-period gap beside the typical cadence', () => {
+    const p = {
+      ...base,
+      headwayByPeriod: { amPeak: 10 },
+      periodCoverageHeadway: { amPeak: 20 },
+    } as ShapeProperties;
+    expect(routeCardCoverageText(p, 'amPeak')).toBe('typically every 10 min · longest gap 20 min');
+  });
 
   it('uses period-specific headway when period is set', () => {
     const p = {

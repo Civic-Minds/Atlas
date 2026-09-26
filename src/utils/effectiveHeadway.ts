@@ -52,9 +52,14 @@ export function hasDirectionPeriodService(p: ShapeProperties, period: TimePeriod
 
 /** Full-window bound first; raw median remains a separately labelled cadence. */
 export function routeCardCoverageText(p: ShapeProperties, period: TimePeriod): string | undefined {
-  // Coverage is a filter-eligibility metric, not a rider-facing headway. A route
-  // can run every 10 minutes within a shorter service span inside this period.
-  return undefined;
+  // Coverage is the longest gap in the full period, while headwayByPeriod is
+  // the typical cadence. Show both when they differ so the card explains why
+  // a route can say "every 10" but fail a strict "15 or faster" filter.
+  if (period === 'all') return undefined;
+  const typical = p.headwayByPeriod?.[period] ?? null;
+  const coverage = p.periodCoverageHeadway?.[period] ?? null;
+  if (typical == null || coverage == null || coverage <= typical) return undefined;
+  return `typically every ${typical} min · longest gap ${coverage} min`;
 }
 
 export function routeCardTypicalText(p: ShapeProperties, period: TimePeriod): string | undefined {
