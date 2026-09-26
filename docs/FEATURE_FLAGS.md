@@ -62,6 +62,8 @@ Keep three Vercel deployments pointed at the same repository and `main` branch:
 2. Preview (`preview.transitatlas.fyi`): `VITE_ATLAS_MODE=preview`, automatic from `main`; this is the stable outreach link for agency contacts.
 3. Beta (`beta.transitatlas.fyi`): `VITE_ATLAS_MODE=beta`, manually promoted from a validated `main` deployment.
 
+Preview uses the same Google Analytics measurement ID as Public when outreach usage should be included in the shared property. Events include `atlas_mode=preview`, so Preview traffic can be separated from Public traffic in reports. Vercel Web Analytics remains project-specific.
+
 The beta deployment may be a separate Vercel project so both sites can automatically rebuild from `main` with different environment values. Do not restore a long-lived beta Git branch just to hold these settings. If beta access ever needs to be limited to named testers, add access control at the deployment boundary; do not make the production client guess whether a user is allowed to see an internal tool.
 
 ### Vercel cutover procedure

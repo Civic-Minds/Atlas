@@ -1,3 +1,5 @@
+import { ATLAS_MODE } from '../../shared/config';
+
 const measurementId = import.meta.env.VITE_GA_MEASUREMENT_ID as string | undefined;
 const CONSENT_KEY = 'atlas.analytics-consent';
 
@@ -69,9 +71,10 @@ export function trackPageView(path: string) {
 
 export function trackEvent(name: string, parameters: Record<string, string | number | boolean | undefined> = {}) {
   if (analyticsDisabled || typeof window === 'undefined') return;
+  const contextualParameters = { atlas_mode: ATLAS_MODE, ...parameters };
   if (!initialized) {
-    pendingEvents.push({ name, parameters });
+    pendingEvents.push({ name, parameters: contextualParameters });
     return;
   }
-  window.gtag('event', name, parameters);
+  window.gtag('event', name, contextualParameters);
 }

@@ -27,7 +27,7 @@ describe('analytics startup queue', () => {
 
     initAnalytics();
 
-    expect(window.dataLayer).toContainEqual(['event', 'page_view', { page_path: '/' }]);
+    expect(window.dataLayer).toContainEqual(['event', 'page_view', { atlas_mode: 'dev', page_path: '/' }]);
   });
 
   it('discards queued events when consent is denied', async () => {
