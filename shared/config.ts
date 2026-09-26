@@ -44,7 +44,7 @@ export const BETA_R2_PUBLIC_URL = getBetaR2PublicUrl().replace(/\/$/, '');
 // Live and History cover a tiny sliver of agencies with no scaling plan yet (Ryan, 2026-07-29) --
 // off by default until that's resolved. Env-driven rather than a hardcoded constant so production
 // and beta can build the same main commit with different feature exposure.
-function envFlag(name: 'VITE_LIVE_ENABLED' | 'VITE_HISTORY_ENABLED' | 'VITE_CORRIDORS_ENABLED' | 'VITE_BETA_BUILD' | 'VITE_CARD_CLICK_TO_FLAG_ENABLED' | 'VITE_UNEVEN_BANNER_ENABLED' | 'VITE_MAP_EXPORT_ENABLED'): boolean {
+function envFlag(name: 'VITE_LIVE_ENABLED' | 'VITE_HISTORY_ENABLED' | 'VITE_CORRIDORS_ENABLED' | 'VITE_BETA_BUILD' | 'VITE_PREVIEW_BUILD' | 'VITE_CARD_CLICK_TO_FLAG_ENABLED' | 'VITE_UNEVEN_BANNER_ENABLED' | 'VITE_MAP_EXPORT_ENABLED'): boolean {
   // @ts-ignore
   return typeof import.meta !== 'undefined' && import.meta?.env?.[name] === 'true';
 }
@@ -63,6 +63,9 @@ export const UNEVEN_BANNER_ENABLED = envFlag('VITE_UNEVEN_BANNER_ENABLED');
 // Same env-driven pattern as the flags above. Distinguishes the beta deployment in the browser
 // tab title so it doesn't look identical to production.
 export const BETA_BUILD = envFlag('VITE_BETA_BUILD');
+/** Preview deployments retain beta data access but omit the beta research apps. */
+export const PREVIEW_BUILD = envFlag('VITE_PREVIEW_BUILD');
+export const RESEARCH_APPS_ENABLED = BETA_BUILD && !PREVIEW_BUILD;
 
 export type AtlasMode = 'public' | 'beta' | 'dev';
 
@@ -87,10 +90,12 @@ const MAP_EXPORT_ENV_ENABLED = envFlag('VITE_MAP_EXPORT_ENABLED');
  */
 export const FEATURES = {
   beta: BETA_BUILD,
+  preview: PREVIEW_BUILD,
+  researchApps: RESEARCH_APPS_ENABLED,
   live: LIVE_ENABLED,
   history: HISTORY_ENABLED,
   corridors: CORRIDORS_ENABLED,
-  frequentService: BETA_BUILD,
+  frequentService: RESEARCH_APPS_ENABLED,
   mapExport: BETA_BUILD || MAP_EXPORT_ENV_ENABLED,
   cardClickToFlag: CARD_CLICK_TO_FLAG_ENABLED,
   unevenBanner: UNEVEN_BANNER_ENABLED,

@@ -11,6 +11,7 @@ Atlas gates immature features (thin agency coverage, no scaling plan, or genuine
 | `CARD_CLICK_TO_FLAG_ENABLED` | Click-to-flag affordance on card values (`FlaggableValue` in `cardUi.tsx`) | off | on | New, unproven interaction — no route/component split like the others, just a UI behavior to validate before it's in front of everyone. |
 | `CORRIDORS_ENABLED` | `/apps/corridors`, `Corridors.tsx` | off | off | Not good enough as a feature yet (Ryan, 2026-07-28). Its panel is also broken by a CSS bug independent of this flag. |
 | `UNEVEN_BANNER_ENABLED` | "Service is uneven" route-card banner, `RouteCardHeadway.tsx` | off | on | The excess/ratio threshold deciding when a period's worst gap is worth surfacing (#345) needs more real-feed tuning than a single main push should carry. |
+| `PREVIEW_BUILD` | Preview title and research-app visibility | off | off | Preview deployments retain beta data access for external testing without exposing the Night Service or Frequent Service research apps. |
 
 ## How it works
 
@@ -75,6 +76,10 @@ The production project and beta project must be separate because Vercel environm
 5. Keep the old beta project/branch available until the new hostname and production site have both been checked; retire it only after the cutover is confirmed.
 
 The beta project currently uses the Vite framework/output configuration (`dist`). A Vercel deployment can show a successful `npm run build` and still fail afterward if its Output Directory is incorrectly set to `build`.
+
+## `VITE_PREVIEW_BUILD`
+
+Preview-only builds set this to `"true"`. They keep `VITE_BETA_BUILD=true` so beta-only data remains available, but hide the research apps and use a `[Preview]` browser title.
 
 ## `VITE_BETA_BUILD`
 

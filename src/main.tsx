@@ -20,7 +20,9 @@ if (import.meta.env.PROD) {
   injectSpeedInsights();
 }
 
-if (FEATURES.beta) {
+if (FEATURES.preview) {
+  document.title = `[Preview] ${document.title}`;
+} else if (FEATURES.beta) {
   document.title = `[Beta] ${document.title}`;
 }
 

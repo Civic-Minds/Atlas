@@ -147,7 +147,7 @@ export default function App() {
   // doesn't lie about what's actually showing.
   const gated = (routedApp === 'live' && !FEATURES.live) || (routedApp === 'history' && !FEATURES.history)
     || (routedApp === 'corridors' && !FEATURES.corridors)
-    || (routedApp === 'night' && !FEATURES.beta)
+    || (routedApp === 'night' && !FEATURES.researchApps)
     || ((isFrequentServiceMapRoute || isFrequentServiceStoryRoute) && !FEATURES.frequentService);
   const activeApp: AppId = gated ? 'frequency' : routedApp;
 
@@ -580,12 +580,12 @@ export default function App() {
           </a>
         )}
 
-        {(FEATURES.beta || FEATURES.frequentService) && (
+        {FEATURES.researchApps && (
           <>
             <span className="w-px h-4 bg-[var(--border-primary)] shrink-0" aria-hidden="true" />
 
             <div className="hidden xl:flex items-center gap-2">
-              {FEATURES.beta && (
+              {FEATURES.researchApps && (
                 <a
                   href={inNight ? '/' : '/apps/night'}
                   aria-label={inNight ? 'Back to frequency map' : 'Night service'}
@@ -616,7 +616,7 @@ export default function App() {
               </button>
               {appLinksOpen && (
                 <div className={`absolute top-10 left-0 ${FLOATING_CARD} min-w-48 p-1.5 flex flex-col gap-1 ${Z_MODAL_TOP}`}>
-                  {FEATURES.beta && (
+                  {FEATURES.researchApps && (
                     <a href={inNight ? '/' : '/apps/night'} onClick={() => setAppLinksOpen(false)} aria-current={inNight ? 'page' : undefined} className={`flex h-8 px-3 items-center gap-1.5 rounded-full text-xs font-bold border ${inNight ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}>
                       <Moon className="w-3.5 h-3.5" />
                       <span>Night Service</span>
