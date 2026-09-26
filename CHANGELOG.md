@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Map export dialogs now use one primary action, remove the redundant title field and cancel button, and show the correct preparation state for download versus sharing.
 - Route cards now distinguish limited or irregular service from no service when coverage data shows departures.
 - Zoom guidance now uses the same compact pill treatment as other map notices.
 - Route-card sparklines now stay stable when hovering a destination without data for the active period.

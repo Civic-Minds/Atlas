@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Download, Share2, X } from 'lucide-react';
-import { FLOATING_CARD, Z_MODAL_BG, Z_MODAL_TOP } from '../styles';
+import { ACTION_PRIMARY, FLOATING_CARD, Z_MODAL_BG, Z_MODAL_TOP } from '../styles';
 import { canShareMapExport, createMapExport, downloadMapExport, shareMapExport } from '../utils/mapExport';
 
 interface Props {
@@ -12,7 +12,7 @@ interface Props {
 }
 
 export default function MapExportDialog({ open, source, defaultTitle, lightMode, onClose }: Props) {
-  const [exporting, setExporting] = useState(false);
+  const [exportingMode, setExportingMode] = useState<'download' | 'share' | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [shareSupported, setShareSupported] = useState(false);
 
@@ -23,8 +23,8 @@ export default function MapExportDialog({ open, source, defaultTitle, lightMode,
   if (!open) return null;
 
   const handleExport = async (mode: 'download' | 'share') => {
-    if (!source || exporting) return;
-    setExporting(true);
+    if (!source || exportingMode) return;
+    setExportingMode(mode);
     setError(null);
     try {
       const blob = await createMapExport({ source, title: defaultTitle, lightMode });
@@ -38,7 +38,7 @@ export default function MapExportDialog({ open, source, defaultTitle, lightMode,
       if (shareError instanceof DOMException && shareError.name === 'AbortError') return;
       setError('The map was not ready. Try again in a moment.');
     } finally {
-      setExporting(false);
+      setExportingMode(null);
     }
   };
 
@@ -60,30 +60,27 @@ export default function MapExportDialog({ open, source, defaultTitle, lightMode,
           </button>
         </div>
 
-        <p className="mt-5 text-[10px] font-black uppercase tracking-wide text-[var(--text-dim)]">Title</p>
-        <p className="mt-1.5 rounded-lg border border-[var(--border-primary)] bg-[var(--bg-app)] px-3 py-2 text-sm font-bold text-[var(--text-primary)]">{defaultTitle}</p>
         {error && <p role="alert" className="mt-2 text-[11px] font-bold text-red-500">{error}</p>}
 
         <div className="mt-5 flex justify-end gap-2">
-          <button type="button" onClick={onClose} className="rounded-full px-3 py-2 text-xs font-bold text-[var(--text-muted)] hover:bg-[var(--bg-btn-hover)]">Cancel</button>
           <button
             type="button"
             onClick={() => void handleExport('download')}
-            disabled={!source || exporting}
-            className="flex items-center gap-1.5 rounded-full bg-[var(--accent)] px-3.5 py-2 text-xs font-black text-white disabled:cursor-not-allowed disabled:opacity-50"
+            disabled={!source || !!exportingMode}
+            className={`flex items-center gap-1.5 rounded-full border px-3.5 py-2 text-xs font-black disabled:cursor-not-allowed disabled:opacity-50 ${ACTION_PRIMARY}`}
           >
             <Download className="h-3.5 w-3.5" />
-            {exporting ? 'Preparing…' : 'Download PNG'}
+            {exportingMode === 'download' ? 'Preparing download…' : 'Download PNG'}
           </button>
           {shareSupported && (
             <button
               type="button"
               onClick={() => void handleExport('share')}
-              disabled={!source || exporting}
+              disabled={!source || !!exportingMode}
               className="flex items-center gap-1.5 rounded-full border border-[var(--border-primary)] px-3.5 py-2 text-xs font-black text-[var(--text-primary)] hover:bg-[var(--bg-btn-hover)] disabled:cursor-not-allowed disabled:opacity-50"
             >
               <Share2 className="h-3.5 w-3.5" />
-              Share image
+              {exportingMode === 'share' ? 'Preparing share…' : 'Share image'}
             </button>
           )}
         </div>
