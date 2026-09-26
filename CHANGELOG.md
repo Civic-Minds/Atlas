@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Removed the unverified combined-frequency number from experimental route-variant notices so opposite directions are not presented as one shared interval.
 - Experimental route-variant notices are now limited to beta and dev builds until their grouping is validated.
 - Selecting a route now fades the surrounding network again so the selected line is clearly distinguishable.
 - Agency detail requests now use the public data origin while beta-only requests stay on the beta data bucket.

@@ -31,8 +31,6 @@ const EXCLUDED_VARIANT_FAMILIES = new Set<string>([
 export interface VariantFamily {
   base: string;
   members: { shortName: string; routeId: string; headway: number | null }[];
-  /** Combined frequency where the variants overlap: 1 / Σ(1/hᵢ). */
-  combinedHeadwayMin: number | null;
 }
 
 /**
@@ -116,11 +114,5 @@ export function findVariantFamily(
   const keepIndices = new Set(largest[0]);
   const foldedMembers = members.filter((_, i) => keepIndices.has(i));
 
-  let inv = 0, counted = 0;
-  for (const mbr of foldedMembers) {
-    if (mbr.headway != null && mbr.headway > 0) { inv += 1 / mbr.headway; counted++; }
-  }
-  const combinedHeadwayMin = counted >= 2 && inv > 0 ? Math.round(1 / inv) : null;
-
-  return { base, members: foldedMembers, combinedHeadwayMin };
+  return { base, members: foldedMembers };
 }
