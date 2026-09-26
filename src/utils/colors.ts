@@ -183,13 +183,12 @@ export function buildDefaultRouteLineOpacityExpression(headwayExpr: unknown, par
   return expr;
 }
 
-/** Keep the normal zoom/headway visibility for background routes while spotlighting one route. */
+/** Fade background routes while keeping the selected route fully visible. */
 export function buildFocusedRouteLineOpacityExpression(routeMatch: unknown, headwayExpr: unknown, mode: ColorVisionMode = 'default'): unknown[] {
   const expr: unknown[] = ['interpolate', ['linear'], ['zoom']];
-  // The accessible palette is intentionally darker and more saturated. Keep its
-  // background routes visibly quieter when one route is selected so selection
-  // does not rely on colour alone.
-  const backgroundOpacities = mode === 'friendly' ? [0.3, 0.35, 0.4] : [0.7, 0.8, 0.9];
+  // The accessible palette needs a little more contrast between the selected route and
+  // its context, but the normal palette retains the established 0.32 fade.
+  const backgroundOpacities = mode === 'friendly' ? [0.3, 0.35, 0.4] : [0.32, 0.32, 0.32];
   for (const [z, opacity] of [[8, backgroundOpacities[0]], [11, backgroundOpacities[1]], [14, backgroundOpacities[2]]] as const) {
     const backgroundOpacity = ['case', ['>', headwayExpr, headwayThresholdForZoom(z)], 0, opacity];
     expr.push(z, ['case', routeMatch, 1.0, backgroundOpacity]);

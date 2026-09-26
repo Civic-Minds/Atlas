@@ -72,7 +72,7 @@ describe('buildDefaultRouteLineOpacityExpression', () => {
 });
 
 describe('buildFocusedRouteLineOpacityExpression', () => {
-  it('keeps background routes on the normal headway opacity curve', () => {
+  it('dims background routes while keeping the selected route fully visible', () => {
     const expression = buildFocusedRouteLineOpacityExpression(['==', ['get', 'routeId'], 'selected'], ['get', 'headway']);
 
     expect(expression[0]).toBe('interpolate');
@@ -80,7 +80,7 @@ describe('buildFocusedRouteLineOpacityExpression', () => {
       'case',
       ['==', ['get', 'routeId'], 'selected'],
       1,
-      ['case', ['>', ['get', 'headway'], 20], 0, 0.7],
+      ['case', ['>', ['get', 'headway'], 20], 0, 0.32],
     ]);
   });
 
