@@ -374,9 +374,9 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
           )}
           {(service.sourceUrl || service.bookingUrl) && (
             <div className="border-t border-[var(--border-primary)] pt-3 px-1">
-              <p className="text-[9px] font-black uppercase tracking-wide text-[var(--text-dim)]">Source</p>
+              <p className="text-[9px] font-black uppercase tracking-wide text-[var(--text-dim)]">Official source</p>
               <a href={service.sourceUrl ?? service.bookingUrl} target="_blank" rel="noopener noreferrer" className="text-[11px] text-[var(--accent)] hover:underline mt-1 block">
-                {service.sourceLabel ?? 'View service details'} →
+                Open official source →
               </a>
             </div>
           )}
