@@ -60,26 +60,23 @@ export const CARD_CLICK_TO_FLAG_ENABLED = envFlag('VITE_CARD_CLICK_TO_FLAG_ENABL
 // is worth surfacing to a rider needed more real-feed tuning than a single main push should
 // carry -- beta only until it's been validated against a lot more agencies (2026-08-08).
 export const UNEVEN_BANNER_ENABLED = envFlag('VITE_UNEVEN_BANNER_ENABLED');
-// Same env-driven pattern as the flags above. Distinguishes the beta deployment in the browser
-// tab title so it doesn't look identical to production.
-export const BETA_BUILD = envFlag('VITE_BETA_BUILD');
-/** Preview deployments retain beta data access but omit the beta research apps. */
-export const PREVIEW_BUILD = envFlag('VITE_PREVIEW_BUILD');
-export const RESEARCH_APPS_ENABLED = BETA_BUILD && !PREVIEW_BUILD;
-
-export type AtlasMode = 'public' | 'beta' | 'dev';
+export type AtlasMode = 'public' | 'preview' | 'beta' | 'dev';
 
 function getAtlasMode(): AtlasMode {
   // @ts-ignore
   const configured = typeof import.meta !== 'undefined' ? import.meta?.env?.VITE_ATLAS_MODE : undefined;
-  if (configured === 'public' || configured === 'beta' || configured === 'dev') return configured;
+  if (configured === 'public' || configured === 'preview' || configured === 'beta' || configured === 'dev') return configured;
   // Preserve the existing defaults when the explicit mode is not configured yet.
   // @ts-ignore
   if (typeof import.meta !== 'undefined' && import.meta?.env?.DEV) return 'dev';
-  return BETA_BUILD ? 'beta' : 'public';
+  if (envFlag('VITE_PREVIEW_BUILD')) return 'preview';
+  return envFlag('VITE_BETA_BUILD') ? 'beta' : 'public';
 }
 
 export const ATLAS_MODE = getAtlasMode();
+export const BETA_BUILD = ATLAS_MODE !== 'public';
+export const PREVIEW_BUILD = ATLAS_MODE === 'preview';
+export const RESEARCH_APPS_ENABLED = ATLAS_MODE === 'beta' || ATLAS_MODE === 'dev';
 // Public map-image export starts on beta so the browser-rendered output can be checked before
 // exposing it on production. Set VITE_MAP_EXPORT_ENABLED to graduate it independently of beta.
 const MAP_EXPORT_ENV_ENABLED = envFlag('VITE_MAP_EXPORT_ENABLED');

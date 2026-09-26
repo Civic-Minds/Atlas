@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Deployment mode is now one explicit public/preview/beta/dev setting, keeping labels, agency visibility, and feature access aligned.
 - Social previews now use a wide 1200×630 Atlas image so shared links render as proper cards on LinkedIn.
 - Preview builds now keep beta data access without exposing the Night Service and Frequent Service research apps.
 - Expired-schedule notices now explain the service area and tracking history in plain sentences.

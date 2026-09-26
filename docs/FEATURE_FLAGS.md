@@ -11,7 +11,7 @@ Atlas gates immature features (thin agency coverage, no scaling plan, or genuine
 | `CARD_CLICK_TO_FLAG_ENABLED` | Click-to-flag affordance on card values (`FlaggableValue` in `cardUi.tsx`) | off | on | New, unproven interaction — no route/component split like the others, just a UI behavior to validate before it's in front of everyone. |
 | `CORRIDORS_ENABLED` | `/apps/corridors`, `Corridors.tsx` | off | off | Not good enough as a feature yet (Ryan, 2026-07-28). Its panel is also broken by a CSS bug independent of this flag. |
 | `UNEVEN_BANNER_ENABLED` | "Service is uneven" route-card banner, `RouteCardHeadway.tsx` | off | on | The excess/ratio threshold deciding when a period's worst gap is worth surfacing (#345) needs more real-feed tuning than a single main push should carry. |
-| `PREVIEW_BUILD` | Preview title and research-app visibility | off | off | Preview deployments retain beta data access for external testing without exposing the Night Service or Frequent Service research apps. |
+| `ATLAS_MODE=preview` | Preview title and research-app visibility | off | on | Preview deployments retain beta data access for external testing without exposing the Night Service or Frequent Service research apps. |
 
 ## How it works
 
@@ -33,15 +33,16 @@ echo "true" | vercel env add VITE_LIVE_ENABLED production
 
 ## Atlas modes
 
-`VITE_ATLAS_MODE` controls agency visibility independently from feature flags:
+`VITE_ATLAS_MODE` is the single source of truth for the deployment mode and controls agency visibility, beta data, and mode-specific UI:
 
 | Mode | Agency visibility |
 |---|---|
 | `public` | Public agencies only; hidden-in-production agencies stay hidden. |
+| `preview` | Beta agencies and data, but no Night Service or Frequent Service research apps. |
 | `beta` | Public agencies plus agencies explicitly marked `betaOnly`. |
 | `dev` | All non-staged agencies, including local QA candidates. |
 
-Use `npm run dev:public`, `npm run dev:beta`, or `npm run dev:all` for local testing. The feature flags remain independent, so public-mode localhost can use the public agency catalog while `.env.local` enables new features for testing. If `VITE_ATLAS_MODE` is unset, deployed builds infer `public` or `beta` from `VITE_BETA_BUILD`, while Vite development infers `dev`.
+Use `npm run dev:public`, `npm run dev:beta`, or `npm run dev:all` for local testing. The mode owns the deployment-level differences; the remaining feature flags are for individual features that are not tied to a deployment mode. If `VITE_ATLAS_MODE` is unset, older deployed builds infer `public` or `beta` from the legacy flags, while Vite development infers `dev`.
 
 When running locally, open `/apps/diagnostics/performance` to see browser navigation timings, paint timings, Atlas readiness marks, the active mode, and the visible agency count. Use its reload button for a fresh measurement.
 
@@ -60,8 +61,9 @@ All product work lands on `main`. The beta deployment follows the same commit as
 
 Keep two Vercel deployments pointed at the same repository and `main` branch:
 
-1. Production (`www.transitatlas.fyi`): beta flags off.
-2. Beta (`beta.transitatlas.fyi`): beta flags on, `VITE_BETA_BUILD=true`, and beta-only agencies visible.
+1. Production (`www.transitatlas.fyi`): `VITE_ATLAS_MODE=public`.
+2. Preview (`preview.transitatlas.fyi`): `VITE_ATLAS_MODE=preview`.
+3. Beta (`beta.transitatlas.fyi`): `VITE_ATLAS_MODE=beta`.
 
 The beta deployment may be a separate Vercel project so both sites can automatically rebuild from `main` with different environment values. Do not restore a long-lived beta Git branch just to hold these settings. If beta access ever needs to be limited to named testers, add access control at the deployment boundary; do not make the production client guess whether a user is allowed to see an internal tool.
 
@@ -77,10 +79,6 @@ The production project and beta project must be separate because Vercel environm
 
 The beta project currently uses the Vite framework/output configuration (`dist`). A Vercel deployment can show a successful `npm run build` and still fail afterward if its Output Directory is incorrectly set to `build`.
 
-## `VITE_PREVIEW_BUILD`
+## Legacy mode flags
 
-Preview-only builds set this to `"true"`. They keep `VITE_BETA_BUILD=true` so beta-only data remains available, but hide the research apps and use a `[Preview]` browser title.
-
-## `VITE_BETA_BUILD`
-
-Not an app gate — same env-driven pattern, but purely cosmetic. Prefixes the browser tab title with `[Beta]` (`src/main.tsx`) so the beta deployment doesn't look identical to production. Set to `"true"` only on the beta deployment; it stays there indefinitely.
+`VITE_BETA_BUILD` and `VITE_PREVIEW_BUILD` are compatibility fallbacks for older deployments. New deployments must set `VITE_ATLAS_MODE` explicitly so the tab title, agency catalog, data artifacts, and feature gates cannot disagree.
