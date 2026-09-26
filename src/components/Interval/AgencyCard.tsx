@@ -345,27 +345,24 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
       <div
         ref={ref}
         data-report-anchor="true"
-        className={`absolute top-20 left-6 sm:left-[var(--sidebar-left)] ${Z_PANEL} ${SIDEBAR_PANEL_WIDTH} ${FLOATING_CARD} ${PANEL_ENTER} overflow-hidden`}
+        className={`absolute top-20 left-6 sm:left-[var(--sidebar-left)] ${Z_PANEL} ${SIDEBAR_PANEL_WIDTH} max-h-[calc(100vh-104px)] flex flex-col ${FLOATING_CARD} ${PANEL_ENTER} overflow-hidden`}
         style={{
           '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px`,
           ...(searchBarWidth ? { width: `${searchBarWidth}px`, maxWidth: 'none' } : {}),
         } as React.CSSProperties}
       >
-        <div className="px-4 pt-4 pb-3 border-b border-[var(--border-primary)]">
-          <p className={`${CARD_TITLE} mb-0`}>{service.serviceName ?? agencyNamePrimary}</p>
-          <p className="text-[9px] font-bold text-[var(--text-dim)] mt-1">On-demand service · {agencyNamePrimary}</p>
+        <div className="shrink-0 px-4 pt-4 pb-3 border-b border-[var(--border-primary)]">
+          <p className={`${CARD_TITLE} mb-0`}>{agencyNamePrimary}</p>
+          <p className="text-[9px] font-bold text-[var(--text-dim)] mt-1 leading-snug">
+            {[service.serviceName ?? 'On-demand service', agencyNameSecondary].filter(Boolean).join(' · ')}
+          </p>
         </div>
-        <div className="px-4 py-4 space-y-4">
-          <div className="rounded-xl border border-[var(--border-primary)] bg-[var(--surface-secondary)] px-3 py-3">
-            <p className="text-[10px] font-black uppercase tracking-wide text-[var(--text-dim)]">Virtual pickup locations</p>
+        <div className="flex-1 overflow-y-auto custom-scrollbar px-4 py-4 space-y-4">
+          <div>
+            <p className="text-[9px] font-black uppercase tracking-wide text-[var(--text-dim)]">On-demand service</p>
             <p className="text-[11px] leading-relaxed text-[var(--text-muted)] mt-1">
-              Book a ride through this service area. These locations are virtual stops for on-demand trips, not a fixed route.
+              {service.stopFeatures?.length ? 'Virtual pickup locations for this service; they are not fixed-route stops.' : 'Service-area information for an on-demand transit service.'}
             </p>
-            {service.bookingUrl && (
-              <a href={service.bookingUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center w-full rounded-lg bg-[var(--accent)] px-3 py-2 mt-3 text-[11px] font-black text-white hover:opacity-90 transition-opacity">
-                Book or view service details →
-              </a>
-            )}
           </div>
           {service.serviceHours && (
             <div className="px-1">
@@ -373,11 +370,11 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
               <p className="text-[11px] leading-relaxed text-[var(--text-muted)] mt-1">{service.serviceHours}</p>
             </div>
           )}
-          {service.sourceUrl && (
+          {(service.sourceUrl || service.bookingUrl) && (
             <div className="border-t border-[var(--border-primary)] pt-3 px-1">
-              <p className="text-[9px] font-black uppercase tracking-wide text-[var(--text-dim)]">Service details</p>
-              <a href={service.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-[11px] text-[var(--accent)] hover:underline mt-1 block">
-                {service.sourceLabel} →
+              <p className="text-[9px] font-black uppercase tracking-wide text-[var(--text-dim)]">Source</p>
+              <a href={service.sourceUrl ?? service.bookingUrl} target="_blank" rel="noopener noreferrer" className="text-[11px] text-[var(--accent)] hover:underline mt-1 block">
+                {service.sourceLabel ?? 'View service details'} →
               </a>
             </div>
           )}
@@ -539,52 +536,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
       </div>
 
       {!fareView && <div className="flex-1 overflow-y-auto custom-scrollbar">
-        {agency.onDemandOnly ? (
-          <div className="px-4 py-4 space-y-4">
-            <div className="rounded-xl border border-[var(--border-primary)] bg-[var(--surface-secondary)] px-3 py-3">
-              <p className="text-[10px] font-black uppercase tracking-wide text-[var(--text-dim)]">Request a ride</p>
-              <p className="text-[11px] leading-relaxed text-[var(--text-muted)] mt-1">
-                Book a shared ride through {agency.name}. Trips are dynamically routed within this service area.
-              </p>
-              {agency.onDemandServiceArea?.bookingUrl && (
-                <a
-                  href={agency.onDemandServiceArea.bookingUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center w-full rounded-lg bg-[var(--accent)] px-3 py-2 mt-3 text-[11px] font-black text-white hover:opacity-90 transition-opacity"
-                >
-                  Book or view service details →
-                </a>
-              )}
-            </div>
-            {agency.onDemandServiceArea?.serviceHours && (
-              <div className="px-1">
-                <p className="text-[9px] font-black uppercase tracking-wide text-[var(--text-dim)]">Service hours</p>
-                <p className="text-[11px] leading-relaxed text-[var(--text-muted)] mt-1">{agency.onDemandServiceArea.serviceHours}</p>
-              </div>
-            )}
-            {agency.onDemandServiceArea?.stopFeatures && agency.onDemandServiceArea.stopFeatures.length > 0 && (
-              <p className="px-1 text-[11px] leading-relaxed text-[var(--text-muted)]">
-                These are virtual pickup locations for a booked on-demand service, not a fixed route.
-              </p>
-            )}
-            {agency.onDemandServiceArea?.sourceUrl && (
-              <div className="border-t border-[var(--border-primary)] pt-3 px-1">
-                <p className="text-[9px] font-black uppercase tracking-wide text-[var(--text-dim)]">
-                  {agency.onDemandServiceArea.features.length > 0 ? 'Service-area boundary' : 'Service details'}
-                </p>
-                <a
-                  href={agency.onDemandServiceArea.sourceUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[11px] text-[var(--accent)] hover:underline mt-1 block"
-                >
-                  {agency.onDemandServiceArea.sourceLabel} →
-                </a>
-              </div>
-            )}
-          </div>
-        ) : visibleRoutes.length === 0 ? (
+        {visibleRoutes.length === 0 ? (
           <p className="px-4 py-4 text-xs text-[var(--text-dim)]">
             {activeFilterLabel ? `No ${activeFilterLabel.toLowerCase()} routes match.` : 'No routes loaded yet.'}
           </p>

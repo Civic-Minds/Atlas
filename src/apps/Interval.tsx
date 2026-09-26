@@ -128,7 +128,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   });
   const [selectedRoute, setSelectedRoute] = useState<string | null>(() => searchParams.get('route'));
   const [selectedStop, setSelectedStop] = useState<string | null>(() => searchParams.get('stop'));
-  const [onDemandStopAgencySlug, setOnDemandStopAgencySlug] = useState<string | null>(null);
+  const [onDemandStopAgencySlug, setOnDemandStopAgencySlug] = useState<string | null>(() => searchParams.get('ondemand'));
 
   useEffect(() => {
     if (!selectedRoute) return;
@@ -161,6 +161,13 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     setOnDemandStopAgencySlug(slug);
     setSelectedAgencySlug?.(null);
   }, [setSelectedAgencySlug]);
+
+  const selectedOnDemandSlug = onDemandStopAgencySlug
+    ?? (selectedAgencySlug && agencies.some(a => a.slug === selectedAgencySlug && a.onDemandServiceArea) ? selectedAgencySlug : null);
+
+  useEffect(() => {
+    syncUrlParams({ ondemand: selectedOnDemandSlug });
+  }, [selectedOnDemandSlug]);
 
   // An agency selection replaces route disambiguation. Keeping both active
   // leaves two sidebar cards competing for the same space.
@@ -664,8 +671,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
         </div>
       )}
 
-      {(showUi || fareView || showSelectionUi) && onDemandStopAgencySlug && !selectedRoute && !selectedStop && !disambiguationRoutes?.length && !searchOverlayHidesPanel(searchFocused, query) && (() => {
-        const agency = agencies.find(a => a.slug === onDemandStopAgencySlug);
+      {(showUi || fareView || showSelectionUi) && selectedOnDemandSlug && !selectedRoute && !selectedStop && !disambiguationRoutes?.length && !searchOverlayHidesPanel(searchFocused, query) && (() => {
+        const agency = agencies.find(a => a.slug === selectedOnDemandSlug);
         return agency ? (
           <AgencyCard
             ref={agencyCardRef}
@@ -687,7 +694,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
         ) : null;
       })()}
 
-      {(showUi || fareView || showSelectionUi) && selectedAgencySlug && !selectedRoute && !selectedStop && !disambiguationRoutes?.length && !searchOverlayHidesPanel(searchFocused, query) && (() => {
+      {(showUi || fareView || showSelectionUi) && selectedAgencySlug && !selectedOnDemandSlug && !selectedRoute && !selectedStop && !disambiguationRoutes?.length && !searchOverlayHidesPanel(searchFocused, query) && (() => {
         const agency = agencies.find(a => a.slug === selectedAgencySlug);
         return agency ? (
           <AgencyCard
