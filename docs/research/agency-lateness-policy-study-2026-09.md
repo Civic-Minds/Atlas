@@ -4,7 +4,7 @@
 - Sample seed: `20260926`
 - Sample: 80 agencies — Canada 20, United States 40, France 20
 - Scope: fixed-route scheduled service only; on-demand, paratransit, and reservation-window policies are excluded from the Atlas comparison
-- Status: sample initialized; 20 of 80 agencies have verified official source sets
+- Status: sample initialized; 21 of 80 agencies have verified official source sets
 
 ## Method
 
@@ -105,7 +105,7 @@ The current pipeline baseline is a minimum 5-minute grace, a 15% grace component
 | Soléa (Mulhouse) | France | Grand Est | medium | bus | static_scheduled | France / qualitative_definition_only | not_reviewed | not_reviewed |
 | Idelis (Pau) | France | Nouvelle-Aquitaine | medium | bus | static_scheduled | France / definition_found | not_reviewed | not_reviewed |
 | Mistral (Toulon) | France | Provence-Alpes-Côte d'Azur | medium | bus | static_scheduled | France / no_definition_found | not_reviewed | not_reviewed |
-| TCL (Lyon) | France | Auvergne-Rhône-Alpes | large | bus | static_scheduled | France / qualitative_definition_only | not_reviewed | not_reviewed |
+| TCL (Lyon) | France | Auvergne-Rhône-Alpes | large | bus | static_scheduled | France / qualitative_definition_only | not_found | not_found |
 | TBM (Bordeaux) | France | Nouvelle-Aquitaine | large | bus | static_scheduled | France / definition_found | not_reviewed | not_reviewed |
 | TUL (Laval) | France | Pays de la Loire | medium | bus | static_scheduled | France / no_definition_found | not_reviewed | not_reviewed |
 | TAG (Grenoble) | France | Auvergne-Rhône-Alpes | large | bus | static_scheduled | France / qualitative_definition_only | not_reviewed | not_reviewed |

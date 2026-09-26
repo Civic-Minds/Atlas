@@ -1,6 +1,6 @@
 {
   "studyVersion": "2026-09-26.v1",
-  "checkedAt": "2026-09-26T22:43:00.517Z",
+  "checkedAt": "2026-09-26T22:43:35.271Z",
   "sampleSeed": 20260926,
   "targetAgencyCount": 80,
   "sampleQuotas": {
@@ -2717,18 +2717,36 @@
         "customer pickup window"
       ],
       "schedulePunctuality": {
-        "status": "not_reviewed",
+        "status": "not_found",
         "definition": null,
-        "sourceIds": [],
-        "notes": []
+        "sourceIds": [
+          "tcl-customer-charter"
+        ],
+        "notes": [
+          "TCL documents punctuality and line regularity as monitored quality indicators using onboard tools and recorded stop passages, but the reviewed customer charter does not state a numeric early/late tolerance."
+        ]
       },
       "headwayReliability": {
-        "status": "not_reviewed",
+        "status": "not_found",
         "definition": null,
-        "sourceIds": [],
-        "notes": []
+        "sourceIds": [
+          "tcl-customer-charter"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
       },
-      "sources": [],
+      "sources": [
+        {
+          "id": "tcl-customer-charter",
+          "url": "https://www.tcl.fr/sites/default/files/2019-07/CHARTE%2BCLIENTS%2BTCL.PDF",
+          "title": "TCL Customer Charter",
+          "publisher": "TCL / SYTRAL Mobilités",
+          "sourceType": "customer-charter",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Punctuality and regularity of lines"
+        }
+      ],
       "notes": []
     },
     {

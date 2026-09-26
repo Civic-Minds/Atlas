@@ -120,6 +120,14 @@ const VERIFIED: Record<string, {
     },
     sources: [{ id: 'cornwall-transit-master-plan', url: 'https://www.cornwall.ca/en/city-hall/resources/Master-Plans/10.25.17-Cornwall-TMP---Final-Report_Part1.pdf', title: 'Cornwall Transit Master Plan', publisher: 'City of Cornwall', sourceType: 'transit-master-plan', accessedAt: '2026-09-26', pagesOrSections: '9.1.1 Improve On-Time Performance/Adherence to Schedule' }],
   },
+  lyon: {
+    schedule: {
+      definition: null,
+      notes: ['TCL documents punctuality and line regularity as monitored quality indicators using onboard tools and recorded stop passages, but the reviewed customer charter does not state a numeric early/late tolerance.'],
+      sourceIds: ['tcl-customer-charter'],
+    },
+    sources: [{ id: 'tcl-customer-charter', url: 'https://www.tcl.fr/sites/default/files/2019-07/CHARTE%2BCLIENTS%2BTCL.PDF', title: 'TCL Customer Charter', publisher: 'TCL / SYTRAL Mobilités', sourceType: 'customer-charter', accessedAt: '2026-09-26', pagesOrSections: 'Punctuality and regularity of lines' }],
+  },
   sunline: {
     schedule: {
       definition: 'SunLine defines on-time as a trip departing a timepoint from 0 minutes early to 3 minutes late, with a 90% target for all services. Other SunLine reports use a 0-to-5-minute window with an 85% minimum target, so the source set records both versions.',
