@@ -722,7 +722,7 @@ export default function History({ active, initialAgencySlug, onInfoOpen, query, 
                         saveRecentSearch(query);
                         setSelectedSlug(agency.slug);
                       }}
-                      variant="divided"
+                      variant="spaced"
                       right={<ChevronRight className="w-3.5 h-3.5 text-[var(--text-dim)] group-hover:text-[var(--accent)] transition-colors shrink-0" />}
                     />
                   ))}
@@ -735,7 +735,13 @@ export default function History({ active, initialAgencySlug, onInfoOpen, query, 
       </div>
 
       {showScrubber && (
-        <div className={`absolute bottom-6 right-14 ${Z_PANEL} w-[260px] h-8 flex items-center gap-2 px-2.5 rounded-full bg-[var(--bg-panel)] border border-[var(--border-primary)] shadow-lg backdrop-blur-md text-[10px]`} title="Older to newer">
+        <div
+          className={`absolute bottom-6 right-14 ${Z_PANEL} w-[260px] h-8 flex items-center gap-2 px-2.5 rounded-full bg-[var(--bg-panel)] border border-[var(--border-primary)] shadow-lg backdrop-blur-md text-[10px]`}
+          title="Older to newer"
+          onPointerDown={event => event.stopPropagation()}
+          onPointerMove={event => event.stopPropagation()}
+          onWheel={event => event.stopPropagation()}
+        >
             <span className="text-[9px] font-bold text-[var(--text-dim)] tabular-nums">{availableYears[0]}</span>
             <input
               type="range"

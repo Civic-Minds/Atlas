@@ -6,6 +6,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- History year slider interactions no longer pan or zoom the map underneath them.
+- History agency rows now match the borderless agency browser styling.
 - History agency browsing now uses the standard grouped list and only exposes agencies with 10+ years of historical data.
 - Route cards now load public agency details through the site proxy instead of failing on cross-origin data requests.
 - Overnight and other period filters now remain active even when Frequency is set to All.
