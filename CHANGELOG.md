@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Expired-feed notices now use consistent numeric check counts, including “1 time” for a single check.
 - Agency rows no longer show distracting browser tooltips on hover.
 - Agency browsing now supports combining Live, History, Outdated, and region filters, with a visible hint that filters can be combined.
 - Agency status filters can now be clicked again to return to All agencies.
