@@ -306,6 +306,27 @@ const VERIFIED: Record<string, {
     },
     sources: [{ id: 'bcrta-board-packet-2024', url: 'https://www.butlercountyrta.com/wp-content/uploads/2023/12/1-BCRTA-Board-Packet-3-20-2024-V-3-signed.pdf', title: 'BCRTA Board Packet', publisher: 'Butler County Regional Transit Authority', sourceType: 'board-packet', accessedAt: '2026-09-26', pagesOrSections: 'On-Time Performance' }],
   },
+  'cats-baton': {
+    schedule: {
+      definition: 'Capital Area Transit System defines fixed-route on-time performance as departing no earlier than the printed schedule and arriving no later than 5 minutes after the scheduled time, with an 80% target.',
+      notes: [],
+      sourceIds: ['cats-title-vi-2021'],
+    },
+    headway: {
+      definition: 'CATS describes typical fixed-route headways as 20–60 minutes and sets target headways of 30 minutes at peak and 60 minutes off-peak for local routes.',
+      notes: ['The source states target headways but does not define an allowed deviation or bunching threshold.'],
+      sourceIds: ['cats-title-vi-2021'],
+    },
+    sources: [{ id: 'cats-title-vi-2021', url: 'https://www.brcats.com/assets/docs/Communications/7_30_2021_CATS_Title_VI_Program_Final.pdf', title: 'CATS Title VI Program', publisher: 'Capital Area Transit System', sourceType: 'title-vi-program', accessedAt: '2026-09-26', pagesOrSections: 'Service Standards and Policies' }],
+  },
+  longbeach: {
+    schedule: {
+      definition: 'Long Beach Transit measures on-time performance as buses departing between 1 minute before and 5 minutes after scheduled time, with a goal above 85%.',
+      notes: [],
+      sourceIds: ['long-beach-budget-2026'],
+    },
+    sources: [{ id: 'long-beach-budget-2026', url: 'https://ridelbt.com/wp-content/uploads/2026/04/05-15-25-Board-Packet-1.pdf', title: 'Fiscal Year 2026 Budget', publisher: 'Long Beach Transit', sourceType: 'budget', accessedAt: '2026-09-26', pagesOrSections: 'Transit Service / On-Time Performance' }],
+  },
   sunline: {
     schedule: {
       definition: 'SunLine defines on-time as a trip departing a timepoint from 0 minutes early to 3 minutes late, with a 90% target for all services. Other SunLine reports use a 0-to-5-minute window with an 85% minimum target, so the source set records both versions.',

@@ -1,6 +1,6 @@
 {
   "studyVersion": "2026-09-26.v1",
-  "checkedAt": "2026-09-26T22:51:28.913Z",
+  "checkedAt": "2026-09-26T22:52:01.594Z",
   "sampleSeed": 20260926,
   "targetAgencyCount": 80,
   "sampleQuotas": {
@@ -1137,18 +1137,34 @@
         "customer pickup window"
       ],
       "schedulePunctuality": {
-        "status": "not_reviewed",
-        "definition": null,
-        "sourceIds": [],
+        "status": "definition_found",
+        "definition": "Long Beach Transit measures on-time performance as buses departing between 1 minute before and 5 minutes after scheduled time, with a goal above 85%.",
+        "sourceIds": [
+          "long-beach-budget-2026"
+        ],
         "notes": []
       },
       "headwayReliability": {
-        "status": "not_reviewed",
+        "status": "not_found",
         "definition": null,
-        "sourceIds": [],
-        "notes": []
+        "sourceIds": [
+          "long-beach-budget-2026"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
       },
-      "sources": [],
+      "sources": [
+        {
+          "id": "long-beach-budget-2026",
+          "url": "https://ridelbt.com/wp-content/uploads/2026/04/05-15-25-Board-Packet-1.pdf",
+          "title": "Fiscal Year 2026 Budget",
+          "publisher": "Long Beach Transit",
+          "sourceType": "budget",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Transit Service / On-Time Performance"
+        }
+      ],
       "notes": []
     },
     {
@@ -1167,18 +1183,34 @@
         "customer pickup window"
       ],
       "schedulePunctuality": {
-        "status": "not_reviewed",
-        "definition": null,
-        "sourceIds": [],
+        "status": "definition_found",
+        "definition": "Capital Area Transit System defines fixed-route on-time performance as departing no earlier than the printed schedule and arriving no later than 5 minutes after the scheduled time, with an 80% target.",
+        "sourceIds": [
+          "cats-title-vi-2021"
+        ],
         "notes": []
       },
       "headwayReliability": {
-        "status": "not_reviewed",
-        "definition": null,
-        "sourceIds": [],
-        "notes": []
+        "status": "definition_found",
+        "definition": "CATS describes typical fixed-route headways as 20–60 minutes and sets target headways of 30 minutes at peak and 60 minutes off-peak for local routes.",
+        "sourceIds": [
+          "cats-title-vi-2021"
+        ],
+        "notes": [
+          "The source states target headways but does not define an allowed deviation or bunching threshold."
+        ]
       },
-      "sources": [],
+      "sources": [
+        {
+          "id": "cats-title-vi-2021",
+          "url": "https://www.brcats.com/assets/docs/Communications/7_30_2021_CATS_Title_VI_Program_Final.pdf",
+          "title": "CATS Title VI Program",
+          "publisher": "Capital Area Transit System",
+          "sourceType": "title-vi-program",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Service Standards and Policies"
+        }
+      ],
       "notes": []
     },
     {
