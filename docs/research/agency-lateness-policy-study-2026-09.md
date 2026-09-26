@@ -16,6 +16,11 @@ Each agency must end with either an official definition, an explicit no-definiti
 
 The current pipeline baseline is a minimum 5-minute grace, a 15% grace component, up to 2 grace violations, and a 30% violation allowance. This study evaluates that baseline; it does not alter it.
 
+## Interim comparison with Atlas
+
+Atlas evaluates the gaps between consecutive scheduled departures, not whether an individual vehicle arrived within an agency’s on-time window. For a candidate tier T, Atlas allows a gap up to T + max(5 minutes, round(15% of T)); all larger gaps fail the tier, except that up to max(2, floor(30% of the observed gaps)) may be within that grace band. It also requires at least ceil(span minutes / T) trips.
+The reviewed agencies show that these are different concepts: schedule-adherence rules commonly use one-sided or asymmetric minute windows, while explicit headway rules are rarer and may scale with the intended headway. Pierce Transit, for example, uses a fixed-route on-time window plus a separate headway rule; AVTA uses the smaller of half-headway or 10 minutes for a late-trip enforcement threshold. These findings are evidence for keeping schedule punctuality and service-spacing reliability as separate research dimensions; they are not yet a basis for changing Atlas thresholds.
+
 ## Initial verified findings
 
 - Niagara uses −1/+5 minutes at published timing points with a 90% target; Greater Sudbury uses no early departures and no more than 3 minutes late with a 90% target.
