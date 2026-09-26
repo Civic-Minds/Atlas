@@ -570,19 +570,19 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
               {helpContext?.agencyName && (
                 <p className="text-xs text-[var(--text-primary)] leading-relaxed">
                   {scheduleNoticeLabel(helpContext.agencyName)}
-                  {helpContext.expDateStr ? ` ended ${helpContext.expDateStr}` : ' may no longer be current'}.
+                  {helpContext.expDateStr ? ` ended on ${helpContext.expDateStr}` : ' may no longer be current'}.
                   {helpContext.lastRefreshedAt && formatStoredDate(helpContext.lastRefreshedAt)
                     ? helpContext.expiredFeedCheckCount != null && helpContext.expiredFeedCheckSince && helpContext.lastFeedCheckAt && formatStoredDate(helpContext.lastFeedCheckAt)
-                      ? ` Atlas started checking this feed on ${formatStoredDate(helpContext.expiredFeedCheckSince)} and has checked it ${helpContext.expiredFeedCheckCount} time${helpContext.expiredFeedCheckCount === 1 ? '' : 's'} since it expired, most recently on ${formatStoredDate(helpContext.lastFeedCheckAt)}.`
+                      ? ` Atlas began checking this feed on ${formatStoredDate(helpContext.expiredFeedCheckSince)} and has checked it ${helpContext.expiredFeedCheckCount} time${helpContext.expiredFeedCheckCount === 1 ? '' : 's'} since then. The most recent check was ${formatStoredDate(helpContext.lastFeedCheckAt)}.`
                       : ` Atlas last successfully refreshed the feed on ${formatStoredDate(helpContext.lastRefreshedAt)}.`
                     : ''}
                 </p>
               )}
               <p className="text-xs text-[var(--text-dim)] leading-relaxed">
-                Transit agencies publish schedules in periods. When a period ends and they haven&apos;t published the next one yet, Atlas still shows the last version we have — with this warning.
+                Transit agencies publish schedules for set periods. When one period ends before the next schedule is available, Atlas keeps showing the most recent schedule and marks it as outdated.
               </p>
               <p className="text-xs text-[var(--text-dim)] leading-relaxed">
-                {FEED_REFRESH_CADENCE_LABEL} Sometimes an agency is late publishing, or their download link breaks, and the warning can linger even though service may have changed.
+                {FEED_REFRESH_CADENCE_LABEL} An agency may be late publishing an update, or its download link may be broken, so this warning can remain even if service has changed.
               </p>
               {helpContext?.websiteUrl && (
                 <a
