@@ -4,7 +4,7 @@
 - Sample seed: `20260926`
 - Sample: 80 agencies — Canada 20, United States 40, France 20
 - Scope: fixed-route scheduled service only; on-demand, paratransit, and reservation-window policies are excluded from the Atlas comparison
-- Status: sample initialized; 28 of 80 agencies have verified official source sets
+- Status: sample initialized; 29 of 80 agencies have verified official source sets
 
 ## Method
 
@@ -45,7 +45,7 @@ The current pipeline baseline is a minimum 5-minute grace, a 15% grace component
 | BC Transit (Kelowna) | Canada | British Columbia | medium | bus | static_scheduled | Canada / qualitative_definition_only | definition_found | not_found |
 | MiWay (Mississauga) | Canada | Ontario | large | bus | static_scheduled | Canada / no_definition_found | definition_found | not_found |
 | Metrobus (St. John's) | Canada | Newfoundland | medium | rail | static_scheduled | Canada / definition_found | definition_found | not_found |
-| RTL (Longueuil) | Canada | Quebec | large | bus | static_scheduled | Canada / qualitative_definition_only | not_reviewed | not_reviewed |
+| RTL (Longueuil) | Canada | Quebec | large | bus | static_scheduled | Canada / qualitative_definition_only | definition_found | not_found |
 | Moose Jaw Transit | Canada | Saskatchewan | small | bus | static_scheduled | Canada / no_definition_found | not_reviewed | not_reviewed |
 | GO Transit | Canada | Ontario | medium | mixed | static_scheduled | Canada / definition_found | definition_found | not_found |
 | Cornwall Transit | Canada | Ontario | small | bus | static_scheduled | Canada / qualitative_definition_only | not_found | not_found |

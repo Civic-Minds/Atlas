@@ -205,6 +205,14 @@ const VERIFIED: Record<string, {
     },
     sources: [{ id: 'avta-master-rfp-2025', url: 'https://www.avta.com/downloads/AVTA_MASTER_RFP_2025-05-Formatted_Reviewed.pdf', title: 'AVTA Master RFP', publisher: 'Antelope Valley Transit Authority', sourceType: 'operating-specification', accessedAt: '2026-09-26', pagesOrSections: 'Schedule and Operations Related Liquidated Damages' }],
   },
+  rtl: {
+    schedule: {
+      definition: 'RTL Longueuil requires at least 85% of trips to arrive on time at control points and 95% of trips to depart on time at terminals, with a tolerance of 1 minute early and 3 minutes late.',
+      notes: ['The source separately describes a 30-minute reservation window for adapted transportation; that policy is excluded.'],
+      sourceIds: ['rtl-quality-standards'],
+    },
+    sources: [{ id: 'rtl-quality-standards', url: 'https://www.rtl-longueuil.qc.ca/fr-CA/rtl/historique/', title: 'RTL Quality Standards', publisher: 'Réseau de transport de Longueuil', sourceType: 'quality-standard', accessedAt: '2026-09-26', pagesOrSections: 'Normes de qualité / Ponctualité du service' }],
+  },
   sunline: {
     schedule: {
       definition: 'SunLine defines on-time as a trip departing a timepoint from 0 minutes early to 3 minutes late, with a 90% target for all services. Other SunLine reports use a 0-to-5-minute window with an 85% minimum target, so the source set records both versions.',

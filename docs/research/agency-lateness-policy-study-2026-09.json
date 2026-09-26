@@ -1,6 +1,6 @@
 {
   "studyVersion": "2026-09-26.v1",
-  "checkedAt": "2026-09-26T22:46:16.443Z",
+  "checkedAt": "2026-09-26T22:46:44.584Z",
   "sampleSeed": 20260926,
   "targetAgencyCount": 80,
   "sampleQuotas": {
@@ -780,18 +780,36 @@
         "customer pickup window"
       ],
       "schedulePunctuality": {
-        "status": "not_reviewed",
-        "definition": null,
-        "sourceIds": [],
-        "notes": []
+        "status": "definition_found",
+        "definition": "RTL Longueuil requires at least 85% of trips to arrive on time at control points and 95% of trips to depart on time at terminals, with a tolerance of 1 minute early and 3 minutes late.",
+        "sourceIds": [
+          "rtl-quality-standards"
+        ],
+        "notes": [
+          "The source separately describes a 30-minute reservation window for adapted transportation; that policy is excluded."
+        ]
       },
       "headwayReliability": {
-        "status": "not_reviewed",
+        "status": "not_found",
         "definition": null,
-        "sourceIds": [],
-        "notes": []
+        "sourceIds": [
+          "rtl-quality-standards"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
       },
-      "sources": [],
+      "sources": [
+        {
+          "id": "rtl-quality-standards",
+          "url": "https://www.rtl-longueuil.qc.ca/fr-CA/rtl/historique/",
+          "title": "RTL Quality Standards",
+          "publisher": "Réseau de transport de Longueuil",
+          "sourceType": "quality-standard",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Normes de qualité / Ponctualité du service"
+        }
+      ],
       "notes": []
     },
     {
