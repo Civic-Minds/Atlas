@@ -4,7 +4,7 @@
 - Sample seed: `20260926`
 - Sample: 80 agencies — Canada 20, United States 40, France 20
 - Scope: fixed-route scheduled service only; on-demand, paratransit, and reservation-window policies are excluded from the Atlas comparison
-- Status: sample initialized; 38 of 80 agencies have verified official source sets
+- Status: sample initialized; 39 of 80 agencies have verified official source sets
 
 ## Method
 
@@ -60,7 +60,7 @@ The reviewed agencies show that these are different concepts: schedule-adherence
 | Central Ohio Transit Authority (COTA) | United States | Ohio | large | mixed | static_scheduled | United States / definition_found | definition_found | not_found |
 | Long Beach Transit | United States | California | medium | bus | static_scheduled | United States / qualitative_definition_only | not_reviewed | not_reviewed |
 | Capital Area Transit System (Baton Rouge) | United States | Louisiana | medium | bus | static_scheduled | United States / no_definition_found | not_reviewed | not_reviewed |
-| Butler County Regional Transit Authority | United States | Ohio | medium | mixed | static_scheduled | United States / definition_found | not_reviewed | not_reviewed |
+| Butler County Regional Transit Authority | United States | Ohio | medium | mixed | static_scheduled | United States / definition_found | definition_found | not_found |
 | Los Angeles Department of Transportation (LADOT/DASH) | United States | California | large | bus | static_scheduled | United States / qualitative_definition_only | definition_found | not_found |
 | Ventura County Transportation Commission (VCTC Intercity) | United States | California | small | mixed | static_scheduled | United States / no_definition_found | not_reviewed | not_reviewed |
 | Westchester County Bee-Line System (BeeLine) | United States | New York | unknown | bus | static_scheduled | United States / definition_found | not_reviewed | not_reviewed |

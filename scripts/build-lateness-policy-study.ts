@@ -298,6 +298,14 @@ const VERIFIED: Record<string, {
     },
     sources: [{ id: 'santa-rosa-srttp', url: 'https://srcitybus.org/wp-content/uploads/2023/11/FY-2016-25-SRTP-FINAL-161027.pdf', title: 'Short Range Transit Plan', publisher: 'City of Santa Rosa / Santa Rosa CityBus', sourceType: 'transit-plan', accessedAt: '2026-09-26', pagesOrSections: 'Route On-Time Performance' }],
   },
+  'butler-county-rta': {
+    schedule: {
+      definition: 'Butler County Regional Transit Authority defines fixed-route motor-bus and commuter-bus on-time performance as 0–1 minutes early and 0–5 minutes late at designated timepoints, with an 85% minimum standard in the reviewed 2024 board packet.',
+      notes: ['The source separately lists a demand-response window; that service is excluded.'],
+      sourceIds: ['bcrta-board-packet-2024'],
+    },
+    sources: [{ id: 'bcrta-board-packet-2024', url: 'https://www.butlercountyrta.com/wp-content/uploads/2023/12/1-BCRTA-Board-Packet-3-20-2024-V-3-signed.pdf', title: 'BCRTA Board Packet', publisher: 'Butler County Regional Transit Authority', sourceType: 'board-packet', accessedAt: '2026-09-26', pagesOrSections: 'On-Time Performance' }],
+  },
   sunline: {
     schedule: {
       definition: 'SunLine defines on-time as a trip departing a timepoint from 0 minutes early to 3 minutes late, with a 90% target for all services. Other SunLine reports use a 0-to-5-minute window with an 85% minimum target, so the source set records both versions.',
