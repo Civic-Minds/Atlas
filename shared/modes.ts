@@ -63,6 +63,7 @@ export const FILTER_MODES = [
   { id: 2, label: 'Rail' },
   { id: 3, label: 'Bus' },
   { id: 4, label: 'Ferry' },
+  { id: 6, label: 'Gondola / Aerial Tram' },
 ] as const;
 
 /** GTFS base route_type → display name (pipeline catalog, agency blurbs). */
