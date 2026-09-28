@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { featureFilter } from '@maplibre/maplibre-gl-style-spec';
-import { buildModeFilterClause, tileEffectiveHeadwayExpr } from '../tileFilterExprs';
-import { flattenPeriodHeadwayProps } from '../pmtilesProps';
+import { buildModeFilterClause, tileEffectiveHeadwayExpr, tilePeriodServiceExpr } from '../tileFilterExprs';
+import { flattenPeriodHeadwayProps, NO_PERIOD_SERVICE_TILE_VALUE } from '../pmtilesProps';
 import { ON_DEMAND_MODE, VIRTUAL_LRT_MODE } from '../modes';
 
 const compileFilter = (filter: unknown) => featureFilter(filter as any, {} as any);
@@ -127,6 +127,20 @@ describe('tileEffectiveHeadwayExpr', () => {
     expect(compiled.filter(ctx, feat({ hps_late: true, wdpch_late: 15, hph_late: 10 }) as any)).toBe(true);
     expect(compiled.filter(ctx, feat({ hps_late: false, wdpch_late: 15, hph_late: 10 }) as any)).toBe(false);
     expect(compiled.filter(ctx, feat({ hps_late: true, wdpch_late: 190, hph_late: 10 }) as any)).toBe(false);
+  });
+});
+
+describe('tilePeriodServiceExpr', () => {
+  it('matches real service even when the period is not sustained', () => {
+    const compiled = compileFilter(tilePeriodServiceExpr('pmPeak'));
+    const ctx = { zoom: 10 };
+    expect(compiled.filter(ctx, feat({ hps_pmPeak: false, hph_pmPeak: 20 }) as any)).toBe(true);
+    expect(compiled.filter(ctx, feat({ hps_pmPeak: false, hph_pmPeak: NO_PERIOD_SERVICE_TILE_VALUE }) as any)).toBe(false);
+  });
+
+  it('fails closed when no period-specific fields exist', () => {
+    const compiled = compileFilter(tilePeriodServiceExpr('pmPeak'));
+    expect(compiled.filter({ zoom: 10 }, feat({ headway: 5 }) as any)).toBe(false);
   });
 });
 

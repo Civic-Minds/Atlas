@@ -4,7 +4,7 @@ import { matchesRouteQuery, searchRouteResults, searchStopResults, type StopSear
 import { HEADWAY_TIERS, getTierColor } from '../utils/colors';
 import { isLivePollingRoute } from '../utils/livePolling';
 import { TIME_PERIODS, PERIOD_LABELS as PERIOD_LABELS_BY_KEY, PERIOD_KEYS, type PeriodKey } from '../../shared/config';
-import { buildModeFilterClause, tileEffectiveHeadwayExpr, tileRouteKeyExpr } from '../../shared/tileFilterExprs';
+import { buildModeFilterClause, tileEffectiveHeadwayExpr, tilePeriodServiceExpr, tileRouteKeyExpr } from '../../shared/tileFilterExprs';
 import { NO_PERIOD_SERVICE_TILE_VALUE } from '../../shared/pmtilesProps';
 import { effectiveMode, ON_DEMAND_MODE } from '../../shared/modes';
 import { effectiveRouteHeadway } from '../utils/effectiveHeadway';
@@ -483,7 +483,12 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
     // to All. Use a threshold just below the no-service sentinel so real headways pass
     // without turning the period filter into an all-day filter.
     if (maxHeadway !== Infinity || (period && period !== 'all')) {
-      const hwExpr = tileEffectiveHeadwayExpr(period);
+      // Frequency = All means any service in the selected period, including one-direction
+      // or irregular service. The strict worst-direction coverage metric is reserved for
+      // actual frequency thresholds; using it here hides routes such as Nashville 87 PM peak.
+      const hwExpr = maxHeadway === Infinity && period && period !== 'all'
+        ? tilePeriodServiceExpr(period)
+        : tileEffectiveHeadwayExpr(period);
       const threshold = maxHeadway === Infinity ? NO_PERIOD_SERVICE_TILE_VALUE - 1 : maxHeadway;
       if (selectedRoute) {
         const routeKeyExpr: any = tileRouteKeyExpr();

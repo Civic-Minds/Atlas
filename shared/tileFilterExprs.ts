@@ -84,6 +84,18 @@ export function tileEffectiveHeadwayExpr(period?: PeriodFilter): unknown[] {
   return allDay;
 }
 
+/** MapLibre expression that detects any computed service in a selected period. */
+export function tilePeriodServiceExpr(period: PeriodFilter): unknown[] {
+  if (period === 'all') return ['literal', true];
+  const [, wdph, hph] = periodHeadwayFlatKeys(period);
+  const keys = [`msph_${period}`, wdph, hph, `wdpch_${period}`, `pch_${period}`];
+  return ['any', ...keys.map(key => [
+    'all',
+    ['has', key],
+    ['<', ['get', key], NO_PERIOD_SERVICE_TILE_VALUE],
+  ])];
+}
+
 /** Flat per-mode matchers (avoids nested case expr that breaks filter compilation). */
 export function buildModeFilterClause(modes: Set<number>): unknown[] | null {
   if (!modes || modes.size === 0) return null;
