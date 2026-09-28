@@ -4,6 +4,7 @@ import { METRO_MICRO_FLEX_FEATURES } from './metroMicroFlexData';
 import { GTFS_FLEX_METADATA } from './metroMicroFlexMetadata';
 import { C_TRAN_CURRENT_FLEX_FEATURES } from './ctranCurrentFlexData';
 import { C_TRAN_CURRENT_FLEX_STOPS } from './ctranCurrentFlexStops';
+import { GTFS_FLEX_FEATURES as WATA_GTFS_FLEX_FEATURES, GTFS_FLEX_SERVICE as WATA_GTFS_FLEX_SERVICE } from './wataFlexData';
 import type { OnDemandAvailability } from '../../shared/onDemandAvailability';
 import { BETA_ROLLOUT_NOTICE } from '../../shared/rolloutNotice';
 
@@ -155,6 +156,17 @@ export const C_TRAN_CURRENT_SERVICE_AREA = {
   serviceHours: 'Service hours vary by zone; The Current operates six published service zones.',
   bookingUrl: 'https://www.c-tran.com/thecurrent',
   serviceName: 'The Current',
+};
+
+export const WATA_PARATRANSIT_SERVICE_AREA = {
+  features: WATA_GTFS_FLEX_FEATURES,
+  sourceUrl: 'https://data.trilliumtransit.com/gtfs/williamsburg-va-us/williamsburg-va-us--flex-v2.zip',
+  sourceLabel: 'Virginia DRPT GTFS-Flex feed',
+  sourceRetrievedAt: '2026-09-28',
+  bookingUrl: WATA_GTFS_FLEX_SERVICE.bookingUrl ?? 'https://www.gowata.org/175/Accessibility-Paratransit-Service',
+  serviceName: WATA_GTFS_FLEX_SERVICE.serviceName,
+  serviceHours: WATA_GTFS_FLEX_SERVICE.serviceHours,
+  availability: WATA_GTFS_FLEX_SERVICE.availability,
 };
 
 export const BWG_ON_DEMAND_AGENCY = {

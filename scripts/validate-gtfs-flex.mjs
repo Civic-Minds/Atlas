@@ -13,6 +13,7 @@ const requiredFiles = [
   'routes.txt',
   'stops.txt',
   'stop_times.txt',
+  'locations.geojson',
   'location_groups.txt',
   'location_group_stops.txt',
   'booking_rules.txt',
@@ -36,9 +37,10 @@ async function readCsv(file) {
 }
 
 const [agencies, routes, stops, stopTimes, locationGroups, locationGroupStops, bookingRules] = await Promise.all(
-  requiredFiles.map(readCsv),
+  requiredFiles.filter(file => file !== 'locations.geojson').map(readCsv),
 );
-const flexStopTimes = stopTimes.filter(row => row.location_group_id && !row.stop_id);
+const locations = JSON.parse(await zip.file('locations.geojson').async('text'));
+const flexStopTimes = stopTimes.filter(row => (row.location_id || row.location_group_id) && !row.stop_id);
 const linkedGroupIds = new Set(locationGroupStops.map(row => row.location_group_id));
 const unlinkedGroups = locationGroups.filter(row => !linkedGroupIds.has(row.location_group_id));
 
@@ -53,7 +55,7 @@ const summary = {
   unlinkedGroups: unlinkedGroups.map(row => row.location_group_name),
 };
 
-if (agencies.length === 0 || routes.length === 0 || stops.length === 0 || locationGroups.length === 0 || flexStopTimes.length === 0) {
+if (agencies.length === 0 || routes.length === 0 || stops.length === 0 || locations.features?.length === 0 || flexStopTimes.length === 0) {
   console.error('GTFS-Flex feed is missing required non-empty agency, route, stop, location-group, or Flex stop-time data.');
   process.exit(1);
 }

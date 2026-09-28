@@ -37,6 +37,7 @@
     "migrate-archive": "npx tsx pipeline/migrate-gtfs-archive.ts",
     "validate-headsigns": "npx tsx scripts/validate-headsign-split.ts",
     "validate:gtfs-flex": "node scripts/validate-gtfs-flex.mjs",
+    "build:gtfs-flex-on-demand": "node scripts/build-gtfs-flex-on-demand.mjs",
     "build:gtfs-flex-metadata": "node scripts/build-gtfs-flex-metadata.mjs",
     "validate-index": "npx tsx pipeline/validate-index.ts",
     "build:agency-index": "npx tsx scripts/build-agency-index.ts",

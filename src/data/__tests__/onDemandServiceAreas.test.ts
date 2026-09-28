@@ -11,6 +11,7 @@ import {
   HAMILTON_MY_RIDE_SERVICE_AREA,
   C_TRAN_CURRENT_SERVICE_AREA,
   METRO_MICRO_SERVICE_AREA,
+  WATA_PARATRANSIT_SERVICE_AREA,
 } from '../onDemandServiceAreas';
 import { HSR_MY_RIDE_STOP_FEATURES } from '../hsrMyRideStops';
 import { isOnDemandActive } from '../../../shared/onDemandAvailability';
@@ -87,6 +88,20 @@ describe('BWG on-demand service area', () => {
     expect(C_TRAN_CURRENT_SERVICE_AREA.features).toHaveLength(7);
     expect(C_TRAN_CURRENT_SERVICE_AREA.stopFeatures).toHaveLength(27);
     expect(C_TRAN_CURRENT_SERVICE_AREA.sourceUrl).toBe('https://www.c-tran.com/images/Google/TheCurrent_GTFSFlex.zip');
+  });
+
+  it('keeps WATA paratransit geometry and hours sourced from its Flex feed', () => {
+    expect(WATA_PARATRANSIT_SERVICE_AREA.features).toHaveLength(1);
+    expect(WATA_PARATRANSIT_SERVICE_AREA.sourceUrl).toBe(
+      'https://data.trilliumtransit.com/gtfs/williamsburg-va-us/williamsburg-va-us--flex-v2.zip',
+    );
+    expect(WATA_PARATRANSIT_SERVICE_AREA.serviceName).toBe('Paratransit');
+    expect(WATA_PARATRANSIT_SERVICE_AREA.serviceHours).toBe(
+      'Weekdays: 6:00 a.m.–9:00 p.m.; Saturday: 6:00 a.m.–9:00 p.m.; Sunday: 8:00 a.m.–6:00 p.m.',
+    );
+    expect(isOnDemandActive(WATA_PARATRANSIT_SERVICE_AREA.availability, 'Sunday', 'amPeak')).toBe(true);
+    expect(isOnDemandActive(WATA_PARATRANSIT_SERVICE_AREA.availability, 'Sunday', 'overnight')).toBe(false);
+    expect(WATA_PARATRANSIT_SERVICE_AREA.features[0].geometry.type).toBe('Polygon');
   });
 
 });

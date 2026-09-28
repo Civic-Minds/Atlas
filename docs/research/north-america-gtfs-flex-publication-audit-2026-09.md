@@ -2,7 +2,7 @@
 
 Status: complete. This is a companion to [the on-demand service audit](north-america-on-demand-audit-2026-09.md). It checks whether each confirmed public on-demand service has a current public GTFS-Flex feed, whether related data is available through an agency or municipal open-data portal, and how to request the data when no public feed is found. The 100 ledger rows cover all 104 source records; five exo sectors are consolidated into one grouped row, and the remaining source-to-service mappings are one-to-one.
 
-Headline result: two services have a confirmed current public GTFS-Flex publication—Metro Transit Metro micro and C-TRAN The Current. No Canadian service in the 35-record Canada inventory has a confirmed public GTFS-Flex publication.
+Headline result: three services have a confirmed current public GTFS-Flex publication—Metro Transit Metro micro, C-TRAN The Current, and Williamsburg Area Transit Authority paratransit. No Canadian service in the 35-record Canada inventory has a confirmed public GTFS-Flex publication.
 
 ## Classification
 
@@ -82,6 +82,12 @@ The Metro Transit ZIP was downloaded and validated locally on 2026-09-24. It con
 | King County Metro — Metro Flex | No public GTFS-Flex download confirmed; public open data exists | King County publishes the ordinary Metro GTFS feed and a separate Metro Flex open-data dataset containing service-area geometry. The public GTFS directory does not expose a Flex ZIP alongside the ordinary feed. | Ask Metro’s developer/open-data contact whether the Flex geometry is also available as a GTFS-Flex package or whether the service is intentionally published only as GIS/open-data geometry. | [Metro GTFS directory](https://metro.kingcounty.gov/gtfs/), [King County Metro Flex open data](https://data.kingcounty.gov/w/3jjm-4frb/shwn-npxw?cur=fxqU9OHpgRi&from=u_AVX81Z7j0), [Metro developer resources](https://cdn.kingcounty.gov/uk-ua/dept/metro/rider-tools/mobile-and-web-apps) |
 
 | C-TRAN (Vancouver, WA) — The Current | **GTFS-Flex confirmed** | C-TRAN’s official GTFS request page explicitly offers a separate “GTFS-Flex Data for The Current” download alongside ordinary GTFS. The page requires accepting C-TRAN’s data licence before download. | No request needed beyond accepting the agency’s data licence on the official download page. | [C-TRAN GTFS/Flex data page](https://mail.c-tran.com/about-c-tran/business/c-tran-gtfs-data), [The Current](https://mail.c-tran.com/thecurrent) |
+
+### Virginia
+
+| Atlas agency/service | GTFS-Flex status | Agency/open-data finding | Request path | Evidence |
+| --- | --- | --- | --- | --- |
+| Williamsburg Area Transit Authority — paratransit | **GTFS-Flex confirmed** | Virginia’s official GTFS clearinghouse lists a current WATA GTFS-Flex download. The April 21, 2026 ZIP contains `locations.geojson`, `booking_rules.txt`, two calendar patterns, and Flex stop-time windows through November 1, 2026. | No request needed for the published schedule. | [Virginia GTFS feed clearinghouse](https://drpt.virginia.gov/data/gtfs-feed-clearinghouse/), [direct WATA GTFS-Flex feed](https://data.trilliumtransit.com/gtfs/williamsburg-va-us/williamsburg-va-us--flex-v2.zip), [WATA paratransit](https://www.gowata.org/175/Accessibility-Paratransit-Service) |
 
 ### Colorado
 

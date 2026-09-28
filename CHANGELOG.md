@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Williamsburg Area Transit Authority paratransit now appears as a source-backed on-demand zone with feed-derived service hours.
 - On-demand zone cards now use source-derived service hours, identify the selected zone, and avoid presenting a separate official-source footer.
 - Agency filters now use the same active and inactive pill styling as the Live and History controls.
 - Agency filter selection now keeps Atlas’s existing active-control colors while adding a clearer outline and weight.
