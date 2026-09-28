@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { routeKey } from './useIntervalStats';
 import type { ShapeProperties, DayType, TimePeriod } from './useIntervalStats';
 import { routeCardDisplayHeadway, routeListDisplayHeadway } from '../utils/effectiveHeadway';
+import { shouldHideNumericRouteShortName } from '../utils/format';
 
 const NEARBY_RADIUS_M = 500;
 const EARTH_R = 6371000;
@@ -103,7 +104,9 @@ export function useNearbyRoutes(
           routeMap.set(mapKey, {
             rKey: rk,
             routeShortName: shortName,
-            displayShortName: p.routeShortName || null,
+            displayShortName: shouldHideNumericRouteShortName(p.routeShortName, p.routeLongName, p.routeType)
+              ? null
+              : p.routeShortName || null,
             routeLongName: (p.routeLongName as string | null) ?? null,
             agencyName: p.agencyName || slug,
             agencySlug: slug,

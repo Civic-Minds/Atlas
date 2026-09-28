@@ -166,6 +166,16 @@ export function routeListCompanionName(
   return displayName;
 }
 
+/** Hide numeric internal IDs when a rail/ferry route has a useful public name. */
+export function shouldHideNumericRouteShortName(
+  shortName: string | null | undefined,
+  longName: string | null | undefined,
+  routeType?: number,
+): boolean {
+  if (!shortName || !longName || !/^\d+$/.test(shortName.trim())) return false;
+  return routeType !== 3 || /(?:line|seabus)$/i.test(longName.trim());
+}
+
 /** Vehicle word for a GTFS route_type (0 tram, 1 metro, 2 rail, 3 bus, 4 ferry). */
 export function vehicleModeWord(routeType: number | null | undefined): string {
   switch (routeType) {

@@ -12,6 +12,7 @@ import {
   shortenAgencyName,
   cleanRouteShortName,
   routeListCompanionName,
+  shouldHideNumericRouteShortName,
 } from '../../utils/format';
 import RouteListRow from '../RouteListRow';
 
@@ -45,8 +46,10 @@ interface SearchSuggestionsPanelProps {
 }
 
 export function routeRowLabels(shortName: string, longName: string | null) {
-  const short = cleanRouteShortName(shortName);
-  const companion = routeListCompanionName(longName ? titleCase(longName) : null, shortName);
+  const hiddenShortName = shouldHideNumericRouteShortName(shortName, longName);
+  const displayShortName = hiddenShortName ? '' : shortName;
+  const short = cleanRouteShortName(displayShortName);
+  const companion = routeListCompanionName(longName ? titleCase(longName) : null, displayShortName);
   return {
     shortName: titleCase(short),
     name: companion ? titleCase(companion) : undefined,
