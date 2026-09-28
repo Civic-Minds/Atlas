@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+-Live Vehicles now polls configured GTFS-RT feeds through the local API for private, local-only tracking.
 -Agency-provided BRT and Express classifications now take precedence over generic “Rapid” wording, and extended Express Bus routes remain visible under Bus.
 -Added BC Ferries and Pierce County Ferries so Atlas covers two more public ferry systems.
 -Vancouver route and stop labels now preserve “SFU” capitalization.
