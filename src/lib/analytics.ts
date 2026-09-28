@@ -1,4 +1,8 @@
 const measurementId = import.meta.env.VITE_GA_MEASUREMENT_ID as string | undefined;
+const atlasMode = (import.meta.env.VITE_ATLAS_MODE as string | undefined)
+  ?? (import.meta.env.VITE_PREVIEW_BUILD === 'true' ? 'preview'
+    : import.meta.env.VITE_BETA_BUILD === 'true' ? 'beta'
+      : import.meta.env.DEV ? 'dev' : 'public');
 const CONSENT_KEY = 'atlas.analytics-consent';
 
 declare global {
@@ -9,6 +13,8 @@ declare global {
 }
 
 let initialized = false;
+let analyticsDisabled = false;
+let pendingEvents: Array<{ name: string; parameters: Record<string, unknown> }> = [];
 
 export type AnalyticsConsent = 'granted' | 'denied';
 
@@ -31,26 +37,46 @@ function loadAnalytics() {
   script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(measurementId)}`;
   document.head.appendChild(script);
   initialized = true;
+
+  for (const event of pendingEvents) {
+    window.gtag('event', event.name, event.parameters);
+  }
+  pendingEvents = [];
 }
 
 export function setAnalyticsConsent(consent: AnalyticsConsent) {
   if (typeof window === 'undefined') return;
   window.localStorage.setItem(CONSENT_KEY, consent);
-  if (consent === 'granted') loadAnalytics();
-  if (consent === 'denied' && initialized) window.gtag('consent', 'update', { analytics_storage: 'denied' });
+  if (consent === 'granted') {
+    analyticsDisabled = false;
+    loadAnalytics();
+  }
+  if (consent === 'denied') {
+    analyticsDisabled = true;
+    pendingEvents = [];
+    if (initialized) window.gtag('consent', 'update', { analytics_storage: 'denied' });
+  }
 }
 
 export function initAnalytics() {
-  if (getAnalyticsConsent() === 'denied') return;
+  if (getAnalyticsConsent() === 'denied') {
+    analyticsDisabled = true;
+    pendingEvents = [];
+    return;
+  }
   loadAnalytics();
 }
 
 export function trackPageView(path: string) {
-  if (!initialized) return;
-  window.gtag('event', 'page_view', { page_path: path });
+  trackEvent('page_view', { page_path: path });
 }
 
 export function trackEvent(name: string, parameters: Record<string, string | number | boolean | undefined> = {}) {
-  if (!initialized) return;
-  window.gtag('event', name, parameters);
+  if (analyticsDisabled || typeof window === 'undefined') return;
+  const contextualParameters = { atlas_mode: atlasMode, ...parameters };
+  if (!initialized) {
+    pendingEvents.push({ name, parameters: contextualParameters });
+    return;
+  }
+  window.gtag('event', name, contextualParameters);
 }
