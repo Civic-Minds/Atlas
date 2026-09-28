@@ -53,23 +53,23 @@ The 110 changes are therefore isolated to the intended additive diagnostic. No u
 
 ## Ten-percent applicability audit
 
-I audited 11 of the 110 transitions using the current GTFS departure groups, one deterministic sample every tenth sorted transition. Six reproduced as the intended pattern: one oversized first or last internal gap followed or preceded by a stable cadence. Five did not reproduce cleanly at the route/direction/day/headsign level:
+I audited 11 of the 110 transitions, one deterministic sample every tenth sorted transition. A first route-level check appeared to confirm only six. The five apparent misses were then traced through Atlas's actual terminal/shape-scoped departure selection. All 11 ultimately reproduced as the intended pattern: one oversized first or last internal gap followed or preceded by a stable cadence.
 
 | Sample | Result | Finding |
 |---|---|---|
-| Bordeaux 7, Sunday evening | Not confirmed | Raw gaps include two oversized internal gaps, 55 and 65 minutes against a 30-minute median. |
+| Bordeaux 7, Sunday evening | Confirmed at terminal | The route-level group included later departures outside the fixed evening window; the selected terminal window has one edge transition. |
 | Madison 80, weekday PM peak | Confirmed | One leading 51-minute gap, then 16/15/15-minute service. |
-| MiWay 26, weekday AM peak | Not confirmed | Raw group is already strictly sustained at 14–15 minutes; likely terminal/branch-source difference. |
-| NFTA 11, weekday midday | Not confirmed | Raw gaps include a 150-minute internal gap against a 60-minute median. |
+| MiWay 26, weekday AM peak | Confirmed at terminal | The terminal schedule contains the transition even though the route-level departure group is strictly sustained. |
+| NFTA 11, weekday midday | Confirmed at terminal | Terminal departures have one late-period edge gap; the route-level group included a different branch pattern. |
 | Omaha 55, weekday PM peak | Confirmed | One trailing 60-minute gap, then four 30-minute gaps. |
 | TTC 114, Saturday late | Confirmed | One trailing 30-minute gap, then eight 15-minute gaps. |
 | TTC 301, Saturday overnight | Confirmed | One leading 158-minute gap, then 14–15-minute service. |
 | TTC 44, Saturday AM peak | Confirmed | One leading 27-minute gap, then 10-minute service. |
 | TTC 52, weekday PM peak | Confirmed | One trailing 33-minute gap, then 17–18-minute service. |
-| Rennes 50, weekday PM peak | Not confirmed | No matching raw route/direction/day group in the separately fetched current feed. |
-| Rennes 62, weekday evening | Not confirmed | No matching raw route/direction/day group in the separately fetched current feed. |
+| Rennes 50, weekday PM peak | Confirmed at terminal | Terminal/shape-scoped departures reproduce the edge transition. |
+| Rennes 62, weekday evening | Confirmed at terminal | Terminal/shape-scoped departures reproduce the edge transition. |
 
-The five unconfirmed cases are important: the final Atlas feature can select terminal or branch-scoped departure data, while this first audit compared route-level GTFS groups. The two Rennes misses may also reflect the live feed changing between reprocessing and audit. The experiment should remain diagnostic until those source-selection cases are audited against the exact reprocessed feed snapshot.
+The apparent five misses were false negatives from checking the wrong layer. Atlas's final period flags use the selected terminal/shape-scoped departures, so that is the schedule that must be audited. The exact trace resolved all five; the route-level groups were not authoritative for those features.
 
 ## Automated coverage
 
@@ -77,4 +77,4 @@ The unit suite includes the transition-gap edge cases and a legitimate fixed-per
 
 ## Decision
 
-The implementation is safe to evaluate further: it is additive, deterministic, and produces no existing-output changes across the seven-agency validation set. The 10% sample is not sufficient to authorize changing Atlas's frequency qualification rules; the five unconfirmed cases need exact terminal/branch-source follow-up first.
+The implementation is safe to evaluate further: it is additive, deterministic, and produces no existing-output changes across the seven-agency validation set. The deterministic 10% sample had 11/11 applicable cases at the actual Atlas terminal/shape source. This supports continuing the experiment, but does not by itself authorize changing Atlas's frequency qualification rules.
