@@ -96,6 +96,8 @@ const PERIODS = Object.fromEntries(
 export interface ProcessOptions extends GtfsTransformOptions {
   slug?: string;
   manualBaseFare?: number;
+  /** Collect exact terminal/shape-scoped edge-transition evidence for a local audit. */
+  edgeTransitionAudit?: boolean;
   /**
    * When true, continue after GTFS validation errors (log only).
    * Default false: throw GtfsValidationError so process CLI fails closed.
@@ -129,6 +131,24 @@ export interface ProcessResult {
   livePollingSidecar?: Record<string, any>;
   shapeAnomalies?: import('../types/gtfs.js').ShapeAnomaly[];
   feedQuality: FeedQuality;
+  edgeTransitionAudit?: EdgeTransitionAuditRecord[];
+}
+
+export interface EdgeTransitionAuditRecord {
+  agency: string | null;
+  routeId: string;
+  routeShortName: string;
+  directionId: number;
+  day: string;
+  headsign: string | null;
+  routeVariant: string | null;
+  shapeId: string | null;
+  terminalStopId: string | null;
+  period: PeriodKey;
+  source: 'terminal-headsign' | 'terminal-shape' | 'terminal-metric' | 'branch';
+  departureTimes: number[];
+  strict: false;
+  experimental: true;
 }
 
 export async function processGtfsBuffer(
@@ -314,6 +334,7 @@ export async function processGtfsBuffer(
   // tell a real branch frequency from a noisy one before trusting it over the terminal-computed
   // value. Not serialized to the GeoJSON output — pipeline-internal only. See issue #263.
   const featureBranchTripCount = new Map<GeoJsonFeature, number>();
+  const featureBranchTimes = new Map<GeoJsonFeature, number[]>();
   for (const result of results) {
     const key = `${result.route}::${result.dir}`;
     // Use the headsign-specific shape so each pattern (e.g. Bramalea GO vs Kitchener GO, or 
@@ -406,8 +427,10 @@ export async function processGtfsBuffer(
     dedupedFeatures.set(dedupeKey, newFeature);
     featureShapeId.set(newFeature, shapeId);
     featureBranchTripCount.set(newFeature, result.times.length);
+    featureBranchTimes.set(newFeature, [...result.times]);
   }
   const features = [...dedupedFeatures.values()];
+  const edgeTransitionAudit: EdgeTransitionAuditRecord[] = [];
 
   // Attach per-stop headways — populated once stop_times are scanned below.
   // We store a reference to the pending map so the loop below can fill it.
@@ -898,6 +921,39 @@ export async function processGtfsBuffer(
         periodSustainedEdgeTransition[pk] = finalH === termH
           ? termSEdgeTransition
           : (finalH === bH ? branchSEdgeTransition : undefined);
+        if (options?.edgeTransitionAudit && periodSustained[pk] === false && periodSustainedEdgeTransition[pk] === true) {
+          const scopedSource = railFeature
+            ? (headsignTerminalTimes != null ? 'terminal-headsign' : 'terminal-shape')
+            : (terminalStopId != null && shapeMap?.get(terminalStopId) != null ? 'terminal-shape' : 'terminal-headsign');
+          const source = finalH === termH
+            ? (headsignTerminalPeriodHw?.[pk] != null
+              ? scopedSource
+              : (terminalPeriodHw?.[pk] != null ? 'terminal-metric' : scopedSource))
+            : 'branch';
+          const departureTimes = source === 'terminal-headsign'
+            ? (terminalScopedTimes ?? [])
+            : source === 'terminal-shape'
+              ? (terminalScopedTimes ?? [])
+              : source === 'terminal-metric'
+                ? (terminalStopId ? metricStopMap.get(terminalStopId) ?? [] : [])
+                : (featureBranchTimes.get(feature) ?? []);
+          edgeTransitionAudit.push({
+            agency: options.slug ?? null,
+            routeId: String(feature.properties.routeId),
+            routeShortName: String(feature.properties.routeShortName),
+            directionId: Number(feature.properties.directionId),
+            day: String(feature.properties.day),
+            headsign: (feature.properties.headsign as string | null) ?? null,
+            routeVariant: (feature.properties.routeVariant as string | null) ?? null,
+            shapeId: featureShape ?? null,
+            terminalStopId: terminalStopId ?? null,
+            period: pk,
+            source,
+            departureTimes: [...departureTimes].sort((a, b) => a - b),
+            strict: false,
+            experimental: true,
+          });
+        }
       }
       const allVals = onShape
         .map(({ stopId }) => allStopPeriodHw[stopId]?.[pk])
@@ -956,6 +1012,42 @@ export async function processGtfsBuffer(
       feature.properties.headwayByHour = mergedHourHw;
     } else if (terminalHourHw) {
       feature.properties.headwayByHour = terminalHourHw;
+    }
+  }
+
+  // Some sparse or overnight features intentionally exit the stop-resolution loop before a
+  // terminal source exists. Their branch-level fields are still valid output, so include those
+  // exact branch calculations in the opt-in audit rather than silently dropping them.
+  if (options?.edgeTransitionAudit) {
+    const recorded = new Set(edgeTransitionAudit.map(record => [
+      record.routeId, record.directionId, record.day, record.headsign ?? '', record.routeVariant ?? '', record.period,
+    ].join('|')));
+    for (const feature of features) {
+      const p = feature.properties;
+      const strict = p.headwayByPeriodSustained as HeadwayByPeriodSustained | undefined;
+      const experimental = p.headwayByPeriodSustainedEdgeTransition as HeadwayByPeriodSustained | undefined;
+      for (const period of Object.keys(experimental ?? {}) as PeriodKey[]) {
+        if (strict?.[period] !== false || experimental?.[period] !== true) continue;
+        const key = [p.routeId, p.directionId, p.day, p.headsign ?? '', p.routeVariant ?? '', period].join('|');
+        if (recorded.has(key)) continue;
+        edgeTransitionAudit.push({
+          agency: options.slug ?? null,
+          routeId: String(p.routeId),
+          routeShortName: String(p.routeShortName),
+          directionId: Number(p.directionId),
+          day: String(p.day),
+          headsign: (p.headsign as string | null) ?? null,
+          routeVariant: (p.routeVariant as string | null) ?? null,
+          shapeId: featureShapeId.get(feature) ?? null,
+          terminalStopId: null,
+          period,
+          source: 'branch',
+          departureTimes: [...(featureBranchTimes.get(feature) ?? [])].sort((a, b) => a - b),
+          strict: false,
+          experimental: true,
+        });
+        recorded.add(key);
+      }
     }
   }
 
@@ -1160,5 +1252,6 @@ export async function processGtfsBuffer(
     livePollingSidecar,
     shapeAnomalies: gtfs.shapeAnomalies,
     feedQuality,
+    ...(options?.edgeTransitionAudit ? { edgeTransitionAudit } : {}),
   };
 }

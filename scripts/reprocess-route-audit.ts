@@ -44,6 +44,7 @@ function processOptions(slug: string): ProcessOptions {
   return {
     slug,
     force: true,
+    edgeTransitionAudit: true,
     agencyId: typeof source.agencyId === 'string' ? source.agencyId : undefined,
     preprocess: typeof source.preprocess === 'string' ? source.preprocess as ProcessOptions['preprocess'] : undefined,
     excludeRouteShortNames: Array.isArray(source.excludeRouteShortNames) ? source.excludeRouteShortNames as string[] : undefined,
@@ -74,7 +75,8 @@ async function main() {
       const buffer = await fetchFeed(feedUrl);
       const result = await processGtfsBuffer(buffer, message => process.stdout.write(`  ${message}\n`), processOptions(agency.slug));
       writeFileSync(resolve(outDir, `${agency.slug}.json`), result.geojson);
-      manifest.set(agency.slug, { slug: agency.slug, name: agency.name, feedUrl, startedAt, completedAt: new Date().toISOString(), status: 'ok', featureCount: result.featureCount, feedVersion: result.feedVersion, feedExpiry: result.feedExpiry, feedQuality: result.feedQuality });
+      writeFileSync(resolve(outDir, `${agency.slug}.edge-transition-audit.json`), `${JSON.stringify(result.edgeTransitionAudit ?? [], null, 2)}\n`);
+      manifest.set(agency.slug, { slug: agency.slug, name: agency.name, feedUrl, startedAt, completedAt: new Date().toISOString(), status: 'ok', featureCount: result.featureCount, feedVersion: result.feedVersion, feedExpiry: result.feedExpiry, feedQuality: result.feedQuality, edgeTransitionAuditCount: result.edgeTransitionAudit?.length ?? 0 });
       writeCheckpoint();
     } catch (error) {
       manifest.set(agency.slug, { slug: agency.slug, name: agency.name, startedAt, completedAt: new Date().toISOString(), status: 'error', error: error instanceof Error ? error.message : String(error) });
