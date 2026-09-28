@@ -58,10 +58,14 @@ export const NearbyRoutesPanel = forwardRef<HTMLDivElement, NearbyRoutesPanelPro
                     className="w-1.5 h-1.5 rounded-full shrink-0"
                     style={{ background: headwayToTierColor(r.headway, colorMode) }}
                   />
-                  <span className="text-[11px] font-black text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors shrink-0">
-                    {r.routeShortName}
-                  </span>
-                  <span className="text-[10px] font-bold text-[var(--text-muted)] truncate">
+                  {r.displayShortName ? (
+                    <span className="text-[11px] font-black text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors shrink-0">
+                      {r.displayShortName}
+                    </span>
+                  ) : null}
+                  <span className={r.displayShortName
+                    ? 'text-[10px] font-bold text-[var(--text-muted)] truncate'
+                    : 'text-[11px] font-black text-[var(--text-primary)] truncate'}>
                     {r.routeLongName || r.agencyName}
                   </span>
                   {r.headway != null && (
