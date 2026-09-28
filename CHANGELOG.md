@@ -6,7 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
-- On-demand service cards now lead with the service name and avoid presenting a separate official-source footer.
+- On-demand service cards now use source-derived service hours, lead with the service name, and avoid presenting a separate official-source footer.
 - Agency filters now use the same active and inactive pill styling as the Live and History controls.
 - Agency filter selection now keeps Atlas’s existing active-control colors while adding a clearer outline and weight.
 - Removed the unnecessary “Combine filters” helper text from the agency filter row.

@@ -1,6 +1,7 @@
 import type { GeoJSON } from 'geojson';
 import { HSR_MY_RIDE_STOP_FEATURES } from './hsrMyRideStops';
 import { METRO_MICRO_FLEX_FEATURES } from './metroMicroFlexData';
+import { METRO_MICRO_FLEX_METADATA } from './metroMicroFlexMetadata';
 import { C_TRAN_CURRENT_FLEX_FEATURES } from './ctranCurrentFlexData';
 import { C_TRAN_CURRENT_FLEX_STOPS } from './ctranCurrentFlexStops';
 import type { OnDemandAvailability } from '../../shared/onDemandAvailability';
@@ -140,14 +141,10 @@ export const METRO_MICRO_SERVICE_AREA = {
   sourceUrl: 'https://svc.metrotransit.org/mtgtfs/gtfs-flex.zip',
   sourceLabel: 'Metro Transit GTFS-Flex feed',
   sourceRetrievedAt: '2026-09-24',
-  serviceHours: 'Weekdays: 5:30 a.m.–10:30 p.m.; Saturday–Sunday: 7:00 a.m.–10:30 p.m.',
+  serviceHours: METRO_MICRO_FLEX_METADATA.serviceHours,
   bookingUrl: 'https://www.metrotransit.org/metro-micro/',
   serviceName: 'Metro micro',
-  availability: {
-    Weekday: [{ startHour: 5.5, endHour: 22.5 }],
-    Saturday: [{ startHour: 7, endHour: 22.5 }],
-    Sunday: [{ startHour: 7, endHour: 22.5 }],
-  } satisfies OnDemandAvailability,
+  availability: METRO_MICRO_FLEX_METADATA.availability,
 };
 
 export const C_TRAN_CURRENT_SERVICE_AREA = {
