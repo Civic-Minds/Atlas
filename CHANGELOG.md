@@ -6,6 +6,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Security:** removed committed credential-bearing GTFS feed URLs; affected agencies retain their existing stored artifacts until safe public or environment-backed sources are configured.
+
 - Live vehicle group headers now include the agency's place when available, reducing ambiguity between similarly named agencies.
 - Zoom guidance now shares the bottom baseline with the map status pills without overlapping the status area, with shorter instruction text.
 - Feedback emails now open with a clear writing area before the page URL.

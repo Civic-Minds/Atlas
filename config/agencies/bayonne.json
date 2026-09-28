@@ -6,7 +6,7 @@
     43.4929,
     -1.4748
   ],
-  "feedUrl": "https://app.mecatran.com/utw/ws/gtfsfeed/static/txiktxak?apiKey=0f64273f070b7d4621002040646e180d374e5373",
+  "feedUrl": null,
   "mdbFeedUrl": null,
   "hiddenInProduction": true,
   "pmtilesPending": true,

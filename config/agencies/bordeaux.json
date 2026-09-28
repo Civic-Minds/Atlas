@@ -6,7 +6,7 @@
     44.8378,
     -0.5792
   ],
-  "feedUrl": "https://bdx.mecatran.com/utw/ws/gtfsfeed/static/bordeaux?apiKey=opendata-bordeaux-metropole-flux-gtfs-rt",
+  "feedUrl": null,
   "mdbFeedUrl": null,
   "hiddenInProduction": true,
   "pmtilesPending": true,
