@@ -36,6 +36,7 @@ import { shouldShowDirectionSections } from '../../../utils/routeCardDirectionLa
 import type { VariantFamily } from '../../../utils/routeVariants';
 import { currentAtlasUrl } from '../../../utils/reportIssue';
 import { ROUTE_DATA_QUALITY_WARNING, ROUTE_DATA_QUALITY_WARNING_MESSAGE } from '../../../../shared/routeDataQuality';
+import { expiredFeedNotice } from '../../../content/noticeCopy';
 
 function medianHeadway(values: number[]): number {
   const sorted = [...values].sort((a, b) => a - b);
@@ -552,7 +553,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
             )}
             {routeIsStale && (
               <CardHelpNotice
-                message={`This schedule may be outdated${expDateStr ? ` and ended ${expDateStr}` : ''}.`}
+                message={expiredFeedNotice(routeAgency?.name ?? 'This agency', expDateStr)}
                 onLearnMore={() => onInfoOpen('about', {
                   helpTopic: 'outdated-schedule',
                   agencyName: routeAgency?.name,
