@@ -32,6 +32,7 @@ import { frequentServiceBand, frequentServiceFeatureKey, frequentServiceQueryKey
 import { effectiveMode, ON_DEMAND_MODE } from '../../../shared/modes';
 import { markAtlasLatest } from '../../lib/performance';
 import { isOnDemandActive } from '../../../shared/onDemandAvailability';
+import { buildRouteSortKeyExpression } from '../../utils/routeSort';
 
 const CORRIDOR_BAND_COLOR = '#64748b';
 const ON_DEMAND_AREA_COLOR = '#64748b';
@@ -153,17 +154,6 @@ function buildEffectiveHeadwayColorExpression(period: TimePeriod, mode: ColorVis
   }
   expression.push(tiers[tiers.length - 1].color);
   return expression;
-}
-
-/** Higher priority draws later, keeping the most frequent lines visible at overlaps. */
-function buildRouteSortKeyExpression(headwayExpr: unknown): any {
-  return ['case',
-    ['<=', headwayExpr, 10], 4,
-    ['<=', headwayExpr, 15], 3,
-    ['<=', headwayExpr, 30], 2,
-    ['<=', headwayExpr, 60], 1,
-    0,
-  ];
 }
 
 function localRouteHeadwayColor(headway: unknown, mode: ColorVisionMode): string {
