@@ -97,11 +97,10 @@ export function titleCase(s: string): string {
     return `${short} — ${titleCase(long)}`;
   }
 
-  // If it's a short string (<= 3 chars) and contains only letters/numbers,
-  // preserve it as uppercase (e.g. "GO", "LW", "VTA"). 4-char strings like "LOOP"
-  // fall through so they title-case correctly; real 4-char acronyms (BART, etc.)
-  // are handled by the TRANSIT_ACRONYMS table below.
-  if (s.length <= 3 && /^[A-Z0-9a-z]+$/i.test(s)) {
+  // Preserve short route codes (e.g. "GO", "LW", "1X") as uppercase. Three-letter
+  // service names such as MARTA's "RED" should still title-case; known three-letter
+  // acronyms are restored by the TRANSIT_ACRONYMS table below.
+  if (s.length <= 2 && /^[A-Z0-9a-z]+$/i.test(s)) {
     return s.toUpperCase();
   }
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { shortenAgencyName } from '../format';
+import { shortenAgencyName, titleCase } from '../format';
 import indexData from '../../../public/data/index.json';
 
 interface IndexAgency {
@@ -88,5 +88,14 @@ describe('shortenAgencyName', () => {
     const collisions = [...byResult.entries()]
       .filter(([result, slugs]) => slugs.length > 1 && !KNOWN_SHARED_ACRONYMS.has(result));
     expect(collisions, `Multiple distinct agencies collapsed to the same shortened name: ${JSON.stringify(collisions)}`).toEqual([]);
+  });
+});
+
+describe('titleCase', () => {
+  it('title-cases three-letter service names while preserving short route codes', () => {
+    expect(titleCase('RED')).toBe('Red');
+    expect(titleCase('Gold')).toBe('Gold');
+    expect(titleCase('GO')).toBe('GO');
+    expect(titleCase('LW')).toBe('LW');
   });
 });
