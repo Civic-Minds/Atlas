@@ -15,13 +15,13 @@
   "feedUrl": "https://transportation-forms.stanford.edu/google/google_transit.zip",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-stanford-marguerite-shuttle-sms-gtfs-59.zip?alt=media",
   "lastFeedExpiry": "20270926",
-  "lastFeedVersion": "2026-09-15T15:07:04Z+eta151",
-  "lastRefreshedAt": "2026-09-23",
+  "lastFeedVersion": "2026-09-15T15:07:04Z+eta152",
+  "lastRefreshedAt": "2026-09-28",
   "cities": [
     "Palo Alto, California",
     "Mountain View, California"
   ],
-  "lastFeedCheckAt": "20260923",
+  "lastFeedCheckAt": "20260928",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270926",
@@ -38,7 +38,7 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 30
     },
-    "checkedAt": "2026-09-23"
+    "checkedAt": "2026-09-28"
   },
   "timezone": "America/Los_Angeles"
 }

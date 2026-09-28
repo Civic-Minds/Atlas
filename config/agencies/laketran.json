@@ -14,9 +14,9 @@
   "cities": [
     "Cleveland, Ohio"
   ],
-  "lastFeedCheckAt": "20260923",
-  "expiredFeedCheckCount": 0,
-  "expiredFeedCheckSince": null,
+  "lastFeedCheckAt": "20260928",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
   "expiredFeedCheckExpiry": "20260927",
   "feedQuality": {
     "status": "review",

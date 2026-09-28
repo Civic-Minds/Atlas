@@ -13,18 +13,18 @@
     -82.607
   ],
   "feedUrl": "https://opendata.citywindsor.ca/Uploads/google_transit.zip",
-  "lastFeedExpiry": "20261220",
-  "lastFeedVersion": "781e2d2c-2419-4ef0-bda9-59b13d56686a",
+  "lastFeedExpiry": "20261225",
+  "lastFeedVersion": "b81e8183-cd75-433b-9b5e-c40decfccea3",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-transit-windsor-gtfs-720.zip?alt=media",
-  "lastRefreshedAt": "2026-09-23",
+  "lastRefreshedAt": "2026-09-28",
   "cities": [
     "Windsor, Ontario",
     "Detroit, Michigan"
   ],
-  "lastFeedCheckAt": "20260923",
+  "lastFeedCheckAt": "20260928",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261220",
+  "expiredFeedCheckExpiry": "20261225",
   "timezone": "America/New_York",
   "feedQuality": {
     "status": "review",
@@ -40,6 +40,6 @@
       "routeHeadwayMismatches": 1,
       "featureCount": 93
     },
-    "checkedAt": "2026-09-23"
+    "checkedAt": "2026-09-28"
   }
 }

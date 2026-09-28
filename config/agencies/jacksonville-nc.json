@@ -29,12 +29,12 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 30
     },
-    "checkedAt": "2026-09-23"
+    "checkedAt": "2026-09-28"
   },
-  "lastFeedExpiry": "20261023",
+  "lastFeedExpiry": "20261028",
   "lastFeedVersion": "20250228",
-  "lastRefreshedAt": "2026-09-23",
-  "lastFeedCheckAt": "20260923",
+  "lastRefreshedAt": "2026-09-28",
+  "lastFeedCheckAt": "20260928",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",

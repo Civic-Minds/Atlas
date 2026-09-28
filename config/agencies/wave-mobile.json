@@ -14,14 +14,27 @@
   "feedUrl": "https://files.mobilitydatabase.org/tld-6773/latest.zip",
   "region": "Alabama",
   "lastFeedExpiry": "20281231",
-  "lastFeedVersion": "20260319",
-  "lastRefreshedAt": "2026-08-07",
+  "lastFeedVersion": "20260925",
+  "lastRefreshedAt": "2026-09-28",
   "cities": [
     "Mobile, Alabama"
   ],
-  "lastFeedCheckAt": "20260923",
+  "lastFeedCheckAt": "20260928",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20281231",
-  "timezone": "America/Chicago"
+  "timezone": "America/Chicago",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 26
+    },
+    "checkedAt": "2026-09-28"
+  }
 }

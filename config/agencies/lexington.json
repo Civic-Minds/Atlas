@@ -9,13 +9,13 @@
   "region": "Kentucky",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2067/latest.zip",
   "lastFeedExpiry": "20261219",
-  "lastFeedVersion": "20260820",
-  "lastRefreshedAt": "2026-08-24",
+  "lastFeedVersion": "20260925",
+  "lastRefreshedAt": "2026-09-28",
   "cities": [
     "Lexington-Fayette, Kentucky",
     "Lexington, Kentucky"
   ],
-  "lastFeedCheckAt": "20260923",
+  "lastFeedCheckAt": "20260928",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261219",
@@ -23,7 +23,7 @@
     "status": "review",
     "score": 90,
     "reasons": [
-      "1 route frequency metric need review."
+      "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
     ],
     "metrics": {
       "validationErrors": 0,
@@ -32,7 +32,7 @@
       "routeHeadwayMismatches": 1,
       "featureCount": 135
     },
-    "checkedAt": "2026-08-24"
+    "checkedAt": "2026-09-28"
   },
   "timezone": "America/New_York"
 }

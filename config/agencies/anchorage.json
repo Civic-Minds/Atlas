@@ -14,9 +14,9 @@
   "cities": [
     "Anchorage, Alaska"
   ],
-  "lastFeedCheckAt": "20260923",
+  "lastFeedCheckAt": "20260928",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20270531",
+  "expiredFeedCheckExpiry": "20270425",
   "timezone": "America/Anchorage"
 }

@@ -15,13 +15,13 @@
   ],
   "feedUrl": "https://www.londontransit.ca/gtfsfeed/google_transit.zip",
   "lastFeedExpiry": "20261128",
-  "lastFeedVersion": "2026 September_20260827",
+  "lastFeedVersion": "2026 September + Trippers_20260924",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-london-transit-commission-gtfs-2.zip?alt=media",
-  "lastRefreshedAt": "2026-09-07",
+  "lastRefreshedAt": "2026-09-28",
   "cities": [
     "London, Ontario"
   ],
-  "lastFeedCheckAt": "20260923",
+  "lastFeedCheckAt": "20260928",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261128",
@@ -36,9 +36,9 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 1,
-      "featureCount": 299
+      "featureCount": 302
     },
-    "checkedAt": "2026-09-07"
+    "checkedAt": "2026-09-28"
   },
   "timezone": "America/Toronto"
 }

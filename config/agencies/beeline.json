@@ -14,9 +14,9 @@
   ],
   "feedUrl": "https://westchester-gmv.itoworld.com/production/ito_westchester_county_gtfs.zip",
   "mdbFeedUrl": "https://s3.amazonaws.com/datatools-511ny/public/Westchester_County_Bee-Line_System.zip",
-  "lastFeedExpiry": "20261231",
+  "lastFeedExpiry": "20270104",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-09-23",
+  "lastRefreshedAt": "2026-09-28",
   "cities": [
     "White Plains, New York",
     "Greenburgh, New York",
@@ -30,24 +30,24 @@
     "Kings Bridge, New York"
   ],
   "timezone": "America/New_York",
-  "lastFeedCheckAt": "20260923",
+  "lastFeedCheckAt": "20260928",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261231",
+  "expiredFeedCheckExpiry": "20270104",
   "feedQuality": {
-    "status": "degraded",
-    "score": 50,
+    "status": "review",
+    "score": 70,
     "reasons": [
-      "4 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
+      "1 map line was repaired — Atlas fixed unusual route geometry before displaying it.",
       "2 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 4,
+      "shapeAnomalies": 1,
       "routeHeadwayMismatches": 2,
-      "featureCount": 286
+      "featureCount": 238
     },
-    "checkedAt": "2026-09-23"
+    "checkedAt": "2026-09-28"
   }
 }

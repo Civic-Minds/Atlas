@@ -19,9 +19,9 @@
     "Mansfield, Texas",
     "Flower Mound, Texas"
   ],
-  "lastFeedCheckAt": "20260923",
-  "expiredFeedCheckCount": 0,
-  "expiredFeedCheckSince": null,
+  "lastFeedCheckAt": "20260928",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
   "expiredFeedCheckExpiry": "20260926",
   "timezone": "America/Chicago"
 }

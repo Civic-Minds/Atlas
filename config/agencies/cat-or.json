@@ -14,12 +14,25 @@
   ],
   "feedUrl": "https://oregon-gtfs.trilliumtransit.com/gtfs_data/canbytransit-or-us/canbytransit-or-us.zip",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-oregon-canby-area-transit-cat-gtfs-252.zip?alt=media",
-  "lastFeedExpiry": "20270101",
-  "lastFeedVersion": "UTC: 09-Jun-2026 21:37",
-  "lastRefreshedAt": "2026-08-07",
-  "lastFeedCheckAt": "20260923",
+  "lastFeedExpiry": "20270401",
+  "lastFeedVersion": "UTC: 24-Sep-2026 21:40",
+  "lastRefreshedAt": "2026-09-28",
+  "lastFeedCheckAt": "20260928",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20270101",
-  "timezone": "America/Los_Angeles"
+  "expiredFeedCheckExpiry": "20270401",
+  "timezone": "America/Los_Angeles",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 11
+    },
+    "checkedAt": "2026-09-28"
+  }
 }

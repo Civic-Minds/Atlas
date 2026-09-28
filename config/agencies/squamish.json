@@ -8,13 +8,13 @@
   ],
   "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=43",
   "lastFeedExpiry": "20270614",
-  "lastFeedVersion": "202609220/20260921 21:00:00/20260922 04:00:00",
+  "lastFeedVersion": "202609280/20260927 21:00:00/20260928 04:00:00",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-british-columbia-bc-transit-squamish-gtfs-701.zip?alt=media",
-  "lastRefreshedAt": "2026-09-23",
+  "lastRefreshedAt": "2026-09-28",
   "cities": [
     "North Vancouver, British Columbia"
   ],
-  "lastFeedCheckAt": "20260923",
+  "lastFeedCheckAt": "20260928",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270614",
@@ -29,7 +29,7 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 20
     },
-    "checkedAt": "2026-09-23"
+    "checkedAt": "2026-09-28"
   },
   "timezone": "America/Vancouver"
 }

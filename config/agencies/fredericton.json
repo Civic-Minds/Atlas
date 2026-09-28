@@ -14,13 +14,13 @@
   ],
   "feedUrl": "https://fredericton.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/gtfs.zip",
   "lastFeedExpiry": "20261219",
-  "lastFeedVersion": "202609230/20260922 23:30:00/20260923 04:00:00",
+  "lastFeedVersion": "202609280/20260927 23:30:00/20260928 04:00:00",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-new-brunswick-fredericton-transit-gtfs-764.zip?alt=media",
-  "lastRefreshedAt": "2026-09-23",
+  "lastRefreshedAt": "2026-09-28",
   "cities": [
     "Fredericton, New Brunswick"
   ],
-  "lastFeedCheckAt": "20260923",
+  "lastFeedCheckAt": "20260928",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261219",
@@ -37,7 +37,7 @@
       "routeHeadwayMismatches": 1,
       "featureCount": 54
     },
-    "checkedAt": "2026-09-23"
+    "checkedAt": "2026-09-28"
   },
   "timezone": "America/Halifax"
 }
