@@ -671,7 +671,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         } else if (uniqueRouteKeys.length > 1) {
           if (map.getZoom() < 11) {
             setDisambiguationRoutesRef.current(null);
-            showZoomHint(e.lngLat.lng, e.lngLat.lat, 'Zoom in to see individual routes', 'Zoom in to choose a route');
+            showZoomHint(e.lngLat.lng, e.lngLat.lat, 'Zoom in to choose a route', 'Zoom in to choose a route');
             return;
           }
           setDisambiguationRoutesRef.current(uniqueRouteKeys);
