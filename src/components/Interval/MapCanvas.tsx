@@ -155,6 +155,17 @@ function buildEffectiveHeadwayColorExpression(period: TimePeriod, mode: ColorVis
   return expression;
 }
 
+/** Higher priority draws later, keeping the most frequent lines visible at overlaps. */
+function buildRouteSortKeyExpression(headwayExpr: unknown): any {
+  return ['case',
+    ['<=', headwayExpr, 10], 4,
+    ['<=', headwayExpr, 15], 3,
+    ['<=', headwayExpr, 30], 2,
+    ['<=', headwayExpr, 60], 1,
+    0,
+  ];
+}
+
 function localRouteHeadwayColor(headway: unknown, mode: ColorVisionMode): string {
   const value = typeof headway === 'number' && Number.isFinite(headway) ? headway : Infinity;
   const tiers = getHeadwayTiers(mode);
@@ -171,18 +182,6 @@ function buildFriendlyRouteWidthExpression(headwayExpr: unknown): any {
   return ['interpolate', ['linear'], ['zoom'],
     8, widthForZoom(1.5),
     11, widthForZoom(2),
-    14, widthForZoom(2.5),
-    17, widthForZoom(3.5),
-  ];
-}
-
-/** Keep rail-like routes legible when a later-drawn bus line shares their geometry. */
-function buildDefaultRouteWidthExpression(headwayExpr: unknown): any {
-  const railLike = ['in', ['get', 'routeType'], ['literal', [0, 1, 2, 4, 5, 6, 7, 12]]];
-  const widthForZoom = (base: number) => ['case', railLike, base + 1, base];
-  return ['interpolate', ['linear'], ['zoom'],
-    8, widthForZoom(1.5),
-    11, widthForZoom(2.0),
     14, widthForZoom(2.5),
     17, widthForZoom(3.5),
   ];
@@ -563,7 +562,10 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     // get a different zoom-gate opacity/visibility here than the main effect would compute for the
     // same route, until something else triggered the main effect to re-run and overwrite it.
     const headwayExpr: any = tileEffectiveHeadwayExpr(period);
-    setRouteLayerPaint(map, 'line-width', buildDefaultRouteWidthExpression(headwayExpr));
+    setRouteLayerPaint(map, 'line-width', [
+      'interpolate', ['linear'], ['zoom'],
+      8, 1.5, 11, 2.0, 14, 2.5, 17, 3.5,
+    ]);
     const defaultOpacity = buildDefaultRouteLineOpacityExpression(headwayExpr) as any;
     const partialMatches = frequencySegmentOverlayRef.current.partialMatches;
     if (partialMatches.length > 0) {
@@ -1747,6 +1749,9 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     if (map.getLayer('selected-local-route-layer')) map.setFilter('selected-local-route-layer', selectedRouteFilter as any);
 
     if (hasRoutes) map.setFilter('routes-layer', routeFilter as any);
+    const routeSortKey = buildRouteSortKeyExpression(headwayExpr);
+    if (hasRoutes) map.setLayoutProperty('routes-layer', 'line-sort-key', routeSortKey as any);
+    if (hasLocalRoutes) map.setLayoutProperty('local-routes-layer', 'line-sort-key', routeSortKey as any);
     if (hasRoutesHit) {
       // Keep the transparent hit target in sync with the route line's zoom/headway
       // visibility gate. Without this, a route with no service in the active period
@@ -1873,7 +1878,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       } else {
         setRouteLayerPaint(map, 'line-width', colorVisionFriendly
           ? buildFriendlyRouteWidthExpression(headwayExpr)
-          : buildDefaultRouteWidthExpression(headwayExpr));
+          : ['interpolate', ['linear'], ['zoom'], 8, 1.5, 11, 2.0, 14, 2.5, 17, 3.5]);
         // Dim routes that only pass the active frequency filter because part of their stops
         // qualify (#317) -- the bright frequency-qualifying-segments-layer overlay above draws
         // the real qualifying stretch on top, so the full-length base line reads as background
