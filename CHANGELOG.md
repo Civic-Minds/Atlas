@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+-Selecting a route now fades the surrounding network more clearly so the selected line is easier to follow ([#560](https://github.com/Civic-Minds/Atlas/issues/560)).
 -The hidden-route “All” filter now clears location selections and search text instead of leaving a mixed filter state.
 -Hidden-route agency labels and region filters now match Atlas’s normal typography and pill shapes.
 -Selected routes now stay visible over overlapping lines, and frequency highlighting no longer treats schedule-coverage gaps as slower stop service ([#557](https://github.com/Civic-Minds/Atlas/issues/557), [#558](https://github.com/Civic-Minds/Atlas/issues/558)).

@@ -1,5 +1,5 @@
 /** Shared map paint for a focused route: keep network context visible while spotlighting one line. */
-export function buildFocusedRoutePaint(routeMatch: unknown, dimOpacity = 0.32, dimWidth = 1.25): {
+export function buildFocusedRoutePaint(routeMatch: unknown, dimOpacity = 0.18, dimWidth = 1.25): {
   opacity: unknown[];
   width: unknown[];
 } {

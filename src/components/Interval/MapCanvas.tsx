@@ -1791,7 +1791,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       // When a route is selected we keep other lines visible and clickable
       // (hit layer still covers them) so the network context stays readable and
       // you can click another line to switch — not a near-invisible ghost layer.
-      const DIM_OPACITY = 0.32;
+      const DIM_OPACITY = 0.18;
       const DIM_WIDTH = 1.25;
       if (historyOverlay?.routeShortName) {
         // History uses its own route selection state, so mirror the Frequency

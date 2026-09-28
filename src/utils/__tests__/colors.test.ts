@@ -80,7 +80,7 @@ describe('buildFocusedRouteLineOpacityExpression', () => {
       'case',
       ['==', ['get', 'routeId'], 'selected'],
       1,
-      ['case', ['>', ['get', 'headway'], 20], 0, 0.32],
+      ['case', ['>', ['get', 'headway'], 20], 0, 0.18],
     ]);
   });
 
@@ -95,7 +95,7 @@ describe('buildFocusedRouteLineOpacityExpression', () => {
       'case',
       ['==', ['get', 'routeId'], 'selected'],
       1,
-      ['case', ['>', ['get', 'headway'], 20], 0, 0.3],
+      ['case', ['>', ['get', 'headway'], 20], 0, 0.16],
     ]);
   });
 });
