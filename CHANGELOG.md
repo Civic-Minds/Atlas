@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Agency summaries now describe routes as fitting the active frequency filter, with clearer minute units.
 - The info panel now shows when a targeted agency refresh last ran, so manual updates are visible without changing the full-refresh date.
 - Map zoom guidance now stays readable longer and clears the bottom status badges instead of overlapping them ([#556](https://github.com/Civic-Minds/Atlas/issues/556)).
 - History backfill reports now record valid source years separately from route-change snapshots, so unchanged years can still qualify an agency for long-term History.
