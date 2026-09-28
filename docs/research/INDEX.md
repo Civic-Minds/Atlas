@@ -5,6 +5,12 @@ topic lives in its own folder with an index, source material, and derived data
 where applicable. Research does not change Atlas's production behavior until a
 separate product or engineering decision is made.
 
+Each research folder uses the same index structure: research question, sample,
+method, results and interpretation, recommendation, limitations and next
+steps, and supporting artifacts. Use the [research template](TEMPLATE.md) when
+starting a new study. Detailed tables, source notes, and machine-readable
+outputs remain supporting artifacts rather than competing summaries.
+
 ## Research programs
 
 - [Frequent-service research](frequent-service-research-2026-09/INDEX.md):
