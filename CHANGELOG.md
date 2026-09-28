@@ -9,6 +9,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - History backfills can now be dry-run locally, producing reusable reports without publishing archives or snapshots to R2.
 - MBTA’s official archive can now be processed into a local ten-year History and feed-quality report using usable dated variants without publishing to R2.
 - NORTA’s official media archive can now be processed into a local ten-year History backfill report without publishing to R2.
+- Local history reports now preserve route metadata and normalize quoted feed dates before publication.
 - Period-filtered route cards now show the active period's cadence instead of falling back to an all-day frequency when service is uneven ([#524](https://github.com/Civic-Minds/Atlas/issues/524)).
 - Williamsburg Area Transit Authority paratransit now appears as a source-backed on-demand zone with feed-derived service hours.
 - On-demand zone cards now use source-derived service hours, identify the selected zone, and avoid presenting a separate official-source footer.

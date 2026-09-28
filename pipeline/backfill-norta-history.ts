@@ -49,8 +49,9 @@ async function peekFeedInfo(buf: Buffer): Promise<{ feedExpiry: string | null; f
   if (!entry) return { feedExpiry: null, feedVersion: null };
   const lines = (await entry.async('text')).trim().split(/\r?\n/);
   if (lines.length < 2) return { feedExpiry: null, feedVersion: null };
-  const headers = lines[0].split(',').map(value => value.trim());
-  const values = lines[1].split(',').map(value => value.trim());
+  const clean = (value: string) => value.trim().replace(/^"|"$/g, '');
+  const headers = lines[0].split(',').map(clean);
+  const values = lines[1].split(',').map(clean);
   const get = (name: string) => {
     const index = headers.indexOf(name);
     return index >= 0 ? values[index] || null : null;
@@ -83,6 +84,9 @@ function snapshotRoutes(geojson: string, previous: Record<string, { headway: num
       route,
       headway: value.headway,
       prevHeadway: previous[route]?.headway ?? null,
+      tier: value.tier,
+      routeLongName: value.routeLongName ?? null,
+      headwayByPeriod: value.headwayByPeriod ?? null,
     }));
   return { current, snapshots };
 }
@@ -121,7 +125,7 @@ async function main() {
       previous = Object.fromEntries(Object.entries(current).map(([route, value]) => [route, { headway: value.headway }]));
       allSnapshots.push(...snapshots.map(snapshot => ({
         key: snapshot.key,
-        body: JSON.stringify({ headway: snapshot.headway, prevHeadway: snapshot.prevHeadway, processedAt: new Date().toISOString() }),
+        body: JSON.stringify({ headway: snapshot.headway, prevHeadway: snapshot.prevHeadway, tier: snapshot.tier, routeLongName: snapshot.routeLongName, headwayByPeriod: snapshot.headwayByPeriod, processedAt: new Date().toISOString() }),
       })));
       reports.push({ year: feed.year, url: feed.url, feedEndDate: info.feedExpiry, feedVersion: info.feedVersion, features: result.featureCount, routeFeatures, quality: result.feedQuality.status, qualityScore: result.feedQuality.score, qualityReasons: result.feedQuality.reasons, snapshots: snapshots.length });
       console.log(`  Processed ${result.featureCount} features (${routeFeatures} route features, ${result.feedQuality.status}); ${snapshots.length} route changes.`);
