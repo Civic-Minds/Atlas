@@ -300,6 +300,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     hideSpan: boolean;
     livePollingOnly: boolean;
   } | null>(null);
+  const previousAgencyFilter = useRef<{ catalogSize: number; selection: string } | null>(null);
   useEffect(() => {
     const next = {
       maxHeadway,
@@ -323,7 +324,19 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     for (const [filterName, filterValue] of changes) {
       trackEvent('filter_changed', { app: analyticsApp, filter_name: filterName, filter_value: filterValue });
     }
-  }, [analyticsApp, day, hideSpan, livePollingOnly, maxHeadway, period, selectedModes]);
+
+    const agencySelection = [...selectedAgencies].sort().join(',');
+    const previousAgency = previousAgencyFilter.current;
+    previousAgencyFilter.current = { catalogSize: agencies.length, selection: agencySelection };
+    if (previousAgency && previousAgency.catalogSize === agencies.length && previousAgency.selection !== agencySelection) {
+      const filterValue = selectedAgencies.size === 0
+        ? 'none'
+        : selectedAgencies.size === agencies.length
+          ? 'all'
+          : 'custom';
+      trackEvent('filter_changed', { app: analyticsApp, filter_name: 'agencies', filter_value: filterValue });
+    }
+  }, [agencies.length, analyticsApp, day, hideSpan, livePollingOnly, maxHeadway, period, selectedAgencies, selectedModes]);
 
   const selectionUiVisible = showSelectionUi && (!!selectedRoute || !!selectedStop || !!disambiguationRoutes?.length || !!selectedAgencySlug);
   const showSidebar = showUi || fareView || selectionUiVisible;

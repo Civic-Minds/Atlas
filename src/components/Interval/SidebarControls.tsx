@@ -879,6 +879,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         result_count: displayAgencyGroups.length + displayRouteResults.length + stopSearchDisplay.totalMatches,
       });
       if (action.type === 'agency' && setSelectedAgencySlug) {
+        trackEvent('agency_selected', { app: analyticsApp, agency_slug: action.slug, surface: 'global_search' });
         setSelectedAgencySlug(action.slug);
         setQuery('');
         setSearchFocused?.(false);
