@@ -80,6 +80,7 @@ interface Props {
   sidebarLeft?: number;
   searchBarWidth?: number;
   searchEnterRef?: React.MutableRefObject<(() => void) | null>;
+  analyticsApp?: string;
   hideLowQuality: boolean;
   setHideLowQuality: (v: boolean | ((prev: boolean) => boolean)) => void;
   feedQualityEnabled?: boolean;
@@ -100,7 +101,7 @@ function readSavedAgenciesOff(): Set<string> {
   }
 }
 
-export default function Interval({ agencies, allAgencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, filterToAgencies = false, onHistoryRouteClick, onDirectFromStop, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, pendingNightRoute, onPendingNightRouteHandled, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, onSelectedMapAgencyChange, onSelectionActiveChange, headerPortalContainer, fareView = false, nightServiceView = false, frequentServiceView = false, frequentServiceDays = ['Weekday'], frequentServiceFrequency = 15, frequentServiceWindow = 'daytime', setFrequentServiceDays, setFrequentServiceFrequency, setFrequentServiceWindow, showMapContext = false, showMatchPercentage = false, sidebarLeft, searchBarWidth, searchEnterRef, hideLowQuality, setHideLowQuality, feedQualityEnabled = false, showMapLegend, setShowMapLegend, dataSaver, setDataSaver, exportEnabled = false, exportTitle = 'Transit map' }: Props) {
+export default function Interval({ agencies, allAgencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, filterToAgencies = false, onHistoryRouteClick, onDirectFromStop, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, pendingNightRoute, onPendingNightRouteHandled, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, onSelectedMapAgencyChange, onSelectionActiveChange, headerPortalContainer, fareView = false, nightServiceView = false, frequentServiceView = false, frequentServiceDays = ['Weekday'], frequentServiceFrequency = 15, frequentServiceWindow = 'daytime', setFrequentServiceDays, setFrequentServiceFrequency, setFrequentServiceWindow, showMapContext = false, showMatchPercentage = false, sidebarLeft, searchBarWidth, searchEnterRef, analyticsApp = 'frequency', hideLowQuality, setHideLowQuality, feedQualityEnabled = false, showMapLegend, setShowMapLegend, dataSaver, setDataSaver, exportEnabled = false, exportTitle = 'Transit map' }: Props) {
   const [searchParams] = useSearchParams();
   const [mapContextOpen, setMapContextOpen] = useState(false);
   const [mapContextView, setMapContextView] = useState<'agencies' | 'routes'>('routes');
@@ -134,17 +135,18 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   useEffect(() => {
     if (!selectedRoute) return;
     const { agencySlug, routeId, routeBranch } = splitRouteKey(selectedRoute);
-    trackEvent('route_selected', { agency_slug: agencySlug, route_id: routeId, route_branch: routeBranch });
-  }, [selectedRoute]);
+    trackEvent('route_selected', { app: analyticsApp, agency_slug: agencySlug, route_id: routeId, route_branch: routeBranch });
+  }, [analyticsApp, selectedRoute]);
 
   useEffect(() => {
     if (!selectedStop) return;
     const separator = selectedStop.indexOf('::');
     trackEvent('stop_selected', {
+      app: analyticsApp,
       agency_slug: separator >= 0 ? selectedStop.slice(0, separator) : selectedStop,
       stop_id: separator >= 0 ? selectedStop.slice(separator + 2) : selectedStop,
     });
-  }, [selectedStop]);
+  }, [analyticsApp, selectedStop]);
   // Debug-only: draw extra routes on the map in distinct colors, independent of the normal
   // single-route selection/sidebar/fit-bounds flow. ?highlight=agency::routeId,agency::routeId2 --
   // same key format as ?route=. Not surfaced in any UI; for investigating cases like #294 where
@@ -289,6 +291,39 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     }
   });
   const [livePollingOnly, setLivePollingOnly] = useState(false);
+
+  const previousAnalyticsFilters = useRef<{
+    maxHeadway: number;
+    day: DayType;
+    period: TimePeriod;
+    modes: string;
+    hideSpan: boolean;
+    livePollingOnly: boolean;
+  } | null>(null);
+  useEffect(() => {
+    const next = {
+      maxHeadway,
+      day,
+      period,
+      modes: [...selectedModes].sort((a, b) => a - b).join(','),
+      hideSpan,
+      livePollingOnly,
+    };
+    const previous = previousAnalyticsFilters.current;
+    previousAnalyticsFilters.current = next;
+    if (!previous) return;
+
+    const changes: Array<[string, string]> = [];
+    if (previous.maxHeadway !== next.maxHeadway) changes.push(['frequency', String(next.maxHeadway === Infinity ? 'all' : next.maxHeadway)]);
+    if (previous.day !== next.day) changes.push(['day', next.day]);
+    if (previous.period !== next.period) changes.push(['period', next.period]);
+    if (previous.modes !== next.modes) changes.push(['mode', next.modes || 'all']);
+    if (previous.hideSpan !== next.hideSpan) changes.push(['irregular_routes', String(next.hideSpan)]);
+    if (previous.livePollingOnly !== next.livePollingOnly) changes.push(['live_only', String(next.livePollingOnly)]);
+    for (const [filterName, filterValue] of changes) {
+      trackEvent('filter_changed', { app: analyticsApp, filter_name: filterName, filter_value: filterValue });
+    }
+  }, [analyticsApp, day, hideSpan, livePollingOnly, maxHeadway, period, selectedModes]);
 
   const selectionUiVisible = showSelectionUi && (!!selectedRoute || !!selectedStop || !!disambiguationRoutes?.length || !!selectedAgencySlug);
   const showSidebar = showUi || fareView || selectionUiVisible;
@@ -857,6 +892,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
         fareOverrides={fareOverrides}
         sidebarLeft={sidebarLeft}
         searchBarWidth={searchBarWidth}
+        analyticsApp={analyticsApp}
         bounds={bounds}
         hoveredBranch={hoveredBranch}
         setHoveredBranch={setHoveredBranch}

@@ -249,10 +249,10 @@ export default function App() {
   }, [appLinksOpen]);
   const [sidebarLeft, setSidebarLeft] = useState<number>(SIDEBAR_LEFT_FALLBACK);
   const handleAgencySelect = useCallback((slug: string) => {
-    trackEvent('agency_selected', { agency_slug: slug });
+    trackEvent('agency_selected', { app: activeApp, agency_slug: slug });
     setSelectedAgencySlug(slug);
     closeInfo();
-  }, [closeInfo]);
+  }, [activeApp, closeInfo]);
   const handleLiveRouteClick = useCallback((slug: string, routeShortName: string) => { setPendingLiveRoute({ slug, routeShortName }); closeInfo(); }, [closeInfo]);
   const handleNightRouteClick = useCallback((slug: string, routeId: string) => { setPendingNightRoute({ slug, routeId }); closeInfo(); }, [closeInfo]);
   const handleHistoryRouteClick = useCallback((slug: string, routeShortName: string) => { setPendingHistoryRoute({ slug, routeShortName }); }, []);
@@ -759,6 +759,7 @@ export default function App() {
               sidebarLeft={sidebarLeft}
               searchBarWidth={searchBarWidth}
               searchEnterRef={searchEnterRef}
+              analyticsApp={activeApp}
               hideLowQuality={hideLowQuality}
               setHideLowQuality={setHideLowQuality}
               feedQualityEnabled={FEATURES.beta}

@@ -41,6 +41,7 @@ import { buildRouteFacts, buildRouteServiceSummary, buildRouteStopMetric, metric
 import { collectStopHubSiblings, getDistanceMeters } from '../../utils/stopHub';
 import { splitRouteKey } from '../../utils/routeKey';
 import { isFeedExpired } from '../../utils/feedFreshness';
+import { trackEvent } from '../../lib/analytics';
 
 interface SidebarControlsProps {
   query: string;
@@ -85,6 +86,7 @@ interface SidebarControlsProps {
   onDirectFromStop?: (stop: StopEntry) => void;
   onInfoOpen?: OpenInfoFn;
   searchEnterRef?: React.MutableRefObject<(() => void) | null>;
+  analyticsApp?: string;
   onSearchRouteHover?: (key: string | null) => void;
 }
 
@@ -132,6 +134,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   onInfoOpen,
   searchEnterRef,
   onSearchRouteHover,
+  analyticsApp = 'frequency',
 }) => {
   const { colorVisionFriendly } = useColorVision();
   const colorMode = colorVisionFriendly ? 'friendly' : 'default';
@@ -869,6 +872,12 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     searchEnterRef.current = () => {
       const action = resolveSearchEnterAction(displayAgencyGroups, displayRouteResults, stopSearchDisplay.stops);
       if (!action) return;
+      trackEvent('search_submitted', {
+        app: analyticsApp,
+        surface: 'global_search',
+        result_type: action.type,
+        result_count: displayAgencyGroups.length + displayRouteResults.length + stopSearchDisplay.totalMatches,
+      });
       if (action.type === 'agency' && setSelectedAgencySlug) {
         setSelectedAgencySlug(action.slug);
         setQuery('');

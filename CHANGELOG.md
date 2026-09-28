@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+-Atlas usage analytics now records high-signal search and filter behavior without collecting typed search text.
 - Beta now separates hiding irregular routes from hiding explicitly time-limited service, so regular infrequent routes are not hidden by the new filter.
 - Limited-service filtering now hides the whole route when only one direction has limited service, instead of leaving the other direction behind.
 - Period views now show routes with limited or one-direction service when irregular routes are not hidden.
