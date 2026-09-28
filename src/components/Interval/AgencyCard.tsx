@@ -133,7 +133,7 @@ export function buildHeaderSummary(
   const matching = routes.filter(r => r.matchesFilter).length;
   const parts = [`${routes.length} route${routes.length !== 1 ? 's' : ''}`];
   const freqLabel = frequencyFilterLabel(maxHeadway);
-  if (freqLabel) parts.push(`${matching} match your filters`);
+  if (freqLabel) parts.push(`${matching} match filters`);
   return parts.join(' · ');
 }
 
