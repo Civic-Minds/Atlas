@@ -9,7 +9,7 @@ This is for implementation and QA work. Product ideas that are not committed roa
 | Experiment | Status | Next gate |
 |---|---|---|
 | [Offline stop-hub clustering](docs/experiments/stop-hub-clustering.md) | Local verification passed; map QA pending | Rebuild the stop PMTiles preview and verify the map/search result grouping |
-| [Fixed-period edge-transition gap](docs/experiments/fixed-period-edge-transition-gap.md) | Seven-agency validation passed; branch-only diagnostic | Decide whether the diagnostic should inform qualification, then add product/UI treatment if approved |
+| [Fixed-period edge-transition gap](docs/experiments/fixed-period-edge-transition-gap.md) | Seven-agency validation passed; 10% sample found 6/11 clearly applicable | Audit terminal/branch source selection for the five unconfirmed cases before deciding on qualification |
 
 ## Completed or archived
 

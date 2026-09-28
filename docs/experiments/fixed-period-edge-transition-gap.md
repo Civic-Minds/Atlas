@@ -51,10 +51,30 @@ npm run experiment:edge-transition:diff -- --baseline=tmp/edge-transition-baseli
 
 The 110 changes are therefore isolated to the intended additive diagnostic. No unexplained baseline output change was found. Omaha contributed three transitions; the motivating feed does not show a broad change to existing route classification.
 
+## Ten-percent applicability audit
+
+I audited 11 of the 110 transitions using the current GTFS departure groups, one deterministic sample every tenth sorted transition. Six reproduced as the intended pattern: one oversized first or last internal gap followed or preceded by a stable cadence. Five did not reproduce cleanly at the route/direction/day/headsign level:
+
+| Sample | Result | Finding |
+|---|---|---|
+| Bordeaux 7, Sunday evening | Not confirmed | Raw gaps include two oversized internal gaps, 55 and 65 minutes against a 30-minute median. |
+| Madison 80, weekday PM peak | Confirmed | One leading 51-minute gap, then 16/15/15-minute service. |
+| MiWay 26, weekday AM peak | Not confirmed | Raw group is already strictly sustained at 14–15 minutes; likely terminal/branch-source difference. |
+| NFTA 11, weekday midday | Not confirmed | Raw gaps include a 150-minute internal gap against a 60-minute median. |
+| Omaha 55, weekday PM peak | Confirmed | One trailing 60-minute gap, then four 30-minute gaps. |
+| TTC 114, Saturday late | Confirmed | One trailing 30-minute gap, then eight 15-minute gaps. |
+| TTC 301, Saturday overnight | Confirmed | One leading 158-minute gap, then 14–15-minute service. |
+| TTC 44, Saturday AM peak | Confirmed | One leading 27-minute gap, then 10-minute service. |
+| TTC 52, weekday PM peak | Confirmed | One trailing 33-minute gap, then 17–18-minute service. |
+| Rennes 50, weekday PM peak | Not confirmed | No matching raw route/direction/day group in the separately fetched current feed. |
+| Rennes 62, weekday evening | Not confirmed | No matching raw route/direction/day group in the separately fetched current feed. |
+
+The five unconfirmed cases are important: the final Atlas feature can select terminal or branch-scoped departure data, while this first audit compared route-level GTFS groups. The two Rennes misses may also reflect the live feed changing between reprocessing and audit. The experiment should remain diagnostic until those source-selection cases are audited against the exact reprocessed feed snapshot.
+
 ## Automated coverage
 
 The unit suite includes the transition-gap edge cases and a legitimate fixed-period case. The full suite and typecheck are launch gates for this branch. The experiment remains branch-only until a product decision is made about whether this diagnostic should affect qualification.
 
 ## Decision
 
-The implementation is safe to evaluate further: it is additive, deterministic, and produces no existing-output changes across the seven-agency validation set. This experiment does not by itself authorize changing Atlas's frequency qualification rules.
+The implementation is safe to evaluate further: it is additive, deterministic, and produces no existing-output changes across the seven-agency validation set. The 10% sample is not sufficient to authorize changing Atlas's frequency qualification rules; the five unconfirmed cases need exact terminal/branch-source follow-up first.
