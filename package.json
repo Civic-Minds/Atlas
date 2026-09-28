@@ -48,6 +48,7 @@
     "audit:route-accuracy": "npx tsx scripts/route-accuracy-spot-check.ts",
     "audit:reprocess": "npx tsx scripts/reprocess-route-audit.ts",
     "experiment:edge-transition:omaha": "npx tsx scripts/compare-edge-transition-omaha.ts",
+    "experiment:edge-transition:diff": "npx tsx scripts/diff-edge-transition-reprocess.ts",
     "audit-feed-freshness": "npx tsx scripts/audit-feed-freshness.ts",
     "audit-expired-sources": "npx tsx scripts/audit-expired-sources.ts",
     "validate:frequent-service-catalog": "node scripts/validate-frequent-service-catalog.mjs",

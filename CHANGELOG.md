@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Added branch-only fixed-period edge-transition diagnostics so schedule tolerance can be evaluated without changing production qualification.
 - Map export dialogs now use one primary action, remove the redundant title field and cancel button, and show the correct preparation state for download versus sharing.
 - Route cards now distinguish limited or irregular service from no service when coverage data shows departures.
 - Zoom guidance now uses the same compact pill treatment as other map notices.

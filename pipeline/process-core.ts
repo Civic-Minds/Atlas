@@ -17,7 +17,7 @@ import { TIME_PERIODS, SPARKLINE_HOURS, type PeriodKey, type HeadwayByPeriod, ty
 import { DAY_TYPES, type DayType } from '../types/gtfs.js';
 import { ALL_DAYS } from '../shared/dayTypes.js';
 import { t2m } from './transit-utils.js';
-import { adaptiveMedianHeadwayInWindow, computePeriodHeadways, computePeriodHeadwayRanges, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, hasGenuineBranchPattern, hasSustainedFrequentService, hasSustainedNightService, headsignOverlapMinHeadway, headwayToTier, medianHeadwayInWindow, nightServiceDepartureTimes, NIGHT_SERVICE_WINDOW_END_MIN, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
+import { adaptiveMedianHeadwayInWindow, computePeriodHeadways, computePeriodHeadwayRanges, computePeriodMaxGaps, computePeriodSustained, computePeriodSustainedWithEdgeTransitionGap, computeResearchFrequentService, forCrossMidnightWindow, hasGenuineBranchPattern, hasSustainedFrequentService, hasSustainedNightService, headsignOverlapMinHeadway, headwayToTier, medianHeadwayInWindow, nightServiceDepartureTimes, NIGHT_SERVICE_WINDOW_END_MIN, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
 import { computeRouteBaseFares, detectBusSubType } from './route-metadata.js';
 import { buildStopsMeta } from './stopsMeta.js';
 import { clipLineBetweenPositions, clipLineBetweenStops, projectStopsOntoShape, simplifyLine } from './geometry.js';
@@ -379,6 +379,7 @@ export async function processGtfsBuffer(
         headwayRangeByPeriod: computePeriodHeadwayRanges(result.times),
         maxGapByPeriod: computePeriodMaxGaps(result.times),
         headwayByPeriodSustained: computePeriodSustained(result.times),
+        headwayByPeriodSustainedEdgeTransition: computePeriodSustainedWithEdgeTransitionGap(result.times),
         headwayByHour: (() => {
           const byHour: HeadwayByHour = {};
           for (const h of SPARKLINE_HOURS) {
@@ -668,6 +669,7 @@ export async function processGtfsBuffer(
     const allStopPeriodCoverageHw: Record<string, HeadwayByPeriod> = {};
     const allStopPeriodMaxGaps: Record<string, HeadwayByPeriodMaxGap> = {};
     const allStopPeriodSustained: Record<string, HeadwayByPeriodSustained> = {};
+    const allStopPeriodSustainedEdgeTransition: Record<string, HeadwayByPeriodSustained> = {};
     const allStopHourHw: Record<string, HeadwayByHour> = {};
     for (const [stopId, times] of metricStopMap) {
       times.sort((a, b) => a - b);
@@ -700,6 +702,7 @@ export async function processGtfsBuffer(
       if (Object.keys(byPeriod).length > 0) {
         allStopPeriodHw[stopId] = byPeriod;
         allStopPeriodSustained[stopId] = computePeriodSustained(times);
+        allStopPeriodSustainedEdgeTransition[stopId] = computePeriodSustainedWithEdgeTransitionGap(times);
       }
       // Hourly: widen past a strict hour only when it doesn't already have >=3 departures on its
       // own, up to a 90-min window [h*60, h*60+90] so 30-min routes still show up (issue #282).
@@ -848,7 +851,11 @@ export async function processGtfsBuffer(
     const headsignTerminalPeriodSustained = terminalScopedTimes && terminalScopedTimes.length > 0
       ? computePeriodSustained(terminalScopedTimes)
       : undefined;
+    const headsignTerminalPeriodSustainedEdgeTransition = terminalScopedTimes && terminalScopedTimes.length > 0
+      ? computePeriodSustainedWithEdgeTransitionGap(terminalScopedTimes)
+      : undefined;
     const terminalPeriodSustained = terminalStopId ? allStopPeriodSustained[terminalStopId] : undefined;
+    const terminalPeriodSustainedEdgeTransition = terminalStopId ? allStopPeriodSustainedEdgeTransition[terminalStopId] : undefined;
     const terminalPeriodMaxGaps = terminalStopId ? allStopPeriodMaxGaps[terminalStopId] : undefined;
     const terminalPeriodIsBranchScoped = !!headsignTerminalPeriodHw;
     // Select the time array before looking up a period: a scoped null is real no-service,
@@ -861,10 +868,12 @@ export async function processGtfsBuffer(
     const periodMedians: HeadwayByPeriod = {};
     const periodMaxGaps: HeadwayByPeriodMaxGap = {};
     const periodSustained: HeadwayByPeriodSustained = {};
+    const periodSustainedEdgeTransition: HeadwayByPeriodSustained = {};
     const periodMins: Partial<Record<PeriodKey, number>> = {};
     const branchPeriodHw = feature.properties.headwayByPeriod as HeadwayByPeriod | undefined;
     const branchPeriodMaxGaps = feature.properties.maxGapByPeriod as HeadwayByPeriodMaxGap | undefined;
     const branchPeriodSustained = feature.properties.headwayByPeriodSustained as HeadwayByPeriodSustained | undefined;
+    const branchPeriodSustainedEdgeTransition = feature.properties.headwayByPeriodSustainedEdgeTransition as HeadwayByPeriodSustained | undefined;
     for (const pk of Object.keys(PERIODS) as PeriodKey[]) {
       const termH = headsignTerminalPeriodHw?.[pk] ?? terminalPeriodHw?.[pk] ?? null;
       const bH = branchPeriodHw?.[pk] ?? null;
@@ -884,6 +893,11 @@ export async function processGtfsBuffer(
         const termS = headsignTerminalPeriodSustained?.[pk] ?? terminalPeriodSustained?.[pk];
         const branchS = branchPeriodSustained?.[pk];
         periodSustained[pk] = finalH === termH ? termS : (finalH === bH ? branchS : undefined);
+        const termSEdgeTransition = headsignTerminalPeriodSustainedEdgeTransition?.[pk] ?? terminalPeriodSustainedEdgeTransition?.[pk];
+        const branchSEdgeTransition = branchPeriodSustainedEdgeTransition?.[pk];
+        periodSustainedEdgeTransition[pk] = finalH === termH
+          ? termSEdgeTransition
+          : (finalH === bH ? branchSEdgeTransition : undefined);
       }
       const allVals = onShape
         .map(({ stopId }) => allStopPeriodHw[stopId]?.[pk])
@@ -894,6 +908,7 @@ export async function processGtfsBuffer(
     feature.properties.periodCoverageHeadway = periodCoverage;
     feature.properties.maxGapByPeriod = periodMaxGaps;
     feature.properties.headwayByPeriodSustained = periodSustained;
+    feature.properties.headwayByPeriodSustainedEdgeTransition = periodSustainedEdgeTransition;
     feature.properties.minStopHeadwayByPeriod = periodMins;
 
     // Headsign-scoped trunk minimums for route-card range display. minStopHeadwayByPeriod
