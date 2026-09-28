@@ -34,7 +34,7 @@ describe('agency card filters', () => {
   });
 
   it('summarizes matching routes for active frequency filter', () => {
-    expect(buildHeaderSummary(routes, 60)).toBe('4 routes · 3 match the 60-min limit');
+    expect(buildHeaderSummary(routes, 60)).toBe('4 routes · 3 match current filters');
     expect(buildHeaderSummary(routes, Infinity)).toBe('4 routes');
   });
 
