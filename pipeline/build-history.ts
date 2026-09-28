@@ -258,9 +258,13 @@ async function main() {
       });
       continue;
     }
-    // history/{slug}/{routeShortName}/{periodKey}.json → parts.length === 4
-    if (parts.length !== 4) continue;
-    const [, slug, routeShortName, filename] = parts;
+    // history/{slug}/{routeShortName}/{periodKey}.json. Route short names can
+    // contain '/', so rejoin the middle path segments instead of requiring
+    // exactly four segments.
+    if (parts.length < 4) continue;
+    const slug = parts[1];
+    const filename = parts[parts.length - 1];
+    const routeShortName = parts.slice(2, -1).join('/');
     if (!filename.endsWith('.json')) continue;
     const periodKey = filename.replace('.json', '');
 
