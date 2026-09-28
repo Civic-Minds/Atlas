@@ -97,7 +97,12 @@ async function peekFeedInfo(buf: Buffer): Promise<{ feedExpiry: string | null; f
   }
 }
 
-async function writeSnapshot(slug: string, geojson: string, periodKey: string) {
+interface SnapshotWriteOptions {
+  dryRun?: boolean;
+  previous?: Record<string, { headway: number }>;
+}
+
+async function writeSnapshot(slug: string, geojson: string, periodKey: string, options: SnapshotWriteOptions = {}) {
   const fc = JSON.parse(geojson) as { features: Array<{ properties: Record<string, unknown> }> };
   const current: Record<string, { headway: number; tier: string | null; routeLongName?: string; headwayByPeriod?: HeadwayByPeriod }> = {};
 
@@ -116,11 +121,13 @@ async function writeSnapshot(slug: string, geojson: string, periodKey: string) {
   }
 
   const latestKey = `history/${slug}/latest.json`;
-  let prev: Record<string, { headway: number }> = {};
-  try {
-    const raw = await r2GetArchive(latestKey);
-    if (raw) prev = JSON.parse(raw).routes ?? {};
-  } catch { /* first run */ }
+  let prev: Record<string, { headway: number }> = options.previous ?? {};
+  if (!options.dryRun) {
+    try {
+      const raw = await r2GetArchive(latestKey);
+      if (raw) prev = JSON.parse(raw).routes ?? {};
+    } catch { /* first run */ }
+  }
 
   const processedAt = new Date().toISOString();
   const writes: Array<() => Promise<void>> = [];
@@ -140,30 +147,39 @@ async function writeSnapshot(slug: string, geojson: string, periodKey: string) {
     writes.push(() => r2PutArchiveJson(key, body));
   }
 
-  const CHUNK = 20;
-  for (let i = 0; i < writes.length; i += CHUNK) {
-    await Promise.all(writes.slice(i, i + CHUNK).map(fn => fn()));
+  if (!options.dryRun) {
+    const CHUNK = 20;
+    for (let i = 0; i < writes.length; i += CHUNK) {
+      await Promise.all(writes.slice(i, i + CHUNK).map(fn => fn()));
+    }
+
+    await r2PutArchiveJson(latestKey, JSON.stringify({
+      processedAt,
+      routes: Object.fromEntries(Object.entries(current).map(([sn, r]) => [sn, { headway: r.headway }])),
+    }));
   }
 
-  await r2PutArchiveJson(latestKey, JSON.stringify({
-    processedAt,
-    routes: Object.fromEntries(Object.entries(current).map(([sn, r]) => [sn, { headway: r.headway }])),
-  }));
-
-  return { changed, total: Object.keys(current).length };
+  return {
+    changed,
+    total: Object.keys(current).length,
+    latest: Object.fromEntries(Object.entries(current).map(([sn, r]) => [sn, { headway: r.headway }])),
+  };
 }
 
 async function main() {
   const [slug, feedId, startYearArg] = process.argv.slice(2);
+  const dryRun = process.argv.includes('--dry-run');
   if (!slug || !feedId) {
-    console.error('Usage: npx tsx pipeline/backfill-mdb-history.ts <slug> <mdb-source-id> [start-year]');
+    console.error('Usage: npx tsx pipeline/backfill-mdb-history.ts <slug> <mdb-source-id> [start-year] [--dry-run]');
     console.error('Example: npx tsx pipeline/backfill-mdb-history.ts burlington mdb-724 2016');
     process.exit(1);
   }
-  if (!process.env.R2_ACCESS_KEY_ID) {
+  if (!dryRun && !process.env.R2_ACCESS_KEY_ID) {
     console.error('Missing R2 credentials in .env.local');
     process.exit(1);
   }
+
+  if (dryRun) console.log('Dry run: processing locally without writing archives or snapshots to R2.');
 
   const startYear = startYearArg ? parseInt(startYearArg) : new Date().getFullYear() - 10;
 
@@ -179,6 +195,7 @@ async function main() {
   picks.forEach(d => console.log(`    ${d.downloaded_at.slice(0, 10)} → ${d.hosted_url.split('/').pop()}`));
 
   const skipped: string[] = [];
+  let dryRunPrevious: Record<string, { headway: number }> = {};
   for (const dataset of picks) {
     const dateStr = dataset.downloaded_at.slice(0, 10);
     console.log(`\nDownloading ${dateStr}...`);
@@ -196,14 +213,20 @@ async function main() {
       console.log(`  Processed ${result.featureCount} features`);
 
       const archiveKey = feedExpiry ?? feedVersion;
-      if (archiveKey) {
+      if (archiveKey && !dryRun) {
         await r2PutArchive(`gtfs/archive/${slug}/${archiveKey}.zip`, buf, 'application/zip');
         console.log(`  Archived → gtfs/archive/${slug}/${archiveKey}.zip`);
+      } else if (archiveKey && dryRun) {
+        console.log(`  [dry-run] Would archive → gtfs/archive/${slug}/${archiveKey}.zip`);
       } else {
         console.log(`  [warn] No feed_end_date — zip not archived`);
       }
 
-      const { changed, total } = await writeSnapshot(slug, result.geojson, periodKey);
+      const { changed, total, latest } = await writeSnapshot(slug, result.geojson, periodKey, {
+        dryRun,
+        previous: dryRunPrevious,
+      });
+      if (dryRun) dryRunPrevious = latest;
       console.log(`  History: ${changed.length}/${total} routes changed (${changed.slice(0, 6).join(', ')}${changed.length > 6 ? '…' : ''})`);
     } catch (err) {
       console.log(`  [skip] ${dateStr} failed: ${err instanceof Error ? err.message : err}`);

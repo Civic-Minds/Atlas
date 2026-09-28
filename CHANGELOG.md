@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- History backfills can now be dry-run locally without publishing archives or snapshots to R2.
 - Period-filtered route cards now show the active period's cadence instead of falling back to an all-day frequency when service is uneven ([#524](https://github.com/Civic-Minds/Atlas/issues/524)).
 - Williamsburg Area Transit Authority paratransit now appears as a source-backed on-demand zone with feed-derived service hours.
 - On-demand zone cards now use source-derived service hours, identify the selected zone, and avoid presenting a separate official-source footer.
