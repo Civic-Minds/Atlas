@@ -1,0 +1,10 @@
+{
+  "slug": "bc-ferries",
+  "name": "BC Ferries",
+  "websiteUrl": "https://www.bcferries.com/",
+  "region": "British Columbia",
+  "center": [51.437497, -127.569881],
+  "bbox": [48.57721, -132.010339, 54.297785, -123.129422],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-690/latest.zip",
+  "timezone": "America/Los_Angeles"
+}

@@ -4600,6 +4600,42 @@
       }
     },
     {
+      "slug": "bc-ferries",
+      "name": "BC Ferries",
+      "websiteUrl": "https://www.bcferries.com/",
+      "region": "British Columbia",
+      "center": [
+        51.437497,
+        -127.569881
+      ],
+      "bbox": [
+        48.57721,
+        -132.010339,
+        54.297785,
+        -123.129422
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-690/latest.zip",
+      "timezone": "America/Los_Angeles"
+    },
+    {
+      "slug": "pierce-county-ferries",
+      "name": "Pierce County Ferries",
+      "websiteUrl": "https://www.piercecountywa.gov/ferry",
+      "region": "Washington",
+      "center": [
+        47.170399,
+        -122.640309
+      ],
+      "bbox": [
+        47.162254,
+        -122.677279,
+        47.178544,
+        -122.60334
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/tld-2289/latest.zip",
+      "timezone": "America/Los_Angeles"
+    },
+    {
       "slug": "sherbrooke",
       "name": "Société de transport de Sherbrooke",
       "websiteUrl": "http://www.sts.qc.ca/",

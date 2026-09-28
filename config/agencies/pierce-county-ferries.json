@@ -1,0 +1,10 @@
+{
+  "slug": "pierce-county-ferries",
+  "name": "Pierce County Ferries",
+  "websiteUrl": "https://www.piercecountywa.gov/ferry",
+  "region": "Washington",
+  "center": [47.170399, -122.640309],
+  "bbox": [47.162254, -122.677279, 47.178544, -122.60334],
+  "feedUrl": "https://files.mobilitydatabase.org/tld-2289/latest.zip",
+  "timezone": "America/Los_Angeles"
+}
