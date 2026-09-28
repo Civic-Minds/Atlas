@@ -7,9 +7,9 @@ date. This audit downloaded and checked candidate feeds without changing feed
 configuration, writing refreshed data, or starting a pipeline action.
 
 - 47 pass Atlas's local processing check, including hidden production record `nice-fr`
-- 22 remain genuinely expired with no verified current replacement
-- 4 now have verified replacement feeds: `fred-transit`, `grt`, `path`, and
-  `whatcomtransit`
+- 18 remain genuinely expired with no verified current replacement
+- 8 now have verified replacement feeds: `fast-ca`, `fred-transit`, `grt`,
+  `path`, `riovista`, `unioncity`, `vacaville`, and `whatcomtransit`
 - 4 need manual source review: `augusta`, `lavta`, `sfmta`, and `westberkeley`
 - 1 newer source is not publishable: `snowmass-village` has stops but no routes,
   trips, stop times, or calendar service
@@ -53,7 +53,7 @@ download automatically.
 | SFMTA / Muni | The official ZIP downloads, but its service calendar ends 2026-08-28 and no later feed was verified | Confirm the next Muni GTFS release and refresh the catalog URL |
 | West Berkeley Shuttle | Cal-ITP URL does not return a usable ZIP and the catalog copy is expired | Confirm whether the shuttle still operates and locate its current feed |
 
-The 22 agencies below remain candidates for source recovery. The read-only audit
+The 18 agencies below remain candidates for source recovery. The read-only audit
 and follow-up research found no current usable replacement among their configured,
 official, or automatically derived candidates. Start with agencies whose snapshots
 ended in 2026; do not replace any of these with an older archived ZIP.
@@ -67,25 +67,21 @@ ended in 2026; do not replace any of these with an older archived ZIP.
 | `cheyenne` | 20250914 |
 | `ecat` | 20221101 |
 | `evansville` | 20250115 |
-| `fast-ca` | 20260630 |
 | `glendalebeeline` | 20220831 |
 | `green-bay` | 20201231 |
 | `hocts` | 20211231 |
 | `mcts` | 20250823 |
 | `moose-jaw` | 20240331 |
 | `qline` | 20251231 |
-| `riovista` | 20250131 |
 | `rockregion` | 20251019 |
 | `saint-hyacinthe` | 20241231 |
 | `taft` | 20220101 |
-| `unioncity` | 20230927 |
-| `vacaville` | 20260630 |
 | `wichita` | 20260814 |
 | `xpress-ga` | 20250705 |
 
 ## Follow-up source findings — 2026-09-26
 
-Four current sources were found and passed Atlas's local processing check. These
+Eight current sources were found and passed Atlas's local processing check. These
 are documented for a later, separately authorized refresh; this audit did not
 change agency configuration or write refreshed artifacts.
 
@@ -94,6 +90,10 @@ change agency configuration or write refreshed artifacts.
 | `fred-transit` | `https://www.fredericksburgva.gov/DocumentCenter/View/31122/FXBGO-GTFS---CY2026` | Official CY2026 feed; processed successfully. The feed has no `feed_info.txt` expiry, so the official publication date is the active-date evidence. |
 | `grt` | `https://webapps.regionofwaterloo.ca/api/grt-routes/api/staticfeeds/0` | Official GRT endpoint; processed successfully. The feed has no `feed_info.txt` expiry, so the official open-data page is the active-source evidence. |
 | `path` | `https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/14843/PATHGTFS.zip` | Current PATH feed; processed successfully through 2026-11-14. It was directly downloadable without a token from this environment. |
+| `fast-ca` | `https://api.511.org/transit/datafeeds?operator_id=FS&api_key=<MUNI_511_API_KEY>` | Current 511.org feed; processed successfully through 2027-06-30. Atlas's existing 511 key provided access. Quality review: 90/100. |
+| `riovista` | `https://api.511.org/transit/datafeeds?operator_id=RV&api_key=<MUNI_511_API_KEY>` | Current 511.org feed; processed successfully through 2027-12-31. Atlas's existing 511 key provided access. Quality review: 90/100. |
+| `unioncity` | `https://api.511.org/transit/datafeeds?operator_id=UC&api_key=<MUNI_511_API_KEY>` | Current 511.org feed; processed successfully through 2027-08-16. Atlas's existing 511 key provided access. Quality healthy: 100/100. |
+| `vacaville` | `https://api.511.org/transit/datafeeds?operator_id=VC&api_key=<MUNI_511_API_KEY>` | Current 511.org feed; processed successfully through 2026-12-31. Atlas's existing 511 key provided access. Quality healthy: 100/100. |
 | `whatcomtransit` | `https://github.com/whatcomtrans/publicwtadata/raw/master/GTFS/wta_gtfs_latest.zip` | Current public agency repository feed; processed successfully through 2027-02-06. |
 
 Other candidate URLs checked during this pass were not publishable replacements:
@@ -106,8 +106,8 @@ Other candidate URLs checked during this pass were not publishable replacements:
   latest available version ends 2026-07-08, so it is already expired.
 - `taft`: the Cal-ITP URL returns an HTML page rather than a ZIP, and the
   available catalog copy is old.
-- `amarillo`, `fast-ca`, and `riovista`: current regional feeds exist, but
-  require an API token and were not directly downloadable here.
+- `amarillo`: a current regional feed exists, but it still requires a separate
+  token and was not directly downloadable here.
 
 ## Research findings for unresolved agencies
 
@@ -132,7 +132,7 @@ agency identity and service dates extending beyond the audit date.
 | `green-bay` | The catalog points to the official Green Bay document, but its download returns HTTP 403 here and the older alternate host is unavailable; no current ZIP was verified. |
 | `evansville` | The official METS URL has a 2026-06-02–2026-12-31 feed, but its download returns HTTP 403 here; do not configure the unverified archive copy. |
 | `glendalebeeline` | Transitland reports the official Glendale URL has a matching 2026-08-30–2027-10-01 version, but the official download returns HTTP 403 here; do not configure the unverified mirror. |
-| `fast-ca`, `riovista`, `unioncity`, `vacaville` | The current regional feed is behind an API key, so no public static ZIP was verified. |
+| `fast-ca`, `riovista`, `unioncity`, `vacaville` | Resolved on 2026-09-28 using Atlas's existing 511.org key; see the verified replacements above. |
 | `hocts` | The configured feed remains expired and malformed; no newer matching HOCTS feed was found. |
 | `moose-jaw` | The city still links its official GTFS URL and it downloads, but the feed still ends 2024-03-31; no current replacement was verified. |
 
