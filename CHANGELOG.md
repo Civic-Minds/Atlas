@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Live vehicle group headers now include the agency's place when available, reducing ambiguity between similarly named agencies.
 - Zoom guidance now shares the bottom baseline with the map status pills without overlapping the status area, with shorter instruction text.
 - Feedback emails now open with a clear writing area before the page URL.
 - The Mode filter now includes Gondola / Aerial Tram routes, including Portland’s Aerial Tram.

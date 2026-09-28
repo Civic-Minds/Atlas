@@ -61,7 +61,7 @@ GO Transit publishes two overlapping route ID sets per schedule period (e.g. `04
 
 ### Display naming violations
 
-The naming audit is still open. Known examples are TransLink without city/province secondary text, Big Blue Bus without a city, and inconsistent agency abbreviations across the same list. Review `SearchResultsList.tsx`, `LiveVehicles.tsx`, `AgencyCard.tsx`, and `History.tsx` together because they render agency names and secondary text in different contexts.
+Agency list and card surfaces now use the shared display-parts helper. Live vehicle group headers also include the derived place when one is available. History data does not carry the full agency city metadata, so its region label remains the available secondary context. Recheck this audit if a new agency-name surface is added.
 
 ---
 

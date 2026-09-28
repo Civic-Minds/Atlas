@@ -1,5 +1,9 @@
 # Manual GTFS refresh queue
 
+**Last reviewed:** 2026-09-26. This is a maintained, read-only source-recovery
+queue; it does not mean that the listed replacements have been approved for a
+live refresh. Re-run `npm run audit-expired-sources` before acting on it.
+
 ## Latest read-only audit — 2026-09-26
 
 The registry contains 80 records whose schedules were expired before the audit
@@ -77,6 +81,7 @@ do not replace any of these with an older archived ZIP.
 | `vacaville` | 20260630 |
 | `wichita` | 20260814 |
 | `xpress-ga` | 20250705 |
+| `whatcomtransit` | Not recorded in this audit snapshot |
 
 ## Research findings for unresolved agencies
 

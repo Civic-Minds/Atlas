@@ -1,6 +1,9 @@
-# GTFS feed status
+# GTFS feed status — historical snapshot (2026-08-10)
 
-Historical snapshot from the full production refresh on 2026-08-10; this is not a live status page.
+This page records the full production refresh from 2026-08-10. It is not a
+current status page. For the current source-recovery queue, see
+[`MANUAL_GTFS_REFRESHES.md`](MANUAL_GTFS_REFRESHES.md). Re-run the read-only
+audit before changing a source.
 
 This snapshot predates the active-fallback policy. The refresh pipeline now keeps the newest available snapshot public when a source is expired or has no usable date, and the app marks that schedule as potentially outdated.
 
