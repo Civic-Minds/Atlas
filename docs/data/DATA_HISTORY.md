@@ -32,12 +32,8 @@ Historical snapshots are compiled via two methods:
 | **SacRT** (`sacrt`) | N/A | 2012 - 2026 | 8 years | Backfilled via manual archive zips. The calendar span is long enough for the goal, but the compiled snapshot count still needs to satisfy the 10-distinct-year UI eligibility check. |
 | **Metro Transit** (`metro-transit`) | `mdb-205` | 2016 - 2026 | 11 years | Backfilled (August 2026). Dynamic URLs updated in `index.json`. |
 | **Grand River Transit** (`grt`) | `mdb-721` | 2016 - 2026 | 11 years | Backfilled (August 2026) using deprecated source ID redirect. |
-| **Brampton Transit** (`brampton`) | `mdb-729` | 2016 - 2026 | 11 years | Backfilled (August 2026) using dynamic open data feeds. |
-| **BART** (`bart`) | `mdb-53` | 2013 - 2026 | 14 years | Backfilled via Mobility Database. |
-| **Caltrain** (`caltrain`) | `mdb-54` | 2013 - 2026 | 13 years | Backfilled via Mobility Database; 2016 dataset skipped (malformed upstream `stop_times.txt` row). |
 | **MARTA** (`marta`) | `mdb-368` | 2013 - 2026 | 14 years | Backfilled via Mobility Database. |
 | **RTD Denver** (`rtd-denver`) | `mdb-178` | 2013 - 2026 | 14 years | Backfilled via Mobility Database. |
-| **PATH** (`path`) | `mdb-517` | 2015 - 2025 | 11 years | Backfilled via Mobility Database; no earlier MDB coverage. |
 | **STM** (`stm`) | `mdb-2126` | 2013 - 2026 | 14 years | Backfilled via Mobility Database. |
 
 The trip-time-over-years experiment is intended to start with rail because alignments change less often than bus. Candidate selection still needs a separate audit; see the experiment note in `docs/roadmap/EXPERIMENTS.md`.
@@ -61,9 +57,27 @@ These agencies have verified, complete 10+ year dataset history on the Mobility 
     *   *MDB Coverage*: 2013 - 2026 (89 datasets).
     *   *Feasibility*: Very High.
 
+### 3. Research candidates (3–9 live years)
+
+These agencies have enough existing history to justify a broader web/archive search, but are not yet eligible for the 10-year History threshold. Counts below come from the live `history-config.json` catalog as of 2026-09-28; unusual future-dated years need validation before being treated as real coverage.
+
+| Agency | Live years | Gap to threshold | Initial assessment |
+| --- | ---: | ---: | --- |
+| **Brampton Transit** (`brampton`) | 9 | 1 | Best first target; configured open-data source may provide another historical feed. |
+| **NORTA** (`norta`) | 8 | 2 | Worth searching, but current source history appears limited. |
+| **Caltrain** (`caltrain`) | 4 | 6 | Rail agency; search official schedule archives and historical feed mirrors. |
+| **AC Transit** (`actransit`) | 3 | 7 | Search needed; direct feed access currently requires an API token. |
+| **BART** (`bart`) | 3 | 7 | Search official and community schedule archives. |
+| **NFTA** (`nfta`) | 3 | 7 | Search historical GTFS and agency archive sources. |
+| **PATH** (`path`) | 3 | 7 | Search historical GTFS and agency archive sources. |
+| **Petaluma Transit** (`petaluma`) | 3 | 7 | Validate the future-dated entry before searching for older feeds. |
+| **Simi Valley Transit** (`simi-valley`) | 3 | 7 | Validate the future-dated entry before searching for older feeds. |
+| **Transfort** (`transfort`) | 3 | 7 | Validate future-dated entries, then search historical feeds. |
+| **WMATA** (`wmata`) | 3 | 7 | Search official and community schedule archives. |
+
 ---
 
-### 3. Deferred / Low-Feasibility Agencies
+### 4. Deferred / Low-Feasibility Agencies
 
 These agencies were audited but cannot be backfilled automatically due to missing datasets or API restrictions:
 
@@ -71,9 +85,6 @@ These agencies were audited but cannot be backfilled automatically due to missin
     *   *Checked*: August 2026.
     *   *Reason*: Major gap in Mobility Database. Only 3 distinct years available (2024-2026, 11 datasets). Missing 2016–2023.
     *   *API issue*: Direct `feedUrl` requires a developer API token (returns 401 Unauthorized).
-*   **New Orleans NORTA** (`norta` / `ntd-60032`)
-    *   *Checked*: August 2026.
-    *   *Reason*: Mobility Database only has datasets from 2024-2026 (15 datasets). Cannot automatically backfill 10 years or show post-Katrina recovery.
 *   **Richmond GRTC** (`grtc` / `mdb-902`)
     *   *Checked*: August 2026.
     *   *Reason*: Mobility Database only has 1 dataset from 2024.
