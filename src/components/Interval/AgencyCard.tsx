@@ -354,30 +354,22 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
         } as React.CSSProperties}
       >
         <div className="shrink-0 px-4 pt-4 pb-3 border-b border-[var(--border-primary)]">
-          <p className={`${CARD_TITLE} mb-0`}>{agencyNamePrimary}</p>
+          <p className={`${CARD_TITLE} mb-0`}>{service.serviceName ?? agencyNamePrimary}</p>
           <p className="text-[9px] font-bold text-[var(--text-dim)] mt-1 leading-snug">
-            {[service.serviceName ?? 'On-demand service', agencyNameSecondary].filter(Boolean).join(' · ')}
+            {[agencyNamePrimary, agencyNameSecondary].filter(Boolean).join(' · ')}
           </p>
         </div>
         <div className="flex-1 overflow-y-auto custom-scrollbar px-4 py-4 space-y-4">
           <div>
             <p className="text-[9px] font-black uppercase tracking-wide text-[var(--text-dim)]">On-demand service</p>
             <p className="text-[11px] leading-relaxed text-[var(--text-muted)] mt-1">
-              {service.stopFeatures?.length ? 'Virtual pickup locations for this service; they are not fixed-route stops.' : 'Service-area information for an on-demand transit service.'}
+              {service.stopFeatures?.length ? 'Virtual pickup locations are shown on the map; they are not fixed-route stops.' : 'The shaded map area shows where this on-demand service operates.'}
             </p>
           </div>
           {service.serviceHours && (
             <div className="px-1">
               <p className="text-[9px] font-black uppercase tracking-wide text-[var(--text-dim)]">Service hours</p>
               <p className="text-[11px] leading-relaxed text-[var(--text-muted)] mt-1">{service.serviceHours}</p>
-            </div>
-          )}
-          {(service.sourceUrl || service.bookingUrl) && (
-            <div className="border-t border-[var(--border-primary)] pt-3 px-1">
-              <p className="text-[9px] font-black uppercase tracking-wide text-[var(--text-dim)]">Official source</p>
-              <a href={service.sourceUrl ?? service.bookingUrl} target="_blank" rel="noopener noreferrer" className="text-[11px] text-[var(--accent)] hover:underline mt-1 block">
-                Open official source →
-              </a>
             </div>
           )}
         </div>

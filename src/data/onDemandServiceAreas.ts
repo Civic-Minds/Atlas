@@ -140,9 +140,14 @@ export const METRO_MICRO_SERVICE_AREA = {
   sourceUrl: 'https://svc.metrotransit.org/mtgtfs/gtfs-flex.zip',
   sourceLabel: 'Metro Transit GTFS-Flex feed',
   sourceRetrievedAt: '2026-09-24',
-  serviceHours: 'Hours vary by Metro micro zone; the current zone and booking details are provided by Metro Transit.',
+  serviceHours: 'Weekdays: 5:30 a.m.–10:30 p.m.; Saturday–Sunday: 7:00 a.m.–10:30 p.m.',
   bookingUrl: 'https://www.metrotransit.org/metro-micro/',
   serviceName: 'Metro micro',
+  availability: {
+    Weekday: [{ startHour: 5.5, endHour: 22.5 }],
+    Saturday: [{ startHour: 7, endHour: 22.5 }],
+    Sunday: [{ startHour: 7, endHour: 22.5 }],
+  } satisfies OnDemandAvailability,
 };
 
 export const C_TRAN_CURRENT_SERVICE_AREA = {

@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- On-demand service cards now lead with the service name and avoid presenting a separate official-source footer.
 - Agency filter selection now keeps Atlas’s existing active-control colors while adding a clearer outline and weight.
 - Removed the unnecessary “Combine filters” helper text from the agency filter row.
 - Added 458 more official agency website links from published GTFS metadata, so outdated-feed notices can direct users to current agency information across the registry.
