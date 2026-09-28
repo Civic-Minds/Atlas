@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { getHiddenFeedAgencies } from '../FilterPanel';
+import { getHiddenFeedAgencies, updateHiddenRouteRegions } from '../FilterPanel';
 import type { Agency } from '../../../App';
 
 const agency = (slug: string, name: string, status?: 'healthy' | 'review' | 'degraded' | 'unusable'): Agency => ({
@@ -32,5 +32,16 @@ describe('getHiddenFeedAgencies', () => {
       agency('h', 'Healthy', 'healthy'),
       agency('n', 'No quality record'),
     ])).toEqual([]);
+  });
+});
+
+describe('updateHiddenRouteRegions', () => {
+  it('clears all region selections when All is chosen', () => {
+    expect(updateHiddenRouteRegions(new Set(['Alabama', 'Alaska']), '')).toEqual(new Set());
+  });
+
+  it('keeps All inactive when one or more regions are selected', () => {
+    expect(updateHiddenRouteRegions(new Set(), 'Alabama')).toEqual(new Set(['Alabama']));
+    expect(updateHiddenRouteRegions(new Set(['Alabama']), 'Alaska')).toEqual(new Set(['Alabama', 'Alaska']));
   });
 });

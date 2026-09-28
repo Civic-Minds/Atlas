@@ -65,6 +65,14 @@ export function getHiddenFeedAgencies(agencies: Agency[]): Agency[] {
     .sort((a, b) => a.name.localeCompare(b.name));
 }
 
+export function updateHiddenRouteRegions(current: Set<string>, region: string): Set<string> {
+  if (region === '') return new Set();
+  const next = new Set(current);
+  if (next.has(region)) next.delete(region);
+  else next.add(region);
+  return next;
+}
+
 function Toggle({ on }: { on: boolean }) {
   return (
     <span
@@ -186,6 +194,15 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
     setDegradedFeedsQuery('');
     setDegradedFeedsStatus('all');
     setDegradedFeedsSort('name');
+  };
+
+  const selectHiddenRouteRegion = (region: string) => {
+    if (region === '') {
+      setHiddenRegionFilter(new Set());
+      setHiddenRoutesQuery('');
+      return;
+    }
+    setHiddenRegionFilter(prev => updateHiddenRouteRegions(prev, region));
   };
 
   const filteredHiddenRoutes = useMemo(() => {
@@ -324,7 +341,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
               <div className="flex items-center gap-1.5">
                 {view !== 'settings' && (
                   <button
-                    onClick={() => { setView('settings'); setHiddenRoutesQuery(''); }}
+                    onClick={() => { setView('settings'); setHiddenRoutesQuery(''); setHiddenRegionFilter(new Set()); }}
                     className="w-7 h-7 -ml-1 flex items-center justify-center rounded-full hover:bg-[var(--bg-btn-hover)] text-[var(--text-dim)] transition-colors"
                     aria-label="Back to settings"
                   >
@@ -369,13 +386,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                         return (
                           <button
                             key={region}
-                            onClick={() => setHiddenRegionFilter(prev => {
-                              if (key === '') return new Set();
-                              const next = new Set(prev);
-                              if (next.has(key)) next.delete(key);
-                              else next.add(key);
-                              return next;
-                            })}
+                            onClick={() => selectHiddenRouteRegion(key)}
                             aria-pressed={active}
                             className={`${FILTER_OPTION} shrink-0 ${active ? CONTROL_ACTIVE : CONTROL_INACTIVE}`}
                           >
