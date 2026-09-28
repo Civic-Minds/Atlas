@@ -59,6 +59,7 @@ interface Props {
   filterToAgencies?: boolean;
   onHistoryRouteClick?: (slug: string, routeShortName: string) => void;
   onDirectFromStop?: (stop: StopEntry) => void;
+  onOnDemandZoneClick?: (selection: { slug: string; zoneId: string }) => void;
   day: DayType;
   setDay: (d: DayType) => void;
   onLayersChange?: (layers: Record<string, GeoJSON.FeatureCollection>) => void;
@@ -162,12 +163,21 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     setSelectedAgencySlug?.(null);
   }, [setSelectedAgencySlug]);
 
-  const selectedOnDemandSlug = onDemandStopAgencySlug
+  const handleOnDemandZoneClick = useCallback(({ slug, zoneId }: { slug: string; zoneId: string }) => {
+    setOnDemandStopAgencySlug(`${slug}::${zoneId}`);
+    setSelectedAgencySlug?.(null);
+  }, [setSelectedAgencySlug]);
+
+  const selectedOnDemandSelection = onDemandStopAgencySlug;
+  const selectedOnDemandSlug = onDemandStopAgencySlug?.split('::', 1)[0]
     ?? (selectedAgencySlug && agencies.some(a => a.slug === selectedAgencySlug && a.onDemandServiceArea) ? selectedAgencySlug : null);
+  const selectedOnDemandZoneId = selectedOnDemandSelection?.includes('::')
+    ? selectedOnDemandSelection.slice(selectedOnDemandSelection.indexOf('::') + 2)
+    : null;
 
   useEffect(() => {
-    syncUrlParams({ ondemand: selectedOnDemandSlug });
-  }, [selectedOnDemandSlug]);
+    syncUrlParams({ ondemand: selectedOnDemandSelection });
+  }, [selectedOnDemandSelection]);
 
   // An agency selection replaces route disambiguation. Keeping both active
   // leaves two sidebar cards competing for the same space.
@@ -581,6 +591,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
         selectedAgencySlug={selectedAgencySlug}
         setSelectedAgencySlug={setSelectedAgencySlug}
         onOnDemandStopClick={handleOnDemandStopClick}
+        onOnDemandZoneClick={handleOnDemandZoneClick}
         fareView={fareView}
         nightServiceView={nightServiceView}
         exportEnabled={exportEnabled}
@@ -690,6 +701,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
             fareOverride={fareOverrides[agency.slug]}
             onInfoOpen={onInfoOpen}
             onDemandFocus
+            onDemandZoneId={selectedOnDemandZoneId}
           />
         ) : null;
       })()}

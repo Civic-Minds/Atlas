@@ -1,7 +1,7 @@
 import type { GeoJSON } from 'geojson';
 import { HSR_MY_RIDE_STOP_FEATURES } from './hsrMyRideStops';
 import { METRO_MICRO_FLEX_FEATURES } from './metroMicroFlexData';
-import { METRO_MICRO_FLEX_METADATA } from './metroMicroFlexMetadata';
+import { GTFS_FLEX_METADATA } from './metroMicroFlexMetadata';
 import { C_TRAN_CURRENT_FLEX_FEATURES } from './ctranCurrentFlexData';
 import { C_TRAN_CURRENT_FLEX_STOPS } from './ctranCurrentFlexStops';
 import type { OnDemandAvailability } from '../../shared/onDemandAvailability';
@@ -141,10 +141,9 @@ export const METRO_MICRO_SERVICE_AREA = {
   sourceUrl: 'https://svc.metrotransit.org/mtgtfs/gtfs-flex.zip',
   sourceLabel: 'Metro Transit GTFS-Flex feed',
   sourceRetrievedAt: '2026-09-24',
-  serviceHours: METRO_MICRO_FLEX_METADATA.serviceHours,
   bookingUrl: 'https://www.metrotransit.org/metro-micro/',
   serviceName: 'Metro micro',
-  availability: METRO_MICRO_FLEX_METADATA.availability,
+  zoneMetadata: GTFS_FLEX_METADATA.zoneMetadata,
 };
 
 export const C_TRAN_CURRENT_SERVICE_AREA = {

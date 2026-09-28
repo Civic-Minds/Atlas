@@ -231,6 +231,7 @@ interface Props {
   fareOverride?: FareOverride;
   onInfoOpen?: OpenInfoFn;
   onDemandFocus?: boolean;
+  onDemandZoneId?: string | null;
 }
 
 function RouteListSection({
@@ -283,6 +284,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
   fareOverride,
   onInfoOpen,
   onDemandFocus = false,
+  onDemandZoneId = null,
 }, ref) {
   const { colorVisionFriendly } = useColorVision();
   const colorMode = colorVisionFriendly ? 'friendly' : 'default';
@@ -343,6 +345,14 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
 
   if (onDemandFocus && agency.onDemandServiceArea) {
     const service = agency.onDemandServiceArea;
+    const selectedZone = onDemandZoneId
+      ? service.features.find(feature => (feature.properties as { areaName?: string } | undefined)?.areaName === onDemandZoneId)
+      : undefined;
+    const zoneName = (selectedZone?.properties as { areaName?: string } | undefined)?.areaName;
+    const zoneDisplayName = zoneName?.replace(/\s+Area$/, '');
+    const zoneMetadata = zoneName ? service.zoneMetadata?.[zoneName] : undefined;
+    const serviceName = zoneMetadata?.serviceName ?? service.serviceName ?? agencyNamePrimary;
+    const serviceHours = zoneMetadata?.serviceHours ?? service.serviceHours;
     return (
       <div
         ref={ref}
@@ -354,7 +364,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
         } as React.CSSProperties}
       >
         <div className="shrink-0 px-4 pt-4 pb-3 border-b border-[var(--border-primary)]">
-          <p className={`${CARD_TITLE} mb-0`}>{service.serviceName ?? agencyNamePrimary}</p>
+          <p className={`${CARD_TITLE} mb-0`}>{[serviceName, zoneDisplayName].filter(Boolean).join(' — ')}</p>
           <p className="text-[9px] font-bold text-[var(--text-dim)] mt-1 leading-snug">
             {[agencyNamePrimary, agencyNameSecondary].filter(Boolean).join(' · ')}
           </p>
@@ -366,10 +376,10 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
               {service.stopFeatures?.length ? 'Virtual pickup locations are shown on the map; they are not fixed-route stops.' : 'The shaded map area shows where this on-demand service operates.'}
             </p>
           </div>
-          {service.serviceHours && (
+          {serviceHours && (
             <div className="px-1">
               <p className="text-[9px] font-black uppercase tracking-wide text-[var(--text-dim)]">Service hours</p>
-              <p className="text-[11px] leading-relaxed text-[var(--text-muted)] mt-1">{service.serviceHours}</p>
+              <p className="text-[11px] leading-relaxed text-[var(--text-muted)] mt-1">{serviceHours}</p>
             </div>
           )}
         </div>

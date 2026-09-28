@@ -107,6 +107,11 @@ export interface Agency {
     bookingUrl?: string;
     serviceName?: string;
     availability?: OnDemandAvailability;
+    zoneMetadata?: Record<string, {
+      serviceName?: string;
+      serviceHours?: string;
+      availability?: OnDemandAvailability;
+    }>;
   };
 }
 

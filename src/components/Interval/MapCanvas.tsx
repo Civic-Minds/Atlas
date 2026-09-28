@@ -223,6 +223,7 @@ interface MapCanvasProps {
   selectedAgencySlug?: string | null;
   setSelectedAgencySlug?: (slug: string | null) => void;
   onOnDemandStopClick?: (slug: string) => void;
+  onOnDemandZoneClick?: (selection: { slug: string; zoneId: string }) => void;
   fareView?: boolean;
   nightServiceView?: boolean;
   frequentServiceView?: boolean;
@@ -282,6 +283,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   selectedAgencySlug,
   setSelectedAgencySlug,
   onOnDemandStopClick,
+  onOnDemandZoneClick,
   fareView = false,
   nightServiceView = false,
   frequentServiceView = false,
@@ -340,10 +342,16 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
 
   const [mapContextAgencies, setMapContextAgencies] = useState<MapContextAgency[]>([]);
 
-  const onDemandAgencies = useMemo(() => agencies.filter(agency =>
-    (selectedAgencies?.has(agency.slug) ?? true)
-    && isOnDemandActive(agency.onDemandServiceArea?.availability, day, period),
-  ), [agencies, day, period, selectedAgencies]);
+  const onDemandAgencies = useMemo(() => agencies.filter(agency => {
+    if (!(selectedAgencies?.has(agency.slug) ?? true)) return false;
+    const service = agency.onDemandServiceArea;
+    if (!service) return false;
+    if (isOnDemandActive(service.availability, day, period)) return true;
+    return service.features.some(feature => {
+      const zoneId = (feature.properties as { areaName?: string } | undefined)?.areaName;
+      return isOnDemandActive(zoneId ? service.zoneMetadata?.[zoneId]?.availability : undefined, day, period);
+    });
+  }), [agencies, day, period, selectedAgencies]);
   const onDemandServiceAreaData = useMemo<GeoJSON.FeatureCollection<GeoJSON.Polygon | GeoJSON.MultiPolygon>>(() => ({
     type: 'FeatureCollection',
     features: (selectedModes.size === 0 || selectedModes.has(ON_DEMAND_MODE) ? onDemandAgencies : [])
@@ -353,6 +361,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
           ...(feature.properties ?? {}),
           agencySlug: agency.slug,
           agencyName: agency.name,
+          onDemandZoneId: (feature.properties as { areaName?: string } | undefined)?.areaName ?? feature.id,
         },
       }))),
   }), [onDemandAgencies, selectedModes]);
@@ -506,6 +515,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   const setSelectedAgencySlugRef = useRef(setSelectedAgencySlug);
   const selectedAgencySlugRef = useRef(selectedAgencySlug);
   const onOnDemandStopClickRef = useRef(onOnDemandStopClick);
+  const onOnDemandZoneClickRef = useRef(onOnDemandZoneClick);
   const onBoundsChangeRef = useRef(onBoundsChange);
   const onTileLoadingChangeRef = useRef(onTileLoadingChange);
   const onClearSelectionRef = useRef(onClearSelection);
@@ -617,7 +627,9 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         if (serviceAreaHits[0]?.layer?.id === 'on-demand-stop-points') {
           onOnDemandStopClickRef.current?.(serviceAreaSlug);
         } else {
-          setSelectedAgencySlugRef.current?.(serviceAreaSlug);
+          const zoneId = serviceAreaHits[0]?.properties?.onDemandZoneId as string | undefined;
+          if (zoneId) onOnDemandZoneClickRef.current?.({ slug: serviceAreaSlug, zoneId });
+          else setSelectedAgencySlugRef.current?.(serviceAreaSlug);
         }
         return;
       }
@@ -686,6 +698,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     fareViewRef.current = fareView;
     setSelectedAgencySlugRef.current = setSelectedAgencySlug;
     onOnDemandStopClickRef.current = onOnDemandStopClick;
+    onOnDemandZoneClickRef.current = onOnDemandZoneClick;
     selectedAgencySlugRef.current = selectedAgencySlug;
     onBoundsChangeRef.current = onBoundsChange;
     onTileLoadingChangeRef.current = onTileLoadingChange;

@@ -75,10 +75,11 @@ describe('BWG on-demand service area', () => {
   it('keeps the published Metro micro Flex zones source-backed', () => {
     expect(METRO_MICRO_SERVICE_AREA.features).toHaveLength(5);
     expect(METRO_MICRO_SERVICE_AREA.sourceUrl).toBe('https://svc.metrotransit.org/mtgtfs/gtfs-flex.zip');
-    expect(METRO_MICRO_SERVICE_AREA.serviceHours).toBe('Weekdays: 5:30 a.m.–10:30 p.m.; Saturday–Sunday: 7:00 a.m.–10:30 p.m.');
-    expect(isOnDemandActive(METRO_MICRO_SERVICE_AREA.availability, 'Weekday', 'amPeak')).toBe(true);
-    expect(isOnDemandActive(METRO_MICRO_SERVICE_AREA.availability, 'Saturday', 'amPeak')).toBe(true);
-    expect(isOnDemandActive(METRO_MICRO_SERVICE_AREA.availability, 'Sunday', 'overnight')).toBe(false);
+    const northMinneapolis = METRO_MICRO_SERVICE_AREA.zoneMetadata?.['North Minneapolis Area'];
+    expect(northMinneapolis?.serviceHours).toBe('Weekdays: 5:30 a.m.–10:30 p.m.; Saturday: 7:00 a.m.–10:30 p.m.; Sunday: 7:00 a.m.–10:30 p.m.');
+    expect(isOnDemandActive(northMinneapolis?.availability, 'Weekday', 'amPeak')).toBe(true);
+    expect(isOnDemandActive(northMinneapolis?.availability, 'Saturday', 'amPeak')).toBe(true);
+    expect(isOnDemandActive(northMinneapolis?.availability, 'Sunday', 'overnight')).toBe(false);
     expect(METRO_MICRO_SERVICE_AREA.features.every(feature => feature.geometry.type === 'MultiPolygon' || feature.geometry.type === 'Polygon')).toBe(true);
   });
 
