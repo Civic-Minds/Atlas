@@ -7,19 +7,12 @@ export function routeCardDisplayHeadway(p: ShapeProperties, period: TimePeriod):
   // A numeric gap inside a short-turn/peak-only cluster is not sustained route
   // service. Keep limited branches out of normal route-card/list cadence rows.
   if (p.tier === 'span') return null;
-  const coverage = p.worstDirectionPeriodCoverageHeadway ?? p.periodCoverageHeadway;
-  const covVal = coverage && period !== 'all' ? coverage[period] : undefined;
 
-  // A period median marked as unsustained:
-  // If the route genuinely covers the period (covVal <= 60), or if it's a legacy artifact
-  // without coverage data, the unsustained flag is a bunching signal (TTC 63 midday #319) —
-  // use the stable headline headway.
-  // When coverage data is present but exceeds 60m or is null, return null (no scheduled service).
+  // A period median marked as unsustained still describes the active period. Display that
+  // period's cadence, never the all-day headline. Coverage data remains available to the
+  // filter and the limited-service treatment elsewhere on the card.
   if (period !== 'all' && p.headwayByPeriodSustained?.[period] === false) {
-    if (!hasPeriodCoverage(p, period) || (covVal != null && covVal <= 60)) {
-      return p.headway ?? null;
-    }
-    return null;
+    return p.headwayByPeriod?.[period] ?? null;
   }
   const summary = buildRouteServiceSummary(p);
   const displayMetric = hasPeriodCoverage(p, period) ? summary.display : summary.filter;

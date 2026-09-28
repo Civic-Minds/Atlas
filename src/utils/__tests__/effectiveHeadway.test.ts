@@ -46,7 +46,7 @@ describe('effectiveRouteHeadway', () => {
     expect(effectiveRouteHeadway(p, 'midday')).toBe(8);
   });
 
-  it('uses the stable branch headway when a period median is not sustained (#319)', () => {
+  it('uses the active period headway when that period is not sustained', () => {
     const p = {
       ...base,
       headway: 10,
@@ -54,9 +54,9 @@ describe('effectiveRouteHeadway', () => {
       headwayByPeriodSustained: { midday: false },
     } as ShapeProperties;
 
-    expect(routeCardDisplayHeadway(p, 'midday')).toBe(10);
-    expect(routeListDisplayHeadway([p], 'midday')).toBe(10);
-    // The filter still uses the raw period metric; this change is display-only.
+    expect(routeCardDisplayHeadway(p, 'midday')).toBe(2);
+    expect(routeListDisplayHeadway([p], 'midday')).toBe(2);
+    // The filter and card now use the same active-period metric.
     expect(effectiveRouteHeadway(p, 'midday')).toBe(2);
   });
 
@@ -175,7 +175,7 @@ describe('effectiveRouteHeadway', () => {
     expect(routeCardDisplayHeadway(p, 'midday')).toBe(10);
   });
 
-  it('does not show a false active-service cadence on cards when full-period coverage has multi-hour voids (#507)', () => {
+  it('shows the active cadence while full-period coverage still records multi-hour voids (#507)', () => {
     const p = {
       headway: 10,
       headwayByPeriod: { overnight: 10 },
@@ -183,7 +183,7 @@ describe('effectiveRouteHeadway', () => {
       periodCoverageHeadway: { overnight: 171 },
       tier: '10',
     } as ShapeProperties;
-    expect(routeCardDisplayHeadway(p, 'overnight')).toBeNull();
+    expect(routeCardDisplayHeadway(p, 'overnight')).toBe(10);
     expect(effectiveRouteHeadway(p, 'overnight')).toBe(171);
   });
 
