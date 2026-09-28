@@ -39,6 +39,7 @@ const TRANSIT_ACRONYMS: Record<string, string> = {
   Bart: 'BART',
   Weta: 'WETA',
   Sfmta: 'SFMTA',
+  Sfu: 'SFU',
   Ac: 'AC',
   Vta: 'VTA',
   Samtrans: 'SamTrans',

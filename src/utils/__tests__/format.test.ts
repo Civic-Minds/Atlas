@@ -97,5 +97,6 @@ describe('titleCase', () => {
     expect(titleCase('Gold')).toBe('Gold');
     expect(titleCase('GO')).toBe('GO');
     expect(titleCase('LW')).toBe('LW');
+    expect(titleCase('SFU Exchange')).toBe('SFU Exchange');
   });
 });

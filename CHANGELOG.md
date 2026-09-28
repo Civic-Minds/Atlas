@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 -Added BC Ferries and Pierce County Ferries so Atlas covers two more public ferry systems.
+-Vancouver route and stop labels now preserve “SFU” capitalization.
 -Nearby route suggestions now show public rail and ferry names instead of internal numeric route IDs.
 -MARTA line names now use consistent casing, so “RED” displays as “Red” beside “Gold” ([#561](https://github.com/Civic-Minds/Atlas/issues/561)).
 -Selecting a route now fades the surrounding network more clearly so the selected line is easier to follow ([#560](https://github.com/Civic-Minds/Atlas/issues/560)).
