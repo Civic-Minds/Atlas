@@ -12,7 +12,9 @@
     38.26,
     -121.61
   ],
-  "feedUrl": "http://data.trilliumtransit.com/gtfs/riovista-ca-us/riovista-ca-us.zip",
+  "feedUrl": "https://api.511.org/transit/datafeeds?operator_id=RV",
+  "feedApiKeyEnvVar": "MUNI_511_API_KEY",
+  "feedApiKeyParam": "api_key",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-rio-vista-delta-breeze-gtfs-81.zip?alt=media",
   "lastFeedExpiry": "20250131",
   "lastFeedVersion": "UTC: 23-Feb-2024 22:27",

@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Added secure runtime API-key support for 511.org static feeds, so Union City, Rio Vista, FAST, and Vacaville can use their current schedules without committing the key.
 - Agency filter selection now keeps Atlas’s existing active-control colors while adding a clearer outline and weight.
 - Removed the unnecessary “Combine filters” helper text from the agency filter row.
 - Added 458 more official agency website links from published GTFS metadata, so outdated-feed notices can direct users to current agency information across the registry.
