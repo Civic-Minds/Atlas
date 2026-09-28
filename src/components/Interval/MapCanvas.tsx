@@ -1922,7 +1922,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         </div>
       )}
       {zoomOrientCard && (
-        <div className={`absolute bottom-16 sm:bottom-20 left-1/2 -translate-x-1/2 ${Z_PANEL} ${PILL_SURFACE} h-auto max-w-[calc(100vw-2rem)] px-4 py-2 pointer-events-none whitespace-nowrap`}>
+        <div className={`absolute bottom-6 left-1/2 -translate-x-1/2 ${Z_PANEL} ${PILL_SURFACE} h-auto max-w-[calc(100vw-2rem)] px-4 py-2 pointer-events-none whitespace-nowrap`}>
           <span className="text-xs font-black text-[var(--text-primary)]">{zoomOrientCard.title}</span>
           <span className="mx-1.5 text-xs text-[var(--text-muted)]">•</span>
           <span className="text-xs font-bold text-[var(--text-muted)]">{zoomOrientCard.subtitle}</span>
