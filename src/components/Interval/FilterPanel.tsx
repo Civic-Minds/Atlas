@@ -397,9 +397,9 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                         const { primary, secondary } = agencyDisplayParts(group.agencyName, agencyCitiesBySlug.get(agencySlug), agencyDisplayAreasBySlug.get(agencySlug));
                         return (
                         <div key={agencySlug}>
-                          <p className="pt-2 pb-1 text-[8px] font-black text-[var(--text-dim)] tracking-widest">
+                          <p className="pt-2 pb-1 text-[11px] font-bold text-[var(--text-primary)]">
                             {primary}
-                            {secondary && <span className="normal-case tracking-normal opacity-60"> · {secondary}</span>}
+                            {secondary && <span className="font-normal text-[var(--text-dim)]"> · {secondary}</span>}
                           </p>
                           <div className="divide-y divide-[var(--border-primary)]">
                             {group.routes.map(route => (
