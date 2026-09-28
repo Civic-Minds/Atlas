@@ -47,6 +47,9 @@ interface SearchSuggestionsPanelProps {
 
 export function routeRowLabels(shortName: string, longName: string | null) {
   const hiddenShortName = shouldHideNumericRouteShortName(shortName, longName);
+  if (hiddenShortName && longName) {
+    return { shortName: titleCase(longName), name: undefined };
+  }
   const displayShortName = hiddenShortName ? '' : shortName;
   const short = cleanRouteShortName(displayShortName);
   const companion = routeListCompanionName(longName ? titleCase(longName) : null, displayShortName);
