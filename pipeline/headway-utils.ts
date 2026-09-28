@@ -528,3 +528,47 @@ export function computePeriodSustained(departureTimes: number[]): Partial<Record
   }
   return result;
 }
+
+/**
+ * Experimental comparison only: treat one oversized gap at the beginning or end of the
+ * period's departure sequence as a transition into or out of a stable cadence. The fixed
+ * period window does not move, and internal oversized gaps remain failures.
+ *
+ * This is deliberately separate from computePeriodSustained so it cannot change published
+ * filtering, tiers, or map colors until the experiment is reviewed.
+ */
+export function computePeriodSustainedWithEdgeTransitionGap(
+  departureTimes: number[],
+  minRemainingGaps = 3,
+): Partial<Record<PeriodKey, boolean>> {
+  const strict = computePeriodSustained(departureTimes);
+  const result: Partial<Record<PeriodKey, boolean>> = { ...strict };
+
+  for (const [key, { start, end }] of Object.entries(PERIODS) as [PeriodKey, { start: number; end: number }][]) {
+    const dt = forCrossMidnightWindow(departureTimes, end);
+    const times = [...new Set(dt)].filter(t => t >= start && t <= end).sort((a, b) => a - b);
+    const value = medianHeadwayInWindow(dt, start, end, 3);
+    if (value == null || times.length < minRemainingGaps + 1) continue;
+
+    const gaps = times.slice(1).map((time, index) => time - times[index]);
+    const leadingGap = times[0] - start;
+    const trailingGap = end - times[times.length - 1];
+    const boundarySustained = value > 0
+      && leadingGap / value <= BOUNDARY_DOMINANT_RATIO
+      && trailingGap / value <= BOUNDARY_DOMINANT_RATIO;
+    if (!boundarySustained) continue;
+
+    const grace = Math.max(5, Math.round(value * 0.15));
+    const edgeCandidates = [0, gaps.length - 1]
+      .filter((index, position, all) => all.indexOf(index) === position)
+      .filter(index => gaps[index] > value + grace);
+    const hasSingleEdgeTransition = edgeCandidates.some(index => {
+      const remaining = gaps.filter((_, gapIndex) => gapIndex !== index);
+      return remaining.length >= minRemainingGaps
+        && remaining.every(gap => gap <= value + grace);
+    });
+    if (hasSingleEdgeTransition) result[key] = true;
+  }
+
+  return result;
+}

@@ -54,7 +54,7 @@ describe('computePeriodCoverageHeadways', () => {
     expect(computePeriodCoverageHeadways([...plain, ...extended])).toMatchObject({ late: 10, overnight: 10 });
   });
 });
-import { adaptiveMedianHeadwayInWindow, computePeriodHeadways, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, hasGenuineBranchPattern, hasSustainedFrequentService, hasSustainedNightService, headsignOverlapMinHeadway, isSustainedHeadway, medianHeadwayInWindow, nightServiceDepartureTimes, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow } from '../headway-utils';
+import { adaptiveMedianHeadwayInWindow, computePeriodHeadways, computePeriodMaxGaps, computePeriodSustained, computePeriodSustainedWithEdgeTransitionGap, computeResearchFrequentService, forCrossMidnightWindow, hasGenuineBranchPattern, hasSustainedFrequentService, hasSustainedNightService, headsignOverlapMinHeadway, isSustainedHeadway, medianHeadwayInWindow, nightServiceDepartureTimes, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow } from '../headway-utils';
 
 describe('medianHeadwayInWindow', () => {
   it('does not expose a sparse two-departure cluster as an hourly headway', () => {
@@ -338,6 +338,29 @@ describe('computePeriodSustained', () => {
     for (const g of gaps) times.push(times[times.length - 1] + g);
     const result = computePeriodSustained(times);
     expect(result.evening).toBe(true);
+  });
+});
+
+describe('computePeriodSustainedWithEdgeTransitionGap', () => {
+  it('allows one leading transition gap while keeping the fixed period window', () => {
+    const times = [360, 390, 400, 410, 420, 430, 440, 450, 460, 470, 480, 490, 500, 510, 520, 530, 540];
+    expect(computePeriodSustainedWithEdgeTransitionGap(times).amPeak).toBe(true);
+  });
+
+  it('allows one trailing transition gap', () => {
+    const times = [360, 370, 380, 390, 400, 410, 420, 430, 440, 450, 460, 470, 480, 490, 500, 510, 520, 550];
+    expect(computePeriodSustainedWithEdgeTransitionGap(times).amPeak).toBe(true);
+  });
+
+  it('does not allow an oversized gap in the middle of the period', () => {
+    const times = [360, 370, 380, 390, 400, 410, 440, 450, 460, 470, 480, 490, 500, 510, 520, 530, 540];
+    expect(computePeriodSustainedWithEdgeTransitionGap(times).amPeak).toBe(false);
+  });
+
+  it('does not allow both edge gaps or a sparse post-transition cluster', () => {
+    const bothEdges = [360, 390, 400, 410, 420, 430, 440, 450, 460, 470, 480, 490, 500, 510, 520, 540];
+    expect(computePeriodSustainedWithEdgeTransitionGap(bothEdges).amPeak).toBe(false);
+    expect(computePeriodSustainedWithEdgeTransitionGap([360, 380, 390, 400]).amPeak).toBe(false);
   });
 });
 
