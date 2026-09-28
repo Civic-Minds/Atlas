@@ -48,6 +48,7 @@ jobs:
           R2_ARCHIVE_BUCKET_NAME: ${{ secrets.R2_ARCHIVE_BUCKET_NAME }}
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          MUNI_511_API_KEY: ${{ secrets.MUNI_511_API_KEY }}
 
       # Persist feed metadata through the protected-branch workflow before the
       # independent PMTiles verification gate.
