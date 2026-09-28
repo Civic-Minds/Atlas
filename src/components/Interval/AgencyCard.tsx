@@ -33,6 +33,7 @@ interface AgencyListFilters {
   maxHeadway: number;
   selectedModes: Set<number>;
   hideSpan: boolean;
+  hideLimitedService: boolean;
 }
 
 function getRoutes(
@@ -52,6 +53,7 @@ function getRoutes(
     day,
     period,
     hideSpan: filters.hideSpan,
+    hideLimitedService: filters.hideLimitedService,
     livePollingOnly: false,
     showCorridors: false,
     showCorridorBand: false,
@@ -224,6 +226,7 @@ interface Props {
   maxHeadway: number;
   selectedModes: Set<number>;
   hideSpan: boolean;
+  hideLimitedService: boolean;
   onRouteSelect: (key: string) => void;
   sidebarLeft?: number;
   searchBarWidth?: number;
@@ -277,6 +280,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
   maxHeadway,
   selectedModes,
   hideSpan,
+  hideLimitedService,
   onRouteSelect,
   sidebarLeft,
   searchBarWidth,
@@ -289,8 +293,8 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
   const { colorVisionFriendly } = useColorVision();
   const colorMode = colorVisionFriendly ? 'friendly' : 'default';
   const routes = useMemo(
-    () => getRoutes(layers, agency.slug, day, period, { maxHeadway, selectedModes, hideSpan }),
-    [layers, agency.slug, day, period, maxHeadway, selectedModes, hideSpan],
+    () => getRoutes(layers, agency.slug, day, period, { maxHeadway, selectedModes, hideSpan, hideLimitedService }),
+    [layers, agency.slug, day, period, maxHeadway, selectedModes, hideSpan, hideLimitedService],
   );
   const routeFilters = useMemo(() => buildAgencyRouteFilters(routes), [routes]);
   const [activeFilter, setActiveFilter] = useState<AgencyRouteFilterKey | null>(null);

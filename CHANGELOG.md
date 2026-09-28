@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Beta now separates hiding irregular routes from hiding explicitly time-limited service, so regular infrequent routes are not hidden by the new filter.
 - Period views now show routes with limited or one-direction service when irregular routes are not hidden.
 - Zoom guidance now shares the bottom baseline with the map status pills without overlapping the status area, with shorter instruction text.
 - Feedback emails now open with a clear writing area before the page URL.

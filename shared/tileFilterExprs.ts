@@ -4,6 +4,11 @@ import { buildEffectiveModeExpression, ON_DEMAND_MODE, VIRTUAL_LRT_MODE } from '
 
 type PeriodFilter = PeriodKey | 'all';
 
+/** MapLibre expression matching the explicit time-limited service class only. */
+export function tileLimitedServiceExpr(): unknown[] {
+  return ['==', ['get', 'serviceClass'], 'time-limited'];
+}
+
 /** MapLibre expression matching the canonical agency::route[:branch] key. */
 export function tileRouteKeyExpr(): unknown[] {
   const base: unknown[] = [

@@ -17,7 +17,7 @@ import { TRANSITION_BASE, TRANSITION_SLOW, Z_PANEL, MAP_BADGE, MAP_BADGE_COUNT, 
 import type { Agency, FareOverride } from '../App';
 import type { OpenInfoFn } from '../components/InfoPanel';
 import type { StopEntry } from './corridor-search';
-import { R2_PUBLIC_URL, VIEWPORT_BBOX_PAD } from '../../shared/config';
+import { ATLAS_MODE, R2_PUBLIC_URL, VIEWPORT_BBOX_PAD } from '../../shared/config';
 import { findVariantFamily } from '../utils/routeVariants';
 import { splitRouteKey } from '../utils/routeKey';
 import { resolveRouteSelectionForDay } from '../utils/routeSelection';
@@ -278,6 +278,16 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
       return true;
     }
   });
+  const [hideLimitedService, setHideLimitedService] = useState(() => {
+    if (ATLAS_MODE === 'public') return false;
+    try {
+      const urlValue = new URLSearchParams(window.location.search).get('limited');
+      if (urlValue != null) return urlValue !== '0';
+      return localStorage.getItem('atlas_pref_hide_limited') === 'true';
+    } catch {
+      return false;
+    }
+  });
   const [livePollingOnly, setLivePollingOnly] = useState(false);
 
   const selectionUiVisible = showSelectionUi && (!!selectedRoute || !!selectedStop || !!disambiguationRoutes?.length || !!selectedAgencySlug);
@@ -380,6 +390,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     selectedRoute,
     bounds,
     hideSpan,
+    hideLimitedService,
     livePollingOnly,
     showCorridors: false,
     showCorridorBand: false,
@@ -403,12 +414,13 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
       day,
       period,
       hideSpan,
+      hideLimitedService,
       livePollingOnly,
       showCorridors: false,
       showCorridorBand: false,
       selectedRoute: null,
     }, routesForStop);
-  }, [day, frequentServiceView, hideSpan, layers, livePollingOnly, maxHeadway, period, routesForStop, selectedAgencies, selectedModes, selectedRoute]);
+  }, [day, frequentServiceView, hideLimitedService, hideSpan, layers, livePollingOnly, maxHeadway, period, routesForStop, selectedAgencies, selectedModes, selectedRoute]);
 
   useEffect(() => { try { localStorage.setItem('atlas_pref_headway', String(maxHeadway)); } catch {} }, [maxHeadway]);
   useEffect(() => { try { localStorage.setItem('atlas_pref_day', day); } catch {} }, [day]);
@@ -416,6 +428,11 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     try { localStorage.setItem('atlas_pref_hide_span', String(hideSpan)); } catch {}
     syncUrlParams({ span: hideSpan ? null : '0' });
   }, [hideSpan]);
+  useEffect(() => {
+    if (ATLAS_MODE === 'public') return;
+    try { localStorage.setItem('atlas_pref_hide_limited', String(hideLimitedService)); } catch {}
+    syncUrlParams({ limited: hideLimitedService ? null : '0' });
+  }, [hideLimitedService]);
   useEffect(() => {
     try {
       const off = agencies.filter(a => !selectedAgencies.has(a.slug)).map(a => a.slug);
@@ -694,6 +711,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
             maxHeadway={maxHeadway}
             selectedModes={selectedModes}
             hideSpan={hideSpan}
+            hideLimitedService={hideLimitedService}
             onRouteSelect={() => {}}
             sidebarLeft={sidebarLeft}
             searchBarWidth={searchBarWidth}
@@ -718,6 +736,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
             maxHeadway={maxHeadway}
             selectedModes={selectedModes}
             hideSpan={hideSpan}
+            hideLimitedService={hideLimitedService}
             onRouteSelect={(key) => { setSelectedRoute(key); onAgencyCardClose?.(); }}
             sidebarLeft={sidebarLeft}
             searchBarWidth={searchBarWidth}
@@ -767,7 +786,9 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
               lightMode={lightMode}
               setLightMode={setLightMode}
               hideSpan={hideSpan}
+              hideLimitedService={hideLimitedService}
               setHideSpan={setHideSpan}
+              setHideLimitedService={setHideLimitedService}
               livePollingOnly={livePollingOnly}
               setLivePollingOnly={setLivePollingOnly}
               onInfoOpen={onInfoOpen}

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { featureFilter } from '@maplibre/maplibre-gl-style-spec';
-import { buildModeFilterClause, tileEffectiveHeadwayExpr, tilePeriodServiceExpr } from '../tileFilterExprs';
+import { buildModeFilterClause, tileEffectiveHeadwayExpr, tileLimitedServiceExpr, tilePeriodServiceExpr } from '../tileFilterExprs';
 import { flattenPeriodHeadwayProps, NO_PERIOD_SERVICE_TILE_VALUE } from '../pmtilesProps';
 import { ON_DEMAND_MODE, VIRTUAL_LRT_MODE } from '../modes';
 
@@ -141,6 +141,16 @@ describe('tilePeriodServiceExpr', () => {
   it('fails closed when no period-specific fields exist', () => {
     const compiled = compileFilter(tilePeriodServiceExpr('pmPeak'));
     expect(compiled.filter({ zoom: 10 }, feat({ headway: 5 }) as any)).toBe(false);
+  });
+});
+
+describe('tileLimitedServiceExpr', () => {
+  it('matches only explicit time-limited service', () => {
+    const compiled = compileFilter(['!', tileLimitedServiceExpr()]);
+    const ctx = { zoom: 10 };
+    expect(compiled.filter(ctx, feat({ serviceClass: 'time-limited' }) as any)).toBe(false);
+    expect(compiled.filter(ctx, feat({ serviceClass: 'regular', tier: 'infrequent' }) as any)).toBe(true);
+    expect(compiled.filter(ctx, feat({ serviceClass: 'irregular', tier: 'span' }) as any)).toBe(true);
   });
 });
 

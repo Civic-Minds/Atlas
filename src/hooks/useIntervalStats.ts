@@ -4,12 +4,12 @@ import { matchesRouteQuery, searchRouteResults, searchStopResults, type StopSear
 import { HEADWAY_TIERS, getTierColor } from '../utils/colors';
 import { isLivePollingRoute } from '../utils/livePolling';
 import { TIME_PERIODS, PERIOD_LABELS as PERIOD_LABELS_BY_KEY, PERIOD_KEYS, type PeriodKey } from '../../shared/config';
-import { buildModeFilterClause, tileEffectiveHeadwayExpr, tilePeriodServiceExpr, tileRouteKeyExpr } from '../../shared/tileFilterExprs';
+import { buildModeFilterClause, tileEffectiveHeadwayExpr, tileLimitedServiceExpr, tilePeriodServiceExpr, tileRouteKeyExpr } from '../../shared/tileFilterExprs';
 import { NO_PERIOD_SERVICE_TILE_VALUE } from '../../shared/pmtilesProps';
 import { effectiveMode, ON_DEMAND_MODE } from '../../shared/modes';
 import { effectiveRouteHeadway } from '../utils/effectiveHeadway';
 import { collectStopHubSiblings } from '../utils/stopHub';
-import { isHiddenByIrregularFilter } from '../../shared/irregularRoutes';
+import { isHiddenByIrregularFilter, isLimitedService } from '../../shared/irregularRoutes';
 import { buildRouteKey } from '../utils/routeKey';
 
 export type DayType = 'Weekday' | 'Saturday' | 'Sunday';
@@ -71,6 +71,7 @@ export interface IntervalFilters {
   selectedRoute?: string | null; // force-include the full geometry of this route even if it doesn't match frequency/agency/etc filters
   bounds?: ViewportBounds | null; // current map viewport; stats are scoped to it when set
   hideSpan?: boolean; // hide routes with no sustained tier (irregular/peak-only/school-run service)
+  hideLimitedService?: boolean; // hide explicitly time-limited service without hiding regular infrequent routes
   livePollingOnly?: boolean; // only show routes covered by Atlas's GTFS-RT adherence polling
   showCorridors?: boolean; // show segments where multiple routes overlap to provide higher frequency
   showCorridorBand?: boolean; // Corridors app is open; always pass isCorridor features through for band rendering
@@ -99,7 +100,7 @@ function resolveTierVal(p: ShapeProperties): number | null {
 export function passesRouteFilter(
   p: ShapeProperties,
   slug: string,
-  filters: { maxHeadway: number; agencies: Set<string>; modes: Set<number>; day: string; period?: TimePeriod; hideSpan?: boolean; livePollingOnly?: boolean; showCorridors?: boolean; showCorridorBand?: boolean; selectedRoute?: string | null },
+  filters: { maxHeadway: number; agencies: Set<string>; modes: Set<number>; day: string; period?: TimePeriod; hideSpan?: boolean; hideLimitedService?: boolean; livePollingOnly?: boolean; showCorridors?: boolean; showCorridorBand?: boolean; selectedRoute?: string | null },
   routesForStop: { slug: string; routeIds: Set<string> } | null,
   // skipFrequency: day/agency/mode/hideSpan/live-polling still apply, but the worst-direction
   // frequency check (#314/#315) does not. Used only for the #317 qualifying-segment overlay,
@@ -156,6 +157,7 @@ export function passesRouteFilter(
   // commuter route with a genuinely irregular return direction, Halifax 330 #318) is irregular
   // as a whole, not just in that one direction -- hide the whole route, not just that branch.
   if (filters.hideSpan && isHiddenByIrregularFilter(p)) return false;
+  if (filters.hideLimitedService && isLimitedService(p)) return false;
   if (options?.skipFrequency) return true;
   // When a specific period is active, use the route's worst-direction headway for that period
   // (falling back to the branch's own headwayByPeriod) -- both directions must qualify, not just
@@ -287,7 +289,7 @@ function getDistanceMeters(lat1: number, lon1: number, lat2: number, lon2: numbe
 }
 
 export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters) {
-  const { query, maxHeadway, agencies, modes, day, period, selectedStop, selectedRoute, bounds, hideSpan, livePollingOnly, showCorridors, showCorridorBand, hoveredBranch } = filters;
+  const { query, maxHeadway, agencies, modes, day, period, selectedStop, selectedRoute, bounds, hideSpan, hideLimitedService, livePollingOnly, showCorridors, showCorridorBand, hoveredBranch } = filters;
   const q = query.trim().toLowerCase();
   // Bounds update on every map moveend — defer stats/search so pan/zoom stays smooth.
   // Tile filters and layer filtering do not depend on bounds.
@@ -367,7 +369,7 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
       return passesRouteFilter(p, p.agencySlug ?? '', filters, routesForStop);
     }),
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  [allFeatures, maxHeadway, agencies, modes, day, period, routesForStop, hideSpan, livePollingOnly, showCorridors, showCorridorBand, selectedRoute]);
+  [allFeatures, maxHeadway, agencies, modes, day, period, routesForStop, hideSpan, hideLimitedService, livePollingOnly, showCorridors, showCorridorBand, selectedRoute]);
 
   // Feeds the #317 qualifying-segment overlay (computeFrequencySegmentOverlay), which needs
   // partial-match routes the frequency check would otherwise exclude entirely -- see
@@ -376,14 +378,14 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
   const filteredLayers = useMemo(() => {
     return filterAgencyLayers(layers, filters, routesForStop, { skipFrequency: true });
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [layers, agencies, modes, day, routesForStop, hideSpan, livePollingOnly, showCorridors, showCorridorBand]);
+  }, [layers, agencies, modes, day, routesForStop, hideSpan, hideLimitedService, livePollingOnly, showCorridors, showCorridorBand]);
 
   // Full map filter for the local route fallback. Unlike filteredLayers above, this includes
   // the active frequency threshold; filteredLayers intentionally skips it for partial segments.
   const mapFilteredLayers = useMemo(() => {
     return filterAgencyLayers(layers, filters, routesForStop);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [layers, maxHeadway, agencies, modes, day, period, routesForStop, hideSpan, livePollingOnly, showCorridors, showCorridorBand, selectedRoute]);
+  }, [layers, maxHeadway, agencies, modes, day, period, routesForStop, hideSpan, hideLimitedService, livePollingOnly, showCorridors, showCorridorBand, selectedRoute]);
 
   const stats = useMemo(() => {
     // Do not publish a catalog-wide count while the map has not reported its first viewport.
@@ -473,6 +475,9 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
         ['!=', ['coalesce', ['get', 'routeHasIrregularDirection'], false], true],
       ]);
     }
+    if (hideLimitedService) {
+      clauses.push(['!', tileLimitedServiceExpr()]);
+    }
 
     // Mode (virtual LRT rules need agencySlug + routeLongName on features)
     const modeClause = buildModeFilterClause(modes);
@@ -500,7 +505,7 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
 
     return clauses.length === 1 ? clauses[0] : ['all', ...clauses];
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [agencies, day, hideSpan, modes, maxHeadway, period, hoveredBranch, selectedRoute]);
+  }, [agencies, day, hideLimitedService, hideSpan, modes, maxHeadway, period, hoveredBranch, selectedRoute]);
 
   return { stats, searchMatches, searchMatchResults, searchStopMatchResults, matchesQuery, q, filteredLayers, mapFilteredLayers, routesForStop, tileFilter };
 }

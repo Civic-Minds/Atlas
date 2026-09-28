@@ -140,6 +140,13 @@ describe('useIntervalStats', () => {
     expect(passesRouteFilter(viaDowntown, 'kingston', filters, null)).toBe(true);
   });
 
+  it('hideLimitedService hides time-limited routes but keeps regular infrequent routes visible', () => {
+    const filters = { ...defaultFilters, maxHeadway: Infinity, agencies: new Set(['nashville']), hideLimitedService: true };
+    expect(passesRouteFilter({ routeId: '87', serviceClass: 'time-limited', tier: '60', headway: 60 } as any, 'nashville', filters, null)).toBe(false);
+    expect(passesRouteFilter({ routeId: '56', serviceClass: 'regular', tier: 'infrequent', headway: 90 } as any, 'nashville', filters, null)).toBe(true);
+    expect(passesRouteFilter({ routeId: '87', serviceClass: 'time-limited', tier: '60', headway: 60 } as any, 'nashville', { ...filters, hideLimitedService: false }, null)).toBe(true);
+  });
+
   it('should return correct stats for default filters', () => {
     const { result } = renderHook(() => useIntervalStats(mockLayers, defaultFilters));
     

@@ -20,6 +20,8 @@ interface FilterPanelProps {
   setLightMode: (v: boolean | ((prev: boolean) => boolean)) => void;
   hideSpan: boolean;
   setHideSpan: (v: boolean | ((prev: boolean) => boolean)) => void;
+  hideLimitedService: boolean;
+  setHideLimitedService: (v: boolean | ((prev: boolean) => boolean)) => void;
   livePollingOnly: boolean;
   setLivePollingOnly: (v: boolean | ((prev: boolean) => boolean)) => void;
   onInfoOpen?: (tab?: 'about' | 'agencies' | 'live') => void;
@@ -93,6 +95,8 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
   setLightMode,
   hideSpan,
   setHideSpan,
+  hideLimitedService,
+  setHideLimitedService,
   livePollingOnly,
   setLivePollingOnly,
   onInfoOpen,
@@ -259,28 +263,37 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
   );
 
   const hasActiveCoreFilter = maxHeadway !== undefined && (maxHeadway !== Infinity || period !== 'all' || (selectedModes && selectedModes.size > 0));
-  const hasActiveFilters = hideSpan || livePollingOnly || hasActiveCoreFilter || hideLowQuality;
+  const hasActiveFilters = hideSpan || hideLimitedService || livePollingOnly || hasActiveCoreFilter || hideLowQuality;
 
   const values: Record<string, boolean> = {
     live: livePollingOnly,
     span: hideSpan,
+    limited: hideLimitedService,
     quality: hideLowQuality,
   };
 
   const toggles: Record<string, () => void> = {
     live: () => setLivePollingOnly(v => !v),
     span: () => setHideSpan(v => !v),
+    limited: () => setHideLimitedService(v => !v),
     quality: () => setHideLowQuality(v => !v),
   };
 
-  const settings = feedQualityEnabled
-    ? [...SETTINGS, {
+  const settings = [
+    ...SETTINGS,
+    ...(ATLAS_MODE === 'public' ? [] : [{
+      id: 'limited',
+      icon: ({ className }: { className?: string }) => <span className={`w-4 h-4 flex items-center justify-center text-[10px] font-black leading-none shrink-0 ${className ?? ''}`}>≈</span>,
+      label: 'Hide limited-service routes',
+      description: 'Hides peak-only or otherwise time-limited service, without hiding regular infrequent routes.',
+    }]),
+    ...(feedQualityEnabled ? [{
       id: 'quality',
       icon: ShieldCheck,
       label: 'Hide degraded feeds',
       description: 'Hides agencies with known data-quality problems. Feeds still being reviewed remain visible.',
-    }]
-    : SETTINGS;
+    }] : []),
+  ];
 
   return (
     <>

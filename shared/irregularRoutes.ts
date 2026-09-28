@@ -4,6 +4,10 @@ export interface IrregularRouteProperties {
   routeHasIrregularDirection?: unknown;
 }
 
+export function isLimitedService(properties: IrregularRouteProperties): boolean {
+  return properties.serviceClass === 'time-limited';
+}
+
 /** True only for genuinely exceptional/irregular service. Legacy artifacts fall back to span. */
 export function isIrregularService(properties: IrregularRouteProperties): boolean {
   return properties.serviceClass === 'irregular'
