@@ -80,7 +80,7 @@ The following agencies are lower-confidence extensions of the pool, but each has
 
 The first archive pass should use the [Mobility Database](https://mobilitydatabase.org/faq) and [Transitland feed archive](https://www.transit.land/feeds/archive/), then agency-specific sources. Confirmed leads include the [RIDE New Orleans historical RTA archive](https://rideneworleans.org/opendata/gtfs/), its [published media archive](https://rideneworleans.org/wp-json/wp/v2/media?search=GTFS&per_page=100), the [MBTA historical GTFS archive](https://github.com/mbta/gtfs-documentation/blob/master/reference/gtfs-archive.md), the [Transitland Transfort archive](https://www.transit.land/feeds/f-9xj-transfortcityoffortcollins), [BART’s official GTFS page](https://www.bart.gov/schedules/developers/gtfs), and the Mobility Database histories for [Caltrain](https://mobilitydatabase.org/feeds/gtfs/mdb-54), [AC Transit](https://mobilitydatabase.org/feeds/gtfs/mdb-2455), and [BART](https://mobilitydatabase.org/feeds/gtfs/mdb-53). Service-change leads include [WMATA's network redesign](https://www.wmata.com/news/metro-budget-proposal-includes-targeted-rail-service-increases-adopts-bus-network-redesign.html), [Edmonton's LRT expansion](https://www.edmonton.ca/projects_plans/transit/future-lrt-projects), and [TTC's annual service plan](https://www.ttc.ca/about-the-ttc/projects-and-plans/2025-Annual-Service-Plan).
 
-Local validation has confirmed that the Atlas processor can read historical BART, Brampton, Caltrain, NFTA, NORTA, Transfort, and Worcester feeds without validation errors; Caltrain’s full 2017–2026 ten-year sample, NFTA’s 2017–2023 historical sample, MBTA’s official 2010–2019 ten-year sample, and NORTA’s official 2012–2021 ten-year sample were processed through the dry-run path. Transfort’s recovered 2016 sample was healthy, but it is not yet a ten-year backfill.
+Local validation has confirmed that the Atlas processor can read historical BART, Brampton, Caltrain, NFTA, NORTA, Transfort, and Worcester feeds without validation errors. The dry-run reports now carry explicit coverage metadata for valid source years: Brampton (10), Caltrain (10), NFTA (7 historical plus Atlas’s current 2024–2026 records), Worcester (12), MBTA (10), and NORTA (10). Route-change snapshot counts can be lower than coverage-year counts when a route’s headway stays unchanged. Transfort’s recovered 2016 sample was healthy, but it is not yet a ten-year backfill.
 
 ### Prepared local batches
 
@@ -88,12 +88,12 @@ These are local-only dry-run results. They have not been published to R2.
 
 | Agency | Source years processed locally | Route-history snapshots | Result |
 | --- | ---: | ---: | --- |
-| Brampton Transit | 2014–2023 | 196 | Ready; ten source years |
-| Caltrain | 2017–2026 | 13 | Ready; ten source years |
-| NFTA | 2017–2023 | 115 | Combine with Atlas’s 2024–2026 records |
-| Worcester RTA | 2013–2026 | 109 | Ready; thirteen source years |
-| MBTA | 2010–2019 | 675 | Ready; ten source years |
-| NORTA | 2012–2021 | 140 | Ready; ten source years |
+| Brampton Transit | 2014–2023 | 196 | Ready; 10 coverage years |
+| Caltrain | 2017–2026 | 13 | Ready; 10 coverage years |
+| NFTA | 2017–2023 | 115 | Combine 7 historical coverage years with Atlas’s 2024–2026 records |
+| Worcester RTA | 2013–2026 | 109 | Ready; 12 coverage years |
+| MBTA | 2010–2019 | 675 | Ready; 10 coverage years |
+| NORTA | 2012–2021 | 140 | Ready; 10 coverage years |
 
 ---
 

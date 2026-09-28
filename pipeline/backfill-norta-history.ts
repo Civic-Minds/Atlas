@@ -106,6 +106,7 @@ async function main() {
   console.log(`Dry run: ${feeds.length} NORTA archive feeds selected for ${startYear}–${endYear}.`);
 
   const skipped: Array<{ year: number; error: string }> = [];
+  const coverageYears = new Set<number>();
   const reports: FeedReport[] = [];
   const allSnapshots: Array<{ key: string; body: string }> = [];
   let previous: Record<string, { headway: number }> = {};
@@ -119,6 +120,7 @@ async function main() {
       const info = await peekFeedInfo(buffer);
       const result = await processGtfsBuffer(buffer, message => process.stdout.write(`  ${message}\n`), { slug: SLUG });
       const periodKey = info.feedExpiry ?? info.feedVersion ?? feed.dateKey;
+      coverageYears.add(feed.year);
       const { current, snapshots } = snapshotRoutes(result.geojson, previous, periodKey);
       const routeFeatures = (JSON.parse(result.geojson) as { features: Array<{ geometry?: { type?: string }; properties?: Record<string, unknown> }> }).features
         .filter(feature => feature.geometry?.type === 'LineString' && feature.properties?.routeShortName != null).length;
@@ -138,7 +140,8 @@ async function main() {
 
   const reportPath = resolve(`tmp/history-dry-run/${SLUG}-official-archive.json`);
   await mkdir(dirname(reportPath), { recursive: true });
-  await writeFile(reportPath, JSON.stringify({ generatedAt: new Date().toISOString(), slug: SLUG, startYear, endYear, source: MEDIA_API, selectedFeeds: feeds, reports, skipped, snapshots: allSnapshots }, null, 2));
+  const sortedCoverageYears = [...coverageYears].sort();
+  await writeFile(reportPath, JSON.stringify({ generatedAt: new Date().toISOString(), slug: SLUG, startYear, endYear, source: MEDIA_API, selectedFeeds: feeds, coverageYears: sortedCoverageYears, coverageMetadata: { coverageYears: sortedCoverageYears, materializeAllPeriods: true }, reports, skipped, snapshots: allSnapshots }, null, 2));
   console.log(`\nReport → ${reportPath} (${reports.length} feeds, ${allSnapshots.length} snapshots, ${skipped.length} skipped)`);
 }
 

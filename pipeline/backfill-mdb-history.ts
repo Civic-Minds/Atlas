@@ -199,6 +199,7 @@ async function main() {
   picks.forEach(d => console.log(`    ${d.downloaded_at.slice(0, 10)} → ${d.hosted_url.split('/').pop()}`));
 
   const skipped: string[] = [];
+  const coverageYears = new Set<number>();
   let dryRunPrevious: Record<string, { headway: number }> = {};
   const dryRunSnapshots: Array<{ key: string; body: string }> = [];
   for (const dataset of picks) {
@@ -212,6 +213,9 @@ async function main() {
 
       const { feedExpiry, feedVersion } = await peekFeedInfo(buf);
       const periodKey = feedExpiry ?? feedVersion ?? dateStr.replace(/-/g, '');
+      // Coverage is based on the selected source year, not feed_end_date:
+      // agencies often publish a fall feed that ends in the following year.
+      coverageYears.add(new Date(dataset.downloaded_at).getFullYear());
       console.log(`  periodKey: ${periodKey}`);
 
       const result = await processGtfsBuffer(buf, msg => process.stdout.write(`  ${msg}\n`), { slug });
@@ -253,11 +257,18 @@ async function main() {
       feedId,
       startYear,
       selectedDatasets: picks.map(d => ({ id: d.id, downloadedAt: d.downloaded_at, hostedUrl: d.hosted_url })),
+      coverageYears: [...coverageYears].sort(),
+      coverageMetadata: { coverageYears: [...coverageYears].sort(), materializeAllPeriods: true },
       skipped,
       snapshots: dryRunSnapshots,
     }, null, 2));
     console.log(`Dry-run report → ${reportPath} (${dryRunSnapshots.length} snapshots)`);
   }
+
+  await r2PutArchiveJson(`history/${slug}/coverage.json`, JSON.stringify({
+    coverageYears: [...coverageYears].sort(),
+    materializeAllPeriods: true,
+  }));
 
   console.log('\nDone. Run: npm run build-history');
 }

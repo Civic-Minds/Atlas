@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- History backfill reports now record valid source years separately from route-change snapshots, so unchanged years can still qualify an agency for long-term History.
 - History builds now include archived route names containing slashes, so those snapshots are not dropped during aggregation.
 - History backfills can now be dry-run locally, producing reusable reports without publishing archives or snapshots to R2.
 - MBTA’s official archive can now be processed into a local ten-year History and feed-quality report using usable dated variants without publishing to R2.
