@@ -15,5 +15,7 @@ describe('MapAttribution', () => {
       expect(element.className).toContain('font-semibold');
       expect(element.className).toContain('leading-none');
     }
+
+    expect(feedback.getAttribute('href')).toContain(encodeURIComponent('Feedback:\n\n\nPage:'));
   });
 });

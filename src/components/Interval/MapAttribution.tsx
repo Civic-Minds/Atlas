@@ -8,7 +8,7 @@ const FULL_ATTRIBUTION =
 
 /** Basemap credit — linked names satisfy OSM + CARTO attribution requirements. */
 export function MapAttribution() {
-  const feedbackHref = `mailto:hey@ryanisnota.pro?subject=Atlas%20Feedback&body=${encodeURIComponent(`Page: ${window.location.href}\n\n`)}`;
+  const feedbackHref = `mailto:hey@ryanisnota.pro?subject=Atlas%20Feedback&body=${encodeURIComponent(`Feedback:\n\n\nPage: ${window.location.href}\n`)}`;
 
   return (
     <div
