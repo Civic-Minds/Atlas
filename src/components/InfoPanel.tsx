@@ -4,13 +4,13 @@ import { DROPDOWN_PANEL, dropdownAnim, SEARCH_PILL, SEARCH_FIELD, Z_MODAL_BG, CO
 import { LIVE_POLLING_ROUTES, liveCoverageForRouteNames, type LiveCoverage } from '../../shared/livePollingConfig';
 import { R2_PUBLIC_URL, FEATURES } from '../../shared/config';
 import { agencyDisplayParts, formatStoredDate } from '../utils/format';
-import { feedRefreshCountdownLabel, FEED_REFRESH_CADENCE_LABEL, type FeedRefreshMeta } from '../../shared/feedRefresh';
+import { feedRefreshCountdownLabel, type FeedRefreshMeta } from '../../shared/feedRefresh';
 import { agencyQualifiesForHistory, agencyQualifiesForHistoryExplore } from '../../shared/historyEligibility';
 import { countriesForAgencies } from '../../shared/regionCountry';
 import type { Agency } from '../App';
 import { isFeedExpired } from '../utils/feedFreshness';
 import { trackEvent } from '../lib/analytics';
-import { EXPIRED_FEED_CONTEXT, EXPIRED_FEED_EXPLANATION, expiredFeedNotice } from '../content/noticeCopy';
+import { EXPIRED_FEED_CADENCE, EXPIRED_FEED_CONTEXT, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice } from '../content/noticeCopy';
 
 interface HistoryAgencySummary { slug: string; name: string; region: string; routes: unknown[] }
 
@@ -565,18 +565,19 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
               {helpContext?.agencyName && (
                 <p className="text-xs text-[var(--text-primary)] leading-relaxed">
                   {expiredFeedNotice(helpContext.agencyName, helpContext.expDateStr)}
-                  {helpContext.lastRefreshedAt && formatStoredDate(helpContext.lastRefreshedAt)
-                    ? helpContext.expiredFeedCheckCount != null && helpContext.expiredFeedCheckSince && helpContext.lastFeedCheckAt && formatStoredDate(helpContext.lastFeedCheckAt)
-                      ? ` Atlas began checking this feed on ${formatStoredDate(helpContext.expiredFeedCheckSince)} and has checked it ${helpContext.expiredFeedCheckCount} time${helpContext.expiredFeedCheckCount === 1 ? '' : 's'} since then. The most recent check was ${formatStoredDate(helpContext.lastFeedCheckAt)}.`
-                      : ` Atlas last successfully refreshed the feed on ${formatStoredDate(helpContext.lastRefreshedAt)}.`
-                    : ''}
+                  {expiredFeedCheckHistory({
+                    count: helpContext.expiredFeedCheckCount,
+                    since: helpContext.expiredFeedCheckSince,
+                    lastChecked: helpContext.lastFeedCheckAt,
+                    lastRefreshed: helpContext.lastRefreshedAt,
+                  })}
                 </p>
               )}
               <p className="text-xs text-[var(--text-dim)] leading-relaxed">
                 {EXPIRED_FEED_EXPLANATION}
               </p>
               <p className="text-xs text-[var(--text-dim)] leading-relaxed">
-                {FEED_REFRESH_CADENCE_LABEL} {EXPIRED_FEED_CONTEXT}
+                {EXPIRED_FEED_CADENCE} {EXPIRED_FEED_CONTEXT}
               </p>
               {helpContext?.websiteUrl && (
                 <a

@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - Centralized expired-feed notice copy and clarified that Atlas has not located and verified a newer feed yet.
+- Moved the full expired-feed notice wording, including refresh history, into the shared notice copy file.
 - Added secure runtime API-key support for 511.org static feeds, so Union City, Rio Vista, FAST, and Vacaville can use their current schedules without committing the key.
 - Agency filter selection now keeps Atlas’s existing active-control colors while adding a clearer outline and weight.
 - Removed the unnecessary “Combine filters” helper text from the agency filter row.

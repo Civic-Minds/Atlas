@@ -1,4 +1,4 @@
-import { agencyDisplayParts } from '../utils/format';
+import { agencyDisplayParts, formatStoredDate } from '../utils/format';
 
 /** Shared user-facing copy for every expired-feed notice. */
 export function expiredFeedNotice(agencyName: string, expDateStr?: string): string {
@@ -12,3 +12,20 @@ export const EXPIRED_FEED_EXPLANATION =
 
 export const EXPIRED_FEED_CONTEXT =
   'A newer schedule may exist on the agency\'s website without a downloadable feed Atlas can verify.';
+
+export const EXPIRED_FEED_CADENCE = 'We check all feeds weekly.';
+
+export function expiredFeedCheckHistory(options: {
+  count?: number;
+  since?: string;
+  lastChecked?: string;
+  lastRefreshed?: string;
+}): string {
+  if (options.count != null && options.since && options.lastChecked && formatStoredDate(options.lastChecked)) {
+    return `Atlas began checking this feed on ${formatStoredDate(options.since)} and has checked it ${options.count} time${options.count === 1 ? '' : 's'} since then. The most recent check was ${formatStoredDate(options.lastChecked)}.`;
+  }
+  if (options.lastRefreshed && formatStoredDate(options.lastRefreshed)) {
+    return `Atlas last successfully refreshed the feed on ${formatStoredDate(options.lastRefreshed)}.`;
+  }
+  return '';
+}
