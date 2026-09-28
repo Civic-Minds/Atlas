@@ -136,6 +136,18 @@ agency identity and service dates extending beyond the audit date.
 | `hocts` | The configured feed remains expired and malformed; no newer matching HOCTS feed was found. |
 | `moose-jaw` | The city still links its official GTFS URL and it downloads, but the feed still ends 2024-03-31; no current replacement was verified. |
 
+Additional source checks on 2026-09-27 did not produce a publishable replacement:
+
+- `hocts`: the official county page and the current public scorecard still point
+  to the same expired feed; downloading that URL returned the old 2020 archive,
+  not a current schedule.
+- `qline`: transit.det.city confirms a 2026-01-01–2027-12-31 QLINE dataset,
+  but it does not publish the underlying ZIP URL; the agency's Transitland
+  source remains the expired 2025 file.
+- `wichita`: the official site has newer rider schedules, but the available
+  GTFS URL and Transitland copy still end before the audit date; no replacement
+  download was verified.
+
 ## Discontinued or merged services
 
 These agencies remain in the historical audit output but should not receive a
