@@ -6,8 +6,8 @@ Use this page to choose the right validation path before changing Atlas. The det
 
 - **Single agency** — a feed-specific quirk such as a bad shape point, mislabeled headsign, or excluded placeholder route. Keep the change agency-keyed and validate that agency.
 - **A group** — a shared country, feed producer, or naming convention. Validate the motivating agency and other known members of that group.
-- **Shared UI** — a behavior with no natural agency boundary, such as filters, route selection, panels, or map controls. Follow [`docs/FIXING_UI_ISSUES.md`](docs/FIXING_UI_ISSUES.md).
-- **Shared pipeline/data** — calculations or transformations used across agencies, such as calendar logic, headways, shapes, or route metrics. Follow [`docs/FIXING_PIPELINE_ISSUES.md`](docs/FIXING_PIPELINE_ISSUES.md).
+- **Shared UI** — a behavior with no natural agency boundary, such as filters, route selection, panels, or map controls. Follow [`docs/engineering/FIXING_UI_ISSUES.md`](docs/engineering/FIXING_UI_ISSUES.md).
+- **Shared pipeline/data** — calculations or transformations used across agencies, such as calendar logic, headways, shapes, or route metrics. Follow [`docs/engineering/FIXING_PIPELINE_ISSUES.md`](docs/engineering/FIXING_PIPELINE_ISSUES.md).
 
 When the scope is uncertain, start with the narrower classification and look for evidence before generalizing. A fix that began with one agency does not become shared merely because the code change looks reusable.
 
@@ -20,6 +20,6 @@ When the scope is uncertain, start with the narrower classification and look for
 5. Update `[Unreleased]`, commit the logical change, and record the validation evidence.
 6. Push only after explicit approval.
 
-See [`docs/PIPELINE.md`](docs/PIPELINE.md) for the underlying processing methodology and [`docs/ADDING_AGENCIES.md`](docs/ADDING_AGENCIES.md) for feed onboarding and publication procedures.
+See [`docs/data/PIPELINE.md`](docs/data/PIPELINE.md) for the underlying processing methodology and [`docs/data/ADDING_AGENCIES.md`](docs/data/ADDING_AGENCIES.md) for feed onboarding and publication procedures.
 
-See [`docs/BRANCH_WORKFLOW.md`](docs/BRANCH_WORKFLOW.md) for the single-`main` branch model and the separate beta/production deployment workflow.
+See [`docs/engineering/BRANCH_WORKFLOW.md`](docs/engineering/BRANCH_WORKFLOW.md) for the single-`main` branch model and the separate deployment workflow.

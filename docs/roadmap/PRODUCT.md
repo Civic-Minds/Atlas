@@ -7,7 +7,7 @@ User experience and the workflow of a transit professional using Atlas.
 ## Current app surfaces
 
 - **Frequency Map — Live:** Where is service frequent or infrequent?
-- **Live Vehicles — Live:** Where are supported vehicles now, and how are routes performing?
+- **Live Vehicles — Paused:** Where are supported vehicles now, and how are routes performing? The UI remains in the codebase, but the hosted data path is currently unavailable.
 - **History — Limited:** How did service change across schedule periods?
 - **Corridors — Contextual:** Which routes connect two selected stations? Available from stop-level interactions rather than primary navigation.
 - **Fares — Paused:** What base fare is associated with a route?
@@ -16,8 +16,8 @@ User experience and the workflow of a transit professional using Atlas.
 
 ## Live Data Layer (Expanding)
 
-- [x] **Live vehicle map**: live vehicle positions for configured agencies; the frontend polls supported feeds while the map is open
-- [x] **Schedule adherence panel**: on-demand comparison of scheduled vs. actual headway for supported routes
+- [ ] **Restore live vehicle map**: live vehicle positions for configured agencies after the hosted data path and coverage are rebuilt
+- [ ] **Restore schedule adherence panel**: on-demand comparison of scheduled vs. actual headway for supported routes
 - [ ] **Historical drift analysis**: combine archived snapshots with on-demand TripUpdates to surface patterns over time (e.g. "always 5 min late on Tuesdays at this stop")
 
 ---

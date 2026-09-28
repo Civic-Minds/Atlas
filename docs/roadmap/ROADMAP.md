@@ -4,8 +4,6 @@ Atlas is a regional transit atlas for understanding where transit runs frequentl
 
 - **[Vision](../product/VISION.md)**: Product philosophy — frequency mapping to live performance evidence and long-term accumulation of real service data.
 
-**Current focus:** The Frequency Map remains the primary app while beta-gated History and Live work expands. Corridors is contextual/local-only rather than a current production focus.
-
 ### Product & Platform
 - **[Product](./PRODUCT.md)**: Map apps (Frequency Map, Corridors, History), live data layer, filters, design principles.
 - **[Platform](./PLATFORM.md)**: History & change analysis, public tools (shareable views, multi-agency merges).

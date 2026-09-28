@@ -13,15 +13,15 @@ GTFS feeds are scattered — one per agency, with no way to see a whole region's
 - **Search**: Cross-agency route search by number or name, scoped to the current frequency filter.
 - **Station View**: Click any stop to pin it and see every route serving it along with their current-day headways.
 - **Corridors**: Station-to-station lookup — find direct routes between two stops with headway at the destination.
-- **Live Adherence**: Real-time headway drift for supported routes via GTFS-RT TripUpdates — fetched on demand.
-- **History**: Week-over-week schedule adherence patterns from a background archiver; shows how reliably a route runs across days and times.
+- **Live Adherence**: Planned real-time headway drift for supported routes via GTFS-RT TripUpdates; currently paused.
+- **History**: Week-over-week schedule adherence patterns from retained schedule and live snapshots; currently limited and gated.
 - **Agency Browser**: Browse all agencies with region filters, search, and a detail card showing routes by frequency and live tracking status.
 
 ## Stack
 - **Frontend**: React 19, Vite, TypeScript, Tailwind CSS, React Router, IndexedDB caching
 - **Mapping**: MapLibre GL JS, deck.gl, PMTiles
 - **Pipeline**: Node.js / tsx, JSZip, PapaParse, GTFS-Realtime protobuf bindings, Tippecanoe
-- **Infrastructure**: Vercel (hosting + serverless API routes), Cloudflare R2 (public map artifacts and private GTFS-RT archives), Cloudflare Workers (background GTFS-RT archiver), GitHub Actions (weekly refresh)
+- **Infrastructure**: Vercel (hosting), Cloudflare R2 (public map artifacts and retained private GTFS-RT snapshots), Cloudflare Workers (legacy background GTFS-RT archiver), GitHub Actions (weekly refresh)
 - **Analytics**: Google Analytics 4 for privacy-conscious feature usage measurement, Vercel Speed Insights for real-user performance
 - **Testing**: Vitest
 

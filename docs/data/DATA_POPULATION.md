@@ -27,7 +27,7 @@ This scope was written when Atlas was much smaller and Ontario was a large share
 
 ## Choosing the first geography (revisited)
 
-The original GTHA choice rested on two separate reasons: it would produce a "geographically compact, readable map," and it matched Atlas's product focus at the time. The second reason no longer holds. The current registry contains 699 agencies; 556 are visible in public mode, with the public catalog currently concentrated in Canada and the United States. The distribution below is based on `public/data/index.json` and the region-to-country lookup in `shared/regionCountry.ts`:
+The original GTHA choice rested on two separate reasons: it would produce a "geographically compact, readable map," and it matched Atlas's product focus at the time. The second reason no longer holds. The current registry contains 691 agencies; 548 are visible in public mode, with the public catalog currently concentrated in Canada and the United States. The distribution below is based on `public/data/index.json` and the region-to-country lookup in `shared/regionCountry.ts`:
 
 - **United States** — California alone has 93 agencies, more than all of Ontario (33). Other large states: New York (29), Washington (23), Florida (20), Texas (20), Virginia (17). The US is Atlas's largest single-country footprint by a wide margin.
 - **France** — seven-plus regions with real coverage: Auvergne-Rhône-Alpes (19), Nouvelle-Aquitaine (17), Occitanie (16), Bretagne (15), Provence-Alpes-Côte d'Azur (13), Hauts-de-France (12), Normandie (12), Grand Est (11), plus smaller regions.
