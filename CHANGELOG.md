@@ -37,6 +37,11 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Limited-service filtering now hides the whole route when only one direction has limited service, instead of leaving the other direction behind.
 - Period views now show routes with limited or one-direction service when irregular routes are not hidden.
 - **Feed security:** restored five agency refresh sources through credential-free public Mobility Database mirrors; Aix-en-Provence, Marseille, Lyon, and Saint-Nazaire remain paused pending verified network-specific sources.
+- Public map tiles no longer get stuck behind cached release errors, so route lines can load after a data release is published.
+- Add a history-only verification workflow so archive checks do not rebuild or republish the entire map release.
+- Make history archive reads use a stable IPv4 connection path, reducing transient R2 timeouts during rebuilds.
+- Make history rebuilds more reliable by limiting archive downloads, reducing dropped snapshots during temporary storage timeouts.
+- Add current fallback feeds for CTtransit and Westchester Bee-Line so scheduled refreshes can recover when the primary hosts fail.
 
 - **Security:** removed committed credential-bearing GTFS feed URLs; affected agencies retain their existing stored artifacts until safe public or environment-backed sources are configured.
 

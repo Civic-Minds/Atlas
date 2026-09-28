@@ -40,6 +40,12 @@ export function dataReleaseAssetUrl(release: DataRelease, key: string, baseUrl =
   return `${baseUrl.replace(/\/$/, '')}/${key.replace(/^\//, '')}?v=${encodeURIComponent(release.releaseId)}`;
 }
 
+export function dataReleaseApiUrl(releaseId: string, variant?: 'overview'): string {
+  const params = new URLSearchParams({ release_id: releaseId });
+  if (variant) params.set('variant', variant);
+  return `/api/atlas-pmtiles?${params.toString()}`;
+}
+
 export function dataReleaseAgencyUrl(
   release: DataRelease,
   slug: string,

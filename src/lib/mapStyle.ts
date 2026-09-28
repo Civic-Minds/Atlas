@@ -3,14 +3,14 @@ import { Protocol, PMTiles } from 'pmtiles';
 import { R2_PUBLIC_URL } from '../../shared/config';
 import { currentAgencyDataVersion, resolveAgencyDataVersion } from './agencyGeo';
 import { RetryingFetchSource } from './pmtilesRetrySource';
-import { dataReleaseAssetUrl, resolveDataRelease, type DataRelease } from './dataRelease';
+import { dataReleaseApiUrl, dataReleaseAssetUrl, resolveDataRelease, type DataRelease } from './dataRelease';
 
 let activeRelease: DataRelease | null = null;
 
 export function getAtlasPmtilesUrl(): string {
   if (activeRelease) {
     if (typeof window !== 'undefined' && import.meta.env.PROD) {
-      return `${window.location.origin}/api/atlas-pmtiles?release=${encodeURIComponent(activeRelease.releaseId)}`;
+      return `${window.location.origin}${dataReleaseApiUrl(activeRelease.releaseId)}`;
     }
     return dataReleaseAssetUrl(activeRelease, activeRelease.pmtilesKey);
   }
@@ -24,7 +24,7 @@ export function getAtlasPmtilesUrl(): string {
 export function getAtlasOverviewPmtilesUrl(): string {
   if (activeRelease) {
     if (typeof window !== 'undefined' && import.meta.env.PROD) {
-      return `${window.location.origin}/api/atlas-pmtiles?variant=overview&release=${encodeURIComponent(activeRelease.releaseId)}`;
+      return `${window.location.origin}${dataReleaseApiUrl(activeRelease.releaseId, 'overview')}`;
     }
     return dataReleaseAssetUrl(activeRelease, activeRelease.overviewPmtilesKey);
   }
