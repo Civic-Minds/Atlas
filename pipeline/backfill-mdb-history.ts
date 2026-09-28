@@ -10,7 +10,8 @@
  * Run: npx tsx pipeline/backfill-mdb-history.ts <slug> <mdb-source-id> [start-year]
  * Example: npx tsx pipeline/backfill-mdb-history.ts burlington mdb-724 2016
  */
-import { resolve } from 'path';
+import { mkdir, writeFile } from 'fs/promises';
+import { dirname, resolve } from 'path';
 import { config } from 'dotenv';
 config({ path: resolve('.env.local') });
 import JSZip from 'jszip';
@@ -131,6 +132,7 @@ async function writeSnapshot(slug: string, geojson: string, periodKey: string, o
 
   const processedAt = new Date().toISOString();
   const writes: Array<() => Promise<void>> = [];
+  const snapshots: Array<{ key: string; body: string }> = [];
   const changed: string[] = [];
 
   for (const [routeShortName, route] of Object.entries(current)) {
@@ -144,6 +146,7 @@ async function writeSnapshot(slug: string, geojson: string, periodKey: string, o
       headwayByPeriod: route.headwayByPeriod ?? null,
       processedAt,
     });
+    snapshots.push({ key, body });
     writes.push(() => r2PutArchiveJson(key, body));
   }
 
@@ -163,6 +166,7 @@ async function writeSnapshot(slug: string, geojson: string, periodKey: string, o
     changed,
     total: Object.keys(current).length,
     latest: Object.fromEntries(Object.entries(current).map(([sn, r]) => [sn, { headway: r.headway }])),
+    snapshots,
   };
 }
 
@@ -196,6 +200,7 @@ async function main() {
 
   const skipped: string[] = [];
   let dryRunPrevious: Record<string, { headway: number }> = {};
+  const dryRunSnapshots: Array<{ key: string; body: string }> = [];
   for (const dataset of picks) {
     const dateStr = dataset.downloaded_at.slice(0, 10);
     console.log(`\nDownloading ${dateStr}...`);
@@ -222,11 +227,12 @@ async function main() {
         console.log(`  [warn] No feed_end_date — zip not archived`);
       }
 
-      const { changed, total, latest } = await writeSnapshot(slug, result.geojson, periodKey, {
+      const { changed, total, latest, snapshots } = await writeSnapshot(slug, result.geojson, periodKey, {
         dryRun,
         previous: dryRunPrevious,
       });
       if (dryRun) dryRunPrevious = latest;
+      if (dryRun) dryRunSnapshots.push(...snapshots);
       console.log(`  History: ${changed.length}/${total} routes changed (${changed.slice(0, 6).join(', ')}${changed.length > 6 ? '…' : ''})`);
     } catch (err) {
       console.log(`  [skip] ${dateStr} failed: ${err instanceof Error ? err.message : err}`);
@@ -236,6 +242,21 @@ async function main() {
 
   if (skipped.length) {
     console.log(`\nSkipped ${skipped.length} dataset(s) due to errors: ${skipped.join(', ')}`);
+  }
+
+  if (dryRun) {
+    const reportPath = resolve(`tmp/history-dry-run/${slug}.json`);
+    await mkdir(dirname(reportPath), { recursive: true });
+    await writeFile(reportPath, JSON.stringify({
+      generatedAt: new Date().toISOString(),
+      slug,
+      feedId,
+      startYear,
+      selectedDatasets: picks.map(d => ({ id: d.id, downloadedAt: d.downloaded_at, hostedUrl: d.hosted_url })),
+      skipped,
+      snapshots: dryRunSnapshots,
+    }, null, 2));
+    console.log(`Dry-run report → ${reportPath} (${dryRunSnapshots.length} snapshots)`);
   }
 
   console.log('\nDone. Run: npm run build-history');

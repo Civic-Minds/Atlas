@@ -53,7 +53,7 @@ These 20 agencies are the current research pool for reaching the 10-year History
 | Agency | Live years | Gap to threshold | Research result |
 | --- | ---: | ---: | --- |
 | **Brampton Transit** (`brampton`) | 9 | 1 | **Strong** — MDB `mdb-729` has archived datasets from 2014–2023; the current feed is separately catalogued for 2024–2026. |
-| **NORTA** (`norta`) | 8 | 2 | **Strong lead** — RIDE New Orleans says it maintains RTA GTFS history dating to 2012; downloadable archive contents still need auditing. |
+| **NORTA** (`norta`) | 8 | 2 | **Promising but incomplete** — RIDE’s archive exposes 2021–2025 RTA feed links; the 2025 file processed locally, while the older linked files and a 2017 Transitland archive URL currently return 404. |
 | **Caltrain** (`caltrain`) | 4 | 6 | **Strong** — MDB `mdb-54` has datasets from 2017–2026; a 2017 feed processed locally with no validation errors. |
 | **AC Transit** (`actransit`) | 3 | 7 | **Blocked/low** — MDB history currently reaches only 2025–2026 and the current producer feed requires an API key. |
 | **BART** (`bart`) | 3 | 7 | **Medium** — MDB `mdb-53` has repeated datasets from 2021–2026, but older coverage needs another archive. |
@@ -79,6 +79,8 @@ The following agencies are lower-confidence extensions of the pool, but each has
 | **Toronto Transit Commission** (`ttc`) | 1 | 9 | **Strong story / weak archive** — annual network plans provide a change trail, while MDB `mdb-2253` currently reaches 2024–2026. |
 
 The first archive pass should use the [Mobility Database](https://mobilitydatabase.org/faq) and [Transitland feed archive](https://www.transit.land/feeds/archive/), then agency-specific sources. Confirmed leads include the [RIDE New Orleans historical RTA archive](https://rideneworleans.org/opendata/gtfs/), the [MBTA historical GTFS archive](https://github.com/mbta/gtfs-documentation/blob/master/reference/gtfs-archive.md), and the Mobility Database histories for [Caltrain](https://mobilitydatabase.org/feeds/gtfs/mdb-54), [AC Transit](https://mobilitydatabase.org/feeds/gtfs/mdb-2455), and [BART](https://mobilitydatabase.org/feeds/gtfs/mdb-53). Service-change leads include [WMATA's network redesign](https://www.wmata.com/news/metro-budget-proposal-includes-targeted-rail-service-increases-adopts-bus-network-redesign.html), [Edmonton's LRT expansion](https://www.edmonton.ca/projects_plans/transit/future-lrt-projects), and [TTC's annual service plan](https://www.ttc.ca/about-the-ttc/projects-and-plans/2025-Annual-Service-Plan).
+
+Local validation has confirmed that the Atlas processor can read historical Brampton, Caltrain, and Worcester feeds without validation errors; Caltrain’s full 2017–2026 ten-year sample was processed through the dry-run path. NORTA’s available 2025 archive feed also processed successfully, but older archive URLs require recovery before a full NORTA backfill is possible.
 
 ---
 
