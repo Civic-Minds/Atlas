@@ -16,7 +16,7 @@ import type { ShapeProperties, ViewportBounds, TimePeriod, HoveredBranch } from 
 import type { DayType } from '../../../shared/dayTypes';
 import { registerProtocol, getAtlasPmtilesUrl, getMapStyle } from '../../lib/mapStyle';
 import { getAgencyBbox } from '../../hooks/useAgencyData';
-import { Z_PANEL, PILL_SURFACE } from '../../styles';
+import { Z_PANEL, MAP_BADGE } from '../../styles';
 import { LIVE_POLLING_ROUTES } from '../../../shared/livePollingConfig';
 import { useColorVision } from '../../context/ColorVisionContext';
 import { tileEffectiveHeadwayExpr, tileRouteKeyExpr } from '../../../shared/tileFilterExprs';
@@ -37,6 +37,14 @@ const CORRIDOR_BAND_COLOR = '#64748b';
 const ON_DEMAND_AREA_COLOR = '#64748b';
 const FREQUENT_15_COLOR = HEADWAY_TIERS.find(tier => tier.max === 15)?.color ?? '#3da44d';
 const FREQUENT_30_COLOR = HEADWAY_TIERS.find(tier => tier.max === 30)?.color ?? '#e07b2a';
+
+function MapNoticePill({ children, className = '' }: { children: React.ReactNode; className?: string }) {
+  return (
+    <div className={`absolute bottom-6 left-1/2 -translate-x-1/2 ${Z_PANEL} ${MAP_BADGE} h-8 max-w-[calc(100vw-2rem)] pointer-events-none ${className}`}>
+      {children}
+    </div>
+  );
+}
 
 /** Smallest-bbox agency containing a point — prefers a local agency over an overlapping regional one. */
 // Many agencies fall back to a fixed-size padding box around their center rather than a real
@@ -1026,6 +1034,36 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         layout: { 'line-cap': 'round', 'line-join': 'round', visibility: 'none' },
       });
 
+      // A selected route must be above overlapping routes. Keeping it in the
+      // shared vector layer lets MapLibre draw whichever feature comes last on
+      // top, so the selected route can disappear on shared geometry.
+      map.addLayer({
+        id: 'selected-route-layer',
+        type: 'line',
+        source: 'atlas-pmtiles',
+        'source-layer': 'routes',
+        minzoom: 8,
+        paint: {
+          'line-color': '#555555',
+          'line-width': ['interpolate', ['linear'], ['zoom'], 8, 3.5, 11, 3.5, 14, 3.5, 17, 3.5],
+          'line-opacity': 1,
+        },
+        layout: { 'line-cap': 'round', 'line-join': 'round' },
+        filter: ['==', ['get', 'routeId'], ''] as any,
+      });
+      map.addLayer({
+        id: 'selected-local-route-layer',
+        type: 'line',
+        source: 'local-routes',
+        paint: {
+          'line-color': ['get', 'localHeadwayColor'],
+          'line-width': ['interpolate', ['linear'], ['zoom'], 8, 3.5, 11, 3.5, 14, 3.5, 17, 3.5],
+          'line-opacity': 1,
+        },
+        layout: { 'line-cap': 'round', 'line-join': 'round' },
+        filter: ['==', ['get', 'routeId'], ''] as any,
+      });
+
       // Debug-only route highlight layer -- see MapCanvasProps.highlightRoutes.
       map.addLayer({
         id: 'debug-highlight-layer',
@@ -1693,6 +1731,12 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       routeFilter = concatFilters(routeFilter, livePairs.length > 0 ? ['any', ...livePairs] : ['==', ['get', 'agencySlug'], '']);
     }
 
+    const selectedRouteFilter = selectedRoute
+      ? routeKeyMatchExpression(selectedRoute)
+      : ['==', ['get', 'routeId'], ''];
+    if (map.getLayer('selected-route-layer')) map.setFilter('selected-route-layer', selectedRouteFilter as any);
+    if (map.getLayer('selected-local-route-layer')) map.setFilter('selected-local-route-layer', selectedRouteFilter as any);
+
     if (hasRoutes) map.setFilter('routes-layer', routeFilter as any);
     if (hasRoutesHit) {
       // Keep the transparent hit target in sync with the route line's zoom/headway
@@ -1723,6 +1767,13 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       }
 
       if (hasRoutes) map.setPaintProperty('routes-layer', 'line-color', lineColorExpr);
+      if (map.getLayer('selected-route-layer')) {
+        map.setPaintProperty('selected-route-layer', 'line-color', lineColorExpr);
+        map.setPaintProperty('selected-route-layer', 'line-width', [
+          'interpolate', ['linear'], ['zoom'],
+          8, 3.5, 11, 3.5, 14, 3.5, 17, 3.5,
+        ]);
+      }
       if (frequentServiceView && map.getLayer('frequent-service-routes-layer')) {
         map.setPaintProperty('frequent-service-routes-layer', 'line-color', [
           'match', ['get', 'frequentServiceBand'], '15', getTierColor('15', colorMode), getTierColor('30', colorMode),
@@ -1917,18 +1968,16 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
 
       {/* Geolocate Button Control Overlay */}
       {mapHint && (
-        <div className={`absolute bottom-6 left-1/2 -translate-x-1/2 ${Z_PANEL} px-3 py-1.5 rounded-full bg-[var(--bg-panel)] border border-[var(--border-primary)] text-xs text-[var(--text-muted)] shadow-lg pointer-events-none`}>
+        <MapNoticePill className="px-3 py-1.5 text-xs text-[var(--text-muted)]">
           {mapHint}
-        </div>
+        </MapNoticePill>
       )}
       {zoomOrientCard && (
-        <div className={`absolute bottom-6 left-6 right-24 sm:right-56 flex justify-center ${Z_PANEL} pointer-events-none`}>
-          <div className={`${PILL_SURFACE} h-auto max-w-full px-4 py-2 whitespace-nowrap`}>
-            <span className="text-xs font-black text-[var(--text-primary)]">{zoomOrientCard.title}</span>
-            <span className="mx-1.5 text-xs text-[var(--text-muted)]">•</span>
-            <span className="text-xs font-bold text-[var(--text-muted)]">{zoomOrientCard.subtitle}</span>
-          </div>
-        </div>
+        <MapNoticePill className="gap-1.5 text-[10px] font-bold text-[var(--text-muted)]">
+          <span className="text-[var(--text-primary)]">{zoomOrientCard.title}</span>
+          <span aria-hidden="true">•</span>
+          <span>{zoomOrientCard.subtitle}</span>
+        </MapNoticePill>
       )}
 
       {mapContextMenu && (

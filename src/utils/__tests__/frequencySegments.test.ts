@@ -308,6 +308,37 @@ describe('computeFrequencySegmentOverlay', () => {
     expect(overlay.segments).toHaveLength(1);
   });
 
+  it('uses scheduled period headways instead of coverage gaps', () => {
+    const stopIds = ['s1', 's2', 's3'];
+    const feature = makeRouteFeature({
+      routeId: 'dart-25',
+      stopIds,
+      stopPeriodHeadways: {
+        s1: { midday: 20 },
+        s2: { midday: 20 },
+        s3: { midday: 20 },
+      },
+    });
+    feature.properties = {
+      ...feature.properties,
+      headwayByPeriod: { midday: 20 },
+      periodCoverageHeadway: { midday: 172 },
+      stopPeriodCoverageHeadways: {
+        s1: { midday: 80 },
+        s2: { midday: 120 },
+        s3: { midday: 172 },
+      },
+    };
+
+    const overlay = computeFrequencySegmentOverlay({ agency: {
+      type: 'FeatureCollection',
+      features: [feature],
+    } }, 'midday', 20);
+
+    expect(overlay.segments).toEqual([]);
+    expect(overlay.partialMatches).toEqual([]);
+  });
+
   it('ignores corridor layers (keyed with a "-corridors" suffix)', () => {
     const layers: AgencyLayers = {
       'agency-corridors': {
