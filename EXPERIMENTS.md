@@ -1,28 +1,19 @@
-# Experiments
+# Atlas experiments
 
-Index of Atlas experiments that need explicit validation before they become part of the product or publishing workflow.
+Experiments are implementation and QA work that needs evidence before becoming product or publishing behavior. Product ideas live in the [roadmap experiments list](docs/roadmap/EXPERIMENTS.md).
 
-This is for implementation and QA work. Product ideas that are not committed roadmap items live in the [roadmap experiments list](docs/roadmap/EXPERIMENTS.md).
-
-## Active experiments
+## Current experiments
 
 | Experiment | Status | Next gate |
 |---|---|---|
-| [Offline stop-hub clustering](docs/experiments/stop-hub-clustering.md) | Local verification passed; map QA pending | Rebuild the stop PMTiles preview and verify the map/search result grouping |
-| [Fixed-period edge-transition gap](docs/experiments/fixed-period-edge-transition-gap.md) | Seven-agency validation passed; full 110-case terminal/shape audit found 110/110 applicable | Decide whether the diagnostic should inform qualification; no production behavior changed yet |
+| [Fixed-period edge-transition gap](docs/experiments/fixed-period-edge-transition-gap/README.md) | Passed validation; not enabled | Decide whether it should affect frequency qualification |
+| [Offline stop-hub clustering](docs/experiments/stop-hub-clustering/README.md) | Testing | Rebuild PMTiles and complete map QA |
 
-## Completed or archived
+## Statuses
 
-Completed experiments remain linked here with their final decision and evidence. Move the detailed record to `docs/experiments/archive/` only when the active list becomes difficult to scan.
+- **Testing** — evidence is still being collected.
+- **Passed validation** — evidence passed; product decision or rollout remains.
+- **Shipped** — the experiment became normal product behavior.
+- **Archived** — closed or superseded; the report remains available for history.
 
-No completed experiments are archived yet.
-
-## Experiment record standard
-
-Each detailed record should state:
-
-- the question or product risk being tested;
-- the implementation scope and current status;
-- the evidence and named test cases;
-- the remaining launch gate;
-- the final decision and the commit or issue that records it.
+Each experiment has its own folder. Its `README.md` is the decision record; supporting artifacts belong in that folder's `evidence/` directory.

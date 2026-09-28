@@ -1,8 +1,16 @@
 # Offline stop-hub clustering
 
-**Status:** Local verification passed; map QA pending a PMTiles rebuild.
+| Field | Value |
+|---|---|
+| Status | Testing |
+| Decision | Not shipped; local matching passed |
+| Next gate | Rebuild PMTiles and complete map QA |
 
-## Goal
+## Question
+
+Can Atlas group nearby sibling stops into one hub without incorrectly merging separate transfers?
+
+## Scope
 
 1. Group sibling stops (for example, cross-agency bus bays and rail platforms) offline during the PMTiles build, injecting a static `hubId` into the compiled `stops.pmtiles` file. This avoids viewport-boundary limits and client-side runtime calculations.
 2. Consolidate search results for stops sharing a `hubId` into one result with combined routes.
@@ -23,11 +31,9 @@
 | **Ogilvie vs Union Station** | Metra, “Ogilvie Transportation Center”<br>`[-87.640, 41.882]` | Metra, “Chicago Union Station”<br>`[-87.640, 41.878]` | ~440m | None; different names | **Excluded — transfer** | Pending rebuild |
 | **Loop L: Wells/Quincy** | CTA, “Washington/Wells”<br>`[-87.634, 41.882]` | CTA, “Quincy”<br>`[-87.634, 41.879]` | ~330m | None; different names | **Excluded — transfer** | Pending rebuild |
 
-## Launch gate
+## Remaining gate
 
 - Rebuild the local stop PMTiles preview.
 - Verify the grouped result on the map and in stop search.
 - Check that nearby but distinct transfers remain separate.
-- Record the final decision, commit, and any follow-up issue in the experiment index.
-
-[Back to Experiments](../../EXPERIMENTS.md)
+- Record the final decision, commit, and any follow-up issue in this report and the experiment index.
