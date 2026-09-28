@@ -559,6 +559,9 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                 {feedRefreshMeta?.lastCompletedAt && formatStoredDate(feedRefreshMeta.lastCompletedAt.slice(0, 10))
                   ? `Last full refresh: ${formatStoredDate(feedRefreshMeta.lastCompletedAt.slice(0, 10))}. `
                   : ''}
+                {feedRefreshMeta?.lastScopedAt && formatStoredDate(feedRefreshMeta.lastScopedAt.slice(0, 10))
+                  ? `Last targeted refresh: ${formatStoredDate(feedRefreshMeta.lastScopedAt.slice(0, 10))}. `
+                  : ''}
                 {feedRefreshCountdownLabel(feedRefreshMeta)}
               </p>
             </div>

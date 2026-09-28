@@ -710,16 +710,25 @@ async function main() {
     console.warn(`  [warn] agencies.json R2 write failed — ${e instanceof Error ? e.message : e}`);
   }
 
-  // Last-run timestamp on R2 only — avoids a git commit when feeds are unchanged.
+  // Last-run timestamps on R2 only — avoids a git commit when feeds are unchanged.
+  // Preserve the other timestamp so a targeted run does not erase the last
+  // full-run date (or vice versa).
+  try {
+    const existingMetaRaw = await r2Get('atlas/feed-refresh-meta.json');
+    const existingMeta = existingMetaRaw
+      ? JSON.parse(existingMetaRaw) as { lastCompletedAt?: string; lastScopedAt?: string }
+      : {};
+    const refreshedAt = new Date().toISOString();
+    const feedRefreshMeta = onlySlugs.length === 0
+      ? { ...existingMeta, lastCompletedAt: refreshedAt }
+      : { ...existingMeta, lastScopedAt: refreshedAt };
+    await r2Put('atlas/feed-refresh-meta.json', JSON.stringify(feedRefreshMeta));
+    console.log(`  feed-refresh-meta.json → R2 (${onlySlugs.length === 0 ? 'full' : 'targeted'} run)`);
+  } catch (e) {
+    console.warn(`  [warn] feed-refresh-meta R2 write failed — ${e instanceof Error ? e.message : e}`);
+  }
+
   if (onlySlugs.length === 0) {
-    try {
-      await r2Put('atlas/feed-refresh-meta.json', JSON.stringify({
-        lastCompletedAt: new Date().toISOString(),
-      }));
-      console.log('  feed-refresh-meta.json → R2');
-    } catch (e) {
-      console.warn(`  [warn] feed-refresh-meta R2 write failed — ${e instanceof Error ? e.message : e}`);
-    }
 
     // Only built from a full run (onlySlugs empty) — a --only-slug run only has fresh
     // night-service data for the agencies it actually touched, and uploading that partial

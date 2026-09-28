@@ -3,6 +3,8 @@ export type FeedRefreshMeta = {
   scheduleCron: string;
   /** ISO timestamp of last full refresh run — on R2, not git */
   lastCompletedAt?: string | null;
+  /** ISO timestamp of last targeted refresh run — on R2, not git */
+  lastScopedAt?: string | null;
 };
 
 /** Parse GitHub weekly cron: minute hour * * weekday (0=Sun … 6=Sat). */

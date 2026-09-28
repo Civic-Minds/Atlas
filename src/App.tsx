@@ -467,11 +467,12 @@ export default function App() {
       fetch('/data/feed-refresh.json').then(r => (r.ok ? r.json() : null)),
       fetch(`${R2_PUBLIC_URL}/atlas/feed-refresh-meta.json`).then(r => (r.ok ? r.json() : null)),
     ])
-      .then(([schedule, run]: [FeedRefreshMeta | null, { lastCompletedAt?: string } | null]) => {
+      .then(([schedule, run]: [FeedRefreshMeta | null, { lastCompletedAt?: string; lastScopedAt?: string } | null]) => {
         if (schedule?.scheduleCron) {
           setFeedRefreshMeta({
             scheduleCron: schedule.scheduleCron,
             lastCompletedAt: run?.lastCompletedAt ?? null,
+            lastScopedAt: run?.lastScopedAt ?? null,
           });
         }
       })
