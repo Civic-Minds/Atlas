@@ -22,7 +22,10 @@ const SAN_DIEGO_RAIL_RE = /^(?:Blue|Copper|Green|Orange|Silver)$/i;
 export function normalizeRouteType(routeType: unknown): number {
   if (routeType === undefined || routeType === null || routeType === '') return 3;
   const n = typeof routeType === 'number' ? routeType : parseInt(String(routeType), 10);
-  return Number.isFinite(n) ? n : 3;
+  if (!Number.isFinite(n)) return 3;
+  // HVT extended bus types (700–799) still belong under Atlas's Bus mode.
+  if (n >= 700 && n < 800) return 3;
+  return n;
 }
 
 export function isVirtualLrt(p: EffectiveModeInput): boolean {
@@ -113,6 +116,10 @@ export function getGtfsModeName(routeType: string | number): string {
 /** MapLibre expression: compute effective mode from feature properties. */
 export function buildEffectiveModeExpression(): unknown[] {
   const routeType: unknown[] = ['to-number', ['coalesce', ['get', 'routeType'], 3]];
+  const normalizedRouteType: unknown[] = ['case',
+    ['all', ['>=', routeType, 700], ['<', routeType, 800]], 3,
+    routeType,
+  ];
   const longName: unknown[] = ['coalesce', ['get', 'routeLongName'], ''];
   const shortName: unknown[] = ['coalesce', ['get', 'routeShortName'], ''];
   const agency: unknown[] = ['coalesce', ['get', 'agencySlug'], ''];
@@ -136,7 +143,7 @@ export function buildEffectiveModeExpression(): unknown[] {
       ['all', ['==', routeType, 2], ['>=', ['index-of', 'ION', longName], 0]],
     ],
     VIRTUAL_LRT_MODE,
-    routeType,
+    normalizedRouteType,
   ];
 }
 

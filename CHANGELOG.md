@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+-Agency-provided BRT and Express classifications now take precedence over generic “Rapid” wording, and extended Express Bus routes remain visible under Bus.
 -Added BC Ferries and Pierce County Ferries so Atlas covers two more public ferry systems.
 -Vancouver route and stop labels now preserve “SFU” capitalization.
 -Rail lines now remain visible when they overlap bus routes on the map.

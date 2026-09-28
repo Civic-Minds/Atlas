@@ -125,6 +125,8 @@ export function buildModeFilterClause(modes: Set<number>): unknown[] | null {
         ['==', ['get', 'routeType'], 2],
         ['<', ['index-of', 'ION', longName], 0],
       ]);
+    } else if (m === 3) {
+      parts.push(['==', effectiveMode, 3]);
     } else {
       parts.push(['==', ['get', 'routeType'], m]);
     }

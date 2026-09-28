@@ -173,6 +173,13 @@ describe('buildModeFilterClause', () => {
     expect(compiled.filter(ctx, feat({ day: 'Weekday', directionId: 0, routeType: 3 }) as any)).toBe(false);
   });
 
+  it('matches extended bus route types under the Bus mode', () => {
+    const filter = productionLikeFilter(Infinity, new Set([3]));
+    const compiled = compileFilter(filter);
+    const ctx = { zoom: 10 };
+    expect(compiled.filter(ctx, feat({ day: 'Weekday', directionId: 0, routeType: 702 }) as any)).toBe(true);
+  });
+
   it('matches no scheduled routes when only on-demand is selected', () => {
     const filter = buildModeFilterClause(new Set([ON_DEMAND_MODE]));
     expect(() => compileFilter(filter)).not.toThrow();

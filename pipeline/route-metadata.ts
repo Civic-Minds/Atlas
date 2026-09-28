@@ -6,10 +6,12 @@ export function detectBusSubType(
   longName: string | null,
   agencySlug?: string,
 ): 'brt' | 'express' | 'coach' | 'local' | undefined {
-  const rt = parseInt(String(routeType ?? '3'));
-  if (rt !== 3) return undefined;
+  const rawType = parseInt(String(routeType ?? '3'));
+  const isBusRoute = rawType === 3 || (rawType >= 700 && rawType < 800);
+  if (!isBusRoute) return undefined;
+  if (rawType === 702) return 'express';
   const combined = `${shortName} ${longName ?? ''}`.toLowerCase();
-  if (/\b(brt|bus rapid transit|viva|züm|zum|pulse|b-line|bline)\b/.test(combined)) return 'brt';
+  if (/\b(brt|bus rapid transit|rapid\s*ride|viva|züm|zum|pulse|b-line|bline)\b/.test(combined)) return 'brt';
   if (/\b(express|xpress)\b/.test(combined)) return 'express';
   if (agencySlug === 'go') return 'coach';
   return 'local';

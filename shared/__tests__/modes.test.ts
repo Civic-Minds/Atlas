@@ -10,6 +10,7 @@ describe('normalizeRouteType', () => {
   it('coerces string GTFS types', () => {
     expect(normalizeRouteType('3')).toBe(3);
     expect(normalizeRouteType('1')).toBe(1);
+    expect(normalizeRouteType('702')).toBe(3);
   });
 
   it('defaults missing values to bus', () => {
@@ -19,6 +20,10 @@ describe('normalizeRouteType', () => {
 });
 
 describe('effectiveMode', () => {
+  it('maps extended Express Bus routes to the Bus mode', () => {
+    expect(effectiveMode({ routeType: 702 })).toBe(3);
+  });
+
   it('classifies OC Transpo O-Train as LRT', () => {
     expect(effectiveMode({
       routeType: 0,
