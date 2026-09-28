@@ -15,6 +15,13 @@ import type { HeadwayByPeriod } from '../shared/config.js';
 
 const ARCHIVE_INDEX = 'https://cdn.mbta.com/archive/archived_feeds.txt';
 const SLUG = 'mbta';
+// These later archive entries are more usable than the first September/October
+// entries for their years: the 2010 September feed has no route features, and
+// the late-2015 feed has a fuller schedule while still ending in 2015.
+const ARCHIVE_OVERRIDES: Record<number, string> = {
+  2010: '20101231',
+  2015: '20151127',
+};
 
 interface ArchiveFeed {
   startDate: string;
@@ -49,6 +56,7 @@ function pickOnePerYear(feeds: ArchiveFeed[], startYear: number, endYear: number
   for (const feed of feeds) {
     const year = Number(feed.startDate.slice(0, 4));
     if (year < startYear || year > endYear) continue;
+    if (ARCHIVE_OVERRIDES[year] && feed.startDate !== String(ARCHIVE_OVERRIDES[year])) continue;
     const existing = byYear.get(year);
     if (!existing || Math.abs(Number(feed.startDate.slice(4)) - 900) < Math.abs(Number(existing.startDate.slice(4)) - 900)) {
       byYear.set(year, feed);
