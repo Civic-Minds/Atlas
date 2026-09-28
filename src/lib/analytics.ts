@@ -28,7 +28,9 @@ function loadAnalytics() {
   if (initialized || !import.meta.env.PROD || !measurementId || typeof window === 'undefined') return;
 
   window.dataLayer = window.dataLayer || [];
-  window.gtag = (...args: unknown[]) => window.dataLayer.push(args);
+  window.gtag = function gtag(..._args: unknown[]) {
+    window.dataLayer.push(arguments);
+  };
   window.gtag('js', new Date());
   window.gtag('config', measurementId, { send_page_view: false });
 
