@@ -439,7 +439,7 @@ describe('nightServiceDepartureTimes', () => {
 
 // Window defaults to GTFS minutes 420-1140 (7am-7pm), maxGap defaults to 15. Same boundary-gap
 // logic as hasSustainedNightService (shared helper), just a different window/threshold -- see
-// docs/DATA_FREQUENT_NETWORK.md for why 7am-7pm/15min was chosen.
+// docs/research/frequent-service-research-2026-09/CRITERIA.md for why 7am-7pm/15min was chosen.
 describe('hasSustainedFrequentService', () => {
   it('is true when every gap, including both boundaries, is exactly 15 minutes', () => {
     const times: number[] = [];

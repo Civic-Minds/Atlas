@@ -606,7 +606,7 @@ export async function processGtfsBuffer(
   const MAX_STOP_DEV2 = MAX_STOP_DEV * MAX_STOP_DEV;
 
   for (const [feature, { shortName, dirId, day }] of featureStopHeadwaySlots) {
-    // Same reasoning for frequentService (#294 follow-on, see docs/DATA_FREQUENT_NETWORK.md).
+    // Same reasoning for frequentService (#294 follow-on, see docs/research/frequent-service-research-2026-09/CRITERIA.md).
     feature.properties.frequentService = false;
     feature.properties.researchFrequentService = { daytime15: false, daytime30: false, extended15: false, extended30: false };
     const gKey = `${shortName}::${dirId}::${day}`;
@@ -823,7 +823,7 @@ export async function processGtfsBuffer(
       : (terminalStopId ? metricStopMap.get(terminalStopId) : undefined);
     // Frequent Network (#294 follow-on): entirely within normal (non-extended-hour) GTFS notation,
     // so unlike Night Service this needs no service_id union across the midnight boundary --
-    // terminalRawTimes alone is the right input. Weekday only, per docs/DATA_FREQUENT_NETWORK.md.
+    // terminalRawTimes alone is the right input. Weekday only, per docs/research/frequent-service-research-2026-09/CRITERIA.md.
     feature.properties.frequentService = (day === 'Weekday' && terminalRawTimes)
       ? hasSustainedFrequentService(terminalRawTimes)
       : false;

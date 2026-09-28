@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 
-const auditPath = 'docs/research/system-map-audit-2026-09.json';
+const auditPath = 'docs/research/system-map-audit-2026-09/data.json';
 const audit = JSON.parse(fs.readFileSync(auditPath, 'utf8'));
 const existing = new Set(audit.records.map(record => record.agencyId));
 

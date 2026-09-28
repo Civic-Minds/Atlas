@@ -1,4 +1,4 @@
-import audit from '../../docs/research/system-map-audit-2026-09.json';
+import audit from '../../docs/research/system-map-audit-2026-09/data.json';
 
 const storyThresholds = [10, 12, 15, 20, 30, 60];
 const storyCountries = new Set(['Canada', 'United States']);

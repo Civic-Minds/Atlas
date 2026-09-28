@@ -304,7 +304,7 @@ Actionable Tier 2 todos exhausted. Remaining items are **blocked** (see above + 
 
 ## France expansion — blocked (no shapes)
 
-Permanent until upstream ships `shapes.txt` on the real network feed. Details in [`KNOWN_ISSUES.md`](../operations/KNOWN_ISSUES.md) § Missing Agencies and [`INTERNATIONAL.md`](./INTERNATIONAL.md) § France.
+Permanent until upstream ships `shapes.txt` on the real network feed. Details in [`KNOWN_ISSUES.md`](../operations/KNOWN_ISSUES.md) § Missing Agencies and [`International expansion`](../research/international-expansion-2026-09/BRIEF.md) § France.
 
 | Status | Slug | Agency | Region | Notes |
 |--------|------|--------|--------|-------|

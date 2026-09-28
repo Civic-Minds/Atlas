@@ -138,4 +138,4 @@ The experiment is worth continuing if it produces at least one clear, defensible
 
 This document does not commit Atlas to building a demographic or equity product.
 
-[Back to Data](../DATA.md)
+[Back to Research](../INDEX.md) · [Data](../../DATA.md)

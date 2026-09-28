@@ -18,7 +18,7 @@ lives in [`shared/livePollingConfig.ts`](../../shared/livePollingConfig.ts).
 The agencies below are configured or previously tested, not currently live in the
 public product.
 
-### Active
+### Configured feeds (currently paused)
 
 | Agency | Slug | Routes | API Key | Feed |
 |--------|------|--------|---------|------|

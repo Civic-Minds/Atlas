@@ -1,6 +1,6 @@
 # North America GTFS-Flex publication audit
 
-Status: complete. This is a companion to [the on-demand service audit](north-america-on-demand-audit-2026-09.md). It checks whether each confirmed public on-demand service has a current public GTFS-Flex feed, whether related data is available through an agency or municipal open-data portal, and how to request the data when no public feed is found. The 100 ledger rows cover all 104 source records; five exo sectors are consolidated into one grouped row, and the remaining source-to-service mappings are one-to-one.
+Status: complete. This is a companion to [the on-demand service audit](ON_DEMAND_PUBLICATION.md). It checks whether each confirmed public on-demand service has a current public GTFS-Flex feed, whether related data is available through an agency or municipal open-data portal, and how to request the data when no public feed is found. The 100 ledger rows cover all 104 source records; five exo sectors are consolidated into one grouped row, and the remaining source-to-service mappings are one-to-one.
 
 Headline result: three services have a confirmed current public GTFS-Flex publication—Metro Transit Metro micro, C-TRAN The Current, and Williamsburg Area Transit Authority paratransit. No Canadian service in the 35-record Canada inventory has a confirmed public GTFS-Flex publication.
 
