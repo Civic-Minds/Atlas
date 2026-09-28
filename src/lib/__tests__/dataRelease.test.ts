@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { clearDataReleaseCache, dataReleaseAssetUrl, resolveDataRelease } from '../dataRelease';
+import { clearDataReleaseCache, dataReleaseApiUrl, dataReleaseAssetUrl, resolveDataRelease } from '../dataRelease';
 
 afterEach(() => {
   clearDataReleaseCache();
@@ -22,6 +22,8 @@ describe('data releases', () => {
     expect(release?.releaseId).toBe('release-test');
     expect(dataReleaseAssetUrl(release!, release!.pmtilesKey, 'https://data.example'))
       .toBe('https://data.example/atlas/releases/release-test/atlas.pmtiles?v=release-test');
+    expect(dataReleaseApiUrl(release!.releaseId)).toBe('/api/atlas-pmtiles?release_id=release-test');
+    expect(dataReleaseApiUrl(release!.releaseId, 'overview')).toBe('/api/atlas-pmtiles?release_id=release-test&variant=overview');
   });
 
   it('rejects an incomplete pointer so callers can use the legacy fallback', async () => {
