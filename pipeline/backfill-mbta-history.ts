@@ -23,6 +23,19 @@ interface ArchiveFeed {
   url: string;
 }
 
+interface FeedReport {
+  year: number;
+  url: string;
+  feedEndDate: string | null;
+  feedVersion: string | null;
+  features: number;
+  routeFeatures: number;
+  quality: string;
+  qualityScore: number;
+  qualityReasons: string[];
+  snapshots: number;
+}
+
 function parseArchiveIndex(text: string): ArchiveFeed[] {
   return text.trim().split(/\r?\n/).slice(1).flatMap(line => {
     const fields = line.match(/(?:"([^"]*)"|([^,]*))(?:,|$)/g)?.map(field => field.replace(/,$/, '').replace(/^"|"$/g, '')) ?? [];
@@ -102,7 +115,7 @@ async function main() {
   console.log(`Dry run: ${feeds.length} MBTA archive feeds selected for ${startYear}–${endYear}.`);
 
   const skipped: Array<{ year: number; error: string }> = [];
-  const reports: Array<{ year: number; url: string; feedEndDate: string | null; feedVersion: string | null; features: number; snapshots: number }> = [];
+  const reports: FeedReport[] = [];
   const allSnapshots: Array<{ key: string; body: string }> = [];
   let previous: Record<string, { headway: number }> = {};
 
@@ -117,13 +130,26 @@ async function main() {
       const result = await processGtfsBuffer(buffer, message => process.stdout.write(`  ${message}\n`), { slug: SLUG });
       const periodKey = info.feedExpiry ?? info.feedVersion ?? feed.endDate;
       const { current, snapshots } = snapshotRoutes(result.geojson, previous, periodKey);
+      const routeFeatures = (JSON.parse(result.geojson) as { features: Array<{ geometry?: { type?: string }; properties?: Record<string, unknown> }> }).features
+        .filter(feature => feature.geometry?.type === 'LineString' && feature.properties?.routeShortName != null).length;
       previous = Object.fromEntries(Object.entries(current).map(([route, value]) => [route, { headway: value.headway }]));
       allSnapshots.push(...snapshots.map(snapshot => ({
         key: snapshot.key,
         body: JSON.stringify({ headway: snapshot.headway, prevHeadway: snapshot.prevHeadway, processedAt: new Date().toISOString() }),
       })));
-      reports.push({ year, url: feed.url, feedEndDate: info.feedExpiry, feedVersion: info.feedVersion, features: result.featureCount, snapshots: snapshots.length });
-      console.log(`  Processed ${result.featureCount} features; ${snapshots.length} route changes.`);
+      reports.push({
+        year,
+        url: feed.url,
+        feedEndDate: info.feedExpiry,
+        feedVersion: info.feedVersion,
+        features: result.featureCount,
+        routeFeatures,
+        quality: result.feedQuality.status,
+        qualityScore: result.feedQuality.score,
+        qualityReasons: result.feedQuality.reasons,
+        snapshots: snapshots.length,
+      });
+      console.log(`  Processed ${result.featureCount} features (${routeFeatures} route features, ${result.feedQuality.status}); ${snapshots.length} route changes.`);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       skipped.push({ year, error: message });
