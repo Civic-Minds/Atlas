@@ -185,7 +185,7 @@
         42.4048,
         -82.191
       ],
-      "feedUrl": null,
+      "feedUrl": "https://files.mobilitydatabase.org/tld-5552/latest.zip",
       "websiteUrl": "https://www.chatham-kent.ca/transit/Pages/default.aspx",
       "cities": [
         "Chatham-Kent, Ontario"
@@ -17845,7 +17845,7 @@
         44.8378,
         -0.5792
       ],
-      "feedUrl": null,
+      "feedUrl": "https://files.mobilitydatabase.org/tdg-83024/latest.zip",
       "mdbFeedUrl": null,
       "hiddenInProduction": true,
       "pmtilesPending": true,
@@ -17917,7 +17917,7 @@
         45.5646,
         5.9178
       ],
-      "feedUrl": null,
+      "feedUrl": "https://files.mobilitydatabase.org/tdg-82272/latest.zip",
       "mdbFeedUrl": null,
       "hiddenInProduction": true,
       "pmtilesPending": true,
@@ -18061,7 +18061,7 @@
         43.4929,
         -1.4748
       ],
-      "feedUrl": null,
+      "feedUrl": "https://files.mobilitydatabase.org/tdg-80701/latest.zip",
       "mdbFeedUrl": null,
       "hiddenInProduction": true,
       "pmtilesPending": true,
@@ -18426,7 +18426,7 @@
         42.6887,
         2.8948
       ],
-      "feedUrl": null,
+      "feedUrl": "https://files.mobilitydatabase.org/tdg-83735/latest.zip",
       "mdbFeedUrl": null,
       "hiddenInProduction": true,
       "pmtilesPending": true,

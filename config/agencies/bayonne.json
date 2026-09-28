@@ -6,7 +6,7 @@
     43.4929,
     -1.4748
   ],
-  "feedUrl": null,
+  "feedUrl": "https://files.mobilitydatabase.org/tdg-80701/latest.zip",
   "mdbFeedUrl": null,
   "hiddenInProduction": true,
   "pmtilesPending": true,

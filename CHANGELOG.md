@@ -6,6 +6,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Feed security:** restored five agency refresh sources through credential-free public Mobility Database mirrors; Aix-en-Provence, Marseille, Lyon, and Saint-Nazaire remain paused pending verified network-specific sources.
+
 - **Security:** removed committed credential-bearing GTFS feed URLs; affected agencies retain their existing stored artifacts until safe public or environment-backed sources are configured.
 
 - Live vehicle group headers now include the agency's place when available, reducing ambiguity between similarly named agencies.
