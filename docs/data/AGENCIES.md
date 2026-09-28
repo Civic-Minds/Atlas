@@ -8,9 +8,10 @@ For display naming rules, see [`DISPLAY_NAMING.md`](DISPLAY_NAMING.md). For live
 
 ## Static Coverage
 
-The current count is generated from `public/data/index.json`; do not maintain a separate hand-count here.
+The current counts are generated from the registry and mode-specific catalogs; do not maintain a separate hand-count here. Run `npm run report:agency-count` for the current totals.
 
 Source of truth: [`public/data/index.json`](../../public/data/index.json)
+Generated public catalog: [`catalog-public.json`](../../public/data/catalog-public.json)
 
 **Expansion backlog:** [`AGENCY_BACKLOG.md`](AGENCY_BACKLOG.md) — prioritized agencies to add. Gap discovery: `npm run discover-gaps`.
 
