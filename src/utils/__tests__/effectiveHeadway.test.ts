@@ -35,14 +35,14 @@ describe('effectiveRouteHeadway', () => {
     expect(routeListDisplayHeadway([p], 'midday')).toBeNull();
   });
 
-  it('routeCardDisplayHeadway uses the same route-level metric as the filter', () => {
+  it('shows the branch cadence while the filter keeps using the route-wide metric', () => {
     const p = {
       ...base,
       headway: 5,
       headwayByPeriod: { midday: 6 },
       worstDirectionHeadwayByPeriod: { midday: 8 },
     } as ShapeProperties;
-    expect(routeCardDisplayHeadway(p, 'midday')).toBe(8);
+    expect(routeCardDisplayHeadway(p, 'midday')).toBe(6);
     expect(effectiveRouteHeadway(p, 'midday')).toBe(8);
   });
 
@@ -56,7 +56,7 @@ describe('effectiveRouteHeadway', () => {
 
     expect(routeCardDisplayHeadway(p, 'midday')).toBe(2);
     expect(routeListDisplayHeadway([p], 'midday')).toBe(2);
-    // The filter and card now use the same active-period metric.
+    // The filter still uses the active-period metric.
     expect(effectiveRouteHeadway(p, 'midday')).toBe(2);
   });
 
@@ -69,7 +69,7 @@ describe('effectiveRouteHeadway', () => {
       worstDirectionHeadwayByPeriod: { midday: 12 },
       headwayByPeriodSustained: { midday: true },
     } as ShapeProperties;
-    expect(routeCardDisplayHeadway(p, 'midday')).toBe(12);
+    expect(routeCardDisplayHeadway(p, 'midday')).toBe(2);
     expect(effectiveRouteHeadway(p, 'midday')).toBe(12);
   });
 

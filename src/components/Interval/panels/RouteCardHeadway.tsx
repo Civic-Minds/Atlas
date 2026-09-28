@@ -404,7 +404,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
         {selectedRouteOutOfFilter && !(hasCoreSummary && coreHeadway != null && coreHeadway <= maxHeadway) && (
           <div className={CARD_NOTICE_FOOTER}>
             <p className={CARD_NOTICE}>
-              This route is outside the active frequency filter, but remains visible because it is selected.
+              This route does not meet the {maxHeadway}-minute filter in every direction during {selectedPeriod?.label ?? 'the selected schedule'}, but remains visible because it is selected.
             </p>
           </div>
         )}

@@ -15,8 +15,10 @@ export function routeCardDisplayHeadway(p: ShapeProperties, period: TimePeriod):
     return p.headwayByPeriod?.[period] ?? null;
   }
   const summary = buildRouteServiceSummary(p);
-  const displayMetric = hasPeriodCoverage(p, period) ? summary.display : summary.filter;
-  return metricValueForPeriod(displayMetric, period);
+  // The card row is destination/branch-specific. Keep the route-wide metric in
+  // `summary.filter` for eligibility and fading, but do not replace a branch's
+  // own cadence with the slowest direction in the route.
+  return metricValueForPeriod(summary.display, period);
 }
 
 export function hasPeriodCoverage(p: ShapeProperties, period: TimePeriod): boolean {
