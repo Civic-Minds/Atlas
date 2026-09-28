@@ -147,6 +147,18 @@ Additional source checks on 2026-09-27 did not produce a publishable replacement
 - `wichita`: the official site has newer rider schedules, but the available
   GTFS URL and Transitland copy still end before the audit date; no replacement
   download was verified.
+- `cheyenne`: the city is actively operating and has newer service notices, but
+  the published National RTAP feed still ends 2025-09-14; no newer ZIP was
+  found.
+- `green-bay`: the city now gates its transit-data downloads behind a developer
+  license agreement; the public page does not expose a downloadable ZIP URL
+  that Atlas can validate automatically.
+- `albany-ga`: the city publishes current route information and Georgia reports
+  that Albany added GTFS data in 2025, but the discoverable feed still ends
+  2024-06-30 and no newer ZIP URL was verified.
+- `amarillo`: the catalog lists a 2024 source with service through 2026-12-30,
+  but it requires a query token; no directly downloadable authoritative ZIP was
+  verified.
 
 ## Discontinued or merged services
 
