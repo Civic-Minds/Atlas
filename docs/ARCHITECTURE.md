@@ -29,37 +29,42 @@ Read by: `pipeline/refresh.ts` only (reads `history/{slug}/latest.json` to detec
 
 ### atlas-live (private)
 
-Real-time GTFS-RT snapshots from the Cloudflare Worker archiver. Canary cohort is
-**smaller** than the browser Live Vehicles set — see `docs/operations/LIVE_POLLING.md` § History Archiving.
+Private storage reserved for real-time GTFS-RT snapshots. The archive is currently
+paused and no new snapshots are being written. The existing objects are retained,
+but the hosted snapshot/replay API is not present in the current checkout.
 
 - `positions/{slug}/{YYYY-MM-DD}/{unix-seconds}.json` — vehicle-position samples for the five archive agencies, every minute
 - `{slug}/{YYYY-MM-DD}/{unix-seconds}.json` — trip-update delay summaries for the five archive agencies, every 5 minutes
-- Both formats use the `atlas.live.v1` normalized envelope; legacy fields remain during migration.
+- The archived formats use the `atlas.live.v1` normalized envelope where snapshots exist.
 
-Written by: five small Cloudflare Workers sharing `workers/gtfs-rt-archiver/src/index.ts`, one shard per free Cron Trigger
-Read by: `/api/live-snapshot`, `/api/live-replay`, `/api/history-adherence` (not direct browser R2)
+Previously written by five small Cloudflare Workers sharing `workers/gtfs-rt-archiver/src/index.ts`.
+`/api/history-adherence` can read the archive; the former live snapshot/replay routes
+are not currently in this checkout.
 
 30-day retention enforced by the bucket's R2 lifecycle rules.
 
 
-## Live Polling: three surfaces (often conflated)
+## Live Polling: current and planned surfaces
 
-### 1. Browser on-demand (while Live is open)
+### 1. Live UI and feed configuration (currently gated off)
 
-Client polls `/api/live-vehicles` (and stop/adherence helpers). Route list and key gates:
-`shared/livePollingConfig.ts` (`LIVE_POLLING_ROUTES`). Includes public feeds (e.g. burlington,
-hamilton, ttc, edmonton, yrt, halifax) and key-gated ones (TransLink, STM, SF Muni `active`,
-LA Metro parked).
+The Live Vehicles UI and agency feed configuration remain in the repository, but the
+feature is disabled unless `VITE_LIVE_ENABLED=true`. The former `/api/live-vehicles`
+polling route and related live endpoints are not present in the current checkout.
+Route configuration and feed credentials remain in `shared/livePollingConfig.ts`.
 
 ### 2. Background Worker archiver (paused)
 
-Hardcoded feed lists in `shared/liveArchiveFeeds.ts` (not `LIVE_POLLING_ROUTES`). The five archive Workers are currently deployed without Cron Triggers, so they are paused and no longer write new snapshots to `atlas-live`:
-trip-updates and vehicle positions for **ttc, burlington, hamilton, halifax, and stm**. Five small Workers divide the feeds so each invocation stays under the Workers Free CPU limit.
-Writes private `atlas-live`. Expand only after canary health + contract checks.
+Hardcoded feed lists live in `shared/liveArchiveFeeds.ts` (not `LIVE_POLLING_ROUTES`).
+The five legacy archive Workers are deployed without active Cron Triggers, so they no
+longer write new snapshots to `atlas-live`. They covered trip updates and vehicle
+positions for **ttc, burlington, hamilton, halifax, and stm**. Any replacement should
+be designed after local validation and a new canary contract.
 
-### 3. Provider consumers (snapshot / replay)
+### 3. Future provider consumers (snapshot / replay)
 
-`/api/live-snapshot` and `/api/live-replay` read `atlas-live` for Bridge and verification tools.
+Bridge and verification tools will need a restored snapshot/replay provider before
+they can consume `atlas-live` through a stable API.
 History UI also uses schedule-period headway diffs from `atlas-archive` (pipeline) — a different
 meaning of “history” than RT delay archives.
 
@@ -87,13 +92,7 @@ Triggered by: GitHub Actions weekly cron (Monday), or `npm run refresh`
 Local: `npm run dev:api` (custom tsx server; not full parity with every Node-style handler).
 Production-like: `vercel dev` if preferred.
 
-- `/api/live-vehicles` — on-demand GTFS-RT vehicle positions + delays for Live UI
-- `/api/live-stop` — predicted (and TTC observed) arrivals at a stop
-- `/api/live-adherence` — on-demand route adherence panel
-- `/api/live-snapshot` — latest versioned canary snapshot with freshness state
-- `/api/live-replay` — bounded versioned snapshot replay for validation and consumers
 - `/api/history-adherence` — aggregates trip-delay archives from `atlas-live` into hourly buckets
-- `/api/gtfs-rt` — legacy raw proto→JSON proxy (burlington/hamilton only)
 
 
 ## Environment Variables

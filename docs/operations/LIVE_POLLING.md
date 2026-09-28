@@ -10,7 +10,13 @@ For where this fits in the platform's future direction, see [Live Data Infrastru
 
 ## Live Polling
 
-Client-side GTFS-RT polling via `/api/live-vehicles`. Runs in the browser while Live Vehicles is open — not a background process. Config lives in [`shared/livePollingConfig.ts`](../../shared/livePollingConfig.ts).
+The Live Vehicles UI and feed configuration remain in the repository, but the hosted
+polling route is currently unavailable and the feature is gated off. The former
+`/api/live-vehicles` route is not present in the current checkout. Feed configuration
+lives in [`shared/livePollingConfig.ts`](../../shared/livePollingConfig.ts).
+
+The agencies below are configured or previously tested, not currently live in the
+public product.
 
 ### Active
 
@@ -53,9 +59,14 @@ Per-agency live feed quirks (trip-ID mismatches, missing routes, protobuf issues
 
 ---
 
-## History Archiving (paused)
+## History Archiving (paused; legacy design)
 
-The Cloudflare Workers in `workers/gtfs-rt-archiver/` write to private R2 bucket `atlas-live`. Five small Workers use the five free Cron slots: TTC positions, TTC trips, Hamilton, STM, and Burlington plus Halifax. Each shard runs every minute; trip-update archives run every 5 minutes, while vehicle-position samples run every minute. R2 lifecycle rules enforce **30-day** retention.
+The previous Cloudflare Worker setup wrote to private R2 bucket `atlas-live`. Five
+small Workers covered TTC positions, TTC trips, Hamilton, STM, and Burlington plus
+Halifax. Each shard ran every minute; trip-update archives ran every 5 minutes,
+while vehicle-position samples ran every minute. That setup is paused and should be
+treated as a legacy design, not the committed shape of the next hosted collector.
+R2 lifecycle rules enforce **30-day** retention.
 Deploy the five configs separately: `wrangler.toml`, `wrangler.ttc-trips.toml`,
 `wrangler.hamilton.toml`, `wrangler.stm.toml`, and
 `wrangler.burlington-halifax.toml`. The STM shard also needs its own
@@ -87,6 +98,13 @@ Written to `positions/{slug}/{YYYY-MM-DD}/{unix-seconds}.json`. Used for live hi
 | Halifax Transit | `halifax` | All vehicle positions |
 
 All other agencies: **static** history snapshots only (headway diffs via `atlas-archive`, written on each pipeline refresh) — not GTFS-RT archives.
+
+## Local validation
+
+Live can be tested locally without Workers or new R2 writes. Local fixtures or a
+local API can fetch and normalize a small number of feeds while the Live UI and
+replay behavior are rebuilt. This is a development/testing path, not a decision
+about the final hosted architecture.
 
 ---
 

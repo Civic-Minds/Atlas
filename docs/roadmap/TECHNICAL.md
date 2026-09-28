@@ -7,13 +7,16 @@ Engineering direction for Atlas infrastructure and the live data layer.
 ## Live Data Infrastructure
 
 The goal is to make Atlas a stable live-data provider for multiple products without
-forcing each consumer to poll GTFS-RT or access private R2. Replay is the validation
-surface; derived operational semantics remain in consumers unless broadly reusable.
+forcing each consumer to poll GTFS-RT or access private R2. The previous hosted live
+collection path is paused; local fixtures and local polling are development tools,
+not the final deployment decision. Replay is the validation surface; derived
+operational semantics remain in consumers unless broadly reusable.
 
-- [x] **Versioned canary snapshots**: publish normalized VehiclePositions and TripUpdates envelopes with freshness/error states.
-- [x] **Replay access**: expose bounded snapshot history for deterministic consumer validation.
+- [x] **Versioned snapshot contract**: define normalized VehiclePositions and TripUpdates envelopes with freshness/error states.
+- [ ] **Restore snapshot and replay access**: expose bounded snapshot history for deterministic consumer validation.
 - [ ] **Canary validation**: verify feed health, schema, replay completeness, and Bridge integration before adding routes or agencies.
-- [x] **Canary verification command**: `npm run verify:live-contract` checks the deployed provider contract and fails closed when live or replay data is unavailable.
+- [ ] **Restore canary verification**: make `npm run verify:live-contract` check a live provider contract and fail closed when live or replay data is unavailable.
+- [ ] **Local validation harness**: run fixtures and selected feeds through the parser, normalizer, freshness checks, and replay path without Workers or production R2 writes.
 - [ ] **Consumer contract tests**: run Atlas fixtures through Bridge's adapter and analysis boundary.
 - [ ] **Add Neon Postgres**: serverless Postgres for structured adherence events — (agency, route, stop, scheduled time, actual time, day of week, period). Neon scales to zero when idle, no always-on instance needed.
 - [ ] **Trip-matching logic**: match observed vehicle positions to scheduled trips using GTFS static data to derive delay in seconds per stop visit
