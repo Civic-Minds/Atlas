@@ -54,6 +54,17 @@ describe('stampWorstDirectionHeadways', () => {
 });
 
 describe('stampRouteIrregularDirection', () => {
+  it('marks the whole route when one direction is time-limited', () => {
+    const features = [
+      { type: 'Feature', geometry: { type: 'LineString', coordinates: [] }, properties: { routeShortName: '87', directionId: 0, day: 'Weekday', serviceClass: 'regular' } },
+      { type: 'Feature', geometry: { type: 'LineString', coordinates: [] }, properties: { routeShortName: '87', directionId: 1, day: 'Weekday', serviceClass: 'time-limited' } },
+    ] as any;
+    stampRouteIrregularDirection(features);
+    expect(features[0].properties.routeHasLimitedDirection).toBe(true);
+    expect(features[1].properties.routeHasLimitedDirection).toBe(true);
+    expect(features[0].properties.routeHasIrregularDirection).toBeUndefined();
+  });
+
   it('flags every feature of a route+day when one whole direction has no real-tier pattern (Halifax 330)', () => {
     const features = [
       feat('330', 'Weekday', 0, undefined as unknown as number, undefined, 'span'), // Westbound: entirely span

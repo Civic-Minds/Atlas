@@ -39,6 +39,8 @@ export interface ShapeProperties {
   stopPeriodCoverageHeadways?: Record<string, HeadwayByPeriod>;
   /** #318: at least one direction of this route+day has no sustained/real-tier pattern at all. */
   routeHasIrregularDirection?: boolean;
+  /** At least one direction of this route+day has explicitly time-limited service. */
+  routeHasLimitedDirection?: boolean;
   minStopHeadway?: number;
   minStopHeadwayByPeriod?: Partial<Record<string, number>>;
   headsignMinStopHeadwayByPeriod?: Partial<Record<string, number>>;

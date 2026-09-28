@@ -1,5 +1,5 @@
 import type { GeoJsonFeature } from './geojson-types.js';
-import { isIrregularService } from '../shared/irregularRoutes.js';
+import { isIrregularService, isLimitedService } from '../shared/irregularRoutes.js';
 export { stampWorstDirectionHeadways } from '../shared/worstDirection.js';
 
 function routeDayKey(routeShortName: string, routeBranch: string | null | undefined, day: unknown): string {
@@ -17,6 +17,7 @@ function routeDayKey(routeShortName: string, routeBranch: string | null | undefi
 export function stampRouteIrregularDirection(features: GeoJsonFeature[]): void {
   const allDirectionsByKey = new Map<string, Set<number>>();
   const realDirectionsByKey = new Map<string, Set<number>>();
+  const limitedKeys = new Set<string>();
 
   for (const f of features) {
     const sn = f.properties.routeShortName as string;
@@ -28,6 +29,8 @@ export function stampRouteIrregularDirection(features: GeoJsonFeature[]): void {
     let allDirs = allDirectionsByKey.get(key);
     if (!allDirs) { allDirs = new Set(); allDirectionsByKey.set(key, allDirs); }
     allDirs.add(dirId);
+
+    if (isLimitedService(f.properties)) limitedKeys.add(key);
 
     if (!isIrregularService(f.properties)) {
       let realDirs = realDirectionsByKey.get(key);
@@ -48,5 +51,6 @@ export function stampRouteIrregularDirection(features: GeoJsonFeature[]): void {
     const sn = f.properties.routeShortName as string;
     const key = routeDayKey(sn, f.properties.routeBranch as string | null | undefined, f.properties.day);
     if (irregularKeys.has(key)) f.properties.routeHasIrregularDirection = true;
+    if (limitedKeys.has(key)) f.properties.routeHasLimitedDirection = true;
   }
 }

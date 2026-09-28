@@ -149,6 +149,7 @@ describe('tileLimitedServiceExpr', () => {
     const compiled = compileFilter(['!', tileLimitedServiceExpr()]);
     const ctx = { zoom: 10 };
     expect(compiled.filter(ctx, feat({ serviceClass: 'time-limited' }) as any)).toBe(false);
+    expect(compiled.filter(ctx, feat({ serviceClass: 'regular', routeHasLimitedDirection: true }) as any)).toBe(false);
     expect(compiled.filter(ctx, feat({ serviceClass: 'regular', tier: 'infrequent' }) as any)).toBe(true);
     expect(compiled.filter(ctx, feat({ serviceClass: 'irregular', tier: 'span' }) as any)).toBe(true);
   });

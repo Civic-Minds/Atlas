@@ -6,7 +6,10 @@ type PeriodFilter = PeriodKey | 'all';
 
 /** MapLibre expression matching the explicit time-limited service class only. */
 export function tileLimitedServiceExpr(): unknown[] {
-  return ['==', ['get', 'serviceClass'], 'time-limited'];
+  return ['any',
+    ['==', ['get', 'serviceClass'], 'time-limited'],
+    ['==', ['coalesce', ['get', 'routeHasLimitedDirection'], false], true],
+  ];
 }
 
 /** MapLibre expression matching the canonical agency::route[:branch] key. */
