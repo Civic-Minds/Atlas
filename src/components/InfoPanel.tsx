@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { X, ExternalLink, Search, Radio, ArrowLeft } from 'lucide-react';
-import { DROPDOWN_PANEL, dropdownAnim, SEARCH_PILL, SEARCH_FIELD, Z_MODAL_BG, CONTROL_ACTIVE, CONTROL_INACTIVE, AGENCY_LIST_ROW, AGENCY_LIST_PRIMARY } from '../styles';
+import { DROPDOWN_PANEL, dropdownAnim, SEARCH_PILL, SEARCH_FIELD, Z_MODAL_BG, APP_TAB_ACTIVE, APP_TAB_INACTIVE, AGENCY_LIST_ROW, AGENCY_LIST_PRIMARY } from '../styles';
 import { LIVE_POLLING_ROUTES, liveCoverageForRouteNames, type LiveCoverage } from '../../shared/livePollingConfig';
 import { R2_PUBLIC_URL, FEATURES } from '../../shared/config';
 import { agencyDisplayParts, formatStoredDate } from '../utils/format';
@@ -438,7 +438,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                         aria-pressed={on}
                         title={id === 'all' ? 'Clear status filters' : 'Combine with other filters'}
                         className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition-colors whitespace-nowrap shrink-0 ${
-                          on ? `${CONTROL_ACTIVE} font-black shadow-sm ring-2 ring-[var(--control-active-border)]` : CONTROL_INACTIVE
+                          on ? APP_TAB_ACTIVE : APP_TAB_INACTIVE
                         }`}
                       >
                         {label}
@@ -461,7 +461,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                         })}
                         aria-pressed={on}
                         className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition-colors whitespace-nowrap shrink-0 ${
-                          on ? `${CONTROL_ACTIVE} font-black shadow-sm ring-2 ring-[var(--control-active-border)]` : CONTROL_INACTIVE
+                          on ? APP_TAB_ACTIVE : APP_TAB_INACTIVE
                         }`}
                       >
                         {r}
