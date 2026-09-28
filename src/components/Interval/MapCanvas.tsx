@@ -176,6 +176,18 @@ function buildFriendlyRouteWidthExpression(headwayExpr: unknown): any {
   ];
 }
 
+/** Keep rail-like routes legible when a later-drawn bus line shares their geometry. */
+function buildDefaultRouteWidthExpression(headwayExpr: unknown): any {
+  const railLike = ['in', ['get', 'routeType'], ['literal', [0, 1, 2, 4, 5, 6, 7, 12]]];
+  const widthForZoom = (base: number) => ['case', railLike, base + 1, base];
+  return ['interpolate', ['linear'], ['zoom'],
+    8, widthForZoom(1.5),
+    11, widthForZoom(2.0),
+    14, widthForZoom(2.5),
+    17, widthForZoom(3.5),
+  ];
+}
+
 interface MapCanvasProps {
   agencies: Agency[];
   layers?: Record<string, GeoJSON.FeatureCollection>;
@@ -551,10 +563,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     // get a different zoom-gate opacity/visibility here than the main effect would compute for the
     // same route, until something else triggered the main effect to re-run and overwrite it.
     const headwayExpr: any = tileEffectiveHeadwayExpr(period);
-    setRouteLayerPaint(map, 'line-width', [
-      'interpolate', ['linear'], ['zoom'],
-      8, 1.5, 11, 2.0, 14, 2.5, 17, 3.5,
-    ]);
+    setRouteLayerPaint(map, 'line-width', buildDefaultRouteWidthExpression(headwayExpr));
     const defaultOpacity = buildDefaultRouteLineOpacityExpression(headwayExpr) as any;
     const partialMatches = frequencySegmentOverlayRef.current.partialMatches;
     if (partialMatches.length > 0) {
@@ -1864,7 +1873,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       } else {
         setRouteLayerPaint(map, 'line-width', colorVisionFriendly
           ? buildFriendlyRouteWidthExpression(headwayExpr)
-          : ['interpolate', ['linear'], ['zoom'], 8, 1.5, 11, 2.0, 14, 2.5, 17, 3.5]);
+          : buildDefaultRouteWidthExpression(headwayExpr));
         // Dim routes that only pass the active frequency filter because part of their stops
         // qualify (#317) -- the bright frequency-qualifying-segments-layer overlay above draws
         // the real qualifying stretch on top, so the full-length base line reads as background
