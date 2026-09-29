@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router';
-import { Map as MapIcon, Search, X, Info, History as HistoryIcon, Moon, ChevronDown } from 'lucide-react';
+import { Map as MapIcon, Search, X, Info, History as HistoryIcon, Moon, Zap, ChevronDown } from 'lucide-react';
 import { PILL_SURFACE, FLOATING_CARD, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_HEADER, Z_MODAL_TOP, SIDEBAR_LEFT_FALLBACK, APP_TAB_ACTIVE, APP_TAB_INACTIVE, ICON_BTN } from './styles';
 import { R2_PUBLIC_URL, getAgencyArtifactUrls, getAgencyCatalogUrl, FEATURES, FEATURE_ROUTES, ATLAS_MODE } from '../shared/config';
 import { isAgencyVisibleInBrowser } from '../shared/agencyVisibility';
@@ -608,6 +608,7 @@ export default function App() {
               )}
               {FEATURES.frequentService && (
                 <a href={inFrequentService ? '/' : FEATURE_ROUTES.frequentService.map} aria-label={inFrequentService ? 'Back to frequency map' : 'Frequent service research'} aria-pressed={inFrequentService} className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold border focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${inFrequentService ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}>
+                  <Zap className="w-3.5 h-3.5" />
                   <span>Frequent Service</span>
                 </a>
               )}
@@ -656,9 +657,10 @@ export default function App() {
                     </a>
                   )}
                   {FEATURES.frequentService && (
-                    <a href={inFrequentService ? '/' : FEATURE_ROUTES.frequentService.map} onClick={() => setAppLinksOpen(false)} aria-current={inFrequentService ? 'page' : undefined} className={`flex h-8 px-3 items-center rounded-full text-xs font-bold border ${inFrequentService ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}>
-                      <span>Frequent Service</span>
-                    </a>
+                  <a href={inFrequentService ? '/' : FEATURE_ROUTES.frequentService.map} onClick={() => setAppLinksOpen(false)} aria-current={inFrequentService ? 'page' : undefined} className={`flex h-8 px-3 items-center gap-1.5 rounded-full text-xs font-bold border ${inFrequentService ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}>
+                    <Zap className="w-3.5 h-3.5" />
+                    <span>Frequent Service</span>
+                  </a>
                   )}
                 </div>
               )}
