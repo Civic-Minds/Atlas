@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Info-panel actions now distinguish internal navigation, email actions, and true external links.
 - Settings descriptions now use consistent, concise wording across sections.
 - Filter settings now align directly beneath their section headers without decorative per-setting icons.
 - Limited-service settings now show how many visible routes are affected by the filter.
