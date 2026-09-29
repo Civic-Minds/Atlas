@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Filter settings now align directly beneath their section headers without decorative per-setting icons.
 - Limited-service settings now show how many visible routes are affected by the filter.
 - PMTiles coverage verification now retries initially missing agencies with a bounded sequential scan before failing the refresh.
 - Route cards now show each direction's own frequency while keeping route-wide filter eligibility accurate ([#564](https://github.com/Civic-Minds/Atlas/issues/564)).

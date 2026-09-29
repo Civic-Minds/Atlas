@@ -93,7 +93,6 @@ function Toggle({ on }: { on: boolean }) {
 const SETTINGS = [
   {
     id: 'span',
-    icon: ({ className }: { className?: string }) => <span className={`w-4 h-4 flex items-center justify-center text-[10px] font-black leading-none shrink-0 ${className ?? ''}`}>≠</span>,
     label: 'Hide irregular routes',
     description: 'Hides exceptional services such as school buses, one- or two-trip routes, and demand-responsive shuttles.',
   },
@@ -302,13 +301,11 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
     ...SETTINGS,
     ...(ATLAS_MODE === 'public' ? [] : [{
       id: 'limited',
-      icon: ({ className }: { className?: string }) => <span className={`w-4 h-4 flex items-center justify-center text-[10px] font-black leading-none shrink-0 ${className ?? ''}`}>≈</span>,
       label: 'Hide limited-service routes',
       description: 'Hides peak-only or otherwise time-limited service, without hiding regular infrequent routes.',
     }]),
     ...(feedQualityEnabled ? [{
       id: 'quality',
-      icon: ShieldCheck,
       label: 'Hide degraded feeds',
       description: 'Hides agencies with known data-quality problems. Feeds still being reviewed remain visible.',
     }] : []),
@@ -606,10 +603,9 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                 )}
               </div>
               <div className="px-5 pb-3 flex flex-col">
-                {settings.map(({ id, icon: Icon, label, description }) => (
+                {settings.map(({ id, label, description }) => (
                   <div key={id} className={`flex items-start justify-between gap-4 py-4 last:pb-2 transition-opacity ${TRANSITION_BASE} ${inFrequency ? 'opacity-100' : 'opacity-40'}`}>
-                    <div className="flex items-start gap-3 min-w-0">
-                      <Icon className="w-4 h-4 mt-0.5 shrink-0 text-[var(--text-dim)]" />
+                    <div className="flex items-start min-w-0">
                       <div className="min-w-0">
                         <p className="text-[11px] font-bold text-[var(--text-primary)] leading-tight">{label}</p>
                         <p className="text-[10px] text-[var(--text-muted)] mt-1 leading-relaxed">{description}</p>
