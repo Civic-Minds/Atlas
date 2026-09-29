@@ -625,7 +625,7 @@ export default function App() {
                 <ChevronDown className={`w-3.5 h-3.5 transition-transform ${appLinksOpen ? 'rotate-180' : ''}`} />
               </button>
               {appLinksOpen && (
-                <div className={`absolute top-10 left-0 ${FLOATING_CARD} min-w-48 p-1.5 flex flex-col gap-1 ${Z_MODAL_TOP}`}>
+                <div className={`absolute top-10 right-0 xl:left-0 xl:right-auto ${FLOATING_CARD} min-w-48 p-1.5 flex flex-col gap-1 ${Z_MODAL_TOP}`}>
                   {showLiveControl && (
                     <button
                       type="button"

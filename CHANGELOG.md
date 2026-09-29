@@ -9,6 +9,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Route cards now show each direction's own frequency while keeping route-wide filter eligibility accurate ([#564](https://github.com/Civic-Minds/Atlas/issues/564)).
 - Shared trunk service now qualifies independently from slower terminal extensions, so branch cards and map filtering do not hide frequent core service.
 - Mobile Live and History navigation now lives in the More menu so the header controls do not overlap on phone screens.
+- The mobile More menu now stays inside the viewport when the button is near the right edge.
 -Agency-provided BRT and Express classifications now take precedence over generic “Rapid” wording, and extended Express Bus routes remain visible under Bus.
 -Added BC Ferries and Pierce County Ferries so Atlas covers two more public ferry systems.
 -Vancouver route and stop labels now preserve “SFU” capitalization.
