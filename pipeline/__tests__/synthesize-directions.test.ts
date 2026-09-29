@@ -27,4 +27,12 @@ describe('synthesizeTripHeadsigns', () => {
     input.trips[0].trip_headsign = 'Downtown';
     expect(synthesizeTripHeadsigns(input).trips[0].trip_headsign).toBe('Downtown');
   });
+
+  it('replaces compact route-name headsigns with the terminal stop', () => {
+    const input = feed();
+    input.routes[0].route_short_name = '2';
+    input.routes[0].route_long_name = 'CROSSTOWN 2';
+    input.trips[0].trip_headsign = 'Crosstown2';
+    expect(synthesizeTripHeadsigns(input).trips[0].trip_headsign).toBe('Whirlpool Aero Car');
+  });
 });

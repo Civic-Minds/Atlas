@@ -589,7 +589,7 @@ export function resolveBranchLabel(opts: {
   sectionBoundLabel?: string;
 }): string {
   const hasSection = !!opts.sectionBoundLabel;
-  const fallback = opts.directionId != null && !hasSection
+  const fallback = opts.multipleDirections && opts.directionId != null && !hasSection
     ? directionBranchFallback(opts.directionId, opts.boundLabel)
     : '';
   let label = formatBranchLabel(opts.headsign, opts.shortName, opts.longName, fallback);

@@ -45,13 +45,13 @@ describe('resolveBranchLabel', () => {
     })).toBe('to Southbound');
   });
 
-  it('falls back to a direction label when a route card headsign is its route name', () => {
+  it('omits a generic direction label when a route card headsign is its route name', () => {
     expect(resolveBranchLabel({
       headsign: 'Crosstown2',
       shortName: '2',
       longName: 'CROSSTOWN 2',
       directionId: 1,
-    })).toBe('to Direction 2');
+    })).toBe('');
   });
 
   it('omits row label when it would repeat the section heading', () => {
