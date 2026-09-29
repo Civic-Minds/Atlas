@@ -3,7 +3,7 @@ import type { ShapeProperties, TimePeriod, HoveredBranch } from '../../../hooks/
 import type { Agency } from '../../../App';
 import type { OpenInfoFn } from '../../InfoPanel';
 import type { HeadwayByPeriod } from '../../../hooks/useAgencyData';
-import { titleCase, shortenAgencyName, resolveBranchLabel } from '../../../utils/format';
+import { titleCase, getRouteLabel, shortenAgencyName, resolveBranchLabel } from '../../../utils/format';
 import { HeadwaySparkline } from '../HeadwaySparkline';
 import RouteCardTitle from '../../RouteCardTitle';
 import {
@@ -371,7 +371,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
               onHourHover={setHoveredHour}
               allowExpand={FEATURES.beta}
               reserveStackedLegendSpace={hasTrunkSparkline}
-              title={`${currentRoute.routeShortName ?? 'Route'}${currentRoute.routeLongName ? ` — ${currentRoute.routeLongName}` : ''}`}
+              title={titleCase(getRouteLabel(currentRoute.routeShortName, currentRoute.routeLongName, agencyDisplayName))}
             />
           </>
         );

@@ -8,6 +8,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 - Info-panel actions now distinguish internal navigation, email actions, and true external links.
 - Route cards no longer show a route’s own name as its destination when a feed uses the route name as the headsign.
+- Expanded route schedules now use the same capitalization as the route card title.
 - Route cards now show each direction's own frequency while keeping route-wide filter eligibility accurate ([#564](https://github.com/Civic-Minds/Atlas/issues/564)).
 - Shared trunk service now qualifies independently from slower terminal extensions, so branch cards and map filtering do not hide frequent core service.
 - Mobile Live and History navigation now lives in the More menu so the header controls do not overlap on phone screens.
