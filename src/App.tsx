@@ -569,7 +569,7 @@ export default function App() {
           <button
             onClick={() => setActiveApp(inLive ? 'frequency' : 'live')}
             aria-label="Live vehicles"
-            className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold border ${inLive ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
+            className={`hidden sm:flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold border ${inLive ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
           >
             <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${inLive ? 'bg-[var(--accent)] animate-pulse' : 'bg-[var(--text-dim)]'}`} />
             <span>Live</span>
@@ -582,7 +582,7 @@ export default function App() {
             href={inHistory ? '/' : '/apps/history'}
             aria-label={inHistory ? 'Back to frequency map' : 'Historical service'}
             aria-pressed={inHistory}
-            className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold border focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${inHistory ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
+            className={`hidden sm:flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold border focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${inHistory ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
           >
             <HistoryIcon className="w-3.5 h-3.5" />
             <span>History</span>
@@ -590,7 +590,7 @@ export default function App() {
           </a>
         )}
 
-        {FEATURES.researchApps && (
+        {(FEATURES.researchApps || showLiveControl || showHistoryControl) && (
           <>
             <span className="w-px h-4 bg-[var(--border-primary)] shrink-0" aria-hidden="true" />
 
@@ -626,6 +626,29 @@ export default function App() {
               </button>
               {appLinksOpen && (
                 <div className={`absolute top-10 left-0 ${FLOATING_CARD} min-w-48 p-1.5 flex flex-col gap-1 ${Z_MODAL_TOP}`}>
+                  {showLiveControl && (
+                    <button
+                      type="button"
+                      onClick={() => { setActiveApp(inLive ? 'frequency' : 'live'); setAppLinksOpen(false); }}
+                      className={`sm:hidden flex h-8 px-3 items-center gap-1.5 rounded-full text-xs font-bold border ${inLive ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
+                    >
+                      <span className={`w-1.5 h-1.5 rounded-full ${inLive ? 'bg-[var(--accent)] animate-pulse' : 'bg-[var(--text-dim)]'}`} />
+                      <span>Live</span>
+                      <span className="font-normal text-[var(--text-dim)]">{liveAgencyCount}</span>
+                    </button>
+                  )}
+                  {showHistoryControl && (
+                    <a
+                      href={inHistory ? '/' : '/apps/history'}
+                      onClick={() => setAppLinksOpen(false)}
+                      aria-current={inHistory ? 'page' : undefined}
+                      className={`sm:hidden flex h-8 px-3 items-center gap-1.5 rounded-full text-xs font-bold border ${inHistory ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
+                    >
+                      <HistoryIcon className="w-3.5 h-3.5" />
+                      <span>History</span>
+                      {historyExploreAgencyCount != null && <span className="font-normal text-[var(--text-dim)]">{historyExploreAgencyCount}+</span>}
+                    </a>
+                  )}
                   {FEATURES.researchApps && (
                     <a href={inNight ? '/' : '/apps/night'} onClick={() => setAppLinksOpen(false)} aria-current={inNight ? 'page' : undefined} className={`flex h-8 px-3 items-center gap-1.5 rounded-full text-xs font-bold border ${inNight ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}>
                       <Moon className="w-3.5 h-3.5" />
