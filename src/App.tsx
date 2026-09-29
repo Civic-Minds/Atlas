@@ -180,7 +180,7 @@ export default function App() {
   // Search scans / map filters / prefetch run from this so keystrokes can
   // paint first. See useDebouncedValue for why this isn't useDeferredValue.
   const deferredQuery = useDebouncedValue(query);
-  const [stats, setStats] = useState<{ total: number; matching: number } | null>(null);
+  const [stats, setStats] = useState<{ total: number; matching: number; limitedService: number } | null>(null);
   const [resetViewKey, setResetViewKey] = useState(0);
   const [infoOpen, setInfoOpen] = useState(false);
   const [appLinksOpen, setAppLinksOpen] = useState(false);

@@ -22,6 +22,7 @@ interface FilterPanelProps {
   setHideSpan: (v: boolean | ((prev: boolean) => boolean)) => void;
   hideLimitedService: boolean;
   setHideLimitedService: (v: boolean | ((prev: boolean) => boolean)) => void;
+  limitedServiceRouteCount?: number | null;
   livePollingOnly: boolean;
   setLivePollingOnly: (v: boolean | ((prev: boolean) => boolean)) => void;
   onInfoOpen?: (tab?: 'about' | 'agencies' | 'live') => void;
@@ -105,6 +106,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
   setHideSpan,
   hideLimitedService,
   setHideLimitedService,
+  limitedServiceRouteCount,
   livePollingOnly,
   setLivePollingOnly,
   onInfoOpen,
@@ -620,6 +622,11 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                               See all hidden routes{hiddenRoutesLoaded ? ` (${hiddenRoutes.length.toLocaleString()})` : ' (…)'} →
                             </button>
                           </>
+                        )}
+                        {id === 'limited' && limitedServiceRouteCount != null && (
+                          <p className="text-[10px] text-[var(--text-muted)] mt-1">
+                            {limitedServiceRouteCount.toLocaleString()} {limitedServiceRouteCount === 1 ? 'route' : 'routes'} affected
+                          </p>
                         )}
                         {id === 'quality' && (
                           <button
