@@ -17,6 +17,10 @@ describe('isRedundantWithRouteName', () => {
     expect(isRedundantWithRouteName('Warden', '68', 'Warden')).toBe(true);
   });
 
+  it('flags route names when case and spacing differ', () => {
+    expect(isRedundantWithRouteName('Crosstown2', '2', 'CROSSTOWN 2')).toBe(true);
+  });
+
   it('does not flag distinct terminals', () => {
     expect(isRedundantWithRouteName('Warden Station', '68', 'Warden')).toBe(false);
   });

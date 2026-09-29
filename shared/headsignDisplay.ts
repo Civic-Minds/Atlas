@@ -6,11 +6,12 @@ export function isRedundantWithRouteName(
   shortName: string | null,
   longName: string | null,
 ): boolean {
-  const lower = cleaned.toLowerCase().trim();
-  if (longName && lower === longName.toLowerCase().trim()) return true;
+  const comparable = (value: string): string => value.toLowerCase().replace(/[^a-z0-9]+/g, '');
+  const normalized = comparable(cleaned);
+  if (longName && normalized === comparable(longName)) return true;
   if (shortName && longName) {
-    const combo = `${shortName.toLowerCase()} ${longName.toLowerCase()}`.trim();
-    if (lower === combo) return true;
+    const combo = `${shortName} ${longName}`;
+    if (normalized === comparable(combo)) return true;
   }
   return false;
 }
