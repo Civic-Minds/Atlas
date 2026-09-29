@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo, useRef } from 'react';
-import { X, ExternalLink, Search, Radio, ArrowLeft } from 'lucide-react';
+import { X, ExternalLink, Search, Radio, ArrowLeft, ChevronRight, Mail } from 'lucide-react';
 import { DROPDOWN_PANEL, dropdownAnim, SEARCH_PILL, SEARCH_FIELD, Z_MODAL_BG, APP_TAB_ACTIVE, APP_TAB_INACTIVE, AGENCY_LIST_ROW, AGENCY_LIST_PRIMARY } from '../styles';
 import { LIVE_POLLING_ROUTES, liveCoverageForRouteNames, type LiveCoverage } from '../../shared/livePollingConfig';
 import { R2_PUBLIC_URL, FEATURES } from '../../shared/config';
@@ -362,14 +362,14 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                     className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group"
                   >
                     <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">Browse agencies</span>
-                    <ExternalLink className="w-3 h-3 text-[var(--text-dim)]" />
+                    <ChevronRight className="w-3 h-3 text-[var(--text-dim)]" />
                   </button>
                   <button
                     onClick={() => setView('sources')}
                     className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group"
                   >
                     <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">Schedule sources</span>
-                    <ExternalLink className="w-3 h-3 text-[var(--text-dim)]" />
+                    <ChevronRight className="w-3 h-3 text-[var(--text-dim)]" />
                   </button>
                 </div>
               </div>
@@ -382,7 +382,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                   className="flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group"
                 >
                   <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">Contact us</span>
-                  <ExternalLink className="w-3 h-3 text-[var(--text-dim)]" />
+                  <Mail className="w-3 h-3 text-[var(--text-dim)]" />
                 </a>
               </div>
 
@@ -602,7 +602,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                 className="flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group"
               >
                 <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">Report a problem</span>
-                <ExternalLink className="w-3 h-3 text-[var(--text-dim)]" />
+                <Mail className="w-3 h-3 text-[var(--text-dim)]" />
               </a>
             </div>
           )}
@@ -670,7 +670,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                 className="flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group"
               >
                 <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">Report a problem</span>
-                <ExternalLink className="w-3 h-3 text-[var(--text-dim)]" />
+                <Mail className="w-3 h-3 text-[var(--text-dim)]" />
               </a>
             </div>
           )}
@@ -728,7 +728,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                     className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group"
                   >
                     <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">View on map</span>
-                    <ExternalLink className="w-3 h-3 text-[var(--text-dim)]" />
+                    <ChevronRight className="w-3 h-3 text-[var(--text-dim)]" />
                   </button>
 
                   {selectedLiveRoutes.length > 0 && (
