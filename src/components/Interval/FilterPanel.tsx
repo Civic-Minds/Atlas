@@ -513,7 +513,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                     <Moon className="w-4 h-4 mt-0.5 shrink-0 text-[var(--text-dim)]" />
                     <div className="min-w-0">
                       <p className="text-[11px] font-bold text-[var(--text-primary)] leading-tight">Dark mode</p>
-                      <p className="text-[10px] text-[var(--text-muted)] mt-1 leading-relaxed">Applies a dark colour theme across Atlas.</p>
+                      <p className="text-[10px] text-[var(--text-muted)] mt-1 leading-relaxed">Uses a dark colour theme across Atlas.</p>
                     </div>
                   </div>
                   <button
@@ -530,7 +530,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                     <span className="w-4 h-4 shrink-0 text-center text-[10px] font-black text-[var(--text-dim)]">◈</span>
                     <div className="min-w-0">
                       <p className="text-[11px] font-bold text-[var(--text-primary)] leading-tight">High contrast mode</p>
-                      <p className="text-[10px] text-[var(--text-muted)] mt-1 leading-relaxed">Uses stronger colours and thicker lines to make routes easier to distinguish.</p>
+                      <p className="text-[10px] text-[var(--text-muted)] mt-1 leading-relaxed">Uses stronger colours and thicker lines for easier route distinction.</p>
                     </div>
                   </div>
                   <button
@@ -580,7 +580,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                         <ShieldCheck className="w-4 h-4 mt-0.5 shrink-0 text-[var(--text-dim)]" />
                         <div className="min-w-0">
                           <p className="text-[11px] font-bold text-[var(--text-primary)] leading-tight">Data saver</p>
-                          <p className="text-[10px] text-[var(--text-muted)] mt-1 leading-relaxed">Loads fewer networks at once to reduce data use and keep Atlas responsive on slower connections.</p>
+                          <p className="text-[10px] text-[var(--text-muted)] mt-1 leading-relaxed">Loads fewer networks at once to reduce data use on slower connections.</p>
                         </div>
                       </div>
                       <button
