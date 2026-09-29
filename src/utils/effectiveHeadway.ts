@@ -18,7 +18,12 @@ export function routeCardDisplayHeadway(p: ShapeProperties, period: TimePeriod):
   // The card row is destination/branch-specific. Keep the route-wide metric in
   // `summary.filter` for eligibility and fading, but do not replace a branch's
   // own cadence with the slowest direction in the route.
-  return metricValueForPeriod(summary.display, period);
+  const branchHeadway = metricValueForPeriod(summary.display, period);
+  if (branchHeadway != null) return branchHeadway;
+  if (period !== 'all') {
+    return summary.shared.byHeadsignPeriod?.[period] ?? null;
+  }
+  return branchHeadway;
 }
 
 export function hasPeriodCoverage(p: ShapeProperties, period: TimePeriod): boolean {
@@ -35,6 +40,7 @@ export function hasDirectionPeriodService(p: ShapeProperties, period: TimePeriod
   const coverage = p.worstDirectionPeriodCoverageHeadway ?? p.periodCoverageHeadway;
   if (coverage && coverage[period] != null) return true;
   if (p.headwayByPeriod && p.headwayByPeriod[period] != null) return true;
+  if (p.headsignMinStopHeadwayByPeriod?.[period] != null) return true;
   if (p.headwayByHour) {
     for (const [hourStr, val] of Object.entries(p.headwayByHour)) {
       if (val != null && isHourInPeriod(Number(hourStr), period)) {
@@ -82,5 +88,13 @@ export function routeListDisplayHeadway(features: readonly ShapeProperties[], pe
 
 /** Headway for display/filtering — mirrors passesRouteFilter period + all-day fallback. */
 export function effectiveRouteHeadway(p: ShapeProperties, period: TimePeriod): number | null {
-  return metricValueForPeriod(buildRouteServiceSummary(p).filter, period);
+  const summary = buildRouteServiceSummary(p);
+  if (period !== 'all') {
+    // A headsign-scoped shared-stop cadence represents the trunk that this
+    // branch belongs to. Use it for eligibility when present; otherwise keep
+    // the established full-window/route-wide filter metric.
+    const sharedHeadway = summary.shared.byHeadsignPeriod?.[period];
+    if (sharedHeadway != null) return sharedHeadway;
+  }
+  return metricValueForPeriod(summary.filter, period);
 }

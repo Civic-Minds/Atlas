@@ -20,7 +20,7 @@ import {
 } from '../cardUi';
 import { CARD_NOTICE, CARD_NOTICE_FOOTER } from '../../../styles';
 import { FEATURES, SPARKLINE_HOURS, TIME_PERIODS, formatPeriodRangeLong, periodKeyForHour } from '../../../../shared/config';
-import { hasDirectionPeriodService, routeCardCoverageText, routeCardDisplayHeadway, routeCardDisplayHeadwayRange } from '../../../utils/effectiveHeadway';
+import { effectiveRouteHeadway, hasDirectionPeriodService, routeCardCoverageText, routeCardDisplayHeadway, routeCardDisplayHeadwayRange } from '../../../utils/effectiveHeadway';
 import { buildRouteServiceSummary, metricValueForPeriod } from '../../../utils/routeFacts';
 import { unevenPeriodMaxGap } from '../../../utils/routeCardUneven';
 import {
@@ -492,8 +492,8 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                 )}
                 <div className="space-y-1">
                   {group.realTier.map((d, i) => {
-                    const filterHw = buildRouteServiceSummary(d).filter;
-                    const dimmed = maxHeadway !== Infinity && (metricValueForPeriod(filterHw, period) ?? Infinity) > maxHeadway;
+                    const branchFilterHeadway = effectiveRouteHeadway(d, period);
+                    const dimmed = maxHeadway !== Infinity && (branchFilterHeadway ?? Infinity) > maxHeadway;
                     return (() => {
                       const displayH = hoveredHour != null
                         ? buildRouteServiceSummary(d).branch.byHour?.[hoveredHour] ?? routeCardDisplayHeadway(d, period)
@@ -509,7 +509,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                           <CardDirectionRow
                             label={label}
                             headway={displayH ?? undefined}
-                            colorHeadway={hoveredHour == null ? metricValueForPeriod(filterHw, period) : undefined}
+                            colorHeadway={hoveredHour == null ? branchFilterHeadway : undefined}
                             headwayLabel={hoveredHour == null ? routeCardCoverageText(d, period) : undefined}
                             trunkHeadway={trunkHw}
                             dimmed={dimmed}

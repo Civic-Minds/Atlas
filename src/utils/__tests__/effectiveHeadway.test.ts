@@ -46,6 +46,18 @@ describe('effectiveRouteHeadway', () => {
     expect(effectiveRouteHeadway(p, 'midday')).toBe(8);
   });
 
+  it('uses the headsign-scoped trunk cadence for active branch filtering', () => {
+    const p = {
+      ...base,
+      headway: 9,
+      headwayByPeriod: { midday: 9 },
+      worstDirectionHeadwayByPeriod: { midday: 22 },
+      headsignMinStopHeadwayByPeriod: { midday: 4 },
+    } as ShapeProperties;
+    expect(routeCardDisplayHeadway(p, 'midday')).toBe(9);
+    expect(effectiveRouteHeadway(p, 'midday')).toBe(4);
+  });
+
   it('uses the active period headway when that period is not sustained', () => {
     const p = {
       ...base,
