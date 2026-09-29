@@ -11,6 +11,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Mobile Live and History navigation now lives in the More menu so the header controls do not overlap on phone screens.
 - The mobile More menu now stays inside the viewport when the button is near the right edge.
 - Frequent Service now has a matching icon wherever it appears beside Night Service.
+- Local development no longer requests the unavailable version endpoint or queries missing map layers during hover.
 -Agency-provided BRT and Express classifications now take precedence over generic “Rapid” wording, and extended Express Bus routes remain visible under Bus.
 -Added BC Ferries and Pierce County Ferries so Atlas covers two more public ferry systems.
 -Vancouver route and stop labels now preserve “SFU” capitalization.

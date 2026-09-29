@@ -1346,8 +1346,10 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
             { layers: routeHitLayers },
           )
         : [];
-      const serviceAreaHits = map.getLayer('on-demand-service-area-fill')
-        ? map.queryRenderedFeatures(e.point, { layers: ['on-demand-service-area-fill', 'on-demand-stop-clusters', 'on-demand-stop-points'] })
+      const serviceAreaHitLayers = ['on-demand-service-area-fill', 'on-demand-stop-clusters', 'on-demand-stop-points']
+        .filter(layerId => Boolean(map.getLayer(layerId)));
+      const serviceAreaHits = serviceAreaHitLayers.length > 0
+        ? map.queryRenderedFeatures(e.point, { layers: serviceAreaHitLayers })
         : [];
       map.getCanvas().style.cursor = stopHits.length > 0 || routeHits.length > 0 || serviceAreaHits.length > 0 ? 'pointer' : '';
     };
