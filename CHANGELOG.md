@@ -7,7 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - Local development now serves historical route-adherence data again.
-- Broad maps now render the simplified overview archive, and Live vehicle map code loads only when Live is activated.
+- Broad maps now render the simplified overview archive, and public builds no longer preload the disabled Live vehicle map code.
 - Info-panel actions now distinguish internal navigation, email actions, and true external links.
 - Route cards no longer show a route’s own name as its destination when a feed uses the route name as the headsign.
 - Expanded route schedules now use the same capitalization as the route card title.

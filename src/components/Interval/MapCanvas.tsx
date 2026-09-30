@@ -38,7 +38,10 @@ const CORRIDOR_BAND_COLOR = '#64748b';
 const ON_DEMAND_AREA_COLOR = '#64748b';
 const FREQUENT_15_COLOR = HEADWAY_TIERS.find(tier => tier.max === 15)?.color ?? '#3da44d';
 const FREQUENT_30_COLOR = HEADWAY_TIERS.find(tier => tier.max === 30)?.color ?? '#e07b2a';
-const LiveVehiclesLayer = React.lazy(() => import('./map/LiveVehiclesLayer'));
+// Keep the Live/Deck.gl graph out of public builds entirely when Live is disabled.
+const LiveVehiclesLayer = import.meta.env.VITE_LIVE_ENABLED === 'true'
+  ? React.lazy(() => import('./map/LiveVehiclesLayer'))
+  : null;
 
 function MapNoticePill({ children, className = '' }: { children: React.ReactNode; className?: string }) {
   return (
@@ -2029,7 +2032,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       {/* Map Element */}
       <div ref={mapContainerRef} style={{ height: '100%', width: '100%' }} />
 
-      {liveLayerRequested && (
+      {LiveVehiclesLayer && liveLayerRequested && (
         <React.Suspense fallback={null}>
           <LiveVehiclesLayer mapRef={mapRef} deckOverlayRef={deckOverlayRef} mapLoaded={mapLoaded} />
         </React.Suspense>
