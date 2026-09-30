@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 410,
+    "manualVerified": 413,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,10 +11,10 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 410,
+      "verified-official": 413,
       "official-fare-page-not-found": 125,
       "official-site-inaccessible": 45,
-      "official-source-candidate": 81,
+      "official-source-candidate": 78,
       "no-official-website": 32
     }
   },
@@ -7719,7 +7719,7 @@
         "USD"
       ],
       "feedVersion": "PDT: 18-Sep-2026 09:07",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 4.25,
         "currency": "USD",
@@ -7734,7 +7734,19 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "wsf",
+        "agencyName": "Washington State Ferries",
+        "amount": 11.35,
+        "amountMax": 148.5,
+        "currency": "USD",
+        "fareType": "Seattle-Bremerton adult passenger fare and 31-ride monthly pass",
+        "payment": "ticket, ORCA, or card",
+        "effectiveDate": "2026-09-10",
+        "confidence": "high",
+        "sourceUrl": "https://www.wsdot.wa.gov/ferries/fares/faresdetail.aspx?arrivingterm=4&departingterm=7",
+        "evidence": "Official WSDOT fare lookup for Seattle-Bremerton dated September 10, 2026 lists adult passenger fare at $11.35, senior/disability at $5.65, youth 18 and under free, and a 31-ride monthly pass at $148.50; ferry fares vary by route and date."
+      }
     },
     {
       "slug": "bc-ferries",
@@ -13859,7 +13871,7 @@
         "USD"
       ],
       "feedVersion": "MAY 26_20260526",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 2,
         "currency": "USD",
@@ -13874,7 +13886,19 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "trinitymetro",
+        "agencyName": "Trinity Metro (Fort Worth)",
+        "amount": 2,
+        "amountMax": 192,
+        "currency": "USD",
+        "fareType": "local single ride and regional monthly pass",
+        "payment": "GoPass app, ticket, or fare media",
+        "effectiveDate": "2026-03-01",
+        "confidence": "high",
+        "sourceUrl": "https://ridetrinitymetro.org/tickets/",
+        "evidence": "Official Trinity Metro ticket page lists local bus/TEXRail/TRE single ride at $2, local one-day pass at $4, and regional monthly pass at $192; prices are effective March 1, 2026, with reduced products listed separately."
+      }
     },
     {
       "slug": "metrohouston",
@@ -17303,7 +17327,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://sctbus.org/",
@@ -17311,7 +17335,18 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "sct",
+        "agencyName": "Suffolk County Transit (SCT)",
+        "amount": 2.25,
+        "amountMax": 112.5,
+        "currency": "USD",
+        "fareType": "regular one-way fare and 50-ticket book",
+        "payment": "exact cash, FastFare app, or ticket book",
+        "confidence": "high",
+        "sourceUrl": "https://sctbus.org/System-Information",
+        "evidence": "Official Suffolk County Transit system-information page lists regular full fare at $2.25 one way, $2.50 with a transfer, youth/student at $1.25, senior/disability/veteran at $0.75, and a 50-ticket full-fare book at $112.50."
+      }
     },
     {
       "slug": "part",
