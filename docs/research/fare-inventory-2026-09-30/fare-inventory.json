@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 430,
+    "manualVerified": 431,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,10 +11,10 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 430,
+      "verified-official": 431,
       "official-fare-page-not-found": 125,
       "official-site-inaccessible": 45,
-      "official-source-candidate": 61,
+      "official-source-candidate": 60,
       "no-official-website": 32
     }
   },
@@ -34679,7 +34679,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.tadao.fr/",
@@ -34687,7 +34687,18 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "lens",
+        "agencyName": "Tadao (Lens-Liévin)",
+        "amount": 0,
+        "currency": "EUR",
+        "fareType": "bus and demand-responsive ride",
+        "payment": "fare-free service",
+        "effectiveDate": "2026-01-01",
+        "confidence": "high",
+        "sourceUrl": "https://www.tadao.fr/fr/v8z-Foire-aux-questions---Gratuite.html",
+        "evidence": "Official Tadao FAQ states that from January 1, 2026 the entire Tadao bus network is 100% free for everyone, including Allobus, Proxibus, and Chronopro, with no ticket or validation required."
+      }
     },
     {
       "slug": "limoges",
