@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 385,
+    "manualVerified": 388,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,10 +11,10 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 385,
+      "verified-official": 388,
       "official-fare-page-not-found": 125,
       "official-site-inaccessible": 45,
-      "official-source-candidate": 106,
+      "official-source-candidate": 103,
       "no-official-website": 32
     }
   },
@@ -36165,7 +36165,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://mobilite.dlva.fr/",
@@ -36190,7 +36190,19 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "manosque",
+        "agencyName": "TransAgglo (Manosque)",
+        "amount": 1.5,
+        "amountMax": 20,
+        "currency": "EUR",
+        "fareType": "single trip and monthly pass",
+        "payment": "cash onboard or standard pass",
+        "sourceUrl": "https://mobilite.dlva.fr/tarifs-reseau-transagglo-au-11-juillet-2024/",
+        "effectiveDate": "2024-07-11",
+        "confidence": "medium",
+        "evidence": "Official DLVAgglo fare notice lists the single ticket at €1.50, 10-trip pass at €10, and monthly pass at €20; the notice is dated July 11, 2024 and may need currentness follow-up."
+      }
     },
     {
       "slug": "mende",
@@ -36232,7 +36244,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.citibus.fr",
@@ -36289,7 +36301,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "narbonne",
+        "agencyName": "Citibus (Narbonne)",
+        "amount": 1.2,
+        "amountMax": 20,
+        "currency": "EUR",
+        "fareType": "single trip and public monthly pass",
+        "payment": "standard ticket, app, or pass",
+        "sourceUrl": "https://www.citibus.fr/tarifs/titres-et-tarifs",
+        "confidence": "high",
+        "evidence": "Official Citibus fare page lists single ticket at €1.20, day ticket at €3, 10 tickets at €9, and public monthly pass at €20."
+      }
     },
     {
       "slug": "oloron",
@@ -36902,7 +36925,7 @@
         "USD"
       ],
       "feedVersion": "20240118",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 4,
         "currency": "USD",
@@ -36931,7 +36954,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "sunshine-bus",
+        "agencyName": "Sunshine Bus Company",
+        "amount": 2,
+        "amountMax": 30,
+        "currency": "USD",
+        "fareType": "regular one-way fare and monthly pass",
+        "payment": "exact cash or pass",
+        "sourceUrl": "https://sunshinebus.net/fares-passes/",
+        "confidence": "high",
+        "evidence": "Official Sunshine Bus fare page lists regular one-way fare at $2, daily pass at $4, and monthly pass at $30; discounted fares are listed separately."
+      }
     },
     {
       "slug": "key-west-transit",
