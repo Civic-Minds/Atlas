@@ -132,6 +132,39 @@ async function main() {
 
   console.log(`Fetched ${fetched} tiles (${emptyTiles} empty, ${errors} errors). Found ${foundSlugs.size} distinct agency slugs across all sampled tiles.`);
 
+  // A concurrent full-catalog scan can occasionally miss a small agency even
+  // when its tile is present in the archive (observed with Kittitas County and
+  // Sierra Vista on R2). Re-scan only the agencies that were missed, one at a
+  // time, before treating them as a failed publication. This keeps the broad
+  // scan rate-limited while making the final decision deterministic.
+  const initialMissing = agencies.filter(a => !foundSlugs.has(a.slug) && !a.pmtilesPending && a.lastFeedExpiry);
+  if (initialMissing.length > 0) {
+    console.log(`Rechecking ${initialMissing.length} initially missing agencies sequentially...`);
+    for (const agency of initialMissing) {
+      // Small agencies can fall just outside the broad scan's 100-tile grid.
+      // Use the complete bbox when it is reasonably sized, while retaining a
+      // bounded grid for unusually large service areas.
+      for (const { x, y } of tilesForAgency(agency, zoom, 1000)) {
+        try {
+          const result = await getZxyWithRetry(pmtiles, zoom, x, y);
+          if (!result) continue;
+          const routesLayer = new VectorTile(new PbfReader(new Uint8Array(result.data))).layers['routes'];
+          if (!routesLayer) continue;
+          for (let i = 0; i < routesLayer.length; i++) {
+            const slug = routesLayer.feature(i).properties?.agencySlug;
+            if (typeof slug === 'string') foundSlugs.add(slug);
+          }
+        } catch (e) {
+          console.error(`Error rechecking ${agency.slug} at z${zoom}/${x}/${y}:`, (e as Error).message);
+        }
+      }
+    }
+    const recovered = initialMissing.filter(a => foundSlugs.has(a.slug));
+    if (recovered.length > 0) {
+      console.log(`Sequential recheck recovered ${recovered.length} agencies: ${recovered.map(a => a.slug).join(', ')}`);
+    }
+  }
+
   const allMissing = agencies.filter(a => !foundSlugs.has(a.slug));
   const missing = allMissing.filter(a => !a.pmtilesPending && a.lastFeedExpiry);
   const stillPending = allMissing.filter(a => a.pmtilesPending && a.lastFeedExpiry);

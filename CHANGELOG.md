@@ -10,6 +10,10 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Route cards no longer show a route’s own name as its destination when a feed uses the route name as the headsign.
 - Expanded route schedules now use the same capitalization as the route card title.
 - Route cards no longer invent generic direction names when a feed has not yet supplied a usable destination.
+- Settings descriptions now use consistent, concise wording across sections.
+- Filter settings now align directly beneath their section headers without decorative per-setting icons.
+- Limited-service settings now show how many visible routes are affected by the filter.
+- PMTiles coverage verification now retries initially missing agencies with a bounded sequential scan before failing the refresh.
 - Route cards now show each direction's own frequency while keeping route-wide filter eligibility accurate ([#564](https://github.com/Civic-Minds/Atlas/issues/564)).
 - Shared trunk service now qualifies independently from slower terminal extensions, so branch cards and map filtering do not hide frequent core service.
 - Mobile Live and History navigation now lives in the More menu so the header controls do not overlap on phone screens.

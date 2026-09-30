@@ -404,10 +404,16 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
     };
     const routesOnly = allFeatures.filter(f => (f.properties as any).routeId && activeDay(f) && onScreen(f));
     const visibleRoutesOnly = visibleFeatures.filter(f => (f.properties as any).routeId && activeDay(f) && onScreen(f));
+    const limitedServiceRoutes = new Set(
+      routesOnly
+        .filter(f => isLimitedService(f.properties as ShapeProperties))
+        .map(f => routeKey(f.properties as unknown as ShapeProperties)),
+    );
 
     return {
       total: new Set(routesOnly.map(f => routeKey(f.properties as unknown as ShapeProperties))).size,
       matching: new Set(visibleRoutesOnly.map(f => routeKey(f.properties as unknown as ShapeProperties))).size,
+      limitedService: limitedServiceRoutes.size,
     };
   }, [allFeatures, visibleFeatures, deferredBounds, day]);
 
