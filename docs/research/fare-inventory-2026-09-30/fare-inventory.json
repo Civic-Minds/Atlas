@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 332,
+    "manualVerified": 335,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,10 +11,10 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 332,
+      "verified-official": 335,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
-      "official-source-candidate": 158,
+      "official-source-candidate": 155,
       "no-official-website": 32
     }
   },
@@ -6394,7 +6394,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.bctransit.com/",
@@ -6402,7 +6402,19 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "comox-valley",
+        "agencyName": "BC Transit (Comox Valley)",
+        "amount": 2.75,
+        "amountMax": 60,
+        "currency": "CAD",
+        "fareType": "adult local single ride and 30-day pass",
+        "payment": "cash, Umo, or fare pass",
+        "sourceUrl": "https://www.bctransit.com/comox-valley/fares/",
+        "confidence": "high",
+        "effectiveDate": "2026-01-01",
+        "evidence": "Official BC Transit Comox Valley fare page lists adult local single ride at $2.75, DayPASS at $5.50, and adult 30-day pass at $60; dual Campbell River/Comox Valley and concession products are listed separately."
+      }
     },
     {
       "slug": "campbell-river",
@@ -6419,7 +6431,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.bctransit.com/",
@@ -6427,7 +6439,18 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "campbell-river",
+        "agencyName": "BC Transit (Campbell River)",
+        "amount": 2,
+        "amountMax": 55,
+        "currency": "CAD",
+        "fareType": "adult local single ride and 30-day pass",
+        "payment": "cash, Umo, or fare pass",
+        "sourceUrl": "https://www.bctransit.com/campbell-river/fares",
+        "confidence": "high",
+        "evidence": "Official BC Transit Campbell River fare page lists adult single trip at $2, DayPASS at $4, adult 30-day pass at $55, and dual Campbell River/Comox Valley adult 30-day pass at $60; concession and handyDART products are listed separately."
+      }
     },
     {
       "slug": "squamish",
@@ -6444,7 +6467,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.bctransit.com/",
@@ -6452,7 +6475,19 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "squamish",
+        "agencyName": "BC Transit (Squamish)",
+        "amount": 2.5,
+        "amountMax": 50,
+        "currency": "CAD",
+        "fareType": "adult local single ride and 30-day pass",
+        "payment": "cash, Umo, or fare pass",
+        "sourceUrl": "https://www.bctransit.com/squamish/wp-content/uploads/sites/44/2026/03/13231_SQU_RG_spring-v3.pdf",
+        "confidence": "high",
+        "effectiveDate": "2026-03-30",
+        "evidence": "Official BC Transit Squamish rider guide lists fares effective March 30, 2026: single ride $2.50, DayPASS $5, 30-day adult pass $50, and handyDART single ride $2.50."
+      }
     },
     {
       "slug": "pemberton",
