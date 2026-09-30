@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 362,
+    "manualVerified": 368,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,10 +11,10 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 362,
+      "verified-official": 368,
       "official-fare-page-not-found": 125,
       "official-site-inaccessible": 45,
-      "official-source-candidate": 129,
+      "official-source-candidate": 123,
       "no-official-website": 32
     }
   },
@@ -15684,7 +15684,7 @@
         "USD"
       ],
       "feedVersion": "UTC: 13-Feb-2026 16:48",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 0.8,
         "currency": "USD",
@@ -15722,7 +15722,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "vctc",
+        "agencyName": "Ventura County Transportation Commission (VCTC Intercity)",
+        "amount": 1.75,
+        "amountMax": 4,
+        "currency": "USD",
+        "fareType": "full-fare Zone 1 and Zone 2 intercity service",
+        "payment": "exact cash or VCbuspass",
+        "sourceUrl": "https://www.goventura.org/ride-vctc/fares/",
+        "confidence": "high",
+        "evidence": "Official VCTC fare page lists full fare at $1.75 for Zone 1 routes within Ventura County and $4 for Zone 2 Coastal Express/Conejo Connection routes; reduced fares, transfers, and free-youth programs are listed separately."
+      }
     },
     {
       "slug": "elmonte",
@@ -18592,7 +18603,7 @@
         "USD"
       ],
       "feedVersion": "20260716",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1.75,
         "currency": "USD",
@@ -18650,7 +18661,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "camtran",
+        "agencyName": "CamTran",
+        "amount": 1.75,
+        "amountMax": 60,
+        "currency": "USD",
+        "fareType": "base fixed-route fare and 31-day adult pass",
+        "payment": "cash or fare pass",
+        "sourceUrl": "https://www.camtranbus.com/fares/camtran-fares/",
+        "confidence": "high",
+        "evidence": "Official CamTran fare page lists base fare at $1.75, transfer at $0.30, reduced fare at $0.85, downtown shuttle at $0.50, 1-day adult pass at $4.50, and 31-day adult pass at $60."
+      }
     },
     {
       "slug": "fact",
@@ -19575,7 +19597,7 @@
         "USD"
       ],
       "feedVersion": "20260821",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 2,
         "currency": "USD",
@@ -19624,7 +19646,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "mta-maryland",
+        "agencyName": "Maryland Transit Administration (MTA Maryland)",
+        "amount": 2,
+        "amountMax": 77,
+        "currency": "USD",
+        "fareType": "full-fare local single trip and 31-day pass",
+        "payment": "exact cash, CharmCard, or CharmPass",
+        "sourceUrl": "https://www.mta.maryland.gov/regular-fares",
+        "confidence": "high",
+        "evidence": "Official Maryland Transit Administration fare page lists full-fare local single trip at $2, day pass at $4.60, weekly pass at $22, and monthly/31-day pass at $77; MARC and commuter bus fares are separate."
+      }
     },
     {
       "slug": "hart",
@@ -21384,7 +21417,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.SunTran.com",
@@ -21400,7 +21433,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "sun-tran",
+        "agencyName": "Sun Tran (Tucson)",
+        "amount": 0,
+        "amountMax": 0,
+        "currency": "USD",
+        "fareType": "current fare-free service",
+        "payment": "no fare required",
+        "sourceUrl": "https://www.suntran.com/fares-passes/",
+        "confidence": "high",
+        "evidence": "Official Sun Tran fare page states that all rides on Sun Tran, Sun Link, Sun Van, Sun On Demand, Sun Express, and Sun Shuttle remain fare-free at the direction of the Mayor and Council."
+      }
     },
     {
       "slug": "ycat",
@@ -22392,7 +22436,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://www.wrtaonline.com/",
@@ -22408,7 +22452,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "youngstown-wrta",
+        "agencyName": "Western Reserve Transit Authority (Youngstown)",
+        "amount": 0,
+        "amountMax": 0,
+        "currency": "USD",
+        "fareType": "current fare-free bus service",
+        "payment": "no fare required",
+        "sourceUrl": "https://www.wrtaonline.com/fares-and-passes/",
+        "confidence": "high",
+        "evidence": "Official WRTA fare page states that rides on all WRTA buses are free and that sales of adult passes and multi-ride tickets are suspended."
+      }
     },
     {
       "slug": "sun-metro",
@@ -22640,7 +22695,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://mountainline.com",
@@ -22656,7 +22711,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "missoula",
+        "agencyName": "Mountain Line (Missoula)",
+        "amount": 0,
+        "amountMax": 0,
+        "currency": "USD",
+        "fareType": "zero-fare bus service",
+        "payment": "no fare required",
+        "sourceUrl": "https://mountainline.com/sustainability/zero-fare/",
+        "confidence": "high",
+        "evidence": "Official Mountain Line page states that the system is zero-fare and riders do not have to pay to ride; it identifies the program as operating since 2015."
+      }
     },
     {
       "slug": "sportran",
