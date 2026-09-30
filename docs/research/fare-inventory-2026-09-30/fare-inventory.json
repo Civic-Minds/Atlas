@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 431,
+    "manualVerified": 434,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,10 +11,10 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 431,
+      "verified-official": 434,
       "official-fare-page-not-found": 125,
       "official-site-inaccessible": 45,
-      "official-source-candidate": 60,
+      "official-source-candidate": 57,
       "no-official-website": 32
     }
   },
@@ -13591,7 +13591,7 @@
       "status": "unresolved",
       "notes": "GTFS publishes only zero-value legacy fare attributes; this may be a placeholder and was not treated as proof of free service.",
       "feedVersion": "2026-05_20260605",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": null,
         "currency": "USD",
@@ -13606,7 +13606,18 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "abqride",
+        "agencyName": "ABQ RIDE (Albuquerque)",
+        "amount": 0,
+        "currency": "USD",
+        "fareType": "regular bus, ART, and Sun Van fare",
+        "payment": "zero-fare service",
+        "effectiveDate": "2026-01-01",
+        "confidence": "high",
+        "sourceUrl": "https://codelibrary.amlegal.com/codes/albuquerque/latest/albuquerque_nm/0-0-0-117185",
+        "evidence": "Current City of Albuquerque municipal code §7-2-1-2 states that ABQ RIDE regular bus service, Albuquerque Rapid Transit, and Sun Van paratransit are zero-fare; it allows only temporary event or premium-service fares."
+      }
     },
     {
       "slug": "santafetrails",
@@ -26695,7 +26706,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://tps.uga.edu/",
@@ -26703,7 +26714,17 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "uga",
+        "agencyName": "UGA Campus Transit",
+        "amount": 0,
+        "currency": "USD",
+        "fareType": "campus bus and paratransit ride",
+        "payment": "fare-free service",
+        "confidence": "high",
+        "sourceUrl": "https://tps.uga.edu/transit/?field_route_value=All",
+        "evidence": "Official University of Georgia Transportation page states Campus Transit provides bus and paratransit services fare-free and open to the public."
+      }
     },
     {
       "slug": "blacksburg",
@@ -28688,7 +28709,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://transportation.ncsu.edu/wolfline/",
@@ -28696,7 +28717,17 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "ncsu-wolfline",
+        "agencyName": "NCSU Wolfline",
+        "amount": 0,
+        "currency": "USD",
+        "fareType": "campus bus ride",
+        "payment": "fare-free service",
+        "confidence": "high",
+        "sourceUrl": "https://transportation.ncsu.edu/wolfline/",
+        "evidence": "Official NC State Transportation page states Wolfline serves the general public fare-free and requires no university ID, pass, or fare."
+      }
     },
     {
       "slug": "clemson-cat",
