@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 281,
+    "manualVerified": 284,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,8 +11,8 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 281,
-      "official-source-candidate": 209,
+      "verified-official": 284,
+      "official-source-candidate": 206,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
       "no-official-website": 32
@@ -14176,7 +14176,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://www.metrostlouis.org",
@@ -14224,7 +14224,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "metrostlouis",
+        "agencyName": "Metro St. Louis",
+        "amount": 1,
+        "amountMax": 78,
+        "currency": "USD",
+        "fareType": "MetroBus cash fare and system pass products",
+        "payment": "cash, Transit app, Ride On card, or ticket vending machine",
+        "sourceUrl": "https://www.metrostlouis.org/fares-and-passes/",
+        "confidence": "high",
+        "evidence": "Official Metro fare table lists MetroBus cash base fare at $1.00, MetroLink rail cash base fare at $2.50, one-day pass at $5, 7-day pass at $27, and 30-day pass at $78."
+      }
     },
     {
       "slug": "kcata",
@@ -20480,7 +20491,7 @@
         "USD"
       ],
       "feedVersion": "S1000046",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1.5,
         "currency": "USD",
@@ -20553,7 +20564,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "cat-savannah",
+        "agencyName": "Chatham Area Transit (CAT)",
+        "amount": 1.5,
+        "amountMax": 50,
+        "currency": "USD",
+        "fareType": "local fixed-route fare and pass products",
+        "payment": "exact cash, SmartCard, Token Transit, or pass",
+        "sourceUrl": "https://catchacat.org/fares-passes/",
+        "confidence": "high",
+        "evidence": "Official CAT fare table lists local one-way fare at $1.50, day pass at $3, weekly pass at $14, monthly pass at $50, and ten-ride card at $15; downtown dot shuttle and Savannah Belles Ferry are free."
+      }
     },
     {
       "slug": "tulsa-transit",
@@ -21390,7 +21412,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://valleymetro.com/",
@@ -21431,7 +21453,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "valley-metro-roanoke",
+        "agencyName": "Valley Metro (Roanoke, VA)",
+        "amount": 1.75,
+        "amountMax": 120,
+        "currency": "USD",
+        "fareType": "basic fixed-route fare and pass products",
+        "payment": "cash or fare pass",
+        "sourceUrl": "https://www.valleymetro.com/fares-passes",
+        "confidence": "high",
+        "evidence": "Official Valley Metro fare page lists basic single ride at $1.75, discount fare at $0.85, 31-day basic pass at $56, and Smart Way basic fare at $4; other service and reduced products are listed separately."
+      }
     },
     {
       "slug": "gltc",
