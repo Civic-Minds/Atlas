@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 477,
+    "manualVerified": 479,
     "officialSiteStats": {
       "official-source-found": 493,
       "official-fare-page-not-found": 116,
@@ -11,11 +11,11 @@
       "site-inaccessible": 52
     },
     "researchStatuses": {
-      "verified-official": 477,
+      "verified-official": 479,
       "official-fare-page-not-found": 113,
       "official-site-inaccessible": 45,
       "no-official-website": 32,
-      "official-source-candidate": 26
+      "official-source-candidate": 24
     }
   },
   "records": [
@@ -26054,7 +26054,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://www.ridesystems.net",
@@ -26062,7 +26062,18 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "ez-rider",
+        "agencyName": "EZ Rider (Midland/Odessa)",
+        "amount": 1.25,
+        "amountMax": 37,
+        "currency": "USD",
+        "fareType": "fixed-route adult one-way fare and monthly pass",
+        "payment": "cash or fare pass",
+        "sourceUrl": "https://www.ez-rider.org/fares",
+        "confidence": "high",
+        "evidence": "Official EZ Rider fare page lists adult ages 19-59 fixed-route one-way fare at $1.25, all-day pass at $3.00, adult monthly pass at $37.00, youth at $1.00/$28.00 monthly, senior/disabled and veteran/active-duty at $0.60/$19.00 monthly, and children 5 and under free; paratransit and commuter fares are listed separately."
+      }
     },
     {
       "slug": "san-angelo",
@@ -37773,7 +37784,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://coastrta.transloc.com",
@@ -37781,7 +37792,18 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "coast-rta",
+        "agencyName": "Coast RTA",
+        "amount": 1,
+        "amountMax": 3.5,
+        "currency": "USD",
+        "fareType": "fixed-route one-boarding fare and daily cap",
+        "payment": "cash or contactless payment",
+        "sourceUrl": "https://coastrta.com/contactless-fare-payment/",
+        "confidence": "high",
+        "evidence": "Official Coast RTA contactless fare page states the current pilot charges $1.00 per boarding for all fares and caps daily payments at $3.50; paratransit ID holders ride free, and students, veterans, and seniors ride free off-peak or pay $1.00 at peak. The agency states there are no transfers."
+      }
     },
     {
       "slug": "sunshine-bus",
