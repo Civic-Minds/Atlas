@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 419,
+    "manualVerified": 421,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,10 +11,10 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 419,
+      "verified-official": 421,
       "official-fare-page-not-found": 125,
       "official-site-inaccessible": 45,
-      "official-source-candidate": 72,
+      "official-source-candidate": 70,
       "no-official-website": 32
     }
   },
@@ -33708,7 +33708,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.corolis.fr",
@@ -33731,7 +33731,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "beauvais",
+        "agencyName": "Corolis (Beauvais)",
+        "amount": 1,
+        "amountMax": 5,
+        "currency": "EUR",
+        "fareType": "all-day single ticket and five-ticket booklet",
+        "payment": "driver, Oise Mobilité app, SMS, or bank card",
+        "confidence": "high",
+        "sourceUrl": "https://www.corolis.fr/acheter/titres-et-tarifs/ticket-a-lunite/",
+        "evidence": "Official Corolis fare page lists the all-day Ticket BUT at €1 and a booklet of five day tickets at €5; the airport-hotel shuttle ticket is listed separately."
+      }
     },
     {
       "slug": "belfort",
@@ -34627,7 +34638,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.stcl.fr/",
@@ -34635,7 +34646,19 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "limoges",
+        "agencyName": "STCL (Limoges)",
+        "amount": 1.5,
+        "amountMax": 20,
+        "currency": "EUR",
+        "fareType": "one-hour single trip and adult monthly pass",
+        "payment": "bank card, ticket, app, or pass",
+        "effectiveDate": "2025-07-01",
+        "confidence": "high",
+        "sourceUrl": "https://storage.googleapis.com/is-wp-160-preprod/uploads-preprod/2026/04/depliant-site.pdf",
+        "evidence": "Official STCL tariff brochure applicable from July 1, 2025 lists one-hour single trip at €1.50, 10 trips at €13.50, day pass at €5.50 for one person, and adult monthly pass at €20; weekend fare-free service is also stated."
+      }
     },
     {
       "slug": "menton",
