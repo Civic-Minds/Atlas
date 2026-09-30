@@ -3,8 +3,17 @@ import { Protocol, PMTiles } from 'pmtiles';
 import { R2_PUBLIC_URL } from '../../shared/config';
 import { currentAgencyDataVersion, resolveAgencyDataVersion } from './agencyGeo';
 import { RetryingFetchSource } from './pmtilesRetrySource';
+import { dataReleaseAssetUrl, resolveDataRelease, type DataRelease } from './dataRelease';
+
+let activeRelease: DataRelease | null = null;
 
 export function getAtlasPmtilesUrl(): string {
+  if (activeRelease) {
+    if (typeof window !== 'undefined' && import.meta.env.PROD) {
+      return `${window.location.origin}/api/atlas-pmtiles?release=${encodeURIComponent(activeRelease.releaseId)}`;
+    }
+    return dataReleaseAssetUrl(activeRelease, activeRelease.pmtilesKey);
+  }
   // Keep deployed requests same-origin and expose the range headers PMTiles needs.
   const browserUrl = typeof window !== 'undefined' && import.meta.env.PROD
     ? `${window.location.origin}/api/atlas-pmtiles`
@@ -12,10 +21,24 @@ export function getAtlasPmtilesUrl(): string {
   return `${browserUrl}?v=${currentAgencyDataVersion()}`;
 }
 
+export function getAtlasOverviewPmtilesUrl(): string {
+  if (activeRelease) {
+    if (typeof window !== 'undefined' && import.meta.env.PROD) {
+      return `${window.location.origin}/api/atlas-pmtiles?variant=overview&release=${encodeURIComponent(activeRelease.releaseId)}`;
+    }
+    return dataReleaseAssetUrl(activeRelease, activeRelease.overviewPmtilesKey);
+  }
+  const browserUrl = typeof window !== 'undefined' && import.meta.env.PROD
+    ? `${window.location.origin}/api/atlas-pmtiles?variant=overview`
+    : `${R2_PUBLIC_URL}/atlas-overview.pmtiles`;
+  return `${browserUrl}${browserUrl.includes('?') ? '&' : '?'}v=${currentAgencyDataVersion()}`;
+}
+
 const protocol = new Protocol();
 let protocolRegistered = false;
 
 export async function registerProtocol() {
+  activeRelease = await resolveDataRelease();
   await resolveAgencyDataVersion();
   if (!protocolRegistered) {
     maplibregl.addProtocol('pmtiles', protocol.tile);
@@ -25,6 +48,7 @@ export async function registerProtocol() {
   // MapLibre's `pmtiles://${url}/{z}/{x}/{y}` requests resolve to it instead
   // of a fresh stock instance (Protocol.get() matches by exact source key).
   protocol.add(new PMTiles(new RetryingFetchSource(getAtlasPmtilesUrl())));
+  protocol.add(new PMTiles(new RetryingFetchSource(getAtlasOverviewPmtilesUrl())));
 }
 
 export const getMapStyle = (lightMode: boolean): maplibregl.StyleSpecification => {

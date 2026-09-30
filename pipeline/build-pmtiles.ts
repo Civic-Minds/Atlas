@@ -3,10 +3,11 @@ import path from 'path';
 import { execSync } from 'child_process';
 // loadEnv first so shared/config sees staging R2_PUBLIC_URL
 import { LOADED_ENV_FILE } from './loadEnv.js';
-import { r2PutFile } from './r2';
+import { r2Put, r2PutFile } from './r2';
 import { getAgencyArtifactUrls, pmtilesMinZoomForHeadway } from '../shared/config.js';
 import { runWithConcurrency } from './utils.js';
 import { prepareAgencyRouteFeaturesForTiles } from './prepareAgencyRoutesForTiles.js';
+import { simplifyLine } from './geometry.js';
 
 console.log(`env: ${LOADED_ENV_FILE} (bucket=${process.env.R2_BUCKET_NAME ?? '?'})`);
 
@@ -19,6 +20,33 @@ interface Feature {
 interface FeatureCollection {
   type: string;
   features: Feature[];
+}
+
+/**
+ * Build the deliberately small route set used by the zoomed-out map. At those
+ * zooms the user needs the network shape, not every bend in every route.
+ */
+function buildOverviewRoutes(routes: Feature[]): Feature[] {
+  return routes.map(feature => ({
+    ...feature,
+    properties: Object.fromEntries(
+      Object.entries(feature.properties ?? {}).filter(([key]) => (
+        [
+          'agencySlug', 'routeId', 'routeShortName', 'routeLongName', 'routeBranch',
+          'routeType', 'directionId', 'day', 'serviceClass', 'tier',
+          'routeHasIrregularDirection', 'headway', 'minStopHeadway', 'worstDirectionHeadway',
+          'tippecanoe:minzoom',
+        ].includes(key)
+        || /^(pch|wdpch|hps|msph|wdph|hph)_/.test(key)
+      )),
+    ),
+    geometry: feature.geometry?.type === 'LineString'
+      ? {
+          ...feature.geometry,
+          coordinates: simplifyLine(feature.geometry.coordinates as number[][], 0.0015),
+        }
+      : feature.geometry,
+  }));
 }
 
 async function fetchJson(url: string, retries = 5): Promise<FeatureCollection | null> {
@@ -59,6 +87,9 @@ async function main() {
 
   const tmpDir = path.resolve('tmp/geojson-build');
   fs.mkdirSync(tmpDir, { recursive: true });
+  const releaseAgencyDir = path.join(tmpDir, 'release-agencies');
+  fs.rmSync(releaseAgencyDir, { recursive: true, force: true });
+  fs.mkdirSync(releaseAgencyDir, { recursive: true });
 
   const allRoutes: Feature[] = [];
   const allStops: Feature[] = [];
@@ -88,6 +119,7 @@ async function main() {
         ? JSON.parse(fs.readFileSync(localPath, 'utf8')) as FeatureCollection
         : await fetchJson(url, 5);
       if (data && data.features) {
+        fs.writeFileSync(path.join(releaseAgencyDir, `${slug}.json`), JSON.stringify(data));
         allRoutes.push(...prepareAgencyRouteFeaturesForTiles(data.features, slug));
       } else if (!data) {
         if (agency.pmtilesPending) {
@@ -105,6 +137,7 @@ async function main() {
         ? JSON.parse(fs.readFileSync(localPath, 'utf8')) as FeatureCollection
         : await fetchJson(stopsUrl);
       if (data) {
+        fs.writeFileSync(path.join(releaseAgencyDir, `${slug}-stops.json`), JSON.stringify(data));
         let stopFeatures: any[] = [];
         if (data.features) {
           // Old GeoJSON format
@@ -135,6 +168,7 @@ async function main() {
         ? JSON.parse(fs.readFileSync(localPath, 'utf8')) as FeatureCollection
         : await fetchJson(corridorsUrl);
       if (data && data.features) {
+        fs.writeFileSync(path.join(releaseAgencyDir, `${slug}-corridors.json`), JSON.stringify(data));
         data.features.forEach(f => {
           f.properties = f.properties || {};
           f.properties.agencySlug = slug;
@@ -178,17 +212,21 @@ async function main() {
   const stopsPath = path.join(tmpDir, 'stops.geojson');
   const corridorsPath = path.join(tmpDir, 'corridors.geojson');
   const pmtilesPath = path.join(tmpDir, 'atlas.pmtiles');
+  const overviewRoutesPath = path.join(tmpDir, 'overview-routes.geojson');
+  const overviewPmtilesPath = path.join(tmpDir, 'atlas-overview.pmtiles');
 
   console.log(`Writing merged GeoJSON layers to temp directory...`);
   fs.writeFileSync(routesPath, JSON.stringify({ type: 'FeatureCollection', features: allRoutes }));
   fs.writeFileSync(stopsPath, JSON.stringify({ type: 'FeatureCollection', features: allStops }));
   fs.writeFileSync(corridorsPath, JSON.stringify({ type: 'FeatureCollection', features: allCorridors }));
+  fs.writeFileSync(overviewRoutesPath, JSON.stringify({ type: 'FeatureCollection', features: buildOverviewRoutes(allRoutes) }));
 
   // Build each layer separately (avoids tippecanoe memory pressure on large inputs),
   // then merge into a single atlas.pmtiles with tile-join.
   const routesPm = path.join(tmpDir, 'routes.pmtiles');
   const stopsPm = path.join(tmpDir, 'stops.pmtiles');
   const corridorsPm = path.join(tmpDir, 'corridors.pmtiles');
+  const overviewRoutesPm = path.join(tmpDir, 'overview-routes.pmtiles');
 
   console.log("Building routes.pmtiles ...");
   // --no-tile-size-limit: never drop routes due to tile size — dense cities like GTHA
@@ -201,20 +239,67 @@ async function main() {
   console.log("Building corridors.pmtiles ...");
   execSync(`tippecanoe -o "${corridorsPm}" -z14 --no-tile-size-limit -l corridors "${corridorsPath}" --force`, { stdio: 'inherit' });
 
+  console.log("Building atlas-overview.pmtiles ...");
+  execSync(`tippecanoe -o "${overviewRoutesPm}" -z7 --no-tile-size-limit -l routes "${overviewRoutesPath}" --force`, { stdio: 'inherit' });
+
   console.log("Merging into atlas.pmtiles via tile-join ...");
   execSync(`tile-join -o "${pmtilesPath}" --force --no-tile-size-limit "${routesPm}" "${stopsPm}" "${corridorsPm}"`, { stdio: 'inherit' });
 
   const size = fs.statSync(pmtilesPath).size;
   console.log(`atlas.pmtiles size: ${(size/1024/1024).toFixed(1)} MB`);
+  const overviewSize = fs.statSync(overviewRoutesPm).size;
+  console.log(`atlas-overview.pmtiles size: ${(overviewSize/1024/1024).toFixed(1)} MB`);
 
   if (dryRun) {
     console.log(`Dry run complete: ${pmtilesPath}`);
+    fs.copyFileSync(overviewRoutesPm, overviewPmtilesPath);
+    fs.writeFileSync(
+      path.resolve('tmp/atlas-preview-manifest.json'),
+      JSON.stringify({
+        releaseId: `local-${Date.now().toString(36)}`,
+        pmtilesKey: 'atlas.pmtiles',
+        overviewPmtilesKey: 'atlas-overview.pmtiles',
+        agencyPrefix: 'atlas/preview-agencies',
+        generatedAt: new Date().toISOString(),
+      }, null, 2),
+    );
+    console.log(`Dry run overview complete: ${overviewPmtilesPath}`);
     return;
   }
 
-  console.log("Uploading atlas.pmtiles to Cloudflare R2 (streaming)...");
-  await r2PutFile('atlas.pmtiles', pmtilesPath, 'application/octet-stream');
-  console.log("PMTiles uploaded: https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas.pmtiles");
+  const releaseId = `release-${Date.now().toString(36)}`;
+  const releasePrefix = `atlas/releases/${releaseId}`;
+  const agencyPrefix = `${releasePrefix}/agencies`;
+  const releaseManifest = {
+    releaseId,
+    generatedAt: new Date().toISOString(),
+    pmtilesKey: `${releasePrefix}/atlas.pmtiles`,
+    overviewPmtilesKey: `${releasePrefix}/atlas-overview.pmtiles`,
+    agencyPrefix,
+  };
+
+  console.log(`Uploading immutable data release ${releaseId}...`);
+  await r2PutFile(releaseManifest.pmtilesKey, pmtilesPath, 'application/octet-stream');
+  await r2PutFile(releaseManifest.overviewPmtilesKey, overviewRoutesPm, 'application/octet-stream');
+  const releaseFiles = fs.readdirSync(releaseAgencyDir).map(filename => ({
+    filename,
+    path: path.join(releaseAgencyDir, filename),
+  }));
+  await runWithConcurrency(
+    releaseFiles.map(({ filename, path: filePath }) => async () => {
+      await r2PutFile(`${agencyPrefix}/${filename}`, filePath, 'application/json');
+    }),
+    6,
+  );
+  await r2Put(`${releasePrefix}/manifest.json`, JSON.stringify(releaseManifest, null, 2));
+  // Leave the manifest locally for the coverage check and the final publish step.
+  // The public pointer is intentionally not updated here: a release is not active
+  // until its immutable PMTiles archive passes verification.
+  fs.writeFileSync(
+    path.resolve('tmp/atlas-release-manifest.json'),
+    JSON.stringify(releaseManifest, null, 2),
+  );
+  console.log(`Immutable release uploaded: ${releaseId}. Run coverage verification, then publish the pointer.`);
 
   // Cleanup
   console.log(`Cleaning up temporary files...`);

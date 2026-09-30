@@ -1,8 +1,9 @@
 /** Shared in-memory cache for agency route GeoJSON (Frequency + Corridors). */
 import { idbGet, idbSet, idbPruneStale } from './idbCache';
-import { getAgencyArtifactUrls, R2_PUBLIC_URL } from '../../shared/config';
+import { BETA_R2_PUBLIC_URL, getAgencyArtifactUrls, R2_PUBLIC_URL } from '../../shared/config';
 import { CACHE_BUILD } from '../../shared/cacheBuild';
 import { stampWorstDirectionHeadways } from '../../shared/worstDirection';
+import { dataReleaseAgencyUrl, resolveDataRelease } from './dataRelease';
 
 export interface AgencyGeoSource {
   slug: string;
@@ -160,8 +161,12 @@ export function getCachedAgencyCorridors(slug: string): GeoJSON.FeatureCollectio
 /** Fetch agency GeoJSON, reusing memory cache and in-flight requests. */
 export async function fetchAgencyGeo(agency: AgencyGeoSource): Promise<GeoJSON.FeatureCollection> {
   const arts = getAgencyArtifactUrls(agency.slug, { betaOnly: agency.betaOnly });
-  const fetchUrl = agency.url || arts.url;
-  const dataVer = await resolveAgencyDataVersion();
+  const releaseBase = agency.betaOnly ? BETA_R2_PUBLIC_URL : R2_PUBLIC_URL;
+  const release = await resolveDataRelease(releaseBase);
+  const fetchUrl = release
+    ? dataReleaseAgencyUrl(release, agency.slug, agency.betaOnly)
+    : agency.url || arts.url;
+  const dataVer = release?.releaseId ?? await resolveAgencyDataVersion();
   pruneOnce(dataVer);
 
   const hit = lruGet(cache, agency.slug);
@@ -235,7 +240,11 @@ export async function fetchAgencyCorridors(slug: string, corridorsUrl: string): 
 
   let pending = corridorsInflight.get(slug);
   if (!pending) {
-    const dataVer = await resolveAgencyDataVersion();
+    const release = await resolveDataRelease();
+    const dataVer = release?.releaseId ?? await resolveAgencyDataVersion();
+    const fetchUrl = release
+      ? dataReleaseAgencyUrl(release, `${slug}-corridors`)
+      : corridorsUrl;
     const w = getWorker();
 
     if (w) {
@@ -254,7 +263,7 @@ export async function fetchAgencyCorridors(slug: string, corridorsUrl: string): 
         w.postMessage({
           type: 'corridors',
           slug,
-          url: corridorsUrl,
+          url: fetchUrl,
           weekVer: dataVer,
         });
       }).finally(() => {
@@ -267,7 +276,7 @@ export async function fetchAgencyCorridors(slug: string, corridorsUrl: string): 
           lruSet(corridorsCache, slug, cached);
           return cached;
         }
-        const r = await fetch(`${corridorsUrl}?v=${dataVer}`, { cache: 'default' });
+        const r = await fetch(`${fetchUrl}?v=${dataVer}`, { cache: 'default' });
         if (!r.ok) throw new Error(`${slug} corridors ${r.status}`);
         const data = await r.json() as GeoJSON.FeatureCollection;
         for (const f of data.features) {

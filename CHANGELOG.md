@@ -127,6 +127,11 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Mode filter options now appear selected when the default all-modes state is active.
 - Privacy & analytics now uses the same switch control as the main Settings panel, with clearer copy and a Privacy Policy link.
 - Public-mode localhost runs now explicitly disable beta-only live, history, and experimental features so local testing matches the public site.
+- Map tiles and route data now publish together only after the release passes coverage checks, preventing frequency filters and route cards from reading different data generations.
+- Selected routes no longer bypass the active map frequency filter.
+- Route clicks now use a tighter hit area and consistent pill-style zoom guidance, reducing false “zoom in” prompts near neighboring routes.
+- Broad maps now use a smaller simplified route archive and switch to detailed geometry when zoomed in, reducing unnecessary transit-data downloads.
+- Regional and broad map views now expose a readiness signal when PMTiles route data is usable, so load measurements do not wait for deferred agency details.
 - Regional and broad map views now defer detailed agency downloads until city-level zoom, reducing unnecessary network requests while keeping PMTiles overview routes visible.
 - Added a local performance page for comparing public, beta, and dev load timings.
 - Loading progress now counts only the current map session's unique networks, so stale local requests cannot inflate the public-mode total.

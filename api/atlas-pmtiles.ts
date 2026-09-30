@@ -1,4 +1,4 @@
-const PMTILES_URL = 'https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas.pmtiles';
+const PMTILES_BASE_URL = 'https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/';
 
 export const config = { maxDuration: 60 };
 
@@ -28,8 +28,12 @@ export default {
       return new Response('Method not allowed', { status: 405 });
     }
 
+    const variant = new URL(request.url).searchParams.get('variant');
+    const release = new URL(request.url).searchParams.get('release');
+    const releasePath = release && /^release-[a-z0-9]+$/.test(release) ? `releases/${release}/` : '';
+    const filename = `${releasePath}${variant === 'overview' ? 'atlas-overview.pmtiles' : 'atlas.pmtiles'}`;
     const range = request.headers.get('range');
-    const upstream = await fetch(PMTILES_URL, {
+    const upstream = await fetch(`${PMTILES_BASE_URL}${filename}`, {
       method: request.method,
       headers: range ? { Range: range } : undefined,
     });
