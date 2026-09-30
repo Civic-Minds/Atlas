@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 402,
+    "manualVerified": 403,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,10 +11,10 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 402,
+      "verified-official": 403,
       "official-fare-page-not-found": 125,
       "official-site-inaccessible": 45,
-      "official-source-candidate": 89,
+      "official-source-candidate": 88,
       "no-official-website": 32
     }
   },
@@ -34556,7 +34556,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.evolity.fr/",
@@ -34617,7 +34617,19 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "montbeliard",
+        "agencyName": "évolitY (Montbéliard)",
+        "amount": 1,
+        "amountMax": 41,
+        "currency": "EUR",
+        "fareType": "one-hour single trip and monthly pass",
+        "payment": "QR code, bank card, app, or pass",
+        "sourceUrl": "https://www.evolity.fr/wp-content/uploads/2026/01/evolity-plaquette-tarifs-2026-web.pdf",
+        "effectiveDate": "2026-01-01",
+        "confidence": "high",
+        "evidence": "Official évolitY 2026 fare brochure, valid from January 1, 2026, lists the Pass 1 Voyage at €1 through agencies, app, e-shop, or bank card, €2 onboard, and the general monthly pass at €41; day and 10-trip products are listed separately."
+      }
     },
     {
       "slug": "morlaix",
