@@ -26,9 +26,10 @@ const TODAY = new Intl.DateTimeFormat('en-CA', {
 const FETCH_MISSING = process.argv.includes('--fetch');
 const REGISTRY_PATH = path.join(ROOT, 'public/data/index.json');
 const CACHE_DIR = path.join(ROOT, 'tmp/fare-research');
-const JSON_OUT = path.join(ROOT, `docs/research/fare-inventory-${TODAY}.json`);
-const CSV_OUT = path.join(ROOT, `docs/research/fare-inventory-${TODAY}.csv`);
-const MD_OUT = path.join(ROOT, `docs/research/fare-inventory-${TODAY}.md`);
+const OUTPUT_DIR = path.join(ROOT, `docs/research/fare-inventory-${TODAY}`);
+const JSON_OUT = path.join(OUTPUT_DIR, 'fare-inventory.json');
+const CSV_OUT = path.join(OUTPUT_DIR, 'fare-inventory.csv');
+const MD_OUT = path.join(OUTPUT_DIR, 'fare-inventory.md');
 
 const currencySymbols = { USD: '$', CAD: '$', EUR: '€', GBP: '£', MXN: '$' };
 
@@ -271,6 +272,7 @@ The full per-agency evidence ledger is in the companion JSON and CSV files.
 
 async function main() {
   await fs.mkdir(CACHE_DIR, { recursive: true });
+  await fs.mkdir(OUTPUT_DIR, { recursive: true });
   const registry = JSON.parse(await fs.readFile(REGISTRY_PATH, 'utf8')).agencies;
   const overrides = await loadPublishedOverrides();
   let zipPaths = await findLocalZips();

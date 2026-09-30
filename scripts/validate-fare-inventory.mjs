@@ -6,7 +6,7 @@ import path from 'node:path';
 const supplied = process.argv[2];
 const files = supplied
   ? [supplied]
-  : fs.readdirSync('docs/research').filter((file) => /^fare-inventory-\d{4}-\d{2}-\d{2}\.json$/.test(file)).sort().map((file) => path.join('docs/research', file));
+  : fs.readdirSync('docs/research').filter((file) => /^fare-inventory-\d{4}-\d{2}-\d{2}$/.test(file)).sort().map((directory) => path.join('docs/research', directory, 'fare-inventory.json'));
 const file = files.at(-1);
 if (!file) throw new Error('No fare inventory JSON found.');
 const fullPath = path.isAbsolute(file) ? file : path.join(process.cwd(), file);
