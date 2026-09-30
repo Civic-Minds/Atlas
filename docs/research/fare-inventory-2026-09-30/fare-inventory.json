@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 297,
+    "manualVerified": 299,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,8 +11,8 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 297,
-      "official-source-candidate": 193,
+      "verified-official": 299,
+      "official-source-candidate": 191,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
       "no-official-website": 32
@@ -20056,7 +20056,7 @@
         "USD"
       ],
       "feedVersion": "1",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 2,
         "currency": "USD",
@@ -20119,7 +20119,19 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "hrt",
+        "agencyName": "Hampton Roads Transit",
+        "amount": 2,
+        "amountMax": 70,
+        "currency": "USD",
+        "fareType": "adult bus, ferry, and light-rail fare with pass products",
+        "payment": "cash, GoPass, GoMobile, or ticket vending machine",
+        "sourceUrl": "https://gohrt.com/fares/",
+        "confidence": "medium",
+        "effectiveDate": "2023-07-01",
+        "evidence": "Official HRT fare page lists fares effective July 1, 2023: adult single trip $2.00, one-day GoPass $4.50, 7-day GoPass $22, and 30-day GoPass $70 for bus, ferry, and light rail; discounted and VB Wave fares are listed separately. Reconfirm if the announced 2026 fare-capping rollout supersedes these posted amounts."
+      }
     },
     {
       "slug": "bay-transit",
@@ -29104,7 +29116,7 @@
         "USD"
       ],
       "feedVersion": "FAL26-161.2",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1,
         "currency": "USD",
@@ -29201,7 +29213,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "seattle-streetcar",
+        "agencyName": "Seattle Streetcar",
+        "amount": 3,
+        "amountMax": 6,
+        "currency": "USD",
+        "fareType": "adult single-ride and regional day pass",
+        "payment": "paper ticket, ORCA, contactless tap, or Transit GO",
+        "sourceUrl": "https://seattle.gov/transportation/getting-around/transit/streetcar/fares-and-orca-card",
+        "confidence": "high",
+        "evidence": "Official Seattle Streetcar fare page lists adult single ride at $3.00 and regional day pass at $6.00; youth ride free, and reduced single/day fares are $1/$2 for seniors/RRFP and ORCA LIFT riders."
+      }
     },
     {
       "slug": "metz",
