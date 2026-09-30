@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 141,
+    "manualVerified": 148,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,8 +11,8 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 141,
-      "official-source-candidate": 349,
+      "verified-official": 148,
+      "official-source-candidate": 342,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
       "no-official-website": 32
@@ -6029,7 +6029,7 @@
         "USD"
       ],
       "feedVersion": "S1000138",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 2,
         "currency": "USD",
@@ -6085,7 +6085,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "piercetransit",
+        "agencyName": "Pierce Transit",
+        "amount": 2,
+        "currency": "USD",
+        "fareType": "adult full-fare one ride",
+        "payment": "ORCA, mobile app, tap to pay, or cash",
+        "sourceUrl": "https://piercetransit.org/fares-passes/",
+        "confidence": "high",
+        "evidence": "Official Pierce Transit fare table lists Adult Full Fare One Ride at $2.00; all-day, monthly, reduced, youth, regional, and free-fare programs are listed separately."
+      }
     },
     {
       "slug": "communitytransit",
@@ -14408,7 +14418,7 @@
         "CAD"
       ],
       "feedVersion": "20260529182459",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 4.4,
         "currency": "CAD",
@@ -14477,7 +14487,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "pace-bus",
+        "agencyName": "Pace Bus (Chicago suburbs)",
+        "amount": 2,
+        "currency": "USD",
+        "fareType": "full-fare regular fixed-route ride with Ventra/contactless",
+        "payment": "Ventra, mobile wallet, app, or cash",
+        "sourceUrl": "https://www.pacebus.com/fares",
+        "confidence": "high",
+        "evidence": "Official Pace fare table lists Regular Fixed Route full fare at $2.00 with Ventra/contactless and $2.25 with cash; reduced and premium-route fares are listed separately."
+      }
     },
     {
       "slug": "marta",
@@ -15435,7 +15455,7 @@
         "USD"
       ],
       "feedVersion": "UTC: 22-May-2025 18:06",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 3,
         "currency": "USD",
@@ -15476,7 +15496,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "path",
+        "agencyName": "PATH (Port Authority Trans-Hudson)",
+        "amount": 3.25,
+        "currency": "USD",
+        "fareType": "full one-way fare",
+        "payment": "TAPP, contactless, cash, or ticket vending machine",
+        "sourceUrl": "https://www.panynj.gov/path/en/fares.html",
+        "confidence": "high",
+        "evidence": "Official PATH fare page lists 1-Trip TAPP/PATH SingleRide at $3.25 per ride; multi-trip, reduced, and unlimited products are listed separately."
+      }
     },
     {
       "slug": "beeline",
@@ -15778,7 +15808,7 @@
         "USD"
       ],
       "feedVersion": "2606-Merged_Clever_2606",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 2.75,
         "currency": "USD",
@@ -15836,7 +15866,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "port-authority-pa",
+        "agencyName": "Pittsburgh Regional Transit",
+        "amount": 2.75,
+        "currency": "USD",
+        "fareType": "full-fare single ride",
+        "payment": "ConnectCard, cash, or standard fare media",
+        "sourceUrl": "https://www.rideprt.org/link/3f4c302b877443feae32ae36e8424003.aspx",
+        "confidence": "high",
+        "evidence": "Official PRT fare page lists Stored Value Full Fare and Cash Fare at $2.75 for a single ride; half-fare, day, weekly, monthly, and senior programs are listed separately."
+      }
     },
     {
       "slug": "ata",
@@ -18300,7 +18340,7 @@
         "USD"
       ],
       "feedVersion": "20260511",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 2,
         "currency": "USD",
@@ -18406,7 +18446,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "palm-tran",
+        "agencyName": "Palm Tran (West Palm Beach)",
+        "amount": 2,
+        "currency": "USD",
+        "fareType": "single trip",
+        "payment": "cash or Paradise Pass",
+        "sourceUrl": "https://www.palmtran.org/fares-passes/",
+        "confidence": "high",
+        "evidence": "Official Palm Tran fare table lists Single Trip at $2.00; 1-day, 3-day, 7-day, 31-day, reduced, and fare-capping products are listed separately."
+      }
     },
     {
       "slug": "sunrail",
@@ -23249,7 +23299,7 @@
         "USD"
       ],
       "feedVersion": "20",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1.4,
         "currency": "USD",
@@ -23311,7 +23361,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "patco",
+        "agencyName": "PATCO Speedline (Philadelphia-Camden)",
+        "amount": 1.4,
+        "amountMax": 3,
+        "currency": "USD",
+        "fareType": "adult one-way fare by station distance",
+        "payment": "cash, card, or FREEDOM Card",
+        "sourceUrl": "http://www.ridepatco.org/schedules/fares.html",
+        "confidence": "high",
+        "evidence": "Official PATCO fare table lists adult one-way fares from $1.40 for Philadelphia/Camden trips to $3.00 from Lindenwold-area stations to Philadelphia; the full distance table is provided."
+      }
     },
     {
       "slug": "cascades-east",
@@ -25839,7 +25900,7 @@
         "USD"
       ],
       "feedVersion": "14FEB26",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 0.5,
         "currency": "USD",
@@ -25864,7 +25925,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "pocatello",
+        "agencyName": "Pocatello Regional Transit",
+        "amount": 1,
+        "currency": "USD",
+        "fareType": "fixed-route one-way ticket",
+        "payment": "standard fare media",
+        "sourceUrl": "https://pocatellotransit.com/fares/",
+        "confidence": "high",
+        "evidence": "Official Pocatello Regional Transit fare page lists Fixed Route One-way ticket at $1.00; half-fare, child, free-zone, and commuter products are listed separately."
+      }
     },
     {
       "slug": "albany-ga",
