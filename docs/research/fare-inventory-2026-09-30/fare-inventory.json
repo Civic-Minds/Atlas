@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 421,
+    "manualVerified": 424,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,10 +11,10 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 421,
+      "verified-official": 424,
       "official-fare-page-not-found": 125,
       "official-site-inaccessible": 45,
-      "official-source-candidate": 70,
+      "official-source-candidate": 67,
       "no-official-website": 32
     }
   },
@@ -30996,7 +30996,7 @@
         "EUR"
       ],
       "feedVersion": null,
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1.8,
         "currency": "EUR",
@@ -31088,7 +31088,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "nantes",
+        "agencyName": "Naolib (Nantes)",
+        "amount": 1.8,
+        "amountMax": 67,
+        "currency": "EUR",
+        "fareType": "one-hour ticket and adult monthly ticket",
+        "payment": "mobile ticket, online, distributor, retailer, or mobility center",
+        "confidence": "high",
+        "sourceUrl": "https://naolib.fr/fr/tarifs/transports-en-commun/tickets",
+        "evidence": "Official Naolib fare page lists the network-wide one-hour ticket at €1.80, ten one-hour tickets at €17.80, 24-hour ticket at €6.80, and monthly ticket at €67 for ages 26 and over."
+      }
     },
     {
       "slug": "le-mans",
@@ -31275,7 +31286,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.sibra.fr/",
@@ -31307,7 +31318,19 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "annecy",
+        "agencyName": "Sibra (Annecy)",
+        "amount": 1.5,
+        "amountMax": 40,
+        "currency": "EUR",
+        "fareType": "one-trip digital ticket and full-price monthly pass",
+        "payment": "digital ticket, reloadable card, onboard purchase, or sales point",
+        "effectiveDate": "2024-07-01",
+        "confidence": "high",
+        "sourceUrl": "https://www.sibra.fr/app/uploads/2025/07/Reglement_BUS_CARS_CGV_01072025-avec-compression.pdf",
+        "evidence": "Official Sibra tariff table applies from July 1, 2024 and lists a one-trip ticket at €1.50 without support when purchased digitally or loaded on a card, €2 onboard from the driver, and a full-price monthly pass at €40."
+      }
     },
     {
       "slug": "amiens",
@@ -31522,7 +31545,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.txiktxak.fr/",
@@ -31625,7 +31648,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "bayonne",
+        "agencyName": "Txik Txak",
+        "amount": 1.4,
+        "currency": "EUR",
+        "fareType": "one-trip ticket",
+        "payment": "contactless bank card, agency, retailer, or ticket machine",
+        "confidence": "high",
+        "sourceUrl": "https://www.txiktxak.fr/preparez-votre-trajet/on-visite-le-pays-basque-avec-txik-txak/villes-et-villages/",
+        "evidence": "Official Txik Txak page states that the one-trip ticket costs €1.40 on every line and includes connections for 1 hour 30 minutes; the page also describes daily and weekly passes."
+      }
     },
     {
       "slug": "beziers",
