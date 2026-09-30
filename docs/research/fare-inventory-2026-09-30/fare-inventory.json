@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 321,
+    "manualVerified": 324,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,10 +11,10 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 321,
+      "verified-official": 324,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
-      "official-source-candidate": 169,
+      "official-source-candidate": 166,
       "no-official-website": 32
     }
   },
@@ -5135,7 +5135,7 @@
         "USD"
       ],
       "feedVersion": "20260922",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1.5,
         "currency": "USD",
@@ -5150,7 +5150,18 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "tcat",
+        "agencyName": "Tompkins Consolidated Area Transit",
+        "amount": 1.5,
+        "amountMax": 45,
+        "currency": "USD",
+        "fareType": "adult single ride and monthly pass",
+        "payment": "cash, contactless card, mobile wallet, Tfare, or Tcard",
+        "sourceUrl": "https://tcatbus.com/fare-pass-options",
+        "confidence": "high",
+        "evidence": "Official TCAT fare page lists adult single ride at $1.50, half fare at $0.75, free rides for youth 17 and under, daily fare cap at $3, and monthly pass at $45; other day, weekly, annual, and ride-based products are listed separately."
+      }
     },
     {
       "slug": "broome",
@@ -6285,7 +6296,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.bctransit.com/",
@@ -6293,7 +6304,18 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "south-okanagan",
+        "agencyName": "BC Transit (South Okanagan-Similkameen)",
+        "amount": 2.25,
+        "amountMax": 45,
+        "currency": "CAD",
+        "fareType": "adult local single ride and 30-day pass",
+        "payment": "cash, Umo, or fare pass",
+        "sourceUrl": "https://www.bctransit.com/south-okanagan-similkameen/fares/",
+        "confidence": "high",
+        "evidence": "Official BC Transit fare page lists South Okanagan-Similkameen adult local single ride at $2.25, DayPASS at $4.50, and 30-day adult pass at $45; regional and Route 70 products are listed separately."
+      }
     },
     {
       "slug": "nanaimo",
@@ -6310,7 +6332,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.bctransit.com/",
@@ -6318,7 +6340,19 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "nanaimo",
+        "agencyName": "BC Transit (Nanaimo)",
+        "amount": 2.75,
+        "amountMax": 65,
+        "currency": "CAD",
+        "fareType": "adult local single ride and 30-day pass",
+        "payment": "cash, Umo, contactless payment, or fare pass",
+        "sourceUrl": "https://www.bctransit.com/nanaimo/wp-content/uploads/sites/29/2026/01/nan_rg_jan2026.pdf",
+        "confidence": "high",
+        "effectiveDate": "2026-01-04",
+        "evidence": "Official BC Transit Nanaimo rider guide lists fares effective January 4, 2026: local single ride $2.75, DayPASS $5.50, adult 30-day pass $65, and NCX Nanaimo-Cowichan Express single ride $5."
+      }
     },
     {
       "slug": "cowichan",
