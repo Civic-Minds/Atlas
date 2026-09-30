@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 71,
+    "manualVerified": 77,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,8 +11,8 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 71,
-      "official-source-candidate": 419,
+      "verified-official": 77,
+      "official-source-candidate": 413,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
       "no-official-website": 32
@@ -14031,7 +14031,7 @@
         "USD"
       ],
       "feedVersion": "UTC: 28-Sep-2026 20:23",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 2,
         "currency": "USD",
@@ -14107,7 +14107,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "cta",
+        "agencyName": "Chicago Transit Authority (CTA)",
+        "amount": 2.25,
+        "currency": "USD",
+        "fareType": "regular bus fare",
+        "payment": "standard fare media",
+        "sourceUrl": "https://www.transitchicago.com/fares/",
+        "confidence": "high",
+        "evidence": "Official fare chart lists regular bus fare at $2.25; rail, reduced, student, pass, and transfer products are listed separately."
+      }
     },
     {
       "slug": "metra",
@@ -14863,7 +14873,7 @@
       "status": "unresolved",
       "notes": "GTFS publishes only zero-value legacy fare attributes; this may be a placeholder and was not treated as proof of free service.",
       "feedVersion": "S1000236",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": null,
         "currency": "USD",
@@ -14888,7 +14898,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "dash",
+        "agencyName": "DASH (Alexandria)",
+        "amount": 0,
+        "currency": "USD",
+        "fareType": "standard bus fare",
+        "payment": "fare-free service",
+        "effectiveDate": "2021-09-01",
+        "sourceUrl": "https://www.dashbus.com/free/",
+        "confidence": "high",
+        "evidence": "Official DASH page states fare collection was eliminated on all DASH buses in September 2021 and the fare-free policy remains in effect."
+      }
     },
     {
       "slug": "nyct-subway",
@@ -15858,7 +15879,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://decaturil.gov/departments/transit/",
@@ -15866,7 +15887,17 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "decatur",
+        "agencyName": "Decatur Public Transit System",
+        "amount": 1,
+        "currency": "USD",
+        "fareType": "adult fixed-route fare",
+        "payment": "cash, Decatur Transit Pay, or Smart Rider Card",
+        "sourceUrl": "https://decaturil.gov/616/Fixed-Route-Passenger-Guide",
+        "confidence": "high",
+        "evidence": "Official Decatur fixed-route guide states the adult fare is $1; reduced and free fares may apply."
+      }
     },
     {
       "slug": "essex-county",
@@ -19350,7 +19381,7 @@
         "USD"
       ],
       "feedVersion": "Updated: Sep 1, 2026, 7:20 PM",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1.5,
         "currency": "USD",
@@ -19382,7 +19413,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "citilink-fw",
+        "agencyName": "Citilink (Fort Wayne, IN)",
+        "amount": 1.5,
+        "currency": "USD",
+        "fareType": "regular adult ticket-to-ride",
+        "payment": "standard fare media",
+        "sourceUrl": "https://fwcitilink.com/bus-passes-store/",
+        "confidence": "high",
+        "evidence": "Official pass store lists Regular Ticket-To-Ride at $1.50; all-day, 31-day, Access, and reduced products are listed separately."
+      }
     },
     {
       "slug": "gptc",
@@ -21382,7 +21423,7 @@
         "USD"
       ],
       "feedVersion": "2026-SEP-07-BB_20260904",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 2,
         "currency": "USD",
@@ -21415,7 +21456,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "cota",
+        "agencyName": "Central Ohio Transit Authority (COTA)",
+        "amount": 2,
+        "currency": "USD",
+        "fareType": "standard trip fare",
+        "payment": "cash, Transit app, or COTA Smartcard",
+        "sourceUrl": "https://www.cota.com/riding-cota/fare-overview/",
+        "confidence": "high",
+        "evidence": "Official fare table lists Standard, Frequent, and Rush Hour two-hour trip fare at $2.00; day, 31-day, child, and reduced fares are listed separately."
+      }
     },
     {
       "slug": "des-moines",
@@ -33693,7 +33744,7 @@
         "USD"
       ],
       "feedVersion": "Updated: Jul 10, 2026, 7:27 PM",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 0.75,
         "currency": "USD",
@@ -33765,7 +33816,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "dcta",
+        "agencyName": "Denton County Transportation Authority (DCTA)",
+        "amount": 1.5,
+        "currency": "USD",
+        "fareType": "GoZone single ride/local fare",
+        "payment": "exact cash, GoZone app, or fare media",
+        "sourceUrl": "https://www.dcta.net/fares-passes/fare-information",
+        "confidence": "high",
+        "evidence": "Official fare table lists GoZone Single Ride at $1.50 and Local AM/PM Pass at $1.50; regional, day, monthly, and reduced fares are listed separately."
+      }
     },
     {
       "slug": "waco",
