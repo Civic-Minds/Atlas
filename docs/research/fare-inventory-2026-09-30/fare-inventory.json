@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 205,
+    "manualVerified": 207,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,8 +11,8 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 205,
-      "official-source-candidate": 285,
+      "verified-official": 207,
+      "official-source-candidate": 283,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
       "no-official-website": 32
@@ -14301,7 +14301,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://ridegtrans.com/",
@@ -14368,7 +14368,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "gtrans",
+        "agencyName": "GTrans (Gardena Municipal Bus Lines)",
+        "amount": 1,
+        "currency": "USD",
+        "fareType": "regular local fare",
+        "payment": "cash or TAP card",
+        "effectiveDate": "2022-07-01",
+        "sourceUrl": "https://ridegtrans.com/fares/?agency_id=860&fare_product_id=oneway_route1x_cash_student&intent=purchase",
+        "confidence": "medium",
+        "evidence": "Official GTrans fare table lists Regular local fare at $1.00 and labels the table effective July 1, 2022; reduced, student, Line 7X, round-trip, and transfer fares are listed separately. The table is not current-dated, so the rate should be reconfirmed before publication."
+      }
     },
     {
       "slug": "vvta",
@@ -17750,7 +17761,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://www.jtafla.com",
@@ -17832,7 +17843,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "jta",
+        "agencyName": "Jacksonville Transportation Authority (JTA)",
+        "amount": 1.75,
+        "currency": "USD",
+        "fareType": "regular fixed-route bus fare",
+        "payment": "exact cash, MyJTA, or Token Transit",
+        "effectiveDate": "2026-08-01",
+        "sourceUrl": "https://ride.jtafla.com/rider-guide/fares-passes",
+        "confidence": "high",
+        "evidence": "Official JTA fare page lists Regular Fare including First Coast Flyer at $1.75 and states the 2026 fare pilot ended July 31, 2026 with regular rates resuming August 1, 2026; reduced, ReadiRide, senior-free, NAVI-free, and pass fares are listed separately."
+      }
     },
     {
       "slug": "cats",
