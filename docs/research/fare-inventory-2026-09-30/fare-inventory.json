@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 335,
+    "manualVerified": 339,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,10 +11,10 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 335,
+      "verified-official": 339,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
-      "official-source-candidate": 155,
+      "official-source-candidate": 151,
       "no-official-website": 32
     }
   },
@@ -4774,7 +4774,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.butlercountyrta.com/",
@@ -4804,7 +4804,19 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "butler-county-rta",
+        "agencyName": "Butler County Regional Transit Authority",
+        "amount": 0,
+        "amountMax": 5,
+        "currency": "USD",
+        "fareType": "fare-free fixed routes and BGo on-demand fare",
+        "payment": "no fare on fixed routes; BGo booking/payment for on-demand trips",
+        "sourceUrl": "https://www.butlercountyrta.com/bgo-curb-to-curb/fare-price-breakdown/",
+        "confidence": "high",
+        "effectiveDate": "2026-01-19",
+        "evidence": "Official BCRTA fare page lists all fixed-route single rides and regional routes as free, CincyLink at $3 reduced from $5 effective January 19, 2026, and BGo curb-to-curb at $5 per one-way trip."
+      }
     },
     {
       "slug": "seat",
@@ -6157,7 +6169,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://LethbridgeTransit.ca",
@@ -6165,7 +6177,19 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "lethbridge",
+        "agencyName": "Lethbridge Transit",
+        "amount": 3,
+        "amountMax": 77,
+        "currency": "CAD",
+        "fareType": "adult cash fare and monthly pass",
+        "payment": "exact cash, LT Fare card, or pass",
+        "sourceUrl": "https://www.lethbridge.ca/roads-parking-transit/transit/",
+        "confidence": "high",
+        "effectiveDate": "2026-06-01",
+        "evidence": "Official City of Lethbridge transit page lists adult cash fare at $3.00, 10 rides at $22.50, monthly pass at $77, and day pass at $7.50; the page also identifies 2026 fare-card availability dates."
+      }
     },
     {
       "slug": "moose-jaw",
@@ -6504,7 +6528,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.bctransit.com/",
@@ -6512,7 +6536,18 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "pemberton",
+        "agencyName": "BC Transit (Pemberton Valley)",
+        "amount": 2.5,
+        "amountMax": 95,
+        "currency": "CAD",
+        "fareType": "adult local and commuter single ride and pass products",
+        "payment": "cash, Umo, contactless payment, or fare pass",
+        "sourceUrl": "https://www.bctransit.com/pemberton-valley/fares/",
+        "confidence": "high",
+        "evidence": "Official BC Transit Pemberton Valley fare page lists local adult single ride at $2.50 and commuter single ride at $4.50, with local and commuter adult pass products listed separately."
+      }
     },
     {
       "slug": "whistler",
@@ -6529,7 +6564,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.bctransit.com/",
@@ -6537,7 +6572,19 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "whistler",
+        "agencyName": "BC Transit (Whistler)",
+        "amount": 2.75,
+        "amountMax": 55,
+        "currency": "CAD",
+        "fareType": "adult local single ride and 30-day pass",
+        "payment": "cash, Umo, or fare pass",
+        "sourceUrl": "https://www.bctransit.com/whistler/fares/",
+        "confidence": "high",
+        "effectiveDate": "2025-10-01",
+        "evidence": "Official BC Transit Whistler fare page lists adult single ride at $2.75, DayPASS at $5.50, 30-day adult pass at $55, and dual Whistler/Pemberton products separately."
+      }
     },
     {
       "slug": "kingcountymetro",
