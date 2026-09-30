@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 324,
+    "manualVerified": 328,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,10 +11,10 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 324,
+      "verified-official": 328,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
-      "official-source-candidate": 166,
+      "official-source-candidate": 162,
       "no-official-website": 32
     }
   },
@@ -6652,7 +6652,7 @@
         "USD"
       ],
       "feedVersion": "SC-Spring-2026.8",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1,
         "currency": "USD",
@@ -6667,7 +6667,18 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "soundtransit",
+        "agencyName": "Sound Transit (Seattle)",
+        "amount": 3,
+        "amountMax": 6,
+        "currency": "USD",
+        "fareType": "adult Link single ride and ORCA day pass",
+        "payment": "ORCA, contactless payment, or ticket",
+        "sourceUrl": "https://www.soundtransit.org/ride-with-us/how-to-pay/fares?agency_id=40&fare_media_id=ORCA&fare_product_id=Free+Shuttle&intent=purchase",
+        "confidence": "medium",
+        "evidence": "Official Sound Transit fare tools list adult Link fares and an adult ORCA day pass at $6; Sound Transit’s current Link fare structure uses a $3 adult trip, while fares vary by service and rider category."
+      }
     },
     {
       "slug": "piercetransit",
@@ -7141,7 +7152,7 @@
         "USD"
       ],
       "feedVersion": "S1000173-S1000174",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1,
         "currency": "USD",
@@ -7156,7 +7167,19 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "whatcomtransit",
+        "agencyName": "Whatcom Transportation Authority",
+        "amount": 2,
+        "amountMax": 60,
+        "currency": "USD",
+        "fareType": "general fixed-route fare with daily and monthly fare caps",
+        "payment": "cash, Umo, contactless tap, or mobile wallet",
+        "sourceUrl": "https://www.ridewta.com/fares-and-passes/",
+        "confidence": "high",
+        "effectiveDate": "2026-09-01",
+        "evidence": "Official WTA fare page lists general fixed-route fare at $2 per ride, a $6 daily fare cap, and a $60 monthly fare cap; reduced and paratransit fares, youth-free eligibility, and payment methods are listed separately."
+      }
     },
     {
       "slug": "islandtransit",
@@ -7174,7 +7197,7 @@
       "status": "unresolved",
       "notes": "GTFS publishes only zero-value legacy fare attributes; this may be a placeholder and was not treated as proof of free service.",
       "feedVersion": "UTC: 06-May-2026 16:22",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": null,
         "currency": "USD",
@@ -7189,7 +7212,18 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "islandtransit",
+        "agencyName": "Island Transit (Whidbey Island)",
+        "amount": 0,
+        "amountMax": 0,
+        "currency": "USD",
+        "fareType": "fare-free fixed-route and paratransit service",
+        "payment": "no fare required",
+        "sourceUrl": "https://www.islandtransit.org/How-to-Ride-the-Bus",
+        "confidence": "high",
+        "evidence": "Official Island Transit rider page states that Island Transit has been fare-free since its founding in 1987 and that no ticket, cash, or coins are needed to ride the bus."
+      }
     },
     {
       "slug": "jeffersontransit",
@@ -7961,7 +7995,7 @@
         "USD"
       ],
       "feedVersion": "SEPT 2026v3_20260914",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 2,
         "currency": "USD",
@@ -7976,7 +8010,18 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "spokane",
+        "agencyName": "Spokane Transit Authority",
+        "amount": 2,
+        "amountMax": 60,
+        "currency": "USD",
+        "fareType": "standard one-ride fare with daily and monthly fare caps",
+        "payment": "cash, fare media, or mobile app",
+        "sourceUrl": "https://www.spokanetransit.com/wp-content/uploads/2026/01/2026-2029-Title-VI-Program-Final-Adopted-12.18.25_compressed.pdf",
+        "confidence": "high",
+        "evidence": "Official Spokane Transit Authority 2026 adopted program lists standard one-ride fare at $2, daily fare cap at $4, and monthly fare cap at $60; reduced, youth, student, and paratransit fares are listed separately."
+      }
     },
     {
       "slug": "eugene-ltd",
