@@ -51,6 +51,8 @@
     "audit-frequency": "npx tsx scripts/audit-frequency.ts",
     "audit-feed-freshness": "npx tsx scripts/audit-feed-freshness.ts",
     "audit-expired-sources": "npx tsx scripts/audit-expired-sources.ts",
+    "research:fares": "node scripts/research-fares.mjs",
+    "research:fares:validate": "node scripts/validate-fare-inventory.mjs",
     "validate:frequent-service-catalog": "node scripts/validate-frequent-service-catalog.mjs",
     "analyze:frequent-service-catalog": "node scripts/analyze-frequent-service-catalog.mjs",
     "poc:burlington": "npx tsx scripts/poc/burlington-rt.ts",
