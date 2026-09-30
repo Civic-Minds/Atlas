@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 193,
+    "manualVerified": 194,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,8 +11,8 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 193,
-      "official-source-candidate": 297,
+      "verified-official": 194,
+      "official-source-candidate": 296,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
       "no-official-website": 32
@@ -29118,7 +29118,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.tac-mobilites.fr/",
@@ -29219,7 +29219,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "annemasse",
+        "agencyName": "TAC (Annemasse)",
+        "amount": 1.7,
+        "currency": "EUR",
+        "fareType": "single ticket, zone 210",
+        "payment": "TAC mobile ticket",
+        "sourceUrl": "https://www.tac-mobilites.fr/tac-vous/notre-application",
+        "confidence": "high",
+        "evidence": "Official TAC Mobilités page lists the TAC single ticket for zone 210 at €1.70, valid for 60 minutes from QR-code validation; 10-ticket and monthly products are listed separately."
+      }
     },
     {
       "slug": "avignon",
