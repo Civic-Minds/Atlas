@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 361,
+    "manualVerified": 362,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,10 +11,10 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 361,
+      "verified-official": 362,
       "official-fare-page-not-found": 125,
       "official-site-inaccessible": 45,
-      "official-source-candidate": 130,
+      "official-source-candidate": 129,
       "no-official-website": 32
     }
   },
@@ -14910,7 +14910,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.ometro.com/",
@@ -14940,7 +14940,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "omahametro",
+        "agencyName": "Omaha Metro",
+        "amount": 1.25,
+        "amountMax": 55,
+        "currency": "USD",
+        "fareType": "adult regular fixed-route fare and 30-day pass",
+        "payment": "cash, Umo, smart card, or fare pass",
+        "sourceUrl": "https://www.ometro.com/fares/",
+        "confidence": "high",
+        "evidence": "Official Omaha Metro fare page lists adult regular cash fare at $1.25, adult express fare at $1.50, MOBY fare at $2.50, 10-ride adult pass at $12.50, and 30-day pass at $55."
+      }
     },
     {
       "slug": "ladot",
