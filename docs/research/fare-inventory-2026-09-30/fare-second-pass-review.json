@@ -1,0 +1,2821 @@
+{
+  "scope": "Targeted second-pass fare audit outcomes",
+  "researchDate": "2026-09-30",
+  "sourceFiles": [
+    "fare-second-pass-queue.json",
+    "fare-second-pass-site-review.json",
+    "manual-verified-fares.json"
+  ],
+  "stats": {
+    "official-site-inaccessible": 43,
+    "no-official-website": 32,
+    "official-fare-page-not-found": 112,
+    "official-source-candidate": 2,
+    "verified-official": 1
+  },
+  "records": [
+    {
+      "slug": "moulins",
+      "agencyName": "Aléo (Moulins)",
+      "region": "Auvergne-Rhône-Alpes",
+      "priority": 1,
+      "reasons": [
+        "official-site-inaccessible"
+      ],
+      "outcome": "official-site-inaccessible",
+      "officialWebsite": "https://www.aleo-moulins.fr/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "ales",
+      "agencyName": "Ales'y (Alès)",
+      "region": "Occitanie",
+      "priority": 1,
+      "reasons": [
+        "no-official-website"
+      ],
+      "outcome": "no-official-website",
+      "officialWebsite": null,
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "ace",
+      "agencyName": "Altamont Corridor Express",
+      "region": "California",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "https://acerail.com/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "amarillo",
+      "agencyName": "Amarillo City Transit",
+      "region": "Texas",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "https://amarillo.gov/departments/community-services/transit",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "amiens",
+      "agencyName": "Ametis (Amiens)",
+      "region": "Hauts-de-France",
+      "priority": 1,
+      "reasons": [
+        "official-site-inaccessible"
+      ],
+      "outcome": "official-site-inaccessible",
+      "officialWebsite": "https://www.ametois.fr/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "rouen",
+      "agencyName": "Astuce (Rouen)",
+      "region": "Normandie",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "https://www.reseau-astuce.fr/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "athens-acc",
+      "agencyName": "Athens Clarke County Transit",
+      "region": "Georgia",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "https://www.accgov.com/transit/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "blois",
+      "agencyName": "Azalys (Blois)",
+      "region": "Centre-Val de Loire",
+      "priority": 1,
+      "reasons": [
+        "official-site-inaccessible"
+      ],
+      "outcome": "official-site-inaccessible",
+      "officialWebsite": "https://www.azalys-blois.fr/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "b-line",
+      "agencyName": "B-Line (Corpus Christi RTA)",
+      "region": "Texas",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "https://www.ccrta.org/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "rock-county",
+      "agencyName": "Beloit Transit System",
+      "region": "Wisconsin",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "http://www.beloittransit.com",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "bettendorf",
+      "agencyName": "Bettendorf Transit",
+      "region": "Iowa",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "https://www.bettendorf.org/departments/engineering___public_",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "bigbluebus",
+      "agencyName": "Big Blue Bus (Santa Monica)",
+      "region": "California",
+      "priority": 1,
+      "reasons": [
+        "official-site-inaccessible"
+      ],
+      "outcome": "official-site-inaccessible",
+      "officialWebsite": "http://www.bigbluebus.com",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "brandon",
+      "agencyName": "Brandon Transit",
+      "region": "Manitoba",
+      "priority": 1,
+      "reasons": [
+        "official-site-inaccessible"
+      ],
+      "outcome": "official-site-inaccessible",
+      "officialWebsite": "http://www.brandontransit.ca/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "breck-free-ride",
+      "agencyName": "Breckenridge Free Ride",
+      "region": "Colorado",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "https://www.breckfreeride.com/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "brownsville",
+      "agencyName": "Brownsville Metro",
+      "region": "Texas",
+      "priority": 1,
+      "reasons": [
+        "official-site-inaccessible"
+      ],
+      "outcome": "official-site-inaccessible",
+      "officialWebsite": "BrownsvilleMetro.transloc.com",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "bustang",
+      "agencyName": "Bustang (CDOT)",
+      "region": "Colorado",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "https://www.ridebustang.com/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "bustang-outrider",
+      "agencyName": "Bustang Outrider",
+      "region": "Colorado",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "http://ridebustang.com/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "ctran",
+      "agencyName": "C-TRAN (Vancouver, WA)",
+      "region": "Washington",
+      "priority": 1,
+      "reasons": [
+        "official-site-inaccessible"
+      ],
+      "outcome": "official-site-inaccessible",
+      "officialWebsite": "http://www.C-TRAN.com",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "cahors",
+      "agencyName": "Cahors urbain",
+      "region": "Occitanie",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "https://www.bus-evidence.fr/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "libourne",
+      "agencyName": "Calibus (Libourne)",
+      "region": "Nouvelle-Aquitaine",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "https://www.calibus.fr",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "cat-or",
+      "agencyName": "Canby Area Transit (CAT)",
+      "region": "Oregon",
+      "priority": 1,
+      "reasons": [
+        "official-site-inaccessible"
+      ],
+      "outcome": "official-site-inaccessible",
+      "officialWebsite": "https://www.canbyoregon.gov/area-transit",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "cherbourg",
+      "agencyName": "Cap Cotentin (Cherbourg)",
+      "region": "Normandie",
+      "priority": 1,
+      "reasons": [
+        "no-official-website"
+      ],
+      "outcome": "no-official-website",
+      "officialWebsite": null,
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "cdta",
+      "agencyName": "Capital District Transportation Authority",
+      "region": "New York",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "http://www.cdta.org",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "cascades-east",
+      "agencyName": "Cascades East Transit (Bend, OR)",
+      "region": "Oregon",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "http://cascadeseasttransit.com/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "ccta",
+      "agencyName": "CCTA / Green Mountain Transit (Burlington, VT)",
+      "region": "Vermont",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "https://sstarides.org/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "centro",
+      "agencyName": "Centro (Syracuse)",
+      "region": "New York",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "http://www.centro.org",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "chamonix",
+      "agencyName": "Chamonix Mobilités",
+      "region": "Auvergne-Rhône-Alpes",
+      "priority": 1,
+      "reasons": [
+        "no-official-website"
+      ],
+      "outcome": "no-official-website",
+      "officialWebsite": null,
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "carta",
+      "agencyName": "Charleston Area Regional Transportation Authority (CARTA)",
+      "region": "South Carolina",
+      "priority": 1,
+      "reasons": [
+        "official-site-inaccessible"
+      ],
+      "outcome": "official-site-inaccessible",
+      "officialWebsite": "https://www.ridecarta.com/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "cheyenne",
+      "agencyName": "Cheyenne Transit Program",
+      "region": "Wyoming",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "https://cheyennecity.org/Transit",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "grand-forks",
+      "agencyName": "Cities Area Transit (Grand Forks)",
+      "region": "North Dakota",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "http://www.ridecat.org",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "vacaville",
+      "agencyName": "City Coach (Vacaville)",
+      "region": "California",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "https://citycoach.com/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "fort-smith",
+      "agencyName": "City of Fort Smith",
+      "region": "Arkansas",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "https://www.fortsmithar.gov/government/departments/transit",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "jackson-ms",
+      "agencyName": "City of Jackson (JTRAN)",
+      "region": "Mississippi",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "https://ridejtran.com/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "slotransit",
+      "agencyName": "City of San Luis Obispo Transit",
+      "region": "California",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "https://www.slocity.org/government/department-directory/public-works/slo-transit-bus",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "clemson-cat",
+      "agencyName": "Clemson Area Transit (CATbus)",
+      "region": "South Carolina",
+      "priority": 1,
+      "reasons": [
+        "official-site-inaccessible"
+      ],
+      "outcome": "official-site-inaccessible",
+      "officialWebsite": "catbus.transloc.com",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "cavaillon",
+      "agencyName": "Cmonbus (Cavaillon)",
+      "region": "Provence-Alpes-Côte d'Azur",
+      "priority": 1,
+      "reasons": [
+        "official-site-inaccessible"
+      ],
+      "outcome": "official-site-inaccessible",
+      "officialWebsite": "https://www.luberonmontsdevaucluse.fr/agglomeration/c-mon-bus",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "san-angelo",
+      "agencyName": "Concho Valley Transit (San Angelo)",
+      "region": "Texas",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "https://www.cvtd.org",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "cornwall",
+      "agencyName": "Cornwall Transit",
+      "region": "Ontario",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "https://www.cornwall.ca/en/live-here/cornwall-transit.aspx",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "corvallis",
+      "agencyName": "Corvallis Transit System",
+      "region": "Oregon",
+      "priority": 1,
+      "reasons": [
+        "official-site-inaccessible"
+      ],
+      "outcome": "official-site-inaccessible",
+      "officialWebsite": "https://www.corvallisoregon.gov/cts",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "coutances",
+      "agencyName": "Cosibus (Coutances)",
+      "region": "Normandie",
+      "priority": 1,
+      "reasons": [
+        "no-official-website"
+      ],
+      "outcome": "no-official-website",
+      "officialWebsite": null,
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "cosne",
+      "agencyName": "Cosne-Cours-sur-Loire",
+      "region": "Bourgogne-Franche-Comté",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "https://www.coeurdeloire.fr/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "cttransit",
+      "agencyName": "CTtransit",
+      "region": "Connecticut",
+      "priority": 1,
+      "reasons": [
+        "no-official-website"
+      ],
+      "outcome": "no-official-website",
+      "officialWebsite": null,
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "cue-bus",
+      "agencyName": "CUE Bus (Fairfax)",
+      "region": "Virginia",
+      "priority": 1,
+      "reasons": [
+        "official-site-inaccessible"
+      ],
+      "outcome": "official-site-inaccessible",
+      "officialWebsite": "http://www.ridesystems.net",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "cyride",
+      "agencyName": "CyRide (Ames)",
+      "region": "Iowa",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "http://www.cyride.com",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "dc-streetcar",
+      "agencyName": "DC Streetcar",
+      "region": "Washington DC",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "https://www.dcstreetcar.com/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "des-moines",
+      "agencyName": "Des Moines Area Regional Transit Authority (DART)",
+      "region": "Iowa",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "http://www.ridedart.com",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "dinan",
+      "agencyName": "Dinamo (Dinan)",
+      "region": "Bretagne",
+      "priority": 1,
+      "reasons": [
+        "no-official-website"
+      ],
+      "outcome": "no-official-website",
+      "officialWebsite": null,
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "dunkirk",
+      "agencyName": "DK'Bus (Dunkerque)",
+      "region": "Hauts-de-France",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "https://www.dkbus.com/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "dole",
+      "agencyName": "Dole",
+      "region": "Bourgogne-Franche-Comté",
+      "priority": 1,
+      "reasons": [
+        "no-official-website"
+      ],
+      "outcome": "no-official-website",
+      "officialWebsite": null,
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "dreux",
+      "agencyName": "Dreux",
+      "region": "Centre-Val de Loire",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "http://www.linead.fr/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "duke",
+      "agencyName": "Duke University Transit",
+      "region": "North Carolina",
+      "priority": 1,
+      "reasons": [
+        "official-site-inaccessible"
+      ],
+      "outcome": "official-site-inaccessible",
+      "officialWebsite": "duke.transloc.com",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "durango-transit",
+      "agencyName": "Durango Transit",
+      "region": "Colorado",
+      "priority": 1,
+      "reasons": [
+        "official-site-inaccessible"
+      ],
+      "outcome": "official-site-inaccessible",
+      "officialWebsite": "https://co-durango.civicplus.com/333/Transit",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "dutchess",
+      "agencyName": "Dutchess County Public Transit",
+      "region": "New York",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "https://www.dutchessny.gov/Departments/Public-Transit/Routes",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "edmonton",
+      "agencyName": "Edmonton Transit Service (ETS)",
+      "region": "Alberta",
+      "priority": 1,
+      "reasons": [
+        "official-site-inaccessible"
+      ],
+      "outcome": "official-site-inaccessible",
+      "officialWebsite": "http://www.takeets.com",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "villeneuve-sur-lot",
+      "agencyName": "Elios (Villeneuve-sur-Lot)",
+      "region": "Nouvelle-Aquitaine",
+      "priority": 1,
+      "reasons": [
+        "no-official-website"
+      ],
+      "outcome": "no-official-website",
+      "officialWebsite": null,
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "embark",
+      "agencyName": "Embark (Oklahoma City)",
+      "region": "Oklahoma",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "https://www.ou.edu/cart",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "arles",
+      "agencyName": "Envia (Arles)",
+      "region": "Provence-Alpes-Côte d'Azur",
+      "priority": 1,
+      "reasons": [
+        "no-official-website"
+      ],
+      "outcome": "no-official-website",
+      "officialWebsite": null,
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "douai",
+      "agencyName": "Évasion (Douai)",
+      "region": "Hauts-de-France",
+      "priority": 1,
+      "reasons": [
+        "no-official-website"
+      ],
+      "outcome": "no-official-website",
+      "officialWebsite": null,
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "fairfax",
+      "agencyName": "Fairfax Connector",
+      "region": "Virginia",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "http://www.fairfaxcounty.gov/connector/routes/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "fast-nc",
+      "agencyName": "Fayetteville Area System of Transit",
+      "region": "North Carolina",
+      "priority": 1,
+      "reasons": [
+        "official-site-inaccessible"
+      ],
+      "outcome": "official-site-inaccessible",
+      "officialWebsite": "fast.transloc.com",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "fecamp",
+      "agencyName": "Fécamp",
+      "region": "Normandie",
+      "priority": 1,
+      "reasons": [
+        "no-official-website"
+      ],
+      "outcome": "no-official-website",
+      "officialWebsite": null,
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "figeac",
+      "agencyName": "Figeac",
+      "region": "Occitanie",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "http://www.cars-delbos.com/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "chartres",
+      "agencyName": "Filibus (Chartres)",
+      "region": "Centre-Val de Loire",
+      "priority": 1,
+      "reasons": [
+        "official-site-inaccessible"
+      ],
+      "outcome": "official-site-inaccessible",
+      "officialWebsite": "https://www.filibus.fr/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "flers",
+      "agencyName": "Flers",
+      "region": "Normandie",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "http://www.flers-agglo.fr/cadre-de-vie/transport-et-mobilite/transports-urbains-transports-a-la-demande-tad/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "gaston-county",
+      "agencyName": "Gaston County Transit",
+      "region": "North Carolina",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "http://www.gastongov.com/government/departments/health_and_human_services/social_services/access.php",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "glendalebeeline",
+      "agencyName": "Glendale Beeline",
+      "region": "California",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "http://glendalebeeline.com/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "gold-coast",
+      "agencyName": "Gold Coast Transit District (Oxnard)",
+      "region": null,
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "http://www.goldcoasttransit.org",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "glensfallstransit",
+      "agencyName": "Greater Glens Falls Transit",
+      "region": "New York",
+      "priority": 1,
+      "reasons": [
+        "official-site-inaccessible"
+      ],
+      "outcome": "official-site-inaccessible",
+      "officialWebsite": "https://gftransit.org/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "greenlink",
+      "agencyName": "GreenLink (Greenville, SC)",
+      "region": "South Carolina",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "http://ridegreenlink.com/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "greensboro",
+      "agencyName": "Greensboro Transit Authority",
+      "region": "North Carolina",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "http://www.greensboro-nc.gov/index.aspx?page=2180",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "grtc",
+      "agencyName": "GRTC Transit (Richmond, VA)",
+      "region": "Virginia",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "http://www.ridegrtc.com",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "guingamp",
+      "agencyName": "Guingamp-Paimpol Mobilité",
+      "region": "Bretagne",
+      "priority": 1,
+      "reasons": [
+        "no-official-website"
+      ],
+      "outcome": "no-official-website",
+      "officialWebsite": null,
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "gwinnett-transit",
+      "agencyName": "Gwinnett County Transit",
+      "region": "Georgia",
+      "priority": 1,
+      "reasons": [
+        "official-site-inaccessible"
+      ],
+      "outcome": "official-site-inaccessible",
+      "officialWebsite": "https://www.ridegwinnett.com/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "chateauroux",
+      "agencyName": "Horizon (Châteauroux)",
+      "region": "Centre-Val de Loire",
+      "priority": 1,
+      "reasons": [
+        "no-official-website"
+      ],
+      "outcome": "no-official-website",
+      "officialWebsite": null,
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "la-roche-sur-yon",
+      "agencyName": "Impulsyon (La Roche-sur-Yon)",
+      "region": "Pays de la Loire",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "https://orchestra.ratpdev.com",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "indian-river",
+      "agencyName": "Indian River Transit",
+      "region": "Florida",
+      "priority": 1,
+      "reasons": [
+        "official-site-inaccessible"
+      ],
+      "outcome": "official-site-inaccessible",
+      "officialWebsite": "http://www.ridesystems.net",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "iowa-city",
+      "agencyName": "Iowa City Transit",
+      "region": "Iowa",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "https://www.icgov.org/city-government/departments-and-divisions/transit",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "janesville",
+      "agencyName": "Janesville Transit System",
+      "region": "Wisconsin",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "http://www.ci.janesville.wi.us/index.aspx?page=124",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "jeffersontransit",
+      "agencyName": "Jefferson Transit",
+      "region": "Washington",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "https://jeffersontransit.com/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "kenosha",
+      "agencyName": "Kenosha Area Transit",
+      "region": "Wisconsin",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "https://www.kenosha.org/departments/transportation",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "kern-transit",
+      "agencyName": "Kern Transit",
+      "region": "California",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "http://kerntransit.org/?referrer=gtfs",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "key-west-transit",
+      "agencyName": "Key West Transit",
+      "region": "Florida",
+      "priority": 1,
+      "reasons": [
+        "official-site-inaccessible"
+      ],
+      "outcome": "official-site-inaccessible",
+      "officialWebsite": "https://kwtransit.com",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "vannes",
+      "agencyName": "Kicéo (Vannes)",
+      "region": "Bretagne",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "https://www.kiceo.fr/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "citylink-north",
+      "agencyName": "Kootenai County Citylink North",
+      "region": "Idaho",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "https://www.kcgov.us/486/Transit-Services",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "lafayette-la",
+      "agencyName": "Lafayette Transit System",
+      "region": "Louisiana",
+      "priority": 1,
+      "reasons": [
+        "official-site-inaccessible"
+      ],
+      "outcome": "official-site-inaccessible",
+      "officialWebsite": "https://www.ridelts.com/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "laguna-beach",
+      "agencyName": "Laguna Beach Transit",
+      "region": "California",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "http://www.lagunabeachcity.net/cityhall/transit_and_trolleys/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "vierzon",
+      "agencyName": "Le Vib (Vierzon)",
+      "region": "Centre-Val de Loire",
+      "priority": 1,
+      "reasons": [
+        "no-official-website"
+      ],
+      "outcome": "no-official-website",
+      "officialWebsite": null,
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "albi",
+      "agencyName": "LibéA (Albi)",
+      "region": "Occitanie",
+      "priority": 1,
+      "reasons": [
+        "no-official-website"
+      ],
+      "outcome": "no-official-website",
+      "officialWebsite": null,
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "lcta",
+      "agencyName": "Luzerne County Transportation Authority",
+      "region": "Pennsylvania",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "http://www.lctabus.com/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "martin-county",
+      "agencyName": "Martin County Public Transit",
+      "region": "Florida",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "https://www.martin.fl.us/transit",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "mason-city",
+      "agencyName": "Mason City Public Transit",
+      "region": "Iowa",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "http://www.masoncity.net/pview.aspx?id=18070&amp;catid=477",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "mende",
+      "agencyName": "Mende",
+      "region": "Occitanie",
+      "priority": 1,
+      "reasons": [
+        "no-official-website"
+      ],
+      "outcome": "no-official-website",
+      "officialWebsite": null,
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "mendocino",
+      "agencyName": "Mendocino Transit Authority",
+      "region": "California",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "https://mendocinotransit.org/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "marathon-county",
+      "agencyName": "Metro Ride",
+      "region": "Wisconsin",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "https://www.ci.wausau.wi.us/Departments/MetroRide.aspx",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "mnr",
+      "agencyName": "Metro-North Railroad (MNR)",
+      "region": "New York",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "http://www.mta.info/mnr",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "guadalajara",
+      "agencyName": "Mi Transporte (Guadalajara)",
+      "region": "Jalisco",
+      "priority": 1,
+      "reasons": [
+        "official-site-inaccessible"
+      ],
+      "outcome": "official-site-inaccessible",
+      "officialWebsite": "https://setrans.jalisco.gob.mx/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "mmvta",
+      "agencyName": "Mid Mon Valley Transit",
+      "region": "Pennsylvania",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "https://www.mmvta.com/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "angouleme",
+      "agencyName": "Möbius (Angoulême)",
+      "region": "Nouvelle-Aquitaine",
+      "priority": 1,
+      "reasons": [
+        "no-official-website"
+      ],
+      "outcome": "no-official-website",
+      "officialWebsite": null,
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "vichy",
+      "agencyName": "MobiVie (Vichy)",
+      "region": "Auvergne-Rhône-Alpes",
+      "priority": 1,
+      "reasons": [
+        "no-official-website"
+      ],
+      "outcome": "no-official-website",
+      "officialWebsite": null,
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "mont-tremblant",
+      "agencyName": "Mont-Tremblant",
+      "region": "Quebec",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "https://www.villedemont-tremblant.qc.ca",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "mst",
+      "agencyName": "Monterey-Salinas Transit (MST)",
+      "region": "California",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "http://www.mst.org",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "montgomery-transit",
+      "agencyName": "Montgomery Transit (The M)",
+      "region": "Alabama",
+      "priority": 1,
+      "reasons": [
+        "official-site-inaccessible"
+      ],
+      "outcome": "official-site-inaccessible",
+      "officialWebsite": "http://www.montgomerytransit.com",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "moose-jaw",
+      "agencyName": "Moose Jaw Transit",
+      "region": "Saskatchewan",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "https://moosejaw.ca",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "mountainmetro",
+      "agencyName": "Mountain Metropolitan Transit (Colorado Springs)",
+      "region": "Colorado",
+      "priority": 1,
+      "reasons": [
+        "official-site-inaccessible"
+      ],
+      "outcome": "official-site-inaccessible",
+      "officialWebsite": "http://www.mmtransit.com",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "mountain-transit-ca",
+      "agencyName": "Mountain Transit (Big Bear Lake)",
+      "region": "California",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "http://www.mountaintransit.org/?referrer=gtfs",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "saint-omer",
+      "agencyName": "MouvO (Saint-Omer)",
+      "region": "Hauts-de-France",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "http://www.ca-pso.fr",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "lirr",
+      "agencyName": "MTA Long Island Rail Road",
+      "region": "New York",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "https://new.mta.info/agency/long-island-rail-road",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "nyct-bus-bronx",
+      "agencyName": "MTA NYCT Bus (Bronx)",
+      "region": "New York",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "http://www.mta.info",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "nyct-bus-brooklyn",
+      "agencyName": "MTA NYCT Bus (Brooklyn)",
+      "region": "New York",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "http://www.mta.info",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "nyct-bus-manhattan",
+      "agencyName": "MTA NYCT Bus (Manhattan)",
+      "region": "New York",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "http://www.mta.info",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "nyct-bus-queens",
+      "agencyName": "MTA NYCT Bus (Queens)",
+      "region": "New York",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "http://www.mta.info",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "nyct-bus-si",
+      "agencyName": "MTA NYCT Bus (Staten Island)",
+      "region": "New York",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "http://www.mta.info",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "nyct-subway",
+      "agencyName": "MTA NYCT Subway",
+      "region": "New York",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "http://www.mta.info",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "needles",
+      "agencyName": "Needles Area Transit",
+      "region": "California",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "https://cityofneedles.com/transit/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "nfta",
+      "agencyName": "NFTA (Buffalo)",
+      "region": "New York",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "http://www.nfta.com/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "oloron",
+      "agencyName": "Oloron-Sainte-Marie",
+      "region": "Nouvelle-Aquitaine",
+      "priority": 1,
+      "reasons": [
+        "official-site-inaccessible"
+      ],
+      "outcome": "official-source-candidate",
+      "officialWebsite": "http://www.oloron-ste-marie.fr/",
+      "sources": [
+        {
+          "url": "http://www.oloron-ste-marie.fr/",
+          "title": "Le site officiel de la ville d'Oloron Sainte-Marie (64)",
+          "amountCandidates": [
+            "5€"
+          ],
+          "evidenceExcerpt": "ligible Ensemble, améliorons notre Habitat En savoir plus FAMILLES SENIORS JEUNESSE BÉNÉVOLES NOUVEAUX ARRIVANTS ENTREPRENEURS 20 siècles après sa création par les romains, Iluro est devenu Oloron Sainte-Marie, une ville qui se conjugue au passé, mais surtout au présent et au futur… (RE) DÉCOUVRIR OLORON Participez à la vie de la cité Votre parole compte Je participe BUDGET PARTICIPATIF En savoir plus DANS MON QUARTIER Voir mon quartier LE CONSEIL MUNICIPAL DES JEUNES Découvrir le CMJ Actualités et agenda Des spectacles à 5€ avec la Carte loisirs du CCAS La politique de loisirs pour toutes les générations est une priorité pour le CCAS. La LIRE LA SUITE » 21 septembre 2026 Aucun commentaire Les vestiaires de la Mielle retrouvent une nouvelle jeunesse ! Dimanche 13 septembre, les vestiaires du stade de Saint-Pée ont été inaugurés après leur rénovation.Quasiment LIRE LA SUITE » 15 septembre 2026 Aucun commentaire Budget participatif : commencez à réfléchir à votre projet ! Si vous avez un projet pour améliorer la vie dans votre quartier ou plus généralement LIRE LA SUITE » 7 septembre 2026 Aucun commentaire Agenda Juil 01 2026 - Sep 30 2026Toute la journée CONCOURS PHOTO RÉGIONAL « MA RÉGION EN IMAGES 2026 » Sep 02 - 30 2026Toute la journée PROGRAMME « ÇA S’PASSE LA HAÜT » DU CENTRE SOCIAL Sep 02 2026 - Oct 01 2026Toute la journée LA FRICHE : AGENDA DU MOIS DE SEPTEMBRE La Friche Sep 09 2026 - Oct 31 2026Toute la journée EXPOSITION « MÉLUSINE, NOTRE PETIT PATRIMOINE » Villa Bedat Vos démarches et documents en ligne La commune et l’administration proposent un grand nombre de services au public. Demande de CNI ou de P",
+          "reviewStatus": "needs-manual-verification"
+        },
+        {
+          "url": "https://www.oloron-ste-marie.fr/events/programme-ca-spasse-la-haut-du-centre-social/",
+          "title": "Programme « ça s’passe La Haüt » du Centre Social – Oloron Sainte-Marie",
+          "amountCandidates": [],
+          "evidenceExcerpt": "Retrouvez-nous sur les réseaux sociaux Facebook-square Twitter Instagram Youtube Payer mes factures AUJOURD'HUI À OLORON JE SUIS MES SERVICES VIE MUNICIPALE JE PARTICIPE ACTUALITÉS AGENDA MES DÉMARCHES PROGRAMME « ÇA S’PASSE LA HAÜT » DU CENTRE SOCIAL Home/Évenements/Programme « ça s’passe La... . Voir le programme + Ajouter à mon Agenda Google + Exporter vers iCal DATE 02 - 30 Sep 2026 En cours... HEURE Toute la journée CATÉGORIE Culture Je participe Jeunesse Spectacles PROCHAIN ÉVÉNEMENT Concours photo régional « Ma région en images 2026 » DATE 01 Juil 2026 - 30 Sep 2026 HEURE Toute la journée PARTAGEZ CET ÉVÉNEMENT Précédent Suivant Les lettres d'informations Abonnez-vous aux actualités de la ville SUIVEZ-NOUS Facebook-square Twitter Instagram Youtube Hôtel de ville Lun/ven : 8h-12h / 13h30-17h30 2 place Georges Clemenceau CS 30138 64404 Oloron Sainte-Marie Cedex Tél. +33 05 59 39 99 99 Liens utiles Communauté de communes du Haut-Béarn Office de Tourisme SICTOM Conseil Départemental des Pyrénées-Atlantiques Région Nouvelle-Aquitaine Préfecture des Pyrénées-Atlantiques Tous les liens Enquêtes publiques Communication Espace presse Tous les magazines municipaux © 2025, Ville d’Oloron Sainte-Marie – Mentions légales – Données personnelles – Gestion des Cookies – Accessibilité numérique – Plan du site",
+          "reviewStatus": "needs-manual-verification"
+        }
+      ],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "omniride",
+      "agencyName": "OmniRide (PRTC)",
+      "region": "Virginia",
+      "priority": 1,
+      "reasons": [
+        "official-site-inaccessible"
+      ],
+      "outcome": "official-site-inaccessible",
+      "officialWebsite": "http://www.omniride.com",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "cannes",
+      "agencyName": "Palm Bus (Cannes)",
+      "region": "Provence-Alpes-Côte d'Azur",
+      "priority": 1,
+      "reasons": [
+        "official-site-inaccessible"
+      ],
+      "outcome": "official-site-inaccessible",
+      "officialWebsite": "https://www.palmbus.fr/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "pasadenatransit",
+      "agencyName": "Pasadena Transit",
+      "region": "California",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "https://www.cityofpasadena.net/pasadena-transit/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "petaluma",
+      "agencyName": "Petaluma Transit",
+      "region": "California",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "http://cityofpetaluma.net/pubworks/transit-sub.html",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "pgc-the-bus",
+      "agencyName": "Prince George's County (The Bus)",
+      "region": "Maryland",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "https://www.princegeorgescountymd.gov/1120/Countys-TheBus",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "pueblo-transit",
+      "agencyName": "Pueblo Transit",
+      "region": "Colorado",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "https://www.pueblo.us/492/Bus-Schedules",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "regina",
+      "agencyName": "Regina Transit",
+      "region": "Saskatchewan",
+      "priority": 1,
+      "reasons": [
+        "official-site-inaccessible"
+      ],
+      "outcome": "official-site-inaccessible",
+      "officialWebsite": "http://www.regina.ca",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "fort-mcmurray",
+      "agencyName": "Regional Municipality of Wood Buffalo Transit",
+      "region": "Alberta",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "http://www.rmwb.ca",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "rtcsnv",
+      "agencyName": "Regional Transportation Commission of Southern Nevada (RTC)",
+      "region": "Nevada",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "http://www.rtcsnv.com",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "ripta",
+      "agencyName": "Rhode Island Public Transit Authority (RIPTA)",
+      "region": "Rhode Island",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "http://www.ripta.com/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "grovelink",
+      "agencyName": "Ride Connection (GroveLink)",
+      "region": "Oregon",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "https://rideconnection.org/ride/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "concord-kannapolis",
+      "agencyName": "Rider Transit",
+      "region": "North Carolina",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "http://trackingckrider.com",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "riverside",
+      "agencyName": "Riverside Transit Agency",
+      "region": "California",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "http://www.riversidetransit.com",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "las-cruces",
+      "agencyName": "RoadRUNNER Transit (Las Cruces)",
+      "region": "New Mexico",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "https://lascruces.gov/community/transportation/roadrunner-transit/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "rioc-tram",
+      "agencyName": "Roosevelt Island Tramway",
+      "region": "New York",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "https://rioc.ny.gov/tramtransportation.htm",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "roswell",
+      "agencyName": "Roswell Transit",
+      "region": "New Mexico",
+      "priority": 1,
+      "reasons": [
+        "official-site-inaccessible"
+      ],
+      "outcome": "official-site-inaccessible",
+      "officialWebsite": "AMERICA/DENVER",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "carcassonne",
+      "agencyName": "RTCA (Carcassonne)",
+      "region": "Occitanie",
+      "priority": 1,
+      "reasons": [
+        "no-official-website"
+      ],
+      "outcome": "no-official-website",
+      "officialWebsite": null,
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "rumilly",
+      "agencyName": "Rumilly",
+      "region": "Auvergne-Rhône-Alpes",
+      "priority": 1,
+      "reasons": [
+        "no-official-website"
+      ],
+      "outcome": "no-official-website",
+      "officialWebsite": null,
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "racine",
+      "agencyName": "Ryde Racine",
+      "region": "Wisconsin",
+      "priority": 1,
+      "reasons": [
+        "official-site-inaccessible"
+      ],
+      "outcome": "official-site-inaccessible",
+      "officialWebsite": "https://www.cityofracine.org/RydeRacine/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "smart-telluride",
+      "agencyName": "San Miguel Authority for Regional Transportation (SMART)",
+      "region": "Colorado",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "https://smarttelluride.colorado.gov/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "smat",
+      "agencyName": "Santa Maria Area Transit",
+      "region": "California",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "https://smrt.tripshot.com/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "sarnia",
+      "agencyName": "Sarnia Transit",
+      "region": "Ontario",
+      "priority": 1,
+      "reasons": [
+        "official-site-inaccessible"
+      ],
+      "outcome": "official-site-inaccessible",
+      "officialWebsite": "http://www.city.sarnia.on.ca/living-here/getting-around/sarnia-transit",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "louviers",
+      "agencyName": "SEMO (Louviers)",
+      "region": "Normandie",
+      "priority": 1,
+      "reasons": [
+        "no-official-website"
+      ],
+      "outcome": "no-official-website",
+      "officialWebsite": null,
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "grasse",
+      "agencyName": "Sillages (Grasse)",
+      "region": "Provence-Alpes-Côte d'Azur",
+      "priority": 1,
+      "reasons": [
+        "no-official-website"
+      ],
+      "outcome": "no-official-website",
+      "officialWebsite": null,
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "simi-valley",
+      "agencyName": "Simi Valley Transit",
+      "region": "California",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "http://www.simivalley.org/departments/community-services/simi-valley-transit",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "sioux-city",
+      "agencyName": "Sioux City Transit",
+      "region": "Iowa",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "https://www.sioux-city.org/services/transit",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "siskiyou",
+      "agencyName": "Siskiyou County",
+      "region": "California",
+      "priority": 1,
+      "reasons": [
+        "official-site-inaccessible"
+      ],
+      "outcome": "official-site-inaccessible",
+      "officialWebsite": "https://www.co.siskiyou.ca.us/generalservices/page/stage-siskiyou-transit-and-general-express",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "chalons",
+      "agencyName": "SITAC (Châlons)",
+      "region": "Grand Est",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "http://www.businfo-groupe.com",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "smart-or",
+      "agencyName": "South Metro Area Regional Transit (SMART)",
+      "region": "Oregon",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "https://www.ridesmart.com/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "southportlandme",
+      "agencyName": "South Portland Bus Service",
+      "region": "Maine",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "http://www.southportland.org/departments/bus-transportation/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "st-thomas",
+      "agencyName": "St. Thomas Transit",
+      "region": "Ontario",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-source-candidate",
+      "officialWebsite": "https://www.stthomas.ca/en/live-here/transit.aspx",
+      "sources": [
+        {
+          "url": "https://uskinned.net/pricing/",
+          "title": "Save time & money with uSkinned for Umbraco CMS",
+          "amountCandidates": [
+            "£30",
+            "£500",
+            "£299",
+            "£90",
+            "£70"
+          ],
+          "evidenceExcerpt": "Skip to main content Skip to footer SITE BUILDER Expand sub pages Site Builder TEMPLATES PRICING RESOURCES Expand sub pages Resources LOGIN FREE TRIAL GROW FASTER WITH USKINNED Pricing Plans Choose the plan that suits your needs. £ GBP (Pounds) $ USD (US Dollars) € EUR (Euros) Free Trial Available You are eligible for a no obligation, 7 day free trial of uSkinned Site Builder. HOSTED We host it, ready to go in minutes MONTHLY ANNUAL SAVE £30 £30 per month CREATE SITE 1 x Website * Additional Websites £30 per month uSkinned Site Builder Visual Page Editor Visual Theme Designer Starter Kit & Theme Custom CSS Custom Javascript Source code Secure Certificate (HTTPS) Hosted on Microsoft Azure Global CDN for Media Automated Upgrades Automated Backups 24/7 Support ** CREATE SITE SELF-HOSTED You host it, fully extendable codebase SINGLE BULK SAVE £500 £299 per website BUY NOW 1 x Website License * Additional Websites £299 uSkinned Site Builder Visual Page Editor Visual Theme Designer All Starter Kits & Themes Custom CSS Custom Javascript Source code Secure Certificate (HTTPS) Hosting Setup Global CDN for Media Upgrades Available ** Backups 24/7 Support ** BUY NOW Pricing terms & conditions The prices displayed are excluding VAT. VAT stands for 'value added tax' and is a tax added to goods and services at a percentage of the purchase price (currently 20% here in the UK). If you live outside of the EU, you won't have to pay VAT on top of these uSkinned prices. If you do live",
+          "reviewStatus": "needs-manual-verification"
+        }
+      ],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "rennes",
+      "agencyName": "STAR (Rennes)",
+      "region": "Bretagne",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "https://www.star.fr/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "staten-island-ferry",
+      "agencyName": "Staten Island Ferry",
+      "region": "New York",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "https://www1.nyc.gov/html/dot/html/ferrybus/staten-island-ferry.shtml",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "stratford",
+      "agencyName": "Stratford Transit",
+      "region": "Ontario",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "https://www.stratford.ca/en/live-here/transit.aspx",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "fougeres",
+      "agencyName": "Surfline (Fougères)",
+      "region": "Bretagne",
+      "priority": 1,
+      "reasons": [
+        "no-official-website"
+      ],
+      "outcome": "no-official-website",
+      "officialWebsite": null,
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "chambery",
+      "agencyName": "Synchro (Chambéry)",
+      "region": "Auvergne-Rhône-Alpes",
+      "priority": 1,
+      "reasons": [
+        "official-site-inaccessible"
+      ],
+      "outcome": "official-site-inaccessible",
+      "officialWebsite": "https://www.synchro.grandchambery.fr/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "privas",
+      "agencyName": "T'CAP (Privas)",
+      "region": "Auvergne-Rhône-Alpes",
+      "priority": 1,
+      "reasons": [
+        "no-official-website"
+      ],
+      "outcome": "no-official-website",
+      "officialWebsite": null,
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "taft",
+      "agencyName": "Taft Area Transit",
+      "region": "California",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "https://www.cityoftaft.org/pview.aspx?id=5385&catid=563",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "nevers",
+      "agencyName": "Taneo (Nevers)",
+      "region": "Bourgogne-Franche-Comté",
+      "priority": 1,
+      "reasons": [
+        "official-site-inaccessible"
+      ],
+      "outcome": "official-site-inaccessible",
+      "officialWebsite": "https://www.taneo-nevers.fr/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "tangipahoa-parish",
+      "agencyName": "Tangipahoa Transit (Hammond)",
+      "region": "Louisiana",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "https://www.tangicoa.com/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "nimes",
+      "agencyName": "Tango (Nîmes)",
+      "region": "Occitanie",
+      "priority": 1,
+      "reasons": [
+        "official-site-inaccessible"
+      ],
+      "outcome": "official-site-inaccessible",
+      "officialWebsite": "https://www.tangonimes.fr/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "orleans",
+      "agencyName": "TAO (Orléans)",
+      "region": "Centre-Val de Loire",
+      "priority": 1,
+      "reasons": [
+        "official-site-inaccessible"
+      ],
+      "outcome": "official-site-inaccessible",
+      "officialWebsite": "https://www.reseau-tao.fr/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "quimperle",
+      "agencyName": "TBK (Quimperlé)",
+      "region": "Bretagne",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "http://www.giro.ca",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "lyon",
+      "agencyName": "TCL (Lyon)",
+      "region": "Auvergne-Rhône-Alpes",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "https://www.tcl.fr/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "winter-park",
+      "agencyName": "The Lift",
+      "region": "Colorado",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "https://www.theliftwp.com/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "thiers",
+      "agencyName": "Thiers",
+      "region": "Auvergne-Rhône-Alpes",
+      "priority": 1,
+      "reasons": [
+        "official-site-inaccessible"
+      ],
+      "outcome": "official-site-inaccessible",
+      "officialWebsite": "http://www.bus-tut.com",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "thousand-oaks",
+      "agencyName": "Thousand Oaks Transit",
+      "region": "California",
+      "priority": 1,
+      "reasons": [
+        "official-site-inaccessible"
+      ],
+      "outcome": "verified-official",
+      "officialWebsite": "https://www.toaks.org/departments/public-works/transit",
+      "sources": [
+        {
+          "url": "https://www.toaks.org/departments/public-works/transit",
+          "title": "Thousand Oaks, CA",
+          "amountCandidates": [],
+          "evidenceExcerpt": "ks, CA 91362 (805) 449-2100 Monday-Thursday 7:30 am to 5 pm Closed alternating Fridays CITY HALL IS OPEN NEED A PERMIT? Visit our virtual permit counter, TO/24 GET STARTED LET US ENTERTAIN YOU Enjoy year-round programming of all types! GET TICKETS UPCOMING PUBLIC MEETINGS Participate in a variety of ways! SEE AGENDAS DOWNTOWN PROJECT Your input matters! LEARN MORE NEED A PERMIT? Visit our virtual permit counter, TO/24 GET STARTED LET US ENTERTAIN YOU Enjoy year-round programming of all types! GET TICKETS UPCOMING PUBLIC MEETINGS Participate in a variety of ways! SEE AGENDAS DOWNTOWN PROJECT Your input matters! LEARN MORE ‹ › PUBLIC MEETINGS 10.01.26 10.07.26 10.12.26 10.13.26 10.26.26 View ALL COUNCIL ON AGING MEETING Regular Meeting of the Council on Aging COUNCIL ON AGING MEETING Regular Meeting of the Council on Aging COUNCIL ON AGING MEETING Regular Meeting of the Council on Aging COUNCIL ON AGING MEETING Regular Meeting of the Council on Aging COUNCIL ON AGING MEETING Regular Meeting of the Council on Aging I want to ... GO STAY INFORMED! Downtown Thousand Oaks Learn more about the Downtown Project, bringing a multi-decade vision to life for the community. Celebrate America's 250th See a variety of events to gather as a community and celebrate America's 250th Anniversary! Citywide Pavement Program The 2026 citywide pavement program will take place from April to October to repair and improve streets. District Lookup Not sure which voting district you are in? Look up your district by address! How can we help you today? From water billing to permitting, we have the links you need most! If you don't see what you",
+          "reviewStatus": "needs-manual-verification"
+        },
+        {
+          "url": "https://toaks.gov/index.php?section=costac",
+          "title": "Conejo Open Space Trails Action Committee | Thousand Oaks, CA",
+          "amountCandidates": [],
+          "evidenceExcerpt": "ings Service Request Make a Payment Contact Us Careers Get Email Updates THE CITY OF THOUSAND OAKS 2100 Thousand Oaks Blvd. Thousand Oaks, CA 91362 (805) 449-2100 Monday-Thursday 7:30 am to 5 pm Closed alternating Fridays CITY HALL IS OPEN COSTAC Get involved! View COSTAC meeting agendas YOUR CITY HALL MAKE A PAYMENT CITY MANAGEMENT DEPARTMENTS BOARDS AND COMMISSIONS AREA HOUSING AUTHORITY BICYCLE ADVISORY TEAM BUSINESS ROUNDTABLE CAPITAL FACILITIES COMMITTEE COMMUNITY FUNDING REVIEW COMMITTEE CONEJO COALITION FOR YOUTH AND FAMILIES CONEJO OPEN SPACE CONSERVATION AGENCY CONEJO OPEN SPACE TRAILS ACTION COMMITTEE COUNCIL ON AGING DISABLED ACCESS APPEALS AND ADVISORY BOARD FINANCE/AUDIT COMMITTEE INVESTMENT REVIEW COMMITTEE PLANNING COMMISSION SANTA MONICA MOUNTAINS CONSERVANCY ADVISORY COMMITTEE TRAFFIC AND TRANSPORTATION ADVISORY COMMISSION TOPASS FOUNDATION VENTURA COUNTY AIR POLLUTION AND CONTROL DISTRICT ADVISORY COMMITTEE VENTURA COUNTY CITIZENS TRANSPORTATION ADVISORY COMMITTEE YOUTH COMMISSION PUBLIC SAFETY Home / Your City Hall / Boards And Commissions / Conejo Open Space Trails Action Committee CONEJO OPEN SPACE TRAILS ACTION COMMITTEE COSTAC acts in a supporting role to the Conejo Open Space Conservation Agency (COSCA), under the direction of COSCA staff. Members provide support for, and may participate in, the volunteer programs approved by the COSCA Board of Directors and may also assist with trail construction and maintenance. Membership: 11 members; up to 4 alternate members Term: 3 years, rotating (regular member); 1 year (alternate member). Appointments made by COSCA Board of Directors Conejo Open S",
+          "reviewStatus": "needs-manual-verification"
+        },
+        {
+          "url": "https://toaks.gov/index.php?section=topass",
+          "title": "TOPASS | Thousand Oaks, CA",
+          "amountCandidates": [
+            "$1"
+          ],
+          "evidenceExcerpt": "gs Service Request Make a Payment Contact Us Careers Get Email Updates THE CITY OF THOUSAND OAKS 2100 Thousand Oaks Blvd. Thousand Oaks, CA 91362 (805) 449-2100 Monday-Thursday 7:30 am to 5 pm Closed alternating Fridays CITY HALL IS OPEN TOPASS YOUR CITY HALL MAKE A PAYMENT CITY MANAGEMENT DEPARTMENTS BOARDS AND COMMISSIONS AREA HOUSING AUTHORITY BICYCLE ADVISORY TEAM BUSINESS ROUNDTABLE CAPITAL FACILITIES COMMITTEE COMMUNITY FUNDING REVIEW COMMITTEE CONEJO COALITION FOR YOUTH AND FAMILIES CONEJO OPEN SPACE CONSERVATION AGENCY CONEJO OPEN SPACE TRAILS ACTION COMMITTEE COUNCIL ON AGING DISABLED ACCESS APPEALS AND ADVISORY BOARD FINANCE/AUDIT COMMITTEE INVESTMENT REVIEW COMMITTEE PLANNING COMMISSION SANTA MONICA MOUNTAINS CONSERVANCY ADVISORY COMMITTEE TRAFFIC AND TRANSPORTATION ADVISORY COMMISSION TOPASS FOUNDATION VENTURA COUNTY AIR POLLUTION AND CONTROL DISTRICT ADVISORY COMMITTEE VENTURA COUNTY CITIZENS TRANSPORTATION ADVISORY COMMITTEE YOUTH COMMISSION PUBLIC SAFETY Home / Your City Hall / Boards And Commissions / TOPASS Foundation TOPASS The TOPASS (Thousand Oaks Plan to Assist School Sites) Foundation was created in February 1985 as a California non-profit benefit corporation to assist the Conejo Valley Unified School District in raising, financing, and using earnings of an endowment fund set up to aid in the construction of capital improvements to designated schools. TOPASS is reactivated when the fund reaches $1M. Members: The non-profit public benefit corporation consists of two voting members each from the City Council, Conejo Valley Unified School District, and one qualified public professional. Qualifi",
+          "reviewStatus": "needs-manual-verification"
+        },
+        {
+          "url": "https://toaks.gov/parkingcitation",
+          "title": "Parking Citation | Thousand Oaks, CA",
+          "amountCandidates": [],
+          "evidenceExcerpt": "Customer Service 2100 E. Thousand Oaks Blvd. Thousand Oaks, CA 91362 IN-PERSON Cash, checks, or credit cards are accepted in-person at the Customer Service Counter in City Hall during business hours. All registered vehicle owners of unpaid tickets will be mailed a courtesy notice of the citation. If the amount is not paid by the date on the notice, the ticket will attach to your DMV registration in the amount of citation, plus any additional fees and penalties. PARKING CITATIONS CITY HALL HOURS City Hall Hours Monday to Thursday 7:30 am to 5:00 pm Alternate Fridays 8:00 am to 5:00 pm City Hall is closed alternate Fridays. 2100 E. Thousand Oaks Blvd. Thousand Oaks, CA 91362 Get in Touch Home About us Hours Request Services Website Feedback Engage Speak at a Meeting Library Transit General Plan Americans with Disabilities Act Explore Open Space Recreation and Parks Theatres Chamber and Tourism Thousand Oaks City Hall 2100 Thousand Oaks Blvd. Thousand Oaks, CA 91362 805.449.2100 city@toaks.gov",
+          "reviewStatus": "needs-manual-verification"
+        },
+        {
+          "url": "https://toaks.gov/index.php?section=fares",
+          "title": "Fares | Thousand Oaks, CA",
+          "amountCandidates": [
+            "$1.00",
+            "$2.00",
+            "$0.50",
+            "$16.00",
+            "$4.00",
+            "$50.00",
+            "$14.00"
+          ],
+          "evidenceExcerpt": "y-Thursday 7:30 am to 5 pm Closed alternating Fridays CITY HALL IS OPEN PROGRAMS AND SERVICES CITY GIS MAPPING ACTIVE TRANSPORTATION PLAN UPDATE CODE COMPLIANCE REPORT AN ISSUE OR REQUEST SERVICE TRANSIT BUS ROUTES AND SCHEDULE INFORMATION FARES TAP2RIDE DIAL-A-RIDE (ADA/65+) TITLE VI REGIONAL TRANSPORTATION KANAN SHUTTLE TRANSPORTE PÚBLICO 公共交通 (PUBLIC TRANSIT) SUSTAINABILITY GRANT OPPORTUNITIES TREES WALK TO SCHOOL THOUSAND OAKS Home / Programs And Services / Transit / Fares FARES WE AIM TO MAINTAIN SCHEDULED TIMES WHENEVER POSSIBLE; HOWEVER, SAFETY IS OUR PRIMARY CONSIDERATION. RAINY WEATHER, TRAFFIC, ROAD CONSTRUCTION, AND OTHER FACTORS MAY AFFECT OPERATING CONDITIONS; THEREFORE, SCHEDULES CANNOT BE GUARANTEED. FARES Fares in cash, pass, or transfer are accepted on Thousand Oaks buses. Fares can be paid in cash with exact change when boarding. Change cards will be issued for change of $1.00 or more. No refunds are available. Passes may be purchased onboard the bus with cash only. SINGLE RIDE (ONE-WAY TRIP) Bus Fares - Single Ride (One-way trip) FARE Regular $2.00 Seniors 65+/Disabled/Medicare $0.50 Students (Grade 1 - 12)* FREE Student (College)* FREE Transfer (between TOTC & VCTC Routes) FREE Child Age 5 & Under (accompanied by a paying passenger) FREE *grant funded programs subject to availability BUS PASSES Bus Passes FARE 10 Ride Bus Pass - Regular $16.00 10 Ride Bus Pass - Seniors 65+/Disabled/Medicare/Medi-Cal $4.00 7 Day Bus Pass - Regular $16.00 7 Day Bus Pass - Seniors 65+/Disabled/Medicare/Medi-Cal $4.00 31 Day Bus Pass - Regular $50.00 31 Day Bus Pass - Seniors 65+/Disabled/Medicare/Medi-Cal $14.00",
+          "reviewStatus": "needs-manual-verification"
+        },
+        {
+          "url": "https://bapacthousandoaks.com/",
+          "title": "Bank of America Performing Arts Center | Thousand Oaks | Bank of America Performing Arts Center Thousand Oaks",
+          "amountCandidates": [],
+          "evidenceExcerpt": "website traffic. By clicking “Accept,” you agree to our website's cookie use as described in our Cookie Policy. You can change your cookie settings at any time by clicking “Preferences.” Preferences Decline Accept JOIN OUR E-NEWSLETTER BUY TICKETS SEARCH NOW SEARCH FULL CALENDAR SHOWS & EVENTS TICKETS PLAN YOUR VISIT RENT OUR SPACE ABOUT CAP PARTNERS PRESS CONTACT National Geographic Live! Sandesh Kadur - Wild Cats Revealed Matt Fraser - America's Top Psychic Medium Natalie MacMaster & Donnell Leahy Ryan Hamilton National Geographic Live! Sandesh Kadur - Wild Cats Revealed Matt Fraser - America's Top Psychic Medium Natalie MacMaster & Donnell Leahy Ryan Hamilton National Geographic Live! Sandesh Kadur - Wild Cats Revealed ‹ › DORRANCE DANCE Oct 24, 2026 Buy Tickets Learn More UB40 Oct 25, 2026 Buy Tickets Learn More KATHY GRIFFIN Nov 13, 2026 Buy Tickets Learn More AN EVENING OF ALTON BROWN Nov 18, 2026 Buy Tickets Learn More Our thanks to Our Media Sponsors Our Season 2100 E. Thousand Oaks Boulevard Thousand Oaks, CA 91362 Box Office at 805.449.2787 Administration at 805.449.2700 UPCOMING SHOWS New West Symphony 2026 Masterpiece Series Broadway in Thousand Oaks 2026-2027 National Geographic Live! Menopause The Musical Beethoven & Copland PLAN YOUR VISIT Patron Info How to Get Tickets Directions / Parking Dining / Lodging / Shopping Area Attractions GET TO KNOW US Bank of America Performing Arts Center Cultural Affairs Commission Galleries Staff Ticketing Policies Privacy Policy Cookie Policy Accessibility Statement Copyrights © 2026 Thousand Oaks Bank of America Performing Arts Center. All Rights Reserved ARTdyn",
+          "reviewStatus": "needs-manual-verification"
+        },
+        {
+          "url": "https://toaks.gov/#passport",
+          "title": "Thousand Oaks, CA",
+          "amountCandidates": [],
+          "evidenceExcerpt": "ks, CA 91362 (805) 449-2100 Monday-Thursday 7:30 am to 5 pm Closed alternating Fridays CITY HALL IS OPEN NEED A PERMIT? Visit our virtual permit counter, TO/24 GET STARTED LET US ENTERTAIN YOU Enjoy year-round programming of all types! GET TICKETS UPCOMING PUBLIC MEETINGS Participate in a variety of ways! SEE AGENDAS DOWNTOWN PROJECT Your input matters! LEARN MORE NEED A PERMIT? Visit our virtual permit counter, TO/24 GET STARTED LET US ENTERTAIN YOU Enjoy year-round programming of all types! GET TICKETS UPCOMING PUBLIC MEETINGS Participate in a variety of ways! SEE AGENDAS DOWNTOWN PROJECT Your input matters! LEARN MORE ‹ › PUBLIC MEETINGS 10.01.26 10.07.26 10.12.26 10.13.26 10.26.26 View ALL COUNCIL ON AGING MEETING Regular Meeting of the Council on Aging COUNCIL ON AGING MEETING Regular Meeting of the Council on Aging COUNCIL ON AGING MEETING Regular Meeting of the Council on Aging COUNCIL ON AGING MEETING Regular Meeting of the Council on Aging COUNCIL ON AGING MEETING Regular Meeting of the Council on Aging I want to ... GO STAY INFORMED! Downtown Thousand Oaks Learn more about the Downtown Project, bringing a multi-decade vision to life for the community. Celebrate America's 250th See a variety of events to gather as a community and celebrate America's 250th Anniversary! Citywide Pavement Program The 2026 citywide pavement program will take place from April to October to repair and improve streets. District Lookup Not sure which voting district you are in? Look up your district by address! How can we help you today? From water billing to permitting, we have the links you need most! If you don't see what you",
+          "reviewStatus": "needs-manual-verification"
+        },
+        {
+          "url": "https://www.tolibrary.org/services/passport-appointment",
+          "title": "Thousand Oaks Library",
+          "amountCandidates": [],
+          "evidenceExcerpt": "cess Enter the lobby before the library opens. LEARN MORE ABOUT THE SELF-SERVICE ACCESS LOCAL AUTHOR FAIR Meet the local authors in person SATURDAY, OCTOBER 31, 2 - 4PM @ GRANT R. BRIMHALL LIBRARY Cardholders Enter for a chance to win free tickets SUBMIT THE FORM BY OCTOBER 28, 2026 Author Talks Live Online and On Demand LEARN ABOUT VIRTUAL AUTHOR TALKS EVENTS Upcoming Events SEP 1 All Day Books for Buttons, Boba or Burgers Grant R. Brimhall Library, Newbury Park Library View Details View Calendar SEP 30 3:00pm Homework Help Grant R. Brimhall Library Marvin E. Smith Community Room View Details View Calendar SEP 30 3:10pm Reading Buddies Grant R. Brimhall Library Marvin E. Smith Community Room | 9 attending View Details View Calendar SEP 30 3:45pm Reading Buddies Grant R. Brimhall Library Marvin E. Smith Community Room | 9 attending View Details View Calendar Apply for a Library Card Today! Get a library card from the Thousand Oaks Library for free access to books, music, movies, and TV shows to borrow, download, or stream. Use your library card to access the Virtual Library and take online classes. For more information or to register for the virtual author talks, visit www.libraryc.org/tolibrary Connect to HomeworkCA Ask a Librarian eResouces A to Z Get a Library Card Hours and Locations My Library Account Passport Services Browse the latest additions to our collections. Find new books and other media in our collections. For Adults | For Teens | For Kids September is Library Card Sign Up Month | Adult Booklists Celebrate Hispanic Heritage Month | YA Booklist Rosh Hashanah | Children and YA Booklist eResources eMe",
+          "reviewStatus": "needs-manual-verification"
+        }
+      ],
+      "verifiedFare": {
+        "slug": "thousand-oaks",
+        "agencyName": "Thousand Oaks Transit",
+        "amount": 2,
+        "amountMax": 50,
+        "currency": "USD",
+        "fareType": "regular one-way fare and bus passes",
+        "payment": "exact cash or onboard pass purchase",
+        "confidence": "high",
+        "sourceUrl": "https://toaks.gov/index.php?section=fares",
+        "fareProducts": [
+          {
+            "name": "Regular single ride",
+            "amount": 2,
+            "currency": "USD",
+            "validity": "one-way trip"
+          },
+          {
+            "name": "Regular 10-ride pass",
+            "amount": 16,
+            "currency": "USD"
+          },
+          {
+            "name": "Regular 7-day pass",
+            "amount": 16,
+            "currency": "USD"
+          },
+          {
+            "name": "Regular 31-day pass",
+            "amount": 50,
+            "currency": "USD"
+          },
+          {
+            "name": "Senior/disabled/Medicare single ride",
+            "amount": 0.5,
+            "currency": "USD"
+          },
+          {
+            "name": "Grades 1-12 and college students",
+            "amount": 0,
+            "currency": "USD",
+            "eligibility": "subject to grant availability"
+          }
+        ],
+        "evidence": "Official City of Thousand Oaks fare page lists regular single ride at $2.00, senior/disabled/Medicare at $0.50, grades 1-12 and college students free subject to grant availability, 10-ride regular pass at $16, 7-day regular pass at $16, and 31-day regular pass at $50. It also lists free transfers between TOTC and VCTC routes and free children age 5 and under with a paying passenger."
+      },
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "lannion",
+      "agencyName": "TILT (Lannion)",
+      "region": "Bretagne",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "https://www.lannion-tregor.com/fr/deplacements.html",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "tarbes",
+      "agencyName": "TLP Mobilités (Tarbes)",
+      "region": "Occitanie",
+      "priority": 1,
+      "reasons": [
+        "no-official-website"
+      ],
+      "outcome": "no-official-website",
+      "officialWebsite": null,
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "montauban",
+      "agencyName": "TM (Montauban)",
+      "region": "Occitanie",
+      "priority": 1,
+      "reasons": [
+        "no-official-website"
+      ],
+      "outcome": "no-official-website",
+      "officialWebsite": null,
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "mont-de-marsan",
+      "agencyName": "TMA (Mont-de-Marsan)",
+      "region": "Nouvelle-Aquitaine",
+      "priority": 1,
+      "reasons": [
+        "official-site-inaccessible"
+      ],
+      "outcome": "official-site-inaccessible",
+      "officialWebsite": "https://bustma.com/fr/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "torrance-transit",
+      "agencyName": "Torrance Transit",
+      "region": null,
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "http://Transit.TorranceCA.gov",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "colmar",
+      "agencyName": "Trace (Colmar)",
+      "region": "Grand Est",
+      "priority": 1,
+      "reasons": [
+        "official-site-inaccessible"
+      ],
+      "outcome": "official-site-inaccessible",
+      "officialWebsite": "https://www.trace-colmar.fr",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "tor",
+      "agencyName": "Transport of Rockland (TOR)",
+      "region": "New York",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "http://rocklandgov.com/departments/public-transportation/transport-of-rockland/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "evreux",
+      "agencyName": "Transurbain (Évreux)",
+      "region": "Normandie",
+      "priority": 1,
+      "reasons": [
+        "no-official-website"
+      ],
+      "outcome": "no-official-website",
+      "officialWebsite": null,
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "gap",
+      "agencyName": "Trotibus (Gap)",
+      "region": "Provence-Alpes-Côte d'Azur",
+      "priority": 1,
+      "reasons": [
+        "official-site-inaccessible"
+      ],
+      "outcome": "official-site-inaccessible",
+      "officialWebsite": "https://www.gap-tallard-durance.fr",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "saint-brieuc",
+      "agencyName": "TUB (Saint-Brieuc)",
+      "region": "Bretagne",
+      "priority": 1,
+      "reasons": [
+        "no-official-website"
+      ],
+      "outcome": "no-official-website",
+      "officialWebsite": null,
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "saint-quentin",
+      "agencyName": "TUC (Saint-Quentin)",
+      "region": "Hauts-de-France",
+      "priority": 1,
+      "reasons": [
+        "no-official-website"
+      ],
+      "outcome": "no-official-website",
+      "officialWebsite": null,
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "laval",
+      "agencyName": "TUL (Laval)",
+      "region": "Pays de la Loire",
+      "priority": 1,
+      "reasons": [
+        "official-site-inaccessible"
+      ],
+      "outcome": "official-site-inaccessible",
+      "officialWebsite": "https://www.tul-laval.fr/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "tulsa-transit",
+      "agencyName": "Tulsa Transit (MTTA)",
+      "region": "Oklahoma",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "http://www.tulsatransit.org",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "um-transit",
+      "agencyName": "University of Michigan Transit Services (Ann Arbor)",
+      "region": "Michigan",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "https://ltp.umich.edu",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "vail-transit",
+      "agencyName": "Vail Transit",
+      "region": "Colorado",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "https://www.vail.gov/government/departments/transportation-services/bus-information",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "valleymetro",
+      "agencyName": "Valley Metro (Phoenix)",
+      "region": "Arizona",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "https://www.valleymetro.org/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "vesoul",
+      "agencyName": "Vesoul",
+      "region": "Bourgogne-Franche-Comté",
+      "priority": 1,
+      "reasons": [
+        "no-official-website"
+      ],
+      "outcome": "no-official-website",
+      "officialWebsite": null,
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "waco",
+      "agencyName": "Waco Transit System",
+      "region": "Texas",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "https://wacotransit.transloc.com",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "wvu-prt",
+      "agencyName": "West Virginia University PRT (Morgantown, WV)",
+      "region": "West Virginia",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "http://transportation.wvu.edu/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "beeline",
+      "agencyName": "Westchester County Bee-Line System (BeeLine)",
+      "region": "New York",
+      "priority": 1,
+      "reasons": [
+        "no-official-website"
+      ],
+      "outcome": "no-official-website",
+      "officialWebsite": null,
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "whitehorse",
+      "agencyName": "Whitehorse Transit",
+      "region": "Yukon",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "https://whitehorse.transloc.com",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "wata",
+      "agencyName": "Williamsburg Area Transit Authority",
+      "region": "Virginia",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "http://www.gowata.org",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "winnipeg",
+      "agencyName": "Winnipeg Transit",
+      "region": "Manitoba",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "https://winnipegtransit.com",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "yamhill",
+      "agencyName": "Yamhill County Transit Area",
+      "region": "Oregon",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "http://ycta.connexionz.net/rtt/public/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "saint-nazaire",
+      "agencyName": "Ycéo (Saint-Nazaire)",
+      "region": "Pays de la Loire",
+      "priority": 1,
+      "reasons": [
+        "official-site-inaccessible"
+      ],
+      "outcome": "official-site-inaccessible",
+      "officialWebsite": "https://www.strann.fr/",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "yellowknife",
+      "agencyName": "Yellowknife Transit",
+      "region": "Northwest Territories",
+      "priority": 1,
+      "reasons": [
+        "official-fare-page-not-found"
+      ],
+      "outcome": "official-fare-page-not-found",
+      "officialWebsite": "http://www.yellowknife.ca/en/living-here/transit.asp",
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    },
+    {
+      "slug": "menton",
+      "agencyName": "Zest (Menton)",
+      "region": "Provence-Alpes-Côte d'Azur",
+      "priority": 1,
+      "reasons": [
+        "no-official-website"
+      ],
+      "outcome": "no-official-website",
+      "officialWebsite": null,
+      "sources": [],
+      "verifiedFare": null,
+      "checkedAt": "2026-09-30"
+    }
+  ]
+}

@@ -11,8 +11,13 @@ const outputDir = path.join(ROOT, `docs/research/fare-inventory-${outputDate}`);
 const base = JSON.parse(await fs.readFile(path.join(baseDir, 'fare-inventory.json'), 'utf8'));
 const official = JSON.parse(await fs.readFile(path.join(outputDir, 'official-site-review.json'), 'utf8'));
 const manual = JSON.parse(await fs.readFile(path.join(outputDir, 'manual-verified-fares.json'), 'utf8'));
+const secondPassPath = path.join(outputDir, 'fare-second-pass-site-review.json');
+const secondPass = await fs.access(secondPassPath).then(async () => JSON.parse(await fs.readFile(secondPassPath, 'utf8'))).catch(() => ({ records: [], stats: {} }));
+const secondPassOutcomePath = path.join(outputDir, 'fare-second-pass-review.json');
+const secondPassOutcome = await fs.access(secondPassOutcomePath).then(async () => JSON.parse(await fs.readFile(secondPassOutcomePath, 'utf8'))).catch(() => ({ records: [], stats: {} }));
 const officialBySlug = new Map(official.records.map((record) => [record.slug, record]));
 const manualBySlug = new Map(manual.records.map((record) => [record.slug, record]));
+const secondPassBySlug = new Map(secondPass.records.map((record) => [record.slug, record]));
 
 const records = base.records.map((record) => {
   const site = officialBySlug.get(record.slug);
@@ -42,6 +47,7 @@ const records = base.records.map((record) => {
       status: site?.status ?? 'not-reviewed',
       candidateSources: officialSources,
     },
+    secondPassReview: secondPassBySlug.get(record.slug) ?? null,
     verifiedFare: verified ?? null,
   };
 });
@@ -50,7 +56,7 @@ const statuses = Object.fromEntries([...new Set(records.map((record) => record.r
 const payload = {
   scope: 'Atlas agency registry',
   researchDate: outputDate,
-  stats: { registryCount: records.length, manualVerified: manual.records.length, officialSiteStats: official.stats, researchStatuses: statuses },
+  stats: { registryCount: records.length, manualVerified: manual.records.length, officialSiteStats: official.stats, researchStatuses: statuses, secondPass: secondPassOutcome.stats ?? secondPass.stats ?? {} },
   records,
 };
 
@@ -76,6 +82,10 @@ This dated ledger combines GTFS supporting evidence, official-site discovery, an
 - Official-site inaccessible: ${statuses['official-site-inaccessible'] ?? 0}
 - No official fare page found: ${statuses['official-fare-page-not-found'] ?? 0}
 - No official website: ${statuses['no-official-website'] ?? 0}
+
+## Targeted second pass
+
+The second-pass site review checked ${secondPassOutcome.records.length || secondPass.records.length} highest-priority unresolved agencies. Its outcome file records ${secondPassOutcome.stats?.['verified-official'] ?? 0} newly verified official fares, ${secondPassOutcome.stats?.['official-source-candidate'] ?? 0} candidates needing manual interpretation, ${secondPassOutcome.stats?.['official-fare-page-not-found'] ?? 0} pages without a fare source, ${secondPassOutcome.stats?.['official-site-inaccessible'] ?? secondPass.stats?.['site-inaccessible'] ?? 0} inaccessible sites, and ${secondPassOutcome.stats?.['no-official-website'] ?? secondPass.stats?.['no-official-website'] ?? 0} agencies without an official website. Raw page evidence is stored in fare-second-pass-site-review.json and interpreted outcomes in fare-second-pass-review.json.
 
 An agency is not called free merely because its GTFS feed contains a zero fare. GTFS values remain supporting evidence unless an official source verifies the rider-facing fare.
 
