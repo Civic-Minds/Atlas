@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 479,
+    "manualVerified": 482,
     "officialSiteStats": {
       "official-source-found": 493,
       "official-fare-page-not-found": 116,
@@ -11,11 +11,11 @@
       "site-inaccessible": 52
     },
     "researchStatuses": {
-      "verified-official": 479,
+      "verified-official": 482,
       "official-fare-page-not-found": 113,
       "official-site-inaccessible": 45,
       "no-official-website": 32,
-      "official-source-candidate": 24
+      "official-source-candidate": 21
     }
   },
   "records": [
@@ -24567,7 +24567,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://www.stanrta.org",
@@ -24614,7 +24614,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "modesto",
+        "agencyName": "Modesto Area Express",
+        "amount": 2,
+        "currency": "USD",
+        "fareType": "regular fixed-route all-day pass",
+        "payment": "exact cash",
+        "effectiveDate": "2024-12-29",
+        "confidence": "medium",
+        "sourceUrl": "https://www.stanrta.org/DocumentCenter/View/2739/StanRTA---Individual-Route-Brochure---33---December-2024",
+        "evidence": "Current official Stanislaus Regional Transit Authority route brochure, effective December 29, 2024, lists the successor The S/StanRTA regular fixed-route cash fare as a $2 all-day pass with unlimited trips; half fare is $1, youth and veterans/active military ride free. The registry name is the former Modesto Area Express name, so the successor mapping is retained explicitly."
+      }
     },
     {
       "slug": "cats-baton",
@@ -26404,7 +26415,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.cityoflakecharles.com/236/Transit",
@@ -26412,7 +26423,17 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "lake-charles",
+        "agencyName": "Lake Charles Transit",
+        "amount": 1,
+        "currency": "USD",
+        "fareType": "full fixed-route one-way fare",
+        "payment": "cash",
+        "confidence": "high",
+        "sourceUrl": "https://www.cityoflakecharles.com/236/Transit",
+        "evidence": "Official City of Lake Charles transit page lists full fixed-route fare at $1.00 one way; senior fare is $0.50, disabled/Medicare and veteran fare is $0.25, student fare is $0.50, children under 3 and transfers are free, and paratransit is $1.00 one way."
+      }
     },
     {
       "slug": "terrebonne-parish",
@@ -26718,7 +26739,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.cutransit.net/",
@@ -26748,7 +26769,19 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "springfield-mo",
+        "agencyName": "City Utilities Transit (Springfield)",
+        "amount": 1,
+        "amountMax": 36,
+        "currency": "USD",
+        "fareType": "adult fixed-route single ride and 31-day pass",
+        "payment": "exact cash, ticket book, or pass",
+        "effectiveDate": "2024-10-01",
+        "confidence": "high",
+        "sourceUrl": "https://www.cityutilities.net/DocumentCenter/View/184/Transit-Pricing-PDF",
+        "evidence": "Official City Utilities fare ordinance effective October 1, 2024 lists adult cash fare at $1.00 each ride, adult 31-day pass at $36.00, daily pass at $3.00, 7-day pass at $10.00, and single-use transfer at $0.25; reduced, youth, and paratransit fares are listed separately."
+      }
     },
     {
       "slug": "evansville",
