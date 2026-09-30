@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 237,
+    "manualVerified": 241,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,8 +11,8 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 237,
-      "official-source-candidate": 253,
+      "verified-official": 241,
+      "official-source-candidate": 249,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
       "no-official-website": 32
@@ -2076,7 +2076,7 @@
       "confidence": "high",
       "status": "confirmed",
       "notes": "Existing Atlas override retained as research evidence.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 3.75,
         "currency": "CAD",
@@ -2165,7 +2165,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "rtl",
+        "agencyName": "RTL (Longueuil)",
+        "amount": 2.75,
+        "amountMax": 71.5,
+        "currency": "CAD",
+        "fareType": "bus fare products in ARTM zone B",
+        "payment": "ARTM fare media",
+        "sourceUrl": "https://www.rtl-longueuil.qc.ca/tarifs-et-achats/grille-de-tarifs",
+        "confidence": "high",
+        "evidence": "Official RTL fare grid lists one bus passage at $2.75, two passages at $5.00, ten passages at $23.50, and monthly bus at $71.50; all-modes zone AB products are listed separately."
+      }
     },
     {
       "slug": "stl",
@@ -7703,7 +7714,7 @@
         "USD"
       ],
       "feedVersion": "UTC: 13-May-2026 14:03",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1,
         "currency": "USD",
@@ -7746,7 +7757,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "rivercities",
+        "agencyName": "RiverCities Transit",
+        "amount": 1,
+        "amountMax": 2,
+        "currency": "USD",
+        "fareType": "adult fixed-route one-way fare and day pass",
+        "payment": "exact cash or pass",
+        "sourceUrl": "https://rctransit.org/passes/fixed-route-fares-and-passes/",
+        "confidence": "high",
+        "evidence": "Official fixed-route fare table lists Adult one-way at $1.00 and Adult day pass at $2.00; reduced, youth, transfer, and monthly/quarterly/annual pass products are listed separately."
+      }
     },
     {
       "slug": "tillamook",
@@ -12515,7 +12537,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.rtd-denver.com",
@@ -12542,7 +12564,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "rtd-denver",
+        "agencyName": "Regional Transportation District (RTD Denver)",
+        "amount": 2.75,
+        "amountMax": 10,
+        "currency": "USD",
+        "fareType": "standard 3-hour pass and airport day pass",
+        "payment": "cash, Tap-n-Ride, MyRide, or mobile ticket",
+        "sourceUrl": "https://www.rtd-denver.com/fares-passes/fares",
+        "confidence": "high",
+        "evidence": "Official RTD fare table lists Standard 3-Hour Pass at $2.75, Standard Day Pass at $5.50, and Airport Day Pass at $10.00; discount, Access-a-Ride, youth, and military fares are listed separately."
+      }
     },
     {
       "slug": "bustang",
@@ -32940,7 +32973,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.valenceromansmobilites.fr",
@@ -33012,7 +33045,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "romans",
+        "agencyName": "Citéa Romans",
+        "amount": 1.4,
+        "amountMax": 3.9,
+        "currency": "EUR",
+        "fareType": "standard bus ticket and 24-hour ticket",
+        "payment": "on-board ticket, contactless ticket, or SMS",
+        "sourceUrl": "https://www.valenceromansmobilites.fr/tarifs-abonnements/bus/",
+        "confidence": "high",
+        "evidence": "Official Citéa fare page lists one-trip ticket at €1.40, 24-hour unlimited ticket at €3.90, and 10 trips at €8; monthly public subscription is €20."
+      }
     },
     {
       "slug": "saint-brieuc",
