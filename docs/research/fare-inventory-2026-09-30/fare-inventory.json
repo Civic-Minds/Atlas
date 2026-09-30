@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 170,
+    "manualVerified": 178,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,8 +11,8 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 170,
-      "official-source-candidate": 320,
+      "verified-official": 178,
+      "official-source-candidate": 312,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
       "no-official-website": 32
@@ -4085,7 +4085,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://smartbus.org",
@@ -4153,7 +4153,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "smart",
+        "agencyName": "SMART (Detroit suburbs)",
+        "amount": 2,
+        "currency": "USD",
+        "fareType": "full-fare fixed-route single trip",
+        "payment": "standard fare media",
+        "sourceUrl": "https://www.smartbus.org/Fares",
+        "confidence": "high",
+        "evidence": "Official SMART fare table lists General age 19-64 Fixed Route Full Fare at $2.00; Connector, reduced, student, and pass fares are listed separately."
+      }
     },
     {
       "slug": "theride",
@@ -6411,7 +6421,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.skagittransit.org",
@@ -6481,7 +6491,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "skagittransit",
+        "agencyName": "Skagit Transit",
+        "amount": 1,
+        "currency": "USD",
+        "fareType": "regular fixed-route standard fare",
+        "payment": "cash, Umo app, or Umo card",
+        "sourceUrl": "https://www.skagittransit.org/rider-info/fares/",
+        "confidence": "high",
+        "evidence": "Official Skagit Transit fare table lists Regular Standard Fare at $1.00; 80X/90X, passes, reduced, youth, and paratransit fares are listed separately."
+      }
     },
     {
       "slug": "whatcomtransit",
@@ -8951,7 +8971,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://www.sctransit.com/?referrer=gtfs",
@@ -9005,7 +9025,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "sonoma-county",
+        "agencyName": "Sonoma County Transit (SCT)",
+        "amount": 1.5,
+        "amountMax": 4.8,
+        "currency": "USD",
+        "fareType": "adult cash fare by zones",
+        "payment": "cash, Clipper, or pass",
+        "sourceUrl": "https://sctransit.com/fares/",
+        "confidence": "high",
+        "evidence": "Official SCT fare table lists adult fares from $1.50 for one zone to $4.80 across five zones; local fare-free routes and reduced/youth fares are listed separately."
+      }
     },
     {
       "slug": "vine",
@@ -11928,7 +11959,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.sunline.org/",
@@ -12012,7 +12043,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "sunline",
+        "agencyName": "SunLine Transit Agency (Coachella Valley)",
+        "amount": 1,
+        "currency": "USD",
+        "fareType": "adult SunBus fixed-route single ride",
+        "payment": "standard fare media",
+        "sourceUrl": "https://www.sunline.org/fares-passes/fares",
+        "confidence": "high",
+        "evidence": "Official SunLine fare table lists Adult SunBus Single Ride at $1.00; youth, reduced, day, 10-ride, monthly, commuter, SunRide, and paratransit fares are listed separately."
+      }
     },
     {
       "slug": "rtcsnv",
@@ -19417,7 +19458,7 @@
         "USD"
       ],
       "feedVersion": "26-05-02 SUM_20260728",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 0.6,
         "currency": "USD",
@@ -19469,7 +19510,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "starmetro",
+        "agencyName": "StarMetro (Tallahassee)",
+        "amount": 1.25,
+        "currency": "USD",
+        "fareType": "regular single trip",
+        "payment": "cash, Token Transit, or smart card",
+        "sourceUrl": "https://www.talgov.com/starmetro/starmetro-fares.aspx",
+        "confidence": "high",
+        "evidence": "Official StarMetro fare table lists Regular Fare Single Trip at $1.25 with transfer; reduced, day, 7-day, monthly, and student fares are listed separately."
+      }
     },
     {
       "slug": "max-transit",
@@ -20748,7 +20799,7 @@
         "USD"
       ],
       "feedVersion": "Sun Metro Rising 2025_20260615",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 0.5,
         "currency": "USD",
@@ -20823,7 +20874,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "sun-metro",
+        "agencyName": "Sun Metro (El Paso)",
+        "amount": 1.5,
+        "currency": "USD",
+        "fareType": "standard/express fare",
+        "payment": "standard fare media",
+        "sourceUrl": "https://sunmetro.net/fares/fares-and-passes/",
+        "confidence": "high",
+        "evidence": "Official Sun Metro fare page lists Standard/Express Fare at $1.50; military, student, child, reduced, daily, weekly, monthly, and LIFT fares are listed separately."
+      }
     },
     {
       "slug": "b-line",
@@ -24090,7 +24151,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://321transit.com",
@@ -24131,7 +24192,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "space-coast",
+        "agencyName": "Space Coast Area Transit",
+        "amount": 1.5,
+        "currency": "USD",
+        "fareType": "full-fare bus one-ride",
+        "payment": "Token Transit, online, phone, or terminal purchase",
+        "sourceUrl": "https://321transit.com/transit/fares/",
+        "confidence": "high",
+        "evidence": "Official Space Coast fare table lists BUS FARE Full Fare 1-Ride at $1.50; reduced, 10-ride, 30-day, TD, and ADA fares are listed separately."
+      }
     },
     {
       "slug": "martin-county",
@@ -24967,7 +25038,7 @@
         "USD"
       ],
       "feedVersion": "S1000206",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1,
         "currency": "USD",
@@ -25003,7 +25074,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "springfield-il",
+        "agencyName": "SMTD (Springfield IL)",
+        "amount": 1.25,
+        "currency": "USD",
+        "fareType": "adult cash fare",
+        "payment": "cash or pass",
+        "sourceUrl": "https://www.smtd.org/rider-guide/passes-and-fares/",
+        "confidence": "high",
+        "evidence": "Official SMTD fare page lists Adult age 13+ cash fare at $1.25; reduced, child, free, day-pass, and transfer fares are listed separately."
+      }
     },
     {
       "slug": "topeka",
