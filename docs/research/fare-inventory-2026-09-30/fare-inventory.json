@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 111,
+    "manualVerified": 118,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,8 +11,8 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 111,
-      "official-source-candidate": 379,
+      "verified-official": 118,
+      "official-source-candidate": 372,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
       "no-official-website": 32
@@ -6206,7 +6206,7 @@
         "USD"
       ],
       "feedVersion": "S1000068",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 2,
         "currency": "USD",
@@ -6270,7 +6270,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "kitsaptransit",
+        "agencyName": "Kitsap Transit",
+        "amount": 2,
+        "currency": "USD",
+        "fareType": "full-fare routed bus/local foot ferry one-way",
+        "payment": "cash, card, ORCA, or Transit GO",
+        "sourceUrl": "https://www.kitsaptransit.com/fares/fares",
+        "confidence": "high",
+        "evidence": "Official fare table lists Full Fare Routed Buses and Local Foot Ferries One-Way at $2.00; fast ferry, reduced, monthly, and regional day fares are listed separately."
+      }
     },
     {
       "slug": "intercitytransit",
@@ -10333,7 +10343,7 @@
         "USD"
       ],
       "feedVersion": null,
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1.75,
         "currency": "USD",
@@ -10361,7 +10371,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "lacmta",
+        "agencyName": "Los Angeles County Metropolitan Transportation Authority (LA Metro)",
+        "amount": 1.75,
+        "currency": "USD",
+        "fareType": "regular one-way ride",
+        "payment": "TAP, app, or exact cash on bus",
+        "sourceUrl": "https://www.metro.net/fares/",
+        "confidence": "high",
+        "evidence": "Official Metro fares page lists Regular Fare One-Way Ride at $1.75; daily and weekly caps, reduced, free, and transfer rules are listed separately."
+      }
     },
     {
       "slug": "metrolink",
@@ -13317,7 +13337,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://www.kcata.org",
@@ -13343,7 +13363,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "kcata",
+        "agencyName": "Kansas City Area Transportation Authority (KCATA)",
+        "amount": 2,
+        "currency": "USD",
+        "fareType": "regular single ride",
+        "payment": "contactless card, RideKCGO, or pass",
+        "effectiveDate": "2026-06-01",
+        "sourceUrl": "https://ridekc.org/fares-passes/",
+        "confidence": "high",
+        "evidence": "Official RideKC page states fares return June 1, 2026 and lists regular Single Ride at $2.00; reduced, day, weekly, monthly, and fare caps are listed separately."
+      }
     },
     {
       "slug": "omahametro",
@@ -22461,7 +22492,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://www.kmetro.com/",
@@ -22487,7 +22518,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "kalamazoo",
+        "agencyName": "Kalamazoo Metro Transit",
+        "amount": 1.5,
+        "currency": "USD",
+        "fareType": "adult bus fare",
+        "payment": "cash, token, or app",
+        "sourceUrl": "https://www.kmetro.com/plan-your-trip/fares",
+        "confidence": "high",
+        "evidence": "Official Metro fare table lists Adults at $1.50; transfers, reduced, tokens, passes, and ADA fares are listed separately."
+      }
     },
     {
       "slug": "laredo",
@@ -22646,7 +22687,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://www.lantabus.com",
@@ -22715,7 +22756,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "lanta",
+        "agencyName": "Lehigh and Northampton Transportation Authority (LANTA)",
+        "amount": 2.5,
+        "currency": "USD",
+        "fareType": "single ride",
+        "payment": "cash, ValleyRide, or fare media",
+        "sourceUrl": "https://lantabus.com/fares",
+        "confidence": "high",
+        "evidence": "Official LANTA fare chart lists Single Ride / Cash Fare at $2.50; three-hour, day, monthly, reduced, senior, and paratransit fares are listed separately."
+      }
     },
     {
       "slug": "winston-salem",
@@ -22822,7 +22873,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://www.redrosetransit.com/",
@@ -22894,7 +22945,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "lancaster",
+        "agencyName": "Red Rose Transit Authority (Lancaster, PA)",
+        "amount": 1.35,
+        "currency": "USD",
+        "fareType": "adult 10-ride pass unit price",
+        "payment": "RRTA pass",
+        "sourceUrl": "https://www.redrosetransit.com/fares/passes",
+        "confidence": "high",
+        "evidence": "Official RRTA pass page lists Adult 10 Ride Pass at $13.50 for 10 one-way trips, equivalent to $1.35 per trip; day, 31-day, student, and half-fare products are listed separately."
+      }
     },
     {
       "slug": "colts",
@@ -24914,7 +24975,7 @@
         "USD"
       ],
       "feedVersion": "UTC: 23-Sep-2026 17:23",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 2,
         "currency": "USD",
@@ -24950,7 +25011,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "juneau",
+        "agencyName": "Capital Transit (Juneau)",
+        "amount": 2,
+        "currency": "USD",
+        "fareType": "general adult one-way cash fare",
+        "payment": "exact cash or Token Transit",
+        "sourceUrl": "https://juneaucapitaltransit.org/fares/",
+        "confidence": "high",
+        "evidence": "Official Capital Transit fare page lists General age 19+ one-way cash fare at $2.00; youth, child, senior, monthly, and 20-ride products are listed separately."
+      }
     },
     {
       "slug": "annapolis",
