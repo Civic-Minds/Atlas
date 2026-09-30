@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 393,
+    "manualVerified": 394,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,10 +11,10 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 393,
+      "verified-official": 394,
       "official-fare-page-not-found": 125,
       "official-site-inaccessible": 45,
-      "official-source-candidate": 98,
+      "official-source-candidate": 97,
       "no-official-website": 32
     }
   },
@@ -20501,7 +20501,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.chapelhillnc.gov/Town-Government/Departments-and-Offices/Transit",
@@ -20509,7 +20509,18 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "chapel-hill-transit",
+        "agencyName": "Chapel Hill Transit",
+        "amount": 0,
+        "amountMax": 0,
+        "currency": "USD",
+        "fareType": "fare-free fixed-route service",
+        "payment": "no fare required",
+        "sourceUrl": "https://www.chapelhillnc.gov/Town-Government/Departments-and-Offices/Transit",
+        "confidence": "high",
+        "evidence": "Official Town of Chapel Hill transit page states Chapel Hill Transit has been fare-free for over 20 years through local partnerships and grants."
+      }
     },
     {
       "slug": "mvta",
