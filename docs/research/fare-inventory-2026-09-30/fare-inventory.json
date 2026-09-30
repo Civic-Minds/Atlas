@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 375,
+    "manualVerified": 379,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,10 +11,10 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 375,
+      "verified-official": 379,
       "official-fare-page-not-found": 125,
       "official-site-inaccessible": 45,
-      "official-source-candidate": 116,
+      "official-source-candidate": 112,
       "no-official-website": 32
     }
   },
@@ -28606,7 +28606,7 @@
       "status": "unresolved",
       "notes": "GTFS publishes only zero-value legacy fare attributes; this may be a placeholder and was not treated as proof of free service.",
       "feedVersion": "UTC: 23-Jan-2025 11:14",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": null,
         "currency": "USD",
@@ -28636,7 +28636,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "streamline",
+        "agencyName": "Streamline (Bozeman)",
+        "amount": 0,
+        "amountMax": 0,
+        "currency": "USD",
+        "fareType": "zero-fare transit service",
+        "payment": "no fare required",
+        "sourceUrl": "https://streamlinebus.com/zero-fare/",
+        "confidence": "high",
+        "evidence": "Official Streamline page states that the service is zero-fare and riders need no cards, coins, or dollars to board."
+      }
     },
     {
       "slug": "athens-oh",
@@ -28653,7 +28664,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://hapcap.org/transportation/athens-public-transit/",
@@ -28669,7 +28680,19 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "athens-oh",
+        "agencyName": "Athens Public Transit",
+        "amount": 0,
+        "amountMax": 0,
+        "currency": "USD",
+        "fareType": "temporary fare-free service",
+        "payment": "fare-free community pass",
+        "sourceUrl": "https://hapcap.org/transportation/athens-public-transit/bus-fares-passes/",
+        "effectiveDate": "2026-09-30",
+        "confidence": "high",
+        "evidence": "Official HAPCAP page says community members can ride Athens Public Transit fare-free with a Community Member Pass through April 2027; Bobcat Pass riders continue to show student ID."
+      }
     },
     {
       "slug": "connect-transit",
@@ -28829,7 +28852,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.radfordva.gov/1296/Radford-Transit",
@@ -28845,7 +28868,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "radford",
+        "agencyName": "Radford Transit",
+        "amount": 0,
+        "amountMax": 0,
+        "currency": "USD",
+        "fareType": "fare-free transit service",
+        "payment": "no fare required",
+        "sourceUrl": "https://www.radfordva.gov/2345/FARE-and-SERVICES",
+        "confidence": "high",
+        "evidence": "Official City of Radford fare page states that Radford Transit is fare free."
+      }
     },
     {
       "slug": "jfk-airtrain",
@@ -30168,7 +30202,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.reseau-stan.com/",
@@ -30242,7 +30276,19 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "nancy",
+        "agencyName": "Réseau Stan (Nancy)",
+        "amount": 1.8,
+        "amountMax": 2,
+        "currency": "EUR",
+        "fareType": "one-hour single trip ticket",
+        "payment": "standard ticket or onboard purchase",
+        "sourceUrl": "https://www.reseau-stan.com/titres-tarifs/tous-les-titres",
+        "effectiveDate": "2026-08-01",
+        "confidence": "high",
+        "evidence": "Official Stan tariff page effective August 1, 2026 lists Pass 1 at €1.80 on the Stan network and €2 when purchased onboard; MixCités is listed at €1.90 or €2 onboard."
+      }
     },
     {
       "slug": "rennes",
