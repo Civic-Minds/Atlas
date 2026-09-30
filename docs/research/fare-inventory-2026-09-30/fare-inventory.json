@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 262,
+    "manualVerified": 265,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,8 +11,8 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 262,
-      "official-source-candidate": 228,
+      "verified-official": 265,
+      "official-source-candidate": 225,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
       "no-official-website": 32
@@ -6253,7 +6253,7 @@
         "USD"
       ],
       "feedVersion": "FAL26-161.2",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1,
         "currency": "USD",
@@ -6350,7 +6350,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "kingcountymetro",
+        "agencyName": "King County Metro (Seattle)",
+        "amount": 3,
+        "currency": "USD",
+        "fareType": "adult single ride",
+        "payment": "ORCA, contactless payment, Transit GO, or cash",
+        "effectiveDate": "2025-09-01",
+        "sourceUrl": "https://kingcounty.gov/en/dept/metro/fares-and-payment/prices",
+        "confidence": "high",
+        "evidence": "Official King County Metro price page lists adult single ride at $3.00 effective September 1, 2025; senior and qualifying disability fares are $1, and youth fares are free."
+      }
     },
     {
       "slug": "soundtransit",
@@ -7318,7 +7329,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.bcferries.com/",
@@ -7381,7 +7392,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "bc-ferries",
+        "agencyName": "BC Ferries",
+        "amount": 49,
+        "currency": "CAD",
+        "fareType": "Saver fare, car and driver one-way from Metro Vancouver to Vancouver Island",
+        "payment": "online booking",
+        "effectiveDate": "2026-06-16",
+        "sourceUrl": "https://www.bcferries.com/routes-fares/ferry-fares",
+        "confidence": "medium",
+        "evidence": "Official BC Ferries page identifies the current fare guide effective June 16, 2026 and advertises Saver fares from $49 one-way for car and driver between Metro Vancouver and Vancouver Island; route-specific standard passenger and vehicle fares remain in the fare guide/calculator."
+      }
     },
     {
       "slug": "pierce-county-ferries",
@@ -7402,7 +7424,7 @@
         "USD"
       ],
       "feedVersion": "UTC: 13-May-2026 10:51",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 7.5,
         "currency": "USD",
@@ -7456,7 +7478,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "pierce-county-ferries",
+        "agencyName": "Pierce County Ferries",
+        "amount": 8.14,
+        "currency": "USD",
+        "fareType": "adult walk-on/passenger round-trip fare",
+        "payment": "ticket at Steilacoom Terminal",
+        "effectiveDate": "2026-01-01",
+        "sourceUrl": "https://www.piercecountywa.gov/2201/Fares",
+        "confidence": "high",
+        "evidence": "Official Pierce County 2026 fare table lists all fares as round trip and Adult walk-on/passenger/bicycle fare at $8.14; youth 18 and under ride free and senior/disability fare is $4.46."
+      }
     },
     {
       "slug": "sherbrooke",
