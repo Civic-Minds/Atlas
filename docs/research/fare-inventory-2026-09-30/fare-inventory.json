@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 96,
+    "manualVerified": 104,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,8 +11,8 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 96,
-      "official-source-candidate": 394,
+      "verified-official": 104,
+      "official-source-candidate": 386,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
       "no-official-website": 32
@@ -8252,7 +8252,7 @@
         "CAD"
       ],
       "feedVersion": "20260529182459",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 4.4,
         "currency": "CAD",
@@ -8365,7 +8365,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "goldengate",
+        "agencyName": "Golden Gate Transit",
+        "amount": 6,
+        "amountMax": 15,
+        "currency": "USD",
+        "fareType": "adult cash bus fare by zones/trip length",
+        "payment": "cash, Clipper, or contactless",
+        "sourceUrl": "https://www.goldengate.org/bus/bus-fares-payment/fare-tables/",
+        "confidence": "high",
+        "evidence": "Official adult cash fare tables show fares varying by trip length and zones, with listed adult cash values from $6.00 to $15.00; contactless/Clipper and reduced fares are listed separately."
+      }
     },
     {
       "slug": "weta",
@@ -11212,7 +11223,7 @@
         "CAD"
       ],
       "feedVersion": "20260529182459",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 4.4,
         "currency": "CAD",
@@ -11259,7 +11270,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "get",
+        "agencyName": "Golden Empire Transit District (GET)",
+        "amount": 1.65,
+        "currency": "USD",
+        "fareType": "regular single ride",
+        "payment": "exact cash or pass",
+        "sourceUrl": "https://www.getbus.org/fares-and-passes/",
+        "confidence": "high",
+        "evidence": "Official GET fare table lists Regular Fares Single Ride at $1.65; day, 15-day, 31-day, reduced, and paratransit fares are listed separately."
+      }
     },
     {
       "slug": "sjrtd",
@@ -17415,7 +17436,7 @@
         "CAD"
       ],
       "feedVersion": "20260529182459",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 4.4,
         "currency": "CAD",
@@ -17460,7 +17481,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "goraleigh",
+        "agencyName": "GoRaleigh (Capital Area Transit)",
+        "amount": 1.25,
+        "currency": "USD",
+        "fareType": "full-fare one-way",
+        "payment": "cash, paper pass, or Umo",
+        "sourceUrl": "https://goraleigh.org/goraleigh-fares-passes",
+        "confidence": "high",
+        "evidence": "Official GoRaleigh fare table lists Full Fare One-Way at $1.25; reduced, day, 7-day, and 31-day products are listed separately."
+      }
     },
     {
       "slug": "gotriangle",
@@ -17481,7 +17512,7 @@
         "CAD"
       ],
       "feedVersion": "20260529182459",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 4.4,
         "currency": "CAD",
@@ -17527,7 +17558,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "gotriangle",
+        "agencyName": "GoTriangle (Raleigh-Durham)",
+        "amount": 2.5,
+        "currency": "USD",
+        "fareType": "full-fare fixed-route ride",
+        "payment": "Umo or standard fare media",
+        "sourceUrl": "https://gotriangle.org/fares-and-passes/",
+        "confidence": "high",
+        "evidence": "Official GoTriangle fare table lists Full Fare at $2.50, with daily, weekly, and monthly caps; discount and free-fare categories are listed separately."
+      }
     },
     {
       "slug": "indygo",
@@ -19555,7 +19596,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.gptcbus.com/",
@@ -19589,7 +19630,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "gptc",
+        "agencyName": "Gary Public Transportation Corporation (Gary, IN)",
+        "amount": 1.6,
+        "amountMax": 2.25,
+        "currency": "USD",
+        "fareType": "adult fixed-route fare by local/regional route",
+        "payment": "cash or Token Transit",
+        "sourceUrl": "https://gptcbus.com/fares/",
+        "confidence": "high",
+        "evidence": "Official GPTC fare table lists Adult Local at $1.60 and Adult Regional at $2.25; transfers, reduced, student, paratransit, and pass fares are listed separately."
+      }
     },
     {
       "slug": "bata",
@@ -20064,7 +20116,7 @@
         "USD"
       ],
       "feedVersion": "UTC: 01-May-2026 16:41",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1,
         "currency": "USD",
@@ -20106,7 +20158,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "gltc",
+        "agencyName": "Greater Lynchburg Transit Company",
+        "amount": 2,
+        "currency": "USD",
+        "fareType": "full-fare single ride",
+        "payment": "standard fare media",
+        "sourceUrl": "https://gltconline.com/gltc-fares/",
+        "confidence": "high",
+        "evidence": "Official GLTC fare table lists Full Fare Single Ride at $2.00, with no transfers; half-fare and pass products are listed separately."
+      }
     },
     {
       "slug": "dayton",
@@ -25633,7 +25695,7 @@
         "USD"
       ],
       "feedVersion": "UTC: 16-Jul-2026 14:21",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 3,
         "currency": "USD",
@@ -25669,7 +25731,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "grand-junction",
+        "agencyName": "Grand Valley Transit",
+        "amount": 1.5,
+        "currency": "USD",
+        "fareType": "adult fixed-route one-way fare",
+        "payment": "standard fare media",
+        "sourceUrl": "https://www.mesacounty.us/gvt/fares-and-passes",
+        "confidence": "high",
+        "evidence": "Official Grand Valley Transit table lists Adult Fixed Route one-way fare at $1.50; day, seven-pass, monthly, seasonal half-fare, and paratransit products are listed separately."
+      }
     },
     {
       "slug": "um-transit",
@@ -33602,7 +33674,7 @@
         "CAD"
       ],
       "feedVersion": "20260529182459",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 4.4,
         "currency": "CAD",
@@ -33653,7 +33725,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "godurham",
+        "agencyName": "GoDurham",
+        "amount": 0,
+        "currency": "USD",
+        "fareType": "standard bus fare",
+        "payment": "fare-free service",
+        "effectiveDate": "2026-07-01",
+        "sourceUrl": "https://godurhamtransit.org/godurham-is-fare-free-through-june-2026/",
+        "confidence": "high",
+        "evidence": "Official City of Durham notice states GoDurham buses remain fare-free through June 2027 under the 2026-2027 budget."
+      }
     },
     {
       "slug": "jacksonville-nc",
