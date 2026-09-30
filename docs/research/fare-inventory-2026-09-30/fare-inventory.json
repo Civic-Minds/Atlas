@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 162,
+    "manualVerified": 170,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,8 +11,8 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 162,
-      "official-source-candidate": 328,
+      "verified-official": 170,
+      "official-source-candidate": 320,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
       "no-official-website": 32
@@ -4375,7 +4375,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.seatbus.org/",
@@ -4398,7 +4398,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "seat",
+        "agencyName": "South East Area Transit",
+        "amount": 2,
+        "currency": "USD",
+        "fareType": "general public one-way fare",
+        "payment": "standard fare media",
+        "sourceUrl": "https://www.seatbus.org/Ride/Fares/",
+        "confidence": "high",
+        "evidence": "Official SEAT fare page lists General Public one-way fare at $2.00; elderly/disabled, county, touching-county, and mileage-based fares are listed separately."
+      }
     },
     {
       "slug": "richland-county-oh",
@@ -7834,7 +7844,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://www.sfmta.com",
@@ -7865,7 +7875,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "sfmta",
+        "agencyName": "San Francisco Municipal Transportation Agency (SFMTA - Muni)",
+        "amount": 2.85,
+        "currency": "USD",
+        "fareType": "adult single ride cash fare",
+        "payment": "cash or Metro ticket machine",
+        "sourceUrl": "https://www.sfmta.com/getting-around/muni/fares",
+        "confidence": "high",
+        "evidence": "Official SFMTA fare table lists Adult Single Ride at $2.85 by cash/Metro Ticket Machine and $3.00 via contactless; day, monthly, reduced, and cable car products are listed separately."
+      }
     },
     {
       "slug": "bart",
@@ -10154,7 +10174,7 @@
       "confidence": "unresolved",
       "status": "inaccessible",
       "notes": "Feed download failed: fetch failed",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://www.sacrt.com",
@@ -10196,7 +10216,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "sacrt",
+        "agencyName": "Sacramento Regional Transit (SacRT)",
+        "amount": 2.5,
+        "currency": "USD",
+        "fareType": "basic single ride ticket",
+        "payment": "fare vending machine, Transit Connect, or exact cash",
+        "sourceUrl": "https://www.sacrt.com/fares/",
+        "confidence": "high",
+        "evidence": "Official SacRT fare table lists Single Ride Ticket at $2.50; transfer, daily, monthly, discounted, and pass products are listed separately."
+      }
     },
     {
       "slug": "yolobus",
@@ -11046,7 +11076,7 @@
         "USD"
       ],
       "feedVersion": "2601 unmerged v2 merged with Generated on 20260521 @ 1307142",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 2.5,
         "currency": "USD",
@@ -11131,7 +11161,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "sdmts",
+        "agencyName": "Metropolitan Transit System (San Diego MTS)",
+        "amount": 2.5,
+        "currency": "USD",
+        "fareType": "adult PRONTO one-way fare",
+        "payment": "PRONTO app or card",
+        "sourceUrl": "https://www.sdmts.com/fares/pronto",
+        "confidence": "high",
+        "evidence": "Official MTS PRONTO fare page lists Adult one-way fare at $2.50, valid for two hours; day and monthly fare caps and reduced fares are listed separately."
+      }
     },
     {
       "slug": "nctd",
@@ -11451,7 +11491,7 @@
         "USD"
       ],
       "feedVersion": "20260726-20270123",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 0.5,
         "currency": "USD",
@@ -11513,7 +11553,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "sjrtd",
+        "agencyName": "San Joaquin RTD",
+        "amount": 1.5,
+        "currency": "USD",
+        "fareType": "full local/express/hopper one-ride fare",
+        "payment": "cash, fare vending machine, or Vamos app",
+        "sourceUrl": "https://sanjoaquinrtd.com/fares/",
+        "confidence": "high",
+        "evidence": "Official San Joaquin RTD fare table lists Full local/express/hopper 1-Ride at $1.50; discount, student, commuter, paratransit, and day/month products are listed separately."
+      }
     },
     {
       "slug": "merced",
@@ -11688,7 +11738,7 @@
         "USD"
       ],
       "feedVersion": "S1000262",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 0.5,
         "currency": "USD",
@@ -11723,7 +11773,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "sbmtd",
+        "agencyName": "Santa Barbara Metropolitan Transit District (MTD)",
+        "amount": 2.5,
+        "currency": "USD",
+        "fareType": "regular one-way fare",
+        "payment": "cash, pass, or Tap2Ride",
+        "sourceUrl": "https://sbmtd.gov/fares-passes/",
+        "confidence": "high",
+        "evidence": "Official MTD fare table lists Regular one-way at $2.50; discounted Tap2Ride, transfer, day, 10-ride, and 30-day products are listed separately."
+      }
     },
     {
       "slug": "slotransit",
@@ -14873,7 +14933,7 @@
         "USD"
       ],
       "feedVersion": "v202608090",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 2.9,
         "currency": "USD",
@@ -14919,7 +14979,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "septa",
+        "agencyName": "SEPTA (Philadelphia)",
+        "amount": 2.9,
+        "currency": "USD",
+        "fareType": "bus and metro pay-per-ride fare",
+        "payment": "SEPTA Key, contactless, cash, or Quick Trip",
+        "sourceUrl": "https://www.septa.org/fares/",
+        "confidence": "high",
+        "evidence": "Official SEPTA fare page lists Bus and Metro Pay-Per-Ride at $2.90 per trip; pass, transfer, regional rail, senior, and reduced products are listed separately."
+      }
     },
     {
       "slug": "wmata",
@@ -21150,7 +21220,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://321transit.com",
@@ -21191,7 +21261,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "scat",
+        "agencyName": "SCAT (Sarasota County)",
+        "amount": 1.5,
+        "currency": "USD",
+        "fareType": "full-fare bus one-ride",
+        "payment": "Token Transit, online, phone, or terminal purchase",
+        "sourceUrl": "https://321transit.com/transit/fares/",
+        "confidence": "high",
+        "evidence": "Official SCAT fare table lists Bus Fare Full Fare 1-Ride at $1.50; reduced, 10-ride, 30-day, TD, and ADA fares are listed separately."
+      }
     },
     {
       "slug": "leetran",
