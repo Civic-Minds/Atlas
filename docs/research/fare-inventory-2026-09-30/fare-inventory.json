@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 56,
+    "manualVerified": 63,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,8 +11,8 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 56,
-      "official-source-candidate": 434,
+      "verified-official": 63,
+      "official-source-candidate": 427,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
       "no-official-website": 32
@@ -3637,7 +3637,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.codiactranspo.ca/",
@@ -3665,7 +3665,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "codiac",
+        "agencyName": "Codiac Transpo (Moncton)",
+        "amount": 3,
+        "currency": "CAD",
+        "fareType": "adult cash fare",
+        "payment": "exact cash or Codiac+",
+        "sourceUrl": "https://www.codiactranspo.ca/moncton-transport/fares",
+        "confidence": "high",
+        "evidence": "Official fare table lists Adult cash fare at $3.00; day, 10-trip, 20-trip, group, and 30-day products are listed separately."
+      }
     },
     {
       "slug": "fredericton",
@@ -6494,7 +6504,7 @@
         "USD"
       ],
       "feedVersion": "Updated: Mar 16, 2026, 12:30 PM",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1,
         "currency": "USD",
@@ -6532,7 +6542,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "clallamtransit",
+        "agencyName": "Clallam Transit System",
+        "amount": 0,
+        "currency": "USD",
+        "fareType": "standard fixed-route fare",
+        "payment": "fare-free service",
+        "effectiveDate": "2025-01-01",
+        "sourceUrl": "https://www.clallamtransit.com/fares",
+        "confidence": "high",
+        "evidence": "Official fares page states zero-fare is effective January 1, 2025 until further notice on all routes except Route 123 Strait Shot, seasonal Hurricane Ridge Shuttle, and out-of-area Clallam Connect rides."
+      }
     },
     {
       "slug": "portlandme",
@@ -7494,7 +7515,7 @@
         "USD"
       ],
       "feedVersion": "UTC: 06-May-2026 19:51",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1,
         "currency": "USD",
@@ -7592,7 +7613,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "columbia-area-transit",
+        "agencyName": "Columbia Area Transit",
+        "amount": 1,
+        "currency": "USD",
+        "fareType": "local one-way fare",
+        "payment": "cash or Token Transit",
+        "sourceUrl": "https://www.ridecatbus.org/buy-fares/",
+        "confidence": "high",
+        "evidence": "Official fare comparison lists Local at $1.00 for one-way Hood River County service; Dial-a-Ride, Gorge-to-Mountain, and Columbia Gorge Express fares are listed separately."
+      }
     },
     {
       "slug": "mats",
@@ -14272,7 +14303,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.cobbcounty.gov/transportation/cobblinc",
@@ -14297,7 +14328,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "cobblinc",
+        "agencyName": "CobbLinc (Marietta, GA)",
+        "amount": 2.5,
+        "currency": "USD",
+        "fareType": "adult local one-way fare",
+        "payment": "cash or Breeze",
+        "sourceUrl": "https://www.cobbcounty.gov/transportation/cobb-transit-service-cobblinc/fares-transfers",
+        "confidence": "high",
+        "evidence": "Official CobbLinc fare table lists Adult Local One-way at $2.50; reduced local and paratransit fares are listed separately."
+      }
     },
     {
       "slug": "gwinnett-transit",
@@ -19454,7 +19495,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.ridecitylink.org/",
@@ -19510,7 +19551,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "citylink-peoria",
+        "agencyName": "CityLink (Peoria, IL)",
+        "amount": 1,
+        "currency": "USD",
+        "fareType": "single ride cash fare",
+        "payment": "cash",
+        "sourceUrl": "https://www.ridecitylink.org/fares/",
+        "confidence": "high",
+        "evidence": "Official fare table lists Single Ride Cash Fare at $1.00 per ride; day, 30-day, reduced, paratransit, and county services are listed separately."
+      }
     },
     {
       "slug": "cedar-rapids",
@@ -25404,7 +25455,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://gocitybus.com/",
@@ -25434,7 +25485,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "citybus-lafayette",
+        "agencyName": "CityBus of Greater Lafayette",
+        "amount": 2,
+        "currency": "USD",
+        "fareType": "regular one-way fare",
+        "payment": "cash or EZFare",
+        "effectiveDate": "2026-01-01",
+        "sourceUrl": "https://www.in.gov/citybuslafayette/how-to-ride/fares",
+        "confidence": "high",
+        "evidence": "Official fare table says fares begin January 1, 2026 and lists Regular One-Way Fare at $2.00, valid for two hours; half-fare, passes, and express fares are listed separately."
+      }
     },
     {
       "slug": "duke",
@@ -33730,7 +33792,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://coasttransit.com/",
@@ -33777,7 +33839,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "coast-transit-ms",
+        "agencyName": "Coast Transit Authority",
+        "amount": 1.75,
+        "currency": "USD",
+        "fareType": "regular adult single ride",
+        "payment": "cash",
+        "sourceUrl": "https://coasttransit.com/bus-fares-fare-zones/",
+        "confidence": "high",
+        "evidence": "Official fare-zone table lists Regular Adult Fare (Single Ride) at $1.75; zone crossings require additional fares and reduced categories are listed separately."
+      }
     },
     {
       "slug": "hub-city-transit",
