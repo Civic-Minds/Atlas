@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 482,
+    "manualVerified": 484,
     "officialSiteStats": {
       "official-source-found": 493,
       "official-fare-page-not-found": 116,
@@ -11,11 +11,11 @@
       "site-inaccessible": 52
     },
     "researchStatuses": {
-      "verified-official": 482,
+      "verified-official": 484,
       "official-fare-page-not-found": 113,
       "official-site-inaccessible": 45,
       "no-official-website": 32,
-      "official-source-candidate": 21
+      "official-source-candidate": 19
     }
   },
   "records": [
@@ -31137,7 +31137,7 @@
         "EUR"
       ],
       "feedVersion": "06/08/2026-04:50",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1.9,
         "currency": "EUR",
@@ -31152,7 +31152,18 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "bordeaux",
+        "agencyName": "TBM (Bordeaux)",
+        "amount": 1.9,
+        "amountMax": 17.5,
+        "currency": "EUR",
+        "fareType": "one-trip ticket and seven-day pass",
+        "payment": "ticket machine, app, website, or TBM retailer",
+        "confidence": "high",
+        "sourceUrl": "https://aide.infotbm.com/?question=combien-coute-un-trajet-voyage-sur-notre-reseau",
+        "evidence": "Official TBM fare help page lists one trip at €1.90, or €2.10 when bought onboard; official TBM day-ticket information lists 24-hour €6.50, 48-hour €11, 72-hour €13.50, and seven-day €17.50 products. A single ticket is valid across the network with the published transfer rules."
+      }
     },
     {
       "slug": "grenoble",
@@ -35603,7 +35614,7 @@
         "EUR"
       ],
       "feedVersion": "20260717144220",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1.7,
         "currency": "EUR",
@@ -35618,7 +35629,18 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "saint-malo",
+        "agencyName": "MAT (Saint-Malo)",
+        "amount": 1.4,
+        "amountMax": 360,
+        "currency": "EUR",
+        "fareType": "one-hour-thirty single ticket and public monthly/annual passes",
+        "payment": "agency, retailer, app, onboard, or contactless bank card",
+        "confidence": "high",
+        "sourceUrl": "https://www.reseau-mat.fr/fr/titres-et-tarifs",
+        "evidence": "Official MAT fare page lists advance one-trip ticket at €1.40, onboard/card payment at €2.00, 24-hour pass at €4.00, 7-day pass at €13.00, public monthly pass at €36.00, and public annual pass at €360. The one-trip ticket permits unlimited travel for 1 hour 30 minutes after validation."
+      }
     },
     {
       "slug": "saint-omer",
