@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 185,
+    "manualVerified": 188,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,8 +11,8 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 185,
-      "official-source-candidate": 305,
+      "verified-official": 187,
+      "official-source-candidate": 303,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
       "no-official-website": 32
@@ -1788,14 +1788,14 @@
         "slug": "yrt",
         "agencyName": "York Region Transit",
         "amount": 4.24,
+        "amountMax": 4.65,
         "currency": "CAD",
         "fareType": "adult single ride",
-        "payment": "PRESTO",
-        "cashAmount": 4.65,
-        "effectiveDate": "2026-07-01",
+        "payment": "PRESTO ($4.24) or cash, credit, or debit ($4.65)",
         "sourceUrl": "https://www.yrt.ca/en/fares-and-passes/fare-chart.aspx",
+        "effectiveDate": "2026-07-01",
         "confidence": "high",
-        "evidence": "Official fare chart says prices effective July 1, 2026 and lists Adult PRESTO $4.24 and cash, credit or debit $4.65."
+        "evidence": "Official YRT fare chart says prices are effective July 1, 2026 and lists Adult PRESTO at $4.24 and Adult Cash, Credit or Debit at $4.65; youth, senior, child, GO, and two-hour transfer rules are listed separately."
       }
     },
     {
@@ -19862,7 +19862,7 @@
         "USD"
       ],
       "feedVersion": null,
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 2,
         "currency": "USD",
@@ -19894,7 +19894,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "ycat",
+        "agencyName": "Yuma County Area Transit (YCAT)",
+        "amount": 2,
+        "currency": "USD",
+        "fareType": "basic full-fare one-way",
+        "payment": "cash on bus",
+        "sourceUrl": "https://www.yumaycat.gov/fares",
+        "confidence": "high",
+        "evidence": "Official YCAT fare table lists Basic Full Fare One Way at $2.00; discount fare, day, 10-ride, 31-day, and deviation fares are listed separately."
+      }
     },
     {
       "slug": "comet",
@@ -31405,7 +31415,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.marineo.fr/",
@@ -31413,7 +31423,17 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "boulogne-sur-mer",
+        "agencyName": "Marinéo (Boulogne)",
+        "amount": 1,
+        "currency": "EUR",
+        "fareType": "single journey ticket",
+        "payment": "standard fare media",
+        "sourceUrl": "https://www.marineo.fr/acheter/titres-et-abonnements",
+        "confidence": "high",
+        "evidence": "Official Marinéo fare page lists Pass’ 1 voyage at €1.00; 10-journey, day, 7-day, monthly, annual, senior, and reduced products are listed separately."
+      }
     },
     {
       "slug": "bourgoin",
