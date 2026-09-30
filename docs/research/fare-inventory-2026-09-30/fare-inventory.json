@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 389,
+    "manualVerified": 391,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,10 +11,10 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 389,
+      "verified-official": 391,
       "official-fare-page-not-found": 125,
       "official-site-inaccessible": 45,
-      "official-source-candidate": 102,
+      "official-source-candidate": 100,
       "no-official-website": 32
     }
   },
@@ -32241,7 +32241,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.rtm.fr/",
@@ -32284,7 +32284,19 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "marseille",
+        "agencyName": "RTM (Marseille)",
+        "amount": 1.8,
+        "amountMax": 73,
+        "currency": "EUR",
+        "fareType": "single trip and 30-day metropolitan pass",
+        "payment": "standard ticket, card, or pass",
+        "sourceUrl": "https://www.rtm.fr/tarifs",
+        "effectiveDate": "2026-07-01",
+        "confidence": "high",
+        "evidence": "Official RTM fare page states tariffs in force July 1, 2026 and lists the standard one-trip product at €1.80 and the 30-day metropolitan pass at €73; reduced profiles and other products are listed separately."
+      }
     },
     {
       "slug": "mulhouse",
@@ -32975,7 +32987,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.reseaumistral.com/",
@@ -33044,7 +33056,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "toulon",
+        "agencyName": "Mistral (Toulon)",
+        "amount": 1.4,
+        "amountMax": 36.5,
+        "currency": "EUR",
+        "fareType": "single trip and 30-day public pass",
+        "payment": "standard ticket, card, or pass",
+        "sourceUrl": "https://www.reseaumistral.com/titres-tarifs/titres-et-tarifs",
+        "confidence": "high",
+        "evidence": "Official Réseau Mistral fare page lists one terrestrial trip at €1.40, one-day pass at €3.90, 7-day pass at €9.90, and 30-day public pass at €36.50."
+      }
     },
     {
       "slug": "toulouse",
