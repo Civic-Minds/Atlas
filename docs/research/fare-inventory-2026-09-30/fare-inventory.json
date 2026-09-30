@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 18,
+    "manualVerified": 22,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,8 +11,8 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 18,
-      "official-source-candidate": 472,
+      "verified-official": 22,
+      "official-source-candidate": 468,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
       "no-official-website": 32
@@ -15336,7 +15336,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.rideata.com/",
@@ -15510,7 +15510,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "ata",
+        "agencyName": "Area Transportation Authority (ATA)",
+        "amount": 1.25,
+        "amountMax": 2.25,
+        "currency": "USD",
+        "fareType": "fixed-route one-way fare, route-dependent",
+        "payment": "standard fare",
+        "sourceUrl": "https://www.rideata.com/fares-and-passes",
+        "confidence": "high",
+        "evidence": "Official fare tables list standard fixed-route fares of $2.25 on several intercity routes and $1.25 within local service areas; the core fare varies by route."
+      }
     },
     {
       "slug": "albemarle-county",
@@ -31240,7 +31251,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://www.bus-baia.fr/",
@@ -31278,7 +31289,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "arcachon",
+        "agencyName": "Baïa (Bassin d'Arcachon)",
+        "amount": 1,
+        "currency": "EUR",
+        "fareType": "one-trip pass",
+        "payment": "standard ticket",
+        "sourceUrl": "https://www.bus-baia.fr/titres-et-tarifs.html",
+        "confidence": "high",
+        "evidence": "PASS 1 VOYAGE: €1; Baïa page states the ticket is valid for one trip."
+      }
     },
     {
       "slug": "argentan",
@@ -31295,7 +31316,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://terresdargentan.fr/argentan-intercom-mobilite/",
@@ -31321,7 +31342,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "argentan",
+        "agencyName": "Terres d'Argentan Mobilité",
+        "amount": 1,
+        "currency": "EUR",
+        "fareType": "one-trip ticket",
+        "payment": "Atoumod ticket or mobile ticket",
+        "sourceUrl": "https://terresdargentan.fr/argentan-intercom-mobilite/",
+        "confidence": "high",
+        "evidence": "Tarifs Terres d’Argentan Mobilité: Ticket 1 Voyage €1 for one hour of travel with transfers."
+      }
     },
     {
       "slug": "auch",
@@ -31934,7 +31965,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.ondea-bus.fr",
@@ -32025,7 +32056,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "aix-les-bains",
+        "agencyName": "Ondéa Grand Lac",
+        "amount": 1.7,
+        "currency": "EUR",
+        "fareType": "adult one-trip ticket",
+        "payment": "standard ticket or mobile ticket",
+        "sourceUrl": "https://www.ondeagrandlac.fr/tarifs/choisir-son-titre",
+        "effectiveDate": "2026-07-01",
+        "confidence": "high",
+        "evidence": "Titres pour tous, tariffs applicable from July 1, 2026: Titre 1 voyage à bord des bus €1.70; mobile ticket is also €1.70."
+      }
     },
     {
       "slug": "amberieu",
