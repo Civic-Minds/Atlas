@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 196,
+    "manualVerified": 199,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,8 +11,8 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 196,
-      "official-source-candidate": 294,
+      "verified-official": 199,
+      "official-source-candidate": 291,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
       "no-official-website": 32
@@ -22513,7 +22513,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.brcats.com/",
@@ -22541,7 +22541,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "cats-baton",
+        "agencyName": "Capital Area Transit System (CATS)",
+        "amount": 1.75,
+        "currency": "USD",
+        "fareType": "adult fixed-route fare",
+        "payment": "cash, pass, or UMO fare media",
+        "sourceUrl": "https://www.brcats.com/page/faqs",
+        "confidence": "high",
+        "evidence": "Official CATS FAQ lists Adults at $1.75 for all routes except the free Capitol Park Shuttle; reduced, student, transfer, and CATS On Demand fares are listed separately."
+      }
     },
     {
       "slug": "knoxville",
@@ -26178,7 +26188,7 @@
         "USD"
       ],
       "feedVersion": "57",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1,
         "currency": "USD",
@@ -26220,7 +26230,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "davenport",
+        "agencyName": "Davenport CitiBus",
+        "amount": 1,
+        "currency": "USD",
+        "fareType": "full/general one-way fare",
+        "payment": "exact cash, token, or pass",
+        "sourceUrl": "https://www.davenportiowa.com/services/citibus_transit/fares__multi-ride_options__transfers",
+        "confidence": "high",
+        "evidence": "Official City of Davenport fare page lists Full/General Fare at $1.00 one-way for riders age 9 and up; free, discounted, pass, token, and transfer rules are listed separately."
+      }
     },
     {
       "slug": "bettendorf",
@@ -27476,7 +27496,7 @@
         "USD"
       ],
       "feedVersion": "UTC: 27-Jan-2026 10:04",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1.5,
         "currency": "USD",
@@ -27491,7 +27511,18 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "corona",
+        "agencyName": "Corona Cruiser",
+        "amount": 1.75,
+        "currency": "USD",
+        "fareType": "general-public fixed-route per-ride fare",
+        "payment": "standard fare media",
+        "sourceUrl": "https://www.coronaca.gov/departments/public-works/public-transit/corona-cruiser",
+        "effectiveDate": "2024-01-01",
+        "confidence": "medium",
+        "evidence": "Official City of Corona fare table lists General Public at $1.75 per ride, effective January 1, 2024, and also states riders pay through June 30, 2026; reduced, student, child, day, and pass fares are listed separately, so the current post-June-2026 amount needs confirmation."
+      }
     },
     {
       "slug": "thousand-oaks",
