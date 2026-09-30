@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 401,
+    "manualVerified": 402,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,10 +11,10 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 401,
+      "verified-official": 402,
       "official-fare-page-not-found": 125,
       "official-site-inaccessible": 45,
-      "official-source-candidate": 90,
+      "official-source-candidate": 89,
       "no-official-website": 32
     }
   },
@@ -33202,7 +33202,7 @@
         "EUR"
       ],
       "feedVersion": null,
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1.8,
         "currency": "EUR",
@@ -33232,7 +33232,19 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "toulouse",
+        "agencyName": "Tisséo (Toulouse)",
+        "amount": 1.9,
+        "amountMax": 59,
+        "currency": "EUR",
+        "fareType": "public one-trip fare and 31-day pass",
+        "payment": "rechargeable ticket, bank card, or Pastel card",
+        "sourceUrl": "https://www.tisseo.fr/sites/default/files/cp/delibCS6juillet_evolutiongammetarifaire.pdf",
+        "effectiveDate": "2026-07-01",
+        "confidence": "high",
+        "evidence": "Official Tisséo tariff schedule lists the public one-trip fare at €1.90 and 31-day pass at €59 from July 1, 2026; the same schedule lists 10 trips at €16 and day pass at €7.20."
+      }
     },
     {
       "slug": "troyes",
