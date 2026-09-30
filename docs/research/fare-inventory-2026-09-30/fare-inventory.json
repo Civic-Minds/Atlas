@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 349,
+    "manualVerified": 352,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,10 +11,10 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 349,
+      "verified-official": 352,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
-      "official-source-candidate": 141,
+      "official-source-candidate": 138,
       "no-official-website": 32
     }
   },
@@ -12478,7 +12478,7 @@
       "status": "unresolved",
       "notes": "GTFS publishes only zero-value legacy fare attributes; this may be a placeholder and was not treated as proof of free service.",
       "feedVersion": "S1000208",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": null,
         "currency": "USD",
@@ -12493,7 +12493,19 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "fax",
+        "agencyName": "Fresno Area Express (FAX)",
+        "amount": 1,
+        "amountMax": 1,
+        "currency": "USD",
+        "fareType": "adult fixed-route one-way fare",
+        "payment": "cash, ticket, or fare pass",
+        "sourceUrl": "https://www.fresno.gov/transportation/fax/frequently-asked-questions/",
+        "confidence": "high",
+        "effectiveDate": "2021-09-01",
+        "evidence": "Official City of Fresno FAX FAQ states that bus rides cost $1 effective September 1, 2021, with reduced fares, free transfers, free rides for children 12 and younger, and 10-ride and 31-day products listed separately."
+      }
     },
     {
       "slug": "get",
@@ -14922,7 +14934,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.ladottransit.com/",
@@ -14938,7 +14950,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "ladot",
+        "agencyName": "Los Angeles Department of Transportation (LADOT/DASH)",
+        "amount": 0.35,
+        "amountMax": 18,
+        "currency": "USD",
+        "fareType": "regular DASH TAP fare and 31-day pass",
+        "payment": "TAP card or exact cash",
+        "sourceUrl": "https://www.ladottransit.com/dash/",
+        "confidence": "high",
+        "evidence": "Official LADOT DASH page lists regular TAP fare at $0.35, cash fare at $0.50, 7-day DASH pass at $5, and 31-day DASH pass at $18; reduced fares and accepted regional passes are listed separately."
+      }
     },
     {
       "slug": "culvercitybus",
@@ -16190,7 +16213,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://www.ridetransfort.com/",
@@ -16198,7 +16221,18 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "transfort",
+        "agencyName": "Transfort (Fort Collins)",
+        "amount": 0,
+        "amountMax": 0,
+        "currency": "USD",
+        "fareType": "current fare-free fixed-route and dial-a-ride service",
+        "payment": "no fare required",
+        "sourceUrl": "https://ridetransfort.com/transfort-faqs/",
+        "confidence": "high",
+        "evidence": "Official Transfort FAQ states that Transfort is fare-free and no fares are being collected; the City of Fort Collins also describes current fixed-route and dial-a-ride service as fare-free."
+      }
     },
     {
       "slug": "septa",
