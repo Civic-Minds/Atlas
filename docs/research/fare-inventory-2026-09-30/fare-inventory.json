@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 40,
+    "manualVerified": 45,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,8 +11,8 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 40,
-      "official-source-candidate": 450,
+      "verified-official": 45,
+      "official-source-candidate": 445,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
       "no-official-website": 32
@@ -20815,7 +20815,7 @@
         "USD"
       ],
       "feedVersion": "UTC: 19-Aug-2026 23:19",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1.5,
         "currency": "USD",
@@ -20830,7 +20830,17 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "all-points-transit",
+        "agencyName": "All Points Transit (Montrose)",
+        "amount": 3,
+        "currency": "USD",
+        "fareType": "on-demand ride",
+        "payment": "standard fare",
+        "sourceUrl": "https://www.allpointstransit.com/",
+        "confidence": "high",
+        "evidence": "Official All Points Transit page lists All Points Go on-demand rides at $3 per ride; fixed-route and Dial-A-Ride services are described separately."
+      }
     },
     {
       "slug": "kart",
@@ -23577,7 +23587,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://www.catabus.com",
@@ -23682,7 +23692,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "cata-state-college",
+        "agencyName": "CATA (State College)",
+        "amount": 2.5,
+        "currency": "USD",
+        "fareType": "full cash fare per trip",
+        "payment": "cash or single-ride ticket",
+        "sourceUrl": "https://catabus.com/services-schedules/catabus/fares/#catabus-catago-fare",
+        "confidence": "high",
+        "evidence": "Official CATABUS and CATAGO fare table lists Full Cash Fare per trip at $2.50; reduced, day, and pass fares are listed separately."
+      }
     },
     {
       "slug": "cyride",
@@ -25996,7 +26016,7 @@
         "USD"
       ],
       "feedVersion": "UTC: 10-Jul-2026 16:23",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1.25,
         "currency": "USD",
@@ -26011,7 +26031,17 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "banning",
+        "agencyName": "Banning Connect",
+        "amount": 1.25,
+        "currency": "USD",
+        "fareType": "general one-way fare",
+        "payment": "cash or Token Transit",
+        "sourceUrl": "http://www.ci.banning.ca.us/351/Bus-Schedules",
+        "confidence": "high",
+        "evidence": "City fare table lists General one-way fare at $1.25; youth, senior/disabled, zone, and pass prices are listed separately."
+      }
     },
     {
       "slug": "beaumont-ca",
@@ -33521,7 +33551,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.btd.org/",
@@ -33537,7 +33567,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "brazos",
+        "agencyName": "Brazos Transit District",
+        "amount": 1,
+        "currency": "USD",
+        "fareType": "general public fixed-route one-way fare",
+        "payment": "cash",
+        "sourceUrl": "https://www.btd.org/fixed-routes/rates/#s-pass",
+        "confidence": "high",
+        "evidence": "Official Fixed Route Rates table lists General Public one-way cash fare at $1.00; reduced fares and passes are listed separately."
+      }
     },
     {
       "slug": "lafayette-la",
@@ -33905,7 +33945,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://www.burlingtoniowa.org/2265/Burlington-Urban-Service-BUS",
@@ -33913,7 +33953,17 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "burlington-ia",
+        "agencyName": "Burlington Urban Service (BUS)",
+        "amount": 1.25,
+        "currency": "USD",
+        "fareType": "cash one-way fare",
+        "payment": "cash",
+        "sourceUrl": "http://www.burlingtoniowa.org/2265/Burlington-Urban-Service-BUS",
+        "confidence": "high",
+        "evidence": "Official Transit Fare Rates table lists Cash Fare at $1.25; monthly, half-month, annual, and school passes are listed separately."
+      }
     },
     {
       "slug": "jefftran",
