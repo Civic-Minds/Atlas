@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 453,
+    "manualVerified": 455,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,10 +11,10 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 453,
+      "verified-official": 455,
       "official-fare-page-not-found": 125,
       "official-site-inaccessible": 45,
-      "official-source-candidate": 38,
+      "official-source-candidate": 36,
       "no-official-website": 32
     }
   },
@@ -31124,7 +31124,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.irigo.fr/",
@@ -31147,7 +31147,19 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "angers",
+        "agencyName": "Irigo (Angers)",
+        "amount": 1.7,
+        "amountMax": 4.8,
+        "currency": "EUR",
+        "fareType": "one-hour single trip and 24-hour fare cap",
+        "payment": "mobile ticket, contactless bank card, ticket machine, or onboard purchase",
+        "effectiveDate": "2026-07-01",
+        "confidence": "high",
+        "sourceUrl": "https://www.irigo.fr/services/actualites/les-infos/nos-tarifs-evoluent-et-sadaptent-vous",
+        "evidence": "Official Irigo fare update effective July 1, 2026 lists a one-trip ticket at €1.70, 10 trips at €15.50, and a 24-hour ticket at €4.80; the official e-boutique confirms the same current prices."
+      }
     },
     {
       "slug": "chambery",
@@ -32275,7 +32287,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.t2c.fr/",
@@ -32291,7 +32303,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "clermont",
+        "agencyName": "T2C (Clermont-Ferrand)",
+        "amount": 1.6,
+        "amountMax": 60,
+        "currency": "EUR",
+        "fareType": "one-trip ticket and monthly pass",
+        "payment": "contactless bank card, SMS, ticket, or fare card",
+        "confidence": "medium",
+        "sourceUrl": "https://www.t2c.fr/page/les-supports-au-voyage",
+        "evidence": "Official current T2C rider-support page lists contactless and SMS one-trip fares at €1.60 and states the ticket is valid for 1 hour 10 minutes; the official fare brochure lists a €60 monthly pass and identifies the tariff as effective from February 1, 2023, so the monthly value should be refreshed if a newer tariff is published."
+      }
     },
     {
       "slug": "dunkirk",
