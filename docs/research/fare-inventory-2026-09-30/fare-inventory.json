@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 407,
+    "manualVerified": 410,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,10 +11,10 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 407,
+      "verified-official": 410,
       "official-fare-page-not-found": 125,
       "official-site-inaccessible": 45,
-      "official-source-candidate": 84,
+      "official-source-candidate": 81,
       "no-official-website": 32
     }
   },
@@ -11210,7 +11210,7 @@
         "USD"
       ],
       "feedVersion": "UTC: 14-Sep-2026 21:59",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1,
         "currency": "USD",
@@ -11225,7 +11225,18 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "lassen",
+        "agencyName": "Lassen Rural Bus (LRB)",
+        "amount": 3,
+        "amountMax": 90,
+        "currency": "USD",
+        "fareType": "daily and monthly pass products",
+        "payment": "cash or pass",
+        "sourceUrl": "https://www.lassentransportation.com/bus-pass-discountssavings",
+        "confidence": "high",
+        "evidence": "Official Lassen Transit Service Agency page lists daily city pass at $3, daily system pass at $5, monthly city pass at $40, monthly system pass at $90, and reduced-price products; the agency separately lists general local trips at $3 and regional trips at $20-$25."
+      }
     },
     {
       "slug": "sacrt",
@@ -18282,7 +18293,7 @@
         "USD"
       ],
       "feedVersion": "UTC: 10-Jul-2026 15:46",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1.25,
         "currency": "USD",
@@ -18305,7 +18316,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "nash-county",
+        "agencyName": "Tar River Transit",
+        "amount": 1.25,
+        "amountMax": 45,
+        "currency": "USD",
+        "fareType": "fixed-route regular fare and multi-ride products",
+        "payment": "exact cash, tokens, or punch card",
+        "sourceUrl": "https://tarrivertransit.org/ride-guide/tickets/",
+        "confidence": "high",
+        "evidence": "Official Tar River Transit fare page lists regular fixed-route fare at $1.25, half fare at $0.60, 10-ride punch card at $11.25, 20-ride card at $22, and 40-ride card at $45; transfers are free."
+      }
     },
     {
       "slug": "rock-county",
@@ -18351,7 +18373,7 @@
         "USD"
       ],
       "feedVersion": "UTC: 05-Feb-2026 10:06",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 2,
         "currency": "USD",
@@ -18366,7 +18388,18 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "sheboygan-county",
+        "agencyName": "Shoreline Metro",
+        "amount": 2,
+        "amountMax": 50,
+        "currency": "USD",
+        "fareType": "single trip and monthly pass",
+        "payment": "exact cash, HotSpot, or pass",
+        "sourceUrl": "https://shorelinemetro.com/fares/",
+        "confidence": "high",
+        "evidence": "Official Shoreline Metro fare page lists single trip at $2, half fare at $1, day pass at $4, 6-pack day passes at $18, monthly pass at $50, and 30-day app pass at $45."
+      }
     },
     {
       "slug": "washington-county",
