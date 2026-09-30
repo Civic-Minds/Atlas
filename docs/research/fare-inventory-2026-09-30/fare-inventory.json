@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 286,
+    "manualVerified": 290,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,8 +11,8 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 286,
-      "official-source-candidate": 204,
+      "verified-official": 290,
+      "official-source-candidate": 200,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
       "no-official-website": 32
@@ -17635,7 +17635,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.johnsoncitytransit.org",
@@ -17657,7 +17657,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "washington-county",
+        "agencyName": "Johnson City",
+        "amount": 1,
+        "amountMax": 25,
+        "currency": "USD",
+        "fareType": "adult fixed-route fare and monthly pass",
+        "payment": "cash or JCT pass",
+        "sourceUrl": "https://www.johnsoncitytransit.org/fares.html",
+        "confidence": "high",
+        "evidence": "Official Johnson City Transit fare table lists adult fare at $1.00, senior/disabled/student fare at $0.50, express monthly pass at $25, and 25-trip pass at $20."
+      }
     },
     {
       "slug": "whitman-county",
@@ -18220,7 +18231,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.westmorelandtransit.com/",
@@ -18300,7 +18311,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "westmoreland",
+        "agencyName": "Westmoreland Transit",
+        "amount": 2,
+        "amountMax": 192,
+        "currency": "USD",
+        "fareType": "adult base fare by zone and pass products",
+        "payment": "cash, pass, or WestMore Tix",
+        "sourceUrl": "https://www.westmorelandtransit.com/fares/",
+        "confidence": "high",
+        "evidence": "Official Westmoreland fare table lists adult base fare at $2 per zone, with one-, two-, and three-zone cash fares of $2, $4, and $6; monthly passes range from $64 to $192."
+      }
     },
     {
       "slug": "uta",
@@ -22307,7 +22329,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://www.thewavetransit.com",
@@ -22359,7 +22381,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "wave-mobile",
+        "agencyName": "Wave Transit (Mobile)",
+        "amount": 1.25,
+        "amountMax": 3,
+        "currency": "USD",
+        "fareType": "regular local fare and shuttle/express fare",
+        "payment": "cash, MyWAVE card, or MyWAVE app",
+        "sourceUrl": "https://thewavetransit.com/183/Fares-Passes",
+        "confidence": "high",
+        "evidence": "Official Wave fare page lists regular one-way fare at $1.25, shuttle/express round-trip fare at $3, Moda downtown circulator at $0.50, and senior/disabled/Medicare fare at $0.60."
+      }
     },
     {
       "slug": "huntsville",
@@ -22730,7 +22763,7 @@
         "USD"
       ],
       "feedVersion": "UTC: 18-Feb-2026 15:22",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1.5,
         "currency": "USD",
@@ -22802,7 +22835,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "tulare-county-transit",
+        "agencyName": "Tulare County Area Transit (TCAT)",
+        "amount": 55,
+        "currency": "USD",
+        "fareType": "regional monthly T-Pass",
+        "payment": "purchase at transit center or RIDE office",
+        "sourceUrl": "https://ridetc.org/fares-passes/passes/",
+        "confidence": "high",
+        "evidence": "Official RIDE Tulare County pass page lists the regional monthly T-Pass at $55 for unlimited fixed-route rides throughout Tulare County, including RIDE Tulare County, Porterville Transit, and Visalia Transit."
+      }
     },
     {
       "slug": "madison-metro",
