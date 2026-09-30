@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 244,
+    "manualVerified": 248,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,8 +11,8 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 244,
-      "official-source-candidate": 246,
+      "verified-official": 248,
+      "official-source-candidate": 242,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
       "no-official-website": 32
@@ -7321,7 +7321,7 @@
         "CAD"
       ],
       "feedVersion": null,
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 4,
         "currency": "CAD",
@@ -7371,7 +7371,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "sherbrooke",
+        "agencyName": "Société de transport de Sherbrooke",
+        "amount": 3.5,
+        "amountMax": 4,
+        "currency": "CAD",
+        "fareType": "regular occasional fare",
+        "payment": "Pratico card, electronic wallet, or exact cash",
+        "sourceUrl": "https://www.sts.qc.ca/tarifs/titres-et-tarifs/",
+        "confidence": "high",
+        "evidence": "Official STS fare page lists Pratico rechargeable at $3.50 per passage and cash at $4.00 per passage; monthly regular pass is $92 and day pass is $12.20."
+      }
     },
     {
       "slug": "trimet",
@@ -28480,7 +28491,7 @@
         "USD"
       ],
       "feedVersion": "2026-Apr-A",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 2,
         "currency": "USD",
@@ -28495,7 +28506,18 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "seattle-monorail",
+        "agencyName": "Seattle Center Monorail",
+        "amount": 4,
+        "amountMax": 8,
+        "currency": "USD",
+        "fareType": "adult one-way and round-trip fare",
+        "payment": "ticket vending machine, mobile ticket, or ORCA",
+        "confidence": "high",
+        "sourceUrl": "https://www.seattlemonorail.com/buy-tickets-to-ride-with-us/",
+        "evidence": "Official ticket page lists Adult one-way at $4.00 and round trip at $8.00; youth and reduced fares are listed separately, and youth ORCA cardholders ride free."
+      }
     },
     {
       "slug": "snoqualmie-valley",
@@ -34028,7 +34050,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://elsa-mobilites.fr/",
@@ -34061,7 +34083,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "selestat",
+        "agencyName": "ELSA (Sélestat)",
+        "amount": 1.5,
+        "amountMax": 28,
+        "currency": "EUR",
+        "fareType": "standard one-hour ticket and monthly pass",
+        "payment": "e-ticket, on-board ticket, or ELSA fare media",
+        "sourceUrl": "https://elsa-mobilites.fr/nos-tarifs/",
+        "confidence": "high",
+        "evidence": "Official ELSA fare page lists standard e-ticket at €1.50, on-board ticket at €2.50, ten-trip solidarity card at €6, and monthly pass at €28; reduced and solidarity products are eligibility-based."
+      }
     },
     {
       "slug": "vichy",
@@ -34905,7 +34938,7 @@
         "EUR"
       ],
       "feedVersion": "20260929",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1.3,
         "currency": "EUR",
@@ -34956,7 +34989,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "sete",
+        "agencyName": "Sète",
+        "amount": 1.3,
+        "amountMax": 6,
+        "currency": "EUR",
+        "fareType": "public bus single ticket and day ticket",
+        "payment": "contactless bank card, smartphone, mobile app, or cash",
+        "sourceUrl": "https://www.mobilite.agglopole.fr/tarifs",
+        "confidence": "high",
+        "evidence": "Official Sète Agglopôle fare page lists single ticket at €1.30 by contactless/app and €1.60 from the driver, day ticket at €5 by app or €6 at sale points, and ten trips at €10."
+      }
     },
     {
       "slug": "thiers",
