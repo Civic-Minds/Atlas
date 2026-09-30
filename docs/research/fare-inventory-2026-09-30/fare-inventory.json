@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 347,
+    "manualVerified": 348,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,10 +11,10 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 347,
+      "verified-official": 348,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
-      "official-source-candidate": 143,
+      "official-source-candidate": 142,
       "no-official-website": 32
     }
   },
@@ -16281,7 +16281,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.wmata.com",
@@ -16297,7 +16297,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "wmata",
+        "agencyName": "WMATA (Washington, DC)",
+        "amount": 2.25,
+        "amountMax": 6.75,
+        "currency": "USD",
+        "fareType": "full-fare Metrorail range and Metrobus fare",
+        "payment": "SmarTrip or contactless payment",
+        "sourceUrl": "https://www.wmata.com/pay.html",
+        "confidence": "high",
+        "evidence": "Official WMATA payment page lists full-fare Metrorail at $2.25–$6.75 depending on trip, and regular Metrobus at $2.25; reduced fares and pass products are listed separately."
+      }
     },
     {
       "slug": "vre",
