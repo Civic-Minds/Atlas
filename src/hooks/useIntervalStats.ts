@@ -114,13 +114,6 @@ export function passesRouteFilter(
   const corridorRouteIds = (p as any).routeIds as string[] | undefined;
   // routesForStop drives stop-card sidebar and map dimming (sibling stopHeadways match)
 
-  // Explicitly selected route (e.g. from station panel click) should always be visible with full geometry,
-  // bypassing frequency, agency, span, etc. filters.
-  const thisKey = routeKey({ ...p, agencySlug: slug } as any);
-  if (filters.selectedRoute && thisKey === filters.selectedRoute) {
-    return true;
-  }
-
   // Strip -corridors suffix so corridor layers (keyed as "{slug}-corridors") still pass the agency filter.
   const agencySlug = slug.endsWith('-corridors') ? slug.slice(0, -10) : slug;
   if (filters.agencies.size > 0 && !filters.agencies.has(agencySlug)) return false;
