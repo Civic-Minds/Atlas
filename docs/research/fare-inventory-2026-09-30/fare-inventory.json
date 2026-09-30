@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 441,
+    "manualVerified": 443,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,10 +11,10 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 441,
+      "verified-official": 443,
       "official-fare-page-not-found": 125,
       "official-site-inaccessible": 45,
-      "official-source-candidate": 50,
+      "official-source-candidate": 48,
       "no-official-website": 32
     }
   },
@@ -17386,7 +17386,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://www.putnamcountyny.com/PART/",
@@ -17394,7 +17394,19 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "part",
+        "agencyName": "Putnam Area Rapid Transit (PART)",
+        "amount": 2.5,
+        "amountMax": 37,
+        "currency": "USD",
+        "fareType": "full single ride and reduced monthly pass",
+        "payment": "exact cash, ticket, or pass",
+        "effectiveDate": "2022-08",
+        "confidence": "medium",
+        "sourceUrl": "https://www.putnamcountyny.com/images/Departments/Planning_Dev_Transport/PDF_Documents/PART-Policy-Procedures-Manual-August-2022.pdf",
+        "evidence": "Official Putnam County PART policy manual lists full fare at $2.50, senior/disabled/student fare at $1.25, transfer fees of $0.75 full/$0.25 reduced, and reduced monthly pass at $37; currentness should be rechecked."
+      }
     },
     {
       "slug": "dutchess",
@@ -23706,7 +23718,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://mykartbus.com/",
@@ -23714,7 +23726,18 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "kart",
+        "agencyName": "Kings Area Rural Transit",
+        "amount": 1.25,
+        "amountMax": 1.75,
+        "currency": "USD",
+        "fareType": "local and out-of-town single ride",
+        "payment": "exact cash or pass",
+        "confidence": "medium",
+        "sourceUrl": "https://www.kartbus.org/fares/",
+        "evidence": "Official KART fare page lists local-route single trip at $1.25 and out-of-town-route single trip at $1.75, with day, 10-trip, 30-day, reduced, paratransit, and on-demand fares also listed; the page has no visible effective date."
+      }
     },
     {
       "slug": "tulare-county-transit",
