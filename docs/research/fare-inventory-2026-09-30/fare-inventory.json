@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 458,
+    "manualVerified": 461,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,10 +11,10 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 458,
+      "verified-official": 461,
       "official-fare-page-not-found": 125,
       "official-site-inaccessible": 45,
-      "official-source-candidate": 33,
+      "official-source-candidate": 30,
       "no-official-website": 32
     }
   },
@@ -34440,7 +34440,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.castres-mazamet.fr/lignes-regulieres",
@@ -34541,7 +34541,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "castres",
+        "agencyName": "Libellus (Castres)",
+        "amount": 0,
+        "currency": "EUR",
+        "fareType": "urban and interurban bus ride",
+        "payment": "fare-free service",
+        "confidence": "high",
+        "sourceUrl": "https://www.castres-mazamet.fr/le-campus/se-deplacer",
+        "evidence": "Official Castres-Mazamet page states that Libellus buses are free, including the urban and interurban network serving Castres-Mazamet; no ticket or fare is required for ordinary service."
+      }
     },
     {
       "slug": "charleville",
@@ -34666,7 +34676,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.coralie-cca.fr",
@@ -34698,7 +34708,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "concarneau",
+        "agencyName": "Coralie (Concarneau)",
+        "amount": 1,
+        "amountMax": 27.5,
+        "currency": "EUR",
+        "fareType": "one-hour single ticket and 26-61 monthly pass",
+        "payment": "cash onboard, app, retailer, or reloadable card",
+        "confidence": "high",
+        "sourceUrl": "https://coralie-cca.fr/tarifs/",
+        "evidence": "Official Coralie fare page lists the single ticket at €1, 10-trip carnet at €7.60, and monthly pass at €27.50 for ages 26-61; the single ticket is valid for one hour with one free connection."
+      }
     },
     {
       "slug": "creil",
@@ -35155,7 +35176,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.lineotim.com/fr/",
@@ -35163,7 +35184,18 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "morlaix",
+        "agencyName": "Linéotim (Morlaix)",
+        "amount": 0,
+        "currency": "EUR",
+        "fareType": "network bus ride",
+        "payment": "fare-free service",
+        "effectiveDate": "2022-09-01",
+        "confidence": "high",
+        "sourceUrl": "https://www.morlaix.bzh/pratique/se-deplacer/les-transports-gratuits",
+        "evidence": "Official Morlaix city page states that all Linéotim buses operating within Morlaix Communauté have been free since September 2022; the operator fare page confirms the network is free for everyone and identifies a separate €1.20 inter-territory line."
+      }
     },
     {
       "slug": "nevers",
