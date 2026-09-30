@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 220,
+    "manualVerified": 223,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,8 +11,8 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 220,
-      "official-source-candidate": 270,
+      "verified-official": 223,
+      "official-source-candidate": 267,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
       "no-official-website": 32
@@ -5146,7 +5146,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.mtaflint.org/",
@@ -5191,7 +5191,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "mta-flint",
+        "agencyName": "Mass Transportation Authority (Flint)",
+        "amount": 1.75,
+        "currency": "USD",
+        "fareType": "general-public primary/peak one-way fare",
+        "payment": "cash, Go Pass card, mobile app, or contactless card",
+        "sourceUrl": "https://www.mtaflint.org/fares/?agency_id=MTA&intent=info",
+        "confidence": "high",
+        "evidence": "Official MTA Flint fare page lists General Public Primary/Peak Route one-way fare at $1.75; ADA/reduced, regional, Your Ride, Rides to Wellness, and pass fares are listed separately."
+      }
     },
     {
       "slug": "cata-lansing",
@@ -16921,7 +16931,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.medicinehat.ca/en/roads-parking-and-transportation/transit.aspx",
@@ -16929,7 +16939,17 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "medicine-hat",
+        "agencyName": "Medicine Hat Transit",
+        "amount": 3.25,
+        "currency": "CAD",
+        "fareType": "single trip fare",
+        "payment": "cash, MHTgo card, or app",
+        "sourceUrl": "https://www.medicinehat.ca/media/jz3hmyt2/mh-transit-ride-guide_november-2025.pdf",
+        "confidence": "high",
+        "evidence": "Official Medicine Hat Transit ride guide lists Single Trip at $3.25 and Day Pass at $6.50; the city transit page lists youth, adult, senior, and student monthly products separately."
+      }
     },
     {
       "slug": "muscogee-county",
@@ -28077,7 +28097,7 @@
         "USD"
       ],
       "feedVersion": "UTC: 13-Aug-2026 19:52",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1,
         "currency": "USD",
@@ -28103,7 +28123,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "moorpark",
+        "agencyName": "Moorpark City Transit",
+        "amount": 1,
+        "currency": "USD",
+        "fareType": "regular one-way fare",
+        "payment": "exact cash, pass, or transfer",
+        "effectiveDate": "2018-08-01",
+        "sourceUrl": "https://www.moorparkca.gov/230/Fares-Regulations-Passes",
+        "confidence": "medium",
+        "evidence": "Official City of Moorpark fare page lists Regular ages 6-64 one-way fare at $1.00 and labels the fares effective August 1, 2018; student, senior, disabled, child, and ticket-book fares are listed separately. The page is not current-dated and should be reconfirmed."
+      }
     },
     {
       "slug": "valley-express",
