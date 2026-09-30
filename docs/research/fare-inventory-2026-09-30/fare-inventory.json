@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 269,
+    "manualVerified": 272,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,8 +11,8 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 269,
-      "official-source-candidate": 221,
+      "verified-official": 272,
+      "official-source-candidate": 218,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
       "no-official-website": 32
@@ -8647,7 +8647,7 @@
         "USD"
       ],
       "feedVersion": "2026-08-27_10:32",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 2.5,
         "currency": "USD",
@@ -8676,7 +8676,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "vta",
+        "agencyName": "Santa Clara Valley Transportation Authority (VTA)",
+        "amount": 2.5,
+        "amountMax": 990,
+        "currency": "USD",
+        "fareType": "adult local single ride and pass products",
+        "payment": "cash, Clipper, or contactless bank card",
+        "sourceUrl": "https://www.vta.org/go/fares",
+        "confidence": "high",
+        "evidence": "Official VTA fare table lists Adult local single ride at $2.50, 8-hour light rail pass at $5, day pass at $7.50, monthly pass at $90, and annual pass at $990; express and reduced fares are listed separately."
+      }
     },
     {
       "slug": "samtrans",
@@ -9098,7 +9109,7 @@
         "USD"
       ],
       "feedVersion": "UTC: 03-Sep-2026 17:27",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1.75,
         "currency": "USD",
@@ -9166,7 +9177,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "westcat",
+        "agencyName": "WestCAT (Pinole)",
+        "amount": 1.75,
+        "amountMax": 140,
+        "currency": "USD",
+        "fareType": "adult local fixed-route fare and LYNX pass products",
+        "payment": "exact cash or Clipper",
+        "sourceUrl": "https://www.westcat.org/home/FaresAll",
+        "confidence": "high",
+        "evidence": "Official WestCAT fare table lists local fixed-route/express cash fare at $1.75, LYNX Transbay at $5, fixed-route day pass at $3.50, and fixed-route 31-day pass at $40; reduced, paratransit, and transfer fares are listed separately."
+      }
     },
     {
       "slug": "soltrans",
@@ -9187,7 +9209,7 @@
         "USD"
       ],
       "feedVersion": "20260923",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 2,
         "currency": "USD",
@@ -9251,7 +9273,19 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "soltrans",
+        "agencyName": "SolTrans (Vallejo)",
+        "amount": 2,
+        "amountMax": 114,
+        "currency": "USD",
+        "fareType": "adult local cash fare and pass products",
+        "payment": "exact cash or Clipper",
+        "effectiveDate": "2021-12-05",
+        "sourceUrl": "https://www.soltrans.org/fares/fare-table",
+        "confidence": "medium",
+        "evidence": "Official SolTrans fare table lists adult local cash fare at $2, SolanoExpress within Solano County at $2.75, outside county at $5, local day pass at $4.50, and local 31-day pass at $60; page is marked effective December 5, 2021 and needs currentness follow-up."
+      }
     },
     {
       "slug": "marintransit",
