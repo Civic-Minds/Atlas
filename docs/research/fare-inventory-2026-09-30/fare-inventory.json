@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 50,
+    "manualVerified": 56,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,8 +11,8 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 50,
-      "official-source-candidate": 440,
+      "verified-official": 56,
+      "official-source-candidate": 434,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
       "no-official-website": 32
@@ -7842,7 +7842,7 @@
         "USD"
       ],
       "feedVersion": "UTC: 10-Jun-2026 22:25",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 4,
         "currency": "USD",
@@ -7942,7 +7942,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "caltrain",
+        "agencyName": "Caltrain",
+        "amount": 4,
+        "currency": "USD",
+        "fareType": "adult one-way one-zone fare",
+        "payment": "ticket machine",
+        "sourceUrl": "https://www.caltrain.com/fares",
+        "confidence": "high",
+        "evidence": "Official Caltrain fare table lists Adult one-way fares by zones, beginning at $4.00 for one zone; higher-zone fares and passenger categories are listed separately."
+      }
     },
     {
       "slug": "actransit",
@@ -9551,7 +9561,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://www.basintransit.com/",
@@ -9577,7 +9587,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "bts-or",
+        "agencyName": "Basin Transit Service (BTS)",
+        "amount": 0.75,
+        "currency": "USD",
+        "fareType": "regular fixed-route cash fare",
+        "payment": "cash",
+        "sourceUrl": "https://www.basintransit.com/fares-and-passes",
+        "confidence": "high",
+        "evidence": "Official fare table lists Regular cash fare at $0.75; all-day, ten-token, monthly, reduced, and Basin Lift products are listed separately."
+      }
     },
     {
       "slug": "rct",
@@ -12031,7 +12051,7 @@
         "USD"
       ],
       "feedVersion": "260826_0956",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1.25,
         "currency": "USD",
@@ -12133,7 +12153,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "capmetro",
+        "agencyName": "Capital Metro (Austin)",
+        "amount": 1.25,
+        "currency": "USD",
+        "fareType": "standard local single ride",
+        "payment": "Umo app, card, or fare media",
+        "sourceUrl": "https://www.capmetro.org/ride/purchase/fares-passes",
+        "confidence": "high",
+        "evidence": "Official Standard Fares table lists Local Fares Single Ride at $1.25; service-day, monthly, commuter, and pickup fares are listed separately."
+      }
     },
     {
       "slug": "dart",
@@ -17072,7 +17102,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://www.ridetransit.org",
@@ -17136,7 +17166,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "cats",
+        "agencyName": "Charlotte Area Transit System (CATS)",
+        "amount": 2.2,
+        "currency": "USD",
+        "fareType": "adult local bus or rail one-way fare",
+        "payment": "standard fare media",
+        "sourceUrl": "https://www.charlottenc.gov/CATS/Fares-Passes",
+        "confidence": "high",
+        "evidence": "Official Local Bus and Rail fare table lists Adult One-Way at $2.20; community shuttle, express, day, weekly, monthly, and reduced fares are listed separately."
+      }
     },
     {
       "slug": "goraleigh",
@@ -19148,7 +19188,7 @@
         "USD"
       ],
       "feedVersion": "S1000125",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1.5,
         "currency": "USD",
@@ -19185,7 +19225,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "carta-chattanooga",
+        "agencyName": "Chattanooga Area Regional Transportation Authority",
+        "amount": 1.5,
+        "currency": "USD",
+        "fareType": "adult one-way cash fare",
+        "payment": "cash or Token Transit",
+        "sourceUrl": "https://www.gocarta.org/fares/",
+        "confidence": "high",
+        "evidence": "Official CARTA fare page lists Adult One Way Cash Fare at $1.50; senior, disability, zone, day, and weekly products are listed separately."
+      }
     },
     {
       "slug": "citilink-fw",
@@ -30167,7 +30217,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.libeo-brive.fr/",
@@ -30223,7 +30273,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "brive",
+        "agencyName": "Libéo (Brive)",
+        "amount": 1.2,
+        "currency": "EUR",
+        "fareType": "standard one-trip ticket",
+        "payment": "standard ticket or mobile app",
+        "sourceUrl": "https://www.libeo-brive.fr/titres-et-tarifs",
+        "confidence": "high",
+        "evidence": "Official Libéo fare page lists Ticket unité at €1.20; last-minute onboard ticket is €1.50 and day, carnet, reduced, and pass products are listed separately."
+      }
     },
     {
       "slug": "cahors",
