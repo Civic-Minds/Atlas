@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 134,
+    "manualVerified": 141,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,8 +11,8 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 134,
-      "official-source-candidate": 356,
+      "verified-official": 141,
+      "official-source-candidate": 349,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
       "no-official-website": 32
@@ -10705,7 +10705,7 @@
         "USD"
       ],
       "feedVersion": null,
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 2,
         "currency": "USD",
@@ -10773,7 +10773,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "octa",
+        "agencyName": "Orange County Transportation Authority (OCTA)",
+        "amount": 2,
+        "currency": "USD",
+        "fareType": "regular single one-way fare",
+        "payment": "cash, Wave, or contactless",
+        "sourceUrl": "https://www.octa.net/getting-around/bus/oc-bus/fares-and-passes/overview",
+        "confidence": "high",
+        "evidence": "Official OCTA fare table lists Regular Single Fare (One Way) at $2.00; reduced, youth, fare-capping, and transfer products are listed separately."
+      }
     },
     {
       "slug": "foothill",
@@ -11181,7 +11191,7 @@
         "USD"
       ],
       "feedVersion": "20260810_20260710a",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 0.9,
         "currency": "USD",
@@ -11229,7 +11239,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "omnitrans",
+        "agencyName": "OmniTrans (San Bernardino)",
+        "amount": 2,
+        "currency": "USD",
+        "fareType": "full-fare single ride",
+        "payment": "standard fare media",
+        "sourceUrl": "https://omnitrans.org/buy-a-pass/",
+        "confidence": "high",
+        "evidence": "Official OmniTrans pass page lists Full Fare Single Ride at $2.00; day, 7-day, 31-day, college, youth, veteran, senior, and disability products are listed separately."
+      }
     },
     {
       "slug": "fax",
@@ -12766,7 +12786,7 @@
         "USD"
       ],
       "feedVersion": "20260910",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1.65,
         "currency": "USD",
@@ -12855,7 +12875,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "nashvillemta",
+        "agencyName": "Nashville MTA WeGo Public Transit",
+        "amount": 2,
+        "currency": "USD",
+        "fareType": "adult local one-ride fare",
+        "payment": "QuickTicket, contactless, or exact cash",
+        "sourceUrl": "https://www.wegotransit.com/buy/fare-information/",
+        "confidence": "high",
+        "evidence": "Official WeGo fare table lists Local Service adult cash 1-Ride at $2.00 and a two-hour unlimited fare at $2.00; day, monthly, discounted, and express fares are listed separately."
+      }
     },
     {
       "slug": "mata",
@@ -12954,7 +12984,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://www.norta.com/",
@@ -12986,7 +13016,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "norta",
+        "agencyName": "New Orleans Regional Transit Authority (NORTA)",
+        "amount": 1.25,
+        "currency": "USD",
+        "fareType": "adult single ride",
+        "payment": "Le Pass app or standard fare media",
+        "sourceUrl": "https://www.norta.com/ride-with-us/how-to-pay/fares",
+        "confidence": "high",
+        "evidence": "Official NORTA fare table lists Adult Single Ride Fare at $1.25; priority rider, ferry, regional, day, 3-day, 7-day, and 31-day fares are listed separately."
+      }
     },
     {
       "slug": "cincinnatimetro",
@@ -13936,7 +13976,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.norwalk.org/city-hall/departments/norwalk-transit-system-nts",
@@ -13957,7 +13997,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "norwalktransit",
+        "agencyName": "Norwalk Transit System",
+        "amount": 1.25,
+        "currency": "USD",
+        "fareType": "adult fare",
+        "payment": "cash or TAP stored value",
+        "sourceUrl": "https://www.norwalk.org/departments_services/norwalk_transit_system_nts/fares_and_schedules.php",
+        "confidence": "high",
+        "evidence": "Official Norwalk Transit page lists Adult Fare at $1.25; student, reduced, free, and transfer fares are listed separately."
+      }
     },
     {
       "slug": "pvpta",
@@ -15468,7 +15518,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://www.nicebus.com",
@@ -15557,7 +15607,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "nice",
+        "agencyName": "Nassau Inter-County Express (NICE Bus)",
+        "amount": 3,
+        "currency": "USD",
+        "fareType": "regular full-fare single ride",
+        "payment": "coins, OMNY, or GoMobile",
+        "effectiveDate": "2026-01-04",
+        "sourceUrl": "https://www.nicebus.com/Fares-Passes/Learn-more-about-fares-and-passes#regularfare",
+        "confidence": "high",
+        "evidence": "Official NICE page states full fare becomes $3.00 on January 4, 2026; senior and disabled fares become $1.50 and transfer rules are listed separately."
+      }
     },
     {
       "slug": "tor",
@@ -17141,7 +17202,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://newcastletransit.org/",
@@ -17163,7 +17224,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "new-castle",
+        "agencyName": "New Castle Area Transit Authority",
+        "amount": 1,
+        "amountMax": 2.5,
+        "currency": "USD",
+        "fareType": "adult one-way fare by service/route",
+        "payment": "standard fare media",
+        "sourceUrl": "https://newcastletransit.org/fares/",
+        "confidence": "high",
+        "evidence": "Official fare tables list Adult one-way city fares at $1.00 and higher regional route fares up to $2.50; student, senior, transfer, and route-specific fares are listed separately."
+      }
     },
     {
       "slug": "westmoreland",
