@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 355,
+    "manualVerified": 357,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,10 +11,10 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 355,
+      "verified-official": 357,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
-      "official-source-candidate": 135,
+      "official-source-candidate": 133,
       "no-official-website": 32
     }
   },
@@ -15625,7 +15625,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://vvta.org/",
@@ -15641,7 +15641,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "vvta",
+        "agencyName": "Victor Valley Transit Authority (VVTA)",
+        "amount": 1.5,
+        "amountMax": 80,
+        "currency": "USD",
+        "fareType": "regular local and county fare products",
+        "payment": "exact cash, Umo, or fare pass",
+        "sourceUrl": "https://vvta.org/fares/",
+        "confidence": "high",
+        "evidence": "Official VVTA fare page lists regular local trip at $1.50, county trip at $2.50, local day pass at $4, county day pass at $6, and local/county 31-day passes at $55/$80; flex, commuter, and Route 15 fares are listed separately."
+      }
     },
     {
       "slug": "vctc",
@@ -16214,7 +16225,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://www.broward.org/bct/Pages/default.aspx",
@@ -16230,7 +16241,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "broward-transit",
+        "agencyName": "Broward County Transit",
+        "amount": 2,
+        "amountMax": 95,
+        "currency": "USD",
+        "fareType": "regular local and premium express fare products",
+        "payment": "cash, RideBCT app, or bus pass",
+        "sourceUrl": "https://www.broward.org/BCT?ContentTypeId=0x010000D6491E712D584B9304192358DBC577&ID=377",
+        "confidence": "high",
+        "evidence": "Official Broward County Transit materials list regular one-way fare at $2, premium express one-way at $2.65, 3-day pass at $12, 7-day pass at $20, 10-ride pass at $20, and regular/premium 31-day passes at $70/$95."
+      }
     },
     {
       "slug": "transfort",
