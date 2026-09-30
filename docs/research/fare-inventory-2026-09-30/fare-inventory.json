@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 413,
+    "manualVerified": 415,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,10 +11,10 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 413,
+      "verified-official": 415,
       "official-fare-page-not-found": 125,
       "official-site-inaccessible": 45,
-      "official-source-candidate": 78,
+      "official-source-candidate": 76,
       "no-official-website": 32
     }
   },
@@ -25265,7 +25265,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.rabbittransit.org/",
@@ -25273,7 +25273,18 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "cat-harrisburg",
+        "agencyName": "Capital Area Transit (Harrisburg)",
+        "amount": 2,
+        "amountMax": 2,
+        "currency": "USD",
+        "fareType": "regular cash fixed-route fare",
+        "payment": "cash, rabbit PAY, or pass",
+        "confidence": "high",
+        "sourceUrl": "https://www.rabbittransit.org/services/capital-region-fixed-route/fares-passes/",
+        "evidence": "Official rabbittransit Capital Region fare page lists regular cash fare at $2.00, prepaid rabbit PAY fare at $1.80, half fare at $1.00, and free senior and child categories; the page also lists 1-ride, 11-ride, day, and 31-day passes."
+      }
     },
     {
       "slug": "jackson-ms",
@@ -25418,7 +25429,7 @@
         "USD"
       ],
       "feedVersion": "20260914",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1.75,
         "currency": "USD",
@@ -25441,7 +25452,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "colts",
+        "agencyName": "County of Lackawanna Transit System (COLTS)",
+        "amount": 1.75,
+        "amountMax": 60,
+        "currency": "USD",
+        "fareType": "regular cash fare and 31-day adult pass",
+        "payment": "cash, fare card, or pass",
+        "confidence": "high",
+        "sourceUrl": "https://coltsbus.com/fusion_element/schedules-2/",
+        "evidence": "Official COLTS fare information lists regular cash fare at $1.75, reduced fare at $0.85, 31-day adult pass at $60, adult 10-ride pass at $15.75, day pass at $4, and reduced transfers at $0.35."
+      }
     },
     {
       "slug": "lcta",
