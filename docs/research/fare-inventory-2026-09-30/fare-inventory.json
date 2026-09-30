@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 277,
+    "manualVerified": 281,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,8 +11,8 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 277,
-      "official-source-candidate": 213,
+      "verified-official": 281,
+      "official-source-candidate": 209,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
       "no-official-website": 32
@@ -18306,7 +18306,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://www.rideuta.com",
@@ -18367,7 +18367,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "uta",
+        "agencyName": "Utah Transit Authority (UTA)",
+        "amount": 2.5,
+        "currency": "USD",
+        "fareType": "regular local one-way fare",
+        "payment": "cash, FAREPAY, TVM, or Transit app",
+        "sourceUrl": "https://web.rideuta.com/Fares-And-Passes/Individual-Fares/Current-Fares",
+        "confidence": "high",
+        "evidence": "Official UTA current fares page states regular local bus/TRAX/UVX/S-Line one-way fare is $2.50, valid for two hours; FAREPAY daily and weekly caps and premium-service fares are listed separately."
+      }
     },
     {
       "slug": "jta",
@@ -19160,7 +19170,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.valleyregionaltransit.org/",
@@ -19215,7 +19225,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "valley-regional-transit",
+        "agencyName": "Valley Regional Transit (Boise)",
+        "amount": 1.5,
+        "amountMax": 42,
+        "currency": "USD",
+        "fareType": "adult standard single ride and 31-day pass",
+        "payment": "cash, Umo, mobile app, or pass retailer",
+        "sourceUrl": "https://www.valleyregionaltransit.org/fares-passes/",
+        "confidence": "high",
+        "evidence": "Official VRT fare table lists Adult Standard single ride at $1.50, all-day pass at $2.50, and 31-day pass at $42; reduced, regional Route 40, and youth products are listed separately."
+      }
     },
     {
       "slug": "psta",
@@ -19435,7 +19456,7 @@
         "USD"
       ],
       "feedVersion": null,
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 2,
         "currency": "USD",
@@ -19579,7 +19600,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "sunrail",
+        "agencyName": "SunRail (Orlando)",
+        "amount": 2,
+        "amountMax": 5,
+        "currency": "USD",
+        "fareType": "adult one-zone fare by county zones",
+        "payment": "SunCard or ticket",
+        "sourceUrl": "https://sunrail.com/fares-passes/fares/",
+        "confidence": "high",
+        "evidence": "Official SunRail fare page states the initial fare is $2.00 within one zone and increases by $1.00 for each additional county zone; exact costs depend on zones, trip type, and rider type."
+      }
     },
     {
       "slug": "votran",
@@ -19600,7 +19632,7 @@
         "USD"
       ],
       "feedVersion": "20260610",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 2,
         "currency": "USD",
@@ -19639,7 +19671,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "votran",
+        "agencyName": "Votran (Volusia County)",
+        "amount": 2,
+        "currency": "USD",
+        "fareType": "adult scheduled-route single ride",
+        "payment": "cash or fare pass",
+        "sourceUrl": "https://www.votran.org/take-a-trip/bus-fares-passes.stml",
+        "confidence": "high",
+        "evidence": "Official Votran bus fare page lists adult cash/single ride at $2.00 and reduced fare at $1.00 for seniors, youth, and persons with disabilities; pass products are listed on the same page."
+      }
     },
     {
       "slug": "chapel-hill-transit",
