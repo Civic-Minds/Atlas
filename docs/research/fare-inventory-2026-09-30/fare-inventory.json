@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 178,
+    "manualVerified": 185,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,8 +11,8 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 178,
-      "official-source-candidate": 312,
+      "verified-official": 185,
+      "official-source-candidate": 305,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
       "no-official-website": 32
@@ -3821,7 +3821,7 @@
         "USD"
       ],
       "feedVersion": "UTC: 14-May-2026 15:14",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 2,
         "currency": "USD",
@@ -3852,7 +3852,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "t3-transit",
+        "agencyName": "T3 Transit (PEI)",
+        "amount": 2,
+        "currency": "CAD",
+        "fareType": "regular cash fare",
+        "payment": "exact cash or pass",
+        "sourceUrl": "https://www.t3transit.ca/fares",
+        "confidence": "high",
+        "evidence": "Official T3 fare page lists Regular Cash Fare at $2.00 for Charlottetown, Cornwall, Stratford, and rural transit; monthly passes and ticket booklets are listed separately."
+      }
     },
     {
       "slug": "metrobus",
@@ -4180,7 +4190,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://www.theride.org",
@@ -4248,7 +4258,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "theride",
+        "agencyName": "TheRide (Ann Arbor)",
+        "amount": 1.5,
+        "currency": "USD",
+        "fareType": "adult fixed-route single ride",
+        "payment": "cash, token, or EZfare mobile",
+        "sourceUrl": "https://www.theride.org/fares-passes/fares",
+        "confidence": "high",
+        "evidence": "Official TheRide fare table lists Adult Fixed Route Single Ride at $1.50; day, 30-day, A-RIDE, and GoldRide fares are listed separately."
+      }
     },
     {
       "slug": "gcrta",
@@ -13331,7 +13351,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.ridetarc.org/",
@@ -13384,7 +13404,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "tarc",
+        "agencyName": "Transit Authority of River City (Louisville)",
+        "amount": 2.25,
+        "currency": "USD",
+        "fareType": "single ride",
+        "payment": "MyTARC fare card or mobile ticket",
+        "sourceUrl": "https://www.ridetarc.org/fare/fare-structure/mytarc-mobile/",
+        "confidence": "high",
+        "evidence": "Official TARC fare page states single rides cost $2.25 per trip on the MyTARC fare card and mobile ticketing; passes and reduced fares are listed separately."
+      }
     },
     {
       "slug": "mcts",
@@ -18357,7 +18387,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://www.thebus.org",
@@ -18382,7 +18412,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "thebus",
+        "agencyName": "TheBus (Honolulu)",
+        "amount": 3.25,
+        "currency": "USD",
+        "fareType": "adult cash single ride",
+        "payment": "exact cash or HOLO card",
+        "sourceUrl": "http://www.thebus.org/Fare/FareAndPasses.asp",
+        "confidence": "high",
+        "evidence": "Official TheBus fare page lists Adult cash single ride at $3.25; adult HOLO stored-value, 2-hour, daily, monthly, and annual products are listed separately."
+      }
     },
     {
       "slug": "ripta",
@@ -23135,7 +23175,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.thunderbay.ca/en/city-services/transit.aspx",
@@ -23161,7 +23201,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "thunder-bay",
+        "agencyName": "Thunder Bay Transit",
+        "amount": 3.25,
+        "currency": "CAD",
+        "fareType": "cash fare",
+        "payment": "cash or standard fare media",
+        "sourceUrl": "https://www.thunderbay.ca/city-services/transit/fares-and-passes/",
+        "effectiveDate": "2026-04-01",
+        "confidence": "high",
+        "evidence": "Official Thunder Bay fare page says fares approved through the 2026 budget took effect April 1, 2026 and lists Cash at $3.25; multipass, day, monthly, senior, youth, and Lift fares are listed separately."
+      }
     },
     {
       "slug": "greensboro",
@@ -35048,7 +35099,7 @@
       "status": "unresolved",
       "notes": "GTFS publishes only zero-value legacy fare attributes; this may be a placeholder and was not treated as proof of free service.",
       "feedVersion": "20260713",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": null,
         "currency": "USD",
@@ -35115,7 +35166,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "tank",
+        "agencyName": "Transit Authority of Northern Kentucky (TANK)",
+        "amount": 2,
+        "currency": "USD",
+        "fareType": "local fixed-route cash fare",
+        "payment": "exact cash, mobile fare, or pass",
+        "sourceUrl": "https://www.tankbus.org/fares-guides/fare/",
+        "confidence": "high",
+        "evidence": "Official TANK fare page lists Local Cash Fare at $2.00; senior/disabled/military, shuttle, student, RAMP, day, and monthly fares are listed separately."
+      }
     },
     {
       "slug": "sandusky",
@@ -35739,7 +35800,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.timmins.ca/our_services/timmins_transit",
@@ -35766,7 +35827,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "timmins",
+        "agencyName": "Timmins Transit",
+        "amount": 3.75,
+        "currency": "CAD",
+        "fareType": "adult cash fare",
+        "payment": "exact cash or Pay Your Way Fare Card",
+        "sourceUrl": "https://www.timmins.ca/our_services/timmins_transit/fares/",
+        "effectiveDate": "2026-01-01",
+        "confidence": "high",
+        "evidence": "Official Timmins Transit fare page lists 2026 Adult Cash Fare at $3.75 and states there were no changes to cash fare rates for 2026; student, child, senior, pass, ride-card, and day-pass fares are listed separately."
+      }
     },
     {
       "slug": "casper",
