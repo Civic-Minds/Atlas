@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 216,
+    "manualVerified": 220,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,8 +11,8 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 216,
-      "official-source-candidate": 274,
+      "verified-official": 220,
+      "official-source-candidate": 270,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
       "no-official-website": 32
@@ -3902,7 +3902,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.metrobus.com",
@@ -3927,7 +3927,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "metrobus",
+        "agencyName": "Metrobus (St. John's)",
+        "amount": 2.5,
+        "currency": "CAD",
+        "fareType": "adult cash fare",
+        "payment": "exact cash or mCard",
+        "effectiveDate": "2020-03-01",
+        "sourceUrl": "https://metrobus.com/fares/",
+        "confidence": "medium",
+        "evidence": "Official Metrobus fare page lists Adult Cash Fare at $2.50 and labels the rates effective March 1, 2020; child, senior, 10-ride, monthly, and student products are listed separately. The page is not current-dated and should be reconfirmed before publication."
+      }
     },
     {
       "slug": "nfta",
@@ -12772,7 +12783,7 @@
         "USD"
       ],
       "feedVersion": "August2026IVOMS_20260828",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1.25,
         "currency": "USD",
@@ -12834,7 +12845,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "metrohouston",
+        "agencyName": "METRO Houston",
+        "amount": 1.25,
+        "currency": "USD",
+        "fareType": "regular local bus/rail fare",
+        "payment": "cash, RideMETRO fare card, contactless, or app",
+        "sourceUrl": "https://websiteprod.ridemetro.org/fares/all-about-fares",
+        "confidence": "high",
+        "evidence": "Official METRO Houston fare page lists Regular Fare at $1.25 for local bus, METRORail, curb2curb, and Community Connector; discounted, Park & Ride, transfer, and pass fares are listed separately."
+      }
     },
     {
       "slug": "via",
@@ -14139,7 +14160,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://www.ridembl.com/",
@@ -14160,7 +14181,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "montebello",
+        "agencyName": "Montebello Bus Lines",
+        "amount": 1.25,
+        "currency": "USD",
+        "fareType": "adult local bus fare",
+        "payment": "cash, TAP, MBL pass, EZ Transit Pass, or token",
+        "effectiveDate": "2025-09-21",
+        "sourceUrl": "https://www.montebelloca.gov/departments/transit/fares",
+        "confidence": "high",
+        "evidence": "Official City of Montebello fare schedule lists Adult fare at $1.25 starting September 21, 2025; student, senior, disabled, pass, and payment-media rules are listed separately."
+      }
     },
     {
       "slug": "burbankbus",
@@ -15002,7 +15034,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://www.miamidade.gov/transit",
@@ -15010,7 +15042,18 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "miami-dade-transit",
+        "agencyName": "Miami-Dade Transit",
+        "amount": 2.25,
+        "currency": "USD",
+        "fareType": "regular Metrobus/Metrorail fare",
+        "payment": "cash, Easy Card, Easy Ticket, contactless, or app",
+        "effectiveDate": "2026-02-01",
+        "sourceUrl": "https://www.miamidade.gov/resources/transportation_publicworks/documents/pdfs/misc/transit-fare-guide.pdf",
+        "confidence": "high",
+        "evidence": "Official Miami-Dade Transit fare guide dated February 2026 lists regular Metrobus and Metrorail fare at $2.25; discounted fare, Metro Express, MetroConnect, transfer, pass, and fare-free Metromover products are listed separately."
+      }
     },
     {
       "slug": "broward-transit",
