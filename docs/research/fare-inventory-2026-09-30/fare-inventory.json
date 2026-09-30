@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 309,
+    "manualVerified": 318,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,8 +11,8 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 309,
-      "official-source-candidate": 181,
+      "verified-official": 318,
+      "official-source-candidate": 172,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
       "no-official-website": 32
@@ -1363,7 +1363,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.owensound.ca/roads-transportation/public-transit/city-bus-service/",
@@ -1371,7 +1371,19 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "owen-sound",
+        "agencyName": "Owen Sound Transit",
+        "amount": 3.25,
+        "amountMax": 72.5,
+        "currency": "CAD",
+        "fareType": "adult single fare and monthly pass",
+        "payment": "exact cash, tickets, or pass",
+        "sourceUrl": "https://www.owensound.ca/living-here/public-transit/city-bus-service/",
+        "confidence": "high",
+        "effectiveDate": "2025-01-01",
+        "evidence": "Official City of Owen Sound transit page lists adult single fare at $3.25, adult monthly pass at $72.50, day pass at $9, 10-ride pass at $27, and semester pass at $165; student, senior, and affordability fares are listed separately."
+      }
     },
     {
       "slug": "north-bay",
@@ -2755,7 +2767,7 @@
       "confidence": "high",
       "status": "confirmed",
       "notes": "Existing Atlas override retained as research evidence.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 3.75,
         "currency": "CAD",
@@ -2813,7 +2825,19 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "exo",
+        "agencyName": "exo (Trains)",
+        "amount": 3.75,
+        "amountMax": 110,
+        "currency": "CAD",
+        "fareType": "representative Zone A one-way and monthly fare; actual fare varies by zones and mode",
+        "payment": "OPUS, occasional smart card, or fare media",
+        "sourceUrl": "https://www.artm.quebec/grille-tarifaire/",
+        "confidence": "medium",
+        "effectiveDate": "2026-07-01",
+        "evidence": "Official ARTM 2026 fare grid, which exo identifies as the source for current regional fares, lists Zone A Tous modes one passage at $3.75 and monthly at $110; exo fares vary by origin/destination zones and train/bus/multimode product."
+      }
     },
     {
       "slug": "exo-presquile",
@@ -2830,7 +2854,7 @@
       "confidence": "high",
       "status": "confirmed",
       "notes": "Existing Atlas override retained as research evidence.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 3.75,
         "currency": "CAD",
@@ -2888,7 +2912,19 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "exo-presquile",
+        "agencyName": "exo (La Presqu'île)",
+        "amount": 3.75,
+        "amountMax": 119,
+        "currency": "CAD",
+        "fareType": "representative bus one-way and monthly fare; actual fare varies by zones and mode",
+        "payment": "OPUS, occasional smart card, or fare media",
+        "sourceUrl": "https://www.artm.quebec/grille-tarifaire/",
+        "confidence": "medium",
+        "effectiveDate": "2026-07-01",
+        "evidence": "Official ARTM 2026 fare grid, referenced by exo for current rates, lists Bus one passage at $3.75 and monthly Bus at $119 for the metropolitan bus zones; exact exo La Presqu'île fare depends on the zones travelled."
+      }
     },
     {
       "slug": "exo-sudouest",
@@ -2905,7 +2941,7 @@
       "confidence": "high",
       "status": "confirmed",
       "notes": "Existing Atlas override retained as research evidence.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 3.75,
         "currency": "CAD",
@@ -2963,7 +2999,19 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "exo-sudouest",
+        "agencyName": "exo (Sud-Ouest)",
+        "amount": 3.75,
+        "amountMax": 119,
+        "currency": "CAD",
+        "fareType": "representative bus one-way and monthly fare; actual fare varies by zones and mode",
+        "payment": "OPUS, occasional smart card, or fare media",
+        "sourceUrl": "https://www.artm.quebec/grille-tarifaire/",
+        "confidence": "medium",
+        "effectiveDate": "2026-07-01",
+        "evidence": "Official ARTM 2026 fare grid, referenced by exo for current rates, lists Bus one passage at $3.75 and monthly Bus at $119 for the metropolitan bus zones; exact exo Sud-Ouest fare depends on the zones travelled."
+      }
     },
     {
       "slug": "exo-lrrs",
@@ -2980,7 +3028,7 @@
       "confidence": "high",
       "status": "confirmed",
       "notes": "Existing Atlas override retained as research evidence.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 3.75,
         "currency": "CAD",
@@ -3038,7 +3086,19 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "exo-lrrs",
+        "agencyName": "exo (Le Richelain–Roussillon)",
+        "amount": 3.75,
+        "amountMax": 119,
+        "currency": "CAD",
+        "fareType": "representative bus one-way and monthly fare; actual fare varies by zones and mode",
+        "payment": "OPUS, occasional smart card, or fare media",
+        "sourceUrl": "https://www.artm.quebec/grille-tarifaire/",
+        "confidence": "medium",
+        "effectiveDate": "2026-07-01",
+        "evidence": "Official ARTM 2026 fare grid, referenced by exo for current rates, lists Bus one passage at $3.75 and monthly Bus at $119 for the metropolitan bus zones; exact exo Le Richelain–Roussillon fare depends on the zones travelled."
+      }
     },
     {
       "slug": "exo-laurentides",
@@ -3055,7 +3115,7 @@
       "confidence": "high",
       "status": "confirmed",
       "notes": "Existing Atlas override retained as research evidence.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 3.75,
         "currency": "CAD",
@@ -3113,7 +3173,19 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "exo-laurentides",
+        "agencyName": "exo (Laurentides)",
+        "amount": 3.75,
+        "amountMax": 119,
+        "currency": "CAD",
+        "fareType": "representative bus one-way and monthly fare; actual fare varies by zones and mode",
+        "payment": "OPUS, occasional smart card, or fare media",
+        "sourceUrl": "https://www.artm.quebec/grille-tarifaire/",
+        "confidence": "medium",
+        "effectiveDate": "2026-07-01",
+        "evidence": "Official ARTM 2026 fare grid, referenced by exo for current rates, lists Bus one passage at $3.75 and monthly Bus at $119 for the metropolitan bus zones; exact exo Laurentides fare depends on the zones travelled."
+      }
     },
     {
       "slug": "exo-terrebonne",
@@ -3130,7 +3202,7 @@
       "confidence": "high",
       "status": "confirmed",
       "notes": "Existing Atlas override retained as research evidence.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 3.75,
         "currency": "CAD",
@@ -3188,7 +3260,19 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "exo-terrebonne",
+        "agencyName": "exo (Terrebonne-Mascouche)",
+        "amount": 3.75,
+        "amountMax": 119,
+        "currency": "CAD",
+        "fareType": "representative bus one-way and monthly fare; actual fare varies by zones and mode",
+        "payment": "OPUS, occasional smart card, or fare media",
+        "sourceUrl": "https://www.artm.quebec/grille-tarifaire/",
+        "confidence": "medium",
+        "effectiveDate": "2026-07-01",
+        "evidence": "Official ARTM 2026 fare grid, referenced by exo for current rates, lists Bus one passage at $3.75 and monthly Bus at $119 for the metropolitan bus zones; exact exo Terrebonne-Mascouche fare depends on the zones travelled."
+      }
     },
     {
       "slug": "exo-vallee-richelieu",
@@ -3209,7 +3293,7 @@
         "CAD"
       ],
       "feedVersion": null,
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 3.75,
         "currency": "CAD",
@@ -3267,7 +3351,19 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "exo-vallee-richelieu",
+        "agencyName": "exo (Vallée du Richelieu)",
+        "amount": 3.75,
+        "amountMax": 119,
+        "currency": "CAD",
+        "fareType": "representative bus one-way and monthly fare; actual fare varies by zones and mode",
+        "payment": "OPUS, occasional smart card, or fare media",
+        "sourceUrl": "https://www.artm.quebec/grille-tarifaire/",
+        "confidence": "medium",
+        "effectiveDate": "2026-07-01",
+        "evidence": "Official ARTM 2026 fare grid, referenced by exo for current rates, lists Bus one passage at $3.75 and monthly Bus at $119 for the metropolitan bus zones; exact exo Vallée du Richelieu fare depends on the zones travelled."
+      }
     },
     {
       "slug": "bc-fraser-valley",
@@ -5873,7 +5969,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://therta.com/",
@@ -5903,7 +5999,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "wrta",
+        "agencyName": "Worcester Regional Transit Authority",
+        "amount": 0,
+        "amountMax": 0,
+        "currency": "USD",
+        "fareType": "fixed-route and paratransit fare-free service",
+        "payment": "no fare collected",
+        "sourceUrl": "https://therta.com/customer-service/purchase-fares-fare-information/",
+        "confidence": "high",
+        "evidence": "Official WRTA fare-information page states that fare suspension on all fixed-route and paratransit services is extended through June 30, 2027, with no fares collected during the extension."
+      }
     },
     {
       "slug": "cttransit",
