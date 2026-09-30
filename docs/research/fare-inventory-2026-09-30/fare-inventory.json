@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 22,
+    "manualVerified": 29,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,8 +11,8 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 22,
-      "official-source-candidate": 468,
+      "verified-official": 29,
+      "official-source-candidate": 461,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
       "no-official-website": 32
@@ -4520,7 +4520,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://gobroomecounty.com/transit",
@@ -4552,7 +4552,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "broome",
+        "agencyName": "Broome County Transit",
+        "amount": 2,
+        "currency": "USD",
+        "fareType": "standard fixed-route one-way cash fare",
+        "payment": "cash or GoPass",
+        "sourceUrl": "https://broomecountyny.gov/transit/fares",
+        "confidence": "high",
+        "evidence": "Official fare table lists Standard Cash Fare (one-way) at $2.00; reduced cash fare is listed separately at $1.00."
+      }
     },
     {
       "slug": "emta",
@@ -16211,7 +16221,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://bcta.com/",
@@ -16248,7 +16258,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "beaver-county",
+        "agencyName": "Beaver County Transit Authority",
+        "amount": 2,
+        "currency": "USD",
+        "fareType": "single ride cash fare",
+        "payment": "cash or mobile ticket",
+        "sourceUrl": "https://bcta.com/fares/?lang=en",
+        "effectiveDate": "2026-03-02",
+        "confidence": "high",
+        "evidence": "Fare Costs Effective March 2, 2026: Single Ride Cash Fare $2.00 each way; reduced fare is listed separately at $1.00."
+      }
     },
     {
       "slug": "butler-pa",
@@ -23191,7 +23212,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.bft.org/",
@@ -23224,7 +23245,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "ben-franklin",
+        "agencyName": "Ben Franklin Transit (Tri-Cities, WA)",
+        "amount": 1.5,
+        "currency": "USD",
+        "fareType": "adult fixed-route cash fare",
+        "payment": "cash",
+        "sourceUrl": "https://www.bft.org/bus-service/fares/",
+        "confidence": "high",
+        "evidence": "Fixed Route ticket table lists Adult age 19+ cash fare at $1.50; transfers are included and reduced/free categories are listed separately."
+      }
     },
     {
       "slug": "asheville",
@@ -24632,7 +24663,7 @@
         "USD"
       ],
       "feedVersion": "UTC: 23-Sep-2026 14:56",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1.75,
         "currency": "USD",
@@ -24662,7 +24693,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "bridgeport-gbt",
+        "agencyName": "Greater Bridgeport Transit",
+        "amount": 1.75,
+        "currency": "USD",
+        "fareType": "base 120-minute fare",
+        "payment": "cash or ZipTrip",
+        "sourceUrl": "https://gogbt.com/how-to-ride/fares-passes/",
+        "confidence": "high",
+        "evidence": "Official fares page states the base fare is $1.75 for 120 minutes of unrestricted ride time; reduced fare is listed separately."
+      }
     },
     {
       "slug": "davenport",
@@ -27358,7 +27399,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.ginko.voyage/",
@@ -27450,7 +27491,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "besancon",
+        "agencyName": "Ginko (Besançon)",
+        "amount": 1.3,
+        "currency": "EUR",
+        "fareType": "general one-trip pass",
+        "payment": "standard ticket",
+        "sourceUrl": "https://www.ginko.voyage/tarifs/titres-et-tarifs/tous-les-titres",
+        "confidence": "high",
+        "evidence": "Official ticket table lists PASS Voyages at €1.30; the page labels the general ticket section for all users."
+      }
     },
     {
       "slug": "annecy",
@@ -27812,7 +27863,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.beemob.fr/",
@@ -27878,7 +27929,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "beziers",
+        "agencyName": "beeMob (Béziers)",
+        "amount": 1,
+        "currency": "EUR",
+        "fareType": "standard one-trip ticket",
+        "payment": "standard ticket",
+        "sourceUrl": "https://beemob.fr/fr/kzk-Tarifs.html",
+        "confidence": "high",
+        "evidence": "Official fare table lists TICKET UNITAIRE, Ticket unité €1.00; reduced and pass products are listed separately."
+      }
     },
     {
       "slug": "bourges",
@@ -27920,7 +27981,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.bibus.fr/",
@@ -28010,7 +28071,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "brest",
+        "agencyName": "Bibus (Brest)",
+        "amount": 1.7,
+        "currency": "EUR",
+        "fareType": "standard one-hour ticket",
+        "payment": "standard ticket",
+        "sourceUrl": "https://www.bibus.fr/tarifs/tickets-et-abonnements",
+        "confidence": "high",
+        "evidence": "Official fare page states Ticket unité €1.70, valid for one hour across the Bibus network."
+      }
     },
     {
       "slug": "caen",
