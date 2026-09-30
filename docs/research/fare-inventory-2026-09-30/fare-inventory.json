@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 252,
+    "manualVerified": 256,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,8 +11,8 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 252,
-      "official-source-candidate": 238,
+      "verified-official": 256,
+      "official-source-candidate": 234,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
       "no-official-website": 32
@@ -2299,7 +2299,7 @@
         "CAD"
       ],
       "feedVersion": "20260905",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 3,
         "currency": "CAD",
@@ -2374,7 +2374,19 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "stlevis",
+        "agencyName": "STLévis",
+        "amount": 3,
+        "amountMax": 102.5,
+        "currency": "CAD",
+        "fareType": "single passage and regular monthly pass",
+        "payment": "OPUS, Nomade, or fare media",
+        "effectiveDate": "2026-07-01",
+        "sourceUrl": "https://www.stlevis.ca/tarifs-points-de-vente/tarification",
+        "confidence": "high",
+        "evidence": "Official 2026-2027 STLévis fare page lists a single passage at $4.00 on weekdays and $3.00 on weekends, four passages at $15, and regular monthly pass at $102.50; reduced monthly pass is $77."
+      }
     },
     {
       "slug": "stm",
@@ -2391,7 +2403,7 @@
       "confidence": "high",
       "status": "confirmed",
       "notes": "Existing Atlas override retained as research evidence.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 3.75,
         "currency": "CAD",
@@ -2430,7 +2442,19 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "stm",
+        "agencyName": "STM (Montréal)",
+        "amount": 3.75,
+        "amountMax": 281,
+        "currency": "CAD",
+        "fareType": "ordinary Zone A fare and fare products",
+        "payment": "OPUS, magnetic ticket, exact cash, or ARTM fare media",
+        "effectiveDate": "2026-07-01",
+        "sourceUrl": "https://www.stm.info/sites/default/files/pdf/fr/tarifs.pdf",
+        "confidence": "high",
+        "evidence": "Official STM tariff effective July 1, 2026 lists ordinary Zone A single passage at $3.75, ten passages at $35, and monthly at $110; zone AB, ABC, ABCD, and bus-only products are listed separately."
+      }
     },
     {
       "slug": "sto",
@@ -2447,7 +2471,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://www.sto.ca",
@@ -2521,7 +2545,19 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "sto",
+        "agencyName": "STO (Gatineau)",
+        "amount": 2.8,
+        "amountMax": 116.5,
+        "currency": "CAD",
+        "fareType": "regular electronic purse/cash fare and monthly pass",
+        "payment": "Multi card or exact cash",
+        "effectiveDate": "2026-01-01",
+        "sourceUrl": "https://m.sto.ca/tarifs/grille/",
+        "confidence": "high",
+        "evidence": "Official STO 2026 tariff lists regular PME at $2.80, cash at $4.75, one-day pass at $9, and regular monthly pass at $116.50; reduced and youth products are listed separately."
+      }
     },
     {
       "slug": "sjsr",
@@ -3275,7 +3311,7 @@
       "confidence": "high",
       "status": "confirmed",
       "notes": "Card/base fare; published cash fare is 3.5 CAD.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 2.85,
         "currency": "CAD",
@@ -3404,7 +3440,19 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "translink",
+        "agencyName": "TransLink (Vancouver)",
+        "amount": 3.5,
+        "amountMax": 12.55,
+        "currency": "CAD",
+        "fareType": "adult 1-zone contactless fare and all-zone day pass",
+        "payment": "Compass, contactless card, mobile wallet, or cash",
+        "effectiveDate": "2026-07-01",
+        "sourceUrl": "https://www.translink.ca/transit-fares/pricing-and-fare-zones",
+        "confidence": "high",
+        "evidence": "Official TransLink fare page states fares increased July 1, 2026 and lists adult contactless fares of $3.50 for 1 zone, $5.10 for 2 zones, and $6.70 for 3 zones; all-zone DayPass is $12.55."
+      }
     },
     {
       "slug": "calgary",
