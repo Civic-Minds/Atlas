@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 290,
+    "manualVerified": 293,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,8 +11,8 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 290,
-      "official-source-candidate": 200,
+      "verified-official": 293,
+      "official-source-candidate": 197,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
       "no-official-website": 32
@@ -24276,7 +24276,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://wstransit.com/",
@@ -24299,7 +24299,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "winston-salem",
+        "agencyName": "Winston-Salem Transit Authority (WSTA)",
+        "amount": 1,
+        "amountMax": 30,
+        "currency": "USD",
+        "fareType": "fixed-route general fare and pass products",
+        "payment": "cash, UMO app, or pass",
+        "sourceUrl": "https://www.wstransit.com/fares",
+        "confidence": "high",
+        "evidence": "Official WSTA fare table lists general fixed-route fare at $1.00, 10-ride pass at $10, 30-day pass at $30, and half fares of $0.50/$5/$15."
+      }
     },
     {
       "slug": "cat-harrisburg",
@@ -24970,7 +24981,7 @@
         "USD"
       ],
       "feedVersion": "1",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1,
         "currency": "USD",
@@ -25014,7 +25025,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "fort-bend",
+        "agencyName": "Fort Bend County Transit",
+        "amount": 1,
+        "amountMax": 4,
+        "currency": "USD",
+        "fareType": "public transit demand-response and commuter fares by route",
+        "payment": "exact cash, ticket, or mobile pass",
+        "sourceUrl": "https://www.fortbendcountytx.gov/government/departments/public-transportation/fares",
+        "confidence": "high",
+        "evidence": "Official Fort Bend fare schedule lists demand-response general fare at $1.00 and commuter fares ranging from $1.00 to $4.00 by route; the 2026 fee schedule also lists current Energy Corridor and event-service fares."
+      }
     },
     {
       "slug": "lake-charles",
@@ -26082,7 +26104,7 @@
         "USD"
       ],
       "feedVersion": "Updated: Aug 7, 2026, 2:23 PM",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 2,
         "currency": "USD",
@@ -26118,7 +26140,19 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "topeka",
+        "agencyName": "Topeka Metro",
+        "amount": 2,
+        "amountMax": 50,
+        "currency": "USD",
+        "fareType": "full fixed-route cash fare and pass products",
+        "payment": "cash, pass, or fare card",
+        "confidence": "medium",
+        "sourceUrl": "https://www.topekametro.org/about-metro/fares",
+        "effectiveDate": "2019-12-01",
+        "evidence": "Official Topeka Metro fare page lists full-fare cash at $2, 24-hour pass at $4, 10-ride card at $18, 31-day pass at $50, and annual pass at $300; the page is marked effective December 1, 2019 and should be reconfirmed."
+      }
     },
     {
       "slug": "barta",
