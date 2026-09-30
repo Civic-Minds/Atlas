@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 29,
+    "manualVerified": 32,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,8 +11,8 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 29,
-      "official-source-candidate": 461,
+      "verified-official": 32,
+      "official-source-candidate": 458,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
       "no-official-website": 32
@@ -913,7 +913,7 @@
         "CAD"
       ],
       "feedVersion": "S1000282",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 3.5,
         "currency": "CAD",
@@ -968,7 +968,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "niagara",
+        "agencyName": "Niagara Transit",
+        "amount": 3.5,
+        "currency": "CAD",
+        "fareType": "adult cash single ride",
+        "payment": "cash or fare media",
+        "sourceUrl": "https://nrtransit.ca/fares/",
+        "confidence": "high",
+        "evidence": "Official fare table lists Cash fare / Single ride for adults ages 18 to 64 at $3.50; reduced categories and passes are listed separately."
+      }
     },
     {
       "slug": "octranspo",
@@ -1137,7 +1147,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.orangeville.ca/en/living-here/schedules-and-map.aspx",
@@ -1153,7 +1163,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "orangeville",
+        "agencyName": "Orangeville Transit",
+        "amount": 0,
+        "currency": "CAD",
+        "fareType": "standard ride",
+        "payment": "no fare required",
+        "sourceUrl": "https://www.orangeville.ca/farefreetransit/",
+        "effectiveDate": "2027-07-21",
+        "confidence": "high",
+        "evidence": "Town of Orangeville states the fare-free transit pilot has been extended until July 21, 2027; riders can use Orangeville Transit without paying a fare."
+      }
     },
     {
       "slug": "orillia",
@@ -1257,7 +1278,7 @@
         "CAD"
       ],
       "feedVersion": "1/20260428 14:06:38/20260429 04:00:00",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 3,
         "currency": "CAD",
@@ -1289,7 +1310,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "north-bay",
+        "agencyName": "North Bay Transit",
+        "amount": 3.25,
+        "currency": "CAD",
+        "fareType": "single trip",
+        "payment": "standard fare",
+        "sourceUrl": "https://northbay.ca/services-payments/north-bay-transit/transit-fares-passes/",
+        "confidence": "high",
+        "evidence": "Official fare table lists Single Trip at $3.25; 10-trip, day, monthly, student, senior, and other fares are listed separately."
+      }
     },
     {
       "slug": "sarnia",
