@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 464,
+    "manualVerified": 467,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,11 +11,11 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 464,
+      "verified-official": 467,
       "official-fare-page-not-found": 125,
       "official-site-inaccessible": 45,
-      "official-source-candidate": 27,
-      "no-official-website": 32
+      "no-official-website": 32,
+      "official-source-candidate": 24
     }
   },
   "records": [
@@ -5874,7 +5874,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://www.capecodrta.org/",
@@ -5906,7 +5906,19 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "mbta",
+        "agencyName": "Massachusetts Bay Transportation Authority",
+        "amount": 1.7,
+        "amountMax": 13.25,
+        "currency": "USD",
+        "fareType": "standard one-way bus, subway, and commuter rail fare range",
+        "payment": "CharlieCard, CharlieTicket, contactless payment, cash, or mTicket",
+        "effectiveDate": "2026-09-01",
+        "confidence": "medium",
+        "sourceUrl": "https://www.mbta.com/fares",
+        "evidence": "Current MBTA fare content lists local bus at $1.70, subway at $2.40, and commuter rail one-way fares from $2.40 to $13.25; the September 1, 2026 pilot also changes bus/subway/ferry transfer treatment. Direct MBTA fare pages were robot-blocked during this pass, so current indexed official content is retained with medium confidence."
+      }
     },
     {
       "slug": "pvta",
@@ -10366,7 +10378,7 @@
       "confidence": "unresolved",
       "status": "inaccessible",
       "notes": "Cached feed could not be read: Can't find end of central directory : is this a zip file ? If it is, see https://stuk.github.io/jszip/documentation/howto/read_zip.html",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://westberkeleyshuttle.net/",
@@ -10374,7 +10386,17 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "westberkeley",
+        "agencyName": "West Berkeley Shuttle",
+        "amount": 0,
+        "currency": "USD",
+        "fareType": "shuttle ride",
+        "payment": "fare-free service",
+        "confidence": "medium",
+        "sourceUrl": "https://511.org/media/96/show",
+        "evidence": "The official Bay Area 511 schedules-and-fares page identifies West Berkeley Shuttle as a free shuttle connecting Ashby BART and Berkeley Amtrak stations with West Berkeley; older planning material reports a $0.50 fare, so the current 511 source is used with medium confidence."
+      }
     },
     {
       "slug": "petaluma",
@@ -11492,7 +11514,7 @@
         "USD"
       ],
       "feedVersion": "UTC: 04-Sep-2026 18:59",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1,
         "currency": "USD",
@@ -11507,7 +11529,18 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "sam",
+        "agencyName": "Sandy Area Metro (SAM)",
+        "amount": 1,
+        "amountMax": 5,
+        "currency": "USD",
+        "fareType": "single ride and all-day pass",
+        "payment": "cash or fare media",
+        "confidence": "high",
+        "sourceUrl": "https://www.ci.sandy.or.us/transit/page/transfers",
+        "evidence": "Official City of Sandy transit page states that transfers on SAM services are included in the $1.00 fare and that a $5.00 all-day pass covers SAM and Mt. Hood Express; transfers to TriMet or Mt. Hood Express otherwise require that provider’s fare."
+      }
     },
     {
       "slug": "cat-or",
