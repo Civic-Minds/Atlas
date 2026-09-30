@@ -29,7 +29,6 @@ Historical snapshots are compiled via two methods:
 | **Burlington Transit** (`burlington`) | `mdb-724` | 2015 - 2026 | 10 years | Backfilled via Mobility Database. |
 | **Community Transit** (`communitytransit`) | N/A | 2016 - 2026 | 11 years | Backfilled via manual archive zips. |
 | **Kingston Transit** (`kingston`) | `mdb-733` | 2016 - 2027 | 10 years | Backfilled via Mobility Database. |
-| **SacRT** (`sacrt`) | N/A | 2012 - 2026 | 8 years | Backfilled via manual archive zips. The calendar span is long enough for the goal, but the compiled snapshot count still needs to satisfy the 10-distinct-year UI eligibility check. |
 | **Metro Transit** (`metro-transit`) | `mdb-205` | 2016 - 2026 | 11 years | Backfilled (August 2026). Dynamic URLs updated in `index.json`. |
 | **Grand River Transit** (`grt`) | `mdb-721` | 2016 - 2026 | 11 years | Backfilled (August 2026) using deprecated source ID redirect. |
 | **Detroit DDOT** (`ddot`) | `mdb-464` | 2014 - 2027 | 12 years | Backfilled; live catalog now meets the 10-year threshold. |
@@ -52,6 +51,7 @@ These 20 agencies are the current research pool for reaching the 10-year History
 
 | Agency | Live years | Gap to threshold | Research result |
 | --- | ---: | ---: | --- |
+| **SacRT** (`sacrt`) | 8 | 2 | **Partial** — manual archive backfill covers 2012–2026, but the compiled snapshot catalog currently contains only eight distinct years. |
 | **Brampton Transit** (`brampton`) | 9 | 1 | **Strong** — MDB `mdb-729` has archived datasets from 2014–2023; the current feed is separately catalogued for 2024–2026. |
 | **NORTA** (`norta`) | 8 | 2 | **Strong** — RIDE’s WordPress media archive exposes official RTA ZIPs from 2012–2021; all ten processed locally with no skips, producing 140 route-history snapshots. |
 | **Caltrain** (`caltrain`) | 4 | 6 | **Strong** — MDB `mdb-54` has datasets from 2017–2026; a 2017 feed processed locally with no validation errors. |

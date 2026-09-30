@@ -12,22 +12,16 @@ Atlas is built from publicly available transit data and publishes the processing
 ## Expansion Planning
 
 - **[Agency Backlog](data/AGENCY_BACKLOG.md)**: Coverage expansion queue and discovery notes.
-- **[International Expansion](data/INTERNATIONAL.md)**: Country-by-country research and planning for coverage beyond Canada/US.
 
 ## Methodology
 
 - **[Pipeline Methodology](data/PIPELINE.md)**: How Atlas processes GTFS and calculates frequency tiers.
-- **History archives**: How Atlas selects, sources, and stores historical GTFS service periods.
 - **[Route Service Metrics](data/ROUTE_SERVICE_METRICS.md)**: Definitions and display semantics for route-level service metrics.
 - **[Display Naming](data/DISPLAY_NAMING.md)**: Definitions and display semantics for agency name shortening and secondary text.
-- **[Population Context](data/DATA_POPULATION.md)**: Proposed population-density data layer and its relationship to transit frequency.
-- **[Frequent Network Criteria](data/DATA_FREQUENT_NETWORK.md)**: Proposed "Frequent" tool (Night Service's daytime counterpart) and the cross-agency research needed before picking a threshold.
 
 ## Freshness, quality, and operations
 
 - **[Data Principles](data/DATA_PRINCIPLES.md)**: How Atlas approaches freshness, review, corrections, and static versus live data.
-- **[Known Issues](operations/KNOWN_ISSUES.md)**: Feed limitations, data quirks, and known coverage gaps.
-- **[Live Polling](operations/LIVE_POLLING.md)**: Freshness and coverage details for real-time vehicle and adherence data.
 - **[Adding Agencies](data/ADDING_AGENCIES.md)**: Contributor procedure for onboarding one new agency or a small batch.
 - **[Updating the Map](data/MAP_UPDATES.md)**: Refreshing feeds and publishing artifacts for already-live agencies.
 - **[Coverage Gap Discovery](data/COVERAGE_GAP_DISCOVERY.md)**: Finding new agency candidates and looking up their feeds.
@@ -35,11 +29,10 @@ Atlas is built from publicly available transit data and publishes the processing
 
 ## History Archives
 
-History is a curated static-schedule feature, not an automatic archive of every
-agency. Atlas prioritizes cities where historical feeds can show meaningful
-network or service changes; it does not need to backfill every public agency.
+History is a curated view of past schedule periods. Coverage varies by agency
+and period, depending on the availability and quality of archived schedule data.
 
-For each selected agency:
+For historical periods Atlas publishes:
 
 - Use the agency’s official current and historical feeds first. Use Mobility
   Database (MDB) as a fallback when the official archive is unavailable or

@@ -1,7 +1,7 @@
 {
   "analysisVersion": 1,
   "analyzedAt": "2026-09-18",
-  "sourceCatalog": "docs/research/frequent-service-catalog.json",
+  "sourceCatalog": "docs/research/frequent-service-research-2026-09/catalog.json",
   "sourceCatalogCheckedAt": "2026-09-18",
   "scope": "Atlas public-transit agencies reviewed across North America and France",
   "purpose": "Describe how agencies in Atlas’s reviewed sample define frequent or frequency-related service. This analysis does not change Atlas production frequency definitions.",

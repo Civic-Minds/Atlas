@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 
-const path = 'docs/research/frequent-service-catalog.json';
-const analysisPath = 'docs/research/frequent-service-analysis-2026-09.json';
+const path = 'docs/research/frequent-service-research-2026-09/catalog.json';
+const analysisPath = 'docs/research/frequent-service-research-2026-09/analysis.json';
 const catalog = JSON.parse(fs.readFileSync(path, 'utf8'));
 const analysis = JSON.parse(fs.readFileSync(analysisPath, 'utf8'));
 const failures = [];

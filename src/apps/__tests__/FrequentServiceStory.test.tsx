@@ -2,7 +2,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import FrequentServiceStory from '../FrequentServiceStory';
 import { frequentServiceStoryStats } from '../../data/frequentServiceStory';
-import audit from '../../../docs/research/system-map-audit-2026-09.json';
+import audit from '../../../docs/research/system-map-audit-2026-09/data.json';
 
 const agencies = [{ slug: 'ttc', name: 'Toronto Transit Commission' }] as any;
 

@@ -12,7 +12,7 @@ import RouteListRow from '../components/RouteListRow';
 import RouteCardTitle from '../components/RouteCardTitle';
 import { getVehicleColors } from '../utils/colors';
 import { useColorVision } from '../context/ColorVisionContext';
-import { cleanRouteShortName, cleanRouteDisplayName, shortenAgencyName, agencyDisplayName, routeListCompanionName, liveVehicleRowLabel, vehicleModeWord } from '../utils/format';
+import { agencyDisplayParts, cleanRouteShortName, cleanRouteDisplayName, shortenAgencyName, agencyDisplayName, routeListCompanionName, liveVehicleRowLabel, vehicleModeWord } from '../utils/format';
 import { buildRouteServiceSummary, metricValueForPeriod } from '../utils/routeFacts';
 import { periodKeyForHour } from '../../shared/config';
 import { inferLiveDirection } from '../utils/liveDirection';
@@ -430,14 +430,16 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
 
       const showAgencyHeader = multipleAgencies && g.agencySlug !== lastSlug;
       lastSlug = g.agencySlug;
-      const rawAgencyName = agencies.find(a => a.slug === g.agencySlug)?.name ?? g.agencySlug;
-      const agencyName = shortenAgencyName(rawAgencyName);
+      const agency = agencies.find(a => a.slug === g.agencySlug);
+      const rawAgencyName = agency?.name ?? g.agencySlug;
+      const { primary: agencyName, secondary: agencyPlace } = agencyDisplayParts(rawAgencyName, agency?.cities, agency?.displayArea);
 
       return (
         <React.Fragment key={key}>
           {showAgencyHeader && (
             <div className={`${PANEL_SECTION_HEAD} ${agencyHeaderIndex++ > 0 ? 'border-t' : 'border-b'} border-[var(--border-primary)]`}>
               {agencyName}
+              {agencyPlace && <span className="font-normal text-[var(--text-dim)]"> · {agencyPlace}</span>}
             </div>
           )}
           <RouteListRow

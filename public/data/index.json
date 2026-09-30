@@ -185,7 +185,7 @@
         42.4048,
         -82.191
       ],
-      "feedUrl": "https://ck.usetransit.com/api/1/public/gtfs/5/gtfs.zip?token=eddbcb1b954b64461!!9687922751$-$@9cc77671a2df2f^",
+      "feedUrl": "https://files.mobilitydatabase.org/tld-5552/latest.zip",
       "websiteUrl": "https://www.chatham-kent.ca/transit/Pages/default.aspx",
       "cities": [
         "Chatham-Kent, Ontario"
@@ -17881,7 +17881,7 @@
         44.8378,
         -0.5792
       ],
-      "feedUrl": "https://bdx.mecatran.com/utw/ws/gtfsfeed/static/bordeaux?apiKey=opendata-bordeaux-metropole-flux-gtfs-rt",
+      "feedUrl": "https://files.mobilitydatabase.org/tdg-83024/latest.zip",
       "mdbFeedUrl": null,
       "hiddenInProduction": true,
       "pmtilesPending": true,
@@ -17953,7 +17953,7 @@
         45.5646,
         5.9178
       ],
-      "feedUrl": "https://mwe.mecatran.com/utw/ws/gtfsfeed/static/chambery?apiKey=223f2f102c1242570d3f0231326a271940774f72&type=gtfs_urbain",
+      "feedUrl": "https://files.mobilitydatabase.org/tdg-82272/latest.zip",
       "mdbFeedUrl": null,
       "hiddenInProduction": true,
       "pmtilesPending": true,
@@ -18097,7 +18097,7 @@
         43.4929,
         -1.4748
       ],
-      "feedUrl": "https://app.mecatran.com/utw/ws/gtfsfeed/static/txiktxak?apiKey=0f64273f070b7d4621002040646e180d374e5373",
+      "feedUrl": "https://files.mobilitydatabase.org/tdg-80701/latest.zip",
       "mdbFeedUrl": null,
       "hiddenInProduction": true,
       "pmtilesPending": true,
@@ -18333,7 +18333,7 @@
         45.764,
         4.8357
       ],
-      "feedUrl": "https://gtech-transit-prod.apigee.net/v1/google/gtfs/odbl/lyon_tcl.zip?apikey=BasyG6OFZXgXnzWdQLTwJFGcGmeOs204&secret=gNo6F5PhQpsGRBCK",
+      "feedUrl": null,
       "mdbFeedUrl": null,
       "hiddenInProduction": true,
       "pmtilesPending": true,
@@ -18351,7 +18351,7 @@
         43.2965,
         5.3698
       ],
-      "feedUrl": "https://app.mecatran.com/utw/ws/gtfsfeed/static/mamp-rtm?apiKey=16421b08630a7d065c6d250051780f484b673659",
+      "feedUrl": null,
       "mdbFeedUrl": null,
       "hiddenInProduction": true,
       "pmtilesPending": true,
@@ -18462,7 +18462,7 @@
         42.6887,
         2.8948
       ],
-      "feedUrl": "https://eur.mecatran.com/utw/ws/gtfsfeed/static/perpignan?apiKey=612f606b5e3b0a3e6e1f441a2c4a050f6a345b55",
+      "feedUrl": "https://files.mobilitydatabase.org/tdg-83735/latest.zip",
       "mdbFeedUrl": null,
       "hiddenInProduction": true,
       "pmtilesPending": true,
@@ -18570,7 +18570,7 @@
         47.2735,
         -2.2137
       ],
-      "feedUrl": "https://app.mecatran.com/utw/ws/gtfsfeed/static/stran-merge?apiKey=2e6071036d276153761f0c090b4a45420e047612",
+      "feedUrl": null,
       "mdbFeedUrl": null,
       "hiddenInProduction": true,
       "pmtilesPending": true,
@@ -18678,7 +18678,7 @@
         43.5297,
         5.4474
       ],
-      "feedUrl": "https://app.mecatran.com/utw/ws/gtfsfeed/static/mamp-aix?apiKey=020c7c326b6c5e750b168064336e344c61213521",
+      "feedUrl": null,
       "mdbFeedUrl": null,
       "hiddenInProduction": true,
       "pmtilesPending": true,

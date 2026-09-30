@@ -11,7 +11,7 @@ Atlas gates immature features (thin agency coverage, no scaling plan, or genuine
 | `CARD_CLICK_TO_FLAG_ENABLED` | Click-to-flag affordance on card values (`FlaggableValue` in `cardUi.tsx`) | off | on | New, unproven interaction — no route/component split like the others, just a UI behavior to validate before it's in front of everyone. |
 | `CORRIDORS_ENABLED` | `/apps/corridors`, `Corridors.tsx` | off | off | Not good enough as a feature yet (Ryan, 2026-07-28). Its panel is also broken by a CSS bug independent of this flag. |
 | `UNEVEN_BANNER_ENABLED` | "Service is uneven" route-card banner, `RouteCardHeadway.tsx` | off | on | The excess/ratio threshold deciding when a period's worst gap is worth surfacing (#345) needs more real-feed tuning than a single main push should carry. |
-| `ATLAS_MODE=preview` | Preview title and research-app visibility | off | on | Preview deployments retain beta data access for external testing without exposing the Night Service or Frequent Service research apps. |
+| `ATLAS_MODE=preview` | Preview title and research-app visibility | off | not configured for the stable domains | Stable Preview currently uses the Beta project's production deployment; there is no separate Preview project or verified `preview` mode. |
 
 ## How it works
 
@@ -24,7 +24,7 @@ function envFlag(name: ...): boolean {
 export const LIVE_ENABLED = envFlag('VITE_LIVE_ENABLED');
 ```
 
-**Why env vars, not a `const true`/`false`:** production and beta use the same `main` commit. Only their Vercel build environments differ, so a feature can be tested on beta without creating a second code branch or repeatedly merging two divergent trees. Configure beta-only values on the beta deployment/project, not in source control:
+**Why env vars, not a `const true`/`false`:** Public and Beta use the same repository, while their Vercel project environments decide which features are exposed. Configure deployment-specific values in Vercel, not in source control:
 
 Live is currently unset/false in every deployment. Do not add a beta override until the Live feature is intentionally re-enabled.
 
@@ -54,29 +54,19 @@ Local dev keeps experimental features available for QA, but Live is currently ex
 
 All product work lands on `main`. The beta deployment follows the same commit as production but enables the selected flags and beta-only agency visibility. A feature is graduated by changing its production flag or removing the gate after beta validation; it does not require a branch merge.
 
-## Deployment separation
+## Verified deployment topology
 
-Keep three Vercel deployments pointed at the same repository and `main` branch:
+Verified 2026-09-28:
 
-1. Production (`www.transitatlas.fyi`): `VITE_ATLAS_MODE=public`, automatic from `main`.
-2. Preview (`preview.transitatlas.fyi`): `VITE_ATLAS_MODE=preview`, automatic from `main`; this is the stable outreach link for agency contacts.
-3. Beta (`beta.transitatlas.fyi`): `VITE_ATLAS_MODE=beta`, manually promoted from a validated `main` deployment.
+1. Public (`www.transitatlas.fyi`) is attached to the `atlas` Vercel project.
+2. Beta (`beta.transitatlas.fyi`) is attached to the `atlas-beta` Vercel project.
+3. Preview (`preview.transitatlas.fyi`) is also attached to `atlas-beta`; it is not a separate Preview project or independently configured deployment.
 
-Preview uses the same Google Analytics measurement ID as Public when outreach usage should be included in the shared property. Events include `atlas_mode=preview`, so Preview traffic can be separated from Public traffic in reports. Vercel Web Analytics remains project-specific.
+The Public project currently has no explicit `VITE_ATLAS_MODE` production variable, so it relies on the public legacy fallback. The Beta project has an explicit production `VITE_ATLAS_MODE` and the Beta feature flags. Preview therefore uses the Beta project's production configuration unless this topology changes.
 
-The deployments may be separate Vercel projects so Public, Preview, and Beta can use different environment values while building the same `main` source. Do not restore a long-lived beta Git branch just to hold these settings. If beta access ever needs to be limited to named testers, add access control at the deployment boundary; do not make the production client guess whether a user is allowed to see an internal tool.
+The Public project has the Google Analytics measurement ID in Production. The Beta project also has a measurement ID in Production. Vercel Web Analytics remains project-specific. Do not document Preview as sharing a separate mode until it has its own project or independently verified environment.
 
-### Vercel cutover procedure
-
-The production project and beta project must be separate because Vercel environment variables are project-scoped; there is no supported way to inject beta flags into one deployment while leaving another deployment of that project unchanged.
-
-1. Create or use the Preview and Beta Vercel projects and set both production branches to `main`.
-2. Set `VITE_ATLAS_MODE=preview` in the Preview project and `VITE_ATLAS_MODE=beta` plus approved beta flags in the Beta project. Keep the production project on `public`.
-3. Deploy each project and verify the generated deployment URL with `npm run verify:deployments` using temporary hostname overrides.
-4. Attach the stable domains, verify them again, and confirm Preview shows the current on-demand outreach demo.
-5. Keep the old branch-based project available until both stable hostnames are confirmed; retire it only after the cutover is complete.
-
-The beta project currently uses the Vite framework/output configuration (`dist`). A Vercel deployment can show a successful `npm run build` and still fail afterward if its Output Directory is incorrectly set to `build`.
+Both projects use the Vite framework preset. The documented Vercel output setting is not a separate `build` directory; keep it aligned with the repository's `dist` build output if the project settings are changed.
 
 ## Legacy mode flags
 

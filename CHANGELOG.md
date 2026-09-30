@@ -32,6 +32,11 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Beta now separates hiding irregular routes from hiding explicitly time-limited service, so regular infrequent routes are not hidden by the new filter.
 - Limited-service filtering now hides the whole route when only one direction has limited service, instead of leaving the other direction behind.
 - Period views now show routes with limited or one-direction service when irregular routes are not hidden.
+- **Feed security:** restored five agency refresh sources through credential-free public Mobility Database mirrors; Aix-en-Provence, Marseille, Lyon, and Saint-Nazaire remain paused pending verified network-specific sources.
+
+- **Security:** removed committed credential-bearing GTFS feed URLs; affected agencies retain their existing stored artifacts until safe public or environment-backed sources are configured.
+
+- Live vehicle group headers now include the agency's place when available, reducing ambiguity between similarly named agencies.
 - Zoom guidance now shares the bottom baseline with the map status pills without overlapping the status area, with shorter instruction text.
 - Feedback emails now open with a clear writing area before the page URL.
 - The Mode filter now includes Gondola / Aerial Tram routes, including Portland’s Aerial Tram.

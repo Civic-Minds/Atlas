@@ -22,7 +22,6 @@ Use this page as the documentation index. The root [README](../README.md) explai
 - [Live polling and history archiving](operations/LIVE_POLLING.md)
 - [Agency backlog](data/AGENCY_BACKLOG.md)
 - [Manual GTFS refresh queue](operations/MANUAL_GTFS_REFRESHES.md)
-- [International expansion](data/INTERNATIONAL.md)
 - [Known issues](operations/KNOWN_ISSUES.md)
 
 ## Product and research
@@ -30,10 +29,10 @@ Use this page as the documentation index. The root [README](../README.md) explai
 - [Product decisions](product/DECISIONS.md)
 - [Strategy](product/STRATEGY.md)
 - [Research](product/RESEARCH.md)
-- [Population context](data/DATA_POPULATION.md)
-- [Frequent network criteria](data/DATA_FREQUENT_NETWORK.md)
-- [200-agency frequent-service research review](research/frequent-service-pilot-2026-09.md)
-- [Frequent-service agency catalog](research/frequent-service-catalog.json)
+- [Research index](research/INDEX.md)
+- [International expansion](research/international-expansion-2026-09/INDEX.md)
+- [Population context](research/population-context-2026-09/INDEX.md)
+- [Frequent-service research](research/frequent-service-research-2026-09/INDEX.md)
 
 ## Contribution and policy
 

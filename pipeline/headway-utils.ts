@@ -352,7 +352,7 @@ export function hasSustainedNightService(
 }
 
 // Frequent Network window: 7am-7pm, matching Victoria (BC Transit)'s own "Frequent" product
-// definition exactly (see docs/DATA_FREQUENT_NETWORK.md for the full cross-agency survey this
+// definition exactly (see docs/research/frequent-service-research-2026-09/CRITERIA.md for the full cross-agency survey this
 // was decided from). Weekday only -- process-core.ts only computes this for the Weekday day-type,
 // same as how Night Service's window sits outside TIME_PERIODS rather than reusing amPeak/midday/
 // pmPeak (7am cuts into amPeak's 6am start; 7pm lands exactly on pmPeak's own end).
@@ -383,7 +383,7 @@ export function computeResearchFrequentService(departureTimes: number[]): Resear
 /**
  * Does this route have sustained frequent service: at least one departure every
  * maxGapMinutes across the whole 7am-7pm window, with no gap at either edge -- same boundary
- * rule as hasSustainedNightService. Weekday only (see docs/DATA_FREQUENT_NETWORK.md).
+ * rule as hasSustainedNightService. Weekday only (see docs/research/frequent-service-research-2026-09/CRITERIA.md).
  */
 export function hasSustainedFrequentService(
   departureTimes: number[],

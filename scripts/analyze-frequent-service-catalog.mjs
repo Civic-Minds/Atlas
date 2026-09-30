@@ -1,8 +1,8 @@
 import fs from 'node:fs';
 
-const catalogPath = 'docs/research/frequent-service-catalog.json';
-const jsonPath = 'docs/research/frequent-service-analysis-2026-09.json';
-const markdownPath = 'docs/research/frequent-service-analysis-2026-09.md';
+const catalogPath = 'docs/research/frequent-service-research-2026-09/catalog.json';
+const jsonPath = 'docs/research/frequent-service-research-2026-09/analysis.json';
+const markdownPath = 'docs/research/frequent-service-research-2026-09/ANALYSIS.md';
 
 const catalog = JSON.parse(fs.readFileSync(catalogPath, 'utf8'));
 
@@ -262,7 +262,7 @@ ${namedThresholdRows || '| None | 0 |'}
 
 ## Reproducibility
 
-The derived JSON is generated from [frequent-service-catalog.json](frequent-service-catalog.json) by the analysis script. Re-run the analysis after catalog changes and validate both artifacts before publishing new research claims.
+The derived JSON is generated from [catalog.json](catalog.json) by the analysis script. Re-run the analysis after catalog changes and validate both artifacts before publishing new research claims.
 `;
 fs.writeFileSync(markdownPath, markdown);
 

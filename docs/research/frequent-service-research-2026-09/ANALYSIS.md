@@ -108,4 +108,4 @@ Among the 86 agencies whose named frequent/high-frequency tier also has numeric 
 
 ## Reproducibility
 
-The derived JSON is generated from [frequent-service-catalog.json](frequent-service-catalog.json) by the analysis script. Re-run the analysis after catalog changes and validate both artifacts before publishing new research claims.
+The derived JSON is generated from [catalog.json](catalog.json) by the analysis script. Re-run the analysis after catalog changes and validate both artifacts before publishing new research claims.
