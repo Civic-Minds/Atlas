@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 449,
+    "manualVerified": 453,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,10 +11,10 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 449,
+      "verified-official": 453,
       "official-fare-page-not-found": 125,
       "official-site-inaccessible": 45,
-      "official-source-candidate": 42,
+      "official-source-candidate": 38,
       "no-official-website": 32
     }
   },
@@ -16564,7 +16564,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://mta.maryland.gov/",
@@ -16606,7 +16606,19 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "marc",
+        "agencyName": "MARC Train (MTA Maryland)",
+        "amount": 6,
+        "amountMax": 19,
+        "currency": "USD",
+        "fareType": "zone-based one-way fare",
+        "payment": "CharmPass, ticket vending machine, ticket agent, or cash onboard",
+        "effectiveDate": "2026-01",
+        "confidence": "high",
+        "sourceUrl": "https://www.mta.maryland.gov/marc-fares",
+        "evidence": "Official MARC fares page links the current multi-ride/reduced-fare chart updated January 2026; its one-way full-fare row runs from $6 for Zone 1 through $19 for Zone 13. Separate line charts and weekly/monthly products are also published."
+      }
     },
     {
       "slug": "rideon",
@@ -17072,7 +17084,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://www.njtransit.com/",
@@ -17080,7 +17092,19 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "njt-rail",
+        "agencyName": "NJ Transit Rail",
+        "amount": 1.8,
+        "amountMax": 23.85,
+        "currency": "USD",
+        "fareType": "origin-and-destination one-way rail fare",
+        "payment": "NJ Transit app, ticket vending machine, or ticket office",
+        "effectiveDate": "2026-07-01",
+        "confidence": "high",
+        "sourceUrl": "https://www.njtransit.com/fares/",
+        "evidence": "Official NJ Transit fare guide lists full-fare one-way rail prices of $1.80-$23.85, priced by origin and destination; it also documents rail passes, airport supplements, and transfer rules."
+      }
     },
     {
       "slug": "njt-bus",
@@ -17097,7 +17121,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://www.njtransit.com/",
@@ -17105,7 +17129,19 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "njt-bus",
+        "agencyName": "NJ Transit Bus",
+        "amount": 1.9,
+        "amountMax": 59.1,
+        "currency": "USD",
+        "fareType": "zone-based one-way bus fare",
+        "payment": "NJ Transit app, ticket vending machine, cash onboard, or contactless card",
+        "effectiveDate": "2026-07-01",
+        "confidence": "high",
+        "sourceUrl": "https://www.njtransit.com/fares/",
+        "evidence": "Official NJ Transit fare guide lists one-way bus fares of $1.90-$59.10, priced by zones and route/interstate conditions; the guide also documents bus transfers and payment options."
+      }
     },
     {
       "slug": "path",
@@ -37924,7 +37960,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://www.hattiesburgms.com/government/departments/urban-development/hub-city-transit/",
@@ -37932,7 +37968,17 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "hub-city-transit",
+        "agencyName": "Hub City Transit (Hattiesburg)",
+        "amount": 0.5,
+        "currency": "USD",
+        "fareType": "regular fixed-route single ride",
+        "payment": "cash or fare media",
+        "confidence": "high",
+        "sourceUrl": "https://www.hattiesburgms.com/hct/",
+        "evidence": "Official City of Hattiesburg Hub City Transit page lists regular fare at $0.50; children, seniors, disabled riders, Medicare/HCT ID holders pay $0.25, and Southern Miss students and City employees ride free."
+      }
     },
     {
       "slug": "tank",
