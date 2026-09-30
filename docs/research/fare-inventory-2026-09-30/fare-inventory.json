@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 328,
+    "manualVerified": 332,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,10 +11,10 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 328,
+      "verified-official": 332,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
-      "official-source-candidate": 162,
+      "official-source-candidate": 158,
       "no-official-website": 32
     }
   },
@@ -8688,7 +8688,7 @@
         "USD"
       ],
       "feedVersion": "42",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 0.7,
         "currency": "USD",
@@ -8754,7 +8754,19 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "bart",
+        "agencyName": "Bay Area Rapid Transit (BART)",
+        "amount": 2.55,
+        "amountMax": 17.25,
+        "currency": "USD",
+        "fareType": "distance-based adult one-way fare",
+        "payment": "Clipper or contactless payment",
+        "sourceUrl": "https://www.bart.gov/sites/default/files/2026-01/BART_Facts_2026.pdf",
+        "confidence": "high",
+        "effectiveDate": "2026-01-01",
+        "evidence": "Official BART Facts 2026 document lists the adult fare range at $2.55–$17.25 and states that riders pay with Clipper or Tap and Ride contactless payment; BART fares vary by origin and destination."
+      }
     },
     {
       "slug": "caltrain",
@@ -9934,7 +9946,7 @@
         "CAD"
       ],
       "feedVersion": "20260529182459",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 4.4,
         "currency": "CAD",
@@ -9949,7 +9961,18 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "emerygoround",
+        "agencyName": "Emery Go-Round",
+        "amount": 0,
+        "amountMax": 0,
+        "currency": "USD",
+        "fareType": "fare-free public shuttle",
+        "payment": "no fare required",
+        "sourceUrl": "https://emerygoround.com/",
+        "confidence": "high",
+        "evidence": "Official Emery Go-Round site describes the service as fare-free and open to the public."
+      }
     },
     {
       "slug": "stanford",
@@ -9967,7 +9990,7 @@
       "status": "unresolved",
       "notes": "GTFS publishes only zero-value legacy fare attributes; this may be a placeholder and was not treated as proof of free service.",
       "feedVersion": "2026-09-15T15:07:04Z+eta152",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": null,
         "currency": "USD",
@@ -9982,7 +10005,18 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "stanford",
+        "agencyName": "Stanford Marguerite Shuttle (SMS)",
+        "amount": 0,
+        "amountMax": 0,
+        "currency": "USD",
+        "fareType": "fare-free public campus shuttle",
+        "payment": "no fare required",
+        "sourceUrl": "https://transportation.stanford.edu/getting-stanford/marguerite",
+        "confidence": "high",
+        "evidence": "Official Stanford Transportation page states that the Marguerite shuttle is free and open to the public, including its campus and Palo Alto/Redwood City connector service."
+      }
     },
     {
       "slug": "tridelta",
@@ -10159,7 +10193,7 @@
         "USD"
       ],
       "feedVersion": "UTC: 14-Mar-2023 23:56",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 2,
         "currency": "USD",
@@ -10174,7 +10208,18 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "unioncity",
+        "agencyName": "Union City Transit",
+        "amount": 2,
+        "amountMax": 55,
+        "currency": "USD",
+        "fareType": "adult one-way fare and 31-day pass",
+        "payment": "cash, Clipper, or fare pass",
+        "sourceUrl": "https://www.unioncity.org/DocumentCenter/View/13510/Activity-Guide_SU25-FINAL-SMALL-FINAL-FINAL-042520225",
+        "confidence": "high",
+        "evidence": "Official City of Union City fare material lists adult one-way fare at $2.00 and adult 31-day pass at $55.00; youth, senior/disabled, and paratransit fares are listed separately."
+      }
     },
     {
       "slug": "westberkeley",
