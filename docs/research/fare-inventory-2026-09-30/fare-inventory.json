@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 299,
+    "manualVerified": 301,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,8 +11,8 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 299,
-      "official-source-candidate": 191,
+      "verified-official": 301,
+      "official-source-candidate": 189,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
       "no-official-website": 32
@@ -10590,7 +10590,7 @@
         "USD"
       ],
       "feedVersion": "Updated: Aug 2, 2026, 5:36 PM",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 2,
         "currency": "USD",
@@ -10616,7 +10616,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "raba",
+        "agencyName": "Redding Area Bus Authority",
+        "amount": 2,
+        "amountMax": 50,
+        "currency": "USD",
+        "fareType": "general two-hour fare and 30-day pass products",
+        "payment": "cash, Token Transit, or pass",
+        "sourceUrl": "https://www.rabaride.com/Document%20Center/RABA_Triennial%20Performance%20Audit_final%20report_4.1.25.pdf",
+        "confidence": "medium",
+        "evidence": "Official RABA-hosted FY 2022-2024 performance audit lists general fare products at $2 for two hours, $4 for 24 hours, $25 for seven days, and $50 for 30 days; discount, express, paratransit, and Route 99X fares are listed separately. The audit is an official source but not a dedicated current fare page."
+      }
     },
     {
       "slug": "siskiyou",
@@ -13191,7 +13202,7 @@
         "USD"
       ],
       "feedVersion": "V716-215-216-20260720",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1,
         "currency": "USD",
@@ -13233,7 +13244,19 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "dart",
+        "agencyName": "Dallas Area Rapid Transit (DART)",
+        "amount": 9,
+        "amountMax": 192,
+        "currency": "USD",
+        "fareType": "regional day pass and 31-day pass products",
+        "payment": "GoPass app, GoPass Tap card, or ticket vending machine",
+        "sourceUrl": "https://www.dart.org/about/news-and-events/newsreleases/newsrelease-detail/dart-announces-regional-fare-adjustments-effective-march-1--2026",
+        "confidence": "high",
+        "effectiveDate": "2026-03-01",
+        "evidence": "Official DART fare-adjustment notice states that from March 1, 2026 the Regional Day Pass is $9 and the Regional 31-Day Pass remains $192; reduced fares are listed separately. The regional pass covers DART, Trinity Metro, and Denton County Transportation Authority services."
+      }
     },
     {
       "slug": "trinitymetro",
