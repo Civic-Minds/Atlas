@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 368,
+    "manualVerified": 375,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,10 +11,10 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 368,
+      "verified-official": 375,
       "official-fare-page-not-found": 125,
       "official-site-inaccessible": 45,
-      "official-source-candidate": 123,
+      "official-source-candidate": 116,
       "no-official-website": 32
     }
   },
@@ -22739,7 +22739,7 @@
       "confidence": "unresolved",
       "status": "inaccessible",
       "notes": "Cached feed could not be read: Can't find end of central directory : is this a zip file ? If it is, see https://stuk.github.io/jszip/documentation/howto/read_zip.html",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.sportran.org/",
@@ -22755,7 +22755,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "sportran",
+        "agencyName": "SporTran (Shreveport)",
+        "amount": 0,
+        "amountMax": 0,
+        "currency": "USD",
+        "fareType": "zero-fare fixed-route and OnDemand service",
+        "payment": "no fare required",
+        "sourceUrl": "https://www.sportran.org/8/Fares-Passes",
+        "confidence": "high",
+        "evidence": "Official SporTran fare page states that all SporTran and OnDemand services within the Shreveport-Bossier City limits are free."
+      }
     },
     {
       "slug": "billings",
@@ -23277,7 +23288,7 @@
         "USD"
       ],
       "feedVersion": "S1000166",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 2,
         "currency": "USD",
@@ -23337,7 +23348,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "rfta",
+        "agencyName": "Roaring Fork Transportation Authority (RFTA)",
+        "amount": 0,
+        "amountMax": 2,
+        "currency": "USD",
+        "fareType": "zone-based regional fare",
+        "payment": "exact cash or fare media",
+        "sourceUrl": "https://www.rfta.com/fares/",
+        "confidence": "high",
+        "evidence": "Official RFTA fare page states service is free within each zone, $2 to the next zone, and $1 for each additional zone; youth and senior concessions are listed separately."
+      }
     },
     {
       "slug": "durango-transit",
@@ -24050,7 +24072,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://myvalleytransit.com/",
@@ -24080,7 +24102,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "appleton",
+        "agencyName": "Valley Transit (Appleton/Fox Cities)",
+        "amount": 4,
+        "amountMax": 60,
+        "currency": "USD",
+        "fareType": "adult fare cap by day or calendar month",
+        "payment": "cash, WisGo Card, or Umo app",
+        "sourceUrl": "https://myvalleytransit.com/fare-information/",
+        "confidence": "high",
+        "evidence": "Official Valley Transit fare page lists adult regular fare caps of $4 per day and $60 per calendar month; reduced and youth caps are listed separately."
+      }
     },
     {
       "slug": "modesto",
@@ -25740,7 +25773,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.t-linebus.org/",
@@ -25763,7 +25796,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "texarkana",
+        "agencyName": "Texarkana T-Line",
+        "amount": 1.25,
+        "amountMax": 40,
+        "currency": "USD",
+        "fareType": "adult cash single ride and monthly pass",
+        "payment": "exact cash or pass",
+        "sourceUrl": "https://www.t-linebus.org/routes-maps",
+        "confidence": "high",
+        "evidence": "Official T-Line Routes & Fares page lists adult cash fare at $1.25, youth/student at $1, senior/disability at $0.60, paratransit at $2.50, and adult monthly pass at $40."
+      }
     },
     {
       "slug": "fort-bend",
@@ -26473,7 +26517,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://ridebt.org/",
@@ -26496,7 +26540,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "blacksburg",
+        "agencyName": "Blacksburg Transit",
+        "amount": 0,
+        "amountMax": 0,
+        "currency": "USD",
+        "fareType": "fare-free service",
+        "payment": "no fare, ID, or pass required",
+        "sourceUrl": "https://ridebt.org/fare-information",
+        "confidence": "high",
+        "evidence": "Official Blacksburg Transit fare page states that all vehicles are fare-free, including service in Blacksburg and Christiansburg, BT Access, and Go Anywhere."
+      }
     },
     {
       "slug": "cata-state-college",
@@ -27315,7 +27370,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.bangormaine.gov/634/Community-Connector",
@@ -27331,7 +27386,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "bangor",
+        "agencyName": "Bangor Community Connector",
+        "amount": 1.5,
+        "amountMax": 45,
+        "currency": "USD",
+        "fareType": "single ride and monthly pass",
+        "payment": "exact cash or pass",
+        "sourceUrl": "https://www.bangormaine.gov/285/Fares",
+        "confidence": "high",
+        "evidence": "Official Bangor fare page lists single ride at $1.50, half/children's fare at $0.75, five-ride ticket at $6, and monthly pass at $45."
+      }
     },
     {
       "slug": "brandon",
@@ -28227,7 +28293,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.sgcity.org/suntran",
@@ -28270,7 +28336,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "st-george",
+        "agencyName": "SunTran (St. George)",
+        "amount": 1,
+        "amountMax": 30,
+        "currency": "USD",
+        "fareType": "regular fixed-route single ride and monthly pass",
+        "payment": "exact cash or pass",
+        "sourceUrl": "https://sgcityutah.gov/services/suntran_bus_system/fares_and_passes.php",
+        "confidence": "high",
+        "evidence": "Official City of St. George fare page lists regular fixed-route fare at $1, one-day pass at $2.50, 10-ride card at $10, and monthly pass at $30; Zion Route fares are separate."
+      }
     },
     {
       "slug": "grand-junction",

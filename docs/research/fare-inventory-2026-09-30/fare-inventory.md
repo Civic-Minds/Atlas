@@ -4,8 +4,8 @@ This dated ledger combines GTFS supporting evidence, official-site discovery, an
 
 ## Current status
 
-- Individually verified official fares: 368
-- Official pages found but still requiring manual fare verification: 123
+- Individually verified official fares: 375
+- Official pages found but still requiring manual fare verification: 116
 - GTFS-only or not yet matched to an official fare source: 0
 - Official-site inaccessible: 45
 - No official fare page found: 125
