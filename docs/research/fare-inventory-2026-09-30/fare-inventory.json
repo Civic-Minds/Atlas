@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 436,
+    "manualVerified": 437,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,10 +11,10 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 436,
+      "verified-official": 437,
       "official-fare-page-not-found": 125,
       "official-site-inaccessible": 45,
-      "official-source-candidate": 55,
+      "official-source-candidate": 54,
       "no-official-website": 32
     }
   },
@@ -26143,7 +26143,7 @@
         "CAD"
       ],
       "feedVersion": "20260529182459",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 4.4,
         "currency": "CAD",
@@ -26158,7 +26158,18 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "terrebonne-parish",
+        "agencyName": "Good Earth Transit (Houma)",
+        "amount": 1,
+        "amountMax": 2.5,
+        "currency": "USD",
+        "fareType": "regular boarding fare and day pass",
+        "payment": "exact cash",
+        "confidence": "high",
+        "sourceUrl": "https://www.tpcg.org/transit/fares",
+        "evidence": "Current official Terrebonne Parish fare page lists regular fare at $1.00 per boarding, regular day pass at $2.50, half fare at $0.50, half-fare day pass at $1.25, and paratransit fares separately."
+      }
     },
     {
       "slug": "tangipahoa-parish",
