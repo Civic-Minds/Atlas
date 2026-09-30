@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 227,
+    "manualVerified": 230,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,8 +11,8 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 227,
-      "official-source-candidate": 263,
+      "verified-official": 230,
+      "official-source-candidate": 260,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
       "no-official-website": 32
@@ -1136,7 +1136,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://www.oakvilletransit.ca/",
@@ -1175,7 +1175,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "oakville",
+        "agencyName": "Oakville Transit",
+        "amount": 3.5,
+        "amountMax": 4,
+        "currency": "CAD",
+        "fareType": "adult single ride",
+        "payment": "PRESTO ($3.50) or exact cash/contactless ($4.00)",
+        "sourceUrl": "https://www.oakvilletransit.ca/fares/",
+        "confidence": "high",
+        "evidence": "Official Oakville Transit fare page lists Adult PRESTO single at $3.50 and Adult exact cash fare at $4.00; senior, youth, child, GO co-fare, care-A-van, and monthly fares are listed separately."
+      }
     },
     {
       "slug": "orangeville",
@@ -18745,7 +18756,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://www.psta.net",
@@ -18780,7 +18791,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "psta",
+        "agencyName": "Pinellas Suncoast Transit Authority (PSTA)",
+        "amount": 2.25,
+        "currency": "USD",
+        "fareType": "regular single ride",
+        "payment": "cash, Flamingo Fares, or tap-to-pay",
+        "sourceUrl": "https://psta.net/fares/",
+        "confidence": "high",
+        "evidence": "Official PSTA fare page lists Regular Fare Single Ride at $2.25 by cash or Flamingo Fares/tap-to-pay; daily/monthly caps, reduced fares, free youth/veteran programs, and TD fares are listed separately."
+      }
     },
     {
       "slug": "palm-tran",
@@ -27364,7 +27385,7 @@
         "USD"
       ],
       "feedVersion": "20260929",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 4.5,
         "currency": "USD",
@@ -27379,7 +27400,17 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "nyc-ferry",
+        "agencyName": "NYC Ferry",
+        "amount": 4.5,
+        "currency": "USD",
+        "fareType": "one-way ferry fare",
+        "payment": "NYC Ferry app or ticket vending machine",
+        "sourceUrl": "https://www.ferry.nyc/ticketing-info/",
+        "confidence": "high",
+        "evidence": "Official NYC Ferry ticketing page lists One-way fare at $4.50; 10-trip, 2-day unlimited, discounted, student, and free-transfer rules are listed separately."
+      }
     },
     {
       "slug": "rioc-tram",
