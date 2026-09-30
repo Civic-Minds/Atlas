@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 187,
+    "manualVerified": 189,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,8 +11,8 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 187,
-      "official-source-candidate": 303,
+      "verified-official": 189,
+      "official-source-candidate": 301,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
       "no-official-website": 32
@@ -19336,7 +19336,7 @@
       "status": "unresolved",
       "notes": "GTFS publishes only zero-value legacy fare attributes; this may be a placeholder and was not treated as proof of free service.",
       "feedVersion": "UTC: 12-Jun-2026 22:21",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": null,
         "currency": "USD",
@@ -19351,7 +19351,17 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "bay-transit",
+        "agencyName": "Bay Transit",
+        "amount": 12,
+        "currency": "USD",
+        "fareType": "10-ticket booklet",
+        "payment": "ticket booklet",
+        "sourceUrl": "https://www.baytransit.org/",
+        "confidence": "high",
+        "evidence": "Official Bay Transit page states current fares include a $12.00 booklet of 10 tickets; the service provides demand-response, deviated fixed-route, and microtransit services."
+      }
     },
     {
       "slug": "wata",
@@ -27514,7 +27524,7 @@
         "USD"
       ],
       "feedVersion": "UTC: 10-Jul-2026 15:49",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1,
         "currency": "USD",
@@ -27529,7 +27539,17 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "camarillo",
+        "agencyName": "Camarillo Area Transit",
+        "amount": 10,
+        "currency": "USD",
+        "fareType": "fixed-route/trolley 10-ride ticket",
+        "payment": "ticket or UMO fare media",
+        "sourceUrl": "https://www.cityofcamarillo.org/residents/public_transportation/bus_pass.php",
+        "confidence": "high",
+        "evidence": "Official City of Camarillo fare page lists the Fixed Route/Trolley Route 10-Ride Ticket at $10.00 general purpose and $5.00 for senior, ADA, and veteran riders; monthly and Dial-A-Ride products are listed separately."
+      }
     },
     {
       "slug": "basin-transit",
