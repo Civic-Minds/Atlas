@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 90,
+    "manualVerified": 96,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,8 +11,8 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 90,
-      "official-source-candidate": 400,
+      "verified-official": 96,
+      "official-source-candidate": 394,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
       "no-official-website": 32
@@ -3692,7 +3692,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.fredericton.ca/en/transit",
@@ -3722,7 +3722,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "fredericton",
+        "agencyName": "Fredericton Transit",
+        "amount": 3,
+        "currency": "CAD",
+        "fareType": "passenger cash/debit/credit single ride",
+        "payment": "exact cash, debit, or credit",
+        "sourceUrl": "https://www.fredericton.ca/resident-services/fredericton-transit/fares",
+        "confidence": "high",
+        "evidence": "Official fare page lists passenger cash, debit, or credit fare at $3.00; children, monthly, student, senior, and 10-ticket products are listed separately."
+      }
     },
     {
       "slug": "saint-john",
@@ -6140,7 +6150,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://www.everetttransit.org/",
@@ -6165,7 +6175,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "everetttransit",
+        "agencyName": "Everett Transit",
+        "amount": 2,
+        "currency": "USD",
+        "fareType": "adult fixed-route single trip",
+        "payment": "exact cash, ORCA, or tap-to-pay",
+        "sourceUrl": "http://www.everetttransit.org/158/Everett-Transit-Fixed-Route-Bus-Fare",
+        "confidence": "high",
+        "evidence": "Official fare table lists Adult single fare at $2.00; monthly, reduced, youth, and pass products are listed separately."
+      }
     },
     {
       "slug": "kitsaptransit",
@@ -9330,7 +9350,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://www.fasttransit.org/",
@@ -9405,7 +9425,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "fast-ca",
+        "agencyName": "Fairfield and Suisun Transit (FAST Transit)",
+        "amount": 2,
+        "currency": "USD",
+        "fareType": "adult local single ride",
+        "payment": "standard fare media",
+        "effectiveDate": "2025-01-06",
+        "sourceUrl": "https://fasttransit.org/fares-passes/",
+        "confidence": "high",
+        "evidence": "Official fare structure effective January 6, 2025 lists Adult Local/DART Single Ride at $2.00; reduced, youth, and intercity fares are listed separately."
+      }
     },
     {
       "slug": "vacaville",
@@ -10688,7 +10719,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.foothilltransit.org",
@@ -10740,7 +10771,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "foothill",
+        "agencyName": "Foothill Transit",
+        "amount": 1.75,
+        "currency": "USD",
+        "fareType": "adult local or Silver Streak single trip",
+        "payment": "cash, TAP, or TAP app",
+        "sourceUrl": "https://www.foothilltransit.org/fares-and-passes",
+        "confidence": "high",
+        "evidence": "Official fare table lists Adult Local + Silver Streak Single Trip at $1.75; student, reduced, commuter express, and pass products are listed separately."
+      }
     },
     {
       "slug": "avta",
@@ -16748,7 +16789,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://factbus.com/",
@@ -16786,7 +16827,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "fact",
+        "agencyName": "Fayette Area Coordinated Transportation",
+        "amount": 2,
+        "amountMax": 8,
+        "currency": "USD",
+        "fareType": "one-way Pittsburgh commuter fare by origin/destination",
+        "payment": "standard fare media",
+        "sourceUrl": "https://factbus.com/bus-schedule/pittsburgh-commuter/?field=monday_friday_service#pittsburgh-fares",
+        "confidence": "high",
+        "evidence": "Official Pittsburgh fare table lists one-way fares from $2.00 to $8.00 depending on origin and destination; the detailed matrix provides the route-specific amounts."
+      }
     },
     {
       "slug": "freedom-transit",
@@ -23496,7 +23548,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://ridecat.com/",
@@ -23557,7 +23609,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "collier",
+        "agencyName": "Collier Area Transit (Naples)",
+        "amount": 2,
+        "currency": "USD",
+        "fareType": "full-fare fixed-route one-way",
+        "payment": "cash, smart card, or fare media",
+        "sourceUrl": "https://www.ridecat.com/fares-passes/fare-information/",
+        "confidence": "high",
+        "evidence": "Official fixed-route fare table lists Full Fare One-Way Fare at $2.00; reduced, Marco Express, day, transfer, and pass products are listed separately."
+      }
     },
     {
       "slug": "springfield-mo",
