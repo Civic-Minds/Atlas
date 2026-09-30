@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 293,
+    "manualVerified": 295,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,8 +11,8 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 293,
-      "official-source-candidate": 197,
+      "verified-official": 295,
+      "official-source-candidate": 195,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
       "no-official-website": 32
@@ -26887,7 +26887,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://www.yakimatransit.org",
@@ -26918,7 +26918,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "yakima",
+        "agencyName": "Yakima Transit",
+        "amount": 1,
+        "amountMax": 25,
+        "currency": "USD",
+        "fareType": "adult fixed-route fare and monthly pass",
+        "payment": "exact cash or pass",
+        "sourceUrl": "https://yakimatransit.org/fares/",
+        "confidence": "high",
+        "evidence": "Official Yakima fare table lists adult one-way fare at $1.00, Yakima-Ellensburg commuter one-way fare at $5, adult monthly pass at $25, and reduced fare at $0.50; youth ride free."
+      }
     },
     {
       "slug": "grand-forks",
@@ -27359,7 +27370,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.wavetransit.com/",
@@ -27385,7 +27396,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "wilmington-nc",
+        "agencyName": "Wave Transit (Wilmington)",
+        "amount": 2,
+        "amountMax": 80,
+        "currency": "USD",
+        "fareType": "regular fixed-route fare and pass products",
+        "payment": "cash or fare pass",
+        "sourceUrl": "https://www.wavetransit.com/fare-pass-information/",
+        "confidence": "high",
+        "evidence": "Official Wave fare table lists regular one-ride pass at $2, 24-hour pass at $5, 7-day pass at $20, 31-day pass at $80, and reduced fares at half-price; DART and RideMICRO fares are listed separately."
+      }
     },
     {
       "slug": "st-george",
