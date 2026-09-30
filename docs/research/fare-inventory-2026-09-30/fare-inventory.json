@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 223,
+    "manualVerified": 227,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,8 +11,8 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 223,
-      "official-source-candidate": 267,
+      "verified-official": 227,
+      "official-source-candidate": 263,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
       "no-official-website": 32
@@ -11317,7 +11317,7 @@
         "USD"
       ],
       "feedVersion": "2607-GTFS-Sept2026TripAdjustment (2026-09-01)",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1.25,
         "currency": "USD",
@@ -11380,7 +11380,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "nctd",
+        "agencyName": "North County Transit District (NCTD)",
+        "amount": 2.5,
+        "currency": "USD",
+        "fareType": "adult BREEZE/SPRINTER single ride",
+        "payment": "PRONTO, contactless, or fare media",
+        "sourceUrl": "https://gonctd.com/fares/fares-passes/",
+        "confidence": "medium",
+        "evidence": "Official NCTD fare page's current single-ride table lists Adult BREEZE and SPRINTER at $2.50; the same page announces a Phase I increase to $3.00 effective October 1, 2026, so $2.50 is the rate before that effective date."
+      }
     },
     {
       "slug": "riverside",
@@ -19174,7 +19184,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://www.mvta.com",
@@ -19214,7 +19224,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "mvta",
+        "agencyName": "Minnesota Valley Transit Authority (MVTA)",
+        "amount": 2,
+        "currency": "USD",
+        "fareType": "adult local fixed-route fare",
+        "payment": "exact cash, Go-To Card, Universal Transit Pass, or regional pass",
+        "sourceUrl": "https://www.mvta.com/fares/",
+        "confidence": "high",
+        "evidence": "Official MVTA fare table lists Adult Local fare at $2.00 in both non-rush and rush hours; adult express, senior/youth, limited-mobility, free, and MVTA Connect fares are listed separately."
+      }
     },
     {
       "slug": "xpress-ga",
@@ -23250,7 +23270,7 @@
         "USD"
       ],
       "feedVersion": "GTFS Feed 09/08/2026 – 19/12/2026 (Generated: 08/09/2026 8:22:54)",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1,
         "currency": "USD",
@@ -23280,7 +23300,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "mtd-champaign",
+        "agencyName": "Champaign-Urbana MTD",
+        "amount": 1,
+        "currency": "USD",
+        "fareType": "standard one-way fare",
+        "payment": "coins, $1 bills, or Token Transit",
+        "sourceUrl": "https://mtd.org/riding/fares-passes/how-much-does-it-cost-to-ride/",
+        "confidence": "high",
+        "evidence": "Official MTD fare page states a one-way trip is $1.00; university, senior, youth, veteran, DASH, and other fare-free or reduced-fare programs are listed separately."
+      }
     },
     {
       "slug": "kalamazoo",
@@ -35835,7 +35865,7 @@
         "CAD"
       ],
       "feedVersion": "20260529182459",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 4.4,
         "currency": "CAD",
@@ -35870,7 +35900,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "muskegon",
+        "agencyName": "Muskegon Area Transit System",
+        "amount": 1.25,
+        "currency": "USD",
+        "fareType": "fixed-route single ride cash fare",
+        "payment": "exact cash",
+        "sourceUrl": "https://matsbus.com/fares/",
+        "confidence": "high",
+        "evidence": "Official MATS fare page lists Cash Fare Single Ride at $1.25 valid on all fixed routes; reduced, monthly, 10-ride, Go2 on-demand, and free-transfer products are listed separately."
+      }
     },
     {
       "slug": "telluride",
