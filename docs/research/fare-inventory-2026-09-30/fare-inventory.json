@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 45,
+    "manualVerified": 50,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,8 +11,8 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 45,
-      "official-source-candidate": 445,
+      "verified-official": 50,
+      "official-source-candidate": 440,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
       "no-official-website": 32
@@ -27253,7 +27253,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.divia.fr/",
@@ -27312,7 +27312,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "dijon",
+        "agencyName": "Divia (Dijon)",
+        "amount": 1.5,
+        "currency": "EUR",
+        "fareType": "one-hour ticket",
+        "payment": "standard ticket or DiviaMobilités card",
+        "sourceUrl": "https://www.divia.fr/titres-et-tarifs/trouver-et-acheter-mon-titre",
+        "confidence": "high",
+        "evidence": "Official Divia page lists Pass 1 Heure at €1.50 for one hour across the Bus&Tram network; contactless bank-card and post-paid products are listed separately."
+      }
     },
     {
       "slug": "angers",
@@ -28246,7 +28256,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.twisto.fr/",
@@ -28299,7 +28309,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "caen",
+        "agencyName": "Twisto (Caen)",
+        "amount": 1.6,
+        "currency": "EUR",
+        "fareType": "one-hour ticket",
+        "payment": "standard ticket",
+        "sourceUrl": "https://www.twisto.fr/tarifs/tickets-et-abonnements-0",
+        "confidence": "high",
+        "evidence": "Official Twisto ticket table lists Ticket 1H at €1.60; 24-hour, 48-hour, 72-hour, and pass products are listed separately."
+      }
     },
     {
       "slug": "chartres",
@@ -29982,7 +30002,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.optymo.fr/",
@@ -30010,7 +30030,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "belfort",
+        "agencyName": "Optymo (Belfort)",
+        "amount": 1,
+        "currency": "EUR",
+        "fareType": "normal bus trip",
+        "payment": "standard ticket",
+        "sourceUrl": "https://www.optymo.fr/pass-tickets/pass-optymo/tarifs/",
+        "confidence": "high",
+        "evidence": "Official Optymo tariff page lists the normal bus fare at €1 per trip; reduced bus, paratransit, bicycle, and car-share rates are listed separately."
+      }
     },
     {
       "slug": "bergerac",
@@ -30102,7 +30132,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.rubantransport.com",
@@ -30110,7 +30140,17 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "bourgoin",
+        "agencyName": "Ruban (Bourgoin-Jallieu)",
+        "amount": 1.5,
+        "currency": "EUR",
+        "fareType": "standard one-trip ticket purchased onboard",
+        "payment": "onboard ticket",
+        "sourceUrl": "https://www.rubantransport.com/occasionnel/",
+        "confidence": "high",
+        "evidence": "Official Ruban page lists Ticket unité at €1.50 when sold onboard, or €1.30 through agencies, relay points, or the mobile app; valid for one hour with connections."
+      }
     },
     {
       "slug": "brive",
@@ -32403,7 +32443,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://www.tedbus.com",
@@ -32432,7 +32472,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "draguignan",
+        "agencyName": "TedBus (Draguignan)",
+        "amount": 1.4,
+        "currency": "EUR",
+        "fareType": "standard one-unit ticket",
+        "payment": "onboard or TixiPass app",
+        "sourceUrl": "https://tedbus.dracenie.com/tarifs/",
+        "effectiveDate": "2023-09-01",
+        "confidence": "medium",
+        "evidence": "Official tariff page says tariffs apply from September 1, 2023 and lists the standard Unitaire fare at €1.40; reduced and pass products are listed separately."
+      }
     },
     {
       "slug": "dreux",
