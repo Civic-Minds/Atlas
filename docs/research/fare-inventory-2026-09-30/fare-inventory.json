@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 485,
+    "manualVerified": 487,
     "officialSiteStats": {
       "official-source-found": 493,
       "official-fare-page-not-found": 116,
@@ -11,11 +11,11 @@
       "site-inaccessible": 52
     },
     "researchStatuses": {
-      "verified-official": 485,
+      "verified-official": 487,
       "official-fare-page-not-found": 113,
       "official-site-inaccessible": 45,
       "no-official-website": 32,
-      "official-source-candidate": 18
+      "official-source-candidate": 16
     }
   },
   "records": [
@@ -24263,7 +24263,7 @@
         "USD"
       ],
       "feedVersion": "20250102",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1.75,
         "currency": "USD",
@@ -24297,7 +24297,19 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "visalia",
+        "agencyName": "Visalia Transit",
+        "amount": 1.75,
+        "amountMax": 50,
+        "currency": "USD",
+        "fareType": "general one-way fare and 31-day pass",
+        "payment": "exact cash, change card, or pass",
+        "effectiveDate": "2018-08-04",
+        "confidence": "medium",
+        "sourceUrl": "https://www.visalia.gov/depts/general_services/transit/fares_n_passes/default.asp",
+        "evidence": "Official City of Visalia fare page lists general one-way fare at $1.75, day pass at $3.50, seven-day pass at $14, and general 31-day pass at $50, with reduced categories and children’s fare rules. The page labels the schedule effective August 4, 2018, so the amount is retained as an official but stale source requiring currentness follow-up."
+      }
     },
     {
       "slug": "green-bay",
@@ -24469,7 +24481,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://www.wichitatransit.org",
@@ -24492,7 +24504,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "wichita",
+        "agencyName": "Wichita Transit",
+        "amount": 1.75,
+        "amountMax": 55,
+        "currency": "USD",
+        "fareType": "adult fixed-route single ride and monthly pass",
+        "payment": "exact cash or pass",
+        "confidence": "high",
+        "sourceUrl": "https://www.wichita.gov/1504/Fares-Passes/",
+        "evidence": "Official City of Wichita fare page lists adult single ride at $1.75, day pass at $5.00, weekly pass at $25.00, and monthly pass at $55.00; youth, half-fare, paratransit, feeder, and zone fares are listed separately. The page states transfers are not accepted."
+      }
     },
     {
       "slug": "appleton",
