@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 352,
+    "manualVerified": 355,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,10 +11,10 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 352,
+      "verified-official": 355,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
-      "official-source-candidate": 138,
+      "official-source-candidate": 135,
       "no-official-website": 32
     }
   },
@@ -11352,7 +11352,7 @@
         "USD"
       ],
       "feedVersion": "SS2-Fall2026_V4",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1.5,
         "currency": "USD",
@@ -11367,7 +11367,19 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "unitrans",
+        "agencyName": "Unitrans (Davis)",
+        "amount": 1.5,
+        "amountMax": 270,
+        "currency": "USD",
+        "fareType": "regular single ride and pass products",
+        "payment": "exact cash, AggieCard, or fare pass",
+        "sourceUrl": "https://unitrans.ucdavis.edu/passes",
+        "confidence": "high",
+        "effectiveDate": "2026-05-30",
+        "evidence": "Official Unitrans fare page lists single ride at $1.50, 10-ride ticket at $9.50, monthly pass at $38, quarterly pass at $97, and annual pass at $270; qualifying youth, senior, and disability passes provide free rides."
+      }
     },
     {
       "slug": "roseville",
@@ -11717,7 +11729,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://ci.carson.ca.us/CommunityServices/Transportation.aspx",
@@ -11725,7 +11737,18 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "carson-circuit",
+        "agencyName": "Carson Circuit",
+        "amount": 1,
+        "amountMax": 30,
+        "currency": "USD",
+        "fareType": "regular single ride and monthly pass",
+        "payment": "cash or fare pass",
+        "sourceUrl": "https://ci.carson.ca.us/communityservices/CSFAQs.aspx",
+        "confidence": "high",
+        "evidence": "Official City of Carson FAQ lists Carson Circuit fare at $1, free rides for elderly and disabled riders with ID, and unlimited monthly passes at $30."
+      }
     },
     {
       "slug": "gold-coast",
@@ -15471,7 +15494,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://www.palosverdes.com/pvtransit/",
@@ -15479,7 +15502,18 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "pvpta",
+        "agencyName": "Palos Verdes Peninsula Transit Authority (PVPTA)",
+        "amount": 2.5,
+        "currency": "USD",
+        "fareType": "regular single ride",
+        "payment": "exact cash, TAP card, or fare pass",
+        "confidence": "high",
+        "effectiveDate": "2025-08-01",
+        "sourceUrl": "https://palosverdes.com/pvtransit/passes.cfm?nomenu=1",
+        "evidence": "Official PVPTA fare page lists regular fare at $2.50 per ride and senior/disabled fare at $1.00, with TAP cards accepted and annual and semester passes available through the authority."
+      }
     },
     {
       "slug": "gtrans",
