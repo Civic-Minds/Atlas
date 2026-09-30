@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 194,
+    "manualVerified": 196,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,8 +11,8 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 194,
-      "official-source-candidate": 296,
+      "verified-official": 196,
+      "official-source-candidate": 294,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
       "no-official-website": 32
@@ -26054,7 +26054,7 @@
         "USD"
       ],
       "feedVersion": "Updated: Aug 28, 2026, 1:53 PM",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1.5,
         "currency": "USD",
@@ -26086,7 +26086,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "greeley",
+        "agencyName": "Greeley-Evans Transit (GET)",
+        "amount": 1.5,
+        "currency": "USD",
+        "fareType": "adult fixed-route one-way fare",
+        "payment": "standard fare media",
+        "sourceUrl": "https://greeleyco.gov/transit/service-offerings/fares-and-passes/",
+        "confidence": "high",
+        "evidence": "Official City of Greeley fare page lists Fixed-Route Adult One-way at $1.50; senior, day, 31-day, annual, youth-free, and transfer policies are listed separately."
+      }
     },
     {
       "slug": "bridgeport-gbt",
@@ -26932,7 +26942,7 @@
         "USD"
       ],
       "feedVersion": "UTC: 18-Aug-2026 18:31",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 0.25,
         "currency": "USD",
@@ -26960,7 +26970,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "dekalb",
+        "agencyName": "DeKalb Public Transit",
+        "amount": 0.5,
+        "currency": "USD",
+        "fareType": "adult fixed-route one-way fare",
+        "payment": "standard fare media",
+        "sourceUrl": "https://www.cityofdekalb.com/1288/Fares",
+        "confidence": "medium",
+        "evidence": "Official City of DeKalb fare table displays Adult fare for all fixed routes as 0.50¢; senior/disabled, student, free-transfer, paratransit, and demand-response fares are listed separately. The page's cent notation is ambiguous and should be confirmed before publication."
+      }
     },
     {
       "slug": "radford",
