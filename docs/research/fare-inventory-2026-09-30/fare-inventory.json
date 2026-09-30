@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 275,
+    "manualVerified": 277,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,8 +11,8 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 275,
-      "official-source-candidate": 215,
+      "verified-official": 277,
+      "official-source-candidate": 213,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
       "no-official-website": 32
@@ -12211,7 +12211,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://www.stanrta.org",
@@ -12258,7 +12258,19 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "start",
+        "agencyName": "Stanislaus Regional Transit (StaRT)",
+        "amount": 2,
+        "amountMax": 165,
+        "currency": "USD",
+        "fareType": "general 1-day pass and regional pass products",
+        "payment": "cash, physical fare media, or digital fare media",
+        "sourceUrl": "https://www.stanrta.org/AgendaCenter/ViewFile/Agenda/_04232026-101?packet=true",
+        "effectiveDate": "2026-04-23",
+        "confidence": "high",
+        "evidence": "Official StanRTA April 2026 board packet lists general 1-day pass at $2, 7-day pass at $10, 31-day pass at $40, BART commuter round trip at $15, and BART commuter 31-day pass at $165; reduced, paratransit, and youth fares are listed separately."
+      }
     },
     {
       "slug": "mst",
@@ -12792,7 +12804,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.mountainline.az.gov/",
@@ -12840,7 +12852,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "mountainline",
+        "agencyName": "Mountain Line (Flagstaff)",
+        "amount": 1.25,
+        "amountMax": 34,
+        "currency": "USD",
+        "fareType": "adult single-trip fare and 30-day pass",
+        "payment": "exact cash, FlagPass, or mobile ticket",
+        "sourceUrl": "https://mountainline.az.gov/fares-passes-online/",
+        "confidence": "high",
+        "evidence": "Official Mountain Line fare table lists Adult single-trip cash fare at $1.25, day pass at $2.50, and 30-day pass at $34; youth, senior, disabled, student, and paratransit products are listed separately."
+      }
     },
     {
       "slug": "mountainmetro",
