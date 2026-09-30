@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 318,
+    "manualVerified": 321,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,10 +11,10 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 318,
-      "official-source-candidate": 172,
+      "verified-official": 321,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
+      "official-source-candidate": 169,
       "no-official-website": 32
     }
   },
@@ -88,7 +88,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.belleville.ca/residents/page/transit",
@@ -96,7 +96,19 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "belleville",
+        "agencyName": "Belleville Transit",
+        "amount": 4,
+        "amountMax": 90,
+        "currency": "CAD",
+        "fareType": "adult single ride and monthly pass",
+        "payment": "cash, ticket, smart card, or BTap app",
+        "sourceUrl": "https://www.belleville.ca/walk-ride-and-drive/transit/fares-and-passes/",
+        "confidence": "high",
+        "effectiveDate": "2026-01-01",
+        "evidence": "Official City of Belleville fare table lists 2026 fares effective January 1, 2026: adult cash or single ticket $4.00 and adult monthly pass $90.00; youth, senior, high-school, and regional pass fares are listed separately."
+      }
     },
     {
       "slug": "brampton",
@@ -4364,7 +4376,7 @@
         "USD"
       ],
       "feedVersion": "S1000182",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 2,
         "currency": "USD",
@@ -4389,7 +4401,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "ddot",
+        "agencyName": "DDOT (Detroit)",
+        "amount": 2,
+        "amountMax": 70,
+        "currency": "USD",
+        "fareType": "standard 4-hour fare and pass products",
+        "payment": "cash, DDOT pass, or mobile fare",
+        "sourceUrl": "https://detroitmi.gov/departments/detroit-department-transportation/transportation-fares",
+        "confidence": "medium",
+        "evidence": "Official City of Detroit DDOT fare page states the full fare is required and reduced fare is $0.50 for eligible riders; the City’s official fare materials list the standard 4-hour ticket at $2, 24-hour ticket at $5, 7-day DDOT pass at $17, and 31-day DDOT pass at $50, with regional products listed separately."
+      }
     },
     {
       "slug": "detroit-people-mover",
@@ -4406,7 +4429,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://www.thepeoplemover.com",
@@ -4414,7 +4437,18 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "detroit-people-mover",
+        "agencyName": "Detroit People Mover",
+        "amount": 0,
+        "amountMax": 0,
+        "currency": "USD",
+        "fareType": "fare-free all-passenger service",
+        "payment": "no fare or pass required",
+        "sourceUrl": "https://www.thepeoplemover.com/",
+        "confidence": "high",
+        "evidence": "Official Detroit People Mover site states that all passengers can board and ride for free, with no fare or pass needed, under the current sponsored fare-free program."
+      }
     },
     {
       "slug": "qline",
