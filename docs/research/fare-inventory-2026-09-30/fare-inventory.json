@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 394,
+    "manualVerified": 398,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,10 +11,10 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 394,
+      "verified-official": 398,
       "official-fare-page-not-found": 125,
       "official-site-inaccessible": 45,
-      "official-source-candidate": 97,
+      "official-source-candidate": 93,
       "no-official-website": 32
     }
   },
@@ -24305,7 +24305,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.mcallen.net/metro/",
@@ -24313,7 +24313,18 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "mcallen",
+        "agencyName": "Metro McAllen",
+        "amount": 1,
+        "amountMax": 1,
+        "currency": "USD",
+        "fareType": "adult/child fixed-route single ride",
+        "payment": "standard fare",
+        "sourceUrl": "https://www.mcallen.net/metro/",
+        "confidence": "high",
+        "evidence": "Official City of McAllen Metro page states the fare system offers $1 rides for adults and children with free transfers; seniors, students, persons with disabilities, and Medicare riders pay $0.50."
+      }
     },
     {
       "slug": "augusta",
@@ -26450,7 +26461,7 @@
         "USD"
       ],
       "feedVersion": "109",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1,
         "currency": "USD",
@@ -26465,7 +26476,18 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "bloomington",
+        "agencyName": "Bloomington Transit",
+        "amount": 1,
+        "amountMax": 30,
+        "currency": "USD",
+        "fareType": "regular fixed-route fare and monthly/daily fare cap",
+        "payment": "cash, Umo card, or Umo app",
+        "sourceUrl": "https://bloomingtontransit.com/umo/",
+        "confidence": "high",
+        "evidence": "Official Bloomington Transit Umo page lists regular fare at $1, reduced fare at $0.50, BLink/BTaccess/microtransit at $2, and regular fare caps of $3 per day and $30 per month."
+      }
     },
     {
       "slug": "athens-acc",
@@ -26835,7 +26857,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://transportation.uiowa.edu/cambus",
@@ -26843,7 +26865,18 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "cambus",
+        "agencyName": "CAMBUS (University of Iowa)",
+        "amount": 0,
+        "amountMax": 0,
+        "currency": "USD",
+        "fareType": "fare-free public transit service",
+        "payment": "no fare required",
+        "sourceUrl": "https://transportation.uiowa.edu/cambus",
+        "confidence": "high",
+        "evidence": "Official University of Iowa CAMBUS page states the service is open to the public and has no fare; the complimentary Bionic Bus demand-response service is also described."
+      }
     },
     {
       "slug": "lawrence-ku",
@@ -29349,7 +29382,7 @@
         "USD"
       ],
       "feedVersion": "UTC: 25-Feb-2026 12:23",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1.5,
         "currency": "USD",
@@ -29364,7 +29397,19 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "beaumont-ca",
+        "agencyName": "Beaumont Transit",
+        "amount": 1,
+        "amountMax": 45,
+        "currency": "USD",
+        "fareType": "fixed-route fare and commuter-link monthly pass",
+        "payment": "exact cash or mobile pass",
+        "sourceUrl": "https://www.beaumontca.gov/DocumentCenter/View/39302/FARE-SCHEDULE_DISCOUNTED-FARE-PROMO_AUG-2023",
+        "effectiveDate": "2023-08-01",
+        "confidence": "medium",
+        "evidence": "Official Beaumont fare schedule PDF dated August 2023 lists fixed-route general base fare $1, day pass $1, 10-ride punch card $8.50, monthly pass $34, and Commuter Link general base $1.50 with monthly pass $45; currentness needs follow-up."
+      }
     },
     {
       "slug": "corona",
