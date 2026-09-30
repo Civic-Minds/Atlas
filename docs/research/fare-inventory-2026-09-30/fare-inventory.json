@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 403,
+    "manualVerified": 407,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,10 +11,10 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 403,
+      "verified-official": 407,
       "official-fare-page-not-found": 125,
       "official-site-inaccessible": 45,
-      "official-source-candidate": 88,
+      "official-source-candidate": 84,
       "no-official-website": 32
     }
   },
@@ -29170,7 +29170,7 @@
         "USD"
       ],
       "feedVersion": "20250124",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1.5,
         "currency": "USD",
@@ -29185,7 +29185,18 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "rapid-city",
+        "agencyName": "Rapid Transit System (Rapid City, SD)",
+        "amount": 1.5,
+        "amountMax": 30,
+        "currency": "USD",
+        "fareType": "adult fixed-route fare and monthly pass",
+        "payment": "exact cash or pass",
+        "sourceUrl": "https://www.rapidtransitsystem.org/rapid-ride/",
+        "confidence": "high",
+        "evidence": "Official RapidRide page lists adult cash fare at $1.50, honored-citizen fare at $0.75, adult monthly pass at $30, youth 18 and under free, and free transfers."
+      }
     },
     {
       "slug": "sioux-city",
@@ -37910,7 +37921,7 @@
         "USD"
       ],
       "feedVersion": "UTC: 02-Jun-2026 18:30",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 2,
         "currency": "USD",
@@ -37925,7 +37936,18 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "telluride",
+        "agencyName": "Town of Telluride (Galloping Goose)",
+        "amount": 0,
+        "amountMax": 0,
+        "currency": "USD",
+        "fareType": "fare-free town loop and regional transit",
+        "payment": "no fare required",
+        "sourceUrl": "https://www.telluride.gov/255/Public-Transit",
+        "confidence": "high",
+        "evidence": "Official Town of Telluride public transit page states the Galloping Goose town loop is free with no tickets or fares and describes SMART as a free regional transit authority."
+      }
     },
     {
       "slug": "mountain-village",
@@ -37946,7 +37968,7 @@
         "USD"
       ],
       "feedVersion": "UTC: 02-Jun-2026 18:30",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 2,
         "currency": "USD",
@@ -37961,7 +37983,18 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "mountain-village",
+        "agencyName": "Town of Mountain Village Transit",
+        "amount": 0,
+        "amountMax": 0,
+        "currency": "USD",
+        "fareType": "fare-free local bus and gondola service",
+        "payment": "no fare required",
+        "sourceUrl": "https://townofmountainvillage.com/explore/getting-around/bus-dial-a-ride/",
+        "confidence": "high",
+        "evidence": "Official Town of Mountain Village page states its local bus service is free, SMART service to Telluride is free during shoulder seasons, and member-resident Dial-A-Ride is free subject to its program conditions."
+      }
     },
     {
       "slug": "smart-telluride",
@@ -38064,7 +38097,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.clearcreekcounty.us/857/RoundAbout-Bus-Service",
@@ -38072,7 +38105,18 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "roundabout",
+        "agencyName": "Clear Creek County Transit (RoundAbout)",
+        "amount": 0,
+        "amountMax": 0,
+        "currency": "USD",
+        "fareType": "fare-free county public transportation service",
+        "payment": "no fare required",
+        "sourceUrl": "https://www.clearcreekcounty.us/857/RoundAbout-Bus-Service?pk_campaign=Prospector+Transit",
+        "confidence": "high",
+        "evidence": "Official Clear Creek County page describes the RoundAbout as a free public transportation service within county limits and to Evergreen and Bergen Park areas."
+      }
     },
     {
       "slug": "breck-free-ride",
