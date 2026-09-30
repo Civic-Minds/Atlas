@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 469,
+    "manualVerified": 471,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,11 +11,11 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 469,
+      "verified-official": 471,
       "official-fare-page-not-found": 125,
       "official-site-inaccessible": 45,
       "no-official-website": 32,
-      "official-source-candidate": 22
+      "official-source-candidate": 20
     }
   },
   "records": [
@@ -26591,7 +26591,7 @@
         "USD"
       ],
       "feedVersion": "20240618",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 0.75,
         "currency": "USD",
@@ -26606,7 +26606,18 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "evansville",
+        "agencyName": "METS (Evansville)",
+        "amount": 0.75,
+        "amountMax": 60,
+        "currency": "USD",
+        "fareType": "standard fixed-route fare and monthly pass",
+        "payment": "cash, fare card, or pass",
+        "confidence": "high",
+        "sourceUrl": "https://www.evansvillegov.org/egov/documents/1502907435_30167.pdf",
+        "evidence": "Official Evansville METS route guide lists standard fixed-route fare at $0.75, student at $0.50, elderly/disabled/Medicare at $0.35, and monthly pass at $60; the guide was published within the past year."
+      }
     },
     {
       "slug": "kenosha",
@@ -32021,7 +32032,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.agglobus.com/",
@@ -32029,7 +32040,18 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "bourges",
+        "agencyName": "AggloBus (Bourges)",
+        "amount": 0,
+        "currency": "EUR",
+        "fareType": "regular bus, demand-response, and local Rémi ride",
+        "payment": "fare-free service; free access card or voucher for specified rail/coach trips",
+        "effectiveDate": "2023-09-01",
+        "confidence": "high",
+        "sourceUrl": "https://www.agglobus.com/reseau-gratuit",
+        "evidence": "Official AggloBus page states the entire network is free for everyone every day, all year, since September 1, 2023, except Cycloplus bike rental; current 2026 network pages continue to describe the service as free."
+      }
     },
     {
       "slug": "brest",
