@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 379,
+    "manualVerified": 383,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,10 +11,10 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 379,
+      "verified-official": 383,
       "official-fare-page-not-found": 125,
       "official-site-inaccessible": 45,
-      "official-source-candidate": 112,
+      "official-source-candidate": 108,
       "no-official-website": 32
     }
   },
@@ -31985,7 +31985,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.transports-lia.fr/",
@@ -32035,7 +32035,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "le-havre",
+        "agencyName": "LiA (Le Havre)",
+        "amount": 1.8,
+        "amountMax": 45,
+        "currency": "EUR",
+        "fareType": "one-hour individual ticket and public monthly pass",
+        "payment": "standard ticket or pass",
+        "sourceUrl": "https://www.transports-lia.fr/fr/trouver-mon-tarif",
+        "confidence": "high",
+        "evidence": "Official LiA fare page lists the one-hour ticket at €1.80 and the public monthly pass at €45; reduced and student fares are listed separately."
+      }
     },
     {
       "slug": "lorient",
@@ -32052,7 +32063,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.izilo.bzh/",
@@ -32155,7 +32166,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "lorient",
+        "agencyName": "Izilo (Lorient)",
+        "amount": 1.5,
+        "amountMax": 4.5,
+        "currency": "EUR",
+        "fareType": "one-hour single trip and day ticket",
+        "payment": "standard ticket or pass",
+        "sourceUrl": "https://www.izilo.bzh/titres-et-tarifs/titres-abonnements",
+        "confidence": "high",
+        "evidence": "Official Izilo fare page lists the one-trip ticket at €1.50, 10 trips at €13, and day ticket at €4.50; subscription categories are listed separately."
+      }
     },
     {
       "slug": "lyon",
@@ -32424,7 +32446,7 @@
         "EUR"
       ],
       "feedVersion": null,
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1.2,
         "currency": "EUR",
@@ -32503,7 +32525,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "pau",
+        "agencyName": "Idelis (Pau)",
+        "amount": 1.2,
+        "amountMax": 3.9,
+        "currency": "EUR",
+        "fareType": "one-hour single trip and day ticket",
+        "payment": "standard ticket, app, or onboard purchase",
+        "sourceUrl": "https://www.idelis.fr/tarifs/titres-de-transport-et-tarifs/tous-les-titres",
+        "confidence": "high",
+        "evidence": "Official Idelis fare page lists one-hour single trip at €1.20 in advance or €1.50 onboard, 10 trips at €10, and 24-hour pass at €3.90."
+      }
     },
     {
       "slug": "perpignan",
@@ -32673,7 +32706,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.qub.fr/",
@@ -32729,7 +32762,19 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "quimper",
+        "agencyName": "Qub (Quimper)",
+        "amount": 1.5,
+        "amountMax": 32,
+        "currency": "EUR",
+        "fareType": "one-hour single trip and public monthly pass",
+        "payment": "standard ticket, app, or pass",
+        "sourceUrl": "https://www.qub.bzh/titres-abonnements/titres-et-tarifs",
+        "effectiveDate": "2026-09-01",
+        "confidence": "high",
+        "evidence": "Official QUB fare page says the one-hour single trip is €1.50, day ticket €4, 10 trips €12, and public monthly pass €32; the page notes the fare range changed September 1, 2026."
+      }
     },
     {
       "slug": "reims",
