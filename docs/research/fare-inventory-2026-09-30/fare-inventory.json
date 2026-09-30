@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 388,
+    "manualVerified": 389,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,10 +11,10 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 388,
+      "verified-official": 389,
       "official-fare-page-not-found": 125,
       "official-site-inaccessible": 45,
-      "official-source-candidate": 103,
+      "official-source-candidate": 102,
       "no-official-website": 32
     }
   },
@@ -30341,7 +30341,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.filbleu.fr/",
@@ -30435,7 +30435,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "tours",
+        "agencyName": "Fil Bleu (Tours)",
+        "amount": 1.8,
+        "amountMax": 49,
+        "currency": "EUR",
+        "fareType": "single trip and public monthly pass",
+        "payment": "standard ticket, contactless card, or pass",
+        "sourceUrl": "https://www.filbleu.fr/tarifs-demarches-et-achat-en-ligne/titres-et-tarifs",
+        "confidence": "high",
+        "evidence": "Official Fil Bleu fare page lists the occasional one-trip fare at €1.80 and the full public monthly pass at €49; youth, senior, reduced, and day products are listed separately."
+      }
     },
     {
       "slug": "bordeaux",
