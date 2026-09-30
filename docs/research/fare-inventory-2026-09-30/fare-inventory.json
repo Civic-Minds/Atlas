@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 272,
+    "manualVerified": 275,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,8 +11,8 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 272,
-      "official-source-candidate": 218,
+      "verified-official": 275,
+      "official-source-candidate": 215,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
       "no-official-website": 32
@@ -9391,7 +9391,7 @@
         "USD"
       ],
       "feedVersion": "UTC: 14-Apr-2026 15:07",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1.5,
         "currency": "USD",
@@ -9435,7 +9435,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "smart-ca",
+        "agencyName": "Sonoma-Marin Area Rail Transit (SMART)",
+        "amount": 1.5,
+        "amountMax": 7.5,
+        "currency": "USD",
+        "fareType": "adult fare by zone",
+        "payment": "Clipper or SMART e-Ticket",
+        "sourceUrl": "https://main.sonomamarintrain.org/fares",
+        "confidence": "high",
+        "evidence": "Official SMART fare table lists adult fare at $1.50 for one zone, increasing by $1.50 per zone through $7.50 for five zones; youth travel fare-free and senior/disabled fares are half-price."
+      }
     },
     {
       "slug": "sonoma-county",
@@ -9538,7 +9549,7 @@
         "USD"
       ],
       "feedVersion": "UTC: 14-Sep-2026 16:38",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 2,
         "currency": "USD",
@@ -9576,7 +9587,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "vine",
+        "agencyName": "VINE Transit (Napa)",
+        "amount": 2,
+        "amountMax": 6,
+        "currency": "USD",
+        "fareType": "adult single ride and service-specific fares",
+        "payment": "cash or fare media",
+        "sourceUrl": "https://vinetransit.com/fares/",
+        "confidence": "high",
+        "evidence": "Official VINE fare table lists Adult at $2.00, Youth at $1.25, Half at $1.00, Express Route 21 at $3.50, and BART connection at $6.00."
+      }
     },
     {
       "slug": "emerygoround",
@@ -9662,7 +9684,7 @@
       "confidence": "unresolved",
       "status": "inaccessible",
       "notes": "Feed download failed: HTTP 401",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://trideltatransit.com",
@@ -9712,7 +9734,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "tridelta",
+        "agencyName": "Tri Delta Transit (Antioch)",
+        "amount": 2,
+        "amountMax": 57,
+        "currency": "USD",
+        "fareType": "general public local single ride and pass products",
+        "payment": "cash or Clipper",
+        "sourceUrl": "https://www.trideltatransit.com/fares-guides/fares-and-passes/",
+        "confidence": "high",
+        "evidence": "Official Tri Delta fare table lists local general-public single ride at $2.00, Route 200X/201X at $2.50, day pass at $3.75, 31-day pass at $57, and 20-ride pass at $33."
+      }
     },
     {
       "slug": "lavta",
