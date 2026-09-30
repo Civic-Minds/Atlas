@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 248,
+    "manualVerified": 252,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,8 +11,8 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 248,
-      "official-source-candidate": 242,
+      "verified-official": 252,
+      "official-source-candidate": 238,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
       "no-official-website": 32
@@ -441,7 +441,7 @@
         "CAD"
       ],
       "feedVersion": "20260529182459",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 4.4,
         "currency": "CAD",
@@ -470,7 +470,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "go",
+        "agencyName": "GO Transit",
+        "amount": 10,
+        "currency": "CAD",
+        "fareType": "weekend day pass",
+        "payment": "GO e-ticket or pass",
+        "sourceUrl": "https://www.gotransit.com/en/plan-your-trip/buy-e-tickets-and-passes",
+        "confidence": "high",
+        "evidence": "Official GO fare page states regular one-way fares vary by distance and lists the Weekend Day Pass at $10 for unlimited one-day travel for each rider aged 13+; children 12 and under ride free."
+      }
     },
     {
       "slug": "grt",
@@ -1656,7 +1666,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.upexpress.com",
@@ -1726,7 +1736,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "upexpress",
+        "agencyName": "UP Express (Toronto)",
+        "amount": 12.35,
+        "amountMax": 24.7,
+        "currency": "CAD",
+        "fareType": "adult standard fare, Union-Pearson one-way and return",
+        "payment": "ticket, PRESTO, or contactless payment",
+        "sourceUrl": "https://www.upexpress.com/en/ways-to-pay/up-express-fares",
+        "confidence": "high",
+        "evidence": "Official UP Express fare table lists Adult Union-Pearson one-way at $12.35 and round-trip at $24.70; distance-based station fares and discounted products are listed separately."
+      }
     },
     {
       "slug": "yrt",
@@ -1847,7 +1868,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.transportlaurentides.ca/",
@@ -1890,7 +1911,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "linter",
+        "agencyName": "L'Inter des Laurentides",
+        "amount": 6,
+        "amountMax": 150,
+        "currency": "CAD",
+        "fareType": "adult bus one-way and pass fare",
+        "payment": "exact cash or fare title",
+        "sourceUrl": "https://www.transportlaurentides.ca/inter/tarifs-et-points-de-vente/",
+        "confidence": "high",
+        "evidence": "Official l'Inter fare page lists one passage at $6, ten bus passages at $40, 30-day bus title at $95, and 30-day DUO title at $150; children 11 and under ride free."
+      }
     },
     {
       "slug": "mont-tremblant",
@@ -1932,7 +1964,7 @@
       "confidence": "high",
       "status": "confirmed",
       "notes": "Existing Atlas override retained as research evidence.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 3.75,
         "currency": "CAD",
@@ -1982,7 +2014,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "rem",
+        "agencyName": "REM (Montréal)",
+        "amount": 3.75,
+        "amountMax": 281,
+        "currency": "CAD",
+        "fareType": "ARTM all-modes fare, Zone A single trip and monthly products",
+        "payment": "OPUS, Chrono, or ARTM fare media",
+        "sourceUrl": "https://rem.info/fr/se-deplacer/titres-et-tarifs",
+        "confidence": "high",
+        "evidence": "Official REM fare page lists Zone A all-modes one passage at $3.75, ten passages at $35, and monthly at $110; fares for zones A-B, A-B-C, and A-B-C-D are listed separately."
+      }
     },
     {
       "slug": "rtc",
