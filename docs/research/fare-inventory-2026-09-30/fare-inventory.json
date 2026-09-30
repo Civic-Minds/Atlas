@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 199,
+    "manualVerified": 202,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,8 +11,8 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 199,
-      "official-source-candidate": 291,
+      "verified-official": 202,
+      "official-source-candidate": 288,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
       "no-official-website": 32
@@ -16484,7 +16484,7 @@
       "status": "unresolved",
       "notes": "GTFS publishes only zero-value legacy fare attributes; this may be a placeholder and was not treated as proof of free service.",
       "feedVersion": "UTC: 13-Aug-2026 20:25",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": null,
         "currency": "USD",
@@ -16499,7 +16499,17 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "essex-county",
+        "agencyName": "Cape Ann Transportation Authority (CATA)",
+        "amount": 0,
+        "currency": "USD",
+        "fareType": "public transportation fare-free service",
+        "payment": "fare-free",
+        "sourceUrl": "https://www.canntran.com/post/fare-free-2026",
+        "confidence": "high",
+        "evidence": "Official CATA announcement states fare-free service was extended through the end of 2026 for nearly all CATA transportation services; the agency's school-trip and summer-route pages state fare-free service through 2027."
+      }
     },
     {
       "slug": "fort-mcmurray",
@@ -17331,7 +17341,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.freedom-transit.org/",
@@ -17390,7 +17400,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "freedom-transit",
+        "agencyName": "Freedom Transit",
+        "amount": 15,
+        "currency": "USD",
+        "fareType": "general-public shared-ride fare, 0-1.99 miles",
+        "payment": "exact fare or FreedomFlex",
+        "sourceUrl": "https://freedom-transit.org/shared-ride-program/shared-ride-fares-washington-county-pa/",
+        "confidence": "high",
+        "evidence": "Official Freedom Transit shared-ride fare table lists the General Public & Full Fare Rate as $15.00 for trips of 0-1.99 miles; distance-based, disability, senior, medical, and sponsored-trip copays are listed separately."
+      }
     },
     {
       "slug": "indigo",
@@ -26282,7 +26302,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.cityofdubuque.org/274/Transit",
@@ -26312,7 +26332,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "dubuque",
+        "agencyName": "The Jule (Dubuque)",
+        "amount": 1.5,
+        "currency": "USD",
+        "fareType": "full fixed-route fare",
+        "payment": "Jule Smart Pass or MyJule mobile ticket",
+        "sourceUrl": "https://www.cityofdubuque.org/288/Fares-and-Passes",
+        "confidence": "high",
+        "evidence": "Official City of Dubuque fare table lists Fixed Route Bus Full Fare at $1.50; half fare, youth, college, 11-ride, and monthly products are listed separately."
+      }
     },
     {
       "slug": "pocatello",
