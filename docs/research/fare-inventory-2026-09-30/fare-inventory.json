@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 189,
+    "manualVerified": 191,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,8 +11,8 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 189,
-      "official-source-candidate": 301,
+      "verified-official": 191,
+      "official-source-candidate": 299,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
       "no-official-website": 32
@@ -22596,7 +22596,7 @@
       "confidence": "unresolved",
       "status": "inaccessible",
       "notes": "Feed download failed: HTTP 404",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://www.augustaga.gov/",
@@ -22604,7 +22604,17 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "augusta",
+        "agencyName": "Augusta Transit",
+        "amount": 1.25,
+        "currency": "USD",
+        "fareType": "regular fixed-route fare",
+        "payment": "exact cash or money order",
+        "sourceUrl": "https://www.augustaga.gov/247/Passes-Fares",
+        "confidence": "high",
+        "evidence": "Official Augusta Transit fare page lists Regular fare at $1.25; transfer, discount, weekly, and monthly fares are listed separately."
+      }
     },
     {
       "slug": "lincoln",
@@ -25537,7 +25547,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://bismantransit.com/",
@@ -25545,7 +25555,17 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "bis-man",
+        "agencyName": "Bis-Man Transit (Bismarck-Mandan)",
+        "amount": 1.5,
+        "currency": "USD",
+        "fareType": "regular fixed-route one-way fare",
+        "payment": "exact cash or pass",
+        "sourceUrl": "https://bismantransit.com/paying-for-cat-rides/",
+        "confidence": "high",
+        "evidence": "Official Bis-Man Transit fare page lists Regular Fare at $1.50 each way; 1-day, 30-day, reduced, and free-fare categories are listed separately."
+      }
     },
     {
       "slug": "bangor",
