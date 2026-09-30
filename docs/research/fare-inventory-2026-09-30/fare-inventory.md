@@ -4,11 +4,11 @@ This dated ledger combines GTFS supporting evidence, official-site discovery, an
 
 ## Current status
 
-- Individually verified official fares: 471
-- Official pages found but still requiring manual fare verification: 20
+- Individually verified official fares: 474
+- Official pages found but still requiring manual fare verification: 29
 - GTFS-only or not yet matched to an official fare source: 0
 - Official-site inaccessible: 45
-- No official fare page found: 125
+- No official fare page found: 113
 - No official website: 32
 
 An agency is not called free merely because its GTFS feed contains a zero fare. GTFS values remain supporting evidence unless an official source verifies the rider-facing fare.
