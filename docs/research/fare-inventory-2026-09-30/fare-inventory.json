@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 305,
+    "manualVerified": 309,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,8 +11,8 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 305,
-      "official-source-candidate": 185,
+      "verified-official": 309,
+      "official-source-candidate": 181,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
       "no-official-website": 32
@@ -3284,7 +3284,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.bctransit.com/",
@@ -3292,7 +3292,19 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "bc-fraser-valley",
+        "agencyName": "BC Transit (Fraser Valley)",
+        "amount": 2.75,
+        "amountMax": 59,
+        "currency": "CAD",
+        "fareType": "adult local single ride and 30-day pass",
+        "payment": "cash, Umo, or fare pass",
+        "sourceUrl": "https://www.bctransit.com/central-fraser-valley/fares/",
+        "confidence": "high",
+        "effectiveDate": "2026-09-06",
+        "evidence": "Official BC Transit Central Fraser Valley fare page lists adult local single ride at $2.75, DayPASS at $5.50, and 30-day adult pass at $59; Fraser Valley Express products are listed separately at $5 single ride and $100 for 30 days."
+      }
     },
     {
       "slug": "kelowna",
@@ -3309,7 +3321,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.bctransit.com/",
@@ -3317,7 +3329,19 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "kelowna",
+        "agencyName": "BC Transit (Kelowna)",
+        "amount": 3,
+        "amountMax": 80,
+        "currency": "CAD",
+        "fareType": "adult local single ride and 30-day pass",
+        "payment": "cash, Umo, or fare pass",
+        "sourceUrl": "https://www.bctransit.com/fare-and-fare-product-changes-coming-to-the-kelowna-regional-transit-system-on-october-1-2025-08-29/",
+        "confidence": "high",
+        "effectiveDate": "2025-10-01",
+        "evidence": "Official BC Transit fare-change notice lists Kelowna fares effective October 1, 2025: single ride $3 for all riders, DayPASS $6, adult 30-day pass $80, and concession 30-day pass $55."
+      }
     },
     {
       "slug": "victoria",
@@ -3334,7 +3358,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.bctransit.com/",
@@ -3342,7 +3366,19 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "victoria",
+        "agencyName": "BC Transit (Victoria)",
+        "amount": 3,
+        "amountMax": 85,
+        "currency": "CAD",
+        "fareType": "regular fixed-route single ride and 30-day pass",
+        "payment": "cash, Umo, or fare pass",
+        "sourceUrl": "https://www.bctransit.com/wp-content/uploads/2025/06/10-2025-VRTS-Transit-Tariff-Update.pdf",
+        "confidence": "high",
+        "effectiveDate": "2025-04-01",
+        "evidence": "Official Victoria Regional Transit System tariff lists fares effective April 1, 2025: regular fixed-route single ride $3, DayPASS $6, and adult 30-day pass $85; concession 30-day pass is $45 and handyDART fares are listed separately."
+      }
     },
     {
       "slug": "translink",
@@ -6072,7 +6108,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.bctransit.com/",
@@ -6080,7 +6116,18 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "kamloops",
+        "agencyName": "BC Transit (Kamloops)",
+        "amount": 2.5,
+        "amountMax": 55,
+        "currency": "CAD",
+        "fareType": "adult local single ride and 30-day pass",
+        "payment": "cash, Umo, or fare pass",
+        "sourceUrl": "https://www.bctransit.com/kamloops/fares/",
+        "confidence": "high",
+        "evidence": "Official BC Transit Kamloops fare page lists adult single ride at $2.50, DayPASS at $5, and 30-day adult pass at $55; concession and handyDART products are listed separately."
+      }
     },
     {
       "slug": "south-okanagan",
