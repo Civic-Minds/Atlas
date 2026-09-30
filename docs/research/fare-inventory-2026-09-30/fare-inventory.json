@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 155,
+    "manualVerified": 162,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,8 +11,8 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 155,
-      "official-source-candidate": 335,
+      "verified-official": 162,
+      "official-source-candidate": 328,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
       "no-official-website": 32
@@ -3493,7 +3493,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://transit.saskatoon.ca",
@@ -3534,7 +3534,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "saskatoon",
+        "agencyName": "Saskatoon Transit",
+        "amount": 3.25,
+        "currency": "CAD",
+        "fareType": "adult cash fare",
+        "payment": "exact cash, TGo, or transit app",
+        "sourceUrl": "https://saskatoontransit.ca/reload",
+        "confidence": "high",
+        "evidence": "Official Saskatoon fare table lists Adult cash fare at $3.25; child, high-school, post-secondary, senior, and pass products are listed separately."
+      }
     },
     {
       "slug": "halifax",
@@ -3749,7 +3759,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://saintjohn.ca/en/transit",
@@ -3780,7 +3790,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "saint-john",
+        "agencyName": "Saint John Transit",
+        "amount": 3,
+        "currency": "CAD",
+        "fareType": "single ride cash fare",
+        "payment": "exact cash or SJTRides app",
+        "sourceUrl": "https://saintjohn.ca/en/transit/fares-and-passes",
+        "confidence": "high",
+        "evidence": "Official Saint John fare page lists Single Ride Cash Fare for age 7 and over at $3.00; child, monthly, and 10-ride products are listed separately."
+      }
     },
     {
       "slug": "t3-transit",
@@ -8190,7 +8210,7 @@
         "USD"
       ],
       "feedVersion": "Revision2",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 2.25,
         "currency": "USD",
@@ -8261,7 +8281,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "samtrans",
+        "agencyName": "San Mateo County Transit District (samTrans)",
+        "amount": 2.25,
+        "currency": "USD",
+        "fareType": "adult local/express cash or mobile fare",
+        "payment": "cash, mobile, or Clipper",
+        "sourceUrl": "https://www.samtrans.com/fares/",
+        "confidence": "high",
+        "evidence": "Official SamTrans fare table lists Adult Local/Express Cash or Mobile fare at $2.25; Clipper, day, monthly, reduced, and youth fares are listed separately."
+      }
     },
     {
       "slug": "goldengate",
@@ -9331,7 +9361,7 @@
       "confidence": "unresolved",
       "status": "inaccessible",
       "notes": "Feed download failed: HTTP 401",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://srcitybus.org/",
@@ -9394,7 +9424,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "santarosa",
+        "agencyName": "Santa Rosa CityBus",
+        "amount": 1.5,
+        "currency": "USD",
+        "fareType": "adult cash fare",
+        "payment": "cash or Clipper",
+        "sourceUrl": "https://srcitybus.org/fares-and-passes/",
+        "confidence": "high",
+        "evidence": "Official CityBus fare table lists Adult cash fare at $1.50; day, monthly, senior, disabled, youth, and ticket-book products are listed separately."
+      }
     },
     {
       "slug": "fast-ca",
@@ -13726,7 +13766,7 @@
         "USD"
       ],
       "feedVersion": "20260624",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1.25,
         "currency": "USD",
@@ -13877,7 +13917,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "santaclarita",
+        "agencyName": "Santa Clarita Transit",
+        "amount": 1.25,
+        "currency": "USD",
+        "fareType": "local full cash fare",
+        "payment": "cash, TAP, Token Transit, or contactless",
+        "sourceUrl": "https://santaclaritatransit.com/fares-passes/",
+        "confidence": "high",
+        "evidence": "Official Santa Clarita fare table lists Local Full Fare cash at $1.25 and electronic fare at $1.00; commuter express, reduced, transfer, and fare-capping products are listed separately."
+      }
     },
     {
       "slug": "montebello",
@@ -25520,7 +25570,7 @@
         "USD"
       ],
       "feedVersion": "S1000117",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1,
         "currency": "USD",
@@ -25576,7 +25626,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "santa-cruz-metro",
+        "agencyName": "Santa Cruz METRO",
+        "amount": 2,
+        "currency": "USD",
+        "fareType": "adult local county one-ride fare",
+        "payment": "cash, Tap2Cruz, or fare media",
+        "sourceUrl": "https://scmetro.org/rider-info/fares-passes/",
+        "confidence": "high",
+        "evidence": "Official Santa Cruz METRO fare table lists Adult local Santa Cruz County Cash/1 Ride at $2.00; day, 31-day, discount, and regional fares are listed separately."
+      }
     },
     {
       "slug": "sioux-falls",
@@ -34915,7 +34975,7 @@
         "USD"
       ],
       "feedVersion": "20260512",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 2,
         "currency": "USD",
@@ -34944,7 +35004,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "sandusky",
+        "agencyName": "Sandusky Transit System",
+        "amount": 2,
+        "currency": "USD",
+        "fareType": "fixed-route single trip",
+        "payment": "exact cash or EZfare",
+        "sourceUrl": "https://www.cityofsandusky.com/community/sandusky_transit_system/fixed_routes.php",
+        "confidence": "high",
+        "evidence": "Official Sandusky Transit fare table lists Fixed Route Single Trip at $2.00; elderly/disabled, 31-day, punch-card, and transfer fares are listed separately."
+      }
     },
     {
       "slug": "bay-metro",
