@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 256,
+    "manualVerified": 259,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,8 +11,8 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 256,
-      "official-source-candidate": 234,
+      "verified-official": 259,
+      "official-source-candidate": 231,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
       "no-official-website": 32
@@ -4116,7 +4116,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://bwbus.com",
@@ -4152,7 +4152,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "port-huron",
+        "agencyName": "Blue Water Area Transit (Port Huron)",
+        "amount": 0.8,
+        "amountMax": 27,
+        "currency": "USD",
+        "fareType": "regular fixed-route fare and monthly pass",
+        "payment": "exact fare or pass",
+        "sourceUrl": "https://bwbus.com/fares/",
+        "confidence": "high",
+        "evidence": "Official Blue Water Area Transit fare page lists regular bus fare at $0.80, 10-day pass at $10.50, and unlimited monthly pass at $27.00; reduced fares are listed separately."
+      }
     },
     {
       "slug": "ddot",
@@ -4469,7 +4480,7 @@
         "USD"
       ],
       "feedVersion": "2606a",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 2.5,
         "currency": "USD",
@@ -4521,7 +4532,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "gcrta",
+        "agencyName": "GCRTA (Cleveland)",
+        "amount": 2.5,
+        "amountMax": 95,
+        "currency": "USD",
+        "fareType": "individual fixed-route fare and monthly pass",
+        "payment": "cash, farecard, mobile ticket, or pass",
+        "sourceUrl": "https://www.riderta.com/fares",
+        "confidence": "high",
+        "evidence": "Official GCRTA fare page lists individual bus/rapid/BRT one-trip and cash fare at $2.50, daily pass at $5, 7-day pass at $25, and monthly pass at $95; reduced and paratransit fares are listed separately."
+      }
     },
     {
       "slug": "butler-county-rta",
@@ -4688,7 +4710,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://tarta.com",
@@ -4745,7 +4767,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "tarta",
+        "agencyName": "TARTA (Toledo)",
+        "amount": 1.5,
+        "amountMax": 45,
+        "currency": "USD",
+        "fareType": "regular fixed-route fare and 31-day pass",
+        "payment": "cash, TARTA Card, EZfare, or Transit App",
+        "sourceUrl": "https://tarta.com/ride-tarta/how-to-ride/fares-passes/account-based-ticketing/",
+        "confidence": "high",
+        "evidence": "Official TARTA fare table lists Regular fare at $1.50, 1-Day Pass at $3, 7-Day Pass at $15, and 31-Day Pass at $45; youth and reduced fares are listed separately."
+      }
     },
     {
       "slug": "rgrta",
