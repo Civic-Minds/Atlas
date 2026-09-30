@@ -53,6 +53,7 @@
     "audit-expired-sources": "npx tsx scripts/audit-expired-sources.ts",
     "research:fares": "node scripts/research-fares.mjs",
     "research:fares:validate": "node scripts/validate-fare-inventory.mjs",
+    "research:fares:official": "node scripts/research-official-fares.mjs",
     "validate:frequent-service-catalog": "node scripts/validate-frequent-service-catalog.mjs",
     "analyze:frequent-service-catalog": "node scripts/analyze-frequent-service-catalog.mjs",
     "poc:burlington": "npx tsx scripts/poc/burlington-rt.ts",
