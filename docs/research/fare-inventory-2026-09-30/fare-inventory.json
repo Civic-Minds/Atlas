@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 209,
+    "manualVerified": 212,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,8 +11,8 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 209,
-      "official-source-candidate": 281,
+      "verified-official": 212,
+      "official-source-candidate": 278,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
       "no-official-website": 32
@@ -627,7 +627,7 @@
         "CAD"
       ],
       "feedVersion": "2026 Summer & 2026 Fall Merged",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 3.75,
         "currency": "CAD",
@@ -650,7 +650,19 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "hamilton",
+        "agencyName": "Hamilton Street Railway",
+        "amount": 2.85,
+        "amountMax": 3.75,
+        "currency": "CAD",
+        "fareType": "adult single ride",
+        "payment": "PRESTO ($2.85) or cash/debit/credit ($3.75)",
+        "effectiveDate": "2025-09-01",
+        "sourceUrl": "https://www.hamilton.ca/home-neighbourhood/hsr/fares/fares-photo-ids?station=hmgo",
+        "confidence": "high",
+        "evidence": "Official City of Hamilton HSR fare table lists Adult single ride with PRESTO at $2.85 and cash fare at $3.75, following the September 1, 2025 fare increase; youth, senior, child, monthly, and e-ticket products are listed separately."
+      }
     },
     {
       "slug": "kingston",
@@ -6388,7 +6400,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.intercitytransit.com/",
@@ -6435,7 +6447,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "intercitytransit",
+        "agencyName": "Intercity Transit (Olympia)",
+        "amount": 0,
+        "currency": "USD",
+        "fareType": "fixed-route public transit fare-free service",
+        "payment": "fare-free",
+        "sourceUrl": "https://intercitytransit.com/sites/default/files/2026-04/202605_Web-Transit%20Guide.pdf",
+        "confidence": "high",
+        "evidence": "Official Intercity Transit May 2026 Transit Guide states bus and Dial-A-Lift passengers will not pay fares to use the service; the guide is the current agency fare source."
+      }
     },
     {
       "slug": "skagittransit",
@@ -27138,7 +27160,7 @@
         "USD"
       ],
       "feedVersion": "jfk_20112026",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 8.75,
         "currency": "USD",
@@ -27153,7 +27175,17 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "jfk-airtrain",
+        "agencyName": "JFK AirTrain",
+        "amount": 8.75,
+        "currency": "USD",
+        "fareType": "single ride airport access fare",
+        "payment": "contactless card, mobile wallet, or OMNY",
+        "sourceUrl": "https://www.jfkairport.com/transportation/airtrain",
+        "confidence": "high",
+        "evidence": "Official JFK Airport AirTrain page lists the single-ride fare at $8.75 between JFK and Jamaica or Howard Beach stations; 30-day cap, group, and child fares are listed separately."
+      }
     },
     {
       "slug": "staten-island-ferry",
