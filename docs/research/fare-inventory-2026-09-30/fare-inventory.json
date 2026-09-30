@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 126,
+    "manualVerified": 134,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,8 +11,8 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 126,
-      "official-source-candidate": 364,
+      "verified-official": 134,
+      "official-source-candidate": 356,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
       "no-official-website": 32
@@ -8735,7 +8735,7 @@
         "USD"
       ],
       "feedVersion": "UTC: 04-Feb-2026 00:08",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 2,
         "currency": "USD",
@@ -8789,7 +8789,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "marintransit",
+        "agencyName": "Marin Transit",
+        "amount": 2,
+        "currency": "USD",
+        "fareType": "adult local fixed-route cash fare",
+        "payment": "cash or Clipper",
+        "sourceUrl": "https://marintransit.gov/fares/",
+        "confidence": "high",
+        "evidence": "Official Marin Transit fare table lists Adult local fixed-route Cash fare at $2.00 and Clipper at $1.80; reduced and pass products are listed separately."
+      }
     },
     {
       "slug": "smart-ca",
@@ -11430,7 +11440,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.mercedthebus.com/",
@@ -11456,7 +11466,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "merced",
+        "agencyName": "Merced County Transit (The Bus)",
+        "amount": 1.5,
+        "amountMax": 3,
+        "currency": "USD",
+        "fareType": "base fare by local/intercommunity trip",
+        "payment": "cash, pass, or standard fare media",
+        "sourceUrl": "https://www.mercedthebus.com/131/Fare-Fees",
+        "confidence": "high",
+        "evidence": "Official fare page lists a $1.50 base fare for local rides within a city/community and $3.00 for travel between cities/communities; eligible veterans, seniors, and ADA riders ride free with ID."
+      }
     },
     {
       "slug": "start",
@@ -13153,7 +13174,7 @@
         "USD"
       ],
       "feedVersion": null,
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 2,
         "currency": "USD",
@@ -13275,7 +13296,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "mcts",
+        "agencyName": "Milwaukee County Transit System (MCTS)",
+        "amount": 2.75,
+        "currency": "USD",
+        "fareType": "adult regular fare",
+        "payment": "WisGo, cash, or standard fare media",
+        "sourceUrl": "https://www.ridemcts.com/fares-passes",
+        "confidence": "high",
+        "evidence": "Official MCTS fare page lists Regular Fare at $2.75 per ride for ages 12-64; reduced fares and daily, weekly, and monthly caps are listed separately."
+      }
     },
     {
       "slug": "metrostlouis",
@@ -14413,7 +14444,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.itsmarta.com",
@@ -14491,7 +14522,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "marta",
+        "agencyName": "MARTA (Atlanta)",
+        "amount": 2.5,
+        "currency": "USD",
+        "fareType": "standard one-way fare",
+        "payment": "Breeze or standard fare media",
+        "sourceUrl": "https://itsmarta.com/fare-programs.aspx",
+        "confidence": "high",
+        "evidence": "Official MARTA fare page lists Standard one-way fare at $2.50 with up to four free transfers in three hours; reduced, mobility, streetcar, and pass fares are listed separately."
+      }
     },
     {
       "slug": "cobblinc",
@@ -19152,7 +19193,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://maxtransit.org",
@@ -19185,7 +19226,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "max-transit",
+        "agencyName": "MAX Transit (Birmingham)",
+        "amount": 1.5,
+        "currency": "USD",
+        "fareType": "adult fixed-route one-way fare",
+        "payment": "exact cash, pass, or app",
+        "sourceUrl": "https://maxtransit.org/fares-and-passes/",
+        "confidence": "high",
+        "evidence": "Official MAX fare table lists Adult Fixed Route One-Way at $1.50; on-demand, paratransit, connector, reduced, day, and monthly fares are listed separately."
+      }
     },
     {
       "slug": "montgomery-transit",
@@ -20004,7 +20055,7 @@
         "CAD"
       ],
       "feedVersion": "20260529182459",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 4.4,
         "currency": "CAD",
@@ -20037,7 +20088,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "matbus",
+        "agencyName": "MATBUS (Fargo, ND)",
+        "amount": 2,
+        "currency": "USD",
+        "fareType": "adult cash fare",
+        "payment": "cash, Connect Card, or app",
+        "effectiveDate": "2026-01-01",
+        "sourceUrl": "https://www.matbus.com/riding-matbus/fares-passes",
+        "confidence": "high",
+        "evidence": "Official MATBUS fare page states fare changes begin January 1, 2026 and lists Adult Cash Fare at $2.00; reduced, day, 7-day, and account-based caps are listed separately."
+      }
     },
     {
       "slug": "duluth-transit",
@@ -21512,7 +21574,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://mymetrobus.com/",
@@ -21568,7 +21630,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "madison-metro",
+        "agencyName": "Madison Metro Transit",
+        "amount": 2,
+        "currency": "USD",
+        "fareType": "adult single ride",
+        "payment": "contactless, Fast Fare, or cash",
+        "sourceUrl": "https://www.cityofmadison.com/metro/fares",
+        "confidence": "high",
+        "evidence": "Official Madison Metro fare table lists Adult Single Ride at $2.00; youth, reduced, day, week, month, and fare caps are listed separately."
+      }
     },
     {
       "slug": "waukesha-metro",
@@ -24914,7 +24986,7 @@
         "USD"
       ],
       "feedVersion": "UTC: 21-Sep-2026 22:33",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1,
         "currency": "USD",
@@ -24951,7 +25023,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "marble-valley",
+        "agencyName": "Marble Valley Transit (Rutland)",
+        "amount": 1,
+        "amountMax": 3,
+        "currency": "USD",
+        "fareType": "single fare by route",
+        "payment": "standard fare media",
+        "sourceUrl": "https://thebus.com/fares/",
+        "confidence": "high",
+        "evidence": "Official Marble Valley fare page lists a Rutland City one-way single fare of $1.00 and $3.00 single fares on the listed regional routes; discounted and access products are listed separately."
+      }
     },
     {
       "slug": "bis-man",
