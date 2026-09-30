@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 104,
+    "manualVerified": 111,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,8 +11,8 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 104,
-      "official-source-candidate": 386,
+      "verified-official": 111,
+      "official-source-candidate": 379,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
       "no-official-website": 32
@@ -9788,7 +9788,7 @@
         "USD"
       ],
       "feedVersion": "UTC: 14-Sep-2026 19:08",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 2,
         "currency": "USD",
@@ -9836,7 +9836,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "humboldt",
+        "agencyName": "Humboldt Transit Authority",
+        "amount": 2,
+        "currency": "USD",
+        "fareType": "regional fixed-route single ride",
+        "payment": "cash, tap-to-pay, or Token Transit",
+        "sourceUrl": "https://hta.org/fares/purchase-tickets-online/",
+        "confidence": "high",
+        "evidence": "Official Ride Humboldt fare page lists Single Ride Regional Pass at $2.00; day, 7-day, 31-day, multi-ride, Flex, and Dial-a-Ride products are listed separately."
+      }
     },
     {
       "slug": "mendocino",
@@ -16956,7 +16966,7 @@
         "USD"
       ],
       "feedVersion": "20260903",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1.75,
         "currency": "USD",
@@ -16986,7 +16996,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "indigo",
+        "agencyName": "IndiGO",
+        "amount": 1.75,
+        "currency": "USD",
+        "fareType": "adult single ride",
+        "payment": "cash or IndiGO Mobile Pay",
+        "effectiveDate": "2026-01-01",
+        "sourceUrl": "https://www.indigobus.com/fares/",
+        "confidence": "high",
+        "evidence": "Official fare table says fares effective January 1, 2026 and lists Adult Single Ride at $1.75; reduced, day, monthly, free, and pass products are listed separately."
+      }
     },
     {
       "slug": "mmvta",
@@ -17589,7 +17610,7 @@
         "CAD"
       ],
       "feedVersion": "20260529182459",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 4.4,
         "currency": "CAD",
@@ -17623,7 +17644,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "indygo",
+        "agencyName": "IndyGo (Indianapolis)",
+        "amount": 2.75,
+        "currency": "USD",
+        "fareType": "full-fare two-hour unlimited ride",
+        "payment": "MyKey+ or standard fare media",
+        "sourceUrl": "https://www.indygo.net/fares-and-passes/",
+        "confidence": "high",
+        "evidence": "Official current fare table lists Full Fare 2 Hour Unlimited at $2.75; daily and weekly caps, half fare, and IndyGo Access fares are listed separately."
+      }
     },
     {
       "slug": "mta-maryland",
@@ -17710,7 +17741,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://www.gohart.org",
@@ -17778,7 +17809,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "hart",
+        "agencyName": "Hillsborough Area Regional Transit (HART)",
+        "amount": 2,
+        "currency": "USD",
+        "fareType": "regular local or limited-express one-trip fare",
+        "payment": "Flamingo Fares or standard fare media",
+        "sourceUrl": "https://www.gohart.org/Pages/fares-cards.aspx",
+        "confidence": "high",
+        "evidence": "Official HART fare table lists Regular Local and Limited Express One Trip at $2.00; fare caps, discount, HARTPlus, pass, and streetcar fares are listed separately."
+      }
     },
     {
       "slug": "tampa-international-airport",
@@ -23212,7 +23253,7 @@
         "USD"
       ],
       "feedVersion": "20230901",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1,
         "currency": "USD",
@@ -23242,7 +23283,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "hobbs",
+        "agencyName": "City of Hobbs Transit",
+        "amount": 1,
+        "currency": "USD",
+        "fareType": "fixed-route daily trip fare",
+        "payment": "exact cash or pass",
+        "sourceUrl": "https://www.hobbsnm.gov/fares.html",
+        "confidence": "high",
+        "evidence": "Official Hobbs Express fare page lists Daily Trip Fare at $1.00; 10-trip, 20-trip, monthly, and demand-response fares are listed separately."
+      }
     },
     {
       "slug": "longview",
@@ -26445,7 +26496,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://www.ivtransit.com/",
@@ -26475,7 +26526,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "imperial-valley",
+        "agencyName": "Imperial Valley Transit",
+        "amount": 1,
+        "amountMax": 2.5,
+        "currency": "USD",
+        "fareType": "one-way fare by zone/service",
+        "payment": "standard fare media",
+        "sourceUrl": "https://www.ivtransit.com/rider-information/fares",
+        "confidence": "high",
+        "evidence": "Official fare table lists Local one-way at $1.00, Regional at $1.25, Direct at $2.50, and additional IVC Express/Fast Trip services; fare varies by service."
+      }
     },
     {
       "slug": "kern-transit",
@@ -34588,7 +34650,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.jeffersoncitymo.gov/government/transit",
@@ -34610,7 +34672,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "jefftran",
+        "agencyName": "Jefferson City Transit (JeffTran)",
+        "amount": 1.5,
+        "currency": "USD",
+        "fareType": "regular one-way fare",
+        "payment": "exact cash or pass",
+        "sourceUrl": "https://www.jeffersoncitymo.gov/government/transit/fares.php",
+        "confidence": "high",
+        "evidence": "Official JeffTran fare page lists Regular Fares at $1.50 per ride; reduced fare and 20-ride pass prices are listed separately."
+      }
     },
     {
       "slug": "muskegon",
