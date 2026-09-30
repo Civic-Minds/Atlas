@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 32,
+    "manualVerified": 40,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,8 +11,8 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 32,
-      "official-source-candidate": 458,
+      "verified-official": 40,
+      "official-source-candidate": 450,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
       "no-official-website": 32
@@ -161,7 +161,7 @@
         "CAD"
       ],
       "feedVersion": null,
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 3.75,
         "currency": "CAD",
@@ -220,7 +220,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "burlington",
+        "agencyName": "Burlington Transit",
+        "amount": 2.85,
+        "currency": "CAD",
+        "fareType": "adult single ride",
+        "payment": "PRESTO",
+        "cashAmount": 3.75,
+        "sourceUrl": "https://www.burlington.ca/en/transit/fares.aspx",
+        "confidence": "high",
+        "evidence": "Official fare page lists Adult PRESTO fare $2.85 and cash fare $3.75 for customers age 13 and older; youth and other categories are listed separately."
+      }
     },
     {
       "slug": "chatham-kent",
@@ -995,7 +1006,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.octranspo.com",
@@ -1074,7 +1085,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "octranspo",
+        "agencyName": "OC Transpo (Ottawa)",
+        "amount": 4.1,
+        "currency": "CAD",
+        "fareType": "adult per-ride fare",
+        "payment": "PRESTO or O-Payment",
+        "cashAmount": 4.15,
+        "sourceUrl": "https://www.octranspo.com/en/fares/",
+        "confidence": "high",
+        "evidence": "Official 2026 fare table lists Adult PRESTO $4.10, O-Payment $4.10, and cash $4.15; reduced fares are listed separately."
+      }
     },
     {
       "slug": "oakville",
@@ -1461,7 +1483,7 @@
       "status": "unresolved",
       "notes": "GTFS publishes only zero-value legacy fare attributes; this may be a placeholder and was not treated as proof of free service.",
       "feedVersion": "S1000523",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": null,
         "currency": "USD",
@@ -1503,7 +1525,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "ttc",
+        "agencyName": "Toronto Transit Commission",
+        "amount": 3.3,
+        "currency": "CAD",
+        "fareType": "adult pay-as-you-go fare",
+        "payment": "PRESTO",
+        "cashAmount": 3.35,
+        "sourceUrl": "https://www.ttc.ca/Fares-and-passes",
+        "confidence": "high",
+        "evidence": "Official pay-as-you-go table lists Adult PRESTO $3.30 and cash $3.35; debit/credit and reduced categories are listed separately."
+      }
     },
     {
       "slug": "windsor",
@@ -1680,7 +1713,7 @@
         "CAD"
       ],
       "feedVersion": "2026.09.06_September_20260810",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 4.65,
         "currency": "CAD",
@@ -1751,7 +1784,19 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "yrt",
+        "agencyName": "York Region Transit",
+        "amount": 4.24,
+        "currency": "CAD",
+        "fareType": "adult single ride",
+        "payment": "PRESTO",
+        "cashAmount": 4.65,
+        "effectiveDate": "2026-07-01",
+        "sourceUrl": "https://www.yrt.ca/en/fares-and-passes/fare-chart.aspx",
+        "confidence": "high",
+        "evidence": "Official fare chart says prices effective July 1, 2026 and lists Adult PRESTO $4.24 and cash, credit or debit $4.65."
+      }
     },
     {
       "slug": "linter",
@@ -1920,7 +1965,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.rtcquebec.ca",
@@ -1969,7 +2014,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "rtc",
+        "agencyName": "RTC (Québec)",
+        "amount": 3.85,
+        "currency": "CAD",
+        "fareType": "adult one-ticket fare",
+        "payment": "standard ticket",
+        "effectiveDate": "2026-07-01",
+        "sourceUrl": "https://www.rtcquebec.ca/tarifs-et-achat/tarifs-et-titres/grille-des-tarifs",
+        "confidence": "high",
+        "evidence": "Official 2026 fare grid states rates are in force from July 1, 2026 and lists a single ticket at $3.85; multi-ticket and other categories are listed separately."
+      }
     },
     {
       "slug": "rtl",
@@ -2092,7 +2148,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://stlaval.ca",
@@ -2124,7 +2180,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "stl",
+        "agencyName": "STL (Laval)",
+        "amount": 3.75,
+        "currency": "CAD",
+        "fareType": "Bus one-trip fare",
+        "payment": "standard ticket",
+        "sourceUrl": "https://stlaval.ca/tarifs",
+        "confidence": "high",
+        "evidence": "Official STL fare page lists the Laval-only Bus fare at $3.75; metropolitan all-mode products are listed separately."
+      }
     },
     {
       "slug": "stlevis",
@@ -3244,7 +3310,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://www.calgarytransit.com",
@@ -3302,7 +3368,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "calgary",
+        "agencyName": "Calgary Transit",
+        "amount": 4,
+        "currency": "CAD",
+        "fareType": "adult one-time cash fare",
+        "payment": "cash or My Fare",
+        "sourceUrl": "https://www.calgarytransit.com/fares---passes.html",
+        "effectiveDate": "2026-01-01",
+        "confidence": "high",
+        "evidence": "Official 2026 fare table lists Adult cash fare $4.00 for one-time use, valid for 90 minutes; ticket books are listed separately."
+      }
     },
     {
       "slug": "edmonton",
@@ -3474,7 +3551,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://www.halifax.ca/transit",
@@ -3533,7 +3610,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "halifax",
+        "agencyName": "Halifax Transit",
+        "amount": 3,
+        "currency": "CAD",
+        "fareType": "adult conventional one-ticket/ride fare",
+        "payment": "cash or HFXGO",
+        "sourceUrl": "https://www.halifax.ca/transportation/halifax-transit/fares-tickets-passes",
+        "confidence": "high",
+        "evidence": "Official fare table lists conventional service 1 Ticket/Ride Adult fare at $3.00; senior, youth, child, and Regional Express fares are listed separately."
+      }
     },
     {
       "slug": "codiac",
