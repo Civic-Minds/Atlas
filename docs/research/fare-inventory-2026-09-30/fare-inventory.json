@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 484,
+    "manualVerified": 485,
     "officialSiteStats": {
       "official-source-found": 493,
       "official-fare-page-not-found": 116,
@@ -11,11 +11,11 @@
       "site-inaccessible": 52
     },
     "researchStatuses": {
-      "verified-official": 484,
+      "verified-official": 485,
       "official-fare-page-not-found": 113,
       "official-site-inaccessible": 45,
       "no-official-website": 32,
-      "official-source-candidate": 19
+      "official-source-candidate": 18
     }
   },
   "records": [
@@ -36032,7 +36032,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.alliance-bus.com/",
@@ -36048,7 +36048,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "auch",
+        "agencyName": "Alliance (Auch)",
+        "amount": 0.9,
+        "currency": "EUR",
+        "fareType": "urban network single ticket",
+        "payment": "standard ticket",
+        "confidence": "medium",
+        "sourceUrl": "https://www.grandauch.com/transports-urbains",
+        "evidence": "Official Grand Auch Cœur de Gascogne transit page lists the Alliance urban network single ticket at €0.90. An older official archive page lists a later €1.00 fare, so the current page is recorded with medium confidence pending a dated tariff sheet."
+      }
     },
     {
       "slug": "beaune",
