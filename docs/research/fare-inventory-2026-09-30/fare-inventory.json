@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 148,
+    "manualVerified": 155,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,8 +11,8 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 148,
-      "official-source-candidate": 342,
+      "verified-official": 155,
+      "official-source-candidate": 335,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
       "no-official-website": 32
@@ -5504,7 +5504,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://www.reddeer.ca/city-services/transit/",
@@ -5537,7 +5537,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "red-deer",
+        "agencyName": "Red Deer Transit",
+        "amount": 3,
+        "currency": "CAD",
+        "fareType": "adult cash fare",
+        "payment": "cash or MYRide card",
+        "sourceUrl": "https://www.reddeer.ca/city-services/transit/fares-and-passes/",
+        "confidence": "high",
+        "evidence": "Official Red Deer fare table lists Adult age 18-64 cash fare at $3.00; 12-ride, day, monthly, youth, senior, and subsidized products are listed separately."
+      }
     },
     {
       "slug": "lethbridge",
@@ -9617,7 +9627,7 @@
         "USD"
       ],
       "feedVersion": "09-29-26  02:35",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 2,
         "currency": "USD",
@@ -9698,7 +9708,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "rvtd",
+        "agencyName": "Rogue Valley Transportation District (RVTD)",
+        "amount": 2,
+        "currency": "USD",
+        "fareType": "full-fare single ride",
+        "payment": "cash or Umo",
+        "sourceUrl": "https://www.rvtd.org/fares-passes/",
+        "confidence": "high",
+        "evidence": "Official RVTD fare table lists Full Fare Single Ride at $2.00; day, 20-ride, monthly, reduced, and youth fares are listed separately."
+      }
     },
     {
       "slug": "bts-or",
@@ -11938,7 +11958,7 @@
         "USD"
       ],
       "feedVersion": "1",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 2,
         "currency": "USD",
@@ -11997,7 +12017,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "rtcwashoe",
+        "agencyName": "Regional Transportation Commission of Washoe County (RTC Washoe)",
+        "amount": 2,
+        "currency": "USD",
+        "fareType": "regular single ride",
+        "payment": "cash or fare media",
+        "sourceUrl": "https://rtcwashoe.com/fares-passes/",
+        "confidence": "high",
+        "evidence": "Official RTC Washoe fare table lists Regular Single Ride at $2.00; day, 7-day, 31-day, reduced, and RTC services are listed separately."
+      }
     },
     {
       "slug": "smat",
@@ -12694,7 +12724,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://rrmetro.org/",
@@ -12775,7 +12805,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "rockregion",
+        "agencyName": "Rock Region Metro (Little Rock)",
+        "amount": 1.35,
+        "currency": "USD",
+        "fareType": "adult local one-way cash fare",
+        "payment": "cash, pass, or standard fare media",
+        "sourceUrl": "https://rrmetro.org/fares/",
+        "confidence": "high",
+        "evidence": "Official Rock Region Metro fare table lists Adult One Way local bus fare at $1.35; 10-ride, 31-day, METRO Links, reduced, child, and transfer fares are listed separately."
+      }
     },
     {
       "slug": "nashvillemta",
@@ -14963,7 +15003,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.montgomerycountymd.gov/dot-transit/index.html",
@@ -14981,7 +15021,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "rideon",
+        "agencyName": "Ride On (Montgomery County)",
+        "amount": 0,
+        "currency": "USD",
+        "fareType": "standard bus fare",
+        "payment": "fare-free service",
+        "effectiveDate": "2025-06-29",
+        "sourceUrl": "https://www.montgomerycountymd.gov/department-transportation/ride-montgomery-county/fares-ride",
+        "confidence": "high",
+        "evidence": "Official Montgomery County page states zero fares began June 29, 2025 for Ride On, Ride On extRa, Ride On Flex, and Flash buses."
+      }
     },
     {
       "slug": "fairfax",
@@ -20982,7 +21033,7 @@
         "USD"
       ],
       "feedVersion": "Updated: Aug 24, 2026, 6:35 AM",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1.5,
         "currency": "USD",
@@ -21022,7 +21073,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "rts",
+        "agencyName": "RTS (Gainesville)",
+        "amount": 1.5,
+        "currency": "USD",
+        "fareType": "adult cash fare",
+        "payment": "exact cash, change card, or fare pass",
+        "sourceUrl": "https://go-rts.com/rts-fares-and-passes/",
+        "confidence": "high",
+        "evidence": "Official RTS fare page lists Adult cash fare at $1.50; day, reduced, free age-based, student, and other passes are listed separately."
+      }
     },
     {
       "slug": "scat",
@@ -22387,7 +22448,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://rmtd.org/",
@@ -22432,7 +22493,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "rockford",
+        "agencyName": "Rockford Mass Transit District",
+        "amount": 1.5,
+        "currency": "USD",
+        "fareType": "adult cash fare",
+        "payment": "cash or ticket/pass",
+        "sourceUrl": "https://rmtd.org/tickets/",
+        "confidence": "high",
+        "evidence": "Official RMTD fare page lists Adults age 12+ cash fare at $1.50; child, student, reduced, day, 7-day, 30-day, and zone fares are listed separately."
+      }
     },
     {
       "slug": "racine",
