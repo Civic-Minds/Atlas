@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 265,
+    "manualVerified": 269,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,8 +11,8 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 265,
-      "official-source-candidate": 225,
+      "verified-official": 269,
+      "official-source-candidate": 221,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
       "no-official-website": 32
@@ -7043,7 +7043,7 @@
         "CAD"
       ],
       "feedVersion": "202609161441",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 3.75,
         "currency": "CAD",
@@ -7103,7 +7103,19 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "portlandme",
+        "agencyName": "Greater Portland Metro",
+        "amount": 2.25,
+        "amountMax": 65,
+        "currency": "USD",
+        "fareType": "full-fare local bus fare and monthly fare cap",
+        "payment": "DiriGo, tap-to-ride, or exact cash",
+        "effectiveDate": "2026-08-01",
+        "sourceUrl": "https://www.gpmetro.org/fare-policy-update/",
+        "confidence": "high",
+        "evidence": "Official Metro fare update states fares increased August 1, 2026 and the base fare became $2.25; full-fare local daily cap is $6.50 and monthly cap is $65, with BREEZ/Zoom fares listed separately."
+      }
     },
     {
       "slug": "southportlandme",
@@ -7592,7 +7604,7 @@
         "USD"
       ],
       "feedVersion": "20260705-20260713-2100",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 0.4,
         "currency": "USD",
@@ -7622,7 +7634,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "trimet",
+        "agencyName": "TriMet (Portland, OR)",
+        "amount": 2,
+        "amountMax": 440,
+        "currency": "USD",
+        "fareType": "Portland Streetcar-only fare and annual pass",
+        "payment": "Hop card, mobile wallet, or contactless payment",
+        "sourceUrl": "https://portlandstreetcar.org/fare-info/fare-info",
+        "confidence": "high",
+        "evidence": "Official Portland Streetcar fare page lists Streetcar-only 2.5-hour fare at $2.00, Honored Citizen/Youth fare at $1.00, monthly pass at $40, and annual pass at $440; TriMet fares are also valid."
+      }
     },
     {
       "slug": "ctran",
@@ -7704,7 +7727,7 @@
         "USD"
       ],
       "feedVersion": "2609a",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1.75,
         "currency": "USD",
@@ -7767,7 +7790,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "eugene-ltd",
+        "agencyName": "Lane Transit District",
+        "amount": 1.75,
+        "amountMax": 135,
+        "currency": "USD",
+        "fareType": "adult single ride and unlimited pass",
+        "payment": "Umo tap card, app, cash, or EmX TVM",
+        "sourceUrl": "https://www.ltd.org/fares-passes/",
+        "confidence": "high",
+        "evidence": "Official LTD fare page lists Adult single ride at $1.75, day pass at $3.50, 31-day pass at $50, and 92-day pass at $135; youth/half-fare and service-specific fares are listed separately."
+      }
     },
     {
       "slug": "cherriots",
@@ -8177,7 +8211,7 @@
         "USD"
       ],
       "feedVersion": "UTC: 30-Jun-2026 05:12",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1,
         "currency": "USD",
@@ -8214,7 +8248,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "mats",
+        "agencyName": "Mount Adams Transportation Service",
+        "amount": 1,
+        "currency": "USD",
+        "fareType": "fixed-route fare",
+        "payment": "exact cash",
+        "sourceUrl": "https://www.klickitatcounty.gov/DocumentCenter/View/10315/WS-FIXED-4521",
+        "confidence": "medium",
+        "evidence": "Official Klickitat County passenger guide states fixed-route MATS fare is $1.00 each time a rider boards and exact change is required; the guide is older and should be reconfirmed for currentness."
+      }
     },
     {
       "slug": "setd",
