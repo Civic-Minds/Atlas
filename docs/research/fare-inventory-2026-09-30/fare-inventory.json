@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 191,
+    "manualVerified": 193,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,8 +11,8 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 191,
-      "official-source-candidate": 299,
+      "verified-official": 193,
+      "official-source-candidate": 297,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
       "no-official-website": 32
@@ -14113,7 +14113,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://www.burbankbus.org/",
@@ -14129,7 +14129,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "burbankbus",
+        "agencyName": "BurbankBus",
+        "amount": 1,
+        "currency": "USD",
+        "fareType": "local one-way bus fare",
+        "payment": "standard fare media",
+        "sourceUrl": "https://www.burbankca.gov/burbankbus",
+        "confidence": "high",
+        "evidence": "Official City of Burbank BurbankBus page states the bus fare rate is $1 one-way; student free-fare information is listed separately."
+      }
     },
     {
       "slug": "glendalebeeline",
@@ -20205,7 +20215,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.bata.net/",
@@ -20286,7 +20296,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "bata",
+        "agencyName": "Bay Area Transportation Authority (Traverse City, MI)",
+        "amount": 1.5,
+        "currency": "USD",
+        "fareType": "City Loop one-way fare",
+        "payment": "cash, fare card, or fare app",
+        "sourceUrl": "https://www.bata.net/fares/fares.html",
+        "confidence": "high",
+        "evidence": "Official BATA fare page lists City Loop one-way at $1.50; Village Loop, Link, Bayline free service, and reduced fares are listed separately."
+      }
     },
     {
       "slug": "citylink-peoria",
