@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 188,
+    "manualVerified": 187,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -1788,14 +1788,14 @@
         "slug": "yrt",
         "agencyName": "York Region Transit",
         "amount": 4.24,
-        "amountMax": 4.65,
         "currency": "CAD",
         "fareType": "adult single ride",
-        "payment": "PRESTO ($4.24) or cash, credit, or debit ($4.65)",
-        "sourceUrl": "https://www.yrt.ca/en/fares-and-passes/fare-chart.aspx",
+        "payment": "PRESTO",
+        "cashAmount": 4.65,
         "effectiveDate": "2026-07-01",
+        "sourceUrl": "https://www.yrt.ca/en/fares-and-passes/fare-chart.aspx",
         "confidence": "high",
-        "evidence": "Official YRT fare chart says prices are effective July 1, 2026 and lists Adult PRESTO at $4.24 and Adult Cash, Credit or Debit at $4.65; youth, senior, child, GO, and two-hour transfer rules are listed separately."
+        "evidence": "Official fare chart says prices effective July 1, 2026 and lists Adult PRESTO $4.24 and cash, credit or debit $4.65."
       }
     },
     {
