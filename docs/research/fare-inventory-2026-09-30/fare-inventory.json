@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 383,
+    "manualVerified": 385,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,10 +11,10 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 383,
+      "verified-official": 385,
       "official-fare-page-not-found": 125,
       "official-site-inaccessible": 45,
-      "official-source-candidate": 108,
+      "official-source-candidate": 106,
       "no-official-website": 32
     }
   },
@@ -33101,7 +33101,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.tcat.fr/",
@@ -33180,7 +33180,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "troyes",
+        "agencyName": "TCAT (Troyes)",
+        "amount": 1.35,
+        "amountMax": 42,
+        "currency": "EUR",
+        "fareType": "one-hour single trip and public 30-day pass",
+        "payment": "standard ticket, app, SMS, or pass",
+        "sourceUrl": "https://tcat.fr/titres-et-tarifs/la-gamme-tarifaire/",
+        "confidence": "high",
+        "evidence": "Official TCAT fare page lists one-hour single trip at €1.35 and full public 30-day pass at €42; 10-trip, 24-hour, annual, and reduced fares are listed separately."
+      }
     },
     {
       "slug": "valence",
@@ -33197,7 +33208,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.vrd-mobilites.fr/",
@@ -33269,7 +33280,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "valence",
+        "agencyName": "Citéa (Valence Romans)",
+        "amount": 1.4,
+        "amountMax": 20,
+        "currency": "EUR",
+        "fareType": "single trip and public monthly pass",
+        "payment": "standard ticket, SMS, or pass",
+        "sourceUrl": "https://www.valenceromansmobilites.fr/tarifs-abonnements/bus/",
+        "confidence": "high",
+        "evidence": "Official Citéa fare page lists single trip at €1.40, 24-hour ticket at €3.90, 10 trips at €8, and full public monthly pass at €20."
+      }
     },
     {
       "slug": "vannes",
