@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 295,
+    "manualVerified": 297,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,8 +11,8 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 295,
-      "official-source-candidate": 195,
+      "verified-official": 297,
+      "official-source-candidate": 193,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
       "no-official-website": 32
@@ -28884,7 +28884,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://www.valleyexpressbus.org/",
@@ -28928,7 +28928,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "valley-express",
+        "agencyName": "Valley Express",
+        "amount": 1.25,
+        "amountMax": 30,
+        "currency": "USD",
+        "fareType": "fixed-route cash fare, Dial-A-Ride fare, and 31-day pass products",
+        "payment": "cash, VCbuspass, or pass",
+        "sourceUrl": "https://www.valleyexpressbus.org/fares/fare-info/",
+        "confidence": "high",
+        "evidence": "Official Valley Express current fare table lists fixed-route full fare at $1.25, Dial-A-Ride full fare at $2.00, fixed-route 31-day pass at $20, and Super Pass at $30; reduced fares and regional VCbuspass products are listed separately."
+      }
     },
     {
       "slug": "laguna-beach",
@@ -29207,7 +29218,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.lemet.fr/",
@@ -29238,7 +29249,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "metz",
+        "agencyName": "Le Met' (Metz)",
+        "amount": 1.9,
+        "amountMax": 45.9,
+        "currency": "EUR",
+        "fareType": "single-journey fare and monthly pass products",
+        "payment": "ticket, Simplicités card, or post-payment",
+        "sourceUrl": "https://www.lemet.fr/quel-tarif-choisir/",
+        "confidence": "high",
+        "evidence": "Official Le Met fare selector lists a one-journey ticket at €1.90 from ticket offices and vending machines (€2.00 from the driver), a 10-journey product at €15.30, and Liberté monthly at €45.90; other rider and group products are listed separately."
+      }
     },
     {
       "slug": "nancy",
