@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 339,
+    "manualVerified": 340,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,10 +11,10 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 339,
+      "verified-official": 340,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
-      "official-source-candidate": 151,
+      "official-source-candidate": 150,
       "no-official-website": 32
     }
   },
@@ -6393,7 +6393,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.bctransit.com/",
@@ -6401,7 +6401,19 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "cowichan",
+        "agencyName": "BC Transit (Cowichan Valley)",
+        "amount": 2.5,
+        "amountMax": 246,
+        "currency": "CAD",
+        "fareType": "adult local, NCX, and CVX/SVX fare products",
+        "payment": "cash, Umo, contactless payment, or fare pass",
+        "sourceUrl": "https://www.bctransit.com/cowichan-valley/fares/",
+        "confidence": "high",
+        "effectiveDate": "2026-01-04",
+        "evidence": "Official BC Transit Cowichan Valley fare page lists local adult single ride at $2.50 and 30-day pass at $55, NCX single ride at $5, and CVX/SVX single ride at $10 with regional pass products listed separately."
+      }
     },
     {
       "slug": "comox-valley",
