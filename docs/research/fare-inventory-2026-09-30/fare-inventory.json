@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 398,
+    "manualVerified": 401,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,10 +11,10 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 398,
+      "verified-official": 401,
       "official-fare-page-not-found": 125,
       "official-site-inaccessible": 45,
-      "official-source-candidate": 93,
+      "official-source-candidate": 90,
       "no-official-website": 32
     }
   },
@@ -31331,7 +31331,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.orizo.fr/",
@@ -31347,7 +31347,19 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "avignon",
+        "agencyName": "Orizo (Avignon)",
+        "amount": 1.4,
+        "amountMax": 45,
+        "currency": "EUR",
+        "fareType": "one-hour single trip and monthly pass",
+        "payment": "standard ticket, app, or pass",
+        "sourceUrl": "https://storage.googleapis.com/is-wp-162-prod/uploads-prod/2025/07/TARIFS-ORIZO_INTEGRALITE-072025.pdf",
+        "effectiveDate": "2025-03-01",
+        "confidence": "medium",
+        "evidence": "Official Orizo fare schedule states tariffs in force in March 2025 and lists the one-hour single ticket at €1.40, 10-trip ticket at €10, day pass at €3.50, and 26+ monthly pass at €45; currentness needs follow-up."
+      }
     },
     {
       "slug": "bayonne",
@@ -32392,7 +32404,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.solea.info/",
@@ -32433,7 +32445,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "mulhouse",
+        "agencyName": "Soléa (Mulhouse)",
+        "amount": 1.6,
+        "amountMax": 47,
+        "currency": "EUR",
+        "fareType": "one-hour single trip and adult monthly pass",
+        "payment": "standard ticket, SMS, bank card, or pass",
+        "sourceUrl": "https://www.solea.info/tickets-abonnements",
+        "confidence": "high",
+        "evidence": "Official Soléa fare page lists a one-hour trip at €1.60 by ticket, SMS, or bank card and the 26–64 adult monthly pass at €47; 10-trip, day, youth, senior, and annual products are listed separately."
+      }
     },
     {
       "slug": "nice-fr",
@@ -32454,7 +32477,7 @@
         "EUR"
       ],
       "feedVersion": null,
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1.7,
         "currency": "EUR",
@@ -32477,7 +32500,19 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "nice-fr",
+        "agencyName": "Lignes d’Azur (Nice)",
+        "amount": 1.7,
+        "amountMax": 60,
+        "currency": "EUR",
+        "fareType": "single trip and 30-day pass",
+        "payment": "rechargeable card, app, or pass",
+        "sourceUrl": "https://www.lignesdazur.com/uploads/Guide_des_tarifs_Septembre_2026_compressed_1_4e2d1aa321.pdf",
+        "effectiveDate": "2026-09-01",
+        "confidence": "high",
+        "evidence": "Official Lignes d’Azur guide dated September 2026 lists Solo one-trip fare at €1.70, a day pass at €7, and a 30-day pass at €60; the guide also lists 65+ travel as free from September 1, 2026."
+      }
     },
     {
       "slug": "nimes",
