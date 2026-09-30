@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 489,
+    "manualVerified": 490,
     "officialSiteStats": {
       "official-source-found": 493,
       "official-fare-page-not-found": 116,
@@ -11,11 +11,11 @@
       "site-inaccessible": 52
     },
     "researchStatuses": {
-      "verified-official": 489,
+      "verified-official": 490,
       "official-fare-page-not-found": 113,
       "official-site-inaccessible": 45,
       "no-official-website": 32,
-      "official-source-candidate": 14
+      "official-source-candidate": 13
     }
   },
   "records": [
@@ -8795,7 +8795,7 @@
         "USD"
       ],
       "feedVersion": "UTC: 27-Jul-2026 17:09",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1,
         "currency": "USD",
@@ -8810,7 +8810,18 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "setd",
+        "agencyName": "Sunset Empire Transportation District",
+        "amount": 1,
+        "amountMax": 30,
+        "currency": "USD",
+        "fareType": "fixed-route base fare and standard monthly pass",
+        "payment": "cash, ticket, or Token Transit",
+        "confidence": "medium",
+        "sourceUrl": "https://nwconnector.org/passes-setd/",
+        "evidence": "Current NW Connector/SETD fare page lists the standard day pass at $3.00 and monthly pass at $30.00; official SETD fare-structure material identifies $1.00 as the base local fixed-route fare and $3.00-$8.00 for longer regional routes. The current GTFS feed also publishes a $1.00 fare, so the base fare is retained with medium confidence while route-specific regional fares remain separate."
+      }
     },
     {
       "slug": "sfmta",
