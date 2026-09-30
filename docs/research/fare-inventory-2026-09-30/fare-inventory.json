@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 424,
+    "manualVerified": 427,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,10 +11,10 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 424,
+      "verified-official": 427,
       "official-fare-page-not-found": 125,
       "official-site-inaccessible": 45,
-      "official-source-candidate": 67,
+      "official-source-candidate": 64,
       "no-official-website": 32
     }
   },
@@ -37117,7 +37117,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://jacksonvillenc.gov/224/Jacksonville-Transit",
@@ -37125,7 +37125,17 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "jacksonville-nc",
+        "agencyName": "Jacksonville Transit",
+        "amount": 1.5,
+        "currency": "USD",
+        "fareType": "regular bus one-way fare",
+        "payment": "Token Transit app, exact change, or paper ticket",
+        "confidence": "high",
+        "sourceUrl": "https://jacksonvillenc.gov/901/Frequently-Asked-Questions",
+        "evidence": "Official City of Jacksonville FAQ states that regular Jacksonville Transit bus fare is $1.50 each way; reduced fare is $0.75 for eligible riders and transfers are free within the stated window."
+      }
     },
     {
       "slug": "fast-nc",
@@ -38238,7 +38248,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.snowmasstransit.com/133/Routes-Schedules",
@@ -38246,7 +38256,17 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "snowmass-village",
+        "agencyName": "Snowmass Village Shuttle",
+        "amount": 0,
+        "currency": "USD",
+        "fareType": "local village shuttle ride",
+        "payment": "no fare required",
+        "confidence": "high",
+        "sourceUrl": "https://www.snowmasstransit.com/",
+        "evidence": "The Town of Snowmass Village official transit site links the Village Shuttle rider guide; the official rider guide states there are no fares for Town of Snowmass Village transit services."
+      }
     },
     {
       "slug": "winter-park",
@@ -38414,7 +38434,7 @@
         "USD"
       ],
       "feedVersion": "1",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 0,
         "currency": "USD",
@@ -38429,7 +38449,17 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "avon-transit",
+        "agencyName": "Avon Transit",
+        "amount": 0,
+        "currency": "USD",
+        "fareType": "local bus and gondola service",
+        "payment": "fare-free service",
+        "confidence": "high",
+        "sourceUrl": "https://www.avon.org/2038/Mobility",
+        "evidence": "Official Town of Avon Mobility page states that Avon Transit provides fare-free bus and gondola service funded by the town’s general revenue fund."
+      }
     },
     {
       "slug": "timmins",
