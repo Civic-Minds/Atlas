@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 348,
+    "manualVerified": 349,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,10 +11,10 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 348,
+      "verified-official": 349,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
-      "official-source-candidate": 142,
+      "official-source-candidate": 141,
       "no-official-website": 32
     }
   },
@@ -13553,7 +13553,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.santafenm.gov/transit",
@@ -13561,7 +13561,18 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "santafetrails",
+        "agencyName": "Santa Fe Trails",
+        "amount": 1,
+        "amountMax": 200,
+        "currency": "USD",
+        "fareType": "adult one-way fare and pass products",
+        "payment": "exact cash or fare pass",
+        "sourceUrl": "https://santafenm.gov/public-works/transit",
+        "confidence": "high",
+        "evidence": "Official City of Santa Fe transit page lists adult one-way fare at $1, day pass at $2, monthly pass at $20, semi-annual pass at $110, and annual pass at $200; youth, veterans, and active-duty military ride free."
+      }
     },
     {
       "slug": "capmetro",
