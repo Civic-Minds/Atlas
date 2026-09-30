@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 496,
+    "manualVerified": 497,
     "officialSiteStats": {
       "official-source-found": 493,
       "official-fare-page-not-found": 116,
@@ -11,11 +11,11 @@
       "site-inaccessible": 52
     },
     "researchStatuses": {
-      "verified-official": 496,
+      "verified-official": 497,
       "official-fare-page-not-found": 113,
       "official-site-inaccessible": 45,
       "no-official-website": 32,
-      "official-source-candidate": 7
+      "official-source-candidate": 6
     }
   },
   "records": [
@@ -37676,7 +37676,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://move-vendomois.fr/",
@@ -37684,7 +37684,18 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "vendome",
+        "agencyName": "Vendôme",
+        "amount": 1,
+        "amountMax": 2,
+        "currency": "EUR",
+        "fareType": "urban one-trip fare and non-urban one-trip fare",
+        "payment": "cash onboard or ticket",
+        "confidence": "high",
+        "sourceUrl": "https://move-vendomois.fr/ticket/",
+        "evidence": "Official MOVE Vendômois fare page lists urban lines at €1 per trip, valid for one hour, and interurban lines at €2 per trip; urban and non-urban on-demand trips are also listed at €2 under the applicable conditions."
+      }
     },
     {
       "slug": "vesoul",
