@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 340,
+    "manualVerified": 343,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,10 +11,10 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 340,
+      "verified-official": 343,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
-      "official-source-candidate": 150,
+      "official-source-candidate": 147,
       "no-official-website": 32
     }
   },
@@ -7624,7 +7624,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://passiotech.com/",
@@ -7632,7 +7632,19 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "watertowncitibus",
+        "agencyName": "Watertown Citibus",
+        "amount": 1.5,
+        "amountMax": 40,
+        "currency": "USD",
+        "fareType": "adult fixed-route fare and monthly pass",
+        "payment": "exact cash or bus pass",
+        "sourceUrl": "https://www.watertown-ny.gov/media/ArchiveDocuments/MiscCityDocuments/CityFeeSchedule/CityFeesandChargesSchedule",
+        "confidence": "high",
+        "effectiveDate": "2026-01-20",
+        "evidence": "Official City of Watertown FY 2025-26 fee schedule lists CitiBus adult base fare at $1.50, 10 rides at $10, and monthly unlimited at $40; the schedule was amended January 20, 2026."
+      }
     },
     {
       "slug": "hudsonlink",
@@ -11275,7 +11287,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://avl.yctd.org/",
@@ -11283,7 +11295,19 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "yolobus",
+        "agencyName": "Yolo County Transportation District (Yolobus)",
+        "amount": 2,
+        "amountMax": 121,
+        "currency": "USD",
+        "fareType": "regular local, intercity, express, and monthly fare products",
+        "payment": "cash, Connect Card, Transit Connect, or contactless payment",
+        "sourceUrl": "https://yolobus.com/fares/",
+        "confidence": "high",
+        "effectiveDate": "2026-07-01",
+        "evidence": "Official Yolobus fare page lists fares effective July 1, 2026 through June 30, 2027: regular local single ride $2, intercity $2.25, express $3.25, and monthly passes from $84 to $121."
+      }
     },
     {
       "slug": "unitrans",
@@ -11336,7 +11360,7 @@
       "confidence": "unresolved",
       "status": "inaccessible",
       "notes": "Feed download failed: fetch failed",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://www.roseville.ca.us/transit",
@@ -11352,7 +11376,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "roseville",
+        "agencyName": "Roseville Transit",
+        "amount": 1.5,
+        "amountMax": 58,
+        "currency": "USD",
+        "fareType": "general public local single fare and 30-day pass",
+        "payment": "cash or Connect Card",
+        "sourceUrl": "https://www.roseville.ca.us/government/departments/public_works/roseville_transit/fares_passes/",
+        "confidence": "high",
+        "evidence": "Official City of Roseville fare page lists local general-public single fare at $1.50, daily pass at $4, 10-ride pass at $15, and 30-day pass at $58; commuter fares are listed separately."
+      }
     },
     {
       "slug": "smart-or",
