@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 392,
+    "manualVerified": 393,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,10 +11,10 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 392,
+      "verified-official": 393,
       "official-fare-page-not-found": 125,
       "official-site-inaccessible": 45,
-      "official-source-candidate": 99,
+      "official-source-candidate": 98,
       "no-official-website": 32
     }
   },
@@ -11625,7 +11625,7 @@
         "USD"
       ],
       "feedVersion": "20260505",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1.5,
         "currency": "USD",
@@ -11640,7 +11640,19 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "metrolink",
+        "agencyName": "Metrolink",
+        "amount": 5,
+        "amountMax": 19,
+        "currency": "USD",
+        "fareType": "LA Zone day pass and weekday SoCal day pass",
+        "payment": "ticket or mobile app",
+        "sourceUrl": "https://metrolinktrains.com/ticketsOverview/fare-change-2026/",
+        "effectiveDate": "2026-10-05",
+        "confidence": "high",
+        "evidence": "Official Metrolink fare-change page states the LA Zone Day Pass remains $5 and the weekday SoCal Day Pass becomes $19 effective October 5, 2026; weekend/holiday SoCal Day Pass becomes $12 and one-way fares vary by distance."
+      }
     },
     {
       "slug": "torrance-transit",
