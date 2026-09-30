@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 488,
+    "manualVerified": 489,
     "officialSiteStats": {
       "official-source-found": 493,
       "official-fare-page-not-found": 116,
@@ -11,11 +11,11 @@
       "site-inaccessible": 52
     },
     "researchStatuses": {
-      "verified-official": 488,
+      "verified-official": 489,
       "official-fare-page-not-found": 113,
       "official-site-inaccessible": 45,
       "no-official-website": 32,
-      "official-source-candidate": 15
+      "official-source-candidate": 14
     }
   },
   "records": [
@@ -7626,7 +7626,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.ocgov.net/oneida/planning/hocts",
@@ -7642,7 +7642,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "hocts",
+        "agencyName": "HOCTS (Utica-Rome)",
+        "amount": 1,
+        "amountMax": 3,
+        "currency": "USD",
+        "fareType": "Centro successor fixed-route fare, route-dependent",
+        "payment": "cash or Centro pass",
+        "confidence": "medium",
+        "sourceUrl": "https://www.centro.org/fares-passes/fares-and-passes",
+        "evidence": "The official Centro fare page lists Greater Rome full fare at $1.00 and the Utica-Rome-Turning Stone service at $3.00, with reduced fares and passes separately. The registry feed is labeled HOCTS (Utica-Rome); the official source identifies Centro as the current successor/operator, so this is recorded as a successor-mapped fare rather than an unqualified HOCTS fare."
+      }
     },
     {
       "slug": "glensfallstransit",
