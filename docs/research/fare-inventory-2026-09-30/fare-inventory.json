@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 497,
+    "manualVerified": 498,
     "officialSiteStats": {
       "official-source-found": 493,
       "official-fare-page-not-found": 116,
@@ -11,11 +11,11 @@
       "site-inaccessible": 52
     },
     "researchStatuses": {
-      "verified-official": 497,
+      "verified-official": 498,
       "official-fare-page-not-found": 113,
       "official-site-inaccessible": 45,
       "no-official-website": 32,
-      "official-source-candidate": 6
+      "official-source-candidate": 5
     }
   },
   "records": [
@@ -32535,7 +32535,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.choletbus.fr/",
@@ -32581,7 +32581,19 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "cholet",
+        "agencyName": "Choletbus",
+        "amount": 1.65,
+        "amountMax": 49.5,
+        "currency": "EUR",
+        "fareType": "one-hour unit ticket, onboard ticket, 10-trip products, and monthly passes",
+        "payment": "app, online, agency, retailer, or onboard",
+        "effectiveDate": "2026-08-01",
+        "confidence": "high",
+        "sourceUrl": "https://www.choletbus.fr/tarifs-transport-en-commun/",
+        "evidence": "Official Choletbus tariff page states that prices apply from August 1, 2026. Its published fare cards list the unit ticket at €1.65, onboard dépannage ticket at €2.20, 10 trips at €14, 10 trips Familles nombreuses at €9.80, monthly passes at €21 for under-11, €38.50 for ages 11-25, €49.50 for ages 26-64, and €31.60 for ages 65+; ordinary tickets are valid one hour with connections across the network."
+      }
     },
     {
       "slug": "clermont",
