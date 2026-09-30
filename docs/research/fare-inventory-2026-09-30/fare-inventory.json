@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 343,
+    "manualVerified": 345,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,10 +11,10 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 343,
+      "verified-official": 345,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
-      "official-source-candidate": 147,
+      "official-source-candidate": 145,
       "no-official-website": 32
     }
   },
@@ -8467,7 +8467,7 @@
         "USD"
       ],
       "feedVersion": "UTC: 11-Feb-2026 21:07",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1,
         "currency": "USD",
@@ -8482,7 +8482,19 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "tillamook",
+        "agencyName": "Tillamook County Transportation District",
+        "amount": 1,
+        "amountMax": 15,
+        "currency": "USD",
+        "fareType": "regular fixed-route and intercity fare products",
+        "payment": "cash or fare pass",
+        "sourceUrl": "https://www.oregon.gov/odot/RPTD/STIFPlanSubmissions/TillamookCountyTransportationDistrict_V1_20250116.pdf",
+        "confidence": "medium",
+        "effectiveDate": "2025-01-16",
+        "evidence": "Official Oregon DOT STIF plan for Tillamook County Transportation District states the base full fixed-route fare is $1 per trip and documents the district’s fare-reduction program; official district fare materials identify additional intercity and pass products."
+      }
     },
     {
       "slug": "columbia-area-transit",
@@ -11150,7 +11162,7 @@
         "USD"
       ],
       "feedVersion": "MAY 26_20260526",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 2,
         "currency": "USD",
@@ -11165,7 +11177,19 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "trinity",
+        "agencyName": "Trinity Transit",
+        "amount": 1,
+        "amountMax": 1,
+        "currency": "USD",
+        "fareType": "same-community regular single ride",
+        "payment": "exact cash only",
+        "sourceUrl": "https://www.trinitycounty.org/613/Trinity-Transit-Fares",
+        "confidence": "medium",
+        "effectiveDate": "2026-07-01",
+        "evidence": "Official Trinity County fare page states that trips within the same community in Trinity County are $1.00, fares vary between communities by bus line, exact cash is required, and the complete route fare charts are provided as official images on the page."
+      }
     },
     {
       "slug": "lassen",
