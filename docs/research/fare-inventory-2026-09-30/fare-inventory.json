@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 207,
+    "manualVerified": 209,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,8 +11,8 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 207,
-      "official-source-candidate": 283,
+      "verified-official": 209,
+      "official-source-candidate": 281,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
       "no-official-website": 32
@@ -491,7 +491,7 @@
         "USD"
       ],
       "feedVersion": "JunSept26_Merged",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1,
         "currency": "USD",
@@ -570,7 +570,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "grt",
+        "agencyName": "Grand River Transit (Waterloo Region)",
+        "amount": 3,
+        "amountMax": 4,
+        "currency": "CAD",
+        "fareType": "single ticket/fare",
+        "payment": "GRT Pay or EasyGO stored value ($3); cash or vending machine ($4)",
+        "sourceUrl": "https://www.grt.ca/fares-and-payment/fare-prices/",
+        "confidence": "high",
+        "evidence": "Official GRT fare table lists single fare at $3.00 by GRT Pay, Transit app, or EasyGO stored value and $4.00 by cash or fare vending machine; reduced, pass, and MobilityPLUS products are listed separately."
+      }
     },
     {
       "slug": "guelph",
@@ -6910,7 +6921,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.ridehudsonlink.com/Tools/Maps-and-Schedules",
@@ -6937,7 +6948,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "hudsonlink",
+        "agencyName": "Hudson Link",
+        "amount": 2.75,
+        "currency": "USD",
+        "fareType": "single ride fare",
+        "payment": "exact cash, website, app, or ticket vending machine",
+        "sourceUrl": "https://www.ridehudsonlink.com/fares",
+        "confidence": "high",
+        "evidence": "Official Hudson Link fare page lists Single Ride Fare at $2.75; single ride with transfer, senior/special-needs, Up the Hill, 5-ride, 10-ride, and pass products are listed separately."
+      }
     },
     {
       "slug": "wsf",
