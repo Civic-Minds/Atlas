@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 487,
+    "manualVerified": 488,
     "officialSiteStats": {
       "official-source-found": 493,
       "official-fare-page-not-found": 116,
@@ -11,11 +11,11 @@
       "site-inaccessible": 52
     },
     "researchStatuses": {
-      "verified-official": 487,
+      "verified-official": 488,
       "official-fare-page-not-found": 113,
       "official-site-inaccessible": 45,
       "no-official-website": 32,
-      "official-source-candidate": 16
+      "official-source-candidate": 15
     }
   },
   "records": [
@@ -36098,7 +36098,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.coteetbus.fr",
@@ -36134,7 +36134,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "beaune",
+        "agencyName": "Côte&Bus (Beaune)",
+        "amount": 1,
+        "amountMax": 3,
+        "currency": "EUR",
+        "fareType": "one-hour single ticket and day pass",
+        "payment": "cash onboard, app, retailer, or fare media",
+        "confidence": "high",
+        "sourceUrl": "https://coteetbus.fr/fr/kBM-Ticket-Unite.html",
+        "evidence": "Official Côte&Bus ticket pages list the unit ticket at €1 and the day ticket at €3. The unit ticket page says it is sold onboard and the network guidance states it permits travel, connections, and return travel for one hour; the day ticket permits unlimited travel on the day of validation."
+      }
     },
     {
       "slug": "cavaillon",
