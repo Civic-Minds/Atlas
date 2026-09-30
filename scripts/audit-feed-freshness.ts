@@ -11,11 +11,14 @@ import { resolve } from 'path';
 import JSZip from 'jszip';
 import { parseCsv } from '../pipeline/parseGtfs.js';
 import { effectiveFeedExpiry } from '../pipeline/feedFreshness.js';
+import { resolveFeedUrl } from '../pipeline/feedUrl.js';
 
 interface Agency {
   slug: string;
   name: string;
   feedUrl?: string | null;
+  feedApiKeyEnvVar?: string;
+  feedApiKeyParam?: string;
   mdbFeedUrl?: string | null;
   staged?: boolean;
   hiddenInProduction?: boolean;
@@ -74,7 +77,8 @@ async function readMetadata(buffer: Buffer): Promise<{ expiry: string | null; ve
 
 async function auditAgency(agency: Agency, today: string): Promise<FeedAudit> {
   const sources: Array<{ kind: 'primary' | 'mdb-fallback'; url: string }> = [];
-  if (agency.feedUrl) sources.push({ kind: 'primary', url: agency.feedUrl });
+  const resolvedFeedUrl = resolveFeedUrl(agency.feedUrl, agency.feedApiKeyEnvVar, agency.feedApiKeyParam);
+  if (resolvedFeedUrl) sources.push({ kind: 'primary', url: resolvedFeedUrl });
   if (agency.mdbFeedUrl && agency.mdbFeedUrl !== agency.feedUrl) {
     sources.push({ kind: 'mdb-fallback', url: agency.mdbFeedUrl });
   }

@@ -57,6 +57,10 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Williamsburg Area Transit Authority paratransit now appears as a source-backed on-demand zone with feed-derived service hours.
 - On-demand zone cards now use source-derived service hours, identify the selected zone, and avoid presenting a separate official-source footer.
 - Agency filters now use the same active and inactive pill styling as the Live and History controls.
+- Centralized expired-feed notice copy and clarified that Atlas has not located and verified a newer feed yet.
+- Moved the full expired-feed notice wording, including refresh history, into the shared notice copy file.
+- Added secure runtime API-key support for 511.org static feeds, so Union City, Rio Vista, FAST, and Vacaville can use their current schedules without committing the key.
+- Passed the 511 API key to scheduled refreshes and read-only feed audits so those feeds keep working automatically.
 - Agency filter selection now keeps Atlas’s existing active-control colors while adding a clearer outline and weight.
 - Removed the unnecessary “Combine filters” helper text from the agency filter row.
 - Added 458 more official agency website links from published GTFS metadata, so outdated-feed notices can direct users to current agency information across the registry.

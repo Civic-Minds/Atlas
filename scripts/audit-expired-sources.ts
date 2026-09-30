@@ -11,6 +11,7 @@ import { resolve } from 'node:path';
 import JSZip from 'jszip';
 import { parseCsv } from '../pipeline/parseGtfs.js';
 import { effectiveFeedExpiry } from '../pipeline/feedFreshness.js';
+import { resolveFeedUrl } from '../pipeline/feedUrl.js';
 import {
   buildFeedCandidates,
   classifyExpiredCandidates,
@@ -23,6 +24,8 @@ interface Agency {
   slug: string;
   name: string;
   feedUrl?: string | null;
+  feedApiKeyEnvVar?: string;
+  feedApiKeyParam?: string;
   mdbFeedUrl?: string | null;
   lastFeedExpiry?: string | null;
   staged?: boolean;
@@ -137,7 +140,10 @@ async function main(): Promise<void> {
     while (queue.length) {
       const agency = queue.shift();
       if (!agency || !agency.lastFeedExpiry) return;
-      const candidates = buildFeedCandidates(agency.feedUrl, agency.mdbFeedUrl);
+      const candidates = buildFeedCandidates(
+        resolveFeedUrl(agency.feedUrl, agency.feedApiKeyEnvVar, agency.feedApiKeyParam),
+        agency.mdbFeedUrl,
+      );
       const inspected = await Promise.all(candidates.map(candidate => inspectCandidate(candidate, today)));
       results.push({
         slug: agency.slug,

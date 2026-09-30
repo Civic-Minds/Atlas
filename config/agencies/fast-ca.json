@@ -12,7 +12,9 @@
     38.58,
     -121.5
   ],
-  "feedUrl": "http://data.trilliumtransit.com/gtfs/fairfield-ca-us/fairfield-ca-us.zip",
+  "feedUrl": "https://api.511.org/transit/datafeeds?operator_id=FS",
+  "feedApiKeyEnvVar": "MUNI_511_API_KEY",
+  "feedApiKeyParam": "api_key",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-fairfield-and-suisun-transit-fast-transit-gtfs-76.zip?alt=media",
   "lastFeedExpiry": "20260630",
   "lastFeedVersion": "UTC: 14-Nov-2025 10:07",

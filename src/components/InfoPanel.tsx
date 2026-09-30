@@ -4,12 +4,13 @@ import { DROPDOWN_PANEL, dropdownAnim, SEARCH_PILL, SEARCH_FIELD, Z_MODAL_BG, AP
 import { LIVE_POLLING_ROUTES, liveCoverageForRouteNames, type LiveCoverage } from '../../shared/livePollingConfig';
 import { R2_PUBLIC_URL, FEATURES } from '../../shared/config';
 import { agencyDisplayParts, formatStoredDate } from '../utils/format';
-import { feedRefreshCountdownLabel, FEED_REFRESH_CADENCE_LABEL, type FeedRefreshMeta } from '../../shared/feedRefresh';
+import { feedRefreshCountdownLabel, type FeedRefreshMeta } from '../../shared/feedRefresh';
 import { agencyQualifiesForHistory, agencyQualifiesForHistoryExplore } from '../../shared/historyEligibility';
 import { countriesForAgencies } from '../../shared/regionCountry';
 import type { Agency } from '../App';
 import { isFeedExpired } from '../utils/feedFreshness';
 import { trackEvent } from '../lib/analytics';
+import { EXPIRED_FEED_CADENCE, EXPIRED_FEED_CONTEXT, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice } from '../content/noticeCopy';
 
 interface HistoryAgencySummary { slug: string; name: string; region: string; routes: unknown[] }
 
@@ -50,11 +51,6 @@ export type OpenInfoOptions = {
   rolloutIssueUrl?: string;
 };
 export type OpenInfoFn = (tab?: Tab, opts?: OpenInfoOptions) => void;
-
-function scheduleNoticeLabel(agencyName: string): string {
-  const { primary, secondary } = agencyDisplayParts(agencyName);
-  return secondary ? `The ${primary} schedule for ${secondary}` : `${primary}'s schedule`;
-}
 
 export function liveRouteLabel(r: { displayRouteShortName: string; displayName?: string }): string {
   if (r.displayName) return r.displayName;
@@ -571,20 +567,20 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
             <div className="h-full overflow-y-auto px-5 py-4 space-y-4">
               {helpContext?.agencyName && (
                 <p className="text-xs text-[var(--text-primary)] leading-relaxed">
-                  {scheduleNoticeLabel(helpContext.agencyName)}
-                  {helpContext.expDateStr ? ` ended on ${helpContext.expDateStr}` : ' may no longer be current'}.
-                  {helpContext.lastRefreshedAt && formatStoredDate(helpContext.lastRefreshedAt)
-                    ? helpContext.expiredFeedCheckCount != null && helpContext.expiredFeedCheckSince && helpContext.lastFeedCheckAt && formatStoredDate(helpContext.lastFeedCheckAt)
-                      ? ` Atlas began checking this feed on ${formatStoredDate(helpContext.expiredFeedCheckSince)} and has checked it ${helpContext.expiredFeedCheckCount} time${helpContext.expiredFeedCheckCount === 1 ? '' : 's'} since then. The most recent check was ${formatStoredDate(helpContext.lastFeedCheckAt)}.`
-                      : ` Atlas last successfully refreshed the feed on ${formatStoredDate(helpContext.lastRefreshedAt)}.`
-                    : ''}
+                  {expiredFeedNotice(helpContext.agencyName, helpContext.expDateStr)}
+                  {expiredFeedCheckHistory({
+                    count: helpContext.expiredFeedCheckCount,
+                    since: helpContext.expiredFeedCheckSince,
+                    lastChecked: helpContext.lastFeedCheckAt,
+                    lastRefreshed: helpContext.lastRefreshedAt,
+                  })}
                 </p>
               )}
               <p className="text-xs text-[var(--text-dim)] leading-relaxed">
-                Transit agencies publish schedules for set periods. When one period ends before the next schedule is available, Atlas keeps showing the most recent schedule and marks it as outdated.
+                {EXPIRED_FEED_EXPLANATION}
               </p>
               <p className="text-xs text-[var(--text-dim)] leading-relaxed">
-                {FEED_REFRESH_CADENCE_LABEL} An agency may be late publishing an update, or its download link may be broken, so this warning can remain even if service has changed.
+                {EXPIRED_FEED_CADENCE} {EXPIRED_FEED_CONTEXT}
               </p>
               {helpContext?.websiteUrl && (
                 <a
