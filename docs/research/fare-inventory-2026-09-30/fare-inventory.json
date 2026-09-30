@@ -13297,6 +13297,7 @@
         "payment": "cash or discount pass",
         "effectiveDate": "2026-04-06",
         "confidence": "high",
+        "sourceUrl": "https://www.slorta.org/schedules-fares/",
         "evidence": "Official fares page states new cash fares effective April 6, 2026: regular fare is $2.00 on Routes 9, 10, 12, and 15 and $1.50 on South County, A&B, and Morro Bay Transit; discounted fares are listed separately."
       }
     },
