@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 118,
+    "manualVerified": 126,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,8 +11,8 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 118,
-      "official-source-candidate": 372,
+      "verified-official": 126,
+      "official-source-candidate": 364,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
       "no-official-website": 32
@@ -9141,7 +9141,7 @@
         "USD"
       ],
       "feedVersion": "20260709",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1.5,
         "currency": "USD",
@@ -9188,7 +9188,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "lavta",
+        "agencyName": "Livermore Amador Valley Transit Authority",
+        "amount": 2.5,
+        "currency": "USD",
+        "fareType": "adult single pass",
+        "payment": "Clipper or standard fare media",
+        "sourceUrl": "https://www.wheelsbus.com/fares/",
+        "confidence": "high",
+        "evidence": "Official Wheels fare table lists Single Pass for riders ages 6-64 at $2.50; youth, discounted, day, monthly, and fare-cap products are listed separately."
+      }
     },
     {
       "slug": "unioncity",
@@ -10607,7 +10617,7 @@
         "USD"
       ],
       "feedVersion": null,
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1.25,
         "currency": "USD",
@@ -10654,7 +10664,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "longbeach",
+        "agencyName": "Long Beach Transit",
+        "amount": 1.25,
+        "currency": "USD",
+        "fareType": "regular single ride",
+        "payment": "exact cash, TAP, or TAP app",
+        "sourceUrl": "https://ridelbt.com/fares/",
+        "confidence": "high",
+        "evidence": "Official LBT fare page lists Regular Single Ride at $1.25; day, 5-day, 30-day, reduced, and water taxi products are listed separately."
+      }
     },
     {
       "slug": "octa",
@@ -20897,7 +20917,7 @@
         "USD"
       ],
       "feedVersion": "S1000223",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 0.75,
         "currency": "USD",
@@ -20953,7 +20973,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "leetran",
+        "agencyName": "LeeTran (Fort Myers)",
+        "amount": 1.5,
+        "currency": "USD",
+        "fareType": "non-discounted fixed-route bus fare",
+        "payment": "cash or LeeFare/TropiCard",
+        "sourceUrl": "https://www.leegov.com/leetran/fares-passes",
+        "confidence": "high",
+        "evidence": "Official LeeTran page lists non-discounted fixed-route bus fare at $1.50; beach trolley, discounted, paratransit, and multi-day passes are listed separately."
+      }
     },
     {
       "slug": "wave-mobile",
@@ -22085,7 +22115,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.lincoln.ne.gov/City/Departments/LTU/StarTran",
@@ -22111,7 +22141,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "lincoln",
+        "agencyName": "StarTran (Lincoln)",
+        "amount": 1.25,
+        "currency": "USD",
+        "fareType": "cash fare",
+        "payment": "cash, digital ticket, or Token Transit",
+        "sourceUrl": "https://www.lincoln.ne.gov/City/Departments/LTU/StarTran/Passes-and-Fares",
+        "confidence": "high",
+        "evidence": "Official StarTran fare page lists Cash Fare at $1.25; child, senior/reduced, day, paratransit, and pass products are listed separately."
+      }
     },
     {
       "slug": "south-bend",
@@ -22351,7 +22391,7 @@
         "USD"
       ],
       "feedVersion": "20260925",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 1,
         "currency": "USD",
@@ -22424,7 +22464,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "lexington",
+        "agencyName": "Lextran (Lexington, KY)",
+        "amount": 1,
+        "currency": "USD",
+        "fareType": "adult single ride",
+        "payment": "cash or Lextran pass",
+        "sourceUrl": "https://lextran.com/schedules-fares/fares-passes/",
+        "confidence": "high",
+        "evidence": "Official Lextran fare table lists Adult Single Ride at $1.00; youth, senior, day, 20-ride, 30-day, and transfer rules are listed separately."
+      }
     },
     {
       "slug": "mtd-champaign",
@@ -22549,7 +22599,7 @@
         "USD"
       ],
       "feedVersion": "Updated: Sep 16, 2026, 12:07 AM",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 2,
         "currency": "USD",
@@ -22602,7 +22652,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "laredo",
+        "agencyName": "El Metro (Laredo)",
+        "amount": 2,
+        "currency": "USD",
+        "fareType": "adult fixed-route fare",
+        "payment": "exact cash or bus pass",
+        "sourceUrl": "https://elmetrotransit.com/maps-schedules/fares-information/",
+        "confidence": "high",
+        "evidence": "Official El Metro fare table lists Adult fare at $2.00; student, child, two-hour, daily, weekly, monthly, and paratransit fares are listed separately."
+      }
     },
     {
       "slug": "thunder-bay",
@@ -23371,7 +23431,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://www.longviewtransit.com/",
@@ -23395,7 +23455,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "longview",
+        "agencyName": "City of Longview Transit",
+        "amount": 1.25,
+        "currency": "USD",
+        "fareType": "regular fixed-route fare",
+        "payment": "cash or ticket/pass",
+        "sourceUrl": "https://www.longviewtransit.com/getting-around/fares-and-passes-fixed-route/",
+        "confidence": "high",
+        "evidence": "Official Longview fare table lists Regular Fare at $1.25 and One Ride Ticket at $1.25; day, monthly, child, reduced, and paratransit fares are listed separately."
+      }
     },
     {
       "slug": "texarkana",
@@ -24433,7 +24503,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://www.lawrencetransit.org",
@@ -24460,7 +24530,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "lawrence-ku",
+        "agencyName": "Lawrence Transit / KU on Wheels",
+        "amount": 0,
+        "currency": "USD",
+        "fareType": "fixed-route and paratransit fare",
+        "payment": "fare-free service",
+        "sourceUrl": "https://lawrencetransit.org/fares/",
+        "confidence": "high",
+        "evidence": "Official Lawrence Transit fare page states fixed-route and paratransit buses are fare-free; On Demand trips are separately priced at $3 one way from March 1, 2026."
+      }
     },
     {
       "slug": "springfield-il",
