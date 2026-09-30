@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 415,
+    "manualVerified": 418,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,10 +11,10 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 415,
+      "verified-official": 418,
       "official-fare-page-not-found": 125,
       "official-site-inaccessible": 45,
-      "official-source-candidate": 76,
+      "official-source-candidate": 73,
       "no-official-website": 32
     }
   },
@@ -20676,7 +20676,7 @@
         "USD"
       ],
       "feedVersion": "S1000101",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 3,
         "currency": "USD",
@@ -20691,7 +20691,18 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "xpress-ga",
+        "agencyName": "Xpress (Georgia Regional)",
+        "amount": 3,
+        "amountMax": 125,
+        "currency": "USD",
+        "fareType": "Green and Blue Zone one-way fares and 31-day passes",
+        "payment": "exact cash, Breeze card, or Breeze Mobile",
+        "confidence": "high",
+        "sourceUrl": "https://xpressga.com/passes/",
+        "evidence": "Official Xpress fare table lists Green Zone one-trip fare at $3 and 31-day pass at $100, and Blue Zone one-trip fare at $4 and 31-day pass at $125; round-trip and 10-trip products are listed separately."
+      }
     },
     {
       "slug": "omniride",
@@ -23314,7 +23325,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.huntsvilleal.gov/residents/streets/public-transportation/shuttle-bus/",
@@ -23322,7 +23333,18 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "huntsville",
+        "agencyName": "Huntsville Shuttle (Orbit)",
+        "amount": 1,
+        "amountMax": 30,
+        "currency": "USD",
+        "fareType": "one-way fare and monthly pass",
+        "payment": "Token Transit, cash, or pass",
+        "confidence": "high",
+        "sourceUrl": "https://www.huntsvilleal.gov/development/streets/public-transportation/orbit/",
+        "evidence": "Official City of Huntsville Orbit page lists one-way fare at $1, reduced fare at $0.50, book of 20 one-way tickets at $18, monthly pass at $30, and free transfers."
+      }
     },
     {
       "slug": "bustang-outrider",
@@ -24013,7 +24035,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://greenbaywi.gov/231/Metro-Transit",
@@ -24021,7 +24043,18 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "green-bay",
+        "agencyName": "Green Bay Metro",
+        "amount": 2,
+        "amountMax": 41,
+        "currency": "USD",
+        "fareType": "adult cash fare and 30-day pass",
+        "payment": "exact cash, E-Fare app, or Tap-N-Go card",
+        "confidence": "high",
+        "sourceUrl": "https://www.greenbaywi.gov/275/Fares",
+        "evidence": "Official City of Green Bay fare page lists adult cash fare at $2, day pass at $4, weekly pass at $16, 30-day pass at $41, reduced cash fare at $1, and paratransit one-way fare at $4."
+      }
     },
     {
       "slug": "cota",
