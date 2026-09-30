@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 230,
+    "manualVerified": 233,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,8 +11,8 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 230,
-      "official-source-candidate": 260,
+      "verified-official": 233,
+      "official-source-candidate": 257,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
       "no-official-website": 32
@@ -4115,7 +4115,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://qlinedetroit.com/",
@@ -4123,7 +4123,17 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "qline",
+        "agencyName": "QLine (Detroit)",
+        "amount": 0,
+        "currency": "USD",
+        "fareType": "streetcar fare-free service",
+        "payment": "fare-free",
+        "sourceUrl": "https://www.qlinedetroit.com/",
+        "confidence": "high",
+        "evidence": "Official QLine homepage states Ride the QLINE for free; the fare-free service state is current on the agency site."
+      }
     },
     {
       "slug": "smart",
@@ -5464,7 +5474,7 @@
       "confidence": "high",
       "status": "confirmed",
       "notes": "Existing Atlas override retained as research evidence.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 0,
         "currency": "USD",
@@ -5540,7 +5550,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "pvta",
+        "agencyName": "Pioneer Valley Transit Authority",
+        "amount": 0,
+        "currency": "USD",
+        "fareType": "fixed-route public transit fare-free service",
+        "payment": "fare-free",
+        "sourceUrl": "https://pvta.com/bus_service/rider_updates.php",
+        "confidence": "high",
+        "evidence": "Official PVTA rider update states PVTA is fare-free for FY27 and that no fares or passes are needed for fixed-route buses; premium B79 service is excluded."
+      }
     },
     {
       "slug": "wrta",
@@ -5739,7 +5759,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://www.citypa.ca/transit",
@@ -5764,7 +5784,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "prince-albert",
+        "agencyName": "Prince Albert Transit",
+        "amount": 3,
+        "currency": "CAD",
+        "fareType": "adult cash fare",
+        "payment": "cash or standard fare media",
+        "effectiveDate": "2024-09-01",
+        "sourceUrl": "https://www.citypa.ca/parking-streets-and-transportation/transit/fares-and-passes/",
+        "confidence": "medium",
+        "evidence": "Official City of Prince Albert fare table, marked as of September 2024, lists Adult Cash fare at $3.00; book-of-10, monthly, semester, senior, youth, child, and free U10 fares are listed separately. The page is not current-dated and should be reconfirmed."
+      }
     },
     {
       "slug": "kamloops",
