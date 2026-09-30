@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 467,
+    "manualVerified": 469,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,11 +11,11 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 467,
+      "verified-official": 469,
       "official-fare-page-not-found": 125,
       "official-site-inaccessible": 45,
       "no-official-website": 32,
-      "official-source-candidate": 24
+      "official-source-candidate": 22
     }
   },
   "records": [
@@ -38810,7 +38810,7 @@
         "USD"
       ],
       "feedVersion": "UTC: 29-Jul-2026 17:51",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 2,
         "currency": "USD",
@@ -38825,7 +38825,17 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "summit-stage",
+        "agencyName": "Summit Stage",
+        "amount": 0,
+        "currency": "USD",
+        "fareType": "fixed-route public transit ride",
+        "payment": "fare-free service",
+        "confidence": "high",
+        "sourceUrl": "https://cms3.revize.com/revize/summitcoco/Documents/Services/Transit%20Summit%20Stage/Riding%20The%20Bus/Summit%20Stage%20Code%20of%20Conduct_Adopted_06.11.2024.pdf",
+        "evidence": "Official Summit County customer code states that Summit Stage offers free public transit services; the county’s current code was adopted June 11, 2024."
+      }
     },
     {
       "slug": "vail-transit",
@@ -38968,7 +38978,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "https://www.cityofcasperwy.com/residents/roads_and_parking/metropolitan_planning_organization/casper_area_transit_/",
@@ -38976,7 +38986,18 @@
         "status": "official-source-found",
         "candidateSources": []
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "casper",
+        "agencyName": "Casper Area Transit",
+        "amount": 1,
+        "amountMax": 30,
+        "currency": "USD",
+        "fareType": "fixed-route general fare and monthly pass",
+        "payment": "cash or pass",
+        "confidence": "medium",
+        "sourceUrl": "https://www.casperwy.gov/UserFiles/Servers/Server_62983/File/Casper%20Area%20Transit%20Route%20Map%20and%20Schedule%20-%20Updated%20August%202021.pdf",
+        "evidence": "Official City of Casper route guide lists fixed-route general fare at $1, senior/disabled/Medicare at $0.50, student at $0.75, monthly pass at $30, and free transfers; the guide is dated August 2021, so currentness requires follow-up."
+      }
     }
   ]
 }
