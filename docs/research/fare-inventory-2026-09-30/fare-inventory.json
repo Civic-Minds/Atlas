@@ -3,7 +3,7 @@
   "researchDate": "2026-09-30",
   "stats": {
     "registryCount": 693,
-    "manualVerified": 202,
+    "manualVerified": 205,
     "officialSiteStats": {
       "official-source-found": 490,
       "official-fare-page-not-found": 126,
@@ -11,8 +11,8 @@
       "site-inaccessible": 45
     },
     "researchStatuses": {
-      "verified-official": 202,
-      "official-source-candidate": 288,
+      "verified-official": 205,
+      "official-source-candidate": 285,
       "official-fare-page-not-found": 126,
       "official-site-inaccessible": 45,
       "no-official-website": 32
@@ -13258,7 +13258,7 @@
         "USD"
       ],
       "feedVersion": "gtfs_20260816-20261205_20260818",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 2.2,
         "currency": "USD",
@@ -13334,7 +13334,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "cincinnatimetro",
+        "agencyName": "Cincinnati Metro (SORTA)",
+        "amount": 2.2,
+        "currency": "USD",
+        "fareType": "local fixed-route single ride",
+        "payment": "cash, pass, or EZfare/Tap&Save",
+        "sourceUrl": "https://www.go-metro.com/fare-update/",
+        "effectiveDate": "2025-07-16",
+        "confidence": "high",
+        "evidence": "Official Metro fare update states that starting July 16, 2025, Local Routes Single Ride is $2.20; express, reduced, MetroNow!, Access, day, and monthly fares are listed separately."
+      }
     },
     {
       "slug": "tarc",
@@ -28589,7 +28600,7 @@
         "EUR"
       ],
       "feedVersion": null,
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": {
         "amount": 2,
         "currency": "EUR",
@@ -28685,7 +28696,18 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "grenoble",
+        "agencyName": "TAG (Grenoble)",
+        "amount": 2,
+        "currency": "EUR",
+        "fareType": "one-hour single journey ticket",
+        "payment": "M réso fare media, app, or bank card",
+        "sourceUrl": "https://www.reso-m.fr/67-un-tarif-pour-chacun.htm?UTB_FS=-1",
+        "effectiveDate": "2026-09-01",
+        "confidence": "high",
+        "evidence": "Official M réso fare page says rates changed September 1, 2026 and lists the one-hour single journey ticket valid across M réso at €2.00 per journey."
+      }
     },
     {
       "slug": "dijon",
@@ -34756,7 +34778,7 @@
       "confidence": "unresolved",
       "status": "no fare found",
       "notes": "Feed was inspected but did not contain a usable fare_attributes.txt or fare_products.txt record.",
-      "researchStatus": "official-source-candidate",
+      "researchStatus": "verified-official",
       "gtfsEvidence": null,
       "officialSiteReview": {
         "websiteUrl": "http://www.mygreenway.org/",
@@ -34782,7 +34804,17 @@
           }
         ]
       },
-      "verifiedFare": null
+      "verifiedFare": {
+        "slug": "greenway",
+        "agencyName": "Greenway Public Transportation",
+        "amount": 1.25,
+        "currency": "USD",
+        "fareType": "local fixed-route single boarding fare",
+        "payment": "exact cash or ticket/pass",
+        "sourceUrl": "https://www.mygreenway.org/bus-fares",
+        "confidence": "high",
+        "evidence": "Official Greenway fare page lists Local Fixed Route Bus Single Ride Fare at $1.25 per boarding; reduced, demand-response, day, week, and 30-day products are listed separately."
+      }
     },
     {
       "slug": "concord-kannapolis",
