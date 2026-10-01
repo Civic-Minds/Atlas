@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Route-branch processing now preserves feed branch codes and configured direction names.
 - Optional history and refresh metadata now load only when their UI is used.
 - Route frequency cards now explain when a typical cadence has a longer full-period gap.
 - Local development now serves historical route-adherence data again.

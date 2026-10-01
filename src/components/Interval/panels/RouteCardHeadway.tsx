@@ -410,15 +410,21 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           </div>
         )}
         {(() => {
-          const branchLabel = (group: DirectionGroup, headsign: string | null | undefined, gi: number) =>
-            resolveBranchLabel({
-              headsign,
+          const branchLabel = (group: DirectionGroup, direction: ShapeProperties, gi: number) => {
+            const label = resolveBranchLabel({
+              headsign: direction.headsign,
               shortName: currentRoute.routeShortName ?? '',
               longName: currentRoute.routeLongName ?? '',
               directionId: needsNumbered ? gi : group.dirId,
               multipleDirections: showDirectionSections,
               sectionBoundLabel: showDirectionSections ? group.boundLabel : undefined,
             });
+            const sameDestinationCount = group.realTier.filter(d =>
+              (d.headsign ?? '').trim().toLowerCase() === (direction.headsign ?? '').trim().toLowerCase()
+            ).length;
+            const variant = direction.routeVariant?.trim();
+            return sameDestinationCount > 1 && variant ? `${variant} · ${label}` : label;
+          };
           const branchHoverProps = (dirId: number, headsign: string | null | undefined) => {
             if (!headsign) return {};
             const isHovered = dirIdNum(hoveredBranch?.directionId) === dirIdNum(dirId)
@@ -455,7 +461,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
               });
             })();
             const exclusiveSpanNames = exclusiveSpans
-              .map(d => branchLabel(group, d.headsign, gi))
+              .map(d => branchLabel(group, d, gi))
               .filter(Boolean);
             const hasVisibleDirectionRows = groupHasCoreSummary
               || group.realTier.length > 0
@@ -499,7 +505,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                       const displayH = hoveredHour != null
                         ? buildRouteServiceSummary(d).branch.byHour?.[hoveredHour] ?? routeCardDisplayHeadway(d, period)
                         : routeCardDisplayHeadway(d, period);
-                      const label = branchLabel(group, d.headsign, gi);
+                      const label = branchLabel(group, d, gi);
                       if (!label && !collapseGroups && displayH == null) return null;
                       const trunkHw = hoveredHour == null && period !== 'all'
                         ? headsignTrunkHeadway(d, period)
@@ -524,7 +530,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                   {(!hideSpan || group.realTier.length === 0) && exclusiveSpans.length === 1 && (
                     <CardDirectionRow
                       key="s0"
-                      label={branchLabel(group, exclusiveSpans[0].headsign, gi) || 'limited service'}
+                      label={branchLabel(group, exclusiveSpans[0], gi) || 'limited service'}
                       limited
                       {...branchHoverProps(group.dirId, exclusiveSpans[0].headsign)}
                     />
