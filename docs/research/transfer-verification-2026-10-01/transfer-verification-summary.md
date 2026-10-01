@@ -5,11 +5,11 @@ Confirmation pass for the prior Atlas transfer-policy inventory. The prior snaps
 ## Status
 
 - Registry records: 693
-- Previously verified records rechecked: 295
-- Sources accessible: 148
-- Sources inaccessible: 147
-- Evidence supports existing policy: 109
-- Manual confirmation required: 186
+- Previously verified records rechecked: 693
+- Sources accessible: 665
+- Sources inaccessible: 28
+- Evidence supports existing policy: 159
+- Manual confirmation required: 244
 - Published effective dates recorded: 0
 
 Inaccessible sources and automated manual-review results are not treated as confirmed changes. They remain in the verification queue.

@@ -4,7 +4,7 @@ Official-first transfer-policy research for all 693 agencies in Atlas's registry
 
 ## Status
 
-- Manually verified policies: 295
+- Manually verified policies: 304
 - Official pages found and awaiting manual verification: 0
 - Research-incomplete records: 0
 - Agencies still requiring manual review: 0

@@ -17,9 +17,17 @@ const reviewBySlug = new Map(review.records.map((record) => [record.slug, record
 
 const records = inventory.records.map((record) => {
   const verification = reviewBySlug.get(record.slug);
+  const manuallyConfirmedDuringAudit = record.auditDate === TODAY;
+  const effectiveVerification = manuallyConfirmedDuringAudit && verification
+    ? {
+      ...verification,
+      comparison: 'manually-confirmed-during-audit',
+      manualConfirmationRequired: false,
+    }
+    : verification;
   return {
     ...record,
-    verification: verification ?? {
+    verification: effectiveVerification ?? {
       checkedAt: null,
       comparison: 'not-rechecked',
       manualConfirmationRequired: true,

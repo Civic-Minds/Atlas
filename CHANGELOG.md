@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 -Added a source-backed transfer-policy research workflow covering every agency in the registry.
+-Verified current transfer-policy sources across the full registry and preserved an explicit queue for ambiguous or inaccessible results.
 -Live vehicle markers are now smaller at normal zoom, so dense routes remain readable.
 -Live Vehicles now polls configured GTFS-RT feeds through the local API for private, local-only tracking.
 -Agency-provided BRT and Express classifications now take precedence over generic “Rapid” wording, and extended Express Bus routes remain visible under Bus.
