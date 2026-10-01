@@ -95,7 +95,9 @@ const records = base.records.map((record) => {
     },
     researchTrail,
     verifiedPolicy: verified ?? null,
-    notes: verified?.notes ?? (noTransferPolicyPublished
+    notes: verified?.notes ?? (verified
+      ? `Manually verified against the official source on ${verified.auditDate ?? today}.`
+      : noTransferPolicyPublished
       ? 'Official site reviewed; no transfer policy was published in the reviewed material.'
       : sourceCandidates.length
       ? 'Official source candidates found; policy still requires manual verification.'
