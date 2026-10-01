@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+-The map now shows a loading indicator while the background map tiles are still loading.
 -Added a source-backed transfer-policy research workflow covering every agency in the registry.
 -Verified current transfer-policy sources across the full registry and preserved an explicit queue for ambiguous or inaccessible results.
 -Live vehicle markers are now smaller at normal zoom, so dense routes remain readable.

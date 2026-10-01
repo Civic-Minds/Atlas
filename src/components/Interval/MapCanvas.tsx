@@ -41,8 +41,10 @@ const FREQUENT_30_COLOR = HEADWAY_TIERS.find(tier => tier.max === 30)?.color ?? 
 
 function MapNoticePill({ children, className = '' }: { children: React.ReactNode; className?: string }) {
   return (
-    <div className={`absolute bottom-6 left-1/2 -translate-x-1/2 ${Z_PANEL} ${MAP_BADGE} h-8 max-w-[calc(100vw-2rem)] pointer-events-none ${className}`}>
-      {children}
+    <div className={`absolute bottom-6 left-6 right-24 sm:right-56 flex justify-center ${Z_PANEL} pointer-events-none`}>
+      <div className={`${MAP_BADGE} h-8 max-w-full ${className}`}>
+        {children}
+      </div>
     </div>
   );
 }
@@ -243,6 +245,7 @@ interface MapCanvasProps {
   selectedAgencies?: Set<string>;
   initialMapCenter?: { lat: number; lon: number; zoom: number };
   onTileLoadingChange?: (loading: boolean) => void;
+  onBasemapLoadingChange?: (loading: boolean) => void;
   setQuery?: (q: string) => void;
   onClearSelection?: () => void;
   sidebarLeft?: number;
@@ -303,6 +306,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   selectedAgencies,
   initialMapCenter,
   onTileLoadingChange,
+  onBasemapLoadingChange,
   onClearSelection,
   sidebarLeft,
   searchBarWidth,
@@ -527,6 +531,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   const onOnDemandZoneClickRef = useRef(onOnDemandZoneClick);
   const onBoundsChangeRef = useRef(onBoundsChange);
   const onTileLoadingChangeRef = useRef(onTileLoadingChange);
+  const onBasemapLoadingChangeRef = useRef(onBasemapLoadingChange);
   const onClearSelectionRef = useRef(onClearSelection);
   const selectedRouteRef = useRef(selectedRoute);
   const highlightRoutesRef = useRef(highlightRoutes);
@@ -711,6 +716,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     selectedAgencySlugRef.current = selectedAgencySlug;
     onBoundsChangeRef.current = onBoundsChange;
     onTileLoadingChangeRef.current = onTileLoadingChange;
+    onBasemapLoadingChangeRef.current = onBasemapLoadingChange;
     onClearSelectionRef.current = onClearSelection;
   });
 
@@ -1432,6 +1438,48 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     window.open(issueUrl, '_blank', 'noopener,noreferrer');
     setMapContextMenu(null);
   };
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapLoaded) return;
+    const sourceId = lightMode ? 'cartodb-light' : 'cartodb-dark';
+    let loadingTimeout: ReturnType<typeof setTimeout> | undefined;
+    const clearLoadingTimeout = () => {
+      if (loadingTimeout) {
+        clearTimeout(loadingTimeout);
+        loadingTimeout = undefined;
+      }
+    };
+    const onTileStart = (event: maplibregl.MapSourceDataEvent) => {
+      if (event.sourceId !== sourceId) return;
+      onBasemapLoadingChangeRef.current?.(true);
+      clearLoadingTimeout();
+      loadingTimeout = setTimeout(() => {
+        loadingTimeout = undefined;
+        onBasemapLoadingChangeRef.current?.(false);
+      }, 15000);
+    };
+    const onSourceData = (event: maplibregl.MapSourceDataEvent) => {
+      if (event.sourceId !== sourceId || !event.isSourceLoaded) return;
+      clearLoadingTimeout();
+      onBasemapLoadingChangeRef.current?.(false);
+    };
+    const onIdle = () => {
+      clearLoadingTimeout();
+      onBasemapLoadingChangeRef.current?.(false);
+    };
+    onBasemapLoadingChangeRef.current?.(!map.isSourceLoaded(sourceId));
+    map.on('sourcedataloading', onTileStart);
+    map.on('sourcedata', onSourceData);
+    map.on('idle', onIdle);
+    return () => {
+      clearLoadingTimeout();
+      map.off('sourcedataloading', onTileStart);
+      map.off('sourcedata', onSourceData);
+      map.off('idle', onIdle);
+      onBasemapLoadingChangeRef.current?.(false);
+    };
+  }, [lightMode, mapLoaded]);
 
   useEffect(() => {
     const map = mapRef.current;
