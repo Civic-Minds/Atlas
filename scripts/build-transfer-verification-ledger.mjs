@@ -8,7 +8,7 @@ const TODAY = process.env.TRANSFER_VERIFICATION_DATE || new Intl.DateTimeFormat(
   timeZone: 'America/Toronto', year: 'numeric', month: '2-digit', day: '2-digit',
 }).format(new Date());
 const SOURCE = process.env.TRANSFER_VERIFICATION_SOURCE || 'docs/research/transfer-inventory-2026-10-01/transfer-inventory.json';
-const REVIEW = process.env.TRANSFER_VERIFICATION_REVIEW || `docs/research/transfer-verification-${TODAY}/transfer-verification.json`;
+const REVIEW = process.env.TRANSFER_VERIFICATION_REVIEW || `docs/research/transfer-verification-${TODAY}/raw/verification-results.json`;
 const OUTPUT_DIR = path.join(ROOT, `docs/research/transfer-verification-${TODAY}`);
 
 const inventory = JSON.parse(await fs.readFile(path.join(ROOT, SOURCE), 'utf8'));

@@ -60,7 +60,7 @@ async function gotoWithRetry(page, url) {
 
 const inventory = JSON.parse(await fs.readFile(path.join(ROOT, INPUT), 'utf8'));
 const records = inventory.records;
-await fs.mkdir(OUTPUT_DIR, { recursive: true });
+await fs.mkdir(path.join(OUTPUT_DIR, 'raw'), { recursive: true });
 
 const browser = await chromium.launch({ headless: true });
 const results = [];
@@ -149,7 +149,7 @@ const payload = {
   },
   records: results,
 };
-await fs.writeFile(path.join(OUTPUT_DIR, 'transfer-verification.json'), `${JSON.stringify(payload, null, 2)}\n`);
+await fs.writeFile(path.join(OUTPUT_DIR, 'raw', 'verification-results.json'), `${JSON.stringify(payload, null, 2)}\n`);
 const queue = results.filter((record) => record.manualConfirmationRequired);
-await fs.writeFile(path.join(OUTPUT_DIR, 'transfer-verification-queue.json'), `${JSON.stringify({ researchDate: TODAY, recordCount: queue.length, records: queue }, null, 2)}\n`);
+await fs.writeFile(path.join(OUTPUT_DIR, 'raw', 'review-queue.json'), `${JSON.stringify({ researchDate: TODAY, recordCount: queue.length, records: queue }, null, 2)}\n`);
 console.log(JSON.stringify({ outputDir: path.relative(ROOT, OUTPUT_DIR), ...payload.stats, recordCount: results.length }, null, 2));
