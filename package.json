@@ -58,6 +58,8 @@
     "research:transfers": "node scripts/research-transfers.mjs",
     "research:transfers:official": "node scripts/research-official-transfers.mjs",
     "research:transfers:ledger": "node scripts/build-transfer-ledger.mjs",
+    "research:transfers:verify": "node scripts/verify-transfer-policies.mjs",
+    "research:transfers:verify:ledger": "node scripts/build-transfer-verification-ledger.mjs",
     "validate:transfer-inventory": "node scripts/validate-transfer-inventory.mjs",
     "validate:transfer-inventory:complete": "REQUIRE_COMPLETE=1 node scripts/validate-transfer-inventory.mjs",
     "validate:frequent-service-catalog": "node scripts/validate-frequent-service-catalog.mjs",
