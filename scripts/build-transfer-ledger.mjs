@@ -44,7 +44,11 @@ const records = base.records.map((record) => {
   const fareSources = sourceCandidates.filter((source) => /(fare|fares|tarif|ticket|pass|price)/i.test(`${source.url ?? ''} ${source.title ?? ''}`));
   const fareText = fareSources.flatMap((source) => source.evidenceExcerpts ?? []).join(' ');
   const noTransferRuleInFareText = fareSources.length > 0 && !/(transfer|transfert|correspond|transbord)/i.test(fareText);
-  const noTransferPolicyPublished = !verified && (site?.status === 'official-transfer-page-not-found' || noTransferRuleInFareText);
+  const noTransferPolicyPublished = !verified && (
+    site?.status === 'official-transfer-page-not-found' ||
+    noTransferRuleInFareText ||
+    (site?.status === 'official-source-found' && sourceCandidates.length > 0)
+  );
   const noTransferPolicySourceUrl = fareSources[0]?.url ?? site?.websiteUrl ?? record.websiteUrl;
   let status = record.status;
   if (verified) status = verified.status ?? 'confirmed';
