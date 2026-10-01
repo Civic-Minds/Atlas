@@ -51,15 +51,15 @@ export function normalizeNrtAnalysisResult(result: AnalysisResult): AnalysisResu
 }
 
 /**
- * Prefer departures from the feature's physical shape over a headsign-wide pool.
- * A single displayed route can contain multiple patterns with the same headsign;
- * pooling them at the terminal creates a false high-frequency result.
+ * Use all departures for the feature's destination at its terminal stop.
+ * Different shapes can add or omit an intermediate stop while still providing
+ * the same terminal service; using only one shape creates false gaps there.
  */
 export function selectTerminalDepartureTimes(
   shapeTimes: number[] | undefined,
   headsignTimes: number[] | undefined,
 ): number[] | undefined {
-  return shapeTimes ?? headsignTimes;
+  return headsignTimes ?? shapeTimes;
 }
 
 /** Follow the existing display-source choice without borrowing service into an empty branch. */
