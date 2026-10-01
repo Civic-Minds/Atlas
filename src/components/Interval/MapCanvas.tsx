@@ -15,7 +15,6 @@ import type { Agency } from '../../App';
 import type { ShapeProperties, ViewportBounds, TimePeriod, HoveredBranch } from '../../hooks/useIntervalStats';
 import type { DayType } from '../../../shared/dayTypes';
 import { registerProtocol, getAtlasPmtilesUrl, getMapStyle } from '../../lib/mapStyle';
-import { getAgencyBbox } from '../../hooks/useAgencyData';
 import { Z_PANEL, MAP_BADGE } from '../../styles';
 import { LIVE_POLLING_ROUTES } from '../../../shared/livePollingConfig';
 import { useColorVision } from '../../context/ColorVisionContext';
@@ -47,25 +46,6 @@ function MapNoticePill({ children, className = '' }: { children: React.ReactNode
       </div>
     </div>
   );
-}
-
-/** Smallest-bbox agency containing a point — prefers a local agency over an overlapping regional one. */
-// Many agencies fall back to a fixed-size padding box around their center rather than a real
-// bbox computed from route geometry (see getAgencyBbox), so neighboring agencies in dense
-// regions (e.g. Brampton/Burlington/Guelph) end up with near-identical-sized overlapping boxes.
-// Picking "smallest overlapping box" among those is effectively arbitrary -- pick whichever
-// agency's *center* is actually closest to the point instead (#430).
-function agencyAtPoint(agencies: Agency[], lng: number, lat: number): Agency | undefined {
-  let best: Agency | undefined;
-  let bestDistSq = Infinity;
-  for (const a of agencies) {
-    const [s, w, n, e] = getAgencyBbox(a);
-    if (lat < s || lat > n || lng < w || lng > e) continue;
-    const [centerLat, centerLon] = a.center;
-    const distSq = (lat - centerLat) ** 2 + (lng - centerLon) ** 2;
-    if (distSq < bestDistSq) { bestDistSq = distSq; best = a; }
-  }
-  return best;
 }
 
 /** Flatten nested ['all', ...] filters into one clause list for MapLibre. */
@@ -333,23 +313,6 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     hintTimerRef.current = setTimeout(() => setMapHint(null), 2500);
   };
 
-  // Orienting card for the zoomed-out "too many overlapping features" dead end (#213):
-  // rather than a bare "Zoom in to choose a route" instruction, name the place being
-  // flown into so the auto zoom-in feels like it's going somewhere, not just blocking.
-  const [zoomOrientCard, setZoomOrientCard] = useState<{ title: string; subtitle: string } | null>(null);
-  const zoomOrientTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
-  const showZoomOrientCard = (title: string, subtitle: string) => {
-    setZoomOrientCard({ title, subtitle });
-    if (zoomOrientTimerRef.current) clearTimeout(zoomOrientTimerRef.current);
-    zoomOrientTimerRef.current = setTimeout(() => setZoomOrientCard(null), 4000);
-  };
-  const showZoomHint = (lng: number, lat: number, subtitle: string, fallback: string) => {
-    const agency = agencyAtPoint(agencies, lng, lat);
-    const place = agency?.cities?.[0] ?? agency?.name;
-    if (place) showZoomOrientCard(place, subtitle);
-    else showMapHint(fallback);
-  };
-
   const { setBoundsAndZoom } = useViewport();
   const { overlay: historyOverlay } = useHistoryMapOverlay();
 
@@ -612,7 +575,6 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         setDisambiguationRoutesRef.current(null);
         if (map.getZoom() < 13) {
           map.flyTo({ center: e.lngLat, zoom: 13, duration: 800 });
-          showZoomHint(e.lngLat.lng, e.lngLat.lat, 'Zooming in to show individual stops', 'Zoom in to choose a stop');
           return;
         }
         setSelectedStopRef.current(prev => prev === compositeId ? null : compositeId);
@@ -685,7 +647,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         } else if (uniqueRouteKeys.length > 1) {
           if (map.getZoom() < 11) {
             setDisambiguationRoutesRef.current(null);
-            showZoomHint(e.lngLat.lng, e.lngLat.lat, 'Zoom in to choose a route', 'Zoom in to choose a route');
+            map.flyTo({ center: e.lngLat, zoom: 11, duration: 800 });
             return;
           }
           setDisambiguationRoutesRef.current(uniqueRouteKeys);
@@ -2024,14 +1986,6 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
           {mapHint}
         </MapNoticePill>
       )}
-      {zoomOrientCard && (
-        <MapNoticePill className="gap-1.5 text-[10px] font-bold text-[var(--text-muted)]">
-          <span className="text-[var(--text-primary)]">{zoomOrientCard.title}</span>
-          <span aria-hidden="true">•</span>
-          <span>{zoomOrientCard.subtitle}</span>
-        </MapNoticePill>
-      )}
-
       {mapContextMenu && (
         <div
           className={`absolute ${Z_PANEL} rounded-xl bg-[var(--bg-panel)] border border-[var(--border-primary)] shadow-2xl backdrop-blur-md overflow-hidden pointer-events-auto`}
