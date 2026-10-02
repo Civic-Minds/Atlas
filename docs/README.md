@@ -30,6 +30,7 @@ Use this page as the documentation index. The root [README](../README.md) explai
 - [Product decisions](product/DECISIONS.md)
 - [Strategy](product/STRATEGY.md)
 - [Research](product/RESEARCH.md)
+- [Research artifact index](research/README.md)
 - [Population context](data/DATA_POPULATION.md)
 - [Frequent network criteria](data/DATA_FREQUENT_NETWORK.md)
 - [200-agency frequent-service research review](research/frequent-service-pilot-2026-09.md)
