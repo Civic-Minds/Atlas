@@ -27,20 +27,20 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - The mobile More menu now stays inside the viewport when the button is near the right edge.
 - Frequent Service now has a matching icon wherever it appears beside Night Service.
 - Local development no longer requests the unavailable version endpoint or queries missing map layers during hover.
--Live Vehicles now polls configured GTFS-RT feeds through the local API for private, local-only tracking.
--Agency-provided BRT and Express classifications now take precedence over generic “Rapid” wording, and extended Express Bus routes remain visible under Bus.
--Added BC Ferries and Pierce County Ferries so Atlas covers two more public ferry systems.
--Vancouver route and stop labels now preserve “SFU” capitalization.
--Rail lines now remain visible when they overlap bus routes on the map.
--Nearby route suggestions now show public rail and ferry names as the primary label instead of internal numeric route IDs.
--MARTA line names now use consistent casing, so “RED” displays as “Red” beside “Gold” ([#561](https://github.com/Civic-Minds/Atlas/issues/561)).
--Selecting a route now fades the surrounding network more clearly so the selected line is easier to follow ([#560](https://github.com/Civic-Minds/Atlas/issues/560)).
--The hidden-route “All” filter now clears location selections and search text instead of leaving a mixed filter state.
--Hidden-route agency labels and region filters now match Atlas’s normal typography and pill shapes.
--Selected routes now stay visible over overlapping lines, and frequency highlighting no longer treats schedule-coverage gaps as slower stop service ([#557](https://github.com/Civic-Minds/Atlas/issues/557), [#558](https://github.com/Civic-Minds/Atlas/issues/558)).
--Map zoom guidance is now centered on the actual viewport ([#559](https://github.com/Civic-Minds/Atlas/issues/559)).
--Atlas usage analytics now records high-signal search and filter behavior without collecting typed search text.
--Atlas usage analytics now records agency filtering and agency selections made from search.
+- Live Vehicles now polls configured GTFS-RT feeds through the local API for private, local-only tracking.
+- Agency-provided BRT and Express classifications now take precedence over generic “Rapid” wording, and extended Express Bus routes remain visible under Bus.
+- Added BC Ferries and Pierce County Ferries so Atlas covers two more public ferry systems.
+- Vancouver route and stop labels now preserve “SFU” capitalization.
+- Rail lines now remain visible when they overlap bus routes on the map.
+- Nearby route suggestions now show public rail and ferry names as the primary label instead of internal numeric route IDs.
+- MARTA line names now use consistent casing, so “RED” displays as “Red” beside “Gold” ([#561](https://github.com/Civic-Minds/Atlas/issues/561)).
+- Selecting a route now fades the surrounding network more clearly so the selected line is easier to follow ([#560](https://github.com/Civic-Minds/Atlas/issues/560)).
+- The hidden-route “All” filter now clears location selections and search text instead of leaving a mixed filter state.
+- Hidden-route agency labels and region filters now match Atlas’s normal typography and pill shapes.
+- Selected routes now stay visible over overlapping lines, and frequency highlighting no longer treats schedule-coverage gaps as slower stop service ([#557](https://github.com/Civic-Minds/Atlas/issues/557), [#558](https://github.com/Civic-Minds/Atlas/issues/558)).
+- Map zoom guidance is now centered on the actual viewport ([#559](https://github.com/Civic-Minds/Atlas/issues/559)).
+- Atlas usage analytics now records high-signal search and filter behavior without collecting typed search text.
+- Atlas usage analytics now records agency filtering and agency selections made from search.
 - Beta now separates hiding irregular routes from hiding explicitly time-limited service, so regular infrequent routes are not hidden by the new filter.
 - Limited-service filtering now hides the whole route when only one direction has limited service, instead of leaving the other direction behind.
 - Period views now show routes with limited or one-direction service when irregular routes are not hidden.
@@ -50,9 +50,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Make history archive reads use a stable IPv4 connection path, reducing transient R2 timeouts during rebuilds.
 - Make history rebuilds more reliable by limiting archive downloads, reducing dropped snapshots during temporary storage timeouts.
 - Add current fallback feeds for CTtransit and Westchester Bee-Line so scheduled refreshes can recover when the primary hosts fail.
-
 - **Security:** removed committed credential-bearing GTFS feed URLs; affected agencies retain their existing stored artifacts until safe public or environment-backed sources are configured.
-
 - Live vehicle group headers now include the agency's place when available, reducing ambiguity between similarly named agencies.
 - Zoom guidance now shares the bottom baseline with the map status pills without overlapping the status area, with shorter instruction text.
 - Feedback emails now open with a clear writing area before the page URL.
@@ -116,7 +114,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Social previews now use a wide 1200×630 Atlas image so shared links render as proper cards on LinkedIn.
 - Preview builds now keep beta data access without exposing the Night Service and Frequent Service research apps.
 - Expired-schedule notices now explain the service area and tracking history in plain sentences.
--Clicking a GTFS-Flex pickup location now opens a dedicated on-demand service card instead of the regular agency card.
+- Clicking a GTFS-Flex pickup location now opens a dedicated on-demand service card instead of the regular agency card.
 - On-demand pickup dots now shrink at regional zoom and grow as you zoom in.
 - GTFS-Flex pickup locations now remain as individual virtual stops without extra map labels.
 - On-demand pickup cards now explain that virtual stops belong to a booked service rather than a fixed route.
@@ -160,7 +158,6 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Register exo Vallée du Richelieu so route 200 Saint-Hyacinthe–Longueuil can be published in Atlas.
 - Remove the unwanted focus box from agency search while preserving keyboard focus styling for controls.
 - Restore compact settings switches so unrelated accessibility styling does not enlarge controls.
-
 - Settings now loads and shows the hidden-route count alongside its review link.
 - Removed the unintended divider between the irregular-route and degraded-feed settings.
 - Removed the obsolete local Diagnostics table and its unused navigation surface.
@@ -175,7 +172,6 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Selected routes now keep normal background-route visibility while the chosen route is highlighted.
 - Night Service route rows now open the normal route card and highlight the selected route on the map.
 - Combined BART’s north/south directional variants into one suggested route per line.
-
 - Repointed Avon Transit to its official 2026 GTFS source so the next refresh can restore current service dates.
 - Recovered OC Transpo’s current GTFS feed through October 2026 so Ottawa schedule data no longer relies on an expired catalog copy.
 - Recovered current GTFS sources for Athens, Davenport, El Monte, JFK AirTrain, Kenosha, Sioux Area Metro, StarMetro, and Waukesha, and separated discontinued DC Streetcar from the source-recovery queue.
@@ -349,9 +345,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Applied the same normal-versus-enhanced button treatment inside filter menus for consistent controls.
 - Added a colour-blind friendly appearance setting with a clearer route palette and frequency-based line weights.
 - Clarified route cards when a direction has no service in the selected time period.
-
 - Made selected-route dimming more visible in High Contrast mode so the focus state does not rely on colour alone.
-
 - Improved accessibility with stronger secondary-text contrast, visible keyboard focus, larger settings toggles, reduced-motion support, and clearer Settings semantics.
 - Centralized button and status colours so High contrast mode applies consistently across Atlas screens while normal mode keeps the standard appearance.
 - Standardized screen-level controls on the shared button styles so future High contrast updates cannot drift between views.
@@ -384,7 +378,6 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Fixed History's agency list not scrolling — the panel had no height limit or scroll behavior, so it just got cut off instead of letting you scroll to agencies further down.
 - Replaced History's "Explore"/"Recent" section labels (sounded like "recently added") with a real Filter control — the agency list is one flat list by default, and the filter lets you narrow to just full- or partial-history agencies using the same plain-language wording already used for the rider-facing badge elsewhere.
 - History now shows how BART's actual trip time has changed year to year, on the routes where the stations and alignment stayed the same long enough to compare fairly (pilot for a future rail-wide rollout).
-
 ## [3.2.22] - 2026-09-03
 
 ### Map and route behavior
