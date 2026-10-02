@@ -17,7 +17,6 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Omaha Metro outdated-feed notices now link to the agency’s official website.
 - Expired-feed notices now use consistent numeric check counts, including “1 time” for a single check.
 - Agency detail requests now use the public data origin while beta-only requests stay on the beta data bucket.
-- Add current fallback feeds for CTtransit and Westchester Bee-Line so scheduled refreshes can recover when the primary hosts fail.
 - Weekly GTFS refreshes now retain last-good agency data and record stale sources instead of silently treating failed fallbacks as normal skips ([#528](https://github.com/Civic-Minds/Atlas/issues/528)).
 - Repointed Avon Transit to its official 2026 GTFS source so the next refresh can restore current service dates.
 - Recovered OC Transpo’s current GTFS feed through October 2026 so Ottawa schedule data no longer relies on an expired catalog copy.
@@ -126,7 +125,6 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Frequent Service's 30-minute view now distinguishes ≤15-minute routes from the 16–30-minute group using the shared frequency colours and line weights.
 - Frequent Service research exposes its two service spans inline for faster comparison.
 - Fixed a misleading “outside the active frequency filter” notice when selecting routes from the Frequent Service research map.
-- Night Service now retains agencies skipped during feed refreshes, keeping its directory aligned with the routes shown on the map ([#516](https://github.com/Civic-Minds/Atlas/issues/516)).
 - Night Service now builds its visible directory from the same route features as the map, so stale index data cannot hide agencies that are shown.
 - Selected routes now preserve their normal headway-based opacity for background context while keeping the selected branch highlighted.
 - Shared trunk service now qualifies independently from slower terminal extensions, so branch cards and map filtering do not hide frequent core service.
@@ -223,7 +221,6 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Night Service and History now share compact research-panel guidance and the same search treatment.
 - Public History now requires 10 distinct years of snapshots, so short archives do not appear as if they offer meaningful long-term history.
 - Limited the public frequency story to Atlas-supported Canada and US agencies and corrected the research date to September 18–19, 2026; the broader international audit remains archived separately.
-- Night Service and History now share compact research-panel guidance and the same search treatment.
 - Added an opt-in history build mode (`materializeAllPeriods`) that keeps every documented schedule period instead of collapsing unchanged ones, for agencies like Sacramento with dense archived history worth showing period-by-period.
 - Fixed the History route card's chart-toggle icon disappearing on routes with a longer name (e.g. Orange-N) — the name was squeezing the row narrow enough to push the icon out entirely instead of properly truncating.
 - Removed the "Recent" badge and "recent refreshes"/"long archive" text from History — every list there (route list, agency list, recent searches) now uses the same spaced style instead of three different hand-rolled versions, and searching for a different agency while History is open now actually opens it instead of snapping back to whichever agency was already selected.
@@ -368,7 +365,6 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Improved accessibility with stronger secondary-text contrast, visible keyboard focus, larger settings toggles, reduced-motion support, and clearer Settings semantics.
 - Centralized button and status colours so High contrast mode applies consistently across Atlas screens while normal mode keeps the standard appearance.
 - Standardized screen-level controls on the shared button styles so future High contrast updates cannot drift between views.
-- Google Analytics no longer loses the initial page view while privacy consent and the tracking script are initializing.
 - Google Analytics no longer loses the initial page view while privacy consent and the tracking script are initializing.
 - Fixed the agency report form opening at the width of its flag icon instead of the full card.
 - Info-panel actions now distinguish internal navigation, email actions, and true external links.
