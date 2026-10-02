@@ -873,13 +873,16 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
 
   // Initialize MapLibre Map
   useEffect(() => {
-    if (!mapContainerRef.current) return;
+    const mapContainer = mapContainerRef.current;
+    if (!mapContainer) return;
     let cancelled = false;
     let cleanupMap: maplibregl.Map | null = null;
 
     void (async () => {
-      await registerProtocol();
-      if (cancelled || !mapContainerRef.current) return;
+      // Start resolving the PMTiles release in parallel with MapLibre startup.
+      // The initial style only contains the raster basemap, so it can render
+      // while the route archive metadata is still loading.
+      const protocolReady = registerProtocol();
 
     const accent = lightMode ? '#3f3f46' : '#e4e4e7';
     const textDim = lightMode ? '#9ca3af' : 'rgba(255, 255, 255, 0.3)';
@@ -891,7 +894,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       ?? { lat: regionalView.center[0], lon: regionalView.center[1], zoom: regionalView.zoom };
 
     const map = new maplibregl.Map({
-      container: mapContainerRef.current,
+      container: mapContainer,
       style: getMapStyle(lightMode),
       center: [initialCenter.lon, initialCenter.lat],
       zoom: initialCenter.zoom,
@@ -902,8 +905,11 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     cleanupMap = map;
       mapRef.current = map;
 
-      map.on('load', () => {
+      map.on('load', async () => {
       setZoom(map.getZoom());
+
+      await protocolReady;
+      if (cancelled) return;
 
       // Keep PMTiles out of the initial style. A stalled route-tile request must
       // not prevent MapLibre from reaching this point or block local GeoJSON.
