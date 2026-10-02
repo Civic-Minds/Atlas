@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- The map now renders its background and route layers while the agency catalog loads, reducing the blank first-load wait.
 - Live Vehicles now polls configured GTFS-RT feeds through the local API for private, local-only tracking.
 - Hosted builds now fetch public agency artifacts directly from the public data origin instead of routing large files through Vercel.
 - Add current fallback feeds for CTtransit and Westchester Bee-Line so scheduled refreshes can recover when the primary hosts fail.

@@ -5,7 +5,7 @@ import { PILL_SURFACE, FLOATING_CARD, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSIT
 import { R2_PUBLIC_URL, getAgencyArtifactUrls, getAgencyCatalogUrl, FEATURES, FEATURE_ROUTES, ATLAS_MODE } from '../shared/config';
 import { isAgencyVisibleInBrowser } from '../shared/agencyVisibility';
 import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig';
-import Interval from './apps/Interval';
+const Interval = React.lazy(() => import('./apps/Interval'));
 import type { StopEntry } from './apps/corridor-search';
 import { useDebouncedValue } from './hooks/useDebouncedValue';
 const NightService = React.lazy(() => import('./apps/NightService'));
@@ -699,45 +699,8 @@ export default function App() {
       {FEATURES.beta && <AppUpdateBanner />}
 
       <main className="absolute inset-0 overflow-hidden">
-        {agenciesLoadState === 'loading' ? (
-          <div className="flex items-center justify-center h-full text-[var(--text-dim)] text-sm">
-            Loading…
-          </div>
-        ) : agenciesLoadState === 'error' ? (
-          <div className="flex flex-col items-center justify-center h-full gap-3 text-sm text-[var(--text-dim)]">
-            <p>Could not load agency data.</p>
-            <button
-              type="button"
-              className="px-3 py-1.5 rounded-full bg-[var(--bg-btn-hover)] text-[var(--text-primary)]"
-              onClick={() => {
-                setAgenciesLoadState('loading');
-                fetch('/data/index.json')
-                  .then(r => {
-                    if (!r.ok) throw new Error(`HTTP ${r.status}`);
-                    return r.json();
-                  })
-                  .then((data: { agencies: Agency[] }) => {
-                    const enriched = data.agencies
-                      .filter((a: Agency) => isAgencyVisibleInBrowser(a, { mode: ATLAS_MODE }))
-                      .map((a: Agency) => {
-                        if (!a.url) {
-                          const arts = getAgencyArtifactUrls(a.slug, { betaOnly: a.betaOnly });
-                          return { ...a, url: arts.url, stopsUrl: a.stopsUrl ?? arts.stopsUrl, corridorsUrl: a.corridorsUrl ?? arts.corridorsUrl };
-                        }
-                        return a;
-                      });
-                    setAgencies(enriched);
-                    markAtlasOnce('agency-catalog-ready');
-                    setAgenciesLoadState('ready');
-                  })
-                  .catch(() => setAgenciesLoadState('error'));
-              }}
-            >
-              Retry
-            </button>
-          </div>
-        ) : (
-          <ErrorBoundary label="The map encountered an error.">
+        <ErrorBoundary label="The map encountered an error.">
+          <React.Suspense fallback={<div className="flex items-center justify-center h-full text-[var(--text-dim)] text-sm">Loading map…</div>}>
           {inFrequentServiceStory ? (
             <FrequentServiceStory agencies={visibleAgencies} onExploreMap={() => navigate(`${FEATURE_ROUTES.frequentService.map}?view=map`)} />
           ) : <>
@@ -843,7 +806,46 @@ export default function App() {
               </div>
             )}
           </>}
+          </React.Suspense>
           </ErrorBoundary>
+        {agenciesLoadState === 'loading' && (
+          <div className="absolute left-1/2 bottom-5 -translate-x-1/2 rounded-full bg-[var(--bg-panel)]/90 px-3 py-1.5 text-xs font-semibold text-[var(--text-dim)] shadow-lg pointer-events-none">
+            Loading agency data…
+          </div>
+        )}
+        {agenciesLoadState === 'error' && (
+          <div className="absolute left-1/2 bottom-5 -translate-x-1/2 flex items-center gap-3 rounded-full bg-[var(--bg-panel)]/95 px-3 py-1.5 text-xs text-[var(--text-dim)] shadow-lg">
+            <span>Could not load agency data.</span>
+            <button
+              type="button"
+              className="font-bold text-[var(--text-primary)] hover:text-[var(--accent)]"
+              onClick={() => {
+                setAgenciesLoadState('loading');
+                fetch(getAgencyCatalogUrl())
+                  .then(r => {
+                    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+                    return r.json();
+                  })
+                  .then((data: { agencies: Agency[] }) => {
+                    const enriched = data.agencies
+                      .filter((a: Agency) => isAgencyVisibleInBrowser(a, { mode: ATLAS_MODE }))
+                      .map((a: Agency) => {
+                        if (!a.url) {
+                          const arts = getAgencyArtifactUrls(a.slug, { betaOnly: a.betaOnly });
+                          return { ...a, url: arts.url, stopsUrl: a.stopsUrl ?? arts.stopsUrl, corridorsUrl: a.corridorsUrl ?? arts.corridorsUrl };
+                        }
+                        return a;
+                      });
+                    setAgencies(enriched);
+                    markAtlasOnce('agency-catalog-ready');
+                    setAgenciesLoadState('ready');
+                  })
+                  .catch(() => setAgenciesLoadState('error'));
+              }}
+            >
+              Retry
+            </button>
+          </div>
         )}
       </main>
       <InfoPanel open={infoOpen} onClose={closeInfo} agencies={visibleAgencies} defaultTab={infoTab} featureFilter={infoFeatureFilter} helpContext={infoHelpContext} feedRefreshMeta={feedRefreshMeta} onAgencySelect={handleAgencySelect} onLiveRouteClick={handleLiveRouteClick} layers={layers} />
