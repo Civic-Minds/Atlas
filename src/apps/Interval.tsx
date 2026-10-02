@@ -381,6 +381,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   const onLocate = useCallback((lat: number, lon: number) => setUserLocation({ lat, lon }), []);
   const clearUserLocation = useCallback(() => setUserLocation(null), []);
   const [isTilesLoading, setIsTilesLoading] = useState(false);
+  const [isBasemapLoading, setIsBasemapLoading] = useState(false);
 
   const { layers, loadedCount, requestedCount, isLoading, failedSlugs } = useAgencyData(agencies, bounds, {
     showCorridorBand: false,
@@ -669,6 +670,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
         selectedAgencies={selectedAgencies}
         initialMapCenter={initialMapCenter}
         onTileLoadingChange={setIsTilesLoading}
+        onBasemapLoadingChange={setIsBasemapLoading}
         setQuery={setQuery}
         onClearSelection={clearMapSelection}
         sidebarLeft={sidebarLeft}
@@ -679,9 +681,9 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
 
       {showMapLegend && !fareView && !nightServiceView && <PersistentMapLegend />}
 
-      {((stats && (stats.total > 0 || !isLoading)) || isLoading || isTilesLoading || failedSlugs.size > 0) && (
+      {((stats && (stats.total > 0 || !isLoading)) || isLoading || isTilesLoading || isBasemapLoading || failedSlugs.size > 0) && (
         <div className={`absolute bottom-6 right-14 ${Z_PANEL} flex gap-2 transition-all ${TRANSITION_SLOW} ${showUi ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-          {(isLoading || isTilesLoading) && (
+          {(isLoading || isTilesLoading || isBasemapLoading) && (
             <div className={`${MAP_BADGE} h-8`}>
               <div className="w-3 h-3 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin shrink-0" />
               <span className={MAP_BADGE_LABEL}>
