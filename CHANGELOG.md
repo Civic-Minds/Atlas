@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Selected routes now preserve their normal headway-based opacity for background context while keeping the selected branch highlighted.
 - Map controls now show when basemap tiles are loading, zoom notices no longer duplicate the map interaction, and Live vehicle markers are smaller on dense maps.
 - Route-branch processing now preserves feed branch codes and configured direction names.
 - Optional history and refresh metadata now load only when their UI is used.
