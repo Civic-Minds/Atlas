@@ -201,6 +201,16 @@ export default function AboutDocsPage() {
           <Section id="quality" title="Quality and limitations">
             <p>Atlas checks feeds for structural and service-data problems, including missing or unusual geometry, schedule inconsistencies, stale sources, and route-frequency anomalies. Some known source problems are corrected or annotated before publication.</p>
             <p>Feed-specific corrections are kept separate from the general methodology so a fix for one agency does not silently change every agency’s results.</p>
+            <h3 className="font-black text-[var(--text-primary)]">How Atlas communicates data quality</h3>
+            <p>Quality decisions are not meant to disappear behind a clean-looking map. Atlas surfaces rider-relevant changes in the interface:</p>
+            <ul className="list-disc pl-5 space-y-1">
+              <li><strong className="text-[var(--text-primary)]">Corrected data:</strong> agency and route cards can say “We corrected this data,” with an explanation of the known feed problem and technical issue links when available.</li>
+              <li><strong className="text-[var(--text-primary)]">Outdated schedules:</strong> route cards identify schedules that may no longer be current, including the schedule end date when known. The detail panel shows the last successful refresh and subsequent checks where those dates are available.</li>
+              <li><strong className="text-[var(--text-primary)]">New schedule data:</strong> recently published feeds can be marked as “New schedule data is being verified” until Atlas checks them for missing service and quality problems.</li>
+              <li><strong className="text-[var(--text-primary)]">Feed quality:</strong> beta quality controls distinguish Healthy, Review, Degraded, and Unusable feeds. The reasons can include validation warnings, adjusted shapes, route-versus-stop frequency differences, expired schedules, or no usable route output, along with the date checked.</li>
+              <li><strong className="text-[var(--text-primary)]">Route-level warnings:</strong> a route can carry a separate warning when its displayed geometry needed adjustment or its service data needs interpretation.</li>
+            </ul>
+            <p>Not every internal exclusion becomes a separate banner. Clearly unusable rows can be removed during processing without overwhelming the map with implementation details, while known rider-facing corrections, stale schedules, review states, and material quality problems remain labelled where they affect interpretation.</p>
             <p>Atlas is schedule analysis, not real-time observation. It does not know whether a vehicle is delayed, cancelled, short-turned, crowded, or accessible unless an explicitly labelled feature provides that information.</p>
             <p>Source feeds can be delayed, incomplete, discontinued, or incorrect. For live alerts, accessibility information, trip planning, and emergency instructions, use the relevant transit agency’s official resources.</p>
           </Section>
