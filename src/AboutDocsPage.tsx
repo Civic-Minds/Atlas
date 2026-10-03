@@ -22,16 +22,17 @@ export default function AboutDocsPage() {
           <nav aria-label="Documentation sections" className="mb-8 rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-btn)] p-4 lg:sticky lg:top-8 lg:mb-0 lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0 lg:pt-10">
             <p className="text-xs font-black uppercase tracking-wide text-[var(--text-muted)] mb-2">On this page</p>
             <div className="grid gap-1.5 text-sm lg:block lg:space-y-2">
-              <a className="block text-[var(--accent)] hover:underline" href="#what-atlas-does">What Atlas does</a>
-              <a className="block text-[var(--accent)] hover:underline" href="#data-model">Data model</a>
-              <a className="block text-[var(--accent)] hover:underline" href="#data-products">Data products</a>
-              <a className="block text-[var(--accent)] hover:underline" href="#data-flow">Data flow</a>
-              <a className="block text-[var(--accent)] hover:underline" href="#frequency">Frequency calculations</a>
-              <a className="block text-[var(--accent)] hover:underline" href="#service-classification">Service classification</a>
-              <a className="block text-[var(--accent)] hover:underline" href="#map-architecture">Map architecture</a>
-              <a className="block text-[var(--accent)] hover:underline" href="#corrections">Data corrections</a>
-              <a className="block text-[var(--accent)] hover:underline" href="#quality">Quality and limitations</a>
-              <a className="block text-[var(--accent)] hover:underline" href="#validation">Quality checks and verification</a>
+              <a className="block text-[var(--accent)] hover:underline" href="#overview">Overview</a>
+              <a className="block text-[var(--accent)] hover:underline" href="#what-atlas-does">Capabilities</a>
+              <a className="block text-[var(--accent)] hover:underline" href="#data-model">Model</a>
+              <a className="block text-[var(--accent)] hover:underline" href="#data-products">Products</a>
+              <a className="block text-[var(--accent)] hover:underline" href="#data-flow">Pipeline</a>
+              <a className="block text-[var(--accent)] hover:underline" href="#frequency">Frequency</a>
+              <a className="block text-[var(--accent)] hover:underline" href="#service-classification">Service</a>
+              <a className="block text-[var(--accent)] hover:underline" href="#map-architecture">Mapping</a>
+              <a className="block text-[var(--accent)] hover:underline" href="#corrections">Corrections</a>
+              <a className="block text-[var(--accent)] hover:underline" href="#quality">Quality</a>
+              <a className="block text-[var(--accent)] hover:underline" href="#validation">Validation</a>
               <a className="block text-[var(--accent)] hover:underline" href="#glossary">Glossary</a>
             </div>
           </nav>
@@ -44,12 +45,13 @@ export default function AboutDocsPage() {
             </p>
           </header>
 
-          <Section title="What Atlas is">
+          <Section id="overview" title="Overview">
+            <h3 className="font-black text-[var(--text-primary)]">What Atlas is</h3>
             <p>Atlas is a client-side transit analysis application for comparing scheduled service across agencies and cities.</p>
             <p>It turns published transit schedules into map layers, route summaries, stop-level frequency estimates, and network comparisons.</p>
           </Section>
 
-          <Section id="what-atlas-does" title="What Atlas does">
+          <Section id="what-atlas-does" title="Capabilities">
             <p>Atlas is more than a map renderer. It is a shared transit-data platform with several layers of work:</p>
             <ul className="list-disc pl-5 space-y-1">
               <li><strong className="text-[var(--text-primary)]">Network exploration:</strong> search agencies, routes, stops, and nearby service across a large catalogue.</li>
@@ -62,7 +64,7 @@ export default function AboutDocsPage() {
             <p>Some surfaces are public, some are in beta, and some remain research or validation tools. The same processed data model supports all of them without making every experimental feature part of the main map.</p>
           </Section>
 
-          <Section id="data-model" title="A layered data model">
+          <Section id="data-model" title="Model">
             <p>Atlas keeps several kinds of transit information separate because they answer different questions:</p>
             <ul className="list-disc pl-5 space-y-1">
               <li><strong className="text-[var(--text-primary)]">Schedule data</strong> describes what an agency publishes for planned service.</li>
@@ -74,7 +76,7 @@ export default function AboutDocsPage() {
             <p>This separation is one of Atlas’s core design principles: a useful number is not automatically a trustworthy number unless its source, meaning, and time period are clear.</p>
           </Section>
 
-          <Section id="data-products" title="Data products and research surfaces">
+          <Section id="data-products" title="Products">
             <p>Different transit questions need different products. Atlas keeps these surfaces related but does not force them into one overloaded route card:</p>
             <ul className="list-disc pl-5 space-y-1">
               <li><strong className="text-[var(--text-primary)]">Frequency:</strong> current scheduled cadence, period filters, route variants, stop-level metrics, and map colouring.</li>
@@ -86,7 +88,7 @@ export default function AboutDocsPage() {
             <p>Research outputs can become product features only after their definitions, coverage, and source quality are clear. This is why Atlas sometimes contains a capability in the data or code before exposing it in the primary navigation.</p>
           </Section>
 
-          <Section id="data-flow" title="Data flow">
+          <Section id="data-flow" title="Pipeline">
             <p>Atlas primarily ingests General Transit Feed Specification (GTFS) schedule data published by transit agencies and transit data providers. An official agency feed is preferred; a provider-hosted mirror or fallback may be used when the primary source is unavailable.</p>
             <ol className="list-decimal pl-5 space-y-1">
               <li>Feeds are downloaded and checked on a recurring refresh schedule.</li>
@@ -123,7 +125,7 @@ export default function AboutDocsPage() {
             <p>This is why the line shown on the map, the cadence shown on a route card, and the cadence used by a frequency filter can be related but not identical measurements.</p>
           </Section>
 
-          <Section id="frequency" title="Frequency calculations">
+          <Section id="frequency" title="Frequency">
             <p>Atlas calculates scheduled headways: the time between consecutive departures. It reads departure times from <code className="text-[var(--text-primary)]">stop_times</code> rather than trusting optional feed-level headway fields, which are often missing or inconsistent.</p>
             <p>Departures are grouped by route, direction, stop, day type, and service period. For a group of departures, Atlas sorts the consecutive gaps and uses the median gap as the typical scheduled headway.</p>
             <p>The median is intentionally resistant to outliers. One unusually long gap should not make an otherwise regular 10-minute service look like 30-minute service.</p>
@@ -141,7 +143,7 @@ export default function AboutDocsPage() {
             <p>When a route operates only during part of the day, Atlas records that absence as an empty period rather than copying its operating-period value into the rest of the day.</p>
           </Section>
 
-          <Section id="service-classification" title="Service classification">
+          <Section id="service-classification" title="Service">
             <p>Frequency and regularity are separate properties. A route can run every 30 minutes and still be irregular if it only operates for a short burst or has too few repeated departures to establish a sustained pattern.</p>
             <dl className="space-y-2">
               <div><dt className="font-bold text-[var(--text-primary)]">Regular</dt><dd>Service covers the normal analysis window. It may be frequent or infrequent.</dd></div>
@@ -151,7 +153,7 @@ export default function AboutDocsPage() {
             <p>The default irregular-service filter hides irregular patterns while keeping predictable time-limited service visible. Periods outside a time-limited route’s operation remain empty rather than inheriting an all-day value.</p>
           </Section>
 
-          <Section id="map-architecture" title="Map architecture">
+          <Section id="map-architecture" title="Mapping">
             <p>The frontend is a React application using MapLibre for map interaction and rendering. Route geometry is distributed in vector tiles for broad map views, while agency detail and stop indexes are loaded as smaller JSON artifacts when needed.</p>
             <p>At a high level, the browser combines three kinds of information:</p>
             <ul className="list-disc pl-5 space-y-1">
@@ -162,7 +164,7 @@ export default function AboutDocsPage() {
             <p>This separation keeps the initial map responsive and lets Atlas update schedule data independently from the application interface.</p>
           </Section>
 
-          <Section id="corrections" title="Data correction and provenance">
+          <Section id="corrections" title="Corrections">
             <p>Atlas does not treat every source feed as ready for publication. Corrections happen at different layers, and the layer matters:</p>
             <ul className="list-disc pl-5 space-y-1">
               <li><strong className="text-[var(--text-primary)]">Parsing repairs</strong> address malformed source structures, such as broken or interleaved route geometry, only when the repair is unambiguous and validated.</li>
@@ -198,7 +200,7 @@ export default function AboutDocsPage() {
             <p>The artifacts contain processed public transit information. They do not contain user accounts, private analytics records, feed credentials, or the raw maintainer workflow.</p>
           </Section>
 
-          <Section id="quality" title="Quality and limitations">
+          <Section id="quality" title="Quality">
             <p>Atlas checks feeds for structural and service-data problems, including missing or unusual geometry, schedule inconsistencies, stale sources, and route-frequency anomalies. Some known source problems are corrected or annotated before publication.</p>
             <p>Feed-specific corrections are kept separate from the general methodology so a fix for one agency does not silently change every agency’s results.</p>
             <h3 className="font-black text-[var(--text-primary)]">A conservative publication rule</h3>
@@ -222,7 +224,7 @@ export default function AboutDocsPage() {
             <p>Source feeds can be delayed, incomplete, discontinued, or incorrect. For live alerts, accessibility information, trip planning, and emergency instructions, use the relevant transit agency’s official resources.</p>
           </Section>
 
-          <Section id="validation" title="Quality checks and verification">
+          <Section id="validation" title="Validation">
             <p>Atlas treats quality control as a chain of checks, not a single “the feed parsed successfully” result. A feed can be valid GTFS and still create a misleading map, an implausible frequency, or a service area that should not be treated like a fixed route.</p>
             <h3 className="font-black text-[var(--text-primary)]">1. Source and freshness checks</h3>
             <p>Before processing, Atlas records where a feed came from, when it was published or retrieved, and which schedule period it represents. Active-feed audits identify expired URLs, stale schedules, duplicate agency submissions, and sources that have changed shape or availability. Official agency sources are preferred, while provider mirrors are treated as fallbacks rather than equivalent evidence.</p>
