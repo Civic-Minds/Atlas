@@ -201,6 +201,9 @@ export default function AboutDocsPage() {
           <Section id="quality" title="Quality and limitations">
             <p>Atlas checks feeds for structural and service-data problems, including missing or unusual geometry, schedule inconsistencies, stale sources, and route-frequency anomalies. Some known source problems are corrected or annotated before publication.</p>
             <p>Feed-specific corrections are kept separate from the general methodology so a fix for one agency does not silently change every agency’s results.</p>
+            <h3 className="font-black text-[var(--text-primary)]">A conservative publication rule</h3>
+            <p>Atlas would rather show no result and clearly indicate that data is missing than show a precise-looking result that may be wrong. This applies to route geometry, frequency metrics, service areas, fares, transfers, and research findings.</p>
+            <p>When the evidence is incomplete, Atlas can leave a route or field out, mark a result as unavailable or provisional, keep a feed in review, or preserve the last known artifact with a freshness warning. It does not fill gaps with a guessed value merely to make the map look complete.</p>
             <h3 className="font-black text-[var(--text-primary)]">How Atlas communicates data quality</h3>
             <p>Quality decisions are not meant to disappear behind a clean-looking map. Atlas surfaces rider-relevant changes in the interface:</p>
             <ul className="list-disc pl-5 space-y-1">
