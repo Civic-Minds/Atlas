@@ -147,8 +147,8 @@ export default function AboutDocsPage() {
             <p>Period calculations are kept inside their own time windows. Atlas does not silently borrow an all-day average to fill a period with sparse or missing service.</p>
             <h3 className="font-black text-[var(--text-primary)]">Band qualification and tolerance</h3>
             <p>Atlas tests the tightest band first and requires enough departures to cover the analyzed span at that band. For a target of <code className="text-xs text-[var(--text-primary)]">T</code> minutes, the minimum trip count is based on <code className="text-xs text-[var(--text-primary)]">ceil(span ÷ T)</code>.</p>
-            <p>A gap at or below <code className="text-xs text-[var(--text-primary)]">T</code> passes directly. A slightly longer gap can count as a near miss when it is no more than <code className="text-xs text-[var(--text-primary)]">T + max(5 minutes, 15% of T)</code>. Atlas allows at most the larger of two near misses or 30% of the analyzed gaps. A gap beyond that tolerance, or too many near misses, disqualifies the band and Atlas tests the next slower one.</p>
-            <p>The five-minute floor means the effective percentage is larger for the faster bands:</p>
+            <p>A gap at or below <code className="text-xs text-[var(--text-primary)]">T</code> passes directly. A slightly longer gap can count as a near miss when it is no more than <code className="text-xs text-[var(--text-primary)]">T + max(5 minutes, 15% of T)</code>. Only <code className="text-xs text-[var(--text-primary)]">max(2, floor(30% × number of gaps))</code> near misses may use that allowance. A gap beyond the tolerance, or too many near misses, disqualifies the band and Atlas tests the next slower one.</p>
+            <p>The current implementation retains a five-minute absolute floor, which makes the effective percentage larger for the faster bands:</p>
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
                 <thead className="text-[var(--text-primary)]">
@@ -167,7 +167,7 @@ export default function AboutDocsPage() {
                 </tbody>
               </table>
             </div>
-            <p>The near-miss limit is only one part of the rule: Atlas still caps the number of near misses at the larger of two gaps or 30% of the analyzed gaps. Rail uses the same tolerance logic; its beta-specific difference is the set of available target bands.</p>
+            <p>The near-miss limit is only one part of the rule: Atlas rounds the 30% count down and never allows fewer than two tolerated gaps. Rail uses the same tolerance logic; its beta-specific difference is the set of available target bands.</p>
             <p>This allowance handles ordinary schedule rounding and small deviations without turning a genuinely uneven route into a frequent one. A large gap is still a failure even if the median looks good, and the final tier is the fastest band that survives the full check.</p>
             <div className="rounded-xl border border-[var(--border-primary)] bg-[var(--bg-btn)] p-3">
               <p className="font-bold text-[var(--text-primary)]">Frequency bands</p>
