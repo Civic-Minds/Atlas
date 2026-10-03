@@ -10,7 +10,7 @@
   "lastFeedExpiry": "20270123",
   "lastFeedVersion": "August2026IVOMS_20260828",
   "region": "Texas",
-  "lastRefreshedAt": "2026-09-07",
+  "lastRefreshedAt": "2026-10-03",
   "cities": [
     "Houston, Texas",
     "Alief, Texas",
@@ -24,7 +24,7 @@
     "Baytown, Texas"
   ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2060/mdb-2060-202607120126/mdb-2060-202607120126.zip",
-  "lastFeedCheckAt": "20260907",
+  "lastFeedCheckAt": "20261003",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270213",
@@ -32,7 +32,7 @@
     "status": "review",
     "score": 90,
     "reasons": [
-      "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+      "1 route has stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
       "validationErrors": 0,
@@ -41,7 +41,11 @@
       "routeHeadwayMismatches": 1,
       "featureCount": 580
     },
-    "checkedAt": "2026-09-07"
+    "checkedAt": "2026-10-03"
   },
-  "timezone": "America/Chicago"
+  "timezone": "America/Chicago",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

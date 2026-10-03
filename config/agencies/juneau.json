@@ -7,9 +7,9 @@
     -134.42
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-294/latest.zip",
-  "lastFeedExpiry": "20260920",
-  "lastFeedVersion": "UTC: 21-May-2026 18:51",
-  "lastRefreshedAt": "2026-08-07",
+  "lastFeedExpiry": "20270425",
+  "lastFeedVersion": "UTC: 02-Oct-2026 20:43",
+  "lastRefreshedAt": "2026-10-03",
   "region": "Alaska",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-294/latest.zip",
   "bbox": [
@@ -18,9 +18,28 @@
     58.4252,
     -134.3699
   ],
-  "lastFeedCheckAt": "20260907",
+  "lastFeedCheckAt": "20261003",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20260920",
-  "timezone": "America/Juneau"
+  "expiredFeedCheckExpiry": "20270430",
+  "timezone": "America/Anchorage",
+  "feedQuality": {
+    "status": "review",
+    "score": 90,
+    "reasons": [
+      "1 minor schedule issue found while reading the feed."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 1,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 23
+    },
+    "checkedAt": "2026-10-03"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

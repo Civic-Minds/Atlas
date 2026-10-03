@@ -7,9 +7,9 @@
     -93.2923
   ],
   "feedUrl": "https://webapp.cityutilities.net/GTPM/google_transit.zip",
-  "lastFeedExpiry": "20261003",
-  "lastFeedVersion": "2026 CU Q3 1",
-  "lastRefreshedAt": "2026-08-07",
+  "lastFeedExpiry": "20270102",
+  "lastFeedVersion": "2026 CU Q4",
+  "lastRefreshedAt": "2026-10-03",
   "region": "Missouri",
   "bbox": [
     37.1082,
@@ -20,9 +20,26 @@
   "cities": [
     "Springfield, Missouri"
   ],
-  "lastFeedCheckAt": "20260907",
+  "lastFeedCheckAt": "20261003",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261003",
-  "timezone": "America/Chicago"
+  "expiredFeedCheckExpiry": "20270102",
+  "timezone": "America/Chicago",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 40
+    },
+    "checkedAt": "2026-10-03"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

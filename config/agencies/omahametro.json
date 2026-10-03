@@ -7,17 +7,34 @@
     -96
   ],
   "feedUrl": "https://www.ometro.com/wp-content/uploads/GTFSRT/google_transit.zip",
-  "lastFeedExpiry": "20260829",
-  "lastFeedVersion": "OMAHA 2604 V1",
+  "lastFeedExpiry": "20261121",
+  "lastFeedVersion": "OMAHA_2607_V1",
   "region": "Nebraska",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-10-03",
   "cities": [
     "Omaha, Nebraska",
     "Council Bluffs, Iowa"
   ],
-  "lastFeedCheckAt": "20260907",
-  "expiredFeedCheckCount": 1,
-  "expiredFeedCheckSince": "20260622",
-  "expiredFeedCheckExpiry": "20260829",
-  "timezone": "America/Chicago"
+  "lastFeedCheckAt": "20261003",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261121",
+  "timezone": "America/Chicago",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 142
+    },
+    "checkedAt": "2026-10-03"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

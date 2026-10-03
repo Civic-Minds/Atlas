@@ -12,9 +12,7 @@
     37.61,
     -122
   ],
-  "feedUrl": "https://api.511.org/transit/datafeeds?operator_id=UC",
-  "feedApiKeyEnvVar": "MUNI_511_API_KEY",
-  "feedApiKeyParam": "api_key",
+  "feedUrl": "https://data.trilliumtransit.com/gtfs/unioncity-ca-us/unioncity-ca-us.zip",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-union-city-transit-gtfs-628.zip?alt=media",
   "lastFeedExpiry": "20230927",
   "lastFeedVersion": "UTC: 14-Mar-2023 23:56",
@@ -25,8 +23,12 @@
   ],
   "timezone": "America/Los_Angeles",
   "lastRawArchiveKey": "20230927-651281e25dba5ea3",
-  "lastFeedCheckAt": "20260907",
-  "expiredFeedCheckCount": 2,
+  "lastFeedCheckAt": "20261003",
+  "expiredFeedCheckCount": 3,
   "expiredFeedCheckSince": "20260622",
-  "expiredFeedCheckExpiry": "20230927"
+  "expiredFeedCheckExpiry": "20230927",
+  "feedRefreshStatus": "stale",
+  "feedRefreshError": "all available feeds expired (latest 20230927)",
+  "feedRefreshErrorAt": "20261003",
+  "feedRefreshRetryCount": 1
 }

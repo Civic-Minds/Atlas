@@ -7,10 +7,10 @@
     -118.4077
   ],
   "feedUrl": "https://web.culvercity.org/gtfs/gtfsexport.zip",
-  "lastFeedExpiry": "20260712",
-  "lastFeedVersion": "S1000250_2026.01.09",
+  "lastFeedExpiry": "20261213",
+  "lastFeedVersion": "S1000254_2026.08.05",
   "region": "California",
-  "lastRefreshedAt": "20260811",
+  "lastRefreshedAt": "2026-10-03",
   "cities": [
     "Mid-City, California",
     "Inglewood, California",
@@ -18,8 +18,25 @@
   ],
   "timezone": "America/Los_Angeles",
   "lastRawArchiveKey": "20260712-b7c46c977165e86f",
-  "lastFeedCheckAt": "20260907",
-  "expiredFeedCheckCount": 2,
-  "expiredFeedCheckSince": "20260622",
-  "expiredFeedCheckExpiry": "20260712"
+  "lastFeedCheckAt": "20261003",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261213",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 43
+    },
+    "checkedAt": "2026-10-03"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

@@ -12,9 +12,7 @@
     38.4,
     -121.93
   ],
-  "feedUrl": "https://api.511.org/transit/datafeeds?operator_id=VC",
-  "feedApiKeyEnvVar": "MUNI_511_API_KEY",
-  "feedApiKeyParam": "api_key",
+  "feedUrl": "http://data.trilliumtransit.com/gtfs/vacavillecitycoach-ca-us/vacavillecitycoach-ca-us.zip",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-city-coach-gtfs-599.zip?alt=media",
   "lastFeedExpiry": "20260630",
   "lastFeedVersion": "2.2.26",
@@ -25,8 +23,12 @@
   ],
   "timezone": "America/Los_Angeles",
   "lastRawArchiveKey": "20260630-9771867b4141da3d",
-  "lastFeedCheckAt": "20260907",
-  "expiredFeedCheckCount": 2,
+  "lastFeedCheckAt": "20261003",
+  "expiredFeedCheckCount": 3,
   "expiredFeedCheckSince": "20260622",
-  "expiredFeedCheckExpiry": "20260630"
+  "expiredFeedCheckExpiry": "20260630",
+  "feedRefreshStatus": "stale",
+  "feedRefreshError": "all available feeds expired (latest 20260630)",
+  "feedRefreshErrorAt": "20261003",
+  "feedRefreshRetryCount": 1
 }

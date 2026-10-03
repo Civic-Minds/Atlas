@@ -14,9 +14,9 @@
     40.6,
     -104.8
   ],
-  "lastFeedExpiry": "20260926",
-  "lastFeedVersion": "Jun26-37073-22-29-20260905-035724",
-  "lastRefreshedAt": "2026-09-07",
+  "lastFeedExpiry": "20270102",
+  "lastFeedVersion": "Sep26-37185-8-10-20260929-133439",
+  "lastRefreshedAt": "2026-10-03",
   "cities": [
     "Denver, Colorado",
     "Colorado Springs, Colorado",
@@ -27,16 +27,16 @@
     "Boulder, Colorado",
     "Centennial, Colorado"
   ],
-  "lastFeedCheckAt": "20260907",
+  "lastFeedCheckAt": "20261003",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20260926",
+  "expiredFeedCheckExpiry": "20270102",
   "feedQuality": {
     "status": "degraded",
     "score": 50,
     "reasons": [
-      "2 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
-      "5 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+      "2 route shapes needed adjustment before display.",
+      "5 route have stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
       "validationErrors": 0,
@@ -45,7 +45,11 @@
       "routeHeadwayMismatches": 5,
       "featureCount": 31
     },
-    "checkedAt": "2026-09-07"
+    "checkedAt": "2026-10-03"
   },
-  "timezone": "America/Denver"
+  "timezone": "America/Denver",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

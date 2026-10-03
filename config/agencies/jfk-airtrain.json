@@ -17,11 +17,28 @@
   "mdbFeedUrl": "https://s3.amazonaws.com/datatools-511ny/public/AirTrain_JFK.zip",
   "lastFeedExpiry": "20261231",
   "lastFeedVersion": "jfk_20112026",
-  "lastRefreshedAt": "20260811",
+  "lastRefreshedAt": "2026-10-03",
   "timezone": "America/New_York",
   "lastRawArchiveKey": "20211231-d3fb77447fdc2f06",
-  "lastFeedCheckAt": "20260907",
-  "expiredFeedCheckCount": 2,
-  "expiredFeedCheckSince": "20260622",
-  "expiredFeedCheckExpiry": "20211231"
+  "lastFeedCheckAt": "20261003",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270228",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 9
+    },
+    "checkedAt": "2026-10-03"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

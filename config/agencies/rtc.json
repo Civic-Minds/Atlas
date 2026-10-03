@@ -14,9 +14,9 @@
     -71
   ],
   "feedUrl": "https://cdn.rtcquebec.ca/Site_Internet/DonneesOuvertes/googletransit.zip",
-  "lastFeedExpiry": "20260821",
+  "lastFeedExpiry": "20261218",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-10-03",
   "cities": [
     "Sainte-Foy, Quebec",
     "Les Rivières, Quebec",
@@ -26,9 +26,28 @@
     "La Cité-Limoilou, Quebec",
     "Québec, Quebec"
   ],
-  "lastFeedCheckAt": "20260907",
-  "expiredFeedCheckCount": 2,
-  "expiredFeedCheckSince": "20260622",
-  "expiredFeedCheckExpiry": "20260821",
-  "timezone": "America/Montreal"
+  "lastFeedCheckAt": "20261003",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261218",
+  "timezone": "America/Montreal",
+  "feedQuality": {
+    "status": "review",
+    "score": 90,
+    "reasons": [
+      "1 route has stops whose frequency differs from the overall route schedule."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 1,
+      "featureCount": 447
+    },
+    "checkedAt": "2026-10-03"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

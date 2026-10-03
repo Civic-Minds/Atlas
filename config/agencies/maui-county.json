@@ -20,8 +20,8 @@
   ],
   "timezone": "Pacific/Honolulu",
   "lastFeedExpiry": "",
-  "lastFeedVersion": "Fixed Route with Commuters",
-  "lastRefreshedAt": "2026-09-08",
+  "lastFeedVersion": "FixedRoute_NewCommuterRouteNames",
+  "lastRefreshedAt": "2026-10-03",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -33,6 +33,14 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 54
     },
-    "checkedAt": "2026-09-08"
-  }
+    "checkedAt": "2026-10-03"
+  },
+  "lastFeedCheckAt": "20261003",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20991231",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

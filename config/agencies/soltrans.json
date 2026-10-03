@@ -16,8 +16,8 @@
   "feedUrl": "https://soltrans.connexionz.net/rtt/public/resource/gtfs.zip",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-soltrans-gtfs-80.zip?alt=media",
   "lastFeedExpiry": "20271231",
-  "lastFeedVersion": "20260904",
-  "lastRefreshedAt": "2026-09-07",
+  "lastFeedVersion": "20261002",
+  "lastRefreshedAt": "2026-10-03",
   "cities": [
     "Vallejo, California",
     "Fairfield, California",
@@ -28,7 +28,7 @@
     "Vacaville, California",
     "Chinatown, California"
   ],
-  "lastFeedCheckAt": "20260907",
+  "lastFeedCheckAt": "20261003",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
@@ -36,7 +36,7 @@
     "status": "review",
     "score": 70,
     "reasons": [
-      "7 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+      "7 route shapes needed adjustment before display."
     ],
     "metrics": {
       "validationErrors": 0,
@@ -45,7 +45,11 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 60
     },
-    "checkedAt": "2026-09-07"
+    "checkedAt": "2026-10-03"
   },
-  "timezone": "America/Los_Angeles"
+  "timezone": "America/Los_Angeles",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

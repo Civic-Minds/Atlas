@@ -22,8 +22,12 @@
   ],
   "timezone": "America/Toronto",
   "lastRawArchiveKey": "20241231-ab9230a3408482f5",
-  "lastFeedCheckAt": "20260907",
-  "expiredFeedCheckCount": 2,
+  "lastFeedCheckAt": "20261003",
+  "expiredFeedCheckCount": 3,
   "expiredFeedCheckSince": "20260622",
-  "expiredFeedCheckExpiry": "20241231"
+  "expiredFeedCheckExpiry": "20241231",
+  "feedRefreshStatus": "stale",
+  "feedRefreshError": "all available feeds expired (latest 20241231)",
+  "feedRefreshErrorAt": "20261003",
+  "feedRefreshRetryCount": 1
 }

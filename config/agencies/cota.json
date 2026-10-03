@@ -10,12 +10,12 @@
   "feedUrl": "https://www.cota.com/data/cota.gtfs.zip",
   "mdbFeedUrl": "https://www.cota.com/data/cota.gtfs.zip",
   "lastFeedExpiry": "20270103",
-  "lastFeedVersion": "2026-SEP-07-BB_20260904",
-  "lastRefreshedAt": "2026-09-07",
+  "lastFeedVersion": "2026-SEP-07-BB_20260924",
+  "lastRefreshedAt": "2026-10-03",
   "cities": [
     "Columbus, Ohio"
   ],
-  "lastFeedCheckAt": "20260907",
+  "lastFeedCheckAt": "20261003",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270103",
@@ -31,6 +31,10 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 198
     },
-    "checkedAt": "2026-09-07"
-  }
+    "checkedAt": "2026-10-03"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

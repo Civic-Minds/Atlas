@@ -12,9 +12,7 @@
     38.58,
     -121.5
   ],
-  "feedUrl": "https://api.511.org/transit/datafeeds?operator_id=FS",
-  "feedApiKeyEnvVar": "MUNI_511_API_KEY",
-  "feedApiKeyParam": "api_key",
+  "feedUrl": "http://data.trilliumtransit.com/gtfs/fairfield-ca-us/fairfield-ca-us.zip",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-fairfield-and-suisun-transit-fast-transit-gtfs-76.zip?alt=media",
   "lastFeedExpiry": "20260630",
   "lastFeedVersion": "UTC: 14-Nov-2025 10:07",
@@ -25,8 +23,12 @@
   ],
   "timezone": "America/Los_Angeles",
   "lastRawArchiveKey": "20260630-c9633fc2dffd25c5",
-  "lastFeedCheckAt": "20260907",
-  "expiredFeedCheckCount": 2,
+  "lastFeedCheckAt": "20261003",
+  "expiredFeedCheckCount": 3,
   "expiredFeedCheckSince": "20260622",
-  "expiredFeedCheckExpiry": "20260630"
+  "expiredFeedCheckExpiry": "20260630",
+  "feedRefreshStatus": "stale",
+  "feedRefreshError": "all available feeds expired (latest 20260630)",
+  "feedRefreshErrorAt": "20261003",
+  "feedRefreshRetryCount": 1
 }

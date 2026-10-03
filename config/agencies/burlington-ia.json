@@ -15,9 +15,9 @@
   "feedUrl": "https://data.trilliumtransit.com/gtfs/burlington-ia-us/burlington-ia-us.zip",
   "region": "Iowa",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-199/latest.zip",
-  "lastFeedExpiry": "20260930",
-  "lastFeedVersion": "UTC: 28-Jan-2026 13:41",
-  "lastRefreshedAt": "2026-08-18",
+  "lastFeedExpiry": "20270401",
+  "lastFeedVersion": "UTC: 24-Sep-2026 19:04",
+  "lastRefreshedAt": "2026-10-03",
   "cities": [
     "Burlington, Iowa",
     "West Burlington, Iowa"
@@ -26,7 +26,7 @@
     "status": "review",
     "score": 70,
     "reasons": [
-      "12 shape corrections needed."
+      "12 route shapes needed adjustment before display."
     ],
     "metrics": {
       "validationErrors": 0,
@@ -35,11 +35,15 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 1
     },
-    "checkedAt": "2026-08-18"
+    "checkedAt": "2026-10-03"
   },
-  "lastFeedCheckAt": "20260907",
+  "lastFeedCheckAt": "20261003",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20260930",
-  "timezone": "America/Chicago"
+  "expiredFeedCheckExpiry": "20270401",
+  "timezone": "America/Chicago",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

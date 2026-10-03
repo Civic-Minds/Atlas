@@ -7,10 +7,10 @@
     -97.29
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-2890/mdb-2890-202606170131/mdb-2890-202606170131.zip",
-  "lastFeedExpiry": "20260926",
-  "lastFeedVersion": "MAY 26_20260526",
+  "lastFeedExpiry": "20270130",
+  "lastFeedVersion": "SEPTEMBER 2026_20260806",
   "region": "Texas",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-10-03",
   "cities": [
     "Fort Worth, Texas",
     "North Richland Hills, Texas",
@@ -20,9 +20,26 @@
     "Mansfield, Texas",
     "Flower Mound, Texas"
   ],
-  "lastFeedCheckAt": "20260907",
+  "lastFeedCheckAt": "20261003",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20260926",
-  "timezone": "America/Chicago"
+  "expiredFeedCheckExpiry": "20270130",
+  "timezone": "America/Chicago",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 171
+    },
+    "checkedAt": "2026-10-03"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

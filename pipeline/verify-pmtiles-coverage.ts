@@ -37,70 +37,7 @@ interface Agency {
 // (see shared/config.ts pmtilesMinZoomForHeadway), so any zoom >= 11 will surface
 // every headway tier. We still clamp to the archive's actual maxZoom at runtime.
 const PREFERRED_ZOOM = 12;
-
-// A sparse fixed-point grid (e.g. 9 corner/edge/center points) can miss real
-// route geometry entirely for agencies with only a handful of routes clustered
-// in a small part of their bbox — confirmed false-positive on siskiyou/lassen
-// (see #215). Instead cover every tile in the bbox up to this cap; beyond it
-// (large/statewide agencies) fall back to an evenly-strided grid so total
-// fetch cost stays bounded.
-const MAX_TILES_PER_AGENCY = 100;
-
-function lonLatToTile(lon: number, lat: number, zoom: number): { x: number; y: number } {
-  const n = 2 ** zoom;
-  const latRad = (lat * Math.PI) / 180;
-  const x = Math.floor(((lon + 180) / 360) * n);
-  const y = Math.floor(
-    ((1 - Math.log(Math.tan(latRad) + 1 / Math.cos(latRad)) / Math.PI) / 2) * n,
-  );
-  return {
-    x: Math.min(Math.max(x, 0), n - 1),
-    y: Math.min(Math.max(y, 0), n - 1),
-  };
-}
-
-/**
- * Every tile spanned by an agency's bbox at the sampling zoom, up to
- * MAX_TILES_PER_AGENCY. Larger bboxes fall back to an evenly-strided grid
- * within the cap rather than every tile, to bound total fetch cost.
- */
-function tilesForAgency(agency: Agency, zoom: number, maxTiles = MAX_TILES_PER_AGENCY): Array<{ x: number; y: number }> {
-  const [centerLat, centerLon] = agency.center;
-  const [s, w, n, e] = agency.bbox ?? [
-    centerLat - FALLBACK_PAD.lat,
-    centerLon - FALLBACK_PAD.lon,
-    centerLat + FALLBACK_PAD.lat,
-    centerLon + FALLBACK_PAD.lon,
-  ];
-  // Tile y increases southward, so north (n) maps to the smaller y.
-  const topLeft = lonLatToTile(w, n, zoom);
-  const bottomRight = lonLatToTile(e, s, zoom);
-  const xMin = Math.min(topLeft.x, bottomRight.x);
-  const xMax = Math.max(topLeft.x, bottomRight.x);
-  const yMin = Math.min(topLeft.y, bottomRight.y);
-  const yMax = Math.max(topLeft.y, bottomRight.y);
-  const width = xMax - xMin + 1;
-  const height = yMax - yMin + 1;
-
-  if (width * height <= maxTiles) {
-    const tiles: Array<{ x: number; y: number }> = [];
-    for (let x = xMin; x <= xMax; x++) {
-      for (let y = yMin; y <= yMax; y++) tiles.push({ x, y });
-    }
-    return tiles;
-  }
-
-  const gridDim = Math.max(1, Math.floor(Math.sqrt(maxTiles)));
-  const tiles: Array<{ x: number; y: number }> = [];
-  for (let i = 0; i < gridDim; i++) {
-    for (let j = 0; j < gridDim; j++) {
-      const x = xMin + Math.round((i / Math.max(1, gridDim - 1)) * (width - 1));
-      const y = yMin + Math.round((j / Math.max(1, gridDim - 1)) * (height - 1));
-      tiles.push({ x, y });
-    }
-  }
-  return tiles;
-}
+const REQUEST_TIMEOUT_MS = 15_000;
 
 async function getZxyWithRetry(
   pmtiles: PMTiles,
@@ -111,11 +48,16 @@ async function getZxyWithRetry(
 ): Promise<Awaited<ReturnType<PMTiles['getZxy']>>> {
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
-      return await pmtiles.getZxy(zoom, x, y);
+      return await Promise.race([
+        pmtiles.getZxy(zoom, x, y),
+        new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error(`PMTiles request timeout after ${REQUEST_TIMEOUT_MS}ms`)), REQUEST_TIMEOUT_MS),
+        ),
+      ]);
     } catch (e) {
       const isLast = attempt === retries;
       const message = (e as Error).message || '';
-      const isTransient = /Bad response code: (429|5\d\d)/.test(message);
+      const isTransient = /Bad response code: (429|5\d\d)|PMTiles request timeout/.test(message);
       if (isLast || !isTransient) throw e;
       // R2 can keep returning 429s briefly while a large archive is being
       // checked. Give the request enough time to leave the rate-limit window
@@ -195,7 +137,7 @@ async function main() {
 
   // This check can request tens of thousands of tiles. Keep the burst low so
   // the verifier does not rate-limit its own reads from the R2 public host.
-  const concurrency = 2;
+  const concurrency = Math.max(1, Number(process.env.PMTILES_COVERAGE_CONCURRENCY ?? 2));
   console.log(`Fetching ${tasks.length} tiles (concurrency ${concurrency})...`);
   await runWithConcurrency(tasks, concurrency);
 

@@ -16,9 +16,9 @@
   "feedUrl": "https://files.mobilitydatabase.org/tld-4211/tld-4211-202607280034/tld-4211-202607280034.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-4211/tld-4211-202607280034/tld-4211-202607280034.zip",
   "timezone": "America/Los_Angeles",
-  "lastFeedExpiry": "20260930",
-  "lastFeedVersion": "UTC: 27-Jul-2026 17:09",
-  "lastRefreshedAt": "2026-08-18",
+  "lastFeedExpiry": "20270531",
+  "lastFeedVersion": "UTC: 30-Sep-2026 16:44",
+  "lastRefreshedAt": "2026-10-03",
   "cities": [
     "Astoria, Oregon",
     "Warrenton, Oregon",
@@ -36,10 +36,14 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 12
     },
-    "checkedAt": "2026-08-18"
+    "checkedAt": "2026-10-03"
   },
-  "lastFeedCheckAt": "20260907",
+  "lastFeedCheckAt": "20261003",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20260930"
+  "expiredFeedCheckExpiry": "20270531",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

@@ -7,10 +7,10 @@
     -76.85
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-477/latest.zip",
-  "lastFeedExpiry": "20260901",
-  "lastFeedVersion": "UTC: 30-Apr-2026 18:15",
+  "lastFeedExpiry": "20270301",
+  "lastFeedVersion": "UTC: 26-Aug-2026 18:42",
   "region": "Maryland",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-10-03",
   "cities": [
     "Downtown DC, District of Columbia",
     "Bowie, Maryland",
@@ -19,9 +19,26 @@
     "Waldorf, Maryland",
     "Columbia, Maryland"
   ],
-  "lastFeedCheckAt": "20260907",
-  "expiredFeedCheckCount": 1,
-  "expiredFeedCheckSince": "20260622",
-  "expiredFeedCheckExpiry": "20260901",
-  "timezone": "America/New_York"
+  "lastFeedCheckAt": "20261003",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270301",
+  "timezone": "America/New_York",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 83
+    },
+    "checkedAt": "2026-10-03"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

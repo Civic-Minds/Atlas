@@ -7,10 +7,10 @@
     -71.42
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-624/latest.zip",
-  "lastFeedExpiry": "20260828",
+  "lastFeedExpiry": "20270115",
   "lastFeedVersion": null,
   "region": "Rhode Island",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-10-03",
   "cities": [
     "Warwick, Rhode Island",
     "Providence, Rhode Island",
@@ -18,9 +18,28 @@
     "Cranston, Rhode Island",
     "Fall River, Massachusetts"
   ],
-  "lastFeedCheckAt": "20260907",
-  "expiredFeedCheckCount": 1,
-  "expiredFeedCheckSince": "20260622",
-  "expiredFeedCheckExpiry": "20260828",
-  "timezone": "America/New_York"
+  "lastFeedCheckAt": "20261003",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270115",
+  "timezone": "America/New_York",
+  "feedQuality": {
+    "status": "review",
+    "score": 80,
+    "reasons": [
+      "2 route have stops whose frequency differs from the overall route schedule."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 2,
+      "featureCount": 303
+    },
+    "checkedAt": "2026-10-03"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

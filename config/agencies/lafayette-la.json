@@ -28,14 +28,18 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 27
     },
-    "checkedAt": "2026-09-07"
+    "checkedAt": "2026-10-03"
   },
   "lastFeedExpiry": "",
   "lastFeedVersion": "8/25/2026",
-  "lastRefreshedAt": "2026-09-07",
-  "lastFeedCheckAt": "20260907",
+  "lastRefreshedAt": "2026-10-03",
+  "lastFeedCheckAt": "20261003",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",
-  "timezone": "America/Chicago"
+  "timezone": "America/Chicago",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

@@ -7,13 +7,32 @@
     -118.11
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-2201/latest.zip",
-  "lastFeedExpiry": "20260906",
-  "lastFeedVersion": "20260626",
+  "lastFeedExpiry": "20270227",
+  "lastFeedVersion": "20260916",
   "region": "California",
-  "lastRefreshedAt": "2026-08-07",
-  "lastFeedCheckAt": "20260907",
-  "expiredFeedCheckCount": 1,
-  "expiredFeedCheckSince": "20260622",
-  "expiredFeedCheckExpiry": "20260906",
-  "timezone": "America/Los_Angeles"
+  "lastRefreshedAt": "2026-10-03",
+  "lastFeedCheckAt": "20261003",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270227",
+  "timezone": "America/Los_Angeles",
+  "feedQuality": {
+    "status": "review",
+    "score": 70,
+    "reasons": [
+      "5 route shapes needed adjustment before display."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 5,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 52
+    },
+    "checkedAt": "2026-10-03"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

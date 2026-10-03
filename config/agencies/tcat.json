@@ -9,9 +9,9 @@
   ],
   "feedUrl": "https://s3.amazonaws.com/tcat-gtfs/tcat-ny-us.zip",
   "lastFeedExpiry": "20261219",
-  "lastFeedVersion": "20260811",
-  "lastRefreshedAt": "2026-08-24",
-  "lastFeedCheckAt": "20260907",
+  "lastFeedVersion": "20260922",
+  "lastRefreshedAt": "2026-10-03",
+  "lastFeedCheckAt": "20261003",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261219",
@@ -26,7 +26,11 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 160
     },
-    "checkedAt": "2026-08-24"
+    "checkedAt": "2026-10-03"
   },
-  "timezone": "America/New_York"
+  "timezone": "America/New_York",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

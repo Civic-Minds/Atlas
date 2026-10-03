@@ -21,23 +21,27 @@
     "status": "review",
     "score": 70,
     "reasons": [
-      "4 route frequency metrics need review."
+      "4 route have stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 4,
-      "featureCount": 112
+      "featureCount": 118
     },
-    "checkedAt": "2026-08-21"
+    "checkedAt": "2026-10-03"
   },
   "lastFeedExpiry": "20261231",
-  "lastFeedVersion": "20260819",
-  "lastRefreshedAt": "2026-08-21",
-  "lastFeedCheckAt": "20260907",
+  "lastFeedVersion": "20260930",
+  "lastRefreshedAt": "2026-10-03",
+  "lastFeedCheckAt": "20261003",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
-  "timezone": "America/New_York"
+  "timezone": "America/New_York",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

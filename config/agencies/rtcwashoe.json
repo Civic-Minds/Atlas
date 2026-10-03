@@ -7,18 +7,37 @@
     -119.81
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-120/latest.zip",
-  "lastFeedExpiry": "20260904",
+  "lastFeedExpiry": "20270101",
   "lastFeedVersion": "1",
   "region": "Nevada",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-10-03",
   "cities": [
     "Reno, Nevada",
     "Sparks, Nevada",
     "Carson City, Nevada"
   ],
-  "lastFeedCheckAt": "20260907",
-  "expiredFeedCheckCount": 1,
-  "expiredFeedCheckSince": "20260622",
-  "expiredFeedCheckExpiry": "20260904",
-  "timezone": "America/Los_Angeles"
+  "lastFeedCheckAt": "20261003",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270101",
+  "timezone": "America/Los_Angeles",
+  "feedQuality": {
+    "status": "review",
+    "score": 80,
+    "reasons": [
+      "2 route shapes needed adjustment before display."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 2,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 116
+    },
+    "checkedAt": "2026-10-03"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

@@ -9,13 +9,13 @@
   "feedUrl": "https://files.mobilitydatabase.org/mdb-325/latest.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-325/latest.zip",
   "lastFeedExpiry": "20270102",
-  "lastFeedVersion": "2608.1",
-  "lastRefreshedAt": "2026-08-27",
+  "lastFeedVersion": "2608.5",
+  "lastRefreshedAt": "2026-10-03",
   "websiteUrl": "https://www.tampaairport.com/",
   "cities": [
     "Tampa, Florida"
   ],
-  "lastFeedCheckAt": "20260907",
+  "lastFeedCheckAt": "20261003",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270102",
@@ -30,7 +30,11 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 6
     },
-    "checkedAt": "2026-08-27"
+    "checkedAt": "2026-10-03"
   },
-  "timezone": "America/New_York"
+  "timezone": "America/New_York",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

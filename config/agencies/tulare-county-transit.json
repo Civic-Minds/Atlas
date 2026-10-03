@@ -9,9 +9,9 @@
   "feedUrl": "https://files.mobilitydatabase.org/mdb-646/mdb-646-202602190016/mdb-646-202602190016.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-646/mdb-646-202602190016/mdb-646-202602190016.zip",
   "region": "California",
-  "lastFeedExpiry": "20261001",
-  "lastFeedVersion": "UTC: 18-Feb-2026 15:22",
-  "lastRefreshedAt": "2026-08-07",
+  "lastFeedExpiry": "20270501",
+  "lastFeedVersion": "UTC: 30-Sep-2026 20:20",
+  "lastRefreshedAt": "2026-10-03",
   "cities": [
     "Tulare, California",
     "Visalia, California",
@@ -19,9 +19,28 @@
     "Delano, California",
     "Fresno, California"
   ],
-  "lastFeedCheckAt": "20260907",
+  "lastFeedCheckAt": "20261003",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261001",
-  "timezone": "America/Los_Angeles"
+  "expiredFeedCheckExpiry": "20270501",
+  "timezone": "America/Los_Angeles",
+  "feedQuality": {
+    "status": "review",
+    "score": 70,
+    "reasons": [
+      "6 route shapes needed adjustment before display."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 6,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 68
+    },
+    "checkedAt": "2026-10-03"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

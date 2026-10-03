@@ -22,14 +22,18 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 48
     },
-    "checkedAt": "2026-09-07"
+    "checkedAt": "2026-10-03"
   },
   "lastFeedExpiry": "",
-  "lastFeedVersion": "Fall 2026 Version 1.01",
-  "lastRefreshedAt": "2026-09-07",
-  "lastFeedCheckAt": "20260907",
+  "lastFeedVersion": "Fall 2026 BLINK,Fall 2026 Version 1.01,Fall 2026 Version 10122026",
+  "lastRefreshedAt": "2026-10-03",
+  "lastFeedCheckAt": "20261003",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",
-  "timezone": "America/New_York"
+  "timezone": "America/New_York",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

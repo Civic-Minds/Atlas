@@ -8,8 +8,8 @@
   ],
   "feedUrl": "https://bus.gocitybus.com/GTFSRT/citybus-lafayette-in-us.zip",
   "lastFeedExpiry": "20261231",
-  "lastFeedVersion": "2026.3.3",
-  "lastRefreshedAt": "2026-09-07",
+  "lastFeedVersion": "2026.3.4",
+  "lastRefreshedAt": "2026-10-03",
   "region": "Indiana",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-391/latest.zip",
   "bbox": [
@@ -21,7 +21,7 @@
   "cities": [
     "Lafayette, Indiana"
   ],
-  "lastFeedCheckAt": "20260907",
+  "lastFeedCheckAt": "20261003",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
@@ -36,7 +36,11 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 70
     },
-    "checkedAt": "2026-09-07"
+    "checkedAt": "2026-10-03"
   },
-  "timezone": "America/New_York"
+  "timezone": "America/New_York",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

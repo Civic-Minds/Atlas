@@ -15,7 +15,7 @@
     "status": "review",
     "score": 80,
     "reasons": [
-      "2 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+      "2 route shapes needed adjustment before display."
     ],
     "metrics": {
       "validationErrors": 0,
@@ -24,14 +24,18 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 20
     },
-    "checkedAt": "2026-09-07"
+    "checkedAt": "2026-10-03"
   },
-  "lastFeedExpiry": "20261130",
-  "lastFeedVersion": "295",
-  "lastRefreshedAt": "2026-09-07",
-  "lastFeedCheckAt": "20260907",
+  "lastFeedExpiry": "20261230",
+  "lastFeedVersion": "296",
+  "lastRefreshedAt": "2026-10-03",
+  "lastFeedCheckAt": "20261003",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
-  "timezone": "America/Toronto"
+  "timezone": "America/Toronto",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

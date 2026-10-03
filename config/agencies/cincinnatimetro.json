@@ -8,14 +8,14 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-307/latest.zip",
   "lastFeedExpiry": "20261205",
-  "lastFeedVersion": "gtfs_20260816-20261205_20260818",
+  "lastFeedVersion": "gtfs_20261004-20261205_20260929",
   "region": "Ohio",
-  "lastRefreshedAt": "2026-08-24",
+  "lastRefreshedAt": "2026-10-03",
   "cities": [
     "Cincinnati, Ohio",
     "Hamilton, Ohio"
   ],
-  "lastFeedCheckAt": "20260907",
+  "lastFeedCheckAt": "20261003",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261205",
@@ -28,9 +28,13 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 299
+      "featureCount": 297
     },
-    "checkedAt": "2026-08-24"
+    "checkedAt": "2026-10-03"
   },
-  "timezone": "America/New_York"
+  "timezone": "America/New_York",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

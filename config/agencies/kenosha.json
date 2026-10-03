@@ -8,9 +8,9 @@
   ],
   "feedUrl": "https://kenoshatransit.com/gtfs",
   "mdbFeedUrl": "https://kenoshatransit.com/gtfs",
-  "lastFeedExpiry": "20991231",
-  "lastFeedVersion": "Route 4 Detour",
-  "lastRefreshedAt": "20260811",
+  "lastFeedExpiry": "",
+  "lastFeedVersion": "Route 1",
+  "lastRefreshedAt": "2026-10-03",
   "region": "Wisconsin",
   "bbox": [
     42.4973,
@@ -23,8 +23,27 @@
   ],
   "timezone": "America/Chicago",
   "lastRawArchiveKey": "20240901-de364d144f1f2a51",
-  "lastFeedCheckAt": "20260907",
-  "expiredFeedCheckCount": 2,
-  "expiredFeedCheckSince": "20260622",
-  "expiredFeedCheckExpiry": "20240901"
+  "lastFeedCheckAt": "20261003",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20991231",
+  "feedQuality": {
+    "status": "review",
+    "score": 70,
+    "reasons": [
+      "3 route shapes needed adjustment before display."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 3,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 29
+    },
+    "checkedAt": "2026-10-03"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

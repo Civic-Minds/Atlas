@@ -9,12 +9,12 @@
   ],
   "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=15",
   "lastFeedExpiry": "20270906",
-  "lastFeedVersion": "202609070/20260906 21:00:00/20260907 04:00:00",
-  "lastRefreshedAt": "2026-09-07",
+  "lastFeedVersion": "202610030/20261002 21:00:00/20261003 04:00:00",
+  "lastRefreshedAt": "2026-10-03",
   "cities": [
     "Kelowna, British Columbia"
   ],
-  "lastFeedCheckAt": "20260907",
+  "lastFeedCheckAt": "20261003",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270906",
@@ -22,7 +22,7 @@
     "status": "review",
     "score": 90,
     "reasons": [
-      "1 map line was repaired — Atlas fixed unusual route geometry before displaying it."
+      "1 route shape needed adjustment before display."
     ],
     "metrics": {
       "validationErrors": 0,
@@ -31,7 +31,11 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 52
     },
-    "checkedAt": "2026-09-07"
+    "checkedAt": "2026-10-03"
   },
-  "timezone": "America/Vancouver"
+  "timezone": "America/Vancouver",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

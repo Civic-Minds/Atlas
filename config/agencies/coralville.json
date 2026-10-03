@@ -7,9 +7,9 @@
     -91.58
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-196/latest.zip",
-  "lastFeedExpiry": "20261230",
-  "lastFeedVersion": "UTC: 20-Aug-2026 22:57",
-  "lastRefreshedAt": "2026-08-27",
+  "lastFeedExpiry": "20270601",
+  "lastFeedVersion": "UTC: 14-Sep-2026 22:58",
+  "lastRefreshedAt": "2026-10-03",
   "region": "Iowa",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-196/latest.zip",
   "bbox": [
@@ -21,16 +21,16 @@
   "cities": [
     "Iowa City, Iowa"
   ],
-  "lastFeedCheckAt": "20260907",
+  "lastFeedCheckAt": "20261003",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261230",
+  "expiredFeedCheckExpiry": "20270601",
   "feedQuality": {
     "status": "review",
     "score": 80,
     "reasons": [
-      "1 schedule-data warning — Atlas found a minor issue while reading the schedule.",
-      "1 map line was repaired — Atlas fixed unusual route geometry before displaying it."
+      "1 minor schedule issue found while reading the feed.",
+      "1 route shape needed adjustment before display."
     ],
     "metrics": {
       "validationErrors": 0,
@@ -39,7 +39,11 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 10
     },
-    "checkedAt": "2026-08-27"
+    "checkedAt": "2026-10-03"
   },
-  "timezone": "America/Chicago"
+  "timezone": "America/Chicago",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

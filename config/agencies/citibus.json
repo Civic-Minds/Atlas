@@ -14,29 +14,35 @@
   ],
   "feedUrl": "http://data.trilliumtransit.com/gtfs/lubbock-tx-us/lubbock-tx-us.zip",
   "region": "Texas",
-  "lastFeedExpiry": "20270207",
-  "lastFeedVersion": "UTC: 31-Aug-2026 23:33",
-  "lastRefreshedAt": "2026-09-07",
+  "lastFeedExpiry": "20270305",
+  "lastFeedVersion": "UTC: 02-Oct-2026 22:55",
+  "lastRefreshedAt": "2026-10-03",
   "cities": [
     "Lubbock, Texas"
   ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-569/mdb-569-202607150103/mdb-569-202607150103.zip",
-  "lastFeedCheckAt": "20260907",
+  "lastFeedCheckAt": "20261003",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20270207",
+  "expiredFeedCheckExpiry": "20270305",
   "timezone": "America/Chicago",
   "feedQuality": {
-    "status": "healthy",
-    "score": 100,
-    "reasons": [],
+    "status": "review",
+    "score": 80,
+    "reasons": [
+      "2 route have stops whose frequency differs from the overall route schedule."
+    ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 0,
-      "routeHeadwayMismatches": 0,
-      "featureCount": 37
+      "routeHeadwayMismatches": 2,
+      "featureCount": 24
     },
-    "checkedAt": "2026-09-07"
-  }
+    "checkedAt": "2026-10-03"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

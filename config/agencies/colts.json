@@ -10,12 +10,12 @@
   "region": "Pennsylvania",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-4553/latest.zip",
   "lastFeedExpiry": "20261231",
-  "lastFeedVersion": "20260903",
-  "lastRefreshedAt": "2026-09-07",
+  "lastFeedVersion": "20260914",
+  "lastRefreshedAt": "2026-10-03",
   "cities": [
     "Scranton, Pennsylvania"
   ],
-  "lastFeedCheckAt": "20260907",
+  "lastFeedCheckAt": "20261003",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
@@ -24,7 +24,7 @@
     "status": "review",
     "score": 70,
     "reasons": [
-      "3 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+      "3 route shapes needed adjustment before display."
     ],
     "metrics": {
       "validationErrors": 0,
@@ -33,6 +33,10 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 79
     },
-    "checkedAt": "2026-09-07"
-  }
+    "checkedAt": "2026-10-03"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }
