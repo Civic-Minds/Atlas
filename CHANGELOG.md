@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **Atlas now has a full `/about` page**: the project, data approach, feedback path, and links to Research are available without opening the map panel.
 - **Beta now groups Night Service and Frequent Service under a full Research page**, keeping research tools out of the main map header while giving each topic a dedicated entry point.
 - **Refreshed the agency catalog and rebuilt the public map data release so route data and PMTiles stay aligned.**
 - **Added Mexico City Metro to the generated agency catalogs so the merged beta/dev agency is included in mode-specific browsing.**

@@ -103,6 +103,7 @@ export const FEATURES = {
 } as const;
 
 export const FEATURE_ROUTES = {
+  about: '/about',
   research: '/research',
   frequentService: {
     map: '/research/frequent-service',

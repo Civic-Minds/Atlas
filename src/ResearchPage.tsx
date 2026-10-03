@@ -37,7 +37,10 @@ export default function ResearchPage() {
             </span>
             <span>Atlas <span className="font-normal text-[var(--text-dim)]">by Civic Minds</span></span>
           </a>
-          <a href="/" className="text-sm font-bold text-[var(--text-muted)] hover:text-[var(--text-primary)]">Back to map</a>
+          <div className="flex items-center gap-4 text-sm font-bold text-[var(--text-muted)]">
+            <a href={FEATURE_ROUTES.about} className="hover:text-[var(--text-primary)]">About Atlas</a>
+            <a href="/" className="hover:text-[var(--text-primary)]">Back to map</a>
+          </div>
         </header>
 
         <section className="max-w-3xl py-20 sm:py-28">
