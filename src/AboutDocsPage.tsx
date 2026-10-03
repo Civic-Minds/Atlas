@@ -29,6 +29,7 @@ export default function AboutDocsPage() {
               <a className="block text-[var(--accent)] hover:underline" href="#frequency">Frequency calculations</a>
               <a className="block text-[var(--accent)] hover:underline" href="#service-classification">Service classification</a>
               <a className="block text-[var(--accent)] hover:underline" href="#map-architecture">Map architecture</a>
+              <a className="block text-[var(--accent)] hover:underline" href="#corrections">Data corrections</a>
               <a className="block text-[var(--accent)] hover:underline" href="#quality">Quality and limitations</a>
               <a className="block text-[var(--accent)] hover:underline" href="#validation">Validation and audit work</a>
               <a className="block text-[var(--accent)] hover:underline" href="#glossary">Glossary</a>
@@ -159,6 +160,20 @@ export default function AboutDocsPage() {
               <li>stop coordinates and route-specific service metrics.</li>
             </ul>
             <p>This separation keeps the initial map responsive and lets Atlas update schedule data independently from the application interface.</p>
+          </Section>
+
+          <Section id="corrections" title="Data correction and provenance">
+            <p>Atlas does not treat every source feed as ready for publication. Corrections happen at different layers, and the layer matters:</p>
+            <ul className="list-disc pl-5 space-y-1">
+              <li><strong className="text-[var(--text-primary)]">Parsing repairs</strong> address malformed source structures, such as broken or interleaved route geometry, only when the repair is unambiguous and validated.</li>
+              <li><strong className="text-[var(--text-primary)]">Normalization rules</strong> reconcile feed conventions, synthesize usable directions, remove duplicate patterns, and separate branches or short turns that would otherwise distort analysis.</li>
+              <li><strong className="text-[var(--text-primary)]">Rider-facing corrections</strong> remove known non-revenue trips, placeholder destinations, duplicate source service, or other values that do not represent what passengers can use.</li>
+              <li><strong className="text-[var(--text-primary)]">Agency-specific overrides</strong> handle a documented feed problem that cannot safely become a global rule. These are scoped to the affected agency, route, shape, or source snapshot.</li>
+              <li><strong className="text-[var(--text-primary)]">Quality annotations</strong> preserve problems that should not be silently “fixed,” such as missing shapes, stale feeds, route-frequency mismatches, or unresolved geometry.</li>
+            </ul>
+            <p>Every correction should have a reason, a narrow scope, and a validation check. A general rule is only preferred when it has been tested against unrelated agencies; otherwise Atlas uses a targeted exception rather than risking a larger silent change.</p>
+            <p>Corrections are tied to the source data that required them. When a new upstream feed arrives, Atlas rechecks whether the correction is still needed instead of treating the old exception as permanent truth.</p>
+            <p>Where a correction affects interpretation, Atlas can show a public note on the relevant agency or route. The goal is not to make imperfect data look perfect; it is to make the processing decision visible and bounded.</p>
           </Section>
 
           <Section title="Why values can differ across the interface">
