@@ -1,5 +1,6 @@
 import { ArrowLeft, ExternalLink } from 'lucide-react';
 import type { ReactNode } from 'react';
+import { ATLAS_MODE, FEATURES } from '../shared/config';
 
 function Section({ id, title, children }: { id?: string; title: string; children: ReactNode }) {
   return (
@@ -20,6 +21,12 @@ function Subsection({ title, children }: { title: string; children: ReactNode })
 }
 
 export default function AboutDocsPage() {
+  const isPublicDocs = ATLAS_MODE === 'public';
+  const showBetaFeatures = FEATURES.beta;
+  const showLive = FEATURES.live;
+  const showHistory = FEATURES.history;
+  const showResearch = FEATURES.researchApps;
+
   return (
     <main className="min-h-screen bg-[var(--bg-app)] text-[var(--text-primary)] px-5 py-8 sm:px-8">
       <div className="max-w-5xl mx-auto">
@@ -28,7 +35,7 @@ export default function AboutDocsPage() {
         </a>
 
         <div className="mt-10 lg:grid lg:grid-cols-[12rem_minmax(0,42rem)] lg:gap-12 lg:items-start">
-          <nav aria-label="Documentation sections" className="mb-8 rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-btn)] p-4 lg:sticky lg:top-8 lg:mb-0 lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0 lg:pt-10">
+          <nav aria-label="Documentation sections" className="mb-8 rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-btn)] p-4 lg:sticky lg:top-8 lg:mb-0 lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0 lg:pt-14">
             <p className="text-xs font-black uppercase tracking-wide text-[var(--text-muted)] mb-2">On this page</p>
             <div className="grid gap-1.5 text-sm lg:block lg:space-y-2">
               <a className="block text-[var(--accent)] hover:underline" href="#overview">Overview</a>
@@ -40,6 +47,7 @@ export default function AboutDocsPage() {
               <a className="block text-[var(--accent)] hover:underline" href="#service-classification">Service</a>
               <a className="block text-[var(--accent)] hover:underline" href="#map-architecture">Mapping</a>
               <a className="block text-[var(--accent)] hover:underline" href="#corrections">Corrections</a>
+              <a className="block text-[var(--accent)] hover:underline" href="#pipeline-changes">Change process</a>
               <a className="block text-[var(--accent)] hover:underline" href="#quality">Quality</a>
               <a className="block text-[var(--accent)] hover:underline" href="#validation">Validation</a>
               <a className="block text-[var(--accent)] hover:underline" href="#glossary">Glossary</a>
@@ -48,10 +56,35 @@ export default function AboutDocsPage() {
 
           <article className="space-y-8">
           <header>
-            <h1 className="text-3xl font-black tracking-tight">Documentation</h1>
+            <div className="flex flex-wrap items-center gap-3">
+              <h1 className="text-3xl font-black tracking-tight">Documentation</h1>
+              <span className={`rounded-full border px-2 py-0.5 text-[10px] font-black uppercase tracking-wide ${isPublicDocs ? 'border-[var(--accent-border)] text-[var(--accent)]' : 'border-amber-500/40 text-amber-500'}`}>
+                {isPublicDocs ? 'Public' : 'Beta'}
+              </span>
+            </div>
             <p className="mt-3 text-base leading-relaxed text-[var(--text-dim)]">
               A technical overview of how Atlas turns published transit data into analysed, verified, and mapped service information.
             </p>
+            <div className="mt-4 flex flex-wrap items-center gap-2 text-xs" aria-label="Documentation environment">
+              <span className="font-black uppercase tracking-wide text-[var(--text-muted)]">Docs version</span>
+              <div className="inline-flex items-center gap-0.5 rounded-lg border border-[var(--border-primary)] bg-[var(--bg-btn)] p-0.5 font-bold">
+              <a
+                href="https://www.transitatlas.fyi/about/docs"
+                aria-current={isPublicDocs ? 'page' : undefined}
+                className={`rounded-md px-2.5 py-1 transition-colors ${isPublicDocs ? 'bg-[var(--accent)] text-white' : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'}`}
+              >
+                Public
+              </a>
+              <a
+                href="https://beta.transitatlas.fyi/about/docs"
+                aria-current={!isPublicDocs ? 'page' : undefined}
+                className={`rounded-md px-2.5 py-1 transition-colors ${!isPublicDocs ? 'bg-amber-500 text-white' : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'}`}
+              >
+                Beta
+              </a>
+              </div>
+              <span className="text-[var(--text-muted)]">Beta may include experimental features and broader research data.</span>
+            </div>
           </header>
 
           <Section id="overview" title="Overview">
@@ -60,9 +93,9 @@ export default function AboutDocsPage() {
             <p>It turns published transit schedules into map layers, route summaries, stop-level frequency estimates, and network comparisons.</p>
             <h3 className="font-black text-[var(--text-primary)]">Design principles</h3>
             <ul className="list-disc pl-5 space-y-1">
-              <li><strong className="text-[var(--text-primary)]">One shared data platform:</strong> route, stop, freshness, history, and live-data capabilities are processed once and exposed through stable outputs for the tools that use them.</li>
+              <li><strong className="text-[var(--text-primary)]">One shared data platform:</strong> route, stop, and freshness data are processed into stable outputs for the tools that use them. Additional history and real-time outputs appear only where those features are enabled.</li>
               <li><strong className="text-[var(--text-primary)]">Honest measurements:</strong> when a period does not contain enough sustained service to support a meaningful frequency claim, Atlas flags that limitation instead of tuning the calculation until it produces a plausible-looking number.</li>
-              <li><strong className="text-[var(--text-primary)]">Preserved history:</strong> historical feeds are treated as dated snapshots. Missing or unusable periods remain unavailable rather than being duplicated or inferred.</li>
+              {showHistory && <li><strong className="text-[var(--text-primary)]">Preserved history:</strong> historical feeds are treated as dated snapshots. Missing or unusable periods remain unavailable rather than being duplicated or inferred.</li>}
               <li><strong className="text-[var(--text-primary)]">Stable contracts:</strong> new information is added alongside existing outputs when possible, so a downstream tool does not silently reinterpret previously published data.</li>
             </ul>
           </Section>
@@ -74,10 +107,11 @@ export default function AboutDocsPage() {
               <li><strong className="text-[var(--text-primary)]">Frequency analysis:</strong> compare service by day type, time period, route branch, direction, and stop.</li>
               <li><strong className="text-[var(--text-primary)]">Data quality:</strong> expose source dates, stale schedules, review states, corrections, geometry repairs, and known limitations.</li>
               <li><strong className="text-[var(--text-primary)]">Specialized service:</strong> represent on-demand and GTFS-Flex service as zones or virtual stops where a fixed route is the wrong model.</li>
-              <li><strong className="text-[var(--text-primary)]">Additional analysis:</strong> support fares, historical schedule comparisons, night-service research, frequent-service research, and stop-to-stop corridor analysis.</li>
-              <li><strong className="text-[var(--text-primary)]">Reusable data infrastructure:</strong> publish stable route, stop, tile, history, and freshness contracts that other transit tools can consume.</li>
+              <li><strong className="text-[var(--text-primary)]">Additional analysis:</strong> support fares and other focused analyses. {showResearch ? 'Beta also exposes historical schedule comparisons, night-service research, frequent-service research, and other validation surfaces.' : 'Research and validation surfaces are documented in the Beta version of this page.'}</li>
+              <li><strong className="text-[var(--text-primary)]">Reusable data infrastructure:</strong> publish stable route, stop, tile, and freshness contracts that other transit tools can consume.</li>
             </ul>
             <p>Some surfaces are public, some are in beta, and some remain research or validation tools. The same processed data model supports all of them without making every experimental feature part of the main map.</p>
+            {showLive && <p>Live is a separate GTFS-Realtime path: it polls configured agency feeds for vehicle positions, trip updates, and selected observed headways. Coverage is route-specific, may be partial, and is never treated as proof that the scheduled frequency calculation is current.</p>}
           </Section>
 
           <Section id="data-model" title="Model">
@@ -86,8 +120,8 @@ export default function AboutDocsPage() {
               <li><strong className="text-[var(--text-primary)]">Schedule data</strong> describes what an agency publishes for planned service.</li>
               <li><strong className="text-[var(--text-primary)]">Processed metrics</strong> describe what Atlas derives from that schedule, such as headways, tiers, coverage, and route branches.</li>
               <li><strong className="text-[var(--text-primary)]">Provenance and quality</strong> describe the source, freshness, review state, and corrections attached to a result.</li>
-              <li><strong className="text-[var(--text-primary)]">Historical data</strong> describes documented past schedule periods rather than pretending current data is historical.</li>
-              <li><strong className="text-[var(--text-primary)]">Real-time data</strong>, where supported, describes observed vehicle or adherence information and is never silently mixed with schedule frequency.</li>
+              {showHistory && <li><strong className="text-[var(--text-primary)]">Historical data</strong> describes documented past schedule periods rather than pretending current data is historical.</li>}
+              {showLive && <li><strong className="text-[var(--text-primary)]">Real-time data</strong> describes observed vehicle or adherence information and is never silently mixed with schedule frequency.</li>}
             </ul>
             <p>This separation is one of Atlas’s core design principles: a useful number is not automatically a trustworthy number unless its source, meaning, and time period are clear.</p>
           </Section>
@@ -97,11 +131,12 @@ export default function AboutDocsPage() {
             <ul className="list-disc pl-5 space-y-1">
               <li><strong className="text-[var(--text-primary)]">Frequency:</strong> current scheduled cadence, period filters, route variants, stop-level metrics, and map colouring.</li>
               <li><strong className="text-[var(--text-primary)]">Fares:</strong> base adult fare information derived from GTFS Fares V1 or V2 when available, with explicitly labelled manual fallbacks where a feed is incomplete.</li>
-              <li><strong className="text-[var(--text-primary)]">History:</strong> selected agencies with usable archived GTFS periods, showing documented service changes without fabricating missing years.</li>
+              {showHistory && <li><strong className="text-[var(--text-primary)]">History:</strong> selected agencies with usable archived GTFS periods, showing documented service changes without fabricating missing years.</li>}
               <li><strong className="text-[var(--text-primary)]">On-demand service:</strong> GTFS-Flex and source-backed service areas represented separately from fixed-route frequency so booking-based service is not misread as a normal route.</li>
-              <li><strong className="text-[var(--text-primary)]">Research:</strong> focused views for night service, frequent-service criteria, fares, transfers, system maps, and other questions that need source review before becoming general map features.</li>
+              {showResearch && <li><strong className="text-[var(--text-primary)]">Research:</strong> focused datasets and analyses for night service, frequent-service criteria, fares, transfers, system maps, and other questions that need source review before becoming general map features.</li>}
             </ul>
-            <p>Research outputs can become product features only after their definitions, coverage, and source quality are clear. This is why Atlas sometimes contains a capability in the data or code before exposing it in the primary navigation.</p>
+            {showHistory && <p>The History eligibility rule requires at least 10 distinct snapshot years. Historical route identity is matched by exact route name by default, with explicit aliases for documented redesigns.</p>}
+            {showResearch && <p>Research outputs can become product features only after their definitions, coverage, and source quality are clear. This is why Atlas sometimes contains a capability in the data or code before exposing it in the primary navigation.</p>}
           </Section>
 
           <Section id="data-flow" title="Pipeline">
@@ -116,16 +151,16 @@ export default function AboutDocsPage() {
             </ol>
             <p>Atlas does not require an account or a user database. The deployed frontend and public transit artifacts are separate so data refreshes do not require a frontend release.</p>
             <Subsection title="GTFS inputs">
-              <p>Atlas consumes GTFS Schedule as a relational set of required tables, calendar rules, geometry, and optional extensions. It joins those records into a normalized analysis model before producing map and service metrics:</p>
+              <p>Atlas consumes GTFS Schedule as a relational set of core tables, calendar rules, optional geometry, and optional extensions. It joins those records into a normalized analysis model before producing map and service metrics:</p>
               <ul className="list-disc pl-5 space-y-1">
                 <li><code className="text-[var(--text-primary)]">routes.txt</code> identifies services and their public route names;</li>
-                <li><code className="text-[var(--text-primary)]">trips.txt</code> identifies individual scheduled runs and directions;</li>
+                <li><code className="text-[var(--text-primary)]">trips.txt</code> identifies individual scheduled runs and, when supplied, their directions;</li>
                 <li><code className="text-[var(--text-primary)]">stop_times.txt</code> supplies the scheduled arrivals and departures;</li>
                 <li><code className="text-[var(--text-primary)]">stops.txt</code> supplies names and coordinates; and</li>
                 <li><code className="text-[var(--text-primary)]">calendar.txt</code>, <code className="text-[var(--text-primary)]">calendar_dates.txt</code>, and feed dates determine when trips operate.</li>
               </ul>
               <p>Shapes and route metadata describe where a service runs, but the frequency numbers come from scheduled departures. A visually long route is not automatically a frequent route.</p>
-              <p>Atlas also reads <code className="text-xs text-[var(--text-primary)]">feed_info.txt</code>, <code className="text-xs text-[var(--text-primary)]">shapes.txt</code>, and GTFS-Flex extensions where present. A feed without <code className="text-xs text-[var(--text-primary)]">shapes.txt</code> can still contain usable schedule data, so Atlas may fall back to stop-to-stop straight-line geometry while marking the geometry limitation. Missing route identifiers, broken trip relationships, invalid coordinates, or no usable route output are more serious and can prevent publication.</p>
+              <p>Atlas also reads <code className="text-xs text-[var(--text-primary)]">feed_info.txt</code>, <code className="text-xs text-[var(--text-primary)]">shapes.txt</code>, and GTFS-Flex extensions where present. A feed without <code className="text-xs text-[var(--text-primary)]">shapes.txt</code> can still contain usable schedule data, so Atlas falls back to stop-to-stop straight-line geometry and records a validation warning. Missing route identifiers, broken trip relationships, invalid coordinates, or no usable route output are more serious and can prevent publication.</p>
               <p>GTFS-Flex adds inputs including <code className="text-xs text-[var(--text-primary)]">locations.geojson</code>, <code className="text-xs text-[var(--text-primary)]">location_groups.txt</code>, <code className="text-xs text-[var(--text-primary)]">location_group_stops.txt</code>, and <code className="text-xs text-[var(--text-primary)]">booking_rules.txt</code>. Atlas validates those separately rather than forcing them through fixed-route assumptions.</p>
             </Subsection>
             <Subsection title="Schedule selection">
@@ -135,16 +170,23 @@ export default function AboutDocsPage() {
             </Subsection>
             <Subsection title="Routes, branches, and shapes">
               <p>A public route name can represent several patterns: branches, short turns, directions, destinations, or trips that only operate during part of the day. Atlas keeps those patterns distinct long enough to calculate meaningful service, then presents them through route and branch summaries.</p>
-              <p>For map display, Atlas selects representative geometry for the active service patterns. For analysis, it avoids allowing a short branch or garage trip to distort the frequency of the main route.</p>
+              <p>For map display, Atlas selects representative geometry for the active service patterns. For analysis, it avoids allowing a short branch or clearly excluded trip pattern to distort the frequency of the main route.</p>
               <p>This is why the line shown on the map, the cadence shown on a route card, and the cadence used by a frequency filter can be related but not identical measurements.</p>
             </Subsection>
           </Section>
 
           <Section id="frequency" title="Frequency">
-            <p>Atlas calculates scheduled headways: the time between consecutive departures. It reads departure times from <code className="text-[var(--text-primary)]">stop_times.txt</code> rather than trusting optional feed-level headway fields, which are often missing or inconsistent.</p>
-            <p>Departures are grouped by route, direction, stop, day type, and service period. For a group of departures, Atlas sorts the consecutive gaps and uses the median gap as the typical scheduled headway.</p>
+            <p>Atlas calculates scheduled headways: the time between consecutive departures. It reads departure times from <code className="text-[var(--text-primary)]">stop_times.txt</code> and expands valid frequency-based trips from <code className="text-[var(--text-primary)]">frequencies.txt</code>; it does not treat that optional table as a single route-level answer.</p>
+            <p>Departures are grouped by route, direction, headsign, physical shape, stop, day type, and service period. For a group of departures, Atlas sorts the consecutive gaps and uses the median gap as the typical scheduled headway.</p>
             <p>The median is intentionally resistant to outliers. One unusually long gap should not make an otherwise regular 10-minute service look like 30-minute service.</p>
             <p>Period calculations are kept inside their own time windows. Atlas does not silently borrow an all-day average to fill a period with sparse or missing service.</p>
+            <p>Atlas keeps separate projections for display cadence, filter cadence, branch cadence, shared-section cadence, and stop-specific cadence. A stop or shared section can have a different value from the whole route because it may combine branches or cover only part of the route.</p>
+            <p>Period output also carries separate longest-gap and sustained-service signals. These diagnostics can mark a median as unrepresentative without changing the stored median or silently filling the gap with an all-day value.</p>
+            <Subsection title="Directions, branches, and route qualification">
+              <p>Atlas calculates each scheduled direction separately before deciding whether a route qualifies. It uses the feed’s <code className="text-xs text-[var(--text-primary)]">direction_id</code> when present. If that field is missing, trips fall into the default direction group, Atlas records a warning, and the resulting headway may be understated because opposite directions may have been merged.</p>
+              <p>Within a direction, Atlas also separates different headsigns and physical shapes so branches and short turns do not get mixed into one artificially frequent series. Surface routes keep the longest meaningful shape groups for analysis, with a trip-volume fallback when length alone would discard most of the service; rail-like routes use their longest available shape. These are analysis choices, not claims that the feed’s direction labels are always correct.</p>
+              <p>Numeric frequency-tier qualification is direction-aware. For a period or all-day threshold, Atlas uses the worst qualifying direction or branch so a route does not pass solely because one direction is frequent while the other is materially slower. For example, a 10-minute direction paired with a 30-minute direction does not qualify the route for a 10-minute threshold; it can qualify for a 30-minute threshold if the other route-level checks also pass. The separate “All” service view is broader by design: it can show service in only one direction or service that has not qualified for a numeric tier. A route/day with a direction that has no sustained, real-tier pattern can also be marked irregular as a whole and hidden by the default irregular-service filter.</p>
+            </Subsection>
             <h3 className="font-black text-[var(--text-primary)]">Band qualification and tolerance</h3>
             <p>Atlas tests the tightest band first and requires enough departures to cover the analyzed span at that band. For a target of <code className="text-xs text-[var(--text-primary)]">T</code> minutes, the minimum trip count is based on <code className="text-xs text-[var(--text-primary)]">ceil(span ÷ T)</code>.</p>
             <p>A gap at or below <code className="text-xs text-[var(--text-primary)]">T</code> passes directly. A slightly longer gap can count as a near miss when it is no more than <code className="text-xs text-[var(--text-primary)]">T + max(5 minutes, 15% of T)</code>. Only <code className="text-xs text-[var(--text-primary)]">max(2, floor(30% × number of gaps))</code> near misses may use that allowance. A gap beyond the tolerance, or too many near misses, disqualifies the band and Atlas tests the next slower one.</p>
@@ -167,12 +209,12 @@ export default function AboutDocsPage() {
                 </tbody>
               </table>
             </div>
-            <p>The near-miss limit is only one part of the rule: Atlas rounds the 30% count down and never allows fewer than two tolerated gaps. Rail uses the same tolerance logic; its beta-specific difference is the set of available target bands.</p>
-            <p>This allowance handles ordinary schedule rounding and small deviations without turning a genuinely uneven route into a frequent one. A large gap is still a failure even if the median looks good, and the final tier is the fastest band that survives the full check.</p>
+            <p>The near-miss limit is only one part of the rule: Atlas rounds the 30% count down and never allows fewer than two tolerated gaps. Rail uses the same tolerance logic, with additional 5- and 8-minute target bands in the processing model; those bands are not separate options in the main map filter.</p>
+            <p>This allowance is intended to handle ordinary schedule rounding and small deviations without turning a genuinely uneven route into a frequent one. A large gap is still a failure even if the median looks good, and the final tier is the fastest band that survives the full check. Atlas is still auditing how often the tolerance is used in real feeds before treating that behaviour as a settled quality result.</p>
             <div className="rounded-xl border border-[var(--border-primary)] bg-[var(--bg-btn)] p-3">
               <p className="font-bold text-[var(--text-primary)]">Frequency bands</p>
               <p className="mt-1">The main Frequency control currently exposes service at or below 10, 15, 20, 30, and 60 minutes. Service slower than 60 minutes, or service that does not qualify for a sustained band, appears as infrequent in that surface.</p>
-              <p className="mt-2">Beta also processes some rail service against additional 5- and 8-minute thresholds, and its separate Frequent Service research views use 15- and 30-minute criteria. Those are distinct from the main map’s general-purpose filter.</p>
+              {showResearch && <p className="mt-2">The separate Frequent Service research view uses 15- and 30-minute criteria. Those criteria are distinct from the main map’s general-purpose filter.</p>}
             </div>
             <Subsection title="Sustained service and long gaps">
               <p>A median alone can hide an important gap. For example, departures might be every 30 minutes during a period except for one three-hour hole. Atlas keeps additional coverage and longest-gap signals so a route can be marked as uneven instead of presenting the median as the whole story.</p>
@@ -215,8 +257,10 @@ export default function AboutDocsPage() {
               <ul className="list-disc pl-5 space-y-1">
                 <li>route geometry with serialized service metrics;</li>
                 <li>a lightweight stop index for searching and stop-specific views;</li>
+                <li>trip and stop-metadata sidecars used for live matching, stop facts, and downstream consumers;</li>
+                {showResearch && <li>separate corridor and research indexes where those surfaces are enabled;</li>}
                 <li>vector tiles for efficient map rendering; and</li>
-                <li>agency metadata describing coverage, freshness, sources, and quality status.</li>
+              <li>agency metadata describing coverage, freshness, sources, and quality status.</li>
               </ul>
               <p>The artifacts contain processed public transit information. They do not contain user accounts, private analytics records, feed credentials, or the raw maintainer workflow.</p>
             </Subsection>
@@ -238,6 +282,20 @@ export default function AboutDocsPage() {
             <p>Where a correction affects interpretation, Atlas can show a public note on the relevant agency or route. The goal is not to make imperfect data look perfect; it is to make the processing decision visible and bounded.</p>
           </Section>
 
+          <Section id="pipeline-changes" title="How pipeline changes are made">
+            <p>Changes to the pipeline are treated as changes to published data, not only as code changes. The first step is to identify the narrowest affected layer: one agency, a feed family, or shared processing used by every agency.</p>
+            <ol className="list-decimal pl-5 space-y-1">
+              <li>Reproduce the problem against the source feed and identify the first stage where the result diverges.</li>
+              <li>Add a regression test for the reported case and a legitimate case that a broader fix could accidentally change.</li>
+              <li>Prefer an agency-specific override or narrow transform when the evidence does not support a global rule.</li>
+              <li>For a shared pipeline change, run the full test suite, dry-run the affected feed, and compare the output before and after.</li>
+              <li>Check at least six additional trusted agencies, spanning two countries when applicable, and investigate every unexplained output change.</li>
+              <li>Record the agencies, commands, output diff, and validation result with the change before it is committed.</li>
+            </ol>
+            <p>Publishing is a separate step. A refresh or processing command can write directly to the live public data bucket, so it requires explicit maintainer approval. New or materially changed map data also needs the required tile rebuild, upload, and coverage verification; a successful code build alone does not prove that the public artifacts are correct.</p>
+            <p>When a source feed changes, Atlas rechecks the correction against the new source. A past exception is not treated as permanent truth, and a newer file is not promoted merely because its date is newer if it fails processing or validation.</p>
+          </Section>
+
           <Section id="quality" title="Quality">
             <p>Atlas checks feeds for structural and service-data problems, including missing or unusual geometry, schedule inconsistencies, stale sources, and route-frequency anomalies. Some known source problems are corrected or annotated before publication.</p>
             <p>Feed-specific corrections are kept separate from the general methodology so a fix for one agency does not silently change every agency’s results.</p>
@@ -250,7 +308,7 @@ export default function AboutDocsPage() {
               <li><strong className="text-[var(--text-primary)]">Corrected data:</strong> agency and route cards can say “We corrected this data,” with an explanation of the known feed problem and technical issue links when available.</li>
               <li><strong className="text-[var(--text-primary)]">Outdated schedules:</strong> route cards identify schedules that may no longer be current, including the schedule end date when known. The detail panel shows the last successful refresh and subsequent checks where those dates are available.</li>
               <li><strong className="text-[var(--text-primary)]">New schedule data:</strong> recently published feeds can be marked as “New schedule data is being verified” until Atlas checks them for missing service and quality problems.</li>
-              <li><strong className="text-[var(--text-primary)]">Feed quality:</strong> beta quality controls distinguish Healthy, Review, Degraded, and Unusable feeds. The reasons can include validation warnings, adjusted shapes, route-versus-stop frequency differences, expired schedules, or no usable route output, along with the date checked.</li>
+              {showBetaFeatures && <li><strong className="text-[var(--text-primary)]">Feed quality:</strong> beta quality controls distinguish Healthy, Review, Degraded, and Unusable feeds. The reasons can include validation warnings, adjusted shapes, route-versus-stop frequency differences, expired schedules, or no usable route output, along with the date checked.</li>}
               <li><strong className="text-[var(--text-primary)]">Route-level warnings:</strong> a route can carry a separate warning when its displayed geometry needed adjustment or its service data needs interpretation.</li>
             </ul>
             <p>Not every internal exclusion becomes a separate banner. Clearly unusable rows can be removed during processing without overwhelming the map with implementation details, while known user-facing corrections, stale schedules, review states, and material quality problems remain labelled where they affect interpretation.</p>
@@ -279,7 +337,7 @@ export default function AboutDocsPage() {
             <p>Overrides are rechecked when the upstream feed changes. If a new feed no longer contains the route or pattern that required an exception, Atlas flags the old override as potentially resolved. If the issue remains, the maintainer must re-verify it against the new source rather than assuming that yesterday’s correction still applies.</p>
             <h3 className="font-black text-[var(--text-primary)]">5. GTFS-Flex and on-demand checks</h3>
             <p>Flex service is validated separately because its data model is different from fixed-route service. Atlas checks the required Flex files, location groups, group-to-stop links, service areas, virtual stops, booking rules, and Flex stop-time rows. An unlinked location group or a feed with no usable Flex trips fails review rather than becoming an empty-looking service zone.</p>
-            <p>Atlas then keeps the result in the beta on-demand view rather than calculating ordinary route frequency from it. Where a feed is incomplete or unavailable, Atlas uses an official geometry source only when the relationship is documented and visible. A missing polygon is not silently replaced with an invented boundary.</p>
+            <p>Atlas keeps the result in a separate on-demand view rather than calculating ordinary route frequency from it. Where a feed is incomplete or unavailable, Atlas uses an official geometry source only when the relationship is documented and visible. A missing polygon is not silently replaced with an invented boundary.</p>
             <h3 className="font-black text-[var(--text-primary)]">6. Independent source review</h3>
             <p>Some facts cannot be established from GTFS alone. Atlas separately reviews official agency pages, fare documents, transfer policies, service-area maps, system maps, and agency guides. Each review records what source was checked, what claim it supports, and whether the source is current enough to use.</p>
             <p>This is especially important for fares, transfers, system maps, and on-demand coverage. A feed can prove that a route exists, but it may not prove the current adult fare, whether a transfer is free, whether a service area is still active, or whether a map is an official current map. Those claims stay provisional or are excluded when the evidence is not strong enough.</p>
