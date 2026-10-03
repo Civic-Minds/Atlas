@@ -39,23 +39,12 @@ export default function AboutDocsPage() {
             <p className="text-xs font-black uppercase tracking-wide text-[var(--text-muted)] mb-2">On this page</p>
             <div className="mb-4 border-b border-[var(--border-primary)] pb-4 lg:border-b-0 lg:pb-0" aria-label="Documentation environment">
               <p className="mb-1.5 text-[10px] font-black uppercase tracking-wide text-[var(--text-muted)]">Docs version</p>
-              <div className="inline-flex items-center gap-0.5 rounded-lg border border-[var(--border-primary)] bg-[var(--bg-btn)] p-0.5 text-xs font-bold">
-                <a
-                  href="https://www.transitatlas.fyi/about/docs"
-                  aria-current={isPublicDocs ? 'page' : undefined}
-                  className={`rounded-md px-2.5 py-1 transition-colors ${isPublicDocs ? 'bg-[var(--accent)] text-white' : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'}`}
-                >
-                  Public
-                </a>
-                <a
-                  href="https://beta.transitatlas.fyi/about/docs"
-                  aria-current={!isPublicDocs ? 'page' : undefined}
-                  className={`rounded-md px-2.5 py-1 transition-colors ${!isPublicDocs ? 'bg-amber-500 text-white' : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'}`}
-                >
-                  Beta
-                </a>
-              </div>
-              <p className="mt-1.5 text-[10px] leading-snug text-[var(--text-muted)]">Beta may include experimental features and broader research data.</p>
+              <span className={`inline-flex rounded-lg border px-3 py-1 text-xs font-bold ${isPublicDocs ? 'border-[var(--accent-border)] text-[var(--accent)]' : 'border-amber-500/40 text-amber-500'}`}>
+                {isPublicDocs ? 'Public documentation' : 'Beta documentation'}
+              </span>
+              <p className="mt-1.5 text-[10px] leading-snug text-[var(--text-muted)]">
+                {isPublicDocs ? 'Covers features available on the public Atlas deployment.' : 'Includes Beta features and research surfaces enabled for this deployment.'}
+              </p>
             </div>
             <div className="grid gap-1.5 text-sm lg:block lg:space-y-2">
               <a className="block text-[var(--accent)] hover:underline" href="#overview">Overview</a>
