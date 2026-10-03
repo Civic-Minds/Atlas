@@ -1,6 +1,7 @@
-import { ArrowLeft, ExternalLink } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { ATLAS_MODE, FEATURES } from '../shared/config';
+import SiteContact from './components/SiteContact';
 import SiteFooter from './components/SiteFooter';
 
 function Section({ id, title, children }: { id?: string; title: string; children: ReactNode }) {
@@ -359,18 +360,12 @@ export default function AboutDocsPage() {
             <p><strong className="text-[var(--text-primary)]">PMTiles:</strong> A single archive format that lets the map request only the vector-tile regions it needs.</p>
           </Section>
 
-          <Section title="Technical questions and feedback">
-            <p>Questions about the methodology, a suspected data problem, or a transit agency’s coverage are welcome. Feedback is most useful when it identifies the agency, route, schedule period, and specific result that needs review.</p>
-          </Section>
+          <SiteContact title="Technical questions and feedback" subject="Atlas Feedback" linkLabel="Contact us with a question or correction">
+            Questions about the methodology, a suspected data problem, or a transit agency’s coverage are welcome. Feedback is most useful when it identifies the agency, route, schedule period, and specific result that needs review.
+          </SiteContact>
 
           <Section title="Privacy">
             <p>You can browse Atlas without an account. Read the <a className="text-[var(--accent)] hover:underline" href="/privacy">Privacy Policy</a> to learn about analytics and browser preferences.</p>
-            <a
-              href="mailto:hey@ryanisnota.pro?subject=Atlas%20Feedback"
-              className="inline-flex items-center gap-2 font-bold text-[var(--accent)] hover:underline"
-            >
-              Contact us with a question or correction <ExternalLink className="w-3.5 h-3.5" />
-            </a>
           </Section>
 
           <SiteFooter />

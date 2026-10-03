@@ -1,5 +1,6 @@
 import { ArrowLeft } from 'lucide-react';
 import type { ReactNode } from 'react';
+import SiteContact from './components/SiteContact';
 import SiteFooter from './components/SiteFooter';
 
 type LegalDocument = 'terms' | 'privacy';
@@ -49,7 +50,9 @@ export default function LegalPage({ document }: { document: LegalDocument }) {
               <p>Atlas and its service providers may process information in Canada, the United States, or other countries where those providers operate.</p>
             </Section>
             <Section title="Changes to this policy"><p>We may update this policy when Atlas’s practices change. The date at the top shows when the current version took effect.</p></Section>
-            <Section title="Contact"><p>Privacy questions can be sent to <a className="text-[var(--accent)] hover:underline" href={CONTACT_HREF}>hey@ryanisnota.pro</a>.</p></Section>
+            <SiteContact title="Contact" subject="Atlas Privacy or Terms" linkLabel="hey@ryanisnota.pro">
+              Privacy questions can be sent to us, including requests to access, correct, or delete personal information.
+            </SiteContact>
           </> : <>
             <p>Atlas is a free public transit frequency map and analysis service by Civic Minds. It processes public transit schedule data into map views, service-frequency measurements, and related tools.</p>
             <Section title="Using Atlas">
@@ -65,7 +68,9 @@ export default function LegalPage({ document }: { document: LegalDocument }) {
             <Section title="Availability and warranties"><p>Atlas is provided free of charge and on an “as-is” and “as-available” basis. We do not promise uninterrupted availability, complete coverage, current data, accurate results, or continued support for any particular feature or agency.</p></Section>
             <Section title="Changes and termination"><p>We may change, suspend, or discontinue Atlas or any feature at any time. We may also update these Terms when the service or its practices change. The date at the top shows when the current version took effect.</p></Section>
             <Section title="Regional rights"><p>Depending on where you live, consumer, privacy, and other legal rights may apply in addition to these Terms. Nothing in these Terms is intended to remove rights that cannot legally be waived.</p></Section>
-            <Section title="Contact"><p>Questions about these Terms can be sent to <a className="text-[var(--accent)] hover:underline" href={CONTACT_HREF}>hey@ryanisnota.pro</a>.</p></Section>
+            <SiteContact title="Contact" subject="Atlas Privacy or Terms" linkLabel="hey@ryanisnota.pro">
+              Questions about these Terms can be sent to us.
+            </SiteContact>
           </>}
           <SiteFooter />
         </article>
