@@ -1,5 +1,6 @@
 import { ArrowLeft } from 'lucide-react';
 import type { ReactNode } from 'react';
+import SiteFooter from './components/SiteFooter';
 
 type LegalDocument = 'terms' | 'privacy';
 
@@ -66,7 +67,7 @@ export default function LegalPage({ document }: { document: LegalDocument }) {
             <Section title="Regional rights"><p>Depending on where you live, consumer, privacy, and other legal rights may apply in addition to these Terms. Nothing in these Terms is intended to remove rights that cannot legally be waived.</p></Section>
             <Section title="Contact"><p>Questions about these Terms can be sent to <a className="text-[var(--accent)] hover:underline" href={CONTACT_HREF}>hey@ryanisnota.pro</a>.</p></Section>
           </>}
-          <footer className="border-t border-[var(--border-primary)] pt-5 text-[var(--text-dim)]"><a className="text-[var(--accent)] hover:underline" href={privacy ? '/terms' : '/privacy'}>View {privacy ? 'Terms of Service' : 'Privacy Policy'}</a></footer>
+          <SiteFooter />
         </article>
       </div>
     </main>

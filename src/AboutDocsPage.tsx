@@ -1,6 +1,7 @@
 import { ArrowLeft, ExternalLink } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { ATLAS_MODE, FEATURES } from '../shared/config';
+import SiteFooter from './components/SiteFooter';
 
 function Section({ id, title, children }: { id?: string; title: string; children: ReactNode }) {
   return (
@@ -372,11 +373,7 @@ export default function AboutDocsPage() {
             </a>
           </Section>
 
-          <footer className="border-t border-[var(--border-primary)] pt-5 text-sm text-[var(--text-dim)]">
-            <a className="text-[var(--accent)] hover:underline" href="/terms">Terms of Service</a>
-            <span className="mx-2">·</span>
-            <a className="text-[var(--accent)] hover:underline" href="/privacy">Privacy Policy</a>
-          </footer>
+          <SiteFooter />
           </article>
         </div>
       </div>

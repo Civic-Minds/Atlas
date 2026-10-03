@@ -19,6 +19,6 @@ describe('LegalPage', () => {
     expect(screen.getByRole('heading', { name: 'Terms of Service' })).toBeTruthy();
     expect(screen.getByRole('heading', { name: 'Transit data and accuracy' })).toBeTruthy();
     expect(screen.getByRole('heading', { name: 'Regional rights' })).toBeTruthy();
-    expect(screen.getByRole('link', { name: 'View Privacy Policy' })).toHaveAttribute('href', '/privacy');
+    expect(screen.getByRole('link', { name: 'Privacy Policy' })).toHaveAttribute('href', '/privacy');
   });
 });
