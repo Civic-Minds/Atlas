@@ -148,6 +148,26 @@ export default function AboutDocsPage() {
             <h3 className="font-black text-[var(--text-primary)]">Band qualification and tolerance</h3>
             <p>Atlas tests the tightest band first and requires enough departures to cover the analyzed span at that band. For a target of <code className="text-xs text-[var(--text-primary)]">T</code> minutes, the minimum trip count is based on <code className="text-xs text-[var(--text-primary)]">ceil(span ÷ T)</code>.</p>
             <p>A gap at or below <code className="text-xs text-[var(--text-primary)]">T</code> passes directly. A slightly longer gap can count as a near miss when it is no more than <code className="text-xs text-[var(--text-primary)]">T + max(5 minutes, 15% of T)</code>. Atlas allows at most the larger of two near misses or 30% of the analyzed gaps. A gap beyond that tolerance, or too many near misses, disqualifies the band and Atlas tests the next slower one.</p>
+            <p>The five-minute floor means the effective percentage is larger for the faster bands:</p>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead className="text-[var(--text-primary)]">
+                  <tr>
+                    <th className="py-1 pr-4 font-bold">Target band</th>
+                    <th className="py-1 pr-4 font-bold">Near-miss limit</th>
+                    <th className="py-1 font-bold">Effective allowance</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td className="py-1 pr-4">10 minutes</td><td className="py-1 pr-4">15 minutes</td><td className="py-1">50%</td></tr>
+                  <tr><td className="py-1 pr-4">15 minutes</td><td className="py-1 pr-4">20 minutes</td><td className="py-1">33%</td></tr>
+                  <tr><td className="py-1 pr-4">20 minutes</td><td className="py-1 pr-4">25 minutes</td><td className="py-1">25%</td></tr>
+                  <tr><td className="py-1 pr-4">30 minutes</td><td className="py-1 pr-4">35 minutes</td><td className="py-1">17%</td></tr>
+                  <tr><td className="py-1 pr-4">60 minutes</td><td className="py-1 pr-4">69 minutes</td><td className="py-1">15%</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>The near-miss limit is only one part of the rule: Atlas still caps the number of near misses at the larger of two gaps or 30% of the analyzed gaps. Rail uses the same tolerance logic; its beta-specific difference is the set of available target bands.</p>
             <p>This allowance handles ordinary schedule rounding and small deviations without turning a genuinely uneven route into a frequent one. A large gap is still a failure even if the median looks good, and the final tier is the fastest band that survives the full check.</p>
             <div className="rounded-xl border border-[var(--border-primary)] bg-[var(--bg-btn)] p-3">
               <p className="font-bold text-[var(--text-primary)]">Frequency bands</p>
