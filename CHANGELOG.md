@@ -47,55 +47,31 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Restored Frequent Service's dedicated 15/30-minute and 7am–7pm/7am–midnight controls, map export access, and strict period filtering.**
 - **Night Service route rows now open the normal route card and highlight the selected route on the map.**
 - **Night Service now retains agencies skipped during feed refreshes, keeping its directory aligned with the routes shown on the map ([#516](https://github.com/Civic-Minds/Atlas/issues/516)).**
-- **Frequent Service story-map captions now stay inside the viewport instead of being clipped below the sticky map.**
+- **Frequent Service’s story map now keeps its narrative and map usable across viewport sizes**: captions stay inside the viewport, the map sits below the global header, the layout remains full-width and responsive, and explanatory panels stay visible beside the map.
 - **Clarified the story introduction to distinguish 127 North American agencies with usable map evidence from the 5 unavailable records in the 132-agency North American sample.**
 - **Split the Frequent Service map and explainer into separate routes**: the map is at `/research/frequent-service` and the story is at `/research/frequent-service/story`.
 - **Reframed the research story as a plain-English lesson about coverage, service span, frequency, and the cost of missing a vehicle.**
 - **Reworded the story-map cards so each filtering step explains what it means for riders.**
 - **Corrected LA Metro’s recorded wording to match the map’s 15-minute weekday Frequent Service Network label.**
 - **Rewrote the research introduction around the rider’s real question**: how long will the next vehicle take?
-- **Reduced the empty space after the scroll-driven story map so the next research section arrives sooner.**
-- **Added more bottom breathing room to the story-map caption so it matches the card’s visual padding.**
 - **Added a rapid hard-cut montage of tightly cropped excerpts from 12 real agency-published system-map pages to make the research introduction feel grounded in the source material.**
 - **Corrected the first map-audit findings after visual review**: TTC is no-definition, while STM is qualitative-only.
-- **Kept the story map narrative below the opening viewport so the research introduction is read first.**
-- **Made the research story map span the viewport and fit its available height responsively.**
-- **Moved the sticky research map below the global header so it no longer overlaps the Atlas branding.**
-- **Removed the extra published-definition label from the story map card.**
-- **Rebalanced the story map layout so the explanatory copy stays visible beside the map at narrower desktop widths.**
-- **Made the research story map full-width with overlay narrative panels.**
-- **Kept each story-stage narrative panel in the same top-left position while the map changes underneath.**
-- **Removed the 15- and 30-minute selector from the story map narrative panel.**
-- **Kept the story map pinned while switching the final 15- and 30-minute comparisons so the network does not jump with the scroll position.**
-- **Stabilized the story-map transition so every stage keeps the same geography, line weight, and persistent network context while the active routes fade between states.**
-- **Simplified the story-map captions so the scroll narrative is easier to follow.**
+- **Frequent Service’s story map now keeps the narrative stable while the map changes**: stage panels stay anchored, the map remains pinned, comparisons do not jump, labels stay concise, and transitions preserve geography, line weight, and network context.
 - **Added a larger Toronto network story that progressively narrows from all routes to regular daytime and 15- or 30-minute service as readers scroll.**
-- **Constrained the research story body and Method text to the same readable line length as the rest of the page.**
-- **Simplified the Frequent Service examples into one-column editorial blocks with only the city, takeaway, explanation, and evidence line.**
-- **Added a guided Frequent Service research story with source-backed North American examples, threshold context, and a handoff into the interactive map.**
-- **Frequent Service research exposes its two frequency thresholds inline for faster comparison.**
-- **Frequent Service's 30-minute view now distinguishes ≤15-minute routes from the 16–30-minute group using the shared frequency colours and line weights.**
-- **Frequent Service research exposes its two service spans inline for faster comparison.**
+- **Frequent Service’s research story now presents its evidence and thresholds as one readable narrative**: examples use editorial blocks, methodology and source context stay within the shared content width, and the 15/30-minute thresholds, service spans, and colour groups are visible inline.
 - **Fixed a misleading “outside the active frequency filter” notice when selecting routes from the Frequent Service research map.**
 - **Night Service now builds its visible directory from the same route features as the map, so stale index data cannot hide agencies that are shown.**
-- **Selected routes now preserve their normal headway-based opacity for background context while keeping the selected branch highlighted.**
+- **Selected-route highlighting now keeps the chosen line clear without hiding context**: the surrounding network stays visible but dimmed, overlapping lines do not cover the selected route, the selected route still respects the active frequency filter, and background opacity remains meaningful ([#557](https://github.com/Civic-Minds/Atlas/issues/557), [#558](https://github.com/Civic-Minds/Atlas/issues/558), [#560](https://github.com/Civic-Minds/Atlas/issues/560)).
 - **Shared trunk service now qualifies independently from slower terminal extensions, so branch cards and map filtering do not hide frequent core service.**
 - **Rail lines now remain visible when they overlap bus routes on the map.**
 - **MARTA line names now use consistent casing, so “RED” displays as “Red” beside “Gold” ([#561](https://github.com/Civic-Minds/Atlas/issues/561)).**
-- **Selecting a route now fades the surrounding network more clearly so the selected line is easier to follow ([#560](https://github.com/Civic-Minds/Atlas/issues/560)).**
-- **Selected routes now stay visible over overlapping lines, and frequency highlighting no longer treats schedule-coverage gaps as slower stop service ([#557](https://github.com/Civic-Minds/Atlas/issues/557), [#558](https://github.com/Civic-Minds/Atlas/issues/558)).**
 - **Public map tiles no longer get stuck behind cached release errors, so route lines can load after a data release is published.**
-- **Zoom guidance now shares the bottom baseline with the map status pills without overlapping the status area, with shorter instruction text.**
-- **Map zoom guidance now stays readable longer and clears the bottom status badges instead of overlapping them ([#556](https://github.com/Civic-Minds/Atlas/issues/556)).**
+- **Zoom guidance now uses one compact, viewport-centred pill treatment**: it stays readable, clears the status badges, and no longer overlaps the map controls ([#556](https://github.com/Civic-Minds/Atlas/issues/556), [#559](https://github.com/Civic-Minds/Atlas/issues/559)).
 - **Route-card sparklines now stay stable when hovering a destination without data for the active period.**
 - **Expanded schedule charts now sit over the current map with a direction selector instead of hiding the underlying screen.**
-- **Selecting a route now fades the surrounding network again so the selected line is clearly distinguishable.**
-- **Regional and broad map views now report readiness when PMTiles route data is available, so performance measurements do not wait for deferred agency details.**
+- **Regional and broad map views now report readiness as soon as usable PMTiles route data is available**: performance measurements no longer wait for deferred agency details, while detailed agency downloads remain deferred until city-level zoom.
 - **Map tiles and route data now publish together only after the release passes coverage checks, preventing frequency filters and route cards from reading different data generations.**
-- **Selected routes no longer bypass the active map frequency filter.**
-- **Route clicks now use a tighter hit area and consistent pill-style zoom guidance, reducing false “zoom in” prompts near neighboring routes.**
-- **Regional and broad map views now expose a readiness signal when PMTiles route data is usable, so load measurements do not wait for deferred agency details.**
-- **Regional and broad map views now defer detailed agency downloads until city-level zoom, reducing unnecessary network requests while keeping PMTiles overview routes visible.**
+- **Route clicks now use tighter hit areas and the shared zoom-guidance pill**, reducing false “zoom in” prompts near neighbouring routes.
 - **Beta now includes an opt-in Data Saver mode that limits background agency loading and defers route details until selection.**
 - **Combined BART’s north/south directional variants into one suggested route per line.**
 - **Beta users can turn on a persistent map legend from Appearance to keep frequency and route-state meanings visible while exploring.**
@@ -108,12 +84,10 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Map controls now show when basemap tiles are loading, zoom notices no longer duplicate the map interaction, and Live vehicle markers are smaller on dense maps.**
 - **PMTiles coverage verification now retries initially missing agencies with a bounded sequential scan before failing the refresh**, while sampling each agency's center tile so small networks are not missed.
 - **Local development no longer requests the unavailable version endpoint or queries missing map layers during hover.**
-- **Map zoom guidance is now centered on the actual viewport ([#559](https://github.com/Civic-Minds/Atlas/issues/559)).**
 - **Feed security:** restored five agency refresh sources through credential-free public Mobility Database mirrors; Aix-en-Provence, Marseille, Lyon, and Saint-Nazaire remain paused pending verified network-specific sources.
 - **Live vehicle group headers now include the agency's place when available, reducing ambiguity between similarly named agencies.**
-- **Agency filter selection now keeps Atlas’s existing active-control colors while adding a clearer outline and weight.**
+- **Agency and filter controls now use one shared visual system**: active states, pill shapes, outlines, button treatment, and High Contrast styling stay consistent across agency, hidden-route, degraded-feed, Live, and History filters.
 - **Map export dialogs now use one primary action, remove the redundant title field and cancel button, and show the correct preparation state for download versus sharing.**
-- **Zoom guidance now uses the same compact pill treatment as other map notices.**
 - **Disabled the paused Live vehicle feature in beta and local builds so its pill and coverage claims do not appear while Live is unavailable.**
 - **Social previews now use a wide 1200×630 Atlas image so shared links render as proper cards on LinkedIn.**
 - **Benchmarking now recognizes completed loads on older public builds that lack the current performance mark.**
@@ -127,12 +101,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Fixed the map export control spacing by grouping it with the zoom and location controls.**
 - **Added beta map-image export with stronger Atlas branding and full CARTO/OpenStreetMap attribution for shareable 1600×900 PNGs.**
 - **Local development now serves historical route-adherence data again.**
-- **Make history archive reads use a stable IPv4 connection path, reducing transient R2 timeouts during rebuilds.**
-- **Make history rebuilds more reliable by limiting archive downloads, reducing dropped snapshots during temporary storage timeouts.**
-- **History backfills now preserve valid source years and route names during aggregation, and support local dry runs**: unchanged years can qualify agencies for long-term History, route names containing slashes are retained, and dry runs do not publish archives or snapshots to R2.
-- **MBTA’s official archive can now be processed into a local ten-year History and feed-quality report using usable dated variants without publishing to R2.**
-- **NORTA’s official media archive can now be processed into a local ten-year History backfill report without publishing to R2.**
-- **Agency filters now use the same active and inactive pill styling as the Live and History controls.**
+- **History backfills and reports are now more reliable and reusable**: archive reads use a stable connection path, downloads are bounded, valid source years and route names are preserved, and local dry runs—including MBTA and NORTA reports—do not publish archives or snapshots to R2.
 - **Agency browsing now supports combining Live, History, Outdated, and region filters, with a visible hint that filters can be combined.**
 - **History agency browsing now uses the shared borderless grouped-list design**: it matches the standard agency browser and only shows agencies with 10+ years of historical data.
 - **Recovered the current North County Transit District GTFS source so NCTD no longer relies on an expired archive.**
@@ -150,22 +119,12 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Replaced History's "Explore"/"Recent" section labels (sounded like "recently added") with a real Filter control — the agency list is one flat list by default, and the filter lets you narrow to just full- or partial-history agencies using the same plain-language wording already used for the rider-facing badge elsewhere.**
 - **History now shows how BART's actual trip time has changed year to year, on the routes where the stations and alignment stayed the same long enough to compare fairly (pilot for a future rail-wide rollout).**
 - **Williamsburg Area Transit Authority paratransit now appears as a source-backed on-demand zone with feed-derived service hours.**
-- **On-demand zone cards now use source-derived service hours, identify the selected zone, and avoid presenting a separate official-source footer.**
-- **On-demand cards now use neutral Atlas source labels instead of rider-facing booking or boundary language.**
-- **On-demand service areas now follow their published operating days and time windows.**
-- **On-demand selections now use the standard Atlas card design and shareable `ondemand=` URL state.**
-- **On-demand overlays now respect selected agencies, days, and time periods instead of appearing outside their published service windows.**
+- **On-demand cards and overlays now use the shared Atlas interaction model**: source-derived hours, neutral labels, standard card styling, selected-zone URL state, and published agency/day/period visibility all stay consistent.
 - **Expired-schedule notices now explain the service area and tracking history in plain sentences.**
-- **Clicking a GTFS-Flex pickup location now opens a dedicated on-demand service card instead of the regular agency card.**
-- **On-demand pickup cards now explain that virtual stops belong to a booked service rather than a fixed route.**
-- **On-demand cards now distinguish Atlas validation status from the transit agency’s service name.**
-- **Beta on-demand service details now use a compact agency-card row instead of a large nested panel.**
-- **Beta/dev on-demand mode now includes source-backed GRT Route 79 zones and HSR myRide stop locations without adding either service to public coverage.**
-- **Beta and dev now include an On-demand mode filter for the curated service-area prototypes; public production remains unchanged.**
-- **On-demand agency cards now use a dedicated booking-first layout instead of resembling fixed-route cards.**
+- **On-demand selections now explain what the service is and how to use it**: pickup locations open dedicated cards, virtual stops are identified as booked service, Atlas validation stays separate from the agency name, and beta details use a compact agency row.
+- **Beta and dev now expose curated on-demand prototypes without changing public coverage**: GRT Route 79 and HSR myRide are available through the On-demand mode filter with booking-first agency cards.
 - **Optional history and refresh metadata now load only when their UI is used.**
 - **Frequent Service now has a matching icon wherever it appears beside Night Service.**
-- **Local history reports now preserve route metadata and normalize quoted feed dates before publication.**
 - **Moved the full expired-feed notice wording, including refresh history, into the shared notice copy file.**
 - **Passed the 511 API key to scheduled refreshes and read-only feed audits so those feeds keep working automatically.**
 - **Outdated-feed notices now explain schedule periods, check history, and refresh timing in clearer language.**
@@ -190,39 +149,25 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Corrected the research classifier so generic slower-service standards are not presented as named frequent definitions, and added the actual 60-minute examples.**
 - **Made the Frequent Service research story interactive**: select a threshold and agency to compare the timing, scope, and service context behind the number.
 - **Corrected the Frequent Service story chart to use each agency's slowest published frequent-service period instead of misleading peak-period values.**
-- **Consolidated Frequent Service story source links into one closing Sources section so the examples read as a story instead of a chain of outbound links.**
-- **Made the Frequent Service story methodology readable as a real closing section instead of tiny footer text.**
-- **Removed the unnecessary numbered context cards from the Frequent Service story and replaced them with a direct explanation.**
 - **Reordered the frequent-service threshold chart numerically and highlighted the most common 15-minute value so the graph reads as a scale.**
-- **Reworked the Frequent Service story examples into a readable editorial sequence instead of a dashboard-like card grid.**
-- **Added a beta-only Frequent Service research view for comparing 15- and 30-minute service across selected days and time spans.**
-- **Frequent Service research now reuses the existing mode filter so users can compare frequency by bus, rail, subway, or other modes.**
-- **Frequent Service research keeps the shared Settings panel available for route and feed visibility controls.**
+- **Frequent Service research now reuses the beta map’s shared controls**: users can compare 15- and 30-minute service across selected periods and modes while keeping route and feed visibility settings available.
 - **Extended High contrast colours to selected rows, secondary filters, report actions, and Night Service.**
 - **Route-branch processing now preserves feed branch codes and configured direction names.**
 - **Route frequency cards now explain when a typical cadence has a longer full-period gap.**
-- **Route cards no longer show a route’s own name as its destination when a feed uses the route name as the headsign.**
-- **Expanded route schedules now use the same capitalization as the route card title.**
-- **Route cards no longer invent generic direction names when a feed has not yet supplied a usable destination.**
-- **Limited-service settings now show how many visible routes are affected by the filter.**
-- **Route cards now show each direction's own frequency while keeping route-wide filter eligibility accurate ([#564](https://github.com/Civic-Minds/Atlas/issues/564)).**
+- **Route cards now use feed-provided destination names consistently**: they no longer repeat the route name as a destination or invent generic directions, and expanded schedules match the card title’s capitalization.
+- **Limited-service and period filtering now explain and apply uneven service consistently**: settings show affected-route counts, cards show each direction’s cadence, and route-wide eligibility remains accurate ([#524](https://github.com/Civic-Minds/Atlas/issues/524), [#564](https://github.com/Civic-Minds/Atlas/issues/564)).
 - **Agency-provided BRT and Express classifications now take precedence over generic “Rapid” wording, and extended Express Bus routes remain visible under Bus.**
 - **Vancouver route and stop labels now preserve “SFU” capitalization.**
 - **Nearby route suggestions now show public rail and ferry names as the primary label instead of internal numeric route IDs.**
 - **The hidden-route “All” filter now clears location selections and search text instead of leaving a mixed filter state.**
 - **Hidden-route agency labels and region filters now match Atlas’s normal typography and pill shapes.**
 - **Beta now separates hiding irregular routes from hiding explicitly time-limited service, so regular infrequent routes are not hidden by the new filter.**
-- **Limited-service filtering now hides the whole route when only one direction has limited service, instead of leaving the other direction behind.**
-- **Period views now show routes with limited or one-direction service when irregular routes are not hidden.**
 - **The Mode filter now includes Gondola / Aerial Tram routes, including Portland’s Aerial Tram.**
 - **Agency summaries now say how many routes match filters.**
-- **Period-filtered route cards now show the active period's cadence instead of falling back to an all-day frequency when service is uneven ([#524](https://github.com/Civic-Minds/Atlas/issues/524)).**
-- **Route cards now distinguish limited or irregular service from no service when coverage data shows departures.**
+- **Limited-service and period views now distinguish limited, irregular, and missing service**: routes are filtered as complete units, one-direction service remains visible when appropriate, and cards do not confuse departures with no service.
 - **Removed the unverified combined-frequency number from experimental route-variant notices so opposite directions are not presented as one shared interval.**
 - **Route cards now load public agency details through the site proxy instead of failing on cross-origin data requests.**
-- **Overnight and other period filters now remain active even when Frequency is set to All.**
 - **Preview route clicks now open cards for beta-only agencies instead of showing geometry without agency data.**
-- **Standardized filter buttons across agency, hidden-route, and degraded-feed lists.**
 - **Degraded-feed explanations now use one shared, rider-facing vocabulary across settings and route details.**
 - **Register exo Vallée du Richelieu so route 200 Saint-Hyacinthe–Longueuil can be published in Atlas.**
 - **Settings now loads and shows the hidden-route count alongside its review link.**
@@ -238,17 +183,13 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Added Area Transportation Authority coverage across North Central Pennsylvania, including Punxsutawney's local bus route.**
 - **Added 19 previously uncovered fixed-route agencies across the US and Canada, including Decatur, Charlottesville, Johnson City, Maui, and Medicine Hat.**
 - **Added eight more fixed-route agencies across Iowa, New Mexico, Kentucky, Illinois, Tennessee, Indiana, Arizona, and Washington.**
-- **Mobile Live and History navigation now lives in the More menu so the header controls do not overlap on phone screens.**
-- **Responsive headers now group Night Service and Frequent Service under More when space is tight, keeping map filters visible.**
+- **Mobile navigation now groups Live, History, Night Service, and Frequent Service under More when space is tight**, keeping map filters and header controls visible without overlap.
 - **Public-mode localhost runs now explicitly disable beta-only live, history, and experimental features so local testing matches the public site.**
 - **Experimental route-variant notices are now limited to beta and dev builds until their grouping is validated.**
 - **Loading progress now counts only the current map session's unique networks, so stale local requests cannot inflate the public-mode total.**
-- **The mobile More menu now stays inside the viewport when the button is near the right edge.**
 - **Local public-mode previews now use the same agency visibility as production while keeping feature testing independent.**
-- **Settings descriptions now use consistent, concise wording across sections.**
-- **Filter settings now align directly beneath their section headers without decorative per-setting icons.**
-- **Atlas usage analytics now records high-signal search and filter behavior without collecting typed search text.**
-- **Atlas usage analytics now records agency filtering and agency selections made from search.**
+- **Settings descriptions and filter settings now use consistent wording and alignment across sections**, with controls directly beneath their headers and no decorative per-setting icons.
+- **Atlas usage analytics now records high-signal search, agency filtering, and agency selection behaviour without collecting typed search text.**
 - **Feedback emails now open with a clear writing area before the page URL.**
 - **Removed the unnecessary “Combine filters” helper text from the agency filter row.**
 - **Agency rows no longer show distracting browser tooltips on hover.**
@@ -258,7 +199,6 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Hourly schedule tooltips no longer label every estimate as a 90-minute window when the underlying calculation may use 60 or 90 minutes.**
 - **Deployment mode is now one explicit public/preview/beta/dev setting, keeping labels, agency visibility, and feature access aligned.**
 - **The About Atlas control now matches Settings and reliably toggles the information panel open or closed.**
-- **High contrast mode now applies to agency filter rows like the other filter dropdowns.**
 - **High contrast selections now preserve light-theme surfaces instead of looking like dark-mode rows.**
 - **Off switches now use a light track in the light theme instead of looking enabled or dark.**
 - **Mode filter options now appear selected when the default all-modes state is active.**
