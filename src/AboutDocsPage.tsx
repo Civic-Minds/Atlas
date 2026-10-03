@@ -249,7 +249,7 @@ export default function AboutDocsPage() {
           </Section>
 
           <Section title="Technical questions and feedback">
-            <p>Questions about the methodology, a suspected data problem, or a transit agency’s coverage are welcome. This public page intentionally omits credentials, deployment configuration, and maintainer runbooks.</p>
+            <p>Questions about the methodology, a suspected data problem, or a transit agency’s coverage are welcome. Feedback is most useful when it identifies the agency, route, schedule period, and specific result that needs review.</p>
           </Section>
 
           <Section title="Privacy">
