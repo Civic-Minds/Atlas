@@ -1,6 +1,7 @@
 import type { GeoJSON } from 'geojson';
 import { HSR_MY_RIDE_STOP_FEATURES } from './hsrMyRideStops';
 import { LEAMINGTON_LT_GO_STOP_FEATURES } from './leamingtonLtGoStops';
+import { HAMILTON_TRANS_CAB_SERVICE_AREAS, HAMILTON_TRANS_CAB_SOURCE, HAMILTON_TRANS_CAB_TRANSFER_POINTS } from './transCabServiceArea';
 import { METRO_MICRO_FLEX_FEATURES } from './metroMicroFlexData';
 import { GTFS_FLEX_METADATA } from './metroMicroFlexMetadata';
 import { C_TRAN_CURRENT_FLEX_FEATURES } from './ctranCurrentFlexData';
@@ -138,14 +139,14 @@ export const CYRIDE_EASE_SERVICE_AREA = {
 };
 
 export const HAMILTON_MY_RIDE_SERVICE_AREA = {
-  features: [] as GeoJSON.Feature<GeoJSON.Polygon>[],
-  stopFeatures: HSR_MY_RIDE_STOP_FEATURES,
-  sourceUrl: 'https://www.hamilton.ca/home-neighbourhood/hsr/schedule-route-tools/hsr-myride-demand',
-  sourceLabel: 'HSR myRide service details',
-  sourceRetrievedAt: '2026-09-24',
-  serviceHours: 'On-demand trips operate within Waterdown; booking windows and availability are confirmed in the HSR myRide app or by phone.',
-  bookingUrl: 'https://www.hamilton.ca/home-neighbourhood/hsr/schedule-route-tools/hsr-myride-demand',
-  serviceName: 'myRide Waterdown On-Demand',
+  features: HAMILTON_TRANS_CAB_SERVICE_AREAS,
+  stopFeatures: [...HSR_MY_RIDE_STOP_FEATURES, ...HAMILTON_TRANS_CAB_TRANSFER_POINTS],
+  sourceUrl: HAMILTON_TRANS_CAB_SOURCE.sourceUrl,
+  sourceLabel: `${HAMILTON_TRANS_CAB_SOURCE.sourceLabel}; HSR myRide service details`,
+  sourceRetrievedAt: '2026-10-03',
+  serviceHours: HAMILTON_TRANS_CAB_SOURCE.serviceHours,
+  bookingUrl: HAMILTON_TRANS_CAB_SOURCE.bookingUrl,
+  serviceName: 'Trans-Cab and myRide On-Demand',
 };
 
 export const GRT_ROUTE_79_SERVICE_AREA = {
