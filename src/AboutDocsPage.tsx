@@ -31,7 +31,7 @@ export default function AboutDocsPage() {
               <a className="block text-[var(--accent)] hover:underline" href="#map-architecture">Map architecture</a>
               <a className="block text-[var(--accent)] hover:underline" href="#corrections">Data corrections</a>
               <a className="block text-[var(--accent)] hover:underline" href="#quality">Quality and limitations</a>
-              <a className="block text-[var(--accent)] hover:underline" href="#validation">Validation and audit work</a>
+              <a className="block text-[var(--accent)] hover:underline" href="#validation">Quality checks and verification</a>
               <a className="block text-[var(--accent)] hover:underline" href="#glossary">Glossary</a>
             </div>
           </nav>
@@ -205,16 +205,23 @@ export default function AboutDocsPage() {
             <p>Source feeds can be delayed, incomplete, discontinued, or incorrect. For live alerts, accessibility information, trip planning, and emergency instructions, use the relevant transit agency’s official resources.</p>
           </Section>
 
-          <Section id="validation" title="Validation and audit work">
-            <p>Atlas uses more than a parser-success check. A feed can be valid GTFS and still produce a misleading map, so validation happens at several levels:</p>
-            <ol className="list-decimal pl-5 space-y-1">
-              <li><strong className="text-[var(--text-primary)]">Feed validation:</strong> confirm that required tables, dates, routes, stops, trips, and shapes can be read.</li>
-              <li><strong className="text-[var(--text-primary)]">Processing validation:</strong> check that normalization, direction handling, branch selection, and frequency calculations produce coherent outputs.</li>
-              <li><strong className="text-[var(--text-primary)]">Cross-agency checks:</strong> compare the shared pipeline across different feed structures, modes, and service patterns.</li>
-              <li><strong className="text-[var(--text-primary)]">Source verification:</strong> use official agency pages and published documents for fares, transfers, service areas, and other facts that GTFS alone cannot establish.</li>
-              <li><strong className="text-[var(--text-primary)]">Rendered verification:</strong> check that published artifacts, map layers, route cards, filters, links, and deployment modes agree with the processed data.</li>
-            </ol>
-            <p>When Atlas cannot establish a fact confidently, it keeps the uncertainty visible, narrows the claim, or leaves the feature out rather than filling the gap with an inference.</p>
+          <Section id="validation" title="Quality checks and verification">
+            <p>Atlas treats quality control as a chain of checks, not a single “the feed parsed successfully” result. A feed can be valid GTFS and still create a misleading map, an implausible frequency, or a service area that should not be treated like a fixed route.</p>
+            <h3 className="font-black text-[var(--text-primary)]">1. Source and freshness checks</h3>
+            <p>Before processing, Atlas records where a feed came from, when it was published or retrieved, and which schedule period it represents. Active-feed audits identify expired URLs, stale schedules, duplicate agency submissions, and sources that have changed shape or availability. Official agency sources are preferred, while provider mirrors are treated as fallbacks rather than equivalent evidence.</p>
+            <h3 className="font-black text-[var(--text-primary)]">2. Structural feed checks</h3>
+            <p>The validator checks required GTFS tables and relationships: routes must connect to trips, trips must connect to calendars and stop times, stop times must reference usable stops or supported Flex locations, and shapes must be readable when geometry is expected. Unusual rows are reported instead of being allowed to silently distort the output.</p>
+            <h3 className="font-black text-[var(--text-primary)]">3. Processing and plausibility checks</h3>
+            <p>After normalization, Atlas checks route counts, direction assignment, branch and shape selection, stop coverage, trip durations, headways, service windows, and frequency tiers. It looks for signals such as implausibly short headways, missing geometry, a route disappearing between stages, or a time period claiming service outside its actual operating window.</p>
+            <h3 className="font-black text-[var(--text-primary)]">4. Corrections and exception audits</h3>
+            <p>Known feed problems are corrected only with a narrow, documented rule. Separate audits review agency-specific overrides, hidden routes, geometry repairs, removed non-revenue patterns, placeholder destinations, and other exceptions so a local fix does not become an undocumented global assumption.</p>
+            <h3 className="font-black text-[var(--text-primary)]">5. GTFS-Flex and on-demand checks</h3>
+            <p>Flex service is validated separately because its data model is different from fixed-route service. Atlas checks location groups, service areas, virtual stops, booking windows, and service-day coverage, then keeps the result in the beta on-demand view rather than calculating ordinary route frequency from it. Where a feed is incomplete or unavailable, Atlas uses an official geometry source only when the relationship is documented and visible.</p>
+            <h3 className="font-black text-[var(--text-primary)]">6. Independent source review</h3>
+            <p>Some facts cannot be established from GTFS alone. Atlas separately reviews official agency pages, fare documents, transfer policies, service-area maps, system maps, and rider guides. This is why a research result may be marked confirmed, provisional, unavailable, or excluded instead of being filled from an assumption.</p>
+            <h3 className="font-black text-[var(--text-primary)]">7. Artifact and interface checks</h3>
+            <p>Finally, Atlas checks the published output: route artifacts, stop indexes, vector tiles, metadata, map filters, route cards, links, and deployment modes. The goal is to catch disagreements between the processed data and what a person can actually see or select in the application.</p>
+            <p>These checks do not make the underlying agency data perfect. They make the limits visible, prevent known errors from being amplified, and give each correction or research claim a traceable reason for existing.</p>
           </Section>
 
           <Section id="glossary" title="Glossary">
