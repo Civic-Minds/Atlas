@@ -1,5 +1,5 @@
 import type { GtfsData } from '../../types/gtfs.js';
-import { filterGtfsByAgencyId, filterGtfsByExcludedShortNames, filterGtfsByExcludedTripHeadsigns, filterGtfsByRouteTypes } from '../filterGtfs.js';
+import { filterGtfsByAgencyId, filterGtfsByAgencyName, filterGtfsByExcludedShortNames, filterGtfsByExcludedTripHeadsigns, filterGtfsByRouteTypes } from '../filterGtfs.js';
 import { synthesizeMissingDirections, synthesizeTripHeadsigns } from '../synthesize-directions.js';
 import { mergeLetterSuffixBranches } from '../transforms/letter-suffix-branches.js';
 import { mergeNrtDayNightRoutes, sanitizeNrtFeed } from '../transforms/nrt-day-night.js';
@@ -15,6 +15,7 @@ export type GtfsPreprocess = 'nrt-day-night' | 'nrt-cleanup' | 'london-route-nam
 export interface GtfsTransformOptions {
   agencyId?: string;
   routeTypes?: number[];
+  agencyName?: string;
   preprocess?: GtfsPreprocess;
   excludeRouteShortNames?: string[];
   excludeTripHeadsigns?: string[];
@@ -28,6 +29,10 @@ export function normalizeGtfs(
   options: GtfsTransformOptions | undefined,
   onStatus?: (msg: string) => void,
 ): GtfsData {
+  if (options?.agencyName) {
+    gtfs = filterGtfsByAgencyName(gtfs, options.agencyName);
+    onStatus?.(`Agency filter: ${options.agencyName}`);
+  }
   if (options?.routeTypes?.length) {
     gtfs = filterGtfsByRouteTypes(gtfs, options.routeTypes);
   }

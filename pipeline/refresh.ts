@@ -204,6 +204,7 @@ interface AgencyEntry {
   expiredFeedCheckExpiry?: string | null;
   agencyId?: string;
   routeTypes?: number[];
+  agencyName?: string;
   preprocess?: GtfsPreprocess;
   excludeRouteShortNames?: string[];
   excludeTripHeadsigns?: string[];
@@ -410,6 +411,7 @@ async function refreshAgency(
     primary = await processGtfsBuffer(buf, undefined, {
       routeTypes: agency.routeTypes,
       agencyId: agency.agencyId,
+      agencyName: agency.agencyName,
       preprocess: agency.preprocess,
       excludeRouteShortNames: agency.excludeRouteShortNames,
       excludeTripHeadsigns: agency.excludeTripHeadsigns,
@@ -451,6 +453,7 @@ async function refreshAgency(
       const supp = await processGtfsBuffer(suppBuf, undefined, {
         routeTypes: agency.routeTypes,
         agencyId: agency.agencyId,
+        agencyName: agency.agencyName,
         preprocess: agency.preprocess,
         excludeRouteShortNames: agency.excludeRouteShortNames,
         excludeTripHeadsigns: agency.excludeTripHeadsigns,
