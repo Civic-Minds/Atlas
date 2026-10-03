@@ -56,4 +56,12 @@ describe('analytics startup queue', () => {
     expect(gtag).not.toHaveBeenCalled();
     expect(document.head.querySelector('script[src*="googletagmanager"]')).toBeNull();
   });
+
+  it('does not initialize for an internal test session', async () => {
+    window.history.replaceState({}, '', '/?atlas_internal=1');
+    const { initAnalytics } = await import('../analytics');
+    initAnalytics();
+
+    expect(document.head.querySelector('script[src*="googletagmanager"]')).toBeNull();
+  });
 });
