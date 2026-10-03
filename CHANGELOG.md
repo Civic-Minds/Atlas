@@ -9,8 +9,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Added Mexico City Metro to the generated agency catalogs so the merged beta/dev agency is included in mode-specific browsing.
 - History’s agency browser now uses the shared state/province filters, keeping the growing archive list easy to browse.
 - Route cards now avoid presenting a regular cadence for materially uneven infrequent branches.
-- The map now starts rendering its basemap while route-archive metadata loads, reducing the blank first-load wait on slower connections.
-- The map now renders its background and route layers while the agency catalog loads, reducing the blank first-load wait.
+- **The map now starts rendering its background and route layers while data loads**: basemap and PMTiles rendering no longer wait for route-archive metadata or the agency catalog, reducing the blank first-load wait on slower connections.
 - Live Vehicles now polls configured GTFS-RT feeds through the local API for private, local-only tracking.
 - Hosted builds now fetch public agency artifacts directly from the public data origin instead of routing large files through Vercel.
 - Add current fallback feeds for CTtransit and Westchester Bee-Line so scheduled refreshes can recover when the primary hosts fail.
@@ -34,8 +33,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Added an editorial collage prototype beside the montage so the two source-led introductions can be compared before choosing one.
 - Removed feed-quality badges from the public agency list so technical review states do not look like rider action items.
 - Broad maps now render the simplified overview archive, and public builds no longer preload the disabled Live vehicle map code.
-- Add a history-only verification workflow so archive checks do not rebuild or republish the entire map release.
-- History agency cards now distinguish archived routes from the full current network.
+- **History verification and cards now stay focused on archive data**: archive checks do not rebuild or republish the map release, and route cards distinguish archived routes from the full current network.
 - History year slider interactions no longer pan or zoom the map underneath them.
 - Broad maps now use a smaller simplified route archive and switch to detailed geometry when zoomed in, reducing unnecessary transit-data downloads.
 - Fixed the History pill staying hidden when a history-enabled agency's selected route was rendered from map tiles instead of the in-memory map data.
@@ -108,7 +106,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Calgary overnight routes starting near the end of the window (such as LRT 201 and late-night buses) no longer pass as frequent overnight routes on the map or in the filter, and their cards now indicate limited service for routes running only part of the period instead of borrowing daytime frequencies ([#507](https://github.com/Civic-Minds/Atlas/issues/507)).
 - Fixed search doing nothing while an agency's route list was already open anywhere in the app — the search box's underlying value could get stuck indefinitely behind other page activity like the map re-rendering ([#495](https://github.com/Civic-Minds/Atlas/issues/495)).
 - Map controls now show when basemap tiles are loading, zoom notices no longer duplicate the map interaction, and Live vehicle markers are smaller on dense maps.
-- PMTiles coverage verification now retries initially missing agencies with a bounded sequential scan before failing the refresh.
+- **PMTiles coverage verification now retries initially missing agencies with a bounded sequential scan before failing the refresh**, while sampling each agency's center tile so small networks are not missed.
 - Local development no longer requests the unavailable version endpoint or queries missing map layers during hover.
 - Map zoom guidance is now centered on the actual viewport ([#559](https://github.com/Civic-Minds/Atlas/issues/559)).
 - **Feed security:** restored five agency refresh sources through credential-free public Mobility Database mirrors; Aix-en-Provence, Marseille, Lyon, and Saint-Nazaire remain paused pending verified network-specific sources.
@@ -120,10 +118,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Social previews now use a wide 1200×630 Atlas image so shared links render as proper cards on LinkedIn.
 - Benchmarking now recognizes completed loads on older public builds that lack the current performance mark.
 - The initial map load no longer includes the Live Vehicles/Deck.gl module graph, reducing first-load JavaScript for the common map view.
-- PMTiles coverage checks now recheck initially missing agencies sequentially, preventing valid small agencies from blocking an otherwise complete release.
 - Added a local performance page for comparing public, beta, and dev load timings.
 - Beta Settings now separate appearance, map, data and performance, and filter controls into clear sections.
-- PMTiles coverage checks now include each agency's center tile so small networks cannot be missed by sparse sampling.
 - Removed the empty app separator and unified bottom-map pill typography for clearer controls and attribution.
 - Removed the separate agency example tabs; agency examples will be shown through map states instead.
 - Aligned the first narrative panel with the map corner and removed the redundant map-stage pill.
@@ -133,16 +129,12 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Local development now serves historical route-adherence data again.
 - Make history archive reads use a stable IPv4 connection path, reducing transient R2 timeouts during rebuilds.
 - Make history rebuilds more reliable by limiting archive downloads, reducing dropped snapshots during temporary storage timeouts.
-- History backfill reports now record valid source years separately from route-change snapshots, so unchanged years can still qualify an agency for long-term History.
-- History builds now include archived route names containing slashes, so those snapshots are not dropped during aggregation.
-- History backfills can now be dry-run locally, producing reusable reports without publishing archives or snapshots to R2.
+- **History backfills now preserve valid source years and route names during aggregation, and support local dry runs**: unchanged years can qualify agencies for long-term History, route names containing slashes are retained, and dry runs do not publish archives or snapshots to R2.
 - MBTA’s official archive can now be processed into a local ten-year History and feed-quality report using usable dated variants without publishing to R2.
 - NORTA’s official media archive can now be processed into a local ten-year History backfill report without publishing to R2.
 - Agency filters now use the same active and inactive pill styling as the Live and History controls.
 - Agency browsing now supports combining Live, History, Outdated, and region filters, with a visible hint that filters can be combined.
-- History agency rows now use the exact shared agency-browser styling.
-- History agency rows now match the borderless agency browser styling.
-- History agency browsing now uses the standard grouped list and only exposes agencies with 10+ years of historical data.
+- **History agency browsing now uses the shared borderless grouped-list design**: it matches the standard agency browser and only shows agencies with 10+ years of historical data.
 - Recovered the current North County Transit District GTFS source so NCTD no longer relies on an expired archive.
 - Recovered the City of Guelph’s current GTFS source so Guelph Transit no longer relies on an expired archive.
 - Recovered EMTA’s current GTFS source through February 2027 so Erie schedule data no longer relies on an expired archive.
