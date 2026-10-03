@@ -11,6 +11,10 @@ on:
         required: false
         type: string
 
+concurrency:
+  group: gtfs-refresh
+  cancel-in-progress: false
+
 permissions:
   contents: write
   pull-requests: write
@@ -36,12 +40,14 @@ jobs:
 
       - name: Refresh agency feeds
         run: |
-          if [ -n "${{ inputs.agencies }}" ]; then
-            npm run refresh -- ${{ inputs.agencies }}
+          if [ -n "$AGENCIES" ]; then
+            read -r -a agency_args <<< "$AGENCIES"
+            npm run refresh -- "${agency_args[@]}"
           else
             npm run refresh
           fi
         env:
+          AGENCIES: ${{ inputs.agencies }}
           R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
           R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
           R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
@@ -83,15 +89,6 @@ jobs:
         env:
           R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
 
-      - name: Publish verified data release
-        run: npm run publish-data-release
-        env:
-          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
-          R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
-          R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
-          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
-          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
-
       # NOT gated on inputs.agencies: this always processes the entire
       # atlas-archive/history/ tree (~12k files) regardless of which agencies
       # were just refreshed -- it's the exact step that crashed on
@@ -104,5 +101,16 @@ jobs:
           R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
           R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
           R2_ARCHIVE_BUCKET_NAME: ${{ secrets.R2_ARCHIVE_BUCKET_NAME }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+
+      # Only make the new PMTiles release public after every derived data
+      # artifact, including History, has rebuilt successfully.
+      - name: Publish verified data release
+        run: npm run publish-data-release
+        env:
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
+          R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}

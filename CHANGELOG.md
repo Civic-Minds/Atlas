@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **GTFS refreshes now avoid overlapping runs and publish the new map release only after History rebuilds successfully**, so a partial pipeline failure cannot point the public app at incomplete derived data.
 - **Atlas now has a full `/about` page**: the project, data approach, feedback path, and links to Research are available without opening the map panel.
 - **Beta now groups Night Service and Frequent Service under a full Research page**, keeping research tools out of the main map header while giving each topic a dedicated entry point.
 - **Refreshed the agency catalog and rebuilt the public map data release so route data and PMTiles stay aligned.**
