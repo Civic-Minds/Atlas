@@ -13,30 +13,31 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
 export default function AboutDocsPage() {
   return (
     <main className="min-h-screen bg-[var(--bg-app)] text-[var(--text-primary)] px-5 py-8 sm:px-8">
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-5xl mx-auto">
         <a href="/" className="inline-flex items-center gap-2 text-sm font-bold text-[var(--accent)] hover:underline">
           <ArrowLeft className="w-4 h-4" /> Back to Atlas
         </a>
 
-        <article className="mt-10 space-y-8">
+        <div className="mt-10 lg:grid lg:grid-cols-[12rem_minmax(0,42rem)] lg:gap-12 lg:items-start">
+          <nav aria-label="Documentation sections" className="mb-8 rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-btn)] p-4 lg:sticky lg:top-8 lg:mb-0 lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0">
+            <p className="text-xs font-black uppercase tracking-wide text-[var(--text-muted)] mb-2">On this page</p>
+            <div className="grid gap-1.5 text-sm lg:block lg:space-y-2">
+              <a className="block text-[var(--accent)] hover:underline" href="#data-flow">Data flow</a>
+              <a className="block text-[var(--accent)] hover:underline" href="#frequency">Frequency calculations</a>
+              <a className="block text-[var(--accent)] hover:underline" href="#service-classification">Service classification</a>
+              <a className="block text-[var(--accent)] hover:underline" href="#map-architecture">Map architecture</a>
+              <a className="block text-[var(--accent)] hover:underline" href="#quality">Quality and limitations</a>
+              <a className="block text-[var(--accent)] hover:underline" href="#glossary">Glossary</a>
+            </div>
+          </nav>
+
+          <article className="space-y-8">
           <header>
             <h1 className="text-3xl font-black tracking-tight">Documentation</h1>
             <p className="mt-3 text-base leading-relaxed text-[var(--text-dim)]">
               A technical overview of Atlas’s data, methodology, and map architecture. This explains the public behaviour without requiring access to the source repository.
             </p>
           </header>
-
-          <nav aria-label="Documentation sections" className="rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-btn)] p-4">
-            <p className="text-xs font-black uppercase tracking-wide text-[var(--text-muted)] mb-2">On this page</p>
-            <div className="grid gap-1.5 text-sm sm:grid-cols-2">
-              <a className="text-[var(--accent)] hover:underline" href="#data-flow">Data flow</a>
-              <a className="text-[var(--accent)] hover:underline" href="#frequency">Frequency calculations</a>
-              <a className="text-[var(--accent)] hover:underline" href="#service-classification">Service classification</a>
-              <a className="text-[var(--accent)] hover:underline" href="#map-architecture">Map architecture</a>
-              <a className="text-[var(--accent)] hover:underline" href="#quality">Quality and limitations</a>
-              <a className="text-[var(--accent)] hover:underline" href="#glossary">Glossary</a>
-            </div>
-          </nav>
 
           <Section title="What Atlas is">
             <p>Atlas is a client-side transit analysis application for comparing scheduled service across agencies and cities.</p>
@@ -122,7 +123,8 @@ export default function AboutDocsPage() {
             <span className="mx-2">·</span>
             <a className="text-[var(--accent)] hover:underline" href="/privacy">Privacy Policy</a>
           </footer>
-        </article>
+          </article>
+        </div>
       </div>
     </main>
   );
