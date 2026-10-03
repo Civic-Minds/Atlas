@@ -111,6 +111,10 @@ export default function AboutDocsPage() {
               <li><code className="text-[var(--text-primary)]">calendar</code>, <code className="text-[var(--text-primary)]">calendar_dates</code>, and feed dates determine when trips operate.</li>
             </ul>
             <p>Shapes and route metadata describe where a service runs, but the frequency numbers come from scheduled departures. A visually long route is not automatically a frequent route.</p>
+            <h3 className="font-black text-[var(--text-primary)]">Technical inputs and fallbacks</h3>
+            <p>Atlas reads the standard schedule tables directly: <code className="text-xs text-[var(--text-primary)]">routes.txt</code>, <code className="text-xs text-[var(--text-primary)]">trips.txt</code>, <code className="text-xs text-[var(--text-primary)]">stop_times.txt</code>, <code className="text-xs text-[var(--text-primary)]">stops.txt</code>, <code className="text-xs text-[var(--text-primary)]">calendar.txt</code>, <code className="text-xs text-[var(--text-primary)]">calendar_dates.txt</code>, <code className="text-xs text-[var(--text-primary)]">shapes.txt</code>, and <code className="text-xs text-[var(--text-primary)]">feed_info.txt</code> where those files are present. Missing or malformed inputs do not all have the same consequence.</p>
+            <p>For example, a feed without <code className="text-xs text-[var(--text-primary)]">shapes.txt</code> can still contain usable schedule data, so Atlas may fall back to stop-to-stop straight-line geometry while marking the geometry limitation. Missing route identifiers, broken trip relationships, invalid coordinates, or no usable route output are more serious and can prevent publication.</p>
+            <p>GTFS-Flex adds a different group of inputs, including <code className="text-xs text-[var(--text-primary)]">locations.geojson</code>, <code className="text-xs text-[var(--text-primary)]">location_groups.txt</code>, <code className="text-xs text-[var(--text-primary)]">location_group_stops.txt</code>, and <code className="text-xs text-[var(--text-primary)]">booking_rules.txt</code>. Atlas validates those separately rather than forcing them through fixed-route assumptions.</p>
           </Section>
 
           <Section title="Choosing the active schedule">
@@ -269,6 +273,7 @@ export default function AboutDocsPage() {
 
           <Section title="Technical questions and feedback">
             <p>Questions about the methodology, a suspected data problem, or a transit agency’s coverage are welcome. Feedback is most useful when it identifies the agency, route, schedule period, and specific result that needs review.</p>
+            <p>The <a className="text-[var(--accent)] hover:underline" href="https://github.com/Civic-Minds/Atlas" target="_blank" rel="noreferrer">Atlas source repository on GitHub</a> contains the implementation, pipeline, tests, and issue history behind this documentation.</p>
           </Section>
 
           <Section title="Privacy">
