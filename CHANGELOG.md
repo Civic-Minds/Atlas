@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- History’s agency browser now uses the shared state/province filters, keeping the growing archive list easy to browse.
 - The map now starts rendering its basemap while route-archive metadata loads, reducing the blank first-load wait on slower connections.
 - The map now renders its background and route layers while the agency catalog loads, reducing the blank first-load wait.
 - Live Vehicles now polls configured GTFS-RT feeds through the local API for private, local-only tracking.

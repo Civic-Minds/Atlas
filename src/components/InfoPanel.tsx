@@ -11,6 +11,7 @@ import type { Agency } from '../App';
 import { isFeedExpired } from '../utils/feedFreshness';
 import { trackEvent } from '../lib/analytics';
 import { EXPIRED_FEED_CADENCE, EXPIRED_FEED_CONTEXT, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice } from '../content/noticeCopy';
+import RegionFilterPills from './RegionFilterPills';
 
 interface HistoryAgencySummary { slug: string; name: string; region: string; routes: unknown[] }
 
@@ -445,26 +446,12 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                   {regionsInScope.length > 0 && (
                     <span className="w-px h-3.5 shrink-0 bg-[var(--border-primary)] mx-0.5" aria-hidden />
                   )}
-                  {regionsInScope.map(r => {
-                    const on = regionFilter.has(r);
-                    return (
-                      <button
-                        key={r}
-                        onClick={() => setRegionFilter(prev => {
-                          const next = new Set(prev);
-                          if (next.has(r)) next.delete(r);
-                          else next.add(r);
-                          return next;
-                        })}
-                        aria-pressed={on}
-                        className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition-colors whitespace-nowrap shrink-0 ${
-                          on ? APP_TAB_ACTIVE : APP_TAB_INACTIVE
-                        }`}
-                      >
-                        {r}
-                      </button>
-                    );
-                  })}
+                  <RegionFilterPills
+                    regions={regionsInScope}
+                    selectedRegions={regionFilter}
+                    setSelectedRegions={setRegionFilter}
+                    includeAll={false}
+                  />
                 </div>
               </div>
               <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar">

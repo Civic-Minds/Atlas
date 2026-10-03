@@ -6,6 +6,7 @@ import { FLOATING_CARD, PANEL_ENTER, TRANSITION_SLOW, SEARCH_PILL, SEARCH_FIELD,
 import RouteListRow from '../components/RouteListRow';
 import { shortenAgencyName } from '../utils/format';
 import { useColorVision } from '../context/ColorVisionContext';
+import RegionFilterPills from '../components/RegionFilterPills';
 import {
   agencyHistoryTier,
   agencyQualifiesForHistory,
@@ -428,6 +429,7 @@ export default function History({ active, initialAgencySlug, onInfoOpen, query, 
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
   const [selectedRouteShortName, setSelectedRouteShortName] = useState<string | null>(null);
   const [selectedYear, setSelectedYear] = useState<number>(0);
+  const [regionFilter, setRegionFilter] = useState<Set<string>>(() => new Set());
   const [shouldRender, setShouldRender] = useState(active);
   const [visible, setVisible] = useState(false);
   const { setOverlay } = useHistoryMapOverlay();
@@ -478,6 +480,10 @@ export default function History({ active, initialAgencySlug, onInfoOpen, query, 
 
   useEffect(() => {
     if (!active) { appliedInitialSlugRef.current = false; return; }
+  }, [active]);
+
+  useEffect(() => {
+    if (!active) setRegionFilter(new Set());
   }, [active]);
 
   useEffect(() => {
@@ -584,10 +590,25 @@ export default function History({ active, initialAgencySlug, onInfoOpen, query, 
 
   const filtered = useMemo(() => {
     const q = query.toLowerCase();
-    return !q ? historyAgencies : historyAgencies.filter(a =>
-      a.name.toLowerCase().includes(q) || a.region.toLowerCase().includes(q)
-    );
-  }, [query, historyAgencies]);
+    return historyAgencies
+      .filter(a => !q || a.name.toLowerCase().includes(q) || a.region.toLowerCase().includes(q))
+      .filter(a => regionFilter.size === 0 || regionFilter.has(a.region || 'Other'));
+  }, [query, historyAgencies, regionFilter]);
+
+  const historyRegions = useMemo(() => {
+    const regions = new Set(historyAgencies.map(a => a.region || 'Other'));
+    return [...regions].sort((a, b) => {
+      if (a === 'Other') return 1;
+      if (b === 'Other') return -1;
+      return a.localeCompare(b, undefined, { sensitivity: 'base' });
+    });
+  }, [historyAgencies]);
+
+  useEffect(() => {
+    if (regionFilter.size === 0) return;
+    const next = new Set([...regionFilter].filter(region => historyRegions.includes(region)));
+    if (next.size !== regionFilter.size) setRegionFilter(next);
+  }, [historyRegions, regionFilter]);
 
   /** Match the main agency browser: region sections, then alphabetical agencies. */
   const agenciesByRegion = useMemo(() => {
@@ -689,6 +710,15 @@ export default function History({ active, initialAgencySlug, onInfoOpen, query, 
             </>
           ) : (
             <>
+              {historyData !== null && !historyLoadFailed && (
+                <div className="flex gap-1.5 px-4 pt-3 pb-2 overflow-x-auto items-center [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none' }}>
+                  <RegionFilterPills
+                    regions={historyRegions}
+                    selectedRegions={regionFilter}
+                    setSelectedRegions={setRegionFilter}
+                  />
+                </div>
+              )}
               {historyData === null && (
                 <p className="text-[11px] text-[var(--text-dim)] px-4 py-3">Loading…</p>
               )}
