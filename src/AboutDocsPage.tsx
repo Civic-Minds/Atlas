@@ -37,6 +37,26 @@ export default function AboutDocsPage() {
         <div className="mt-10 lg:grid lg:grid-cols-[12rem_minmax(0,42rem)] lg:gap-12 lg:items-start">
           <nav aria-label="Documentation sections" className="mb-8 rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-btn)] p-4 lg:sticky lg:top-8 lg:mb-0 lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0 lg:pt-14">
             <p className="text-xs font-black uppercase tracking-wide text-[var(--text-muted)] mb-2">On this page</p>
+            <div className="mb-4 border-b border-[var(--border-primary)] pb-4 lg:border-b-0 lg:pb-0" aria-label="Documentation environment">
+              <p className="mb-1.5 text-[10px] font-black uppercase tracking-wide text-[var(--text-muted)]">Docs version</p>
+              <div className="inline-flex items-center gap-0.5 rounded-lg border border-[var(--border-primary)] bg-[var(--bg-btn)] p-0.5 text-xs font-bold">
+                <a
+                  href="https://www.transitatlas.fyi/about/docs"
+                  aria-current={isPublicDocs ? 'page' : undefined}
+                  className={`rounded-md px-2.5 py-1 transition-colors ${isPublicDocs ? 'bg-[var(--accent)] text-white' : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'}`}
+                >
+                  Public
+                </a>
+                <a
+                  href="https://beta.transitatlas.fyi/about/docs"
+                  aria-current={!isPublicDocs ? 'page' : undefined}
+                  className={`rounded-md px-2.5 py-1 transition-colors ${!isPublicDocs ? 'bg-amber-500 text-white' : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'}`}
+                >
+                  Beta
+                </a>
+              </div>
+              <p className="mt-1.5 text-[10px] leading-snug text-[var(--text-muted)]">Beta may include experimental features and broader research data.</p>
+            </div>
             <div className="grid gap-1.5 text-sm lg:block lg:space-y-2">
               <a className="block text-[var(--accent)] hover:underline" href="#overview">Overview</a>
               <a className="block text-[var(--accent)] hover:underline" href="#what-atlas-does">Capabilities</a>
@@ -58,33 +78,10 @@ export default function AboutDocsPage() {
           <header>
             <div className="flex flex-wrap items-center gap-3">
               <h1 className="text-3xl font-black tracking-tight">Documentation</h1>
-              <span className={`rounded-full border px-2 py-0.5 text-[10px] font-black uppercase tracking-wide ${isPublicDocs ? 'border-[var(--accent-border)] text-[var(--accent)]' : 'border-amber-500/40 text-amber-500'}`}>
-                {isPublicDocs ? 'Public' : 'Beta'}
-              </span>
             </div>
             <p className="mt-3 text-base leading-relaxed text-[var(--text-dim)]">
               A technical overview of how Atlas turns published transit data into analysed, verified, and mapped service information.
             </p>
-            <div className="mt-4 flex flex-wrap items-center gap-2 text-xs" aria-label="Documentation environment">
-              <span className="font-black uppercase tracking-wide text-[var(--text-muted)]">Docs version</span>
-              <div className="inline-flex items-center gap-0.5 rounded-lg border border-[var(--border-primary)] bg-[var(--bg-btn)] p-0.5 font-bold">
-              <a
-                href="https://www.transitatlas.fyi/about/docs"
-                aria-current={isPublicDocs ? 'page' : undefined}
-                className={`rounded-md px-2.5 py-1 transition-colors ${isPublicDocs ? 'bg-[var(--accent)] text-white' : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'}`}
-              >
-                Public
-              </a>
-              <a
-                href="https://beta.transitatlas.fyi/about/docs"
-                aria-current={!isPublicDocs ? 'page' : undefined}
-                className={`rounded-md px-2.5 py-1 transition-colors ${!isPublicDocs ? 'bg-amber-500 text-white' : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'}`}
-              >
-                Beta
-              </a>
-              </div>
-              <span className="text-[var(--text-muted)]">Beta may include experimental features and broader research data.</span>
-            </div>
           </header>
 
           <Section id="overview" title="Overview">
