@@ -377,7 +377,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
           <div>
             <p className="text-[9px] font-black uppercase tracking-wide text-[var(--text-dim)]">On-demand service</p>
             <p className="text-[11px] leading-relaxed text-[var(--text-muted)] mt-1">
-              {service.stopFeatures?.length ? 'Virtual pickup locations are shown on the map; they are not fixed-route stops.' : 'The shaded map area shows where this on-demand service operates.'}
+              {service.stopFeatures?.length ? 'Virtual pickup locations and transfer points are shown on the map; they are not fixed-route stops.' : 'The shaded map area shows where this on-demand service operates.'}
             </p>
           </div>
           {serviceHours && (

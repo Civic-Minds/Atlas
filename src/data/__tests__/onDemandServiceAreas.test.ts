@@ -14,6 +14,7 @@ import {
   WATA_PARATRANSIT_SERVICE_AREA,
 } from '../onDemandServiceAreas';
 import { HSR_MY_RIDE_STOP_FEATURES } from '../hsrMyRideStops';
+import { HAMILTON_TRANS_CAB_SERVICE_AREAS, HAMILTON_TRANS_CAB_TRANSFER_POINTS } from '../transCabServiceArea';
 import { isOnDemandActive } from '../../../shared/onDemandAvailability';
 
 describe('BWG on-demand service area', () => {
@@ -66,9 +67,15 @@ describe('BWG on-demand service area', () => {
     }
   });
 
-  it('keeps HSR myRide as stop data without inventing a service boundary', () => {
-    expect(HAMILTON_MY_RIDE_SERVICE_AREA.features).toHaveLength(0);
-    expect(HAMILTON_MY_RIDE_SERVICE_AREA.stopFeatures).toBe(HSR_MY_RIDE_STOP_FEATURES);
+  it('keeps Hamilton myRide stops and Trans-Cab boundaries as separate source-backed data', () => {
+    expect(HAMILTON_TRANS_CAB_SERVICE_AREAS).toHaveLength(3);
+    for (const area of HAMILTON_TRANS_CAB_SERVICE_AREAS) {
+      expect(area.geometry.coordinates[0][0]).toEqual(area.geometry.coordinates[0].at(-1));
+    }
+    expect(HAMILTON_TRANS_CAB_TRANSFER_POINTS).toHaveLength(2);
+    expect(HAMILTON_MY_RIDE_SERVICE_AREA.features).toBe(HAMILTON_TRANS_CAB_SERVICE_AREAS);
+    expect(HAMILTON_MY_RIDE_SERVICE_AREA.stopFeatures?.slice(0, 138)).toEqual(HSR_MY_RIDE_STOP_FEATURES);
+    expect(HAMILTON_MY_RIDE_SERVICE_AREA.stopFeatures?.slice(138)).toEqual(HAMILTON_TRANS_CAB_TRANSFER_POINTS);
     expect(HSR_MY_RIDE_STOP_FEATURES).toHaveLength(138);
     expect(HSR_MY_RIDE_STOP_FEATURES.every(feature => feature.geometry.type === 'Point')).toBe(true);
   });
