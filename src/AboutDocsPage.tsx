@@ -49,6 +49,13 @@ export default function AboutDocsPage() {
             <h3 className="font-black text-[var(--text-primary)]">What Atlas is</h3>
             <p>Atlas is a client-side transit analysis application for comparing scheduled service across agencies and cities.</p>
             <p>It turns published transit schedules into map layers, route summaries, stop-level frequency estimates, and network comparisons.</p>
+            <h3 className="font-black text-[var(--text-primary)]">Design principles</h3>
+            <ul className="list-disc pl-5 space-y-1">
+              <li><strong className="text-[var(--text-primary)]">One shared data platform:</strong> route, stop, freshness, history, and live-data capabilities are processed once and exposed through stable outputs for the tools that use them.</li>
+              <li><strong className="text-[var(--text-primary)]">Honest measurements:</strong> when a period does not contain enough sustained service to support a meaningful frequency claim, Atlas flags that limitation instead of tuning the calculation until it produces a plausible-looking number.</li>
+              <li><strong className="text-[var(--text-primary)]">Preserved history:</strong> historical feeds are treated as dated snapshots. Missing or unusable periods remain unavailable rather than being duplicated or inferred.</li>
+              <li><strong className="text-[var(--text-primary)]">Stable contracts:</strong> new information is added alongside existing outputs when possible, so a downstream tool does not silently reinterpret previously published data.</li>
+            </ul>
           </Section>
 
           <Section id="what-atlas-does" title="Capabilities">
@@ -273,7 +280,6 @@ export default function AboutDocsPage() {
 
           <Section title="Technical questions and feedback">
             <p>Questions about the methodology, a suspected data problem, or a transit agency’s coverage are welcome. Feedback is most useful when it identifies the agency, route, schedule period, and specific result that needs review.</p>
-            <p>The <a className="text-[var(--accent)] hover:underline" href="https://github.com/Civic-Minds/Atlas" target="_blank" rel="noreferrer">Atlas source repository on GitHub</a> contains the implementation, pipeline, tests, and issue history behind this documentation.</p>
           </Section>
 
           <Section title="Privacy">
