@@ -109,7 +109,7 @@ export default function AboutDocsPage() {
           </Section>
 
           <Section title="What Atlas reads from GTFS">
-            <p>A GTFS feed is a group of related tables rather than one ready-made map. Atlas uses those tables together:</p>
+            <p>Atlas consumes GTFS Schedule as a relational set of required tables, calendar rules, geometry, and optional extensions. It joins those records into a normalized analysis model before producing map and service metrics:</p>
             <ul className="list-disc pl-5 space-y-1">
               <li><code className="text-[var(--text-primary)]">routes</code> identifies services and their public route names;</li>
               <li><code className="text-[var(--text-primary)]">trips</code> identifies individual scheduled runs and directions;</li>
