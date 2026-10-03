@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router';
-import { Map as MapIcon, Search, X, Info, History as HistoryIcon, Moon, Zap, ChevronDown } from 'lucide-react';
+import { Map as MapIcon, Search, X, Info, History as HistoryIcon, BookOpen, ChevronDown } from 'lucide-react';
 import { PILL_SURFACE, FLOATING_CARD, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_HEADER, Z_MODAL_TOP, SIDEBAR_LEFT_FALLBACK, APP_TAB_ACTIVE, APP_TAB_INACTIVE, ICON_BTN } from './styles';
 import { R2_PUBLIC_URL, getAgencyArtifactUrls, getAgencyCatalogUrl, FEATURES, FEATURE_ROUTES, ATLAS_MODE } from '../shared/config';
 import { isAgencyVisibleInBrowser } from '../shared/agencyVisibility';
@@ -356,6 +356,7 @@ export default function App() {
   const inLive = activeApp === 'live';
   const inFares = activeApp === 'fares';
   const inNight = activeApp === 'night';
+  const researchActive = inNight || inFrequentService || inFrequentServiceStory;
   const loadedAgencySlugs = useMemo(
     () => new Set(Object.keys(layers).map(slug => slug.endsWith('-corridors') ? slug.slice(0, -10) : slug)),
     [layers],
@@ -609,19 +610,13 @@ export default function App() {
             <div className="hidden xl:flex items-center gap-2">
               {FEATURES.researchApps && (
                 <a
-                  href={inNight ? '/' : '/apps/night'}
-                  aria-label={inNight ? 'Back to frequency map' : 'Night service'}
-                  aria-pressed={inNight}
-                  className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold border focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${inNight ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
+                  href={FEATURE_ROUTES.research}
+                  aria-label="Research"
+                  aria-pressed={researchActive}
+                  className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold border focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${researchActive ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
                 >
-                  <Moon className="w-3.5 h-3.5" />
-                  <span>Night Service</span>
-                </a>
-              )}
-              {FEATURES.frequentService && (
-                <a href={inFrequentService ? '/' : FEATURE_ROUTES.frequentService.map} aria-label={inFrequentService ? 'Back to frequency map' : 'Frequent service research'} aria-pressed={inFrequentService} className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold border focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${inFrequentService ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}>
-                  <Zap className="w-3.5 h-3.5" />
-                  <span>Frequent Service</span>
+                  <BookOpen className="w-3.5 h-3.5" />
+                  <span>Research</span>
                 </a>
               )}
             </div>
@@ -663,16 +658,10 @@ export default function App() {
                     </a>
                   )}
                   {FEATURES.researchApps && (
-                    <a href={inNight ? '/' : '/apps/night'} onClick={() => setAppLinksOpen(false)} aria-current={inNight ? 'page' : undefined} className={`flex h-8 px-3 items-center gap-1.5 rounded-full text-xs font-bold border ${inNight ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}>
-                      <Moon className="w-3.5 h-3.5" />
-                      <span>Night Service</span>
+                    <a href={FEATURE_ROUTES.research} onClick={() => setAppLinksOpen(false)} aria-current={researchActive ? 'page' : undefined} className={`flex h-8 px-3 items-center gap-1.5 rounded-full text-xs font-bold border ${researchActive ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}>
+                      <BookOpen className="w-3.5 h-3.5" />
+                      <span>Research</span>
                     </a>
-                  )}
-                  {FEATURES.frequentService && (
-                  <a href={inFrequentService ? '/' : FEATURE_ROUTES.frequentService.map} onClick={() => setAppLinksOpen(false)} aria-current={inFrequentService ? 'page' : undefined} className={`flex h-8 px-3 items-center gap-1.5 rounded-full text-xs font-bold border ${inFrequentService ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}>
-                    <Zap className="w-3.5 h-3.5" />
-                    <span>Frequent Service</span>
-                  </a>
                   )}
                 </div>
               )}
