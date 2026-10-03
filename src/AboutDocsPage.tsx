@@ -40,7 +40,7 @@ export default function AboutDocsPage() {
           <header>
             <h1 className="text-3xl font-black tracking-tight">Documentation</h1>
             <p className="mt-3 text-base leading-relaxed text-[var(--text-dim)]">
-              A technical overview of Atlas’s data, methodology, and map architecture. This explains the public behaviour without requiring access to the source repository.
+              A technical overview of how Atlas turns published transit data into analysed, verified, and mapped service information.
             </p>
           </header>
 
