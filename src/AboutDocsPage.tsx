@@ -20,8 +20,7 @@ export default function AboutDocsPage() {
 
         <article className="mt-10 space-y-8">
           <header>
-            <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--accent)]">Atlas by Civic Minds</p>
-            <h1 className="mt-2 text-3xl font-black tracking-tight">Documentation</h1>
+            <h1 className="text-3xl font-black tracking-tight">Documentation</h1>
             <p className="mt-3 text-base leading-relaxed text-[var(--text-dim)]">
               A technical overview of Atlas’s data, methodology, and map architecture.
             </p>
