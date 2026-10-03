@@ -266,6 +266,10 @@ export default function AboutDocsPage() {
             <h3 className="font-black text-[var(--text-primary)]">7. Artifact and interface checks</h3>
             <p>Finally, Atlas checks the published output: route artifacts, stop indexes, vector tiles, metadata, map filters, route cards, links, and deployment modes. The goal is to catch disagreements between the processed data and what a person can actually see or select in the application.</p>
             <p>Published artifacts are checked for coverage and shape integrity, not just whether they uploaded successfully. The browser is checked against those artifacts because a correct pipeline result can still be presented incorrectly by a stale index, a missing tile, a mismatched route key, or a filter that uses a different definition than the route card.</p>
+            <h3 className="font-black text-[var(--text-primary)]">8. Manual review and feedback</h3>
+            <p>Automated checks are supplemented by manual spot checks. When someone familiar with a city’s network notices a route, branch, shape, schedule, or frequency that looks wrong, Atlas compares the result against the source feed and the agency’s published information rather than assuming the automated output is correct.</p>
+            <p>Atlas also includes a Feedback control and an in-app “Report a problem” form. Reports can identify problems with routes, branches, names, frequencies, schedules, shapes, stops, filters, live information, or stale data, and the route report can include the loaded metric context needed to reproduce the result.</p>
+            <p>A report is evidence for review, not an automatic correction. The issue is reproduced against the relevant feed and processing stage, then the response may be a code fix, a feed-specific transform, a quality notice, a source update, or a decision to leave the result unchanged when the source supports it.</p>
             <h3 className="font-black text-[var(--text-primary)]">What happens when a check fails</h3>
             <p>Atlas does not use one automatic response for every problem:</p>
             <ul className="list-disc pl-5 space-y-1">
