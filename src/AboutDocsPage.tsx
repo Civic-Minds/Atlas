@@ -132,7 +132,8 @@ export default function AboutDocsPage() {
             <p>Period calculations are kept inside their own time windows. Atlas does not silently borrow an all-day average to fill a period with sparse or missing service.</p>
             <div className="rounded-xl border border-[var(--border-primary)] bg-[var(--bg-btn)] p-3">
               <p className="font-bold text-[var(--text-primary)]">Frequency bands</p>
-              <p className="mt-1">The map currently distinguishes service at or below 10, 15, 20, 30, and 60 minutes. Service slower than 60 minutes, or service that does not qualify for a sustained band, is treated as infrequent.</p>
+              <p className="mt-1">The main Frequency control currently exposes service at or below 10, 15, 20, 30, and 60 minutes. Service slower than 60 minutes, or service that does not qualify for a sustained band, appears as infrequent in that surface.</p>
+              <p className="mt-2">Beta also processes some rail service against additional 5- and 8-minute thresholds, and its separate Frequent Service research views use 15- and 30-minute criteria. Those are distinct from the main map’s general-purpose filter.</p>
             </div>
           </Section>
 
