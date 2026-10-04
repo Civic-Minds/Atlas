@@ -153,6 +153,10 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
 }) => {
   const [hoveredHour, setHoveredHour] = React.useState<number | null>(null);
   const reportRef = React.useRef<CardReportButtonHandle>(null);
+  // Local-only visual demo for reviewing the edge-gap indicator before a data rebuild.
+  const demoEdgeGapAllowance = import.meta.env.DEV
+    && currentRoute.routeShortName === '501'
+    && new URLSearchParams(window.location.search).has('demo_edge_allowance');
   const agencyDisplayName = shortenAgencyName(routeAgency?.name ?? routeSlug ?? '');
   const routeOverrideNote = routeAgency?.overrideNote
     && (!routeAgency.overrideNoteRoutes?.length || routeAgency.overrideNoteRoutes.includes(currentRoute.routeShortName ?? ''))
@@ -519,7 +523,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                             colorHeadway={hoveredHour == null ? branchFilterHeadway : undefined}
                             headwayLabel={hoveredHour == null ? routeCardCoverageText(d, period) : undefined}
                             trunkHeadway={trunkHw}
-                            edgeGapAllowance={d.edgeGapAllowance}
+                            edgeGapAllowance={d.edgeGapAllowance ?? (demoEdgeGapAllowance && i === 0 ? 'opening' : undefined)}
                             onEdgeGapAllowanceClick={onInfoOpen ? () => onInfoOpen('about', { helpTopic: 'edge-gap-allowance' }) : undefined}
                             dimmed={dimmed}
                             limited={isLimited}
