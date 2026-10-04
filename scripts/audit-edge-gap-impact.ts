@@ -1,0 +1,200 @@
+import { readdirSync, readFileSync } from 'fs';
+import { basename, join } from 'path';
+import JSZip from 'jszip';
+import Papa from 'papaparse';
+import { computeRawDepartures } from '../pipeline/transit-phase1';
+import { determineTier } from '../pipeline/transit-phase2';
+import { DEFAULT_CRITERIA, getTiersForCriteria } from '../pipeline/defaults';
+import { DAY_TO_TYPE, GtfsData, RawRouteDepartures } from '../types/gtfs';
+
+const parse = (text: string) => Papa.parse(text, {
+  header: true,
+  skipEmptyLines: true,
+  transform: (value: string) => value.trim(),
+}).data as any[];
+
+const archives = readdirSync('/Users/ryan/Desktop/Data/GTFS/Files', { recursive: true })
+  .filter((path): path is string => typeof path === 'string' && path.endsWith('.zip'))
+  .map(path => join('/Users/ryan/Desktop/Data/GTFS/Files', path));
+
+const amountRules: Record<string, (tier: number) => number> = {
+  '+5 minutes': tier => tier + 5,
+  '+10 minutes': tier => tier + 10,
+  '+15 minutes': tier => tier + 15,
+  '+20 minutes': tier => tier + 20,
+  '+10%': tier => tier * 1.10,
+  '+15%': tier => tier * 1.15,
+  '+20%': tier => tier * 1.20,
+  '+25%': tier => tier * 1.25,
+  '+50%': tier => tier * 1.50,
+  'current max(5, 15%)': tier => tier + Math.max(5, Math.round(tier * 0.15)),
+};
+
+type EdgeMode = 'opening' | 'closing' | 'both';
+type EdgeResult = {
+  changes: number;
+  upgrades: number;
+  downgrades: number;
+  candidates: number;
+  tierChanges: Record<string, number>;
+};
+
+const makeResult = (): EdgeResult => ({ changes: 0, upgrades: 0, downgrades: 0, candidates: 0, tierChanges: {} });
+const rank = (tier: string): number => tier === 'span' ? Number.POSITIVE_INFINITY : Number(tier);
+const increment = (record: Record<string, number>, key: string) => { record[key] = (record[key] ?? 0) + 1; };
+
+const qualifiesAtTier = (times: number[], tier: number): boolean => {
+  if (times.length < 2) return false;
+  const gaps = times.slice(1).map((time, index) => time - times[index]);
+  if (times.length < Math.ceil((times[times.length - 1] - times[0]) / tier)) return false;
+  const grace = Math.max(DEFAULT_CRITERIA.graceMinutes, Math.round(tier * DEFAULT_CRITERIA.gracePercent));
+  const allowedViolations = Math.max(DEFAULT_CRITERIA.maxGraceViolations, Math.floor(gaps.length * DEFAULT_CRITERIA.violationPercent));
+  let violations = 0;
+  for (const gap of gaps) {
+    if (gap <= tier) continue;
+    if (gap > tier + grace || ++violations > allowedViolations) return false;
+  }
+  return true;
+};
+
+const candidateTierFor = (
+  times: number[],
+  tiers: number[],
+  actualOpening: boolean,
+  actualClosing: boolean,
+  mode: EdgeMode,
+  limitFor: (tier: number) => number,
+): { tier: string; edgeUsed: boolean } => {
+  for (const tier of tiers) {
+    const gaps = times.slice(1).map((time, index) => time - times[index]);
+    const opening = (mode === 'opening' || mode === 'both') && actualOpening && gaps[0] > tier && gaps[0] <= limitFor(tier);
+    const closing = (mode === 'closing' || mode === 'both') && actualClosing && gaps[gaps.length - 1] > tier && gaps[gaps.length - 1] <= limitFor(tier);
+    const trims = Number(opening) + Number(closing);
+    if (trims && times.length - trims < 3) continue;
+    const trimmed = times.slice(opening ? 1 : 0, closing ? -1 : undefined);
+    if (qualifiesAtTier(trimmed, tier)) return { tier: String(tier), edgeUsed: Boolean(trims) };
+  }
+  return { tier: 'span', edgeUsed: false };
+};
+
+const readFeed = async (archive: string): Promise<GtfsData | null> => {
+  try {
+    const zip = await JSZip.loadAsync(readFileSync(archive));
+    const get = async (name: string) => {
+      const file = zip.file(name);
+      return file ? parse(await file.async('text')) : [];
+    };
+    return {
+      routes: await get('routes.txt'),
+      trips: await get('trips.txt'),
+      stops: await get('stops.txt'),
+      stopTimes: await get('stop_times.txt'),
+      calendar: await get('calendar.txt'),
+      calendarDates: await get('calendar_dates.txt'),
+      frequencies: await get('frequencies.txt'),
+      agencies: await get('agency.txt'),
+      shapes: [],
+    } as unknown as GtfsData;
+  } catch {
+    return null;
+  }
+};
+
+const getWindow = (raw: RawRouteDepartures) => {
+  const dayType = DAY_TO_TYPE[raw.day];
+  const dayConfig = DEFAULT_CRITERIA.dayTypes[dayType];
+  if (!dayConfig) return null;
+  let times = raw.departureTimes.filter(time => time >= dayConfig.timeWindow.start && time <= dayConfig.timeWindow.end);
+  if (times.length < 2) times = [...raw.departureTimes].sort((a, b) => a - b);
+  if (raw.railLike) {
+    const midday = times.filter(time => time >= 570 && time <= 870);
+    if (midday.length >= 2) times = midday;
+  }
+  if (times.length < 4) return null;
+  return {
+    times,
+    actualOpening: !raw.departureTimes.some(time => time < times[0]),
+    actualClosing: !raw.departureTimes.some(time => time > times[times.length - 1]),
+  };
+};
+
+const results = new Map<string, EdgeResult>();
+for (const amount of Object.keys(amountRules)) {
+  for (const mode of ['opening', 'closing', 'both'] as EdgeMode[]) {
+    results.set(`${mode}: ${amount}`, makeResult());
+  }
+}
+
+let feedsWithRows = 0;
+let skipped = 0;
+let rawRows = 0;
+let periods = 0;
+let baselineMismatches = 0;
+
+for (let index = 0; index < archives.length; index++) {
+  if (index % 25 === 0) console.error(`processed ${index}/${archives.length}`);
+  const data = await readFeed(archives[index]);
+  if (!data) { skipped++; continue; }
+  let rawRowsForFeed: RawRouteDepartures[];
+  try {
+    rawRowsForFeed = computeRawDepartures(data);
+  } catch {
+    skipped++;
+    continue;
+  }
+  if (rawRowsForFeed.length) feedsWithRows++;
+  rawRows += rawRowsForFeed.length;
+  for (const raw of rawRowsForFeed) {
+    const window = getWindow(raw);
+    if (!window) continue;
+    periods++;
+    const dayType = DAY_TO_TYPE[raw.day];
+    const dayConfig = DEFAULT_CRITERIA.dayTypes[dayType];
+    if (!dayConfig) continue;
+    const tiers = getTiersForCriteria(raw.routeType, dayConfig.tiers, DEFAULT_CRITERIA.modeTierOverrides);
+    const gaps = window.times.slice(1).map((time, gapIndex) => time - window.times[gapIndex]);
+    const currentTier = determineTier(
+      gaps,
+      window.times.length,
+      window.times[window.times.length - 1] - window.times[0],
+      tiers,
+      DEFAULT_CRITERIA.graceMinutes,
+      DEFAULT_CRITERIA.maxGraceViolations,
+      DEFAULT_CRITERIA.gracePercent,
+      DEFAULT_CRITERIA.violationPercent,
+    );
+    if (currentTier !== determineTier(
+      gaps,
+      window.times.length,
+      window.times[window.times.length - 1] - window.times[0],
+      tiers,
+      DEFAULT_CRITERIA.graceMinutes,
+      DEFAULT_CRITERIA.maxGraceViolations,
+      DEFAULT_CRITERIA.gracePercent,
+      DEFAULT_CRITERIA.violationPercent,
+    )) baselineMismatches++;
+
+    for (const [amount, limitFor] of Object.entries(amountRules)) {
+      for (const mode of ['opening', 'closing', 'both'] as EdgeMode[]) {
+        const result = results.get(`${mode}: ${amount}`)!;
+        const candidate = candidateTierFor(window.times, tiers, window.actualOpening, window.actualClosing, mode, limitFor);
+        if (candidate.edgeUsed) result.candidates++;
+        if (candidate.tier === currentTier) continue;
+        result.changes++;
+        if (rank(candidate.tier) < rank(currentTier)) result.upgrades++;
+        else result.downgrades++;
+        increment(result.tierChanges, `${currentTier}->${candidate.tier}`);
+      }
+    }
+  }
+}
+
+console.log(JSON.stringify({
+  archiveCount: archives.length,
+  feedsWithRows,
+  skipped,
+  rawRows,
+  periods,
+  baselineMismatches,
+  results: Object.fromEntries(results),
+}, null, 2));
