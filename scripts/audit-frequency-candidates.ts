@@ -17,7 +17,7 @@ import {
   determineCandidateTier,
 } from './frequency-candidate-rules';
 
-type CandidateGroup = 'edge' | 'internal' | 'hardGap';
+type CandidateGroup = 'edge' | 'internal' | 'hardGap' | 'minimumEvidence';
 type Candidate = CandidateRuleOptions & { name: string; group: CandidateGroup };
 type Period = {
   feed: string;
@@ -98,6 +98,18 @@ for (const internal of q3InternalPolicies) {
   }
 }
 
+for (const minimumEvidence of [2, 3, 4, 5, 6]) {
+  candidates.push({
+    name: `q4-minimum-evidence-${minimumEvidence}`,
+    group: 'minimumEvidence',
+    edgeMode: 'none',
+    edgeLimit: 'grace',
+    internal: CURRENT_INTERNAL_POLICY,
+    hardGap: 'current',
+    minimumEvidence,
+  });
+}
+
 type CandidateSummary = {
   group: CandidateGroup;
   changes: number;
@@ -107,6 +119,7 @@ type CandidateSummary = {
   tierChanges: Record<string, number>;
   dayTypes: Record<string, number>;
   gapBuckets: Record<string, number>;
+  tripCounts: Record<string, number>;
   examples: Array<Record<string, unknown>>;
 };
 
@@ -119,6 +132,7 @@ const summaries = new Map<string, CandidateSummary>(candidates.map(candidate => 
   tierChanges: {},
   dayTypes: {},
   gapBuckets: {},
+  tripCounts: {},
   examples: [],
 }]));
 
@@ -249,6 +263,8 @@ for (const period of periods) {
     const result = determineCandidateTier(period.times, period.tiers, candidate);
     const comparisonTier = candidate.name.startsWith('q3-')
       ? determineCandidateTier(period.times, period.tiers, { ...candidate, hardGap: 'current' }).tier
+      : candidate.group === 'minimumEvidence'
+      ? determineCandidateTier(period.times, period.tiers, { ...candidate, minimumEvidence: 3 }).tier
       : period.currentTier;
     const summary = summaries.get(candidate.name)!;
     if (result.edgeWarnings.length > 0) summary.edgeWarnings += result.edgeWarnings.length;
@@ -259,6 +275,7 @@ for (const period of periods) {
     increment(summary.tierChanges, `${comparisonTier}->${result.tier}`);
     increment(summary.dayTypes, period.dayType);
     increment(summary.gapBuckets, period.gapBucket);
+    increment(summary.tripCounts, period.times.length <= 6 ? String(period.times.length) : '7+');
     if (summary.examples.length < 20) {
       summary.examples.push({
         feed: period.feed,
@@ -284,6 +301,7 @@ const output = {
   rawRows,
   periods: periods.length,
   q3EligiblePeriods: periods.filter(period => period.times.length >= 4).length,
+  q4EligiblePeriods: periods.filter(period => period.times.length >= 2).length,
   distinctAgencies: agencies.size,
   distinctRoutes: routeKeys.size,
   distinctRoutesWithEligiblePeriods: eligibleRouteKeys.size,

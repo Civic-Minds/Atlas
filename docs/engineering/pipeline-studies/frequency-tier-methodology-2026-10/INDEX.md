@@ -62,8 +62,8 @@ type-checking, and a complete local archive regression.
    combination?
 3. **Hard failures:** Should a sufficiently large internal gap fail a tier no
    matter how many other gaps pass?
-4. **Short periods and modes:** Do short periods, day types, or rail midday
-   windows need different treatment or minimum evidence?
+4. **Minimum evidence:** How many departures must a route-period contain before
+   Atlas can claim sustained frequency?
 5. **Combined effect:** What does the complete selected rule do when all parts
    are applied together through the production processor?
 
@@ -217,6 +217,50 @@ This is a recommendation, not a production change. It should remain separate
 from the pending decisions about the number of internal exceptions and the
 minimum evidence required for short periods.
 
+## Minimum evidence
+
+“Short period” was imprecise terminology for this question. The issue is not
+only how long the clock window is; it is whether there are enough departures in
+the analysed period to show a repeated schedule. The Beta **Hide irregular
+routes** setting is a display filter for the resulting irregular classification,
+not the rule that determines a frequency tier.
+
+The production classifier currently requires three departures before a
+limited-service period can be treated as sustained. The Q4 audit tested that
+minimum against two, four, five, and six departures. Each candidate was
+compared with the same frequency rule and the current hard-gap boundary, with
+edge allowances disabled so this question was not mixed with the service-edge
+decision.
+
+The corrected full-census comparison covered all 430,867 route/day/direction/
+pattern observations. The three-departure candidate was used as the reference
+for every Q4 comparison; it produced zero changes against itself.
+
+| Minimum departures | Changed observations | Faster | Slower | Affected departure counts |
+| ---: | ---: | ---: | ---: | --- |
+| 2 | 34,954 | 34,954 | 0 | 2 trips: 34,954 |
+| 3 | 0 | 0 | 0 | — |
+| 4 | 18,569 | 0 | 18,569 | 3 trips: 18,569 |
+| 5 | 29,941 | 0 | 29,941 | 3 trips: 18,569; 4 trips: 11,372 |
+| 6 | 37,738 | 0 | 37,738 | 3 trips: 18,569; 4 trips: 11,372; 5 trips: 7,797 |
+
+Allowing two departures is too weak: a single gap can make two trips look like
+10-, 15-, 20-, 30-, or 60-minute service. For example, two departures exactly
+60 minutes apart would qualify for the 60-minute tier even though there is no
+repeated cadence to observe.
+
+Requiring four or more departures is more conservative, but it rejects
+repeated patterns that already show a consistent cadence. For example, three
+departures with 30-minute gaps meet the 30-minute tier under the existing rule;
+requiring four departures would label that period irregular despite both
+observed gaps matching the tier exactly.
+
+The Q4 recommendation is therefore to retain **three departures as the minimum
+evidence** for a sustained frequency claim. This preserves the existing Beta
+behaviour: one- and two-trip periods remain irregular, while three repeated
+departures can still represent a real short-window schedule. This is a study
+recommendation, not a production change.
+
 ## Decision log
 
 - Edge-gap proposal: one true service-edge exception total, with a fixed
@@ -226,7 +270,10 @@ minimum evidence required for short periods.
 - Hard-gap policy: recommendation is to retain the existing grace boundary;
   no larger multiplier should be allowed to turn a large internal gap into a
   near miss.
-- Short-period and combined-rule review: pending this study.
+- Minimum evidence: retain the existing minimum of three departures; higher
+  thresholds remove many consistent sparse periods, while two departures are
+  not enough to demonstrate sustained cadence.
+- Combined-rule review: pending.
 
 ## Supporting artifacts
 

@@ -58,4 +58,13 @@ describe('frequency candidate rules', () => {
     expect(result.tier).toBe('15');
     expect(result.edgeWarnings).toEqual([]);
   });
+
+  it('uses three departures as the default minimum evidence', () => {
+    expect(determineCandidateTier([0, 10], [10], { ...base, minimumEvidence: 3 }).tier).toBe('span');
+    expect(determineCandidateTier([0, 10, 20], [10], base).tier).toBe('10');
+  });
+
+  it('supports a higher minimum-evidence candidate', () => {
+    expect(determineCandidateTier([0, 10, 20], [10], { ...base, minimumEvidence: 4 }).tier).toBe('span');
+  });
 });

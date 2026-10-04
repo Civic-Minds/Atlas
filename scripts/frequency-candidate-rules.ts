@@ -13,6 +13,7 @@ export interface CandidateRuleOptions {
   edgeLimit: EdgeLimit;
   internal: InternalPolicy;
   hardGap: HardGapPolicy;
+  minimumEvidence?: number;
   graceMinutes?: number;
   gracePercent?: number;
 }
@@ -65,7 +66,7 @@ export function determineCandidateTier(
     const start = trimOpening ? 1 : 0;
     const end = sorted.length - (trimClosing ? 1 : 0);
     const times = sorted.slice(start, end);
-    if (times.length < 2) continue;
+    if (times.length < (options.minimumEvidence ?? 2)) continue;
 
     const gaps = times.slice(1).map((time, index) => time - times[index]);
     const minimumTrips = Math.ceil((times[times.length - 1] - times[0]) / tier);
