@@ -1,6 +1,6 @@
 import { ArrowLeft } from 'lucide-react';
 import type { ReactNode } from 'react';
-import { ATLAS_MODE, FEATURES } from '../shared/config';
+import { FEATURES } from '../shared/config';
 import SiteContact from './components/SiteContact';
 import SiteFooter from './components/SiteFooter';
 
@@ -23,7 +23,6 @@ function Subsection({ title, children }: { title: string; children: ReactNode })
 }
 
 export default function AboutDocsPage() {
-  const isPublicDocs = ATLAS_MODE === 'public';
   const showBetaFeatures = FEATURES.beta;
   const showLive = FEATURES.live;
   const showHistory = FEATURES.history;
@@ -39,15 +38,6 @@ export default function AboutDocsPage() {
         <div className="mt-10 lg:grid lg:grid-cols-[12rem_minmax(0,42rem)] lg:gap-12 lg:items-start">
           <nav aria-label="Documentation sections" className="mb-8 rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-btn)] p-4 lg:sticky lg:top-8 lg:mb-0 lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0 lg:pt-14">
             <p className="text-xs font-black uppercase tracking-wide text-[var(--text-muted)] mb-2">On this page</p>
-            <div className="mb-4 border-b border-[var(--border-primary)] pb-4 lg:border-b-0 lg:pb-0" aria-label="Documentation environment">
-              <p className="mb-1.5 text-[10px] font-black uppercase tracking-wide text-[var(--text-muted)]">Docs version</p>
-              <span className={`inline-flex rounded-lg border px-3 py-1 text-xs font-bold ${isPublicDocs ? 'border-[var(--accent-border)] text-[var(--accent)]' : 'border-amber-500/40 text-amber-500'}`}>
-                {isPublicDocs ? 'Public documentation' : 'Beta documentation'}
-              </span>
-              <p className="mt-1.5 text-[10px] leading-snug text-[var(--text-muted)]">
-                {isPublicDocs ? 'Covers features available on the public Atlas deployment.' : 'Includes Beta features and research surfaces enabled for this deployment.'}
-              </p>
-            </div>
             <div className="grid gap-1.5 text-sm lg:block lg:space-y-2">
               <a className="block text-[var(--accent)] hover:underline" href="#overview">Overview</a>
               <a className="block text-[var(--accent)] hover:underline" href="#what-atlas-does">Capabilities</a>
