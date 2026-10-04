@@ -32,6 +32,7 @@ import { effectiveMode, ON_DEMAND_MODE } from '../../../shared/modes';
 import { markAtlasLatest } from '../../lib/performance';
 import { isOnDemandActive } from '../../../shared/onDemandAvailability';
 import { buildRouteSortKeyExpression } from '../../utils/routeSort';
+import { openAtlasProblemDestination } from '../../utils/reportIssue';
 
 const CORRIDOR_BAND_COLOR = '#64748b';
 const ON_DEMAND_AREA_COLOR = '#64748b';
@@ -1352,8 +1353,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
 
   // Right-click a spot to open a small menu: copy a URL pointing at that exact
   // location + current zoom (handy for a bug report or handing someone the
-  // precise spot under the cursor), or jump straight to filing a GitHub issue
-  // pre-filled with that URL.
+  // precise spot under the cursor), or open a pre-filled maintainer/user report.
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapLoaded) return;
@@ -1395,9 +1395,8 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     if (!mapContextMenu) return;
     const url = buildLocationUrl(mapContextMenu.lat, mapContextMenu.lon);
     const title = `Map issue near ${mapContextMenu.lat.toFixed(5)}, ${mapContextMenu.lon.toFixed(5)}`;
-    const body = `**Location:** ${url}\n\n**What's wrong:**\n\n`;
-    const issueUrl = `https://github.com/Civic-Minds/Atlas/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}&labels=${encodeURIComponent('user-reported')}`;
-    window.open(issueUrl, '_blank', 'noopener,noreferrer');
+    const body = `Location: ${url}\n\nWhat’s wrong:\n\n`;
+    openAtlasProblemDestination(title, body);
     setMapContextMenu(null);
   };
 
