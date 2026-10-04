@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **The first-or-last-trip frequency allowance now has a clickable info icon that explains it in the side panel.**
 - **Route details now identify when a frequency tier uses the small first-or-last-trip allowance.**
 - **Frequency tiers now allow one true service-edge gap up to ten minutes beyond the tier while preserving the existing sustained-service checks.**
 - **Hamilton’s Trans-Cab service zones now appear alongside myRide coverage**, with the published Stoney Creek and Glanbrook boundaries and transfer points shown separately from fixed routes.

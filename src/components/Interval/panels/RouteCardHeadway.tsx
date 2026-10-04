@@ -520,6 +520,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                             headwayLabel={hoveredHour == null ? routeCardCoverageText(d, period) : undefined}
                             trunkHeadway={trunkHw}
                             edgeGapAllowance={d.edgeGapAllowance}
+                            onEdgeGapAllowanceClick={onInfoOpen ? () => onInfoOpen('about', { helpTopic: 'edge-gap-allowance' }) : undefined}
                             dimmed={dimmed}
                             limited={isLimited}
                             {...branchHoverProps(group.dirId, d.headsign)}
