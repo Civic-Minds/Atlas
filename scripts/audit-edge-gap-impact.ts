@@ -33,11 +33,19 @@ const amountRules: Record<string, (tier: number) => number> = {
   '+15% beyond normal grace': tier => tier + Math.max(DEFAULT_CRITERIA.graceMinutes, Math.round(tier * DEFAULT_CRITERIA.gracePercent)) + tier * 0.15,
   '+20% beyond normal grace': tier => tier + Math.max(DEFAULT_CRITERIA.graceMinutes, Math.round(tier * DEFAULT_CRITERIA.gracePercent)) + tier * 0.20,
   '+25% beyond normal grace': tier => tier + Math.max(DEFAULT_CRITERIA.graceMinutes, Math.round(tier * DEFAULT_CRITERIA.gracePercent)) + tier * 0.25,
+  '+10% beyond normal grace, max tier+10': tier => Math.min(tier + 10, tier + Math.max(DEFAULT_CRITERIA.graceMinutes, Math.round(tier * DEFAULT_CRITERIA.gracePercent)) + tier * 0.10),
+  '+15% beyond normal grace, max tier+10': tier => Math.min(tier + 10, tier + Math.max(DEFAULT_CRITERIA.graceMinutes, Math.round(tier * DEFAULT_CRITERIA.gracePercent)) + tier * 0.15),
+  '+20% beyond normal grace, max tier+10': tier => Math.min(tier + 10, tier + Math.max(DEFAULT_CRITERIA.graceMinutes, Math.round(tier * DEFAULT_CRITERIA.gracePercent)) + tier * 0.20),
+  '+25% beyond normal grace, max tier+10': tier => Math.min(tier + 10, tier + Math.max(DEFAULT_CRITERIA.graceMinutes, Math.round(tier * DEFAULT_CRITERIA.gracePercent)) + tier * 0.25),
+  '+20% beyond normal grace, max tier+15': tier => Math.min(tier + 15, tier + Math.max(DEFAULT_CRITERIA.graceMinutes, Math.round(tier * DEFAULT_CRITERIA.gracePercent)) + tier * 0.20),
 };
 const impactAmounts = [
   '+10 minutes', '+15 minutes', '+20 minutes', '+10%', '+15%', 'current max(5, 15%)',
   '+5% beyond normal grace', '+10% beyond normal grace', '+15% beyond normal grace',
   '+20% beyond normal grace', '+25% beyond normal grace',
+  '+10% beyond normal grace, max tier+10', '+15% beyond normal grace, max tier+10',
+  '+20% beyond normal grace, max tier+10', '+25% beyond normal grace, max tier+10',
+  '+20% beyond normal grace, max tier+15',
 ];
 const proposalOnly = process.argv.includes('--proposal-only');
 const impactTreatments: EdgeTreatment[] = proposalOnly ? ['one-total'] : ['trim-both', 'one-total', 'preserve-frame'];

@@ -153,6 +153,22 @@ frequency tier. This is evidence for testing a percentage booster, not yet a
 final choice. The next review should compare the percentage rule's actual
 maximum gaps by tier and decide whether it needs an absolute ceiling.
 
+Adding a tier-plus-ten-minute ceiling produced these results:
+
+| Booster beyond normal grace | Maximum | Changed observations |
+| ---: | ---: | ---: |
+| 10% of tier | tier + 10 minutes | 1,686 |
+| 15% of tier | tier + 10 minutes | 2,074 |
+| 20% of tier | tier + 10 minutes | 2,855 |
+| 25% of tier | tier + 10 minutes | 3,620 |
+| 20% of tier | tier + 15 minutes | 3,659 |
+
+Every change in these bounded tests was an upgrade. The results do not identify
+a uniquely correct percentage, but they do show that an uncapped percentage is
+not safe: the observed edge-gap tail includes very large gaps. The defensible
+shape is therefore a percentage booster plus an absolute ceiling, with the
+percentage and ceiling still requiring a product decision.
+
 The existing public/Beta “Hide irregular routes” and Beta “Hide limited-service
 routes” settings are useful for reviewing the visible consequences of a
 candidate. They do not participate in the tier calculation and are not a
@@ -172,6 +188,7 @@ substitute for the census.
 - Candidate rule harness: `scripts/frequency-candidate-rules.ts`
 - Candidate rule tests: `scripts/frequency-candidate-rules.test.ts`
 - Census audit: `scripts/audit-frequency-candidates.ts`
+- Edge-gap distribution audit: `scripts/audit-edge-gap-amounts.ts`
 - Edge-gap impact audit: `scripts/audit-edge-gap-impact.ts`
 - Full-pipeline comparison: `scripts/audit-edge-gap-pipeline.ts`
 - Related issues: [#567](https://github.com/Civic-Minds/Atlas/issues/567),
