@@ -7,7 +7,7 @@ describe('LegalPage', () => {
     render(<LegalPage document="privacy" />);
 
     expect(screen.getByRole('heading', { name: 'Privacy Policy' })).toBeTruthy();
-    expect(screen.getByText('Last updated September 22, 2026.')).toBeTruthy();
+    expect(screen.getByText('Last updated October 3, 2026.')).toBeTruthy();
     expect(screen.getByRole('heading', { name: 'Analytics and performance' })).toBeTruthy();
     expect(screen.getByRole('heading', { name: 'Location features' })).toBeTruthy();
     expect(screen.getAllByRole('link', { name: 'hey@ryanisnota.pro' })).toHaveLength(2);
