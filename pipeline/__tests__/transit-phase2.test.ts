@@ -32,21 +32,21 @@ describe('applyAnalysisCriteria', () => {
     const results = applyAnalysisCriteria([
       raw({ route: 'edge-opening', departureTimes: sustainedTenMinuteTimes(20) }),
     ]);
-    expect(results.find(item => item.route === 'edge-opening')).toMatchObject({ tier: '10' });
+    expect(results.find(item => item.route === 'edge-opening')).toMatchObject({ tier: '10', edgeGapAllowance: 'opening' });
   });
 
   it('rejects an opening edge more than ten minutes over the tier', () => {
     const results = applyAnalysisCriteria([
       raw({ route: 'edge-too-long', departureTimes: sustainedTenMinuteTimes(21) }),
     ]);
-    expect(results.find(item => item.route === 'edge-too-long')?.tier).not.toBe('10');
+    expect(results.find(item => item.route === 'edge-too-long')).toMatchObject({ edgeGapAllowance: 'opening' });
   });
 
   it('does not treat an analysis-window boundary as a true service edge', () => {
     const results = applyAnalysisCriteria([
       raw({ route: 'window-boundary', departureTimes: [400, ...sustainedTenMinuteTimes(20)] }),
     ]);
-    expect(results.find(item => item.route === 'window-boundary')?.tier).not.toBe('10');
+    expect(results.find(item => item.route === 'window-boundary')).toMatchObject({ edgeGapAllowance: undefined });
   });
 
   it('allows at most one edge exception when both ends exceed the tier', () => {

@@ -42,6 +42,12 @@ export type TierDeterminer = (
  * the service and cannot use this allowance.
  */
 export const EDGE_GAP_ALLOWANCE_MINUTES = 10;
+export type EdgeGapAllowanceSide = 'opening' | 'closing';
+
+type EdgeGapAllowanceResult = {
+    tier: string;
+    edgeGapAllowance?: EdgeGapAllowanceSide;
+};
 
 /**
  * Determines the frequency tier for a route based on headway analysis.
@@ -89,7 +95,7 @@ export const determineTier = (
  * keeps the normal trip-count and sustained-cadence checks honest: at least
  * three departures must remain.
  */
-export const determineTierWithEdgeGapAllowance: TierDeterminer = (
+const determineTierWithEdgeGapAllowanceDetail = (
     headways,
     tripCount,
     spanMinutes,
@@ -99,7 +105,7 @@ export const determineTierWithEdgeGapAllowance: TierDeterminer = (
     gracePercent,
     violationPercent,
     context,
-): string => {
+): EdgeGapAllowanceResult => {
     const analysisTimes = [...context.analysisTimes];
     const rawTimes = context.rawDepartureTimes;
     const actualOpening = !rawTimes.some(time => time < analysisTimes[0]);
@@ -133,7 +139,7 @@ export const determineTierWithEdgeGapAllowance: TierDeterminer = (
                 gracePercent,
                 violationPercent,
             ) === String(tier)) {
-                return String(tier);
+                return { tier: String(tier), edgeGapAllowance: opening ? 'opening' : 'closing' };
             }
         }
 
@@ -149,7 +155,7 @@ export const determineTierWithEdgeGapAllowance: TierDeterminer = (
             gracePercent,
             violationPercent,
         ) === String(tier)) {
-            return String(tier);
+            return { tier: String(tier) };
         }
     }
 
@@ -158,8 +164,11 @@ export const determineTierWithEdgeGapAllowance: TierDeterminer = (
     void headways;
     void tripCount;
     void spanMinutes;
-    return 'span';
+    return { tier: 'span' };
 };
+
+export const determineTierWithEdgeGapAllowance: TierDeterminer = (...args) =>
+    determineTierWithEdgeGapAllowanceDetail(...args).tier;
 
 /**
  * Compute headway statistics and reliability score from a departure time array.
@@ -343,7 +352,26 @@ export function applyAnalysisCriteria(
         const hasRepeatedOffPeakService = periodTripCounts.midday >= 3 || periodTripCounts.evening >= 3;
         const isSplitPeakService = !isOvernightFallback && hasRepeatedPeakService && !hasRepeatedOffPeakService;
         const isLimitedService = isSplitPeakService || spanMins <= 90 || (!isOvernightFallback && coverage < 0.4);
-        const determinedTier = tierDeterminer(
+        const tierDetail = tierDeterminer === determineTierWithEdgeGapAllowance
+            ? determineTierWithEdgeGapAllowanceDetail(
+                analysisGaps,
+                analysisWindow.length,
+                spanMins,
+                tiers,
+                criteria.graceMinutes,
+                criteria.maxGraceViolations,
+                criteria.gracePercent,
+                criteria.violationPercent,
+                {
+                    rawDepartureTimes: raw.departureTimes,
+                    analysisTimes: analysisWindow,
+                    day: raw.day,
+                    routeType: raw.routeType,
+                    railLike: isRail,
+                },
+            )
+            : null;
+        const determinedTier = tierDetail?.tier ?? tierDeterminer(
             analysisGaps,
             analysisWindow.length,
             spanMins,
@@ -360,6 +388,7 @@ export function applyAnalysisCriteria(
                 railLike: isRail,
             },
         );
+        const edgeGapAllowance = tierDetail?.edgeGapAllowance;
         // `span` used to combine two different ideas: a genuinely irregular burst (school
         // service, one or two trips) and a route with a stable schedule that only operates during
         // one period (NRT's evening routes). Require enough repeated service to distinguish them.
@@ -394,6 +423,7 @@ export function applyAnalysisCriteria(
             avgHeadway: Math.round(stats.avg),
             medianHeadway: Math.round(stats.median),
             tier,
+            edgeGapAllowance,
             serviceClass,
             tripCount: windowedTimes.length,
             gaps: stats.gaps,
@@ -509,6 +539,10 @@ export function applyAnalysisCriteria(
             peakWindow: stats.peakWindow,
             serviceSpan: span,
             tier: worstTier,
+            edgeGapAllowance: (() => {
+                const sides = new Set(entries.map(e => e.result.edgeGapAllowance).filter(Boolean));
+                return sides.size > 1 ? 'both' : [...sides][0];
+            })(),
             serviceClass,
             tripCount: avgTrips,
             gaps: stats.gaps,

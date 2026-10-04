@@ -19,6 +19,7 @@ interface Props {
   // Limited service
   limited?: boolean;
   limitedHint?: boolean;  // inline hint row (dot + label + "limited" badge)
+  edgeGapAllowance?: 'opening' | 'closing' | 'both';
   // Filtering
   dimmed?: boolean;
   // Branch map highlight (#96)
@@ -34,7 +35,7 @@ interface Props {
  * Owns label color, headway display, and limited-service variants
  * so there's one place to change instead of hunting across SidebarControls.
  */
-export default function RouteDirectionRow({ label, headway, colorHeadway, headwayLabel, trunkHeadway, headwaySuffix, subLabel, live, limited, limitedHint, dimmed, onHoverStart, onHoverEnd, branchHovered, branchDimmed, onClick }: Props) {
+export default function RouteDirectionRow({ label, headway, colorHeadway, headwayLabel, trunkHeadway, headwaySuffix, subLabel, live, limited, limitedHint, edgeGapAllowance, dimmed, onHoverStart, onHoverEnd, branchHovered, branchDimmed, onClick }: Props) {
   const { colorVisionFriendly } = useColorVision();
   const colorMode = colorVisionFriendly ? 'friendly' : 'default';
   const interactive = !!(onHoverStart && onHoverEnd);
@@ -70,6 +71,15 @@ export default function RouteDirectionRow({ label, headway, colorHeadway, headwa
         <span className={`font-bold flex-1 min-w-0 leading-snug break-words ${clickable ? '' : 'text-[var(--text-primary)]'}`}>
           {label}
         </span>
+        {edgeGapAllowance && (
+          <span
+            className="inline-flex items-center text-[var(--text-dim)] shrink-0"
+            title="Atlas added a small allowance for the first or last trip of the day."
+            aria-label="Atlas added a small allowance for the first or last trip of the day"
+          >
+            <span aria-hidden="true" className="text-[10px]">↔</span>
+          </span>
+        )}
         {limited && (
           <span className="inline-flex items-center gap-1 text-[11px] font-black text-[var(--text-primary)] leading-snug shrink-0 whitespace-nowrap">
             <span className="w-2 h-2 rounded-full shrink-0" style={{ background: dotColor }} />

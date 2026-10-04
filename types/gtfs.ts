@@ -288,6 +288,8 @@ export interface AnalysisResult {
     avgHeadway: number;
     medianHeadway: number;
     tier: string;
+    /** Whether a genuine opening or closing service edge used the small edge-gap allowance. */
+    edgeGapAllowance?: 'opening' | 'closing' | 'both';
     /** Whether service is regular, scheduled only during part of the day, or genuinely irregular. */
     serviceClass?: 'regular' | 'time-limited' | 'irregular';
     tripCount: number;
