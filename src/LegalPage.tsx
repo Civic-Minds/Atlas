@@ -9,28 +9,28 @@ type LegalDocument = 'terms' | 'privacy';
 const CONTACT_HREF = 'mailto:hey@ryanisnota.pro?subject=Atlas%20Privacy%20or%20Terms';
 
 function Section({ id, title, children }: { id: string; title: string; children: ReactNode }) {
-  return <section id={id} className="scroll-mt-8"><h2 className="font-black mb-2">{title}</h2><div className="space-y-2">{children}</div></section>;
+  return <section id={id} className="scroll-mt-8"><h2 className="text-base font-black text-[var(--text-primary)] mb-2">{title}</h2><div className="space-y-2">{children}</div></section>;
 }
 
 const CONTENTS = {
   privacy: [
-    ['information', 'Information'],
-    ['analytics', 'Analytics'],
+    ['information', 'Information Atlas handles'],
+    ['analytics', 'Analytics and performance'],
     ['storage', 'Browser storage'],
-    ['location', 'Location'],
-    ['third-party', 'Third-party services'],
-    ['retention', 'Retention'],
-    ['security', 'Security'],
-    ['policy-changes', 'Changes'],
+    ['location', 'Location features'],
+    ['third-party', 'Public data and third-party services'],
+    ['retention', 'Retention and privacy requests'],
+    ['security', 'Children, security, and international processing'],
+    ['policy-changes', 'Changes to this policy'],
     ['contact', 'Contact'],
   ],
   terms: [
     ['using-atlas', 'Using Atlas'],
-    ['accuracy', 'Transit data'],
-    ['third-party', 'Third-party services'],
-    ['attribution', 'Attribution'],
-    ['availability', 'Availability'],
-    ['changes', 'Changes'],
+    ['accuracy', 'Transit data and accuracy'],
+    ['third-party', 'Third-party data and services'],
+    ['attribution', 'Atlas content and attribution'],
+    ['availability', 'Availability and warranties'],
+    ['changes', 'Changes and termination'],
     ['regional-rights', 'Regional rights'],
     ['contact', 'Contact'],
   ],
@@ -41,11 +41,11 @@ export default function LegalPage({ document }: { document: LegalDocument }) {
   return (
     <main className="min-h-screen bg-[var(--bg-app)] text-[var(--text-primary)] px-5 py-8 sm:px-8">
       <div className="max-w-5xl mx-auto">
-        <a href="/" className="inline-flex items-center gap-2 text-sm font-bold text-[var(--accent)] hover:underline"><ArrowLeft className="w-4 h-4" /> Atlas by Civic Minds</a>
+        <a href="/" className="inline-flex items-center gap-2 text-sm font-bold text-[var(--accent)] hover:underline"><ArrowLeft className="w-4 h-4" /> Back to Atlas</a>
         <div className="mt-10 lg:grid lg:grid-cols-[12rem_minmax(0,42rem)] lg:gap-12 lg:items-start">
           <PageContents items={CONTENTS[privacy ? 'privacy' : 'terms'].map(([id, label]) => ({ id, label }))} />
-          <article className="space-y-8 text-sm leading-relaxed">
-          <header><h1 className="text-2xl font-black">{privacy ? 'Privacy Policy' : 'Terms of Service'}</h1><p className="mt-3 text-[var(--text-dim)]">Last updated September 22, 2026.</p></header>
+          <article className="space-y-8 text-sm leading-relaxed text-[var(--text-dim)]">
+          <header><h1 className="text-3xl font-black tracking-tight text-[var(--text-primary)]">{privacy ? 'Privacy Policy' : 'Terms of Service'}</h1><p className="mt-3">Last updated September 22, 2026.</p></header>
           {privacy ? <>
             <p>Atlas is a free public transit map and analysis service operated by Civic Minds. You do not need an account or need to provide personal information to browse the map.</p>
             <Section id="information" title="Information Atlas handles">
@@ -54,6 +54,7 @@ export default function LegalPage({ document }: { document: LegalDocument }) {
             </Section>
             <Section id="analytics" title="Analytics and performance">
               <p>Production Atlas uses Vercel Web Analytics and Vercel Speed Insights to understand usage and measure site performance. These services may receive page views, device and browser information, approximate location, referrer information, and performance measurements.</p>
+              <p>Atlas also uses Cloudflare Web Analytics for page-view and performance measurement. Its beacon may collect timing metrics and dimensions such as country, host, path, referrer, device type, browser, and operating system. Cloudflare says Web Analytics does not collect or use visitors’ personal data or track individual end users across properties.</p>
               <p>Google Analytics 4 may load only when it is configured for the production build and you allow it, or where the current regional consent flow permits it. Google Analytics can receive page views, basic usage events, device and browser information, approximate location, and referrer information. Atlas does not use these analytics services for advertising or account profiling.</p>
               <p>You can allow or decline Google Analytics through <em>Privacy &amp; analytics</em> in the About panel. Atlas also respects Global Privacy Control by declining Google Analytics. Declining Google Analytics does not disable the map.</p>
             </Section>

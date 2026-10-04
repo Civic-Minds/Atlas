@@ -18,8 +18,8 @@ export default function SiteContact({
 }) {
   return (
     <section id={id} className={id ? 'scroll-mt-8' : undefined}>
-      <h2 className="font-black mb-2">{title}</h2>
-      <div className="space-y-2">
+      <h2 className="text-base font-black text-[var(--text-primary)] mb-2">{title}</h2>
+      <div className="space-y-2 text-[var(--text-dim)]">
         <p>{children}</p>
         <a
           className="inline-flex items-center gap-2 font-bold text-[var(--accent)] hover:underline"
