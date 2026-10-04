@@ -64,8 +64,8 @@ type-checking, and a complete local archive regression.
    matter how many other gaps pass?
 4. **Minimum evidence:** How many departures must a route-period contain before
    Atlas can claim sustained frequency?
-5. **Combined effect:** What does the complete selected rule do when all parts
-   are applied together through the production processor?
+5. **Display:** How should Atlas describe sustained frequency and any active
+   exceptions without overstating what the data proves?
 
 ## Results
 
@@ -261,6 +261,62 @@ behaviour: one- and two-trip periods remain irregular, while three repeated
 departures can still represent a real short-window schedule. This is a study
 recommendation, not a production change.
 
+## Display
+
+Q5 is a communication decision, not another frequency calculation. The display
+should tell people what Atlas can support from the schedule without turning
+every processing detail into a route-card warning.
+
+### Recommended labels
+
+| Data state | Recommended display | Explanation when opened |
+| --- | --- | --- |
+| Finite sustained tier | `typically every N min` | The typical scheduled gap in the selected period. |
+| Sustained branch range | `typically every X–Y min` | The branch has a range of typical scheduled gaps rather than one value. |
+| Uneven period with a useful range | Add `longest gap N min` | The longest wait is materially longer than the typical range, so the typical value should not be read as a guarantee. |
+| Predictable part-day service (`time-limited`) | Keep the numeric frequency and add a `limited service` label where the period or card needs context | Service operates during only part of the normal window but has a repeated schedule while operating. |
+| No finite sustained tier (`infrequent`) | `infrequent` | Atlas could not confirm a sustained finite frequency tier; it should not present a faster numeric cadence as the route's normal service. |
+| Exceptional or unsustained pattern (`irregular`) | `irregular service` or `no sustained frequency` | Atlas found too little repeated service or a pattern too uneven to support a sustained frequency claim. |
+| Confirmed no departures in the selected period | `no scheduled service` | The route has no scheduled departures in this period. |
+| Metric unavailable or not safely computable | `no data for this period` | Atlas does not have enough reliable data to make a claim. This is intentionally different from confirmed no service. |
+
+The current route-card code already uses `typically every`, branch ranges,
+longest-gap text, `limited service`, `no scheduled service`, and `no data for
+this period` in different surfaces. The study recommendation is to preserve
+the cautious numeric wording and make the underlying distinction explicit:
+`time-limited` means a predictable schedule that operates during part of the
+window; `irregular` means Atlas cannot confirm sustained frequency. The current
+shared “limited” treatment is too ambiguous for those two cases.
+
+### Data-quality and exception notices
+
+Keep these notices separate from the frequency number:
+
+- **Outdated schedule:** keep the existing notice and explain that Atlas kept
+  the last successful schedule because the source feed may be out of date.
+- **New schedule data:** keep the review notice while Atlas checks the feed.
+- **Corrected data:** keep the notice when Atlas filtered or corrected a known
+  source problem, with the explanation of what changed.
+- **Route data quality:** keep a route-specific warning when geometry or another
+  source problem affects interpretation.
+- **First/last-trip allowance:** keep the small info icon and side-panel
+  explanation. The concise copy should remain: “Atlas added a small allowance
+  for the first or last trip of the day.” It must also say that this does not
+  apply to gaps in the middle of the day.
+
+Internal near-miss counts and hard-gap checks should remain in the technical
+methodology rather than appearing beside every route. They affect whether a
+tier qualifies, but exposing the arithmetic on every card would imply a level
+of precision the display is not trying to provide.
+
+### Q5 recommendation
+
+Use plain-language state labels on the route card, keep the cautious `typically`
+wording for numeric cadences, distinguish `time-limited` from `irregular`, and
+reserve the side panel for explanations about stale, reviewed, corrected, or
+edge-allowance data. This is a display recommendation only; no UI copy or
+production behaviour has changed as part of the study.
+
 ## Decision log
 
 - Edge-gap proposal: one true service-edge exception total, with a fixed
@@ -273,7 +329,9 @@ recommendation, not a production change.
 - Minimum evidence: retain the existing minimum of three departures; higher
   thresholds remove many consistent sparse periods, while two departures are
   not enough to demonstrate sustained cadence.
-- Combined-rule review: pending.
+- Display: use cautious numeric cadence wording, distinguish predictable
+  time-limited service from irregular service, and keep processing exceptions
+  in notices or the side panel rather than route-card arithmetic.
 
 ## Supporting artifacts
 
