@@ -30,9 +30,12 @@ const CONTENTS = {
     ['accuracy', 'Accuracy'],
     ['third-party', 'Third-party services'],
     ['attribution', 'Attribution'],
+    ['licence', 'Licence'],
     ['availability', 'Availability'],
     ['feedback', 'Feedback'],
     ['changes', 'Changes'],
+    ['liability', 'Liability'],
+    ['enforcement', 'Enforcement'],
     ['regional-rights', 'Regional rights'],
     ['contact', 'Contact'],
   ],
@@ -100,9 +103,12 @@ export default function LegalPage({ document }: { document: LegalDocument }) {
             </Section>
             <Section id="third-party" title="Third-party services"><p>Transit feeds, map data, map tiles, linked agency resources, and other third-party materials remain subject to their own terms, licenses, and availability. Atlas does not control third-party services and is not responsible for their content or outages.</p></Section>
             <Section id="attribution" title="Attribution"><p>Civic Minds owns Atlas’s software, branding, presentation, and original analysis except where stated otherwise. You must preserve applicable attribution and license notices for third-party data and services.</p></Section>
+            <Section id="licence" title="Licence"><p>Subject to these Terms, Civic Minds grants you a limited, revocable, non-exclusive, non-transferable licence to access and use Atlas for lawful personal, educational, or research use. This licence does not transfer ownership or permit you to copy, modify, redistribute, sell, or commercially exploit Atlas’s software, branding, or original analysis, except where Civic Minds or an applicable third-party licence expressly allows it. Applicable third-party licences govern third-party materials.</p></Section>
             <Section id="availability" title="Availability"><p>Atlas is provided free of charge and on an “as-is” and “as-available” basis. We do not promise uninterrupted availability, complete coverage, current data, accurate results, or continued support for any particular feature or agency.</p></Section>
-            <Section id="feedback" title="Feedback"><p>When you send feedback, report a problem, or attach supporting material, you give Atlas the information needed to respond, investigate the report, document a correction, and improve the service. Do not send confidential information, precise personal location data, or anything you do not want included in that support record.</p></Section>
+            <Section id="feedback" title="Feedback"><p>When you send feedback, report a problem, or attach supporting material, you grant Civic Minds a worldwide, non-exclusive, royalty-free licence to use, reproduce, adapt, and publish it to respond, investigate, document corrections, and improve Atlas. We may quote or adapt feedback for those purposes without identifying you publicly. Do not send confidential information, precise personal location data, or anything you do not want included in that support record.</p></Section>
             <Section id="changes" title="Changes"><p>Atlas may make experimental, research, or Beta features available on a separate deployment. These features may change, be incomplete, have limited coverage, or be removed without notice. Results from a Beta or research feature should be treated as provisional and checked against the relevant source before being relied on.</p><p>We may change, suspend, or discontinue Atlas or any feature at any time. We may also update these Terms when the service or its practices change. The date at the top shows when the current version took effect.</p></Section>
+            <Section id="liability" title="Liability"><p>To the extent permitted by law, Civic Minds is not liable for indirect, incidental, special, consequential, or similar losses arising from your use of or reliance on Atlas, including losses caused by unavailable, delayed, incomplete, or inaccurate transit information. Nothing in these Terms limits liability that cannot legally be limited or excluded.</p></Section>
+            <Section id="enforcement" title="Enforcement"><p>We may limit or suspend access to Atlas when reasonably necessary to protect the service, investigate misuse, address security or operational risks, comply with law, or enforce these Terms. We are not required to monitor every use of Atlas or preserve access to any particular feature.</p></Section>
             <Section id="regional-rights" title="Regional rights"><p>Depending on where you live, consumer, privacy, and other legal rights may apply in addition to these Terms. Nothing in these Terms is intended to remove rights that cannot legally be waived.</p></Section>
             <SiteContact id="contact" title="Contact" subject="Atlas Privacy or Terms" linkLabel="hey@ryanisnota.pro">
               Questions about these Terms can be sent to us.
