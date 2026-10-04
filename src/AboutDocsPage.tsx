@@ -1,8 +1,25 @@
 import { ArrowLeft } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { FEATURES } from '../shared/config';
+import PageContents from './components/PageContents';
 import SiteContact from './components/SiteContact';
 import SiteFooter from './components/SiteFooter';
+
+const DOCS_CONTENTS = [
+  ['overview', 'Overview'],
+  ['what-atlas-does', 'Capabilities'],
+  ['data-model', 'Model'],
+  ['data-products', 'Products'],
+  ['data-flow', 'Pipeline'],
+  ['frequency', 'Frequency'],
+  ['service-classification', 'Service'],
+  ['map-architecture', 'Mapping'],
+  ['corrections', 'Corrections'],
+  ['pipeline-changes', 'Change process'],
+  ['quality', 'Quality'],
+  ['validation', 'Validation'],
+  ['glossary', 'Glossary'],
+] as const;
 
 function Section({ id, title, children }: { id?: string; title: string; children: ReactNode }) {
   return (
@@ -36,24 +53,7 @@ export default function AboutDocsPage() {
         </a>
 
         <div className="mt-10 lg:grid lg:grid-cols-[12rem_minmax(0,42rem)] lg:gap-12 lg:items-start">
-          <nav aria-label="Documentation sections" className="mb-8 rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-btn)] p-4 lg:sticky lg:top-8 lg:mb-0 lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0 lg:pt-14">
-            <p className="text-xs font-black uppercase tracking-wide text-[var(--text-muted)] mb-2">On this page</p>
-            <div className="grid gap-1.5 text-sm lg:block lg:space-y-2">
-              <a className="block text-[var(--accent)] hover:underline" href="#overview">Overview</a>
-              <a className="block text-[var(--accent)] hover:underline" href="#what-atlas-does">Capabilities</a>
-              <a className="block text-[var(--accent)] hover:underline" href="#data-model">Model</a>
-              <a className="block text-[var(--accent)] hover:underline" href="#data-products">Products</a>
-              <a className="block text-[var(--accent)] hover:underline" href="#data-flow">Pipeline</a>
-              <a className="block text-[var(--accent)] hover:underline" href="#frequency">Frequency</a>
-              <a className="block text-[var(--accent)] hover:underline" href="#service-classification">Service</a>
-              <a className="block text-[var(--accent)] hover:underline" href="#map-architecture">Mapping</a>
-              <a className="block text-[var(--accent)] hover:underline" href="#corrections">Corrections</a>
-              <a className="block text-[var(--accent)] hover:underline" href="#pipeline-changes">Change process</a>
-              <a className="block text-[var(--accent)] hover:underline" href="#quality">Quality</a>
-              <a className="block text-[var(--accent)] hover:underline" href="#validation">Validation</a>
-              <a className="block text-[var(--accent)] hover:underline" href="#glossary">Glossary</a>
-            </div>
-          </nav>
+          <PageContents items={DOCS_CONTENTS.map(([id, label]) => ({ id, label }))} />
 
           <article className="space-y-8">
           <header>
@@ -353,10 +353,6 @@ export default function AboutDocsPage() {
           <SiteContact title="Technical questions and feedback" subject="Atlas Feedback" linkLabel="Contact us with a question or correction">
             Questions about the methodology, a suspected data problem, or a transit agency’s coverage are welcome. Feedback is most useful when it identifies the agency, route, schedule period, and specific result that needs review.
           </SiteContact>
-
-          <Section title="Privacy">
-            <p>You can browse Atlas without an account. Read the <a className="text-[var(--accent)] hover:underline" href="/privacy">Privacy Policy</a> to learn about analytics and browser preferences.</p>
-          </Section>
 
           <SiteFooter />
           </article>

@@ -4,18 +4,20 @@ import type { ReactNode } from 'react';
 const CONTACT_EMAIL = 'hey@ryanisnota.pro';
 
 export default function SiteContact({
+  id,
   title,
   children,
   subject,
   linkLabel,
 }: {
+  id?: string;
   title: string;
   children: ReactNode;
   subject: string;
   linkLabel: string;
 }) {
   return (
-    <section>
+    <section id={id} className={id ? 'scroll-mt-8' : undefined}>
       <h2 className="font-black mb-2">{title}</h2>
       <div className="space-y-2">
         <p>{children}</p>
