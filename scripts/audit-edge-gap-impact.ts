@@ -28,8 +28,17 @@ const amountRules: Record<string, (tier: number) => number> = {
   '+25%': tier => tier * 1.25,
   '+50%': tier => tier * 1.50,
   'current max(5, 15%)': tier => tier + Math.max(5, Math.round(tier * 0.15)),
+  '+5% beyond normal grace': tier => tier + Math.max(DEFAULT_CRITERIA.graceMinutes, Math.round(tier * DEFAULT_CRITERIA.gracePercent)) + tier * 0.05,
+  '+10% beyond normal grace': tier => tier + Math.max(DEFAULT_CRITERIA.graceMinutes, Math.round(tier * DEFAULT_CRITERIA.gracePercent)) + tier * 0.10,
+  '+15% beyond normal grace': tier => tier + Math.max(DEFAULT_CRITERIA.graceMinutes, Math.round(tier * DEFAULT_CRITERIA.gracePercent)) + tier * 0.15,
+  '+20% beyond normal grace': tier => tier + Math.max(DEFAULT_CRITERIA.graceMinutes, Math.round(tier * DEFAULT_CRITERIA.gracePercent)) + tier * 0.20,
+  '+25% beyond normal grace': tier => tier + Math.max(DEFAULT_CRITERIA.graceMinutes, Math.round(tier * DEFAULT_CRITERIA.gracePercent)) + tier * 0.25,
 };
-const impactAmounts = ['+10 minutes', '+15 minutes', '+20 minutes', '+10%', '+15%', 'current max(5, 15%)'];
+const impactAmounts = [
+  '+10 minutes', '+15 minutes', '+20 minutes', '+10%', '+15%', 'current max(5, 15%)',
+  '+5% beyond normal grace', '+10% beyond normal grace', '+15% beyond normal grace',
+  '+20% beyond normal grace', '+25% beyond normal grace',
+];
 const proposalOnly = process.argv.includes('--proposal-only');
 const impactTreatments: EdgeTreatment[] = proposalOnly ? ['one-total'] : ['trim-both', 'one-total', 'preserve-frame'];
 const amountsToRun = proposalOnly ? ['+10 minutes'] : impactAmounts;

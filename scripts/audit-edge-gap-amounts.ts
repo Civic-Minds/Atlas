@@ -42,6 +42,8 @@ type EdgeStats = {
   actualAmountCapture: Record<string, number>;
   windowAmountCapture: Record<string, number>;
   excessBuckets: Record<string, number>;
+  actualEdgeRatios: number[];
+  actualEdgeToMedianInternalRatios: number[];
   examples: Array<Record<string, unknown>>;
 };
 
@@ -60,11 +62,36 @@ for (const tier of [5, 8, 10, 15, 20, 30, 60]) {
     actualAmountCapture: Object.fromEntries(Object.keys(amountRules).map(name => [name, 0])),
     windowAmountCapture: Object.fromEntries(Object.keys(amountRules).map(name => [name, 0])),
     excessBuckets: {},
+    actualEdgeRatios: [],
+    actualEdgeToMedianInternalRatios: [],
     examples: [],
   });
 }
 
 const increment = (record: Record<string, number>, key: string) => { record[key] = (record[key] ?? 0) + 1; };
+
+const median = (values: number[]): number | null => {
+  if (values.length === 0) return null;
+  const sorted = [...values].sort((a, b) => a - b);
+  const middle = Math.floor(sorted.length / 2);
+  return sorted.length % 2 === 0 ? (sorted[middle - 1] + sorted[middle]) / 2 : sorted[middle];
+};
+
+const quantiles = (values: number[]) => {
+  const sorted = [...values].sort((a, b) => a - b);
+  if (sorted.length === 0) return null;
+  const at = (p: number) => sorted[Math.min(sorted.length - 1, Math.floor((sorted.length - 1) * p))];
+  return {
+    n: sorted.length,
+    p25: at(0.25),
+    p50: at(0.50),
+    p75: at(0.75),
+    p90: at(0.90),
+    p95: at(0.95),
+    p99: at(0.99),
+    max: sorted[sorted.length - 1],
+  };
+};
 
 const readFeed = async (archive: string): Promise<GtfsData | null> => {
   try {
@@ -144,10 +171,15 @@ for (let index = 0; index < archives.length; index++) {
       const bothEligible = openingGap > tier && closingGap > tier && internalPasses && window.times.length - 2 >= 3;
       const openingEligible = openingGap > tier && internalPasses && (closingGap <= tier || bothEligible) && window.times.length - 1 >= 3;
       const closingEligible = closingGap > tier && internalPasses && (openingGap <= tier || bothEligible) && window.times.length - 1 >= 3;
+      const internalMedian = median(gaps.slice(1, -1));
       if (openingEligible) {
         summary.opening++;
         if (window.actualOpening) summary.actualOpening++;
         else summary.windowOpening++;
+        if (window.actualOpening) {
+          summary.actualEdgeRatios.push(openingGap / tier);
+          if (internalMedian != null && internalMedian > 0) summary.actualEdgeToMedianInternalRatios.push(openingGap / internalMedian);
+        }
         const excess = openingGap - tier;
         const bucket = excess <= 5 ? '1–5 minutes over' : excess <= 10 ? '6–10 minutes over' : excess <= 15 ? '11–15 minutes over' : excess <= 20 ? '16–20 minutes over' : 'more than 20 minutes over';
         increment(summary.excessBuckets, bucket);
@@ -164,6 +196,10 @@ for (let index = 0; index < archives.length; index++) {
         summary.closing++;
         if (window.actualClosing) summary.actualClosing++;
         else summary.windowClosing++;
+        if (window.actualClosing) {
+          summary.actualEdgeRatios.push(closingGap / tier);
+          if (internalMedian != null && internalMedian > 0) summary.actualEdgeToMedianInternalRatios.push(closingGap / internalMedian);
+        }
         const excess = closingGap - tier;
         const bucket = excess <= 5 ? '1–5 minutes over' : excess <= 10 ? '6–10 minutes over' : excess <= 15 ? '11–15 minutes over' : excess <= 20 ? '16–20 minutes over' : 'more than 20 minutes over';
         increment(summary.excessBuckets, bucket);
@@ -181,4 +217,10 @@ for (let index = 0; index < archives.length; index++) {
   }
 }
 
-console.log(JSON.stringify({ archiveCount: archives.length, feedsWithRows, skipped, rawRows, periods, tiers: Object.fromEntries(stats) }, null, 2));
+const outputTiers = Object.fromEntries([...stats.entries()].map(([tier, summary]) => [tier, {
+  ...summary,
+  actualEdgeRatios: quantiles(summary.actualEdgeRatios),
+  actualEdgeToMedianInternalRatios: quantiles(summary.actualEdgeToMedianInternalRatios),
+}]));
+
+console.log(JSON.stringify({ archiveCount: archives.length, feedsWithRows, skipped, rawRows, periods, tiers: outputTiers }, null, 2));

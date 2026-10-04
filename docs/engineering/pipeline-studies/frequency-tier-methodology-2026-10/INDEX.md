@@ -112,6 +112,47 @@ from long schedules. This is a recommendation, not a production change; it
 still needs a human decision and a focused review of representative examples
 before implementation.
 
+## Edge-gap booster follow-up
+
+The edge audit was extended to measure genuine opening and closing gaps against
+the candidate tier and against the median internal gap in the same period. It
+covered the same 1,160-archive census and excluded analysis-window boundaries
+when service continued outside the window.
+
+| Tier | Genuine edge candidates | Median edge / tier | 75th-percentile edge / tier | Captured by +10% | +20% | +50% |
+| ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| 8 | 86 | 1.25× | 2.38× | 0 | 18 | 50 |
+| 10 | 1,007 | 1.60× | 3.10× | 109 | 238 | 481 |
+| 15 | 2,233 | 1.67× | 3.07× | 273 | 454 | 948 |
+| 20 | 3,354 | 1.50× | 3.00× | 422 | 612 | 1,777 |
+| 30 | 8,301 | 2.00× | 4.97× | 985 | 1,694 | 2,981 |
+| 60 | 11,870 | 1.75× | 5.00× | 2,532 | 3,754 | 5,449 |
+
+This means a single percentage booster is unlikely to describe every edge
+case. A small booster captures only a minority of genuine edge candidates,
+while a booster large enough to capture most candidates would also admit very
+large gaps. The next test should compare percentage boosters with an explicit
+maximum, and should keep the edge booster separate from the internal-gap
+exception count.
+
+The full-census impact test used one total edge exception and measured the
+booster as an addition to the existing per-gap grace:
+
+| Edge booster beyond normal grace | Changed route-period observations | Upgrades | Downgrades |
+| ---: | ---: | ---: | ---: |
+| 5% of tier | 1,389 | 1,389 | 0 |
+| 10% of tier | 2,389 | 2,389 | 0 |
+| 15% of tier | 3,031 | 3,031 | 0 |
+| 20% of tier | 4,332 | 4,332 | 0 |
+| 25% of tier | 5,297 | 5,297 | 0 |
+| Existing +10-minute proposal | 4,207 | 4,207 | 0 |
+
+The 20% candidate has a similar total impact to the existing +10-minute
+proposal, but it is not equivalent: its absolute allowance grows with the
+frequency tier. This is evidence for testing a percentage booster, not yet a
+final choice. The next review should compare the percentage rule's actual
+maximum gaps by tier and decide whether it needs an absolute ceiling.
+
 The existing public/Beta “Hide irregular routes” and Beta “Hide limited-service
 routes” settings are useful for reviewing the visible consequences of a
 candidate. They do not participate in the tier calculation and are not a
