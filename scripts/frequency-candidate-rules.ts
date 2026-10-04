@@ -6,7 +6,7 @@ export type InternalPolicy = {
   minimum: number;
   maximum?: number;
 };
-export type HardGapPolicy = 'current' | 'one-and-a-half' | 'double';
+export type HardGapPolicy = 'current' | 'one-and-a-quarter' | 'one-and-a-half' | 'one-and-three-quarters' | 'double';
 
 export interface CandidateRuleOptions {
   edgeMode: EdgeMode;
@@ -26,7 +26,9 @@ const graceFor = (tier: number, options: CandidateRuleOptions): number =>
   Math.max(options.graceMinutes ?? 5, Math.round(tier * (options.gracePercent ?? 0.15)));
 
 const hardLimitFor = (tier: number, grace: number, policy: HardGapPolicy): number => {
+  if (policy === 'one-and-a-quarter') return Math.round(tier * 1.25);
   if (policy === 'one-and-a-half') return Math.round(tier * 1.5);
+  if (policy === 'one-and-three-quarters') return Math.round(tier * 1.75);
   if (policy === 'double') return tier * 2;
   return tier + grace;
 };

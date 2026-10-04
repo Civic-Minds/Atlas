@@ -43,6 +43,12 @@ describe('frequency candidate rules', () => {
     expect(determineCandidateTier(times, [10], base).tier).toBe('span');
   });
 
+  it('supports explicit proportional hard-gap thresholds', () => {
+    const times = [0, 10, 20, 35, 45, 55];
+    expect(determineCandidateTier(times, [10], { ...base, hardGap: 'one-and-a-quarter' }).tier).toBe('span');
+    expect(determineCandidateTier(times, [10], { ...base, hardGap: 'one-and-a-half' }).tier).toBe('10');
+  });
+
   it('does not qualify a two-trip period by trimming its only edge gap', () => {
     const result = determineCandidateTier([0, 20], [10, 15, 20, 30], {
       ...base,

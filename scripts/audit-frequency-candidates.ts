@@ -70,7 +70,7 @@ for (const internal of INTERNAL_CANDIDATES) {
     hardGap: 'current',
   });
 }
-for (const hardGap of ['one-and-a-half', 'double'] as HardGapPolicy[]) {
+for (const hardGap of ['one-and-a-quarter', 'one-and-a-half', 'one-and-three-quarters', 'double'] as HardGapPolicy[]) {
   candidates.push({
     name: `hard-gap-${hardGap}`,
     group: 'hardGap',
@@ -79,6 +79,23 @@ for (const hardGap of ['one-and-a-half', 'double'] as HardGapPolicy[]) {
     internal: CURRENT_INTERNAL_POLICY,
     hardGap,
   });
+}
+
+const q3InternalPolicies = [
+  { name: 'fixed-2', percent: 0, minimum: 2, maximum: 2 },
+  { name: 'percent-30-cap-3', percent: 0.30, minimum: 2, maximum: 3 },
+];
+for (const internal of q3InternalPolicies) {
+  for (const hardGap of ['current', 'one-and-a-quarter', 'one-and-a-half', 'one-and-three-quarters', 'double'] as HardGapPolicy[]) {
+    candidates.push({
+      name: `q3-${internal.name}-${hardGap}`,
+      group: 'hardGap',
+      edgeMode: 'none',
+      edgeLimit: 'grace',
+      internal,
+      hardGap,
+    });
+  }
 }
 
 type CandidateSummary = {
@@ -226,14 +243,20 @@ for (let index = 0; index < allArchives.length; index++) {
 
 for (const period of periods) {
   for (const candidate of candidates) {
+    // Keep Q3 separate from the unresolved short-period question (Q4). The
+    // Q3 comparison uses periods with at least four selected departures.
+    if (candidate.name.startsWith('q3-') && period.times.length < 4) continue;
     const result = determineCandidateTier(period.times, period.tiers, candidate);
+    const comparisonTier = candidate.name.startsWith('q3-')
+      ? determineCandidateTier(period.times, period.tiers, { ...candidate, hardGap: 'current' }).tier
+      : period.currentTier;
     const summary = summaries.get(candidate.name)!;
     if (result.edgeWarnings.length > 0) summary.edgeWarnings += result.edgeWarnings.length;
-    if (result.tier === period.currentTier) continue;
+    if (result.tier === comparisonTier) continue;
     summary.changes++;
-    if (rank(result.tier) < rank(period.currentTier)) summary.upgrades++;
+    if (rank(result.tier) < rank(comparisonTier)) summary.upgrades++;
     else summary.downgrades++;
-    increment(summary.tierChanges, `${period.currentTier}->${result.tier}`);
+    increment(summary.tierChanges, `${comparisonTier}->${result.tier}`);
     increment(summary.dayTypes, period.dayType);
     increment(summary.gapBuckets, period.gapBucket);
     if (summary.examples.length < 20) {
@@ -244,10 +267,11 @@ for (const period of periods) {
         dir: period.dir,
         headsign: period.headsign,
         mode: period.mode,
-        currentTier: period.currentTier,
+        currentTier: comparisonTier,
         candidateTier: result.tier,
         edgeWarnings: result.edgeWarnings,
         trips: period.times.length,
+        gaps: period.times.slice(1).map((time, index) => time - period.times[index]),
       });
     }
   }
@@ -259,6 +283,7 @@ const output = {
   skipped,
   rawRows,
   periods: periods.length,
+  q3EligiblePeriods: periods.filter(period => period.times.length >= 4).length,
   distinctAgencies: agencies.size,
   distinctRoutes: routeKeys.size,
   distinctRoutesWithEligiblePeriods: eligibleRouteKeys.size,

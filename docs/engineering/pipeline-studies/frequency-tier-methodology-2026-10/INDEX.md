@@ -174,13 +174,58 @@ routes” settings are useful for reviewing the visible consequences of a
 candidate. They do not participate in the tier calculation and are not a
 substitute for the census.
 
+## Hard-gap follow-up
+
+The Q3 comparison used only periods with at least four selected departures so
+that the unresolved short-period question did not determine the result. It
+also kept the edge allowance disabled and compared each hard-gap threshold
+against the same internal-gap policy with the current hard boundary.
+
+The full census contained 332,239 eligible periods. A candidate hard boundary
+was tested under both bounded internal-gap policies considered for Q2:
+
+- fixed two internal near misses; and
+- 30% of gaps, capped at three near misses.
+
+| Hard boundary | Fixed 2: changed | Fixed 2: faster / slower | 30% capped at 3: changed | 30% capped at 3: faster / slower |
+| --- | ---: | ---: | ---: | ---: |
+| Existing grace boundary | 0 | 0 / 0 | 0 | 0 / 0 |
+| 1.25× target | 9,095 | 7,191 / 1,904 | 10,696 | 8,263 / 2,433 |
+| 1.5× target | 21,230 | 21,210 / 20 | 25,105 | 25,085 / 20 |
+| 1.75× target | 25,866 | 25,864 / 2 | 30,602 | 30,600 / 2 |
+| 2× target | 34,585 | 34,585 / 0 | 40,814 | 40,814 / 0 |
+
+“Faster” means the candidate allowed a period to claim a faster frequency
+tier. That is the dangerous direction for this question: a route with a very
+large internal hole can look more frequent because the hard boundary was
+relaxed.
+
+The examples show why the wider thresholds are not defensible. With a 1.25×
+boundary, one Wellington Cable Car period moved from irregular to a 60-minute
+tier with gaps including 70 minutes among otherwise roughly hourly service.
+With a 1.5× boundary, another period moved to a 60-minute tier despite an
+82-minute internal gap. With a 2× boundary, a period with two 120-minute gaps
+could qualify for a 60-minute tier.
+
+The Q3 recommendation is therefore to keep the existing hard boundary:
+
+> Any internal gap longer than the normal grace limit — `T + max(5 minutes,
+> 15% of T)` — automatically fails that candidate tier. The internal near-miss
+> allowance may not excuse a gap beyond this limit.
+
+This is a recommendation, not a production change. It should remain separate
+from the pending decisions about the number of internal exceptions and the
+minimum evidence required for short periods.
+
 ## Decision log
 
 - Edge-gap proposal: one true service-edge exception total, with a fixed
   tier-plus-ten-minute ceiling, was approved for implementation after the
   full-census and full-pipeline validation.
 - Internal near-miss policy: pending this study.
-- Hard-gap policy: pending this study.
+- Hard-gap policy: recommendation is to retain the existing grace boundary;
+  no larger multiplier should be allowed to turn a large internal gap into a
+  near miss.
 - Short-period and combined-rule review: pending this study.
 
 ## Supporting artifacts
