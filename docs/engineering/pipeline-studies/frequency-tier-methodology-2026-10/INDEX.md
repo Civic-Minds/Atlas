@@ -271,7 +271,7 @@ every processing detail into a route-card warning.
 
 | Data state | Recommended display | Explanation when opened |
 | --- | --- | --- |
-| Finite sustained tier | `typically every N min` | The typical scheduled gap in the selected period. |
+| Finite sustained tier | Recommended: `typically every N min` | The typical scheduled gap in the selected period. |
 | Sustained branch range | `typically every X–Y min` | The branch has a range of typical scheduled gaps rather than one value. |
 | Uneven period with a useful range | Add `longest gap N min` | The longest wait is materially longer than the typical range, so the typical value should not be read as a guarantee. |
 | Predictable part-day service (`time-limited`) | Keep the numeric frequency and add a `limited service` label where the period or card needs context | Service operates during only part of the normal window but has a repeated schedule while operating. |
@@ -280,10 +280,12 @@ every processing detail into a route-card warning.
 | Confirmed no departures in the selected period | `no scheduled service` | The route has no scheduled departures in this period. |
 | Metric unavailable or not safely computable | `no data for this period` | Atlas does not have enough reliable data to make a claim. This is intentionally different from confirmed no service. |
 
-The current route-card code already uses `typically every`, branch ranges,
+The browser check found that the current main route card still renders a
+numeric cadence as `every N min` (for example, `every 7 min`). The code also
+contains the more cautious `typically every` helper and uses branch ranges,
 longest-gap text, `limited service`, `no scheduled service`, and `no data for
-this period` in different surfaces. The study recommendation is to preserve
-the cautious numeric wording and make the underlying distinction explicit:
+this period` in different surfaces. The study recommendation is to use the
+cautious wording consistently and make the underlying distinction explicit:
 `time-limited` means a predictable schedule that operates during part of the
 window; `irregular` means Atlas cannot confirm sustained frequency. The current
 shared “limited” treatment is too ambiguous for those two cases.
