@@ -11,14 +11,15 @@ import {
   CURRENT_INTERNAL_POLICY,
   INTERNAL_CANDIDATES,
   CandidateRuleOptions,
+  InternalPolicy,
   EdgeLimit,
   EdgeMode,
   HardGapPolicy,
   determineCandidateTier,
 } from './frequency-candidate-rules';
 
-type CandidateGroup = 'edge' | 'internal' | 'hardGap' | 'minimumEvidence';
-type Candidate = CandidateRuleOptions & { name: string; group: CandidateGroup };
+type CandidateGroup = 'edge' | 'internal' | 'hardGap' | 'minimumEvidence' | 'q2Internal';
+type Candidate = CandidateRuleOptions & { name: string; group: CandidateGroup; targetTier?: number };
 type Period = {
   feed: string;
   route: string;
@@ -70,6 +71,69 @@ for (const internal of INTERNAL_CANDIDATES) {
     hardGap: 'current',
   });
 }
+
+// Q2 study candidates. These compare tier-specific percentage allowances against
+// a strict zero-exception reference. The current 30% rule is intentionally not
+// used as the reference or treated as a recommendation.
+const q2Tiers = [5, 8, 10, 15, 20, 30, 60];
+const q2Percentages = [0.05, 0.10, 0.15, 0.20, 0.25];
+const q2Floors = [0, 1];
+const q2Caps: Array<number | undefined> = [undefined, 3, 5];
+const q2PolicyName = (percent: number, floor: number, cap: number | undefined): string =>
+  `p${Math.round(percent * 100)}-floor${floor}-cap${cap ?? 'none'}`;
+for (const targetTier of q2Tiers) {
+  for (const percent of q2Percentages) {
+    for (const minimum of q2Floors) {
+      for (const maximum of q2Caps) {
+        const policyName = q2PolicyName(percent, minimum, maximum);
+        candidates.push({
+          name: `q2-tier-${targetTier}-${policyName}`,
+          group: 'q2Internal',
+          targetTier,
+          edgeMode: 'none',
+          edgeLimit: 'grace',
+          internal: {
+            name: `q2-tier-${targetTier}-${policyName}`,
+            percent: 0,
+            percentByTier: { [targetTier]: percent },
+            minimum,
+            maximum,
+          },
+          hardGap: 'current',
+          minimumEvidence: 3,
+        });
+      }
+    }
+  }
+}
+
+const q2Curves: Record<string, Record<number, number>> = {
+  'curve-20-15-10-5-5': { 5: 0.20, 8: 0.20, 10: 0.20, 15: 0.15, 20: 0.10, 30: 0.05, 60: 0.05 },
+  'curve-15-10-10-5-5': { 5: 0.15, 8: 0.15, 10: 0.15, 15: 0.10, 20: 0.10, 30: 0.05, 60: 0.05 },
+  'curve-10-10-5-5-5': { 5: 0.10, 8: 0.10, 10: 0.10, 15: 0.10, 20: 0.05, 30: 0.05, 60: 0.05 },
+};
+for (const [curveName, percentByTier] of Object.entries(q2Curves)) {
+  for (const minimum of q2Floors) {
+    for (const maximum of q2Caps) {
+      const policyName = `${curveName}-floor${minimum}-cap${maximum ?? 'none'}`;
+      candidates.push({
+        name: `q2-${policyName}`,
+        group: 'q2Internal',
+        edgeMode: 'none',
+        edgeLimit: 'grace',
+        internal: {
+          name: `q2-${policyName}`,
+          percent: 0,
+          percentByTier,
+          minimum,
+          maximum,
+        },
+        hardGap: 'current',
+        minimumEvidence: 3,
+      });
+    }
+  }
+}
 for (const hardGap of ['one-and-a-quarter', 'one-and-a-half', 'one-and-three-quarters', 'double'] as HardGapPolicy[]) {
   candidates.push({
     name: `hard-gap-${hardGap}`,
@@ -112,6 +176,7 @@ for (const minimumEvidence of [2, 3, 4, 5, 6]) {
 
 type CandidateSummary = {
   group: CandidateGroup;
+  targetTier?: number;
   changes: number;
   upgrades: number;
   downgrades: number;
@@ -125,6 +190,7 @@ type CandidateSummary = {
 
 const summaries = new Map<string, CandidateSummary>(candidates.map(candidate => [candidate.name, {
   group: candidate.group,
+  targetTier: candidate.targetTier,
   changes: 0,
   upgrades: 0,
   downgrades: 0,
@@ -193,6 +259,7 @@ let baselineMismatches = 0;
 const agencies = new Set<string>();
 const routeKeys = new Set<string>();
 const eligibleRouteKeys = new Set<string>();
+const q2StrictReference: InternalPolicy = { name: 'q2-strict-zero-exceptions', percent: 0, minimum: 0, maximum: 0 };
 
 for (let index = 0; index < allArchives.length; index++) {
   if (index % 25 === 0) console.error(`processed ${index}/${allArchives.length}`);
@@ -256,15 +323,39 @@ for (let index = 0; index < allArchives.length; index++) {
 }
 
 for (const period of periods) {
+  const q2StrictTier = determineCandidateTier(period.times, period.tiers, {
+    edgeMode: 'none',
+    edgeLimit: 'grace',
+    internal: q2StrictReference,
+    hardGap: 'current',
+    minimumEvidence: 3,
+  }).tier;
   for (const candidate of candidates) {
     // Keep Q3 separate from the unresolved short-period question (Q4). The
     // Q3 comparison uses periods with at least four selected departures.
     if (candidate.name.startsWith('q3-') && period.times.length < 4) continue;
-    const result = determineCandidateTier(period.times, period.tiers, candidate);
+    let result = determineCandidateTier(period.times, period.tiers, candidate);
+    // Independent Q2 candidates only change one tier's allowance. If the
+    // strict reference already qualifies at a faster tier, the candidate
+    // cannot change the result. Otherwise, test only the target tier and fall
+    // back to the strict result if it does not qualify. This preserves the
+    // tier-ordering semantics while avoiding hundreds of repeated evaluations.
+    if (candidate.group === 'q2Internal' && candidate.targetTier !== undefined) {
+      if (rank(q2StrictTier) < candidate.targetTier || !period.tiers.includes(candidate.targetTier)) {
+        result = { tier: q2StrictTier, edgeWarnings: [] };
+      } else {
+        const targetResult = determineCandidateTier(period.times, [candidate.targetTier], candidate);
+        result = targetResult.tier === String(candidate.targetTier)
+          ? targetResult
+          : { tier: q2StrictTier, edgeWarnings: [] };
+      }
+    }
     const comparisonTier = candidate.name.startsWith('q3-')
       ? determineCandidateTier(period.times, period.tiers, { ...candidate, hardGap: 'current' }).tier
       : candidate.group === 'minimumEvidence'
       ? determineCandidateTier(period.times, period.tiers, { ...candidate, minimumEvidence: 3 }).tier
+      : candidate.group === 'q2Internal'
+      ? q2StrictTier
       : period.currentTier;
     const summary = summaries.get(candidate.name)!;
     if (result.edgeWarnings.length > 0) summary.edgeWarnings += result.edgeWarnings.length;
@@ -302,6 +393,8 @@ const output = {
   periods: periods.length,
   q3EligiblePeriods: periods.filter(period => period.times.length >= 4).length,
   q4EligiblePeriods: periods.filter(period => period.times.length >= 2).length,
+  q2EligiblePeriods: periods.filter(period => period.times.length >= 3).length,
+  q2Reference: 'strict zero internal exceptions, current gap-size grace, current hard-gap boundary, minimum 3 departures',
   distinctAgencies: agencies.size,
   distinctRoutes: routeKeys.size,
   distinctRoutesWithEligiblePeriods: eligibleRouteKeys.size,

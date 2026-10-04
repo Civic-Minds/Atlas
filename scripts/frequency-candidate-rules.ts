@@ -3,6 +3,7 @@ export type EdgeLimit = 'grace' | 'double';
 export type InternalPolicy = {
   name: string;
   percent: number;
+  percentByTier?: Record<number, number>;
   minimum: number;
   maximum?: number;
 };
@@ -73,7 +74,8 @@ export function determineCandidateTier(
     if (times.length < minimumTrips) continue;
 
     const hardLimit = hardLimitFor(tier, grace, options.hardGap);
-    const proportionalAllowance = Math.floor(gaps.length * options.internal.percent);
+    const proportionalPercent = options.internal.percentByTier?.[tier] ?? options.internal.percent;
+    const proportionalAllowance = Math.floor(gaps.length * proportionalPercent);
     const allowedExceptions = Math.min(
       options.internal.maximum ?? Number.POSITIVE_INFINITY,
       Math.max(options.internal.minimum, proportionalAllowance),

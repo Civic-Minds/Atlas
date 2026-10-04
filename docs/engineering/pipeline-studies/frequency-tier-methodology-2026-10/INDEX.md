@@ -82,8 +82,80 @@ The complete local census covered 1,160 GTFS archives:
 
 The current middle-gap rule is unbounded: it allows at least two near misses,
 then allows more as the number of gaps grows (`max(2, floor(30% of gaps))`).
-The candidate results below show how many of those observations would receive
-a different tier:
+That 30% value is implementation behaviour, not an approved product decision.
+It is retained below only as historical context; this follow-up tests lower
+percentages and bounded alternatives against a strict zero-exception reference.
+
+For this Q2 follow-up, the gap-size rule was held constant: a near miss is a
+gap above the target but no longer than `T + max(5 minutes, 15% of T)`. The
+question was only how many such internal near misses may be allowed. A
+percentage is calculated from the number of internal gaps, rounded down. A
+floor guarantees a minimum number of allowances; a cap prevents the allowance
+from growing indefinitely.
+
+The full Q2 follow-up census covered 368,544 observations with at least three
+departures. Each candidate was compared with the same strict reference: zero
+internal exceptions, the current gap-size grace, the current hard boundary,
+and a three-departure minimum. The results below are therefore changes from
+strict service, not claims about a final production policy.
+
+### Tier-specific percentage tests
+
+These candidates apply the listed percentage only to the named tier, with a
+zero floor and a cap of three. The values show how many observations would
+qualify for a faster tier than the strict reference:
+
+| Target tier | 5% | 10% | 15% | 20% | 25% |
+| ---: | ---: | ---: | ---: | ---: | ---: |
+| 5 minutes | 34 | 49 | 56 | 68 | 70 |
+| 8 minutes | 73 | 135 | 162 | 171 | 174 |
+| 10 minutes | 1,046 | 1,257 | 1,355 | 1,519 | 1,612 |
+| 15 minutes | 2,393 | 2,867 | 3,102 | 3,432 | 3,704 |
+| 20 minutes | 3,015 | 3,917 | 4,168 | 4,482 | 4,664 |
+| 30 minutes | 6,715 | 10,274 | 11,779 | 12,544 | 13,076 |
+| 60 minutes | 4,350 | 11,768 | 14,408 | 16,919 | 18,556 |
+
+The impact is not proportional to the number of trips alone. The 60-minute
+tier has many more observations affected because its five-minute grace band
+can absorb a large number of otherwise disqualifying schedules. The 10-minute
+tier is also sensitive: in a three-hour period with roughly 17 internal gaps,
+10% permits one near miss when the result is rounded down. A 30-minute period
+with roughly five internal gaps gets zero allowances at 10%, unless a floor is
+added. This is why a single fixed number does not behave consistently across
+tiers.
+
+### Sliding-scale tests
+
+Three complete curves were tested across the published tiers. The curves use
+the surface tiers 10, 15, 20, 30, and 60, with the nearest corresponding value
+for rail tiers. Each result uses a cap of three:
+
+| Curve from fastest to slowest | Floor 0 | Floor 1 |
+| --- | ---: | ---: |
+| 20%, 15%, 10%, 5%, 5% | 19,800 | 36,025 |
+| 15%, 10%, 10%, 5%, 5% | 19,383 | 35,873 |
+| 10%, 10%, 5%, 5%, 5% | 18,351 | 35,115 |
+
+The floor is the major decision, not a small implementation detail. A floor of
+one more than doubles the number of changes in these tests because even a
+short period receives one exception. That can make a three-trip period with
+one near miss look sustained, which is difficult to defend. A floor of zero
+lets the percentage respond to the amount of evidence available.
+
+The cap also matters. For the most conservative curve, `10%, 10%, 5%, 5%, 5%`
+changed 18,351 observations with a cap of three, compared with 20,482 with no
+cap and 19,516 with a cap of five. The cap prevents long schedules from
+accumulating a large number of individually small exceptions.
+
+The candidate to carry into focused review is therefore the bounded,
+sliding-scale shape `10%, 10%, 5%, 5%, 5%`, with no minimum floor and a cap of
+three internal near misses. This is the most conservative complete curve
+tested that still scales the allowance with the number of gaps. It is not a
+production change or a final decision. Before implementation, representative
+10-, 20-, 30-, and 60-minute examples should be reviewed, especially periods
+where the candidate upgrades a period from irregular to a numeric tier.
+
+For historical comparison, the earlier fixed and 30% candidate results were:
 
 | Internal allowance | Changed observations | Faster | Slower |
 | --- | ---: | ---: | ---: |
@@ -94,23 +166,9 @@ a different tier:
 | 30%, capped at three | 10,926 | 0 | 10,926 |
 | 30%, capped at five | 5,854 | 0 | 5,854 |
 
-The three-exception fixed rule creates upgrades because it is more permissive
-than the current rule for short periods. The capped percentage rule does not:
-it preserves the existing allowance where it is small and stops the allowance
-from growing indefinitely on long schedules. Its 10,926 changes are all
-downgrades, concentrated in observations with 10 or more gaps; the largest
-single transition is 30-minute to 60-minute service (4,072 observations).
-
-This evidence supports allowing middle-of-service near misses, but bounding
-them. Because the existing 30% value was not a deliberate product decision,
-the recommended rule for the next decision is the simpler fixed cap of two
-internal near misses. It is explicit, does not become more permissive just
-because a schedule has more trips, and produces no upgrades in the census.
-Compared with allowing none or one, it avoids treating ordinary isolated
-schedule deviations as a failure while still removing the unbounded allowance
-from long schedules. This is a recommendation, not a production change; it
-still needs a human decision and a focused review of representative examples
-before implementation.
+Those historical results should not be read as approval of the 30% rule or of
+the previous fixed-two recommendation. The Q2 decision remains pending focused
+review of the sliding-scale candidate above.
 
 ## Edge-gap booster follow-up
 

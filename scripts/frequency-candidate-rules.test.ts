@@ -23,7 +23,7 @@ describe('frequency candidate rules', () => {
   });
 
   it('rejects a third near miss under a fixed two-gap cap', () => {
-    const times = [0, 10, 25, 35, 50, 60, 75, 85, 100, 110, 125];
+    const times = [0, 10, 25, 35, 50, 60, 75, 85, 95, 105, 115];
     expect(determineCandidateTier(times, [10], base).tier).toBe('span');
   });
 
@@ -66,5 +66,39 @@ describe('frequency candidate rules', () => {
 
   it('supports a higher minimum-evidence candidate', () => {
     expect(determineCandidateTier([0, 10, 20], [10], { ...base, minimumEvidence: 4 }).tier).toBe('span');
+  });
+
+  it('uses a tier-specific internal near-miss percentage', () => {
+    const times = [0, 10, 25, 35, 45, 55, 65, 75, 85, 95, 105];
+    const result = determineCandidateTier(times, [10], {
+      ...base,
+      internal: {
+        name: 'tier-specific',
+        percent: 0,
+        percentByTier: { 10: 0.2 },
+        minimum: 0,
+      },
+    });
+    expect(result.tier).toBe('10');
+  });
+
+  it('can give a short period one percentage allowance through a minimum floor', () => {
+    const times = [0, 15, 25];
+    expect(determineCandidateTier(times, [10], {
+      ...base,
+      internal: { name: 'no-floor', percent: 0, minimum: 0 },
+    }).tier).toBe('span');
+    expect(determineCandidateTier(times, [10], {
+      ...base,
+      internal: { name: 'one-floor', percent: 0, minimum: 1 },
+    }).tier).toBe('10');
+  });
+
+  it('caps a percentage allowance even when the percentage would allow more gaps', () => {
+    const times = [0, 35, 65, 100, 130, 165, 195, 230, 260, 290];
+    expect(determineCandidateTier(times, [30], {
+      ...base,
+      internal: { name: 'capped', percent: 0.5, minimum: 0, maximum: 3 },
+    }).tier).toBe('span');
   });
 });
