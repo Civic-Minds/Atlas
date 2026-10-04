@@ -112,7 +112,12 @@ function firstAvailableByPeriod(
  * projections instead of independently choosing among raw GeoJSON fields.
  */
 export function buildRouteServiceSummary(p: ShapeProperties): RouteServiceSummary {
-  const coverage = p.worstDirectionPeriodCoverageHeadway ?? p.periodCoverageHeadway;
+  // Older published artifacts do not have the derived coverage field, but they do
+  // retain the maximum period gap. Treat that gap as the full-window bound so an
+  // unsustained median cannot pass an active-period frequency filter (#524).
+  const coverage = p.worstDirectionPeriodCoverageHeadway
+    ?? p.periodCoverageHeadway
+    ?? p.maxGapByPeriod;
   const regularPeriods = firstAvailableByPeriod(p.worstDirectionHeadwayByPeriod, p.headwayByPeriod);
   const filterPeriods = coverage === undefined ? regularPeriods : Object.fromEntries(
     PERIOD_KEYS.map(key => {

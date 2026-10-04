@@ -58,6 +58,10 @@ export function tileEffectiveHeadwayExpr(period?: PeriodFilter): unknown[] {
       'case',
       ['has', coverageKeys[0]], ['get', coverageKeys[0]],
       ['has', coverageKeys[1]], ['get', coverageKeys[1]],
+      // Older tiles can contain an explicit unsustained marker without the
+      // coverage field. Do not let their partial-period median pass as a
+      // full-period frequency match.
+      ['==', ['get', `hps_${period}`], false], NO_PERIOD_SERVICE_TILE_VALUE,
       ['any', ...periodKeys.map((key) => ['has', key])],
       periodValue,
       // A period-specific filter must not silently become an all-day filter when

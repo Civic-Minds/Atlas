@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+-Unsustained period medians now use their full service gap for filtering, so partial overnight routes cannot appear as frequent service ([#524](https://github.com/Civic-Minds/Atlas/issues/524)).
 -Terms and Privacy section headings now use the same concise wording as Atlas Documentation.
 -Beta-specific Terms now sit within the general Changes section, removing duplicate change language.
 -Legal pages now place the “Back to map” link beside the document content.

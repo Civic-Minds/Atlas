@@ -187,6 +187,17 @@ describe('effectiveRouteHeadway', () => {
     expect(effectiveRouteHeadway(p, 'overnight')).toBe(171);
   });
 
+  it('uses legacy max gaps as coverage when published coverage is absent (#524)', () => {
+    const p = {
+      ...base,
+      headwayByPeriod: { overnight: 11 },
+      headwayByPeriodSustained: { overnight: false },
+      maxGapByPeriod: { overnight: 109 },
+    } as ShapeProperties;
+    expect(routeCardDisplayHeadway(p, 'overnight')).toBe(11);
+    expect(effectiveRouteHeadway(p, 'overnight')).toBe(109);
+  });
+
   it('preserves active-service cadence on cards while filtering by full-period coverage (#507)', () => {
     const p = {
       headway: 36,

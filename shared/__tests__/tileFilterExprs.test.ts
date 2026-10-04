@@ -127,6 +127,7 @@ describe('tileEffectiveHeadwayExpr', () => {
     expect(compiled.filter(ctx, feat({ hps_late: true, wdpch_late: 15, hph_late: 10 }) as any)).toBe(true);
     expect(compiled.filter(ctx, feat({ hps_late: false, wdpch_late: 15, hph_late: 10 }) as any)).toBe(false);
     expect(compiled.filter(ctx, feat({ hps_late: true, wdpch_late: 190, hph_late: 10 }) as any)).toBe(false);
+    expect(compiled.filter(ctx, feat({ hps_late: false, hph_late: 10 }) as any)).toBe(false);
   });
 });
 

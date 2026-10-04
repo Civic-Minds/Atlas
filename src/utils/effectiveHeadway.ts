@@ -20,7 +20,11 @@ export function routeCardDisplayHeadway(p: ShapeProperties, period: TimePeriod):
 }
 
 export function hasPeriodCoverage(p: ShapeProperties, period: TimePeriod): boolean {
-  return period !== 'all' && (p.periodCoverageHeadway !== undefined || p.worstDirectionPeriodCoverageHeadway !== undefined);
+  return period !== 'all' && (
+    p.periodCoverageHeadway !== undefined
+    || p.worstDirectionPeriodCoverageHeadway !== undefined
+    || p.maxGapByPeriod !== undefined
+  );
 }
 
 /**
