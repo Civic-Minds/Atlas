@@ -181,14 +181,6 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     setSelectedRoute(matches.size === 1 ? [...matches.values()][0] : key);
   }, [nonCorridorLayers, setSelectedRoute]);
 
-  useEffect(() => {
-    if (!import.meta.env.DEV || selectedRoute || !new URLSearchParams(window.location.search).has('demo_edge_allowance')) return;
-    const ttcRoute = nonCorridorLayers.ttc?.features.find(feature =>
-      String((feature.properties as Partial<ShapeProperties> | null)?.routeShortName ?? '') === '501',
-    );
-    if (ttcRoute) setSelectedRoute(buildRouteFacts(ttcRoute.properties as ShapeProperties, 'ttc').key);
-  }, [nonCorridorLayers, selectedRoute, setSelectedRoute]);
-
   const pickRoute = useCallback((key: string) => {
     setSearchFocused?.(false);
     selectRoute(key);
