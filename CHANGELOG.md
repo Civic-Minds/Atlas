@@ -6,6 +6,9 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+-Terms and Privacy section headings now use the same concise wording as Atlas Documentation.
+-Beta-specific Terms now sit within the general Changes section, removing duplicate change language.
+-Legal pages now place the “Back to map” link beside the document content.
 -Zooming in to disambiguate routes and stops no longer adds a redundant notice over the map.
 -The map now shows a loading indicator while the background map tiles are still loading.
 -Added a source-backed transfer-policy research workflow covering every agency in the registry.

@@ -7,9 +7,10 @@ describe('LegalPage', () => {
     render(<LegalPage document="privacy" />);
 
     expect(screen.getByRole('heading', { name: 'Privacy Policy' })).toBeTruthy();
+    expect(screen.getByRole('link', { name: 'Back to map' })).toHaveAttribute('href', '/');
     expect(screen.getByText('Last updated October 3, 2026.')).toBeTruthy();
-    expect(screen.getByRole('heading', { name: 'Analytics and performance' })).toBeTruthy();
-    expect(screen.getByRole('heading', { name: 'Location features' })).toBeTruthy();
+    expect(screen.getByRole('heading', { name: 'Analytics' })).toBeTruthy();
+    expect(screen.getByRole('heading', { name: 'Location' })).toBeTruthy();
     expect(screen.getAllByRole('link', { name: 'hey@ryanisnota.pro' })).toHaveLength(2);
   });
 
@@ -17,7 +18,7 @@ describe('LegalPage', () => {
     render(<LegalPage document="terms" />);
 
     expect(screen.getByRole('heading', { name: 'Terms of Service' })).toBeTruthy();
-    expect(screen.getByRole('heading', { name: 'Transit data and accuracy' })).toBeTruthy();
+    expect(screen.getByRole('heading', { name: 'Accuracy' })).toBeTruthy();
     expect(screen.getByRole('heading', { name: 'Regional rights' })).toBeTruthy();
     expect(screen.getByRole('link', { name: 'Privacy Policy' })).toHaveAttribute('href', '/privacy');
   });

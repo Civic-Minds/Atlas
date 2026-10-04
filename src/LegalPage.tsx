@@ -15,25 +15,24 @@ function Section({ id, title, children }: { id: string; title: string; children:
 const CONTENTS = {
   privacy: [
     ['scope', 'Scope'],
-    ['information', 'Information Atlas handles'],
-    ['analytics', 'Analytics and performance'],
-    ['storage', 'Browser storage'],
-    ['location', 'Location features'],
-    ['third-party', 'Public data and third-party services'],
-    ['retention', 'Retention and privacy requests'],
-    ['security', 'Children, security, and international processing'],
-    ['policy-changes', 'Changes to this policy'],
+    ['information', 'Information'],
+    ['analytics', 'Analytics'],
+    ['storage', 'Storage'],
+    ['location', 'Location'],
+    ['third-party', 'Third-party services'],
+    ['retention', 'Retention and requests'],
+    ['security', 'Security and processing'],
+    ['policy-changes', 'Changes'],
     ['contact', 'Contact'],
   ],
   terms: [
     ['using-atlas', 'Using Atlas'],
-    ['accuracy', 'Transit data and accuracy'],
-    ['third-party', 'Third-party data and services'],
-    ['attribution', 'Atlas content and attribution'],
-    ['availability', 'Availability and warranties'],
-    ['beta', 'Beta features'],
-    ['feedback', 'Feedback and reports'],
-    ['changes', 'Changes and termination'],
+    ['accuracy', 'Accuracy'],
+    ['third-party', 'Third-party services'],
+    ['attribution', 'Attribution'],
+    ['availability', 'Availability'],
+    ['feedback', 'Feedback'],
+    ['changes', 'Changes'],
     ['regional-rights', 'Regional rights'],
     ['contact', 'Contact'],
   ],
@@ -44,7 +43,7 @@ export default function LegalPage({ document }: { document: LegalDocument }) {
   return (
     <main className="min-h-screen bg-[var(--bg-app)] text-[var(--text-primary)] px-5 py-8 sm:px-8">
       <div className="max-w-5xl mx-auto">
-        <a href="/" className="inline-flex items-center gap-2 text-sm font-bold text-[var(--accent)] hover:underline"><ArrowLeft className="w-4 h-4" /> Back to Atlas</a>
+        <a href="/" className="inline-flex items-center gap-2 text-sm font-bold text-[var(--accent)] hover:underline"><ArrowLeft className="w-4 h-4" /> Back to map</a>
         <div className="mt-10 lg:grid lg:grid-cols-[12rem_minmax(0,42rem)] lg:gap-12 lg:items-start">
           <PageContents items={CONTENTS[privacy ? 'privacy' : 'terms'].map(([id, label]) => ({ id, label }))} />
           <article className="space-y-8 text-sm leading-relaxed text-[var(--text-dim)]">
@@ -54,38 +53,38 @@ export default function LegalPage({ document }: { document: LegalDocument }) {
             <Section id="scope" title="Scope">
               <p>This policy applies to the Atlas website, map, documentation, Public deployment, Beta deployment, and related contact and feedback features. It does not govern transit agencies, linked websites, CARTO, OpenStreetMap, Cloudflare, Vercel, Google, or other third-party services; their own policies apply to their processing.</p>
             </Section>
-            <Section id="information" title="Information Atlas handles">
+            <Section id="information" title="Information">
               <p>Atlas may handle information needed to operate and protect the service, such as request time, browser and device information, referring page, approximate location, and performance measurements. Hosting, delivery, and analytics providers may process some of this information on our behalf.</p>
               <p>If you contact us, we receive the email address, message, and any attachments you send. We use that information to respond and keep the correspondence in the receiving mailbox.</p>
             </Section>
-            <Section id="analytics" title="Analytics and performance">
+            <Section id="analytics" title="Analytics">
               <p>Production Atlas uses Vercel Web Analytics and Vercel Speed Insights to understand usage and measure site performance. These services may receive page views, device and browser information, approximate location, referrer information, and performance measurements.</p>
               <p>Atlas also uses Cloudflare Web Analytics for page-view and performance measurement. Its beacon may collect timing metrics and dimensions such as country, host, path, referrer, device type, browser, and operating system. Cloudflare says Web Analytics does not collect or use visitors’ personal data or track individual end users across properties.</p>
               <p>Google Analytics 4 may load only when it is configured for the production build and you allow it, or where the current regional consent flow permits it. Google Analytics can receive page views, basic usage events, device and browser information, approximate location, and referrer information. Atlas does not use these analytics services for advertising or account profiling.</p>
               <p>You can allow or decline Google Analytics through <em>Privacy &amp; analytics</em> in the About panel. Atlas also respects Global Privacy Control by declining Google Analytics. Declining Google Analytics does not disable the map.</p>
             </Section>
-            <Section id="storage" title="Browser storage">
+            <Section id="storage" title="Storage">
               <p>Atlas stores some preferences in your browser, including theme, display settings, filter choices, recent searches, recently viewed routes, and your Google Analytics consent choice. These values help Atlas remember your preferences and are not an Atlas account.</p>
             </Section>
-            <Section id="location" title="Location features">
+            <Section id="location" title="Location">
               <p>If you choose the locate-me button, your browser may provide precise coordinates after you grant permission. Atlas uses those coordinates to center the map and does not intentionally store them as an Atlas profile.</p>
               <p>If browser geolocation is unavailable or cannot determine a position, Atlas may request approximate city-level coordinates derived from hosting-provider request headers. This fallback is less precise than browser geolocation and is used only to center the map.</p>
             </Section>
-            <Section id="third-party" title="Public data and third-party services">
+            <Section id="third-party" title="Third-party services">
               <p>Atlas processes public transit schedule data, including GTFS feeds published by transit agencies and data providers. Map tiles and map data are provided through CARTO and OpenStreetMap and are subject to their own terms, licenses, and privacy practices.</p>
               <p>Atlas is hosted and delivered through third-party infrastructure. Vercel provides hosting, Web Analytics, and Speed Insights; Cloudflare provides Web Analytics and parts of Atlas’s data delivery and storage; Google may provide optional Analytics; and CARTO and OpenStreetMap provide map services and data. These providers may process technical request information as part of hosting, security, delivery, analytics, or performance measurement.</p>
               <p>Atlas does not sell personal information or use analytics for advertising or account profiling. We disclose information to service providers only as needed to operate, secure, measure, support, or improve Atlas, or when required by law.</p>
             </Section>
-            <Section id="retention" title="Retention and privacy requests">
+            <Section id="retention" title="Retention and requests">
               <p>We keep information only for as long as reasonably necessary for the purpose for which it was collected, including operating the service, handling security and reliability issues, and responding to correspondence. Provider-specific systems may have their own retention periods.</p>
               <p>Where applicable, you may ask for access to, correction of, deletion of, restriction of, or objection to the processing of personal information, or request a portable copy of information you provided. To make a request or raise a privacy concern, email <a className="text-[var(--accent)] hover:underline" href={CONTACT_HREF}>hey@ryanisnota.pro</a>. We may need enough information to identify the relevant request, and some records may need to be retained for legal, security, or dispute-resolution reasons.</p>
               <p>You can withdraw Google Analytics consent through <em>Privacy &amp; analytics</em> in the About panel or through your browser’s privacy controls. This does not disable the map or change provider processing that is necessary to deliver the site.</p>
             </Section>
-            <Section id="security" title="Children, security, and international processing">
+            <Section id="security" title="Security and processing">
               <p>Atlas is a general-audience service and is not directed at children. We use reasonable technical and organizational measures to protect information, but no internet service can guarantee absolute security.</p>
               <p>Atlas and its service providers may process information in Canada, the United States, or other countries where those providers operate.</p>
             </Section>
-            <Section id="policy-changes" title="Changes to this policy"><p>We may update this policy when Atlas’s practices change. The date at the top shows when the current version took effect.</p></Section>
+            <Section id="policy-changes" title="Changes"><p>We may update this policy when Atlas’s practices change. The date at the top shows when the current version took effect.</p></Section>
             <SiteContact id="contact" title="Contact" subject="Atlas Privacy or Terms" linkLabel="hey@ryanisnota.pro">
               Privacy questions can be sent to us, including requests to access, correct, or delete personal information.
             </SiteContact>
@@ -95,16 +94,15 @@ export default function LegalPage({ document }: { document: LegalDocument }) {
               <p>You may use Atlas for personal, educational, research, and other lawful purposes. You must not use Atlas to break the law, interfere with the service, bypass access controls or rate limits, or create unreasonable load for other users.</p>
               <p>Do not scrape or bulk-download Atlas in a way that degrades the service. Do not misrepresent Atlas as an official transit-agency service or imply that a transit agency endorses it.</p>
             </Section>
-            <Section id="accuracy" title="Transit data and accuracy">
+            <Section id="accuracy" title="Accuracy">
               <p>Atlas relies on public GTFS schedules and other data supplied by transit agencies and data providers. That information may be delayed, incomplete, discontinued, incorrectly classified, or wrong.</p>
               <p>Atlas is not a substitute for an agency’s official service alerts, schedules, accessibility information, or emergency instructions. Verify time-sensitive travel information with the relevant transit agency.</p>
             </Section>
-            <Section id="third-party" title="Third-party data and services"><p>Transit feeds, map data, map tiles, linked agency resources, and other third-party materials remain subject to their own terms, licenses, and availability. Atlas does not control third-party services and is not responsible for their content or outages.</p></Section>
-            <Section id="attribution" title="Atlas content and attribution"><p>Civic Minds owns Atlas’s software, branding, presentation, and original analysis except where stated otherwise. You must preserve applicable attribution and license notices for third-party data and services.</p></Section>
-            <Section id="availability" title="Availability and warranties"><p>Atlas is provided free of charge and on an “as-is” and “as-available” basis. We do not promise uninterrupted availability, complete coverage, current data, accurate results, or continued support for any particular feature or agency.</p></Section>
-            <Section id="beta" title="Beta features"><p>Atlas may make experimental, research, or Beta features available on a separate deployment. These features may change, be incomplete, have limited coverage, or be removed without notice. Results from a Beta or research feature should be treated as provisional and checked against the relevant source before being relied on.</p></Section>
-            <Section id="feedback" title="Feedback and reports"><p>When you send feedback, report a problem, or attach supporting material, you give Atlas the information needed to respond, investigate the report, document a correction, and improve the service. Do not send confidential information, precise personal location data, or anything you do not want included in that support record.</p></Section>
-            <Section id="changes" title="Changes and termination"><p>We may change, suspend, or discontinue Atlas or any feature at any time. We may also update these Terms when the service or its practices change. The date at the top shows when the current version took effect.</p></Section>
+            <Section id="third-party" title="Third-party services"><p>Transit feeds, map data, map tiles, linked agency resources, and other third-party materials remain subject to their own terms, licenses, and availability. Atlas does not control third-party services and is not responsible for their content or outages.</p></Section>
+            <Section id="attribution" title="Attribution"><p>Civic Minds owns Atlas’s software, branding, presentation, and original analysis except where stated otherwise. You must preserve applicable attribution and license notices for third-party data and services.</p></Section>
+            <Section id="availability" title="Availability"><p>Atlas is provided free of charge and on an “as-is” and “as-available” basis. We do not promise uninterrupted availability, complete coverage, current data, accurate results, or continued support for any particular feature or agency.</p></Section>
+            <Section id="feedback" title="Feedback"><p>When you send feedback, report a problem, or attach supporting material, you give Atlas the information needed to respond, investigate the report, document a correction, and improve the service. Do not send confidential information, precise personal location data, or anything you do not want included in that support record.</p></Section>
+            <Section id="changes" title="Changes"><p>Atlas may make experimental, research, or Beta features available on a separate deployment. These features may change, be incomplete, have limited coverage, or be removed without notice. Results from a Beta or research feature should be treated as provisional and checked against the relevant source before being relied on.</p><p>We may change, suspend, or discontinue Atlas or any feature at any time. We may also update these Terms when the service or its practices change. The date at the top shows when the current version took effect.</p></Section>
             <Section id="regional-rights" title="Regional rights"><p>Depending on where you live, consumer, privacy, and other legal rights may apply in addition to these Terms. Nothing in these Terms is intended to remove rights that cannot legally be waived.</p></Section>
             <SiteContact id="contact" title="Contact" subject="Atlas Privacy or Terms" linkLabel="hey@ryanisnota.pro">
               Questions about these Terms can be sent to us.
