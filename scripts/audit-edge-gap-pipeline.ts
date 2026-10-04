@@ -4,8 +4,7 @@ import { processGtfsBuffer, type ProcessResult } from '../pipeline/process-core'
 import { parseGtfsZip } from '../pipeline/parseGtfs';
 import { normalizeGtfs } from '../pipeline/preprocess/run';
 import { computeRawDepartures } from '../pipeline/transit-phase1';
-import { applyAnalysisCriteria } from '../pipeline/transit-phase2';
-import { applyEdgeGapCandidateCriteria } from './edge-gap-candidate';
+import { applyAnalysisCriteria, determineTier } from '../pipeline/transit-phase2';
 import type { RawRouteDepartures } from '../types/gtfs';
 
 type Feature = {
@@ -47,12 +46,19 @@ const resultSignature = (raw: ReturnType<typeof applyAnalysisCriteria>): string 
   .sort()
   .join('\n');
 
+const applyLegacyAnalysisCriteria = (rawData: RawRouteDepartures[]) => applyAnalysisCriteria(
+  rawData,
+  undefined,
+  (headways, tripCount, spanMinutes, tiers, graceMinutes, maxGraceViolations, gracePercent, violationPercent) =>
+    determineTier(headways, tripCount, spanMinutes, tiers, graceMinutes, maxGraceViolations, gracePercent, violationPercent),
+);
+
 const hasCandidateChange = async (buffer: Buffer, slug: string): Promise<boolean> => {
   try {
     const parsed = await parseGtfsZip(buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength) as ArrayBuffer);
     const normalized = normalizeGtfs(parsed, { slug });
     const raw = computeRawDepartures(normalized, undefined, undefined, slug);
-    return resultSignature(applyAnalysisCriteria(raw)) !== resultSignature(applyEdgeGapCandidateCriteria(raw));
+    return resultSignature(applyLegacyAnalysisCriteria(raw)) !== resultSignature(applyAnalysisCriteria(raw));
   } catch {
     return true;
   }
@@ -155,11 +161,11 @@ for (let index = 0; index < selectedArchives.length; index++) {
     const slug = basename(archive, '.zip');
     if (!skipPrefilter && !await hasCandidateChange(buffer, slug)) continue;
     const options = { slug, force: true as const };
-    const baseline = await processGtfsBuffer(buffer, undefined, options);
-    const candidate = await processGtfsBuffer(buffer, undefined, {
+    const baseline = await processGtfsBuffer(buffer, undefined, {
       ...options,
-      analysisCriteriaFn: applyEdgeGapCandidateCriteria,
+      analysisCriteriaFn: applyLegacyAnalysisCriteria,
     });
+    const candidate = await processGtfsBuffer(buffer, undefined, options);
     reports.push(compareResults(baseline, candidate, archive));
   } catch (error) {
     errors.push({ archive, error: error instanceof Error ? error.message : String(error) });

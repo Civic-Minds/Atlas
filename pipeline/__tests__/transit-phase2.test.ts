@@ -22,6 +22,42 @@ function raw(overrides: Partial<RawRouteDepartures> & { departureTimes: number[]
 }
 
 describe('applyAnalysisCriteria', () => {
+  const sustainedTenMinuteTimes = (openingGap: number): number[] => [
+    420,
+    420 + openingGap,
+    ...Array.from({ length: 17 }, (_, index) => 420 + openingGap + 10 + index * 10),
+  ];
+
+  it('allows one true opening edge up to tier plus ten minutes', () => {
+    const results = applyAnalysisCriteria([
+      raw({ route: 'edge-opening', departureTimes: sustainedTenMinuteTimes(20) }),
+    ]);
+    expect(results.find(item => item.route === 'edge-opening')).toMatchObject({ tier: '10' });
+  });
+
+  it('rejects an opening edge more than ten minutes over the tier', () => {
+    const results = applyAnalysisCriteria([
+      raw({ route: 'edge-too-long', departureTimes: sustainedTenMinuteTimes(21) }),
+    ]);
+    expect(results.find(item => item.route === 'edge-too-long')?.tier).not.toBe('10');
+  });
+
+  it('does not treat an analysis-window boundary as a true service edge', () => {
+    const results = applyAnalysisCriteria([
+      raw({ route: 'window-boundary', departureTimes: [400, ...sustainedTenMinuteTimes(20)] }),
+    ]);
+    expect(results.find(item => item.route === 'window-boundary')?.tier).not.toBe('10');
+  });
+
+  it('allows at most one edge exception when both ends exceed the tier', () => {
+    const times = sustainedTenMinuteTimes(20);
+    times.push(times.at(-1)! + 20);
+    const results = applyAnalysisCriteria([
+      raw({ route: 'both-edges', departureTimes: times }),
+    ]);
+    expect(results.find(item => item.route === 'both-edges')?.tier).not.toBe('10');
+  });
+
   it('produces a normal daytime result unaffected by the overnight fallback', () => {
     // 08:00–18:00, every 15 -- real sustained daytime coverage (unlike the narrow rush-hour-only
     // burst cases the existing coverage check is meant to catch).

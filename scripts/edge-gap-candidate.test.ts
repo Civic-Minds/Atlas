@@ -19,7 +19,7 @@ const raw = (departureTimes: number[], route = 'edge-test'): RawRouteDepartures 
 const sustainedTenMinuteTimes = (openingGap: number): number[] => [
   420,
   420 + openingGap,
-  ...Array.from({ length: 17 }, (_, index) => 440 + index * 10),
+  ...Array.from({ length: 17 }, (_, index) => 420 + openingGap + 10 + index * 10),
 ];
 
 describe('applyEdgeGapCandidateCriteria', () => {

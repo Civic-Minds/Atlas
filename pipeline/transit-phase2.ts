@@ -35,6 +35,15 @@ export type TierDeterminer = (
 ) => string;
 
 /**
+ * The maximum total gap allowed for one true service-edge exception.
+ *
+ * This is deliberately applied only to the first or last departure in the
+ * raw service list. A gap created by the analysis window is not an edge of
+ * the service and cannot use this allowance.
+ */
+export const EDGE_GAP_ALLOWANCE_MINUTES = 10;
+
+/**
  * Determines the frequency tier for a route based on headway analysis.
  * Returns the tightest tier the route sustains across the full span.
  */
@@ -67,6 +76,88 @@ export const determineTier = (
         }
         if (!fail) return String(T);
     }
+    return 'span';
+};
+
+/**
+ * Determine a tier while allowing one true opening or closing gap to exceed
+ * the normal grace allowance by up to ten minutes.
+ *
+ * The existing grace rules remain unchanged for every other gap. When both
+ * edges qualify, each edge is tested independently, so two exceptions can
+ * never be combined. Removing the exception from the tested sequence also
+ * keeps the normal trip-count and sustained-cadence checks honest: at least
+ * three departures must remain.
+ */
+export const determineTierWithEdgeGapAllowance: TierDeterminer = (
+    headways,
+    tripCount,
+    spanMinutes,
+    tiers,
+    graceMinutes,
+    maxGraceViolations,
+    gracePercent,
+    violationPercent,
+    context,
+): string => {
+    const analysisTimes = [...context.analysisTimes];
+    const rawTimes = context.rawDepartureTimes;
+    const actualOpening = !rawTimes.some(time => time < analysisTimes[0]);
+    const actualClosing = !rawTimes.some(time => time > analysisTimes[analysisTimes.length - 1]);
+
+    for (const tier of tiers) {
+        const gaps = analysisTimes.slice(1).map((time, index) => time - analysisTimes[index]);
+        const existingGrace = Math.max(graceMinutes, Math.round(tier * gracePercent));
+        const openingEligible = actualOpening
+            && gaps[0] > tier + existingGrace
+            && gaps[0] <= tier + EDGE_GAP_ALLOWANCE_MINUTES;
+        const closingEligible = actualClosing
+            && gaps[gaps.length - 1] > tier + existingGrace
+            && gaps[gaps.length - 1] <= tier + EDGE_GAP_ALLOWANCE_MINUTES;
+
+        const variants: boolean[] = [];
+        if (openingEligible) variants.push(true);
+        if (closingEligible) variants.push(false);
+
+        for (const opening of variants) {
+            const trimmed = analysisTimes.slice(opening ? 1 : 0, opening ? undefined : -1);
+            if (trimmed.length < 3) continue;
+            const trimmedGaps = trimmed.slice(1).map((time, index) => time - trimmed[index]);
+            if (determineTier(
+                trimmedGaps,
+                trimmed.length,
+                trimmed[trimmed.length - 1] - trimmed[0],
+                [tier],
+                graceMinutes,
+                maxGraceViolations,
+                gracePercent,
+                violationPercent,
+            ) === String(tier)) {
+                return String(tier);
+            }
+        }
+
+        // Preserve the baseline calculation exactly when neither edge is
+        // eligible for this tier.
+        if (!openingEligible && !closingEligible && determineTier(
+            gaps,
+            analysisTimes.length,
+            analysisTimes[analysisTimes.length - 1] - analysisTimes[0],
+            [tier],
+            graceMinutes,
+            maxGraceViolations,
+            gracePercent,
+            violationPercent,
+        ) === String(tier)) {
+            return String(tier);
+        }
+    }
+
+    // Keep the unused baseline arguments explicit: this determiner has the
+    // same signature as production and replaces only tier selection.
+    void headways;
+    void tripCount;
+    void spanMinutes;
     return 'span';
 };
 
@@ -175,8 +266,7 @@ export function computeResourceStats(
 export function applyAnalysisCriteria(
     rawData: RawRouteDepartures[],
     criteria: AnalysisCriteria = DEFAULT_CRITERIA,
-    tierDeterminer: TierDeterminer = (headways, tripCount, spanMinutes, tiers, graceMinutes, maxGraceViolations, gracePercent, violationPercent) =>
-        determineTier(headways, tripCount, spanMinutes, tiers, graceMinutes, maxGraceViolations, gracePercent, violationPercent),
+    tierDeterminer: TierDeterminer = determineTierWithEdgeGapAllowance,
 ): AnalysisResult[] {
     const perDayResults = new Map<string, { dayType: DayType; day: DayName; result: AnalysisResult }>();
 
