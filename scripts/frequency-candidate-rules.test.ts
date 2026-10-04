@@ -9,6 +9,14 @@ const base = {
 };
 
 describe('frequency candidate rules', () => {
+  it('can require every internal gap to meet the tier or its hard limit', () => {
+    const times = [0, 10, 25, 35, 45, 55, 65, 80, 90, 100, 110];
+    expect(determineCandidateTier(times, [10], {
+      ...base,
+      internal: { name: 'fixed-0', percent: 0, minimum: 0, maximum: 0 },
+    }).tier).toBe('span');
+  });
+
   it('matches the current rule for a route with two 15-minute gaps in otherwise 10-minute service', () => {
     const times = [0, 10, 25, 35, 45, 55, 65, 80, 90, 100, 110];
     expect(determineCandidateTier(times, [10], { ...base, internal: { name: 'current', percent: 0.30, minimum: 2 } }).tier).toBe('10');

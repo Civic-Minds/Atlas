@@ -159,6 +159,9 @@ let feedsWithRows = 0;
 let rawRows = 0;
 let skipped = 0;
 let baselineMismatches = 0;
+const agencies = new Set<string>();
+const routeKeys = new Set<string>();
+const eligibleRouteKeys = new Set<string>();
 
 for (let index = 0; index < allArchives.length; index++) {
   if (index % 25 === 0) console.error(`processed ${index}/${allArchives.length}`);
@@ -173,10 +176,14 @@ for (let index = 0; index < allArchives.length; index++) {
     continue;
   }
   if (rawRowsForFeed.length > 0) feedsWithRows++;
+  agencies.add(feed.agency);
   rawRows += rawRowsForFeed.length;
   for (const raw of rawRowsForFeed) {
     const times = productionWindow(raw);
     if (times.length < 2) continue;
+    const routeKey = `${feed.agency}::${raw.route}`;
+    routeKeys.add(routeKey);
+    if (times.length >= 4) eligibleRouteKeys.add(routeKey);
     const dayType = DAY_TO_TYPE[raw.day];
     const dayConfig = DEFAULT_CRITERIA.dayTypes[dayType];
     if (!dayConfig) continue;
@@ -252,6 +259,9 @@ const output = {
   skipped,
   rawRows,
   periods: periods.length,
+  distinctAgencies: agencies.size,
+  distinctRoutes: routeKeys.size,
+  distinctRoutesWithEligiblePeriods: eligibleRouteKeys.size,
   baselineMismatches,
   candidates: Object.fromEntries(summaries),
 };

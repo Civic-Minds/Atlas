@@ -102,6 +102,7 @@ export function determineCandidateTier(
 export const CURRENT_INTERNAL_POLICY: InternalPolicy = { name: 'current-30-percent', percent: 0.30, minimum: 2 };
 
 export const INTERNAL_CANDIDATES: InternalPolicy[] = [
+  { name: 'fixed-0', percent: 0, minimum: 0, maximum: 0 },
   { name: 'fixed-1', percent: 0, minimum: 1, maximum: 1 },
   { name: 'fixed-2', percent: 0, minimum: 2, maximum: 2 },
   { name: 'fixed-3', percent: 0, minimum: 3, maximum: 3 },
