@@ -30,6 +30,9 @@ const amountRules: Record<string, (tier: number) => number> = {
   'current max(5, 15%)': tier => tier + Math.max(5, Math.round(tier * 0.15)),
 };
 const impactAmounts = ['+10 minutes', '+15 minutes', '+20 minutes', '+10%', '+15%', 'current max(5, 15%)'];
+const proposalOnly = process.argv.includes('--proposal-only');
+const impactTreatments: EdgeTreatment[] = proposalOnly ? ['one-total'] : ['trim-both', 'one-total', 'preserve-frame'];
+const amountsToRun = proposalOnly ? ['+10 minutes'] : impactAmounts;
 
 type EdgeMode = 'opening' | 'closing' | 'both';
 type EdgeTreatment = 'trim-both' | 'one-total' | 'preserve-frame';
@@ -70,8 +73,9 @@ const candidateTierFor = (
 ): { tier: string; edgeUsed: boolean } => {
   for (const tier of tiers) {
     const gaps = times.slice(1).map((time, index) => time - times[index]);
-    const opening = (mode === 'opening' || mode === 'both') && actualOpening && gaps[0] > tier && gaps[0] <= limitFor(tier);
-    const closing = (mode === 'closing' || mode === 'both') && actualClosing && gaps[gaps.length - 1] > tier && gaps[gaps.length - 1] <= limitFor(tier);
+    const existingGrace = Math.max(DEFAULT_CRITERIA.graceMinutes, Math.round(tier * DEFAULT_CRITERIA.gracePercent));
+    const opening = (mode === 'opening' || mode === 'both') && actualOpening && gaps[0] > tier + existingGrace && gaps[0] <= limitFor(tier);
+    const closing = (mode === 'closing' || mode === 'both') && actualClosing && gaps[gaps.length - 1] > tier + existingGrace && gaps[gaps.length - 1] <= limitFor(tier);
     const variants = treatment === 'one-total' && mode === 'both' && opening && closing
       ? [{ opening: true, closing: false }, { opening: false, closing: true }]
       : [{ opening, closing }];
@@ -128,8 +132,8 @@ const getWindow = (raw: RawRouteDepartures) => {
 };
 
 const results = new Map<string, EdgeResult>();
-for (const treatment of ['trim-both', 'one-total', 'preserve-frame'] as EdgeTreatment[]) {
-  for (const amount of impactAmounts) {
+for (const treatment of impactTreatments) {
+  for (const amount of amountsToRun) {
     for (const mode of ['opening', 'closing', 'both'] as EdgeMode[]) {
       results.set(`${treatment}: ${mode}: ${amount}`, makeResult());
     }
@@ -141,6 +145,7 @@ let skipped = 0;
 let rawRows = 0;
 let periods = 0;
 let baselineMismatches = 0;
+const proposalAffectedArchives = new Set<string>();
 
 for (let index = 0; index < archives.length; index++) {
   if (index % 25 === 0) console.error(`processed ${index}/${archives.length}`);
@@ -185,12 +190,15 @@ for (let index = 0; index < archives.length; index++) {
       DEFAULT_CRITERIA.violationPercent,
     )) baselineMismatches++;
 
-    for (const treatment of ['trim-both', 'one-total', 'preserve-frame'] as EdgeTreatment[]) {
-      for (const amount of impactAmounts) {
+    for (const treatment of impactTreatments) {
+      for (const amount of amountsToRun) {
         const limitFor = amountRules[amount];
         for (const mode of ['opening', 'closing', 'both'] as EdgeMode[]) {
           const result = results.get(`${treatment}: ${mode}: ${amount}`)!;
           const candidate = candidateTierFor(window.times, tiers, window.actualOpening, window.actualClosing, mode, limitFor, treatment);
+          if (treatment === 'one-total' && mode === 'both' && amount === '+10 minutes' && candidate.tier !== currentTier) {
+            proposalAffectedArchives.add(archives[index]);
+          }
           if (candidate.edgeUsed) result.candidates++;
           if (candidate.tier === currentTier) continue;
           result.changes++;
@@ -210,5 +218,6 @@ console.log(JSON.stringify({
   rawRows,
   periods,
   baselineMismatches,
+  proposalAffectedArchives: [...proposalAffectedArchives].sort(),
   results: Object.fromEntries(results),
 }, null, 2));

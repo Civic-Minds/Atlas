@@ -14,6 +14,26 @@ import { SURFACE_TIER_MAXES, TIME_PERIODS } from '../shared/config.js';
 import { isRailLikeRoute } from '../shared/modes.js';
 import { computeRawDepartures } from './transit-phase1';
 
+export type TierDeterminerContext = {
+    rawDepartureTimes: readonly number[];
+    analysisTimes: readonly number[];
+    day: DayName;
+    routeType: string;
+    railLike: boolean;
+};
+
+export type TierDeterminer = (
+    headways: number[],
+    tripCount: number,
+    spanMinutes: number,
+    tiers: number[],
+    graceMinutes: number,
+    maxGraceViolations: number,
+    gracePercent: number,
+    violationPercent: number,
+    context: TierDeterminerContext,
+) => string;
+
 /**
  * Determines the frequency tier for a route based on headway analysis.
  * Returns the tightest tier the route sustains across the full span.
@@ -154,7 +174,9 @@ export function computeResourceStats(
  */
 export function applyAnalysisCriteria(
     rawData: RawRouteDepartures[],
-    criteria: AnalysisCriteria = DEFAULT_CRITERIA
+    criteria: AnalysisCriteria = DEFAULT_CRITERIA,
+    tierDeterminer: TierDeterminer = (headways, tripCount, spanMinutes, tiers, graceMinutes, maxGraceViolations, gracePercent, violationPercent) =>
+        determineTier(headways, tripCount, spanMinutes, tiers, graceMinutes, maxGraceViolations, gracePercent, violationPercent),
 ): AnalysisResult[] {
     const perDayResults = new Map<string, { dayType: DayType; day: DayName; result: AnalysisResult }>();
 
@@ -231,7 +253,7 @@ export function applyAnalysisCriteria(
         const hasRepeatedOffPeakService = periodTripCounts.midday >= 3 || periodTripCounts.evening >= 3;
         const isSplitPeakService = !isOvernightFallback && hasRepeatedPeakService && !hasRepeatedOffPeakService;
         const isLimitedService = isSplitPeakService || spanMins <= 90 || (!isOvernightFallback && coverage < 0.4);
-        const determinedTier = determineTier(
+        const determinedTier = tierDeterminer(
             analysisGaps,
             analysisWindow.length,
             spanMins,
@@ -240,6 +262,13 @@ export function applyAnalysisCriteria(
             criteria.maxGraceViolations,
             criteria.gracePercent,
             criteria.violationPercent,
+            {
+                rawDepartureTimes: raw.departureTimes,
+                analysisTimes: analysisWindow,
+                day: raw.day,
+                routeType: raw.routeType,
+                railLike: isRail,
+            },
         );
         // `span` used to combine two different ideas: a genuinely irregular burst (school
         // service, one or two trips) and a route with a stable schedule that only operates during
