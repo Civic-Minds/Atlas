@@ -12,13 +12,13 @@ describe('effectiveRouteHeadway', () => {
     routeLongName: 'Spadina',
   };
 
-  it('explains a longer full-period gap beside the typical cadence', () => {
+  it('does not expose the full-period coverage bound as route-card wording', () => {
     const p = {
       ...base,
       headwayByPeriod: { amPeak: 10 },
       periodCoverageHeadway: { amPeak: 20 },
     } as ShapeProperties;
-    expect(routeCardCoverageText(p, 'amPeak')).toBe('typically every 10 min · longest gap 20 min');
+    expect(routeCardCoverageText(p, 'amPeak')).toBeUndefined();
   });
 
   it('uses period-specific headway when period is set', () => {
