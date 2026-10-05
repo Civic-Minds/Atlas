@@ -1,3 +1,5 @@
+import { getRouteLabel } from '../../shared/cleanHeadsign';
+
 const BRANCH_MARKER = '::branch:';
 
 export function buildRouteKey(agencySlug: string, routeId: string, routeBranch?: string | null): string {
@@ -29,9 +31,11 @@ export function dedupeRouteKeysByDisplay(candidates: RouteDisplayCandidate[]): s
   const seen = new Set<string>();
   const keys: string[] = [];
   for (const candidate of candidates) {
-    const displayKey = [candidate.agencySlug, candidate.shortName, candidate.longName ?? '']
-      .map(value => value.trim().toLowerCase())
-      .join('::');
+    // Deduplicate on the label riders actually see, not the raw GTFS fields.
+    // Feeds can represent the same branded line with different internal IDs,
+    // casing, or redundant short/long-name combinations.
+    const displayLabel = getRouteLabel(candidate.shortName, candidate.longName).trim().toLowerCase().replace(/\s+/g, ' ');
+    const displayKey = `${candidate.agencySlug.trim().toLowerCase()}::${displayLabel}`;
     if (seen.has(displayKey)) continue;
     seen.add(displayKey);
     keys.push(candidate.key);

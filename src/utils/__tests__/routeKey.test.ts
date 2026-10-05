@@ -20,4 +20,11 @@ describe('route keys', () => {
       { key: 'calgary::201', agencySlug: 'calgary', shortName: '201', longName: 'Red Line' },
     ])).toEqual(['calgary::202-20785', 'calgary::201']);
   });
+
+  it('collapses raw name variants that render as the same rider-facing label', () => {
+    expect(dedupeRouteKeysByDisplay([
+      { key: 'yrt::603', agencySlug: 'yrt', shortName: 'purple', longName: 'VIVA PURPLE' },
+      { key: 'yrt::603-variant', agencySlug: 'yrt', shortName: 'Purple', longName: 'Viva   Purple' },
+    ])).toEqual(['yrt::603']);
+  });
 });
