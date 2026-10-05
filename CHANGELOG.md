@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **Map loading no longer shows a misleading network counter while route lines and network details load separately.**
 - **Frequency classifications now use tier-specific, capped internal-gap allowances, and scheduled cadence labels use cautious “about every” wording.**
 - **Removed the clipped longest-gap wording from route cards, returning them to the approved frequency label.**
 - **The first-or-last-trip frequency allowance now has a clickable info icon that explains it in the side panel.**

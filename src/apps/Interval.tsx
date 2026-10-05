@@ -687,7 +687,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
             <div className={`${MAP_BADGE} h-8`}>
               <div className="w-3 h-3 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin shrink-0" />
               <span className={MAP_BADGE_LABEL}>
-                {isLoading ? `${loadedCount}/${requestedCount} networks` : 'Loading map...'}
+                {isLoading ? 'Loading networks' : 'Loading map...'}
               </span>
             </div>
           )}
