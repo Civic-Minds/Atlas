@@ -220,7 +220,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
         // period, which can happen even when real service exists (#297). Don't assert absence.
         const range = routeCardDisplayHeadwayRange(direction, period);
         const isLimited = headway == null && period !== 'all' && hasDirectionPeriodService(direction, period);
-        return `- ${reportLabel}: ${routeCardCoverageText(direction, period) ?? (headway != null ? `every ${headway} min` : range ?? (isLimited ? 'limited service' : 'no data for this period'))}`;
+        return `- ${reportLabel}: ${routeCardCoverageText(direction, period) ?? (headway != null ? `about every ${headway} min` : range ?? (isLimited ? 'limited service' : 'no data for this period'))}`;
       })
       .filter((line): line is string => line !== null);
     const limitedLines = !hideSpan

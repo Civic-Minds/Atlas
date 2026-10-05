@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { applyAnalysisCriteria } from '../transit-phase2';
+import { applyAnalysisCriteria, determineTier } from '../transit-phase2';
 import { DEFAULT_CRITERIA } from '../defaults';
 import type { RawRouteDepartures } from '../../types/gtfs';
 
@@ -144,6 +144,13 @@ describe('applyAnalysisCriteria', () => {
     expect(r).toMatchObject({ tier: '60', serviceClass: 'time-limited' });
   });
 
+  it('uses the production tier map instead of the legacy fallback percentage', () => {
+    const results = applyAnalysisCriteria([
+      raw({ route: 'tier-map', departureTimes: [420, 445, ...Array.from({ length: 9 }, (_, i) => 465 + i * 20)] }),
+    ]);
+    expect(results.find(item => item.route === 'tier-map')?.tier).toBe('30');
+  });
+
   it('correctly falls to infrequent/span rather than a false tight tier when a day bucket mixes two separate overnight blocks (real TTC 300 pattern)', () => {
     // Tail of one night's run (233-263, non-extended) plus the start of the next night's run
     // (1512+, extended) landing in the same calendar-day bucket -- a real GTFS quirk confirmed
@@ -155,5 +162,28 @@ describe('applyAnalysisCriteria', () => {
     const r = results.find(x => x.route === '300' && x.dir === '1');
     expect(r).toBeDefined();
     expect(['span', 'infrequent']).toContain(r!.tier);
+  });
+});
+
+describe('tier-specific internal near-miss allowances', () => {
+  it('allows one 10-minute near miss when ten percent permits it', () => {
+    const gaps = [15, ...Array(9).fill(10)];
+    expect(determineTier(gaps, gaps.length + 1, gaps.reduce((a, b) => a + b, 0), [10], 5, 0, 0.15, 0.05, {
+      10: 0.10,
+    })).toBe('10');
+  });
+
+  it('does not give a 20-minute period a free near miss when five percent rounds below one', () => {
+    const gaps = [25, ...Array(9).fill(20)];
+    expect(determineTier(gaps, gaps.length + 1, gaps.reduce((a, b) => a + b, 0), [20], 5, 0, 0.15, 0.05, {
+      20: 0.05,
+    })).toBe('span');
+  });
+
+  it('caps a large period at three internal near misses', () => {
+    const gaps = [65, 65, 65, 65, ...Array(56).fill(60)];
+    expect(determineTier(gaps, gaps.length + 1, gaps.reduce((a, b) => a + b, 0), [60], 5, 0, 0.15, 0.05, {
+      60: 0.05,
+    })).toBe('span');
   });
 });

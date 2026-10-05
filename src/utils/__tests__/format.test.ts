@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { shortenAgencyName, titleCase } from '../format';
+import { fmtHeadway, shortenAgencyName, titleCase } from '../format';
 import indexData from '../../../public/data/index.json';
 
 interface IndexAgency {
@@ -98,5 +98,12 @@ describe('titleCase', () => {
     expect(titleCase('GO')).toBe('GO');
     expect(titleCase('LW')).toBe('LW');
     expect(titleCase('SFU Exchange')).toBe('SFU Exchange');
+  });
+});
+
+describe('fmtHeadway', () => {
+  it('uses cautious wording for scheduled cadence', () => {
+    expect(fmtHeadway(10)).toBe('about every 10 min');
+    expect(fmtHeadway(90)).toBe('about every 1.5h');
   });
 });

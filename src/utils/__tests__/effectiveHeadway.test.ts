@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { effectiveRouteHeadway, hasDirectionPeriodService, routeCardCoverageText, routeCardDisplayHeadway, routeListDisplayHeadway } from '../effectiveHeadway';
+import { effectiveRouteHeadway, hasDirectionPeriodService, routeCardCoverageText, routeCardDisplayHeadway, routeCardTypicalText, routeListDisplayHeadway } from '../effectiveHeadway';
 import type { ShapeProperties } from '../../hooks/useIntervalStats';
 
 describe('effectiveRouteHeadway', () => {
@@ -19,6 +19,17 @@ describe('effectiveRouteHeadway', () => {
       periodCoverageHeadway: { amPeak: 20 },
     } as ShapeProperties;
     expect(routeCardCoverageText(p, 'amPeak')).toBeUndefined();
+  });
+
+  it('uses cautious about-every wording for limited-period cadence', () => {
+    const p = {
+      ...base,
+      headwayByPeriod: { amPeak: 10 },
+      headwayRangeByPeriod: { amPeak: { min: 10, max: 12 } },
+      periodCoverageHeadway: { amPeak: 10 },
+      headwayByPeriodSustained: { amPeak: false },
+    } as ShapeProperties;
+    expect(routeCardTypicalText(p, 'amPeak')).toBe('about every 10–12 min');
   });
 
   it('uses period-specific headway when period is set', () => {

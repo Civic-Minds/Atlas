@@ -80,11 +80,12 @@ The complete local census covered 1,160 GTFS archives:
 - the baseline candidate harness matched the production tier result for every
   observation.
 
-The current middle-gap rule is unbounded: it allows at least two near misses,
-then allows more as the number of gaps grows (`max(2, floor(30% of gaps))`).
-That 30% value is implementation behaviour, not an approved product decision.
-It is retained below only as historical context; this follow-up tests lower
-percentages and bounded alternatives against a strict zero-exception reference.
+The former middle-gap rule was unbounded: it allowed at least two near misses,
+then allowed more as the number of gaps grew (`max(2, floor(30% of gaps))`).
+That 30% value was implementation behaviour, not an approved product decision.
+The production policy now uses a tier-specific percentage, a zero minimum floor,
+and a cap of three near misses: 10% for 5–15-minute tiers and 5% for
+20–60-minute tiers.
 
 For this Q2 follow-up, the gap-size rule was held constant: a near miss is a
 gap above the target but no longer than `T + max(5 minutes, 15% of T)`. The
@@ -352,8 +353,8 @@ every processing detail into a route-card warning.
 
 | Data state | Recommended display | Explanation when opened |
 | --- | --- | --- |
-| Finite sustained tier | Recommended: `typically every N min` | The typical scheduled gap in the selected period. |
-| Sustained branch range | `typically every X–Y min` | The branch has a range of typical scheduled gaps rather than one value. |
+| Finite sustained tier | `about every N min` | The representative scheduled gap in the selected period, without implying exact regularity. |
+| Sustained branch range | `about every X–Y min` | The branch has a range of scheduled gaps rather than one exact value. |
 | Uneven period with a useful range | Add `longest gap N min` | The longest wait is materially longer than the typical range, so the typical value should not be read as a guarantee. |
 | Predictable part-day service (`time-limited`) | Keep the numeric frequency and add a `limited service` label where the period or card needs context | Service operates during only part of the normal window but has a repeated schedule while operating. |
 | No finite sustained tier (`infrequent`) | `infrequent` | Atlas could not confirm a sustained finite frequency tier; it should not present a faster numeric cadence as the route's normal service. |
@@ -361,9 +362,9 @@ every processing detail into a route-card warning.
 | Confirmed no departures in the selected period | `no scheduled service` | The route has no scheduled departures in this period. |
 | Metric unavailable or not safely computable | `no data for this period` | Atlas does not have enough reliable data to make a claim. This is intentionally different from confirmed no service. |
 
-The browser check found that the current main route card still renders a
-numeric cadence as `every N min` (for example, `every 7 min`). The code also
-contains the more cautious `typically every` helper and uses branch ranges,
+The route card and related scheduled-service labels now render numeric cadence
+as `about every N min` (for example, `about every 7 min`). The code also
+contains branch ranges,
 longest-gap text, `limited service`, `no scheduled service`, and `no data for
 this period` in different surfaces. The study recommendation is to use the
 cautious wording consistently and make the underlying distinction explicit:
@@ -394,27 +395,29 @@ of precision the display is not trying to provide.
 
 ### Q5 recommendation
 
-Use plain-language state labels on the route card, keep the cautious `typically`
+Use plain-language state labels on the route card, use cautious `about every`
 wording for numeric cadences, distinguish `time-limited` from `irregular`, and
 reserve the side panel for explanations about stale, reviewed, corrected, or
-edge-allowance data. This is a display recommendation only; no UI copy or
-production behaviour has changed as part of the study.
+edge-allowance data.
 
 ## Decision log
 
 - Edge-gap proposal: one true service-edge exception total, with a fixed
   tier-plus-ten-minute ceiling, was approved for implementation after the
   full-census and full-pipeline validation.
-- Internal near-miss policy: pending this study.
+- Internal near-miss policy: use 10% for 5-, 8-, 10-, and 15-minute tiers and
+  5% for 20-, 30-, and 60-minute tiers, with a zero minimum floor and a
+  three-gap cap. This was approved after the full-census and representative-
+  example review.
 - Hard-gap policy: recommendation is to retain the existing grace boundary;
   no larger multiplier should be allowed to turn a large internal gap into a
   near miss.
 - Minimum evidence: retain the existing minimum of three departures; higher
   thresholds remove many consistent sparse periods, while two departures are
   not enough to demonstrate sustained cadence.
-- Display: use cautious numeric cadence wording, distinguish predictable
-  time-limited service from irregular service, and keep processing exceptions
-  in notices or the side panel rather than route-card arithmetic.
+- Display: use `about every N min`, distinguish predictable time-limited
+  service from irregular service, and keep processing exceptions in notices or
+  the side panel rather than route-card arithmetic.
 
 ## Supporting artifacts
 

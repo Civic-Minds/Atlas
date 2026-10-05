@@ -7,7 +7,8 @@ const SURFACE_TIERS = SURFACE_TIER_MAXES;
  * Default analysis criteria:
  * - Weekday: 07:00–22:00 · Saturday: 07:00–22:00 · Sunday: 09:00–21:00
  * - Grace: max(5 min, T × 15%) per tier — tier=60 gets 9 min, tighter tiers keep 5 min floor
- * - Violations: max(2, gaps × 30%) — proportional to route length in window
+ * - Internal near misses: 10% for 5–15-minute tiers and 5% for 20–60-minute
+ *   tiers, with no minimum floor and a three-gap cap
  */
 export const DEFAULT_CRITERIA: AnalysisCriteria = {
     id: 'default',
@@ -28,8 +29,17 @@ export const DEFAULT_CRITERIA: AnalysisCriteria = {
     },
     graceMinutes: 5,
     gracePercent: 0.15,
-    maxGraceViolations: 2,
-    violationPercent: 0.30,
+    maxGraceViolations: 0,
+    violationPercent: 0.05,
+    violationPercentByTier: {
+        5: 0.10,
+        8: 0.10,
+        10: 0.10,
+        15: 0.10,
+        20: 0.05,
+        30: 0.05,
+        60: 0.05,
+    },
     modeTierOverrides: {
         rail: [5, 8, 10, 15, 30, 60],
         surface: SURFACE_TIERS,

@@ -32,6 +32,7 @@ export type TierDeterminer = (
     gracePercent: number,
     violationPercent: number,
     context: TierDeterminerContext,
+    violationPercentByTier?: Record<number, number>,
 ) => string;
 
 /**
@@ -62,10 +63,13 @@ export const determineTier = (
     maxGraceViolations: number = 2,
     gracePercent: number = 0.15,
     violationPercent: number = 0.30,
+    violationPercentByTier?: Record<number, number>,
 ): string => {
     for (const T of tiers) {
         const grace = Math.max(graceMinutes, Math.round(T * gracePercent));
-        const allowedViolations = Math.max(maxGraceViolations, Math.floor(headways.length * violationPercent));
+        const tierViolationPercent = violationPercentByTier?.[T] ?? violationPercent;
+        const percentageAllowance = Math.floor(headways.length * tierViolationPercent);
+        const allowedViolations = Math.min(3, Math.max(maxGraceViolations, percentageAllowance));
         const minTrips = Math.ceil(spanMinutes / T);
         if (tripCount < minTrips) continue;
 
@@ -105,6 +109,7 @@ const determineTierWithEdgeGapAllowanceDetail = (
     gracePercent,
     violationPercent,
     context,
+    violationPercentByTier,
 ): EdgeGapAllowanceResult => {
     const analysisTimes = [...context.analysisTimes];
     const rawTimes = context.rawDepartureTimes;
@@ -138,6 +143,8 @@ const determineTierWithEdgeGapAllowanceDetail = (
                 maxGraceViolations,
                 gracePercent,
                 violationPercent,
+                undefined,
+                violationPercentByTier,
             ) === String(tier)) {
                 return { tier: String(tier), edgeGapAllowance: opening ? 'opening' : 'closing' };
             }
@@ -154,6 +161,8 @@ const determineTierWithEdgeGapAllowanceDetail = (
             maxGraceViolations,
             gracePercent,
             violationPercent,
+            undefined,
+            violationPercentByTier,
         ) === String(tier)) {
             return { tier: String(tier) };
         }
@@ -369,6 +378,7 @@ export function applyAnalysisCriteria(
                     routeType: raw.routeType,
                     railLike: isRail,
                 },
+                criteria.violationPercentByTier,
             )
             : null;
         const determinedTier = tierDetail?.tier ?? tierDeterminer(
@@ -387,6 +397,7 @@ export function applyAnalysisCriteria(
                 routeType: raw.routeType,
                 railLike: isRail,
             },
+            criteria.violationPercentByTier,
         );
         const edgeGapAllowance = tierDetail?.edgeGapAllowance;
         // `span` used to combine two different ideas: a genuinely irregular burst (school
