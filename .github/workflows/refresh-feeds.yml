@@ -53,7 +53,7 @@ jobs:
       # Persist feed metadata through the protected-branch workflow before the
       # independent PMTiles verification gate.
       - name: Open or update refresh pull request
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: "chore: weekly GTFS feed refresh"
