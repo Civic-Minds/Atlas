@@ -147,13 +147,36 @@ changed 18,351 observations with a cap of three, compared with 20,482 with no
 cap and 19,516 with a cap of five. The cap prevents long schedules from
 accumulating a large number of individually small exceptions.
 
-The candidate to carry into focused review is therefore the bounded,
+The candidate taken into focused review was therefore the bounded,
 sliding-scale shape `10%, 10%, 5%, 5%, 5%`, with no minimum floor and a cap of
 three internal near misses. This is the most conservative complete curve
-tested that still scales the allowance with the number of gaps. It is not a
-production change or a final decision. Before implementation, representative
-10-, 20-, 30-, and 60-minute examples should be reviewed, especially periods
-where the candidate upgrades a period from irregular to a numeric tier.
+tested that still scales the allowance with the number of gaps.
+
+### Q2 representative-example review
+
+The candidate was reviewed against 40 full-census upgrades: 10 resulting in
+each of the 10-, 20-, 30-, and 60-minute tiers. The sample was stratified by
+mode, day type, direction, and trip-count bucket where the census provided
+enough examples.
+
+| Resulting tier | Examples reviewed | Assessment |
+| ---: | ---: | --- |
+| 10 minutes | 10 | All looked like sustained 10-minute service with only small, isolated deviations. |
+| 20 minutes | 10 | All looked like sustained 20-minute service with one or two small deviations. |
+| 30 minutes | 10 | All looked like sustained 30-minute service with one small deviation. |
+| 60 minutes | 10 | Eight looked like hourly service with one small deviation. Two had mostly 15-minute service interrupted by one 63-minute gap, and correctly fell back to 60 because the faster tier was broken. |
+
+The two F21 examples are not false 15-minute classifications. The 63-minute
+gap causes the faster tier to fail; the candidate then reports the fastest
+slower tier that survives. This is the intended fallback behaviour, and the
+review did not find a candidate that incorrectly continued to claim the faster
+tier after a major interruption.
+
+The representative-example review therefore approves this Q2 candidate for a
+separate production implementation. This approval does not itself change
+production logic or published data. The implementation should retain the
+current gap-size grace, hard-gap boundary, edge treatment, and three-departure
+minimum.
 
 For historical comparison, the earlier fixed and 30% candidate results were:
 
@@ -167,8 +190,8 @@ For historical comparison, the earlier fixed and 30% candidate results were:
 | 30%, capped at five | 5,854 | 0 | 5,854 |
 
 Those historical results should not be read as approval of the 30% rule or of
-the previous fixed-two recommendation. The Q2 decision remains pending focused
-review of the sliding-scale candidate above.
+the previous fixed-two recommendation. The Q2 decision is now approved for
+implementation using the reviewed sliding-scale candidate above.
 
 ## Edge-gap booster follow-up
 

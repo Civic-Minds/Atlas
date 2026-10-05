@@ -174,6 +174,12 @@ for (const minimumEvidence of [2, 3, 4, 5, 6]) {
   });
 }
 
+const reviewOnlyCandidateName = 'q2-curve-10-10-5-5-5-floor0-cap3';
+const reviewOnly = process.env.Q2_REVIEW_ONLY === '1';
+const candidatesToRun = process.env.Q2_REVIEW_ONLY === '1'
+  ? candidates.filter(candidate => candidate.name === reviewOnlyCandidateName)
+  : candidates;
+
 type CandidateSummary = {
   group: CandidateGroup;
   targetTier?: number;
@@ -186,9 +192,10 @@ type CandidateSummary = {
   gapBuckets: Record<string, number>;
   tripCounts: Record<string, number>;
   examples: Array<Record<string, unknown>>;
+  reviewExamples: Record<string, Array<Record<string, unknown>>>;
 };
 
-const summaries = new Map<string, CandidateSummary>(candidates.map(candidate => [candidate.name, {
+const summaries = new Map<string, CandidateSummary>(candidatesToRun.map(candidate => [candidate.name, {
   group: candidate.group,
   targetTier: candidate.targetTier,
   changes: 0,
@@ -200,6 +207,7 @@ const summaries = new Map<string, CandidateSummary>(candidates.map(candidate => 
   gapBuckets: {},
   tripCounts: {},
   examples: [],
+  reviewExamples: {},
 }]));
 
 const rank = (tier: string): number => tier === 'span' ? Number.POSITIVE_INFINITY : Number(tier);
@@ -330,7 +338,7 @@ for (const period of periods) {
     hardGap: 'current',
     minimumEvidence: 3,
   }).tier;
-  for (const candidate of candidates) {
+  for (const candidate of candidatesToRun) {
     // Keep Q3 separate from the unresolved short-period question (Q4). The
     // Q3 comparison uses periods with at least four selected departures.
     if (candidate.name.startsWith('q3-') && period.times.length < 4) continue;
@@ -381,6 +389,36 @@ for (const period of periods) {
         trips: period.times.length,
         gaps: period.times.slice(1).map((time, index) => time - period.times[index]),
       });
+    }
+    if (reviewOnly && candidate.name === reviewOnlyCandidateName && ['10', '20', '30', '60'].includes(result.tier)) {
+      const tripBucket = period.times.length <= 6 ? `${period.times.length} trips` : period.times.length <= 12 ? '7–12 trips' : '13+ trips';
+      const sampleKey = `${result.tier}:${period.mode}:${period.dayType}:${tripBucket}`;
+      const reviewExamples = summary.reviewExamples[result.tier] ?? (summary.reviewExamples[result.tier] = []);
+      const sameStratumCount = reviewExamples.filter(example => example.sampleKey === sampleKey).length;
+      if (reviewExamples.length < 10 && sameStratumCount < 4) {
+        const tier = Number(result.tier);
+        const grace = Math.max(5, Math.round(tier * 0.15));
+        const nearMisses = period.times.slice(1)
+          .map((time, index) => time - period.times[index])
+          .filter(gap => gap > tier && gap <= tier + grace);
+        reviewExamples.push({
+          sampleKey,
+          feed: period.feed,
+          route: period.route,
+          day: period.day,
+          dayType: period.dayType,
+          dir: period.dir,
+          headsign: period.headsign,
+          mode: period.mode,
+          strictTier: comparisonTier,
+          candidateTier: result.tier,
+          trips: period.times.length,
+          gapCount: period.times.length - 1,
+          nearMissCount: nearMisses.length,
+          longestGap: Math.max(...period.times.slice(1).map((time, index) => time - period.times[index])),
+          gaps: period.times.slice(1).map((time, index) => time - period.times[index]),
+        });
+      }
     }
   }
 }
