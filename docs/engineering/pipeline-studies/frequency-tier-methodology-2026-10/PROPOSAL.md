@@ -94,6 +94,20 @@ Before any candidate is promoted, record:
 6. the implementation commit and rollback path; and
 7. the date and decision-maker for each rule.
 
+## Validation completed on this branch
+
+- Full automated suite: 798 tests passed.
+- Focused frequency and edge tests: 23 tests passed.
+- Type-checking: passed for the application and API configurations.
+- Downstream artifact comparison: 53 affected archives completed with no
+  geometry changes, route-set changes, or invariant failures. The comparison
+  found only expected frequency-related property changes.
+
+The archive comparison is intentionally a representative affected-feed run,
+not a claim that every local archive has been fully reprocessed. A complete
+production promotion should still run the archive regression in the normal
+pipeline environment before publishing.
+
 ## Future external white paper
 
 An external paper should wait until the rules are stable, implemented, and

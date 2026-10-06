@@ -60,9 +60,9 @@ export const determineTier = (
     spanMinutes: number,
     tiers: number[] = SURFACE_TIER_MAXES,
     graceMinutes: number = 5,
-    maxGraceViolations: number = 2,
+    maxGraceViolations: number = 0,
     gracePercent: number = 0.15,
-    violationPercent: number = 0.30,
+    violationPercent: number = 0.05,
     violationPercentByTier?: Record<number, number>,
 ): string => {
     for (const T of tiers) {
