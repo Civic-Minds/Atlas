@@ -122,4 +122,5 @@ from the final approved rules, not a copy of this working record.
 ## Related record
 
 See [`INDEX.md`](./INDEX.md) for the experiment register, census counts,
-simulation tables, route examples, and detailed unresolved questions.
+simulation tables, route examples, and detailed unresolved questions. The
+retroactive decision record is in [`EXPERIMENT-LOG.md`](./EXPERIMENT-LOG.md).

@@ -15,6 +15,11 @@ Each study records:
 - the decision, implementation commit, and verification commands; and
 - limitations or follow-up questions.
 
+Use [`EXPERIMENT_TEMPLATE.md`](./EXPERIMENT_TEMPLATE.md) for new experiments.
+Decision records should distinguish broad rule testing from end-to-end archive
+regression and should record the exact code version, input census, commands,
+results, and implementation commit.
+
 ## Studies
 
 - [Frequency-tier methodology](frequency-tier-methodology-2026-10/INDEX.md):

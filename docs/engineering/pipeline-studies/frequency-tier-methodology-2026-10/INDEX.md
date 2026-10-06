@@ -89,6 +89,7 @@ hypothesis, comparison, result, and decision visible in one place.
 | Q3 hard gap | A larger internal gap multiplier might be acceptable if the rest of the schedule is regular. | Tested 1.25×, 1.5×, 1.75×, and 2× boundaries; wider boundaries created faster tiers despite 70–120 minute holes. | Keep the existing hard boundary. |
 | Q4 minimum evidence | Two departures might be enough to identify a sustained frequency pattern. | Two departures produced 34,954 faster classifications; four or more rejected many consistent three-trip patterns. The downstream edge regression found that trimming an edge from four departures could still over-qualify a sparse period. | Retain three departures for ordinary classifications; require four departures after an edge allowance is used. |
 | Q5 display | Cautious wording can communicate scheduled cadence without implying a guarantee. | Reviewed route-card labels, longest-gap notices, limited/irregular states, and exception notices against the underlying metrics. | Use `about every`, separate service-state labels, and side-panel explanations. |
+| Q6 edge accounting | A qualifying edge booster should not silently stack on top of the internal near-miss allowance. | Full local census comparison: counting each qualifying edge as one exception removed 108 of 2,336 both-edge upgrades and caused no downgrades. | Recommend counting the edge against the bounded allowance; product approval and representative-example review remain pending. |
 
 ## Candidate questions
 
@@ -566,6 +567,7 @@ edge-allowance data.
 
 ## Supporting artifacts
 
+- Experiment log: `EXPERIMENT-LOG.md`
 - Candidate rule harness: `scripts/frequency-candidate-rules.ts`
 - Candidate rule tests: `scripts/frequency-candidate-rules.test.ts`
 - Census audit: `scripts/audit-frequency-candidates.ts`

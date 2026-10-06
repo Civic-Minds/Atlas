@@ -68,17 +68,20 @@ const impactAmounts = [
 const proposalOnly = process.argv.includes('--proposal-only');
 const dynamicOnly = process.argv.includes('--dynamic-only');
 const sampleOnly = process.argv.includes('--sample-only');
-const impactTreatments: EdgeTreatment[] = sampleOnly
-  ? ['trim-both', 'one-total']
+const edgeCountOnly = process.argv.includes('--edge-count-only');
+const impactTreatments: EdgeTreatment[] = edgeCountOnly
+  ? ['trim-both', 'trim-both-count-edge']
+  : sampleOnly ? ['trim-both', 'one-total']
   : proposalOnly ? ['one-total'] : ['trim-both', 'one-total', 'preserve-frame'];
 const amountsToRun = sampleOnly
-  ? ['+10 minutes', 'dynamic 10% booster, max tier+10']
+  ? edgeCountOnly ? ['+10 minutes'] : ['+10 minutes', 'dynamic 10% booster, max tier+10']
+  : edgeCountOnly ? ['+10 minutes']
   : dynamicOnly
   ? ['dynamic floor-5% booster, max tier+10']
   : proposalOnly ? ['+10 minutes'] : impactAmounts;
 
 type EdgeMode = 'opening' | 'closing' | 'both';
-type EdgeTreatment = 'trim-both' | 'one-total' | 'preserve-frame';
+type EdgeTreatment = 'trim-both' | 'trim-both-count-edge' | 'one-total' | 'preserve-frame';
 type EdgeResult = {
   changes: number;
   upgrades: number;
@@ -92,13 +95,17 @@ const makeResult = (): EdgeResult => ({ changes: 0, upgrades: 0, downgrades: 0, 
 const rank = (tier: string): number => tier === 'span' ? Number.POSITIVE_INFINITY : Number(tier);
 const increment = (record: Record<string, number>, key: string) => { record[key] = (record[key] ?? 0) + 1; };
 
-const qualifiesAtTier = (times: number[], tier: number, frame = times): boolean => {
+const qualifiesAtTier = (times: number[], tier: number, frame = times, extraExceptionCount = 0): boolean => {
   if (times.length < 2) return false;
   const gaps = times.slice(1).map((time, index) => time - times[index]);
   if (frame.length < Math.ceil((frame[frame.length - 1] - frame[0]) / tier)) return false;
   const grace = Math.max(DEFAULT_CRITERIA.graceMinutes, Math.round(tier * DEFAULT_CRITERIA.gracePercent));
-  const allowedViolations = Math.max(DEFAULT_CRITERIA.maxGraceViolations, Math.floor(gaps.length * DEFAULT_CRITERIA.violationPercent));
-  let violations = 0;
+  // The count-included variant treats each qualifying edge booster as one
+  // exception in the same allowance, while retaining the same percentage and
+  // cap logic used for the interior gaps.
+  const allowanceGapCount = gaps.length + extraExceptionCount;
+  const allowedViolations = Math.max(DEFAULT_CRITERIA.maxGraceViolations, Math.floor(allowanceGapCount * DEFAULT_CRITERIA.violationPercent));
+  let violations = extraExceptionCount;
   for (const gap of gaps) {
     if (gap <= tier) continue;
     if (gap > tier + grace || ++violations > allowedViolations) return false;
@@ -128,7 +135,10 @@ const candidateTierFor = (
       if (trims && times.length - trims < 4) continue;
       const trimmed = times.slice(variant.opening ? 1 : 0, variant.closing ? -1 : undefined);
       const frame = treatment === 'preserve-frame' ? times : trimmed;
-      if (qualifiesAtTier(trimmed, tier, frame)) return { tier: String(tier), edgeUsed: Boolean(trims) };
+      const edgeExceptionCount = treatment === 'trim-both-count-edge' ? trims : 0;
+      if (qualifiesAtTier(trimmed, tier, frame, edgeExceptionCount)) {
+        return { tier: String(tier), edgeUsed: Boolean(trims) };
+      }
     }
   }
   return { tier: 'span', edgeUsed: false };
