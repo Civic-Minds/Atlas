@@ -53,6 +53,22 @@ No candidate is promoted to production from the audit alone. A production
 change requires an explicit decision, focused tests, full test-suite results,
 type-checking, and a complete local archive regression.
 
+## Experiment register
+
+Each candidate rule is treated as a separate experiment. The detailed evidence
+for each experiment appears in the sections below; this register keeps the
+hypothesis, comparison, result, and decision visible in one place.
+
+| Experiment | Hypothesis | Test and result | Decision/status |
+| --- | --- | --- | --- |
+| Weekday rollup | Combining Monday–Friday departures may create a cadence that never ran on a real day. | Full archive census; 1,726 groups had a faster merged median, including 1,349 that were at least five minutes faster. | Implemented representative real-weekday rollups and slowest-weekday tiering. |
+| Q1 edge amount | A genuine first/last-service gap can be treated more leniently without weakening internal-gap checks. | Compared absolute and percentage ceilings across the full census and reviewed a stratified route sample; the edge-gap distribution had a long tail, while regular schedules supported a bounded total allowance. | Use the fixed `T + 10 minutes` branch candidate; do not use an uncapped percentage. |
+| Q1 edge count | Both service edges may be exceptions if the internal schedule remains sustained. | Fixed `T + 10` changed 2,948 periods with both edges versus 2,901 with one; the difference was 47, all upgrades. | Both genuine edges are allowed independently, subject to the remaining-trip and internal-gap checks. |
+| Q2 internal allowance | A tier-specific sliding percentage may preserve ordinary schedule variation without retaining the unapproved 30% rule. | Tested tier curves, floors, and caps against a strict zero-exception reference; a zero floor and three-gap cap avoided short-period over-qualification. | Implemented `10% / 5%` tier-specific allowances with no floor and a three-gap cap. |
+| Q3 hard gap | A larger internal gap multiplier might be acceptable if the rest of the schedule is regular. | Tested 1.25×, 1.5×, 1.75×, and 2× boundaries; wider boundaries created faster tiers despite 70–120 minute holes. | Keep the existing hard boundary. |
+| Q4 minimum evidence | Two departures might be enough to identify a sustained frequency pattern. | Two departures produced 34,954 faster classifications; four or more rejected many consistent three-trip patterns. | Retain three departures as the minimum. |
+| Q5 display | Cautious wording can communicate scheduled cadence without implying a guarantee. | Reviewed route-card labels, longest-gap notices, limited/irregular states, and exception notices against the underlying metrics. | Use `about every`, separate service-state labels, and side-panel explanations. |
+
 ## Candidate questions
 
 1. **Service edges:** How many true opening or closing gaps may be excepted,
@@ -303,8 +319,8 @@ Adding a tier-plus-ten-minute ceiling produced these results:
 
 Every change in these bounded tests was an upgrade. The results do not identify
 a uniquely correct percentage, and they show that an uncapped percentage is
-not safe: the observed edge-gap tail includes very large gaps. The selected
-production rule is the simpler boundary: each genuine edge gap may be
+not safe: the observed edge-gap tail includes very large gaps. The current
+branch candidate is the simpler boundary: each genuine edge gap may be
 accepted only when it is no more than `T + 10 minutes` in total. Both the
 opening and closing edge may use the allowance because they are separate
 service boundaries, not middle-of-service holes. This is not ten minutes
@@ -316,6 +332,49 @@ The existing public/Beta “Hide irregular routes” and Beta “Hide limited-se
 routes” settings are useful for reviewing the visible consequences of a
 candidate. They do not participate in the tier calculation and are not a
 substitute for the census.
+
+### Edge-rule comparison matrix
+
+The follow-up simulation compared the edge limits across the full archive
+census. The counts below use both genuine edges and show route-periods whose
+reported tier changed from the no-edge reference; every change was an upgrade
+and no candidate produced a downgrade.
+
+| Edge rule | Changed observations | Difference when both edges are allowed instead of one |
+| --- | ---: | ---: |
+| Fixed `T + 10` total | 2,948 | 47 |
+| Dynamic 10% booster, capped at `T + 10` | 1,561 | 6 |
+| Dynamic 15% booster, capped at `T + 10` | 2,080 | 18 |
+| Dynamic 20% booster, capped at `T + 10` | 2,185 | 23 |
+
+The candidate with a five-minute minimum booster is equivalent to the fixed
+`T + 10` rule at these tiers. The dynamic 10% rule reduces the number of
+upgrades substantially, but it rejects the illustrative 10-minute route with
+one 20-minute opening gap.
+
+### Qualitative route review
+
+The matrix was followed by a stratified review of 40 actual tier-changing
+observations under the fixed `T + 10` candidate and 40 under the dynamic 10%
+candidate. The sample covered the 8-, 10-, 15-, 20-, 30-, and 60-minute tiers,
+surface and rail where available, and periods with 3–4, 5–6, 7–10, and 11+
+departures. It is a review sample, not a replacement for the full census.
+
+| Example | Gaps in the analyzed period | Result | Assessment |
+| --- | --- | --- | --- |
+| Wellington Metlink route 13, Monday | `20, 20, 20, 20, 20, 30` | 30 → 20 minutes | Good edge case: consistent 20-minute service with one 30-minute closing gap. |
+| Brisbane Translink route 736, Monday | `60 × 9, 70` | span → 60 minutes | Good edge case: regular hourly service with one 70-minute edge gap. |
+| TransLink Vancouver route 004, weekday | `22, 14, 14, 14, 15` | 30 → 15 minutes | Plausible edge case: one longer opening gap followed by sustained 14–15-minute service. |
+| Wellington Metlink route 32x, Monday | `30, 20, 15, 15, 10, 10, 10, 10, 15, 15, 30` | 30 → 20 minutes | Mixed but defensible: both edge gaps are 30 minutes and the interior remains within the existing policy. |
+| Adelaide Metro G20X, Monday | `37, 23, 30, 27` | 60 → 30 minutes under dynamic 10% | Needs caution: only five departures and broadly uneven service; this is mainly a minimum-evidence/internal-allowance question. |
+| Brisbane Translink route 381, Monday | `18, 22, 37` | 60 → 30 minutes | Needs caution: only four departures, so removing an edge leaves the minimum three departures. |
+
+The review supports allowing both genuine edges under the fixed `T + 10`
+ceiling. It does not support an uncapped percentage, and it does not show a
+benefit from making the edge amount dynamic: the dynamic 10% version rejects
+the intended 10-minute pattern with a single 20-minute opening gap. The sparse
+examples remain covered by the separate three-departure minimum and should not
+be used as evidence that a large edge gap is generally acceptable.
 
 ## Hard-gap follow-up
 

@@ -33,6 +33,22 @@ const amountRules: Record<string, (tier: number) => number> = {
   '+15% beyond normal grace': tier => tier + Math.max(DEFAULT_CRITERIA.graceMinutes, Math.round(tier * DEFAULT_CRITERIA.gracePercent)) + tier * 0.15,
   '+20% beyond normal grace': tier => tier + Math.max(DEFAULT_CRITERIA.graceMinutes, Math.round(tier * DEFAULT_CRITERIA.gracePercent)) + tier * 0.20,
   '+25% beyond normal grace': tier => tier + Math.max(DEFAULT_CRITERIA.graceMinutes, Math.round(tier * DEFAULT_CRITERIA.gracePercent)) + tier * 0.25,
+  'dynamic floor-5% booster, max tier+10': tier => Math.min(
+    tier + 10,
+    tier + Math.max(DEFAULT_CRITERIA.graceMinutes, Math.round(tier * DEFAULT_CRITERIA.gracePercent)) + Math.max(5, Math.round(tier * 0.10)),
+  ),
+  'dynamic 10% booster, max tier+10': tier => Math.min(
+    tier + 10,
+    tier + Math.max(DEFAULT_CRITERIA.graceMinutes, Math.round(tier * DEFAULT_CRITERIA.gracePercent)) + Math.round(tier * 0.10),
+  ),
+  'dynamic 15% booster, max tier+10': tier => Math.min(
+    tier + 10,
+    tier + Math.max(DEFAULT_CRITERIA.graceMinutes, Math.round(tier * DEFAULT_CRITERIA.gracePercent)) + Math.round(tier * 0.15),
+  ),
+  'dynamic 20% booster, max tier+10': tier => Math.min(
+    tier + 10,
+    tier + Math.max(DEFAULT_CRITERIA.graceMinutes, Math.round(tier * DEFAULT_CRITERIA.gracePercent)) + Math.round(tier * 0.20),
+  ),
   '+10% beyond normal grace, max tier+10': tier => Math.min(tier + 10, tier + Math.max(DEFAULT_CRITERIA.graceMinutes, Math.round(tier * DEFAULT_CRITERIA.gracePercent)) + tier * 0.10),
   '+15% beyond normal grace, max tier+10': tier => Math.min(tier + 10, tier + Math.max(DEFAULT_CRITERIA.graceMinutes, Math.round(tier * DEFAULT_CRITERIA.gracePercent)) + tier * 0.15),
   '+20% beyond normal grace, max tier+10': tier => Math.min(tier + 10, tier + Math.max(DEFAULT_CRITERIA.graceMinutes, Math.round(tier * DEFAULT_CRITERIA.gracePercent)) + tier * 0.20),
@@ -43,13 +59,23 @@ const impactAmounts = [
   '+10 minutes', '+15 minutes', '+20 minutes', '+10%', '+15%', 'current max(5, 15%)',
   '+5% beyond normal grace', '+10% beyond normal grace', '+15% beyond normal grace',
   '+20% beyond normal grace', '+25% beyond normal grace',
+  'dynamic floor-5% booster, max tier+10', 'dynamic 10% booster, max tier+10',
+  'dynamic 15% booster, max tier+10', 'dynamic 20% booster, max tier+10',
   '+10% beyond normal grace, max tier+10', '+15% beyond normal grace, max tier+10',
   '+20% beyond normal grace, max tier+10', '+25% beyond normal grace, max tier+10',
   '+20% beyond normal grace, max tier+15',
 ];
 const proposalOnly = process.argv.includes('--proposal-only');
-const impactTreatments: EdgeTreatment[] = proposalOnly ? ['one-total'] : ['trim-both', 'one-total', 'preserve-frame'];
-const amountsToRun = proposalOnly ? ['+10 minutes'] : impactAmounts;
+const dynamicOnly = process.argv.includes('--dynamic-only');
+const sampleOnly = process.argv.includes('--sample-only');
+const impactTreatments: EdgeTreatment[] = sampleOnly
+  ? ['trim-both', 'one-total']
+  : proposalOnly ? ['one-total'] : ['trim-both', 'one-total', 'preserve-frame'];
+const amountsToRun = sampleOnly
+  ? ['+10 minutes', 'dynamic 10% booster, max tier+10']
+  : dynamicOnly
+  ? ['dynamic floor-5% booster, max tier+10']
+  : proposalOnly ? ['+10 minutes'] : impactAmounts;
 
 type EdgeMode = 'opening' | 'closing' | 'both';
 type EdgeTreatment = 'trim-both' | 'one-total' | 'preserve-frame';
@@ -59,9 +85,10 @@ type EdgeResult = {
   downgrades: number;
   candidates: number;
   tierChanges: Record<string, number>;
+  examples: Array<Record<string, unknown>>;
 };
 
-const makeResult = (): EdgeResult => ({ changes: 0, upgrades: 0, downgrades: 0, candidates: 0, tierChanges: {} });
+const makeResult = (): EdgeResult => ({ changes: 0, upgrades: 0, downgrades: 0, candidates: 0, tierChanges: {}, examples: [] });
 const rank = (tier: string): number => tier === 'span' ? Number.POSITIVE_INFINITY : Number(tier);
 const increment = (record: Record<string, number>, key: string) => { record[key] = (record[key] ?? 0) + 1; };
 
@@ -177,6 +204,7 @@ for (let index = 0; index < archives.length; index++) {
   }
   if (rawRowsForFeed.length) feedsWithRows++;
   rawRows += rawRowsForFeed.length;
+  const routeNames = new Map((data.routes ?? []).map((route: any) => [route.route_id, route.route_short_name || route.route_id]));
   for (const raw of rawRowsForFeed) {
     const window = getWindow(raw);
     if (!window) continue;
@@ -222,6 +250,33 @@ for (let index = 0; index < archives.length; index++) {
           if (rank(candidate.tier) < rank(currentTier)) result.upgrades++;
           else result.downgrades++;
           increment(result.tierChanges, `${currentTier}->${candidate.tier}`);
+          if (sampleOnly && candidate.edgeUsed && result.examples.length < 40) {
+            const internalGaps = gaps.slice(1, -1).sort((a, b) => a - b);
+            const tripBucket = window.times.length <= 4 ? '3-4' : window.times.length <= 6 ? '5-6' : window.times.length <= 10 ? '7-10' : '11+';
+            const sampleKey = `${candidate.tier}|${raw.railLike ? 'rail' : 'surface'}|${tripBucket}|${mode}`;
+            if (result.examples.filter(example => example.sampleKey === sampleKey).length >= 2) continue;
+            result.examples.push({
+              sampleKey,
+              feed: basename(archives[index], '.zip'),
+              route: routeNames.get(raw.route) ?? raw.route,
+              day: raw.day,
+              direction: raw.dir,
+              mode: raw.railLike ? 'rail' : 'surface',
+              tripCount: window.times.length,
+              currentTier,
+              candidateTier: candidate.tier,
+              edgeMode: mode,
+              edgeTreatment: treatment,
+              openingGap: gaps[0],
+              closingGap: gaps[gaps.length - 1],
+              internalGapCount: internalGaps.length,
+              internalMin: internalGaps[0] ?? null,
+              internalMax: internalGaps.at(-1) ?? null,
+              internalMedian: internalGaps.length ? internalGaps[Math.floor(internalGaps.length / 2)] : null,
+              actualOpening: window.actualOpening,
+              actualClosing: window.actualClosing,
+            });
+          }
         }
       }
     }
