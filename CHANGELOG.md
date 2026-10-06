@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **Edge-gap allowances now count against the same bounded near-miss budget as internal gaps**, preventing the two types of exception from stacking silently.
 - **Edge-gap allowances now require four departures to remain after trimming an edge**, preventing sparse four-trip patterns from being promoted to sustained service.
 - **Frequency-tier defaults now use the reviewed zero-floor, tier-specific near-miss allowances even when the determiner is called directly**, keeping pipeline fallbacks aligned with the published criteria.
 - **Route cards now flag when weekdays qualify for different frequency tiers, so the slowest-weekday result is clear.**

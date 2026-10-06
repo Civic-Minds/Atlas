@@ -211,6 +211,14 @@ describe('tier-specific internal near-miss allowances', () => {
     })).toBe('10');
   });
 
+  it('counts a qualifying edge allowance against the same near-miss budget', () => {
+    const gaps = [15, ...Array(9).fill(10)];
+    const span = gaps.reduce((a, b) => a + b, 0);
+    expect(determineTier(gaps, gaps.length + 1, span, [10], 5, 0, 0.15, 0.05, {
+      10: 0.10,
+    }, 1)).toBe('span');
+  });
+
   it('does not give a 20-minute period a free near miss when five percent rounds below one', () => {
     const gaps = [25, ...Array(9).fill(20)];
     expect(determineTier(gaps, gaps.length + 1, gaps.reduce((a, b) => a + b, 0), [20], 5, 0, 0.15, 0.05, {

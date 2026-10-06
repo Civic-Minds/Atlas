@@ -33,6 +33,7 @@ export type TierDeterminer = (
     violationPercent: number,
     context: TierDeterminerContext,
     violationPercentByTier?: Record<number, number>,
+    preCountedGraceViolations?: number,
 ) => string;
 
 /**
@@ -64,16 +65,17 @@ export const determineTier = (
     gracePercent: number = 0.15,
     violationPercent: number = 0.05,
     violationPercentByTier?: Record<number, number>,
+    preCountedGraceViolations: number = 0,
 ): string => {
     for (const T of tiers) {
         const grace = Math.max(graceMinutes, Math.round(T * gracePercent));
         const tierViolationPercent = violationPercentByTier?.[T] ?? violationPercent;
-        const percentageAllowance = Math.floor(headways.length * tierViolationPercent);
+        const percentageAllowance = Math.floor((headways.length + preCountedGraceViolations) * tierViolationPercent);
         const allowedViolations = Math.min(3, Math.max(maxGraceViolations, percentageAllowance));
         const minTrips = Math.ceil(spanMinutes / T);
         if (tripCount < minTrips) continue;
 
-        let graceCount = 0;
+        let graceCount = preCountedGraceViolations;
         let fail = false;
         for (const h of headways) {
             if (h <= T) continue;
@@ -94,8 +96,11 @@ export const determineTier = (
  * the target tier by up to ten minutes total. This is an absolute ceiling,
  * not ten minutes added to the ordinary grace allowance.
  *
- * The existing grace rules remain unchanged for every other gap. When both
- * edges qualify, they are removed independently from the tested sequence.
+ * The existing grace rules remain unchanged for every other gap. Each
+ * qualifying edge also consumes one slot in the same bounded near-miss
+ * allowance, so the edge booster cannot silently stack on top of the internal
+ * exception budget. When both edges qualify, they are removed independently
+ * from the tested sequence and consume two slots.
  * Removing edge departures keeps the normal trip-count and sustained-cadence
  * checks honest: at least four departures must remain when an edge exception
  * is used. Ordinary classifications retain the separate three-departure
@@ -149,8 +154,8 @@ const determineTierWithEdgeGapAllowanceDetail = (
                 maxGraceViolations,
                 gracePercent,
                 violationPercent,
-                undefined,
                 violationPercentByTier,
+                Number(variant.opening) + Number(variant.closing),
             ) === String(tier)) {
                 return {
                     tier: String(tier),
@@ -172,7 +177,6 @@ const determineTierWithEdgeGapAllowanceDetail = (
             maxGraceViolations,
             gracePercent,
             violationPercent,
-            undefined,
             violationPercentByTier,
         ) === String(tier)) {
             return { tier: String(tier) };
