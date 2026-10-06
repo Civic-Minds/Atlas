@@ -89,7 +89,7 @@ hypothesis, comparison, result, and decision visible in one place.
 | Q3 hard gap | A larger internal gap multiplier might be acceptable if the rest of the schedule is regular. | Tested 1.25×, 1.5×, 1.75×, and 2× boundaries; wider boundaries created faster tiers despite 70–120 minute holes. | Keep the existing hard boundary. |
 | Q4 minimum evidence | Two departures might be enough to identify a sustained frequency pattern. | Two departures produced 34,954 faster classifications; four or more rejected many consistent three-trip patterns. The downstream edge regression found that trimming an edge from four departures could still over-qualify a sparse period. | Retain three departures for ordinary classifications; require four departures after an edge allowance is used. |
 | Q5 display | Cautious wording can communicate scheduled cadence without implying a guarantee. | Reviewed route-card labels, longest-gap notices, limited/irregular states, and exception notices against the underlying metrics. | Use `about every`, separate service-state labels, and side-panel explanations. |
-| Q6 edge accounting | A qualifying edge booster should not silently stack on top of the internal near-miss allowance. | Full local census comparison: counting each qualifying edge as one exception removed 108 of 2,336 both-edge upgrades and caused no downgrades. | Recommend counting the edge against the bounded allowance; product approval and representative-example review remain pending. |
+| Q6 edge accounting | A qualifying edge booster should not silently stack on top of the internal near-miss allowance. | Full local census comparison: counting each qualifying edge as one exception removed 108 of 2,336 both-edge upgrades and caused no downgrades. | Approved: count the edge against the bounded allowance. |
 
 ## Candidate questions
 
@@ -310,8 +310,10 @@ when service continued outside the window.
 This means a single percentage booster is unlikely to describe every edge
 case. A small booster captures only a minority of genuine edge candidates,
 while a booster large enough to capture most candidates would also admit very
-large gaps. The edge allowance therefore needs an explicit absolute ceiling
-and must remain separate from the internal-gap exception count.
+large gaps. The edge allowance therefore needs an explicit absolute ceiling.
+The edge is still identified separately from a middle-of-service gap, but a
+qualifying edge consumes one slot in the same bounded exception count so the
+allowances cannot stack silently.
 
 The full-census impact test used one total edge exception and measured the
 booster as an addition to the existing per-gap grace:
@@ -398,7 +400,8 @@ benefit from making the edge amount dynamic: the dynamic 10% version rejects
 the intended 10-minute pattern with a single 20-minute opening gap. The sparse
 examples are the reason for the stricter edge-specific evidence requirement:
 three departures remain sufficient for ordinary classification, but not when
-the classification depends on removing an edge departure.
+the classification depends on removing an edge departure. A qualifying edge
+also consumes one slot in the bounded near-miss allowance.
 
 ## Hard-gap follow-up
 
@@ -551,6 +554,9 @@ edge-allowance data.
 - Edge-gap proposal: each true service edge may use one fixed tier-plus-ten-minute
   ceiling, with both edges allowed independently, after the full-census and
   full-pipeline validation.
+- Edge accounting: each qualifying edge consumes one slot in the same bounded
+  near-miss allowance; two qualifying edges consume two slots. This prevents
+  the edge booster from stacking on top of the internal exception budget.
 - Internal near-miss policy: use 10% for 5-, 8-, 10-, and 15-minute tiers and
   5% for 20-, 30-, and 60-minute tiers, with a zero minimum floor and a
   three-gap cap. This was approved after the full-census and representative-

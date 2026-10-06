@@ -41,7 +41,7 @@ records the decision trail in a consistent format.
 
 ### FREQ-003 — Service-edge allowance
 
-- **Status:** decided, with accounting follow-up pending
+- **Status:** decided
 - **Hypothesis:** A genuine opening or closing gap can receive a bounded
   allowance without weakening the internal-gap check.
 - **Comparison:** One edge versus both edges; fixed and dynamic ceilings;
@@ -55,7 +55,7 @@ records the decision trail in a consistent format.
   failures.
 - **Decision:** Allow genuine opening and closing edges independently, up to
   `T + 10 minutes`, with four departures remaining after edge use.
-- **Implementation:** `66a7cbd9`, `5f4494fc`.
+- **Implementation:** `66a7cbd9`, `5f4494fc`, `0afcba10`.
 - **Evidence:** `INDEX.md` § Edge-gap booster follow-up and the archive
   regression output recorded during the implementation.
 - **Open accounting question:** Whether a qualifying edge gap should also
@@ -93,7 +93,7 @@ records the decision trail in a consistent format.
 
 ## FREQ-006 — Does an edge gap consume an internal allowance?
 
-- **Status:** analysis complete; product decision pending
+- **Status:** approved and implemented
 - **Question:** Should a first or last gap that qualifies for the edge booster
   also use one of the internal near-miss exceptions?
 - **Reference:** The current candidate treats the edge gap separately and
@@ -116,11 +116,12 @@ records the decision trail in a consistent format.
   downgrades.
 - **Recommendation:** Count a qualifying edge gap against the same bounded
   exception allowance. This prevents the edge booster and internal allowance
-  from stacking silently. Do not change the production classifier until this
-  recommendation is explicitly approved.
+  from stacking silently.
 - **Example review:** The stratified sample run covered opening, closing, and
   both-edge cases across sparse and longer periods. Stable qualifying examples
   included Wellington route 13 and 32x and Brisbane routes 361 and 603; the
   count-included rule preserved these regular interior patterns while removing
   some upgrades that depended on stacking allowances.
-- **Decision:** Pending representative-example review and product approval.
+- **Decision:** Approved 2026-10-06. The edge gap counts against the bounded
+  allowance, and the full downstream regression passed before final commit.
+- **Implementation:** `0afcba10`.

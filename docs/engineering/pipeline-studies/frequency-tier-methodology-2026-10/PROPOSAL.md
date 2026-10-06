@@ -23,7 +23,8 @@ The current analysis-branch candidate therefore keeps the rules explicit:
 - evaluate real weekdays individually before producing weekday summaries;
 - allow genuine opening and closing edge gaps independently, up to `T + 10`
   minutes total for the tested tier `T`;
-- keep internal-gap exceptions separate from edge allowances;
+- count each qualifying edge gap against the same bounded exception allowance
+  used for internal near misses;
 - retain the tier-specific internal allowance and three-gap cap documented in
   the study;
 - retain the existing hard-gap boundary; and
@@ -76,12 +77,13 @@ should remain in place.
 | Area | Current branch status | What remains before publication |
 | --- | --- | --- |
 | Weekday rollup | Implemented and tested on the analysis branch | Confirm final product wording and complete the production archive regression. |
-| Edge count | Both genuine edges supported | Review the final implementation against downstream artifacts. |
-| Edge amount | Fixed `T + 10` candidate | Explicit approval of the amount and final route-review sign-off. |
-| Internal allowance | Tier-specific bounded candidate | Confirm the exact percentages and cap in the implementation review. |
+| Edge count | Both genuine edges supported | Implemented and regression-tested. |
+| Edge amount | Fixed `T + 10` candidate | Implemented and regression-tested. |
+| Edge accounting | Edge gaps consume the bounded allowance | Approved and implemented after full-census comparison. |
+| Internal allowance | Tier-specific bounded candidate | Implemented and regression-tested. |
 | Hard gap | Existing boundary retained | No further change proposed unless new evidence appears. |
-| Minimum evidence | Three departures for ordinary classifications; four after an edge allowance | Confirm the final edge/sparse-period interaction in the production archive regression. |
-| Display | Conservative wording candidate | Finalize route-card and notice copy after rules are locked. |
+| Minimum evidence | Three departures for ordinary classifications; four after an edge allowance | Implemented and regression-tested. |
+| Display | Conservative wording candidate | Implemented in the candidate UI. |
 
 ## Required approval record
 
@@ -97,12 +99,13 @@ Before any candidate is promoted, record:
 
 ## Validation completed on this branch
 
-- Full automated suite: 800 tests passed.
-- Focused frequency and edge tests: 37 tests passed.
+- Full automated suite: 801 tests passed.
+- Focused frequency and edge tests: 38 tests passed.
 - Type-checking: passed for the application and API configurations.
+- Production build: passed.
 - Downstream artifact comparison: all 209 affected archives completed with no
   errors, geometry changes, route-set changes, or invariant failures. The
-  comparison found 137 archives and 480 route features with expected
+  approved comparison found 149 archives and 577 route features with expected
   frequency-related property changes.
 
 This is a local candidate-branch regression, not a production promotion. The
