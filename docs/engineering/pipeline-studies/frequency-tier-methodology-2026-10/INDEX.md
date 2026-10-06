@@ -53,6 +53,27 @@ No candidate is promoted to production from the audit alone. A production
 change requires an explicit decision, focused tests, full test-suite results,
 type-checking, and a complete local archive regression.
 
+## How much of Atlas is tested
+
+There are two different levels of testing:
+
+1. **Rule testing:** the frequency calculation is rerun across the complete
+   local route-period census. This is the broad test: every eligible
+   route/day/direction/period observation in the study is compared under the
+   candidate rule. It tells us how many classifications would change and
+   which kinds of service are affected.
+2. **Pipeline testing:** selected affected GTFS archives are then processed
+   end to end, from the feed through route geometry, stops, corridors, and
+   output metadata. This checks that a frequency change does not break the
+   generated products. The final edge-gap candidate regression covered all
+   209 affected archives and found no errors, route-set changes, geometry
+   changes, or invariant failures.
+
+This means we do test the rule against essentially every eligible route-period
+in the local data, but we do not rebuild every archive for every experimental
+variant. The expensive full-pipeline run is reserved for the candidate that
+has survived the census analysis and focused review.
+
 ## Experiment register
 
 Each candidate rule is treated as a separate experiment. The detailed evidence
