@@ -56,6 +56,10 @@ export function tileEffectiveHeadwayExpr(period?: PeriodFilter): unknown[] {
     ];
     const coverage = [
       'case',
+      // Span routes can contain tightly clustered school/special trips, but those
+      // clusters are not regular frequency. Do not use their max-gap fallback to
+      // pass an active-period frequency filter.
+      ['==', ['get', 'tier'], 'span'], NO_PERIOD_SERVICE_TILE_VALUE,
       ['has', coverageKeys[0]], ['get', coverageKeys[0]],
       ['has', coverageKeys[1]], ['get', coverageKeys[1]],
       // Older tiles can contain an explicit unsustained marker without the

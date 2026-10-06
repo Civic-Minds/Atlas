@@ -198,6 +198,18 @@ describe('effectiveRouteHeadway', () => {
     expect(effectiveRouteHeadway(p, 'overnight')).toBe(109);
   });
 
+  it('does not treat a span route cluster as regular frequency', () => {
+    const p = {
+      ...base,
+      tier: 'span',
+      headway: null,
+      headwayByPeriod: { midday: null },
+      maxGapByPeriod: { midday: 3 },
+    } as ShapeProperties;
+
+    expect(effectiveRouteHeadway(p, 'midday')).toBeNull();
+  });
+
   it('preserves active-service cadence on cards while filtering by full-period coverage (#507)', () => {
     const p = {
       headway: 36,

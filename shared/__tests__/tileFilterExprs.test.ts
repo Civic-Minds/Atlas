@@ -129,6 +129,12 @@ describe('tileEffectiveHeadwayExpr', () => {
     expect(compiled.filter(ctx, feat({ hps_late: true, wdpch_late: 190, hph_late: 10 }) as any)).toBe(false);
     expect(compiled.filter(ctx, feat({ hps_late: false, hph_late: 10 }) as any)).toBe(false);
   });
+
+  it('does not let span-route clusters pass an active-period frequency filter', () => {
+    const compiled = compileFilter(periodFilter('late', 15));
+    const ctx = { zoom: 10 };
+    expect(compiled.filter(ctx, feat({ tier: 'span', hph_late: 3 }) as any)).toBe(false);
+  });
 });
 
 describe('tilePeriodServiceExpr', () => {
