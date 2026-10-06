@@ -275,6 +275,23 @@ export function computeResourceStats(
 }
 
 /**
+ * Choose one real day to represent a day-type rollup. Combining departures from
+ * different weekdays creates a timetable that never actually ran and can make
+ * the displayed headway look faster than any individual day.
+ */
+const representativeRollupEntry = <T extends { result: AnalysisResult }>(
+    entries: T[],
+): T => {
+    const counts = entries.map(entry => entry.result.times.length).sort((a, b) => a - b);
+    const medianCount = counts[Math.floor(counts.length / 2)];
+    return entries.reduce((best, entry) => {
+        const distance = Math.abs(entry.result.times.length - medianCount);
+        const bestDistance = Math.abs(best.result.times.length - medianCount);
+        return distance < bestDistance ? entry : best;
+    }, entries[0]);
+};
+
+/**
  * Phase 2: Apply analysis criteria to raw departure data.
  *
  * Filters departures to each day type's time window, classifies into tiers,
@@ -496,19 +513,18 @@ export function applyAnalysisCriteria(
             ? 'time-limited'
             : 'regular';
 
-        const allTimes = entries.flatMap(e => e.result.times);
-        const mergedTimes = [...new Set(allTimes)].sort((a, b) => a - b);
-        const rep = entries[0].result;
-        // Rail rollup: same midday representative-day logic for both directions.
+        const repEntry = representativeRollupEntry(entries);
+        const rep = repEntry.result;
+        // Rail rollup: apply the existing midday representative-day logic on top of
+        // the day-type representative selection used by all modes.
         // For dir=0 (outbound): avoids Friday extra-train distortion.
         // For dir=1 (inbound): all trains share "Union Station" headsign so the pool is the
         // same across weekdays; representative-day pick is still valid.
         const isRailRollup = rep.railLike ?? isRailLikeRoute({ routeType: rep.routeType });
         const rollupStatsBase = (() => {
           if (isRailRollup) {
-            // Union of all weekdays creates spurious short gaps when some days (e.g. Fridays)
-            // run extra trains. Pick the "representative day" — the day whose midday trip count
-            // is closest to the median count across all days — and use only its times.
+            // Pick the representative day's midday times. A weekday union creates spurious
+            // short gaps when some days (e.g. Fridays) run extra trains.
             const MIDDAY_START = 570; // 09:30
             const MIDDAY_END = 870;   // 14:30
             const dayMiddays = entries.map(e => e.result.times.filter(t => t >= MIDDAY_START && t <= MIDDAY_END));
@@ -520,10 +536,10 @@ export function applyAnalysisCriteria(
             const repTimes = dayMiddays[bestIdx];
             if (repTimes.length >= 2) return repTimes;
           }
-          return mergedTimes;
+          return rep.times;
         })();
         const stats = computeHeadwayStats(rollupStatsBase);
-        const rollupTimes = isRailRollup ? rollupStatsBase : mergedTimes;
+        const rollupTimes = rollupStatsBase;
         const avgTrips = Math.round(entries.reduce((sum, e) => sum + e.result.tripCount, 0) / entries.length);
         const allStarts = entries.map(e => e.result.serviceSpan?.start ?? 0);
         const allEnds = entries.map(e => e.result.serviceSpan?.end ?? 0);

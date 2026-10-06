@@ -153,6 +153,47 @@ sliding-scale shape `10%, 10%, 5%, 5%, 5%`, with no minimum floor and a cap of
 three internal near misses. This is the most conservative complete curve
 tested that still scales the allowance with the number of gaps.
 
+## Weekday rollup bias audit
+
+The weekday rollup was audited separately from the frequency-tier policy. The
+question was whether combining Monday through Friday departure times could make
+the displayed cadence look faster than any real weekday schedule.
+
+The corrected full census covered:
+
+- 1,160 GTFS archives;
+- 62 archives that could not be opened or parsed;
+- 897 feeds with usable departure rows;
+- 430,867 daily route-pattern observations; and
+- 66,655 weekday route-pattern groups containing at least two actual weekdays.
+
+The merged weekday departure list produced a faster median than the daily
+results in 1,726 groups (2.59%). In 1,349 groups (2.02%), the displayed
+median was at least five minutes faster. The effect was concentrated in
+surface transit: 1,707 of the faster-median cases were surface groups and 19
+were rail groups.
+
+This did not mean the current tier rollup was making the same claim: tier
+qualification already uses the worst actual weekday. The confirmed issue was
+the displayed cadence and related statistics, which were still being computed
+from a Monday–Friday union in the non-rail path.
+
+The production correction selects a representative actual weekday instead.
+The representative day is the one whose departure count is closest to the
+median count across the available weekdays. The tier remains the worst actual
+weekday, and missing weekdays continue to generate a warning. This keeps the
+published statistics internally coherent: every displayed departure belongs
+to a schedule that actually ran on one day.
+
+The affected cases are not primarily once-a-day community routes. Of the 820
+groups that would receive a faster tier if the merged timetable were used, 573
+(69.9%) have at least 16 departures per actual weekday, while 88 (10.7%) have
+four or fewer. The displayed-median effect is broader: 450 of its 1,726 cases
+(26.1%) have four or fewer departures per weekday. Groups with only one
+departure cannot produce a daily headway and are not included in this specific
+comparison; the sparse cases here have at least two departures on at least two
+actual weekdays.
+
 ### Q2 representative-example review
 
 The candidate was reviewed against 40 full-census upgrades: 10 resulting in
