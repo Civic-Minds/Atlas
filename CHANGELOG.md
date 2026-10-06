@@ -12,7 +12,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Removed the clipped longest-gap wording from route cards, returning them to the approved frequency label.**
 - **The first-or-last-trip frequency allowance now has a clickable info icon that explains it in the side panel.**
 - **Route details now identify when a frequency tier uses the small first-or-last-trip allowance.**
-- **Frequency tiers now allow one true service-edge gap up to ten minutes beyond the tier while preserving the existing sustained-service checks.**
+- **Frequency tiers now allow genuine opening and closing service-edge gaps up to ten minutes beyond the tier while preserving the existing sustained-service checks.**
 - **Hamilton’s Trans-Cab service zones now appear alongside myRide coverage**, with the published Stoney Creek and Glanbrook boundaries and transfer points shown separately from fixed routes.
 - **Marked internal test sessions no longer send Atlas, Vercel, or Google analytics**, so performance checks do not pollute production measurements.
 - **GTFS refreshes now avoid overlapping runs and publish the new map release only after History rebuilds successfully**, so a partial pipeline failure cannot point the public app at incomplete derived data.

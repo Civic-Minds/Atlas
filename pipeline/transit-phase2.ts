@@ -36,14 +36,14 @@ export type TierDeterminer = (
 ) => string;
 
 /**
- * The maximum total gap allowed for one true service-edge exception.
+ * The maximum total gap allowed for each true service-edge exception.
  *
  * This is deliberately applied only to the first or last departure in the
  * raw service list. A gap created by the analysis window is not an edge of
  * the service and cannot use this allowance.
  */
 export const EDGE_GAP_ALLOWANCE_MINUTES = 10;
-export type EdgeGapAllowanceSide = 'opening' | 'closing';
+export type EdgeGapAllowanceSide = 'opening' | 'closing' | 'both';
 
 type EdgeGapAllowanceResult = {
     tier: string;
@@ -90,14 +90,14 @@ export const determineTier = (
 };
 
 /**
- * Determine a tier while allowing one true opening or closing gap to exceed
- * the normal grace allowance by up to ten minutes.
+ * Determine a tier while allowing each true opening or closing gap to exceed
+ * the target tier by up to ten minutes total. This is an absolute ceiling,
+ * not ten minutes added to the ordinary grace allowance.
  *
  * The existing grace rules remain unchanged for every other gap. When both
- * edges qualify, each edge is tested independently, so two exceptions can
- * never be combined. Removing the exception from the tested sequence also
- * keeps the normal trip-count and sustained-cadence checks honest: at least
- * three departures must remain.
+ * edges qualify, they are removed independently from the tested sequence.
+ * Removing edge departures keeps the normal trip-count and sustained-cadence
+ * checks honest: at least three departures must remain.
  */
 const determineTierWithEdgeGapAllowanceDetail = (
     headways,
@@ -126,12 +126,16 @@ const determineTierWithEdgeGapAllowanceDetail = (
             && gaps[gaps.length - 1] > tier + existingGrace
             && gaps[gaps.length - 1] <= tier + EDGE_GAP_ALLOWANCE_MINUTES;
 
-        const variants: boolean[] = [];
-        if (openingEligible) variants.push(true);
-        if (closingEligible) variants.push(false);
+        const variants: Array<{ opening: boolean; closing: boolean }> = [];
+        if (openingEligible && closingEligible) {
+            variants.push({ opening: true, closing: true });
+        } else {
+            if (openingEligible) variants.push({ opening: true, closing: false });
+            if (closingEligible) variants.push({ opening: false, closing: true });
+        }
 
-        for (const opening of variants) {
-            const trimmed = analysisTimes.slice(opening ? 1 : 0, opening ? undefined : -1);
+        for (const variant of variants) {
+            const trimmed = analysisTimes.slice(variant.opening ? 1 : 0, variant.closing ? -1 : undefined);
             if (trimmed.length < 3) continue;
             const trimmedGaps = trimmed.slice(1).map((time, index) => time - trimmed[index]);
             if (determineTier(
@@ -146,7 +150,12 @@ const determineTierWithEdgeGapAllowanceDetail = (
                 undefined,
                 violationPercentByTier,
             ) === String(tier)) {
-                return { tier: String(tier), edgeGapAllowance: opening ? 'opening' : 'closing' };
+                return {
+                    tier: String(tier),
+                    edgeGapAllowance: variant.opening && variant.closing
+                        ? 'both'
+                        : variant.opening ? 'opening' : 'closing',
+                };
             }
         }
 

@@ -272,9 +272,8 @@ when service continued outside the window.
 This means a single percentage booster is unlikely to describe every edge
 case. A small booster captures only a minority of genuine edge candidates,
 while a booster large enough to capture most candidates would also admit very
-large gaps. The next test should compare percentage boosters with an explicit
-maximum, and should keep the edge booster separate from the internal-gap
-exception count.
+large gaps. The edge allowance therefore needs an explicit absolute ceiling
+and must remain separate from the internal-gap exception count.
 
 The full-census impact test used one total edge exception and measured the
 booster as an addition to the existing per-gap grace:
@@ -290,9 +289,7 @@ booster as an addition to the existing per-gap grace:
 
 The 20% candidate has a similar total impact to the existing +10-minute
 proposal, but it is not equivalent: its absolute allowance grows with the
-frequency tier. This is evidence for testing a percentage booster, not yet a
-final choice. The next review should compare the percentage rule's actual
-maximum gaps by tier and decide whether it needs an absolute ceiling.
+frequency tier. This is why the percentage-only candidates were not selected.
 
 Adding a tier-plus-ten-minute ceiling produced these results:
 
@@ -305,10 +302,15 @@ Adding a tier-plus-ten-minute ceiling produced these results:
 | 20% of tier | tier + 15 minutes | 3,659 |
 
 Every change in these bounded tests was an upgrade. The results do not identify
-a uniquely correct percentage, but they do show that an uncapped percentage is
-not safe: the observed edge-gap tail includes very large gaps. The defensible
-shape is therefore a percentage booster plus an absolute ceiling, with the
-percentage and ceiling still requiring a product decision.
+a uniquely correct percentage, and they show that an uncapped percentage is
+not safe: the observed edge-gap tail includes very large gaps. The selected
+production rule is the simpler boundary: each genuine edge gap may be
+accepted only when it is no more than `T + 10 minutes` in total. Both the
+opening and closing edge may use the allowance because they are separate
+service boundaries, not middle-of-service holes. This is not ten minutes
+beyond the ordinary grace allowance. The ordinary internal gap rule remains
+unchanged, and at least three departures must remain after removing the edge
+departures.
 
 The existing public/Beta “Hide irregular routes” and Beta “Hide limited-service
 routes” settings are useful for reviewing the visible consequences of a
@@ -461,9 +463,9 @@ edge-allowance data.
 
 ## Decision log
 
-- Edge-gap proposal: one true service-edge exception total, with a fixed
-  tier-plus-ten-minute ceiling, was approved for implementation after the
-  full-census and full-pipeline validation.
+- Edge-gap proposal: each true service edge may use one fixed tier-plus-ten-minute
+  ceiling, with both edges allowed independently, after the full-census and
+  full-pipeline validation.
 - Internal near-miss policy: use 10% for 5-, 8-, 10-, and 15-minute tiers and
   5% for 20-, 30-, and 60-minute tiers, with a zero minimum floor and a
   three-gap cap. This was approved after the full-census and representative-

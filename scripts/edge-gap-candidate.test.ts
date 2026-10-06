@@ -39,10 +39,10 @@ describe('applyEdgeGapCandidateCriteria', () => {
     expect(result.find(item => item.route === 'window-boundary')?.tier).not.toBe('10');
   });
 
-  it('allows at most one edge when both ends are outside the tier', () => {
+  it('allows both genuine edges when the internal schedule remains sustained', () => {
     const times = sustainedTenMinuteTimes(20);
     times.push(times.at(-1)! + 20);
     const result = applyEdgeGapCandidateCriteria([raw(times, 'both-edges')]);
-    expect(result.find(item => item.route === 'both-edges')?.tier).not.toBe('10');
+    expect(result.find(item => item.route === 'both-edges')).toMatchObject({ tier: '10' });
   });
 });

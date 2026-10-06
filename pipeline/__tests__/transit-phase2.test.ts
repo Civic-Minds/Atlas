@@ -35,11 +35,12 @@ describe('applyAnalysisCriteria', () => {
     expect(results.find(item => item.route === 'edge-opening')).toMatchObject({ tier: '10', edgeGapAllowance: 'opening' });
   });
 
-  it('rejects an opening edge more than ten minutes over the tier', () => {
+  it('does not use an opening edge above the tier-plus-ten ceiling for that tier', () => {
     const results = applyAnalysisCriteria([
       raw({ route: 'edge-too-long', departureTimes: sustainedTenMinuteTimes(21) }),
     ]);
     expect(results.find(item => item.route === 'edge-too-long')).toMatchObject({ edgeGapAllowance: 'opening' });
+    expect(results.find(item => item.route === 'edge-too-long')?.tier).not.toBe('10');
   });
 
   it('does not treat an analysis-window boundary as a true service edge', () => {
@@ -49,13 +50,13 @@ describe('applyAnalysisCriteria', () => {
     expect(results.find(item => item.route === 'window-boundary')).toMatchObject({ edgeGapAllowance: undefined });
   });
 
-  it('allows at most one edge exception when both ends exceed the tier', () => {
+  it('allows both genuine service edges when the internal schedule remains sustained', () => {
     const times = sustainedTenMinuteTimes(20);
     times.push(times.at(-1)! + 20);
     const results = applyAnalysisCriteria([
       raw({ route: 'both-edges', departureTimes: times }),
     ]);
-    expect(results.find(item => item.route === 'both-edges')?.tier).not.toBe('10');
+    expect(results.find(item => item.route === 'both-edges')).toMatchObject({ tier: '10', edgeGapAllowance: 'both' });
   });
 
   it('produces a normal daytime result unaffected by the overnight fallback', () => {
