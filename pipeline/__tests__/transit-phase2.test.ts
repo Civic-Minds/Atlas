@@ -59,6 +59,17 @@ describe('applyAnalysisCriteria', () => {
     expect(results.find(item => item.route === 'both-edges')).toMatchObject({ tier: '10', edgeGapAllowance: 'both' });
   });
 
+  it('does not use an edge allowance when it would leave only three departures', () => {
+    const results = applyAnalysisCriteria([
+      raw({ route: 'sparse-edge', departureTimes: [420, 440, 450, 460] }),
+    ]);
+    expect(results.find(item => item.route === 'sparse-edge')).toMatchObject({
+      tier: 'span',
+      serviceClass: 'irregular',
+      edgeGapAllowance: undefined,
+    });
+  });
+
   it('produces a normal daytime result unaffected by the overnight fallback', () => {
     // 08:00–18:00, every 15 -- real sustained daytime coverage (unlike the narrow rush-hour-only
     // burst cases the existing coverage check is meant to catch).

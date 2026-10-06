@@ -61,7 +61,7 @@ export function determineCandidateTier(
     // An edge exception must still leave a sustained schedule to evaluate. This prevents a
     // two-trip period from becoming a "qualified" tier merely because its only gap was trimmed.
     const requestedTrims = Number(requestedOpening) + Number(requestedClosing);
-    const canTrimEdges = sorted.length - requestedTrims >= 3;
+    const canTrimEdges = sorted.length - requestedTrims >= 4;
     const trimOpening = canTrimEdges && requestedOpening;
     const trimClosing = canTrimEdges && requestedClosing;
     const start = trimOpening ? 1 : 0;

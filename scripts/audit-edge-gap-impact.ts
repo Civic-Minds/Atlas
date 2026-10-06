@@ -125,7 +125,7 @@ const candidateTierFor = (
       : [{ opening, closing }];
     for (const variant of variants) {
       const trims = Number(variant.opening) + Number(variant.closing);
-      if (trims && times.length - trims < 3) continue;
+      if (trims && times.length - trims < 4) continue;
       const trimmed = times.slice(variant.opening ? 1 : 0, variant.closing ? -1 : undefined);
       const frame = treatment === 'preserve-frame' ? times : trimmed;
       if (qualifiesAtTier(trimmed, tier, frame)) return { tier: String(tier), edgeUsed: Boolean(trims) };

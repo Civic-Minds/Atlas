@@ -66,7 +66,7 @@ hypothesis, comparison, result, and decision visible in one place.
 | Q1 edge count | Both service edges may be exceptions if the internal schedule remains sustained. | Fixed `T + 10` changed 2,948 periods with both edges versus 2,901 with one; the difference was 47, all upgrades. | Both genuine edges are allowed independently, subject to the remaining-trip and internal-gap checks. |
 | Q2 internal allowance | A tier-specific sliding percentage may preserve ordinary schedule variation without retaining the unapproved 30% rule. | Tested tier curves, floors, and caps against a strict zero-exception reference; a zero floor and three-gap cap avoided short-period over-qualification. | Implemented `10% / 5%` tier-specific allowances with no floor and a three-gap cap. |
 | Q3 hard gap | A larger internal gap multiplier might be acceptable if the rest of the schedule is regular. | Tested 1.25×, 1.5×, 1.75×, and 2× boundaries; wider boundaries created faster tiers despite 70–120 minute holes. | Keep the existing hard boundary. |
-| Q4 minimum evidence | Two departures might be enough to identify a sustained frequency pattern. | Two departures produced 34,954 faster classifications; four or more rejected many consistent three-trip patterns. | Retain three departures as the minimum. |
+| Q4 minimum evidence | Two departures might be enough to identify a sustained frequency pattern. | Two departures produced 34,954 faster classifications; four or more rejected many consistent three-trip patterns. The downstream edge regression found that trimming an edge from four departures could still over-qualify a sparse period. | Retain three departures for ordinary classifications; require four departures after an edge allowance is used. |
 | Q5 display | Cautious wording can communicate scheduled cadence without implying a guarantee. | Reviewed route-card labels, longest-gap notices, limited/irregular states, and exception notices against the underlying metrics. | Use `about every`, separate service-state labels, and side-panel explanations. |
 
 ## Candidate questions
@@ -251,8 +251,8 @@ tier after a major interruption.
 The representative-example review therefore approves this Q2 candidate for a
 separate production implementation. This approval does not itself change
 production logic or published data. The implementation should retain the
-current gap-size grace, hard-gap boundary, edge treatment, and three-departure
-minimum.
+current gap-size grace, hard-gap boundary, edge treatment, and the ordinary
+three-departure minimum, with four departures required after edge trimming.
 
 For historical comparison, the earlier fixed and 30% candidate results were:
 
@@ -325,8 +325,9 @@ accepted only when it is no more than `T + 10 minutes` in total. Both the
 opening and closing edge may use the allowance because they are separate
 service boundaries, not middle-of-service holes. This is not ten minutes
 beyond the ordinary grace allowance. The ordinary internal gap rule remains
-unchanged, and at least three departures must remain after removing the edge
-departures.
+unchanged, and at least four departures must remain after removing an edge
+departure. Ordinary classifications retain the separate three-departure
+minimum.
 
 The existing public/Beta “Hide irregular routes” and Beta “Hide limited-service
 routes” settings are useful for reviewing the visible consequences of a
@@ -367,14 +368,15 @@ departures. It is a review sample, not a replacement for the full census.
 | TransLink Vancouver route 004, weekday | `22, 14, 14, 14, 15` | 30 → 15 minutes | Plausible edge case: one longer opening gap followed by sustained 14–15-minute service. |
 | Wellington Metlink route 32x, Monday | `30, 20, 15, 15, 10, 10, 10, 10, 15, 15, 30` | 30 → 20 minutes | Mixed but defensible: both edge gaps are 30 minutes and the interior remains within the existing policy. |
 | Adelaide Metro G20X, Monday | `37, 23, 30, 27` | 60 → 30 minutes under dynamic 10% | Needs caution: only five departures and broadly uneven service; this is mainly a minimum-evidence/internal-allowance question. |
-| Brisbane Translink route 381, Monday | `18, 22, 37` | 60 → 30 minutes | Needs caution: only four departures, so removing an edge leaves the minimum three departures. |
+| Brisbane Translink route 381, Monday | `18, 22, 37` | 60 → 30 minutes under the earlier candidate | Rejected by the updated rule: only four departures means an edge allowance would leave just three, which is not enough evidence for an edge-based upgrade. |
 
 The review supports allowing both genuine edges under the fixed `T + 10`
 ceiling. It does not support an uncapped percentage, and it does not show a
 benefit from making the edge amount dynamic: the dynamic 10% version rejects
 the intended 10-minute pattern with a single 20-minute opening gap. The sparse
-examples remain covered by the separate three-departure minimum and should not
-be used as evidence that a large edge gap is generally acceptable.
+examples are the reason for the stricter edge-specific evidence requirement:
+three departures remain sufficient for ordinary classification, but not when
+the classification depends on removing an edge departure.
 
 ## Hard-gap follow-up
 
@@ -428,7 +430,8 @@ routes** setting is a display filter for the resulting irregular classification,
 not the rule that determines a frequency tier.
 
 The production classifier currently requires three departures before a
-limited-service period can be treated as sustained. The Q4 audit tested that
+limited-service period can be treated as sustained. The edge-specific rule
+requires four departures after trimming an edge. The Q4 audit tested the
 minimum against two, four, five, and six departures. Each candidate was
 compared with the same frequency rule and the current hard-gap boundary, with
 edge allowances disabled so this question was not mixed with the service-edge
@@ -458,8 +461,9 @@ requiring four departures would label that period irregular despite both
 observed gaps matching the tier exactly.
 
 The Q4 recommendation is therefore to retain **three departures as the minimum
-evidence** for a sustained frequency claim. This preserves the existing Beta
-behaviour: one- and two-trip periods remain irregular, while three repeated
+evidence** for ordinary sustained-frequency claims, and require **four
+departures after an edge allowance**. This preserves the existing Beta
+behaviour for ordinary periods: one- and two-trip periods remain irregular, while three repeated
 departures can still represent a real short-window schedule. This is a study
 recommendation, not a production change.
 
@@ -532,9 +536,9 @@ edge-allowance data.
 - Hard-gap policy: recommendation is to retain the existing grace boundary;
   no larger multiplier should be allowed to turn a large internal gap into a
   near miss.
-- Minimum evidence: retain the existing minimum of three departures; higher
-  thresholds remove many consistent sparse periods, while two departures are
-  not enough to demonstrate sustained cadence.
+- Minimum evidence: retain three departures for ordinary classifications, but
+  require four after an edge allowance so a sparse four-trip period cannot be
+  upgraded solely by trimming its first or last gap.
 - Display: use `about every N min`, distinguish predictable time-limited
   service from irregular service, and keep processing exceptions in notices or
   the side panel rather than route-card arithmetic.

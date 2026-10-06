@@ -45,4 +45,9 @@ describe('applyEdgeGapCandidateCriteria', () => {
     const result = applyEdgeGapCandidateCriteria([raw(times, 'both-edges')]);
     expect(result.find(item => item.route === 'both-edges')).toMatchObject({ tier: '10' });
   });
+
+  it('does not use an edge allowance when only three departures would remain', () => {
+    const result = applyEdgeGapCandidateCriteria([raw([420, 440, 450, 460], 'sparse-edge')]);
+    expect(result.find(item => item.route === 'sparse-edge')?.tier).toBe('span');
+  });
 });

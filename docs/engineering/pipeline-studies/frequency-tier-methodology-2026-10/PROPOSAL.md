@@ -27,7 +27,8 @@ The current analysis-branch candidate therefore keeps the rules explicit:
 - retain the tier-specific internal allowance and three-gap cap documented in
   the study;
 - retain the existing hard-gap boundary; and
-- require at least three departures after any edge departures are removed.
+- require at least four departures after an edge departure is removed; ordinary
+  classifications still use the three-departure minimum.
 
 These are branch candidates, not a public commitment. The study and the
 implementation must still be reviewed together before publication.
@@ -79,7 +80,7 @@ should remain in place.
 | Edge amount | Fixed `T + 10` candidate | Explicit approval of the amount and final route-review sign-off. |
 | Internal allowance | Tier-specific bounded candidate | Confirm the exact percentages and cap in the implementation review. |
 | Hard gap | Existing boundary retained | No further change proposed unless new evidence appears. |
-| Minimum evidence | Three remaining departures | Confirm interaction with limited and irregular route filters. |
+| Minimum evidence | Three departures for ordinary classifications; four after an edge allowance | Confirm the final edge/sparse-period interaction in the production archive regression. |
 | Display | Conservative wording candidate | Finalize route-card and notice copy after rules are locked. |
 
 ## Required approval record
@@ -96,17 +97,16 @@ Before any candidate is promoted, record:
 
 ## Validation completed on this branch
 
-- Full automated suite: 798 tests passed.
-- Focused frequency and edge tests: 23 tests passed.
+- Full automated suite: 800 tests passed.
+- Focused frequency and edge tests: 37 tests passed.
 - Type-checking: passed for the application and API configurations.
-- Downstream artifact comparison: 53 affected archives completed with no
-  geometry changes, route-set changes, or invariant failures. The comparison
-  found only expected frequency-related property changes.
+- Downstream artifact comparison: all 209 affected archives completed with no
+  errors, geometry changes, route-set changes, or invariant failures. The
+  comparison found 137 archives and 480 route features with expected
+  frequency-related property changes.
 
-The archive comparison is intentionally a representative affected-feed run,
-not a claim that every local archive has been fully reprocessed. A complete
-production promotion should still run the archive regression in the normal
-pipeline environment before publishing.
+This is a local candidate-branch regression, not a production promotion. The
+candidate has not been published.
 
 ## Future external white paper
 

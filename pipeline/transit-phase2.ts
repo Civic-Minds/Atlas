@@ -97,7 +97,9 @@ export const determineTier = (
  * The existing grace rules remain unchanged for every other gap. When both
  * edges qualify, they are removed independently from the tested sequence.
  * Removing edge departures keeps the normal trip-count and sustained-cadence
- * checks honest: at least three departures must remain.
+ * checks honest: at least four departures must remain when an edge exception
+ * is used. Ordinary classifications retain the separate three-departure
+ * minimum below.
  */
 const determineTierWithEdgeGapAllowanceDetail = (
     headways,
@@ -136,7 +138,7 @@ const determineTierWithEdgeGapAllowanceDetail = (
 
         for (const variant of variants) {
             const trimmed = analysisTimes.slice(variant.opening ? 1 : 0, variant.closing ? -1 : undefined);
-            if (trimmed.length < 3) continue;
+            if (trimmed.length < 4) continue;
             const trimmedGaps = trimmed.slice(1).map((time, index) => time - trimmed[index]);
             if (determineTier(
                 trimmedGaps,
