@@ -181,6 +181,10 @@ const metric = {
   weekdayMergedTierUpgradesByMedianTrips: {} as Record<string, number>,
   weekdayMergedMedianFasterByMedianTrips: {} as Record<string, number>,
   weekdayMergedMedianFasterByDailyMedian: {} as Record<string, number>,
+  weekdayTierVariationGroups: 0,
+  weekdayTierVariationByMode: {} as Record<string, number>,
+  weekdayMedianRangeAtLeastFive: 0,
+  weekdayMedianRangeAtLeastTwofold: 0,
   branchGroups: 0,
   branchMixingTierUpgrades: 0,
   branchMixingMedianFaster: 0,
@@ -188,6 +192,7 @@ const metric = {
   examples: {
     weekdayTierUpgrades: [] as Example[],
     weekdayMedianFaster: [] as Example[],
+    weekdayTierVariation: [] as Example[],
     branchMixing: [] as Example[],
   },
 };
@@ -211,6 +216,25 @@ for (const [key, rows] of grouped) {
   const dayMedians = weekdayRows.map(row => row.median).filter((value): value is number => value != null);
   const dailyMedian = median(dayMedians);
   const mergedMedian = median(mergedTimes.slice(1).map((time, i) => time - mergedTimes[i]));
+  const dailyTierNames = new Set(weekdayRows.map(row => row.tier));
+  if (dailyTierNames.size > 1) {
+    metric.weekdayTierVariationGroups++;
+    increment(metric.weekdayTierVariationByMode, weekdayRows[0].mode);
+    addExample(metric.examples.weekdayTierVariation, {
+      key,
+      days: weekdayRows.map(row => row.day),
+      dailyTiers: weekdayRows.map(row => row.tier),
+      dailyMedians: weekdayRows.map(row => row.median),
+      dailyTripCounts: weekdayRows.map(row => row.times.length),
+    });
+  }
+  if (dayMedians.length >= 2) {
+    const medianRange = Math.max(...dayMedians) - Math.min(...dayMedians);
+    if (medianRange >= 5) metric.weekdayMedianRangeAtLeastFive++;
+    if (Math.min(...dayMedians) > 0 && Math.max(...dayMedians) / Math.min(...dayMedians) >= 2) {
+      metric.weekdayMedianRangeAtLeastTwofold++;
+    }
+  }
   if (rank(mergedTier) < rank(worstTier)) {
     metric.weekdayMergedTierUpgrades++;
     increment(metric.weekdayMergedTierUpgradesByMode, weekdayRows[0].mode);

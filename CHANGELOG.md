@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **Route cards now flag when weekdays qualify for different frequency tiers, so the slowest-weekday result is clear.**
 - **Weekday frequency summaries now use a real representative weekday instead of combining Monday–Friday departures into a schedule that never ran.**
 - **Map loading no longer shows a misleading network counter while route lines and network details load separately.**
 - **Frequency classifications now use tier-specific, capped internal-gap allowances, and scheduled cadence labels use cautious “about every” wording.**

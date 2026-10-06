@@ -161,6 +161,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   const hasRouteDataQualityWarning = currentRoute.directions.some(
     direction => direction.routeDataQualityWarning === ROUTE_DATA_QUALITY_WARNING,
   );
+  const hasWeekdayTierVariation = currentRoute.directions.some(direction => direction.weekdayTierVariation);
   const selectedPeriod = period !== 'all' ? TIME_PERIODS.find(p => p.key === period) : undefined;
   const hasPeriodService = period === 'all' || directionGroups.some(group =>
     group.realTier.some(direction => routeCardDisplayHeadway(direction, period) != null) ||
@@ -548,7 +549,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
             );
           });
         })()}
-        {(routeIsStale || routeAgency?.feedReviewStatus === 'review' || routeOverrideNote || hasRouteDataQualityWarning) && onInfoOpen && (
+        {(routeIsStale || routeAgency?.feedReviewStatus === 'review' || routeOverrideNote || hasRouteDataQualityWarning || hasWeekdayTierVariation) && onInfoOpen && (
           <div className={`${CARD_NOTICE_FOOTER} space-y-1`}>
             {hasRouteDataQualityWarning && (
               <CardHelpNotice
@@ -598,6 +599,12 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                   issueUrl: routeAgency?.issueUrl,
                   issueUrls: routeAgency?.issueUrls,
                 })}
+              />
+            )}
+            {hasWeekdayTierVariation && (
+              <CardHelpNotice
+                message="Weekday schedules vary. The tier shown reflects the slowest weekday."
+                onLearnMore={() => onInfoOpen('about', { helpTopic: 'weekday-variation' })}
               />
             )}
           </div>

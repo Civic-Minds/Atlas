@@ -507,6 +507,8 @@ export function applyAnalysisCriteria(
         const worstTier = worstTierValue === Infinity ? 'span'
             : worstTierValue >= INFREQUENT_VAL ? 'infrequent'
             : String(worstTierValue);
+        const weekdayTierVariation = dayType === 'Weekday'
+            && new Set(entries.map(entry => entry.result.tier)).size > 1;
         const serviceClass = entries.some(e => e.result.serviceClass === 'irregular')
             ? 'irregular'
             : entries.some(e => e.result.serviceClass === 'time-limited')
@@ -566,6 +568,7 @@ export function applyAnalysisCriteria(
             peakWindow: stats.peakWindow,
             serviceSpan: span,
             tier: worstTier,
+            weekdayTierVariation: weekdayTierVariation || undefined,
             edgeGapAllowance: (() => {
                 const sides = new Set(entries.map(e => e.result.edgeGapAllowance).filter(Boolean));
                 return sides.size > 1 ? 'both' : [...sides][0];

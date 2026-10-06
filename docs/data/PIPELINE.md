@@ -45,6 +45,9 @@ The displayed weekday cadence uses one representative actual weekday, selected b
 the number of departures closest to the weekday median. Atlas does not combine
 departures from different weekdays into one timetable, because those departures did
 not occur on the same day and would create artificially short gaps.
+When actual weekdays qualify for different tiers, the route card flags that
+weekday schedules vary and explains that the displayed tier reflects the
+slowest weekday.
 
 ### 6. Assigning Frequency Tiers
 Atlas uses sustained service thresholds to assign frequency tiers. It tests the analyzed gaps across each service window, allowing a small number of grace-period violations, then stores headway metrics separately for display and filtering. The current surface thresholds are:

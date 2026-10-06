@@ -165,6 +165,18 @@ describe('applyAnalysisCriteria', () => {
     expect(weekday?.times[0]).toBe(480);
   });
 
+  it('flags weekday tier variation while retaining the slowest weekday tier', () => {
+    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'] as const;
+    const results = applyAnalysisCriteria(days.map((day) => raw({
+      route: 'weekday-tier-variation',
+      day,
+      departureTimes: Array.from({ length: 17 }, (_, trip) => 480 + trip * (day === 'Friday' ? 15 : 30)),
+    })));
+    const weekday = results.find(item => item.route === 'weekday-tier-variation' && item.day === 'Weekday');
+
+    expect(weekday).toMatchObject({ tier: '30', weekdayTierVariation: true });
+  });
+
   it('correctly falls to infrequent/span rather than a false tight tier when a day bucket mixes two separate overnight blocks (real TTC 300 pattern)', () => {
     // Tail of one night's run (233-263, non-extended) plus the start of the next night's run
     // (1512+, extended) landing in the same calendar-day bucket -- a real GTFS quirk confirmed

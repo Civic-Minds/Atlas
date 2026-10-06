@@ -377,6 +377,7 @@ export async function processGtfsBuffer(
         directionId: parseInt(result.dir),
         routeDataQualityWarning: routeDataQualityWarningForShape(shapeId, gtfs.shapeAnomalies),
         tier: result.tier,
+        weekdayTierVariation: result.weekdayTierVariation,
         edgeGapAllowance: result.edgeGapAllowance,
         serviceClass: result.serviceClass ?? (result.tier === 'span' ? 'irregular' : 'regular'),
         headway: newHeadway,

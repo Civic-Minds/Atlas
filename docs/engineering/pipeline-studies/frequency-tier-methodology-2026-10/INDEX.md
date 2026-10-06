@@ -194,6 +194,24 @@ departure cannot produce a daily headway and are not included in this specific
 comparison; the sparse cases here have at least two departures on at least two
 actual weekdays.
 
+### Weekday tier variation and route-card notice
+
+The follow-up census also compared the actual weekday results before deciding
+whether the route card needed a notice:
+
+- 794 groups (1.19%) had different frequency tiers on different weekdays;
+- 784 of those groups were surface transit and 10 were rail;
+- 1,309 groups (1.96%) had weekday median headways at least five minutes
+  apart; and
+- 522 groups (0.78%) had a weekday median headway at least twice another
+  weekday's median.
+
+The notice is therefore tied to the clearest product-relevant condition:
+different actual weekdays produce different tiers. The route card says that
+weekday schedules vary and that the displayed tier reflects the slowest
+weekday. The side panel explains that Atlas checks each weekday separately and
+does not combine departures from different days.
+
 ### Q2 representative-example review
 
 The candidate was reviewed against 40 full-census upgrades: 10 resulting in
