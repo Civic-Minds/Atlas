@@ -172,28 +172,27 @@ export default function AboutDocsPage() {
             </Subsection>
             <h3 className="font-black text-[var(--text-primary)]">Band qualification and tolerance</h3>
             <p>Atlas tests the tightest band first and requires enough departures to cover the analyzed span at that band. For a target of <code className="text-xs text-[var(--text-primary)]">T</code> minutes, the minimum trip count is based on <code className="text-xs text-[var(--text-primary)]">ceil(span ÷ T)</code>.</p>
-            <p>A gap at or below <code className="text-xs text-[var(--text-primary)]">T</code> passes directly. A slightly longer gap can count as a near miss when it is no more than <code className="text-xs text-[var(--text-primary)]">T + max(5 minutes, 15% of T)</code>. Only <code className="text-xs text-[var(--text-primary)]">max(2, floor(30% × number of gaps))</code> near misses may use that allowance. A gap beyond the tolerance, or too many near misses, disqualifies the band and Atlas tests the next slower one.</p>
-            <p>The current implementation retains a five-minute absolute floor, which makes the effective percentage larger for the faster bands:</p>
+            <p>A gap at or below <code className="text-xs text-[var(--text-primary)]">T</code> passes directly. A slightly longer internal gap can count as a near miss when it is no more than <code className="text-xs text-[var(--text-primary)]">T + max(5 minutes, 15% of T)</code>. The number of allowed near misses is tier-specific and capped at three:</p>
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
                 <thead className="text-[var(--text-primary)]">
                   <tr>
                     <th className="py-1 pr-4 font-bold">Target band</th>
                     <th className="py-1 pr-4 font-bold">Near-miss limit</th>
-                    <th className="py-1 font-bold">Effective allowance</th>
+                    <th className="py-1 font-bold">Allowance</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr><td className="py-1 pr-4">10 minutes</td><td className="py-1 pr-4">15 minutes</td><td className="py-1">50%</td></tr>
-                  <tr><td className="py-1 pr-4">15 minutes</td><td className="py-1 pr-4">20 minutes</td><td className="py-1">33%</td></tr>
-                  <tr><td className="py-1 pr-4">20 minutes</td><td className="py-1 pr-4">25 minutes</td><td className="py-1">25%</td></tr>
-                  <tr><td className="py-1 pr-4">30 minutes</td><td className="py-1 pr-4">35 minutes</td><td className="py-1">17%</td></tr>
-                  <tr><td className="py-1 pr-4">60 minutes</td><td className="py-1 pr-4">69 minutes</td><td className="py-1">15%</td></tr>
+                  <tr><td className="py-1 pr-4">10 minutes</td><td className="py-1 pr-4">15 minutes</td><td className="py-1">10% of gaps</td></tr>
+                  <tr><td className="py-1 pr-4">15 minutes</td><td className="py-1 pr-4">20 minutes</td><td className="py-1">10% of gaps</td></tr>
+                  <tr><td className="py-1 pr-4">20 minutes</td><td className="py-1 pr-4">25 minutes</td><td className="py-1">5% of gaps</td></tr>
+                  <tr><td className="py-1 pr-4">30 minutes</td><td className="py-1 pr-4">35 minutes</td><td className="py-1">5% of gaps</td></tr>
+                  <tr><td className="py-1 pr-4">60 minutes</td><td className="py-1 pr-4">69 minutes</td><td className="py-1">5% of gaps</td></tr>
                 </tbody>
               </table>
             </div>
-            <p>The near-miss limit is only one part of the rule: Atlas rounds the 30% count down and never allows fewer than two tolerated gaps. Rail uses the same tolerance logic, with additional 5- and 8-minute target bands in the processing model; those bands are not separate options in the main map filter.</p>
-            <p>This allowance is intended to handle ordinary schedule rounding and small deviations without turning a genuinely uneven route into a frequent one. A large gap is still a failure even if the median looks good, and the final tier is the fastest band that survives the full check. Atlas is still auditing how often the tolerance is used in real feeds before treating that behaviour as a settled quality result.</p>
+            <p>Atlas rounds the percentage down, does not guarantee a minimum exception, and never allows more than three near misses. A first or last gap that is genuinely at the edge of service may receive a separate allowance up to <code className="text-xs text-[var(--text-primary)]">T + 10 minutes</code>. That edge allowance also uses one of the same near-miss slots, and at least four departures must remain after the edge treatment is applied. A gap beyond the relevant limit, or too many near misses, disqualifies the band and Atlas tests the next slower one.</p>
+            <p>These allowances handle ordinary schedule rounding and small deviations without turning a genuinely uneven route into a frequent one. A large gap is still a failure even if the median looks good, and the final tier is the fastest band that survives the full check. Rail uses the same tolerance logic, with additional 5- and 8-minute target bands in the processing model; those bands are not separate options in the main map filter.</p>
             <div className="rounded-xl border border-[var(--border-primary)] bg-[var(--bg-btn)] p-3">
               <p className="font-bold text-[var(--text-primary)]">Frequency bands</p>
               <p className="mt-1">The main Frequency control currently exposes service at or below 10, 15, 20, 30, and 60 minutes. Service slower than 60 minutes, or service that does not qualify for a sustained band, appears as infrequent in that surface.</p>
