@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+-Brantford Transit is now available in Atlas with 13 routes from its current published schedule.
 -Span-only school and special-service routes no longer pass frequency filters because of short clustered-trip gaps.
 -Transitive markdown-it and brace-expansion dependencies now include their security patches.
 -Map disambiguation now collapses GTFS variants that render as the same rider-facing route name.

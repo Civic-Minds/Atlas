@@ -1,0 +1,34 @@
+{
+  "slug": "brantford",
+  "name": "Brantford Transit",
+  "websiteUrl": "https://www.brantford.ca/en/transportation/brantford-transit.aspx",
+  "region": "Ontario",
+  "center": [
+    43.1394,
+    -80.2644
+  ],
+  "bbox": [
+    43.109792,
+    -80.3361756256561,
+    43.191216,
+    -80.2091417521496
+  ],
+  "timezone": "America/New_York",
+  "feedUrl": null,
+  "lastFeedExpiry": "20261230",
+  "lastFeedVersion": "d6957916-4bb3-479b-beb4-0d4e9d0d7a62",
+  "lastRefreshedAt": "2026-10-06",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 66
+    },
+    "checkedAt": "2026-10-06"
+  }
+}
