@@ -12,6 +12,7 @@ import { isFeedExpired } from '../utils/feedFreshness';
 import { trackEvent } from '../lib/analytics';
 import { EXPIRED_FEED_CADENCE, EXPIRED_FEED_CONTEXT, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice } from '../content/noticeCopy';
 import RegionFilterPills from './RegionFilterPills';
+import { WEEKDAY_VARIATION_EXPLANATION } from '../content/noticeCopy';
 
 interface HistoryAgencySummary { slug: string; name: string; region: string; routes: unknown[] }
 
@@ -611,9 +612,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
               <p className="text-xs text-[var(--text-primary)] leading-relaxed">
                 Weekday schedules differ for this route.
               </p>
-              <p className="text-xs text-[var(--text-dim)] leading-relaxed">
-                Atlas checks Monday through Friday separately. The frequency tier shown on the route card reflects the slowest actual weekday, while the displayed cadence uses a typical actual weekday. This keeps the summary from combining departures that ran on different days.
-              </p>
+              <p className="text-xs text-[var(--text-dim)] leading-relaxed">{WEEKDAY_VARIATION_EXPLANATION}</p>
             </div>
           )}
 

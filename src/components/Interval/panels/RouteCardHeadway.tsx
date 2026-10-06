@@ -36,7 +36,7 @@ import { shouldShowDirectionSections } from '../../../utils/routeCardDirectionLa
 import type { VariantFamily } from '../../../utils/routeVariants';
 import { currentAtlasUrl } from '../../../utils/reportIssue';
 import { ROUTE_DATA_QUALITY_WARNING, ROUTE_DATA_QUALITY_WARNING_MESSAGE } from '../../../../shared/routeDataQuality';
-import { expiredFeedNotice } from '../../../content/noticeCopy';
+import { expiredFeedNotice, WEEKDAY_VARIATION_NOTICE } from '../../../content/noticeCopy';
 
 function medianHeadway(values: number[]): number {
   const sorted = [...values].sort((a, b) => a - b);
@@ -603,7 +603,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
             )}
             {hasWeekdayTierVariation && (
               <CardHelpNotice
-                message="Weekday schedules vary. The tier shown reflects the slowest weekday."
+                message={WEEKDAY_VARIATION_NOTICE}
                 onLearnMore={() => onInfoOpen('about', { helpTopic: 'weekday-variation' })}
               />
             )}

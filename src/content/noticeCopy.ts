@@ -15,6 +15,10 @@ export const EXPIRED_FEED_CONTEXT =
 
 export const EXPIRED_FEED_CADENCE = 'We check all feeds weekly.';
 
+/** Shared copy for route cards whose actual weekdays qualify for different tiers. */
+export const WEEKDAY_VARIATION_NOTICE = 'Weekday schedules vary. The tier shown reflects the slowest weekday.';
+export const WEEKDAY_VARIATION_EXPLANATION = 'Atlas checks Monday through Friday separately. The frequency tier shown on the route card reflects the slowest actual weekday, while the displayed cadence uses a typical actual weekday. This keeps the summary from combining departures that ran on different days.';
+
 export function expiredFeedCheckHistory(options: {
   count?: number;
   since?: string;
