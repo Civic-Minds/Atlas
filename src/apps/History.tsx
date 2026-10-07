@@ -172,15 +172,15 @@ function RouteHistoryCard({
       <div className="shrink-0 px-4 pt-3 pb-2">
         <button
           onClick={(e) => { e.stopPropagation(); onBack(); }}
-          className="flex items-center gap-0.5 text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors mb-1.5"
+          className="flex items-center gap-0.5 text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors mb-2"
           aria-label="Back to routes"
         >
           <ChevronLeft className="w-3 h-3 shrink-0" />
-          <span className="text-[10px] font-medium">{agencyName}</span>
+          <span className="text-[10px] font-bold">{shortenAgencyName(agencyName)} routes</span>
         </button>
         <div className="flex items-center justify-between gap-2">
           <div className="min-w-0 flex-1 flex items-baseline gap-1.5">
-            <span className="text-sm font-black text-[var(--text-primary)] shrink-0">{route.routeShortName}</span>
+            <span className="text-base font-black text-[var(--text-primary)] shrink-0">{route.routeShortName}</span>
             {route.routeName && (
               <span className="text-xs font-semibold text-[var(--text-dim)] truncate">{titleCase(route.routeName)}</span>
             )}

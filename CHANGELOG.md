@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **History route details now give the route title priority and use a compact agency back link.**
 - **History route names now match the normal route list, and agency summaries use shorter labels.**
 - **Export and Share now support Social (1200×630), Standard (1600×900), and High resolution (2400×1350) PNGs, with equal-weight actions and click-outside dismissal.**
 - **Night Service now uses the shared header for its 30-minute and 60-minute filters and search, keeping the panel from duplicating controls.**
