@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { fmtHeadway, getRouteLabel, shortenAgencyName, titleCase } from '../format';
+import { fmtHeadway, getRouteLabel, shouldHideNumericRouteShortName, shortenAgencyName, titleCase } from '../format';
 import indexData from '../../../public/data/index.json';
 
 interface IndexAgency {
@@ -106,6 +106,10 @@ describe('titleCase', () => {
 
   it('formats the cleaned Brantford route 20 label', () => {
     expect(titleCase(getRouteLabel('20', 'Grand River Line'))).toBe('20 — Grand River Line');
+  });
+
+  it('hides internal numeric IDs for named rail lines', () => {
+    expect(shouldHideNumericRouteShortName('30053', 'Expo Line', 1)).toBe(true);
   });
 });
 
