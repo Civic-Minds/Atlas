@@ -523,13 +523,13 @@ export default function App() {
           onClick={() => {
             if (inFrequentServiceStory) {
               navigate(`${FEATURE_ROUTES.frequentService.map}?view=map`);
-            } else if (activeApp !== 'frequency') {
+            } else if (inFrequentService || activeApp !== 'frequency') {
               navigate('/');
             } else {
               setResetViewKey(k => k + 1);
             }
           }}
-          aria-label={inFrequentServiceStory || activeApp !== 'frequency' ? 'Back to frequency map' : 'Reset map view'}
+          aria-label={inFrequentServiceStory || inFrequentService || activeApp !== 'frequency' ? 'Back to frequency map' : 'Reset map view'}
           className="w-8 h-8 bg-[var(--accent)] rounded-full flex items-center justify-center shrink-0 shadow-2xl hover:opacity-80 transition-opacity"
         >
           <MapIcon className="w-3.5 h-3.5 text-white" />
