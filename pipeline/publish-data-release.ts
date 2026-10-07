@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import './loadEnv.js';
 import { r2Put } from './r2.js';
 import { bumpPublicDataVersion } from './dataVersion.js';
 

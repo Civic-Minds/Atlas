@@ -11,6 +11,7 @@ describe('isRetryableR2Error', () => {
   it('retries plain errors matched by message', () => {
     expect(isRetryableR2Error(new Error('ETIMEDOUT'))).toBe(true);
     expect(isRetryableR2Error(new Error('socket hang up'))).toBe(true);
+    expect(isRetryableR2Error(Object.assign(new Error('connect EADDRNOTAVAIL'), { code: 'EADDRNOTAVAIL' }))).toBe(true);
     expect(isRetryableR2Error(new Error('NoSuchKey'))).toBe(false);
   });
 
