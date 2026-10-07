@@ -61,7 +61,6 @@ interface Props {
   layers: Record<string, GeoJSON.FeatureCollection>;
   query?: string;
   frequency: NightServiceFrequency;
-  setFrequency: (frequency: NightServiceFrequency) => void;
   onRouteSelect?: (agencySlug: string, routeId: string) => void;
 }
 
@@ -84,7 +83,7 @@ function featureIntersectsBounds(feature: GeoJSON.Feature, bounds: { s: number; 
   return maxLon >= bounds.w && minLon <= bounds.e && maxLat >= bounds.s && minLat <= bounds.n;
 }
 
-export default function NightService({ active, sidebarLeft, layers, query = '', frequency, setFrequency, onRouteSelect }: Props) {
+export default function NightService({ active, sidebarLeft, layers, query = '', frequency, onRouteSelect }: Props) {
   const { colorVisionFriendly } = useColorVision();
   const colorMode = colorVisionFriendly ? 'friendly' : 'default';
   const [data, setData] = useState<NightServiceIndexFile | null>(null);
@@ -212,17 +211,6 @@ export default function NightService({ active, sidebarLeft, layers, query = '', 
             At least one departure every {frequency} minutes, 2am–6am local time, with no gap at either end of the window.
           </p>
         )}
-
-        <div className="px-3 py-2 border-b border-[var(--border-primary)] flex items-center justify-between gap-2">
-          <span className="text-[10px] font-bold text-[var(--text-dim)]">Overnight frequency</span>
-          <div className="flex items-center gap-1 rounded-full border border-[var(--border-primary)] p-0.5">
-            {([30, 60] as const).map(value => (
-              <button key={value} type="button" onClick={() => setFrequency(value)} aria-pressed={frequency === value} className={`px-2 py-1 rounded-full text-[10px] font-bold ${frequency === value ? 'bg-[var(--accent)] text-white' : 'text-[var(--text-dim)]'}`}>
-                {value} min
-              </button>
-            ))}
-          </div>
-        </div>
 
         <div className="p-3 border-b border-[var(--border-primary)] shrink-0">
           <div className={SEARCH_PILL}>

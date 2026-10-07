@@ -6,7 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 - **Export and Share now support Social (1200×630), Standard (1600×900), and High resolution (2400×1350) PNGs, with equal-weight actions and click-outside dismissal.**
-- **Night Service now offers 30-minute and 60-minute filters for the fixed 2am–6am window.**
+- **Night Service now offers 30-minute and 60-minute filters in the shared header layout for the fixed 2am–6am window.**
 - **Frequent Service navigation now returns to the main frequency map when the Atlas logo is clicked.**
 - **Settings now use a cleaner text-first layout, with appearance, map, performance, and filter controls presented consistently.**
 - **The info panel now links directly to Documentation alongside Terms and Privacy.**
