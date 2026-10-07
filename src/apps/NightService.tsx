@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Moon, Search, X } from 'lucide-react';
+import { Moon, X } from 'lucide-react';
 import { getNightServiceColor } from '../utils/colors';
 import { useColorVision } from '../context/ColorVisionContext';
 import { useViewport } from '../context/ViewportContext';
@@ -10,8 +10,6 @@ import {
   PANEL_TITLE,
   PANEL_BODY,
   PANEL_EMPTY,
-  SEARCH_PILL,
-  SEARCH_FIELD,
   Z_PANEL,
   SIDEBAR_LEFT_FALLBACK,
   SIDEBAR_PANEL_WIDTH,
@@ -88,7 +86,6 @@ export default function NightService({ active, sidebarLeft, layers, query = '', 
   const colorMode = colorVisionFriendly ? 'friendly' : 'default';
   const [data, setData] = useState<NightServiceIndexFile | null>(null);
   const [loadState, setLoadState] = useState<'loading' | 'ready' | 'error'>('loading');
-  const [filterQuery, setFilterQuery] = useState('');
   const { bounds } = useViewport();
   const visibleRoutes = useMemo(() => {
     if (!bounds || Object.keys(layers).length === 0) return [];
@@ -157,7 +154,7 @@ export default function NightService({ active, sidebarLeft, layers, query = '', 
       entry.routes.set(summaryKey, summary);
       byAgency.set(visible.agencySlug, entry);
     }
-    const q = (filterQuery || query).trim().toLowerCase();
+    const q = query.trim().toLowerCase();
     const list = [...byAgency.entries()].map(([slug, entry]) => ({ slug, ...entry, routes: [...entry.routes.values()] }));
     if (!q) return list;
     return list
@@ -211,23 +208,6 @@ export default function NightService({ active, sidebarLeft, layers, query = '', 
             At least one departure every {frequency} minutes, 2am–6am local time, with no gap at either end of the window.
           </p>
         )}
-
-        <div className="p-3 border-b border-[var(--border-primary)] shrink-0">
-          <div className={SEARCH_PILL}>
-            <Search className="w-3.5 h-3.5 text-[var(--text-dim)] shrink-0" />
-            <input
-              className={SEARCH_FIELD}
-              placeholder="Find an agency or route"
-              value={filterQuery}
-              onChange={e => setFilterQuery(e.target.value)}
-            />
-            {filterQuery && (
-              <button onClick={() => setFilterQuery('')} aria-label="Clear search">
-                <X className="w-3.5 h-3.5 text-[var(--text-dim)] hover:text-[var(--text-primary)]" />
-              </button>
-            )}
-          </div>
-        </div>
 
         <div className={PANEL_BODY}>
           {loadState === 'loading' && <p className={PANEL_EMPTY}>Loading…</p>}
