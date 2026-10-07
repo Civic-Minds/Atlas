@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from 'react-router';
 import App from './App';
 import LegalPage from './LegalPage';
 import AboutDocsPage from './AboutDocsPage';
+import AboutPage from './AboutPage';
 import './styles/index.css';
 import { FEATURES } from '../shared/config';
 import { inject } from '@vercel/analytics';
@@ -44,6 +45,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <Route path="/terms" element={<LegalPage document="terms" />} />
           <Route path="/privacy" element={<LegalPage document="privacy" />} />
           <Route path="/about/docs" element={<AboutDocsPage />} />
+          <Route path="/about" element={<AboutPage />} />
           <Route path="/*" element={<App />} />
           </Routes>
         </React.Suspense>
