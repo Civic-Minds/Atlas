@@ -26,11 +26,11 @@ export default function ResearchPage() {
             <span className="mt-5 inline-flex h-8 items-center rounded-full border px-3 text-xs font-bold text-[var(--text-primary)]">Open Night Service →</span>
           </a>
 
-          <a href={FEATURE_ROUTES.frequentService.map} className={`${FLOATING_CARD} group p-5 transition-colors hover:border-[var(--accent-border)]`}>
+          <a href={FEATURE_ROUTES.frequentService.story} className={`${FLOATING_CARD} group p-5 transition-colors hover:border-[var(--accent-border)]`}>
             <Zap className="h-5 w-5 text-[var(--accent)]" />
             <h2 className="mt-5 text-lg font-black text-[var(--text-primary)] group-hover:text-[var(--accent)]">Frequent Service</h2>
-            <p className="mt-2 text-sm font-bold leading-6 text-[var(--text-muted)]">Explore routes that meet Atlas’s sustained-frequency thresholds.</p>
-            <span className="mt-5 inline-flex h-8 items-center rounded-full border px-3 text-xs font-bold text-[var(--text-primary)]">Open Frequent Service →</span>
+            <p className="mt-2 text-sm font-bold leading-6 text-[var(--text-muted)]">Learn what frequent service means, then explore routes that meet Atlas’s sustained-frequency thresholds.</p>
+            <span className="mt-5 inline-flex h-8 items-center rounded-full border px-3 text-xs font-bold text-[var(--text-primary)]">Read the story →</span>
           </a>
         </div>
       </div>
