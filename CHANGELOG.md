@@ -8,6 +8,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Frequency classification now uses the reviewed tier-specific near-miss limits and genuine service-edge allowances**, with edge exceptions counted in the same bounded budget and all downstream artifacts rebuilt from the shared pipeline.
 - **Atlas now records the frequency-methodology study and verification work**, including the route-wide regression checks behind the change.
 - **Patched the development toolchain’s source-map-js denial-of-service vulnerability** without changing Atlas runtime dependencies.
+- **Manual GTFS sources now have a separate outdated-data explanation**, so agencies such as Brantford are not described as if Atlas can check their feeds automatically.
 
 -Span-only school and special-service routes no longer pass frequency filters because of short clustered-trip gaps.
 -Transitive markdown-it and brace-expansion dependencies now include their security patches.

@@ -91,6 +91,8 @@ export interface Agency {
   cities?: string[];
   /** IANA timezone from GTFS agency.txt (e.g. "America/Toronto"). Absent for agencies processed before this field existed — see #245. */
   timezone?: string | null;
+  /** The current GTFS artifact was received or maintained manually. */
+  manualFeedSource?: boolean;
   /** Agency-published direction names keyed by route short name and GTFS direction_id. */
   directionLabels?: Record<string, Record<string, string>>;
   // Pipeline / source fields (present in the JSON even if not in this UI-focused type)
@@ -199,6 +201,7 @@ export default function App() {
       topic: opts.helpTopic,
       agencyName: opts.agencyName,
       expDateStr: opts.expDateStr,
+      manualFeedSource: opts.manualFeedSource,
       lastRefreshedAt: opts.lastRefreshedAt,
       lastFeedCheckAt: opts.lastFeedCheckAt,
       expiredFeedCheckCount: opts.expiredFeedCheckCount,

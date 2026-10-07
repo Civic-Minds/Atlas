@@ -10,7 +10,7 @@ import { countriesForAgencies } from '../../shared/regionCountry';
 import type { Agency } from '../App';
 import { isFeedExpired } from '../utils/feedFreshness';
 import { trackEvent } from '../lib/analytics';
-import { EXPIRED_FEED_CADENCE, EXPIRED_FEED_CONTEXT, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice } from '../content/noticeCopy';
+import { EXPIRED_FEED_CADENCE, EXPIRED_FEED_CONTEXT, EXPIRED_FEED_EXPLANATION, MANUAL_FEED_CONTEXT, expiredFeedCheckHistory, expiredFeedNotice } from '../content/noticeCopy';
 import RegionFilterPills from './RegionFilterPills';
 
 interface HistoryAgencySummary { slug: string; name: string; region: string; routes: unknown[] }
@@ -24,6 +24,7 @@ export type HelpContext = {
   topic: HelpTopic;
   agencyName?: string;
   expDateStr?: string;
+  manualFeedSource?: boolean;
   lastRefreshedAt?: string;
   lastFeedCheckAt?: string;
   expiredFeedCheckCount?: number;
@@ -40,6 +41,7 @@ export type OpenInfoOptions = {
   helpTopic?: HelpTopic;
   agencyName?: string;
   expDateStr?: string;
+  manualFeedSource?: boolean;
   lastRefreshedAt?: string;
   lastFeedCheckAt?: string;
   expiredFeedCheckCount?: number;
@@ -570,7 +572,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
             <div className="h-full overflow-y-auto px-5 py-4 space-y-4">
               {helpContext?.agencyName && (
                 <p className="text-xs text-[var(--text-primary)] leading-relaxed">
-                  {expiredFeedNotice(helpContext.agencyName, helpContext.expDateStr)}
+                  {expiredFeedNotice(helpContext.agencyName, helpContext.expDateStr, helpContext.manualFeedSource)}
                   {expiredFeedCheckHistory({
                     count: helpContext.expiredFeedCheckCount,
                     since: helpContext.expiredFeedCheckSince,
@@ -583,7 +585,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                 {EXPIRED_FEED_EXPLANATION}
               </p>
               <p className="text-xs text-[var(--text-dim)] leading-relaxed">
-                {EXPIRED_FEED_CADENCE} {EXPIRED_FEED_CONTEXT}
+                {EXPIRED_FEED_CADENCE} {helpContext?.manualFeedSource ? MANUAL_FEED_CONTEXT : EXPIRED_FEED_CONTEXT}
               </p>
               {helpContext?.websiteUrl && (
                 <a
