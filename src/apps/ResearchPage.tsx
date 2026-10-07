@@ -7,7 +7,7 @@ export default function ResearchPage() {
     <div className="absolute inset-0 overflow-y-auto px-6 pt-28 pb-12 sm:px-10 lg:px-16">
       <div className="mx-auto max-w-4xl">
         <div className="max-w-2xl">
-          <p className="text-xs font-black uppercase tracking-[0.18em] text-[var(--accent)]">Explore Atlas</p>
+          <p className="text-xs font-black uppercase tracking-[0.18em] text-[var(--accent)]">Research</p>
           <h1 className="mt-3 text-3xl font-black tracking-tight text-[var(--text-primary)] sm:text-5xl">Research views for understanding transit service.</h1>
           <p className="mt-4 text-sm font-bold leading-7 text-[var(--text-muted)] sm:text-base">
             Research views use Atlas schedule data to examine service patterns that do not fit the everyday frequency map.
