@@ -16,16 +16,16 @@ export function MapAttribution() {
       title={FULL_ATTRIBUTION}
     >
       <a
-        href={feedbackHref}
-        className={`${MAP_BADGE} h-8 ${MAP_BADGE_LABEL} no-underline hover:text-[var(--text-primary)]`}
-      >
-        Feedback
-      </a>
-      <a
         href="/about"
         className={`${MAP_BADGE} h-8 ${MAP_BADGE_LABEL} no-underline hover:text-[var(--text-primary)]`}
       >
         About Atlas
+      </a>
+      <a
+        href={feedbackHref}
+        className={`${MAP_BADGE} h-8 ${MAP_BADGE_LABEL} no-underline hover:text-[var(--text-primary)]`}
+      >
+        Feedback
       </a>
       <div className={`${MAP_BADGE} h-8`}>
         <p className={`${MAP_BADGE_LABEL} whitespace-nowrap`}>
