@@ -2064,7 +2064,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   // Force-reset route paint when selection clears (guards against stuck highlight state).
   useEffect(() => {
     const map = mapRef.current;
-    if (!map || !mapLoaded || selectedRoute || historyOverlay?.routeShortName) return;
+    if (!map || !mapLoaded || selectedRoute || historyOverlay) return;
     resetRoutesLayerDefaultPaint(map);
   }, [selectedRoute, mapLoaded, historyOverlay]);
 
