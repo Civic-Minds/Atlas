@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Settings, X, Sun, Moon, Map as MapIcon, ArrowLeft, Search, ShieldCheck } from 'lucide-react';
+import { Settings, X, ArrowLeft, Search } from 'lucide-react';
 import { ICON_BTN, DROPDOWN_PANEL, SEARCH_FIELD, SEARCH_PILL, FILTER_OPTION, CONTROL_ACTIVE, CONTROL_INACTIVE, dropdownAnim, TRANSITION_BASE, Z_MODAL_TOP } from '../../styles';
 import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
 import { FILTER_MODES, ON_DEMAND_MODE } from '../../../shared/modes';
@@ -509,8 +509,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
               </div>
               <div className="px-5 pb-4">
                 <div className="flex items-start justify-between gap-4">
-                  <div className="flex items-center gap-3 min-w-0">
-                    <Moon className="w-4 h-4 mt-0.5 shrink-0 text-[var(--text-dim)]" />
+                  <div className="flex items-center min-w-0">
                     <div className="min-w-0">
                       <p className="text-[11px] font-bold text-[var(--text-primary)] leading-tight">Dark mode</p>
                       <p className="text-[10px] text-[var(--text-muted)] mt-1 leading-relaxed">Uses a dark colour theme across Atlas.</p>
@@ -526,8 +525,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                   </button>
                 </div>
                 <div className="flex items-center justify-between mt-2 pt-2">
-                  <div className="flex items-center gap-3 min-w-0">
-                    <span className="w-4 h-4 shrink-0 text-center text-[10px] font-black text-[var(--text-dim)]">◈</span>
+                  <div className="flex items-center min-w-0">
                     <div className="min-w-0">
                       <p className="text-[11px] font-bold text-[var(--text-primary)] leading-tight">High contrast mode</p>
                       <p className="text-[10px] text-[var(--text-muted)] mt-1 leading-relaxed">Uses stronger colours and thicker lines for easier route distinction.</p>
@@ -550,8 +548,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                   </div>
                   <div className="px-5 pb-3">
                     <div className="flex items-start justify-between gap-4">
-                      <div className="flex items-start gap-3 min-w-0">
-                        <MapIcon className="w-4 h-4 mt-0.5 shrink-0 text-[var(--text-dim)]" />
+                      <div className="flex items-start min-w-0">
                         <div className="min-w-0">
                           <p className="text-[11px] font-bold text-[var(--text-primary)] leading-tight">Persistent legend</p>
                           <p className="text-[10px] text-[var(--text-muted)] mt-1 leading-relaxed">Keeps the map legend visible while you explore.</p>
@@ -576,8 +573,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                   </div>
                   <div className="px-5 pb-3">
                     <div className="flex items-start justify-between gap-4">
-                      <div className="flex items-start gap-3 min-w-0">
-                        <ShieldCheck className="w-4 h-4 mt-0.5 shrink-0 text-[var(--text-dim)]" />
+                      <div className="flex items-start min-w-0">
                         <div className="min-w-0">
                           <p className="text-[11px] font-bold text-[var(--text-primary)] leading-tight">Data saver</p>
                           <p className="text-[10px] text-[var(--text-muted)] mt-1 leading-relaxed">Loads fewer networks at once to reduce data use on slower connections.</p>

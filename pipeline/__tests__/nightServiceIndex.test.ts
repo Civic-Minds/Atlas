@@ -20,6 +20,8 @@ describe('extractNightServiceRoutes', () => {
         directionId: 0,
         headsign: 'Downtown',
         day: 'Saturday',
+        nightService30: false,
+        nightService60: true,
       },
     ]);
   });

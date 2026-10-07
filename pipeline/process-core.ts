@@ -78,12 +78,16 @@ export function hasNightServiceAtShapeEndpoints(
   endpointStopIds: readonly (string | undefined)[],
   routeDepartures: ReadonlyMap<string, number[]>,
   overnightOnlyDepartures: ReadonlyMap<string, number[]> = new Map(),
+  maxGapMinutes: number = 60,
 ): boolean {
   return [...new Set(endpointStopIds.filter((id): id is string => id != null))].some(stopId => {
     const departures = routeDepartures.get(stopId);
     if (!departures) return false;
     return hasSustainedNightService(
       nightServiceDepartureTimes(departures, overnightOnlyDepartures.get(stopId) ?? []),
+      undefined,
+      undefined,
+      maxGapMinutes,
     );
   });
 }
@@ -619,6 +623,8 @@ export async function processGtfsBuffer(
     // Same reasoning for frequentService (#294 follow-on, see docs/research/frequent-service-research-2026-09/CRITERIA.md).
     feature.properties.frequentService = false;
     feature.properties.researchFrequentService = { daytime15: false, daytime30: false, extended15: false, extended30: false };
+    feature.properties.nightService30 = false;
+    feature.properties.nightService60 = false;
     const gKey = `${shortName}::${dirId}::${day}`;
     const stopMap = stopDepsByGroup.get(gKey);
     if (!stopMap) {
@@ -663,11 +669,19 @@ export async function processGtfsBuffer(
       nightShapeStops[0]?.stopId,
       nightShapeStops.at(-1)?.stopId,
     ].filter((id): id is string => id != null))];
-    feature.properties.nightService = hasNightServiceAtShapeEndpoints(
+    feature.properties.nightService30 = hasNightServiceAtShapeEndpoints(
       nightEndpointStopIds,
       metricStopMap,
       stopDepsByGroupNight.get(gKey),
+      30,
     );
+    feature.properties.nightService60 = hasNightServiceAtShapeEndpoints(
+      nightEndpointStopIds,
+      metricStopMap,
+      stopDepsByGroupNight.get(gKey),
+      60,
+    );
+    feature.properties.nightService = feature.properties.nightService60;
 
     // Step 1: compute all-day, per-period, and per-hour headways for every stop in the route+dir group.
     const allStopHw: Record<string, number> = {};
