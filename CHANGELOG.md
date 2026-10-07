@@ -8,7 +8,6 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Frequency classification now uses the reviewed tier-specific near-miss limits and genuine service-edge allowances**, with edge exceptions counted in the same bounded budget and all downstream artifacts rebuilt from the shared pipeline.
 - **Atlas now records the frequency-methodology study and verification work**, including the route-wide regression checks behind the change.
 
--Brantford Transit is now available in Atlas with 13 routes from its current published schedule.
 -Span-only school and special-service routes no longer pass frequency filters because of short clustered-trip gaps.
 -Transitive markdown-it and brace-expansion dependencies now include their security patches.
 -Map disambiguation now collapses GTFS variants that render as the same rider-facing route name.
