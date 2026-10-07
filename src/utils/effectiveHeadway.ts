@@ -8,6 +8,14 @@ export function routeCardDisplayHeadway(p: ShapeProperties, period: TimePeriod):
   // service. Keep limited branches out of normal route-card/list cadence rows.
   if (p.tier === 'span') return null;
 
+  // An infrequent branch can still have a numeric median, but that median is
+  // misleading when the longest scheduled gap is materially larger.
+  if (period !== 'all' && p.tier === 'infrequent') {
+    const median = p.headwayByPeriod?.[period] ?? p.headway ?? null;
+    const longestGap = p.maxGapByPeriod?.[period];
+    if (median != null && longestGap != null && longestGap > median * 1.5) return null;
+  }
+
   // A period median marked as unsustained still describes the active period. Display that
   // period's cadence, never the all-day headline. Coverage data remains available to the
   // filter and the limited-service treatment elsewhere on the card.
@@ -15,8 +23,13 @@ export function routeCardDisplayHeadway(p: ShapeProperties, period: TimePeriod):
     return p.headwayByPeriod?.[period] ?? null;
   }
   const summary = buildRouteServiceSummary(p);
-  const displayMetric = hasPeriodCoverage(p, period) ? summary.display : summary.filter;
-  return metricValueForPeriod(displayMetric, period);
+  // Cards show the destination/branch cadence. Keep the route-wide metric in
+  // summary.filter for eligibility and use the shared headsign cadence only
+  // when the branch has no more specific display metric.
+  const branchHeadway = metricValueForPeriod(summary.display, period);
+  if (branchHeadway != null) return branchHeadway;
+  if (period !== 'all') return summary.shared.byHeadsignPeriod?.[period] ?? null;
+  return branchHeadway;
 }
 
 export function hasPeriodCoverage(p: ShapeProperties, period: TimePeriod): boolean {
@@ -37,6 +50,7 @@ export function hasDirectionPeriodService(p: ShapeProperties, period: TimePeriod
   const coverage = p.worstDirectionPeriodCoverageHeadway ?? p.periodCoverageHeadway;
   if (coverage && coverage[period] != null) return true;
   if (p.headwayByPeriod && p.headwayByPeriod[period] != null) return true;
+  if (p.headsignMinStopHeadwayByPeriod?.[period] != null) return true;
   if (p.headwayByHour) {
     for (const [hourStr, val] of Object.entries(p.headwayByHour)) {
       if (val != null && isHourInPeriod(Number(hourStr), period)) {
@@ -59,7 +73,7 @@ export function routeCardTypicalText(p: ShapeProperties, period: TimePeriod): st
   const range = routeCardDisplayHeadwayRange(p, period);
   if (range) return range;
   const median = p.headwayByPeriod?.[period];
-  return median == null ? undefined : `typically every ${median} min`;
+  return median == null ? undefined : `about every ${median} min`;
 }
 
 /** Rider-facing range for an irregular period, scoped to this destination/branch. */
@@ -67,11 +81,11 @@ export function routeCardDisplayHeadwayRange(p: ShapeProperties, period: TimePer
   if (p.tier === 'span' || period === 'all' || p.headwayByPeriodSustained?.[period] !== false) return null;
   const range = p.headwayRangeByPeriod?.[period];
   if (!range) return null;
-  const rangeText = range.min === range.max ? `every ${range.min} min` : `every ${range.min}–${range.max} min`;
+  const rangeText = range.min === range.max ? `about every ${range.min} min` : `about every ${range.min}–${range.max} min`;
   const longestGap = p.maxGapByPeriod?.[period];
   return longestGap != null && longestGap > range.max + 5
-    ? `typically ${rangeText} · longest gap ${longestGap} min`
-    : `typically ${rangeText}`;
+    ? `${rangeText} · longest gap ${longestGap} min`
+    : rangeText;
 }
 
 /** Display the best active-period cadence across a route's direction/branch rows. */
@@ -84,5 +98,10 @@ export function routeListDisplayHeadway(features: readonly ShapeProperties[], pe
 
 /** Headway for display/filtering — mirrors passesRouteFilter period + all-day fallback. */
 export function effectiveRouteHeadway(p: ShapeProperties, period: TimePeriod): number | null {
-  return metricValueForPeriod(buildRouteServiceSummary(p).filter, period);
+  const summary = buildRouteServiceSummary(p);
+  if (period !== 'all') {
+    const sharedHeadway = summary.shared.byHeadsignPeriod?.[period];
+    if (sharedHeadway != null) return sharedHeadway;
+  }
+  return metricValueForPeriod(summary.filter, period);
 }

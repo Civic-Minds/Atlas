@@ -3,7 +3,7 @@
  * Used by process-gtfs.ts (local zip) and refresh.ts (downloaded feeds).
  */
 import { parseGtfsZip } from './parseGtfs.js';
-import type { GtfsData } from '../types/gtfs.js';
+import type { GtfsData, AnalysisResult, RawRouteDepartures } from '../types/gtfs.js';
 import { computeRawDepartures } from './transit-phase1.js';
 import { applyAnalysisCriteria } from './transit-phase2.js';
 import { calculateCorridors } from './transit-logic.js';
@@ -25,7 +25,6 @@ import { computeLivePollingOffsets, computeLiveTripStopTimes } from './live-poll
 import { annotateShortTurnVariants, buildShapeSelectionContext } from './shape-selection.js';
 import { stampWorstDirectionHeadways, stampRouteIrregularDirection } from './worst-direction.js';
 import type { GeoJsonFeature, StopEntry } from './geojson-types.js';
-import type { AnalysisResult } from '../types/gtfs.js';
 import { assessFeedQuality, type FeedQuality } from '../shared/feedQuality.js';
 import { routeDataQualityWarningForShape } from './routeDataQuality.js';
 import { deriveRouteBranch } from '../shared/routeBranch.js';
@@ -102,6 +101,11 @@ export interface ProcessOptions extends GtfsTransformOptions {
    * Refresh catches the error and soft-skips the agency.
    */
   force?: boolean;
+  /**
+   * Analysis-only override used by local comparison audits. Production callers
+   * omit this and continue to use the default analysis criteria.
+   */
+  analysisCriteriaFn?: (raw: RawRouteDepartures[]) => AnalysisResult[];
 }
 
 /** Thrown when validateGtfs reports errors and options.force is not set. */
@@ -201,7 +205,8 @@ export async function processGtfsBuffer(
   onStatus?.('Running phase 1...');
   const raw = computeRawDepartures(gtfs, refDate, shapeFilterForPhase1, options?.slug);
   onStatus?.('Running phase 2...');
-  const results = applyAnalysisCriteria(raw).map(result =>
+  const analyze = options?.analysisCriteriaFn ?? ((input: RawRouteDepartures[]) => applyAnalysisCriteria(input));
+  const results = analyze(raw).map(result =>
     options?.slug === 'niagara' ? normalizeNrtAnalysisResult(result) : result,
   );
 
@@ -370,6 +375,8 @@ export async function processGtfsBuffer(
         directionId: parseInt(result.dir),
         routeDataQualityWarning: routeDataQualityWarningForShape(shapeId, gtfs.shapeAnomalies),
         tier: result.tier,
+        weekdayTierVariation: result.weekdayTierVariation,
+        edgeGapAllowance: result.edgeGapAllowance,
         serviceClass: result.serviceClass ?? (result.tier === 'span' ? 'irregular' : 'regular'),
         headway: newHeadway,
         headwayByPeriod: computePeriodHeadways(result.times),

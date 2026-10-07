@@ -1,4 +1,5 @@
 import React from 'react';
+import { Info } from 'lucide-react';
 import { getTierColor } from '../../utils/colors';
 import { fmtHeadwayRange } from '../../utils/format';
 import { shouldShowBranchHeadwayRange } from '../../utils/routeCardTrunk';
@@ -19,6 +20,8 @@ interface Props {
   // Limited service
   limited?: boolean;
   limitedHint?: boolean;  // inline hint row (dot + label + "limited" badge)
+  edgeGapAllowance?: 'opening' | 'closing' | 'both';
+  onEdgeGapAllowanceClick?: () => void;
   // Filtering
   dimmed?: boolean;
   // Branch map highlight (#96)
@@ -34,7 +37,7 @@ interface Props {
  * Owns label color, headway display, and limited-service variants
  * so there's one place to change instead of hunting across SidebarControls.
  */
-export default function RouteDirectionRow({ label, headway, colorHeadway, headwayLabel, trunkHeadway, headwaySuffix, subLabel, live, limited, limitedHint, dimmed, onHoverStart, onHoverEnd, branchHovered, branchDimmed, onClick }: Props) {
+export default function RouteDirectionRow({ label, headway, colorHeadway, headwayLabel, trunkHeadway, headwaySuffix, subLabel, live, limited, limitedHint, edgeGapAllowance, onEdgeGapAllowanceClick, dimmed, onHoverStart, onHoverEnd, branchHovered, branchDimmed, onClick }: Props) {
   const { colorVisionFriendly } = useColorVision();
   const colorMode = colorVisionFriendly ? 'friendly' : 'default';
   const interactive = !!(onHoverStart && onHoverEnd);
@@ -70,6 +73,20 @@ export default function RouteDirectionRow({ label, headway, colorHeadway, headwa
         <span className={`font-bold flex-1 min-w-0 leading-snug break-words ${clickable ? '' : 'text-[var(--text-primary)]'}`}>
           {label}
         </span>
+        {edgeGapAllowance && (
+          <button
+            type="button"
+            onClick={(event) => {
+              event.stopPropagation();
+              onEdgeGapAllowanceClick?.();
+            }}
+            className="inline-flex items-center text-[var(--text-dim)] hover:text-[var(--accent)] transition-colors shrink-0"
+            title="Atlas added a small allowance for the first or last trip of the day."
+            aria-label="About the first-or-last-trip allowance"
+          >
+            <Info aria-hidden="true" className="w-3 h-3" />
+          </button>
+        )}
         {limited && (
           <span className="inline-flex items-center gap-1 text-[11px] font-black text-[var(--text-primary)] leading-snug shrink-0 whitespace-nowrap">
             <span className="w-2 h-2 rounded-full shrink-0" style={{ background: dotColor }} />

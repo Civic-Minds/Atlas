@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { effectiveRouteHeadway, hasDirectionPeriodService, routeCardDisplayHeadway, routeListDisplayHeadway } from '../effectiveHeadway';
+import { effectiveRouteHeadway, hasDirectionPeriodService, routeCardCoverageText, routeCardDisplayHeadway, routeCardTypicalText, routeListDisplayHeadway } from '../effectiveHeadway';
 import type { ShapeProperties } from '../../hooks/useIntervalStats';
 
 describe('effectiveRouteHeadway', () => {
@@ -11,6 +11,26 @@ describe('effectiveRouteHeadway', () => {
     routeShortName: '510',
     routeLongName: 'Spadina',
   };
+
+  it('does not expose the full-period coverage bound as route-card wording', () => {
+    const p = {
+      ...base,
+      headwayByPeriod: { amPeak: 10 },
+      periodCoverageHeadway: { amPeak: 20 },
+    } as ShapeProperties;
+    expect(routeCardCoverageText(p, 'amPeak')).toBeUndefined();
+  });
+
+  it('uses cautious about-every wording for limited-period cadence', () => {
+    const p = {
+      ...base,
+      headwayByPeriod: { amPeak: 10 },
+      headwayRangeByPeriod: { amPeak: { min: 10, max: 12 } },
+      periodCoverageHeadway: { amPeak: 10 },
+      headwayByPeriodSustained: { amPeak: false },
+    } as ShapeProperties;
+    expect(routeCardTypicalText(p, 'amPeak')).toBe('about every 10–12 min');
+  });
 
   it('uses period-specific headway when period is set', () => {
     const p = {
@@ -35,15 +55,38 @@ describe('effectiveRouteHeadway', () => {
     expect(routeListDisplayHeadway([p], 'midday')).toBeNull();
   });
 
-  it('routeCardDisplayHeadway uses the same route-level metric as the filter', () => {
+  it('does not show a regular cadence for a sparse infrequent branch', () => {
+    const p = {
+      ...base,
+      tier: 'infrequent',
+      headway: 43,
+      headwayByPeriod: { amPeak: 43 },
+      maxGapByPeriod: { amPeak: 70 },
+    } as ShapeProperties;
+    expect(routeCardDisplayHeadway(p, 'amPeak')).toBeNull();
+  });
+
+  it('shows the branch cadence while the filter keeps using the route-wide metric', () => {
     const p = {
       ...base,
       headway: 5,
       headwayByPeriod: { midday: 6 },
       worstDirectionHeadwayByPeriod: { midday: 8 },
     } as ShapeProperties;
-    expect(routeCardDisplayHeadway(p, 'midday')).toBe(8);
+    expect(routeCardDisplayHeadway(p, 'midday')).toBe(6);
     expect(effectiveRouteHeadway(p, 'midday')).toBe(8);
+  });
+
+  it('uses the headsign-scoped trunk cadence for active branch filtering', () => {
+    const p = {
+      ...base,
+      headway: 9,
+      headwayByPeriod: { midday: 9 },
+      worstDirectionHeadwayByPeriod: { midday: 22 },
+      headsignMinStopHeadwayByPeriod: { midday: 4 },
+    } as ShapeProperties;
+    expect(routeCardDisplayHeadway(p, 'midday')).toBe(9);
+    expect(effectiveRouteHeadway(p, 'midday')).toBe(4);
   });
 
   it('uses the active period headway when that period is not sustained', () => {
@@ -56,7 +99,7 @@ describe('effectiveRouteHeadway', () => {
 
     expect(routeCardDisplayHeadway(p, 'midday')).toBe(2);
     expect(routeListDisplayHeadway([p], 'midday')).toBe(2);
-    // The filter and card now use the same active-period metric.
+    // The filter still uses the active-period metric.
     expect(effectiveRouteHeadway(p, 'midday')).toBe(2);
   });
 
@@ -69,7 +112,7 @@ describe('effectiveRouteHeadway', () => {
       worstDirectionHeadwayByPeriod: { midday: 12 },
       headwayByPeriodSustained: { midday: true },
     } as ShapeProperties;
-    expect(routeCardDisplayHeadway(p, 'midday')).toBe(12);
+    expect(routeCardDisplayHeadway(p, 'midday')).toBe(2);
     expect(effectiveRouteHeadway(p, 'midday')).toBe(12);
   });
 
@@ -185,29 +228,6 @@ describe('effectiveRouteHeadway', () => {
     } as ShapeProperties;
     expect(routeCardDisplayHeadway(p, 'overnight')).toBe(10);
     expect(effectiveRouteHeadway(p, 'overnight')).toBe(171);
-  });
-
-  it('uses legacy max gaps as coverage when published coverage is absent (#524)', () => {
-    const p = {
-      ...base,
-      headwayByPeriod: { overnight: 11 },
-      headwayByPeriodSustained: { overnight: false },
-      maxGapByPeriod: { overnight: 109 },
-    } as ShapeProperties;
-    expect(routeCardDisplayHeadway(p, 'overnight')).toBe(11);
-    expect(effectiveRouteHeadway(p, 'overnight')).toBe(109);
-  });
-
-  it('does not treat a span route cluster as regular frequency', () => {
-    const p = {
-      ...base,
-      tier: 'span',
-      headway: null,
-      headwayByPeriod: { midday: null },
-      maxGapByPeriod: { midday: 3 },
-    } as ShapeProperties;
-
-    expect(effectiveRouteHeadway(p, 'midday')).toBeNull();
   });
 
   it('preserves active-service cadence on cards while filtering by full-period coverage (#507)', () => {

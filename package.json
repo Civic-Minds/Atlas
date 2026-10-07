@@ -34,6 +34,7 @@
     "dev:staging": "ATLAS_ENV=staging VITE_R2_PUBLIC_URL=https://pub-5f1c48f86b024c42a8d174a4a5dd69ca.r2.dev vite",
     "route-report": "npx tsx pipeline/route-report.ts",
     "build-history": "npx tsx pipeline/build-history.ts",
+    "publish-data-release": "npx tsx pipeline/publish-data-release.ts",
     "build-hidden-routes": "npx tsx pipeline/build-hidden-routes.ts",
     "migrate-archive": "npx tsx pipeline/migrate-gtfs-archive.ts",
     "validate-headsigns": "npx tsx scripts/validate-headsign-split.ts",

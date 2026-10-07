@@ -39,6 +39,16 @@ A route's frequency is calculated as the median gap (headway) between consecutiv
 - **Why the Median:** We use the median instead of the mean (average) because it is much more resistant to outliers. For example, if a bus runs every 10 minutes all day but has one 60-minute gap for a driver shift change, the median headway remains 10 minutes, representing the typical rider experience.
 - **Stop-Level Headways:** Gaps are computed at every individual stop along a route. This powers the Corridors app, which displays frequency at the passenger's boarding stop rather than a generic route average.
 
+For a Weekday summary, Atlas keeps Monday through Friday as separate schedules while
+it calculates the daily results. The frequency tier uses the worst actual weekday.
+The displayed weekday cadence uses one representative actual weekday, selected by
+the number of departures closest to the weekday median. Atlas does not combine
+departures from different weekdays into one timetable, because those departures did
+not occur on the same day and would create artificially short gaps.
+When actual weekdays qualify for different tiers, the route card flags that
+weekday schedules vary and explains that the displayed tier reflects the
+slowest weekday.
+
 ### 6. Assigning Frequency Tiers
 Atlas uses sustained service thresholds to assign frequency tiers. It tests the analyzed gaps across each service window, allowing a small number of grace-period violations, then stores headway metrics separately for display and filtering. The current surface thresholds are:
 

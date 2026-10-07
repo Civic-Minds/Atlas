@@ -160,6 +160,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   const hasRouteDataQualityWarning = currentRoute.directions.some(
     direction => direction.routeDataQualityWarning === ROUTE_DATA_QUALITY_WARNING,
   );
+  const hasWeekdayTierVariation = currentRoute.directions.some(direction => direction.weekdayTierVariation);
   const selectedPeriod = period !== 'all' ? TIME_PERIODS.find(p => p.key === period) : undefined;
   const hasPeriodService = period === 'all' || directionGroups.some(group =>
     group.realTier.some(direction => routeCardDisplayHeadway(direction, period) != null) ||
@@ -219,7 +220,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
         // period, which can happen even when real service exists (#297). Don't assert absence.
         const range = routeCardDisplayHeadwayRange(direction, period);
         const isLimited = headway == null && period !== 'all' && hasDirectionPeriodService(direction, period);
-        return `- ${reportLabel}: ${routeCardCoverageText(direction, period) ?? (headway != null ? `every ${headway} min` : range ?? (isLimited ? 'limited service' : 'no data for this period'))}`;
+        return `- ${reportLabel}: ${routeCardCoverageText(direction, period) ?? (headway != null ? `about every ${headway} min` : range ?? (isLimited ? 'limited service' : 'no data for this period'))}`;
       })
       .filter((line): line is string => line !== null);
     const limitedLines = !hideSpan
@@ -512,6 +513,8 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                             colorHeadway={hoveredHour == null ? metricValueForPeriod(filterHw, period) : undefined}
                             headwayLabel={hoveredHour == null ? routeCardCoverageText(d, period) : undefined}
                             trunkHeadway={trunkHw}
+                            edgeGapAllowance={d.edgeGapAllowance}
+                            onEdgeGapAllowanceClick={onInfoOpen ? () => onInfoOpen('about', { helpTopic: 'edge-gap-allowance' }) : undefined}
                             dimmed={dimmed}
                             limited={isLimited}
                             {...branchHoverProps(group.dirId, d.headsign)}
@@ -539,7 +542,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
             );
           });
         })()}
-        {(routeIsStale || routeAgency?.feedReviewStatus === 'review' || routeOverrideNote || hasRouteDataQualityWarning) && onInfoOpen && (
+        {(routeIsStale || routeAgency?.feedReviewStatus === 'review' || routeOverrideNote || hasRouteDataQualityWarning || hasWeekdayTierVariation) && onInfoOpen && (
           <div className={`${CARD_NOTICE_FOOTER} space-y-1`}>
             {hasRouteDataQualityWarning && (
               <CardHelpNotice
@@ -589,6 +592,12 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                   issueUrl: routeAgency?.issueUrl,
                   issueUrls: routeAgency?.issueUrls,
                 })}
+              />
+            )}
+            {hasWeekdayTierVariation && (
+              <CardHelpNotice
+                message="Weekday schedules vary. The tier shown reflects the slowest weekday."
+                onLearnMore={() => onInfoOpen('about', { helpTopic: 'weekday-variation' })}
               />
             )}
           </div>
