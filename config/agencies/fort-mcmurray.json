@@ -19,9 +19,9 @@
     "Fort McMurray, Alberta"
   ],
   "timezone": "America/Edmonton",
-  "lastFeedExpiry": null,
+  "lastFeedExpiry": "20261210",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-09-08",
+  "lastRefreshedAt": "2026-10-03",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -33,6 +33,14 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 28
     },
-    "checkedAt": "2026-09-08"
-  }
+    "checkedAt": "2026-10-03"
+  },
+  "lastFeedCheckAt": "20261003",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261210",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

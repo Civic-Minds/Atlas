@@ -23,6 +23,8 @@ export interface GtfsTrip {
     direction_id?: string;
     block_id?: string;
     shape_id?: string;
+    /** Optional agency/feed-specific branch or variant identifier. */
+    route_variant?: string;
 }
 
 export interface GtfsStop {
@@ -221,7 +223,9 @@ export interface RawRouteDepartures {
     /** For rail routes split by terminus — e.g. "Kitchener GO" vs "Bramalea GO" */
     headsign?: string;
     /** Physical GTFS shape for this branch. Same headsigns can still use different branches. */
-    shapeId?: string;
+  shapeId?: string;
+  /** Optional feed-provided branch or variant identifier. */
+  routeVariant?: string;
 
     /** Every departure time in minutes from midnight, sorted ascending, deduplicated */
     departureTimes: number[];
@@ -323,7 +327,9 @@ export interface AnalysisResult {
     /** Which individual days this rolled-up result covers */
     daysIncluded?: DayName[];
     /** For rail routes: the terminus headsign this result represents (e.g. "Kitchener GO") */
-    headsign?: string;
+  headsign?: string;
+  /** Optional feed-provided branch or variant identifier. */
+  routeVariant?: string;
     /** Physical GTFS shape for this branch. */
     shapeId?: string;
 }

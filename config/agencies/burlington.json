@@ -14,18 +14,18 @@
     -79.3
   ],
   "feedUrl": "https://opendata.burlington.ca/gtfs-rt/GTFS_Data.zip",
-  "lastFeedExpiry": "20261031",
+  "lastFeedExpiry": "20261219",
   "lastFeedVersion": null,
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-burlington-transit-gtfs-724.zip?alt=media",
-  "lastRefreshedAt": "2026-08-27",
+  "lastRefreshedAt": "2026-10-03",
   "cities": [
     "Burlington, Ontario",
     "Hamilton, Ontario"
   ],
-  "lastFeedCheckAt": "20260907",
+  "lastFeedCheckAt": "20261003",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261031",
+  "expiredFeedCheckExpiry": "20261219",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -37,7 +37,11 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 74
     },
-    "checkedAt": "2026-08-27"
+    "checkedAt": "2026-10-03"
   },
-  "timezone": "America/Toronto"
+  "timezone": "America/Toronto",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

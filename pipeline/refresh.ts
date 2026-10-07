@@ -49,9 +49,9 @@ import type { FeedQuality } from '../shared/feedQuality.js';
 import { historyRouteKey } from './historyRouteKey.js';
 import { effectiveFeedExpiry } from './feedFreshness.js';
 import { isActiveProductionFeed } from '../shared/feedAvailability.js';
-import { bumpPublicDataVersion } from './dataVersion.js';
 import { recordFeedCheck, type FeedCheckFields } from './feedCheckTracking.js';
 import { buildFeedCandidates, type FeedCandidate } from './feedSourceCandidates.js';
+import { resolveFeedUrl } from './feedUrl.js';
 
 console.log(`  env: ${LOADED_ENV_FILE} (bucket=${process.env.R2_BUCKET_NAME ?? '?'}${isProductionPublicR2Bucket() ? ' [PRODUCTION]' : ' [non-prod]'})`);
 
@@ -191,6 +191,8 @@ interface AgencyEntry {
   stopsUrl: string;
   corridorsUrl?: string;
   feedUrl: string | null;
+  feedApiKeyEnvVar?: string;
+  feedApiKeyParam?: string;
   mdbFeedUrl?: string | null;
   supplementalFeedUrls?: string[];
   lastFeedExpiry?: string | null;
@@ -202,6 +204,7 @@ interface AgencyEntry {
   expiredFeedCheckExpiry?: string | null;
   agencyId?: string;
   routeTypes?: number[];
+  agencyName?: string;
   preprocess?: GtfsPreprocess;
   excludeRouteShortNames?: string[];
   excludeTripHeadsigns?: string[];
@@ -263,7 +266,8 @@ async function refreshAgency(
   // Skip processing if the feed hasn't changed since last refresh.
   // Primary key: feed_end_date. Fallback: feed_version (for agencies without feed_info expiry).
   const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
-  const feedCandidates = buildFeedCandidates(agency.feedUrl, agency.mdbFeedUrl);
+  const configuredFeedUrl = resolveFeedUrl(agency.feedUrl, agency.feedApiKeyEnvVar, agency.feedApiKeyParam);
+  const feedCandidates = buildFeedCandidates(configuredFeedUrl, agency.mdbFeedUrl);
   let buf: Buffer | null = null;
   let peekedExpiry: string | null = null;
   let peekedVersion: string | null = null;
@@ -311,7 +315,7 @@ async function refreshAgency(
     writeLog(`\n  [warn] refresh unavailable (${reason}) — retaining the last good artifact\n`);
     return { summary: `stale (feed unavailable: ${reason})`, stale: true };
   }
-  if (selectedCandidate.kind !== 'configured' || selectedCandidate.url !== agency.feedUrl) {
+  if (selectedCandidate.kind !== 'configured' || selectedCandidate.url !== configuredFeedUrl) {
     writeLog(`\n  [info] using ${selectedCandidate.kind} source: ${selectedCandidate.url}\n`);
   }
 
@@ -407,6 +411,7 @@ async function refreshAgency(
     primary = await processGtfsBuffer(buf, undefined, {
       routeTypes: agency.routeTypes,
       agencyId: agency.agencyId,
+      agencyName: agency.agencyName,
       preprocess: agency.preprocess,
       excludeRouteShortNames: agency.excludeRouteShortNames,
       excludeTripHeadsigns: agency.excludeTripHeadsigns,
@@ -448,6 +453,7 @@ async function refreshAgency(
       const supp = await processGtfsBuffer(suppBuf, undefined, {
         routeTypes: agency.routeTypes,
         agencyId: agency.agencyId,
+        agencyName: agency.agencyName,
         preprocess: agency.preprocess,
         excludeRouteShortNames: agency.excludeRouteShortNames,
         excludeTripHeadsigns: agency.excludeTripHeadsigns,
@@ -504,9 +510,6 @@ async function refreshAgency(
   // We no longer store the full artifact URLs in index.json (they are derived from slug + R2_PUBLIC_URL).
   // The uploads still happen so the files exist on R2.
   await Promise.all(uploads);
-  // Bust browser IndexedDB and CDN cache keys immediately; do not wait for a frontend deploy.
-  await bumpPublicDataVersion(`refresh ${agency.slug}`);
-
   const stopsSnapshot = JSON.stringify({ generatedAt: new Date().toISOString(), stops: currentStops });
   const stopSnapshotKey = `stops-meta/${agency.slug}/${feedExpiry ?? feedVersion ?? peekedExpiry ?? peekedVersion ?? today}.json`;
   await Promise.all([

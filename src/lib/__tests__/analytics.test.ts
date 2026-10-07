@@ -5,6 +5,7 @@ describe('analytics startup queue', () => {
     vi.resetModules();
     vi.stubEnv('PROD', true);
     vi.stubEnv('VITE_GA_MEASUREMENT_ID', 'G-TEST123');
+    vi.stubEnv('VITE_ATLAS_MODE', 'public');
     const values = new Map<string, string>();
     Object.defineProperty(window, 'localStorage', {
       configurable: true,
@@ -27,7 +28,9 @@ describe('analytics startup queue', () => {
 
     initAnalytics();
 
-    expect(window.dataLayer).toContainEqual(['event', 'page_view', { atlas_mode: 'dev', page_path: '/' }]);
+    expect(window.dataLayer.some((entry) => Array.from(entry as ArrayLike<unknown>).every((value, index) =>
+      JSON.stringify(value) === JSON.stringify(['event', 'page_view', { atlas_mode: 'public', page_path: '/' }][index]),
+    ))).toBe(true);
   });
 
   it('discards queued events when consent is denied', async () => {

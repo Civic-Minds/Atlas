@@ -15,13 +15,33 @@
   ],
   "feedUrl": "https://schedule.ivtransit.com/gtfs/data.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-5547/tld-5547-202501020017/tld-5547-202501020017.zip",
-  "lastRefreshedAt": "20260811",
-  "lastFeedExpiry": "20251231",
-  "lastFeedVersion": null,
+  "lastRefreshedAt": "2026-10-03",
+  "lastFeedExpiry": "20261231",
+  "lastFeedVersion": "2026-08-27",
   "timezone": "America/Los_Angeles",
   "lastRawArchiveKey": "20251231-915e28c519db2c9f",
-  "lastFeedCheckAt": "20260907",
-  "expiredFeedCheckCount": 2,
-  "expiredFeedCheckSince": "20260622",
-  "expiredFeedCheckExpiry": "20251231"
+  "lastFeedCheckAt": "20261003",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261231",
+  "feedQuality": {
+    "status": "degraded",
+    "score": 50,
+    "reasons": [
+      "8 route shapes needed adjustment before display.",
+      "2 route have stops whose frequency differs from the overall route schedule."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 8,
+      "routeHeadwayMismatches": 2,
+      "featureCount": 22
+    },
+    "checkedAt": "2026-10-03"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

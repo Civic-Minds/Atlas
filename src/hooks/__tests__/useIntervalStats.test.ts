@@ -49,7 +49,9 @@ describe('useIntervalStats', () => {
   it('keeps selected-route visibility separate from the active filter explanation', () => {
     const route = { routeId: '12', agencySlug: 'kalamazoo', headway: 60, tier: '60' } as any;
     const filters = { ...defaultFilters, maxHeadway: 20, agencies: new Set(['kalamazoo']) };
-    expect(passesRouteFilter(route, 'kalamazoo', { ...filters, selectedRoute: 'kalamazoo::12' }, null)).toBe(true);
+    // Selection opens route details but must never make an out-of-filter route
+    // appear on the map.
+    expect(passesRouteFilter(route, 'kalamazoo', { ...filters, selectedRoute: 'kalamazoo::12' }, null)).toBe(false);
     expect(passesRouteFilter(route, 'kalamazoo', { ...filters, selectedRoute: null }, null)).toBe(false);
   });
 
@@ -167,7 +169,7 @@ describe('useIntervalStats', () => {
     };
 
     expect(passesRouteFilter(route, 'yrt', filters, null)).toBe(false);
-    expect(passesRouteFilter(route, 'yrt', { ...filters, selectedRoute: 'yrt::446' }, null)).toBe(true);
+    expect(passesRouteFilter(route, 'yrt', { ...filters, selectedRoute: 'yrt::446' }, null)).toBe(false);
   });
 
   it('should return correct stats for default filters', () => {
@@ -175,7 +177,8 @@ describe('useIntervalStats', () => {
     
     expect(result.current.stats).toEqual({
       total: 2,
-      matching: 2
+      matching: 2,
+      limitedService: 0,
     });
     expect(result.current.searchMatches).toBeNull();
   });
@@ -185,7 +188,8 @@ describe('useIntervalStats', () => {
     
     expect(result.current.stats).toEqual({
       total: 2,
-      matching: 1 // Only the 504 matches (10m headway)
+      matching: 1, // Only the 504 matches (10m headway)
+      limitedService: 0,
     });
   });
 
@@ -197,7 +201,8 @@ describe('useIntervalStats', () => {
     
     expect(result.current.stats).toEqual({
       total: 2,
-      matching: 0
+      matching: 0,
+      limitedService: 0,
     });
 
     const { result: resultMatch } = renderHook(() => useIntervalStats(mockLayers, { 
@@ -369,7 +374,7 @@ describe('useIntervalStats', () => {
       ...defaultFilters,
       bounds: { s: 43.5, w: -79.6, n: 43.8, e: -79.1 }
     }));
-    expect(result.current.stats).toEqual({ total: 1, matching: 1 });
+    expect(result.current.stats).toEqual({ total: 1, matching: 1, limitedService: 0 });
 
     // No bounds → wait for the map rather than counting every loaded route.
     const { result: unscoped } = renderHook(() => useIntervalStats(layersSpread, {

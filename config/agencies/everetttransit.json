@@ -14,15 +14,34 @@
     -122.1
   ],
   "feedUrl": "https://gtfs.sound.obaweb.org/prod/97_gtfs.zip",
-  "lastFeedExpiry": "20260905",
-  "lastFeedVersion": "4fcef50b-1dfc-45aa-8abb-b2eecb95b162",
-  "lastRefreshedAt": "2026-08-07",
+  "lastFeedExpiry": "20261213",
+  "lastFeedVersion": "f3eb566c-18ab-42f6-a5e2-e58b848458a2",
+  "lastRefreshedAt": "2026-10-03",
   "cities": [
     "Everett, Washington"
   ],
-  "lastFeedCheckAt": "20260907",
-  "expiredFeedCheckCount": 1,
-  "expiredFeedCheckSince": "20260622",
-  "expiredFeedCheckExpiry": "20260905",
-  "timezone": "America/Los_Angeles"
+  "lastFeedCheckAt": "20261003",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261213",
+  "timezone": "America/Los_Angeles",
+  "feedQuality": {
+    "status": "review",
+    "score": 80,
+    "reasons": [
+      "2 route shapes needed adjustment before display."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 2,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 56
+    },
+    "checkedAt": "2026-10-03"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

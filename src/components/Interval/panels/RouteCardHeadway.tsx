@@ -3,7 +3,7 @@ import type { ShapeProperties, TimePeriod, HoveredBranch } from '../../../hooks/
 import type { Agency } from '../../../App';
 import type { OpenInfoFn } from '../../InfoPanel';
 import type { HeadwayByPeriod } from '../../../hooks/useAgencyData';
-import { titleCase, shortenAgencyName, resolveBranchLabel } from '../../../utils/format';
+import { titleCase, getRouteLabel, shortenAgencyName, resolveBranchLabel } from '../../../utils/format';
 import { HeadwaySparkline } from '../HeadwaySparkline';
 import RouteCardTitle from '../../RouteCardTitle';
 import {
@@ -20,7 +20,7 @@ import {
 } from '../cardUi';
 import { CARD_NOTICE, CARD_NOTICE_FOOTER } from '../../../styles';
 import { FEATURES, SPARKLINE_HOURS, TIME_PERIODS, formatPeriodRangeLong, periodKeyForHour } from '../../../../shared/config';
-import { hasDirectionPeriodService, routeCardCoverageText, routeCardDisplayHeadway, routeCardDisplayHeadwayRange } from '../../../utils/effectiveHeadway';
+import { effectiveRouteHeadway, hasDirectionPeriodService, routeCardCoverageText, routeCardDisplayHeadway, routeCardDisplayHeadwayRange } from '../../../utils/effectiveHeadway';
 import { buildRouteServiceSummary, metricValueForPeriod } from '../../../utils/routeFacts';
 import { unevenPeriodMaxGap } from '../../../utils/routeCardUneven';
 import {
@@ -36,6 +36,7 @@ import { shouldShowDirectionSections } from '../../../utils/routeCardDirectionLa
 import type { VariantFamily } from '../../../utils/routeVariants';
 import { currentAtlasUrl } from '../../../utils/reportIssue';
 import { ROUTE_DATA_QUALITY_WARNING, ROUTE_DATA_QUALITY_WARNING_MESSAGE } from '../../../../shared/routeDataQuality';
+import { expiredFeedNotice } from '../../../content/noticeCopy';
 
 function medianHeadway(values: number[]): number {
   const sorted = [...values].sort((a, b) => a - b);
@@ -372,7 +373,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
               onHourHover={setHoveredHour}
               allowExpand={FEATURES.beta}
               reserveStackedLegendSpace={hasTrunkSparkline}
-              title={`${currentRoute.routeShortName ?? 'Route'}${currentRoute.routeLongName ? ` — ${currentRoute.routeLongName}` : ''}`}
+              title={titleCase(getRouteLabel(currentRoute.routeShortName, currentRoute.routeLongName, agencyDisplayName))}
             />
           </>
         );
@@ -405,20 +406,26 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
         {selectedRouteOutOfFilter && !(hasCoreSummary && coreHeadway != null && coreHeadway <= maxHeadway) && (
           <div className={CARD_NOTICE_FOOTER}>
             <p className={CARD_NOTICE}>
-              This route is outside the active frequency filter, but remains visible because it is selected.
+              This route does not meet the {maxHeadway}-minute filter in every direction during {selectedPeriod?.label ?? 'the selected schedule'}, but remains visible because it is selected.
             </p>
           </div>
         )}
         {(() => {
-          const branchLabel = (group: DirectionGroup, headsign: string | null | undefined, gi: number) =>
-            resolveBranchLabel({
-              headsign,
+          const branchLabel = (group: DirectionGroup, direction: ShapeProperties, gi: number) => {
+            const label = resolveBranchLabel({
+              headsign: direction.headsign,
               shortName: currentRoute.routeShortName ?? '',
               longName: currentRoute.routeLongName ?? '',
               directionId: needsNumbered ? gi : group.dirId,
               multipleDirections: showDirectionSections,
               sectionBoundLabel: showDirectionSections ? group.boundLabel : undefined,
             });
+            const sameDestinationCount = group.realTier.filter(d =>
+              (d.headsign ?? '').trim().toLowerCase() === (direction.headsign ?? '').trim().toLowerCase()
+            ).length;
+            const variant = direction.routeVariant?.trim();
+            return sameDestinationCount > 1 && variant ? `${variant} · ${label}` : label;
+          };
           const branchHoverProps = (dirId: number, headsign: string | null | undefined) => {
             if (!headsign) return {};
             const isHovered = dirIdNum(hoveredBranch?.directionId) === dirIdNum(dirId)
@@ -455,7 +462,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
               });
             })();
             const exclusiveSpanNames = exclusiveSpans
-              .map(d => branchLabel(group, d.headsign, gi))
+              .map(d => branchLabel(group, d, gi))
               .filter(Boolean);
             const hasVisibleDirectionRows = groupHasCoreSummary
               || group.realTier.length > 0
@@ -493,13 +500,13 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                 )}
                 <div className="space-y-1">
                   {group.realTier.map((d, i) => {
-                    const filterHw = buildRouteServiceSummary(d).filter;
-                    const dimmed = maxHeadway !== Infinity && (metricValueForPeriod(filterHw, period) ?? Infinity) > maxHeadway;
+                    const branchFilterHeadway = effectiveRouteHeadway(d, period);
+                    const dimmed = maxHeadway !== Infinity && (branchFilterHeadway ?? Infinity) > maxHeadway;
                     return (() => {
                       const displayH = hoveredHour != null
                         ? buildRouteServiceSummary(d).branch.byHour?.[hoveredHour] ?? routeCardDisplayHeadway(d, period)
                         : routeCardDisplayHeadway(d, period);
-                      const label = branchLabel(group, d.headsign, gi);
+                      const label = branchLabel(group, d, gi);
                       if (!label && !collapseGroups && displayH == null) return null;
                       const trunkHw = hoveredHour == null && period !== 'all'
                         ? headsignTrunkHeadway(d, period)
@@ -510,7 +517,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                           <CardDirectionRow
                             label={label}
                             headway={displayH ?? undefined}
-                            colorHeadway={hoveredHour == null ? metricValueForPeriod(filterHw, period) : undefined}
+                            colorHeadway={hoveredHour == null ? branchFilterHeadway : undefined}
                             headwayLabel={hoveredHour == null ? routeCardCoverageText(d, period) : undefined}
                             trunkHeadway={trunkHw}
                             edgeGapAllowance={d.edgeGapAllowance}
@@ -526,7 +533,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                   {(!hideSpan || group.realTier.length === 0) && exclusiveSpans.length === 1 && (
                     <CardDirectionRow
                       key="s0"
-                      label={branchLabel(group, exclusiveSpans[0].headsign, gi) || 'limited service'}
+                      label={branchLabel(group, exclusiveSpans[0], gi) || 'limited service'}
                       limited
                       {...branchHoverProps(group.dirId, exclusiveSpans[0].headsign)}
                     />
@@ -555,7 +562,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
             )}
             {routeIsStale && (
               <CardHelpNotice
-                message={`This schedule may be outdated${expDateStr ? ` and ended ${expDateStr}` : ''}.`}
+                message={expiredFeedNotice(routeAgency?.name ?? 'This agency', expDateStr)}
                 onLearnMore={() => onInfoOpen('about', {
                   helpTopic: 'outdated-schedule',
                   agencyName: routeAgency?.name,

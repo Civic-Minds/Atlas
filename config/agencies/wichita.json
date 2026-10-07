@@ -15,9 +15,13 @@
   "cities": [
     "Wichita, Kansas"
   ],
-  "lastFeedCheckAt": "20260907",
-  "expiredFeedCheckCount": 2,
+  "lastFeedCheckAt": "20261003",
+  "expiredFeedCheckCount": 1,
   "expiredFeedCheckSince": "20260622",
-  "expiredFeedCheckExpiry": "20260814",
-  "timezone": "America/Chicago"
+  "expiredFeedCheckExpiry": "20260522",
+  "timezone": "America/Chicago",
+  "feedRefreshStatus": "stale",
+  "feedRefreshError": "all available feeds expired (latest 20260522)",
+  "feedRefreshErrorAt": "20261003",
+  "feedRefreshRetryCount": 1
 }

@@ -8,8 +8,8 @@
   ],
   "feedUrl": "http://data.trilliumtransit.com/gtfs/gbt-ct-us/gbt-ct-us.zip",
   "lastFeedExpiry": "20261227",
-  "lastFeedVersion": "UTC: 17-Jun-2026 15:39",
-  "lastRefreshedAt": "2026-08-07",
+  "lastFeedVersion": "UTC: 23-Sep-2026 14:56",
+  "lastRefreshedAt": "2026-10-03",
   "region": "Connecticut",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-530/latest.zip",
   "bbox": [
@@ -27,9 +27,26 @@
     "Milford, Connecticut",
     "East Norwalk, Connecticut"
   ],
-  "lastFeedCheckAt": "20260907",
+  "lastFeedCheckAt": "20261003",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261227",
-  "timezone": "America/New_York"
+  "timezone": "America/New_York",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 97
+    },
+    "checkedAt": "2026-10-03"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

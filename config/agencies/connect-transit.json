@@ -8,8 +8,8 @@
   ],
   "feedUrl": "https://rideconnecttransit.com/gtfs",
   "lastFeedExpiry": "",
-  "lastFeedVersion": "Fixing 113 and 114",
-  "lastRefreshedAt": "2026-09-07",
+  "lastFeedVersion": "Sapphire Change 9/14/2026",
+  "lastRefreshedAt": "2026-10-03",
   "region": "Illinois",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2267/latest.zip",
   "bbox": [
@@ -22,7 +22,7 @@
     "Bloomington, Illinois",
     "Normal, Illinois"
   ],
-  "lastFeedCheckAt": "20260907",
+  "lastFeedCheckAt": "20261003",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",
@@ -37,7 +37,11 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 96
     },
-    "checkedAt": "2026-09-07"
+    "checkedAt": "2026-10-03"
   },
-  "timezone": "America/Chicago"
+  "timezone": "America/Chicago",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

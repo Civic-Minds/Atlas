@@ -15,8 +15,8 @@
   "feedUrl": "https://muskegon.connexionz.net/rtt/public/resource/gtfs.zip",
   "region": "Michigan",
   "lastFeedExpiry": "20271231",
-  "lastFeedVersion": "20260904",
-  "lastRefreshedAt": "2026-09-07",
+  "lastFeedVersion": "20260928",
+  "lastRefreshedAt": "2026-10-03",
   "cities": [
     "Muskegon, Michigan",
     "Muskegon Heights, Michigan",
@@ -31,13 +31,17 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 26
+      "featureCount": 14
     },
-    "checkedAt": "2026-09-07"
+    "checkedAt": "2026-10-03"
   },
-  "lastFeedCheckAt": "20260907",
+  "lastFeedCheckAt": "20261003",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
-  "timezone": "America/Chicago"
+  "timezone": "America/Chicago",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

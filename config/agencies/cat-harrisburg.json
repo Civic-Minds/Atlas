@@ -10,12 +10,12 @@
   "region": "Pennsylvania",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-4298/latest.zip",
   "lastFeedExpiry": "20261231",
-  "lastFeedVersion": "20260902",
-  "lastRefreshedAt": "2026-09-07",
+  "lastFeedVersion": "20260918",
+  "lastRefreshedAt": "2026-10-03",
   "cities": [
     "Harrisburg, Pennsylvania"
   ],
-  "lastFeedCheckAt": "20260907",
+  "lastFeedCheckAt": "20261003",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
@@ -24,8 +24,8 @@
     "status": "review",
     "score": 60,
     "reasons": [
-      "41 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
-      "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+      "41 route shapes needed adjustment before display.",
+      "1 route has stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
       "validationErrors": 0,
@@ -34,6 +34,10 @@
       "routeHeadwayMismatches": 1,
       "featureCount": 89
     },
-    "checkedAt": "2026-09-07"
-  }
+    "checkedAt": "2026-10-03"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

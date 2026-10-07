@@ -1,15 +1,17 @@
 import React, { useEffect, useState, useMemo, useRef } from 'react';
-import { X, ExternalLink, Search, Radio, ArrowLeft } from 'lucide-react';
+import { X, ExternalLink, Search, Radio, ArrowLeft, ChevronRight, Mail } from 'lucide-react';
 import { DROPDOWN_PANEL, dropdownAnim, SEARCH_PILL, SEARCH_FIELD, Z_MODAL_BG, APP_TAB_ACTIVE, APP_TAB_INACTIVE, AGENCY_LIST_ROW, AGENCY_LIST_PRIMARY } from '../styles';
 import { LIVE_POLLING_ROUTES, liveCoverageForRouteNames, type LiveCoverage } from '../../shared/livePollingConfig';
 import { R2_PUBLIC_URL, FEATURES } from '../../shared/config';
 import { agencyDisplayParts, formatStoredDate } from '../utils/format';
-import { feedRefreshCountdownLabel, FEED_REFRESH_CADENCE_LABEL, type FeedRefreshMeta } from '../../shared/feedRefresh';
+import { feedRefreshCountdownLabel, type FeedRefreshMeta } from '../../shared/feedRefresh';
 import { agencyQualifiesForHistory, agencyQualifiesForHistoryExplore } from '../../shared/historyEligibility';
 import { countriesForAgencies } from '../../shared/regionCountry';
 import type { Agency } from '../App';
 import { isFeedExpired } from '../utils/feedFreshness';
 import { trackEvent } from '../lib/analytics';
+import { EXPIRED_FEED_CADENCE, EXPIRED_FEED_CONTEXT, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice } from '../content/noticeCopy';
+import RegionFilterPills from './RegionFilterPills';
 
 interface HistoryAgencySummary { slug: string; name: string; region: string; routes: unknown[] }
 
@@ -50,11 +52,6 @@ export type OpenInfoOptions = {
   rolloutIssueUrl?: string;
 };
 export type OpenInfoFn = (tab?: Tab, opts?: OpenInfoOptions) => void;
-
-function scheduleNoticeLabel(agencyName: string): string {
-  const { primary, secondary } = agencyDisplayParts(agencyName);
-  return secondary ? `The ${primary} schedule for ${secondary}` : `${primary}'s schedule`;
-}
 
 export function liveRouteLabel(r: { displayRouteShortName: string; displayName?: string }): string {
   if (r.displayName) return r.displayName;
@@ -99,11 +96,12 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
   }, [countries]);
 
   useEffect(() => {
+    if (!FEATURES.history || historyAgencies || !open) return;
     fetch(`${R2_PUBLIC_URL}/atlas/history-config.json`)
       .then(r => r.json())
       .then((d: HistoryAgencySummary[]) => setHistoryAgencies(d))
       .catch(() => setHistoryAgencies([]));
-  }, []);
+  }, [historyAgencies, open]);
 
   useEffect(() => {
     if (open) {
@@ -366,14 +364,14 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                     className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group"
                   >
                     <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">Browse agencies</span>
-                    <ExternalLink className="w-3 h-3 text-[var(--text-dim)]" />
+                    <ChevronRight className="w-3 h-3 text-[var(--text-dim)]" />
                   </button>
                   <button
                     onClick={() => setView('sources')}
                     className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group"
                   >
                     <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">Schedule sources</span>
-                    <ExternalLink className="w-3 h-3 text-[var(--text-dim)]" />
+                    <ChevronRight className="w-3 h-3 text-[var(--text-dim)]" />
                   </button>
                 </div>
               </div>
@@ -397,7 +395,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                   className="flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group"
                 >
                   <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">Contact us</span>
-                  <ExternalLink className="w-3 h-3 text-[var(--text-dim)]" />
+                  <Mail className="w-3 h-3 text-[var(--text-dim)]" />
                 </a>
               </div>
 
@@ -463,26 +461,12 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                   {regionsInScope.length > 0 && (
                     <span className="w-px h-3.5 shrink-0 bg-[var(--border-primary)] mx-0.5" aria-hidden />
                   )}
-                  {regionsInScope.map(r => {
-                    const on = regionFilter.has(r);
-                    return (
-                      <button
-                        key={r}
-                        onClick={() => setRegionFilter(prev => {
-                          const next = new Set(prev);
-                          if (next.has(r)) next.delete(r);
-                          else next.add(r);
-                          return next;
-                        })}
-                        aria-pressed={on}
-                        className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition-colors whitespace-nowrap shrink-0 ${
-                          on ? APP_TAB_ACTIVE : APP_TAB_INACTIVE
-                        }`}
-                      >
-                        {r}
-                      </button>
-                    );
-                  })}
+                  <RegionFilterPills
+                    regions={regionsInScope}
+                    selectedRegions={regionFilter}
+                    setSelectedRegions={setRegionFilter}
+                    includeAll={false}
+                  />
                 </div>
               </div>
               <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar">
@@ -586,20 +570,20 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
             <div className="h-full overflow-y-auto px-5 py-4 space-y-4">
               {helpContext?.agencyName && (
                 <p className="text-xs text-[var(--text-primary)] leading-relaxed">
-                  {scheduleNoticeLabel(helpContext.agencyName)}
-                  {helpContext.expDateStr ? ` ended on ${helpContext.expDateStr}` : ' may no longer be current'}.
-                  {helpContext.lastRefreshedAt && formatStoredDate(helpContext.lastRefreshedAt)
-                    ? helpContext.expiredFeedCheckCount != null && helpContext.expiredFeedCheckSince && helpContext.lastFeedCheckAt && formatStoredDate(helpContext.lastFeedCheckAt)
-                      ? ` Atlas began checking this feed on ${formatStoredDate(helpContext.expiredFeedCheckSince)} and has checked it ${helpContext.expiredFeedCheckCount} time${helpContext.expiredFeedCheckCount === 1 ? '' : 's'} since then. The most recent check was ${formatStoredDate(helpContext.lastFeedCheckAt)}.`
-                      : ` Atlas last successfully refreshed the feed on ${formatStoredDate(helpContext.lastRefreshedAt)}.`
-                    : ''}
+                  {expiredFeedNotice(helpContext.agencyName, helpContext.expDateStr)}
+                  {expiredFeedCheckHistory({
+                    count: helpContext.expiredFeedCheckCount,
+                    since: helpContext.expiredFeedCheckSince,
+                    lastChecked: helpContext.lastFeedCheckAt,
+                    lastRefreshed: helpContext.lastRefreshedAt,
+                  })}
                 </p>
               )}
               <p className="text-xs text-[var(--text-dim)] leading-relaxed">
-                Transit agencies publish schedules for set periods. When one period ends before the next schedule is available, Atlas keeps showing the most recent schedule and marks it as outdated.
+                {EXPIRED_FEED_EXPLANATION}
               </p>
               <p className="text-xs text-[var(--text-dim)] leading-relaxed">
-                {FEED_REFRESH_CADENCE_LABEL} An agency may be late publishing an update, or its download link may be broken, so this warning can remain even if service has changed.
+                {EXPIRED_FEED_CADENCE} {EXPIRED_FEED_CONTEXT}
               </p>
               {helpContext?.websiteUrl && (
                 <a
@@ -617,7 +601,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                 className="flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group"
               >
                 <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">Report a problem</span>
-                <ExternalLink className="w-3 h-3 text-[var(--text-dim)]" />
+                <Mail className="w-3 h-3 text-[var(--text-dim)]" />
               </a>
             </div>
           )}
@@ -707,7 +691,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                 className="flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group"
               >
                 <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">Report a problem</span>
-                <ExternalLink className="w-3 h-3 text-[var(--text-dim)]" />
+                <Mail className="w-3 h-3 text-[var(--text-dim)]" />
               </a>
             </div>
           )}
@@ -765,7 +749,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                     className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group"
                   >
                     <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">View on map</span>
-                    <ExternalLink className="w-3 h-3 text-[var(--text-dim)]" />
+                    <ChevronRight className="w-3 h-3 text-[var(--text-dim)]" />
                   </button>
 
                   {selectedLiveRoutes.length > 0 && (

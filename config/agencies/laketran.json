@@ -15,9 +15,9 @@
   "cities": [
     "Cleveland, Ohio"
   ],
-  "lastFeedCheckAt": "20260907",
-  "expiredFeedCheckCount": 0,
-  "expiredFeedCheckSince": null,
+  "lastFeedCheckAt": "20261003",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
   "expiredFeedCheckExpiry": "20260927",
   "feedQuality": {
     "status": "review",
@@ -34,5 +34,9 @@
     },
     "checkedAt": "2026-08-27"
   },
-  "timezone": "America/New_York"
+  "timezone": "America/New_York",
+  "feedRefreshStatus": "stale",
+  "feedRefreshError": "all available feeds expired (latest 20260927)",
+  "feedRefreshErrorAt": "20261003",
+  "feedRefreshRetryCount": 1
 }

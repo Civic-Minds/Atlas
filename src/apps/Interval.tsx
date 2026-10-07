@@ -38,7 +38,7 @@ interface Props {
   setLightMode: (v: boolean | ((prev: boolean) => boolean)) => void;
   query: string;
   setQuery: (q: string) => void;
-  onStatsChange?: (stats: { total: number; matching: number } | null) => void;
+  onStatsChange?: (stats: { total: number; matching: number; limitedService: number } | null) => void;
   resetViewKey?: number;
   showUi?: boolean;
   /** Keep the normal selection card available for another app (e.g. Live). */
@@ -832,13 +832,14 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
             />
           </div>
           {!hideFilterPanel && (
-            <FilterPanel
+              <FilterPanel
               lightMode={lightMode}
               setLightMode={setLightMode}
               hideSpan={hideSpan}
               hideLimitedService={hideLimitedService}
               setHideSpan={setHideSpan}
-              setHideLimitedService={setHideLimitedService}
+                setHideLimitedService={setHideLimitedService}
+                limitedServiceRouteCount={stats?.limitedService ?? null}
               livePollingOnly={livePollingOnly}
               setLivePollingOnly={setLivePollingOnly}
               onInfoOpen={onInfoOpen}

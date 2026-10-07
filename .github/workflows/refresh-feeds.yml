@@ -48,11 +48,12 @@ jobs:
           R2_ARCHIVE_BUCKET_NAME: ${{ secrets.R2_ARCHIVE_BUCKET_NAME }}
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          MUNI_511_API_KEY: ${{ secrets.MUNI_511_API_KEY }}
 
       # Persist feed metadata through the protected-branch workflow before the
       # independent PMTiles verification gate.
       - name: Open or update refresh pull request
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: "chore: weekly GTFS feed refresh"
@@ -81,6 +82,15 @@ jobs:
         run: npm run verify-pmtiles-coverage
         env:
           R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
+
+      - name: Publish verified data release
+        run: npm run publish-data-release
+        env:
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
+          R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
 
       # NOT gated on inputs.agencies: this always processes the entire
       # atlas-archive/history/ tree (~12k files) regardless of which agencies

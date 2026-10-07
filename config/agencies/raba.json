@@ -16,13 +16,13 @@
   "feedUrl": "https://gtfs.remix.com/redding_area_bus_authority.zip",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-redding-redding-area-bu-gtfs-3031.zip?alt=media",
   "lastFeedExpiry": "20261231",
-  "lastFeedVersion": "Updated: Aug 24, 2026, 10:00 PM",
-  "lastRefreshedAt": "2026-08-27",
+  "lastFeedVersion": "Updated: Sep 15, 2026, 10:52 PM",
+  "lastRefreshedAt": "2026-10-03",
   "cities": [
     "Redding, California",
     "Chico, California"
   ],
-  "lastFeedCheckAt": "20260907",
+  "lastFeedCheckAt": "20261003",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
@@ -30,7 +30,7 @@
     "status": "review",
     "score": 70,
     "reasons": [
-      "4 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+      "4 route shapes needed adjustment before display."
     ],
     "metrics": {
       "validationErrors": 0,
@@ -39,7 +39,11 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 37
     },
-    "checkedAt": "2026-08-27"
+    "checkedAt": "2026-10-03"
   },
-  "timezone": "America/Los_Angeles"
+  "timezone": "America/Los_Angeles",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

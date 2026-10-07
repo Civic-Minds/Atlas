@@ -9,10 +9,10 @@
   ],
   "feedUrl": "https://cdn.mbta.com/MBTA_GTFS.zip",
   "lastFeedExpiry": "20261212",
-  "lastFeedVersion": "Fall 2026, 2026-09-06T00:56:24+00:00, version D",
+  "lastFeedVersion": "Fall 2026, 2026-10-02T16:00:50+00:00, version D",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-massachusetts-massachusetts-bay-transportation-authority-mbta-gtfs-437.zip?alt=media",
   "gtfsFares": true,
-  "lastRefreshedAt": "2026-09-07",
+  "lastRefreshedAt": "2026-10-03",
   "cities": [
     "Dorchester, Massachusetts",
     "Brookline, Massachusetts",
@@ -25,7 +25,7 @@
     "Newton, Massachusetts",
     "Cambridge, Massachusetts"
   ],
-  "lastFeedCheckAt": "20260907",
+  "lastFeedCheckAt": "20261003",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261212",
@@ -33,17 +33,21 @@
     "status": "degraded",
     "score": 40,
     "reasons": [
-      "22 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
-      "13 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+      "19 route shapes needed adjustment before display.",
+      "13 route have stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 22,
+      "shapeAnomalies": 19,
       "routeHeadwayMismatches": 13,
-      "featureCount": 1042
+      "featureCount": 943
     },
-    "checkedAt": "2026-09-07"
+    "checkedAt": "2026-10-03"
   },
-  "timezone": "America/New_York"
+  "timezone": "America/New_York",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

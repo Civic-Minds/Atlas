@@ -7,17 +7,37 @@
   ],
   "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11664/Google_Transit.zip",
   "lastFeedExpiry": "20271125",
-  "lastFeedVersion": null,
+  "lastFeedVersion": "",
   "region": "California",
-  "lastRefreshedAt": "20260811",
+  "lastRefreshedAt": "2026-10-03",
   "websiteUrl": "http://www.ci.el-monte.ca.us/Government/PublicWorks/Transportation.aspx",
   "cities": [
     "El Monte, California"
   ],
   "timezone": "America/Los_Angeles",
   "lastRawArchiveKey": "20251031-7b5bc958bf995eaa",
-  "lastFeedCheckAt": "20260907",
-  "expiredFeedCheckCount": 2,
-  "expiredFeedCheckSince": "20260622",
-  "expiredFeedCheckExpiry": "20251031"
+  "pmtilesPending": true,
+  "lastFeedCheckAt": "20261003",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20271126",
+  "feedQuality": {
+    "status": "unusable",
+    "score": 0,
+    "reasons": [
+      "Atlas could not find any usable routes in this feed."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 2,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 0
+    },
+    "checkedAt": "2026-10-03"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

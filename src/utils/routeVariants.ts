@@ -30,7 +30,8 @@ const EXCLUDED_VARIANT_FAMILIES = new Set<string>([
 
 export interface VariantFamily {
   base: string;
-  members: { shortName: string; routeId: string; headway: number | null }[];
+  members: { shortName: string; routeId: string; headway: number | null; routeVariant?: string }[];
+  combinedHeadwayMin: number | null;
 }
 
 /**
@@ -49,6 +50,26 @@ export function findVariantFamily(
   if (!m) return null;
   const base = m[1];
   if (agencySlug && EXCLUDED_VARIANT_FAMILIES.has(`${agencySlug}::${base}`)) return null;
+
+  // Some feeds keep one route number for the whole family and put the branch code on trips.
+  const explicitByVariant = new Map<string, { routeId: string; best: number | null }>();
+  for (const p of agencyFeatures) {
+    if (p.routeShortName !== shortName) continue;
+    const variant = p.routeVariant?.trim();
+    if (!variant || !p.routeId) continue;
+    const hw = effectiveRouteHeadway(p, period);
+    const current = explicitByVariant.get(variant);
+    if (!current) explicitByVariant.set(variant, { routeId: String(p.routeId), best: hw });
+    else if (hw != null && (current.best == null || hw < current.best)) current.best = hw;
+  }
+  if (explicitByVariant.size >= 2) {
+    const members = [...explicitByVariant.entries()]
+      .map(([routeVariant, value]) => ({ shortName: routeVariant, routeVariant, routeId: value.routeId, headway: value.best }))
+      .sort((a, b) => a.shortName.localeCompare(b.shortName, undefined, { numeric: true }));
+    const finite = members.map(m => m.headway).filter((h): h is number => h != null && h > 0);
+    const combinedHeadwayMin = finite.length >= 2 ? Math.round(1 / finite.reduce((sum, h) => sum + 1 / h, 0)) : null;
+    return { base, members, combinedHeadwayMin };
+  }
 
   const byShort = new Map<string, { routeId: string; best: number | null; shapes: ShapeProperties[] }>();
   for (const p of agencyFeatures) {
@@ -114,5 +135,7 @@ export function findVariantFamily(
   const keepIndices = new Set(largest[0]);
   const foldedMembers = members.filter((_, i) => keepIndices.has(i));
 
-  return { base, members: foldedMembers };
+  const finite = foldedMembers.map(m => m.headway).filter((h): h is number => h != null && h > 0);
+  const combinedHeadwayMin = finite.length >= 2 ? Math.round(1 / finite.reduce((sum, h) => sum + 1 / h, 0)) : null;
+  return { base, members: foldedMembers, combinedHeadwayMin };
 }

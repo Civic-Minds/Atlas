@@ -7,10 +7,10 @@
     -84.388
   ],
   "feedUrl": "https://www.itsmarta.com/google_transit_feed/google_transit.zip",
-  "lastFeedExpiry": "20260821",
+  "lastFeedExpiry": "20261211",
   "lastFeedVersion": null,
   "region": "Georgia",
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "2026-10-03",
   "cities": [
     "Atlanta, Georgia",
     "Brookhaven, Georgia",
@@ -21,9 +21,28 @@
     "Roswell, Georgia",
     "Smyrna, Georgia"
   ],
-  "lastFeedCheckAt": "20260907",
-  "expiredFeedCheckCount": 2,
-  "expiredFeedCheckSince": "20260622",
-  "expiredFeedCheckExpiry": "20260821",
-  "timezone": "America/New_York"
+  "lastFeedCheckAt": "20261003",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261211",
+  "timezone": "America/New_York",
+  "feedQuality": {
+    "status": "review",
+    "score": 80,
+    "reasons": [
+      "2 route have stops whose frequency differs from the overall route schedule."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 2,
+      "featureCount": 555
+    },
+    "checkedAt": "2026-10-03"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

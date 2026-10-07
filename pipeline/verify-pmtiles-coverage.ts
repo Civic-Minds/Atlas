@@ -37,6 +37,7 @@ interface Agency {
 // (see shared/config.ts pmtilesMinZoomForHeadway), so any zoom >= 11 will surface
 // every headway tier. We still clamp to the archive's actual maxZoom at runtime.
 const PREFERRED_ZOOM = 12;
+const REQUEST_TIMEOUT_MS = 15_000;
 
 async function getZxyWithRetry(
   pmtiles: PMTiles,
@@ -47,11 +48,16 @@ async function getZxyWithRetry(
 ): Promise<Awaited<ReturnType<PMTiles['getZxy']>>> {
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
-      return await pmtiles.getZxy(zoom, x, y);
+      return await Promise.race([
+        pmtiles.getZxy(zoom, x, y),
+        new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error(`PMTiles request timeout after ${REQUEST_TIMEOUT_MS}ms`)), REQUEST_TIMEOUT_MS),
+        ),
+      ]);
     } catch (e) {
       const isLast = attempt === retries;
       const message = (e as Error).message || '';
-      const isTransient = /Bad response code: (429|5\d\d)/.test(message);
+      const isTransient = /Bad response code: (429|5\d\d)|PMTiles request timeout/.test(message);
       if (isLast || !isTransient) throw e;
       // R2 can keep returning 429s briefly while a large archive is being
       // checked. Give the request enough time to leave the rate-limit window
@@ -70,7 +76,12 @@ async function main() {
   const agencies = index.agencies || [];
   console.log(`Found ${agencies.length} agencies.`);
 
-  const pmtilesUrl = `${R2_PUBLIC_URL}/atlas.pmtiles`;
+  const localManifestPath = 'tmp/atlas-release-manifest.json';
+  const localManifest = fs.existsSync(localManifestPath)
+    ? JSON.parse(fs.readFileSync(localManifestPath, 'utf8')) as { pmtilesKey?: string }
+    : null;
+  const pmtilesUrl = process.env.PMTILES_URL
+    ?? (localManifest?.pmtilesKey ? `${R2_PUBLIC_URL}/${localManifest.pmtilesKey}` : `${R2_PUBLIC_URL}/atlas.pmtiles`);
   console.log(`Opening PMTiles archive: ${pmtilesUrl}`);
   const pmtiles = new PMTiles(pmtilesUrl);
 
@@ -126,11 +137,44 @@ async function main() {
 
   // This check can request tens of thousands of tiles. Keep the burst low so
   // the verifier does not rate-limit its own reads from the R2 public host.
-  const concurrency = 2;
+  const concurrency = Math.max(1, Number(process.env.PMTILES_COVERAGE_CONCURRENCY ?? 2));
   console.log(`Fetching ${tasks.length} tiles (concurrency ${concurrency})...`);
   await runWithConcurrency(tasks, concurrency);
 
   console.log(`Fetched ${fetched} tiles (${emptyTiles} empty, ${errors} errors). Found ${foundSlugs.size} distinct agency slugs across all sampled tiles.`);
+
+  // A concurrent full-catalog scan can occasionally miss a small agency even
+  // when its tile is present in the archive (observed with Kittitas County and
+  // Sierra Vista on R2). Re-scan only the agencies that were missed, one at a
+  // time, before treating them as a failed publication. This keeps the broad
+  // scan rate-limited while making the final decision deterministic.
+  const initialMissing = agencies.filter(a => !foundSlugs.has(a.slug) && !a.pmtilesPending && a.lastFeedExpiry);
+  if (initialMissing.length > 0) {
+    console.log(`Rechecking ${initialMissing.length} initially missing agencies sequentially...`);
+    for (const agency of initialMissing) {
+      // Small agencies can fall just outside the broad scan's 100-tile grid.
+      // Use the complete bbox when it is reasonably sized, while retaining a
+      // bounded grid for unusually large service areas.
+      for (const { x, y } of tilesForAgency(agency, zoom, 1000)) {
+        try {
+          const result = await getZxyWithRetry(pmtiles, zoom, x, y);
+          if (!result) continue;
+          const routesLayer = new VectorTile(new PbfReader(new Uint8Array(result.data))).layers['routes'];
+          if (!routesLayer) continue;
+          for (let i = 0; i < routesLayer.length; i++) {
+            const slug = routesLayer.feature(i).properties?.agencySlug;
+            if (typeof slug === 'string') foundSlugs.add(slug);
+          }
+        } catch (e) {
+          console.error(`Error rechecking ${agency.slug} at z${zoom}/${x}/${y}:`, (e as Error).message);
+        }
+      }
+    }
+    const recovered = initialMissing.filter(a => foundSlugs.has(a.slug));
+    if (recovered.length > 0) {
+      console.log(`Sequential recheck recovered ${recovered.length} agencies: ${recovered.map(a => a.slug).join(', ')}`);
+    }
+  }
 
   const allMissing = agencies.filter(a => !foundSlugs.has(a.slug));
   const missing = allMissing.filter(a => !a.pmtilesPending && a.lastFeedExpiry);

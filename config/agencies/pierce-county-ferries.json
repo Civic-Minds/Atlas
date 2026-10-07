@@ -3,8 +3,42 @@
   "name": "Pierce County Ferries",
   "websiteUrl": "https://www.piercecountywa.gov/ferry",
   "region": "Washington",
-  "center": [47.170399, -122.640309],
-  "bbox": [47.162254, -122.677279, 47.178544, -122.60334],
+  "center": [
+    47.170399,
+    -122.640309
+  ],
+  "bbox": [
+    47.162254,
+    -122.677279,
+    47.178544,
+    -122.60334
+  ],
   "feedUrl": "https://files.mobilitydatabase.org/tld-2289/latest.zip",
-  "timezone": "America/Los_Angeles"
+  "timezone": "America/Los_Angeles",
+  "lastFeedCheckAt": "20261003",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261231",
+  "feedQuality": {
+    "status": "review",
+    "score": 90,
+    "reasons": [
+      "1 minor schedule issue found while reading the feed."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 1,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 15
+    },
+    "checkedAt": "2026-10-03"
+  },
+  "lastFeedExpiry": "20261231",
+  "lastFeedVersion": "UTC: 13-May-2026 10:51",
+  "lastRefreshedAt": "2026-10-03",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

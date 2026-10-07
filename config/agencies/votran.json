@@ -6,10 +6,10 @@
     -81.0746
   ],
   "feedUrl": "https://www.votran.org/file/6120/google_transit_June-2026.zip",
-  "lastFeedExpiry": "20220223",
-  "lastFeedVersion": "20210223",
+  "lastFeedExpiry": "20270605",
+  "lastFeedVersion": "20260610",
   "region": "Florida",
-  "lastRefreshedAt": "20260811",
+  "lastRefreshedAt": "2026-10-03",
   "websiteUrl": "http://www.votran.org",
   "cities": [
     "Daytona Beach, Florida",
@@ -18,8 +18,27 @@
   ],
   "timezone": "America/New_York",
   "lastRawArchiveKey": "20220223-e5fca0a56e84cfdb",
-  "lastFeedCheckAt": "20260907",
-  "expiredFeedCheckCount": 2,
-  "expiredFeedCheckSince": "20260622",
-  "expiredFeedCheckExpiry": "20220223"
+  "lastFeedCheckAt": "20261003",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270605",
+  "feedQuality": {
+    "status": "review",
+    "score": 70,
+    "reasons": [
+      "68 route shapes needed adjustment before display."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 68,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 88
+    },
+    "checkedAt": "2026-10-03"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

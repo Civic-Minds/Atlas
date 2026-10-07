@@ -22,9 +22,13 @@
     "Abbotsford, British Columbia",
     "South Surrey, British Columbia"
   ],
-  "lastFeedCheckAt": "20260907",
-  "expiredFeedCheckCount": 0,
-  "expiredFeedCheckSince": null,
+  "lastFeedCheckAt": "20261003",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
   "expiredFeedCheckExpiry": "20260919",
-  "timezone": "America/Los_Angeles"
+  "timezone": "America/Los_Angeles",
+  "feedRefreshStatus": "stale",
+  "feedRefreshError": "all available feeds expired (latest 20260919)",
+  "feedRefreshErrorAt": "20261003",
+  "feedRefreshRetryCount": 1
 }

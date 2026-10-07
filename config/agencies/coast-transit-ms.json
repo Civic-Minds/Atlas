@@ -20,10 +20,11 @@
     "Ocean Springs, Mississippi"
   ],
   "feedQuality": {
-    "status": "review",
-    "score": 90,
+    "status": "degraded",
+    "score": 55,
     "reasons": [
-      "1 schedule-data warning — Atlas found a minor issue while reading the schedule."
+      "1 minor schedule issue found while reading the feed.",
+      "The schedule dates in this feed have passed."
     ],
     "metrics": {
       "validationErrors": 0,
@@ -32,14 +33,18 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 23
     },
-    "checkedAt": "2026-09-07"
+    "checkedAt": "2026-10-03"
   },
   "lastFeedExpiry": "20260930",
   "lastFeedVersion": "20260316",
-  "lastRefreshedAt": "2026-09-07",
-  "lastFeedCheckAt": "20260907",
+  "lastRefreshedAt": "2026-10-03",
+  "lastFeedCheckAt": "20261003",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
-  "timezone": "America/Chicago"
+  "timezone": "America/Chicago",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

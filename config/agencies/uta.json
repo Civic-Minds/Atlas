@@ -8,9 +8,9 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-170/latest.zip",
   "lastFeedExpiry": "20261205",
-  "lastFeedVersion": "2026 AUG_20260813",
+  "lastFeedVersion": "2026 AUG_20261001",
   "region": "Utah",
-  "lastRefreshedAt": "2026-08-24",
+  "lastRefreshedAt": "2026-10-03",
   "cities": [
     "Salt Lake City, Utah",
     "Ogden, Utah",
@@ -23,7 +23,7 @@
     "Sandy, Utah",
     "Orem, Utah"
   ],
-  "lastFeedCheckAt": "20260907",
+  "lastFeedCheckAt": "20261003",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261205",
@@ -38,7 +38,11 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 363
     },
-    "checkedAt": "2026-08-24"
+    "checkedAt": "2026-10-03"
   },
-  "timezone": "America/Denver"
+  "timezone": "America/Denver",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

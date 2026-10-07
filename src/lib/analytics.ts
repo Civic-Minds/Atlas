@@ -1,6 +1,8 @@
-import { ATLAS_MODE } from '../../shared/config';
-
 const measurementId = import.meta.env.VITE_GA_MEASUREMENT_ID as string | undefined;
+const atlasMode = (import.meta.env.VITE_ATLAS_MODE as string | undefined)
+  ?? (import.meta.env.VITE_PREVIEW_BUILD === 'true' ? 'preview'
+    : import.meta.env.VITE_BETA_BUILD === 'true' ? 'beta'
+      : import.meta.env.DEV ? 'dev' : 'public');
 const CONSENT_KEY = 'atlas.analytics-consent';
 
 declare global {
@@ -26,7 +28,9 @@ function loadAnalytics() {
   if (initialized || !import.meta.env.PROD || !measurementId || typeof window === 'undefined') return;
 
   window.dataLayer = window.dataLayer || [];
-  window.gtag = (...args: unknown[]) => window.dataLayer.push(args);
+  window.gtag = function gtag(..._args: unknown[]) {
+    window.dataLayer.push(arguments);
+  };
   window.gtag('js', new Date());
   window.gtag('config', measurementId, { send_page_view: false });
 
@@ -71,7 +75,7 @@ export function trackPageView(path: string) {
 
 export function trackEvent(name: string, parameters: Record<string, string | number | boolean | undefined> = {}) {
   if (analyticsDisabled || typeof window === 'undefined') return;
-  const contextualParameters = { atlas_mode: ATLAS_MODE, ...parameters };
+  const contextualParameters = { atlas_mode: atlasMode, ...parameters };
   if (!initialized) {
     pendingEvents.push({ name, parameters: contextualParameters });
     return;

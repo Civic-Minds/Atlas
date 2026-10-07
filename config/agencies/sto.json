@@ -14,10 +14,10 @@
     -75.391
   ],
   "feedUrl": "https://contenu.sto.ca/GTFS/GTFS.zip",
-  "lastFeedExpiry": "20261029",
+  "lastFeedExpiry": "20261122",
   "lastFeedVersion": null,
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-societe-de-transport-de-loutaouais-gtfs-740.zip?alt=media",
-  "lastRefreshedAt": "2026-09-07",
+  "lastRefreshedAt": "2026-10-03",
   "cities": [
     "Gatineau, Quebec",
     "Aylmer, Quebec",
@@ -25,15 +25,15 @@
     "Orléans, Ontario",
     "Ottawa, Ontario"
   ],
-  "lastFeedCheckAt": "20260907",
+  "lastFeedCheckAt": "20261003",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261029",
+  "expiredFeedCheckExpiry": "20261122",
   "feedQuality": {
     "status": "review",
     "score": 80,
     "reasons": [
-      "2 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+      "2 route have stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
       "validationErrors": 0,
@@ -42,7 +42,11 @@
       "routeHeadwayMismatches": 2,
       "featureCount": 222
     },
-    "checkedAt": "2026-09-07"
+    "checkedAt": "2026-10-03"
   },
-  "timezone": "America/Montreal"
+  "timezone": "America/Montreal",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

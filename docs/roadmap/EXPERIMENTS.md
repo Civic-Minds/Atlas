@@ -1,6 +1,7 @@
 # Roadmap experiments
 
-Ideas we're kicking around — not committed roadmap items, no promise any of it ships. Written down so they're not forgotten, not because they're planned.
+These are uncommitted product and data experiments. They document possible
+directions, not scheduled work or a promise to ship.
 
 For experiments already being implemented or QA-validated, see the [implementation experiment index](../../EXPERIMENTS.md).
 

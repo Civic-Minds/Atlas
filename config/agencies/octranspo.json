@@ -18,9 +18,9 @@
   ],
   "feedUrl": "https://oct-gtfs-emasagcnfmcgeham.z01.azurefd.net/public-access/GTFSExport.zip",
   "mdbFeedUrl": "https://oct-gtfs-emasagcnfmcgeham.z01.azurefd.net/public-access/GTFSExport.zip",
-  "lastFeedExpiry": "20261018",
-  "lastFeedVersion": "S1000518",
-  "lastRefreshedAt": "20260919",
+  "lastFeedExpiry": "20261025",
+  "lastFeedVersion": "S1000520",
+  "lastRefreshedAt": "2026-10-03",
   "cities": [
     "Nepean, Ontario",
     "Orléans, Ontario",
@@ -32,9 +32,28 @@
     "Hull, Quebec",
     "Gatineau, Quebec"
   ],
-  "lastFeedCheckAt": "20260919",
-  "expiredFeedCheckCount": 1,
-  "expiredFeedCheckSince": "20260622",
-  "expiredFeedCheckExpiry": "20260829",
-  "timezone": "Canada/Eastern"
+  "lastFeedCheckAt": "20261003",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261025",
+  "timezone": "Canada/Eastern",
+  "feedQuality": {
+    "status": "review",
+    "score": 70,
+    "reasons": [
+      "5 route have stops whose frequency differs from the overall route schedule."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 5,
+      "featureCount": 659
+    },
+    "checkedAt": "2026-10-03"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

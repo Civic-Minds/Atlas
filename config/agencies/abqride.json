@@ -6,18 +6,35 @@
     35.09,
     -106.65
   ],
-  "feedUrl": "https://files.mobilitydatabase.org/mdb-166/mdb-166-202606060001/mdb-166-202606060001.zip",
-  "lastFeedExpiry": "20260904",
-  "lastFeedVersion": "2026-05_20260605",
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-166/latest.zip",
+  "lastFeedExpiry": "20261211",
+  "lastFeedVersion": "2026-08_20260806",
   "region": "New Mexico",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-10-03",
   "cities": [
     "Albuquerque, New Mexico",
     "Rio Rancho, New Mexico"
   ],
-  "lastFeedCheckAt": "20260907",
-  "expiredFeedCheckCount": 1,
-  "expiredFeedCheckSince": "20260622",
-  "expiredFeedCheckExpiry": "20260904",
-  "timezone": "America/Denver"
+  "lastFeedCheckAt": "20261003",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261211",
+  "timezone": "America/Denver",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 127
+    },
+    "checkedAt": "2026-10-03"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

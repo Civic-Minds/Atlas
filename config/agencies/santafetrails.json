@@ -6,18 +6,35 @@
     -105.9769
   ],
   "feedUrl": "https://passio3.com/santafenm/passioTransit/gtfs/google_transit.zip",
-  "lastFeedExpiry": "20260330",
-  "lastFeedVersion": "2024-12-14T14:31:44Z",
+  "lastFeedExpiry": "20261102",
+  "lastFeedVersion": "20250228",
   "region": "New Mexico",
-  "lastRefreshedAt": "20260811",
+  "lastRefreshedAt": "2026-10-03",
   "websiteUrl": "https://www.santafenm.gov/transit",
   "cities": [
     "Santa Fe, New Mexico"
   ],
   "timezone": "America/Denver",
   "lastRawArchiveKey": "20260330-d16bafca3fa50d8f",
-  "lastFeedCheckAt": "20260907",
-  "expiredFeedCheckCount": 2,
-  "expiredFeedCheckSince": "20260622",
-  "expiredFeedCheckExpiry": "20260330"
+  "lastFeedCheckAt": "20261003",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20271231",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 33
+    },
+    "checkedAt": "2026-10-03"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

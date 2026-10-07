@@ -16,9 +16,9 @@
   "feedUrl": "https://files.mobilitydatabase.org/mdb-246/mdb-246-202602130110/mdb-246-202602130110.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-246/mdb-246-202602130110/mdb-246-202602130110.zip",
   "timezone": "America/Los_Angeles",
-  "lastFeedExpiry": "20260901",
-  "lastFeedVersion": "UTC: 11-Feb-2026 21:07",
-  "lastRefreshedAt": "2026-08-18",
+  "lastFeedExpiry": "20261101",
+  "lastFeedVersion": "UTC: 30-Sep-2026 20:12",
+  "lastRefreshedAt": "2026-10-03",
   "cities": [
     "Tillamook, Oregon",
     "Lincoln City, Oregon",
@@ -29,19 +29,23 @@
     "status": "review",
     "score": 70,
     "reasons": [
-      "4 shape corrections needed."
+      "4 route shapes needed adjustment before display."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 4,
       "routeHeadwayMismatches": 0,
-      "featureCount": 36
+      "featureCount": 48
     },
-    "checkedAt": "2026-08-18"
+    "checkedAt": "2026-10-03"
   },
-  "lastFeedCheckAt": "20260907",
-  "expiredFeedCheckCount": 1,
-  "expiredFeedCheckSince": "20260622",
-  "expiredFeedCheckExpiry": "20260901"
+  "lastFeedCheckAt": "20261003",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270531",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

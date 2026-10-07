@@ -16,9 +16,9 @@
   "feedUrl": "http://data.trilliumtransit.com/gtfs/mendocino-ca-us/mendocino-ca-us.zip",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-mendocino-transit-authority-gtfs-69.zip?alt=media",
   "lastFeedExpiry": "20270228",
-  "lastFeedVersion": "UTC: 13-Aug-2026 18:56",
-  "lastRefreshedAt": "2026-08-27",
-  "lastFeedCheckAt": "20260907",
+  "lastFeedVersion": "UTC: 22-Sep-2026 20:33",
+  "lastRefreshedAt": "2026-10-03",
+  "lastFeedCheckAt": "20261003",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270228",
@@ -26,7 +26,7 @@
     "status": "review",
     "score": 70,
     "reasons": [
-      "4 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+      "4 route shapes needed adjustment before display."
     ],
     "metrics": {
       "validationErrors": 0,
@@ -35,7 +35,11 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 11
     },
-    "checkedAt": "2026-08-27"
+    "checkedAt": "2026-10-03"
   },
-  "timezone": "America/Los_Angeles"
+  "timezone": "America/Los_Angeles",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

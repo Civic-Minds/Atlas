@@ -13,6 +13,10 @@ describe('formatBranchLabel', () => {
     expect(formatBranchLabel('Warden', '68', 'Warden', 'Southbound')).toBe('to Southbound');
   });
 
+  it('uses fallback when feed spacing differs from route name', () => {
+    expect(formatBranchLabel('Crosstown2', '2', 'CROSSTOWN 2', 'Eastbound')).toBe('to Eastbound');
+  });
+
   it('shows distinct terminals', () => {
     expect(formatBranchLabel('Warden Station', '68', 'Warden', 'Southbound')).toBe('to Warden Station');
   });
@@ -39,6 +43,15 @@ describe('resolveBranchLabel', () => {
       boundLabel: 'Southbound',
       multipleDirections: true,
     })).toBe('to Southbound');
+  });
+
+  it('omits a generic direction label when a route card headsign is its route name', () => {
+    expect(resolveBranchLabel({
+      headsign: 'Crosstown2',
+      shortName: '2',
+      longName: 'CROSSTOWN 2',
+      directionId: 1,
+    })).toBe('');
   });
 
   it('omits row label when it would repeat the section heading', () => {

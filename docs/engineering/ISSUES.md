@@ -305,7 +305,7 @@ Post real findings as issue comments while investigating, not just at close time
 
 ### Closing issues (preferred workflow)
 
-**Close via commit on push — not `gh issue close`.** This is the standard Atlas workflow and works on machines where `gh issue edit` / `gh issue close` are blocked.
+**Close via the fixing commit on push — not by manually closing an issue before the fix lands.** This is the standard Atlas workflow: linked issues close automatically when the fixing commit is pushed or merged. Direct issue closure remains available for issue-hygiene cases such as an issue that was fixed before it was linked to a commit.
 
 | Step | What |
 |------|------|

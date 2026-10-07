@@ -8,19 +8,19 @@ import { HEADWAY_TIERS, getHeadwayTiers, getTierColor, getNightServiceColor, bui
 import { getRegionalView, saveView, getSavedView, getAgencyBounds } from '../../utils/regionView';
 import { useViewport } from '../../context/ViewportContext';
 import { useHistoryMapOverlay } from '../../context/HistoryMapOverlay';
+import { useLiveVehiclesMapOverlay } from '../../context/LiveVehiclesMapOverlay';
 import { useCorridorLayer } from './map/useCorridorLayer';
 import { useHistoryLayer } from './map/useHistoryLayer';
-import { useLiveVehiclesLayer } from './map/useLiveVehiclesLayer';
 import type { Agency } from '../../App';
 import type { ShapeProperties, ViewportBounds, TimePeriod, HoveredBranch } from '../../hooks/useIntervalStats';
 import type { DayType } from '../../../shared/dayTypes';
-import { registerProtocol, getAtlasPmtilesUrl, getMapStyle } from '../../lib/mapStyle';
+import { registerProtocol, getAtlasPmtilesUrl, getAtlasOverviewPmtilesUrl, getMapStyle } from '../../lib/mapStyle';
 import { Z_PANEL, MAP_BADGE } from '../../styles';
 import { LIVE_POLLING_ROUTES } from '../../../shared/livePollingConfig';
 import { useColorVision } from '../../context/ColorVisionContext';
 import { tileEffectiveHeadwayExpr, tileRouteKeyExpr } from '../../../shared/tileFilterExprs';
 import { syncUrlParams } from '../../utils/syncUrlParams';
-import { buildFocusedRoutePaint } from '../../utils/routeFocus';
+import { buildFocusedRoutePaint, buildSelectedRouteLineOpacity } from '../../utils/routeFocus';
 import { dedupeRouteKeysByDisplay, splitRouteKey } from '../../utils/routeKey';
 import { computeFrequencySegmentOverlay, buildPartialMatchFilterExpression, broadenFilterForPartialMatches } from '../../utils/frequencySegments';
 import { buildSharedHoverSegments } from '../../utils/sharedHoverSegments';
@@ -32,12 +32,15 @@ import { effectiveMode, ON_DEMAND_MODE } from '../../../shared/modes';
 import { markAtlasLatest } from '../../lib/performance';
 import { isOnDemandActive } from '../../../shared/onDemandAvailability';
 import { buildRouteSortKeyExpression } from '../../utils/routeSort';
-import { openAtlasProblemDestination } from '../../utils/reportIssue';
 
 const CORRIDOR_BAND_COLOR = '#64748b';
 const ON_DEMAND_AREA_COLOR = '#64748b';
 const FREQUENT_15_COLOR = HEADWAY_TIERS.find(tier => tier.max === 15)?.color ?? '#3da44d';
 const FREQUENT_30_COLOR = HEADWAY_TIERS.find(tier => tier.max === 30)?.color ?? '#e07b2a';
+// Keep the Live/Deck.gl graph out of public builds entirely when Live is disabled.
+const LiveVehiclesLayer = import.meta.env.VITE_LIVE_ENABLED === 'true'
+  ? React.lazy(() => import('./map/LiveVehiclesLayer'))
+  : null;
 
 function MapNoticePill({ children, className = '' }: { children: React.ReactNode; className?: string }) {
   return (
@@ -316,6 +319,12 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
 
   const { setBoundsAndZoom } = useViewport();
   const { overlay: historyOverlay } = useHistoryMapOverlay();
+  const { overlay: liveOverlay } = useLiveVehiclesMapOverlay();
+  const [liveLayerRequested, setLiveLayerRequested] = useState(false);
+
+  useEffect(() => {
+    if (liveOverlay) setLiveLayerRequested(true);
+  }, [liveOverlay]);
 
   const [mapContextAgencies, setMapContextAgencies] = useState<MapContextAgency[]>([]);
 
@@ -361,7 +370,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       setMapContextAgencies([]);
       return;
     }
-    const layers = ['routes-layer', 'local-routes-layer'].filter(layer => map.getLayer(layer));
+    const layers = ['overview-routes-layer', 'routes-layer', 'local-routes-layer'].filter(layer => map.getLayer(layer));
     const features = layers.length > 0 ? map.queryRenderedFeatures(undefined, { layers }) : [];
     setMapContextAgencies(getMapContextAgenciesFromFeatures(agencies, features));
   }, [agencies, mapLoaded, showMapContext]);
@@ -385,18 +394,63 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapLoaded) return;
+    const sourceId = lightMode ? 'cartodb-light' : 'cartodb-dark';
+    let loadingTimeout: ReturnType<typeof setTimeout> | undefined;
+    const clearLoadingTimeout = () => {
+      if (loadingTimeout) {
+        clearTimeout(loadingTimeout);
+        loadingTimeout = undefined;
+      }
+    };
+    const onTileStart = (event: maplibregl.MapSourceDataEvent) => {
+      if (event.sourceId !== sourceId) return;
+      onBasemapLoadingChangeRef.current?.(true);
+      clearLoadingTimeout();
+      loadingTimeout = setTimeout(() => {
+        loadingTimeout = undefined;
+        onBasemapLoadingChangeRef.current?.(false);
+      }, 15000);
+    };
+    const onSourceData = (event: maplibregl.MapSourceDataEvent) => {
+      if (event.sourceId !== sourceId || !event.isSourceLoaded) return;
+      clearLoadingTimeout();
+      onBasemapLoadingChangeRef.current?.(false);
+    };
+    const onIdle = () => {
+      clearLoadingTimeout();
+      onBasemapLoadingChangeRef.current?.(false);
+    };
+    onBasemapLoadingChangeRef.current?.(!map.isSourceLoaded(sourceId));
+    map.on('sourcedataloading', onTileStart);
+    map.on('sourcedata', onSourceData);
+    map.on('idle', onIdle);
+    return () => {
+      clearLoadingTimeout();
+      map.off('sourcedataloading', onTileStart);
+      map.off('sourcedata', onSourceData);
+      map.off('idle', onIdle);
+      onBasemapLoadingChangeRef.current?.(false);
+    };
+  }, [lightMode, mapLoaded]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapLoaded) return;
 
     const checkRouteTiles = () => {
-      const sourceFeatures = map.querySourceFeatures('atlas-pmtiles', { sourceLayer: 'routes' });
-      const renderedFeatures = map.getLayer('routes-layer')
-        ? map.queryRenderedFeatures(undefined, { layers: ['routes-layer'] })
+      const detailedSourceFeatures = map.querySourceFeatures('atlas-pmtiles', { sourceLayer: 'routes' });
+      const overviewSourceFeatures = map.querySourceFeatures('atlas-overview-pmtiles', { sourceLayer: 'routes' });
+      const sourceFeatures = [...overviewSourceFeatures, ...detailedSourceFeatures];
+      const renderedLayers = ['overview-routes-layer', 'routes-layer'].filter(layer => map.getLayer(layer));
+      const renderedFeatures = renderedLayers.length > 0
+        ? map.queryRenderedFeatures(undefined, { layers: renderedLayers })
         : [];
       const agencySlugs = new Set(
         renderedFeatures
           .map(feature => String(feature.properties?.agencySlug ?? ''))
           .filter(Boolean),
       );
-      if (sourceFeatures.length > 0 && (map.isSourceLoaded('atlas-pmtiles') || renderedFeatures.length > 0)) {
+      if (sourceFeatures.length > 0 && (map.isSourceLoaded('atlas-pmtiles') || map.isSourceLoaded('atlas-overview-pmtiles') || renderedFeatures.length > 0)) {
         markAtlasLatest('network-data-ready', {
           source: 'pmtiles',
           sourceFeatureCount: sourceFeatures.length,
@@ -416,7 +470,10 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     map.on('idle', checkRouteTiles);
     map.on('moveend', checkRouteTiles);
     const fallbackTimer = window.setTimeout(() => {
-      const sourceFeatures = map.querySourceFeatures('atlas-pmtiles', { sourceLayer: 'routes' });
+      const sourceFeatures = [
+        ...map.querySourceFeatures('atlas-overview-pmtiles', { sourceLayer: 'routes' }),
+        ...map.querySourceFeatures('atlas-pmtiles', { sourceLayer: 'routes' }),
+      ];
       if (sourceFeatures.length === 0) {
         setPmtilesRoutesAvailable(false);
         setPmtilesRouteAgencies(new Set());
@@ -508,13 +565,13 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   // Beta-only agencies are rendered from the local GeoJSON layer until their routes are in the
   // shared PMTiles archive. Keep focus styling in sync across both route sources.
   const setRouteLayerPaint = (map: maplibregl.Map, property: 'line-opacity' | 'line-width', value: any) => {
-    for (const layerId of ['routes-layer', 'local-routes-layer']) {
+    for (const layerId of ['overview-routes-layer', 'routes-layer', 'local-routes-layer']) {
       if (map.getLayer(layerId)) map.setPaintProperty(layerId, property, value);
     }
   };
 
   const resetRoutesLayerDefaultPaint = (map: maplibregl.Map) => {
-    if (!map.getLayer('routes-layer') && !map.getLayer('local-routes-layer')) return;
+    if (!map.getLayer('overview-routes-layer') && !map.getLayer('routes-layer') && !map.getLayer('local-routes-layer')) return;
     // Must match the main filter effect's headwayExpr (tileEffectiveHeadwayExpr(period)) exactly --
     // this used to be a separately hand-maintained all-day-only expression that ignored the active
     // period filter, so a route whose all-day headway differs from its period-specific headway could
@@ -532,9 +589,13 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       if (map.getLayer('routes-layer')) {
         map.setPaintProperty('routes-layer', 'line-opacity', buildDefaultRouteLineOpacityExpression(headwayExpr, partialMatch) as any);
       }
+      if (map.getLayer('overview-routes-layer')) {
+        map.setPaintProperty('overview-routes-layer', 'line-opacity', buildDefaultRouteLineOpacityExpression(headwayExpr, partialMatch) as any);
+      }
       if (map.getLayer('local-routes-layer')) map.setPaintProperty('local-routes-layer', 'line-opacity', 0.9);
     } else {
       if (map.getLayer('routes-layer')) map.setPaintProperty('routes-layer', 'line-opacity', defaultOpacity);
+      if (map.getLayer('overview-routes-layer')) map.setPaintProperty('overview-routes-layer', 'line-opacity', defaultOpacity);
       if (map.getLayer('local-routes-layer')) map.setPaintProperty('local-routes-layer', 'line-opacity', 0.9);
     }
   };
@@ -611,7 +672,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         return;
       }
 
-      const routeHitLayers = ['routes-hit-layer'];
+      const routeHitLayers = ['overview-routes-hit-layer', 'routes-hit-layer'];
       if (map.getLayer('local-routes-hit-layer')) {
         routeHitLayers.push('local-routes-hit-layer');
       }
@@ -812,13 +873,16 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
 
   // Initialize MapLibre Map
   useEffect(() => {
-    if (!mapContainerRef.current) return;
+    const mapContainer = mapContainerRef.current;
+    if (!mapContainer) return;
     let cancelled = false;
     let cleanupMap: maplibregl.Map | null = null;
 
     void (async () => {
-      await registerProtocol();
-      if (cancelled || !mapContainerRef.current) return;
+      // Start resolving the PMTiles release in parallel with MapLibre startup.
+      // The initial style only contains the raster basemap, so it can render
+      // while the route archive metadata is still loading.
+      const protocolReady = registerProtocol();
 
     const accent = lightMode ? '#3f3f46' : '#e4e4e7';
     const textDim = lightMode ? '#9ca3af' : 'rgba(255, 255, 255, 0.3)';
@@ -830,7 +894,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       ?? { lat: regionalView.center[0], lon: regionalView.center[1], zoom: regionalView.zoom };
 
     const map = new maplibregl.Map({
-      container: mapContainerRef.current,
+      container: mapContainer,
       style: getMapStyle(lightMode),
       center: [initialCenter.lon, initialCenter.lat],
       zoom: initialCenter.zoom,
@@ -841,14 +905,21 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     cleanupMap = map;
       mapRef.current = map;
 
-      map.on('load', () => {
+      map.on('load', async () => {
       setZoom(map.getZoom());
+
+      await protocolReady;
+      if (cancelled) return;
 
       // Keep PMTiles out of the initial style. A stalled route-tile request must
       // not prevent MapLibre from reaching this point or block local GeoJSON.
       map.addSource('atlas-pmtiles', {
         type: 'vector',
         url: `pmtiles://${getAtlasPmtilesUrl()}`,
+      });
+      map.addSource('atlas-overview-pmtiles', {
+        type: 'vector',
+        url: `pmtiles://${getAtlasOverviewPmtilesUrl()}`,
       });
 
       // Demand-responsive agencies may publish a service boundary without
@@ -895,12 +966,37 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         layout: { visibility: 'none' },
       });
 
-      // Add route shapes (line) layers
+      // Broad maps use simplified route geometry; detailed geometry takes over
+      // once the map is close enough for the extra vertices to matter.
+      map.addLayer({
+        id: 'overview-routes-layer',
+        type: 'line',
+        source: 'atlas-overview-pmtiles',
+        'source-layer': 'routes',
+        maxzoom: 8,
+        paint: {
+          'line-color': '#555555',
+          'line-width': ['interpolate', ['linear'], ['zoom'], 0, 1.0, 7, 1.8],
+          'line-opacity': ['interpolate', ['linear'], ['zoom'], 0, 0.65, 7, 0.8],
+        },
+        layout: { 'line-cap': 'round', 'line-join': 'round' },
+      });
+      map.addLayer({
+        id: 'overview-routes-hit-layer',
+        type: 'line',
+        source: 'atlas-overview-pmtiles',
+        'source-layer': 'routes',
+        maxzoom: 8,
+        paint: { 'line-color': '#000000', 'line-width': 18, 'line-opacity': 0 },
+      });
+
+      // Add detailed route shapes (line) layers
       map.addLayer({
         id: 'routes-layer',
         type: 'line',
         source: 'atlas-pmtiles',
         'source-layer': 'routes',
+        minzoom: 8,
         paint: {
           'line-color': '#555555',
           'line-width': ['interpolate', ['linear'], ['zoom'], 8, 1.5, 11, 2.0, 14, 2.5, 17, 3.5],
@@ -918,6 +1014,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         type: 'line',
         source: 'atlas-pmtiles',
         'source-layer': 'routes',
+        minzoom: 8,
         paint: {
           'line-color': '#000000',
           'line-width': 18,
@@ -1281,6 +1378,8 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     const map = mapRef.current;
     if (!map || !mapLoaded) return;
     const visibility = showRouteLayers && !frequentServiceView && !nightServiceView && pmtilesRoutesAvailable !== false ? 'visible' : 'none';
+    if (map.getLayer('overview-routes-layer')) map.setLayoutProperty('overview-routes-layer', 'visibility', visibility);
+    if (map.getLayer('overview-routes-hit-layer')) map.setLayoutProperty('overview-routes-hit-layer', 'visibility', visibility);
     if (map.getLayer('routes-layer')) map.setLayoutProperty('routes-layer', 'visibility', visibility);
     if (map.getLayer('routes-hit-layer')) map.setLayoutProperty('routes-hit-layer', 'visibility', visibility);
   }, [frequentServiceView, mapLoaded, nightServiceView, pmtilesRoutesAvailable, showRouteLayers]);
@@ -1302,21 +1401,23 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       const stopHits = map.getLayer('stops-layer')
         ? map.queryRenderedFeatures(e.point, { layers: ['stops-layer'] })
         : [];
-      const routeHitLayers = ['routes-hit-layer'];
+      const routeHitLayers = ['overview-routes-hit-layer', 'routes-hit-layer'];
       if (map.getLayer('local-routes-hit-layer')) {
         routeHitLayers.push('local-routes-hit-layer');
       }
       if (map.getLayer('frequency-qualifying-segments-hit-layer')) {
         routeHitLayers.push('frequency-qualifying-segments-hit-layer');
       }
-      const routeHits = stopHits.length === 0 && (map.getLayer('routes-hit-layer') || map.getLayer('local-routes-hit-layer'))
+      const routeHits = stopHits.length === 0 && (map.getLayer('overview-routes-hit-layer') || map.getLayer('routes-hit-layer') || map.getLayer('local-routes-hit-layer'))
         ? map.queryRenderedFeatures(
             [[e.point.x - 12, e.point.y - 12], [e.point.x + 12, e.point.y + 12]],
             { layers: routeHitLayers },
           )
         : [];
-      const serviceAreaHits = map.getLayer('on-demand-service-area-fill')
-        ? map.queryRenderedFeatures(e.point, { layers: ['on-demand-service-area-fill', 'on-demand-stop-clusters', 'on-demand-stop-points'] })
+      const serviceAreaHitLayers = ['on-demand-service-area-fill', 'on-demand-stop-clusters', 'on-demand-stop-points']
+        .filter(layerId => Boolean(map.getLayer(layerId)));
+      const serviceAreaHits = serviceAreaHitLayers.length > 0
+        ? map.queryRenderedFeatures(e.point, { layers: serviceAreaHitLayers })
         : [];
       map.getCanvas().style.cursor = stopHits.length > 0 || routeHits.length > 0 || serviceAreaHits.length > 0 ? 'pointer' : '';
     };
@@ -1353,7 +1454,8 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
 
   // Right-click a spot to open a small menu: copy a URL pointing at that exact
   // location + current zoom (handy for a bug report or handing someone the
-  // precise spot under the cursor), or open a pre-filled maintainer/user report.
+  // precise spot under the cursor), or jump straight to filing a GitHub issue
+  // pre-filled with that URL.
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapLoaded) return;
@@ -1395,15 +1497,15 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     if (!mapContextMenu) return;
     const url = buildLocationUrl(mapContextMenu.lat, mapContextMenu.lon);
     const title = `Map issue near ${mapContextMenu.lat.toFixed(5)}, ${mapContextMenu.lon.toFixed(5)}`;
-    const body = `Location: ${url}\n\nWhat’s wrong:\n\n`;
-    openAtlasProblemDestination(title, body);
+    const body = `**Location:** ${url}\n\n**What's wrong:**\n\n`;
+    const issueUrl = `https://github.com/Civic-Minds/Atlas/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}&labels=${encodeURIComponent('user-reported')}`;
+    window.open(issueUrl, '_blank', 'noopener,noreferrer');
     setMapContextMenu(null);
   };
 
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapLoaded) return;
-    const sourceId = lightMode ? 'cartodb-light' : 'cartodb-dark';
     let loadingTimeout: ReturnType<typeof setTimeout> | undefined;
     const clearLoadingTimeout = () => {
       if (loadingTimeout) {
@@ -1412,48 +1514,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       }
     };
     const onTileStart = (event: maplibregl.MapSourceDataEvent) => {
-      if (event.sourceId !== sourceId) return;
-      onBasemapLoadingChangeRef.current?.(true);
-      clearLoadingTimeout();
-      loadingTimeout = setTimeout(() => {
-        loadingTimeout = undefined;
-        onBasemapLoadingChangeRef.current?.(false);
-      }, 15000);
-    };
-    const onSourceData = (event: maplibregl.MapSourceDataEvent) => {
-      if (event.sourceId !== sourceId || !event.isSourceLoaded) return;
-      clearLoadingTimeout();
-      onBasemapLoadingChangeRef.current?.(false);
-    };
-    const onIdle = () => {
-      clearLoadingTimeout();
-      onBasemapLoadingChangeRef.current?.(false);
-    };
-    onBasemapLoadingChangeRef.current?.(!map.isSourceLoaded(sourceId));
-    map.on('sourcedataloading', onTileStart);
-    map.on('sourcedata', onSourceData);
-    map.on('idle', onIdle);
-    return () => {
-      clearLoadingTimeout();
-      map.off('sourcedataloading', onTileStart);
-      map.off('sourcedata', onSourceData);
-      map.off('idle', onIdle);
-      onBasemapLoadingChangeRef.current?.(false);
-    };
-  }, [lightMode, mapLoaded]);
-
-  useEffect(() => {
-    const map = mapRef.current;
-    if (!map || !mapLoaded) return;
-    let loadingTimeout: ReturnType<typeof setTimeout> | undefined;
-    const clearLoadingTimeout = () => {
-      if (loadingTimeout) {
-        clearTimeout(loadingTimeout);
-        loadingTimeout = undefined;
-      }
-    };
-    const onTileStart = (event: maplibregl.MapSourceDataEvent) => {
-      if (event.sourceId !== 'atlas-pmtiles') return;
+      if (event.sourceId !== 'atlas-pmtiles' && event.sourceId !== 'atlas-overview-pmtiles') return;
       onTileLoadingChangeRef.current?.(true);
       clearLoadingTimeout();
       // A failed or rate-limited tile must not leave the HUD spinning forever.
@@ -1463,7 +1524,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       }, 15000);
     };
     const onSourceData = (event: maplibregl.MapSourceDataEvent) => {
-      if (event.sourceId !== 'atlas-pmtiles' || !event.isSourceLoaded) return;
+      if ((event.sourceId !== 'atlas-pmtiles' && event.sourceId !== 'atlas-overview-pmtiles') || !event.isSourceLoaded) return;
       clearLoadingTimeout();
       onTileLoadingChangeRef.current?.(false);
     };
@@ -1662,6 +1723,8 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     // Defensive guards: the PMTiles layers are added inside the map 'load' callback.
     // In some cases (StrictMode double-invoke, very early effect runs, or future
     // changes) they may temporarily not exist. Guard to avoid console spam.
+    const hasOverviewRoutes = !!map.getLayer('overview-routes-layer');
+    const hasOverviewRoutesHit = !!map.getLayer('overview-routes-hit-layer');
     const hasRoutes = !!map.getLayer('routes-layer');
     const hasLocalRoutes = !!map.getLayer('local-routes-layer');
     const hasFrequentRoutes = !!map.getLayer('frequent-service-routes-layer');
@@ -1747,11 +1810,13 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     if (map.getLayer('selected-route-layer')) map.setFilter('selected-route-layer', selectedRouteFilter as any);
     if (map.getLayer('selected-local-route-layer')) map.setFilter('selected-local-route-layer', selectedRouteFilter as any);
 
+    if (hasOverviewRoutes) map.setFilter('overview-routes-layer', routeFilter as any);
     if (hasRoutes) map.setFilter('routes-layer', routeFilter as any);
     const routeSortKey = buildRouteSortKeyExpression(headwayExpr);
+    if (hasOverviewRoutes) map.setLayoutProperty('overview-routes-layer', 'line-sort-key', routeSortKey as any);
     if (hasRoutes) map.setLayoutProperty('routes-layer', 'line-sort-key', routeSortKey as any);
     if (hasLocalRoutes) map.setLayoutProperty('local-routes-layer', 'line-sort-key', routeSortKey as any);
-    if (hasRoutesHit) {
+    if (hasOverviewRoutesHit || hasRoutesHit) {
       // Keep the transparent hit target in sync with the route line's zoom/headway
       // visibility gate. Without this, a route with no service in the active period
       // has an invisible but clickable 18px-wide hitbox (e.g. GO 37 at midday).
@@ -1763,10 +1828,11 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
               : buildZoomHeadwayGateExpression(headwayExpr),
           )
         : routeFilter;
-      map.setFilter('routes-hit-layer', hitRouteFilter as any);
+      if (hasOverviewRoutesHit) map.setFilter('overview-routes-hit-layer', hitRouteFilter as any);
+      if (hasRoutesHit) map.setFilter('routes-hit-layer', hitRouteFilter as any);
     }
 
-    if (hasRoutes || hasLocalRoutes || hasFrequentRoutes) {
+    if (hasOverviewRoutes || hasRoutes || hasLocalRoutes || hasFrequentRoutes) {
       // Apply color paint styling — fare view if requested and baseFare present, else tier
       let lineColorExpr: any;
       if (fareView) {
@@ -1779,6 +1845,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         lineColorExpr = buildEffectiveHeadwayColorExpression(period, colorMode);
       }
 
+      if (hasOverviewRoutes) map.setPaintProperty('overview-routes-layer', 'line-color', lineColorExpr);
       if (hasRoutes) map.setPaintProperty('routes-layer', 'line-color', lineColorExpr);
       if (map.getLayer('selected-route-layer')) {
         map.setPaintProperty('selected-route-layer', 'line-color', lineColorExpr);
@@ -1819,12 +1886,20 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       } else if (selectedRoute) {
         const selKey = selectedRoute;
         const routeMatch: any = routeKeyMatchExpression(selKey);
+        const partialMatch = frequencySegmentOverlay.partialMatches.length > 0
+          ? buildPartialMatchFilterExpression(frequencySegmentOverlay.partialMatches)
+          : undefined;
+        const setSelectedOpacity = (focusCases: unknown[]) => {
+          if (hasRoutes) map.setPaintProperty('routes-layer', 'line-opacity', buildSelectedRouteLineOpacity(
+            buildDefaultRouteLineOpacityExpression(headwayExpr, partialMatch), focusCases,
+          ) as any);
+          if (hasLocalRoutes) map.setPaintProperty('local-routes-layer', 'line-opacity',
+            buildSelectedRouteLineOpacity(0.9, focusCases) as any);
+        };
         if (hoveredBranch?.isCore) {
           // The clipped shared-hover-segments overlay is the only bright geometry for a
           // combined-row hover. Never brighten the full route as a proxy for the shared section.
-          setRouteLayerPaint(map, 'line-opacity', [
-            'case', routeMatch, 0.4, DIM_OPACITY,
-          ]);
+          setSelectedOpacity([routeMatch, 0.4]);
           setRouteLayerPaint(map, 'line-width', [
             'case', routeMatch, 1.5, DIM_WIDTH,
           ]);
@@ -1837,14 +1912,12 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
             ['==', ['get', 'directionId'], hoveredBranch.directionId],
             branchHeadSignMatch,
           ];
-          setRouteLayerPaint(map, 'line-opacity', [
-            'case', branchMatch, 1.0, routeMatch, 0.4, DIM_OPACITY,
-          ]);
+          setSelectedOpacity([branchMatch, 1.0, routeMatch, 0.4]);
           setRouteLayerPaint(map, 'line-width', [
             'case', branchMatch, 3.5, routeMatch, 1.5, DIM_WIDTH,
           ]);
         } else {
-          setRouteLayerPaint(map, 'line-opacity', buildFocusedRouteLineOpacityExpression(routeMatch, headwayExpr, colorMode) as any);
+          setSelectedOpacity([routeMatch, 1.0]);
           setRouteLayerPaint(map, 'line-width', [
             'interpolate', ['linear'], ['zoom'],
             8, ['case', routeMatch, 3.5, 1.5],
@@ -1890,9 +1963,13 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
           if (hasRoutes) {
             map.setPaintProperty('routes-layer', 'line-opacity', buildDefaultRouteLineOpacityExpression(headwayExpr, partialMatch) as any);
           }
+          if (hasOverviewRoutes) {
+            map.setPaintProperty('overview-routes-layer', 'line-opacity', buildDefaultRouteLineOpacityExpression(headwayExpr, partialMatch) as any);
+          }
           if (hasLocalRoutes) map.setPaintProperty('local-routes-layer', 'line-opacity', 0.9);
         } else {
           if (hasRoutes) map.setPaintProperty('routes-layer', 'line-opacity', buildDefaultRouteLineOpacityExpression(headwayExpr) as any);
+          if (hasOverviewRoutes) map.setPaintProperty('overview-routes-layer', 'line-opacity', buildDefaultRouteLineOpacityExpression(headwayExpr) as any);
           if (hasLocalRoutes) map.setPaintProperty('local-routes-layer', 'line-opacity', 0.9);
         }
       }
@@ -1965,8 +2042,6 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   // Overlay layers (corridors, history, live vehicles) — extracted to hooks
   useCorridorLayer(mapRef, mapLoaded, showCorridorBand || showCorridors, selectedCorridorFamily);
   useHistoryLayer(mapRef, mapLoaded);
-  useLiveVehiclesLayer(mapRef, deckOverlayRef, mapLoaded);
-
   // Clean up deck overlay on unmount
   useEffect(() => {
     return () => {
@@ -1979,12 +2054,19 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       {/* Map Element */}
       <div ref={mapContainerRef} style={{ height: '100%', width: '100%' }} />
 
+      {LiveVehiclesLayer && liveLayerRequested && (
+        <React.Suspense fallback={null}>
+          <LiveVehiclesLayer mapRef={mapRef} deckOverlayRef={deckOverlayRef} mapLoaded={mapLoaded} />
+        </React.Suspense>
+      )}
+
       {/* Geolocate Button Control Overlay */}
       {mapHint && (
         <MapNoticePill className="px-3 py-1.5 text-xs text-[var(--text-muted)]">
           {mapHint}
         </MapNoticePill>
       )}
+
       {mapContextMenu && (
         <div
           className={`absolute ${Z_PANEL} rounded-xl bg-[var(--bg-panel)] border border-[var(--border-primary)] shadow-2xl backdrop-blur-md overflow-hidden pointer-events-auto`}

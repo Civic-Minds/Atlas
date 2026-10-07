@@ -11,6 +11,9 @@ export function useAppUpdate(enabled: boolean): boolean {
   const lastCheckAt = useRef(0);
 
   const checkForUpdate = useCallback(async () => {
+    // Vite's development server does not mount the Vercel version endpoint.
+    // Avoid a noisy, expected 404 while working locally.
+    if (import.meta.env.DEV) return;
     const now = Date.now();
     if (now - lastCheckAt.current < UPDATE_CHECK_COOLDOWN_MS) return;
     lastCheckAt.current = now;

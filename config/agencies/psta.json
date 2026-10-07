@@ -6,10 +6,10 @@
     -82.7219
   ],
   "feedUrl": "https://www.ftis.org/PostFileDownload.aspx?id=1036A0",
-  "lastFeedExpiry": "20260606",
-  "lastFeedVersion": "S1000242",
+  "lastFeedExpiry": "20270206",
+  "lastFeedVersion": "S1000246",
   "region": "Florida",
-  "lastRefreshedAt": "20260811",
+  "lastRefreshedAt": "2026-10-03",
   "websiteUrl": "http://www.psta.net",
   "cities": [
     "St. Petersburg, Florida",
@@ -22,8 +22,25 @@
   ],
   "timezone": "America/New_York",
   "lastRawArchiveKey": "20260606-face4e6e47319b36",
-  "lastFeedCheckAt": "20260907",
-  "expiredFeedCheckCount": 2,
-  "expiredFeedCheckSince": "20260622",
-  "expiredFeedCheckExpiry": "20260606"
+  "lastFeedCheckAt": "20261003",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270206",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 264
+    },
+    "checkedAt": "2026-10-03"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

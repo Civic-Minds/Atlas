@@ -21,10 +21,10 @@
   "cities": [
     "Portland, Maine"
   ],
-  "lastFeedCheckAt": "20260907",
+  "lastFeedCheckAt": "20261003",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261007",
+  "expiredFeedCheckExpiry": "20261003",
   "feedQuality": {
     "status": "healthy",
     "score": 100,

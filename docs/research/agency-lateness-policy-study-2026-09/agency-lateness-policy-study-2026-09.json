@@ -1,0 +1,4114 @@
+{
+  "studyVersion": "2026-09-26.v1",
+  "checkedAt": "2026-09-26T23:05:50.744Z",
+  "sampleSeed": 20260926,
+  "targetAgencyCount": 80,
+  "sampleQuotas": {
+    "Canada": 20,
+    "United States": 40,
+    "France": 20
+  },
+  "purpose": "Research agency definitions of schedule lateness and service-spacing reliability before changing Atlas tolerance rules.",
+  "sourcePolicy": "Official agency sources first; record not_found or inaccessible instead of inferring a policy.",
+  "atlasBaseline": {
+    "minimumGraceMinutes": 5,
+    "gracePercent": 0.15,
+    "maxGraceViolations": 2,
+    "violationPercent": 0.3
+  },
+  "records": [
+    {
+      "slug": "niagara",
+      "name": "Niagara Transit",
+      "country": "Canada",
+      "region": "Ontario",
+      "selectionStratum": "Canada / definition_found",
+      "sizeBand": "medium",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "definition_found",
+        "definition": "Niagara’s fixed-route guideline says vehicles should be no more than 1 minute early and no more than 5 minutes late at published timing points, 90% of the time; buses should not depart early from published timing points.",
+        "sourceIds": [
+          "niagara-service-governance"
+        ],
+        "notes": [
+          "The same source separately proposes demand-responsive windows, which are not used for fixed-route Atlas comparisons."
+        ]
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "niagara-service-governance"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "niagara-service-governance",
+          "url": "https://www.niagararegion.ca/priorities/documents/transit-service-and-governance-strategy-final-report.pdf",
+          "title": "Niagara Transit Service and Governance Strategy",
+          "publisher": "Niagara Region",
+          "sourceType": "service-guideline",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "On-Time Performance Guideline"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "sudbury",
+      "name": "Greater Sudbury Transit",
+      "country": "Canada",
+      "region": "Ontario",
+      "selectionStratum": "Canada / qualitative_definition_only",
+      "sizeBand": "medium",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "definition_found",
+        "definition": "Greater Sudbury’s service standard targets 90% schedule adherence, with buses on time when no more than 3 minutes late; buses should not leave published time points early.",
+        "sourceIds": [
+          "sudbury-service-standard",
+          "sudbury-action-plan"
+        ],
+        "notes": [
+          "A later action-plan discussion considers changing the standard to zero minutes early and five minutes late, so the source set records both the current stated standard and the proposed revision."
+        ]
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "sudbury-service-standard",
+          "sudbury-action-plan"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "sudbury-service-standard",
+          "url": "https://pub-greatersudbury.escribemeetings.com/filestream.ashx?documentid=12728",
+          "title": "Greater Sudbury Transit service standards",
+          "publisher": "City of Greater Sudbury",
+          "sourceType": "service-standard",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Schedule adherence"
+        },
+        {
+          "id": "sudbury-action-plan",
+          "url": "https://pub-greatersudbury.escribemeetings.com/filestream.ashx?documentid=6786",
+          "title": "Draft Greater Sudbury Transit Action Plan",
+          "publisher": "City of Greater Sudbury",
+          "sourceType": "action-plan",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Schedule Adherence by Route"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "stl",
+      "name": "STL (Laval)",
+      "country": "Canada",
+      "region": "Quebec",
+      "selectionStratum": "Canada / no_definition_found",
+      "sizeBand": "large",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "definition_found",
+        "definition": "STL Laval commits to regular-route service being no more than 2 minutes early and no more than 5 minutes late. Its 2025 performance indicator uses a customer boarding window of 30 seconds early to 5 minutes 30 seconds late and a 90.5% target.",
+        "sourceIds": [
+          "stl-quality-commitment",
+          "stl-performance-indicators"
+        ],
+        "notes": [
+          "The public quality commitment and the performance-indicator calculation use slightly different windows; both are recorded. The paratransit 30-minute pickup window is excluded."
+        ]
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "stl-quality-commitment",
+          "stl-performance-indicators"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "stl-quality-commitment",
+          "url": "https://stlaval.ca/engagement-qualite",
+          "title": "STL Quality Commitment",
+          "publisher": "STL Laval",
+          "sourceType": "customer-commitment",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Réseau régulier / Ponctualité"
+        },
+        {
+          "id": "stl-performance-indicators",
+          "url": "https://stlaval.ca/gouvernance/indicateurs",
+          "title": "STL Performance Indicators",
+          "publisher": "STL Laval",
+          "sourceType": "performance-dashboard",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Ponctualité du service – Transport régulier"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "burlington",
+      "name": "Burlington Transit",
+      "country": "Canada",
+      "region": "Ontario",
+      "selectionStratum": "Canada / definition_found",
+      "sizeBand": "medium",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "burlington-schedules",
+          "burlington-transit"
+        ],
+        "notes": [
+          "Burlington publishes fixed-route schedules and real-time information, but the reviewed official transit pages do not state a minute-level fixed-route lateness window. Specialized transit rules are excluded."
+        ]
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "burlington-schedules",
+          "burlington-transit"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "burlington-schedules",
+          "url": "https://www.burlington.ca/en/transit/schedules-and-routes.aspx",
+          "title": "Burlington Transit Schedules and Routes",
+          "publisher": "City of Burlington",
+          "sourceType": "schedule-page",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Routes and schedules"
+        },
+        {
+          "id": "burlington-transit",
+          "url": "https://www.burlington.ca/en/transit/transit.aspx",
+          "title": "Burlington Transit",
+          "publisher": "City of Burlington",
+          "sourceType": "agency-information",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Fixed-route and specialized transit"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "red-deer",
+      "name": "Red Deer Transit",
+      "country": "Canada",
+      "region": "Alberta",
+      "selectionStratum": "Canada / qualitative_definition_only",
+      "sizeBand": "medium",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "red-deer-report-card"
+        ],
+        "notes": [
+          "Red Deer publishes an 85% on-time target but the reviewed report does not state the minute window used to classify a bus as on time."
+        ]
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "red-deer-report-card"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "red-deer-report-card",
+          "url": "https://www.reddeer.ca/media/reddeerca/city-government/mayor-and-city-council/strategic-plan/Q4-2023-Report-Card.pdf",
+          "title": "Q4 2023 Report Card",
+          "publisher": "City of Red Deer",
+          "sourceType": "performance-report",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Committed to Positive Customer Experience"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "owen-sound",
+      "name": "Owen Sound Transit",
+      "country": "Canada",
+      "region": "Ontario",
+      "selectionStratum": "Canada / no_definition_found",
+      "sizeBand": "small",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "owen-sound-timing-pilot"
+        ],
+        "notes": [
+          "The reviewed city notice discusses a 30-minute peak schedule and timing adjustments but does not define an acceptable early/late window or an on-time target."
+        ]
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "owen-sound-timing-pilot"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "owen-sound-timing-pilot",
+          "url": "https://www.owensound.ca/news-and-public-notices/posts/city-to-pilot-minor-timing-changes-for-owen-sound-transit/",
+          "title": "City to Pilot Minor Timing Changes for Owen Sound Transit",
+          "publisher": "City of Owen Sound",
+          "sourceType": "service-change-notice",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "On-time performance and 30-minute schedule"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "guelph",
+      "name": "Guelph Transit",
+      "country": "Canada",
+      "region": "Ontario",
+      "selectionStratum": "Canada / definition_found",
+      "sizeBand": "medium",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "definition_found",
+        "definition": "Guelph’s reported on-time criterion in transit advisory materials is 2 minutes early to 5 minutes late.",
+        "sourceIds": [
+          "guelph-tac"
+        ],
+        "notes": [
+          "The source is a transit advisory committee performance report, not a current formal service standard."
+        ]
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "guelph-tac"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "guelph-tac",
+          "url": "https://guelph.ca/wp-content/uploads/TAC_Minutes_051619.pdf",
+          "title": "Transit Advisory Committee Minutes",
+          "publisher": "City of Guelph",
+          "sourceType": "committee-minutes",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "On-time performance (April 2019)"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "barrie",
+      "name": "Barrie Transit",
+      "country": "Canada",
+      "region": "Ontario",
+      "selectionStratum": "Canada / qualitative_definition_only",
+      "sizeBand": "medium",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "definition_found",
+        "definition": "Barrie reports fixed-route on-time performance as trips between 3 minutes early and 5 minutes late from schedule; its asset plan lists a fixed-route performance value and a separate on-demand value.",
+        "sourceIds": [
+          "barrie-asset-plan"
+        ],
+        "notes": [
+          "The fixed-route and on-demand metrics are explicitly separate."
+        ]
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "barrie-asset-plan"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "barrie-asset-plan",
+          "url": "https://www.barrie.ca/Corporate-Asset-Management-Plan.pdf",
+          "title": "Corporate Asset Management Plan",
+          "publisher": "City of Barrie",
+          "sourceType": "asset-plan",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Quality & Reliability"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "st-thomas",
+      "name": "St. Thomas Transit",
+      "country": "Canada",
+      "region": "Ontario",
+      "selectionStratum": "Canada / no_definition_found",
+      "sizeBand": "small",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "st-thomas-tmp",
+          "st-thomas-ride-guide"
+        ],
+        "notes": [
+          "The reviewed official transportation plan discusses measuring schedule adherence and on-time performance but does not publish a minute-level fixed-route lateness window. The rider guide also distinguishes regular conventional service from on-demand and parallel service."
+        ]
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "st-thomas-tmp",
+          "st-thomas-ride-guide"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "st-thomas-tmp",
+          "url": "https://www.stthomas.ca/UserFiles/Servers/Server_12189721/File/City%20Hall/Environmental%20Services/TMP/StThomas_TMP_20211126.pdf",
+          "title": "St. Thomas Transportation Master Plan",
+          "publisher": "City of St. Thomas",
+          "sourceType": "transportation-master-plan",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Transit priority / schedule adherence"
+        },
+        {
+          "id": "st-thomas-ride-guide",
+          "url": "https://www.stthomas.ca/UserFiles/Servers/Server_12189721/File/Living%20Here/Transportation/Ride%20Guide%20One%20Page.pdf",
+          "title": "Railway City Transit Ride Guide",
+          "publisher": "City of St. Thomas",
+          "sourceType": "rider-guide",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Schedules and service types"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "grt",
+      "name": "Grand River Transit (Waterloo Region)",
+      "country": "Canada",
+      "region": "Ontario",
+      "selectionStratum": "Canada / definition_found",
+      "sizeBand": "large",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "definition_found",
+        "definition": "Grand River Transit requires no early departures and allows 0–3 minutes late for 90–95% of service, depending on route type and time period; express routes have a 95% target, while other routes have a 90% weekday-peak and 95% off-peak target.",
+        "sourceIds": [
+          "grt-business-plan"
+        ],
+        "notes": [
+          "This is a time-period and route-type-specific policy, not one network-wide percentage."
+        ]
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "grt-business-plan"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "grt-business-plan",
+          "url": "https://www.regionofwaterloo.ca/en/regional-government/resources/PW/APA2015-0811.pdf",
+          "title": "GRT Business Plan On-Time Performance Service Standard",
+          "publisher": "Region of Waterloo",
+          "sourceType": "service-standard",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Appendix A, On-time Performance"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "comox-valley",
+      "name": "BC Transit (Comox Valley)",
+      "country": "Canada",
+      "region": "British Columbia",
+      "selectionStratum": "Canada / qualitative_definition_only",
+      "sizeBand": "small",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "definition_found",
+        "definition": "BC Transit defines on-time departures at timing points as no more than 1 minute early and no more than 3 minutes late.",
+        "sourceIds": [
+          "bc-transit-service-design-standards"
+        ],
+        "notes": [
+          "The reviewed source is a BC Transit service-design standard published for the Kamloops system; it is recorded as an operator-level reference, not a Comox Valley-specific performance target."
+        ]
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "bc-transit-service-design-standards"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "bc-transit-service-design-standards",
+          "url": "https://www.bctransit.com/wp-content/uploads/142/723/2022-01-24-KAM-SDSPG-final0.pdf",
+          "title": "Service Design Standards",
+          "publisher": "BC Transit",
+          "sourceType": "service-standard",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "5.4 On-time Performance"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "saint-hyacinthe",
+      "name": "Ville de Saint-Hyacinthe",
+      "country": "Canada",
+      "region": "Quebec",
+      "selectionStratum": "Canada / no_definition_found",
+      "sizeBand": "small",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "saint-hyacinthe-schedule",
+          "saint-hyacinthe-zenbus"
+        ],
+        "notes": [
+          "The City of Saint-Hyacinthe publishes local fixed-route bus schedules and real-time vehicle location, but the reviewed official material does not state a minute-level lateness window."
+        ]
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "saint-hyacinthe-schedule",
+          "saint-hyacinthe-zenbus"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "saint-hyacinthe-schedule",
+          "url": "https://www.st-hyacinthe.ca/services-aux-citoyens/transport-collectif/horaire-dautobus",
+          "title": "Saint-Hyacinthe Bus Schedule",
+          "publisher": "City of Saint-Hyacinthe",
+          "sourceType": "schedule-page",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Local bus schedules"
+        },
+        {
+          "id": "saint-hyacinthe-zenbus",
+          "url": "https://www.st-hyacinthe.ca/communiques/2024-11-12/zenbus",
+          "title": "Saint-Hyacinthe Zenbus",
+          "publisher": "City of Saint-Hyacinthe",
+          "sourceType": "real-time-information",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Real-time bus location and schedules"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "upexpress",
+      "name": "UP Express (Toronto)",
+      "country": "Canada",
+      "region": "Ontario",
+      "selectionStratum": "Canada / definition_found",
+      "sizeBand": "small",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "definition_found",
+        "definition": "Metrolinx measures UP Express on-time performance as arrival within 5 minutes of the targeted journey time.",
+        "sourceIds": [
+          "metrolinx-business-plan-2025-26"
+        ],
+        "notes": [
+          "This is a journey-arrival measure rather than a departure-headway rule."
+        ]
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "metrolinx-business-plan-2025-26"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "metrolinx-business-plan-2025-26",
+          "url": "https://assets.metrolinx.com/image/upload/v1764160191/Documents/2025-26_Business_Plan_English.pdf",
+          "title": "2025-26 Metrolinx Business Plan",
+          "publisher": "Metrolinx",
+          "sourceType": "business-plan",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "On-Time Performance"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "kelowna",
+      "name": "BC Transit (Kelowna)",
+      "country": "Canada",
+      "region": "British Columbia",
+      "selectionStratum": "Canada / qualitative_definition_only",
+      "sizeBand": "medium",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "definition_found",
+        "definition": "BC Transit defines on-time departures at timing points as no more than 1 minute early and no more than 3 minutes late.",
+        "sourceIds": [
+          "bc-transit-service-design-standards"
+        ],
+        "notes": [
+          "The reviewed source is a BC Transit service-design standard published for the Kamloops system; it is recorded as an operator-level reference, not a Kelowna-specific performance target."
+        ]
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "bc-transit-service-design-standards"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "bc-transit-service-design-standards",
+          "url": "https://www.bctransit.com/wp-content/uploads/142/723/2022-01-24-KAM-SDSPG-final0.pdf",
+          "title": "Service Design Standards",
+          "publisher": "BC Transit",
+          "sourceType": "service-standard",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "5.4 On-time Performance"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "miway",
+      "name": "MiWay (Mississauga)",
+      "country": "Canada",
+      "region": "Ontario",
+      "selectionStratum": "Canada / no_definition_found",
+      "sizeBand": "large",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "definition_found",
+        "definition": "MiWay’s 2024 asset-management plan defines a bus as on time when it is between 1 minute early and 5 minutes late. A later 2025 plan reports a methodology change to 2 minutes early and 4 minutes late, so both periods are recorded.",
+        "sourceIds": [
+          "miway-2024-asset-plan",
+          "miway-2025-asset-plan"
+        ],
+        "notes": [
+          "The agency has changed its measurement window; the study does not collapse the two definitions into one current rule."
+        ]
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "miway-2024-asset-plan",
+          "miway-2025-asset-plan"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "miway-2024-asset-plan",
+          "url": "https://www.mississauga.ca/wp-content/uploads/2024/06/27113648/2024-corporate-asset-management-plan.pdf",
+          "title": "2024 Corporate Asset Management Plan",
+          "publisher": "City of Mississauga",
+          "sourceType": "asset-plan",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Transit / On-Time Performance"
+        },
+        {
+          "id": "miway-2025-asset-plan",
+          "url": "https://www.mississauga.ca/wp-content/uploads/2025/06/03145826/2025-Corporate-Asset-Management-Plan.pdf",
+          "title": "2025 Corporate Asset Management Plan",
+          "publisher": "City of Mississauga",
+          "sourceType": "asset-plan",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Transit’s Level of Service"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "metrobus",
+      "name": "Metrobus (St. John's)",
+      "country": "Canada",
+      "region": "Newfoundland",
+      "selectionStratum": "Canada / definition_found",
+      "sizeBand": "medium",
+      "modeFamily": "rail",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "definition_found",
+        "definition": "Metrobus service standards require fixed-route services to depart timed or scheduled stops from 0 minutes early to 3 minutes late at least 85% of the time.",
+        "sourceIds": [
+          "metrobus-transit-review"
+        ],
+        "notes": [
+          "The same source separately lists a customer pickup-window standard for dynamic on-demand service; that policy is excluded from this study."
+        ]
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "metrobus-transit-review"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "metrobus-transit-review",
+          "url": "https://www.metrobus.com/pdf/StJohnsTransitReview2019.pdf",
+          "title": "St. John’s Transit Review",
+          "publisher": "City of St. John’s / Metrobus",
+          "sourceType": "service-standard",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Table 18: On-time Performance Standards"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "rtl",
+      "name": "RTL (Longueuil)",
+      "country": "Canada",
+      "region": "Quebec",
+      "selectionStratum": "Canada / qualitative_definition_only",
+      "sizeBand": "large",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "definition_found",
+        "definition": "RTL Longueuil requires at least 85% of trips to arrive on time at control points and 95% of trips to depart on time at terminals, with a tolerance of 1 minute early and 3 minutes late.",
+        "sourceIds": [
+          "rtl-quality-standards"
+        ],
+        "notes": [
+          "The source separately describes a 30-minute reservation window for adapted transportation; that policy is excluded."
+        ]
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "rtl-quality-standards"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "rtl-quality-standards",
+          "url": "https://www.rtl-longueuil.qc.ca/fr-CA/rtl/historique/",
+          "title": "RTL Quality Standards",
+          "publisher": "Réseau de transport de Longueuil",
+          "sourceType": "quality-standard",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Normes de qualité / Ponctualité du service"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "moose-jaw",
+      "name": "Moose Jaw Transit",
+      "country": "Canada",
+      "region": "Saskatchewan",
+      "selectionStratum": "Canada / no_definition_found",
+      "sizeBand": "small",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "moose-jaw-fixed-route"
+        ],
+        "notes": [
+          "The official fixed-route page publishes scheduled service hours and routes, but no minute-level lateness or schedule-adherence tolerance. The separate paratransit pickup rule is excluded."
+        ]
+      },
+      "headwayReliability": {
+        "status": "definition_found",
+        "definition": "Moose Jaw says its four fixed routes converge downtown every 40 minutes, but does not state an allowed headway deviation or bunching threshold.",
+        "sourceIds": [
+          "moose-jaw-faq",
+          "moose-jaw-fixed-route"
+        ],
+        "notes": [
+          "This is a published scheduled frequency, not a reliability tolerance."
+        ]
+      },
+      "sources": [
+        {
+          "id": "moose-jaw-fixed-route",
+          "url": "https://moosejaw.ca/transit/fixed-route-service/",
+          "title": "Moose Jaw Fixed Route Service",
+          "publisher": "City of Moose Jaw",
+          "sourceType": "fixed-route-service-page",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Regular Fixed Route Service"
+        },
+        {
+          "id": "moose-jaw-faq",
+          "url": "https://moosejaw.ca/faqs/",
+          "title": "City of Moose Jaw FAQ",
+          "publisher": "City of Moose Jaw",
+          "sourceType": "service-information",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Transit transfers and schedules"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "go",
+      "name": "GO Transit",
+      "country": "Canada",
+      "region": "Ontario",
+      "selectionStratum": "Canada / definition_found",
+      "sizeBand": "medium",
+      "modeFamily": "mixed",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "definition_found",
+        "definition": "GO defines train on-time performance as arrival at the terminating destination within 5 minutes of schedule for journeys under 90 minutes, or within 10 minutes for journeys over 90 minutes.",
+        "sourceIds": [
+          "go-good-to-go"
+        ],
+        "notes": [
+          "This is a terminal-arrival rule, not a route headway rule."
+        ]
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "go-good-to-go"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "go-good-to-go",
+          "url": "https://www.gotransit.com/en/travelling-on-go/good-to-go",
+          "title": "You’re Good to GO",
+          "publisher": "GO Transit",
+          "sourceType": "service-policy",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "GO train on-time performance footnote"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "cornwall",
+      "name": "Cornwall Transit",
+      "country": "Canada",
+      "region": "Ontario",
+      "selectionStratum": "Canada / qualitative_definition_only",
+      "sizeBand": "small",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "cornwall-transit-master-plan"
+        ],
+        "notes": [
+          "The transit master plan documents observed early and late running, including trips more than 10 minutes late, and recommends schedule refinement; it does not define an official tolerance or target."
+        ]
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "cornwall-transit-master-plan"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "cornwall-transit-master-plan",
+          "url": "https://www.cornwall.ca/en/city-hall/resources/Master-Plans/10.25.17-Cornwall-TMP---Final-Report_Part1.pdf",
+          "title": "Cornwall Transit Master Plan",
+          "publisher": "City of Cornwall",
+          "sourceType": "transit-master-plan",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "9.1.1 Improve On-Time Performance/Adherence to Schedule"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "bloomington",
+      "name": "Bloomington Transit",
+      "country": "United States",
+      "region": "Indiana",
+      "selectionStratum": "United States / definition_found",
+      "sizeBand": "medium",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "definition_found",
+        "definition": "Bloomington Transit considers a fixed-route vehicle on time when it arrives at a timepoint no more than 5 minutes after schedule and departs no earlier than schedule; earlier departures and arrivals over 5 minutes late are classified separately.",
+        "sourceIds": [
+          "bloomington-title-vi-2022"
+        ],
+        "notes": [
+          "The source also describes route-level review and possible headway or schedule adjustments. BloomingtonLink microtransit is excluded."
+        ]
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "bloomington-title-vi-2022"
+        ],
+        "notes": [
+          "The reviewed source mentions headway adjustments as a remedial action but does not define a headway deviation or bunching tolerance."
+        ]
+      },
+      "sources": [
+        {
+          "id": "bloomington-title-vi-2022",
+          "url": "https://bloomingtontransit.com/wp-content/uploads/2024/03/Title-VI-and-LEP-Program-2022-2025.pdf",
+          "title": "Bloomington Transit Title VI and LEP Program",
+          "publisher": "Bloomington Public Transportation Corporation",
+          "sourceType": "title-vi-program",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "On-Time Performance"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "santarosa",
+      "name": "Santa Rosa CityBus",
+      "country": "United States",
+      "region": "California",
+      "selectionStratum": "United States / qualitative_definition_only",
+      "sizeBand": "unknown",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "definition_found",
+        "definition": "Santa Rosa CityBus defines on-time at scheduled timepoints as arriving within 5 minutes of the scheduled time and not leaving early, with a 90% minimum standard.",
+        "sourceIds": [
+          "santa-rosa-srttp"
+        ],
+        "notes": []
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "santa-rosa-srttp"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "santa-rosa-srttp",
+          "url": "https://srcitybus.org/wp-content/uploads/2023/11/FY-2016-25-SRTP-FINAL-161027.pdf",
+          "title": "Short Range Transit Plan",
+          "publisher": "City of Santa Rosa / Santa Rosa CityBus",
+          "sourceType": "transit-plan",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Route On-Time Performance"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "sunline",
+      "name": "SunLine Transit Agency (Coachella Valley)",
+      "country": "United States",
+      "region": "California",
+      "selectionStratum": "United States / no_definition_found",
+      "sizeBand": "medium",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "definition_found",
+        "definition": "SunLine defines on-time as a trip departing a timepoint from 0 minutes early to 3 minutes late, with a 90% target for all services. Other SunLine reports use a 0-to-5-minute window with an 85% minimum target, so the source set records both versions.",
+        "sourceIds": [
+          "sunline-service-quality",
+          "sunline-otp-report"
+        ],
+        "notes": [
+          "The agency has changed or reported different standards across documents; this is not normalized into one rule."
+        ]
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "sunline-service-quality",
+          "sunline-otp-report"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "sunline-service-quality",
+          "url": "https://www.sunline.org/images/Agendas/Strategic_Planning-Operational_Committee_May_27_2020-web.pdf",
+          "title": "Service Quality Standards",
+          "publisher": "SunLine Transit Agency",
+          "sourceType": "service-standard",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "On-time Performance"
+        },
+        {
+          "id": "sunline-otp-report",
+          "url": "https://www.sunline.org/images/BoD_Finance_Audit_Committee_Agenda_23_Apr_2018_0.pdf",
+          "title": "On-Time Performance Percent by Line",
+          "publisher": "SunLine Transit Agency",
+          "sourceType": "performance-report",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "On Time"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "cota",
+      "name": "Central Ohio Transit Authority (COTA)",
+      "country": "United States",
+      "region": "Ohio",
+      "selectionStratum": "United States / definition_found",
+      "sizeBand": "large",
+      "modeFamily": "mixed",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "definition_found",
+        "definition": "COTA considers a vehicle late when it arrives 5 minutes or more after the scheduled time.",
+        "sourceIds": [
+          "cota-service-planning"
+        ],
+        "notes": [
+          "The source describes an on-time performance standard but does not define headway tolerance."
+        ]
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "cota-service-planning"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "cota-service-planning",
+          "url": "https://www.cota.com/static/94322f6ed0d3f27c471f1e34f49cf911/COTA_SLR_Report_Appendices_20200610_reduced.pdf",
+          "title": "E Service Planning",
+          "publisher": "Central Ohio Transit Authority",
+          "sourceType": "service-standard",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "On-time performance standards"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "longbeach",
+      "name": "Long Beach Transit",
+      "country": "United States",
+      "region": "California",
+      "selectionStratum": "United States / qualitative_definition_only",
+      "sizeBand": "medium",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "definition_found",
+        "definition": "Long Beach Transit measures on-time performance as buses departing between 1 minute before and 5 minutes after scheduled time, with a goal above 85%.",
+        "sourceIds": [
+          "long-beach-budget-2026"
+        ],
+        "notes": []
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "long-beach-budget-2026"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "long-beach-budget-2026",
+          "url": "https://ridelbt.com/wp-content/uploads/2026/04/05-15-25-Board-Packet-1.pdf",
+          "title": "Fiscal Year 2026 Budget",
+          "publisher": "Long Beach Transit",
+          "sourceType": "budget",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Transit Service / On-Time Performance"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "cats-baton",
+      "name": "Capital Area Transit System (Baton Rouge)",
+      "country": "United States",
+      "region": "Louisiana",
+      "selectionStratum": "United States / no_definition_found",
+      "sizeBand": "medium",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "definition_found",
+        "definition": "Capital Area Transit System defines fixed-route on-time performance as departing no earlier than the printed schedule and arriving no later than 5 minutes after the scheduled time, with an 80% target.",
+        "sourceIds": [
+          "cats-title-vi-2021"
+        ],
+        "notes": []
+      },
+      "headwayReliability": {
+        "status": "definition_found",
+        "definition": "CATS describes typical fixed-route headways as 20–60 minutes and sets target headways of 30 minutes at peak and 60 minutes off-peak for local routes.",
+        "sourceIds": [
+          "cats-title-vi-2021"
+        ],
+        "notes": [
+          "The source states target headways but does not define an allowed deviation or bunching threshold."
+        ]
+      },
+      "sources": [
+        {
+          "id": "cats-title-vi-2021",
+          "url": "https://www.brcats.com/assets/docs/Communications/7_30_2021_CATS_Title_VI_Program_Final.pdf",
+          "title": "CATS Title VI Program",
+          "publisher": "Capital Area Transit System",
+          "sourceType": "title-vi-program",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Service Standards and Policies"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "butler-county-rta",
+      "name": "Butler County Regional Transit Authority",
+      "country": "United States",
+      "region": "Ohio",
+      "selectionStratum": "United States / definition_found",
+      "sizeBand": "medium",
+      "modeFamily": "mixed",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "definition_found",
+        "definition": "Butler County Regional Transit Authority defines fixed-route motor-bus and commuter-bus on-time performance as 0–1 minutes early and 0–5 minutes late at designated timepoints, with an 85% minimum standard in the reviewed 2024 board packet.",
+        "sourceIds": [
+          "bcrta-board-packet-2024"
+        ],
+        "notes": [
+          "The source separately lists a demand-response window; that service is excluded."
+        ]
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "bcrta-board-packet-2024"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "bcrta-board-packet-2024",
+          "url": "https://www.butlercountyrta.com/wp-content/uploads/2023/12/1-BCRTA-Board-Packet-3-20-2024-V-3-signed.pdf",
+          "title": "BCRTA Board Packet",
+          "publisher": "Butler County Regional Transit Authority",
+          "sourceType": "board-packet",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "On-Time Performance"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "ladot",
+      "name": "Los Angeles Department of Transportation (LADOT/DASH)",
+      "country": "United States",
+      "region": "California",
+      "selectionStratum": "United States / qualitative_definition_only",
+      "sizeBand": "large",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "definition_found",
+        "definition": "LADOT publishes an 85% on-time performance standard for DASH and Commuter Express, but the reviewed source does not provide a minute-based early/late window.",
+        "sourceIds": [
+          "ladot-title-vi"
+        ],
+        "notes": [
+          "This is a performance target, not a definition of an individual late trip."
+        ]
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "ladot-title-vi"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "ladot-title-vi",
+          "url": "https://www.ladottransit.com/pdf/titlevi/LADOT_Transit_2021_Title_VI_Report.pdf",
+          "title": "LADOT Transit 2021 Title VI Report",
+          "publisher": "City of Los Angeles Department of Transportation",
+          "sourceType": "performance-standard",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "On-Time Performance Standards"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "vctc",
+      "name": "Ventura County Transportation Commission (VCTC Intercity)",
+      "country": "United States",
+      "region": "California",
+      "selectionStratum": "United States / no_definition_found",
+      "sizeBand": "small",
+      "modeFamily": "mixed",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "definition_found",
+        "definition": "VCTC Intercity defines on-time performance as no more than 8 minutes late and no early arrivals, with an 85% target; Valley Express fixed route uses no more than 15 minutes late and no early arrivals, with a 95% target.",
+        "sourceIds": [
+          "vctc-title-vi-2019"
+        ],
+        "notes": [
+          "VCTC’s source separately describes Valley Express demand-response service; this study records only the fixed-route standards."
+        ]
+      },
+      "headwayReliability": {
+        "status": "definition_found",
+        "definition": "VCTC publishes fixed-route headway standards: 60 minutes peak and 90 minutes off-peak for intra-county Intercity routes; Valley Express uses 60 minutes peak and 120 minutes off-peak where offered. It does not define an allowed headway deviation or bunching threshold.",
+        "sourceIds": [
+          "vctc-title-vi-2019"
+        ],
+        "notes": [
+          "These are scheduled service standards, not headway-reliability tolerances."
+        ]
+      },
+      "sources": [
+        {
+          "id": "vctc-title-vi-2019",
+          "url": "https://www.goventura.org/wp-content/uploads/2019/09/Item-8L-Attachment-VCTC-Title-VI-Report-AMENDED-FINAL.pdf",
+          "title": "VCTC Title VI Program",
+          "publisher": "Ventura County Transportation Commission",
+          "sourceType": "title-vi-program",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Headway and on-time performance policies"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "beeline",
+      "name": "Westchester County Bee-Line System (BeeLine)",
+      "country": "United States",
+      "region": "New York",
+      "selectionStratum": "United States / definition_found",
+      "sizeBand": "unknown",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "beeline-performance"
+        ],
+        "notes": [
+          "The reviewed official performance material reports Bee-Line fixed-route operating statistics but does not state a minute-level schedule-adherence window."
+        ]
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "beeline-performance"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "beeline-performance",
+          "url": "https://www.dot.ny.gov/divisions/policy-and-strategy/public-trans-rpository/8_Westchester.pdf",
+          "title": "Westchester County Bee-Line Operating and Performance Statistics",
+          "publisher": "New York State Department of Transportation",
+          "sourceType": "performance-report",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Fixed Route and Paratransit"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "juneau",
+      "name": "Capital Transit (Juneau)",
+      "country": "United States",
+      "region": "Alaska",
+      "selectionStratum": "United States / qualitative_definition_only",
+      "sizeBand": "small",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "capital-transit-site",
+          "juneau-coa"
+        ],
+        "notes": [
+          "The reviewed official Capital Transit site and planning material describe fixed-route service and reliability goals but do not state a minute-level lateness window. Capital AKcess paratransit is excluded."
+        ]
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "capital-transit-site",
+          "juneau-coa"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "capital-transit-site",
+          "url": "https://juneaucapitaltransit.org/about-us/",
+          "title": "About Capital Transit",
+          "publisher": "City and Borough of Juneau",
+          "sourceType": "agency-information",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Fixed-route and paratransit services"
+        },
+        {
+          "id": "juneau-coa",
+          "url": "https://juneaucapitaltransit.org/wp-content/uploads/2016/04/Juneau-COA-FINAL.pdf",
+          "title": "Capital Transit Comprehensive Operations Analysis",
+          "publisher": "City and Borough of Juneau",
+          "sourceType": "operations-analysis",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Fixed Route Scorecards"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "port-huron",
+      "name": "Blue Water Area Transit (Port Huron)",
+      "country": "United States",
+      "region": "Michigan",
+      "selectionStratum": "United States / no_definition_found",
+      "sizeBand": "small",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "definition_found",
+        "definition": "Blue Water Area Transportation Commission considers a fixed-route vehicle on time when it departs a scheduled timepoint no more than 1 minute early and no more than 5 minutes late, with an on-time objective of at least 80%.",
+        "sourceIds": [
+          "bwatc-title-vi"
+        ],
+        "notes": []
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "bwatc-title-vi"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "bwatc-title-vi",
+          "url": "https://bwbus.com/wp-content/uploads/BWATC-Title-VI-program-updated-3-24-15-002.pdf",
+          "title": "BWATC Title VI Program",
+          "publisher": "Blue Water Area Transportation Commission",
+          "sourceType": "title-vi-program",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "On-time Performance Standards"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "hart",
+      "name": "Hillsborough Area Regional Transit (HART)",
+      "country": "United States",
+      "region": "Florida",
+      "selectionStratum": "United States / definition_found",
+      "sizeBand": "medium",
+      "modeFamily": "mixed",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "definition_found",
+        "definition": "HART’s published KPI defines on-time performance at timepoints as departures from 1 minute early through 5 minutes late.",
+        "sourceIds": [
+          "hart-kpi-dashboard"
+        ],
+        "notes": [
+          "The source describes the metric but does not provide a systemwide percentage target in the reviewed page."
+        ]
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "hart-kpi-dashboard"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "hart-kpi-dashboard",
+          "url": "https://www.gohart.org/Pages/AboutUS-KPI.aspx",
+          "title": "HART Planning and Performance Indicators",
+          "publisher": "Hillsborough Area Regional Transit",
+          "sourceType": "performance-dashboard",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "On Time Performance at Timepoints"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "jeffersontransit",
+      "name": "Jefferson Transit",
+      "country": "United States",
+      "region": "Washington",
+      "selectionStratum": "United States / qualitative_definition_only",
+      "sizeBand": "small",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "jefferson-operational-analysis"
+        ],
+        "notes": [
+          "The reviewed operational analysis reports route-level on-time percentages but does not define the minute window used to classify a trip as on time."
+        ]
+      },
+      "headwayReliability": {
+        "status": "definition_found",
+        "definition": "The operational analysis specifies a 30-minute peak-period headway and a consistent 30-minute headway for selected shuttle service, but does not define an allowed headway deviation or bunching threshold.",
+        "sourceIds": [
+          "jefferson-operational-analysis"
+        ],
+        "notes": [
+          "This is a scheduled service-design interval, not an observed headway-reliability tolerance."
+        ]
+      },
+      "sources": [
+        {
+          "id": "jefferson-operational-analysis",
+          "url": "https://www.jeffersontransit.com/DocumentCenter/View/893/Comprehensive-Operational-Analysis-PDF",
+          "title": "2025 Comprehensive Operational Analysis",
+          "publisher": "Jefferson Transit",
+          "sourceType": "operations-analysis",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Service guidelines and on-time performance tables"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "laguna-beach",
+      "name": "Laguna Beach Transit",
+      "country": "United States",
+      "region": "California",
+      "selectionStratum": "United States / no_definition_found",
+      "sizeBand": "small",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "laguna-trolleys"
+        ],
+        "notes": [
+          "Laguna Beach publishes fixed-route trolley frequencies and separately identifies Laguna Local as on-demand, but the reviewed official transit page does not state a minute-level fixed-route lateness window."
+        ]
+      },
+      "headwayReliability": {
+        "status": "definition_found",
+        "definition": "Laguna Beach publishes fixed-route trolley frequencies of every 20–30 minutes on the Coastal Route and every 30 minutes on the Canyon Route, but does not define an allowed deviation or bunching threshold.",
+        "sourceIds": [
+          "laguna-trolleys"
+        ],
+        "notes": [
+          "This is a published frequency, not a headway-reliability tolerance."
+        ]
+      },
+      "sources": [
+        {
+          "id": "laguna-trolleys",
+          "url": "https://www.lagunabeachcity.net/live-here/parking-and-transportation/trolleys",
+          "title": "Laguna Beach Trolleys",
+          "publisher": "City of Laguna Beach",
+          "sourceType": "fixed-route-service-page",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Coastal and Canyon Route frequencies"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "augusta",
+      "name": "Augusta Transit",
+      "country": "United States",
+      "region": "Georgia",
+      "selectionStratum": "United States / definition_found",
+      "sizeBand": "unknown",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "definition_found",
+        "definition": "Augusta Transit considers a vehicle on time when it departs a scheduled time point no more than 1 minute early and no more than 5 minutes late, with an objective of at least 90%.",
+        "sourceIds": [
+          "augusta-title-vi-2024"
+        ],
+        "notes": []
+      },
+      "headwayReliability": {
+        "status": "definition_found",
+        "definition": "Augusta Transit publishes policy headways by route family and period, including 40-minute peak headways and 40- to 80-minute base or evening headways, but does not state an allowed deviation from those headways.",
+        "sourceIds": [
+          "augusta-title-vi-2024"
+        ],
+        "notes": [
+          "This is a scheduled service standard, not a headway-regularity tolerance."
+        ]
+      },
+      "sources": [
+        {
+          "id": "augusta-title-vi-2024",
+          "url": "https://www.augustaga.gov/DocumentCenter/View/19838/Augusta-Transit-Title-VI-Plan-May-2024-051024-ADOPTED",
+          "title": "Augusta Transit Title VI Plan",
+          "publisher": "Augusta-Richmond County",
+          "sourceType": "title-vi-plan",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Vehicle Headway; On-Time Performance"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "blacksburg",
+      "name": "Blacksburg Transit",
+      "country": "United States",
+      "region": "Virginia",
+      "selectionStratum": "United States / qualitative_definition_only",
+      "sizeBand": "small",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "blacksburg-budget-2026-27"
+        ],
+        "notes": [
+          "The reviewed official budget reports Blacksburg Transit on-time performance targets and results but does not state the minute window used to classify a trip as on time."
+        ]
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "blacksburg-budget-2026-27"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "blacksburg-budget-2026-27",
+          "url": "https://www.blacksburg.gov/home/showpublisheddocument/14127/639089269708361176",
+          "title": "FY 2026-27 Proposed Budget",
+          "publisher": "Town of Blacksburg",
+          "sourceType": "budget",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Transit Department / On-Time Performance"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "bowling-green",
+      "name": "City of Bowling Green",
+      "country": "United States",
+      "region": null,
+      "selectionStratum": "United States / no_definition_found",
+      "sizeBand": "small",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "definition_found",
+        "definition": "GO bg Transit defines on-time performance as completing established runs no more than 0 minutes early or 5 minutes late, with a 95% target.",
+        "sourceIds": [
+          "go-bg-title-vi"
+        ],
+        "notes": [
+          "The source is for GO bg Transit in Bowling Green, Kentucky. It is separate from the demand-response BG Transit service in Bowling Green, Ohio."
+        ]
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "go-bg-title-vi"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "go-bg-title-vi",
+          "url": "https://www.bgky.org/files/crBmcFcg.pdf",
+          "title": "GO bg Transit On-Time Performance Standard",
+          "publisher": "City of Bowling Green, Kentucky",
+          "sourceType": "title-vi-program",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "On-time performance for each mode"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "durango-transit",
+      "name": "Durango Transit",
+      "country": "United States",
+      "region": "Colorado",
+      "selectionStratum": "United States / definition_found",
+      "sizeBand": "small",
+      "modeFamily": "mixed",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "definition_found",
+        "definition": "Durango Transit considers a fixed-route vehicle on time when it departs a scheduled timepoint no more than 5 minutes late.",
+        "sourceIds": [
+          "durango-title-vi-2025"
+        ],
+        "notes": [
+          "The reviewed standard does not state an early-departure allowance. It separately describes paratransit and microtransit service, which are excluded."
+        ]
+      },
+      "headwayReliability": {
+        "status": "definition_found",
+        "definition": "Durango publishes fixed-route frequencies of 30 minutes for loop buses and 20 minutes for the trolley during peak, base, and evening periods, but does not define an allowed headway deviation or bunching threshold.",
+        "sourceIds": [
+          "durango-title-vi-2025"
+        ],
+        "notes": [
+          "This is a scheduled frequency standard, not a headway-reliability tolerance."
+        ]
+      },
+      "sources": [
+        {
+          "id": "durango-title-vi-2025",
+          "url": "https://www.durangoco.gov/DocumentCenter/View/36319/Title-VI-Report-PDF---2025-Update",
+          "title": "Durango Transit Title VI Report 2025 Update",
+          "publisher": "City of Durango",
+          "sourceType": "title-vi-report",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "On-Time Performance Standards; Service Frequency"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "kitsaptransit",
+      "name": "Kitsap Transit",
+      "country": "United States",
+      "region": "Washington",
+      "selectionStratum": "United States / qualitative_definition_only",
+      "sizeBand": "medium",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "definition_found",
+        "definition": "Kitsap Transit’s fixed-route bus and ferry standard measures on-time performance as arrivals at a transit station within 5 minutes of the posted schedule, with a 95% minimum by time of day in the reviewed Title VI program.",
+        "sourceIds": [
+          "kitsap-title-vi"
+        ],
+        "notes": [
+          "The agency’s on-demand pickup-window policy is excluded."
+        ]
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "kitsap-title-vi"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "kitsap-title-vi",
+          "url": "https://www.kitsaptransit.com/uploads/pdf/projects/kitsaptransittitleviprogram.pdf",
+          "title": "Kitsap Transit Title VI Program",
+          "publisher": "Kitsap Transit",
+          "sourceType": "title-vi-program",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "On-Time Performance Standard"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "chemung-county",
+      "name": "Chemung County C-TRAN",
+      "country": "United States",
+      "region": "New York",
+      "selectionStratum": "United States / no_definition_found",
+      "sizeBand": "small",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "ctran-long-range-plan",
+          "ctran-board"
+        ],
+        "notes": [
+          "The reviewed official C-TRAN planning and board material reports service-performance metrics but does not state a minute-level fixed-route lateness window."
+        ]
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "ctran-long-range-plan",
+          "ctran-board"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "ctran-long-range-plan",
+          "url": "https://www.chemungcountyny.gov/DocumentCenter/View/19019/ECTC-LRTP---Adopted-9-30-25_reduced?bidId=",
+          "title": "Elmira-Chemung Long Range Transportation Plan",
+          "publisher": "Elmira-Chemung Transportation Council",
+          "sourceType": "long-range-plan",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "C-TRAN Performance Metrics"
+        },
+        {
+          "id": "ctran-board",
+          "url": "https://chemungcountyny.gov/744/Transit-Board",
+          "title": "Chemung County Transit Board",
+          "publisher": "Chemung County",
+          "sourceType": "agency-governance",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Transit oversight and policy"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "piercetransit",
+      "name": "Pierce Transit",
+      "country": "United States",
+      "region": "Washington",
+      "selectionStratum": "United States / definition_found",
+      "sizeBand": "medium",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "definition_found",
+        "definition": "Pierce Transit’s current fixed-route definition considers a bus on time when it is up to 1 minute early and up to 5 minutes late; the agency strives for 90% on-time performance in its Stream program standards.",
+        "sourceIds": [
+          "pierce-stream-standards",
+          "pierce-reliability-appendix"
+        ],
+        "notes": [
+          "Older Title VI materials use a 0-to-4-minute window; the study records the current and historical definitions separately."
+        ]
+      },
+      "headwayReliability": {
+        "status": "definition_found",
+        "definition": "Pierce Transit’s Stream program standards consider a bus late when the gap is more than 3 minutes longer than the intended headway.",
+        "sourceIds": [
+          "pierce-stream-standards"
+        ],
+        "notes": [
+          "This is an explicit headway-management tolerance for higher-frequency service, distinct from schedule adherence."
+        ]
+      },
+      "sources": [
+        {
+          "id": "pierce-stream-standards",
+          "url": "https://piercetransit.org/wp-content/uploads/2025/01/Appendix-C-Program-Standards.pdf",
+          "title": "Stream Program Standards",
+          "publisher": "Pierce Transit",
+          "sourceType": "service-standard",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Reliability / On-Time Performance / Headway Management"
+        },
+        {
+          "id": "pierce-reliability-appendix",
+          "url": "https://piercetransit.org/wp-content/uploads/2024/12/Appendix-A-H-Version-2.pdf",
+          "title": "Reliability Appendix",
+          "publisher": "Pierce Transit",
+          "sourceType": "reliability-standard",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Fixed-route reliability"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "pvpta",
+      "name": "Palos Verdes Peninsula Transit Authority (PVPTA)",
+      "country": "United States",
+      "region": "California",
+      "selectionStratum": "United States / qualitative_definition_only",
+      "sizeBand": "small",
+      "modeFamily": "mixed",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "definition_found",
+        "definition": "Palos Verdes Peninsula Transit Authority considers a vehicle on time when it departs a scheduled timepoint no more than 1 minute early and no more than 5 minutes late, with a 90% objective.",
+        "sourceIds": [
+          "pvpta-service-standards"
+        ],
+        "notes": []
+      },
+      "headwayReliability": {
+        "status": "definition_found",
+        "definition": "PVPTA publishes scheduled route frequencies of 15 and 30 minutes, with hourly service on Route 225–226, but does not define an allowed deviation or bunching threshold.",
+        "sourceIds": [
+          "pvpta-service-standards"
+        ],
+        "notes": [
+          "This is a scheduled frequency standard, not a headway-reliability tolerance."
+        ]
+      },
+      "sources": [
+        {
+          "id": "pvpta-service-standards",
+          "url": "https://palosverdes.com/pvtransit/10-17-2013-Agenda.pdf",
+          "title": "PVPTA Service Standards and Policies",
+          "publisher": "Palos Verdes Peninsula Transit Authority",
+          "sourceType": "service-standard",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Vehicle Headway; On-Time Performance"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "westcat",
+      "name": "WestCAT (Pinole)",
+      "country": "United States",
+      "region": "California",
+      "selectionStratum": "United States / no_definition_found",
+      "sizeBand": "small",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "definition_found",
+        "definition": "WestCAT considers Express and Local fixed-route vehicles on time when they depart a scheduled timepoint from 5 minutes early through 5 minutes late; Regional Transbay Commute service uses the same early window and allows up to 15 minutes late. Each has a 90% objective.",
+        "sourceIds": [
+          "westcat-title-vi-2025"
+        ],
+        "notes": []
+      },
+      "headwayReliability": {
+        "status": "definition_found",
+        "definition": "WestCAT publishes route-family headway standards by period, ranging from 20-minute peak Express or Regional service to 60-minute night or base service, but does not state an allowed deviation or bunching threshold.",
+        "sourceIds": [
+          "westcat-title-vi-2025"
+        ],
+        "notes": [
+          "This is a scheduled frequency standard, not a headway-reliability tolerance."
+        ]
+      },
+      "sources": [
+        {
+          "id": "westcat-title-vi-2025",
+          "url": "https://www.westcat.org/Content/pdf/WCCTA_Feb2025_Full_BODPacket.pdf",
+          "title": "WestCAT Title VI Program",
+          "publisher": "Western Contra Costa Transit Authority",
+          "sourceType": "title-vi-program",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Policy Headways and Periods of Operation; On-Time Performance Standards"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "everetttransit",
+      "name": "Everett Transit",
+      "country": "United States",
+      "region": "Washington",
+      "selectionStratum": "United States / definition_found",
+      "sizeBand": "medium",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "definition_found",
+        "definition": "Everett Transit defines fixed-route on-time service as departing no earlier than the scheduled time and no later than 5 minutes after it.",
+        "sourceIds": [
+          "everett-title-vi-2023"
+        ],
+        "notes": [
+          "The source separately discusses paratransit; that service is excluded from the Atlas comparison."
+        ]
+      },
+      "headwayReliability": {
+        "status": "definition_found",
+        "definition": "Everett Transit publishes maximum fixed-route headways of 30 minutes in peak periods and 60 minutes at midday, evening, and weekends. Its schedule-adherence targets are 85% for peak service at 10–30-minute headways and 95% for other listed periods/headway bands.",
+        "sourceIds": [
+          "everett-title-vi-2023"
+        ],
+        "notes": [
+          "These are service-frequency and adherence targets, not a minute-level headway-deviation tolerance."
+        ]
+      },
+      "sources": [
+        {
+          "id": "everett-title-vi-2023",
+          "url": "https://everetttransit.org/DocumentCenter/View/2408/Title-VI-Plan-2023-2026-PDF?bidId=",
+          "title": "Everett Transit Title VI Plan 2023–2026",
+          "publisher": "Everett Transit",
+          "sourceType": "title-vi-plan",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Vehicle Headway; On-time Performance"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "rtd-denver",
+      "name": "Regional Transportation District (RTD Denver)",
+      "country": "United States",
+      "region": "Colorado",
+      "selectionStratum": "United States / qualitative_definition_only",
+      "sizeBand": "large",
+      "modeFamily": "mixed",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "definition_found",
+        "definition": "RTD considers a vehicle on time when it is less than 1 minute early or no more than 5 minutes late at a stop or station.",
+        "sourceIds": [
+          "rtd-otp"
+        ],
+        "notes": [
+          "The same window is stated for bus and rail."
+        ]
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "rtd-otp"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "rtd-otp",
+          "url": "https://www.rtd-denver.com/public-information-dashboards/on-time-performance",
+          "title": "On-Time Performance",
+          "publisher": "RTD-Denver",
+          "sourceType": "on-time-policy",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "On-Time Performance definition"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "kalamazoo",
+      "name": "Kalamazoo Metro Transit",
+      "country": "United States",
+      "region": "Michigan",
+      "selectionStratum": "United States / no_definition_found",
+      "sizeBand": "medium",
+      "modeFamily": "rail",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "kalamazoo-coa"
+        ],
+        "notes": [
+          "The reviewed Kalamazoo Metro operations analysis discusses on-time performance and frequency as service attributes but does not state a minute-level fixed-route lateness window. The Metro Connect on-demand service is excluded."
+        ]
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "kalamazoo-coa"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "kalamazoo-coa",
+          "url": "https://www.kmetro.com/wp-content/uploads/board_presentation_-_february_2022-1.pdf",
+          "title": "Kalamazoo Metro Comprehensive Operations Analysis",
+          "publisher": "Kalamazoo County Transportation Authority",
+          "sourceType": "operations-analysis",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Stakeholder Questions / On-time Performance and Frequency"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "tcat",
+      "name": "Tompkins Consolidated Area Transit",
+      "country": "United States",
+      "region": "New York",
+      "selectionStratum": "United States / definition_found",
+      "sizeBand": "medium",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "definition_found",
+        "definition": "TCAT defines on-time performance as 0 to 5 minutes late in the reviewed board performance report, with an average on-time target of 90%.",
+        "sourceIds": [
+          "tcat-board-minutes-2021"
+        ],
+        "notes": [
+          "The reviewed source does not state an early-departure allowance."
+        ]
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "tcat-board-minutes-2021"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "tcat-board-minutes-2021",
+          "url": "https://tcatbus.com/wp-content/uploads/2021.06.24_Minutes-4.pdf",
+          "title": "TCAT Board Minutes",
+          "publisher": "Tompkins Consolidated Area Transit",
+          "sourceType": "board-minutes",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Systems Report / On-time Performance"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "avta",
+      "name": "Antelope Valley Transit Authority (AVTA)",
+      "country": "United States",
+      "region": "California",
+      "selectionStratum": "United States / qualitative_definition_only",
+      "sizeBand": "medium",
+      "modeFamily": "mixed",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "definition_found",
+        "definition": "AVTA’s operating specification treats a trip as late when it departs a designated timepoint at least 10 minutes late or at least half the scheduled headway late, whichever threshold is smaller; it also penalizes early departures and requires at least 85% on-time performance.",
+        "sourceIds": [
+          "avta-master-rfp-2025"
+        ],
+        "notes": [
+          "The specification uses a headway-scaled lateness threshold rather than one fixed minute window."
+        ]
+      },
+      "headwayReliability": {
+        "status": "definition_found",
+        "definition": "AVTA defines a missed trip for service-quality enforcement as a scheduled trip not operated, and uses the smaller of half the route headway or 10 minutes as a late-trip threshold.",
+        "sourceIds": [
+          "avta-master-rfp-2025"
+        ],
+        "notes": [
+          "This is an enforcement threshold, not a statement that every observed headway must remain within that amount."
+        ]
+      },
+      "sources": [
+        {
+          "id": "avta-master-rfp-2025",
+          "url": "https://www.avta.com/downloads/AVTA_MASTER_RFP_2025-05-Formatted_Reviewed.pdf",
+          "title": "AVTA Master RFP",
+          "publisher": "Antelope Valley Transit Authority",
+          "sourceType": "operating-specification",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Schedule and Operations Related Liquidated Damages"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "santaclarita",
+      "name": "Santa Clarita Transit",
+      "country": "United States",
+      "region": "California",
+      "selectionStratum": "United States / no_definition_found",
+      "sizeBand": "medium",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "definition_found",
+        "definition": "Santa Clarita Transit defines on-time as departing a stop no more than 5 minutes after and not before the posted time; departures 6 or more minutes late are late.",
+        "sourceIds": [
+          "santa-clarita-tdp"
+        ],
+        "notes": [
+          "The source reports local and commuter fixed-route performance separately. Dial-A-Ride and other demand-responsive services are excluded."
+        ]
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "santa-clarita-tdp"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "santa-clarita-tdp",
+          "url": "https://filecenter.santa-clarita.com/transit/SCT%202018-TDP-Final%20Report_May%202019_Final.pdf",
+          "title": "Santa Clarita Transit Development Plan",
+          "publisher": "City of Santa Clarita",
+          "sourceType": "transit-development-plan",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Schedule Adherence"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "citybus-lafayette",
+      "name": "CityBus of Greater Lafayette",
+      "country": "United States",
+      "region": "Indiana",
+      "selectionStratum": "United States / definition_found",
+      "sizeBand": "medium",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "definition_found",
+        "definition": "CityBus of Greater Lafayette sets an 85% fixed-route on-time standard: arrivals must be no more than 5 minutes late and buses must not depart early.",
+        "sourceIds": [
+          "citybus-service-standards"
+        ],
+        "notes": [
+          "The reviewed service standard includes separate demand-response and FLEX services; those are excluded."
+        ]
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "citybus-service-standards"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "citybus-service-standards",
+          "url": "https://www.in.gov/citybuslafayette/files/04.25-BrdPkt.pdf",
+          "title": "CityBus Service Standards",
+          "publisher": "Greater Lafayette Public Transportation Corporation",
+          "sourceType": "service-standard",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "On-Time Performance & Reliability"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "nfta",
+      "name": "NFTA (Buffalo)",
+      "country": "United States",
+      "region": "New York",
+      "selectionStratum": "United States / qualitative_definition_only",
+      "sizeBand": "large",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "definition_found",
+        "definition": "NFTA’s Title VI program says fixed-route service is on time when it departs a scheduled stop up to 2 minutes early or up to 5 minutes late. An earlier performance report defines Metro Bus arrivals as less than 2 minutes early and less than 4 minutes late, and Metro Rail as less than 1 minute late.",
+        "sourceIds": [
+          "nfta-title-vi",
+          "nfta-performance-2023"
+        ],
+        "notes": [
+          "The official documents do not use one stable window across all modes and reporting periods; this is a documented policy discrepancy, not a single normalized rule."
+        ]
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "nfta-title-vi",
+          "nfta-performance-2023"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "nfta-title-vi",
+          "url": "https://cms.nfta.com/media/0wfhzrzh/nfta-title-vi-program-2024.pdf",
+          "title": "NFTA Title VI Program 2024",
+          "publisher": "Niagara Frontier Transportation Authority",
+          "sourceType": "service-standard",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "On-Time Performance"
+        },
+        {
+          "id": "nfta-performance-2023",
+          "url": "https://www.nfta.com/sites/default/files/DocLibMediaFileUpload/Annual%20Reports/Performance%20Reports/2023-nfta-performance-report.pdf",
+          "title": "2023 Performance Report",
+          "publisher": "NFTA Metro",
+          "sourceType": "performance-report",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "On-Time Calculation"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "carta",
+      "name": "Charleston Area Regional Transportation Authority (CARTA)",
+      "country": "United States",
+      "region": "South Carolina",
+      "selectionStratum": "United States / no_definition_found",
+      "sizeBand": "medium",
+      "modeFamily": "mixed",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "definition_found",
+        "definition": "CARTA defines on-time performance as a vehicle completing a scheduled run from 1 minute early through 10 minutes late, with no early running accepted, and a 90% systemwide or route-level standard.",
+        "sourceIds": [
+          "carta-title-vi-2024"
+        ],
+        "notes": []
+      },
+      "headwayReliability": {
+        "status": "definition_found",
+        "definition": "CARTA publishes route-level service-frequency standards, such as 60- or 90-minute headways, but the reviewed policy does not define an allowed deviation or bunching threshold.",
+        "sourceIds": [
+          "carta-title-vi-2024"
+        ],
+        "notes": [
+          "This is a scheduled frequency standard, not a headway-reliability tolerance."
+        ]
+      },
+      "sources": [
+        {
+          "id": "carta-title-vi-2024",
+          "url": "https://ridecarta.com/wp-content/uploads/2024/06/CARTA-Agenda-Packet-6-12-2024.pdf",
+          "title": "CARTA Agenda Packet",
+          "publisher": "Charleston Area Regional Transportation Authority",
+          "sourceType": "title-vi-service-monitoring",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "On-time performance and vehicle headway standards"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "bustang-outrider",
+      "name": "Bustang Outrider",
+      "country": "United States",
+      "region": "Colorado",
+      "selectionStratum": "United States / definition_found",
+      "sizeBand": "small",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "bustang-home",
+          "bustang-alerts"
+        ],
+        "notes": [
+          "The reviewed official Bustang/Outrider pages publish routes, schedules, and delay alerts but do not state a numeric fixed-route lateness window or headway reliability tolerance."
+        ]
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "bustang-home",
+          "bustang-alerts"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "bustang-home",
+          "url": "https://ridebustang.com/",
+          "title": "Bustang and Outrider",
+          "publisher": "Colorado Department of Transportation",
+          "sourceType": "agency-information",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Routes and service types"
+        },
+        {
+          "id": "bustang-alerts",
+          "url": "https://ridebustang.com/alerts/",
+          "title": "Bustang Alerts",
+          "publisher": "Colorado Department of Transportation",
+          "sourceType": "service-alerts",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Route delays and schedule changes"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "indian-river",
+      "name": "Indian River Transit",
+      "country": "United States",
+      "region": "Florida",
+      "selectionStratum": "United States / qualitative_definition_only",
+      "sizeBand": "medium",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "goline-2025-tdp",
+          "goline-site"
+        ],
+        "notes": [
+          "GoLine is a fixed-route system, while Community Coach is demand-response. The reviewed official material gives fixed-route operating hours and frequencies but no minute-level schedule-adherence window; the demand-response rules are excluded."
+        ]
+      },
+      "headwayReliability": {
+        "status": "definition_found",
+        "definition": "GoLine’s official material describes one-hour headways for the fixed-route network and half-hour timed connections for selected routes, but does not define an allowed headway deviation or bunching threshold.",
+        "sourceIds": [
+          "goline-2025-tdp",
+          "goline-riding"
+        ],
+        "notes": [
+          "This is a published service pattern, not a headway-reliability tolerance."
+        ]
+      },
+      "sources": [
+        {
+          "id": "goline-2025-tdp",
+          "url": "https://www.indianriver.gov/Agenda%20%26%20Minutes/Transportation%20Disadvantaged%20Local%20Coordinating%20Board/2025/TDLCB022425A.pdf?t=202502211636580",
+          "title": "Indian River County 2025 Transit Development Plan Annual Update",
+          "publisher": "Indian River County MPO",
+          "sourceType": "transit-development-plan",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Current Transit Service / Fixed-Route Service"
+        },
+        {
+          "id": "goline-site",
+          "url": "https://golineirt.com/",
+          "title": "GoLine",
+          "publisher": "Indian River County / Senior Resource Association",
+          "sourceType": "agency-information",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Fixed-route service"
+        },
+        {
+          "id": "goline-riding",
+          "url": "https://golineirt.com/info.html",
+          "title": "Riding GoLine",
+          "publisher": "GoLine",
+          "sourceType": "rider-information",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Timed connections"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "camarillo",
+      "name": "Camarillo Area Transit",
+      "country": "United States",
+      "region": "California",
+      "selectionStratum": "United States / no_definition_found",
+      "sizeBand": "small",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "camarillo-short-range-plan"
+        ],
+        "notes": [
+          "The reviewed official Ventura County transit plan reports a 15-minute pickup window for Camarillo Dial-a-Ride, which is demand-responsive and excluded. No fixed-route schedule-lateness rule was found for Camarillo Area Transit in the reviewed source."
+        ]
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "camarillo-short-range-plan"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "camarillo-short-range-plan",
+          "url": "https://www.goventura.org/wp-content/uploads/2026/03/2026.04.03_Attachment-Item-9K_Final-FY2025-2034-Short-Range-Transit-Plan.pdf",
+          "title": "Ventura Countywide Short Range Transit Plan",
+          "publisher": "Ventura County Transportation Commission",
+          "sourceType": "short-range-transit-plan",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Camarillo Dial-a-Ride On-Time Performance"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "collier",
+      "name": "Collier Area Transit (Naples)",
+      "country": "United States",
+      "region": "Florida",
+      "selectionStratum": "United States / definition_found",
+      "sizeBand": "medium",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "definition_found",
+        "definition": "Collier Area Transit’s fixed-route service standard allows local, express, and trolley buses to be up to 5 minutes late, with a 95% on-time goal.",
+        "sourceIds": [
+          "collier-service-standards"
+        ],
+        "notes": [
+          "The same table separately lists a paratransit standard; that service is excluded from this study."
+        ]
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "collier-service-standards"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "collier-service-standards",
+          "url": "https://www.colliercountyfl.gov/home/showdocument?id=93262",
+          "title": "System-Wide Service Standards",
+          "publisher": "Collier Area Transit / Collier County",
+          "sourceType": "service-standard",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "On-Time Performance"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "clallamtransit",
+      "name": "Clallam Transit System",
+      "country": "United States",
+      "region": "Washington",
+      "selectionStratum": "United States / qualitative_definition_only",
+      "sizeBand": "small",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "definition_found",
+        "definition": "Clallam Transit’s reviewed operations analysis classifies service trips as on time from 0 to 5 minutes, with early trips before 0 minutes and late trips after 5 minutes.",
+        "sourceIds": [
+          "clallam-coa"
+        ],
+        "notes": [
+          "The source reports observed performance separately and does not state a target percentage."
+        ]
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "clallam-coa"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "clallam-coa",
+          "url": "https://irp.cdn-website.com/0eaf265e/files/uploaded/Clallam%20Transit%20COA%20Final%20Report%2008.10.2021%20PRINT%20READY.pdf",
+          "title": "Clallam Transit Comprehensive Operations Analysis",
+          "publisher": "Clallam Transit System",
+          "sourceType": "operations-analysis",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Service Performance / On-Time Performance"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "grand-junction",
+      "name": "Grand Valley Transit",
+      "country": "United States",
+      "region": "Colorado",
+      "selectionStratum": "United States / no_definition_found",
+      "sizeBand": "small",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "gvt-strategic-plan"
+        ],
+        "notes": [
+          "Grand Valley Transit’s strategic plan discusses schedule reliability and acknowledges that its on-time data was not accurate, but does not state a numeric lateness window or service-spacing tolerance."
+        ]
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "gvt-strategic-plan"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "gvt-strategic-plan",
+          "url": "https://gvt.mesacounty.us/globalassets/strategic-plan/grand-valley-transit-strategic-plan.pdf",
+          "title": "Grand Valley Transit Strategic Plan",
+          "publisher": "Mesa County / Grand Valley Transit",
+          "sourceType": "strategic-plan",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Transit System Scorecard / Schedule Reliability"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "ben-franklin",
+      "name": "Ben Franklin Transit (Tri-Cities, WA)",
+      "country": "United States",
+      "region": "Washington",
+      "selectionStratum": "United States / definition_found",
+      "sizeBand": "medium",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "definition_found",
+        "definition": "Ben Franklin Transit’s fixed-route standard treats a bus as early when it departs more than 1 minute before schedule and late when it arrives more than 5 minutes after schedule; earlier planning documents describe a 1-minute-early to 5-minute-late, 90% informal target.",
+        "sourceIds": [
+          "bft-service-standards-2025",
+          "bft-tdp-2021-26"
+        ],
+        "notes": [
+          "The 2025 service-standard wording and earlier planning target are recorded separately. Demand-response windows are excluded."
+        ]
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "bft-service-standards-2025",
+          "bft-tdp-2021-26"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "bft-service-standards-2025",
+          "url": "https://www.bft.org/wp-content/uploads/2025/07/Board-Packet-2025-07-17-REVISED-1.pdf",
+          "title": "Systemwide Service Standards",
+          "publisher": "Ben Franklin Transit",
+          "sourceType": "service-standard",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Fixed Route On-Time Performance"
+        },
+        {
+          "id": "bft-tdp-2021-26",
+          "url": "https://www.bft.org/assets/1/6/2021-2026_bft_transit_development_plan.pdf",
+          "title": "2021-2026 Transit Development Plan",
+          "publisher": "Ben Franklin Transit",
+          "sourceType": "transit-development-plan",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Local Performance Measures and Targets"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "charleville",
+      "name": "TAC (Charleville)",
+      "country": "France",
+      "region": "Grand Est",
+      "selectionStratum": "France / no_definition_found",
+      "sizeBand": "medium",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "bustac-line-1"
+        ],
+        "notes": [
+          "Bustac publishes fixed-route schedules for the TAC network serving Charleville-Mézières, but the reviewed official route material does not state a minute-level lateness or headway-reliability window."
+        ]
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "bustac-line-1"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "bustac-line-1",
+          "url": "https://www.bustac.fr/se-deplacer/horaires/ligne-bus-1",
+          "title": "Bustac Route 1 Timetable",
+          "publisher": "Bustac / Ardenne Métropole",
+          "sourceType": "schedule-page",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "TAC mobility guide and route schedule"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "marseille",
+      "name": "RTM (Marseille)",
+      "country": "France",
+      "region": "Provence-Alpes-Côte d'Azur",
+      "selectionStratum": "France / qualitative_definition_only",
+      "sizeBand": "large",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "rtm-quality-certification",
+          "rtm-annual-report-2023"
+        ],
+        "notes": [
+          "RTM publicly describes monitoring regularity and punctuality and reports schedule-respect objectives, but the reviewed official material does not state a minute-level fixed-route lateness window."
+        ]
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "rtm-quality-certification",
+          "rtm-annual-report-2023"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "rtm-quality-certification",
+          "url": "https://www.rtm.fr/espace-presse/la-satisfaction-des-voyageurs-au-coeur-de-la-strategie-de-la-rtm-880-000-voyagesjour",
+          "title": "RTM Service Quality Certification",
+          "publisher": "Régie des Transports Métropolitains",
+          "sourceType": "quality-policy",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Regularity and punctuality"
+        },
+        {
+          "id": "rtm-annual-report-2023",
+          "url": "https://www.rtm.fr/sites/default/files/docs/RTM_RA2023_compressed_1.pdf",
+          "title": "RTM Annual Report 2023",
+          "publisher": "Régie des Transports Métropolitains",
+          "sourceType": "annual-report",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Bus quality contract"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "poitiers",
+      "name": "Vitalis (Poitiers)",
+      "country": "France",
+      "region": "Nouvelle-Aquitaine",
+      "selectionStratum": "France / definition_found",
+      "sizeBand": "large",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "vitalis-regular-lines",
+          "vitalis-flexibus"
+        ],
+        "notes": [
+          "Vitalis publishes regular fixed-route schedules and separately describes Flex’e-bus reservation service, but the reviewed official pages do not state a minute-level fixed-route lateness window."
+        ]
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "vitalis-regular-lines",
+          "vitalis-flexibus"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "vitalis-regular-lines",
+          "url": "https://www.vitalis-poitiers.fr/services/lignes-regulieres/",
+          "title": "Vitalis Regular Lines",
+          "publisher": "Vitalis / Grand Poitiers",
+          "sourceType": "fixed-route-service-page",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Regular lines and service periods"
+        },
+        {
+          "id": "vitalis-flexibus",
+          "url": "https://www.vitalis-poitiers.fr/services/transport-a-la-demande/",
+          "title": "Vitalis Flex’e-bus",
+          "publisher": "Vitalis / Grand Poitiers",
+          "sourceType": "on-demand-service-page",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Reservation service"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "compiegne",
+      "name": "TIC (Compiègne)",
+      "country": "France",
+      "region": "Hauts-de-France",
+      "selectionStratum": "France / no_definition_found",
+      "sizeBand": "small",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "oise-mobilite-compiegne"
+        ],
+        "notes": [
+          "The official Compiègne transport information page documents TIC departures, schedules, and real-time information but does not state a minute-level fixed-route lateness window."
+        ]
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "oise-mobilite-compiegne"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "oise-mobilite-compiegne",
+          "url": "https://www.agglo-compiegne.fr/oise-mobilite",
+          "title": "Oise Mobilité and TIC Information",
+          "publisher": "Agglomération de la Région de Compiègne",
+          "sourceType": "network-information",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "TIC departures and passenger information"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "caen",
+      "name": "Twisto (Caen)",
+      "country": "France",
+      "region": "Normandie",
+      "selectionStratum": "France / qualitative_definition_only",
+      "sizeBand": "medium",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "twisto-bus",
+          "twisto-schedules",
+          "twisto-flex-faq"
+        ],
+        "notes": [
+          "Twisto publishes regular bus and tram schedules and identifies Flex services separately, but the reviewed official fixed-route pages do not state a minute-level lateness window. The reservation-window rule for Twisto Flex is excluded."
+        ]
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "twisto-bus",
+          "twisto-schedules",
+          "twisto-flex-faq"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "twisto-bus",
+          "url": "https://www.twisto.fr/bus",
+          "title": "Twisto Bus Network",
+          "publisher": "Twisto / Caen la mer",
+          "sourceType": "fixed-route-service-page",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Bus network and frequencies"
+        },
+        {
+          "id": "twisto-schedules",
+          "url": "https://www.twisto.fr/se-deplacer/horaires/depliants-horaires",
+          "title": "Twisto Timetables",
+          "publisher": "Twisto / Caen la mer",
+          "sourceType": "schedule-page",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Regular bus and tram schedules"
+        },
+        {
+          "id": "twisto-flex-faq",
+          "url": "https://www.twisto.fr/contact/faq",
+          "title": "Twisto FAQ",
+          "publisher": "Twisto / Caen la mer",
+          "sourceType": "customer-information",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Twisto Flex reservation"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "colmar",
+      "name": "Trace (Colmar)",
+      "country": "France",
+      "region": "Grand Est",
+      "selectionStratum": "France / definition_found",
+      "sizeBand": "medium",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "definition_found",
+        "definition": "Trace Colmar defines punctuality and regularity as the bus passing between H−1 and H+3 minutes.",
+        "sourceIds": [
+          "trace-colmar-commitments"
+        ],
+        "notes": []
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "trace-colmar-commitments"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "trace-colmar-commitments",
+          "url": "https://www.trace-colmar.fr/nous-connaitre/notre-raison-detre/nos-engagements/",
+          "title": "Trace Colmar Service Commitments",
+          "publisher": "Trace Colmar / Colmar Agglomération",
+          "sourceType": "service-standard",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Démarche qualité / Ponctualité-régularité"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "vesoul",
+      "name": "Vesoul",
+      "country": "France",
+      "region": "Bourgogne-Franche-Comté",
+      "selectionStratum": "France / no_definition_found",
+      "sizeBand": "unknown",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "moova-vesoul"
+        ],
+        "notes": [
+          "Moova publishes regular lines and separately identifies its personalized on-demand service, but the reviewed official network page does not state a minute-level fixed-route lateness window."
+        ]
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "moova-vesoul"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "moova-vesoul",
+          "url": "https://www.vesoul.fr/au-quotidien/vbus-transports-en-commun.html",
+          "title": "Moova Public Transport Network",
+          "publisher": "Agglomération et Ville de Vesoul",
+          "sourceType": "network-information",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Regular lines and on-demand service"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "brest",
+      "name": "Bibus (Brest)",
+      "country": "France",
+      "region": "Bretagne",
+      "selectionStratum": "France / qualitative_definition_only",
+      "sizeBand": "medium",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "bibus-quality"
+        ],
+        "notes": [
+          "Bibus commits to monitoring regularity and punctuality for scheduled transit, but the reviewed public quality page does not state a minute-level on-time window. The reservation-based ACCEMO punctuality rule is excluded."
+        ]
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "bibus-quality"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "bibus-quality",
+          "url": "https://www.bibus.fr/bibus-et-vous/qui-sommes-nous/notre-demarche-qualite",
+          "title": "Bibus Quality Approach",
+          "publisher": "Bibus / Brest métropole",
+          "sourceType": "quality-policy",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Qualité de service"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "tours",
+      "name": "Fil Bleu (Tours)",
+      "country": "France",
+      "region": "Centre-Val de Loire",
+      "selectionStratum": "France / definition_found",
+      "sizeBand": "medium",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "filbleu-network"
+        ],
+        "notes": [
+          "Fil Bleu publishes scheduled frequencies and operates a real-time information service, but the reviewed official network page does not state a numeric fixed-route lateness window. The separate demand-responsive policy is excluded."
+        ]
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "filbleu-network"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "filbleu-network",
+          "url": "https://www.filbleu.fr/services/le-reseau-bus-tram",
+          "title": "Fil Bleu Network",
+          "publisher": "Fil Bleu / Tours Métropole",
+          "sourceType": "network-information",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Bus and tram network"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "laon",
+      "name": "Laon urbain",
+      "country": "France",
+      "region": "Hauts-de-France",
+      "selectionStratum": "France / no_definition_found",
+      "sizeBand": "small",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "tul-laon-schedules"
+        ],
+        "notes": [
+          "TUL Laon publishes fixed-route schedules and separately identifies transport à la demande service, but the reviewed official timetable page does not state a minute-level fixed-route lateness window."
+        ]
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "tul-laon-schedules"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "tul-laon-schedules",
+          "url": "https://www.tul-laon.fr/mes-lignes/horaires-des-lignes",
+          "title": "TUL Laon Timetables",
+          "publisher": "TUL Laon",
+          "sourceType": "schedule-page",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Line schedules and service types"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "saumur",
+      "name": "Saumur Agglobus",
+      "country": "France",
+      "region": "Pays de la Loire",
+      "selectionStratum": "France / qualitative_definition_only",
+      "sizeBand": "medium",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "saumur-agglobus-schedules"
+        ],
+        "notes": [
+          "Saumur Agglobus publishes urban fixed-route schedules and service days, but the reviewed official timetable page does not state a minute-level lateness or headway-reliability window."
+        ]
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "saumur-agglobus-schedules"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "saumur-agglobus-schedules",
+          "url": "https://www.agglobus.fr/index.php?Itemid=245&layout=category&option=com_zoo&view=category",
+          "title": "Saumur Agglobus Urban Timetables",
+          "publisher": "Saumur Agglobus",
+          "sourceType": "schedule-page",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Urban network timetable sheets"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "la-rochelle",
+      "name": "Yélo (La Rochelle)",
+      "country": "France",
+      "region": "Nouvelle-Aquitaine",
+      "selectionStratum": "France / definition_found",
+      "sizeBand": "medium",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "yelo-faq"
+        ],
+        "notes": [
+          "Yélo describes improving frequency and quality and separately documents its reservation-based on-demand service, but the reviewed official material does not state a minute-level fixed-route lateness window."
+        ]
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "yelo-faq"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "yelo-faq",
+          "url": "https://www.yelo-larochelle.fr/faq/",
+          "title": "Yélo FAQ",
+          "publisher": "Yélo / La Rochelle Agglomération",
+          "sourceType": "customer-information",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Network evolution and service quality"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "menton",
+      "name": "Zest (Menton)",
+      "country": "France",
+      "region": "Provence-Alpes-Côte d'Azur",
+      "selectionStratum": "France / no_definition_found",
+      "sizeBand": "unknown",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "zest-network",
+          "zestgo"
+        ],
+        "notes": [
+          "Zest publishes regular-route schedules and identifies Zestgo as a separate on-demand service, but the reviewed official network material does not state a minute-level fixed-route lateness window."
+        ]
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "zest-network",
+          "zestgo"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "zest-network",
+          "url": "https://www.riviera-francaise.fr/reseau-zest/",
+          "title": "Zest Network",
+          "publisher": "Communauté d’agglomération de la Riviera Française",
+          "sourceType": "network-information",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Regular network and service changes"
+        },
+        {
+          "id": "zestgo",
+          "url": "https://www.zestbus.fr/zestgo",
+          "title": "Zestgo On-Demand Service",
+          "publisher": "Zestbus",
+          "sourceType": "on-demand-service-page",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "On-demand service"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "mulhouse",
+      "name": "Soléa (Mulhouse)",
+      "country": "France",
+      "region": "Grand Est",
+      "selectionStratum": "France / qualitative_definition_only",
+      "sizeBand": "medium",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "solea-dsp-quality",
+          "solea-quality-commitments"
+        ],
+        "notes": [
+          "Soléa tracks punctuality and publishes network-level targets, including 95% for major tram lines and 81% for buses in the reviewed service-delegation material, but does not state a minute-level late/early window."
+        ]
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "solea-dsp-quality",
+          "solea-quality-commitments"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "solea-dsp-quality",
+          "url": "https://www.solea.info/sites/default/files/2025-02/CP%20m2A%20-%20Transdev%20-%20Sol%C3%A9a%20-%20Signature%20DSP%20des%20mobilt%C3%A9s.pdf",
+          "title": "Soléa Mobility Service Delegation Commitments",
+          "publisher": "Soléa / m2A",
+          "sourceType": "service-delegation",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Quality performance commitments"
+        },
+        {
+          "id": "solea-quality-commitments",
+          "url": "https://www.solea.info/engagements-qualite",
+          "title": "Soléa Quality Commitments",
+          "publisher": "Soléa",
+          "sourceType": "quality-policy",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Punctuality and service quality"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "pau",
+      "name": "Idelis (Pau)",
+      "country": "France",
+      "region": "Nouvelle-Aquitaine",
+      "selectionStratum": "France / definition_found",
+      "sizeBand": "medium",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "idelis-faq",
+          "idelis-satisfaction-2023"
+        ],
+        "notes": [
+          "Idelis explains that bus delays can occur and that its control centre regulates service minute by minute, but the reviewed official material does not define a numeric fixed-route lateness window. Reservation and demand-responsive punctuality rules are excluded."
+        ]
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "idelis-faq",
+          "idelis-satisfaction-2023"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "idelis-faq",
+          "url": "https://www.idelis.fr/contact/faq",
+          "title": "Idelis FAQ",
+          "publisher": "Idelis / Pau Béarn Pyrénées Mobilités",
+          "sourceType": "customer-information",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Why is my bus late?"
+        },
+        {
+          "id": "idelis-satisfaction-2023",
+          "url": "https://www.idelis.fr/fileadmin/Fichiers_client/ENQUETES/Satisfaction_2023.pdf",
+          "title": "Idelis Customer Satisfaction Survey 2023",
+          "publisher": "Idelis",
+          "sourceType": "customer-survey",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Punctuality and frequency"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "toulon",
+      "name": "Mistral (Toulon)",
+      "country": "France",
+      "region": "Provence-Alpes-Côte d'Azur",
+      "selectionStratum": "France / no_definition_found",
+      "sizeBand": "medium",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "mistral-exploitation",
+          "mistral-trip-preparation"
+        ],
+        "notes": [
+          "Réseau Mistral describes regulation and service-quality work for regular lines but the reviewed official material does not state a minute-level fixed-route lateness window. Reservation-based Appel Bus and PMR policies are excluded."
+        ]
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "mistral-exploitation",
+          "mistral-trip-preparation"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "mistral-exploitation",
+          "url": "https://www.reseaumistral.com/mistral-vous/rejoignez-nous",
+          "title": "Réseau Mistral Operations",
+          "publisher": "Réseau Mistral / RD TPM",
+          "sourceType": "agency-information",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Exploitation and regulation"
+        },
+        {
+          "id": "mistral-trip-preparation",
+          "url": "https://www.reseaumistral.com/je-prepare-mon-deplacement",
+          "title": "Preparing a Journey on Réseau Mistral",
+          "publisher": "Réseau Mistral",
+          "sourceType": "customer-information",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Regular lines and reserved services"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "lyon",
+      "name": "TCL (Lyon)",
+      "country": "France",
+      "region": "Auvergne-Rhône-Alpes",
+      "selectionStratum": "France / qualitative_definition_only",
+      "sizeBand": "large",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "tcl-customer-charter"
+        ],
+        "notes": [
+          "TCL documents punctuality and line regularity as monitored quality indicators using onboard tools and recorded stop passages, but the reviewed customer charter does not state a numeric early/late tolerance."
+        ]
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "tcl-customer-charter"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "tcl-customer-charter",
+          "url": "https://www.tcl.fr/sites/default/files/2019-07/CHARTE%2BCLIENTS%2BTCL.PDF",
+          "title": "TCL Customer Charter",
+          "publisher": "TCL / SYTRAL Mobilités",
+          "sourceType": "customer-charter",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Punctuality and regularity of lines"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "bordeaux",
+      "name": "TBM (Bordeaux)",
+      "country": "France",
+      "region": "Nouvelle-Aquitaine",
+      "selectionStratum": "France / definition_found",
+      "sizeBand": "large",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "tbm-bus-network"
+        ],
+        "notes": [
+          "TBM publishes scheduled frequencies and describes regularity as a service objective, but the reviewed official network material does not state a minute-level fixed-route lateness window. Mobibus reservation rules are excluded."
+        ]
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "tbm-bus-network"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "tbm-bus-network",
+          "url": "https://www.infotbm.com/fr/lignes_de_bus",
+          "title": "TBM Bus Network",
+          "publisher": "TBM / Bordeaux Métropole",
+          "sourceType": "network-information",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Bus express, frequency, and regularity"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "laval",
+      "name": "TUL (Laval)",
+      "country": "France",
+      "region": "Pays de la Loire",
+      "selectionStratum": "France / no_definition_found",
+      "sizeBand": "medium",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "tul-delegation-report-2024",
+          "tul-network"
+        ],
+        "notes": [
+          "Laval Agglomération measures TUL punctuality and publishes a 95% conformity target, but the reviewed official delegation report does not state the minute-level definition behind that measure. TULIB and other demand-responsive rules are excluded."
+        ]
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "tul-delegation-report-2024",
+          "tul-network"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "tul-delegation-report-2024",
+          "url": "https://www.agglo-laval.fr/fileadmin/Phototheque_agglo/Transport/Bus/RD_LAVAL_Rapport_Annuel_2024.pdf",
+          "title": "RD Laval Delegate Report 2024",
+          "publisher": "Laval Agglomération",
+          "sourceType": "delegation-report",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Punctuality of service"
+        },
+        {
+          "id": "tul-network",
+          "url": "https://www.agglo-laval.fr/utile-au-quotidien/transports-et-mobilites/tul",
+          "title": "TUL Network",
+          "publisher": "Laval Agglomération",
+          "sourceType": "network-information",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Regular lines and TULIB"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "slug": "grenoble",
+      "name": "TAG (Grenoble)",
+      "country": "France",
+      "region": "Auvergne-Rhône-Alpes",
+      "selectionStratum": "France / qualitative_definition_only",
+      "sizeBand": "large",
+      "modeFamily": "bus",
+      "serviceScope": "static_scheduled",
+      "excludedPolicyScopes": [
+        "on-demand",
+        "paratransit",
+        "reservation-window",
+        "customer pickup window"
+      ],
+      "schedulePunctuality": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "tag-activity-2019"
+        ],
+        "notes": [
+          "The reviewed official TAG activity material discusses quality indicators and service performance but does not state a minute-level fixed-route lateness window. Reservation-based Flexo service rules are excluded."
+        ]
+      },
+      "headwayReliability": {
+        "status": "not_found",
+        "definition": null,
+        "sourceIds": [
+          "tag-activity-2019"
+        ],
+        "notes": [
+          "The reviewed official source set did not state a headway or service-spacing reliability rule."
+        ]
+      },
+      "sources": [
+        {
+          "id": "tag-activity-2019",
+          "url": "https://semitag.tag.fr/cms_viewFile.php?idtf=2763&path=Rapport-Activite-2019.pdf",
+          "title": "SEMITAG Activity Report 2019",
+          "publisher": "SEMITAG / TAG",
+          "sourceType": "annual-report",
+          "accessedAt": "2026-09-26",
+          "pagesOrSections": "Quality indicators and service"
+        }
+      ],
+      "notes": []
+    }
+  ]
+}

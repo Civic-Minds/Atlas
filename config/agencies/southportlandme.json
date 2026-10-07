@@ -21,10 +21,10 @@
     "Portland, Maine"
   ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2642/mdb-2642-202608100103/mdb-2642-202608100103.zip",
-  "lastFeedCheckAt": "20260907",
+  "lastFeedCheckAt": "20261003",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261007",
+  "expiredFeedCheckExpiry": "20261003",
   "feedQuality": {
     "status": "healthy",
     "score": 100,

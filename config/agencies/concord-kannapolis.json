@@ -29,14 +29,18 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 48
     },
-    "checkedAt": "2026-09-07"
+    "checkedAt": "2026-10-03"
   },
   "lastFeedExpiry": "",
   "lastFeedVersion": "Yellow Route Fixed",
-  "lastRefreshedAt": "2026-09-07",
-  "lastFeedCheckAt": "20260907",
+  "lastRefreshedAt": "2026-10-03",
+  "lastFeedCheckAt": "20261003",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",
-  "timezone": "America/New_York"
+  "timezone": "America/New_York",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

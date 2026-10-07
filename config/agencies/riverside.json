@@ -6,11 +6,11 @@
     33.98,
     -117.37
   ],
-  "feedUrl": "https://files.mobilitydatabase.org/mdb-98/mdb-98-202605110136/mdb-98-202605110136.zip",
-  "lastFeedExpiry": "20260912",
-  "lastFeedVersion": "S1000245",
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-98/latest.zip",
+  "lastFeedExpiry": "20270109",
+  "lastFeedVersion": "S1000249",
   "region": "California",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-10-03",
   "cities": [
     "Riverside, California",
     "Moreno Valley, California",
@@ -23,9 +23,26 @@
     "Corona, California",
     "Menifee, California"
   ],
-  "lastFeedCheckAt": "20260907",
+  "lastFeedCheckAt": "20261003",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20260912",
-  "timezone": "America/Los_Angeles"
+  "expiredFeedCheckExpiry": "20270109",
+  "timezone": "America/Los_Angeles",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 195
+    },
+    "checkedAt": "2026-10-03"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

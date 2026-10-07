@@ -14,14 +14,33 @@
   ],
   "feedUrl": "https://gtfs.remix.com/redwoodcoast.zip",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-redwood-coast-transit-rct-gtfs-20.zip?alt=media",
-  "lastFeedExpiry": "20260530",
-  "lastFeedVersion": "UTC: 20-Jan-2026 15:30",
-  "lastRefreshedAt": "20260811",
+  "lastFeedExpiry": "20261231",
+  "lastFeedVersion": "Updated: Aug 19, 2026, 11:14 PM",
+  "lastRefreshedAt": "2026-10-03",
   "websiteUrl": "http://www.redwoodcoasttransit.org/",
   "timezone": "America/Los_Angeles",
   "lastRawArchiveKey": "20260530-8364fe10c2bd25da",
-  "lastFeedCheckAt": "20260907",
-  "expiredFeedCheckCount": 2,
-  "expiredFeedCheckSince": "20260622",
-  "expiredFeedCheckExpiry": "20260530"
+  "lastFeedCheckAt": "20261003",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261231",
+  "feedQuality": {
+    "status": "review",
+    "score": 70,
+    "reasons": [
+      "5 route shapes needed adjustment before display."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 5,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 14
+    },
+    "checkedAt": "2026-10-03"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

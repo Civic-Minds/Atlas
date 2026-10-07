@@ -1,4 +1,4 @@
-const PMTILES_URL = 'https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/atlas.pmtiles';
+const PMTILES_BASE_URL = 'https://pub-85dc05d357954b6399c9a44018a3221e.r2.dev/';
 
 export const config = { maxDuration: 60 };
 
@@ -28,8 +28,15 @@ export default {
       return new Response('Method not allowed', { status: 405 });
     }
 
+    const params = new URL(request.url).searchParams;
+    const variant = params.get('variant');
+    // `release_id` avoids stale Vercel cache entries created for the old `release` query.
+    // Keep accepting `release` so older deployed bundles continue to work.
+    const release = params.get('release_id') ?? params.get('release');
+    const releasePath = release && /^release-[a-z0-9]+$/.test(release) ? `releases/${release}/` : '';
+    const filename = `${releasePath}${variant === 'overview' ? 'atlas-overview.pmtiles' : 'atlas.pmtiles'}`;
     const range = request.headers.get('range');
-    const upstream = await fetch(PMTILES_URL, {
+    const upstream = await fetch(`${PMTILES_BASE_URL}${filename}`, {
       method: request.method,
       headers: range ? { Range: range } : undefined,
     });
@@ -38,7 +45,10 @@ export default {
       const value = upstream.headers.get(name);
       if (value) headers.set(name, value);
     }
-    headers.set('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400');
+    headers.set(
+      'Cache-Control',
+      upstream.ok ? 'public, s-maxage=3600, stale-while-revalidate=86400' : 'no-store',
+    );
     headers.set('Access-Control-Allow-Origin', '*');
     headers.set('Access-Control-Expose-Headers', FORWARDED_HEADERS.join(', '));
 

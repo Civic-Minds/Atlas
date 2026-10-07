@@ -14,9 +14,9 @@
     -121.8
   ],
   "feedUrl": "https://metro.kingcounty.gov/gtfs/google_transit.zip",
-  "lastFeedExpiry": "20260828",
-  "lastFeedVersion": "SPR26-160.3-MetroDayShuttleUpdate",
-  "lastRefreshedAt": "2026-08-07",
+  "lastFeedExpiry": "20270326",
+  "lastFeedVersion": "FAL26-161.2",
+  "lastRefreshedAt": "2026-10-03",
   "cities": [
     "Seattle, Washington",
     "Shoreline, Washington",
@@ -29,9 +29,29 @@
     "Sammamish, Washington",
     "Redmond, Washington"
   ],
-  "lastFeedCheckAt": "20260907",
-  "expiredFeedCheckCount": 1,
-  "expiredFeedCheckSince": "20260622",
-  "expiredFeedCheckExpiry": "20260828",
-  "timezone": "America/Los_Angeles"
+  "lastFeedCheckAt": "20261003",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20271231",
+  "timezone": "America/Los_Angeles",
+  "feedQuality": {
+    "status": "degraded",
+    "score": 40,
+    "reasons": [
+      "7 route shapes needed adjustment before display.",
+      "3 route have stops whose frequency differs from the overall route schedule."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 7,
+      "routeHeadwayMismatches": 3,
+      "featureCount": 791
+    },
+    "checkedAt": "2026-10-03"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

@@ -8,6 +8,7 @@ import { periodKeyForHour, isHourInPeriod, SPARKLINE_HOURS, TIME_PERIODS } from 
 import { PERIOD_LABELS } from '../../hooks/useIntervalStats';
 import type { TimePeriod } from '../../hooks/useIntervalStats';
 import type { HeadwayByPeriod, HeadwayByHour } from '../../hooks/useAgencyData';
+import { CONTROL_ACTIVE, CONTROL_INACTIVE } from '../../styles';
 
 const HOURS = SPARKLINE_HOURS;
 
@@ -309,7 +310,7 @@ export function HeadwaySparkline({ byHour, stackedByHour, directionOptions, peri
                     role="tab"
                     aria-selected={expandedDirection === option.key}
                     onClick={() => setExpandedDirection(option.key)}
-                    className={`rounded-full border px-3 py-1.5 text-[10px] font-bold transition-colors ${expandedDirection === option.key ? 'border-[var(--text-primary)] bg-[var(--text-primary)] text-[var(--bg-panel)]' : 'border-[var(--border-primary)] bg-[var(--bg-btn)] text-[var(--text-dim)] hover:text-[var(--text-primary)]'}`}
+                    className={`h-8 px-3 flex items-center justify-center rounded-full border text-[10px] font-bold transition-colors ${expandedDirection === option.key ? CONTROL_ACTIVE : CONTROL_INACTIVE}`}
                   >
                     {option.label}
                   </button>

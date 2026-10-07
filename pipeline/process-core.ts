@@ -50,15 +50,15 @@ export function normalizeNrtAnalysisResult(result: AnalysisResult): AnalysisResu
 }
 
 /**
- * Prefer departures from the feature's physical shape over a headsign-wide pool.
- * A single displayed route can contain multiple patterns with the same headsign;
- * pooling them at the terminal creates a false high-frequency result.
+ * Use all departures for the feature's destination at its terminal stop.
+ * Different shapes can add or omit an intermediate stop while still providing
+ * the same terminal service; using only one shape creates false gaps there.
  */
 export function selectTerminalDepartureTimes(
   shapeTimes: number[] | undefined,
   headsignTimes: number[] | undefined,
 ): number[] | undefined {
-  return shapeTimes ?? headsignTimes;
+  return headsignTimes ?? shapeTimes;
 }
 
 /** Follow the existing display-source choice without borrowing service into an empty branch. */
@@ -234,7 +234,7 @@ export async function processGtfsBuffer(
       if (!serviceIdToDayType.has(id)) serviceIdToDayType.set(id, dayType);
     }
   }
-  const tripGroupByTripId = new Map<string, { routeId: string; shortName: string; dirId: string; dayType: string; headsign: string | null; shapeId: string | null; serviceId: string }>();
+  const tripGroupByTripId = new Map<string, { routeId: string; shortName: string; dirId: string; dayType: string; headsign: string | null; shapeId: string | null; serviceId: string; routeVariant: string | null }>();
   for (const trip of gtfs.trips ?? []) {
     const dayType = serviceIdToDayType.get(trip.service_id);
     if (!dayType) continue;
@@ -257,6 +257,7 @@ export async function processGtfsBuffer(
       headsign,
       shapeId: trip.shape_id || null,
       serviceId: trip.service_id,
+      routeVariant: trip.route_variant?.trim() || null,
     });
   }
   // Max raw stop_time minute seen anywhere for each service_id. Needed below: a service_id
@@ -343,9 +344,10 @@ export async function processGtfsBuffer(
     const cleanedForDedup = resolveDisplayHeadsign(result.headsign, shortName, routeLongName);
     // Deduplicate by (shortName, dir, day, headsign) so separate directions and terminuses
     // aren't collapsed together.
+    const branchKey = result.routeVariant?.trim() || '';
     const dedupeKey = cleanedForDedup
-      ? `${shortName}::${result.dir}::${result.day}::${cleanedForDedup}`
-      : `${shortName}::${result.dir}::${result.day}`;
+      ? `${shortName}::${result.dir}::${result.day}::${cleanedForDedup}::${branchKey}`
+      : `${shortName}::${result.dir}::${result.day}::${branchKey}`;
     const existing = dedupedFeatures.get(dedupeKey);
     const isRailRoute = route?.route_type === '2' || route?.route_type === 2;
     const initialPeriodHeadways = computePeriodHeadways(result.times);
@@ -395,6 +397,7 @@ export async function processGtfsBuffer(
           return byHour;
         })(),
         routeShortName: shortName,
+        routeVariant: result.routeVariant ?? null,
         routeLongName: route?.route_long_name ?? null,
         routeBranch: deriveRouteBranch(options?.slug, shortName, resolveDisplayHeadsign(result.headsign, shortName, routeLongName)),
         routeColor: route?.route_color ?? null,
@@ -613,7 +616,7 @@ export async function processGtfsBuffer(
   const MAX_STOP_DEV2 = MAX_STOP_DEV * MAX_STOP_DEV;
 
   for (const [feature, { shortName, dirId, day }] of featureStopHeadwaySlots) {
-    // Same reasoning for frequentService (#294 follow-on, see docs/DATA_FREQUENT_NETWORK.md).
+    // Same reasoning for frequentService (#294 follow-on, see docs/research/frequent-service-research-2026-09/CRITERIA.md).
     feature.properties.frequentService = false;
     feature.properties.researchFrequentService = { daytime15: false, daytime30: false, extended15: false, extended30: false };
     const gKey = `${shortName}::${dirId}::${day}`;
@@ -830,7 +833,7 @@ export async function processGtfsBuffer(
       : (terminalStopId ? metricStopMap.get(terminalStopId) : undefined);
     // Frequent Network (#294 follow-on): entirely within normal (non-extended-hour) GTFS notation,
     // so unlike Night Service this needs no service_id union across the midnight boundary --
-    // terminalRawTimes alone is the right input. Weekday only, per docs/DATA_FREQUENT_NETWORK.md.
+    // terminalRawTimes alone is the right input. Weekday only, per docs/research/frequent-service-research-2026-09/CRITERIA.md.
     feature.properties.frequentService = (day === 'Weekday' && terminalRawTimes)
       ? hasSustainedFrequentService(terminalRawTimes)
       : false;

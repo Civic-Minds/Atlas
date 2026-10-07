@@ -13,17 +13,36 @@
     34.4,
     -118.8
   ],
-  "lastFeedExpiry": "20260808",
+  "lastFeedExpiry": "20270102",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "20260811",
+  "lastRefreshedAt": "2026-10-03",
   "cities": [
     "Oxnard, California",
     "Ventura, California"
   ],
   "timezone": "America/Vancouver",
   "lastRawArchiveKey": "20260808-26a2b10b0d954217",
-  "lastFeedCheckAt": "20260907",
-  "expiredFeedCheckCount": 2,
-  "expiredFeedCheckSince": "20260622",
-  "expiredFeedCheckExpiry": "20260808"
+  "lastFeedCheckAt": "20261003",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270102",
+  "feedQuality": {
+    "status": "review",
+    "score": 90,
+    "reasons": [
+      "1 route shape needed adjustment before display."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 1,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 99
+    },
+    "checkedAt": "2026-10-03"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

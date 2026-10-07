@@ -8,10 +8,10 @@
   ],
   "feedUrl": "https://www.transitchicago.com/downloads/sch_data/google_transit.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-389/mdb-389-202608070138/mdb-389-202608070138.zip",
-  "lastFeedExpiry": "20261031",
+  "lastFeedExpiry": "20261130",
   "lastFeedVersion": null,
   "region": "Illinois",
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "2026-10-03",
   "cities": [
     "South Shore, Illinois",
     "Chicago Lawn, Illinois",
@@ -24,9 +24,29 @@
     "Near North Side, Illinois",
     "Oak Park, Illinois"
   ],
-  "lastFeedCheckAt": "20260907",
+  "lastFeedCheckAt": "20261003",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261031",
-  "timezone": "America/Chicago"
+  "expiredFeedCheckExpiry": "20261130",
+  "timezone": "America/Chicago",
+  "feedQuality": {
+    "status": "degraded",
+    "score": 40,
+    "reasons": [
+      "4 route shapes needed adjustment before display.",
+      "3 route have stops whose frequency differs from the overall route schedule."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 4,
+      "routeHeadwayMismatches": 3,
+      "featureCount": 964
+    },
+    "checkedAt": "2026-10-03"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

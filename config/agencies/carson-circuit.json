@@ -9,7 +9,7 @@
   "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11488/CarsonGTFS.zip",
   "lastFeedExpiry": "20261126",
   "lastFeedVersion": "20231127",
-  "lastRefreshedAt": "20260811",
+  "lastRefreshedAt": "2026-10-03",
   "cities": [
     "Carson, California",
     "Compton, California",
@@ -17,8 +17,28 @@
   ],
   "timezone": "America/Los_Angeles",
   "lastRawArchiveKey": "20211111-1c359ccdcc3657b6",
-  "lastFeedCheckAt": "20260907",
-  "expiredFeedCheckCount": 2,
-  "expiredFeedCheckSince": "20260622",
-  "expiredFeedCheckExpiry": "20211111"
+  "lastFeedCheckAt": "20261003",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20320103",
+  "feedQuality": {
+    "status": "review",
+    "score": 70,
+    "reasons": [
+      "1 minor schedule issue found while reading the feed.",
+      "2 route have stops whose frequency differs from the overall route schedule."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 1,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 2,
+      "featureCount": 2
+    },
+    "checkedAt": "2026-10-03"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

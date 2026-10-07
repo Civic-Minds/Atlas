@@ -10,7 +10,7 @@ import { findVariantFamily } from '../../utils/routeVariants';
 import { shortenAgencyName, searchOverlayHidesPanel } from '../../utils/format';
 import { normalizeStopName, type StopEntry } from '../../apps/corridor-search';
 import { labelDirectionGroups, sortDirectionGroupIds } from '../../utils/directionLabel';
-import { routeCardDisplayHeadway, routeListDisplayHeadway } from '../../utils/effectiveHeadway';
+import { hasDirectionPeriodService, routeCardDisplayHeadway, routeListDisplayHeadway } from '../../utils/effectiveHeadway';
 import { combineSuggestedRouteNames, suggestedRouteGroupKey } from '../../utils/routeSuggestion';
 import { dedupeCrossDirectionHeadsigns } from '../../utils/crossDirectionDedup';
 import { searchAgencyGroups, prepareAgencyGroupsForDisplay, SEARCH_AGENCY_DISPLAY_LIMIT, type AgencySearchGroup } from '../../utils/agencySearch';
@@ -451,6 +451,13 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   const liveRouteShortName = liveAgencySlug ? currentRoute?.routeShortName ?? null : null;
   const { data: liveData, status: liveStatus } = useLiveAdherence(liveAgencySlug, liveRouteShortName);
 
+  const directionLabelOverrides = useMemo(() => {
+    if (!currentRoute) return undefined;
+    const slug = (currentRoute as any).agencySlug as string | undefined;
+    const agency = slug ? agencies.find(a => a.slug === slug) : undefined;
+    return agency?.directionLabels?.[currentRoute.routeShortName ?? ''];
+  }, [agencies, currentRoute]);
+
   // Group directions by directionId so outbound/inbound are visually separated,
   // and collapse multiple span patterns in the same group into one row.
   const directionGroups = useMemo(() => {
@@ -468,7 +475,10 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       // a normal route-card row just because the gap is numerically defined.
       if (d.tier === 'span') {
         g.span.push(d);
-      } else if (metricValueForPeriod(buildRouteServiceSummary(d).branch, period) != null) {
+      } else if (
+        metricValueForPeriod(buildRouteServiceSummary(d).branch, period) != null
+        || hasDirectionPeriodService(d, period)
+      ) {
         g.realTier.push(d);
       }
       // Else: normal (non-span) service that simply has no data for the
@@ -484,18 +494,25 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       const seen = new Map<string, ShapeProperties>();
       for (const d of g.realTier) {
         // Normalize for dedup (post-clean from data) to handle any remaining variants
-        const key = (d.headsign ?? '').trim().toLowerCase();
+        const headsignKey = (d.headsign ?? '').trim().toLowerCase();
+        const variantKey = d.routeVariant?.trim().toLowerCase();
+        const key = variantKey ? `${headsignKey}::${variantKey}` : headsignKey;
         const existing = seen.get(key);
         const branchValue = metricValueForPeriod(buildRouteServiceSummary(d).branch, period) ?? Infinity;
         const existingValue = existing ? metricValueForPeriod(buildRouteServiceSummary(existing).branch, period) ?? Infinity : Infinity;
         if (!existing || branchValue < existingValue) seen.set(key, d);
       }
       g.realTier = Array.from(seen.values());
+      g.realTier.sort((a, b) => {
+        const aHeadway = routeCardDisplayHeadway(a, period) ?? Infinity;
+        const bHeadway = routeCardDisplayHeadway(b, period) ?? Infinity;
+        return aHeadway - bHeadway;
+      });
     }
     const groups = Array.from(map.values());
     if (groups.length > 1 && routeFeatures.length > 0) {
       const dirIds = groups.map(g => g.dirId);
-      const boundLabels = labelDirectionGroups(routeFeatures, dirIds);
+      const boundLabels = labelDirectionGroups(routeFeatures, dirIds, directionLabelOverrides);
       for (const g of groups) {
         const label = boundLabels.get(g.dirId);
         if (label) g.boundLabel = label;
@@ -507,7 +524,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       dedupeCrossDirectionHeadsigns(groups, routeFeatures);
     }
     return groups;
-  }, [currentRoute, period]);
+  }, [currentRoute, directionLabelOverrides, period]);
 
   const liveRouteInfo = useMemo(() => {
     if (!currentRoute) return null;

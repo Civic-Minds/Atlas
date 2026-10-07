@@ -14,9 +14,9 @@
     -121.7
   ],
   "feedUrl": "https://www.communitytransit.org/docs/default-source/open-data/gtfs/current.zip",
-  "lastFeedExpiry": "20260828",
-  "lastFeedVersion": "20260522-20260828",
-  "lastRefreshedAt": "2026-08-07",
+  "lastFeedExpiry": "20261211",
+  "lastFeedVersion": "20260829-20261211",
+  "lastRefreshedAt": "2026-10-03",
   "cities": [
     "Shoreline, Washington",
     "Marysville, Washington",
@@ -27,9 +27,28 @@
     "Bellevue, Washington",
     "Sammamish, Washington"
   ],
-  "lastFeedCheckAt": "20260907",
-  "expiredFeedCheckCount": 1,
-  "expiredFeedCheckSince": "20260622",
-  "expiredFeedCheckExpiry": "20260828",
-  "timezone": "America/Los_Angeles"
+  "lastFeedCheckAt": "20261003",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261211",
+  "timezone": "America/Los_Angeles",
+  "feedQuality": {
+    "status": "review",
+    "score": 80,
+    "reasons": [
+      "2 route have stops whose frequency differs from the overall route schedule."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 2,
+      "featureCount": 188
+    },
+    "checkedAt": "2026-10-03"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

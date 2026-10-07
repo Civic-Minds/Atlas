@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 
-const catalogPath = 'docs/research/frequent-service-catalog.json';
-const outputPath = 'docs/research/system-map-audit-2026-09.json';
+const catalogPath = 'docs/research/frequent-service-research-2026-09/catalog.json';
+const outputPath = 'docs/research/system-map-audit-2026-09/data.json';
 const preservedMapDirectory = '/Users/ryan/Desktop/Data/System Maps/Atlas Frequent Service';
 const catalog = JSON.parse(fs.readFileSync(catalogPath, 'utf8'));
 

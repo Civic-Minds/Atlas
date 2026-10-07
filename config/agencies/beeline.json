@@ -13,6 +13,7 @@
     -73.6597
   ],
   "feedUrl": "https://westchester-gmv.itoworld.com/production/ito_westchester_county_gtfs.zip",
+  "mdbFeedUrl": "https://s3.amazonaws.com/datatools-511ny/public/Westchester_County_Bee-Line_System.zip",
   "lastFeedExpiry": "20261019",
   "lastFeedVersion": "20260728_180759",
   "lastRefreshedAt": "2026-07-29",
@@ -28,5 +29,13 @@
     "The Bronx, New York",
     "Kings Bridge, New York"
   ],
-  "timezone": "America/New_York"
+  "timezone": "America/New_York",
+  "lastFeedCheckAt": "20261003",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
+  "expiredFeedCheckExpiry": "20260927",
+  "feedRefreshStatus": "stale",
+  "feedRefreshError": "all available feeds expired (latest 20260927)",
+  "feedRefreshErrorAt": "20261003",
+  "feedRefreshRetryCount": 1
 }

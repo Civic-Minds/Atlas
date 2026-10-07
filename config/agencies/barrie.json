@@ -14,22 +14,22 @@
     -79.19
   ],
   "feedUrl": "http://www.myridebarrie.ca/gtfs/google_transit.zip",
-  "lastFeedExpiry": "20261031",
-  "lastFeedVersion": "20260628vs4",
+  "lastFeedExpiry": "20261226",
+  "lastFeedVersion": "20260920",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-barrie-transit-gtfs-3.zip?alt=media",
-  "lastRefreshedAt": "2026-09-07",
+  "lastRefreshedAt": "2026-10-03",
   "cities": [
     "Barrie, Ontario"
   ],
-  "lastFeedCheckAt": "20260907",
+  "lastFeedCheckAt": "20261003",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261031",
+  "expiredFeedCheckExpiry": "20261226",
   "feedQuality": {
     "status": "review",
     "score": 90,
     "reasons": [
-      "1 route frequency needs checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+      "1 route has stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
       "validationErrors": 0,
@@ -38,7 +38,11 @@
       "routeHeadwayMismatches": 1,
       "featureCount": 50
     },
-    "checkedAt": "2026-09-07"
+    "checkedAt": "2026-10-03"
   },
-  "timezone": "America/New_York"
+  "timezone": "America/New_York",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

@@ -11,7 +11,7 @@
   "lastFeedExpiry": "20261212",
   "lastFeedVersion": "",
   "region": "California",
-  "lastRefreshedAt": "2026-09-17",
+  "lastRefreshedAt": "2026-10-03",
   "supplementalFeedUrls": [
     "https://gitlab.com/LACMTA/gtfs_rail/raw/master/gtfs_rail.zip"
   ],
@@ -27,7 +27,7 @@
     "North Hills, California",
     "North Hollywood, California"
   ],
-  "lastFeedCheckAt": "20260917",
+  "lastFeedCheckAt": "20261003",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270401",
@@ -35,16 +35,20 @@
     "status": "review",
     "score": 70,
     "reasons": [
-      "3 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+      "3 route have stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 3,
-      "featureCount": 1002
+      "featureCount": 1004
     },
-    "checkedAt": "2026-09-17"
+    "checkedAt": "2026-10-03"
   },
-  "timezone": "America/Los_Angeles"
+  "timezone": "America/Los_Angeles",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

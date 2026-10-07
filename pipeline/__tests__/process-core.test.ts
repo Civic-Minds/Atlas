@@ -59,11 +59,11 @@ describe('normalizeNrtAnalysisResult', () => {
 });
 
 describe('selectTerminalDepartureTimes', () => {
-  it('prefers the feature shape when a headsign combines multiple schedule patterns', () => {
+  it('prefers destination-scoped departures when a headsign combines schedule patterns', () => {
     const shapeTimes = [600, 630, 660];
     const headsignTimes = [600, 604, 630, 634, 660];
 
-    expect(selectTerminalDepartureTimes(shapeTimes, headsignTimes)).toBe(shapeTimes);
+    expect(selectTerminalDepartureTimes(shapeTimes, headsignTimes)).toBe(headsignTimes);
   });
 
   it('uses headsign departures when no shape-specific departures exist', () => {
@@ -72,9 +72,9 @@ describe('selectTerminalDepartureTimes', () => {
     expect(selectTerminalDepartureTimes(undefined, headsignTimes)).toBe(headsignTimes);
   });
 
-  it('preserves an empty scoped array instead of borrowing another pattern', () => {
+  it('preserves an empty destination-scoped array instead of borrowing another pattern', () => {
     const empty: number[] = [];
-    expect(selectTerminalDepartureTimes(empty, [360, 370, 380])).toBe(empty);
+    expect(selectTerminalDepartureTimes(empty, [360, 370, 380])).toEqual([360, 370, 380]);
   });
 });
 

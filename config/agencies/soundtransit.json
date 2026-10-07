@@ -14,9 +14,9 @@
     -121.7
   ],
   "feedUrl": "https://gtfs.sound.obaweb.org/prod/40_gtfs.zip",
-  "lastFeedExpiry": "20260829",
-  "lastFeedVersion": "SC-Spring-2026.8",
-  "lastRefreshedAt": "2026-08-10",
+  "lastFeedExpiry": "20270326",
+  "lastFeedVersion": "SC-Fall-2026.3",
+  "lastRefreshedAt": "2026-10-03",
   "cities": [
     "Seattle, Washington",
     "Tacoma, Washington",
@@ -29,9 +29,28 @@
     "Kent, Washington",
     "Federal Way, Washington"
   ],
-  "lastFeedCheckAt": "20260907",
-  "expiredFeedCheckCount": 1,
-  "expiredFeedCheckSince": "20260622",
-  "expiredFeedCheckExpiry": "20260829",
-  "timezone": "America/Los_Angeles"
+  "lastFeedCheckAt": "20261003",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270328",
+  "timezone": "America/Los_Angeles",
+  "feedQuality": {
+    "status": "review",
+    "score": 80,
+    "reasons": [
+      "2 route have stops whose frequency differs from the overall route schedule."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 2,
+      "featureCount": 27
+    },
+    "checkedAt": "2026-10-03"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

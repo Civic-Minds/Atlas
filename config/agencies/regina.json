@@ -14,15 +14,35 @@
     -104.44
   ],
   "feedUrl": "https://opengis.regina.ca/reginagtfs/google_transit.zip",
-  "lastFeedExpiry": "20260822",
+  "lastFeedExpiry": "20270109",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "2026-10-03",
   "cities": [
     "Regina, Saskatchewan"
   ],
-  "lastFeedCheckAt": "20260907",
-  "expiredFeedCheckCount": 2,
-  "expiredFeedCheckSince": "20260622",
-  "expiredFeedCheckExpiry": "20260822",
-  "timezone": "America/Regina"
+  "lastFeedCheckAt": "20261003",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270109",
+  "timezone": "America/Regina",
+  "feedQuality": {
+    "status": "review",
+    "score": 60,
+    "reasons": [
+      "5 route shapes needed adjustment before display.",
+      "1 route has stops whose frequency differs from the overall route schedule."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 5,
+      "routeHeadwayMismatches": 1,
+      "featureCount": 95
+    },
+    "checkedAt": "2026-10-03"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

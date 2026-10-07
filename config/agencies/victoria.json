@@ -8,15 +8,15 @@
   ],
   "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=48",
   "lastFeedExpiry": "20270103",
-  "lastFeedVersion": "202609070/20260906 21:00:00/20260907 04:00:00",
-  "lastRefreshedAt": "2026-09-07",
+  "lastFeedVersion": "202610030/20261002 21:00:00/20261003 04:00:00",
+  "lastRefreshedAt": "2026-10-03",
   "websiteUrl": "https://www.bctransit.com/",
   "cities": [
     "Victoria, British Columbia",
     "Saanich, British Columbia"
   ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2571/mdb-2571-202608100023/mdb-2571-202608100023.zip",
-  "lastFeedCheckAt": "20260907",
+  "lastFeedCheckAt": "20261003",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270103",
@@ -24,7 +24,7 @@
     "status": "review",
     "score": 80,
     "reasons": [
-      "2 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+      "2 route have stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
       "validationErrors": 0,
@@ -33,7 +33,11 @@
       "routeHeadwayMismatches": 2,
       "featureCount": 348
     },
-    "checkedAt": "2026-09-07"
+    "checkedAt": "2026-10-03"
   },
-  "timezone": "America/Vancouver"
+  "timezone": "America/Vancouver",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

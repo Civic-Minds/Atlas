@@ -6,11 +6,11 @@
     26.7,
     -80.1
   ],
-  "feedUrl": "https://files.mobilitydatabase.org/mdb-332/mdb-332-202605190002/mdb-332-202605190002.zip",
-  "lastFeedExpiry": "20260919",
-  "lastFeedVersion": "20260511",
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-332/latest.zip",
+  "lastFeedExpiry": "20270109",
+  "lastFeedVersion": "20260915",
   "region": "Florida",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-10-03",
   "cities": [
     "West Palm Beach, Florida",
     "Boynton Beach, Florida",
@@ -23,9 +23,28 @@
     "Coconut Creek, Florida",
     "Coral Springs, Florida"
   ],
-  "lastFeedCheckAt": "20260907",
+  "lastFeedCheckAt": "20261003",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20260919",
-  "timezone": "America/New_York"
+  "expiredFeedCheckExpiry": "20270109",
+  "timezone": "America/New_York",
+  "feedQuality": {
+    "status": "review",
+    "score": 70,
+    "reasons": [
+      "12 route shapes needed adjustment before display."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 12,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 181
+    },
+    "checkedAt": "2026-10-03"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

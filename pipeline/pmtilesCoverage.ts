@@ -25,7 +25,7 @@ export function lonLatToTile(lon: number, lat: number, zoom: number): { x: numbe
  * The center tile is always included so small agencies cannot disappear from
  * the check when a large fallback area is sampled with a sparse grid.
  */
-export function tilesForAgency(agency: CoverageAgency, zoom: number): Array<{ x: number; y: number }> {
+export function tilesForAgency(agency: CoverageAgency, zoom: number, maxTiles = MAX_TILES_PER_AGENCY): Array<{ x: number; y: number }> {
   const [centerLat, centerLon] = agency.center;
   const [s, w, n, e] = agency.bbox ?? [
     centerLat - FALLBACK_PAD.lat,
@@ -47,12 +47,12 @@ export function tilesForAgency(agency: CoverageAgency, zoom: number): Array<{ x:
     if (!tiles.some(existing => existing.x === tile.x && existing.y === tile.y)) tiles.push(tile);
   };
 
-  if (width * height <= MAX_TILES_PER_AGENCY) {
+  if (width * height <= maxTiles) {
     for (let x = xMin; x <= xMax; x++) {
       for (let y = yMin; y <= yMax; y++) addTile({ x, y });
     }
   } else {
-    const gridDim = Math.max(1, Math.floor(Math.sqrt(MAX_TILES_PER_AGENCY)));
+    const gridDim = Math.max(1, Math.floor(Math.sqrt(maxTiles)));
     for (let i = 0; i < gridDim; i++) {
       for (let j = 0; j < gridDim; j++) {
         addTile({

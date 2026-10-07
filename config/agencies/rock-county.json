@@ -20,14 +20,14 @@
     "Rock County, Wisconsin"
   ],
   "timezone": "America/Chicago",
-  "lastFeedExpiry": "20261007",
+  "lastFeedExpiry": "20261102",
   "lastFeedVersion": "20250228",
-  "lastRefreshedAt": "2026-09-08",
+  "lastRefreshedAt": "2026-10-03",
   "feedQuality": {
     "status": "review",
     "score": 90,
     "reasons": [
-      "1 schedule-data warning — Atlas found a minor issue while reading the schedule."
+      "1 minor schedule issue found while reading the feed."
     ],
     "metrics": {
       "validationErrors": 0,
@@ -36,6 +36,14 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 21
     },
-    "checkedAt": "2026-09-08"
-  }
+    "checkedAt": "2026-10-03"
+  },
+  "lastFeedCheckAt": "20261003",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20271231",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }
