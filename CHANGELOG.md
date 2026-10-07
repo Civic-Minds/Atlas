@@ -7,7 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - **Export and Share now support Social (1200×630), Standard (1600×900), and High resolution (2400×1350) PNGs, with equal-weight actions and click-outside dismissal.**
-- **Night Service now offers 30-minute and 60-minute filters in the shared header layout for the fixed 2am–6am window.**
+- **Night Service now uses the shared header for its 30-minute and 60-minute filters and search, keeping the panel from duplicating controls.**
 - **Night Service route cards now clear the bottom map controls instead of overlapping attribution and feedback controls.**
 - **On-demand service areas now respect the selected day and time period, so zones disappear after their published service hours end.**
 - **Frequent Service navigation now returns to the main frequency map when the Atlas logo is clicked.**
