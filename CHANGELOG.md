@@ -14,6 +14,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Map controls now put About Atlas before Feedback and map attribution.**
 - **History’s agency chooser now matches Atlas’s shared panel spacing and list treatment.**
 - **History agency selection now fits and highlights the complete network instead of zooming to one centre point.**
+- **About Atlas now leads with clear ways to use the map and research views.**
 - **Search fields now clear immediately when the X is pressed.**
 - **Settings now use a cleaner text-first layout, with appearance, map, performance, and filter controls presented consistently.**
 - **The info panel now links directly to Documentation alongside Terms and Privacy.**
