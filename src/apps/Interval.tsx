@@ -912,6 +912,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
         setLivePollingOnly={setLivePollingOnly}
         setSelectedAgencySlug={setSelectedAgencySlug}
         fareView={fareView}
+        nightServiceView={nightServiceView}
         fareOverrides={fareOverrides}
         sidebarLeft={sidebarLeft}
         searchBarWidth={searchBarWidth}
