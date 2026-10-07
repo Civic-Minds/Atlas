@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **The Research landing page now starts with its actual title instead of repeating “Research” as a label.**
 - **The Research page now introduces Frequent Service through its explanatory story before sending users to the interactive map.**
 - **History now fades unselected routes when a route is selected, making the active historical line easier to follow on the map.**
 - **History now exposes current route-mode filters, and its header no longer offers unrelated Research navigation.**
