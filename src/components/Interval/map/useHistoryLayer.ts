@@ -55,7 +55,11 @@ export function useHistoryLayer(
       const features = historyOverlay.historicalRouteGeometries.map(r => ({
         type: 'Feature' as const,
         geometry: { type: 'LineString' as const, coordinates: r.coordinates },
-        properties: { color: getTierColor(String(Math.min(60, Math.ceil(r.headway / 5) * 5)), colorMode) || '#3b82f6' }
+        properties: {
+          color: getTierColor(String(Math.min(60, Math.ceil(r.headway / 5) * 5)), colorMode) || '#3b82f6',
+          routeShortName: r.routeShortName,
+          selected: Boolean(historyOverlay.routeShortName && r.routeShortName === historyOverlay.routeShortName),
+        }
       }));
       source.setData({ type: 'FeatureCollection', features });
     } else {
