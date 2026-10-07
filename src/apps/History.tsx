@@ -4,7 +4,7 @@ import { useHistoryMapOverlay } from '../context/HistoryMapOverlay';
 import { R2_PUBLIC_URL, type HeadwayByPeriod } from '../../shared/config';
 import { FLOATING_CARD, PANEL_ENTER, TRANSITION_SLOW, SEARCH_PILL, SEARCH_FIELD, LIST_ROW, AGENCY_LIST_ROW, AGENCY_LIST_PRIMARY, PANEL_TITLE_BAR, PANEL_TITLE, Z_PANEL, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH, CONTROL_ACTIVE } from '../styles';
 import RouteListRow from '../components/RouteListRow';
-import { shortenAgencyName } from '../utils/format';
+import { shortenAgencyName, titleCase } from '../utils/format';
 import { useColorVision } from '../context/ColorVisionContext';
 import RegionFilterPills from '../components/RegionFilterPills';
 import {
@@ -96,11 +96,6 @@ function formatXLabel(label: string): string {
   return label;
 }
 
-function toTitleCase(s: string): string {
-  if (!s || s !== s.toUpperCase()) return s;
-  return s.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
-}
-
 function RouteHistoryCard({
   route,
   agencyName,
@@ -187,7 +182,7 @@ function RouteHistoryCard({
           <div className="min-w-0 flex-1 flex items-baseline gap-1.5">
             <span className="text-sm font-black text-[var(--text-primary)] shrink-0">{route.routeShortName}</span>
             {route.routeName && (
-              <span className="text-xs font-semibold text-[var(--text-dim)] truncate">{toTitleCase(route.routeName)}</span>
+              <span className="text-xs font-semibold text-[var(--text-dim)] truncate">{titleCase(route.routeName)}</span>
             )}
           </div>
           {snaps.length >= 2 && (
@@ -372,7 +367,7 @@ function HistoryAgencyPanel({
               <h2 className="text-sm font-black text-[var(--text-primary)] leading-tight truncate">{shortenAgencyName(agencyHistory.name)}</h2>
             </div>
             <p className="text-[10px] font-bold text-[var(--text-muted)] tracking-wide mt-0.5">
-              {agencyHistory.region} · {agencyHistory.routes.length} routes with historical data · {minYear === maxYear ? minYear : `${minYear}–${maxYear}`}
+              {agencyHistory.region} · {agencyHistory.routes.length} routes · {minYear === maxYear ? minYear : `${minYear}–${maxYear}`}
             </p>
             {!routeQuery && (
               <p className="text-[9px] text-[var(--text-dim)] mt-1">Routes ordered by biggest frequency change</p>
@@ -409,7 +404,7 @@ function HistoryAgencyPanel({
           <RouteListRow
             key={route.routeShortName}
             shortName={route.routeShortName}
-            name={route.routeName}
+            name={titleCase(route.routeName)}
             onClick={() => onRouteSelect(route.routeShortName)}
             variant="spaced"
             right={<ChevronRight className="w-3 h-3 text-[var(--text-dim)] group-hover:text-[var(--accent)] transition-colors shrink-0 ml-3" />}
