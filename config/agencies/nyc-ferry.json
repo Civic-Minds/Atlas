@@ -16,8 +16,8 @@
   "feedUrl": "https://files.mobilitydatabase.org/mdb-515/latest.zip",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-nyc-ferry-gtfs-515.zip?alt=media",
   "lastFeedExpiry": "20271231",
-  "lastFeedVersion": "20261002",
-  "lastRefreshedAt": "2026-10-03",
+  "lastFeedVersion": "20261004",
+  "lastRefreshedAt": "2026-10-07",
   "cities": [
     "South Ozone Park, New York",
     "Sheepshead Bay, New York",
@@ -30,7 +30,7 @@
     "Parkchester, New York",
     "Park Slope, New York"
   ],
-  "lastFeedCheckAt": "20261003",
+  "lastFeedCheckAt": "20261007",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
@@ -45,7 +45,7 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 47
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-10-07"
   },
   "timezone": "America/New_York",
   "feedRefreshStatus": "current",

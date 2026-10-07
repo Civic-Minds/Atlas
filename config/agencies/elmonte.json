@@ -9,7 +9,7 @@
   "lastFeedExpiry": "20271125",
   "lastFeedVersion": "",
   "region": "California",
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-10-07",
   "websiteUrl": "http://www.ci.el-monte.ca.us/Government/PublicWorks/Transportation.aspx",
   "cities": [
     "El Monte, California"
@@ -17,7 +17,7 @@
   "timezone": "America/Los_Angeles",
   "lastRawArchiveKey": "20251031-7b5bc958bf995eaa",
   "pmtilesPending": true,
-  "lastFeedCheckAt": "20261003",
+  "lastFeedCheckAt": "20261007",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271126",
@@ -34,7 +34,7 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 0
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-10-07"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,

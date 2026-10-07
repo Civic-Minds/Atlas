@@ -8,17 +8,17 @@
     -71.802
   ],
   "feedUrl": "https://gtfs.wrta.cadavl.com/WRTA/GTFS/GTFS_WRTA.zip",
-  "lastFeedExpiry": "20270102",
+  "lastFeedExpiry": "20270104",
   "lastFeedVersion": null,
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-massachusetts-worcester-regional-transit-authority-wrta-gtfs-432.zip?alt=media",
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-10-07",
   "cities": [
     "Worcester, Massachusetts"
   ],
-  "lastFeedCheckAt": "20261003",
+  "lastFeedCheckAt": "20261007",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20270102",
+  "expiredFeedCheckExpiry": "20270104",
   "timezone": "America/New_York",
   "feedQuality": {
     "status": "review",
@@ -33,7 +33,7 @@
       "routeHeadwayMismatches": 1,
       "featureCount": 121
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-10-07"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,

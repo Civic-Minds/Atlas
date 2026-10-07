@@ -16,11 +16,11 @@
   "region": "Virginia",
   "lastFeedExpiry": "",
   "lastFeedVersion": "09/27/26",
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-10-07",
   "cities": [
     "Roanoke, Virginia"
   ],
-  "lastFeedCheckAt": "20261003",
+  "lastFeedCheckAt": "20261007",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",
@@ -39,7 +39,7 @@
       "routeHeadwayMismatches": 1,
       "featureCount": 63
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-10-07"
   },
   "timezone": "America/New_York",
   "feedRefreshStatus": "current",

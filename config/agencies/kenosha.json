@@ -10,7 +10,7 @@
   "mdbFeedUrl": "https://kenoshatransit.com/gtfs",
   "lastFeedExpiry": "",
   "lastFeedVersion": "Route 1",
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-10-07",
   "region": "Wisconsin",
   "bbox": [
     42.4973,
@@ -23,7 +23,7 @@
   ],
   "timezone": "America/Chicago",
   "lastRawArchiveKey": "20240901-de364d144f1f2a51",
-  "lastFeedCheckAt": "20261003",
+  "lastFeedCheckAt": "20261007",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",
@@ -40,7 +40,7 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 29
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-10-07"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,

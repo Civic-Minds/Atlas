@@ -8,13 +8,13 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-2350/latest.zip",
   "lastFeedExpiry": "20261205",
-  "lastFeedVersion": "(2608_v5_BusRail_MERGED_Landlines)",
+  "lastFeedVersion": "(2608_MidSignup_v11_BusRail_MERGED_Landlines)",
   "region": "Hawaii",
-  "lastRefreshedAt": "2026-08-24",
+  "lastRefreshedAt": "2026-10-07",
   "cities": [
     "Honolulu, Hawaii"
   ],
-  "lastFeedCheckAt": "20261003",
+  "lastFeedCheckAt": "20261007",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261205",
@@ -27,9 +27,13 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 640
+      "featureCount": 639
     },
-    "checkedAt": "2026-08-24"
+    "checkedAt": "2026-10-07"
   },
-  "timezone": "Pacific/Honolulu"
+  "timezone": "Pacific/Honolulu",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

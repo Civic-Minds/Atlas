@@ -26,7 +26,7 @@
     "Saint-Basile-le-Grand, Quebec"
   ],
   "timezone": "America/Montreal",
-  "lastFeedCheckAt": "20261003",
+  "lastFeedCheckAt": "20261007",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270103",
@@ -44,8 +44,8 @@
     "checkedAt": "2026-09-22"
   },
   "lastRefreshedAt": "2026-09-22",
-  "feedRefreshStatus": "current",
-  "feedRefreshError": null,
-  "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshStatus": "stale",
+  "feedRefreshError": "HTTP 404",
+  "feedRefreshErrorAt": "20261007",
+  "feedRefreshRetryCount": 1
 }

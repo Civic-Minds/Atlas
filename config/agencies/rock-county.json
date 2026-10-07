@@ -20,9 +20,9 @@
     "Rock County, Wisconsin"
   ],
   "timezone": "America/Chicago",
-  "lastFeedExpiry": "20261102",
+  "lastFeedExpiry": "20261105",
   "lastFeedVersion": "20250228",
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-10-07",
   "feedQuality": {
     "status": "review",
     "score": 90,
@@ -36,9 +36,9 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 21
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-10-07"
   },
-  "lastFeedCheckAt": "20261003",
+  "lastFeedCheckAt": "20261007",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
