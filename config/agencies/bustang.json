@@ -15,8 +15,8 @@
     -104.8
   ],
   "lastFeedExpiry": "20270102",
-  "lastFeedVersion": "Sep26-37185-8-10-20260929-133439",
-  "lastRefreshedAt": "2026-10-03",
+  "lastFeedVersion": "Sep26-37209-10-11-20261003-082236",
+  "lastRefreshedAt": "2026-10-07",
   "cities": [
     "Denver, Colorado",
     "Colorado Springs, Colorado",
@@ -27,7 +27,7 @@
     "Boulder, Colorado",
     "Centennial, Colorado"
   ],
-  "lastFeedCheckAt": "20261003",
+  "lastFeedCheckAt": "20261007",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270102",
@@ -45,7 +45,7 @@
       "routeHeadwayMismatches": 5,
       "featureCount": 31
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-10-07"
   },
   "timezone": "America/Denver",
   "feedRefreshStatus": "current",

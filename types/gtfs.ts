@@ -266,8 +266,10 @@ export interface AnalysisCriteria {
     dayTypes: Partial<Record<DayType, DayTypeCriteria>>;
     graceMinutes: number;         // minimum absolute grace (floor); actual grace = max(this, T × gracePercent)
     gracePercent: number;         // grace as fraction of tier (e.g. 0.15 → tier=60 gets 9 min grace)
-    maxGraceViolations: number;   // minimum allowed violations (floor); actual = max(this, gaps × violationPercent)
-    violationPercent: number;     // max fraction of gaps allowed to be in grace zone (e.g. 0.30)
+    maxGraceViolations: number;   // minimum allowed violations (floor); production default is 0
+    violationPercent: number;     // fallback fraction of gaps allowed in the grace zone
+    /** Tier-specific internal near-miss percentages; production also caps the result at 3. */
+    violationPercentByTier?: Record<number, number>;
     /** Override tiers for rail vs surface modes */
     modeTierOverrides?: Record<string, number[]>;
     isDefault?: boolean;
@@ -288,6 +290,10 @@ export interface AnalysisResult {
     avgHeadway: number;
     medianHeadway: number;
     tier: string;
+    /** Weekday service produced different tiers on different actual weekdays. */
+    weekdayTierVariation?: boolean;
+    /** Whether a genuine opening or closing service edge used the small edge-gap allowance. */
+    edgeGapAllowance?: 'opening' | 'closing' | 'both';
     /** Whether service is regular, scheduled only during part of the day, or genuinely irregular. */
     serviceClass?: 'regular' | 'time-limited' | 'irregular';
     tripCount: number;

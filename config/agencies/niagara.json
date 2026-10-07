@@ -28,9 +28,9 @@
     "301",
     "401"
   ],
-  "lastFeedExpiry": "20261010",
-  "lastFeedVersion": "S1000285",
-  "lastRefreshedAt": "2026-08-27",
+  "lastFeedExpiry": "20261128",
+  "lastFeedVersion": "S1000288",
+  "lastRefreshedAt": "2026-10-07",
   "websiteUrl": "https://nrtransit.ca/",
   "cities": [
     "St. Catharines, Ontario",
@@ -48,12 +48,16 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 450
+      "featureCount": 448
     },
-    "checkedAt": "2026-08-27"
+    "checkedAt": "2026-10-07"
   },
-  "lastFeedCheckAt": "20261003",
+  "lastFeedCheckAt": "20261007",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261010"
+  "expiredFeedCheckExpiry": "20261128",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

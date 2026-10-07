@@ -7,17 +7,34 @@
     -80.84
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-2265/mdb-2265-202606120001/mdb-2265-202606120001.zip",
-  "lastFeedExpiry": "20261004",
+  "lastFeedExpiry": "20270131",
   "lastFeedVersion": null,
   "region": "North Carolina",
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "2026-10-07",
   "cities": [
     "Charlotte, North Carolina",
     "Huntersville, North Carolina"
   ],
-  "lastFeedCheckAt": "20261003",
+  "lastFeedCheckAt": "20261007",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261004",
-  "timezone": "America/New_York"
+  "expiredFeedCheckExpiry": "20270131",
+  "timezone": "America/New_York",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 301
+    },
+    "checkedAt": "2026-10-07"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

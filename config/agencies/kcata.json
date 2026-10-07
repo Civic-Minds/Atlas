@@ -20,9 +20,13 @@
     "Lee's Summit, Missouri",
     "Shawnee, Kansas"
   ],
-  "lastFeedCheckAt": "20261003",
-  "expiredFeedCheckCount": 0,
-  "expiredFeedCheckSince": null,
+  "lastFeedCheckAt": "20261007",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
   "expiredFeedCheckExpiry": "20261003",
-  "timezone": "America/Chicago"
+  "timezone": "America/Chicago",
+  "feedRefreshStatus": "stale",
+  "feedRefreshError": "all available feeds expired (latest 20261003)",
+  "feedRefreshErrorAt": "20261007",
+  "feedRefreshRetryCount": 1
 }

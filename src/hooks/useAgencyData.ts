@@ -16,6 +16,8 @@ export interface ShapeProperties {
   routeBranch?: string | null;
   directionId: number;
   tier: string | null;
+  weekdayTierVariation?: boolean;
+  edgeGapAllowance?: 'opening' | 'closing' | 'both';
   serviceClass?: 'regular' | 'time-limited' | 'irregular';
   headway: number | null;
   headwayByPeriod?: HeadwayByPeriod;

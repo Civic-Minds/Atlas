@@ -8,7 +8,7 @@ import { FLOATING_CARD, PANEL_ENTER, CARD_NOTICE_FOOTER, CARD_NOTICE_INLINE, Z_P
 import { getFareColor, HEADWAY_TIERS } from '../../utils/colors';
 import { useColorVision } from '../../context/ColorVisionContext';
 import { effectiveMode, GTFS_RAIL_MODE_LABELS, isRailReplacementBus, VIRTUAL_LRT_MODE } from '../../../shared/modes';
-import { agencyDisplayParts, getRouteLabel, titleCase } from '../../utils/format';
+import { agencyDisplayParts, getRouteLabel, shouldHideNumericRouteShortName, titleCase } from '../../utils/format';
 import type { DayType, TimePeriod, ShapeProperties } from '../../hooks/useIntervalStats';
 import { passesRouteFilter } from '../../hooks/useIntervalStats';
 import { routeListDisplayHeadway } from '../../utils/effectiveHeadway';
@@ -253,10 +253,13 @@ function RouteListSection({
       {routes.map(r => {
         const isLive = FEATURES.live && liveShortNames.has(r.shortName);
         const key = `${r.agencySlug}::${r.routeId}`;
+        const label = shouldHideNumericRouteShortName(r.shortName, r.longName, r.routeType)
+          ? r.longName ?? r.shortName
+          : getRouteLabel(r.shortName, r.longName);
         return (
           <div key={r.routeId} className="px-3 py-1 hover:bg-[var(--bg-btn-hover)] transition-colors">
           <CardDirectionRow
-            label={titleCase(getRouteLabel(r.shortName, r.longName))}
+            label={titleCase(label)}
             headway={r.headway ?? undefined}
             subLabel={isRailReplacementBus({ routeType: r.routeType, routeLongName: r.longName })
                 ? 'Rail replacement bus'

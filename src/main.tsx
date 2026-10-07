@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router';
 import App from './App';
 import LegalPage from './LegalPage';
-import ResearchPage from './ResearchPage';
+import AboutDocsPage from './AboutDocsPage';
 import AboutPage from './AboutPage';
 import './styles/index.css';
 import { FEATURES } from '../shared/config';
@@ -11,14 +11,13 @@ import { inject } from '@vercel/analytics';
 import { injectSpeedInsights } from '@vercel/speed-insights';
 import AnalyticsConsent from './components/AnalyticsConsent';
 import { ColorVisionProvider } from './context/ColorVisionContext';
-import { isInternalTestSession } from './lib/internalTest';
 
 const DiagnosticsUnevenPage = React.lazy(() => import('./DiagnosticsUnevenPage'));
 const DiagnosticsPerformancePage = React.lazy(() => import('./DiagnosticsPerformancePage'));
 
 // Collect page views only from deployed builds; local development should not
 // pollute the production and beta analytics data.
-if (import.meta.env.PROD && !isInternalTestSession()) {
+if (import.meta.env.PROD) {
   inject();
   injectSpeedInsights();
 }
@@ -45,8 +44,8 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           )}
           <Route path="/terms" element={<LegalPage document="terms" />} />
           <Route path="/privacy" element={<LegalPage document="privacy" />} />
+          <Route path="/about/docs" element={<AboutDocsPage />} />
           <Route path="/about" element={<AboutPage />} />
-          {FEATURES.researchApps && <Route path="/research" element={<ResearchPage />} />}
           <Route path="/*" element={<App />} />
           </Routes>
         </React.Suspense>

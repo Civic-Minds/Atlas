@@ -17,11 +17,11 @@
   "region": "North Dakota",
   "lastFeedExpiry": "",
   "lastFeedVersion": "9/7/2026 Schedule",
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-10-07",
   "cities": [
     "Fargo, North Dakota"
   ],
-  "lastFeedCheckAt": "20261003",
+  "lastFeedCheckAt": "20261007",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",
@@ -36,7 +36,7 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 55
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-10-07"
   },
   "timezone": "America/Chicago",
   "feedRefreshStatus": "current",

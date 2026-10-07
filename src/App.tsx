@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router';
-import { Map as MapIcon, Search, X, Info, History as HistoryIcon, BookOpen, ChevronDown } from 'lucide-react';
+import { Map as MapIcon, Search, X, Info, History as HistoryIcon, ChevronDown, FlaskConical } from 'lucide-react';
 import { PILL_SURFACE, FLOATING_CARD, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_HEADER, Z_MODAL_TOP, SIDEBAR_LEFT_FALLBACK, APP_TAB_ACTIVE, APP_TAB_INACTIVE, ICON_BTN } from './styles';
 import { R2_PUBLIC_URL, getAgencyArtifactUrls, getAgencyCatalogUrl, FEATURES, FEATURE_ROUTES, ATLAS_MODE } from '../shared/config';
 import { isAgencyVisibleInBrowser } from '../shared/agencyVisibility';
@@ -31,7 +31,9 @@ import type { FeedQuality } from '../shared/feedQuality';
 import { trackEvent, trackPageView } from './lib/analytics';
 import { markAtlasOnce } from './lib/performance';
 import { parseFrequentServiceDays, type FrequentServiceFrequency, type FrequentServiceWindow } from '../shared/frequentService';
+import type { NightServiceFrequency } from '../shared/nightService';
 const FrequentServiceStory = React.lazy(() => import('./apps/FrequentServiceStory'));
+const ResearchPage = React.lazy(() => import('./apps/ResearchPage'));
 import { BWG_ON_DEMAND_AGENCY, CALEDON_ON_DEMAND_AGENCY, BRAMPTON_ON_DEMAND_AGENCY, C_TRAN_CURRENT_SERVICE_AREA, GRT_ROUTE_79_SERVICE_AREA, HAMILTON_MY_RIDE_SERVICE_AREA, METRO_MICRO_SERVICE_AREA, WATA_PARATRANSIT_SERVICE_AREA } from './data/onDemandServiceAreas';
 import type { OnDemandAvailability } from '../shared/onDemandAvailability';
 
@@ -91,6 +93,8 @@ export interface Agency {
   cities?: string[];
   /** IANA timezone from GTFS agency.txt (e.g. "America/Toronto"). Absent for agencies processed before this field existed — see #245. */
   timezone?: string | null;
+  /** The current GTFS artifact was received or maintained manually. */
+  manualFeedSource?: boolean;
   /** Agency-published direction names keyed by route short name and GTFS direction_id. */
   directionLabels?: Record<string, Record<string, string>>;
   // Pipeline / source fields (present in the JSON even if not in this UI-focused type)
@@ -151,6 +155,7 @@ export default function App() {
   const frequentServiceMapView = FEATURES.frequentService && isFrequentServiceMapRoute;
   const inFrequentServiceStory = FEATURES.frequentService && isFrequentServiceStoryRoute;
   const inFrequentService = frequentServiceMapView;
+  const inResearch = FEATURES.researchApps && pathname === FEATURE_ROUTES.research;
   const routedApp: AppId = PATH_TO_APP[pathname] ?? 'frequency';
   // Direct URL access (e.g. /apps/live) would otherwise bypass the LIVE_ENABLED / HISTORY_ENABLED /
   // CORRIDORS_ENABLED gate below -- fall back to the frequency map, and correct the URL so it
@@ -199,6 +204,7 @@ export default function App() {
       topic: opts.helpTopic,
       agencyName: opts.agencyName,
       expDateStr: opts.expDateStr,
+      manualFeedSource: opts.manualFeedSource,
       lastRefreshedAt: opts.lastRefreshedAt,
       lastFeedCheckAt: opts.lastFeedCheckAt,
       expiredFeedCheckCount: opts.expiredFeedCheckCount,
@@ -230,7 +236,8 @@ export default function App() {
   const [selectedAgencySlug, setSelectedAgencySlug] = useState<string | null>(null);
   const [selectedMapAgencySlug, setSelectedMapAgencySlug] = useState<string | null>(null);
   const [pendingLiveRoute, setPendingLiveRoute] = useState<{ slug: string; routeShortName: string } | null>(null);
-  const [pendingNightRoute, setPendingNightRoute] = useState<{ slug: string; routeId: string } | null>(null);
+  const [pendingNightRoute, setPendingNightRoute] = useState<{ slug: string; routeId: string; frequency: NightServiceFrequency } | null>(null);
+  const [nightServiceFrequency, setNightServiceFrequency] = useState<NightServiceFrequency>(() => new URLSearchParams(window.location.search).get('nightFrequency') === '30' ? 30 : 60);
   const [pendingHistoryRoute, setPendingHistoryRoute] = useState<{ slug: string; routeShortName: string } | null>(null);
   const [headerPortalEl, setHeaderPortalEl] = useState<Element | null>(null);
   const headerPortalRef = useCallback((el: HTMLDivElement | null) => { setHeaderPortalEl(el); }, []);
@@ -256,7 +263,7 @@ export default function App() {
     closeInfo();
   }, [activeApp, closeInfo]);
   const handleLiveRouteClick = useCallback((slug: string, routeShortName: string) => { setPendingLiveRoute({ slug, routeShortName }); closeInfo(); }, [closeInfo]);
-  const handleNightRouteClick = useCallback((slug: string, routeId: string) => { setPendingNightRoute({ slug, routeId }); closeInfo(); }, [closeInfo]);
+  const handleNightRouteClick = useCallback((slug: string, routeId: string) => { setPendingNightRoute({ slug, routeId, frequency: nightServiceFrequency }); closeInfo(); }, [closeInfo, nightServiceFrequency]);
   const handleHistoryRouteClick = useCallback((slug: string, routeShortName: string) => { setPendingHistoryRoute({ slug, routeShortName }); }, []);
   const handleAgencyCardClose = useCallback(() => setSelectedAgencySlug(null), []);
   const handlePendingHandled = useCallback(() => setPendingLiveRoute(null), []);
@@ -356,7 +363,6 @@ export default function App() {
   const inLive = activeApp === 'live';
   const inFares = activeApp === 'fares';
   const inNight = activeApp === 'night';
-  const researchActive = inNight || inFrequentService || inFrequentServiceStory;
   const loadedAgencySlugs = useMemo(
     () => new Set(Object.keys(layers).map(slug => slug.endsWith('-corridors') ? slug.slice(0, -10) : slug)),
     [layers],
@@ -521,13 +527,13 @@ export default function App() {
           onClick={() => {
             if (inFrequentServiceStory) {
               navigate(`${FEATURE_ROUTES.frequentService.map}?view=map`);
-            } else if (activeApp !== 'frequency') {
+            } else if (inFrequentService || activeApp !== 'frequency') {
               navigate('/');
             } else {
               setResetViewKey(k => k + 1);
             }
           }}
-          aria-label={inFrequentServiceStory || activeApp !== 'frequency' ? 'Back to frequency map' : 'Reset map view'}
+          aria-label={inFrequentServiceStory || inFrequentService || activeApp !== 'frequency' ? 'Back to frequency map' : 'Reset map view'}
           className="w-8 h-8 bg-[var(--accent)] rounded-full flex items-center justify-center shrink-0 shadow-2xl hover:opacity-80 transition-opacity"
         >
           <MapIcon className="w-3.5 h-3.5 text-white" />
@@ -538,7 +544,7 @@ export default function App() {
           <span className="text-[8px] sm:text-[10px] text-[var(--text-dim)]">by Civic Minds</span>
         </div>
 
-        {!inFrequentServiceStory && <div className="flex items-center gap-2 flex-1 min-w-0 lg:flex-none">
+        {!inFrequentServiceStory && !inResearch && <div className="flex items-center gap-2 flex-1 min-w-0 lg:flex-none">
         <div className="flex-1 min-w-0 sm:flex">
         <div ref={searchBarRef} className={`${SEARCH_BAR_WIDTH} relative ${PILL_SURFACE} pl-1 pr-3`}>
           <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--text-dim)] pointer-events-none" />
@@ -568,7 +574,16 @@ export default function App() {
           )}
           {query !== '' && (
             <button
-              onClick={handleSearchClear}
+              type="button"
+              onPointerDown={event => {
+                event.preventDefault();
+                handleSearchClear();
+              }}
+              onClick={event => {
+                // Pointer activation is handled on pointerdown for immediate feedback.
+                // Keep click for keyboard activation, whose detail is zero.
+                if (event.detail === 0) handleSearchClear();
+              }}
               className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors p-0.5"
               aria-label="Clear search"
             >
@@ -610,12 +625,12 @@ export default function App() {
             <div className="hidden xl:flex items-center gap-2">
               {FEATURES.researchApps && (
                 <a
-                  href={FEATURE_ROUTES.research}
-                  aria-label="Research"
-                  aria-pressed={researchActive}
-                  className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold border focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${researchActive ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
+                  href={inResearch ? '/' : FEATURE_ROUTES.research}
+                  aria-label={inResearch ? 'Back to frequency map' : 'Research'}
+                  aria-pressed={inResearch || inNight || inFrequentService}
+                  className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold border focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${inResearch || inNight || inFrequentService ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
                 >
-                  <BookOpen className="w-3.5 h-3.5" />
+                  <FlaskConical className="w-3.5 h-3.5" />
                   <span>Research</span>
                 </a>
               )}
@@ -627,7 +642,7 @@ export default function App() {
                 onClick={() => setAppLinksOpen(open => !open)}
                 aria-label="More Atlas views"
                 aria-expanded={appLinksOpen}
-                className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold border focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${appLinksOpen || inNight || inFrequentService ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
+                className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold border focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${appLinksOpen || inResearch || inNight || inFrequentService ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
               >
                 <span>More</span>
                 <ChevronDown className={`w-3.5 h-3.5 transition-transform ${appLinksOpen ? 'rotate-180' : ''}`} />
@@ -658,8 +673,8 @@ export default function App() {
                     </a>
                   )}
                   {FEATURES.researchApps && (
-                    <a href={FEATURE_ROUTES.research} onClick={() => setAppLinksOpen(false)} aria-current={researchActive ? 'page' : undefined} className={`flex h-8 px-3 items-center gap-1.5 rounded-full text-xs font-bold border ${researchActive ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}>
-                      <BookOpen className="w-3.5 h-3.5" />
+                    <a href={inResearch ? '/' : FEATURE_ROUTES.research} onClick={() => setAppLinksOpen(false)} aria-current={inResearch ? 'page' : undefined} className={`flex h-8 px-3 items-center gap-1.5 rounded-full text-xs font-bold border ${inResearch ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}>
+                      <FlaskConical className="w-3.5 h-3.5" />
                       <span>Research</span>
                     </a>
                   )}
@@ -690,7 +705,9 @@ export default function App() {
       <main className="absolute inset-0 overflow-hidden">
         <ErrorBoundary label="The map encountered an error.">
           <React.Suspense fallback={<div className="flex items-center justify-center h-full text-[var(--text-dim)] text-sm">Loading map…</div>}>
-          {inFrequentServiceStory ? (
+          {inResearch ? (
+            <ResearchPage />
+          ) : inFrequentServiceStory ? (
             <FrequentServiceStory agencies={visibleAgencies} onExploreMap={() => navigate(`${FEATURE_ROUTES.frequentService.map}?view=map`)} />
           ) : <>
             <Interval
@@ -714,6 +731,8 @@ export default function App() {
               liveRoutesOnly={inLive}
               fareView={inFares}
               nightServiceView={inNight}
+              nightServiceFrequency={nightServiceFrequency}
+              setNightServiceFrequency={setNightServiceFrequency}
               exportEnabled={FEATURES.mapExport || inFrequentService}
               exportTitle={inFrequentService ? 'Frequent Service' : inNight ? 'Night Service' : inHistory ? 'Service History' : inFares ? 'Transit Fares' : inLive ? 'Live Transit' : 'Transit Frequency'}
               frequentServiceView={inFrequentService}
@@ -774,7 +793,7 @@ export default function App() {
             )}
             {FEATURES.beta && (
               <React.Suspense fallback={null}>
-                <NightService active={inNight} sidebarLeft={sidebarLeft} layers={layers} query={deferredQuery} onRouteSelect={handleNightRouteClick} />
+                <NightService active={inNight} sidebarLeft={sidebarLeft} layers={layers} query={deferredQuery} frequency={nightServiceFrequency} onRouteSelect={handleNightRouteClick} />
               </React.Suspense>
             )}
             {FEATURES.live && liveMounted && (

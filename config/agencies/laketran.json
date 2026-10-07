@@ -8,35 +8,35 @@
     -81.337
   ],
   "feedUrl": "http://data.trilliumtransit.com/gtfs/lakecounty-oh-us/lakecounty-oh-us.zip",
-  "lastFeedExpiry": "20260927",
-  "lastFeedVersion": "August 2026 V3",
+  "lastFeedExpiry": "20270125",
+  "lastFeedVersion": "September 2026",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-ohio-laketran-gtfs-410.zip?alt=media",
-  "lastRefreshedAt": "2026-08-27",
+  "lastRefreshedAt": "2026-10-07",
   "cities": [
     "Cleveland, Ohio"
   ],
-  "lastFeedCheckAt": "20261003",
-  "expiredFeedCheckCount": 1,
-  "expiredFeedCheckSince": "20260622",
-  "expiredFeedCheckExpiry": "20260927",
+  "lastFeedCheckAt": "20261007",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270125",
   "feedQuality": {
     "status": "review",
     "score": 70,
     "reasons": [
-      "16 map lines were repaired — Atlas fixed unusual route geometry before displaying it."
+      "15 route shapes needed adjustment before display."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 16,
+      "shapeAnomalies": 15,
       "routeHeadwayMismatches": 0,
       "featureCount": 39
     },
-    "checkedAt": "2026-08-27"
+    "checkedAt": "2026-10-07"
   },
   "timezone": "America/New_York",
-  "feedRefreshStatus": "stale",
-  "feedRefreshError": "all available feeds expired (latest 20260927)",
-  "feedRefreshErrorAt": "20261003",
-  "feedRefreshRetryCount": 1
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

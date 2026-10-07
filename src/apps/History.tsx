@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
-import { ChevronLeft, ChevronRight, X, Search, TrendingUp } from 'lucide-react';
+import { ChevronLeft, ChevronRight, X, Search, TrendingUp, History as HistoryIcon } from 'lucide-react';
 import { useHistoryMapOverlay } from '../context/HistoryMapOverlay';
 import { R2_PUBLIC_URL, type HeadwayByPeriod } from '../../shared/config';
-import { FLOATING_CARD, PANEL_ENTER, TRANSITION_SLOW, SEARCH_PILL, SEARCH_FIELD, LIST_ROW, AGENCY_LIST_ROW, AGENCY_LIST_PRIMARY, Z_PANEL, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH, CONTROL_ACTIVE } from '../styles';
+import { FLOATING_CARD, PANEL_ENTER, TRANSITION_SLOW, SEARCH_PILL, SEARCH_FIELD, LIST_ROW, AGENCY_LIST_ROW, AGENCY_LIST_PRIMARY, PANEL_TITLE_BAR, PANEL_TITLE, Z_PANEL, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH, CONTROL_ACTIVE } from '../styles';
 import RouteListRow from '../components/RouteListRow';
 import { shortenAgencyName } from '../utils/format';
 import { useColorVision } from '../context/ColorVisionContext';
@@ -682,14 +682,18 @@ export default function History({ active, initialAgencySlug, onInfoOpen, query, 
             />
           );
         })()
-      ) : (
+        ) : (
         <div
           className={`${FLOATING_CARD} max-h-[calc(100vh-104px)] overflow-y-auto custom-scrollbar transition-[opacity,transform] duration-200 ease-out ${showAgencyChooser || searchFocused ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}
           onMouseDown={e => e.preventDefault()}
         >
+          <div className={PANEL_TITLE_BAR}>
+            <HistoryIcon className="w-3 h-3 text-[var(--text-dim)] shrink-0" />
+            <span className={PANEL_TITLE}>Historical service</span>
+          </div>
           {query === '' && recentSearches.length > 0 ? (
             <>
-              <div className="px-4 pt-3 pb-2 border-b border-[var(--border-primary)] flex items-center justify-between">
+              <div className="px-5 pt-3 pb-2 border-b border-[var(--border-primary)] flex items-center justify-between">
                 <p className="text-[10px] font-bold text-[var(--text-muted)]">Recent searches</p>
                 <button
                   onClick={clearRecentSearches}
@@ -711,7 +715,7 @@ export default function History({ active, initialAgencySlug, onInfoOpen, query, 
           ) : (
             <>
               {historyData !== null && !historyLoadFailed && (
-                <div className="flex gap-1.5 px-4 pt-3 pb-2 overflow-x-auto items-center [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none' }}>
+                <div className="flex gap-1.5 px-5 pt-3 pb-2 overflow-x-auto items-center [&::-webkit-scrollbar]:hidden border-b border-[var(--border-primary)]" style={{ scrollbarWidth: 'none' }}>
                   <RegionFilterPills
                     regions={historyRegions}
                     selectedRegions={regionFilter}
@@ -738,7 +742,7 @@ export default function History({ active, initialAgencySlug, onInfoOpen, query, 
               )}
               {agenciesByRegion.map(([region, agencies]) => (
                 <div key={region}>
-                  <p className="px-4 pt-3 pb-1 text-[10px] font-bold text-[var(--text-dim)]">{region}</p>
+                  <p className="px-5 pt-3 pb-1 text-[10px] font-bold text-[var(--text-dim)]">{region}</p>
                   {agencies.map(agency => (
                     <button
                       key={agency.slug}
@@ -746,7 +750,7 @@ export default function History({ active, initialAgencySlug, onInfoOpen, query, 
                         saveRecentSearch(query);
                         setSelectedSlug(agency.slug);
                       }}
-                      className={AGENCY_LIST_ROW}
+                      className={`${AGENCY_LIST_ROW} border-b border-[var(--border-primary)] last:border-0`}
                     >
                       <span className="min-w-0">
                         <span className={AGENCY_LIST_PRIMARY}>{shortenAgencyName(agency.name)}</span>

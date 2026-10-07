@@ -7,9 +7,9 @@
     -82.1159
   ],
   "feedUrl": "https://passio3.com/athenstransit/passioTransit/gtfs/google_transit.zip",
-  "lastFeedExpiry": "20261102",
+  "lastFeedExpiry": "20261105",
   "lastFeedVersion": "20250228",
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-10-07",
   "region": "Ohio",
   "mdbFeedUrl": "https://passio3.com/athenstransit/passioTransit/gtfs/google_transit.zip",
   "bbox": [
@@ -20,7 +20,7 @@
   ],
   "timezone": "America/New_York",
   "lastRawArchiveKey": "20241231-112b338b9cb60ce3",
-  "lastFeedCheckAt": "20261003",
+  "lastFeedCheckAt": "20261007",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
@@ -35,7 +35,7 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 25
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-10-07"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,

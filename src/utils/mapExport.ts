@@ -1,10 +1,22 @@
-export const MAP_EXPORT_WIDTH = 1600;
-export const MAP_EXPORT_HEIGHT = 900;
+export const MAP_EXPORT_SIZES = [
+  { id: 'social', label: 'Social', width: 1200, height: 630 },
+  { id: 'standard', label: 'Standard', width: 1600, height: 900 },
+  { id: 'high', label: 'High resolution', width: 2400, height: 1350 },
+] as const;
+
+export type MapExportSizeId = typeof MAP_EXPORT_SIZES[number]['id'];
+export type MapExportSize = typeof MAP_EXPORT_SIZES[number];
+
+export const DEFAULT_MAP_EXPORT_SIZE = MAP_EXPORT_SIZES[1];
+// Backwards-compatible aliases for the standard export size.
+export const MAP_EXPORT_WIDTH = DEFAULT_MAP_EXPORT_SIZE.width;
+export const MAP_EXPORT_HEIGHT = DEFAULT_MAP_EXPORT_SIZE.height;
 
 interface MapExportOptions {
   source: HTMLCanvasElement;
   title: string;
   lightMode: boolean;
+  size?: MapExportSize;
 }
 
 function fitSourceCanvas(
@@ -53,22 +65,23 @@ async function canvasToBlob(canvas: HTMLCanvasElement): Promise<Blob> {
 }
 
 /** Compose the rendered map into a shareable, branded landscape image. */
-export async function createMapExport({ source, title, lightMode }: MapExportOptions): Promise<Blob> {
+export async function createMapExport({ source, title, lightMode, size = DEFAULT_MAP_EXPORT_SIZE }: MapExportOptions): Promise<Blob> {
   if (source.width === 0 || source.height === 0) {
     throw new Error('The map is not ready to export');
   }
 
   const canvas = document.createElement('canvas');
-  canvas.width = MAP_EXPORT_WIDTH;
-  canvas.height = MAP_EXPORT_HEIGHT;
+  canvas.width = size.width;
+  canvas.height = size.height;
   const context = canvas.getContext('2d');
   if (!context) throw new Error('Could not prepare the export image');
 
   const colors = lightMode
     ? { background: '#f8fafc', foreground: '#18181b', muted: '#52525b', panel: 'rgba(255, 255, 255, 0.94)' }
     : { background: '#111113', foreground: '#f4f4f5', muted: '#d4d4d8', panel: 'rgba(17, 17, 19, 0.94)' };
-  const headerHeight = 72;
-  const footerHeight = 38;
+  const scale = size.width / DEFAULT_MAP_EXPORT_SIZE.width;
+  const headerHeight = 72 * scale;
+  const footerHeight = 38 * scale;
 
   context.fillStyle = colors.background;
   context.fillRect(0, 0, canvas.width, canvas.height);
@@ -79,22 +92,22 @@ export async function createMapExport({ source, title, lightMode }: MapExportOpt
   context.fillRect(0, canvas.height - footerHeight, canvas.width, footerHeight);
 
   context.fillStyle = colors.foreground;
-  context.font = '800 27px Inter, ui-sans-serif, system-ui, sans-serif';
+  context.font = `800 ${27 * scale}px Inter, ui-sans-serif, system-ui, sans-serif`;
   context.textBaseline = 'middle';
-  context.fillText(fitText(context, title.trim() || 'Transit map', 830), 28, 30);
+  context.fillText(fitText(context, title.trim() || 'Transit map', 830 * scale), 28 * scale, 30 * scale);
 
   context.fillStyle = colors.muted;
-  context.font = '600 13px Inter, ui-sans-serif, system-ui, sans-serif';
-  context.fillText('Atlas by Civic Minds', 28, 53);
+  context.font = `600 ${13 * scale}px Inter, ui-sans-serif, system-ui, sans-serif`;
+  context.fillText('Atlas by Civic Minds', 28 * scale, 53 * scale);
 
   context.textAlign = 'right';
   context.fillStyle = colors.foreground;
-  context.font = '800 13px Inter, ui-sans-serif, system-ui, sans-serif';
-  context.fillText('Atlas by Civic Minds · transitatlas.fyi', canvas.width - 28, canvas.height - 19);
+  context.font = `800 ${13 * scale}px Inter, ui-sans-serif, system-ui, sans-serif`;
+  context.fillText('Atlas by Civic Minds · transitatlas.fyi', canvas.width - 28 * scale, canvas.height - 19 * scale);
   context.textAlign = 'left';
   context.fillStyle = colors.muted;
-  context.font = '500 10px Inter, ui-sans-serif, system-ui, sans-serif';
-  context.fillText('Map tiles by CARTO, under CC BY 3.0. Data by OpenStreetMap, under ODbL.', 28, canvas.height - 19);
+  context.font = `500 ${10 * scale}px Inter, ui-sans-serif, system-ui, sans-serif`;
+  context.fillText('Map tiles by CARTO, under CC BY 3.0. Data by OpenStreetMap, under ODbL.', 28 * scale, canvas.height - 19 * scale);
 
   return canvasToBlob(canvas);
 }

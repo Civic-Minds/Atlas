@@ -22,13 +22,13 @@
     "White Plains, New York",
     "Paterson, New Jersey"
   ],
-  "lastFeedCheckAt": "20261003",
-  "expiredFeedCheckCount": 1,
+  "lastFeedCheckAt": "20261007",
+  "expiredFeedCheckCount": 2,
   "expiredFeedCheckSince": "20260622",
   "expiredFeedCheckExpiry": "20261001",
   "timezone": "America/New_York",
   "feedRefreshStatus": "stale",
   "feedRefreshError": "all available feeds expired (latest 20261001)",
-  "feedRefreshErrorAt": "20261003",
-  "feedRefreshRetryCount": 1
+  "feedRefreshErrorAt": "20261007",
+  "feedRefreshRetryCount": 2
 }

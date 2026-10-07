@@ -34,6 +34,8 @@ function buildOverviewRoutes(routes: Feature[]): Feature[] {
         [
           'agencySlug', 'routeId', 'routeShortName', 'routeLongName', 'routeBranch',
           'routeType', 'directionId', 'day', 'serviceClass', 'tier',
+          'weekdayTierVariation',
+          'edgeGapAllowance',
           'routeHasIrregularDirection', 'headway', 'minStopHeadway', 'worstDirectionHeadway',
           'tippecanoe:minzoom',
         ].includes(key)

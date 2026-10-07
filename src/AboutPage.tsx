@@ -1,61 +1,83 @@
-import React from 'react';
-import { ArrowRight, BookOpen, Mail, Map } from 'lucide-react';
-import { FEATURE_ROUTES } from '../shared/config';
+import { ArrowLeft, ArrowRight, BookOpen, Clock3, FlaskConical, Map } from 'lucide-react';
+import SiteFooter from './components/SiteFooter';
 
 export default function AboutPage() {
   return (
-    <main className="min-h-screen overflow-y-auto bg-[var(--bg-app)] text-[var(--text-primary)] px-6 py-8 sm:px-10 lg:px-16">
+    <main className="min-h-screen bg-[var(--bg-app)] text-[var(--text-primary)] px-5 py-8 sm:px-8">
       <div className="mx-auto max-w-5xl">
-        <header className="flex items-center justify-between gap-4">
-          <a href="/" className="flex items-center gap-3 text-sm font-black">
-            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--accent)] text-white shadow-lg">
-              <Map className="h-4 w-4" />
-            </span>
-            <span>Atlas <span className="font-normal text-[var(--text-dim)]">by Civic Minds</span></span>
-          </a>
-          <a href="/" className="text-sm font-bold text-[var(--text-muted)] hover:text-[var(--text-primary)]">Back to map</a>
-        </header>
+        <a href="/" className="inline-flex items-center gap-2 text-sm font-bold text-[var(--accent)] hover:underline">
+          <ArrowLeft className="h-4 w-4" /> Back to the map
+        </a>
 
-        <section className="max-w-3xl py-20 sm:py-28">
-          <p className="text-xs font-black uppercase tracking-[0.24em] text-[var(--accent)]">About Atlas</p>
-          <h1 className="mt-4 text-4xl font-black tracking-tight sm:text-6xl">A clearer way to explore transit.</h1>
-          <p className="mt-6 max-w-2xl text-lg leading-8 text-[var(--text-muted)]">
-            Atlas is a map for understanding transit networks: where routes go, how often they run, and how service changes across the day.
-          </p>
-        </section>
+        <article className="mt-12">
+          <section className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-end">
+            <div>
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-[var(--accent)]">Atlas</p>
+              <h1 className="mt-3 max-w-2xl text-4xl font-black tracking-tight sm:text-6xl">Find the transit service that actually runs.</h1>
+              <p className="mt-5 max-w-xl text-base leading-7 text-[var(--text-muted)]">
+                Atlas turns published schedules into a map you can explore by frequency, time of day, agency, and place.
+              </p>
+              <div className="mt-7 flex flex-wrap gap-2">
+                <a href="/" className="inline-flex h-10 items-center gap-2 rounded-full bg-[var(--accent)] px-5 text-sm font-black text-[var(--bg-app)] hover:opacity-80">
+                  Open the map <ArrowRight className="h-4 w-4" />
+                </a>
+                <a href="/research" className="inline-flex h-10 items-center rounded-full border border-[var(--border-primary)] px-5 text-sm font-bold text-[var(--text-primary)] hover:bg-[var(--bg-btn-hover)]">
+                  Explore research
+                </a>
+              </div>
+            </div>
 
-        <section className="grid gap-5 pb-16 md:grid-cols-3">
-          <article className="rounded-3xl border border-[var(--border-primary)] bg-[var(--bg-panel)] p-6 shadow-xl">
-            <Map className="h-5 w-5 text-[var(--accent)]" />
-            <h2 className="mt-6 text-xl font-black">Explore the network</h2>
-            <p className="mt-3 text-sm leading-6 text-[var(--text-muted)]">Compare routes, agencies, modes, and service periods on one map without losing the surrounding context.</p>
-          </article>
-          <article className="rounded-3xl border border-[var(--border-primary)] bg-[var(--bg-panel)] p-6 shadow-xl">
-            <BookOpen className="h-5 w-5 text-[var(--accent)]" />
-            <h2 className="mt-6 text-xl font-black">Read the evidence</h2>
-            <p className="mt-3 text-sm leading-6 text-[var(--text-muted)]">Atlas uses published agency data and keeps research, schedule interpretation, and product behaviour distinct.</p>
-          </article>
-          <article className="rounded-3xl border border-[var(--border-primary)] bg-[var(--bg-panel)] p-6 shadow-xl">
-            <Mail className="h-5 w-5 text-[var(--accent)]" />
-            <h2 className="mt-6 text-xl font-black">Help improve it</h2>
-            <p className="mt-3 text-sm leading-6 text-[var(--text-muted)]">Spot something wrong or have an idea? Send feedback and include the map link where you found it.</p>
-            <a className="mt-5 inline-flex items-center gap-2 text-sm font-bold" href="mailto:hey@ryanisnota.pro?subject=Atlas%20Feedback">Contact Atlas <ArrowRight className="h-4 w-4" /></a>
-          </article>
-        </section>
+            <div className="rounded-3xl border border-[var(--border-primary)] bg-[var(--bg-panel)] p-5 shadow-xl">
+              <p className="text-xs font-black uppercase tracking-[0.16em] text-[var(--text-dim)]">Ask Atlas</p>
+              <div className="mt-4 space-y-3">
+                <div className="flex items-start gap-3 rounded-2xl bg-[var(--bg-btn)] p-3">
+                  <Map className="mt-0.5 h-4 w-4 shrink-0 text-[var(--accent)]" />
+                  <span className="text-sm font-bold">Where can I find frequent service?</span>
+                </div>
+                <div className="flex items-start gap-3 rounded-2xl bg-[var(--bg-btn)] p-3">
+                  <Clock3 className="mt-0.5 h-4 w-4 shrink-0 text-[var(--accent)]" />
+                  <span className="text-sm font-bold">What still runs overnight?</span>
+                </div>
+                <div className="flex items-start gap-3 rounded-2xl bg-[var(--bg-btn)] p-3">
+                  <FlaskConical className="mt-0.5 h-4 w-4 shrink-0 text-[var(--accent)]" />
+                  <span className="text-sm font-bold">How do two networks compare?</span>
+                </div>
+              </div>
+            </div>
+          </section>
 
-        <section className="max-w-2xl border-t border-[var(--border-primary)] py-10">
-          <h2 className="text-2xl font-black">Keep exploring</h2>
-          <p className="mt-3 text-sm leading-6 text-[var(--text-muted)]">Use the map for the network in front of you, or visit Research for source-backed comparisons of service patterns.</p>
-          <a href={FEATURE_ROUTES.research} className="mt-5 inline-flex items-center gap-2 rounded-full border border-[var(--border-primary)] bg-[var(--bg-panel)] px-4 py-2 text-sm font-bold shadow-lg hover:border-[var(--accent)]">Visit Research <ArrowRight className="h-4 w-4" /></a>
-        </section>
+          <section className="mt-16 grid gap-4 sm:grid-cols-3">
+            <div className="rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-panel)] p-5">
+              <Map className="h-5 w-5 text-[var(--accent)]" />
+              <h2 className="mt-5 text-base font-black">See the network</h2>
+              <p className="mt-2 text-sm font-bold leading-6 text-[var(--text-muted)]">Compare scheduled service across agencies, cities, and regions.</p>
+            </div>
+            <div className="rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-panel)] p-5">
+              <Clock3 className="h-5 w-5 text-[var(--accent)]" />
+              <h2 className="mt-5 text-base font-black">See when it runs</h2>
+              <p className="mt-2 text-sm font-bold leading-6 text-[var(--text-muted)]">Switch between daytime, late, overnight, and other service periods.</p>
+            </div>
+            <div className="rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-panel)] p-5">
+              <BookOpen className="h-5 w-5 text-[var(--accent)]" />
+              <h2 className="mt-5 text-base font-black">Know what it means</h2>
+              <p className="mt-2 text-sm font-bold leading-6 text-[var(--text-muted)]">Read the sources, definitions, and limits behind each view.</p>
+            </div>
+          </section>
 
-        <footer className="flex gap-3 pb-10 text-xs text-[var(--text-dim)]">
-          <a href="/terms" className="hover:text-[var(--accent)] hover:underline">Terms</a>
-          <span>·</span>
-          <a href="/privacy" className="hover:text-[var(--accent)] hover:underline">Privacy policy</a>
-          <span>·</span>
-          <span>© 2026 Civic Minds.</span>
-        </footer>
+          <section className="mt-16 max-w-2xl border-t border-[var(--border-primary)] pt-8">
+            <h2 className="text-xl font-black">Built for looking closer</h2>
+            <p className="mt-3 text-sm leading-7 text-[var(--text-muted)]">
+              Atlas is for riders, planners, researchers, and advocates who want to understand service beyond a single trip. It uses published agency schedules to make patterns visible, while keeping live alerts and official trip planning with the agencies that provide them.
+            </p>
+            <a href="/about/docs" className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-[var(--accent)] hover:underline">
+              Read how Atlas works <ArrowRight className="h-4 w-4" />
+            </a>
+          </section>
+        </article>
+
+        <div className="mt-16">
+          <SiteFooter />
+        </div>
       </div>
     </main>
   );

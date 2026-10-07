@@ -21,13 +21,13 @@
   "cities": [
     "Longview, Texas"
   ],
-  "lastFeedCheckAt": "20261003",
-  "expiredFeedCheckCount": 1,
+  "lastFeedCheckAt": "20261007",
+  "expiredFeedCheckCount": 2,
   "expiredFeedCheckSince": "20260622",
   "expiredFeedCheckExpiry": "20260930",
   "timezone": "America/Chicago",
   "feedRefreshStatus": "stale",
   "feedRefreshError": "all available feeds expired (latest 20260930)",
-  "feedRefreshErrorAt": "20261003",
-  "feedRefreshRetryCount": 1
+  "feedRefreshErrorAt": "20261007",
+  "feedRefreshRetryCount": 2
 }

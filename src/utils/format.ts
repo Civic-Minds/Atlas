@@ -35,6 +35,8 @@ const TRANSIT_ACRONYMS: Record<string, string> = {
   // excluded for, just not caught until France expansion made it common.
   // St intentionally excluded — "St" in stop names means Street/Saint, not the GO Stouffville line
   Rh: 'RH',
+  // Brantford Transit publishes the Northwest Industrial Area as NWIA.
+  Nwia: 'NWIA',
   // Bay Area / Staged expansion acronyms
   Bart: 'BART',
   Weta: 'WETA',
@@ -65,14 +67,14 @@ export function fmtHeadway(minutes: number | null | undefined, style: 'narrative
     if (minutes >= 60) return `${Math.round(minutes / 60)}h`;
     return `${Math.round(minutes)} min`;
   }
-  if (minutes <= 60) return `every ${minutes} min`;
+  if (minutes <= 60) return `about every ${minutes} min`;
   const hrs = Math.round(minutes / 30) / 2;
-  return `every ~${hrs}h`;
+  return `about every ${hrs}h`;
 }
 
-// "every 6–12 min" when both fit in minutes; fall back to two separate strings otherwise.
+// "about every 6–12 min" when both fit in minutes; fall back to two separate strings otherwise.
 export function fmtHeadwayRange(low: number, high: number): string {
-  if (low <= 60 && high <= 60) return `every ${low}–${high} min`;
+  if (low <= 60 && high <= 60) return `about every ${low}–${high} min`;
   return `${fmtHeadway(low)} – ${fmtHeadway(high)}`;
 }
 

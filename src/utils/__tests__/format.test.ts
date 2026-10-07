@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { shortenAgencyName, titleCase } from '../format';
+import { fmtHeadway, getRouteLabel, shouldHideNumericRouteShortName, shortenAgencyName, titleCase } from '../format';
 import indexData from '../../../public/data/index.json';
 
 interface IndexAgency {
@@ -98,5 +98,24 @@ describe('titleCase', () => {
     expect(titleCase('GO')).toBe('GO');
     expect(titleCase('LW')).toBe('LW');
     expect(titleCase('SFU Exchange')).toBe('SFU Exchange');
+  });
+
+  it('preserves Brantford Transit’s NWIA acronym', () => {
+    expect(titleCase('NWIA | Downtown')).toBe('NWIA | Downtown');
+  });
+
+  it('formats the cleaned Brantford route 20 label', () => {
+    expect(titleCase(getRouteLabel('20', 'Grand River Line'))).toBe('20 — Grand River Line');
+  });
+
+  it('hides internal numeric IDs for named rail lines', () => {
+    expect(shouldHideNumericRouteShortName('30053', 'Expo Line', 1)).toBe(true);
+  });
+});
+
+describe('fmtHeadway', () => {
+  it('uses cautious wording for scheduled cadence', () => {
+    expect(fmtHeadway(10)).toBe('about every 10 min');
+    expect(fmtHeadway(90)).toBe('about every 1.5h');
   });
 });

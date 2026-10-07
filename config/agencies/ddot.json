@@ -23,10 +23,10 @@
     "Windsor, Ontario"
   ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-464/mdb-464-202606250001/mdb-464-202606250001.zip",
-  "lastFeedCheckAt": "20261003",
-  "expiredFeedCheckCount": 0,
-  "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20270207",
+  "lastFeedCheckAt": "20261007",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
+  "expiredFeedCheckExpiry": "20260920",
   "timezone": "America/Detroit",
   "feedQuality": {
     "status": "healthy",
@@ -40,5 +40,9 @@
       "featureCount": 224
     },
     "checkedAt": "2026-09-07"
-  }
+  },
+  "feedRefreshStatus": "stale",
+  "feedRefreshError": "all available feeds expired (latest 20260920)",
+  "feedRefreshErrorAt": "20261007",
+  "feedRefreshRetryCount": 1
 }

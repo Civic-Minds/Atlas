@@ -16,12 +16,12 @@
   "region": "Texas",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-7038/latest.zip",
   "lastFeedExpiry": "20261231",
-  "lastFeedVersion": "Updated: Sep 16, 2026, 12:07 AM",
-  "lastRefreshedAt": "2026-10-03",
+  "lastFeedVersion": "Updated: Oct 6, 2026, 7:25 PM",
+  "lastRefreshedAt": "2026-10-07",
   "cities": [
     "Laredo, Texas"
   ],
-  "lastFeedCheckAt": "20261003",
+  "lastFeedCheckAt": "20261007",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
@@ -37,7 +37,7 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 131
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-10-07"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,

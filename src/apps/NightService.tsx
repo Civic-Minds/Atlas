@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Moon, Search, X } from 'lucide-react';
+import { Moon, X } from 'lucide-react';
 import { getNightServiceColor } from '../utils/colors';
 import { useColorVision } from '../context/ColorVisionContext';
 import { useViewport } from '../context/ViewportContext';
@@ -10,13 +10,13 @@ import {
   PANEL_TITLE,
   PANEL_BODY,
   PANEL_EMPTY,
-  SEARCH_PILL,
-  SEARCH_FIELD,
   Z_PANEL,
   SIDEBAR_LEFT_FALLBACK,
   SIDEBAR_PANEL_WIDTH,
 } from '../styles';
 import { R2_PUBLIC_URL } from '../../shared/config';
+import type { NightServiceFrequency } from '../../shared/nightService';
+import { nightServiceKey } from '../../shared/nightService';
 
 interface NightServiceRoute {
   agencySlug: string;
@@ -37,6 +37,8 @@ interface NightServiceRouteSummary {
 
 interface NightServiceFeatureProperties {
   nightService?: boolean;
+  nightService30?: boolean;
+  nightService60?: boolean;
   routeId?: string | null;
   routeShortName?: string | null;
   routeLongName?: string | null;
@@ -56,6 +58,7 @@ interface Props {
   sidebarLeft?: number;
   layers: Record<string, GeoJSON.FeatureCollection>;
   query?: string;
+  frequency: NightServiceFrequency;
   onRouteSelect?: (agencySlug: string, routeId: string) => void;
 }
 
@@ -78,12 +81,11 @@ function featureIntersectsBounds(feature: GeoJSON.Feature, bounds: { s: number; 
   return maxLon >= bounds.w && minLon <= bounds.e && maxLat >= bounds.s && minLat <= bounds.n;
 }
 
-export default function NightService({ active, sidebarLeft, layers, query = '', onRouteSelect }: Props) {
+export default function NightService({ active, sidebarLeft, layers, query = '', frequency, onRouteSelect }: Props) {
   const { colorVisionFriendly } = useColorVision();
   const colorMode = colorVisionFriendly ? 'friendly' : 'default';
   const [data, setData] = useState<NightServiceIndexFile | null>(null);
   const [loadState, setLoadState] = useState<'loading' | 'ready' | 'error'>('loading');
-  const [filterQuery, setFilterQuery] = useState('');
   const { bounds } = useViewport();
   const visibleRoutes = useMemo(() => {
     if (!bounds || Object.keys(layers).length === 0) return [];
@@ -91,12 +93,13 @@ export default function NightService({ active, sidebarLeft, layers, query = '', 
     for (const [agencySlug, collection] of Object.entries(layers)) {
       for (const feature of collection.features) {
         const properties = feature.properties as NightServiceFeatureProperties | null;
-        if (properties?.nightService !== true || !featureIntersectsBounds(feature, bounds)) continue;
+        if (properties?.[nightServiceKey(frequency)] !== true && !(frequency === 60 && properties?.nightService === true)) continue;
+        if (!featureIntersectsBounds(feature, bounds)) continue;
         routes.push({ agencySlug, properties });
       }
     }
     return routes;
-  }, [bounds, layers]);
+  }, [bounds, layers, frequency]);
   const [introDismissed, setIntroDismissed] = useState(() => {
     try { return localStorage.getItem('atlas_pref_night_intro_dismissed') === '1'; } catch { return false; }
   });
@@ -151,7 +154,7 @@ export default function NightService({ active, sidebarLeft, layers, query = '', 
       entry.routes.set(summaryKey, summary);
       byAgency.set(visible.agencySlug, entry);
     }
-    const q = (filterQuery || query).trim().toLowerCase();
+    const q = query.trim().toLowerCase();
     const list = [...byAgency.entries()].map(([slug, entry]) => ({ slug, ...entry, routes: [...entry.routes.values()] }));
     if (!q) return list;
     return list
@@ -192,7 +195,7 @@ export default function NightService({ active, sidebarLeft, layers, query = '', 
               Which routes actually run through the night?
             </p>
             <p className="mt-1 pr-5 text-[10px] text-[var(--text-dim)] font-bold leading-snug">
-              A route counts here only if it has a departure at least every 60 minutes,
+              A route counts here only if it has a departure at least every {frequency} minutes,
               2am to 6am, with no gap at either end of the core overnight window.
             </p>
             <p className="mt-1.5 text-[10px] font-bold" style={{ color: getNightServiceColor(colorMode) }}>
@@ -202,26 +205,9 @@ export default function NightService({ active, sidebarLeft, layers, query = '', 
         )}
         {data && introDismissed && (
           <p className="px-4 pt-2 pb-1 text-[10px] text-[var(--text-dim)] font-bold leading-snug border-b border-[var(--border-primary)]">
-            {data.criteria}
+            At least one departure every {frequency} minutes, 2am–6am local time, with no gap at either end of the window.
           </p>
         )}
-
-        <div className="p-3 border-b border-[var(--border-primary)] shrink-0">
-          <div className={SEARCH_PILL}>
-            <Search className="w-3.5 h-3.5 text-[var(--text-dim)] shrink-0" />
-            <input
-              className={SEARCH_FIELD}
-              placeholder="Find an agency or route"
-              value={filterQuery}
-              onChange={e => setFilterQuery(e.target.value)}
-            />
-            {filterQuery && (
-              <button onClick={() => setFilterQuery('')} aria-label="Clear search">
-                <X className="w-3.5 h-3.5 text-[var(--text-dim)] hover:text-[var(--text-primary)]" />
-              </button>
-            )}
-          </div>
-        </div>
 
         <div className={PANEL_BODY}>
           {loadState === 'loading' && <p className={PANEL_EMPTY}>Loading…</p>}

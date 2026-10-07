@@ -29,6 +29,8 @@ import { MapContextPanel } from './MapContextPanel';
 import MapExportDialog from '../MapExportDialog';
 import { frequentServiceBand, frequentServiceFeatureKey, frequentServiceQueryKey, type FrequentServiceFrequency, type FrequentServiceWindow } from '../../../shared/frequentService';
 import { effectiveMode, ON_DEMAND_MODE } from '../../../shared/modes';
+import type { NightServiceFrequency } from '../../../shared/nightService';
+import { nightServiceKey } from '../../../shared/nightService';
 import { markAtlasLatest } from '../../lib/performance';
 import { isOnDemandActive } from '../../../shared/onDemandAvailability';
 import { buildRouteSortKeyExpression } from '../../utils/routeSort';
@@ -41,6 +43,19 @@ const FREQUENT_30_COLOR = HEADWAY_TIERS.find(tier => tier.max === 30)?.color ?? 
 const LiveVehiclesLayer = import.meta.env.VITE_LIVE_ENABLED === 'true'
   ? React.lazy(() => import('./map/LiveVehiclesLayer'))
   : null;
+
+type OnDemandService = NonNullable<Agency['onDemandServiceArea']>;
+
+function isOnDemandFeatureActive(
+  service: OnDemandService,
+  feature: GeoJSON.Feature,
+  day: DayType,
+  period: TimePeriod,
+): boolean {
+  const zoneId = (feature.properties as { areaName?: string } | undefined)?.areaName;
+  const zone = zoneId ? service.zoneMetadata?.[zoneId] : undefined;
+  return isOnDemandActive(zone ? zone.availability : service.availability, day, period);
+}
 
 function MapNoticePill({ children, className = '' }: { children: React.ReactNode; className?: string }) {
   return (
@@ -221,6 +236,7 @@ interface MapCanvasProps {
   onOnDemandZoneClick?: (selection: { slug: string; zoneId: string }) => void;
   fareView?: boolean;
   nightServiceView?: boolean;
+  nightServiceFrequency?: NightServiceFrequency;
   frequentServiceView?: boolean;
   frequentServiceDays?: DayType[];
   frequentServiceFrequency?: FrequentServiceFrequency;
@@ -282,6 +298,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   onOnDemandZoneClick,
   fareView = false,
   nightServiceView = false,
+  nightServiceFrequency = 60,
   frequentServiceView = false,
   frequentServiceDays = ['Weekday'],
   frequentServiceFrequency = 15,
@@ -332,16 +349,14 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     if (!(selectedAgencies?.has(agency.slug) ?? true)) return false;
     const service = agency.onDemandServiceArea;
     if (!service) return false;
-    if (isOnDemandActive(service.availability, day, period)) return true;
-    return service.features.some(feature => {
-      const zoneId = (feature.properties as { areaName?: string } | undefined)?.areaName;
-      return isOnDemandActive(zoneId ? service.zoneMetadata?.[zoneId]?.availability : undefined, day, period);
-    });
+    return service.features.length === 0
+      ? isOnDemandActive(service.availability, day, period)
+      : service.features.some(feature => isOnDemandFeatureActive(service, feature, day, period));
   }), [agencies, day, period, selectedAgencies]);
   const onDemandServiceAreaData = useMemo<GeoJSON.FeatureCollection<GeoJSON.Polygon | GeoJSON.MultiPolygon>>(() => ({
     type: 'FeatureCollection',
     features: (selectedModes.size === 0 || selectedModes.has(ON_DEMAND_MODE) ? onDemandAgencies : [])
-      .flatMap(agency => (agency.onDemandServiceArea?.features ?? []).map(feature => ({
+      .flatMap(agency => (agency.onDemandServiceArea?.features ?? []).filter(feature => isOnDemandFeatureActive(agency.onDemandServiceArea!, feature, day, period)).map(feature => ({
         ...feature,
         properties: {
           ...(feature.properties ?? {}),
@@ -350,7 +365,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
           onDemandZoneId: (feature.properties as { areaName?: string } | undefined)?.areaName ?? feature.id,
         },
       }))),
-  }), [onDemandAgencies, selectedModes]);
+  }), [day, onDemandAgencies, period, selectedModes]);
   const onDemandStopData = useMemo<GeoJSON.FeatureCollection<GeoJSON.Point>>(() => ({
     type: 'FeatureCollection',
     features: (selectedModes.size === 0 || selectedModes.has(ON_DEMAND_MODE) ? onDemandAgencies : [])
@@ -771,10 +786,10 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   const nightServiceFeatures = useMemo(() => {
     if (!layers) return [];
     return Object.values(layers).flatMap(collection => collection.features.filter(feature => {
-      const properties = feature.properties as { nightService?: boolean } | null;
-      return feature.geometry.type === 'LineString' && properties?.nightService === true;
+      const properties = feature.properties as Record<string, any> | null;
+      return feature.geometry.type === 'LineString' && (properties?.[nightServiceKey(nightServiceFrequency)] === true || (nightServiceFrequency === 60 && properties?.nightService === true));
     }));
-  }, [layers]);
+  }, [layers, nightServiceFrequency]);
 
   const frequentServiceFeatures = useMemo(() => {
     const key = frequentServiceQueryKey(frequentServiceFrequency, frequentServiceWindow);
@@ -1883,6 +1898,20 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         const focusedPaint = buildFocusedRoutePaint(historyRouteMatch, DIM_OPACITY, DIM_WIDTH);
         setRouteLayerPaint(map, 'line-opacity', focusedPaint.opacity as any);
         setRouteLayerPaint(map, 'line-width', focusedPaint.width as any);
+      } else if (historyOverlay?.slug) {
+        // History agency selection keeps the whole agency visible while dimming
+        // the surrounding network, matching route-level focus without hiding context.
+        const historyAgencyMatch: any = ['==', ['get', 'agencySlug'], historyOverlay.slug];
+        setRouteLayerPaint(map, 'line-opacity', [
+          'case', historyAgencyMatch, 1.0, DIM_OPACITY,
+        ] as any);
+        setRouteLayerPaint(map, 'line-width', [
+          'interpolate', ['linear'], ['zoom'],
+          8, ['case', historyAgencyMatch, 2.8, DIM_WIDTH],
+          11, ['case', historyAgencyMatch, 3.2, DIM_WIDTH],
+          14, ['case', historyAgencyMatch, 3.8, DIM_WIDTH],
+          17, ['case', historyAgencyMatch, 4.5, DIM_WIDTH],
+        ] as any);
       } else if (selectedRoute) {
         const selKey = selectedRoute;
         const routeMatch: any = routeKeyMatchExpression(selKey);
@@ -1978,7 +2007,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       // treatment above (default state, nothing else focused) -- otherwise it would draw a bright
       // "this part qualifies" line over routes a selection/hover/stop-focus state has already
       // dimmed for an unrelated reason, or fight a route's own full-opacity focused treatment.
-      const isDefaultRouteFocusState = !historyOverlay?.routeShortName
+      const isDefaultRouteFocusState = !historyOverlay
         && !selectedRoute
         && !hoveredSearchRoute
         && !nightServiceView
@@ -2035,7 +2064,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   // Force-reset route paint when selection clears (guards against stuck highlight state).
   useEffect(() => {
     const map = mapRef.current;
-    if (!map || !mapLoaded || selectedRoute || historyOverlay?.routeShortName) return;
+    if (!map || !mapLoaded || selectedRoute || historyOverlay) return;
     resetRoutesLayerDefaultPaint(map);
   }, [selectedRoute, mapLoaded, historyOverlay]);
 

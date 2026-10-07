@@ -15,7 +15,7 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-690/latest.zip",
   "timezone": "America/Los_Angeles",
-  "lastFeedCheckAt": "20261003",
+  "lastFeedCheckAt": "20261007",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20500101",
@@ -33,11 +33,11 @@
       "routeHeadwayMismatches": 1,
       "featureCount": 130
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-10-07"
   },
   "lastFeedExpiry": "20270331",
   "lastFeedVersion": "UTC: 27-Sep-2026 05:10",
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-10-07",
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,

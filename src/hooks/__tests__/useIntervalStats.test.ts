@@ -149,6 +149,29 @@ describe('useIntervalStats', () => {
     expect(passesRouteFilter({ routeId: '87', serviceClass: 'time-limited', tier: '60', headway: 60 } as any, 'nashville', { ...filters, hideLimitedService: false }, null)).toBe(true);
   });
 
+  it('does not let an unselected span-route cluster pass frequency filtering', () => {
+    const route = {
+      routeId: '446',
+      routeShortName: '446',
+      agencySlug: 'yrt',
+      tier: 'span',
+      headway: null,
+      headwayByPeriod: { midday: null },
+      maxGapByPeriod: { midday: 3 },
+    } as any;
+    const filters = {
+      ...defaultFilters,
+      maxHeadway: 15,
+      period: 'midday',
+      agencies: new Set(['yrt']),
+      hideSpan: false,
+      hideLimitedService: false,
+    };
+
+    expect(passesRouteFilter(route, 'yrt', filters, null)).toBe(false);
+    expect(passesRouteFilter(route, 'yrt', { ...filters, selectedRoute: 'yrt::446' }, null)).toBe(false);
+  });
+
   it('should return correct stats for default filters', () => {
     const { result } = renderHook(() => useIntervalStats(mockLayers, defaultFilters));
     

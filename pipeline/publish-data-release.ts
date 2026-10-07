@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import './loadEnv.js';
 import { r2Put } from './r2.js';
 import { bumpPublicDataVersion } from './dataVersion.js';
 
@@ -8,9 +9,14 @@ if (!fs.existsSync(manifestPath)) {
   throw new Error(`Missing ${manifestPath}; run build-pmtiles and verify coverage first.`);
 }
 
-const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8')) as {
+  releaseId?: string;
+  pmtilesKey?: string;
+  overviewPmtilesKey?: string;
+  agencyPrefix?: string;
+};
 if (!manifest.releaseId || !manifest.pmtilesKey || !manifest.overviewPmtilesKey || !manifest.agencyPrefix) {
-  throw new Error(`Invalid release manifest at ${manifestPath}.`);
+  throw new Error(`Invalid ${manifestPath}.`);
 }
 
 await r2Put('atlas/release.json', JSON.stringify(manifest, null, 2));

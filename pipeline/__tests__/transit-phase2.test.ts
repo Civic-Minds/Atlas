@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { applyAnalysisCriteria } from '../transit-phase2';
+import { applyAnalysisCriteria, determineTier } from '../transit-phase2';
 import { DEFAULT_CRITERIA } from '../defaults';
 import type { RawRouteDepartures } from '../../types/gtfs';
 
@@ -22,6 +22,54 @@ function raw(overrides: Partial<RawRouteDepartures> & { departureTimes: number[]
 }
 
 describe('applyAnalysisCriteria', () => {
+  const sustainedTenMinuteTimes = (openingGap: number): number[] => [
+    420,
+    420 + openingGap,
+    ...Array.from({ length: 17 }, (_, index) => 420 + openingGap + 10 + index * 10),
+  ];
+
+  it('allows one true opening edge up to tier plus ten minutes', () => {
+    const results = applyAnalysisCriteria([
+      raw({ route: 'edge-opening', departureTimes: sustainedTenMinuteTimes(20) }),
+    ]);
+    expect(results.find(item => item.route === 'edge-opening')).toMatchObject({ tier: '10', edgeGapAllowance: 'opening' });
+  });
+
+  it('does not use an opening edge above the tier-plus-ten ceiling for that tier', () => {
+    const results = applyAnalysisCriteria([
+      raw({ route: 'edge-too-long', departureTimes: sustainedTenMinuteTimes(21) }),
+    ]);
+    expect(results.find(item => item.route === 'edge-too-long')).toMatchObject({ edgeGapAllowance: 'opening' });
+    expect(results.find(item => item.route === 'edge-too-long')?.tier).not.toBe('10');
+  });
+
+  it('does not treat an analysis-window boundary as a true service edge', () => {
+    const results = applyAnalysisCriteria([
+      raw({ route: 'window-boundary', departureTimes: [400, ...sustainedTenMinuteTimes(20)] }),
+    ]);
+    expect(results.find(item => item.route === 'window-boundary')).toMatchObject({ edgeGapAllowance: undefined });
+  });
+
+  it('allows both genuine service edges when the internal schedule remains sustained', () => {
+    const times = sustainedTenMinuteTimes(20);
+    times.push(times.at(-1)! + 20);
+    const results = applyAnalysisCriteria([
+      raw({ route: 'both-edges', departureTimes: times }),
+    ]);
+    expect(results.find(item => item.route === 'both-edges')).toMatchObject({ tier: '10', edgeGapAllowance: 'both' });
+  });
+
+  it('does not use an edge allowance when it would leave only three departures', () => {
+    const results = applyAnalysisCriteria([
+      raw({ route: 'sparse-edge', departureTimes: [420, 440, 450, 460] }),
+    ]);
+    expect(results.find(item => item.route === 'sparse-edge')).toMatchObject({
+      tier: 'span',
+      serviceClass: 'irregular',
+      edgeGapAllowance: undefined,
+    });
+  });
+
   it('produces a normal daytime result unaffected by the overnight fallback', () => {
     // 08:00–18:00, every 15 -- real sustained daytime coverage (unlike the narrow rush-hour-only
     // burst cases the existing coverage check is meant to catch).
@@ -108,6 +156,39 @@ describe('applyAnalysisCriteria', () => {
     expect(r).toMatchObject({ tier: '60', serviceClass: 'time-limited' });
   });
 
+  it('uses the production tier map instead of the legacy fallback percentage', () => {
+    const results = applyAnalysisCriteria([
+      raw({ route: 'tier-map', departureTimes: [420, 445, ...Array.from({ length: 9 }, (_, i) => 465 + i * 20)] }),
+    ]);
+    expect(results.find(item => item.route === 'tier-map')?.tier).toBe('30');
+  });
+
+  it('uses one real weekday for rollup statistics instead of merging weekdays into a fake timetable', () => {
+    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'] as const;
+    const results = applyAnalysisCriteria(days.map((day, index) => raw({
+      route: 'weekday-rollup',
+      day,
+      departureTimes: Array.from({ length: 17 }, (_, trip) => 480 + index * 5 + trip * 30),
+    })));
+    const weekday = results.find(item => item.route === 'weekday-rollup' && item.day === 'Weekday');
+
+    expect(weekday).toMatchObject({ tier: '30', medianHeadway: 30, tripCount: 17 });
+    expect(weekday?.times).toHaveLength(17);
+    expect(weekday?.times[0]).toBe(480);
+  });
+
+  it('flags weekday tier variation while retaining the slowest weekday tier', () => {
+    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'] as const;
+    const results = applyAnalysisCriteria(days.map((day) => raw({
+      route: 'weekday-tier-variation',
+      day,
+      departureTimes: Array.from({ length: 17 }, (_, trip) => 480 + trip * (day === 'Friday' ? 15 : 30)),
+    })));
+    const weekday = results.find(item => item.route === 'weekday-tier-variation' && item.day === 'Weekday');
+
+    expect(weekday).toMatchObject({ tier: '30', weekdayTierVariation: true });
+  });
+
   it('correctly falls to infrequent/span rather than a false tight tier when a day bucket mixes two separate overnight blocks (real TTC 300 pattern)', () => {
     // Tail of one night's run (233-263, non-extended) plus the start of the next night's run
     // (1512+, extended) landing in the same calendar-day bucket -- a real GTFS quirk confirmed
@@ -119,5 +200,36 @@ describe('applyAnalysisCriteria', () => {
     const r = results.find(x => x.route === '300' && x.dir === '1');
     expect(r).toBeDefined();
     expect(['span', 'infrequent']).toContain(r!.tier);
+  });
+});
+
+describe('tier-specific internal near-miss allowances', () => {
+  it('allows one 10-minute near miss when ten percent permits it', () => {
+    const gaps = [15, ...Array(9).fill(10)];
+    expect(determineTier(gaps, gaps.length + 1, gaps.reduce((a, b) => a + b, 0), [10], 5, 0, 0.15, 0.05, {
+      10: 0.10,
+    })).toBe('10');
+  });
+
+  it('counts a qualifying edge allowance against the same near-miss budget', () => {
+    const gaps = [15, ...Array(9).fill(10)];
+    const span = gaps.reduce((a, b) => a + b, 0);
+    expect(determineTier(gaps, gaps.length + 1, span, [10], 5, 0, 0.15, 0.05, {
+      10: 0.10,
+    }, 1)).toBe('span');
+  });
+
+  it('does not give a 20-minute period a free near miss when five percent rounds below one', () => {
+    const gaps = [25, ...Array(9).fill(20)];
+    expect(determineTier(gaps, gaps.length + 1, gaps.reduce((a, b) => a + b, 0), [20], 5, 0, 0.15, 0.05, {
+      20: 0.05,
+    })).toBe('span');
+  });
+
+  it('caps a large period at three internal near misses', () => {
+    const gaps = [65, 65, 65, 65, ...Array(56).fill(60)];
+    expect(determineTier(gaps, gaps.length + 1, gaps.reduce((a, b) => a + b, 0), [60], 5, 0, 0.15, 0.05, {
+      60: 0.05,
+    })).toBe('span');
   });
 });

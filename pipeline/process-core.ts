@@ -3,7 +3,7 @@
  * Used by process-gtfs.ts (local zip) and refresh.ts (downloaded feeds).
  */
 import { parseGtfsZip } from './parseGtfs.js';
-import type { GtfsData } from '../types/gtfs.js';
+import type { GtfsData, AnalysisResult, RawRouteDepartures } from '../types/gtfs.js';
 import { computeRawDepartures } from './transit-phase1.js';
 import { applyAnalysisCriteria } from './transit-phase2.js';
 import { calculateCorridors } from './transit-logic.js';
@@ -25,7 +25,6 @@ import { computeLivePollingOffsets, computeLiveTripStopTimes } from './live-poll
 import { annotateShortTurnVariants, buildShapeSelectionContext } from './shape-selection.js';
 import { stampWorstDirectionHeadways, stampRouteIrregularDirection } from './worst-direction.js';
 import type { GeoJsonFeature, StopEntry } from './geojson-types.js';
-import type { AnalysisResult } from '../types/gtfs.js';
 import { assessFeedQuality, type FeedQuality } from '../shared/feedQuality.js';
 import { routeDataQualityWarningForShape } from './routeDataQuality.js';
 import { deriveRouteBranch } from '../shared/routeBranch.js';
@@ -79,12 +78,16 @@ export function hasNightServiceAtShapeEndpoints(
   endpointStopIds: readonly (string | undefined)[],
   routeDepartures: ReadonlyMap<string, number[]>,
   overnightOnlyDepartures: ReadonlyMap<string, number[]> = new Map(),
+  maxGapMinutes: number = 60,
 ): boolean {
   return [...new Set(endpointStopIds.filter((id): id is string => id != null))].some(stopId => {
     const departures = routeDepartures.get(stopId);
     if (!departures) return false;
     return hasSustainedNightService(
       nightServiceDepartureTimes(departures, overnightOnlyDepartures.get(stopId) ?? []),
+      undefined,
+      undefined,
+      maxGapMinutes,
     );
   });
 }
@@ -102,6 +105,11 @@ export interface ProcessOptions extends GtfsTransformOptions {
    * Refresh catches the error and soft-skips the agency.
    */
   force?: boolean;
+  /**
+   * Analysis-only override used by local comparison audits. Production callers
+   * omit this and continue to use the default analysis criteria.
+   */
+  analysisCriteriaFn?: (raw: RawRouteDepartures[]) => AnalysisResult[];
 }
 
 /** Thrown when validateGtfs reports errors and options.force is not set. */
@@ -201,7 +209,8 @@ export async function processGtfsBuffer(
   onStatus?.('Running phase 1...');
   const raw = computeRawDepartures(gtfs, refDate, shapeFilterForPhase1, options?.slug);
   onStatus?.('Running phase 2...');
-  const results = applyAnalysisCriteria(raw).map(result =>
+  const analyze = options?.analysisCriteriaFn ?? ((input: RawRouteDepartures[]) => applyAnalysisCriteria(input));
+  const results = analyze(raw).map(result =>
     options?.slug === 'niagara' ? normalizeNrtAnalysisResult(result) : result,
   );
 
@@ -372,6 +381,8 @@ export async function processGtfsBuffer(
         directionId: parseInt(result.dir),
         routeDataQualityWarning: routeDataQualityWarningForShape(shapeId, gtfs.shapeAnomalies),
         tier: result.tier,
+        weekdayTierVariation: result.weekdayTierVariation,
+        edgeGapAllowance: result.edgeGapAllowance,
         serviceClass: result.serviceClass ?? (result.tier === 'span' ? 'irregular' : 'regular'),
         headway: newHeadway,
         headwayByPeriod: computePeriodHeadways(result.times),
@@ -612,6 +623,8 @@ export async function processGtfsBuffer(
     // Same reasoning for frequentService (#294 follow-on, see docs/research/frequent-service-research-2026-09/CRITERIA.md).
     feature.properties.frequentService = false;
     feature.properties.researchFrequentService = { daytime15: false, daytime30: false, extended15: false, extended30: false };
+    feature.properties.nightService30 = false;
+    feature.properties.nightService60 = false;
     const gKey = `${shortName}::${dirId}::${day}`;
     const stopMap = stopDepsByGroup.get(gKey);
     if (!stopMap) {
@@ -656,11 +669,19 @@ export async function processGtfsBuffer(
       nightShapeStops[0]?.stopId,
       nightShapeStops.at(-1)?.stopId,
     ].filter((id): id is string => id != null))];
-    feature.properties.nightService = hasNightServiceAtShapeEndpoints(
+    feature.properties.nightService30 = hasNightServiceAtShapeEndpoints(
       nightEndpointStopIds,
       metricStopMap,
       stopDepsByGroupNight.get(gKey),
+      30,
     );
+    feature.properties.nightService60 = hasNightServiceAtShapeEndpoints(
+      nightEndpointStopIds,
+      metricStopMap,
+      stopDepsByGroupNight.get(gKey),
+      60,
+    );
+    feature.properties.nightService = feature.properties.nightService60;
 
     // Step 1: compute all-day, per-period, and per-hour headways for every stop in the route+dir group.
     const allStopHw: Record<string, number> = {};

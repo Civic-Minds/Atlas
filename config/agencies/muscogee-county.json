@@ -22,7 +22,7 @@
   "timezone": "America/New_York",
   "lastFeedExpiry": "",
   "lastFeedVersion": "6/17/2026 Saturday Reduced",
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-10-07",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -34,9 +34,9 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 42
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-10-07"
   },
-  "lastFeedCheckAt": "20261003",
+  "lastFeedCheckAt": "20261007",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",

@@ -11,6 +11,7 @@ import { bboxInViewport } from '../../utils/agencySearch';
 import { FILTER_MODES, ON_DEMAND_MODE } from '../../../shared/modes';
 import { DAY_TYPES, getNowDay, type DayType } from '../../../shared/dayTypes';
 import type { FrequentServiceFrequency, FrequentServiceWindow } from '../../../shared/frequentService';
+import type { NightServiceFrequency } from '../../../shared/nightService';
 import { useColorVision } from '../../context/ColorVisionContext';
 
 export { getNowDay };
@@ -35,6 +36,9 @@ interface FilterChipsProps {
   setResearchFrequency?: (frequency: FrequentServiceFrequency) => void;
   researchWindow?: FrequentServiceWindow;
   setResearchWindow?: (window: FrequentServiceWindow) => void;
+  nightServiceMode?: boolean;
+  nightServiceFrequency?: NightServiceFrequency;
+  setNightServiceFrequency?: (frequency: NightServiceFrequency) => void;
 }
 
 const MODES = ATLAS_MODE === 'public'
@@ -241,6 +245,9 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
   setResearchFrequency,
   researchWindow = 'daytime',
   setResearchWindow,
+  nightServiceMode = false,
+  nightServiceFrequency = 60,
+  setNightServiceFrequency,
 }) => {
   const { colorVisionFriendly } = useColorVision();
   const colorMode = colorVisionFriendly ? 'friendly' : 'default';
@@ -290,6 +297,20 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
   const toggle = (id: ChipId) => setOpenChip(c => c === id ? null : id);
 
   const hasActiveCoreFilter = maxHeadway !== Infinity || period !== 'all' || selectedModes.size > 0;
+
+  if (nightServiceMode && setNightServiceFrequency) {
+    return (
+      <div ref={rowRef} className="flex items-center gap-2">
+        <div className="flex items-center gap-1 rounded-full border border-[var(--border-primary)] p-0.5">
+          {([30, 60] as const).map(value => (
+            <button key={value} onClick={() => setNightServiceFrequency(value)} className={compactOptBtn(nightServiceFrequency === value, colorMode === 'friendly')} aria-pressed={nightServiceFrequency === value}>
+              {value} min
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   if (researchMode && setResearchDays && setResearchFrequency && setResearchWindow) {
     const researchButton = (active: boolean) => rowBtn(active, colorMode === 'friendly');

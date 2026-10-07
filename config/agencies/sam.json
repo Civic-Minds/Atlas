@@ -17,8 +17,8 @@
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-oregon-sandy-area-metro-sam-gtfs-261.zip?alt=media",
   "lastFeedExpiry": "20261201",
   "lastFeedVersion": "UTC: 04-Sep-2026 18:59",
-  "lastRefreshedAt": "2026-10-03",
-  "lastFeedCheckAt": "20261003",
+  "lastRefreshedAt": "2026-10-07",
+  "lastFeedCheckAt": "20261007",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270331",
@@ -36,7 +36,7 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 19
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-10-07"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,

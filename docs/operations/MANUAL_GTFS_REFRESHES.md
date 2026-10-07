@@ -1,10 +1,37 @@
 # Manual GTFS refresh queue
 
-**Last reviewed:** 2026-09-26. This is a maintained, read-only source-recovery
+**Last reviewed:** 2026-10-07. This is a maintained, read-only source-recovery
 queue; it does not mean that the listed replacements have been approved for a
 live refresh. Re-run `npm run audit-expired-sources` before acting on it.
 
-## Latest read-only audit — 2026-09-26
+## Latest read-only audit — 2026-10-07
+
+The full live-source freshness audit checked all 552 production-visible
+agencies: 495 feeds were current, 52 were expired, and 5 were unavailable.
+The follow-up source audit downloaded and checked the expired agencies'
+configured and fallback sources without changing feed configuration, writing
+refreshed data, or starting a pipeline action.
+
+- 47 remain genuinely expired with no verified current replacement
+- 5 need manual source review: `augusta`, `kcata`, `lavta`, `sfmta`, and
+  `westberkeley`
+
+The 13 additional expired feeds found by the live-source audit, outside the
+registry's recorded-expiry queue, are `beeline`, `cats`, `exo`,
+`exo-laurentides`, `exo-lrrs`, `exo-presquile`, `exo-sudouest`,
+`exo-terrebonne`, `metrostlouis`, `setd`, `tillamook`, `trinitymetro`, and
+`tulare-county-transit`. Their configured sources were either expired or
+unavailable; none supplied a verified current replacement.
+
+Three newer candidates observed during source review were also rejected by
+local processing: `coast-transit-ms` was degraded with passed schedule dates,
+`grand-junction` produced zero usable routes, and `snowmass-village` lacked
+required routes, trips, stop times, and calendar service.
+
+No agency from this audit is approved for a live refresh. The 47 genuinely
+expired agencies remain a source-recovery queue, not a batch refresh list.
+
+## Previous read-only audit — 2026-09-26
 
 The registry contains 80 records whose schedules were expired before the audit
 date. This audit downloaded and checked candidate feeds without changing feed

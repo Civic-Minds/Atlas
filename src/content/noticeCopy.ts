@@ -1,9 +1,12 @@
 import { agencyDisplayParts, formatStoredDate } from '../utils/format';
 
 /** Shared user-facing copy for every expired-feed notice. */
-export function expiredFeedNotice(agencyName: string, expDateStr?: string): string {
+export function expiredFeedNotice(agencyName: string, expDateStr?: string, manualFeedSource = false): string {
   const { primary, secondary } = agencyDisplayParts(agencyName);
   const label = secondary ? `the ${primary} schedule for ${secondary}` : `${primary}'s schedule`;
+  if (manualFeedSource) {
+    return `Atlas's latest ${label} ended${expDateStr ? ` on ${expDateStr}` : ''}. This schedule is maintained manually, so Atlas will keep showing it until a newer file is provided and verified.`;
+  }
   return `Atlas's latest ${label} ended${expDateStr ? ` on ${expDateStr}` : ''}. We haven't been able to locate and verify a newer feed yet.`;
 }
 
@@ -12,6 +15,9 @@ export const EXPIRED_FEED_EXPLANATION =
 
 export const EXPIRED_FEED_CONTEXT =
   'A newer schedule may exist on the agency\'s website without a downloadable feed Atlas can verify.';
+
+export const MANUAL_FEED_CONTEXT =
+  'This agency does not publish a feed that Atlas can check automatically. We update it when a newer file is provided and verified.';
 
 export const EXPIRED_FEED_CADENCE = 'We check all feeds weekly.';
 

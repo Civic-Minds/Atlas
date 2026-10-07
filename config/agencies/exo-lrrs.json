@@ -26,9 +26,13 @@
     "Le Vieux-Longueuil, Quebec",
     "Le Sud-Ouest, Quebec"
   ],
-  "lastFeedCheckAt": "20261003",
-  "expiredFeedCheckCount": 0,
-  "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20270103",
-  "timezone": "America/Montreal"
+  "lastFeedCheckAt": "20261007",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
+  "expiredFeedCheckExpiry": "20260823",
+  "timezone": "America/Montreal",
+  "feedRefreshStatus": "stale",
+  "feedRefreshError": "all available feeds expired (latest 20260823)",
+  "feedRefreshErrorAt": "20261007",
+  "feedRefreshRetryCount": 1
 }

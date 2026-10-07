@@ -13,6 +13,8 @@
 
 interface RouteFeatureProperties {
   nightService?: boolean;
+  nightService30?: boolean;
+  nightService60?: boolean;
   routeShortName?: string | null;
   routeLongName?: string | null;
   routeColor?: string | null;
@@ -35,6 +37,8 @@ export interface NightServiceRouteEntry {
   directionId: number | null;
   headsign: string | null;
   day: string | null;
+  nightService30: boolean;
+  nightService60: boolean;
 }
 
 export interface NightServiceIndexFile {
@@ -46,7 +50,7 @@ export interface NightServiceIndexFile {
 }
 
 export const NIGHT_SERVICE_CRITERIA =
-  'At least one departure every 60 minutes, 2am-6am local time, with no gap at the start or end of the core overnight window.';
+  'At least one departure every 30 or 60 minutes, 2am-6am local time, with no gap at the start or end of the core overnight window.';
 
 /**
  * Pure: pull the qualifying routes out of one agency's already-processed feature
@@ -60,7 +64,7 @@ export function extractNightServiceRoutes(
   features: RouteFeature[],
 ): NightServiceRouteEntry[] {
   return features
-    .filter(f => f.properties.nightService === true)
+    .filter(f => f.properties.nightService30 === true || f.properties.nightService60 === true || f.properties.nightService === true)
     .map(f => ({
       agencySlug,
       agencyName,
@@ -71,6 +75,8 @@ export function extractNightServiceRoutes(
       directionId: f.properties.directionId ?? null,
       headsign: f.properties.headsign ?? null,
       day: f.properties.day ?? null,
+      nightService30: f.properties.nightService30 === true,
+      nightService60: f.properties.nightService60 === true || f.properties.nightService === true,
     }));
 }
 

@@ -34,6 +34,7 @@ export interface AgencyCatalogEntry extends BrowserAgencyVisibility {
   searchAliases?: string[];
   cities?: string[];
   timezone?: string | null;
+  manualFeedSource?: boolean;
 }
 
 export interface AgencyCatalogFile {
