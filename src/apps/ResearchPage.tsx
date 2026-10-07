@@ -18,14 +18,14 @@ export default function ResearchPage() {
             <Moon className="h-5 w-5 text-[var(--accent)]" />
             <h2 className="mt-5 text-lg font-black text-[var(--text-primary)] group-hover:text-[var(--accent)]">Night Service</h2>
             <p className="mt-2 text-sm font-bold leading-6 text-[var(--text-muted)]">Find routes with sustained service from 2am to 6am.</p>
-            <span className="mt-5 inline-flex h-8 items-center rounded-full border px-3 text-xs font-bold text-[var(--text-primary)]">Open Night Service →</span>
+            <span className="mt-5 inline-flex h-8 items-center rounded-full border px-3 text-xs font-bold text-[var(--text-primary)]">See overnight routes →</span>
           </a>
 
           <a href={FEATURE_ROUTES.frequentService.story} className={`${FLOATING_CARD} group p-5 transition-colors hover:border-[var(--accent-border)]`}>
             <Zap className="h-5 w-5 text-[var(--accent)]" />
             <h2 className="mt-5 text-lg font-black text-[var(--text-primary)] group-hover:text-[var(--accent)]">Frequent Service</h2>
             <p className="mt-2 text-sm font-bold leading-6 text-[var(--text-muted)]">Learn what frequent service means, then explore routes that meet Atlas’s sustained-frequency thresholds.</p>
-            <span className="mt-5 inline-flex h-8 items-center rounded-full border px-3 text-xs font-bold text-[var(--text-primary)]">Read the story →</span>
+            <span className="mt-5 inline-flex h-8 items-center rounded-full border px-3 text-xs font-bold text-[var(--text-primary)]">Understand the threshold →</span>
           </a>
         </div>
       </div>
