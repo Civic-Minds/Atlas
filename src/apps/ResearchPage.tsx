@@ -7,15 +7,11 @@ export default function ResearchPage() {
     <div className="absolute inset-0 overflow-y-auto px-6 pt-28 pb-12 sm:px-10 lg:px-16">
       <div className="mx-auto max-w-4xl">
         <div className="max-w-2xl">
-          <h1 className="mt-3 text-3xl font-black tracking-tight text-[var(--text-primary)] sm:text-5xl">Research views for understanding transit service.</h1>
+          <h1 className="mt-3 text-3xl font-black tracking-tight text-[var(--text-primary)] sm:text-5xl">Look closer at how transit works.</h1>
           <p className="mt-4 text-sm font-bold leading-7 text-[var(--text-muted)] sm:text-base">
-            Research views use Atlas schedule data to examine service patterns that do not fit the everyday frequency map.
+            Explore the service patterns that the everyday frequency map cannot show on its own.
           </p>
         </div>
-        <a href="/about" className="group mt-4 block rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-panel)] p-5 transition-colors hover:border-[var(--accent-border)]">
-            <h2 className="text-lg font-black text-[var(--text-primary)] group-hover:text-[var(--accent)]">About Atlas</h2>
-            <p className="mt-2 text-sm font-bold leading-6 text-[var(--text-muted)]">Learn what Atlas does, where its data comes from, and what its measurements mean.</p>
-        </a>
 
         <div className="mt-10 grid gap-4 sm:grid-cols-2">
           <a href="/apps/night" className={`${FLOATING_CARD} group p-5 transition-colors hover:border-[var(--accent-border)]`}>
