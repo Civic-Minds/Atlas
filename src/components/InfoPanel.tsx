@@ -402,7 +402,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                 <span className="mx-1.5">·</span>
                 <a href="/terms" className="hover:text-[var(--accent)] hover:underline">Terms</a>
                 <span className="mx-1.5">·</span>
-                <a href="/privacy" className="hover:text-[var(--accent)] hover:underline">Privacy policy</a>
+                <a href="/privacy" className="hover:text-[var(--accent)] hover:underline">Privacy Policy</a>
                 <span className="mx-1.5">·</span>
                 <span>© 2026 Civic Minds.</span>
               </div>
