@@ -2,11 +2,11 @@ import { describe, expect, it } from 'vitest';
 import { normalizeBrantfordRouteLabels } from '../transforms/brantford-route-labels';
 import type { GtfsData } from '../../types/gtfs';
 
-function fixture(routes: GtfsData['routes']): GtfsData {
+function fixture(routes: GtfsData['routes'], trips: GtfsData['trips'] = []): GtfsData {
   return {
     agencies: [],
     routes,
-    trips: [],
+    trips,
     stops: [],
     stopTimes: [],
     calendar: [],
@@ -38,5 +38,25 @@ describe('normalizeBrantfordRouteLabels', () => {
     ]));
 
     expect(result.routes[0].route_long_name).toBe('Market Street');
+  });
+
+  it('renders Downtown as a via point in Brantford headsigns', () => {
+    const result = normalizeBrantfordRouteLabels(fixture([], [
+      { route_id: '3076', service_id: 'weekday', trip_id: 'southbound', trip_headsign: 'Blackburn Dr | Downtown' },
+      { route_id: '3076', service_id: 'weekday', trip_id: 'northbound', trip_headsign: 'NWIA | Downtown' },
+    ]));
+
+    expect(result.trips.map(trip => trip.trip_headsign)).toEqual([
+      'Blackburn Dr via Downtown',
+      'NWIA via Downtown',
+    ]);
+  });
+
+  it('keeps other pipe-separated headsigns unchanged', () => {
+    const result = normalizeBrantfordRouteLabels(fixture([], [
+      { route_id: '14', service_id: 'weekday', trip_id: 'route-14', trip_headsign: 'Echo Place | Lynden Park Mall' },
+    ]));
+
+    expect(result.trips[0].trip_headsign).toBe('Echo Place | Lynden Park Mall');
   });
 });

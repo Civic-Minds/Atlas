@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
-- **Brantford route cards now show the correct Grand River Line name and NWIA destination casing.**
+- **Brantford route cards now show clean route names, destination casing, and via labels.**
 - **The info panel footer now links directly to Documentation alongside Terms and Privacy.**
 - **PMTiles coverage verification now retries transient R2 connection failures and can verify a downloaded archive locally**, preventing network noise from being reported as missing agencies.
 - **Frequency classification now uses the reviewed tier-specific near-miss limits and genuine service-edge allowances**, with edge exceptions counted in the same bounded budget and all downstream artifacts rebuilt from the shared pipeline.
