@@ -35,6 +35,8 @@ const TRANSIT_ACRONYMS: Record<string, string> = {
   // excluded for, just not caught until France expansion made it common.
   // St intentionally excluded — "St" in stop names means Street/Saint, not the GO Stouffville line
   Rh: 'RH',
+  // Brantford Transit publishes the Northwest Industrial Area as NWIA.
+  Nwia: 'NWIA',
   // Bay Area / Staged expansion acronyms
   Bart: 'BART',
   Weta: 'WETA',

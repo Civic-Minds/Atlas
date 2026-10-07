@@ -16,6 +16,7 @@
   "timezone": "America/New_York",
   "feedUrl": null,
   "manualFeedSource": true,
+  "preprocess": "brantford-route-labels",
   "lastFeedExpiry": "20261230",
   "lastFeedVersion": "d6957916-4bb3-479b-beb4-0d4e9d0d7a62",
   "lastRefreshedAt": "2026-10-06",

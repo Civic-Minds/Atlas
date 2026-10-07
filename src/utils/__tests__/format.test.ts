@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { fmtHeadway, shortenAgencyName, titleCase } from '../format';
+import { fmtHeadway, getRouteLabel, shortenAgencyName, titleCase } from '../format';
 import indexData from '../../../public/data/index.json';
 
 interface IndexAgency {
@@ -98,6 +98,14 @@ describe('titleCase', () => {
     expect(titleCase('GO')).toBe('GO');
     expect(titleCase('LW')).toBe('LW');
     expect(titleCase('SFU Exchange')).toBe('SFU Exchange');
+  });
+
+  it('preserves Brantford Transit’s NWIA acronym', () => {
+    expect(titleCase('NWIA | Downtown')).toBe('NWIA | Downtown');
+  });
+
+  it('formats the cleaned Brantford route 20 label', () => {
+    expect(titleCase(getRouteLabel('20', 'Grand River Line'))).toBe('20 — Grand River Line');
   });
 });
 
