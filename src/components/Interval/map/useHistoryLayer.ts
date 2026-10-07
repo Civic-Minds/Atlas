@@ -122,7 +122,29 @@ export function useHistoryLayer(
         // animations can keep emitting moveend updates and trigger React's
         // update-depth guard (#478).
         if (!hasRouteGeometry && !hasHistoricalRouteGeometry) {
-          map.flyTo({ center: [historyOverlay.agencyCenter[1], historyOverlay.agencyCenter[0]], zoom: 13 });
+          const fitAgencyRoutes = () => {
+            tryZoomHandlerRef.current = null;
+            const features = map.queryRenderedFeatures(undefined, {
+              layers: ['overview-routes-layer', 'routes-layer', 'local-routes-layer'],
+            }).filter(feature => String(feature.properties?.agencySlug ?? '') === historyOverlay.slug);
+            let minLng = 180, maxLng = -180, minLat = 90, maxLat = -90;
+            for (const feature of features) {
+              const geometry = feature.geometry as GeoJSON.LineString | GeoJSON.MultiLineString;
+              const coordinates = geometry.type === 'LineString' ? geometry.coordinates : geometry.coordinates.flat();
+              for (const [lng, lat] of coordinates) {
+                minLng = Math.min(minLng, lng);
+                maxLng = Math.max(maxLng, lng);
+                minLat = Math.min(minLat, lat);
+                maxLat = Math.max(maxLat, lat);
+              }
+            }
+            if (minLng < maxLng && minLat < maxLat) {
+              map.fitBounds([[minLng, minLat], [maxLng, maxLat]], { padding: { top: 80, bottom: 80, left: 80, right: 280 }, maxZoom: 11 });
+            }
+          };
+          tryZoomHandlerRef.current = fitAgencyRoutes;
+          map.once('moveend', fitAgencyRoutes);
+          map.flyTo({ center: [historyOverlay.agencyCenter[1], historyOverlay.agencyCenter[0]], zoom: 10, duration: 700 });
         }
         // Without historical geometry, try to zoom to the specific current route
         // after the agency fly completes.
