@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest';
-import { isRetryableR2Error } from '../r2.js';
+import { describe, expect, it, vi } from 'vitest';
+import { getR2Client, isRetryableR2Error } from '../r2.js';
 
 function connectAggregateError(codes: string[]): AggregateError {
   const children = codes.map(code => Object.assign(new Error(`connect ${code}`), { code }));
@@ -38,5 +38,17 @@ describe('isRetryableR2Error', () => {
   it('handles null/non-error input safely', () => {
     expect(isRetryableR2Error(null)).toBe(false);
     expect(isRetryableR2Error('random string')).toBe(false);
+  });
+});
+
+describe('getR2Client', () => {
+  it('reuses the configured client for repeated archive operations', () => {
+    vi.stubEnv('R2_ACCOUNT_ID', 'test-account');
+    vi.stubEnv('R2_ACCESS_KEY_ID', 'test-access-key');
+    vi.stubEnv('R2_SECRET_ACCESS_KEY', 'test-secret-key');
+
+    expect(getR2Client()).toBe(getR2Client());
+
+    vi.unstubAllEnvs();
   });
 });

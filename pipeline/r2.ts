@@ -21,11 +21,15 @@ function requireEnv(key: string): string {
   return v;
 }
 
+let cachedR2Client: S3Client | undefined;
+
 export function getR2Client() {
   const accountId = requireEnv('R2_ACCOUNT_ID');
   const accessKeyId = requireEnv('R2_ACCESS_KEY_ID');
   const secretAccessKey = requireEnv('R2_SECRET_ACCESS_KEY');
-  return new S3Client({
+  if (cachedR2Client) return cachedR2Client;
+
+  cachedR2Client = new S3Client({
     region: 'auto',
     endpoint: `https://${accountId}.r2.cloudflarestorage.com`,
     credentials: { accessKeyId, secretAccessKey },
@@ -40,6 +44,7 @@ export function getR2Client() {
       httpsAgent: { family: 4, keepAlive: true, maxSockets: 10 },
     },
   });
+  return cachedR2Client;
 }
 
 export function r2PublicUrl(key: string): string {
