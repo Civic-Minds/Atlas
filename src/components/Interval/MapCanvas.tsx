@@ -29,6 +29,8 @@ import { MapContextPanel } from './MapContextPanel';
 import MapExportDialog from '../MapExportDialog';
 import { frequentServiceBand, frequentServiceFeatureKey, frequentServiceQueryKey, type FrequentServiceFrequency, type FrequentServiceWindow } from '../../../shared/frequentService';
 import { effectiveMode, ON_DEMAND_MODE } from '../../../shared/modes';
+import type { NightServiceFrequency } from '../../../shared/nightService';
+import { nightServiceKey } from '../../../shared/nightService';
 import { markAtlasLatest } from '../../lib/performance';
 import { isOnDemandActive } from '../../../shared/onDemandAvailability';
 import { buildRouteSortKeyExpression } from '../../utils/routeSort';
@@ -221,6 +223,7 @@ interface MapCanvasProps {
   onOnDemandZoneClick?: (selection: { slug: string; zoneId: string }) => void;
   fareView?: boolean;
   nightServiceView?: boolean;
+  nightServiceFrequency?: NightServiceFrequency;
   frequentServiceView?: boolean;
   frequentServiceDays?: DayType[];
   frequentServiceFrequency?: FrequentServiceFrequency;
@@ -282,6 +285,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   onOnDemandZoneClick,
   fareView = false,
   nightServiceView = false,
+  nightServiceFrequency = 60,
   frequentServiceView = false,
   frequentServiceDays = ['Weekday'],
   frequentServiceFrequency = 15,
@@ -771,10 +775,10 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   const nightServiceFeatures = useMemo(() => {
     if (!layers) return [];
     return Object.values(layers).flatMap(collection => collection.features.filter(feature => {
-      const properties = feature.properties as { nightService?: boolean } | null;
-      return feature.geometry.type === 'LineString' && properties?.nightService === true;
+      const properties = feature.properties as Record<string, any> | null;
+      return feature.geometry.type === 'LineString' && (properties?.[nightServiceKey(nightServiceFrequency)] === true || (nightServiceFrequency === 60 && properties?.nightService === true));
     }));
-  }, [layers]);
+  }, [layers, nightServiceFrequency]);
 
   const frequentServiceFeatures = useMemo(() => {
     const key = frequentServiceQueryKey(frequentServiceFrequency, frequentServiceWindow);

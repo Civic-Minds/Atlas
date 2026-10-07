@@ -17,6 +17,8 @@ import {
   SIDEBAR_PANEL_WIDTH,
 } from '../styles';
 import { R2_PUBLIC_URL } from '../../shared/config';
+import type { NightServiceFrequency } from '../../shared/nightService';
+import { nightServiceKey } from '../../shared/nightService';
 
 interface NightServiceRoute {
   agencySlug: string;
@@ -37,6 +39,8 @@ interface NightServiceRouteSummary {
 
 interface NightServiceFeatureProperties {
   nightService?: boolean;
+  nightService30?: boolean;
+  nightService60?: boolean;
   routeId?: string | null;
   routeShortName?: string | null;
   routeLongName?: string | null;
@@ -56,6 +60,8 @@ interface Props {
   sidebarLeft?: number;
   layers: Record<string, GeoJSON.FeatureCollection>;
   query?: string;
+  frequency: NightServiceFrequency;
+  setFrequency: (frequency: NightServiceFrequency) => void;
   onRouteSelect?: (agencySlug: string, routeId: string) => void;
 }
 
@@ -78,7 +84,7 @@ function featureIntersectsBounds(feature: GeoJSON.Feature, bounds: { s: number; 
   return maxLon >= bounds.w && minLon <= bounds.e && maxLat >= bounds.s && minLat <= bounds.n;
 }
 
-export default function NightService({ active, sidebarLeft, layers, query = '', onRouteSelect }: Props) {
+export default function NightService({ active, sidebarLeft, layers, query = '', frequency, setFrequency, onRouteSelect }: Props) {
   const { colorVisionFriendly } = useColorVision();
   const colorMode = colorVisionFriendly ? 'friendly' : 'default';
   const [data, setData] = useState<NightServiceIndexFile | null>(null);
@@ -91,12 +97,13 @@ export default function NightService({ active, sidebarLeft, layers, query = '', 
     for (const [agencySlug, collection] of Object.entries(layers)) {
       for (const feature of collection.features) {
         const properties = feature.properties as NightServiceFeatureProperties | null;
-        if (properties?.nightService !== true || !featureIntersectsBounds(feature, bounds)) continue;
+        if (properties?.[nightServiceKey(frequency)] !== true && !(frequency === 60 && properties?.nightService === true)) continue;
+        if (!featureIntersectsBounds(feature, bounds)) continue;
         routes.push({ agencySlug, properties });
       }
     }
     return routes;
-  }, [bounds, layers]);
+  }, [bounds, layers, frequency]);
   const [introDismissed, setIntroDismissed] = useState(() => {
     try { return localStorage.getItem('atlas_pref_night_intro_dismissed') === '1'; } catch { return false; }
   });
@@ -192,7 +199,7 @@ export default function NightService({ active, sidebarLeft, layers, query = '', 
               Which routes actually run through the night?
             </p>
             <p className="mt-1 pr-5 text-[10px] text-[var(--text-dim)] font-bold leading-snug">
-              A route counts here only if it has a departure at least every 60 minutes,
+              A route counts here only if it has a departure at least every {frequency} minutes,
               2am to 6am, with no gap at either end of the core overnight window.
             </p>
             <p className="mt-1.5 text-[10px] font-bold" style={{ color: getNightServiceColor(colorMode) }}>
@@ -202,9 +209,20 @@ export default function NightService({ active, sidebarLeft, layers, query = '', 
         )}
         {data && introDismissed && (
           <p className="px-4 pt-2 pb-1 text-[10px] text-[var(--text-dim)] font-bold leading-snug border-b border-[var(--border-primary)]">
-            {data.criteria}
+            At least one departure every {frequency} minutes, 2am–6am local time, with no gap at either end of the window.
           </p>
         )}
+
+        <div className="px-3 py-2 border-b border-[var(--border-primary)] flex items-center justify-between gap-2">
+          <span className="text-[10px] font-bold text-[var(--text-dim)]">Overnight frequency</span>
+          <div className="flex items-center gap-1 rounded-full border border-[var(--border-primary)] p-0.5">
+            {([30, 60] as const).map(value => (
+              <button key={value} type="button" onClick={() => setFrequency(value)} aria-pressed={frequency === value} className={`px-2 py-1 rounded-full text-[10px] font-bold ${frequency === value ? 'bg-[var(--accent)] text-white' : 'text-[var(--text-dim)]'}`}>
+                {value} min
+              </button>
+            ))}
+          </div>
+        </div>
 
         <div className="p-3 border-b border-[var(--border-primary)] shrink-0">
           <div className={SEARCH_PILL}>

@@ -31,6 +31,7 @@ import type { FeedQuality } from '../shared/feedQuality';
 import { trackEvent, trackPageView } from './lib/analytics';
 import { markAtlasOnce } from './lib/performance';
 import { parseFrequentServiceDays, type FrequentServiceFrequency, type FrequentServiceWindow } from '../shared/frequentService';
+import type { NightServiceFrequency } from '../shared/nightService';
 const FrequentServiceStory = React.lazy(() => import('./apps/FrequentServiceStory'));
 import { BWG_ON_DEMAND_AGENCY, CALEDON_ON_DEMAND_AGENCY, BRAMPTON_ON_DEMAND_AGENCY, C_TRAN_CURRENT_SERVICE_AREA, GRT_ROUTE_79_SERVICE_AREA, HAMILTON_MY_RIDE_SERVICE_AREA, METRO_MICRO_SERVICE_AREA, WATA_PARATRANSIT_SERVICE_AREA } from './data/onDemandServiceAreas';
 import type { OnDemandAvailability } from '../shared/onDemandAvailability';
@@ -233,7 +234,8 @@ export default function App() {
   const [selectedAgencySlug, setSelectedAgencySlug] = useState<string | null>(null);
   const [selectedMapAgencySlug, setSelectedMapAgencySlug] = useState<string | null>(null);
   const [pendingLiveRoute, setPendingLiveRoute] = useState<{ slug: string; routeShortName: string } | null>(null);
-  const [pendingNightRoute, setPendingNightRoute] = useState<{ slug: string; routeId: string } | null>(null);
+  const [pendingNightRoute, setPendingNightRoute] = useState<{ slug: string; routeId: string; frequency: NightServiceFrequency } | null>(null);
+  const [nightServiceFrequency, setNightServiceFrequency] = useState<NightServiceFrequency>(() => new URLSearchParams(window.location.search).get('nightFrequency') === '30' ? 30 : 60);
   const [pendingHistoryRoute, setPendingHistoryRoute] = useState<{ slug: string; routeShortName: string } | null>(null);
   const [headerPortalEl, setHeaderPortalEl] = useState<Element | null>(null);
   const headerPortalRef = useCallback((el: HTMLDivElement | null) => { setHeaderPortalEl(el); }, []);
@@ -259,7 +261,7 @@ export default function App() {
     closeInfo();
   }, [activeApp, closeInfo]);
   const handleLiveRouteClick = useCallback((slug: string, routeShortName: string) => { setPendingLiveRoute({ slug, routeShortName }); closeInfo(); }, [closeInfo]);
-  const handleNightRouteClick = useCallback((slug: string, routeId: string) => { setPendingNightRoute({ slug, routeId }); closeInfo(); }, [closeInfo]);
+  const handleNightRouteClick = useCallback((slug: string, routeId: string) => { setPendingNightRoute({ slug, routeId, frequency: nightServiceFrequency }); closeInfo(); }, [closeInfo, nightServiceFrequency]);
   const handleHistoryRouteClick = useCallback((slug: string, routeShortName: string) => { setPendingHistoryRoute({ slug, routeShortName }); }, []);
   const handleAgencyCardClose = useCallback(() => setSelectedAgencySlug(null), []);
   const handlePendingHandled = useCallback(() => setPendingLiveRoute(null), []);
@@ -728,6 +730,7 @@ export default function App() {
               liveRoutesOnly={inLive}
               fareView={inFares}
               nightServiceView={inNight}
+              nightServiceFrequency={nightServiceFrequency}
               exportEnabled={FEATURES.mapExport || inFrequentService}
               exportTitle={inFrequentService ? 'Frequent Service' : inNight ? 'Night Service' : inHistory ? 'Service History' : inFares ? 'Transit Fares' : inLive ? 'Live Transit' : 'Transit Frequency'}
               frequentServiceView={inFrequentService}
@@ -788,7 +791,7 @@ export default function App() {
             )}
             {FEATURES.beta && (
               <React.Suspense fallback={null}>
-                <NightService active={inNight} sidebarLeft={sidebarLeft} layers={layers} query={deferredQuery} onRouteSelect={handleNightRouteClick} />
+                <NightService active={inNight} sidebarLeft={sidebarLeft} layers={layers} query={deferredQuery} frequency={nightServiceFrequency} setFrequency={setNightServiceFrequency} onRouteSelect={handleNightRouteClick} />
               </React.Suspense>
             )}
             {FEATURES.live && liveMounted && (
