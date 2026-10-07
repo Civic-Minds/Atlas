@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **Export dialogs now close when you click outside them, while clicks inside remain focused on export actions.**
+- **Map exports now support Social, Standard, and High resolution image presets with equal-weight Download and Share actions.**
 - **Night Service now supports 30-minute and 60-minute filters for the fixed 2am–6am window.**
 - **Settings now use a cleaner text-first layout without decorative row icons.**
 - **The Atlas logo now exits Frequent Service and returns to the main frequency map.**
