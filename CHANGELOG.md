@@ -13,6 +13,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Frequent Service navigation now returns to the main frequency map when the Atlas logo is clicked.**
 - **Explore Atlas now provides one landing page for About Atlas, Night Service, and Frequent Service.**
 - **Map controls now put About Atlas before Feedback and map attribution.**
+- **History’s agency chooser now matches Atlas’s shared panel spacing and list treatment.**
+- **History agency selection now fits and highlights the complete network instead of zooming to one centre point.**
 - **Search fields now clear immediately when the X is pressed.**
 - **Settings now use a cleaner text-first layout, with appearance, map, performance, and filter controls presented consistently.**
 - **The info panel now links directly to Documentation alongside Terms and Privacy.**
