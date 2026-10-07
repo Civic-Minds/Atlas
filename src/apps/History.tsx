@@ -4,7 +4,8 @@ import { useHistoryMapOverlay } from '../context/HistoryMapOverlay';
 import { R2_PUBLIC_URL, type HeadwayByPeriod } from '../../shared/config';
 import { FLOATING_CARD, PANEL_ENTER, TRANSITION_SLOW, SEARCH_PILL, SEARCH_FIELD, LIST_ROW, AGENCY_LIST_ROW, AGENCY_LIST_PRIMARY, PANEL_TITLE_BAR, PANEL_TITLE, Z_PANEL, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH, CONTROL_ACTIVE } from '../styles';
 import RouteListRow from '../components/RouteListRow';
-import { shortenAgencyName } from '../utils/format';
+import { shortenAgencyName, titleCase } from '../utils/format';
+import { buildHistoryRouteFilters, historyRouteMatchesFilter, type HistoryRouteFilterKey } from '../utils/historyRouteFilters';
 import { useColorVision } from '../context/ColorVisionContext';
 import RegionFilterPills from '../components/RegionFilterPills';
 import {
@@ -32,6 +33,8 @@ export interface RouteTripDurationSummary {
 export interface RouteHistoryEntry {
   routeShortName: string;
   routeName: string;
+  currentRouteType?: number | string | null;
+  currentBusSubType?: string | null;
   snapshots: RouteSnapshot[];
   /** Only present when the route's stops/alignment were identical across the compared range. */
   tripDuration?: RouteTripDurationSummary;
@@ -94,11 +97,6 @@ function formatXLabel(label: string): string {
     return month ? `${month.slice(0, 3)} '${year}` : `'${year}`;
   }
   return label;
-}
-
-function toTitleCase(s: string): string {
-  if (!s || s !== s.toUpperCase()) return s;
-  return s.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
 }
 
 function RouteHistoryCard({
@@ -177,17 +175,17 @@ function RouteHistoryCard({
       <div className="shrink-0 px-4 pt-3 pb-2">
         <button
           onClick={(e) => { e.stopPropagation(); onBack(); }}
-          className="flex items-center gap-0.5 text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors mb-1.5"
+          className="flex items-center gap-0.5 text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors mb-2"
           aria-label="Back to routes"
         >
           <ChevronLeft className="w-3 h-3 shrink-0" />
-          <span className="text-[10px] font-medium">{agencyName}</span>
+          <span className="text-[10px] font-bold">{shortenAgencyName(agencyName)} routes</span>
         </button>
         <div className="flex items-center justify-between gap-2">
           <div className="min-w-0 flex-1 flex items-baseline gap-1.5">
-            <span className="text-sm font-black text-[var(--text-primary)] shrink-0">{route.routeShortName}</span>
+            <span className="text-base font-black text-[var(--text-primary)] shrink-0">{route.routeShortName}</span>
             {route.routeName && (
-              <span className="text-xs font-semibold text-[var(--text-dim)] truncate">{toTitleCase(route.routeName)}</span>
+              <span className="text-xs font-semibold text-[var(--text-dim)] truncate">{titleCase(route.routeName)}</span>
             )}
           </div>
           {snaps.length >= 2 && (
@@ -321,7 +319,12 @@ function HistoryAgencyPanel({
   onRouteSelect: (routeShortName: string) => void;
 }) {
   const [routeQuery, setRouteQuery] = useState('');
+  const [activeFilter, setActiveFilter] = useState<HistoryRouteFilterKey | null>(null);
   const tier = agencyHistoryTier(agencyHistory) ?? 'recent';
+
+  useEffect(() => {
+    setActiveFilter(null);
+  }, [agencyHistory.slug]);
 
   const minYear = useMemo(() => {
     const all = agencyHistory.routes.flatMap(r => r.snapshots.map(s => s.year));
@@ -362,6 +365,27 @@ function HistoryAgencyPanel({
       });
   }, [agencyHistory, routeQuery]);
 
+  const filterRoutes = useMemo(() => agencyHistory.routes.map(route => ({
+    routeShortName: route.routeShortName,
+    routeLongName: route.routeName,
+    routeType: route.currentRouteType,
+    busSubType: route.currentBusSubType,
+    agencySlug: agencyHistory.slug,
+  })), [agencyHistory]);
+
+  const routeFilters = useMemo(() => buildHistoryRouteFilters(filterRoutes), [filterRoutes]);
+
+  const visibleRouteRows = useMemo(() => {
+    if (!activeFilter) return routeRows;
+    return routeRows.filter(({ route }) => historyRouteMatchesFilter({
+      routeShortName: route.routeShortName,
+      routeLongName: route.routeName,
+      routeType: route.currentRouteType,
+      busSubType: route.currentBusSubType,
+      agencySlug: agencyHistory.slug,
+    }, activeFilter));
+  }, [activeFilter, agencyHistory.slug, routeRows]);
+
   return (
     <div className={`${FLOATING_CARD} flex flex-col overflow-hidden max-h-[calc(100vh-104px)] ${PANEL_ENTER}`}>
       {/* Header */}
@@ -372,9 +396,9 @@ function HistoryAgencyPanel({
               <h2 className="text-sm font-black text-[var(--text-primary)] leading-tight truncate">{shortenAgencyName(agencyHistory.name)}</h2>
             </div>
             <p className="text-[10px] font-bold text-[var(--text-muted)] tracking-wide mt-0.5">
-              {agencyHistory.region} · {agencyHistory.routes.length} routes with historical data · {minYear === maxYear ? minYear : `${minYear}–${maxYear}`}
+              {agencyHistory.region} · {agencyHistory.routes.length} routes · {minYear === maxYear ? minYear : `${minYear}–${maxYear}`}
             </p>
-            {!routeQuery && (
+            {!routeQuery && !activeFilter && (
               <p className="text-[9px] text-[var(--text-dim)] mt-1">Routes ordered by biggest frequency change</p>
             )}
           </div>
@@ -397,19 +421,39 @@ function HistoryAgencyPanel({
             </button>
           )}
         </div>
+        {routeFilters.length > 0 && (
+          <div className="flex flex-wrap items-center gap-1.5 mt-2">
+            <span className="text-[9px] font-bold text-[var(--text-dim)]">Current mode</span>
+            {routeFilters.map(filter => {
+              const active = activeFilter === filter.key;
+              return (
+                <button
+                  key={filter.key}
+                  type="button"
+                  onClick={() => setActiveFilter(active ? null : filter.key)}
+                  aria-pressed={active}
+                  title="Filters by current route metadata"
+                  className={`text-[9px] font-bold px-2 py-0.5 rounded-full border transition-colors ${active ? CONTROL_ACTIVE : 'bg-transparent border-[var(--border-primary)] text-[var(--text-muted)] hover:bg-[var(--bg-btn-hover)]'}`}
+                >
+                  {filter.label} {filter.count}
+                </button>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       <div className="flex-1 overflow-y-auto custom-scrollbar">
-        {routeRows.length === 0 && (
+        {visibleRouteRows.length === 0 && (
           <p className="text-[11px] text-[var(--text-dim)] px-4 py-3">
-            {routeQuery ? 'No routes match.' : 'No data for this period.'}
+            {routeQuery || activeFilter ? 'No routes match.' : 'No data for this period.'}
           </p>
         )}
-        {routeRows.map(({ route }) => (
+        {visibleRouteRows.map(({ route }) => (
           <RouteListRow
             key={route.routeShortName}
             shortName={route.routeShortName}
-            name={route.routeName}
+            name={titleCase(route.routeName)}
             onClick={() => onRouteSelect(route.routeShortName)}
             variant="spaced"
             right={<ChevronRight className="w-3 h-3 text-[var(--text-dim)] group-hover:text-[var(--accent)] transition-colors shrink-0 ml-3" />}
