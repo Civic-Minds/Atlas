@@ -14,7 +14,8 @@
  */
 
 import fs from 'fs';
-import { PMTiles } from 'pmtiles';
+import path from 'path';
+import { PMTiles, type Source } from 'pmtiles';
 import { PbfReader } from 'pbf';
 import { VectorTile } from '@mapbox/vector-tile';
 import { R2_PUBLIC_URL } from '../shared/config.js';
@@ -39,6 +40,27 @@ interface Agency {
 const PREFERRED_ZOOM = 12;
 const REQUEST_TIMEOUT_MS = 15_000;
 
+class NodeFileSource implements Source {
+  constructor(private readonly filePath: string) {}
+
+  getKey() {
+    return this.filePath;
+  }
+
+  async getBytes(offset: number, length: number) {
+    const handle = await fs.promises.open(this.filePath, 'r');
+    try {
+      const buffer = Buffer.allocUnsafe(length);
+      const { bytesRead } = await handle.read(buffer, 0, length, offset);
+      return {
+        data: buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + bytesRead),
+      };
+    } finally {
+      await handle.close();
+    }
+  }
+}
+
 async function getZxyWithRetry(
   pmtiles: PMTiles,
   zoom: number,
@@ -57,7 +79,12 @@ async function getZxyWithRetry(
     } catch (e) {
       const isLast = attempt === retries;
       const message = (e as Error).message || '';
-      const isTransient = /Bad response code: (429|5\d\d)|PMTiles request timeout/.test(message);
+      // FetchSource can surface transient R2 connection failures as the very
+      // generic `fetch failed` message rather than preserving the HTTP status.
+      // Treat those network errors like 429/5xx responses so a large archive
+      // check does not turn a temporary socket failure into a false coverage
+      // failure.
+      const isTransient = /Bad response code: (429|5\d\d)|PMTiles request timeout|fetch failed|EADDRNOTAVAIL|ECONNRESET|ETIMEDOUT|socket hang up/i.test(message);
       if (isLast || !isTransient) throw e;
       // R2 can keep returning 429s briefly while a large archive is being
       // checked. Give the request enough time to leave the rate-limit window
@@ -83,7 +110,10 @@ async function main() {
   const pmtilesUrl = process.env.PMTILES_URL
     ?? (localManifest?.pmtilesKey ? `${R2_PUBLIC_URL}/${localManifest.pmtilesKey}` : `${R2_PUBLIC_URL}/atlas.pmtiles`);
   console.log(`Opening PMTiles archive: ${pmtilesUrl}`);
-  const pmtiles = new PMTiles(pmtilesUrl);
+  const localPmtilesPath = process.env.PMTILES_LOCAL_PATH;
+  const pmtiles = localPmtilesPath
+    ? new PMTiles(new NodeFileSource(path.resolve(localPmtilesPath)))
+    : new PMTiles(pmtilesUrl);
 
   const header = await pmtiles.getHeader();
   const zoom = Math.min(PREFERRED_ZOOM, header.maxZoom);

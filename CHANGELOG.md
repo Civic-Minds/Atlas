@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **PMTiles coverage verification now retries transient R2 connection failures and can verify a downloaded archive locally**, preventing network noise from being reported as missing agencies.
 - **Frequency classification now uses the reviewed tier-specific near-miss limits and genuine service-edge allowances**, with edge exceptions counted in the same bounded budget and all downstream artifacts rebuilt from the shared pipeline.
 - **Atlas now records the frequency-methodology study and verification work**, including the route-wide regression checks behind the change.
 - **Patched the development toolchain’s source-map-js denial-of-service vulnerability** without changing Atlas runtime dependencies.
