@@ -44,6 +44,19 @@ const LiveVehiclesLayer = import.meta.env.VITE_LIVE_ENABLED === 'true'
   ? React.lazy(() => import('./map/LiveVehiclesLayer'))
   : null;
 
+type OnDemandService = NonNullable<Agency['onDemandServiceArea']>;
+
+function isOnDemandFeatureActive(
+  service: OnDemandService,
+  feature: GeoJSON.Feature,
+  day: DayType,
+  period: TimePeriod,
+): boolean {
+  const zoneId = (feature.properties as { areaName?: string } | undefined)?.areaName;
+  const zone = zoneId ? service.zoneMetadata?.[zoneId] : undefined;
+  return isOnDemandActive(zone ? zone.availability : service.availability, day, period);
+}
+
 function MapNoticePill({ children, className = '' }: { children: React.ReactNode; className?: string }) {
   return (
     <div className={`absolute bottom-6 left-6 right-24 sm:right-56 flex justify-center ${Z_PANEL} pointer-events-none`}>
@@ -336,16 +349,14 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     if (!(selectedAgencies?.has(agency.slug) ?? true)) return false;
     const service = agency.onDemandServiceArea;
     if (!service) return false;
-    if (isOnDemandActive(service.availability, day, period)) return true;
-    return service.features.some(feature => {
-      const zoneId = (feature.properties as { areaName?: string } | undefined)?.areaName;
-      return isOnDemandActive(zoneId ? service.zoneMetadata?.[zoneId]?.availability : undefined, day, period);
-    });
+    return service.features.length === 0
+      ? isOnDemandActive(service.availability, day, period)
+      : service.features.some(feature => isOnDemandFeatureActive(service, feature, day, period));
   }), [agencies, day, period, selectedAgencies]);
   const onDemandServiceAreaData = useMemo<GeoJSON.FeatureCollection<GeoJSON.Polygon | GeoJSON.MultiPolygon>>(() => ({
     type: 'FeatureCollection',
     features: (selectedModes.size === 0 || selectedModes.has(ON_DEMAND_MODE) ? onDemandAgencies : [])
-      .flatMap(agency => (agency.onDemandServiceArea?.features ?? []).map(feature => ({
+      .flatMap(agency => (agency.onDemandServiceArea?.features ?? []).filter(feature => isOnDemandFeatureActive(agency.onDemandServiceArea!, feature, day, period)).map(feature => ({
         ...feature,
         properties: {
           ...(feature.properties ?? {}),
@@ -354,7 +365,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
           onDemandZoneId: (feature.properties as { areaName?: string } | undefined)?.areaName ?? feature.id,
         },
       }))),
-  }), [onDemandAgencies, selectedModes]);
+  }), [day, onDemandAgencies, period, selectedModes]);
   const onDemandStopData = useMemo<GeoJSON.FeatureCollection<GeoJSON.Point>>(() => ({
     type: 'FeatureCollection',
     features: (selectedModes.size === 0 || selectedModes.has(ON_DEMAND_MODE) ? onDemandAgencies : [])
