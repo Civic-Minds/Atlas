@@ -4,6 +4,8 @@ export default function SiteFooter() {
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <span>© 2026 Civic Minds.</span>
         <nav className="flex flex-wrap items-center gap-x-2 gap-y-1" aria-label="Footer links">
+          <a className="text-[var(--accent)] hover:underline" href="/about">About Atlas</a>
+          <span aria-hidden="true">·</span>
           <a className="text-[var(--accent)] hover:underline" href="/about/docs">Documentation</a>
           <span aria-hidden="true">·</span>
           <a className="text-[var(--accent)] hover:underline" href="/terms">Terms of Service</a>
