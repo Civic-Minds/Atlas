@@ -31,6 +31,7 @@ import { routeDataQualityWarningForShape } from './routeDataQuality.js';
 import { deriveRouteBranch } from '../shared/routeBranch.js';
 import { isRailLikeRoute } from '../shared/modes.js';
 import { computePeriodCoverageHeadways } from './headway-utils.js';
+import { maybeFilterLargeGtfsZip } from './largeGtfsFilter.js';
 
 export type { GtfsPreprocess };
 export type { HeadwayByPeriod };
@@ -136,7 +137,8 @@ export async function processGtfsBuffer(
   onStatus?: (msg: string) => void,
   options?: ProcessOptions,
 ): Promise<ProcessResult> {
-  let gtfs = await parseGtfsZip(buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) as ArrayBuffer, onStatus);
+  const parseBuffer = maybeFilterLargeGtfsZip(buf, options?.agencyId, onStatus);
+  let gtfs = await parseGtfsZip(parseBuffer.buffer.slice(parseBuffer.byteOffset, parseBuffer.byteOffset + parseBuffer.byteLength) as ArrayBuffer, onStatus);
   gtfs = normalizeGtfs(gtfs, options, onStatus);
 
   const validation = validateGtfs(gtfs, options?.slug ?? 'feed');

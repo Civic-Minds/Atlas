@@ -30,9 +30,11 @@ Explored Gloucester/Cheltenham (Stagecoach West operates routes between them) as
 - **Source:** the Bus Open Data Service (BODS, `data.bus-data.dft.gov.uk`) is the correct, current national aggregator. No API key needed for GTFS downloads.
 - **The catch:** BODS has **no per-operator download** — only whole-region zips bundling every bus operator together. The South West England file (containing Stagecoach West, `agency_id=OP735`) is 215MB compressed / ~1.4GB uncompressed, covering dozens of operators, not just the one we want.
 - **Data quality itself looks good** — clean 0/1 `direction_id` across 218k trips, zero out-of-bbox stops among 43,158, dense/sane shapes, real headsigns. No Guadalajara-style corruption.
-- **What it would take:** a new pipeline capability to filter a downloaded regional feed down to one `agency_id` (Atlas's `filterGtfs.ts` currently only filters by route short name / route type, nothing for agency_id). Since the download cost is fixed regardless of how many operators we keep, it'd likely make sense to extract *multiple* South West operators as separate Atlas agencies rather than just one — but each additional operator is its own data-quality unknown, and multiple agencies sharing one `feedUrl` raises a caching question (does `refresh.ts` dedupe repeated downloads of the same source file across agency entries? — not yet checked).
+- **What it would take:** a downloaded regional feed must be reduced to one `agency_id` before Atlas's normal parser sees it. The existing route-level filter was not enough because this file is roughly 240MB compressed / 1.6GB uncompressed and exceeds the parser's maximum string length. Atlas now prefilters large `agency_id` feeds locally before parsing, while smaller feeds continue through the existing path.
 
-**Status:** not started. Good data quality, but real net-new pipeline work needed before the first agency lands.
+**Pilot result (2026-10-07):** Stagecoach West (`agency_id=OP735`) successfully processed from the current South West England feed in a local dry-run. It produced 70 routes and 4,696 rendered features, with no headway-mismatch flags. Two shapes were repaired by the existing clustered-jump logic, and two near-duplicate headsign pairs need review. No R2 or production write was made. The UK pilot is technically viable; a second South West operator should be tested before treating the shared regional feed as a rollout pattern.
+
+**Status:** pilot complete locally. The next step is a second operator from the same regional feed plus refresh/download deduplication before any UK production launch.
 
 ---
 

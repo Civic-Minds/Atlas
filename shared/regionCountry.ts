@@ -90,6 +90,8 @@ const REGION_TO_COUNTRY: Record<string, string> = {
   'Occitanie': 'France',
   'Pays de la Loire': 'France',
   "Provence-Alpes-Côte d'Azur": 'France',
+  // United Kingdom
+  'South West England': 'United Kingdom',
   // Belgium (for candidates; none live yet)
   'Brussels': 'Belgium',
   'Brussels-Capital': 'Belgium',
@@ -108,7 +110,7 @@ export function countryForRegion(region: string | null | undefined): string | nu
 }
 
 /** Canonical display order — North America first (the established base), then newer countries by addition order. */
-const COUNTRY_DISPLAY_ORDER = ['Canada', 'United States', 'Mexico', 'France'];
+const COUNTRY_DISPLAY_ORDER = ['Canada', 'United States', 'Mexico', 'France', 'United Kingdom'];
 
 /**
  * Distinct countries represented across a set of agencies, in a stable display

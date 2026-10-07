@@ -23887,6 +23887,28 @@
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0
+    },
+    {
+      "slug": "stagecoach-west",
+      "name": "Stagecoach West",
+      "websiteUrl": "https://www.stagecoachbus.com/",
+      "region": "South West England",
+      "country": "United Kingdom",
+      "center": [
+        51.86,
+        -2.24
+      ],
+      "bbox": [
+        51.15,
+        -4,
+        52.25,
+        -1.1
+      ],
+      "feedUrl": "https://data.bus-data.dft.gov.uk/timetable/download/gtfs-file/south_west/",
+      "agencyId": "OP735",
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
+      "timezone": "Europe/London"
     }
   ]
 }

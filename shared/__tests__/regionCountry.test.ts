@@ -19,6 +19,7 @@ describe('countryForRegion', () => {
     expect(countryForRegion('Pays de la Loire')).toBe('France');
     expect(countryForRegion('Wallonia')).toBe('Belgium');
     expect(countryForRegion('Basque Country')).toBe('Spain');
+    expect(countryForRegion('South West England')).toBe('United Kingdom');
   });
 
   it('returns null for unmapped or missing regions', () => {
