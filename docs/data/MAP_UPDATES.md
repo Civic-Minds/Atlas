@@ -18,6 +18,17 @@ Same procedure as adding a single agency (see [`ADDING_AGENCIES.md`](ADDING_AGEN
 5. Rebuild and upload the PMTiles archive (`npm run build-pmtiles` then `npm run upload-pmtiles`), then run `npm run verify-pmtiles-coverage` — see [`ADDING_AGENCIES.md`](ADDING_AGENCIES.md) § Integrating a New Transit Agency step 7 for why this is never optional (it fails silently, not loudly, when skipped).
 6. Record product additions in `CHANGELOG.md` and mark backlog items `done` in `docs/data/AGENCY_BACKLOG.md`.
 
+### Manual feed refreshes
+
+For a targeted production refresh, use the complete pipeline command:
+
+```bash
+npm run refresh-release -- translink
+npm run refresh-release -- translink --force  # only when the source is known current
+```
+
+This refreshes the GTFS feed, rebuilds the PMTiles and History artifacts, verifies coverage, and publishes one final data release. Do not use `npm run build-pmtiles` by itself to update schedule data: it only repackages the agency artifacts that are already published and does not download any feeds. Use the lower-level commands separately only when intentionally rebuilding derived artifacts from unchanged source data.
+
 `build-pmtiles` also creates an immutable release containing the PMTiles archives and the agency route artifacts used to build them. It publishes `atlas/release.json` only after those files and the verification gate succeed. The frontend reads that pointer so the map and route cards use one data generation. Do not manually bump `atlas/data-version.json` during a feed refresh; the release build bumps it after publication.
 
 If a release build fails, the previous `atlas/release.json` remains active. This is intentional: a failed or partial refresh must not become a public map/data combination.

@@ -51,7 +51,7 @@ function sleep(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-const RETRYABLE_PATTERN = /ssl|tls|bad record mac|ECONNRESET|ETIMEDOUT|ENETUNREACH|EAI_AGAIN|timeout|socket hang up|EPIPE/i;
+const RETRYABLE_PATTERN = /ssl|tls|bad record mac|ECONNRESET|ETIMEDOUT|ENETUNREACH|EAI_AGAIN|EADDRNOTAVAIL|timeout|socket hang up|EPIPE/i;
 
 /**
  * Node's AggregateError from internalConnectMultiple (dual-stack IPv4/IPv6 connect

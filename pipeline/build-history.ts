@@ -225,7 +225,8 @@ async function main() {
       }
     });
   }
-  await runWithConcurrency(tripDurationTasks, 50);
+  const tripDurationConcurrency = Number(process.env.HISTORY_TRIP_DURATION_CONCURRENCY ?? 10);
+  await runWithConcurrency(tripDurationTasks, Number.isInteger(tripDurationConcurrency) && tripDurationConcurrency > 0 ? tripDurationConcurrency : 10);
   for (const routes of Object.values(tripDurationRoutes)) {
     for (const entries of Object.values(routes)) {
       entries.sort((a, b) => getPeriodKeySortValue(a.periodKey) - getPeriodKeySortValue(b.periodKey));
@@ -303,10 +304,10 @@ async function main() {
     });
   }
 
-  const configuredConcurrency = Number(process.env.HISTORY_DOWNLOAD_CONCURRENCY ?? 10);
+  const configuredConcurrency = Number(process.env.HISTORY_DOWNLOAD_CONCURRENCY ?? 4);
   const concurrency = Number.isInteger(configuredConcurrency) && configuredConcurrency > 0
     ? configuredConcurrency
-    : 10;
+    : 4;
   console.log(`Downloading ${tasks.length} history snapshot files in parallel (concurrency ${concurrency})...`);
   await runWithConcurrency(tasks, concurrency);
   console.log(`History archive summary: ${tasks.length - failedFiles}/${tasks.length} files read successfully; ${failedFiles} failed.`);
@@ -345,7 +346,11 @@ async function main() {
   const headwayTasks = slugsWithData.map(slug => async () => {
     currentHeadways[slug] = await loadCurrentHeadways(slug);
   });
-  await runWithConcurrency(headwayTasks, 25);
+  const currentDataConcurrency = Number(process.env.HISTORY_CURRENT_DATA_CONCURRENCY ?? 8);
+  await runWithConcurrency(
+    headwayTasks,
+    Number.isInteger(currentDataConcurrency) && currentDataConcurrency > 0 ? currentDataConcurrency : 8,
+  );
 
   const currentYear = new Date().getFullYear();
   const historyData: any[] = [];
