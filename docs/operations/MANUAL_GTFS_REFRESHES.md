@@ -1,10 +1,28 @@
 # Manual GTFS refresh queue
 
-**Last reviewed:** 2026-09-26. This is a maintained, read-only source-recovery
+**Last reviewed:** 2026-10-07. This is a maintained, read-only source-recovery
 queue; it does not mean that the listed replacements have been approved for a
 live refresh. Re-run `npm run audit-expired-sources` before acting on it.
 
-## Latest read-only audit — 2026-09-26
+## Latest read-only audit — 2026-10-07
+
+The registry contains 42 production-visible agencies whose recorded feed
+expiry is before the audit date. This audit downloaded and checked their
+configured and fallback sources without changing feed configuration, writing
+refreshed data, or starting a pipeline action.
+
+- 34 remain genuinely expired with no verified current replacement
+- 5 need manual source review: `augusta`, `kcata`, `lavta`, `sfmta`, and
+  `westberkeley`
+- 3 newer candidates were rejected after local processing:
+  `coast-transit-ms` is already expired and degraded, `grand-junction`
+  produces zero usable routes, and `snowmass-village` contains stops but no
+  required routes, trips, stop times, or calendar service
+
+No agency from this audit is approved for a live refresh. The 34 genuinely
+expired agencies remain a source-recovery queue, not a batch refresh list.
+
+## Previous read-only audit — 2026-09-26
 
 The registry contains 80 records whose schedules were expired before the audit
 date. This audit downloaded and checked candidate feeds without changing feed
