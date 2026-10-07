@@ -14,6 +14,43 @@ import { SURFACE_TIER_MAXES, TIME_PERIODS } from '../shared/config.js';
 import { isRailLikeRoute } from '../shared/modes.js';
 import { computeRawDepartures } from './transit-phase1';
 
+export type TierDeterminerContext = {
+    rawDepartureTimes: readonly number[];
+    analysisTimes: readonly number[];
+    day: DayName;
+    routeType: string;
+    railLike: boolean;
+};
+
+export type TierDeterminer = (
+    headways: number[],
+    tripCount: number,
+    spanMinutes: number,
+    tiers: number[],
+    graceMinutes: number,
+    maxGraceViolations: number,
+    gracePercent: number,
+    violationPercent: number,
+    context: TierDeterminerContext,
+    violationPercentByTier?: Record<number, number>,
+    preCountedGraceViolations?: number,
+) => string;
+
+/**
+ * The maximum total gap allowed for each true service-edge exception.
+ *
+ * This is deliberately applied only to the first or last departure in the
+ * raw service list. A gap created by the analysis window is not an edge of
+ * the service and cannot use this allowance.
+ */
+export const EDGE_GAP_ALLOWANCE_MINUTES = 10;
+export type EdgeGapAllowanceSide = 'opening' | 'closing' | 'both';
+
+type EdgeGapAllowanceResult = {
+    tier: string;
+    edgeGapAllowance?: EdgeGapAllowanceSide;
+};
+
 /**
  * Determines the frequency tier for a route based on headway analysis.
  * Returns the tightest tier the route sustains across the full span.
@@ -24,17 +61,21 @@ export const determineTier = (
     spanMinutes: number,
     tiers: number[] = SURFACE_TIER_MAXES,
     graceMinutes: number = 5,
-    maxGraceViolations: number = 2,
+    maxGraceViolations: number = 0,
     gracePercent: number = 0.15,
-    violationPercent: number = 0.30,
+    violationPercent: number = 0.05,
+    violationPercentByTier?: Record<number, number>,
+    preCountedGraceViolations: number = 0,
 ): string => {
     for (const T of tiers) {
         const grace = Math.max(graceMinutes, Math.round(T * gracePercent));
-        const allowedViolations = Math.max(maxGraceViolations, Math.floor(headways.length * violationPercent));
+        const tierViolationPercent = violationPercentByTier?.[T] ?? violationPercent;
+        const percentageAllowance = Math.floor((headways.length + preCountedGraceViolations) * tierViolationPercent);
+        const allowedViolations = Math.min(3, Math.max(maxGraceViolations, percentageAllowance));
         const minTrips = Math.ceil(spanMinutes / T);
         if (tripCount < minTrips) continue;
 
-        let graceCount = 0;
+        let graceCount = preCountedGraceViolations;
         let fail = false;
         for (const h of headways) {
             if (h <= T) continue;
@@ -49,6 +90,109 @@ export const determineTier = (
     }
     return 'span';
 };
+
+/**
+ * Determine a tier while allowing each true opening or closing gap to exceed
+ * the target tier by up to ten minutes total. This is an absolute ceiling,
+ * not ten minutes added to the ordinary grace allowance.
+ *
+ * The existing grace rules remain unchanged for every other gap. Each
+ * qualifying edge also consumes one slot in the same bounded near-miss
+ * allowance, so the edge booster cannot silently stack on top of the internal
+ * exception budget. When both edges qualify, they are removed independently
+ * from the tested sequence and consume two slots.
+ * Removing edge departures keeps the normal trip-count and sustained-cadence
+ * checks honest: at least four departures must remain when an edge exception
+ * is used. Ordinary classifications retain the separate three-departure
+ * minimum below.
+ */
+const determineTierWithEdgeGapAllowanceDetail = (
+    headways,
+    tripCount,
+    spanMinutes,
+    tiers,
+    graceMinutes,
+    maxGraceViolations,
+    gracePercent,
+    violationPercent,
+    context,
+    violationPercentByTier,
+): EdgeGapAllowanceResult => {
+    const analysisTimes = [...context.analysisTimes];
+    const rawTimes = context.rawDepartureTimes;
+    const actualOpening = !rawTimes.some(time => time < analysisTimes[0]);
+    const actualClosing = !rawTimes.some(time => time > analysisTimes[analysisTimes.length - 1]);
+
+    for (const tier of tiers) {
+        const gaps = analysisTimes.slice(1).map((time, index) => time - analysisTimes[index]);
+        const existingGrace = Math.max(graceMinutes, Math.round(tier * gracePercent));
+        const openingEligible = actualOpening
+            && gaps[0] > tier + existingGrace
+            && gaps[0] <= tier + EDGE_GAP_ALLOWANCE_MINUTES;
+        const closingEligible = actualClosing
+            && gaps[gaps.length - 1] > tier + existingGrace
+            && gaps[gaps.length - 1] <= tier + EDGE_GAP_ALLOWANCE_MINUTES;
+
+        const variants: Array<{ opening: boolean; closing: boolean }> = [];
+        if (openingEligible && closingEligible) {
+            variants.push({ opening: true, closing: true });
+        } else {
+            if (openingEligible) variants.push({ opening: true, closing: false });
+            if (closingEligible) variants.push({ opening: false, closing: true });
+        }
+
+        for (const variant of variants) {
+            const trimmed = analysisTimes.slice(variant.opening ? 1 : 0, variant.closing ? -1 : undefined);
+            if (trimmed.length < 4) continue;
+            const trimmedGaps = trimmed.slice(1).map((time, index) => time - trimmed[index]);
+            if (determineTier(
+                trimmedGaps,
+                trimmed.length,
+                trimmed[trimmed.length - 1] - trimmed[0],
+                [tier],
+                graceMinutes,
+                maxGraceViolations,
+                gracePercent,
+                violationPercent,
+                violationPercentByTier,
+                Number(variant.opening) + Number(variant.closing),
+            ) === String(tier)) {
+                return {
+                    tier: String(tier),
+                    edgeGapAllowance: variant.opening && variant.closing
+                        ? 'both'
+                        : variant.opening ? 'opening' : 'closing',
+                };
+            }
+        }
+
+        // Preserve the baseline calculation exactly when neither edge is
+        // eligible for this tier.
+        if (!openingEligible && !closingEligible && determineTier(
+            gaps,
+            analysisTimes.length,
+            analysisTimes[analysisTimes.length - 1] - analysisTimes[0],
+            [tier],
+            graceMinutes,
+            maxGraceViolations,
+            gracePercent,
+            violationPercent,
+            violationPercentByTier,
+        ) === String(tier)) {
+            return { tier: String(tier) };
+        }
+    }
+
+    // Keep the unused baseline arguments explicit: this determiner has the
+    // same signature as production and replaces only tier selection.
+    void headways;
+    void tripCount;
+    void spanMinutes;
+    return { tier: 'span' };
+};
+
+export const determineTierWithEdgeGapAllowance: TierDeterminer = (...args) =>
+    determineTierWithEdgeGapAllowanceDetail(...args).tier;
 
 /**
  * Compute headway statistics and reliability score from a departure time array.
@@ -146,6 +290,23 @@ export function computeResourceStats(
 }
 
 /**
+ * Choose one real day to represent a day-type rollup. Combining departures from
+ * different weekdays creates a timetable that never actually ran and can make
+ * the displayed headway look faster than any individual day.
+ */
+const representativeRollupEntry = <T extends { result: AnalysisResult }>(
+    entries: T[],
+): T => {
+    const counts = entries.map(entry => entry.result.times.length).sort((a, b) => a - b);
+    const medianCount = counts[Math.floor(counts.length / 2)];
+    return entries.reduce((best, entry) => {
+        const distance = Math.abs(entry.result.times.length - medianCount);
+        const bestDistance = Math.abs(best.result.times.length - medianCount);
+        return distance < bestDistance ? entry : best;
+    }, entries[0]);
+};
+
+/**
  * Phase 2: Apply analysis criteria to raw departure data.
  *
  * Filters departures to each day type's time window, classifies into tiers,
@@ -154,7 +315,8 @@ export function computeResourceStats(
  */
 export function applyAnalysisCriteria(
     rawData: RawRouteDepartures[],
-    criteria: AnalysisCriteria = DEFAULT_CRITERIA
+    criteria: AnalysisCriteria = DEFAULT_CRITERIA,
+    tierDeterminer: TierDeterminer = determineTierWithEdgeGapAllowance,
 ): AnalysisResult[] {
     const perDayResults = new Map<string, { dayType: DayType; day: DayName; result: AnalysisResult }>();
 
@@ -231,7 +393,27 @@ export function applyAnalysisCriteria(
         const hasRepeatedOffPeakService = periodTripCounts.midday >= 3 || periodTripCounts.evening >= 3;
         const isSplitPeakService = !isOvernightFallback && hasRepeatedPeakService && !hasRepeatedOffPeakService;
         const isLimitedService = isSplitPeakService || spanMins <= 90 || (!isOvernightFallback && coverage < 0.4);
-        const determinedTier = determineTier(
+        const tierDetail = tierDeterminer === determineTierWithEdgeGapAllowance
+            ? determineTierWithEdgeGapAllowanceDetail(
+                analysisGaps,
+                analysisWindow.length,
+                spanMins,
+                tiers,
+                criteria.graceMinutes,
+                criteria.maxGraceViolations,
+                criteria.gracePercent,
+                criteria.violationPercent,
+                {
+                    rawDepartureTimes: raw.departureTimes,
+                    analysisTimes: analysisWindow,
+                    day: raw.day,
+                    routeType: raw.routeType,
+                    railLike: isRail,
+                },
+                criteria.violationPercentByTier,
+            )
+            : null;
+        const determinedTier = tierDetail?.tier ?? tierDeterminer(
             analysisGaps,
             analysisWindow.length,
             spanMins,
@@ -240,7 +422,16 @@ export function applyAnalysisCriteria(
             criteria.maxGraceViolations,
             criteria.gracePercent,
             criteria.violationPercent,
+            {
+                rawDepartureTimes: raw.departureTimes,
+                analysisTimes: analysisWindow,
+                day: raw.day,
+                routeType: raw.routeType,
+                railLike: isRail,
+            },
+            criteria.violationPercentByTier,
         );
+        const edgeGapAllowance = tierDetail?.edgeGapAllowance;
         // `span` used to combine two different ideas: a genuinely irregular burst (school
         // service, one or two trips) and a route with a stable schedule that only operates during
         // one period (NRT's evening routes). Require enough repeated service to distinguish them.
@@ -275,6 +466,7 @@ export function applyAnalysisCriteria(
             avgHeadway: Math.round(stats.avg),
             medianHeadway: Math.round(stats.median),
             tier,
+            edgeGapAllowance,
             serviceClass,
             tripCount: windowedTimes.length,
             gaps: stats.gaps,
@@ -330,25 +522,26 @@ export function applyAnalysisCriteria(
         const worstTier = worstTierValue === Infinity ? 'span'
             : worstTierValue >= INFREQUENT_VAL ? 'infrequent'
             : String(worstTierValue);
+        const weekdayTierVariation = dayType === 'Weekday'
+            && new Set(entries.map(entry => entry.result.tier)).size > 1;
         const serviceClass = entries.some(e => e.result.serviceClass === 'irregular')
             ? 'irregular'
             : entries.some(e => e.result.serviceClass === 'time-limited')
             ? 'time-limited'
             : 'regular';
 
-        const allTimes = entries.flatMap(e => e.result.times);
-        const mergedTimes = [...new Set(allTimes)].sort((a, b) => a - b);
-        const rep = entries[0].result;
-        // Rail rollup: same midday representative-day logic for both directions.
+        const repEntry = representativeRollupEntry(entries);
+        const rep = repEntry.result;
+        // Rail rollup: apply the existing midday representative-day logic on top of
+        // the day-type representative selection used by all modes.
         // For dir=0 (outbound): avoids Friday extra-train distortion.
         // For dir=1 (inbound): all trains share "Union Station" headsign so the pool is the
         // same across weekdays; representative-day pick is still valid.
         const isRailRollup = rep.railLike ?? isRailLikeRoute({ routeType: rep.routeType });
         const rollupStatsBase = (() => {
           if (isRailRollup) {
-            // Union of all weekdays creates spurious short gaps when some days (e.g. Fridays)
-            // run extra trains. Pick the "representative day" — the day whose midday trip count
-            // is closest to the median count across all days — and use only its times.
+            // Pick the representative day's midday times. A weekday union creates spurious
+            // short gaps when some days (e.g. Fridays) run extra trains.
             const MIDDAY_START = 570; // 09:30
             const MIDDAY_END = 870;   // 14:30
             const dayMiddays = entries.map(e => e.result.times.filter(t => t >= MIDDAY_START && t <= MIDDAY_END));
@@ -360,10 +553,10 @@ export function applyAnalysisCriteria(
             const repTimes = dayMiddays[bestIdx];
             if (repTimes.length >= 2) return repTimes;
           }
-          return mergedTimes;
+          return rep.times;
         })();
         const stats = computeHeadwayStats(rollupStatsBase);
-        const rollupTimes = isRailRollup ? rollupStatsBase : mergedTimes;
+        const rollupTimes = rollupStatsBase;
         const avgTrips = Math.round(entries.reduce((sum, e) => sum + e.result.tripCount, 0) / entries.length);
         const allStarts = entries.map(e => e.result.serviceSpan?.start ?? 0);
         const allEnds = entries.map(e => e.result.serviceSpan?.end ?? 0);
@@ -390,6 +583,11 @@ export function applyAnalysisCriteria(
             peakWindow: stats.peakWindow,
             serviceSpan: span,
             tier: worstTier,
+            weekdayTierVariation: weekdayTierVariation || undefined,
+            edgeGapAllowance: (() => {
+                const sides = new Set(entries.map(e => e.result.edgeGapAllowance).filter(Boolean));
+                return sides.size > 1 ? 'both' : [...sides][0];
+            })(),
             serviceClass,
             tripCount: avgTrips,
             gaps: stats.gaps,

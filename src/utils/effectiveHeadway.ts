@@ -8,9 +8,8 @@ export function routeCardDisplayHeadway(p: ShapeProperties, period: TimePeriod):
   // service. Keep limited branches out of normal route-card/list cadence rows.
   if (p.tier === 'span') return null;
 
-  // An infrequent branch can have a numeric median while still being too uneven
-  // to promise a regular cadence. Treat a materially larger longest gap as
-  // limited service for the active period.
+  // An infrequent branch can still have a numeric median, but that median is
+  // misleading when the longest scheduled gap is materially larger.
   if (period !== 'all' && p.tier === 'infrequent') {
     const median = p.headwayByPeriod?.[period] ?? p.headway ?? null;
     const longestGap = p.maxGapByPeriod?.[period];
@@ -24,19 +23,21 @@ export function routeCardDisplayHeadway(p: ShapeProperties, period: TimePeriod):
     return p.headwayByPeriod?.[period] ?? null;
   }
   const summary = buildRouteServiceSummary(p);
-  // The card row is destination/branch-specific. Keep the route-wide metric in
-  // `summary.filter` for eligibility and fading, but do not replace a branch's
-  // own cadence with the slowest direction in the route.
+  // Cards show the destination/branch cadence. Keep the route-wide metric in
+  // summary.filter for eligibility and use the shared headsign cadence only
+  // when the branch has no more specific display metric.
   const branchHeadway = metricValueForPeriod(summary.display, period);
   if (branchHeadway != null) return branchHeadway;
-  if (period !== 'all') {
-    return summary.shared.byHeadsignPeriod?.[period] ?? null;
-  }
+  if (period !== 'all') return summary.shared.byHeadsignPeriod?.[period] ?? null;
   return branchHeadway;
 }
 
 export function hasPeriodCoverage(p: ShapeProperties, period: TimePeriod): boolean {
-  return period !== 'all' && (p.periodCoverageHeadway !== undefined || p.worstDirectionPeriodCoverageHeadway !== undefined);
+  return period !== 'all' && (
+    p.periodCoverageHeadway !== undefined
+    || p.worstDirectionPeriodCoverageHeadway !== undefined
+    || p.maxGapByPeriod !== undefined
+  );
 }
 
 /**
@@ -62,14 +63,9 @@ export function hasDirectionPeriodService(p: ShapeProperties, period: TimePeriod
 
 /** Full-window bound first; raw median remains a separately labelled cadence. */
 export function routeCardCoverageText(p: ShapeProperties, period: TimePeriod): string | undefined {
-  // Coverage is the longest gap in the full period, while headwayByPeriod is
-  // the typical cadence. Show both when they differ so the card explains why
-  // a route can say "every 10" but fail a strict "15 or faster" filter.
-  if (period === 'all') return undefined;
-  const typical = p.headwayByPeriod?.[period] ?? null;
-  const coverage = p.periodCoverageHeadway?.[period] ?? null;
-  if (typical == null || coverage == null || coverage <= typical) return undefined;
-  return `typically every ${typical} min · longest gap ${coverage} min`;
+  // Coverage is a filter-eligibility metric, not a rider-facing headway. A route
+  // can run every 10 minutes within a shorter service span inside this period.
+  return undefined;
 }
 
 export function routeCardTypicalText(p: ShapeProperties, period: TimePeriod): string | undefined {
@@ -77,7 +73,7 @@ export function routeCardTypicalText(p: ShapeProperties, period: TimePeriod): st
   const range = routeCardDisplayHeadwayRange(p, period);
   if (range) return range;
   const median = p.headwayByPeriod?.[period];
-  return median == null ? undefined : `typically every ${median} min`;
+  return median == null ? undefined : `about every ${median} min`;
 }
 
 /** Rider-facing range for an irregular period, scoped to this destination/branch. */
@@ -85,11 +81,11 @@ export function routeCardDisplayHeadwayRange(p: ShapeProperties, period: TimePer
   if (p.tier === 'span' || period === 'all' || p.headwayByPeriodSustained?.[period] !== false) return null;
   const range = p.headwayRangeByPeriod?.[period];
   if (!range) return null;
-  const rangeText = range.min === range.max ? `every ${range.min} min` : `every ${range.min}–${range.max} min`;
+  const rangeText = range.min === range.max ? `about every ${range.min} min` : `about every ${range.min}–${range.max} min`;
   const longestGap = p.maxGapByPeriod?.[period];
   return longestGap != null && longestGap > range.max + 5
-    ? `typically ${rangeText} · longest gap ${longestGap} min`
-    : `typically ${rangeText}`;
+    ? `${rangeText} · longest gap ${longestGap} min`
+    : rangeText;
 }
 
 /** Display the best active-period cadence across a route's direction/branch rows. */
@@ -104,9 +100,6 @@ export function routeListDisplayHeadway(features: readonly ShapeProperties[], pe
 export function effectiveRouteHeadway(p: ShapeProperties, period: TimePeriod): number | null {
   const summary = buildRouteServiceSummary(p);
   if (period !== 'all') {
-    // A headsign-scoped shared-stop cadence represents the trunk that this
-    // branch belongs to. Use it for eligibility when present; otherwise keep
-    // the established full-window/route-wide filter metric.
     const sharedHeadway = summary.shared.byHeadsignPeriod?.[period];
     if (sharedHeadway != null) return sharedHeadway;
   }

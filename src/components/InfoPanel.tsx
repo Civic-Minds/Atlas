@@ -15,11 +15,11 @@ import RegionFilterPills from './RegionFilterPills';
 
 interface HistoryAgencySummary { slug: string; name: string; region: string; routes: unknown[] }
 
-type View = 'home' | 'agencies' | 'agency-detail' | 'outdated-schedule' | 'new-schedule-data' | 'corrected-data' | 'beta-rollout' | 'route-data-quality' | 'sources';
+type View = 'home' | 'agencies' | 'agency-detail' | 'outdated-schedule' | 'new-schedule-data' | 'corrected-data' | 'beta-rollout' | 'route-data-quality' | 'edge-gap-allowance' | 'weekday-variation' | 'sources';
 export type Tab = 'about' | 'agencies' | 'history' | 'live';
 export type InfoFeatureFilter = 'all' | 'live' | 'history';
 type AgencyListFilter = InfoFeatureFilter | 'outdated';
-export type HelpTopic = 'outdated-schedule' | 'new-schedule-data' | 'corrected-data' | 'beta-rollout' | 'route-data-quality';
+export type HelpTopic = 'outdated-schedule' | 'new-schedule-data' | 'corrected-data' | 'beta-rollout' | 'route-data-quality' | 'edge-gap-allowance' | 'weekday-variation';
 export type HelpContext = {
   topic: HelpTopic;
   agencyName?: string;
@@ -139,6 +139,8 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
         : helpContext?.topic === 'corrected-data' ? 'corrected-data'
         : helpContext?.topic === 'beta-rollout' ? 'beta-rollout'
         : helpContext?.topic === 'route-data-quality' ? 'route-data-quality'
+        : helpContext?.topic === 'edge-gap-allowance' ? 'edge-gap-allowance'
+        : helpContext?.topic === 'weekday-variation' ? 'weekday-variation'
         : tabToView(defaultTab ?? 'about'),
       );
       setAgencyFeatureFilters(featureFilter === 'all' ? new Set() : new Set([featureFilter]));
@@ -284,6 +286,8 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
     : view === 'corrected-data' ? 'Corrected data'
     : view === 'beta-rollout' ? 'Beta testing'
     : view === 'route-data-quality' ? 'Route data quality'
+    : view === 'edge-gap-allowance' ? 'Frequency allowance'
+    : view === 'weekday-variation' ? 'Weekday variation'
     : view === 'sources' ? 'Sources'
     : null;
 
@@ -370,6 +374,17 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                     <ChevronRight className="w-3 h-3 text-[var(--text-dim)]" />
                   </button>
                 </div>
+              </div>
+
+              <div>
+                <p className="text-[10px] font-bold text-[var(--text-muted)] mb-2">Learn more</p>
+                <a
+                  href="/about/docs"
+                  className="flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group"
+                >
+                  <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">Read the documentation</span>
+                  <ExternalLink className="w-3 h-3 text-[var(--text-dim)]" />
+                </a>
               </div>
 
               <div>
@@ -588,6 +603,28 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                 <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">Report a problem</span>
                 <Mail className="w-3 h-3 text-[var(--text-dim)]" />
               </a>
+            </div>
+          )}
+
+          {view === 'edge-gap-allowance' && (
+            <div className="h-full overflow-y-auto px-5 py-4 space-y-4">
+              <p className="text-xs text-[var(--text-primary)] leading-relaxed">
+                Atlas added a small allowance for the first or last trip of the day.
+              </p>
+              <p className="text-xs text-[var(--text-dim)] leading-relaxed">
+                This means a route can still qualify for its frequency tier when the first or last gap is a little longer than the rest of the service. It does not apply to gaps in the middle of the day.
+              </p>
+            </div>
+          )}
+
+          {view === 'weekday-variation' && (
+            <div className="h-full overflow-y-auto px-5 py-4 space-y-4">
+              <p className="text-xs text-[var(--text-primary)] leading-relaxed">
+                Weekday schedules differ for this route.
+              </p>
+              <p className="text-xs text-[var(--text-dim)] leading-relaxed">
+                Atlas checks Monday through Friday separately. The frequency tier shown on the route card reflects the slowest actual weekday, while the displayed cadence uses a typical actual weekday. This keeps the summary from combining departures that ran on different days.
+              </p>
             </div>
           )}
 
