@@ -9,6 +9,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Export and Share now support Social (1200×630), Standard (1600×900), and High resolution (2400×1350) PNGs, with equal-weight actions and click-outside dismissal.**
 - **Night Service now uses the shared header for its 30-minute and 60-minute filters and search, keeping the panel from duplicating controls.**
 - **Night Service route cards now clear the bottom map controls instead of overlapping attribution and feedback controls.**
+- **Night Service route rows now open the standard route card and highlight the selected route on the map.**
 - **On-demand service areas now respect the selected day and time period, so zones disappear after their published service hours end.**
 - **Frequent Service navigation now returns to the main frequency map when the Atlas logo is clicked.**
 - **Explore Atlas now provides one landing page for About Atlas, Night Service, and Frequent Service.**
@@ -20,12 +21,22 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Settings now use a cleaner text-first layout, with appearance, map, performance, and filter controls presented consistently.**
 - **The info panel now links directly to Documentation alongside Terms and Privacy.**
 - **Route selection, map dimming, zoom guidance, and overlapping-line treatment now keep selected services easier to follow.**
-- **Search, agency browsing, hidden-route filters, and limited-service filters now keep their state and results clearer while exploring the map.**
-- **Route cards now explain uneven, limited, and no-service periods more clearly instead of presenting misleading frequency values.**
-- **History browsing now uses clearer agency and route lists, search behavior, and year comparisons.**
-- **Accessibility improvements now strengthen contrast, keyboard focus, reduced motion, settings semantics, and colour-vision support.**
-- **Map loading and wide-area navigation now defer unnecessary data and keep the interface responsive while networks load.**
+- **Search, hidden-route filters, and limited-service filters now keep their state and results clearer while exploring the map.**
+- **Accessibility improvements now strengthen contrast, keyboard focus, reduced motion, settings semantics, colour-vision support, hidden-route counts, and compact privacy controls.**
 - **Security updates now patch vulnerable transitive dependencies and prevent untrusted transit-feed text from being rendered as markup.**
+- **Frequency and period filters now distinguish limited, irregular, one-direction, and span-only service instead of treating every route pattern as equivalent.**
+- **Search and route disambiguation now collapse duplicate rider-facing variants and keep route and stop selection easier to follow.**
+- **Agency browsing now supports combined status and region filters with clearer active states, route counts, and refresh information.**
+- **Route cards and schedule charts now explain uneven, limited, and no-service periods more accurately, with stable sparklines, clearer time-window labels, and responsive map guidance.**
+- **Map loading and wide-area navigation now defer unnecessary data while keeping guidance readable and the interface responsive.**
+- **Mode filters now include aerial tram and gondola services instead of treating them as unclassified routes.**
+- **Rail, ferry, destination, and route labels now use clearer rider-facing names instead of internal identifiers or inconsistent casing.**
+- **History now limits its agency directory to meaningful archives, distinguishes historical route coverage from the current network, and keeps year comparisons separate from map interaction.**
+- **On-demand service now has dedicated cards, pickup interactions, operating-hour filtering, and map selection behaviour instead of appearing as fixed-route service.**
+- **GTFS-Flex pickup locations now remain individually identifiable while explaining that they belong to booked service rather than fixed routes.**
+- **Frequent Service now separates its interactive map from its research story and explains each filtering step in rider-facing language.**
+- **Beta now offers an optional Data Saver mode that defers background agency details while keeping map exploration available.**
+- **Public, beta, and local builds now keep feature access, agency visibility, data sources, and research navigation aligned with the selected deployment mode.**
 
 ## [3.2.22] - 2026-09-03
 
