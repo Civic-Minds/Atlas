@@ -22,12 +22,12 @@
   ],
   "timezone": "America/New_York",
   "lastRawArchiveKey": "20250727-6723aa5560da6d1c",
-  "lastFeedCheckAt": "20261003",
-  "expiredFeedCheckCount": 3,
+  "lastFeedCheckAt": "20261007",
+  "expiredFeedCheckCount": 4,
   "expiredFeedCheckSince": "20260622",
   "expiredFeedCheckExpiry": "20250727",
   "feedRefreshStatus": "stale",
   "feedRefreshError": "all available feeds expired (latest 20250727)",
-  "feedRefreshErrorAt": "20261003",
-  "feedRefreshRetryCount": 1
+  "feedRefreshErrorAt": "20261007",
+  "feedRefreshRetryCount": 2
 }

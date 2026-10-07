@@ -9,7 +9,7 @@
   "feedUrl": "https://www.bt4uclassic.org/gtfs/google_transit.zip",
   "lastFeedExpiry": "20261031",
   "lastFeedVersion": "FY27 Blacksburg 1.8A",
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-10-07",
   "region": "Virginia",
   "mdbFeedUrl": "https://www.bt4uclassic.org/gtfs/google_transit.zip",
   "bbox": [
@@ -23,10 +23,10 @@
   ],
   "timezone": "America/New_York",
   "lastRawArchiveKey": "20260731-0bc49aabb978919b",
-  "lastFeedCheckAt": "20261003",
+  "lastFeedCheckAt": "20261007",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261031",
+  "expiredFeedCheckExpiry": "20261230",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -36,9 +36,9 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 44
+      "featureCount": 48
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-10-07"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,

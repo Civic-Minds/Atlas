@@ -6,10 +6,10 @@
     -86.153
   ],
   "feedUrl": "https://realtime.indygo.net/InfoPoint/gtfs-zip.ashx",
-  "lastFeedExpiry": "20261010",
-  "lastFeedVersion": "20260730",
+  "lastFeedExpiry": "20270213",
+  "lastFeedVersion": "20261005",
   "region": "Indiana",
-  "lastRefreshedAt": "20260811",
+  "lastRefreshedAt": "2026-10-07",
   "websiteUrl": "http://www.indygo.net",
   "cities": [
     "Indianapolis, Indiana",
@@ -19,8 +19,27 @@
   ],
   "timezone": "America/New_York",
   "lastRawArchiveKey": "20250607-c00a632c8badd09b",
-  "lastFeedCheckAt": "20261003",
+  "lastFeedCheckAt": "20261007",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261010"
+  "expiredFeedCheckExpiry": "20270213",
+  "feedQuality": {
+    "status": "review",
+    "score": 70,
+    "reasons": [
+      "4 route shapes needed adjustment before display."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 4,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 190
+    },
+    "checkedAt": "2026-10-07"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

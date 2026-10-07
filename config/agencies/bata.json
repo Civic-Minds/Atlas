@@ -10,11 +10,11 @@
   "feedUrl": "https://batabustracker.com/gtfs",
   "lastFeedExpiry": "",
   "lastFeedVersion": "9/7/2026",
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-10-07",
   "cities": [
     "Traverse City, Michigan"
   ],
-  "lastFeedCheckAt": "20261003",
+  "lastFeedCheckAt": "20261007",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",
@@ -29,7 +29,7 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 40
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-10-07"
   },
   "timezone": "America/New_York",
   "feedRefreshStatus": "current",

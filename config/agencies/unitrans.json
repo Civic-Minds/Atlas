@@ -16,12 +16,12 @@
   "feedUrl": "https://unitrans.ucdavis.edu/media/gtfs/Unitrans_GTFS.zip",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-unitrans-gtfs-82.zip?alt=media",
   "lastFeedExpiry": "20261213",
-  "lastFeedVersion": "SS2-Fall2026_V4",
-  "lastRefreshedAt": "2026-10-03",
+  "lastFeedVersion": "Fall2026_V5",
+  "lastRefreshedAt": "2026-10-07",
   "cities": [
     "Davis, California"
   ],
-  "lastFeedCheckAt": "20261003",
+  "lastFeedCheckAt": "20261007",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261213",
@@ -38,9 +38,9 @@
       "validationWarnings": 1,
       "shapeAnomalies": 1,
       "routeHeadwayMismatches": 0,
-      "featureCount": 64
+      "featureCount": 63
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-10-07"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,

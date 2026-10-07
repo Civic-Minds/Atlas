@@ -31,12 +31,12 @@
   ],
   "timezone": "America/Los_Angeles",
   "lastRawArchiveKey": "20260613-5e822cf6a9ea298f",
-  "lastFeedCheckAt": "20261003",
+  "lastFeedCheckAt": "20261007",
   "expiredFeedCheckCount": 2,
   "expiredFeedCheckSince": "20260622",
   "expiredFeedCheckExpiry": "20250405",
   "feedRefreshStatus": "stale",
   "feedRefreshError": "fetch failed",
-  "feedRefreshErrorAt": "20261003",
-  "feedRefreshRetryCount": 1
+  "feedRefreshErrorAt": "20261007",
+  "feedRefreshRetryCount": 2
 }

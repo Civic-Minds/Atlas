@@ -15,32 +15,31 @@
   ],
   "feedUrl": "https://gtfs.sound.obaweb.org/prod/19_gtfs.zip",
   "lastFeedExpiry": "20270102",
-  "lastFeedVersion": "20260903",
-  "lastRefreshedAt": "2026-10-03",
+  "lastFeedVersion": "20260927",
+  "lastRefreshedAt": "2026-10-07",
   "cities": [
     "Olympia, Washington",
     "Lakewood, Washington"
   ],
-  "lastFeedCheckAt": "20261003",
+  "lastFeedCheckAt": "20261007",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270102",
   "timezone": "America/Los_Angeles",
   "feedQuality": {
     "status": "review",
-    "score": 60,
+    "score": 90,
     "reasons": [
-      "3 route shapes needed adjustment before display.",
       "1 route has stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 3,
+      "shapeAnomalies": 0,
       "routeHeadwayMismatches": 1,
       "featureCount": 189
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-10-07"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,

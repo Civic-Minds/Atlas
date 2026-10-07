@@ -6,17 +6,17 @@
     -105.9769
   ],
   "feedUrl": "https://passio3.com/santafenm/passioTransit/gtfs/google_transit.zip",
-  "lastFeedExpiry": "20261102",
+  "lastFeedExpiry": "20261105",
   "lastFeedVersion": "20250228",
   "region": "New Mexico",
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-10-07",
   "websiteUrl": "https://www.santafenm.gov/transit",
   "cities": [
     "Santa Fe, New Mexico"
   ],
   "timezone": "America/Denver",
   "lastRawArchiveKey": "20260330-d16bafca3fa50d8f",
-  "lastFeedCheckAt": "20261003",
+  "lastFeedCheckAt": "20261007",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
@@ -31,7 +31,7 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 33
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-10-07"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,

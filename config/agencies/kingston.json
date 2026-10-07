@@ -14,17 +14,17 @@
     -75.99
   ],
   "feedUrl": "https://api.cityofkingston.ca/gtfs/gtfs.zip",
-  "lastFeedExpiry": "20270913",
-  "lastFeedVersion": "1/20260913 10:51:17/20260914 04:00:00",
+  "lastFeedExpiry": "20271004",
+  "lastFeedVersion": "1/20261004 16:24:38/20261005 04:00:00",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-kingston-transit-gtfs-733.zip?alt=media",
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-10-07",
   "cities": [
     "Kingston, Ontario"
   ],
-  "lastFeedCheckAt": "20261003",
+  "lastFeedCheckAt": "20261007",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20270913",
+  "expiredFeedCheckExpiry": "20271004",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -34,9 +34,9 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 163
+      "featureCount": 159
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-10-07"
   },
   "timezone": "America/Toronto",
   "feedRefreshStatus": "current",

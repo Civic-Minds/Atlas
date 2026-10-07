@@ -7,9 +7,9 @@
     -90.5769
   ],
   "feedUrl": "https://s3.amazonaws.com/etatransit.gtfs/citibuspublic.etaspot.net/gtfs.zip",
-  "lastFeedExpiry": "20270914",
-  "lastFeedVersion": "57",
-  "lastRefreshedAt": "20260811",
+  "lastFeedExpiry": "20271005",
+  "lastFeedVersion": "59",
+  "lastRefreshedAt": "2026-10-07",
   "region": "Iowa",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2304/latest.zip",
   "bbox": [
@@ -23,8 +23,25 @@
   ],
   "timezone": "America/Chicago",
   "lastRawArchiveKey": "20241231-19de367bf787d09c",
-  "lastFeedCheckAt": "20261003",
+  "lastFeedCheckAt": "20261007",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20270914"
+  "expiredFeedCheckExpiry": "20271005",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 42
+    },
+    "checkedAt": "2026-10-07"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

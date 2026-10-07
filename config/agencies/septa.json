@@ -19,8 +19,8 @@
   ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-502/mdb-502-202608050207/mdb-502-202608050207.zip",
   "lastFeedExpiry": "20270220",
-  "lastFeedVersion": "v202609270",
-  "lastRefreshedAt": "2026-10-03",
+  "lastFeedVersion": "v202609271",
+  "lastRefreshedAt": "2026-10-07",
   "cities": [
     "Havertown, Pennsylvania",
     "Philadelphia, Pennsylvania",
@@ -33,7 +33,7 @@
     "Camden, New Jersey",
     "Reading, Pennsylvania"
   ],
-  "lastFeedCheckAt": "20261003",
+  "lastFeedCheckAt": "20261007",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270220",
@@ -41,16 +41,16 @@
     "status": "review",
     "score": 70,
     "reasons": [
-      "6 route have stops whose frequency differs from the overall route schedule."
+      "7 route have stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 0,
-      "routeHeadwayMismatches": 6,
-      "featureCount": 976
+      "routeHeadwayMismatches": 7,
+      "featureCount": 1028
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-10-07"
   },
   "timezone": "America/New_York",
   "feedRefreshStatus": "current",

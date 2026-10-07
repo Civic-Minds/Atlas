@@ -15,9 +15,9 @@
   ],
   "feedUrl": "https://www.stlaval.ca/datas/opendata/GTF_STL.zip",
   "lastFeedExpiry": "20261030",
-  "lastFeedVersion": "20261003044626",
+  "lastFeedVersion": "20261006044637",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-societe-de-transport-de-laval-gtfs-3190.zip?alt=media",
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-10-07",
   "cities": [
     "Laval, Quebec",
     "Chomedey, Quebec",
@@ -30,7 +30,7 @@
     "Saint-Léonard, Quebec",
     "Saint-Laurent, Quebec"
   ],
-  "lastFeedCheckAt": "20261003",
+  "lastFeedCheckAt": "20261007",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261030",
@@ -45,9 +45,9 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 1,
-      "featureCount": 261
+      "featureCount": 270
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-10-07"
   },
   "timezone": "America/Montreal",
   "feedRefreshStatus": "current",

@@ -15,14 +15,14 @@
   ],
   "feedUrl": "https://www.arlingtontransit.com/shared/content/gtfs/art/google_transit.zip",
   "lastFeedExpiry": "20271231",
-  "lastFeedVersion": "Updated: Sep 14, 2026, 6:20 AM",
-  "lastRefreshedAt": "2026-10-03",
+  "lastFeedVersion": "Updated: Oct 2, 2026, 2:02 PM",
+  "lastRefreshedAt": "2026-10-07",
   "cities": [
     "Arlington, Virginia",
     "Washington, District of Columbia",
     "Alexandria, Virginia"
   ],
-  "lastFeedCheckAt": "20261003",
+  "lastFeedCheckAt": "20261007",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
@@ -40,7 +40,7 @@
       "routeHeadwayMismatches": 2,
       "featureCount": 57
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-10-07"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,

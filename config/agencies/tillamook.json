@@ -18,7 +18,7 @@
   "timezone": "America/Los_Angeles",
   "lastFeedExpiry": "20261101",
   "lastFeedVersion": "UTC: 30-Sep-2026 20:12",
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-10-07",
   "cities": [
     "Tillamook, Oregon",
     "Lincoln City, Oregon",
@@ -38,9 +38,9 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 48
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-10-07"
   },
-  "lastFeedCheckAt": "20261003",
+  "lastFeedCheckAt": "20261007",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270531",

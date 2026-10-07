@@ -17,14 +17,14 @@
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-oregon-south-metro-area-regional-transit-smart-gtfs-2706.zip?alt=media",
   "lastFeedExpiry": "",
   "lastFeedVersion": "FY27 Q1",
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-10-07",
   "cities": [
     "Tigard, Oregon",
     "Salem, Oregon",
     "Gresham, Oregon",
     "Portland, Oregon"
   ],
-  "lastFeedCheckAt": "20261003",
+  "lastFeedCheckAt": "20261007",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",
@@ -42,7 +42,7 @@
       "routeHeadwayMismatches": 1,
       "featureCount": 24
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-10-07"
   },
   "timezone": "America/Los_Angeles",
   "feedRefreshStatus": "current",

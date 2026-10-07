@@ -11,11 +11,11 @@
   "mdbFeedUrl": "https://ridewsta.com/gtfs",
   "lastFeedExpiry": "",
   "lastFeedVersion": "Aug 30 start - Rev 1",
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-10-07",
   "cities": [
     "Winston-Salem, North Carolina"
   ],
-  "lastFeedCheckAt": "20261003",
+  "lastFeedCheckAt": "20261007",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",
@@ -31,7 +31,7 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 124
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-10-07"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
