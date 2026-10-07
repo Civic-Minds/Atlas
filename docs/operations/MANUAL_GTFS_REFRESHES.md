@@ -6,20 +6,29 @@ live refresh. Re-run `npm run audit-expired-sources` before acting on it.
 
 ## Latest read-only audit — 2026-10-07
 
-The registry contains 42 production-visible agencies whose recorded feed
-expiry is before the audit date. This audit downloaded and checked their
+The full live-source freshness audit checked all 552 production-visible
+agencies: 495 feeds were current, 52 were expired, and 5 were unavailable.
+The follow-up source audit downloaded and checked the expired agencies'
 configured and fallback sources without changing feed configuration, writing
 refreshed data, or starting a pipeline action.
 
-- 34 remain genuinely expired with no verified current replacement
+- 47 remain genuinely expired with no verified current replacement
 - 5 need manual source review: `augusta`, `kcata`, `lavta`, `sfmta`, and
   `westberkeley`
-- 3 newer candidates were rejected after local processing:
-  `coast-transit-ms` is already expired and degraded, `grand-junction`
-  produces zero usable routes, and `snowmass-village` contains stops but no
-  required routes, trips, stop times, or calendar service
 
-No agency from this audit is approved for a live refresh. The 34 genuinely
+The 13 additional expired feeds found by the live-source audit, outside the
+registry's recorded-expiry queue, are `beeline`, `cats`, `exo`,
+`exo-laurentides`, `exo-lrrs`, `exo-presquile`, `exo-sudouest`,
+`exo-terrebonne`, `metrostlouis`, `setd`, `tillamook`, `trinitymetro`, and
+`tulare-county-transit`. Their configured sources were either expired or
+unavailable; none supplied a verified current replacement.
+
+Three newer candidates observed during source review were also rejected by
+local processing: `coast-transit-ms` was degraded with passed schedule dates,
+`grand-junction` produced zero usable routes, and `snowmass-village` lacked
+required routes, trips, stop times, and calendar service.
+
+No agency from this audit is approved for a live refresh. The 47 genuinely
 expired agencies remain a source-recovery queue, not a batch refresh list.
 
 ## Previous read-only audit — 2026-09-26
