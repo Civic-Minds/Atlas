@@ -11,6 +11,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **On-demand service areas now respect the selected day and time period, so zones disappear after their published service hours end.**
 - **Frequent Service navigation now returns to the main frequency map when the Atlas logo is clicked.**
 - **Explore Atlas now provides one landing page for About Atlas, Night Service, and Frequent Service.**
+- **Search fields now clear immediately when the X is pressed.**
 - **Settings now use a cleaner text-first layout, with appearance, map, performance, and filter controls presented consistently.**
 - **The info panel now links directly to Documentation alongside Terms and Privacy.**
 - **Route selection, map dimming, zoom guidance, and overlapping-line treatment now keep selected services easier to follow.**

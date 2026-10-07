@@ -574,7 +574,16 @@ export default function App() {
           )}
           {query !== '' && (
             <button
-              onClick={handleSearchClear}
+              type="button"
+              onPointerDown={event => {
+                event.preventDefault();
+                handleSearchClear();
+              }}
+              onClick={event => {
+                // Pointer activation is handled on pointerdown for immediate feedback.
+                // Keep click for keyboard activation, whose detail is zero.
+                if (event.detail === 0) handleSearchClear();
+              }}
               className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors p-0.5"
               aria-label="Clear search"
             >
