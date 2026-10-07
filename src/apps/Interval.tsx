@@ -70,6 +70,7 @@ interface Props {
   fareView?: boolean;
   nightServiceView?: boolean;
   nightServiceFrequency?: NightServiceFrequency;
+  setNightServiceFrequency?: (frequency: NightServiceFrequency) => void;
   frequentServiceView?: boolean;
   frequentServiceDays?: DayType[];
   frequentServiceFrequency?: FrequentServiceFrequency;
@@ -103,7 +104,7 @@ function readSavedAgenciesOff(): Set<string> {
   }
 }
 
-export default function Interval({ agencies, allAgencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, filterToAgencies = false, onHistoryRouteClick, onDirectFromStop, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, pendingNightRoute, onPendingNightRouteHandled, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, onSelectedMapAgencyChange, onSelectionActiveChange, headerPortalContainer, fareView = false, nightServiceView = false, nightServiceFrequency = 60, frequentServiceView = false, frequentServiceDays = ['Weekday'], frequentServiceFrequency = 15, frequentServiceWindow = 'daytime', setFrequentServiceDays, setFrequentServiceFrequency, setFrequentServiceWindow, showMapContext = false, showMatchPercentage = false, sidebarLeft, searchBarWidth, searchEnterRef, analyticsApp = 'frequency', hideLowQuality, setHideLowQuality, feedQualityEnabled = false, showMapLegend, setShowMapLegend, dataSaver, setDataSaver, exportEnabled = false, exportTitle = 'Transit map' }: Props) {
+export default function Interval({ agencies, allAgencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, filterToAgencies = false, onHistoryRouteClick, onDirectFromStop, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, pendingNightRoute, onPendingNightRouteHandled, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, onSelectedMapAgencyChange, onSelectionActiveChange, headerPortalContainer, fareView = false, nightServiceView = false, nightServiceFrequency = 60, setNightServiceFrequency, frequentServiceView = false, frequentServiceDays = ['Weekday'], frequentServiceFrequency = 15, frequentServiceWindow = 'daytime', setFrequentServiceDays, setFrequentServiceFrequency, setFrequentServiceWindow, showMapContext = false, showMatchPercentage = false, sidebarLeft, searchBarWidth, searchEnterRef, analyticsApp = 'frequency', hideLowQuality, setHideLowQuality, feedQualityEnabled = false, showMapLegend, setShowMapLegend, dataSaver, setDataSaver, exportEnabled = false, exportTitle = 'Transit map' }: Props) {
   const [searchParams] = useSearchParams();
   const [mapContextOpen, setMapContextOpen] = useState(false);
   const [mapContextView, setMapContextView] = useState<'agencies' | 'routes'>('routes');
@@ -810,8 +811,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
       )}
 
       {headerPortalContainer && createPortal(
-        <div className={`flex items-center gap-2 ${!showUi && hideFilterPanel ? 'pointer-events-none' : ''}`}>
-          <div className={`hidden sm:flex items-center gap-2 transition-opacity ${TRANSITION_BASE} ${showUi ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+        <div className={`flex items-center gap-2 ${!showUi && hideFilterPanel && !nightServiceView ? 'pointer-events-none' : ''}`}>
+          <div className={`hidden sm:flex items-center gap-2 transition-opacity ${TRANSITION_BASE} ${showUi || nightServiceView ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
             <FilterChips
               maxHeadway={maxHeadway}
               setMaxHeadway={setMaxHeadway}
@@ -832,6 +833,9 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
               setResearchFrequency={setFrequentServiceFrequency}
               researchWindow={frequentServiceWindow}
               setResearchWindow={setFrequentServiceWindow}
+              nightServiceMode={nightServiceView}
+              nightServiceFrequency={nightServiceFrequency}
+              setNightServiceFrequency={setNightServiceFrequency}
             />
           </div>
           {!hideFilterPanel && (

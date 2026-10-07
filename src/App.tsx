@@ -731,6 +731,7 @@ export default function App() {
               fareView={inFares}
               nightServiceView={inNight}
               nightServiceFrequency={nightServiceFrequency}
+              setNightServiceFrequency={setNightServiceFrequency}
               exportEnabled={FEATURES.mapExport || inFrequentService}
               exportTitle={inFrequentService ? 'Frequent Service' : inNight ? 'Night Service' : inHistory ? 'Service History' : inFares ? 'Transit Fares' : inLive ? 'Live Transit' : 'Transit Frequency'}
               frequentServiceView={inFrequentService}
@@ -791,7 +792,7 @@ export default function App() {
             )}
             {FEATURES.beta && (
               <React.Suspense fallback={null}>
-                <NightService active={inNight} sidebarLeft={sidebarLeft} layers={layers} query={deferredQuery} frequency={nightServiceFrequency} setFrequency={setNightServiceFrequency} onRouteSelect={handleNightRouteClick} />
+                <NightService active={inNight} sidebarLeft={sidebarLeft} layers={layers} query={deferredQuery} frequency={nightServiceFrequency} onRouteSelect={handleNightRouteClick} />
               </React.Suspense>
             )}
             {FEATURES.live && liveMounted && (
