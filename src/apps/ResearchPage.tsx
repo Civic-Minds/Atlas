@@ -7,7 +7,7 @@ export default function ResearchPage() {
     <div className="absolute inset-0 overflow-y-auto px-6 pt-28 pb-12 sm:px-10 lg:px-16">
       <div className="mx-auto max-w-4xl">
         <div className="max-w-2xl">
-          <h1 className="mt-3 text-3xl font-black tracking-tight text-[var(--text-primary)] sm:text-5xl">Look closer at how transit works.</h1>
+          <h1 className="mt-3 text-3xl font-black tracking-tight text-[var(--text-primary)] sm:text-5xl">Explore the patterns behind transit service.</h1>
           <p className="mt-4 text-sm font-bold leading-7 text-[var(--text-muted)] sm:text-base">
             Explore the service patterns that the everyday frequency map cannot show on its own.
           </p>

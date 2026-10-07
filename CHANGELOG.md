@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **Research landing-page copy now describes schedule patterns precisely instead of implying a broader view of transit operations.**
 - **Research view links now describe the insight users will get instead of repeating generic “Open” actions.**
 - **The Research landing page now opens with a clearer invitation and puts the research tools first.**
 - **The Research landing page now starts with its actual title instead of repeating “Research” as a label.**
