@@ -8,5 +8,6 @@ tmp
 *.log
 .DS_Store
 pipeline/
-scripts/
+scripts/*
+!scripts/build-agency-catalog.ts
 types/
