@@ -50,6 +50,7 @@ describe('BWG on-demand service area', () => {
 
   it('filters Argo services to their published operating windows', () => {
     expect(isOnDemandActive(BRAMPTON_ON_DEMAND_AGENCY.onDemandServiceArea.availability, 'Weekday', 'evening')).toBe(true);
+    expect(isOnDemandActive(BRAMPTON_ON_DEMAND_AGENCY.onDemandServiceArea.availability, 'Weekday', 'late')).toBe(false);
     expect(isOnDemandActive(BRAMPTON_ON_DEMAND_AGENCY.onDemandServiceArea.availability, 'Weekday', 'overnight')).toBe(false);
     expect(isOnDemandActive(BRAMPTON_ON_DEMAND_AGENCY.onDemandServiceArea.availability, 'Saturday', 'midday')).toBe(false);
     expect(isOnDemandActive(CALEDON_ON_DEMAND_AGENCY.onDemandServiceArea.availability, 'Sunday', 'pmPeak')).toBe(true);
