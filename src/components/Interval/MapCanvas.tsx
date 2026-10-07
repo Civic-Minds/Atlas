@@ -1898,6 +1898,20 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         const focusedPaint = buildFocusedRoutePaint(historyRouteMatch, DIM_OPACITY, DIM_WIDTH);
         setRouteLayerPaint(map, 'line-opacity', focusedPaint.opacity as any);
         setRouteLayerPaint(map, 'line-width', focusedPaint.width as any);
+      } else if (historyOverlay?.slug) {
+        // History agency selection keeps the whole agency visible while dimming
+        // the surrounding network, matching route-level focus without hiding context.
+        const historyAgencyMatch: any = ['==', ['get', 'agencySlug'], historyOverlay.slug];
+        setRouteLayerPaint(map, 'line-opacity', [
+          'case', historyAgencyMatch, 1.0, DIM_OPACITY,
+        ] as any);
+        setRouteLayerPaint(map, 'line-width', [
+          'interpolate', ['linear'], ['zoom'],
+          8, ['case', historyAgencyMatch, 2.8, DIM_WIDTH],
+          11, ['case', historyAgencyMatch, 3.2, DIM_WIDTH],
+          14, ['case', historyAgencyMatch, 3.8, DIM_WIDTH],
+          17, ['case', historyAgencyMatch, 4.5, DIM_WIDTH],
+        ] as any);
       } else if (selectedRoute) {
         const selKey = selectedRoute;
         const routeMatch: any = routeKeyMatchExpression(selKey);
@@ -1993,7 +2007,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       // treatment above (default state, nothing else focused) -- otherwise it would draw a bright
       // "this part qualifies" line over routes a selection/hover/stop-focus state has already
       // dimmed for an unrelated reason, or fight a route's own full-opacity focused treatment.
-      const isDefaultRouteFocusState = !historyOverlay?.routeShortName
+      const isDefaultRouteFocusState = !historyOverlay
         && !selectedRoute
         && !hoveredSearchRoute
         && !nightServiceView

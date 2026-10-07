@@ -81,9 +81,14 @@ export function useHistoryLayer(
 
     if (!historyOverlay) return;
 
-    // If we have historical route geometry (from per-period snapshot), fit to it (supports discontinued routes)
+    // If we have historical route geometry (from per-period snapshot), fit to it (supports discontinued routes).
+    // For an agency selection, fit the complete set of historical routes rather
+    // than flying to the catalog centre, which can land on a single suburb.
     const routeGeometry = historyOverlay.routeGeometry;
     const hasRouteGeometry = Boolean(routeGeometry && routeGeometry.length > 1);
+    const hasHistoricalRouteGeometry = Boolean(
+      historyOverlay.historicalRouteGeometries && historyOverlay.historicalRouteGeometries.length > 0,
+    );
     if (routeGeometry && routeGeometry.length > 1) {
       const coords = routeGeometry;
       let minLng = 180, maxLng = -180, minLat = 90, maxLat = -90;
@@ -95,6 +100,19 @@ export function useHistoryLayer(
       if (minLng < maxLng) {
         map.fitBounds([[minLng, minLat], [maxLng, maxLat]], { padding: { top: 80, bottom: 80, left: 80, right: 280 }, maxZoom: 14 });
       }
+    } else if (historyOverlay.historicalRouteGeometries && historyOverlay.historicalRouteGeometries.length > 0) {
+      let minLng = 180, maxLng = -180, minLat = 90, maxLat = -90;
+      for (const route of historyOverlay.historicalRouteGeometries) {
+        for (const [lng, lat] of route.coordinates) {
+          minLng = Math.min(minLng, lng);
+          maxLng = Math.max(maxLng, lng);
+          minLat = Math.min(minLat, lat);
+          maxLat = Math.max(maxLat, lat);
+        }
+      }
+      if (minLng < maxLng && minLat < maxLat) {
+        map.fitBounds([[minLng, minLat], [maxLng, maxLat]], { padding: { top: 80, bottom: 80, left: 80, right: 280 }, maxZoom: 11 });
+      }
     }
 
     if (historyOverlay.stops.length === 0) {
@@ -103,7 +121,7 @@ export function useHistoryLayer(
         // immediately fly back to the agency center; the competing camera
         // animations can keep emitting moveend updates and trigger React's
         // update-depth guard (#478).
-        if (!hasRouteGeometry) {
+        if (!hasRouteGeometry && !hasHistoricalRouteGeometry) {
           map.flyTo({ center: [historyOverlay.agencyCenter[1], historyOverlay.agencyCenter[0]], zoom: 13 });
         }
         // Without historical geometry, try to zoom to the specific current route
