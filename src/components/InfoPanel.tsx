@@ -409,6 +409,8 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
               </div>
 
               <div className="text-[10px] text-[var(--text-dim)] whitespace-nowrap">
+                <a href="/about/docs" className="hover:text-[var(--accent)] hover:underline">Documentation</a>
+                <span className="mx-1.5">·</span>
                 <a href="/terms" className="hover:text-[var(--accent)] hover:underline">Terms</a>
                 <span className="mx-1.5">·</span>
                 <a href="/privacy" className="hover:text-[var(--accent)] hover:underline">Privacy policy</a>
