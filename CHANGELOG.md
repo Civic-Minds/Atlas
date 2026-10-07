@@ -31,6 +31,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Map loading and wide-area navigation now defer unnecessary data while keeping guidance readable and the interface responsive.**
 - **Mode filters now include aerial tram and gondola services instead of treating them as unclassified routes.**
 - **Rail, ferry, destination, and route labels now use clearer rider-facing names instead of internal identifiers or inconsistent casing.**
+- **Named rail lines no longer expose internal numeric IDs in agency route cards.**
 - **History now limits its agency directory to meaningful archives, distinguishes historical route coverage from the current network, and keeps year comparisons separate from map interaction.**
 - **On-demand service now has dedicated cards, pickup interactions, operating-hour filtering, and map selection behaviour instead of appearing as fixed-route service.**
 - **GTFS-Flex pickup locations now remain individually identifiable while explaining that they belong to booked service rather than fixed routes.**
