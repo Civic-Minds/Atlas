@@ -22,6 +22,7 @@ Use this page as the documentation index. The root [README](../README.md) explai
 - [Live polling and history archiving](operations/LIVE_POLLING.md)
 - [Agency backlog](data/AGENCY_BACKLOG.md)
 - [Manual GTFS refresh queue](operations/MANUAL_GTFS_REFRESHES.md)
+- [Manually maintained GTFS sources](operations/MANUAL_GTFS_SOURCES.md)
 - [Known issues](operations/KNOWN_ISSUES.md)
 
 ## Product and research

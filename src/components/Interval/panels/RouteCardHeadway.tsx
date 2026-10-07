@@ -562,11 +562,12 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
             )}
             {routeIsStale && (
               <CardHelpNotice
-                message={expiredFeedNotice(routeAgency?.name ?? 'This agency', expDateStr)}
+                message={expiredFeedNotice(routeAgency?.name ?? 'This agency', expDateStr, routeAgency?.manualFeedSource)}
                 onLearnMore={() => onInfoOpen('about', {
                   helpTopic: 'outdated-schedule',
                   agencyName: routeAgency?.name,
                   expDateStr: expDateStr || undefined,
+                  manualFeedSource: routeAgency?.manualFeedSource,
                   lastRefreshedAt: routeAgency?.lastRefreshedAt ?? undefined,
                   lastFeedCheckAt: routeAgency?.lastFeedCheckAt ?? undefined,
                   expiredFeedCheckCount: routeAgency?.expiredFeedCheckCount,
