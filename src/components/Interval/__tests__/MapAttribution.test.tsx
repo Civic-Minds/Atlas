@@ -7,11 +7,17 @@ describe('MapAttribution', () => {
     render(<MapAttribution />);
 
     const feedback = screen.getByRole('link', { name: 'Feedback' });
-    expect(screen.getByRole('link', { name: 'About Atlas' })).toHaveAttribute('href', '/about');
+    const about = screen.getByRole('link', { name: 'About Atlas' });
+    expect(about).toHaveAttribute('href', '/about');
     const osm = screen.getByRole('link', { name: 'OpenStreetMap' });
     const carto = screen.getByRole('link', { name: 'CARTO' });
+    expect(screen.getAllByRole('link').map(link => link.textContent)).toEqual([
+      'About Atlas',
+      'Feedback',
+      'OpenStreetMap',
+      'CARTO',
+    ]);
 
-    const about = screen.getByRole('link', { name: 'About Atlas' });
     for (const element of [feedback, about, osm, carto]) {
       expect(element.className).toContain('text-[10px]');
       expect(element.className).toContain('font-semibold');
