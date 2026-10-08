@@ -11,7 +11,7 @@
  * Run:
  *   npm run reprocess-derived-artifacts
  */
-import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import './loadEnv.js';
 import { processGtfsBuffer, type GtfsPreprocess } from './process-core.js';
@@ -50,6 +50,9 @@ interface ReportRow {
 
 const indexPath = resolve('public/data/index.json');
 const outputDir = resolve('tmp/derived-reprocess');
+const localArchiveDir = process.env.ATLAS_LOCAL_ARCHIVE_DIR
+  ? resolve(process.env.ATLAS_LOCAL_ARCHIVE_DIR)
+  : null;
 const writeToR2 = process.argv.includes('--write');
 const concurrency = Math.max(1, Number(process.env.REPROCESS_CONCURRENCY ?? 2));
 
@@ -85,12 +88,21 @@ async function selectArchiveKey(agency: Agency): Promise<string | null> {
   return keys.at(-1) ?? null;
 }
 
+function localArchivePath(slug: string): string | null {
+  if (!localArchiveDir) return null;
+  const path = resolve(localArchiveDir, `${slug}.zip`);
+  return existsSync(path) ? path : null;
+}
+
 async function processAgency(agency: Agency): Promise<ReportRow> {
   try {
     const sourceKey = await selectArchiveKey(agency);
-    if (!sourceKey) throw new Error('no archived GTFS snapshot');
-    const body = await r2GetArchiveBuffer(sourceKey);
-    if (!body) throw new Error(`could not read ${sourceKey}`);
+    const localPath = localArchivePath(agency.slug);
+    if (!sourceKey && !localPath) throw new Error('no archived GTFS snapshot or validated local recovery input');
+    const body = localPath
+      ? readFileSync(localPath)
+      : await r2GetArchiveBuffer(sourceKey!);
+    if (!body) throw new Error(`could not read ${sourceKey ?? localPath}`);
 
     console.log(`\n${agency.slug}: ${sourceKey}`);
     const result = await processGtfsBuffer(body, message => process.stdout.write(`  ${message}`), processOptions(agency));
@@ -117,7 +129,7 @@ async function processAgency(agency: Agency): Promise<ReportRow> {
 
     return {
       slug: agency.slug,
-      sourceKey,
+      sourceKey: sourceKey ?? `local:${localPath}`,
       featureCount: result.featureCount,
       schemaVersion: ROUTE_ARTIFACT_SCHEMA_VERSION,
       status: 'processed',

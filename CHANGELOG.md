@@ -9,6 +9,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Schedule charts now mark individual hours with unusually long gaps, so a route’s typical frequency does not hide a slower hour.**
 - **Routes without service in the selected period are now hidden from the map, so route cards no longer contradict the map.**
 - **Shared route-data changes now fail closed until every agency artifact is reprocessed, preventing stale JSON from being repackaged into new PMTiles.**
+- **Local archive recovery now validates missing GTFS inputs before they can be used in a full derived-data rebuild.**
 - **Expanded route schedule direction controls now match Atlas’s standard filter buttons.**
 - **Large R2 archive jobs now reuse connections instead of creating a new client for every file, preventing History verification from exhausting sockets.**
 - **Export and Share now support Social (1200×630), Standard (1600×900), and High resolution (2400×1350) PNGs, with equal-weight actions and click-outside dismissal.**

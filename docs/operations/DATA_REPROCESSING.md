@@ -13,6 +13,27 @@ ATLAS_LOCAL_PREVIEW_DIR=tmp/derived-reprocess npm run build-pmtiles -- --dry-run
 
 Review `tmp/derived-reprocess/report.json`. The PMTiles build must succeed for the complete catalog; an old agency artifact now fails the schema gate instead of being silently repackaged.
 
+If the report contains missing raw archives, recover and validate local inputs
+before retrying the reprocess:
+
+```bash
+npm run recover-local-archive-inputs
+ATLAS_LOCAL_ARCHIVE_DIR=tmp/derived-reprocess-inputs \
+  NODE_OPTIONS='--max-old-space-size=8192' \
+  REPROCESS_CONCURRENCY=2 npm run reprocess-derived-artifacts
+```
+
+Manually reviewed replacement URLs can be supplied without changing the
+registry or R2:
+
+```bash
+npm run recover-local-archive-inputs -- --sources-file tmp/source-overrides.json
+```
+
+The recovery report records the URL, feed dates, feature count, quality score,
+and any unresolved blocker. A recovered local input is not approval to publish
+it.
+
 ## Publish
 
 After reviewing the dry-run report, publish the regenerated agency artifacts and then rebuild the verified release:
