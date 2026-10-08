@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **Coordinated data releases now stop before PMTiles when any requested agency fails or remains stale, preventing partial refreshes from becoming map releases.**
 - **PMTiles rebuilds now require a successful data refresh first, preventing stale agency artifacts from becoming a new map release.**
 - **MapLibre GL is now on a patched release**, addressing a critical security vulnerability without changing Atlas’s map behaviour.
 - **Research landing-page copy now describes schedule patterns precisely instead of implying a broader view of transit operations.**

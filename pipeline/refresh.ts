@@ -15,7 +15,7 @@
 import { readFileSync, writeFileSync, renameSync } from 'fs';
 import { execFileSync } from 'child_process';
 import { resolve } from 'path';
-import { writeDataRefreshMarker } from './dataRefreshMarker.js';
+import { clearDataRefreshHandoff, writeDataRefreshMarker, writeRefreshRunResult, type RefreshAgencyStatus } from './dataRefreshMarker.js';
 // loadEnv first so shared/config sees staging R2_PUBLIC_URL
 import { LOADED_ENV_FILE, isProductionPublicR2Bucket } from './loadEnv.js';
 import { r2Put, r2Get, r2PutArchive, r2PutArchiveJson, r2GetArchive, rawFeedArchiveKey } from './r2.js';
@@ -597,6 +597,7 @@ function writeAgencySource(agency: AgencyEntry): void {
 }
 
 async function main() {
+  clearDataRefreshHandoff();
   const indexPath = resolve('public/data/index.json');
   const index: { agencies: AgencyEntry[] } = JSON.parse(readFileSync(indexPath, 'utf8'));
 
@@ -627,6 +628,7 @@ async function main() {
   let stale = 0;
   let uploads = 0;
   let countryLaunchSkips = 0;
+  const refreshStatuses: Record<string, RefreshAgencyStatus> = {};
   const allNightServiceRoutes: NightServiceRouteEntry[] = [];
   const refreshedNightServiceAgencySlugs = new Set<string>();
   let existingNightServiceIndex: NightServiceIndexFile | null = null;
@@ -652,6 +654,7 @@ async function main() {
         const country = resolveAgencyCountry(agency);
         if (isCountryLaunchBlocked(country, countryRegistry)) {
           countryLaunchSkips++;
+          refreshStatuses[agency.slug] = 'skipped';
           console.log(
             `  ${agency.slug.padEnd(12)} ... skipped (unlaunched country: ${country} — ` +
               `pass ${COUNTRY_LAUNCH_FLAG} after explicit maintainer approval)`,
@@ -663,6 +666,7 @@ async function main() {
       const summary = result.summary;
       if (result.processed) refreshedNightServiceAgencySlugs.add(agency.slug);
       if (result.stale) stale++;
+      refreshStatuses[agency.slug] = result.processed ? 'processed' : result.stale ? 'stale' : 'unchanged';
       if (result.processed) {
         uploads++;
         if (result.hiddenRoutes) refreshedHiddenRoutes.set(agency.slug, result.hiddenRoutes);
@@ -675,6 +679,7 @@ async function main() {
       writeAgencySource(agency);
     } catch (e) {
       failures++;
+      refreshStatuses[agency.slug] = 'failed';
       console.log(`  ${agency.slug.padEnd(12)} ... FAILED — ${e instanceof Error ? e.message : e}${logBuffer}`);
     }
   });
@@ -687,16 +692,21 @@ async function main() {
   }
   await runWithConcurrency(tasks, 5);
 
+  const refreshResult = writeRefreshRunResult(targets.map(agency => agency.slug), refreshStatuses);
+
   console.log(`\n  index.json updated. ${targets.length - failures}/${targets.length} succeeded.`);
   if (countryLaunchSkips > 0) {
     console.log(
       `  ${countryLaunchSkips} skipped — unlaunched country (no production-visible agencies yet)`,
     );
   }
-  if (uploads > 0) {
-    bumpCacheBuild();
-    writeDataRefreshMarker('refresh', targets.filter(agency => agency.lastRefreshedAt === todayUtcYmd()).map(agency => agency.slug));
-    console.log(`  cache build bumped (${uploads} agencies uploaded)`);
+  if (refreshResult.complete) {
+    if (uploads > 0) bumpCacheBuild();
+    writeDataRefreshMarker('refresh', targets.map(agency => agency.slug));
+    console.log(`  ${uploads > 0 ? `cache build bumped (${uploads} agencies uploaded)` : 'no agency data changed'}`);
+  }
+  if (!refreshResult.complete) {
+    console.error('  Refresh incomplete — PMTiles rebuild is blocked until every requested agency succeeds or is unchanged.');
   }
   if (failures > 0) {
     console.warn(`${failures} agencies failed to refresh (see warnings above). Continuing so action succeeds.`);

@@ -9,7 +9,19 @@ export interface DataRefreshMarker {
   source: 'refresh' | 'process';
   slugs: string[];
   indexSha256: string;
+  complete: true;
 }
+
+export type RefreshAgencyStatus = 'processed' | 'unchanged' | 'stale' | 'failed' | 'skipped';
+
+export interface RefreshRunResult {
+  generatedAt: string;
+  requestedSlugs: string[];
+  statuses: Record<string, RefreshAgencyStatus>;
+  complete: boolean;
+}
+
+export const REFRESH_RESULT_PATH = path.resolve('tmp/atlas-refresh-result.json');
 
 export function hashIndex(indexPath = path.resolve('public/data/index.json')): string {
   return createHash('sha256').update(fs.readFileSync(indexPath)).digest('hex');
@@ -26,8 +38,39 @@ export function writeDataRefreshMarker(
     source,
     slugs: [...new Set(slugs)].sort(),
     indexSha256: hashIndex(indexPath),
+    complete: true,
   };
   fs.writeFileSync(DATA_REFRESH_MARKER_PATH, `${JSON.stringify(marker, null, 2)}\n`);
+}
+
+export function writeRefreshRunResult(
+  requestedSlugs: string[],
+  statuses: Record<string, RefreshAgencyStatus>,
+): RefreshRunResult {
+  const result: RefreshRunResult = {
+    generatedAt: new Date().toISOString(),
+    requestedSlugs: [...new Set(requestedSlugs)].sort(),
+    statuses,
+    complete: Object.values(statuses).every(status => status === 'processed' || status === 'unchanged'),
+  };
+  fs.mkdirSync(path.dirname(REFRESH_RESULT_PATH), { recursive: true });
+  fs.writeFileSync(REFRESH_RESULT_PATH, `${JSON.stringify(result, null, 2)}\n`);
+  return result;
+}
+
+export function readRefreshRunResult(): RefreshRunResult | null {
+  if (!fs.existsSync(REFRESH_RESULT_PATH)) return null;
+  try {
+    return JSON.parse(fs.readFileSync(REFRESH_RESULT_PATH, 'utf8')) as RefreshRunResult;
+  } catch {
+    return null;
+  }
+}
+
+export function clearDataRefreshHandoff(): void {
+  for (const filePath of [DATA_REFRESH_MARKER_PATH, REFRESH_RESULT_PATH]) {
+    if (fs.existsSync(filePath)) fs.rmSync(filePath);
+  }
 }
 
 export function readDataRefreshMarker(): DataRefreshMarker | null {
@@ -48,6 +91,9 @@ export function dataRefreshGuardError(
   }
   if (marker.slugs.length === 0) {
     return 'The data refresh marker contains no refreshed agencies; refusing to rebuild PMTiles.';
+  }
+  if (marker.complete !== true) {
+    return 'The data refresh did not complete for every requested agency; refusing to rebuild PMTiles.';
   }
   if (marker.indexSha256 !== hashIndex(indexPath)) {
     return 'The agency index changed after the data refresh; refresh the data again before rebuilding PMTiles.';
