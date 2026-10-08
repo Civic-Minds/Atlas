@@ -19,7 +19,7 @@ import {
   type CardReportButtonHandle,
 } from '../cardUi';
 import { CARD_NOTICE, CARD_NOTICE_FOOTER } from '../../../styles';
-import { FEATURES, SPARKLINE_HOURS, TIME_PERIODS, formatPeriodRangeLong, periodKeyForHour } from '../../../../shared/config';
+import { FEATURES, SPARKLINE_HOURS, TIME_PERIODS, formatPeriodHourLong, formatPeriodRangeLong, periodKeyForHour } from '../../../../shared/config';
 import { effectiveRouteHeadway, hasDirectionPeriodService, routeCardCoverageText, routeCardDisplayHeadway, routeCardDisplayHeadwayRange } from '../../../utils/effectiveHeadway';
 import { buildRouteServiceSummary, metricValueForPeriod } from '../../../utils/routeFacts';
 import { unevenPeriodMaxGap } from '../../../utils/routeCardUneven';
@@ -106,6 +106,20 @@ function sparklineMaxGapByHour(
   }));
 }
 
+function activePeriodRanges(directions: ShapeProperties[], startHour: number, endHour: number): string[] {
+  const ranges: Array<[number, number]> = [];
+  let runStart: number | null = null;
+  for (let hour = startHour; hour <= endHour; hour++) {
+    const active = hour < endHour && directions.some(direction => direction.headwayByHour?.[hour] != null);
+    if (active && runStart === null) runStart = hour;
+    if ((!active || hour === endHour) && runStart !== null) {
+      ranges.push([runStart, hour]);
+      runStart = null;
+    }
+  }
+  return ranges.map(([start, end]) => formatPeriodRangeLong(start, end));
+}
+
 export interface DirectionGroup {
   dirId: number;
   realTier: ShapeProperties[];
@@ -175,6 +189,9 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   );
   const hasWeekdayTierVariation = currentRoute.directions.some(direction => direction.weekdayTierVariation);
   const selectedPeriod = period !== 'all' ? TIME_PERIODS.find(p => p.key === period) : undefined;
+  const activePeriodRangeText = selectedPeriod
+    ? activePeriodRanges(currentRoute.directions, selectedPeriod.startHour, selectedPeriod.endHour).join(', ')
+    : '';
   const hasPeriodService = period === 'all' || directionGroups.some(group =>
     group.realTier.some(direction => routeCardDisplayHeadway(direction, period) != null) ||
     group.span.length > 0,
@@ -422,7 +439,9 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
         {selectedRouteOutOfFilter && !(hasCoreSummary && coreHeadway != null && coreHeadway <= maxHeadway) && (
           <div className={CARD_NOTICE_FOOTER}>
             <p className={CARD_NOTICE}>
-              Only part of this route meets the {maxHeadway}-minute filter during {selectedPeriod?.label ?? 'the selected schedule'}. The map shows that qualifying stretch; the full route remains visible because it is selected.
+              {selectedPeriod && activePeriodRangeText
+                ? `This route meets the ${maxHeadway}-minute filter around ${activePeriodRangeText}, but not across the full ${selectedPeriod.label} window (${formatPeriodRangeLong(selectedPeriod.startHour, selectedPeriod.endHour)}). The full route remains visible because it is selected.`
+                : `This route does not meet the ${maxHeadway}-minute filter across the full ${selectedPeriod?.label ?? 'the selected schedule'} window. The full route remains visible because it is selected.`}
             </p>
           </div>
         )}

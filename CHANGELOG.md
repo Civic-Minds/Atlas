@@ -6,7 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
-- **Partial frequency matches now explain that only the qualifying stretch is highlighted, so selected routes no longer appear to contradict the active filter.**
+- **Selected routes now explain when service only covers part of the selected time window, so frequency filters are easier to understand.**
 - **Schedule charts now mark individual hours with unusually long gaps, so a route’s typical frequency does not hide a slower hour.**
 - **Routes without service in the selected period are now hidden from the map, so route cards no longer contradict the map.**
 - **Shared route-data changes now fail closed until every agency artifact is reprocessed, preventing stale JSON from being repackaged into new PMTiles.**
