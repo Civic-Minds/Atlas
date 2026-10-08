@@ -8,7 +8,7 @@ export default function AboutPage() {
       <div className="mx-auto max-w-5xl">
         <SiteHeader />
 
-        <section className="grid gap-12 border-b border-[var(--border-primary)] pb-20 pt-24 sm:pt-32 lg:grid-cols-[1.2fr_0.8fr] lg:gap-20">
+        <section className="border-b border-[var(--border-primary)] pb-20 pt-24 sm:pt-32">
           <div>
             <p className="text-xs font-black uppercase tracking-[0.18em] text-[var(--accent)]">About Atlas</p>
             <h1 className="mt-5 max-w-3xl text-5xl font-black tracking-[-0.045em] sm:text-7xl">Find the transit service that actually runs.</h1>
@@ -19,10 +19,12 @@ export default function AboutPage() {
             </div>
           </div>
 
-          <div className="self-start border-l-2 border-[var(--accent-border)] pl-6 lg:pt-16">
+          <div className="mt-16 grid max-w-4xl gap-5 border-t border-[var(--border-primary)] pt-6 sm:grid-cols-[0.7fr_1.3fr] sm:gap-12">
             <p className="text-sm font-black uppercase tracking-[0.16em] text-[var(--text-dim)]">A different kind of map</p>
-            <p className="mt-4 text-xl font-black leading-8">Not just where a route goes, but when it is useful.</p>
-            <p className="mt-4 text-sm leading-6 text-[var(--text-muted)]">Atlas is for looking at the service behind the line: the intervals, the gaps, the hours, and the places connected.</p>
+            <div>
+              <p className="text-xl font-black leading-8">Not just where a route goes, but when it is useful.</p>
+              <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--text-muted)]">Atlas is for looking at the service behind the line: the intervals, the gaps, the hours, and the places connected.</p>
+            </div>
           </div>
         </section>
 
