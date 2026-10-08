@@ -444,7 +444,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           <div className={CARD_NOTICE_FOOTER}>
             <p className={CARD_NOTICE}>
               {selectedPeriod && activePeriodRangeText
-                ? `This route runs about every 30 minutes around ${activePeriodRangeText}, but not throughout the full ${selectedPeriod.label} window (${formatPeriodRangeLong(selectedPeriod.startHour, selectedPeriod.endHour)}). The full route remains visible because it is selected.`
+                ? `Service runs about every 30 minutes from ${activePeriodRangeText}. The ${selectedPeriod.label} period is ${formatPeriodRangeLong(selectedPeriod.startHour, selectedPeriod.endHour)}, so this route does not run throughout it. It stays visible because you selected it.`
                 : `This route does not meet the ${maxHeadway}-minute filter across the full ${selectedPeriod?.label ?? 'the selected schedule'} window. The full route remains visible because it is selected.`}
             </p>
           </div>
