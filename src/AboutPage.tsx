@@ -4,7 +4,7 @@ import SiteFooter from './components/SiteFooter';
 
 export default function AboutPage() {
   return (
-    <main className="min-h-screen overflow-y-auto bg-[var(--bg-app)] px-6 py-8 text-[var(--text-primary)] sm:px-10 lg:px-16">
+    <main className="min-h-screen bg-[var(--bg-app)] px-6 py-8 text-[var(--text-primary)] sm:px-10 lg:px-16">
       <div className="mx-auto max-w-5xl">
         <SiteHeader />
 
