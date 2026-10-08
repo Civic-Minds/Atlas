@@ -202,16 +202,6 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   // the card already has a qualifying combined trunk summary, do not contradict it
   // with an individual branch's terminal gap (#381).
   const unevenGap = FEATURES.unevenBanner ? unevenPeriodMaxGap(directionGroups, period) : 0;
-  const periodNotice = selectedPeriod && !hasPeriodService
-    ? periodServiceNotice(
-      selectedPeriod.label,
-      formatPeriodRangeLong(selectedPeriod.startHour, selectedPeriod.endHour),
-      hasPartialPeriodService,
-    )
-    : null;
-  const unevenNotice = selectedPeriod && unevenGap > 0
-    ? unevenServiceNotice(selectedPeriod.label, unevenGap)
-    : null;
 
   // Largest multi-branch direction group — same branches as WESTBOUND/EASTBOUND rows.
   const primaryMultiBranch = directionGroups
@@ -224,6 +214,17 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
       selectedPeriod.endHour,
     ).join(', ')
     : '';
+  const periodNotice = selectedPeriod && !hasPeriodService
+    ? periodServiceNotice(
+      selectedPeriod.label,
+      formatPeriodRangeLong(selectedPeriod.startHour, selectedPeriod.endHour),
+      hasPartialPeriodService,
+      activePeriodRangeText,
+    )
+    : null;
+  const unevenNotice = selectedPeriod && unevenGap > 0
+    ? unevenServiceNotice(selectedPeriod.label, unevenGap)
+    : null;
   const coreGroups = directionGroups.filter(group => shouldShowTrunkSummary(group.realTier, period));
   const hasCoreSummary = coreGroups.length > 0;
   const primaryCoreHeadway = primaryMultiBranch && shouldShowTrunkSummary(primaryMultiBranch.realTier, period)

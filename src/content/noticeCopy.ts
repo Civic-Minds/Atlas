@@ -18,9 +18,9 @@ export function selectedRouteFilterNotice(options: {
   return `Service runs about every 30 minutes: ${options.activeRange}. ${options.periodLabel} service is measured from ${options.periodRange}; this route is shown because you selected it.`;
 }
 
-export function periodServiceNotice(periodLabel: string, periodRange: string, partial: boolean): string {
+export function periodServiceNotice(periodLabel: string, periodRange: string, partial: boolean, activeRange?: string): string {
   return partial
-    ? `Limited service during ${periodLabel} (${periodRange}).`
+    ? `Limited service during ${periodLabel} (${activeRange || periodRange}).`
     : `No scheduled service during ${periodLabel} (${periodRange}).`;
 }
 

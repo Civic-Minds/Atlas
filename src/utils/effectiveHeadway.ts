@@ -52,12 +52,12 @@ export function hasPeriodCoverage(p: ShapeProperties, period: TimePeriod): boole
  */
 export function hasDirectionPeriodService(p: ShapeProperties, period: TimePeriod): boolean {
   if (period === 'all') return true;
-  const coverage = p.worstDirectionPeriodCoverageHeadway ?? p.periodCoverageHeadway;
-  if (coverage && Object.prototype.hasOwnProperty.call(coverage, period)) return coverage[period] != null;
+  const worstCoverage = p.worstDirectionPeriodCoverageHeadway?.[period];
+  const directionCoverage = p.periodCoverageHeadway?.[period];
+  if (worstCoverage != null || directionCoverage != null) return true;
   if (p.headwayByPeriod && Object.prototype.hasOwnProperty.call(p.headwayByPeriod, period)) {
     return p.headwayByPeriod[period] != null;
   }
-  if (p.headsignMinStopHeadwayByPeriod?.[period] != null) return true;
   if (p.headwayByHour) {
     for (const [hourStr, val] of Object.entries(p.headwayByHour)) {
       if (val != null && isHourInPeriod(Number(hourStr), period)) {
@@ -65,6 +65,9 @@ export function hasDirectionPeriodService(p: ShapeProperties, period: TimePeriod
       }
     }
   }
+  if (p.worstDirectionPeriodCoverageHeadway && Object.prototype.hasOwnProperty.call(p.worstDirectionPeriodCoverageHeadway, period)) return false;
+  if (p.periodCoverageHeadway && Object.prototype.hasOwnProperty.call(p.periodCoverageHeadway, period)) return false;
+  if (p.headsignMinStopHeadwayByPeriod?.[period] != null) return true;
   return false;
 }
 
