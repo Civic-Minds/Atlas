@@ -1,5 +1,6 @@
 import type { ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
 import { isHourInPeriod } from '../../shared/config';
+import { hasAnyPeriodCoverage, hasPeriodCoverageValue, isUnsustainedWithoutCoverage, periodCoverageValue, PERIOD_COVERAGE_MAX_HEADWAY } from '../../shared/periodEligibility';
 import { buildRouteServiceSummary, metricValueForPeriod } from './routeFacts';
 
 /** Headway shown on route cards and lists — the same route-level metric used by the filter. */
@@ -112,25 +113,15 @@ export function effectiveRouteHeadway(p: ShapeProperties, period: TimePeriod): n
   if (period !== 'all') {
     const hasExplicitPeriodValue = p.headwayByPeriod
       && Object.prototype.hasOwnProperty.call(p.headwayByPeriod, period);
-    const coverage = p.worstDirectionPeriodCoverageHeadway?.[period]
-      ?? p.periodCoverageHeadway?.[period]
-      ?? (p.tier === 'span' ? undefined : p.maxGapByPeriod?.[period]);
-    const hasCoverageValue = Boolean(
-      (p.worstDirectionPeriodCoverageHeadway
-        && Object.prototype.hasOwnProperty.call(p.worstDirectionPeriodCoverageHeadway, period))
-      || (p.periodCoverageHeadway
-        && Object.prototype.hasOwnProperty.call(p.periodCoverageHeadway, period))
-      || (p.maxGapByPeriod
-        && Object.prototype.hasOwnProperty.call(p.maxGapByPeriod, period)),
-    );
     // Older artifacts can mark a period as unsustained without publishing its
     // full-window gap. The median is not enough to prove filterable service.
-    if (p.headwayByPeriodSustained?.[period] === false && !hasCoverageValue) return null;
+    if (isUnsustainedWithoutCoverage(p, period)) return null;
+    const coverage = periodCoverageValue(p, period);
     // An explicit no-service period, or a period whose full-window coverage is too sparse,
     // must not be replaced by a shared-stop cadence from a shorter part of the route.
     if ((hasExplicitPeriodValue && p.headwayByPeriod?.[period] == null)
-      || (coverage != null && coverage > 60)
-      || (coverage == null && (p.periodCoverageHeadway || p.worstDirectionPeriodCoverageHeadway))) {
+      || (coverage != null && coverage > PERIOD_COVERAGE_MAX_HEADWAY)
+      || (coverage == null && hasAnyPeriodCoverage(p) && !hasPeriodCoverageValue(p, period))) {
       return metricValueForPeriod(summary.filter, period);
     }
     const sharedHeadway = summary.shared.byHeadsignPeriod?.[period];

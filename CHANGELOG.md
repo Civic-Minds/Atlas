@@ -10,6 +10,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Schedule charts now mark individual hours with unusually long gaps, so a route’s typical frequency does not hide a slower hour.**
 - **Routes without service in the selected period are now hidden from the map, so route cards no longer contradict the map.**
 - **Frequency filters now ignore shared-stop and all-day frequencies when the selected period has no full-window service, so false overnight lines stay off the map ([#524](https://github.com/Civic-Minds/Atlas/issues/524)).**
+- **Period filtering now shares one full-window service rule across map data and route cards, so older artifacts cannot reintroduce false frequent service.**
 - **Shared route-data changes now fail closed until every agency artifact is reprocessed, preventing stale JSON from being repackaged into new PMTiles.**
 - **Local archive recovery now validates missing GTFS inputs before they can be used in a full derived-data rebuild.**
 - **PMTiles builds now stream large merged GeoJSON layers instead of failing while serializing them in memory.**
