@@ -55,7 +55,8 @@ export default function AboutPage() {
           <h2 className="text-2xl font-black tracking-tight">Atlas makes scheduled service easier to understand.</h2>
           <div className="space-y-5 text-base leading-7 text-[var(--text-muted)]">
             <p>How often does service come? How late does it run? Which parts of a network are useful without a timetable?</p>
-            <p>It helps riders, planners, researchers, and advocates compare service across places and time. Atlas does not replace official trip planning, live alerts, or the agencies that publish the schedules.</p>
+            <p>Atlas brings published agency schedules into one place so riders, planners, researchers, and advocates can compare routes across cities, time periods, and modes. History makes changes visible over time, while Research explains the definitions and evidence behind specific service patterns.</p>
+            <p>Atlas does not replace official trip planning, live alerts, or the agencies that publish the schedules.</p>
             <a href="/about/docs" className="inline-flex items-center gap-2 text-sm font-bold text-[var(--accent)] hover:underline">
               Read how Atlas works <ArrowRight className="h-4 w-4" />
             </a>
