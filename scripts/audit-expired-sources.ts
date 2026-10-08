@@ -9,6 +9,7 @@ import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import JSZip from 'jszip';
+import '../pipeline/loadEnv.js';
 import { parseCsv } from '../pipeline/parseGtfs.js';
 import { effectiveFeedExpiry } from '../pipeline/feedFreshness.js';
 import { resolveFeedUrl } from '../pipeline/feedUrl.js';
@@ -24,6 +25,7 @@ interface Agency {
   slug: string;
   name: string;
   feedUrl?: string | null;
+  feedFallbackUrls?: string[];
   feedApiKeyEnvVar?: string;
   feedApiKeyParam?: string;
   mdbFeedUrl?: string | null;
@@ -93,12 +95,21 @@ async function readMetadata(buffer: Buffer): Promise<FeedMetadata> {
 }
 
 async function inspectCandidate(candidate: FeedCandidate, today: string): Promise<FeedCandidateResult> {
+  const safeUrl = (() => {
+    try {
+      const url = new URL(candidate.url);
+      url.searchParams.delete('api_key');
+      return url.toString();
+    } catch {
+      return candidate.url;
+    }
+  })();
   try {
     const buffer = await download(candidate.url);
     const metadata = await readMetadata(buffer);
     return {
       kind: candidate.kind,
-      url: candidate.url,
+      url: safeUrl,
       status: metadata.feedExpiry ? (metadata.feedExpiry < today ? 'expired' : 'current') : 'missing-metadata',
       ...metadata,
       sha256: sha256(buffer),
@@ -106,7 +117,7 @@ async function inspectCandidate(candidate: FeedCandidate, today: string): Promis
   } catch (error) {
     return {
       kind: candidate.kind,
-      url: candidate.url,
+      url: safeUrl,
       status: 'unavailable',
       feedExpiry: null,
       feedVersion: null,
@@ -143,6 +154,7 @@ async function main(): Promise<void> {
       const candidates = buildFeedCandidates(
         resolveFeedUrl(agency.feedUrl, agency.feedApiKeyEnvVar, agency.feedApiKeyParam),
         agency.mdbFeedUrl,
+        agency.feedFallbackUrls,
       );
       const inspected = await Promise.all(candidates.map(candidate => inspectCandidate(candidate, today)));
       results.push({

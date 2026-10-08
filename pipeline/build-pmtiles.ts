@@ -9,6 +9,7 @@ import { runWithConcurrency } from './utils.js';
 import { prepareAgencyRouteFeaturesForTiles } from './prepareAgencyRoutesForTiles.js';
 import { simplifyLine } from './geometry.js';
 import { assertRouteArtifactSchema, ROUTE_ARTIFACT_SCHEMA_VERSION } from '../shared/artifactSchema.js';
+import { consumeDataRefreshMarker, dataRefreshGuardError, readDataRefreshMarker } from './dataRefreshMarker.js';
 
 console.log(`env: ${LOADED_ENV_FILE} (bucket=${process.env.R2_BUCKET_NAME ?? '?'})`);
 
@@ -111,6 +112,16 @@ async function fetchJson(url: string, retries = 5): Promise<FeatureCollection | 
 
 async function main() {
   const dryRun = process.argv.includes('--dry-run');
+  const allowStaleData = process.argv.includes('--allow-stale-data');
+  if (!dryRun && !allowStaleData) {
+    const guardError = dataRefreshGuardError(readDataRefreshMarker());
+    if (guardError) {
+      throw new Error(`${guardError} Use --allow-stale-data only for an explicitly intentional repack.`);
+    }
+    console.log('Data refresh handoff verified; building PMTiles from freshly refreshed artifacts.');
+  } else if (allowStaleData) {
+    console.warn('WARNING: --allow-stale-data bypasses the refresh-to-PMTiles guard.');
+  }
   const localPreviewDir = process.env.ATLAS_LOCAL_PREVIEW_DIR
     ? path.resolve(process.env.ATLAS_LOCAL_PREVIEW_DIR)
     : null;
@@ -341,6 +352,7 @@ async function main() {
     path.resolve('tmp/atlas-release-manifest.json'),
     JSON.stringify(releaseManifest, null, 2),
   );
+  consumeDataRefreshMarker();
   console.log(`Immutable release uploaded: ${releaseId}. Run coverage verification, then publish the pointer.`);
 
   // Cleanup

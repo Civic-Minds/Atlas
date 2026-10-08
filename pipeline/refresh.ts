@@ -15,6 +15,7 @@
 import { readFileSync, writeFileSync, renameSync } from 'fs';
 import { execFileSync } from 'child_process';
 import { resolve } from 'path';
+import { writeDataRefreshMarker } from './dataRefreshMarker.js';
 // loadEnv first so shared/config sees staging R2_PUBLIC_URL
 import { LOADED_ENV_FILE, isProductionPublicR2Bucket } from './loadEnv.js';
 import { r2Put, r2Get, r2PutArchive, r2PutArchiveJson, r2GetArchive, rawFeedArchiveKey } from './r2.js';
@@ -197,6 +198,7 @@ interface AgencyEntry {
   stopsUrl: string;
   corridorsUrl?: string;
   feedUrl: string | null;
+  feedFallbackUrls?: string[];
   feedApiKeyEnvVar?: string;
   feedApiKeyParam?: string;
   mdbFeedUrl?: string | null;
@@ -223,6 +225,8 @@ interface AgencyEntry {
   overrideNote?: string;
   overrideNoteRoutes?: string[];
   feedReviewStatus?: 'review' | 'verified';
+  lastFeedSourceKind?: FeedCandidate['kind'] | null;
+  lastFeedSourceUrl?: string | null;
   feedQuality?: FeedQuality;
 }
 
@@ -273,7 +277,7 @@ async function refreshAgency(
   // Primary key: feed_end_date. Fallback: feed_version (for agencies without feed_info expiry).
   const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
   const configuredFeedUrl = resolveFeedUrl(agency.feedUrl, agency.feedApiKeyEnvVar, agency.feedApiKeyParam);
-  const feedCandidates = buildFeedCandidates(configuredFeedUrl, agency.mdbFeedUrl);
+  const feedCandidates = buildFeedCandidates(configuredFeedUrl, agency.mdbFeedUrl, agency.feedFallbackUrls);
   let buf: Buffer | null = null;
   let peekedExpiry: string | null = null;
   let peekedVersion: string | null = null;
@@ -323,6 +327,15 @@ async function refreshAgency(
   }
   if (selectedCandidate.kind !== 'configured' || selectedCandidate.url !== configuredFeedUrl) {
     writeLog(`\n  [info] using ${selectedCandidate.kind} source: ${selectedCandidate.url}\n`);
+  }
+
+  agency.lastFeedSourceKind = selectedCandidate.kind;
+  try {
+    const sourceUrl = new URL(selectedCandidate.url);
+    if (agency.feedApiKeyEnvVar) sourceUrl.searchParams.delete(agency.feedApiKeyParam ?? 'api_key');
+    agency.lastFeedSourceUrl = sourceUrl.toString();
+  } catch {
+    agency.lastFeedSourceUrl = selectedCandidate.url;
   }
 
   recordFeedCheck(agency as FeedCheckFields, { feedExpiry: peekedExpiry, todayYmd: today });
@@ -682,6 +695,7 @@ async function main() {
   }
   if (uploads > 0) {
     bumpCacheBuild();
+    writeDataRefreshMarker('refresh', targets.filter(agency => agency.lastRefreshedAt === todayUtcYmd()).map(agency => agency.slug));
     console.log(`  cache build bumped (${uploads} agencies uploaded)`);
   }
   if (failures > 0) {

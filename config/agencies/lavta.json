@@ -12,7 +12,8 @@
     37.93,
     -121.7
   ],
-  "feedUrl": "http://webwatch.lavta.org/TMGTFSRealTimeWebService/GTFS-Static/google_transit.zip",
+  "feedUrl": "https://api.511.org/transit/datafeeds?operator_id=WH",
+  "feedApiKeyEnvVar": "MUNI_511_API_KEY",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-livermore-amador-valley-transit-authority-gtfs-64.zip?alt=media",
   "lastFeedExpiry": "20260430",
   "lastFeedVersion": "January_26_01_20260327",

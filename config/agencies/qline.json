@@ -6,7 +6,7 @@
     42.3463,
     -83.057
   ],
-  "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-michigan-qline-detroit-gtfs-802.zip?alt=media",
+  "feedUrl": "https://s3.amazonaws.com/etatransit.gtfs/qline.etaspot.net/gtfs.zip",
   "lastFeedExpiry": "20251231",
   "lastFeedVersion": "UTC: 21-Apr-2025 21:29",
   "lastRefreshedAt": "20260811",

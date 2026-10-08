@@ -44,6 +44,7 @@ import {
   type AgencyCountrySource,
 } from './countryLaunchGate.js';
 import { buildHiddenRoutesForAgency, mergeHiddenRoutes, type HiddenRoutesFile } from './hiddenRoutes.js';
+import { writeDataRefreshMarker } from './dataRefreshMarker.js';
 
 console.log(`  env: ${LOADED_ENV_FILE} (bucket=${process.env.R2_BUCKET_NAME ?? '?'}${isProductionPublicR2Bucket() ? ' [PRODUCTION]' : ' [non-prod]'})`);
 
@@ -321,6 +322,7 @@ async function main() {
   } catch (e) {
     console.warn(`  [warn] hidden-routes.json write failed — ${e instanceof Error ? e.message : e}`);
   }
+  writeDataRefreshMarker('process', [slug]);
 }
 
 main().catch(e => {

@@ -12,7 +12,7 @@
     38.4,
     -121.93
   ],
-  "feedUrl": "http://data.trilliumtransit.com/gtfs/vacavillecitycoach-ca-us/vacavillecitycoach-ca-us.zip",
+  "feedUrl": "https://myride.citycoach.com/GTFS/google_transit.zip",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-city-coach-gtfs-599.zip?alt=media",
   "lastFeedExpiry": "20260630",
   "lastFeedVersion": "2.2.26",

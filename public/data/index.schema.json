@@ -32,6 +32,12 @@
           "maxItems": 4
         },
         "feedUrl": { "type": ["string", "null"] },
+        "feedFallbackUrls": {
+          "type": "array",
+          "items": { "type": "string", "format": "uri" }
+        },
+        "feedApiKeyEnvVar": { "type": "string" },
+        "feedApiKeyParam": { "type": "string" },
         "mdbFeedUrl": { "type": "string" },
         "supplementalFeedUrls": {
           "type": "array",
@@ -40,6 +46,8 @@
         "lastFeedExpiry": { "type": ["string", "null"] },
         "lastFeedVersion": { "type": ["string", "null"] },
         "lastRefreshedAt": { "type": ["string", "null"] },
+        "lastFeedSourceKind": { "type": ["string", "null"] },
+        "lastFeedSourceUrl": { "type": ["string", "null"], "format": "uri" },
         "preprocess": { "type": "string" },
         "excludeRouteShortNames": {
           "type": "array",

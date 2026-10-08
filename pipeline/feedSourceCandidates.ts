@@ -1,4 +1,4 @@
-export type FeedCandidateKind = 'configured' | 'mdb-latest';
+export type FeedCandidateKind = 'configured' | 'fallback' | 'mdb-latest';
 
 export interface FeedCandidate {
   kind: FeedCandidateKind;
@@ -14,7 +14,11 @@ export function mobilityDatabaseLatestUrl(url: string): string | null {
 }
 
 /** Return configured sources followed by safe, automatically-derived fallbacks. */
-export function buildFeedCandidates(feedUrl?: string | null, mdbFeedUrl?: string | null): FeedCandidate[] {
+export function buildFeedCandidates(
+  feedUrl?: string | null,
+  mdbFeedUrl?: string | null,
+  fallbackUrls: string[] = [],
+): FeedCandidate[] {
   const candidates: FeedCandidate[] = [];
   const add = (kind: FeedCandidateKind, url: string | null | undefined) => {
     if (!url || candidates.some(candidate => candidate.url === url)) return;
@@ -22,6 +26,7 @@ export function buildFeedCandidates(feedUrl?: string | null, mdbFeedUrl?: string
   };
 
   add('configured', feedUrl);
+  for (const url of fallbackUrls) add('fallback', url);
   add('configured', mdbFeedUrl);
   for (const url of [feedUrl, mdbFeedUrl]) {
     const latest = url ? mobilityDatabaseLatestUrl(url) : null;

@@ -55,14 +55,14 @@ This is the single canonical procedure for adding or updating an agency. [`AGENC
    ```bash
    npm run verify-pmtiles-coverage
    ```
-   This compares every agency slug in `index.json` against which slugs actually have route features in the deployed PMTiles and fails loudly on any gap. Run it after every `build-pmtiles` + `upload-pmtiles`, not just when adding a brand-new agency — it also catches an existing agency whose feed changed (new routes, new mode) without a rebuild.
+   PMTiles builds now require a successful `refresh` or real `process` handoff first, so stale agency artifacts cannot be repackaged accidentally. `--allow-stale-data` is reserved for an explicitly intentional repack. This compares every agency slug in `index.json` against which slugs actually have route features in the deployed PMTiles and fails loudly on any gap. Run it after every `build-pmtiles` + `upload-pmtiles`, not just when adding a brand-new agency — it also catches an existing agency whose feed changed (new routes, new mode) without a rebuild.
 8. Commit the agency source file (`config/agencies/<slug>.json`) and regenerated `public/data/index.json`. PMTiles upload is a separate live action (goes straight to R2, not part of git history) — see `docs/ARCHITECTURE.md` for the R2 bucket layout.
 
 **Mid-week data fix cache bust**: the browser caches agency GeoJSON in IndexedDB keyed by `${slug}-${weekVersion}`. If you re-process an *existing* agency mid-week (e.g. fixing a wrong feed), the IDB cache won't update automatically. Bump `CACHE_BUILD` in `shared/cacheBuild.ts` to invalidate old entries and force a fresh fetch from R2.
 
 ## Incremental PMTiles Build (single new, isolated agency)
 
-A full `npm run build-pmtiles` downloads every agency's GeoJSON and retippecanoes the entire archive — expensive, and unnecessary just to validate one small new agency (e.g. proof-of-concept international coverage). `pipeline/build-pmtiles-incremental.ts` (`npm run build-pmtiles-incremental -- <slug> [--dry-run]`) instead builds tippecanoe outputs for just that one agency's routes/stops/corridors and `tile-join`s them into the *already-deployed* `atlas.pmtiles`, without touching any other agency's tiles.
+A full `npm run build-pmtiles` downloads every agency's GeoJSON and retippecanoes the entire archive — expensive, and unnecessary just to validate one small new agency (e.g. proof-of-concept international coverage). `pipeline/build-pmtiles-incremental.ts` (`npm run build-pmtiles-incremental -- <slug> [--dry-run]`) instead builds tippecanoe outputs for just that one agency's routes/stops/corridors and `tile-join`s them into the *already-deployed* `atlas.pmtiles`, without touching any other agency's tiles. Live incremental builds use the same refresh handoff guard as full builds.
 
 **When this is safe**: a brand-new agency, not yet published, whose service area does not geographically overlap any existing Atlas agency.
 
