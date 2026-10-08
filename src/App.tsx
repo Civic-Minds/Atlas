@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router';
-import { Map as MapIcon, Search, X, Info, History as HistoryIcon, ChevronDown, FlaskConical } from 'lucide-react';
+import { Map as MapIcon, Search, X, Info, History as HistoryIcon, ChevronDown } from 'lucide-react';
 import { PILL_SURFACE, FLOATING_CARD, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_HEADER, Z_MODAL_TOP, SIDEBAR_LEFT_FALLBACK, APP_TAB_ACTIVE, APP_TAB_INACTIVE, ICON_BTN } from './styles';
 import { R2_PUBLIC_URL, getAgencyArtifactUrls, getAgencyCatalogUrl, FEATURES, FEATURE_ROUTES, ATLAS_MODE } from '../shared/config';
 import { isAgencyVisibleInBrowser } from '../shared/agencyVisibility';
@@ -363,7 +363,6 @@ export default function App() {
   const inLive = activeApp === 'live';
   const inFares = activeApp === 'fares';
   const inNight = activeApp === 'night';
-  const showResearchControl = FEATURES.researchApps && !inHistory;
   const loadedAgencySlugs = useMemo(
     () => new Set(Object.keys(layers).map(slug => slug.endsWith('-corridors') ? slug.slice(0, -10) : slug)),
     [layers],
@@ -619,23 +618,9 @@ export default function App() {
           </a>
         )}
 
-        {(showResearchControl || showLiveControl || showHistoryControl) && (
+        {(showLiveControl || showHistoryControl) && (
           <>
             <span className="w-px h-4 bg-[var(--border-primary)] shrink-0" aria-hidden="true" />
-
-            <div className="hidden xl:flex items-center gap-2">
-              {showResearchControl && (
-                <a
-                  href={inResearch ? '/' : FEATURE_ROUTES.research}
-                  aria-label={inResearch ? 'Back to frequency map' : 'Research'}
-                  aria-pressed={inResearch || inNight || inFrequentService}
-                  className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold border focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${inResearch || inNight || inFrequentService ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
-                >
-                  <FlaskConical className="w-3.5 h-3.5" />
-                  <span>Research</span>
-                </a>
-              )}
-            </div>
 
             <div ref={appLinksRef} className="relative flex xl:hidden">
               <button
@@ -671,12 +656,6 @@ export default function App() {
                       <HistoryIcon className="w-3.5 h-3.5" />
                       <span>History</span>
                       {historyExploreAgencyCount != null && <span className="font-normal text-[var(--text-dim)]">{historyExploreAgencyCount}+</span>}
-                    </a>
-                  )}
-                  {showResearchControl && (
-                    <a href={inResearch ? '/' : FEATURE_ROUTES.research} onClick={() => setAppLinksOpen(false)} aria-current={inResearch ? 'page' : undefined} className={`flex h-8 px-3 items-center gap-1.5 rounded-full text-xs font-bold border ${inResearch ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}>
-                      <FlaskConical className="w-3.5 h-3.5" />
-                      <span>Research</span>
                     </a>
                   )}
                 </div>
