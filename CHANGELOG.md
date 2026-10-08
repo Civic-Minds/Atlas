@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Fixed the About headline layout so its rotating word no longer shifts the surrounding text.
 - Added a compact shared menu to Atlas’s standalone pages so users can move between the map, research, and documentation without relying on a back link.
 - **The About headline now cycles through “understanding,” “exploring,” and “comparing,” giving the page a little movement while keeping its message clear.**
 - **About now explains why Atlas combines frequency, span, coverage, modes, and history**, connecting the individual views to the bigger picture of how a network works.
