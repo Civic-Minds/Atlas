@@ -8,6 +8,7 @@ import { getAgencyArtifactUrls, pmtilesMinZoomForHeadway } from '../shared/confi
 import { runWithConcurrency } from './utils.js';
 import { prepareAgencyRouteFeaturesForTiles } from './prepareAgencyRoutesForTiles.js';
 import { simplifyLine } from './geometry.js';
+import { assertRouteArtifactSchema, ROUTE_ARTIFACT_SCHEMA_VERSION } from '../shared/artifactSchema.js';
 
 console.log(`env: ${LOADED_ENV_FILE} (bucket=${process.env.R2_BUCKET_NAME ?? '?'})`);
 
@@ -121,6 +122,7 @@ async function main() {
         ? JSON.parse(fs.readFileSync(localPath, 'utf8')) as FeatureCollection
         : await fetchJson(url, 5);
       if (data && data.features) {
+        assertRouteArtifactSchema(data, `${slug}.json`);
         fs.writeFileSync(path.join(releaseAgencyDir, `${slug}.json`), JSON.stringify(data));
         allRoutes.push(...prepareAgencyRouteFeaturesForTiles(data.features, slug));
       } else if (!data) {
@@ -275,6 +277,7 @@ async function main() {
   const releaseManifest = {
     releaseId,
     generatedAt: new Date().toISOString(),
+    routeArtifactSchemaVersion: ROUTE_ARTIFACT_SCHEMA_VERSION,
     pmtilesKey: `${releasePrefix}/atlas.pmtiles`,
     overviewPmtilesKey: `${releasePrefix}/atlas-overview.pmtiles`,
     agencyPrefix,

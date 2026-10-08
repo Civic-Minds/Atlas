@@ -1,10 +1,12 @@
 import { BETA_R2_PUBLIC_URL, R2_PUBLIC_URL } from '../../shared/config';
+import { ROUTE_ARTIFACT_SCHEMA_VERSION } from '../../shared/artifactSchema';
 
 export interface DataRelease {
   releaseId: string;
   pmtilesKey: string;
   overviewPmtilesKey: string;
   agencyPrefix: string;
+  routeArtifactSchemaVersion: number;
   generatedAt?: string;
 }
 
@@ -28,7 +30,8 @@ export function resolveDataRelease(baseUrl = R2_PUBLIC_URL): Promise<DataRelease
     .then(async response => {
       if (!response.ok) return null;
       const value = await response.json() as Partial<DataRelease>;
-      if (!value.releaseId || !value.pmtilesKey || !value.overviewPmtilesKey || !value.agencyPrefix) return null;
+      if (!value.releaseId || !value.pmtilesKey || !value.overviewPmtilesKey || !value.agencyPrefix
+        || value.routeArtifactSchemaVersion !== ROUTE_ARTIFACT_SCHEMA_VERSION) return null;
       return value as DataRelease;
     })
     .catch(() => null);

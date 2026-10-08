@@ -3,6 +3,7 @@ import path from 'path';
 import './loadEnv.js';
 import { r2Put } from './r2.js';
 import { bumpPublicDataVersion } from './dataVersion.js';
+import { ROUTE_ARTIFACT_SCHEMA_VERSION } from '../shared/artifactSchema.js';
 
 const manifestPath = path.resolve('tmp/atlas-release-manifest.json');
 if (!fs.existsSync(manifestPath)) {
@@ -14,8 +15,9 @@ const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8')) as {
   pmtilesKey?: string;
   overviewPmtilesKey?: string;
   agencyPrefix?: string;
+  routeArtifactSchemaVersion?: number;
 };
-if (!manifest.releaseId || !manifest.pmtilesKey || !manifest.overviewPmtilesKey || !manifest.agencyPrefix) {
+if (!manifest.releaseId || !manifest.pmtilesKey || !manifest.overviewPmtilesKey || !manifest.agencyPrefix || manifest.routeArtifactSchemaVersion !== ROUTE_ARTIFACT_SCHEMA_VERSION) {
   throw new Error(`Invalid ${manifestPath}.`);
 }
 
