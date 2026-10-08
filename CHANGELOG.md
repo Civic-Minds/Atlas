@@ -14,6 +14,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **History now exposes current route-mode filters, and its header no longer offers unrelated Research navigation.**
 - **History route details now give the route title priority and use a compact agency back link.**
 - **History route names now match the normal route list, and agency summaries use shorter labels.**
+- **Large R2 archive jobs now reuse connections instead of creating a new client for every file, preventing History verification from exhausting sockets.**
 - **Export and Share now support Social (1200×630), Standard (1600×900), and High resolution (2400×1350) PNGs, with equal-weight actions and click-outside dismissal.**
 - **Night Service now uses the shared header for its 30-minute and 60-minute filters and search, keeping the panel from duplicating controls.**
 - **Night Service route cards now clear the bottom map controls instead of overlapping attribution and feedback controls.**
