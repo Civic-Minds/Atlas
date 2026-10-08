@@ -10,6 +10,7 @@ const base = buildDefaultRouteLineOpacityExpression(['get', 'headway']);
 function opacity(expression: unknown, properties: Record<string, unknown>, zoom = 10.3) {
   const compiled = createPropertyExpression(
     expression,
+    'layers[0].paint.line-opacity',
     latest.paint_line['line-opacity'] as StylePropertySpecification,
   );
   expect(compiled.result).toBe('success');
