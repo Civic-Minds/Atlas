@@ -44,9 +44,9 @@ following refresh candidates; none has been written to R2.
 
 | Agency | Replacement URL | Result |
 | --- | --- | --- |
-| `kcata` | `https://ridekc.org/static-gtfs` | Official current feed through 2027-01-02; 2,499 route features; review quality 80/100 because 2 routes have stop-frequency mismatches. |
+| `kcata` | `https://ridekc.org/static-gtfs` | Official current feed through 2027-01-02; 2,499 route features; review quality 80/100. Route QA found 2 stop-vs-route headway mismatches. |
 | `hudsonlink` | `https://s3.amazonaws.com/datatools-511ny/public/Hudson_Link.zip` | 511NY source through 2027-06-28; 59 route features; healthy quality. |
-| `islandtransit` | `https://passio3.com/islandtransit/passioTransit/gtfs/google_transit.zip` | Agency Passio source through 2026-11-06; 553 route features; review quality 70/100 because 7 route shapes needed correction. |
+| `islandtransit` | `https://passio3.com/islandtransit/passioTransit/gtfs/google_transit.zip` | Agency Passio source through 2026-11-06; 553 route features; review quality 70/100. Route QA found 7 shape corrections and 1 possible headsign duplicate. |
 | `loudoun-transit` | `https://www.loudoun.gov/loudountransitgtfs` | Official county feed through 2027-03-27; 632 route features; source quality passed, but route QA found a likely route 54 headsign typo (`Shenadoah` vs `Shenandoah`) requiring review. |
 | `setd` | `https://oregon-gtfs.trilliumtransit.com/gtfs_data/clatsopcounty-or-us/clatsopcounty-or-us.zip` | Oregon ODOT/Trillium feed through 2027-05-31; 71 route features; healthy quality. |
 | `trinitymetro` | `https://gtfsdata.ridetm.org/gtfs/fwtatransitdata.zip` | Official Trinity Metro feed through 2027-01-30; 1,752 route features; healthy quality. |
@@ -61,7 +61,7 @@ ends 2026-09-30, `broward-transit` ends 2026-09-26, and `longview` ends
 
 All eight listed candidates were processed with `--dry-run`; local route QA
 confirmed no anomalies for Hudson Link, SETD, Trinity Metro, or Whatcom. The
-Loudoun headsign warning remains open for review. No agency
+Loudoun, KCATA, and Island Transit warnings remain open for review. No agency
 configuration, production artifact, PMTiles file, or R2 object was changed.
 
 ## Previous read-only audit — 2026-09-26
