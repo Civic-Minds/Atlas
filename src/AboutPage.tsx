@@ -1,5 +1,5 @@
 import { ArrowRight } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import SiteHeader from './components/SiteHeader';
 import SiteFooter from './components/SiteFooter';
 
@@ -14,14 +14,7 @@ const lenses = [
 ];
 
 export default function AboutPage() {
-  const [headlineVerbIndex, setHeadlineVerbIndex] = useState(0);
-
-  useEffect(() => {
-    const interval = window.setInterval(() => {
-      setHeadlineVerbIndex(index => (index + 1) % headlineVerbs.length);
-    }, 2600);
-    return () => window.clearInterval(interval);
-  }, []);
+  const [headlineVerbIndex] = useState(() => Math.floor(Math.random() * headlineVerbs.length));
 
   return (
     <main className="min-h-screen overflow-y-auto bg-[var(--bg-app)] px-6 py-8 text-[var(--text-primary)] sm:px-10 lg:px-16">
