@@ -51,16 +51,6 @@ export default function AboutPage() {
           </div>
         </section>
 
-        <section className="grid gap-8 border-b border-[var(--border-primary)] py-12 sm:grid-cols-[1.25fr_0.75fr]" aria-labelledby="research-heading">
-          <div className="sm:order-1">
-            <p className="max-w-2xl text-base leading-7 text-[var(--text-muted)]">Read how agencies define frequent and overnight service, then explore the evidence and methods behind Atlas’s research views.</p>
-            <a href="/research" className="mt-4 inline-flex items-center gap-2 text-sm font-bold text-[var(--accent)] hover:underline">
-              Explore Research <ArrowRight className="h-4 w-4" />
-            </a>
-          </div>
-          <h2 id="research-heading" className="text-2xl font-black tracking-tight sm:order-2 sm:text-right">Research the patterns behind the map.</h2>
-        </section>
-
         <section className="grid max-w-4xl gap-8 py-20 sm:grid-cols-[0.75fr_1.25fr]">
           <h2 className="text-2xl font-black tracking-tight">Atlas makes scheduled service easier to understand.</h2>
           <div className="space-y-5 text-base leading-7 text-[var(--text-muted)]">
@@ -68,6 +58,22 @@ export default function AboutPage() {
             <p>It helps riders, planners, researchers, and advocates compare service across places and time. Atlas does not replace official trip planning, live alerts, or the agencies that publish the schedules.</p>
             <a href="/about/docs" className="inline-flex items-center gap-2 text-sm font-bold text-[var(--accent)] hover:underline">
               Read how Atlas works <ArrowRight className="h-4 w-4" />
+            </a>
+          </div>
+        </section>
+
+        <section className="border-y border-[var(--border-primary)] py-12" aria-labelledby="research-heading">
+          <h2 id="research-heading" className="text-2xl font-black tracking-tight">See our latest research.</h2>
+          <div className="mt-8 grid gap-4 sm:grid-cols-2">
+            <a href="/research/frequent-service/story" className="group border-l-2 border-[var(--accent-border)] pl-4">
+              <h3 className="text-lg font-black group-hover:text-[var(--accent)]">What happens when you miss the bus?</h3>
+              <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">A source-backed look at what frequent service means across transit networks.</p>
+              <span className="mt-4 inline-flex items-center gap-2 text-sm font-bold text-[var(--accent)]">Read the story <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" /></span>
+            </a>
+            <a href="/apps/night" className="group border-l-2 border-[var(--accent-border)] pl-4">
+              <h3 className="text-lg font-black group-hover:text-[var(--accent)]">What still runs overnight?</h3>
+              <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">Find routes with sustained scheduled service from 2am to 6am.</p>
+              <span className="mt-4 inline-flex items-center gap-2 text-sm font-bold text-[var(--accent)]">Explore Night Service <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" /></span>
             </a>
           </div>
         </section>

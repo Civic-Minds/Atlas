@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **About now highlights the latest Frequent Service and Night Service research**, giving the page useful destinations instead of a generic Research link.
+- **Moved the Research section below Atlas’s core explanation**, so the page introduces the map before sending readers into research.
 - **About now alternates its section alignment**, giving the page a more dynamic editorial rhythm without adding decorative clutter.
 - **Removed the remaining decorative icon from the About-page Research section**, keeping the page icon-free.
 - **About now gives Research its own section**, separating explanatory stories from the network views and data dimensions in the main grid.
