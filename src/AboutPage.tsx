@@ -11,9 +11,17 @@ export default function AboutPage() {
   return (
     <main className="min-h-screen overflow-y-auto bg-[var(--bg-app)] px-6 py-8 text-[var(--text-primary)] sm:px-10 lg:px-16">
       <div className="mx-auto max-w-5xl">
-        <a href="/" className="inline-flex items-center gap-2 text-sm font-bold text-[var(--text-muted)] hover:text-[var(--text-primary)]">
-          <ArrowLeft className="h-4 w-4" /> Back to the map
-        </a>
+        <header className="flex items-center justify-between gap-4">
+          <a href="/" className="flex items-center gap-3 text-sm font-black">
+            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--text-primary)] text-[var(--bg-app)]">
+              <Map className="h-4 w-4" />
+            </span>
+            <span>Atlas <span className="font-normal text-[var(--text-dim)]">by Civic Minds</span></span>
+          </a>
+          <a href="/" className="inline-flex items-center gap-2 text-sm font-bold text-[var(--text-muted)] hover:text-[var(--text-primary)]">
+            <ArrowLeft className="h-4 w-4" /> Back to the map
+          </a>
+        </header>
 
         <section className="max-w-3xl py-20 sm:py-28">
           <h1 className="max-w-2xl text-4xl font-black tracking-tight sm:text-6xl">See the service behind the map.</h1>
