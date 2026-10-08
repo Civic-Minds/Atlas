@@ -12,6 +12,11 @@ The follow-up source audit downloaded and checked the expired agencies'
 configured and fallback sources without changing feed configuration, writing
 refreshed data, or starting a pipeline action.
 
+The automated `audit-expired-sources` command checks only the configured and
+Mobility Database fallback URLs. It does not include the separately researched
+replacement URLs below, so its expired-agency count will not necessarily match
+this full source-recovery audit.
+
 - 47 remain genuinely expired with no verified current replacement
 - 5 need manual source review: `augusta`, `kcata`, `lavta`, `sfmta`, and
   `westberkeley`
@@ -42,7 +47,7 @@ following refresh candidates; none has been written to R2.
 | `kcata` | `https://ridekc.org/static-gtfs` | Official current feed through 2027-01-02; 2,499 route features; review quality 80/100 because 2 routes have stop-frequency mismatches. |
 | `hudsonlink` | `https://s3.amazonaws.com/datatools-511ny/public/Hudson_Link.zip` | 511NY source through 2027-06-28; 59 route features; healthy quality. |
 | `islandtransit` | `https://passio3.com/islandtransit/passioTransit/gtfs/google_transit.zip` | Agency Passio source through 2026-11-06; 553 route features; review quality 70/100 because 7 route shapes needed correction. |
-| `loudoun-transit` | `https://www.loudoun.gov/loudountransitgtfs` | Official county feed through 2027-03-27; 632 route features; healthy quality. |
+| `loudoun-transit` | `https://www.loudoun.gov/loudountransitgtfs` | Official county feed through 2027-03-27; 632 route features; source quality passed, but route QA found a likely route 54 headsign typo (`Shenadoah` vs `Shenandoah`) requiring review. |
 | `setd` | `https://oregon-gtfs.trilliumtransit.com/gtfs_data/clatsopcounty-or-us/clatsopcounty-or-us.zip` | Oregon ODOT/Trillium feed through 2027-05-31; 71 route features; healthy quality. |
 | `trinitymetro` | `https://gtfsdata.ridetm.org/gtfs/fwtatransitdata.zip` | Official Trinity Metro feed through 2027-01-30; 1,752 route features; healthy quality. |
 | `whatcomtransit` | `https://github.com/whatcomtrans/publicwtadata/raw/master/GTFS/wta_gtfs_latest.zip` | Agency repository feed through 2027-02-06; 1,049 route features; healthy quality. |
@@ -54,7 +59,9 @@ review, with 396 route features and 3 shape corrections. `annapolis` still
 ends 2026-09-30, `broward-transit` ends 2026-09-26, and `longview` ends
 2026-09-30; those are not replacements.
 
-All eight listed candidates were processed with `--dry-run`; no agency
+All eight listed candidates were processed with `--dry-run`; local route QA
+confirmed no anomalies for Hudson Link, SETD, Trinity Metro, or Whatcom. The
+Loudoun headsign warning remains open for review. No agency
 configuration, production artifact, PMTiles file, or R2 object was changed.
 
 ## Previous read-only audit — 2026-09-26
