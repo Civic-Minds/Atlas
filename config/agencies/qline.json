@@ -7,21 +7,36 @@
     -83.057
   ],
   "feedUrl": "https://s3.amazonaws.com/etatransit.gtfs/qline.etaspot.net/gtfs.zip",
-  "lastFeedExpiry": "20251231",
-  "lastFeedVersion": "UTC: 21-Apr-2025 21:29",
-  "lastRefreshedAt": "20260811",
+  "lastFeedExpiry": "20270122",
+  "lastFeedVersion": "8",
+  "lastRefreshedAt": "2026-10-08",
   "websiteUrl": "https://qlinedetroit.com/",
   "cities": [
     "Detroit, Michigan"
   ],
-  "timezone": "America/Detroit",
+  "timezone": "America/New_York",
   "lastRawArchiveKey": "20251231-8926b6d5769c203c",
-  "lastFeedCheckAt": "20261007",
-  "expiredFeedCheckCount": 4,
-  "expiredFeedCheckSince": "20260622",
-  "expiredFeedCheckExpiry": "20251231",
-  "feedRefreshStatus": "stale",
-  "feedRefreshError": "all available feeds expired (latest 20251231)",
-  "feedRefreshErrorAt": "20261007",
-  "feedRefreshRetryCount": 2
+  "lastFeedCheckAt": "20261008",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270122",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://s3.amazonaws.com/etatransit.gtfs/qline.etaspot.net/gtfs.zip",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 6
+    },
+    "checkedAt": "2026-10-08"
+  }
 }

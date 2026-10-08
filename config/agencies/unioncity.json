@@ -14,21 +14,36 @@
   ],
   "feedUrl": "https://unioncity.tripshot.com/v1/gtfs.zip?regionId=CA558DDC-D7F2-4B48-9CAC-DEEA1134F8206",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-union-city-transit-gtfs-628.zip?alt=media",
-  "lastFeedExpiry": "20230927",
-  "lastFeedVersion": "UTC: 14-Mar-2023 23:56",
-  "lastRefreshedAt": "20260811",
+  "lastFeedExpiry": "",
+  "lastFeedVersion": "",
+  "lastRefreshedAt": "2026-10-08",
   "websiteUrl": "http://www.uctransit.org",
   "cities": [
     "Union City, California"
   ],
   "timezone": "America/Los_Angeles",
   "lastRawArchiveKey": "20230927-651281e25dba5ea3",
-  "lastFeedCheckAt": "20261007",
-  "expiredFeedCheckCount": 4,
-  "expiredFeedCheckSince": "20260622",
-  "expiredFeedCheckExpiry": "20230927",
-  "feedRefreshStatus": "stale",
-  "feedRefreshError": "all available feeds expired (latest 20230927)",
-  "feedRefreshErrorAt": "20261007",
-  "feedRefreshRetryCount": 2
+  "lastFeedCheckAt": "20261008",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270816",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://unioncity.tripshot.com/v1/gtfs.zip?regionId=CA558DDC-D7F2-4B48-9CAC-DEEA1134F8206",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 34
+    },
+    "checkedAt": "2026-10-08"
+  }
 }

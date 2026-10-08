@@ -3021,23 +3021,38 @@
         -83.057
       ],
       "feedUrl": "https://s3.amazonaws.com/etatransit.gtfs/qline.etaspot.net/gtfs.zip",
-      "lastFeedExpiry": "20251231",
-      "lastFeedVersion": "UTC: 21-Apr-2025 21:29",
-      "lastRefreshedAt": "20260811",
+      "lastFeedExpiry": "20270122",
+      "lastFeedVersion": "8",
+      "lastRefreshedAt": "2026-10-08",
       "websiteUrl": "https://qlinedetroit.com/",
       "cities": [
         "Detroit, Michigan"
       ],
-      "timezone": "America/Detroit",
+      "timezone": "America/New_York",
       "lastRawArchiveKey": "20251231-8926b6d5769c203c",
-      "lastFeedCheckAt": "20261007",
-      "expiredFeedCheckCount": 4,
-      "expiredFeedCheckSince": "20260622",
-      "expiredFeedCheckExpiry": "20251231",
-      "feedRefreshStatus": "stale",
-      "feedRefreshError": "all available feeds expired (latest 20251231)",
-      "feedRefreshErrorAt": "20261007",
-      "feedRefreshRetryCount": 2
+      "lastFeedCheckAt": "20261008",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20270122",
+      "feedRefreshStatus": "current",
+      "feedRefreshError": null,
+      "feedRefreshErrorAt": null,
+      "feedRefreshRetryCount": 0,
+      "lastFeedSourceKind": "configured",
+      "lastFeedSourceUrl": "https://s3.amazonaws.com/etatransit.gtfs/qline.etaspot.net/gtfs.zip",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 6
+        },
+        "checkedAt": "2026-10-08"
+      }
     },
     {
       "slug": "smart",
@@ -4801,7 +4816,9 @@
           "featureCount": 171
         },
         "checkedAt": "2026-10-08"
-      }
+      },
+      "lastFeedSourceKind": "configured",
+      "lastFeedSourceUrl": "https://github.com/whatcomtrans/publicwtadata/raw/master/GTFS/wta_gtfs_latest.zip"
     },
     {
       "slug": "islandtransit",
@@ -4827,15 +4844,17 @@
         "Everett, Washington",
         "Bellingham, Washington"
       ],
-      "lastFeedCheckAt": "20261007",
-      "expiredFeedCheckCount": 2,
+      "lastFeedCheckAt": "20261008",
+      "expiredFeedCheckCount": 3,
       "expiredFeedCheckSince": "20260622",
       "expiredFeedCheckExpiry": "20261001",
       "timezone": "America/Los_Angeles",
       "feedRefreshStatus": "stale",
       "feedRefreshError": "all available feeds expired (latest 20261001)",
-      "feedRefreshErrorAt": "20261007",
-      "feedRefreshRetryCount": 2
+      "feedRefreshErrorAt": "20261008",
+      "feedRefreshRetryCount": 3,
+      "lastFeedSourceKind": "configured",
+      "lastFeedSourceUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-washington-island-transit-gtfs-280.zip?alt=media"
     },
     {
       "slug": "jeffersontransit",
@@ -5120,7 +5139,9 @@
           "featureCount": 30
         },
         "checkedAt": "2026-10-08"
-      }
+      },
+      "lastFeedSourceKind": "configured",
+      "lastFeedSourceUrl": "https://s3.amazonaws.com/datatools-511ny/public/Hudson_Link.zip"
     },
     {
       "slug": "wsf",
@@ -5856,7 +5877,9 @@
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
-      "feedRefreshRetryCount": 0
+      "feedRefreshRetryCount": 0,
+      "lastFeedSourceKind": "configured",
+      "lastFeedSourceUrl": "https://oregon-gtfs.trilliumtransit.com/gtfs_data/clatsopcounty-or-us/clatsopcounty-or-us.zip"
     },
     {
       "slug": "sfmta",
@@ -6623,9 +6646,9 @@
       "feedUrl": "https://api.511.org/transit/datafeeds?operator_id=WH",
       "feedApiKeyEnvVar": "MUNI_511_API_KEY",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-livermore-amador-valley-transit-authority-gtfs-64.zip?alt=media",
-      "lastFeedExpiry": "20260430",
-      "lastFeedVersion": "January_26_01_20260327",
-      "lastRefreshedAt": "20260811",
+      "lastFeedExpiry": "20270129",
+      "lastFeedVersion": "20260922",
+      "lastRefreshedAt": "2026-10-08",
       "websiteUrl": "https://wheelsbus.com/",
       "cities": [
         "Livermore, California",
@@ -6634,14 +6657,29 @@
       ],
       "timezone": "America/Los_Angeles",
       "lastRawArchiveKey": "20260430-d4b24aea487f70da",
-      "lastFeedCheckAt": "20261007",
-      "expiredFeedCheckCount": 4,
-      "expiredFeedCheckSince": "20260622",
-      "expiredFeedCheckExpiry": "20260430",
-      "feedRefreshStatus": "stale",
-      "feedRefreshError": "all available feeds expired (latest 20260430)",
-      "feedRefreshErrorAt": "20261007",
-      "feedRefreshRetryCount": 2
+      "lastFeedCheckAt": "20261008",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20270129",
+      "feedRefreshStatus": "current",
+      "feedRefreshError": null,
+      "feedRefreshErrorAt": null,
+      "feedRefreshRetryCount": 0,
+      "lastFeedSourceKind": "configured",
+      "lastFeedSourceUrl": "https://api.511.org/transit/datafeeds?operator_id=WH",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 51
+        },
+        "checkedAt": "2026-10-08"
+      }
     },
     {
       "slug": "unioncity",
@@ -6659,23 +6697,38 @@
       ],
       "feedUrl": "https://unioncity.tripshot.com/v1/gtfs.zip?regionId=CA558DDC-D7F2-4B48-9CAC-DEEA1134F8206",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-union-city-transit-gtfs-628.zip?alt=media",
-      "lastFeedExpiry": "20230927",
-      "lastFeedVersion": "UTC: 14-Mar-2023 23:56",
-      "lastRefreshedAt": "20260811",
+      "lastFeedExpiry": "",
+      "lastFeedVersion": "",
+      "lastRefreshedAt": "2026-10-08",
       "websiteUrl": "http://www.uctransit.org",
       "cities": [
         "Union City, California"
       ],
       "timezone": "America/Los_Angeles",
       "lastRawArchiveKey": "20230927-651281e25dba5ea3",
-      "lastFeedCheckAt": "20261007",
-      "expiredFeedCheckCount": 4,
-      "expiredFeedCheckSince": "20260622",
-      "expiredFeedCheckExpiry": "20230927",
-      "feedRefreshStatus": "stale",
-      "feedRefreshError": "all available feeds expired (latest 20230927)",
-      "feedRefreshErrorAt": "20261007",
-      "feedRefreshRetryCount": 2
+      "lastFeedCheckAt": "20261008",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20270816",
+      "feedRefreshStatus": "current",
+      "feedRefreshError": null,
+      "feedRefreshErrorAt": null,
+      "feedRefreshRetryCount": 0,
+      "lastFeedSourceKind": "configured",
+      "lastFeedSourceUrl": "https://unioncity.tripshot.com/v1/gtfs.zip?regionId=CA558DDC-D7F2-4B48-9CAC-DEEA1134F8206",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 34
+        },
+        "checkedAt": "2026-10-08"
+      }
     },
     {
       "slug": "westberkeley",
@@ -6819,23 +6872,38 @@
       ],
       "feedUrl": "https://myride.citycoach.com/GTFS/google_transit.zip",
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-city-coach-gtfs-599.zip?alt=media",
-      "lastFeedExpiry": "20260630",
-      "lastFeedVersion": "2.2.26",
-      "lastRefreshedAt": "20260811",
+      "lastFeedExpiry": "20261231",
+      "lastFeedVersion": "6.18.26",
+      "lastRefreshedAt": "2026-10-08",
       "websiteUrl": "https://citycoach.com/",
       "cities": [
         "Vacaville, California"
       ],
       "timezone": "America/Los_Angeles",
       "lastRawArchiveKey": "20260630-9771867b4141da3d",
-      "lastFeedCheckAt": "20261007",
-      "expiredFeedCheckCount": 4,
-      "expiredFeedCheckSince": "20260622",
-      "expiredFeedCheckExpiry": "20260630",
-      "feedRefreshStatus": "stale",
-      "feedRefreshError": "all available feeds expired (latest 20260630)",
-      "feedRefreshErrorAt": "20261007",
-      "feedRefreshRetryCount": 2
+      "lastFeedCheckAt": "20261008",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20261231",
+      "feedRefreshStatus": "current",
+      "feedRefreshError": null,
+      "feedRefreshErrorAt": null,
+      "feedRefreshRetryCount": 0,
+      "lastFeedSourceKind": "configured",
+      "lastFeedSourceUrl": "https://myride.citycoach.com/GTFS/google_transit.zip",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 17
+        },
+        "checkedAt": "2026-10-08"
+      }
     },
     {
       "slug": "riovista",
@@ -9013,7 +9081,9 @@
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
-      "feedRefreshRetryCount": 0
+      "feedRefreshRetryCount": 0,
+      "lastFeedSourceKind": "configured",
+      "lastFeedSourceUrl": "https://gtfsdata.ridetm.org/gtfs/fwtatransitdata.zip"
     },
     {
       "slug": "metrohouston",
@@ -9136,24 +9206,39 @@
         -92.3139
       ],
       "feedUrl": "https://gtfs.rrmetro.cadavl.com/RRMETRO/GTFS/GTFS_RRMETRO.zip",
-      "lastFeedExpiry": "20251019",
+      "lastFeedExpiry": "20261231",
       "lastFeedVersion": null,
       "region": "Arkansas",
-      "lastRefreshedAt": "20260811",
+      "lastRefreshedAt": "2026-10-08",
       "cities": [
         "Little Rock, Arkansas",
         "North Little Rock, Arkansas"
       ],
       "timezone": "America/Chicago",
       "lastRawArchiveKey": "20251019-9254f70ee7df65fe",
-      "lastFeedCheckAt": "20261007",
-      "expiredFeedCheckCount": 4,
-      "expiredFeedCheckSince": "20260622",
-      "expiredFeedCheckExpiry": "20251019",
-      "feedRefreshStatus": "stale",
-      "feedRefreshError": "all available feeds expired (latest 20251019)",
-      "feedRefreshErrorAt": "20261007",
-      "feedRefreshRetryCount": 2
+      "lastFeedCheckAt": "20261008",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20261231",
+      "feedRefreshStatus": "current",
+      "feedRefreshError": null,
+      "feedRefreshErrorAt": null,
+      "feedRefreshRetryCount": 0,
+      "lastFeedSourceKind": "configured",
+      "lastFeedSourceUrl": "https://gtfs.rrmetro.cadavl.com/RRMETRO/GTFS/GTFS_RRMETRO.zip",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 92
+        },
+        "checkedAt": "2026-10-08"
+      }
     },
     {
       "slug": "nashvillemta",
@@ -10183,10 +10268,10 @@
         -80.1373
       ],
       "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11865/CFL_FL_GTFS.zip",
-      "lastFeedExpiry": "20260926",
-      "lastFeedVersion": "S20260621_E20260926_TS20260626144559",
+      "lastFeedExpiry": "20280930",
+      "lastFeedVersion": "20251211",
       "region": "Florida",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-10-08",
       "cities": [
         "Pompano Beach, Florida",
         "Hollywood, Florida",
@@ -10199,15 +10284,30 @@
         "Coconut Creek, Florida",
         "Miramar, Florida"
       ],
-      "lastFeedCheckAt": "20261007",
-      "expiredFeedCheckCount": 2,
-      "expiredFeedCheckSince": "20260622",
-      "expiredFeedCheckExpiry": "20260926",
+      "lastFeedCheckAt": "20261008",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20280930",
       "timezone": "America/New_York",
-      "feedRefreshStatus": "stale",
-      "feedRefreshError": "all available feeds expired (latest 20260926)",
-      "feedRefreshErrorAt": "20261007",
-      "feedRefreshRetryCount": 2
+      "feedRefreshStatus": "current",
+      "feedRefreshError": null,
+      "feedRefreshErrorAt": null,
+      "feedRefreshRetryCount": 0,
+      "lastFeedSourceKind": "configured",
+      "lastFeedSourceUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11865/CFL_FL_GTFS.zip",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 9
+        },
+        "checkedAt": "2026-10-08"
+      }
     },
     {
       "slug": "transfort",
@@ -13486,7 +13586,9 @@
           "featureCount": 123
         },
         "checkedAt": "2026-10-08"
-      }
+      },
+      "lastFeedSourceKind": "configured",
+      "lastFeedSourceUrl": "https://www.loudoun.gov/loudountransitgtfs"
     },
     {
       "slug": "cue-bus",
@@ -13871,23 +13973,38 @@
       ],
       "feedUrl": "https://catchacat.org/wp-content/uploads/CAT_S70_GTFSExport_2026-08-27.zip",
       "region": "Georgia",
-      "lastFeedExpiry": "20250727",
-      "lastFeedVersion": "S1000046",
-      "lastRefreshedAt": "20260811",
+      "lastFeedExpiry": "20261122",
+      "lastFeedVersion": "S1000070",
+      "lastRefreshedAt": "2026-10-08",
       "websiteUrl": "http://www.catchacat.org",
       "cities": [
         "Savannah, Georgia"
       ],
       "timezone": "America/New_York",
       "lastRawArchiveKey": "20250727-6723aa5560da6d1c",
-      "lastFeedCheckAt": "20261007",
-      "expiredFeedCheckCount": 4,
-      "expiredFeedCheckSince": "20260622",
-      "expiredFeedCheckExpiry": "20250727",
-      "feedRefreshStatus": "stale",
-      "feedRefreshError": "all available feeds expired (latest 20250727)",
-      "feedRefreshErrorAt": "20261007",
-      "feedRefreshRetryCount": 2
+      "lastFeedCheckAt": "20261008",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20261122",
+      "feedRefreshStatus": "current",
+      "feedRefreshError": null,
+      "feedRefreshErrorAt": null,
+      "feedRefreshRetryCount": 0,
+      "lastFeedSourceKind": "configured",
+      "lastFeedSourceUrl": "https://catchacat.org/wp-content/uploads/CAT_S70_GTFSExport_2026-08-27.zip",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 92
+        },
+        "checkedAt": "2026-10-08"
+      }
     },
     {
       "slug": "tulsa-transit",
@@ -15439,23 +15556,38 @@
       ],
       "feedUrl": "https://www.greenbaywi.gov/DocumentCenter/View/12124/Transit-Data-March-2026",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-917/mdb-917-202406071503/mdb-917-202406071503.zip",
-      "lastFeedExpiry": "20201231",
-      "lastFeedVersion": "",
-      "lastRefreshedAt": "20260811",
+      "lastFeedExpiry": "20270404",
+      "lastFeedVersion": null,
+      "lastRefreshedAt": "2026-10-08",
       "websiteUrl": "https://greenbaywi.gov/231/Metro-Transit",
       "cities": [
         "Green Bay, Wisconsin"
       ],
-      "timezone": "US/Central",
+      "timezone": "America/Chicago",
       "lastRawArchiveKey": "20201231-a3bd5150fb0630b1",
-      "lastFeedCheckAt": "20261007",
-      "expiredFeedCheckCount": 4,
-      "expiredFeedCheckSince": "20260622",
-      "expiredFeedCheckExpiry": "20201231",
-      "feedRefreshStatus": "stale",
-      "feedRefreshError": "all available feeds expired (latest 20201231)",
-      "feedRefreshErrorAt": "20261007",
-      "feedRefreshRetryCount": 2
+      "lastFeedCheckAt": "20261008",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20270404",
+      "feedRefreshStatus": "current",
+      "feedRefreshError": null,
+      "feedRefreshErrorAt": null,
+      "feedRefreshRetryCount": 0,
+      "lastFeedSourceKind": "configured",
+      "lastFeedSourceUrl": "https://www.greenbaywi.gov/DocumentCenter/View/12124/Transit-Data-March-2026",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 45
+        },
+        "checkedAt": "2026-10-08"
+      }
     },
     {
       "slug": "cota",
@@ -18597,9 +18729,9 @@
         -84.1616
       ],
       "feedUrl": "https://gtfs.remix.com/ats_albany_ga_us.zip",
-      "lastFeedExpiry": "20240630",
-      "lastFeedVersion": null,
-      "lastRefreshedAt": "20260811",
+      "lastFeedExpiry": "20261231",
+      "lastFeedVersion": "Updated: Sep 18, 2026, 5:21 PM",
+      "lastRefreshedAt": "2026-10-08",
       "region": "Georgia",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2146/latest.zip",
       "bbox": [
@@ -18613,14 +18745,29 @@
       ],
       "timezone": "America/New_York",
       "lastRawArchiveKey": "20240630-cc0eb0e68ef49960",
-      "lastFeedCheckAt": "20261007",
-      "expiredFeedCheckCount": 4,
-      "expiredFeedCheckSince": "20260622",
-      "expiredFeedCheckExpiry": "20240630",
-      "feedRefreshStatus": "stale",
-      "feedRefreshError": "all available feeds expired (latest 20240630)",
-      "feedRefreshErrorAt": "20261007",
-      "feedRefreshRetryCount": 2
+      "lastFeedCheckAt": "20261008",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20261231",
+      "feedRefreshStatus": "current",
+      "feedRefreshError": null,
+      "feedRefreshErrorAt": null,
+      "feedRefreshRetryCount": 0,
+      "lastFeedSourceKind": "configured",
+      "lastFeedSourceUrl": "https://gtfs.remix.com/ats_albany_ga_us.zip",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 4
+        },
+        "checkedAt": "2026-10-08"
+      }
     },
     {
       "slug": "wilmington-nc",

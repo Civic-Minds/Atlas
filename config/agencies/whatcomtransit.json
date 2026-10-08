@@ -43,5 +43,7 @@
       "featureCount": 171
     },
     "checkedAt": "2026-10-08"
-  }
+  },
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://github.com/whatcomtrans/publicwtadata/raw/master/GTFS/wta_gtfs_latest.zip"
 }

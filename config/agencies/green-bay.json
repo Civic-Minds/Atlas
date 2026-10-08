@@ -8,21 +8,36 @@
   ],
   "feedUrl": "https://www.greenbaywi.gov/DocumentCenter/View/12124/Transit-Data-March-2026",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-917/mdb-917-202406071503/mdb-917-202406071503.zip",
-  "lastFeedExpiry": "20201231",
-  "lastFeedVersion": "",
-  "lastRefreshedAt": "20260811",
+  "lastFeedExpiry": "20270404",
+  "lastFeedVersion": null,
+  "lastRefreshedAt": "2026-10-08",
   "websiteUrl": "https://greenbaywi.gov/231/Metro-Transit",
   "cities": [
     "Green Bay, Wisconsin"
   ],
-  "timezone": "US/Central",
+  "timezone": "America/Chicago",
   "lastRawArchiveKey": "20201231-a3bd5150fb0630b1",
-  "lastFeedCheckAt": "20261007",
-  "expiredFeedCheckCount": 4,
-  "expiredFeedCheckSince": "20260622",
-  "expiredFeedCheckExpiry": "20201231",
-  "feedRefreshStatus": "stale",
-  "feedRefreshError": "all available feeds expired (latest 20201231)",
-  "feedRefreshErrorAt": "20261007",
-  "feedRefreshRetryCount": 2
+  "lastFeedCheckAt": "20261008",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270404",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://www.greenbaywi.gov/DocumentCenter/View/12124/Transit-Data-March-2026",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 45
+    },
+    "checkedAt": "2026-10-08"
+  }
 }

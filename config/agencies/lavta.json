@@ -15,9 +15,9 @@
   "feedUrl": "https://api.511.org/transit/datafeeds?operator_id=WH",
   "feedApiKeyEnvVar": "MUNI_511_API_KEY",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-livermore-amador-valley-transit-authority-gtfs-64.zip?alt=media",
-  "lastFeedExpiry": "20260430",
-  "lastFeedVersion": "January_26_01_20260327",
-  "lastRefreshedAt": "20260811",
+  "lastFeedExpiry": "20270129",
+  "lastFeedVersion": "20260922",
+  "lastRefreshedAt": "2026-10-08",
   "websiteUrl": "https://wheelsbus.com/",
   "cities": [
     "Livermore, California",
@@ -26,12 +26,27 @@
   ],
   "timezone": "America/Los_Angeles",
   "lastRawArchiveKey": "20260430-d4b24aea487f70da",
-  "lastFeedCheckAt": "20261007",
-  "expiredFeedCheckCount": 4,
-  "expiredFeedCheckSince": "20260622",
-  "expiredFeedCheckExpiry": "20260430",
-  "feedRefreshStatus": "stale",
-  "feedRefreshError": "all available feeds expired (latest 20260430)",
-  "feedRefreshErrorAt": "20261007",
-  "feedRefreshRetryCount": 2
+  "lastFeedCheckAt": "20261008",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270129",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://api.511.org/transit/datafeeds?operator_id=WH",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 51
+    },
+    "checkedAt": "2026-10-08"
+  }
 }
