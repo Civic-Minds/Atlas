@@ -20,7 +20,7 @@ export function selectedRouteFilterNotice(options: {
 
 export function periodServiceNotice(periodRange: string, partial: boolean, activeRange?: string): string {
   return partial
-    ? `Limited service during the selected ${periodRange} period; service runs only from ${activeRange || periodRange}.`
+    ? `Limited service during the selected ${activeRange || periodRange} period.`
     : `No scheduled service during the selected ${periodRange} period.`;
 }
 
