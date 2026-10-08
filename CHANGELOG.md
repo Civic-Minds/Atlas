@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **Removed the redundant About-page “Back to the map” link**, since the Atlas header already returns to the map.
 - **Standalone Atlas pages now retain the Atlas identity in their header**, so About does not feel disconnected from the main app.
 - **About page actions now use a consistent light outline style**, so one button does not overpower the rest of the page.
 - **The About page now uses a simpler, more focused layout**, so Atlas’s purpose and next steps are clear without a competing prompt panel.
