@@ -30,8 +30,9 @@ Read by: `pipeline/refresh.ts` only (reads `history/{slug}/latest.json` to detec
 ### atlas-live (private)
 
 Private storage reserved for real-time GTFS-RT snapshots. The archive is currently
-paused and no new snapshots are being written. The existing objects are retained,
-but the hosted snapshot/replay API is not present in the current checkout.
+paused and no new snapshots are being written. Existing objects are retained until
+the bucket’s 30-day lifecycle removes them. Snapshot/replay for Live UI needs a
+restored provider contract before Live can be re-enabled.
 
 - `positions/{slug}/{YYYY-MM-DD}/{unix-seconds}.json` — vehicle-position samples for the five archive agencies, every minute
 - `{slug}/{YYYY-MM-DD}/{unix-seconds}.json` — trip-update delay summaries for the five archive agencies, every 5 minutes
@@ -49,8 +50,9 @@ are not currently in this checkout.
 ### 1. Live UI and feed configuration (currently gated off)
 
 The Live Vehicles UI and agency feed configuration remain in the repository, but the
-feature is disabled unless `VITE_LIVE_ENABLED=true`. The former `/api/live-vehicles`
-polling route and related live endpoints are not present in the current checkout.
+feature is disabled unless `VITE_LIVE_ENABLED=true`. `api/live-vehicles.ts` still
+exists for local/`vercel` API development; production `vercel.json` does not currently
+rewrite a public Live route (only `history-adherence` and `privacy-region` are wired).
 Route configuration and feed credentials remain in `shared/livePollingConfig.ts`.
 
 ### 2. Background Worker archiver (paused)
@@ -92,7 +94,12 @@ Triggered by: GitHub Actions weekly cron (Monday), or `npm run refresh`
 Local: `npm run dev:api` (custom tsx server; not full parity with every Node-style handler).
 Production-like: `vercel dev` if preferred.
 
+Production rewrites (`vercel.json`):
 - `/api/history-adherence` — aggregates trip-delay archives from `atlas-live` into hourly buckets
+- `/api/privacy-region` — privacy region helper
+
+Also present in `api/` for local/`vercel` API development (not all are production-rewritten):
+- `live-vehicles`, `atlas-pmtiles`, `carto-tiles`, `geo`, `version`, plus shared helpers
 
 
 ## Environment Variables

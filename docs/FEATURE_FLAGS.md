@@ -6,10 +6,10 @@ Atlas gates immature features (thin agency coverage, no scaling plan, or genuine
 
 | Flag | Controls | Production | Beta deployment | Why gated |
 |---|---|---|---|---|
-| `LIVE_ENABLED` | Live pill, `/apps/live`, `LiveVehicles.tsx` | off | off | Live vehicle coverage is paused everywhere until the data pipeline and scope are ready. |
+| `LIVE_ENABLED` | Live pill, `/apps/live`, `LiveVehicles.tsx` | off | off | Live vehicle coverage is paused everywhere until the data pipeline and scope are ready. GTFS-RT Worker cron triggers are off; existing `atlas-live` objects age out under the bucket’s 30-day lifecycle — resuming Live requires restoring archiving first, not only flipping this flag. |
 | `HISTORY_ENABLED` | History control, Agency-list History filter and coverage pills, `/apps/history`, `History.tsx` | off | on | Covers a handful of cities out of the current public catalog. Same reason. |
 | `CARD_CLICK_TO_FLAG_ENABLED` | Click-to-flag affordance on card values (`FlaggableValue` in `cardUi.tsx`) | off | on | New, unproven interaction — no route/component split like the others, just a UI behavior to validate before it's in front of everyone. |
-| `CORRIDORS_ENABLED` | `/apps/corridors`, `Corridors.tsx` | off | off | Not good enough as a feature yet (Ryan, 2026-07-28). Its panel is also broken by a CSS bug independent of this flag. |
+| `CORRIDORS_ENABLED` | `/apps/corridors`, `Corridors.tsx` | off | off | Not good enough as a feature yet (Ryan, 2026-07-28). The panel is intentionally invisible in layout (not a CSS accident) — do not “fix” positioning until the feature is ready to ship. |
 | `UNEVEN_BANNER_ENABLED` | "Service is uneven" route-card banner, `RouteCardHeadway.tsx` | off | on | The excess/ratio threshold deciding when a period's worst gap is worth surfacing (#345) needs more real-feed tuning than a single main push should carry. |
 | `ATLAS_MODE=preview` | Preview title and research-app visibility | off | not configured for the stable domains | Stable Preview currently uses the Beta project's production deployment; there is no separate Preview project or verified `preview` mode. |
 
