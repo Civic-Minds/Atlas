@@ -2,14 +2,6 @@ import { ArrowRight } from 'lucide-react';
 import SiteHeader from './components/SiteHeader';
 import SiteFooter from './components/SiteFooter';
 
-const lenses = [
-  { number: '01', label: 'Frequency', text: 'How often service comes.' },
-  { number: '02', label: 'Service span', text: 'When useful service starts and ends.' },
-  { number: '03', label: 'Coverage', text: 'Where the network actually reaches.' },
-  { number: '04', label: 'Modes', text: 'How bus, rail, ferry, and other services differ.' },
-  { number: '05', label: 'History', text: 'How scheduled service changes over time.' },
-];
-
 export default function AboutPage() {
   return (
     <main className="min-h-screen overflow-y-auto bg-[var(--bg-app)] px-6 py-8 text-[var(--text-primary)] sm:px-10 lg:px-16">
@@ -34,18 +26,20 @@ export default function AboutPage() {
           </div>
         </section>
 
-        <section className="grid gap-10 border-b border-[var(--border-primary)] py-16 sm:py-20 lg:grid-cols-[0.75fr_1.25fr] lg:gap-20" aria-labelledby="lenses-heading">
-          <h2 id="lenses-heading" className="max-w-xs text-2xl font-black tracking-tight">Look at a network from more than one angle.</h2>
-          <div>
-            <p className="max-w-xl text-base leading-7 text-[var(--text-muted)]">Together, these views show how a network works: where service goes, when it runs, how often it comes, and how it changes.</p>
-            <div className="mt-8 divide-y divide-[var(--border-primary)] border-y border-[var(--border-primary)]">
-              {lenses.map(({ number, label, text }) => (
-                <div key={label} className="grid grid-cols-[2.5rem_1fr] gap-4 py-4 sm:grid-cols-[3rem_10rem_1fr] sm:items-center">
-                  <span className="text-xs font-black tabular-nums text-[var(--accent)]">{number}</span>
-                  <h3 className="text-base font-black">{label}</h3>
-                  <p className="col-start-2 text-sm leading-6 text-[var(--text-muted)] sm:col-start-3">{text}</p>
-                </div>
-              ))}
+        <section className="border-b border-[var(--border-primary)] py-16 sm:py-20" aria-labelledby="questions-heading">
+          <h2 id="questions-heading" className="max-w-2xl text-3xl font-black tracking-tight sm:text-4xl">Where does service go, when does it run, and how often does it come?</h2>
+          <div className="mt-10 grid gap-8 sm:grid-cols-3">
+            <div className="border-t-2 border-[var(--accent-border)] pt-4">
+              <h3 className="text-base font-black">Where</h3>
+              <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">See the routes and places connected by a network.</p>
+            </div>
+            <div className="border-t-2 border-[var(--accent-border)] pt-4">
+              <h3 className="text-base font-black">When</h3>
+              <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">See what still runs in the morning, evening, or overnight.</p>
+            </div>
+            <div className="border-t-2 border-[var(--accent-border)] pt-4">
+              <h3 className="text-base font-black">How often</h3>
+              <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">Compare scheduled frequency without opening a timetable.</p>
             </div>
           </div>
         </section>
