@@ -188,7 +188,6 @@ export default function App() {
   // Search scans / map filters / prefetch run from this so keystrokes can
   // paint first. See useDebouncedValue for why this isn't useDeferredValue.
   const deferredQuery = useDebouncedValue(query);
-  const [stats, setStats] = useState<{ total: number; matching: number; limitedService: number } | null>(null);
   const [resetViewKey, setResetViewKey] = useState(0);
   const [infoOpen, setInfoOpen] = useState(false);
   const [appLinksOpen, setAppLinksOpen] = useState(false);
@@ -519,7 +518,7 @@ export default function App() {
     <CorridorMapOverlayProvider>
     <HistoryMapOverlayProvider>
     <LiveVehiclesMapOverlayProvider>
-    <div className={`relative h-screen w-screen bg-[var(--bg-app)] text-[var(--text-primary)] font-sans overflow-hidden transition-colors ${TRANSITION_BASE}`}>
+    <div className={`relative h-dvh w-screen bg-[var(--bg-app)] text-[var(--text-primary)] font-sans overflow-hidden transition-colors ${TRANSITION_BASE}`}>
       {/* Unified header row — left and right sections share one flex container so they can never overlap */}
       <div className={`absolute ${inFrequentServiceStory ? 'top-0 left-0 right-0 bg-[var(--bg-app)] px-6 py-6' : 'top-6 left-6 right-6'} ${infoOpen ? Z_MODAL_TOP : Z_HEADER} flex items-center justify-between pointer-events-none`}>
       <div ref={headerLeftRef} className="flex items-center gap-2 pointer-events-auto flex-1 max-w-[calc(100%-3rem)] sm:max-w-none mr-2 sm:mr-0">
@@ -721,7 +720,6 @@ export default function App() {
               setLightMode={setLightMode}
               query={deferredQuery}
               setQuery={setQuery}
-              onStatsChange={setStats}
               resetViewKey={resetViewKey}
               showUi={inFrequency || inFrequentService}
               showSelectionUi={inLive || inNight}

@@ -186,29 +186,35 @@ export default function Corridors({
     // toggling in and out doesn't re-fetch.
     if (!active || stopsReady) return;
 
-    const eligible = agencies.filter(a => a.slug);
+    const eligible = agencies.filter(a => Boolean(a.slug && a.stopsUrl));
     if (eligible.length === 0) { setStopsReady(true); return; }
 
     let cancelled = false;
 
     (async () => {
-      const stopResults = await Promise.allSettled(
-        eligible.map(async a => {
-          const stops = await fetch(a.stopsUrl!).then(r => {
-            if (!r.ok) throw new Error(`${a.slug} stops ${r.status}`);
-            return r.json();
-          });
-          return { slug: a.slug, stops };
-        }),
-      );
+      const concurrency = 6;
+      const indexes: typeof stopsIndexes = {};
+      const queue = [...eligible];
+
+      async function worker() {
+        while (queue.length > 0 && !cancelled) {
+          const a = queue.shift()!;
+          try {
+            const stops = await fetch(a.stopsUrl!).then(r => {
+              if (!r.ok) throw new Error(`${a.slug} stops ${r.status}`);
+              return r.json();
+            });
+            if (!cancelled) indexes[a.slug] = stops;
+          } catch (err) {
+            console.warn('Corridors: stops load failed', err);
+          }
+        }
+      }
+
+      await Promise.all(Array.from({ length: Math.min(concurrency, eligible.length) }, () => worker()));
 
       if (cancelled) return;
 
-      const indexes: typeof stopsIndexes = {};
-      for (const r of stopResults) {
-        if (r.status === 'fulfilled') indexes[r.value.slug] = r.value.stops;
-        else console.warn('Corridors: stops load failed', r.reason);
-      }
       setStopsIndexes(indexes);
       setStopsReady(true);
     })();

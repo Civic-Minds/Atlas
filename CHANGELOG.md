@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- Map rendering, standalone page navigation, and tile proxy caching are now faster and more resilient.
 - Standalone pages now use a simpler Atlas wordmark that better matches the rest of the product.
 - Documentation and legal pages now share the site header for consistent navigation.
 - Documentation and legal pages now use one shared Atlas navigation path instead of duplicate back links.

@@ -785,14 +785,15 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   );
 
   const nightServiceFeatures = useMemo(() => {
-    if (!layers) return [];
+    if (!nightServiceView || !layers) return [];
     return Object.values(layers).flatMap(collection => collection.features.filter(feature => {
       const properties = feature.properties as Record<string, any> | null;
       return feature.geometry.type === 'LineString' && (properties?.[nightServiceKey(nightServiceFrequency)] === true || (nightServiceFrequency === 60 && properties?.nightService === true));
     }));
-  }, [layers, nightServiceFrequency]);
+  }, [layers, nightServiceFrequency, nightServiceView]);
 
   const frequentServiceFeatures = useMemo(() => {
+    if (!frequentServiceView || !layers) return [];
     const key = frequentServiceQueryKey(frequentServiceFrequency, frequentServiceWindow);
     const grouped = new Map<string, GeoJSON.Feature[]>();
     for (const feature of Object.values(layers ?? {}).flatMap(collection => collection.features)) {
@@ -823,7 +824,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         frequentServiceBand: frequentServiceBand(feature.properties as Record<string, any>, frequentServiceWindow, frequentServiceFrequency),
       },
     })));
-  }, [frequentServiceDays, frequentServiceFrequency, frequentServiceWindow, layers, selectedModes]);
+  }, [frequentServiceDays, frequentServiceFrequency, frequentServiceView, frequentServiceWindow, layers, selectedModes]);
 
   useLayoutEffect(() => {
     frequencySegmentOverlayRef.current = frequencySegmentOverlay;
@@ -922,10 +923,11 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       mapRef.current = map;
 
       map.on('load', async () => {
-      setZoom(map.getZoom());
+        if (cancelled) return;
+        setZoom(map.getZoom());
 
-      await protocolReady;
-      if (cancelled) return;
+        await protocolReady;
+        if (cancelled) return;
 
       // Keep PMTiles out of the initial style. A stalled route-tile request must
       // not prevent MapLibre from reaching this point or block local GeoJSON.
