@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **Rebuilt the About page as a flatter editorial introduction**, removing the oversized hero card and nested panel so Atlas’s purpose reads more clearly.
 - **Removed the redundant uppercase About-page section labels**, so the page no longer repeats the title as a decorative eyebrow.
 - **The About page now presents the full range of Atlas views as a lighter exploration list**, instead of an incomplete and over-boxed measurement panel.
 - **The About page now leads with Atlas’s purpose and three measurable service lenses**, making the product feel like a transit tool rather than a generic information page.
