@@ -19,7 +19,7 @@ export default function AboutPage() {
             </div>
           </div>
 
-          <div className="self-end border-l-2 border-[var(--accent-border)] pl-6 lg:mb-2">
+          <div className="self-start border-l-2 border-[var(--accent-border)] pl-6 lg:pt-16">
             <p className="text-sm font-black uppercase tracking-[0.16em] text-[var(--text-dim)]">A different kind of map</p>
             <p className="mt-4 text-xl font-black leading-8">Not just where a route goes, but when it is useful.</p>
             <p className="mt-4 text-sm leading-6 text-[var(--text-muted)]">Atlas is for looking at the service behind the line: the intervals, the gaps, the hours, and the places connected.</p>
