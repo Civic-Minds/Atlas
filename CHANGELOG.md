@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **Removed the decorative About-page icons from the exploration list**, making the categories quieter and easier to scan.
 - **About now describes frequency, modes, history, and research as different ways to explore Atlas**, instead of inaccurately grouping them as six “lenses.”
 - **Rebuilt the About page as a flatter editorial introduction**, removing the oversized hero card and nested panel so Atlas’s purpose reads more clearly.
 - **Removed the redundant uppercase About-page section labels**, so the page no longer repeats the title as a decorative eyebrow.

@@ -1,13 +1,13 @@
-import { ArrowRight, BookOpen, Clock3, Map, Zap } from 'lucide-react';
+import { ArrowRight, Map } from 'lucide-react';
 import SiteFooter from './components/SiteFooter';
 
 const lenses = [
-  { icon: Zap, label: 'Frequency', text: 'How often the next vehicle comes.' },
-  { icon: Clock3, label: 'Service span', text: 'When useful service starts and ends.' },
-  { icon: Map, label: 'Coverage', text: 'Where the network actually reaches.' },
-  { icon: Map, label: 'Modes', text: 'How bus, rail, ferry, and other services differ.' },
-  { icon: Clock3, label: 'History', text: 'How scheduled service changes over time.' },
-  { icon: BookOpen, label: 'Research', text: 'How agencies define and compare service.' },
+  { label: 'Frequency', text: 'How often the next vehicle comes.' },
+  { label: 'Service span', text: 'When useful service starts and ends.' },
+  { label: 'Coverage', text: 'Where the network actually reaches.' },
+  { label: 'Modes', text: 'How bus, rail, ferry, and other services differ.' },
+  { label: 'History', text: 'How scheduled service changes over time.' },
+  { label: 'Research', text: 'How agencies define and compare service.' },
 ];
 
 export default function AboutPage() {
@@ -43,13 +43,10 @@ export default function AboutPage() {
         <section className="border-y border-[var(--border-primary)] py-8" aria-labelledby="explore-heading">
           <h2 id="explore-heading" className="text-xl font-black">Different ways to understand the network.</h2>
           <div className="mt-8 grid gap-x-8 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
-            {lenses.map(({ icon: Icon, label, text }) => (
-              <div key={label} className="flex gap-3">
-                <Icon className="mt-0.5 h-5 w-5 shrink-0 text-[var(--accent)]" />
-                <div>
-                  <h3 className="text-base font-black">{label}</h3>
-                  <p className="mt-1 text-sm leading-6 text-[var(--text-muted)]">{text}</p>
-                </div>
+            {lenses.map(({ label, text }) => (
+              <div key={label} className="border-l-2 border-[var(--accent-border)] pl-4">
+                <h3 className="text-base font-black">{label}</h3>
+                <p className="mt-1 text-sm leading-6 text-[var(--text-muted)]">{text}</p>
               </div>
             ))}
           </div>
