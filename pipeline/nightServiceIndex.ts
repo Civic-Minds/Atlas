@@ -11,17 +11,9 @@
  * "public directory" pattern.
  */
 
-interface RouteFeatureProperties {
-  nightService?: boolean;
-  nightService30?: boolean;
-  nightService60?: boolean;
-  routeShortName?: string | null;
-  routeLongName?: string | null;
-  routeColor?: string | null;
-  directionId?: number | null;
-  headsign?: string | null;
-  day?: string | null;
-}
+import type { RouteIndexProperties } from '../shared/routeIndexProperties.js';
+
+type RouteFeatureProperties = RouteIndexProperties;
 
 interface RouteFeature {
   properties: RouteFeatureProperties;

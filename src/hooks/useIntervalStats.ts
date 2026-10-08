@@ -35,7 +35,7 @@ export interface ShapeProperties extends BaseShapeProperties {
 }
 
 export const routeKey = (p: ShapeProperties) => buildRouteKey(
-  (p as any).agencySlug ?? p.agencyName ?? '',
+  p.agencySlug ?? p.agencyName ?? '',
   p.routeId,
   p.routeBranch,
 );
@@ -111,8 +111,8 @@ export function passesRouteFilter(
   // route appear as if it fully passed; it only lets it *in* so that function can look.
   options?: { skipFrequency?: boolean },
 ): boolean {
-  const isCorridor = !!(p as any).isCorridor;
-  const corridorRouteIds = (p as any).routeIds as string[] | undefined;
+  const isCorridor = !!p.isCorridor;
+  const corridorRouteIds = p.routeIds;
   // routesForStop drives stop-card sidebar and map dimming (sibling stopHeadways match)
 
   // Strip -corridors suffix so corridor layers (keyed as "{slug}-corridors") still pass the agency filter.
