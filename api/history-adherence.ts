@@ -4,8 +4,10 @@ import { computeHistoryAdherence, type Snapshot } from '../shared/computeHistory
 import { R2_PUBLIC_URL } from '../shared/config.js';
 import { isRateLimited, rateLimitWebResponse } from '../shared/rateLimit.js';
 import { requestHeader } from '../shared/request.js';
+import { mapWithConcurrency } from './concurrency.js';
 
 export const config = { maxDuration: 60 };
+const HISTORY_SNAPSHOT_CONCURRENCY = 15;
 
 function requireEnv(key: string): string {
   const v = process.env[key];
@@ -123,7 +125,11 @@ async function handler(req: Request) {
     // Sample keys: every other file (10-min resolution), capped at 500 to bound response time
     const strideKeys = allKeys.filter((_, i) => i % 2 === 0);
     const sampledKeys = strideKeys.slice(0, 500);
-    const snapshots = (await Promise.all(sampledKeys.map(k => fetchSnapshot(client, k)))).filter(Boolean) as Snapshot[];
+    const snapshots = (await mapWithConcurrency(
+      sampledKeys,
+      HISTORY_SNAPSHOT_CONCURRENCY,
+      key => fetchSnapshot(client, key),
+    )).filter(Boolean) as Snapshot[];
 
     const sidecar = await sidecarPromise;
     const routeSidecar = sidecar?.[route];

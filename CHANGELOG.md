@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- History adherence now limits concurrent R2 snapshot reads, preventing large requests from exhausting connections.
 - GTFS processing now preserves weekday/weekend service buckets, frequency-based stop headways, and full-day rail schedule metrics.
 - Rail-like shapes are no longer treated as street geometry, and refresh registry writes are atomic.
 - Map rendering, standalone page navigation, and tile proxy caching are now faster and more resilient.
