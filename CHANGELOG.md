@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **Removed the remaining decorative icon from the About-page Research section**, keeping the page icon-free.
 - **About now gives Research its own section**, separating explanatory stories from the network views and data dimensions in the main grid.
 - **About now explains Atlas plainly as a schedule-based transit map**, including what people can compare and what the product does not replace.
 - **Removed the decorative About-page icons from the exploration list**, making the categories quieter and easier to scan.
