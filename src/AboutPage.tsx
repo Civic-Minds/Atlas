@@ -28,13 +28,9 @@ export default function AboutPage() {
       <div className="mx-auto max-w-5xl">
         <SiteHeader />
 
-        <section className="grid gap-10 py-24 sm:py-32 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
-          <div>
-            <h1 className="max-w-3xl text-5xl font-black tracking-[-0.04em] sm:text-7xl">A map for <span className="inline-block w-[12ch] whitespace-nowrap">{headlineVerbs[headlineVerbIndex]}</span> how transit works.</h1>
-          </div>
-          <div className="max-w-md pb-1">
-            <p className="text-lg leading-8 text-[var(--text-muted)]">Atlas turns published schedules into a clearer picture of where transit goes, how often it comes, and when it is useful.</p>
-          </div>
+        <section className="max-w-5xl py-24 sm:py-32">
+          <h1 className="max-w-4xl text-5xl font-black tracking-[-0.04em] sm:text-7xl">A map for <span className="inline-block w-[12ch] whitespace-nowrap">{headlineVerbs[headlineVerbIndex]}</span> how transit works.</h1>
+          <p className="mt-8 max-w-2xl text-xl leading-8 text-[var(--text-muted)]">Atlas turns published schedules into a clearer picture of where transit goes, how often it comes, and when it is useful.</p>
         </section>
 
         <section className="grid max-w-4xl gap-8 border-y border-[var(--border-primary)] py-16 sm:grid-cols-[0.75fr_1.25fr]" aria-labelledby="explore-heading">
