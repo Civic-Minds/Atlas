@@ -1,8 +1,8 @@
-import { ArrowLeft } from 'lucide-react';
 import type { ReactNode } from 'react';
 import PageContents from './components/PageContents';
 import SiteContact from './components/SiteContact';
 import SiteFooter from './components/SiteFooter';
+import SiteHeader from './components/SiteHeader';
 
 type LegalDocument = 'terms' | 'privacy';
 
@@ -46,8 +46,8 @@ export default function LegalPage({ document }: { document: LegalDocument }) {
   return (
     <main className="min-h-screen bg-[var(--bg-app)] text-[var(--text-primary)] px-5 py-8 sm:px-8">
       <div className="max-w-5xl mx-auto">
-        <a href="/" className="inline-flex items-center gap-2 text-sm font-bold text-[var(--accent)] hover:underline"><ArrowLeft className="w-4 h-4" /> Back to map</a>
-        <div className="mt-10 lg:grid lg:grid-cols-[12rem_minmax(0,42rem)] lg:gap-12 lg:items-start">
+        <SiteHeader />
+        <div className="mt-12 lg:grid lg:grid-cols-[12rem_minmax(0,42rem)] lg:gap-12 lg:items-start">
           <PageContents items={CONTENTS[privacy ? 'privacy' : 'terms'].map(([id, label]) => ({ id, label }))} />
           <article className="space-y-8 text-sm leading-relaxed text-[var(--text-dim)]">
           <header><h1 className="text-3xl font-black tracking-tight text-[var(--text-primary)]">{privacy ? 'Privacy Policy' : 'Terms of Service'}</h1><p className="mt-3">Last updated October 3, 2026.</p></header>

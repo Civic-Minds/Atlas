@@ -1,5 +1,9 @@
-import { ArrowRight, Map } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import SiteHeader from './components/SiteHeader';
 import SiteFooter from './components/SiteFooter';
+
+const headlineVerbs = ['understanding', 'exploring', 'comparing'];
 
 const lenses = [
   { label: 'Frequency', text: 'How often the next vehicle comes.' },
@@ -10,21 +14,23 @@ const lenses = [
 ];
 
 export default function AboutPage() {
+  const [headlineVerbIndex, setHeadlineVerbIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = window.setInterval(() => {
+      setHeadlineVerbIndex(index => (index + 1) % headlineVerbs.length);
+    }, 2600);
+    return () => window.clearInterval(interval);
+  }, []);
+
   return (
     <main className="min-h-screen overflow-y-auto bg-[var(--bg-app)] px-6 py-8 text-[var(--text-primary)] sm:px-10 lg:px-16">
       <div className="mx-auto max-w-5xl">
-        <header>
-          <a href="/" className="flex items-center gap-3 text-sm font-black">
-            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--text-primary)] text-[var(--bg-app)]">
-              <Map className="h-4 w-4" />
-            </span>
-            <span>Atlas <span className="font-normal text-[var(--text-dim)]">by Civic Minds</span></span>
-          </a>
-        </header>
+        <SiteHeader />
 
         <section className="grid gap-10 py-24 sm:py-32 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
           <div>
-            <h1 className="max-w-3xl text-5xl font-black tracking-[-0.04em] sm:text-7xl">A map for understanding how transit works.</h1>
+            <h1 className="max-w-3xl text-5xl font-black tracking-[-0.04em] sm:text-7xl">A map for <span className="inline-block min-w-[5.7ch]">{headlineVerbs[headlineVerbIndex]}</span> how transit works.</h1>
           </div>
           <div className="max-w-md pb-1">
             <p className="text-lg leading-8 text-[var(--text-muted)]">Atlas turns published schedules into a clearer picture of where transit goes, how often it comes, and when it is useful.</p>

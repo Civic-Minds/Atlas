@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+
+- Added a compact shared menu to Atlas’s standalone pages so users can move between the map, research, and documentation without relying on a back link.
+- **The About headline now cycles through “understanding,” “exploring,” and “comparing,” giving the page a little movement while keeping its message clear.**
 - **About now explains why Atlas combines frequency, span, coverage, modes, and history**, connecting the individual views to the bigger picture of how a network works.
 - **About now explains Atlas’s work in more detail**, including schedule comparison, historical change, and the role of Research.
 - **About now highlights the latest Frequent Service and Night Service research**, giving the page useful destinations instead of a generic Research link.

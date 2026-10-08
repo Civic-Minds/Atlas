@@ -1,6 +1,7 @@
 import React from 'react';
-import { ArrowRight, BookOpen, Moon, Zap } from 'lucide-react';
+import { ArrowRight, Moon, Zap } from 'lucide-react';
 import { FEATURE_ROUTES } from '../shared/config';
+import SiteHeader from './components/SiteHeader';
 
 const cards = [
   {
@@ -30,18 +31,7 @@ export default function ResearchPage() {
   return (
     <main className="min-h-screen overflow-y-auto bg-[var(--bg-app)] text-[var(--text-primary)] px-6 py-8 sm:px-10 lg:px-16">
       <div className="mx-auto max-w-5xl">
-        <header className="flex items-center justify-between gap-4">
-          <a href="/" className="flex items-center gap-3 text-sm font-black">
-            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--accent)] text-white shadow-lg">
-              <BookOpen className="h-4 w-4" />
-            </span>
-            <span>Atlas <span className="font-normal text-[var(--text-dim)]">by Civic Minds</span></span>
-          </a>
-          <div className="flex items-center gap-4 text-sm font-bold text-[var(--text-muted)]">
-            <a href={FEATURE_ROUTES.about} className="hover:text-[var(--text-primary)]">About Atlas</a>
-            <a href="/" className="hover:text-[var(--text-primary)]">Back to map</a>
-          </div>
-        </header>
+        <SiteHeader />
 
         <section className="max-w-3xl py-20 sm:py-28">
           <p className="text-xs font-black uppercase tracking-[0.24em] text-[var(--accent)]">Atlas Research</p>
