@@ -15,7 +15,7 @@ import { resolveDisplayHeadsign } from '../shared/headsignDisplay.js';
 import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig.js';
 import { TIME_PERIODS, SPARKLINE_HOURS, type PeriodKey, type HeadwayByPeriod, type HeadwayByPeriodMaxGap, type HeadwayByPeriodSustained } from '../shared/config.js';
 import { ROUTE_ARTIFACT_SCHEMA_VERSION } from '../shared/artifactSchema.js';
-import { DAY_TYPES, type DayType } from '../types/gtfs.js';
+import { DAY_TYPES, WEEKDAYS, type DayName, type DayType } from '../types/gtfs.js';
 import { ALL_DAYS } from '../shared/dayTypes.js';
 import { t2m } from './transit-utils.js';
 import { adaptiveMedianHeadwayInWindow, computeHourMaxGaps, computePeriodHeadways, computePeriodHeadwayRanges, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, hasGenuineBranchPattern, hasSustainedFrequentService, hasSustainedNightService, headsignOverlapMinHeadway, headwayToTier, medianHeadwayInWindow, nightServiceDepartureTimes, NIGHT_SERVICE_WINDOW_END_MIN, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
@@ -48,6 +48,19 @@ export function normalizeNrtAnalysisResult(result: AnalysisResult): AnalysisResu
     return result;
   }
   return { ...result, tier: headwayToTier(result.medianHeadway) };
+}
+
+/** Return offsets for the repeated departures described by one frequencies.txt row. */
+export function expandFrequencyOffsets(
+  firstTripDeparture: number,
+  start: number,
+  end: number,
+  headwayMinutes: number,
+): number[] {
+  if (!Number.isFinite(firstTripDeparture) || !Number.isFinite(start) || !Number.isFinite(end) || !Number.isFinite(headwayMinutes) || headwayMinutes <= 0 || end <= start) return [];
+  const offsets: number[] = [];
+  for (let generated = start; generated < end; generated += headwayMinutes) offsets.push(generated - firstTripDeparture);
+  return offsets;
 }
 
 /**
@@ -183,11 +196,14 @@ export async function processGtfsBuffer(
   // otherwise-valid phase1/phase2 results with `if (!shapeId) continue` further
   // down (Fredericksburg Regional Transit pattern).
   const activeServiceIdsByDay = new Map<DayType, Set<string>>();
+  const calendarDaysForType = (dayType: DayType): DayName[] =>
+    dayType === 'Weekday' ? [...WEEKDAYS] : [dayType as DayName];
   for (const dayType of DAY_TYPES) {
-    const calDay = dayType === 'Weekday' ? 'Monday' : dayType;
     activeServiceIdsByDay.set(
       dayType,
-      new Set(getActiveServiceIds(gtfs.calendar ?? [], gtfs.calendarDates ?? [], calDay, refDate)),
+      new Set(calendarDaysForType(dayType).flatMap(day =>
+        getActiveServiceIds(gtfs.calendar ?? [], gtfs.calendarDates ?? [], day, refDate),
+      )),
     );
   }
   const activeForShapes = new Set<string>(
@@ -228,21 +244,21 @@ export async function processGtfsBuffer(
     if (!existing || r.departureTimes.length > existing.length) rawByDayType.set(k, r.departureTimes);
   }
 
-  // Per-stop headway computation (AI-96): map serviceId → dayType, then tripId → group,
-  // so we can collect per-stop departure arrays from stop_times without a second GTFS scan.
-  // This runs before the feature-building loop; stop_times are scanned once below alongside
-  // the existing routesByStop collection.
-  const serviceIdToDayType = new Map<string, DayType>();
+  // Per-stop headway computation (AI-96): map serviceId → dayTypes, then tripId → groups,
+  // so each service block contributes to every applicable weekday/weekend bucket.
+  const serviceIdToDayTypes = new Map<string, Set<DayType>>();
   for (const dayType of DAY_TYPES) {
-    const calDay = dayType === 'Weekday' ? 'Monday' : dayType;
-    for (const id of getActiveServiceIds(gtfs.calendar ?? [], gtfs.calendarDates ?? [], calDay, refDate)) {
-      if (!serviceIdToDayType.has(id)) serviceIdToDayType.set(id, dayType);
+    for (const id of activeServiceIdsByDay.get(dayType) ?? []) {
+      const types = serviceIdToDayTypes.get(id) ?? new Set<DayType>();
+      types.add(dayType);
+      serviceIdToDayTypes.set(id, types);
     }
   }
-  const tripGroupByTripId = new Map<string, { routeId: string; shortName: string; dirId: string; dayType: string; headsign: string | null; shapeId: string | null; serviceId: string; routeVariant: string | null }>();
+  type StopTripGroup = { routeId: string; shortName: string; dirId: string; dayType: DayType; headsign: string | null; shapeId: string | null; serviceId: string; routeVariant: string | null };
+  const tripGroupByTripId = new Map<string, StopTripGroup[]>();
   for (const trip of gtfs.trips ?? []) {
-    const dayType = serviceIdToDayType.get(trip.service_id);
-    if (!dayType) continue;
+    const dayTypes = serviceIdToDayTypes.get(trip.service_id);
+    if (!dayTypes || dayTypes.size === 0) continue;
     // Use shortName as the group key so agencies with multiple route_ids per line (e.g. GO Transit
     // date-prefixed IDs like 04260626-LW / 06260926-LW) merge into one combined stop frequency group.
     const route = routeById.get(trip.route_id);
@@ -254,16 +270,16 @@ export async function processGtfsBuffer(
       if (lastStopId) rawHeadsign = stopNameById.get(lastStopId) ?? null;
     }
     const headsign = resolveDisplayHeadsign(rawHeadsign, shortName, longName);
-    tripGroupByTripId.set(trip.trip_id, {
-      routeId: trip.route_id,
-      shortName,
-      dirId: String(trip.direction_id ?? '0'),
-      dayType,
-      headsign,
-      shapeId: trip.shape_id || null,
-      serviceId: trip.service_id,
-      routeVariant: trip.route_variant?.trim() || null,
-    });
+    tripGroupByTripId.set(trip.trip_id, [...dayTypes].map(dayType => ({
+        routeId: trip.route_id,
+        shortName,
+        dirId: String(trip.direction_id ?? '0'),
+        dayType,
+        headsign,
+        shapeId: trip.shape_id || null,
+        serviceId: trip.service_id,
+        routeVariant: trip.route_variant?.trim() || null,
+    })));
   }
   // Max raw stop_time minute seen anywhere for each service_id. Needed below: a service_id
   // qualifies as a genuine overnight-only block (#297; e.g. CTA Red Line's 00:10-02:45 under
@@ -279,14 +295,15 @@ export async function processGtfsBuffer(
   // from the feed, not stranded elsewhere. Shifting would fabricate departures, not recover them.
   const serviceIdMaxMinute = new Map<string, number>();
   for (const st of gtfs.stopTimes ?? []) {
-    const trip = tripGroupByTripId.get(st.trip_id);
-    if (!trip) continue;
+    const tripGroups = tripGroupByTripId.get(st.trip_id);
+    if (!tripGroups || tripGroups.length === 0) continue;
     const timeStr = st.departure_time || st.arrival_time;
     if (!timeStr) continue;
     const mins = t2m(timeStr);
     if (mins === null) continue;
-    const prev = serviceIdMaxMinute.get(trip.serviceId);
-    if (prev === undefined || mins > prev) serviceIdMaxMinute.set(trip.serviceId, mins);
+    const serviceId = tripGroups[0].serviceId;
+    const prev = serviceIdMaxMinute.get(serviceId);
+    if (prev === undefined || mins > prev) serviceIdMaxMinute.set(serviceId, mins);
   }
   // stopDepsByGroup["routeId::dirId::dayType"] → stopId → sorted departure minutes
   const stopDepsByGroup = new Map<string, Map<string, number[]>>();
@@ -308,6 +325,22 @@ export async function processGtfsBuffer(
   // regardless, so this still covers every route that reaches the night-service check.
   const stopDepsByGroupNight = new Map<string, Map<string, number[]>>();
   const stopDepsByHeadsignGroupNight = new Map<string, Map<string, number[]>>();
+
+  // A frequency-based trip has one representative stop-time sequence, while
+  // frequencies.txt describes the repeated departures. Add those generated
+  // departures to stop-level metrics after the ordinary stop_times pass below.
+  const firstDepartureByTripId = new Map<string, number>();
+  const stopTimesByTripId = new Map<string, typeof gtfs.stopTimes>();
+  for (const st of gtfs.stopTimes ?? []) {
+    const mins = t2m(st.departure_time || st.arrival_time);
+    if (mins !== null) {
+      const previous = firstDepartureByTripId.get(st.trip_id);
+      if (previous === undefined || mins < previous) firstDepartureByTripId.set(st.trip_id, mins);
+    }
+    const tripStops = stopTimesByTripId.get(st.trip_id) ?? [];
+    tripStops.push(st);
+    stopTimesByTripId.set(st.trip_id, tripStops);
+  }
   // Track first visit per (trip_id, stop_id) to avoid double-counting loop routes
   // where the terminus appears at both the start and end of the same trip.
   const stopFirstVisit = new Map<string, Set<string>>();
@@ -474,8 +507,8 @@ export async function processGtfsBuffer(
     }
 
     // Per-stop departure collection
-    const grp = tripGroupByTripId.get(st.trip_id);
-    if (grp) {
+    const tripGroups = tripGroupByTripId.get(st.trip_id) ?? [];
+    for (const grp of tripGroups) {
       const timeStr = st.departure_time || st.arrival_time;
       if (timeStr) {
         const mins = t2m(timeStr);
@@ -493,8 +526,9 @@ export async function processGtfsBuffer(
           // outbound and inbound times to produce a falsely short headway (AI-121).
           let visitSet = stopFirstVisit.get(st.trip_id);
           if (!visitSet) { visitSet = new Set(); stopFirstVisit.set(st.trip_id, visitSet); }
-          if (!visitSet.has(st.stop_id)) {
-            visitSet.add(st.stop_id);
+          const visitKey = `${grp.dayType}:${st.stop_id}`;
+          if (!visitSet.has(visitKey)) {
+            visitSet.add(visitKey);
             pushDep(stopMap, st.stop_id, mins);
             if (grp.headsign) {
               const hsKey = `${grp.shortName}::${grp.dirId}::${grp.dayType}::${grp.headsign}`;
@@ -522,8 +556,9 @@ export async function processGtfsBuffer(
               }
             }
             // Propagate to parent station so it also gets headways (only count first visit to parent per trip)
-            if (parentId && !visitSet.has(parentId)) {
-              visitSet.add(parentId);
+            const parentVisitKey = parentId ? `${grp.dayType}:${parentId}` : null;
+            if (parentId && parentVisitKey && !visitSet.has(parentVisitKey)) {
+              visitSet.add(parentVisitKey);
               pushDep(stopMap, parentId, mins);
               if (grp.headsign) {
                 const hsKey = `${grp.shortName}::${grp.dirId}::${grp.dayType}::${grp.headsign}`;
@@ -551,6 +586,46 @@ export async function processGtfsBuffer(
               }
             }
           }
+        }
+      }
+    }
+  }
+
+  const pushUnique = (map: Map<string, Map<string, number[]>>, key: string, stopId: string, mins: number) => {
+    let stopMap = map.get(key);
+    if (!stopMap) { stopMap = new Map(); map.set(key, stopMap); }
+    const arr = stopMap.get(stopId) ?? [];
+    if (!arr.includes(mins)) arr.push(mins);
+    stopMap.set(stopId, arr);
+  };
+  const addFrequencyDeparture = (grp: StopTripGroup, stopId: string, mins: number) => {
+    const groupKey = `${grp.shortName}::${grp.dirId}::${grp.dayType}`;
+    pushUnique(stopDepsByGroup, groupKey, stopId, mins);
+    if (grp.headsign) pushUnique(stopDepsByHeadsignGroup, `${grp.shortName}::${grp.dirId}::${grp.dayType}::${grp.headsign}`, stopId, mins);
+    if (grp.shapeId) pushUnique(stopDepsByShapeGroup, `${grp.shapeId}::${grp.dayType}`, stopId, mins);
+    if (mins < NIGHT_SHIFT_EARLY_CUTOFF && (serviceIdMaxMinute.get(grp.serviceId) ?? Infinity) < NIGHT_SHIFT_EARLY_CUTOFF) {
+      const shifted = mins + 1440;
+      pushUnique(stopDepsByGroupNight, groupKey, stopId, shifted);
+      if (grp.headsign) pushUnique(stopDepsByHeadsignGroupNight, `${grp.shortName}::${grp.dirId}::${grp.dayType}::${grp.headsign}`, stopId, shifted);
+    }
+  };
+  for (const frequency of gtfs.frequencies ?? []) {
+    const first = firstDepartureByTripId.get(frequency.trip_id);
+    const tripStops = stopTimesByTripId.get(frequency.trip_id);
+    const groups = tripGroupByTripId.get(frequency.trip_id);
+    const start = t2m(frequency.start_time);
+    const end = t2m(frequency.end_time);
+    const headway = Number(frequency.headway_secs) / 60;
+    if (first === undefined || !tripStops || !groups || start === null || end === null || !Number.isFinite(headway) || headway <= 0) continue;
+    for (const offset of expandFrequencyOffsets(first, start, end, headway)) {
+      for (const st of tripStops) {
+        const base = t2m(st.departure_time || st.arrival_time);
+        if (base === null) continue;
+        const mins = base + offset;
+        for (const grp of groups) {
+          addFrequencyDeparture(grp, st.stop_id, mins);
+          const parentId = childToParent.get(st.stop_id);
+          if (parentId) addFrequencyDeparture(grp, parentId, mins);
         }
       }
     }

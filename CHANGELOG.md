@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- GTFS processing now preserves weekday/weekend service buckets, frequency-based stop headways, and full-day rail schedule metrics.
+- Rail-like shapes are no longer treated as street geometry, and refresh registry writes are atomic.
 - Map rendering, standalone page navigation, and tile proxy caching are now faster and more resilient.
 - Standalone pages now use a simpler Atlas wordmark that better matches the rest of the product.
 - Documentation and legal pages now share the site header for consistent navigation.

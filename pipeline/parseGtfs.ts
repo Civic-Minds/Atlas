@@ -2,6 +2,7 @@ import JSZip from 'jszip';
 import Papa from 'papaparse';
 import { GtfsData, GtfsShape, GtfsCalendar, GtfsCalendarDate, GtfsAgency, GtfsFareAttribute, GtfsFareRule, GtfsFareProduct, GtfsRiderCategory, GtfsFareLegRule, ShapeAnomaly } from '../types/gtfs';
 import { haversineDistance, bearing, bearingDiff } from './utils.js';
+import { isRailLikeRoute } from '../shared/modes.js';
 
 /**
  * Parse a CSV string into an array of typed objects.
@@ -499,7 +500,10 @@ export const parseGtfsZip = async (
     if (rawShapes) {
         const railRouteIds = new Set(
             (gtfsData.routes ?? [])
-                .filter(route => Number(route.route_type) === 2)
+                .filter(route => isRailLikeRoute({
+                    routeType: route.route_type,
+                    routeLongName: route.route_long_name,
+                }))
                 .map(route => route.route_id),
         );
         const railShapeIds = new Set(

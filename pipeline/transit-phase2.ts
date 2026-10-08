@@ -556,7 +556,10 @@ export function applyAnalysisCriteria(
           return rep.times;
         })();
         const stats = computeHeadwayStats(rollupStatsBase);
-        const rollupTimes = rollupStatsBase;
+        // Keep the complete representative-day schedule in the result. Rail uses a
+        // midday sample for tier stability, but downstream period/hour metrics and
+        // sparklines need the morning, evening, and overnight departures too.
+        const rollupTimes = isRailRollup ? rep.times : rollupStatsBase;
         const avgTrips = Math.round(entries.reduce((sum, e) => sum + e.result.tripCount, 0) / entries.length);
         const allStarts = entries.map(e => e.result.serviceSpan?.start ?? 0);
         const allEnds = entries.map(e => e.result.serviceSpan?.end ?? 0);
