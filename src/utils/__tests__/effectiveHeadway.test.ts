@@ -286,6 +286,18 @@ describe('effectiveRouteHeadway', () => {
     expect(effectiveRouteHeadway(p, 'midday')).toBe(61);
   });
 
+  it('does not replace null worst-direction coverage with a shared-stop cadence', () => {
+    const p = {
+      ...base,
+      headwayByPeriod: { overnight: 30 },
+      headwayByPeriodSustained: { overnight: true },
+      periodCoverageHeadway: { overnight: 167 },
+      worstDirectionPeriodCoverageHeadway: { overnight: null },
+      headsignMinStopHeadwayByPeriod: { overnight: 29 },
+    } as ShapeProperties;
+    expect(effectiveRouteHeadway(p, 'overnight')).toBeNull();
+  });
+
   it('detects partial period service for routes starting late or ending early (#507)', () => {
     const withCoverage = {
       periodCoverageHeadway: { overnight: 171 },

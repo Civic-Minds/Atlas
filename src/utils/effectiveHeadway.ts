@@ -118,9 +118,19 @@ export function effectiveRouteHeadway(p: ShapeProperties, period: TimePeriod): n
     const coverage = periodCoverageValue(p, period);
     // An explicit no-service period, or a period whose full-window coverage is too sparse,
     // must not be replaced by a shared-stop cadence from a shorter part of the route.
-    if ((hasExplicitPeriodValue && p.headwayByPeriod?.[period] == null)
-      || (coverage != null && coverage > PERIOD_COVERAGE_MAX_HEADWAY)
-      || (coverage == null && hasAnyPeriodCoverage(p) && !hasPeriodCoverageValue(p, period))) {
+    if (hasExplicitPeriodValue && p.headwayByPeriod?.[period] == null) {
+      return null;
+    }
+    if (coverage != null && coverage > PERIOD_COVERAGE_MAX_HEADWAY) {
+      return coverage;
+    }
+    // A published coverage field with a null value is an explicit statement that
+    // this direction has no usable full-window coverage. Do not replace it with
+    // a shared-stop cadence from a shorter part of the period.
+    if (coverage == null && hasPeriodCoverageValue(p, period)) {
+      return null;
+    }
+    if (coverage == null && hasAnyPeriodCoverage(p) && !hasPeriodCoverageValue(p, period)) {
       return metricValueForPeriod(summary.filter, period);
     }
     const sharedHeadway = summary.shared.byHeadsignPeriod?.[period];

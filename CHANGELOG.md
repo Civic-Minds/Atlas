@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- Overnight frequency filters no longer show routes whose full selected-period coverage is too sparse ([#524](https://github.com/Civic-Minds/Atlas/issues/524)).
 
 - **Route schedule data now uses one shared contract across the app and processing tools, reducing mismatches between map filters and route cards.**
 - **Route directories now read one shared feature contract, keeping research and Night Service indexes aligned with processed route data.**
