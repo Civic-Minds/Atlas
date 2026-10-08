@@ -5,6 +5,9 @@ const lenses = [
   { icon: Zap, label: 'Frequency', text: 'How often does the next vehicle come?' },
   { icon: Clock3, label: 'Service span', text: 'When does useful service start and end?' },
   { icon: Map, label: 'Coverage', text: 'Where does the network actually reach?' },
+  { icon: Map, label: 'Modes', text: 'How do bus, rail, ferry, and other services differ?' },
+  { icon: Clock3, label: 'History', text: 'How has scheduled service changed over time?' },
+  { icon: BookOpen, label: 'Research', text: 'How do agencies define and compare service?' },
 ];
 
 export default function AboutPage() {
@@ -22,7 +25,6 @@ export default function AboutPage() {
 
         <section className="mt-14 grid gap-8 rounded-[2rem] border border-[var(--border-primary)] bg-[var(--bg-panel)] p-7 shadow-xl sm:mt-20 sm:p-12 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
           <div>
-            <p className="text-xs font-black uppercase tracking-[0.2em] text-[var(--accent)]">About Atlas</p>
             <h1 className="mt-4 max-w-2xl text-4xl font-black tracking-tight sm:text-6xl">Transit is more than lines on a map.</h1>
             <p className="mt-6 max-w-xl text-lg leading-8 text-[var(--text-muted)]">
               Atlas turns published schedules into a clearer picture of how transit works: where it goes, how often it comes, and when it is actually useful.
@@ -37,15 +39,15 @@ export default function AboutPage() {
             </div>
           </div>
 
-          <div className="rounded-3xl bg-[var(--bg-btn)] p-5 sm:p-6">
-            <p className="text-xs font-black uppercase tracking-[0.18em] text-[var(--text-dim)]">What Atlas measures</p>
-            <div className="mt-5 space-y-3">
+          <div className="border-l border-[var(--border-primary)] pl-5 sm:pl-6">
+            <h2 className="text-lg font-black">What you can explore</h2>
+            <div className="mt-6 grid grid-cols-2 gap-x-4 gap-y-6">
               {lenses.map(({ icon: Icon, label, text }) => (
-                <div key={label} className="flex items-center gap-3 rounded-2xl bg-[var(--bg-panel)] p-3 shadow-sm">
-                  <Icon className="h-5 w-5 shrink-0 text-[var(--accent)]" />
+                <div key={label} className="flex items-start gap-2">
+                  <Icon className="mt-0.5 h-4 w-4 shrink-0 text-[var(--accent)]" />
                   <div>
-                    <p className="text-sm font-black">{label}</p>
-                    <p className="text-xs leading-5 text-[var(--text-muted)]">{text}</p>
+                    <p className="text-sm font-black leading-5">{label}</p>
+                    <p className="mt-1 text-xs leading-5 text-[var(--text-muted)]">{text}</p>
                   </div>
                 </div>
               ))}
@@ -55,8 +57,7 @@ export default function AboutPage() {
 
         <section className="grid max-w-4xl gap-8 py-16 sm:grid-cols-[0.8fr_1.2fr] sm:py-20">
           <div>
-            <p className="text-xs font-black uppercase tracking-[0.2em] text-[var(--accent)]">Why it exists</p>
-            <h2 className="mt-3 text-2xl font-black tracking-tight">Built for questions a route map cannot answer.</h2>
+            <h2 className="text-2xl font-black tracking-tight">Built for questions a route map cannot answer.</h2>
           </div>
           <div className="space-y-5 text-base leading-7 text-[var(--text-muted)]">
             <p>How often does service come? How late does it run? Which parts of a network are useful without a timetable?</p>
