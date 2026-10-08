@@ -104,6 +104,11 @@ describe('titleCase', () => {
     expect(titleCase('NWIA | Downtown')).toBe('NWIA | Downtown');
   });
 
+  it('formats uppercase historical route names while preserving branded casing', () => {
+    expect(titleCase('STOCKTON/BROADWAY')).toBe('Stockton/Broadway');
+    expect(titleCase('CordoVan - Anatolia-Kavala Ranch')).toBe('CordoVan - Anatolia-Kavala Ranch');
+  });
+
   it('formats the cleaned Brantford route 20 label', () => {
     expect(titleCase(getRouteLabel('20', 'Grand River Line'))).toBe('20 — Grand River Line');
   });

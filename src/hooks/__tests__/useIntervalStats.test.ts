@@ -570,7 +570,9 @@ describe('useIntervalStats', () => {
     }));
     const tf = JSON.stringify(result.current.tileFilter);
     expect(tf).toContain('hph_overnight');
-    expect(tf).toContain('999998');
+    // Frequency "All" uses an exclusive upper bound (< NO_PERIOD_SERVICE_TILE_VALUE / 999999)
+    // so MapLibre 6 never compares a boolean period predicate with numeric <=.
+    expect(tf).toContain('999999');
   });
 
   it('period filter falls back to headwayByHour if period data is missing', () => {

@@ -363,6 +363,7 @@ export default function App() {
   const inLive = activeApp === 'live';
   const inFares = activeApp === 'fares';
   const inNight = activeApp === 'night';
+  const showResearchControl = FEATURES.researchApps && !inHistory;
   const loadedAgencySlugs = useMemo(
     () => new Set(Object.keys(layers).map(slug => slug.endsWith('-corridors') ? slug.slice(0, -10) : slug)),
     [layers],
@@ -615,12 +616,12 @@ export default function App() {
           </a>
         )}
 
-        {(FEATURES.researchApps || showLiveControl || showHistoryControl) && (
+        {(showResearchControl || showLiveControl || showHistoryControl) && (
           <>
             <span className="w-px h-4 bg-[var(--border-primary)] shrink-0" aria-hidden="true" />
 
             <div className="hidden xl:flex items-center gap-2">
-              {FEATURES.researchApps && (
+              {showResearchControl && (
                 <a
                   href={inResearch ? '/' : FEATURE_ROUTES.research}
                   aria-label={inResearch ? 'Back to frequency map' : 'Research'}
@@ -639,7 +640,7 @@ export default function App() {
                 onClick={() => setAppLinksOpen(open => !open)}
                 aria-label="More Atlas views"
                 aria-expanded={appLinksOpen}
-                className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold border focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${appLinksOpen || inResearch || inNight || inFrequentService ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
+                className={`flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold border focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${inHistory ? 'sm:hidden' : ''} ${appLinksOpen || inResearch || inNight || inFrequentService ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
               >
                 <span>More</span>
                 <ChevronDown className={`w-3.5 h-3.5 transition-transform ${appLinksOpen ? 'rotate-180' : ''}`} />
@@ -669,7 +670,7 @@ export default function App() {
                       {historyExploreAgencyCount != null && <span className="font-normal text-[var(--text-dim)]">{historyExploreAgencyCount}+</span>}
                     </a>
                   )}
-                  {FEATURES.researchApps && (
+                  {showResearchControl && (
                     <a href={inResearch ? '/' : FEATURE_ROUTES.research} onClick={() => setAppLinksOpen(false)} aria-current={inResearch ? 'page' : undefined} className={`flex h-8 px-3 items-center gap-1.5 rounded-full text-xs font-bold border ${inResearch ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}>
                       <FlaskConical className="w-3.5 h-3.5" />
                       <span>Research</span>

@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **MapLibre GL is now on a patched release**, addressing a critical security vulnerability without changing Atlas’s map behaviour.
+- **Research landing-page copy now describes schedule patterns precisely instead of implying a broader view of transit operations.**
+- **Research view links now describe the insight users will get instead of repeating generic “Open” actions.**
+- **The Research landing page now opens with a clearer invitation and puts the research tools first.**
+- **The Research landing page now starts with its actual title instead of repeating “Research” as a label.**
+- **The Research page now introduces Frequent Service through its explanatory story before sending users to the interactive map.**
+- **History now fades unselected routes when a route is selected, making the active historical line easier to follow on the map.**
+- **History now exposes current route-mode filters, and its header no longer offers unrelated Research navigation.**
+- **History route details now give the route title priority and use a compact agency back link.**
+- **History route names now match the normal route list, and agency summaries use shorter labels.**
 - History adherence now limits concurrent R2 snapshot reads, preventing large requests from exhausting connections.
 - GTFS processing now preserves weekday/weekend service buckets, frequency-based stop headways, and full-day rail schedule metrics.
 - Rail-like shapes are no longer treated as street geometry, and refresh registry writes are atomic.
@@ -71,6 +81,28 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Frequent Service now separates its interactive map from its research story and explains each filtering step in rider-facing language.**
 - **Beta now offers an optional Data Saver mode that defers background agency details while keeping map exploration available.**
 - **Public, beta, and local builds now keep feature access, agency visibility, data sources, and research navigation aligned with the selected deployment mode.**
+
+## [3.2.23] - 2026-09-22
+
+- Regional and broad map views now defer detailed agency downloads until city-level zoom, reducing unnecessary network requests while keeping PMTiles overview routes visible.
+- Added a visible Feedback email link beside the map attribution for launch-period comments and feature requests.
+- Calgary overnight routes starting near the end of the window (such as LRT 201 and late-night buses) no longer pass as frequent overnight routes on the map or in the filter, and their cards now indicate limited service for routes running only part of the period instead of borrowing daytime frequencies ([#507](https://github.com/Civic-Minds/Atlas/issues/507)).
+- Calgary MAX route cards now show the terminal name without repeating the MAX service branding.
+- Fixed the agency report form opening at the width of its flag icon instead of the full card.
+- Removed feed-quality badges from the public agency list so technical review states do not look like rider action items.
+- Added Area Transportation Authority coverage across North Central Pennsylvania, including Punxsutawney's local bus route.
+- Added 19 previously uncovered fixed-route agencies across the US and Canada, including Decatur, Charlottesville, Johnson City, Maui, and Medicine Hat.
+- Added eight more fixed-route agencies across Iowa, New Mexico, Kentucky, Illinois, Tennessee, Indiana, Arizona, and Washington.
+- Added an opt-in history build mode (`materializeAllPeriods`) that keeps every documented schedule period instead of collapsing unchanged ones, for agencies like Sacramento with dense archived history worth showing period-by-period.
+- History's route list no longer shows a divider line between every route, and an agency whose short archived series falls entirely within one year (e.g. "2026") no longer shows a silly-looking repeated range like "2026–2026".
+- Fixed the History route card's chart-toggle icon disappearing on routes with a longer name (e.g. Orange-N) — the name was squeezing the row narrow enough to push the icon out entirely instead of properly truncating.
+- Removed the "Recent" badge and "recent refreshes"/"long archive" text from History — every list there (route list, agency list, recent searches) now uses the same spaced style instead of three different hand-rolled versions, and searching for a different agency while History is open now actually opens it instead of snapping back to whichever agency was already selected.
+- Fixed search doing nothing while an agency's route list was already open anywhere in the app — the search box's underlying value could get stuck indefinitely behind other page activity like the map re-rendering ([#495](https://github.com/Civic-Minds/Atlas/issues/495)).
+- Removed a confusing "shorter series from refreshes" label from History's agency list section headers.
+- Opening History now always shows the full agency list instead of jumping straight to whatever agency the map happened to be showing (e.g. TTC, just because the map defaults to Toronto).
+- Removed the "10+ years of snapshots" internal detail from History's "Explore" section header.
+- Fixed History's agency list not scrolling — the panel had no height limit or scroll behavior, so it just got cut off instead of letting you scroll to agencies further down.
+- Replaced History's "Explore"/"Recent" section labels (sounded like "recently added") with a real Filter control — the agency list is one flat list by default, and the filter lets you narrow to just full- or partial-history agencies using the same plain-language wording already used for the rider-facing badge elsewhere.
 
 ## [3.2.22] - 2026-09-03
 

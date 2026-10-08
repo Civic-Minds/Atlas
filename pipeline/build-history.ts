@@ -138,6 +138,8 @@ function getPeriodKeySortValue(key: string): number {
 async function loadCurrentHeadways(slug: string): Promise<Record<string, {
   headway: number;
   routeLongName?: string;
+  routeType?: number | string;
+  busSubType?: string;
   headwayByPeriod?: HeadwayByPeriod;
   geometry?: number[][];
 }>> {
@@ -148,6 +150,8 @@ async function loadCurrentHeadways(slug: string): Promise<Record<string, {
     const current: Record<string, {
       headway: number;
       routeLongName?: string;
+      routeType?: number | string;
+      busSubType?: string;
       headwayByPeriod?: HeadwayByPeriod;
       geometry?: number[][];
     }> = {};
@@ -162,6 +166,8 @@ async function loadCurrentHeadways(slug: string): Promise<Record<string, {
         current[routeShortName] = {
           headway,
           routeLongName: p.routeLongName ? String(p.routeLongName) : undefined,
+          routeType: p.routeType as number | string | undefined,
+          busSubType: p.busSubType ? String(p.busSubType) : undefined,
           headwayByPeriod: p.headwayByPeriod as HeadwayByPeriod | undefined,
           geometry: feature.geometry?.coordinates,
         };
@@ -466,7 +472,14 @@ async function main() {
         ?? changes.find(c => c.routeLongName)?.routeLongName
         ?? routeShortName;
 
-      agencyRoutes.push({ routeShortName, routeName: routeLongName, snapshots: deduped, tripDuration });
+      agencyRoutes.push({
+        routeShortName,
+        routeName: routeLongName,
+        currentRouteType: currentRoute?.routeType,
+        currentBusSubType: currentRoute?.busSubType,
+        snapshots: deduped,
+        tripDuration,
+      });
     }
 
     if (agencyRoutes.length === 0) continue;
