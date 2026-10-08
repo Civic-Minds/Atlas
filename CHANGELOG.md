@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Unified the About page’s explanatory sections so the network dimensions and Atlas overview use the same editorial structure.
 - Removed duplicate About-page action buttons now that the shared header provides the same destinations.
 - Reordered the standalone-page menu so Research and Docs come before the Atlas destination.
 - Fixed the About headline layout so its rotating word no longer shifts the surrounding text.
