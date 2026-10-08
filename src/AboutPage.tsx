@@ -15,7 +15,7 @@ export default function AboutPage() {
             <p className="mt-8 max-w-2xl text-lg leading-8 text-[var(--text-muted)]">Atlas turns published agency schedules into a map you can explore by frequency, time of day, agency, and place.</p>
             <div className="mt-9 flex flex-wrap gap-3">
               <a href="/" className="inline-flex h-11 items-center gap-2 rounded-full border border-[var(--accent-border)] bg-[var(--accent-bg)] px-5 text-sm font-black text-[var(--text-primary)] hover:bg-[var(--bg-btn-hover)]">Open the map <ArrowRight className="h-4 w-4" /></a>
-              <a href="/research" className="inline-flex h-11 items-center rounded-full border border-[var(--border-primary)] px-5 text-sm font-bold text-[var(--text-primary)] hover:bg-[var(--bg-btn-hover)]">Explore research</a>
+              {FEATURES.researchApps && <a href="/research" className="inline-flex h-11 items-center rounded-full border border-[var(--border-primary)] px-5 text-sm font-bold text-[var(--text-primary)] hover:bg-[var(--bg-btn-hover)]">Explore research</a>}
             </div>
           </div>
 

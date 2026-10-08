@@ -10,6 +10,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - Documentation and legal pages now use one shared Atlas navigation path instead of duplicate back links.
 - Atlas branding now comes from one shared component across the map and standalone pages.
 - Public About pages no longer show research links that are unavailable in the public build.
+- Public navigation no longer exposes disabled research routes.
 - The About hero now focuses on Atlas’s purpose and actions without a redundant marketing callout.
 - The About page now uses a simpler editorial layout focused on the questions Atlas helps answer.
 - The About page now gives Atlas a clearer editorial landing page with shared navigation, a schedule-to-insight diagram, and direct research paths.
