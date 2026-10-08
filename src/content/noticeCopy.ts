@@ -18,14 +18,14 @@ export function selectedRouteFilterNotice(options: {
   return `Service runs about every 30 minutes: ${options.activeRange}. ${options.periodLabel} service is measured from ${options.periodRange}; this route is shown because you selected it.`;
 }
 
-export function periodServiceNotice(periodLabel: string, periodRange: string, partial: boolean, activeRange?: string): string {
+export function periodServiceNotice(periodRange: string, partial: boolean, activeRange?: string): string {
   return partial
-    ? `Limited service during ${periodLabel} (${activeRange || periodRange}).`
-    : `No scheduled service during ${periodLabel} (${periodRange}).`;
+    ? `Limited service during the selected period: ${activeRange || periodRange}.`
+    : `No scheduled service during the selected period: ${periodRange}.`;
 }
 
-export function unevenServiceNotice(periodLabel: string, longestGap: number): string {
-  return `Service runs throughout ${periodLabel}, but not consistently. Longest gap: ${longestGap} minutes.`;
+export function unevenServiceNotice(longestGap: number): string {
+  return `Service runs throughout the selected period, but not consistently. Longest gap: ${longestGap} minutes.`;
 }
 
 export function selectedRouteOutsideFilterNotice(maxHeadway: number, periodLabel: string): string {

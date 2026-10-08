@@ -215,15 +215,14 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
     ).join(', ')
     : '';
   const periodNotice = selectedPeriod && !hasPeriodService
-    ? periodServiceNotice(
-      selectedPeriod.label,
+      ? periodServiceNotice(
       formatPeriodRangeLong(selectedPeriod.startHour, selectedPeriod.endHour),
       hasPartialPeriodService,
       activePeriodRangeText,
     )
     : null;
   const unevenNotice = selectedPeriod && hasPeriodService && unevenGap > 0
-    ? unevenServiceNotice(selectedPeriod.label, unevenGap)
+    ? unevenServiceNotice(unevenGap)
     : null;
   const coreGroups = directionGroups.filter(group => shouldShowTrunkSummary(group.realTier, period));
   const hasCoreSummary = coreGroups.length > 0;
