@@ -1,14 +1,13 @@
-import { ArrowRight, Map } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
-export default function SiteHeader() {
+export default function SiteHeader({ showWordmark = true }: { showWordmark?: boolean }) {
   return (
     <header className="flex items-center justify-between gap-6">
-      <a href="/" aria-label="Atlas by Civic Minds" className="flex items-center gap-3 text-sm font-black">
-        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--text-primary)] text-[var(--bg-app)]">
-          <Map className="h-4 w-4" />
-        </span>
-        <span>Atlas <span className="font-normal text-[var(--text-dim)]">by Civic Minds</span></span>
-      </a>
+      {showWordmark ? (
+        <a href="/" aria-label="Atlas by Civic Minds" className="text-sm font-black">
+          Atlas <span className="font-normal text-[var(--text-dim)]">by Civic Minds</span>
+        </a>
+      ) : <span aria-hidden="true" />}
       <nav aria-label="Site navigation" className="flex items-center gap-4 text-sm font-bold text-[var(--text-muted)]">
         <a href="/research" className="hover:text-[var(--text-primary)]">Research</a>
         <a href="/about/docs" className="hover:text-[var(--text-primary)]">Docs</a>

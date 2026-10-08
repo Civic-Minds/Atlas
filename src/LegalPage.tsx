@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import PageContents from './components/PageContents';
 import SiteContact from './components/SiteContact';
 import SiteFooter from './components/SiteFooter';
+import SiteHeader from './components/SiteHeader';
 
 type LegalDocument = 'terms' | 'privacy';
 
@@ -46,6 +47,7 @@ export default function LegalPage({ document }: { document: LegalDocument }) {
   return (
     <main className="min-h-screen bg-[var(--bg-app)] text-[var(--text-primary)] px-5 py-8 sm:px-8">
       <div className="max-w-5xl mx-auto">
+        <SiteHeader showWordmark={false} />
         <a href="/" className="inline-flex items-center gap-2 text-sm font-bold text-[var(--accent)] hover:underline"><ArrowLeft className="w-4 h-4" /> Back to map</a>
         <div className="mt-10 lg:grid lg:grid-cols-[12rem_minmax(0,42rem)] lg:gap-12 lg:items-start">
           <PageContents items={CONTENTS[privacy ? 'privacy' : 'terms'].map(([id, label]) => ({ id, label }))} />
