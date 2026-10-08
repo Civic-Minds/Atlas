@@ -45,7 +45,6 @@
     "validate-index": "npx tsx pipeline/validate-index.ts",
     "build:agency-index": "npx tsx scripts/build-agency-index.ts",
     "build:agency-catalog": "npx tsx scripts/build-agency-catalog.ts",
-    "benchmark": "node scripts/benchmark-atlas.mjs",
     "record-feed-review": "npx tsx scripts/record-feed-review.ts",
     "verify:live-contract": "npx tsx scripts/verify-live-contract.ts",
     "verify:deployments": "node scripts/verify-deployments.mjs",
@@ -73,7 +72,6 @@
     "upload-pmtiles": "npx tsx pipeline/upload-pmtiles.ts",
     "verify-pmtiles-coverage": "npx tsx pipeline/verify-pmtiles-coverage.ts",
     "report:agency-count": "node -e \"const fs=require('fs');const count=f=>JSON.parse(fs.readFileSync(f,'utf8')).agencies.length;console.log('Registry: '+count('public/data/index.json'));for(const mode of ['public','preview','beta','dev'])console.log(mode[0].toUpperCase()+mode.slice(1)+': '+count('public/data/catalog-'+mode+'.json'));\"",
-    "publish-data-release": "npx tsx pipeline/publish-data-release.ts",
     "sync-agency-count": "node -e \"const fs=require('fs');const count=JSON.parse(fs.readFileSync('public/data/index.json','utf8')).agencies.length;const p='docs/AGENCIES.md';fs.writeFileSync(p,fs.readFileSync(p,'utf8').replace(/^(\\d+) agencies as of/m,count+' agencies as of'));console.log('Updated AGENCIES.md: '+count+' agencies');\""
   },
   "dependencies": {
@@ -89,7 +87,7 @@
     "gtfs-realtime-bindings": "^2.2.0",
     "jszip": "^3.10.2",
     "lucide-react": "^1.50.0",
-    "maplibre-gl": "^5.24.0",
+    "maplibre-gl": "^6.4.1",
     "papaparse": "^5.7.0",
     "pbf": "^5.1.2",
     "pmtiles": "^4.5.0",

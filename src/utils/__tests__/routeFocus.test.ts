@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createPropertyExpression, latest } from '@maplibre/maplibre-gl-style-spec';
+import { createPropertyExpression, latest, type StylePropertySpecification } from '@maplibre/maplibre-gl-style-spec';
 import { buildDefaultRouteLineOpacityExpression } from '../colors';
 import { buildSelectedRouteLineOpacity } from '../routeFocus';
 
@@ -8,7 +8,11 @@ const branchMatch = ['all', routeMatch, ['==', ['get', 'directionId'], 0]];
 const base = buildDefaultRouteLineOpacityExpression(['get', 'headway']);
 
 function opacity(expression: unknown, properties: Record<string, unknown>, zoom = 10.3) {
-  const compiled = createPropertyExpression(expression, latest.paint_line['line-opacity']);
+  const compiled = createPropertyExpression(
+    expression,
+    'layers[0].paint.line-opacity',
+    latest.paint_line['line-opacity'] as StylePropertySpecification,
+  );
   expect(compiled.result).toBe('success');
   if (compiled.result !== 'success') throw new Error(JSON.stringify(compiled.value));
   return compiled.value.evaluate({ zoom }, { type: 'LineString', properties });

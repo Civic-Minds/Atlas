@@ -112,6 +112,19 @@ export function tilePeriodServiceExpr(period: PeriodFilter): unknown[] {
   ])];
 }
 
+/** MapLibre filter clause for the selected period and frequency ceiling. */
+export function buildTileHeadwayFilterClause(period: PeriodFilter | undefined, maxHeadway: number): unknown[] {
+  // When Frequency = All for a specific period, the service predicate is already
+  // boolean. Do not wrap it in a numeric <= comparison; MapLibre 6 rejects that
+  // expression and it never represented a numeric headway threshold.
+  if (maxHeadway === Infinity && period && period !== 'all') {
+    return tilePeriodServiceExpr(period);
+  }
+
+  const threshold = maxHeadway === Infinity ? NO_PERIOD_SERVICE_TILE_VALUE - 1 : maxHeadway;
+  return ['<=', tileEffectiveHeadwayExpr(period), threshold];
+}
+
 /** Flat per-mode matchers (avoids nested case expr that breaks filter compilation). */
 export function buildModeFilterClause(modes: Set<number>): unknown[] | null {
   if (!modes || modes.size === 0) return null;
