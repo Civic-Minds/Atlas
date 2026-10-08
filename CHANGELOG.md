@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **The About page now leads with Atlas’s purpose and three measurable service lenses**, making the product feel like a transit tool rather than a generic information page.
 - **Removed the redundant About-page “Back to the map” link**, since the Atlas header already returns to the map.
 - **Standalone Atlas pages now retain the Atlas identity in their header**, so About does not feel disconnected from the main app.
 - **About page actions now use a consistent light outline style**, so one button does not overpower the rest of the page.
