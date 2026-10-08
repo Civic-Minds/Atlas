@@ -110,6 +110,29 @@ export function routeListDisplayHeadway(features: readonly ShapeProperties[], pe
 export function effectiveRouteHeadway(p: ShapeProperties, period: TimePeriod): number | null {
   const summary = buildRouteServiceSummary(p);
   if (period !== 'all') {
+    const hasExplicitPeriodValue = p.headwayByPeriod
+      && Object.prototype.hasOwnProperty.call(p.headwayByPeriod, period);
+    const coverage = p.worstDirectionPeriodCoverageHeadway?.[period]
+      ?? p.periodCoverageHeadway?.[period]
+      ?? (p.tier === 'span' ? undefined : p.maxGapByPeriod?.[period]);
+    const hasCoverageValue = Boolean(
+      (p.worstDirectionPeriodCoverageHeadway
+        && Object.prototype.hasOwnProperty.call(p.worstDirectionPeriodCoverageHeadway, period))
+      || (p.periodCoverageHeadway
+        && Object.prototype.hasOwnProperty.call(p.periodCoverageHeadway, period))
+      || (p.maxGapByPeriod
+        && Object.prototype.hasOwnProperty.call(p.maxGapByPeriod, period)),
+    );
+    // Older artifacts can mark a period as unsustained without publishing its
+    // full-window gap. The median is not enough to prove filterable service.
+    if (p.headwayByPeriodSustained?.[period] === false && !hasCoverageValue) return null;
+    // An explicit no-service period, or a period whose full-window coverage is too sparse,
+    // must not be replaced by a shared-stop cadence from a shorter part of the route.
+    if ((hasExplicitPeriodValue && p.headwayByPeriod?.[period] == null)
+      || (coverage != null && coverage > 60)
+      || (coverage == null && (p.periodCoverageHeadway || p.worstDirectionPeriodCoverageHeadway))) {
+      return metricValueForPeriod(summary.filter, period);
+    }
     const sharedHeadway = summary.shared.byHeadsignPeriod?.[period];
     if (sharedHeadway != null) return sharedHeadway;
   }
