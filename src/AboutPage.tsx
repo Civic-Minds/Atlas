@@ -25,7 +25,7 @@ export default function AboutPage() {
 
         <section className="grid gap-10 py-24 sm:py-32 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
           <div>
-            <h1 className="max-w-3xl text-5xl font-black tracking-[-0.04em] sm:text-7xl">See what the schedule actually means.</h1>
+            <h1 className="max-w-3xl text-5xl font-black tracking-[-0.04em] sm:text-7xl">A map for understanding how transit works.</h1>
           </div>
           <div className="max-w-md pb-1">
             <p className="text-lg leading-8 text-[var(--text-muted)]">Atlas turns published schedules into a clearer picture of where transit goes, how often it comes, and when it is useful.</p>
@@ -53,10 +53,10 @@ export default function AboutPage() {
         </section>
 
         <section className="grid max-w-4xl gap-8 py-20 sm:grid-cols-[0.75fr_1.25fr]">
-          <h2 className="text-2xl font-black tracking-tight">Built for questions a route map cannot answer.</h2>
+          <h2 className="text-2xl font-black tracking-tight">Atlas makes scheduled service easier to understand.</h2>
           <div className="space-y-5 text-base leading-7 text-[var(--text-muted)]">
             <p>How often does service come? How late does it run? Which parts of a network are useful without a timetable?</p>
-            <p>Atlas uses published agency schedules to make those patterns easier to see. It helps riders, planners, researchers, and advocates understand scheduled service without replacing official trip planning or live alerts.</p>
+            <p>It helps riders, planners, researchers, and advocates compare service across places and time. Atlas does not replace official trip planning, live alerts, or the agencies that publish the schedules.</p>
             <a href="/about/docs" className="inline-flex items-center gap-2 text-sm font-bold text-[var(--accent)] hover:underline">
               Read how Atlas works <ArrowRight className="h-4 w-4" />
             </a>
