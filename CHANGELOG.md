@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **The Frequent Service story now opens with “Why frequency matters,” giving the reader a useful frame instead of a generic section label.**
 - **Research cards now make the service patterns and thresholds visible at a glance**, with clearer visual identity and more specific next steps.
 - **Hamilton’s Trans-Cab service zones now appear alongside myRide coverage**, with the published Stoney Creek and Glanbrook boundaries and transfer points shown separately from fixed routes.
 - **Marked internal test sessions no longer send Atlas, Vercel, or Google analytics**, so performance checks do not pollute production measurements.
