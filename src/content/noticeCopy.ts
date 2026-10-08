@@ -10,6 +10,14 @@ export function expiredFeedNotice(agencyName: string, expDateStr?: string, manua
   return `Atlas's latest ${label} ended${expDateStr ? ` on ${expDateStr}` : ''}. We haven't been able to locate and verify a newer feed yet.`;
 }
 
+export function selectedRouteFilterNotice(options: {
+  activeRange: string;
+  periodLabel: string;
+  periodRange: string;
+}): string {
+  return `Service runs about every 30 minutes: ${options.activeRange}. ${options.periodLabel} service is measured from ${options.periodRange}; this route is shown because you selected it.`;
+}
+
 export const EXPIRED_FEED_EXPLANATION =
   'Atlas keeps showing the most recent feed it could verify while we look for a newer public feed.';
 
