@@ -41,7 +41,7 @@ export default function AboutPage() {
         </section>
 
         <section className="border-y border-[var(--border-primary)] py-8" aria-labelledby="explore-heading">
-          <h2 id="explore-heading" className="text-xl font-black">Explore transit through six lenses.</h2>
+          <h2 id="explore-heading" className="text-xl font-black">Different ways to understand the network.</h2>
           <div className="mt-8 grid gap-x-8 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
             {lenses.map(({ icon: Icon, label, text }) => (
               <div key={label} className="flex gap-3">
