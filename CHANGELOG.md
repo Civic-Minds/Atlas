@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- The About page now gives Atlas a clearer editorial landing page with shared navigation, a schedule-to-insight diagram, and direct research paths.
 - Overnight frequency filters no longer show routes whose full selected-period coverage is too sparse ([#524](https://github.com/Civic-Minds/Atlas/issues/524)).
 
 - **Route schedule data now uses one shared contract across the app and processing tools, reducing mismatches between map filters and route cards.**
