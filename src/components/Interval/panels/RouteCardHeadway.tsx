@@ -222,7 +222,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
       activePeriodRangeText,
     )
     : null;
-  const unevenNotice = selectedPeriod && unevenGap > 0
+  const unevenNotice = selectedPeriod && hasPeriodService && unevenGap > 0
     ? unevenServiceNotice(selectedPeriod.label, unevenGap)
     : null;
   const coreGroups = directionGroups.filter(group => shouldShowTrunkSummary(group.realTier, period));
@@ -433,12 +433,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
       )}
       {unevenNotice && (
         <div className="mt-4 mb-3 rounded-xl bg-[var(--bg-app)] px-3 py-2.5">
-          <p className="text-[10px] font-black text-[var(--text-primary)]">
-            {unevenNotice.title}
-          </p>
-          <p className="text-[9px] font-bold text-[var(--text-dim)] mt-0.5">
-            {unevenNotice.detail}
-          </p>
+          <p className="text-[10px] font-black text-[var(--text-primary)]">{unevenNotice}</p>
         </div>
       )}
       <SidebarCardList>

@@ -24,11 +24,8 @@ export function periodServiceNotice(periodLabel: string, periodRange: string, pa
     : `No scheduled service during ${periodLabel} (${periodRange}).`;
 }
 
-export function unevenServiceNotice(periodLabel: string, longestGap: number): { title: string; detail: string } {
-  return {
-    title: `Service is uneven during ${periodLabel}.`,
-    detail: `Longest gap: ${longestGap} minutes.`,
-  };
+export function unevenServiceNotice(periodLabel: string, longestGap: number): string {
+  return `Service runs throughout ${periodLabel}, but not consistently. Longest gap: ${longestGap} minutes.`;
 }
 
 export function selectedRouteOutsideFilterNotice(maxHeadway: number, periodLabel: string): string {
