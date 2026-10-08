@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **About now explains why Atlas combines frequency, span, coverage, modes, and history**, connecting the individual views to the bigger picture of how a network works.
 - **About now explains Atlas’s work in more detail**, including schedule comparison, historical change, and the role of Research.
 - **About now highlights the latest Frequent Service and Night Service research**, giving the page useful destinations instead of a generic Research link.
 - **Moved the Research section below Atlas’s core explanation**, so the page introduces the map before sending readers into research.

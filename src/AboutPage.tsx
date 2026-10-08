@@ -40,7 +40,8 @@ export default function AboutPage() {
         </section>
 
         <section className="border-y border-[var(--border-primary)] py-8" aria-labelledby="explore-heading">
-          <h2 id="explore-heading" className="text-xl font-black">Different ways to understand the network.</h2>
+          <h2 id="explore-heading" className="text-xl font-black">Atlas brings the pieces together.</h2>
+          <p className="mt-3 max-w-3xl text-base leading-7 text-[var(--text-muted)]">Together, these views show how a network actually works: where service goes, when it runs, how often it comes, and how it changes over time.</p>
           <div className="mt-8 grid gap-x-8 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
             {lenses.map(({ label, text }) => (
               <div key={label} className="border-l-2 border-[var(--accent-border)] pl-4">
