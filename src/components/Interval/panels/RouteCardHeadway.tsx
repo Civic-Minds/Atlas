@@ -422,7 +422,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
         {selectedRouteOutOfFilter && !(hasCoreSummary && coreHeadway != null && coreHeadway <= maxHeadway) && (
           <div className={CARD_NOTICE_FOOTER}>
             <p className={CARD_NOTICE}>
-              This route does not meet the {maxHeadway}-minute filter in every direction during {selectedPeriod?.label ?? 'the selected schedule'}, but remains visible because it is selected.
+              Only part of this route meets the {maxHeadway}-minute filter during {selectedPeriod?.label ?? 'the selected schedule'}. The map shows that qualifying stretch; the full route remains visible because it is selected.
             </p>
           </div>
         )}
