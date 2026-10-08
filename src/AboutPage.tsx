@@ -15,11 +15,11 @@ const lenses = [
 
 function AtlasDiagram() {
   return (
-    <div className="mt-14 rounded-[2rem] border border-[var(--border-primary)] bg-[var(--bg-panel)] p-5 sm:p-7" aria-label="Atlas turns a published schedule into service insights">
-      <div className="grid items-center gap-6 md:grid-cols-[1fr_auto_1.25fr]">
+    <div className="mt-12 rounded-[1.75rem] border border-[var(--border-primary)] bg-[var(--bg-panel)] p-4 sm:p-6" aria-label="Atlas turns a published schedule into service insights">
+      <div className="grid items-center gap-5 md:grid-cols-[1fr_auto_1.25fr]">
         <div>
           <p className="text-xs font-black uppercase tracking-[0.18em] text-[var(--text-dim)]">Published schedule</p>
-          <div className="mt-4 space-y-3 rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-app)] p-4">
+          <div className="mt-3 space-y-2.5 rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-app)] p-3.5">
             {['6:00', '6:15', '6:30', '6:45'].map((time, index) => (
               <div key={time} className="flex items-center gap-3 text-sm font-bold">
                 <span className="w-10 text-[var(--text-muted)]">{time}</span>
@@ -40,7 +40,7 @@ function AtlasDiagram() {
               ['Coverage', '18 stops'],
               ['History', '2012–2026'],
             ].map(([label, value]) => (
-              <div key={label} className="rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-app)] p-4">
+              <div key={label} className="rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-app)] p-3.5">
                 <p className="text-xs font-bold text-[var(--text-muted)]">{label}</p>
                 <p className="mt-2 text-base font-black">{value}</p>
               </div>
@@ -59,7 +59,7 @@ export default function AboutPage() {
     <main className="min-h-screen overflow-y-auto bg-[var(--bg-app)] px-6 py-8 text-[var(--text-primary)] sm:px-10 lg:px-16">
       <div className="mx-auto max-w-5xl">
         <SiteHeader />
-        <section className="max-w-5xl py-24 sm:py-32">
+        <section className="max-w-5xl pb-16 pt-24 sm:pb-20 sm:pt-32">
           <h1 className="max-w-4xl text-5xl font-black tracking-[-0.04em] sm:text-7xl">A map for <span className="block"><span className="inline-block w-[12ch] whitespace-nowrap">{headlineVerbs[headlineVerbIndex]}</span></span>{' '}how transit works.</h1>
           <p className="mt-8 max-w-2xl text-xl leading-8 text-[var(--text-muted)]">Atlas turns published schedules into a clearer picture of where transit goes, how often it comes, and when it is useful.</p>
           <AtlasDiagram />
