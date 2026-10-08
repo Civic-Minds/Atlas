@@ -13,6 +13,47 @@ const lenses = [
   { label: 'History', text: 'How scheduled service changes over time.' },
 ];
 
+function AtlasDiagram() {
+  return (
+    <div className="mt-14 rounded-[2rem] border border-[var(--border-primary)] bg-[var(--bg-panel)] p-5 sm:p-7" aria-label="Atlas turns a published schedule into service insights">
+      <div className="grid items-center gap-6 md:grid-cols-[1fr_auto_1.25fr]">
+        <div>
+          <p className="text-xs font-black uppercase tracking-[0.18em] text-[var(--text-dim)]">Published schedule</p>
+          <div className="mt-4 space-y-3 rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-app)] p-4">
+            {['6:00', '6:15', '6:30', '6:45'].map((time, index) => (
+              <div key={time} className="flex items-center gap-3 text-sm font-bold">
+                <span className="w-10 text-[var(--text-muted)]">{time}</span>
+                <span className={`h-1.5 flex-1 rounded-full ${index % 2 === 0 ? 'bg-indigo-400' : 'bg-amber-400'}`} />
+                <span className="h-2.5 w-2.5 rounded-full border-2 border-[var(--text-primary)]" />
+              </div>
+            ))}
+          </div>
+          <p className="mt-3 text-sm text-[var(--text-muted)]">Route 12 · weekday departures</p>
+        </div>
+
+        <ArrowRight className="mx-auto hidden h-6 w-6 text-[var(--text-dim)] md:block" aria-hidden="true" />
+
+        <div>
+          <p className="text-xs font-black uppercase tracking-[0.18em] text-[var(--text-dim)]">Atlas view</p>
+          <div className="mt-4 grid grid-cols-2 gap-3">
+            {[
+              ['Frequency', '15 min'],
+              ['Service span', '6am–10pm'],
+              ['Coverage', '18 stops'],
+              ['History', '2012–2026'],
+            ].map(([label, value]) => (
+              <div key={label} className="rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-app)] p-4">
+                <p className="text-xs font-bold text-[var(--text-muted)]">{label}</p>
+                <p className="mt-2 text-base font-black">{value}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function AboutPage() {
   const [headlineVerbIndex] = useState(() => Math.floor(Math.random() * headlineVerbs.length));
 
@@ -24,6 +65,7 @@ export default function AboutPage() {
         <section className="max-w-5xl py-24 sm:py-32">
           <h1 className="max-w-4xl text-5xl font-black tracking-[-0.04em] sm:text-7xl">A map for <span className="block"><span className="inline-block w-[12ch] whitespace-nowrap">{headlineVerbs[headlineVerbIndex]}</span></span>{' '}how transit works.</h1>
           <p className="mt-8 max-w-2xl text-xl leading-8 text-[var(--text-muted)]">Atlas turns published schedules into a clearer picture of where transit goes, how often it comes, and when it is useful.</p>
+          <AtlasDiagram />
         </section>
 
         <section className="grid max-w-4xl gap-8 border-y border-[var(--border-primary)] py-16 sm:grid-cols-[0.75fr_1.25fr]" aria-labelledby="explore-heading">
