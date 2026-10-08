@@ -24,6 +24,10 @@ describe('HeadwaySparkline', () => {
         onPeriodChange={() => {}}
         allowExpand
         title="Route 14 — Lakeshore"
+        directionOptions={[
+          { key: 'all', label: 'All directions', byHour: { 6: 30, 12: 20, 18: 25, 24: 45 } },
+          { key: 'northbound', label: 'Northbound', byHour: { 6: 30, 12: 20, 18: 25, 24: 45 } },
+        ]}
       />,
     );
 
@@ -34,6 +38,7 @@ describe('HeadwaySparkline', () => {
     expect(within(dialog).getByText('AM Peak')).toBeInTheDocument();
     expect(within(dialog).getByText('Midday')).toBeInTheDocument();
     expect(within(dialog).getByText('Overnight')).toBeInTheDocument();
+    expect(within(dialog).getByRole('tab', { name: 'All directions' })).toHaveClass('h-7', 'px-2.5');
     expect(within(dialog).getByText('Hover over an hour to inspect its scheduled headway window.')).toBeInTheDocument();
   });
 

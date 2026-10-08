@@ -310,7 +310,7 @@ export function HeadwaySparkline({ byHour, stackedByHour, directionOptions, peri
                     role="tab"
                     aria-selected={expandedDirection === option.key}
                     onClick={() => setExpandedDirection(option.key)}
-                    className={`h-8 px-3 flex items-center justify-center rounded-full border text-[10px] font-bold transition-colors ${expandedDirection === option.key ? CONTROL_ACTIVE : CONTROL_INACTIVE}`}
+                    className={`h-7 px-2.5 flex items-center justify-center text-[11px] font-bold rounded-full border transition-colors ${expandedDirection === option.key ? CONTROL_ACTIVE : CONTROL_INACTIVE}`}
                   >
                     {option.label}
                   </button>
