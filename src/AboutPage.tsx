@@ -51,14 +51,14 @@ export default function AboutPage() {
           </div>
         </section>
 
-        <section className="grid gap-8 border-b border-[var(--border-primary)] py-12 sm:grid-cols-[0.75fr_1.25fr]" aria-labelledby="research-heading">
-          <h2 id="research-heading" className="text-2xl font-black tracking-tight">Research the patterns behind the map.</h2>
-          <div>
+        <section className="grid gap-8 border-b border-[var(--border-primary)] py-12 sm:grid-cols-[1.25fr_0.75fr]" aria-labelledby="research-heading">
+          <div className="sm:order-1">
             <p className="max-w-2xl text-base leading-7 text-[var(--text-muted)]">Read how agencies define frequent and overnight service, then explore the evidence and methods behind Atlas’s research views.</p>
             <a href="/research" className="mt-4 inline-flex items-center gap-2 text-sm font-bold text-[var(--accent)] hover:underline">
               Explore Research <ArrowRight className="h-4 w-4" />
             </a>
           </div>
+          <h2 id="research-heading" className="text-2xl font-black tracking-tight sm:order-2 sm:text-right">Research the patterns behind the map.</h2>
         </section>
 
         <section className="grid max-w-4xl gap-8 py-20 sm:grid-cols-[0.75fr_1.25fr]">
