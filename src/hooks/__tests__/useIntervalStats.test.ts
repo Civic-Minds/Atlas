@@ -550,6 +550,17 @@ describe('useIntervalStats', () => {
     expect(JSON.stringify(result.current.tileFilter)).toContain('15');
   });
 
+  it('does not force an out-of-period selected route into the tile filter', () => {
+    const { result } = renderHook(() => useIntervalStats({}, {
+      ...defaultFilters,
+      agencies: new Set(['sacrt']),
+      maxHeadway: Infinity,
+      period: 'evening' as const,
+      selectedRoute: 'sacrt::010',
+    }));
+    expect(JSON.stringify(result.current.tileFilter)).not.toContain('sacrt::010');
+  });
+
   it('keeps the active period filter when Frequency is set to All', () => {
     const { result } = renderHook(() => useIntervalStats({}, {
       ...defaultFilters,

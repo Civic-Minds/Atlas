@@ -68,7 +68,7 @@ export interface IntervalFilters {
   day: DayType;
   period: TimePeriod;
   selectedStop: string | null; // stopId
-  selectedRoute?: string | null; // force-include the full geometry of this route even if it doesn't match frequency/agency/etc filters
+  selectedRoute?: string | null; // identifies the route whose details are open; it must still pass map filters
   bounds?: ViewportBounds | null; // current map viewport; stats are scoped to it when set
   hideSpan?: boolean; // hide routes with no sustained tier (irregular/peak-only/school-run service)
   hideLimitedService?: boolean; // hide explicitly time-limited service without hiding regular infrequent routes
@@ -494,12 +494,7 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
         ? tilePeriodServiceExpr(period)
         : tileEffectiveHeadwayExpr(period);
       const threshold = maxHeadway === Infinity ? NO_PERIOD_SERVICE_TILE_VALUE - 1 : maxHeadway;
-      if (selectedRoute) {
-        const routeKeyExpr: any = tileRouteKeyExpr();
-        clauses.push(['any', ['==', routeKeyExpr, selectedRoute], ['<=', hwExpr, threshold]]);
-      } else {
-        clauses.push(['<=', hwExpr, threshold]);
-      }
+      clauses.push(['<=', hwExpr, threshold]);
     }
 
     return clauses.length === 1 ? clauses[0] : ['all', ...clauses];

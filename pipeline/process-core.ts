@@ -17,7 +17,7 @@ import { TIME_PERIODS, SPARKLINE_HOURS, type PeriodKey, type HeadwayByPeriod, ty
 import { DAY_TYPES, type DayType } from '../types/gtfs.js';
 import { ALL_DAYS } from '../shared/dayTypes.js';
 import { t2m } from './transit-utils.js';
-import { adaptiveMedianHeadwayInWindow, computePeriodHeadways, computePeriodHeadwayRanges, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, hasGenuineBranchPattern, hasSustainedFrequentService, hasSustainedNightService, headsignOverlapMinHeadway, headwayToTier, medianHeadwayInWindow, nightServiceDepartureTimes, NIGHT_SERVICE_WINDOW_END_MIN, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
+import { adaptiveMedianHeadwayInWindow, computeHourMaxGaps, computePeriodHeadways, computePeriodHeadwayRanges, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, hasGenuineBranchPattern, hasSustainedFrequentService, hasSustainedNightService, headsignOverlapMinHeadway, headwayToTier, medianHeadwayInWindow, nightServiceDepartureTimes, NIGHT_SERVICE_WINDOW_END_MIN, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
 import { computeRouteBaseFares, detectBusSubType } from './route-metadata.js';
 import { buildStopsMeta } from './stopsMeta.js';
 import { clipLineBetweenPositions, clipLineBetweenStops, projectStopsOntoShape, simplifyLine } from './geometry.js';
@@ -400,6 +400,7 @@ export async function processGtfsBuffer(
           }
           return byHour;
         })(),
+        maxGapByHour: computeHourMaxGaps(result.times, SPARKLINE_HOURS),
         routeShortName: shortName,
         routeVariant: result.routeVariant ?? null,
         routeLongName: route?.route_long_name ?? null,
@@ -950,18 +951,32 @@ export async function processGtfsBuffer(
           SPARKLINE_HOURS.map(h => [h, adaptiveMedianHeadwayInWindow(terminalScopedTimes, h * 60, 3)]),
         ) as HeadwayByHour
       : undefined;
+    const terminalHourGaps = terminalStopId
+      ? computeHourMaxGaps(metricStopMap.get(terminalStopId) ?? [], SPARKLINE_HOURS)
+      : undefined;
+    const headsignTerminalHourGaps = terminalScopedTimes
+      ? computeHourMaxGaps(terminalScopedTimes, SPARKLINE_HOURS)
+      : undefined;
     const terminalHourIsBranchScoped = !!headsignTerminalHourHw;
     const branchHourHw = feature.properties.headwayByHour as HeadwayByHour | undefined;
     if (branchHourHw) {
       const mergedHourHw: HeadwayByHour = {};
+      const branchHourGaps = feature.properties.maxGapByHour as Record<number, number | null> | undefined;
+      const mergedHourGaps: Record<number, number | null> = {};
       for (const h of SPARKLINE_HOURS) {
         const termH = headsignTerminalHourHw?.[h] ?? terminalHourHw?.[h] ?? null;
         const bH = branchHourHw[h] ?? null;
-        mergedHourHw[h] = resolveTerminalPeriodHeadway(termH, bH, terminalHourIsBranchScoped);
+        const resolvedH = resolveTerminalPeriodHeadway(termH, bH, terminalHourIsBranchScoped);
+        mergedHourHw[h] = resolvedH;
+        mergedHourGaps[h] = resolvedH === termH
+          ? (headsignTerminalHourGaps?.[h] ?? terminalHourGaps?.[h] ?? null)
+          : (branchHourGaps?.[h] ?? null);
       }
       feature.properties.headwayByHour = mergedHourHw;
+      feature.properties.maxGapByHour = mergedHourGaps;
     } else if (terminalHourHw) {
       feature.properties.headwayByHour = terminalHourHw;
+      feature.properties.maxGapByHour = headsignTerminalHourGaps ?? terminalHourGaps;
     }
   }
 

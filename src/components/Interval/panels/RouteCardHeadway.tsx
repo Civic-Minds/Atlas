@@ -94,6 +94,18 @@ function sparklineHeadwayByHour(
   return out;
 }
 
+function sparklineMaxGapByHour(
+  directions: ShapeProperties[],
+  hours: readonly number[],
+): Record<number, number | null> {
+  return Object.fromEntries(hours.map(h => {
+    const values = directions
+      .map(d => d.maxGapByHour?.[h])
+      .filter((v): v is number => v != null);
+    return [h, values.length > 0 ? Math.max(...values) : null];
+  }));
+}
+
 export interface DirectionGroup {
   dirId: number;
   realTier: ShapeProperties[];
@@ -339,6 +351,9 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
         const hoveredMerged = showTrunkSparkline
           ? defaultMerged
           : sparklineHeadwayByHour(hoveredSparklineDirs, HOURS);
+        const mergedMaxGaps = showTrunkSparkline
+          ? sparklineMaxGapByHour(primaryMultiBranch!.realTier, HOURS)
+          : sparklineMaxGapByHour(hoveredSingleBranch ? hoveredSparklineDirs : defaultSparklineDirs, HOURS);
         // A hovered destination can have no hourly data in the active period.
         // Falling back to the route chart keeps the chart mounted, so its layout
         // does not shift under the pointer and cause hover flicker (#550).
@@ -366,6 +381,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           <>
             <HeadwaySparkline
               byHour={merged}
+              maxGapByHour={mergedMaxGaps}
               stackedByHour={stackedByHour}
               directionOptions={directionOptions}
               period={period}
@@ -388,7 +404,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           <p className="text-[9px] font-bold text-[var(--text-dim)] mt-0.5">
             {hasPartialPeriodService
               ? `Service only runs for part of this period (${formatPeriodRangeLong(selectedPeriod.startHour, selectedPeriod.endHour)}).`
-              : `${formatPeriodRangeLong(selectedPeriod.startHour, selectedPeriod.endHour)}. This route may run during another period.`}
+              : `${formatPeriodRangeLong(selectedPeriod.startHour, selectedPeriod.endHour)}. It is hidden from the map for this period.`}
           </p>
         </div>
       )}

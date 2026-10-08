@@ -240,6 +240,9 @@ export interface HeadwayPeriodRange {
 
 export type HeadwayByPeriodRange = Partial<Record<PeriodKey, HeadwayPeriodRange | null>>;
 
+/** Longest departure gap starting within each sparkline hour. */
+export type HeadwayByHourMaxGap = Partial<Record<number, number | null>>;
+
 export interface HeadwayTier {
   max: number;
   color: string;

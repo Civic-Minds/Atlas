@@ -1820,7 +1820,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     }
 
     const selectedRouteFilter = selectedRoute
-      ? routeKeyMatchExpression(selectedRoute)
+      ? concatFilters(routeFilter, routeKeyMatchExpression(selectedRoute))
       : ['==', ['get', 'routeId'], ''];
     if (map.getLayer('selected-route-layer')) map.setFilter('selected-route-layer', selectedRouteFilter as any);
     if (map.getLayer('selected-local-route-layer')) map.setFilter('selected-local-route-layer', selectedRouteFilter as any);
@@ -1838,9 +1838,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       const hitRouteFilter = (!fareView && !nightServiceView && !frequentServiceView)
         ? concatFilters(
             routeFilter,
-            selectedRoute
-              ? ['any', routeKeyMatchExpression(selectedRoute), buildZoomHeadwayGateExpression(headwayExpr)]
-              : buildZoomHeadwayGateExpression(headwayExpr),
+            buildZoomHeadwayGateExpression(headwayExpr),
           )
         : routeFilter;
       if (hasOverviewRoutesHit) map.setFilter('overview-routes-hit-layer', hitRouteFilter as any);
