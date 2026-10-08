@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **About page actions now use a consistent light outline style**, so one button does not overpower the rest of the page.
 - **The About page now uses a simpler, more focused layout**, so Atlas’s purpose and next steps are clear without a competing prompt panel.
 - **The map header no longer shows an empty More menu when History is already visible**, keeping the remaining navigation controls meaningful at each screen size.
 - **Removed the duplicate Research control from the map header**, keeping research navigation on the Research landing page instead of splitting it across the app shell.

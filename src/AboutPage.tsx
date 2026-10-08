@@ -21,7 +21,7 @@ export default function AboutPage() {
             Atlas turns published schedules into a map you can explore by frequency, time of day, agency, and place.
           </p>
           <div className="mt-8 flex flex-wrap gap-2">
-            <a href="/" className="inline-flex h-10 items-center gap-2 rounded-full bg-[var(--text-primary)] px-5 text-sm font-black text-[var(--bg-app)] hover:opacity-80">
+            <a href="/" className="inline-flex h-10 items-center gap-2 rounded-full border border-[var(--border-primary)] px-5 text-sm font-black hover:border-[var(--accent-border)]">
               Open the map <ArrowRight className="h-4 w-4" />
             </a>
             <a href="/research" className="inline-flex h-10 items-center rounded-full border border-[var(--border-primary)] px-5 text-sm font-bold hover:bg-[var(--bg-btn-hover)]">
