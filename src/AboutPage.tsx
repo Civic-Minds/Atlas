@@ -1,4 +1,5 @@
 import { ArrowRight } from 'lucide-react';
+import { FEATURES } from '../shared/config';
 import SiteHeader from './components/SiteHeader';
 import SiteFooter from './components/SiteFooter';
 
@@ -47,7 +48,7 @@ export default function AboutPage() {
           </div>
         </section>
 
-        <section className="border-t border-[var(--border-primary)] py-12" aria-labelledby="research-heading">
+        {FEATURES.researchApps && <section className="border-t border-[var(--border-primary)] py-12" aria-labelledby="research-heading">
           <h2 id="research-heading" className="text-2xl font-black tracking-tight">Keep looking.</h2>
           <div className="mt-8 grid gap-8 sm:grid-cols-2">
             <a href="/research/frequent-service/story" className="group border-l-2 border-[var(--accent-border)] pl-4">
@@ -61,7 +62,7 @@ export default function AboutPage() {
               <span className="mt-4 inline-flex items-center gap-2 text-sm font-bold text-[var(--accent)]">Explore Night Service <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" /></span>
             </a>
           </div>
-        </section>
+        </section>}
 
         <SiteFooter />
       </div>
