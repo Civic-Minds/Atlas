@@ -1,65 +1,16 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import type { Agency } from '../App';
 import { fetchAgencyGeo, getCachedAgencyGeo, fetchAgencyCorridors, getCachedAgencyCorridors } from '../lib/agencyGeo';
-import { getAgencyArtifactUrls, DEFAULT_MAP_CENTER, AGENCY_BBOX_PAD, VIEWPORT_BBOX_PAD, type HeadwayByHourMaxGap, type HeadwayByPeriod, type HeadwayByPeriodMaxGap, type HeadwayByPeriodRange, type HeadwayByPeriodSustained } from '../../shared/config';
+import { getAgencyArtifactUrls, DEFAULT_MAP_CENTER, AGENCY_BBOX_PAD, VIEWPORT_BBOX_PAD } from '../../shared/config';
+import type { HeadwayByHourMaxGap, HeadwayByPeriod, HeadwayByPeriodMaxGap, HeadwayByPeriodRange, HeadwayByPeriodSustained } from '../../shared/config';
+import type { HeadwayByHour, RouteProperties } from '../../shared/routeProperties';
 import type { ViewportBounds } from './useIntervalStats';
 import { getSavedView } from '../utils/regionView';
 import { agencySlugsToPrefetchForSearch } from '../utils/agencySearch';
 import { pruneAgencyLayers, MAX_AGENCY_LAYERS_IN_REACT } from './agencyLayerPrune';
-import type { RouteDataQualityWarning } from '../../shared/routeDataQuality';
-
+export type { HeadwayByHour, RouteProperties };
 export type { HeadwayByHourMaxGap, HeadwayByPeriod, HeadwayByPeriodMaxGap, HeadwayByPeriodRange, HeadwayByPeriodSustained };
-export type HeadwayByHour = Partial<Record<number, number | null>>;
-
-export interface ShapeProperties {
-  routeId: string;
-  routeBranch?: string | null;
-  directionId: number;
-  tier: string | null;
-  weekdayTierVariation?: boolean;
-  edgeGapAllowance?: 'opening' | 'closing' | 'both';
-  serviceClass?: 'regular' | 'time-limited' | 'irregular';
-  headway: number | null;
-  headwayByPeriod?: HeadwayByPeriod;
-  /** Typical scheduled gap range inside each period. */
-  headwayRangeByPeriod?: HeadwayByPeriodRange;
-  /** #281: longest departure gap touching each period, clipped to the period window. */
-  maxGapByPeriod?: HeadwayByPeriodMaxGap;
-  /** #281: whether each period's own median fairly describes its gaps. */
-  headwayByPeriodSustained?: HeadwayByPeriodSustained;
-  routeDataQualityWarning?: import('../../shared/routeDataQuality').RouteDataQualityWarning;
-  headwayByHour?: HeadwayByHour;
-  /** Longest departure gap starting in each sparkline hour. */
-  maxGapByHour?: HeadwayByHourMaxGap;
-  routeShortName: string | null;
-  routeLongName: string | null;
-  /** Optional agency/feed-provided branch or variant identifier. */
-  routeVariant?: string | null;
-  agencyName?: string;
-  headsign?: string | null;
-  busSubType?: 'brt' | 'express' | 'coach' | 'local';
-  worstDirectionHeadway?: number;
-  worstDirectionHeadwayByPeriod?: HeadwayByPeriod;
-  periodCoverageHeadway?: HeadwayByPeriod;
-  worstDirectionPeriodCoverageHeadway?: HeadwayByPeriod;
-  stopPeriodCoverageHeadways?: Record<string, HeadwayByPeriod>;
-  /** #318: at least one direction of this route+day has no sustained/real-tier pattern at all. */
-  routeHasIrregularDirection?: boolean;
-  /** At least one direction of this route+day has explicitly time-limited service. */
-  routeHasLimitedDirection?: boolean;
-  minStopHeadway?: number;
-  minStopHeadwayByPeriod?: Partial<Record<string, number>>;
-  headsignMinStopHeadwayByPeriod?: Partial<Record<string, number>>;
-  /** Per-stop service projections used by stop cards and corridor legs. */
-  stopHeadways?: Record<string, number | null>;
-  stopPeriodHeadways?: Record<string, HeadwayByPeriod>;
-  /** On-shape stop IDs in shape order, and their normalized (0-1) position along the shape.
-   *  Real per-agency GeoJSON only -- PMTiles serializes these as JSON-stringified scalar
-   *  properties, not usable for map filters/expressions (#317). */
-  stopOrder?: string[];
-  stopPositions?: number[];
-  researchFrequentService?: { daytime15: boolean; daytime30: boolean; extended15: boolean; extended30: boolean };
-}
+export type ShapeProperties = RouteProperties;
 
 export type AgencyLayers = Record<string, GeoJSON.FeatureCollection>;
 

@@ -11,6 +11,7 @@ import { effectiveRouteHeadway } from '../utils/effectiveHeadway';
 import { collectStopHubSiblings } from '../utils/stopHub';
 import { isHiddenByIrregularFilter, isLimitedService } from '../../shared/irregularRoutes';
 import { buildRouteKey } from '../utils/routeKey';
+import { hasPeriodSummary } from '../../shared/periodEligibility';
 
 export type DayType = 'Weekday' | 'Saturday' | 'Sunday';
 
@@ -169,12 +170,7 @@ export function passesRouteFilter(
     // An explicit null period summary means no scheduled service in that
     // period. Do not let the all-day fallback make the route look like an
     // active-period match (the agency card may still list it as inventory).
-    const hasPeriodSummary = p.headwayByPeriod != null
-      && Object.prototype.hasOwnProperty.call(p.headwayByPeriod, filters.period);
-    const hasLegacyLateSummary = filters.period === 'late'
-      && p.headwayByPeriod != null
-      && Object.prototype.hasOwnProperty.call(p.headwayByPeriod, 'lateNight');
-    if (hasPeriodSummary || hasLegacyLateSummary) return false;
+    if (hasPeriodSummary(p, filters.period)) return false;
     // No period data — fall through to all-day check below.
   }
   // All-day check: use worst-direction headway (AI-182) so both directions must qualify.

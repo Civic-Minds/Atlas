@@ -1,7 +1,15 @@
 import { describe, expect, it } from 'vitest';
-import { hasAnyPeriodCoverage, hasPeriodCoverageValue, isUnsustainedWithoutCoverage, periodCoverageValue } from '../periodEligibility';
+import { hasAnyPeriodCoverage, hasNoPeriodService, hasPeriodCoverageValue, hasPeriodSummary, isUnsustainedWithoutCoverage, periodCoverageValue } from '../periodEligibility';
 
 describe('period eligibility policy', () => {
+  it('recognizes explicit period summaries and explicit no-service values', () => {
+    const fields = { headwayByPeriod: { overnight: null, lateNight: 20 } };
+    expect(hasPeriodSummary(fields, 'overnight')).toBe(true);
+    expect(hasNoPeriodService(fields, 'overnight')).toBe(true);
+    expect(hasPeriodSummary(fields, 'late')).toBe(true);
+    expect(hasNoPeriodService(fields, 'late')).toBe(false);
+  });
+
   it('uses the worst-direction coverage value when available', () => {
     const fields = {
       periodCoverageHeadway: { overnight: 180 },

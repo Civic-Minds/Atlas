@@ -1,6 +1,6 @@
 import type { ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
 import { isHourInPeriod } from '../../shared/config';
-import { hasAnyPeriodCoverage, hasPeriodCoverageValue, isUnsustainedWithoutCoverage, periodCoverageValue, PERIOD_COVERAGE_MAX_HEADWAY } from '../../shared/periodEligibility';
+import { hasAnyPeriodCoverage, hasNoPeriodService, hasPeriodCoverageValue, hasPeriodSummary, isUnsustainedWithoutCoverage, periodCoverageValue, PERIOD_COVERAGE_MAX_HEADWAY } from '../../shared/periodEligibility';
 import { buildRouteServiceSummary, metricValueForPeriod } from './routeFacts';
 
 /** Headway shown on route cards and lists — the same route-level metric used by the filter. */
@@ -32,7 +32,7 @@ export function routeCardDisplayHeadway(p: ShapeProperties, period: TimePeriod):
   if (period !== 'all') {
     // An explicit null means this branch has no service in the selected period.
     // Do not replace that with a shared-stop cadence from another pattern or direction.
-    if (p.headwayByPeriod && Object.prototype.hasOwnProperty.call(p.headwayByPeriod, period)) return null;
+    if (hasNoPeriodService(p, period)) return null;
     return summary.shared.byHeadsignPeriod?.[period] ?? null;
   }
   return branchHeadway;
@@ -111,8 +111,7 @@ export function routeListDisplayHeadway(features: readonly ShapeProperties[], pe
 export function effectiveRouteHeadway(p: ShapeProperties, period: TimePeriod): number | null {
   const summary = buildRouteServiceSummary(p);
   if (period !== 'all') {
-    const hasExplicitPeriodValue = p.headwayByPeriod
-      && Object.prototype.hasOwnProperty.call(p.headwayByPeriod, period);
+    const hasExplicitPeriodValue = hasPeriodSummary(p, period);
     // Older artifacts can mark a period as unsustained without publishing its
     // full-window gap. The median is not enough to prove filterable service.
     if (isUnsustainedWithoutCoverage(p, period)) return null;

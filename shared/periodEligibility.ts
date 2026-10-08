@@ -1,10 +1,11 @@
-import type { PeriodKey } from './config.js';
+import type { HeadwayByPeriod, PeriodKey } from './config.js';
 
 /** The largest full-window gap that can still qualify as frequent service. */
 export const PERIOD_COVERAGE_MAX_HEADWAY = 60;
 
 export interface PeriodEligibilityFields {
   tier?: string | null;
+  headwayByPeriod?: HeadwayByPeriod;
   periodCoverageHeadway?: Partial<Record<PeriodKey, number | null>>;
   worstDirectionPeriodCoverageHeadway?: Partial<Record<PeriodKey, number | null>>;
   maxGapByPeriod?: Partial<Record<PeriodKey, number | null>>;
@@ -35,6 +36,21 @@ export function hasAnyPeriodCoverage(fields: PeriodEligibilityFields): boolean {
   return fields.worstDirectionPeriodCoverageHeadway !== undefined
     || fields.periodCoverageHeadway !== undefined
     || (fields.tier !== 'span' && fields.maxGapByPeriod !== undefined);
+}
+
+/** Whether the artifact explicitly supplied a period summary, including null. */
+export function hasPeriodSummary(fields: PeriodEligibilityFields, period: PeriodKey): boolean {
+  return hasOwn(fields.headwayByPeriod, period)
+    || (period === 'late' && hasOwn(fields.headwayByPeriod, 'lateNight'));
+}
+
+/** Whether an explicit period summary says that the period has no service. */
+export function hasNoPeriodService(fields: PeriodEligibilityFields, period: PeriodKey): boolean {
+  if (!fields.headwayByPeriod) return false;
+  if (hasOwn(fields.headwayByPeriod, period)) return fields.headwayByPeriod[period] == null;
+  return period === 'late'
+    && hasOwn(fields.headwayByPeriod, 'lateNight')
+    && (fields.headwayByPeriod as Record<string, number | null>)['lateNight'] == null;
 }
 
 /** Legacy records cannot use an unsustained median as proof of filterable service. */

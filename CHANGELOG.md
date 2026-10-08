@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Route schedule data now uses one shared contract across the app and processing tools, reducing mismatches between map filters and route cards.**
 - **Selected routes now explain when service only covers part of the selected time window, so frequency filters are easier to understand.**
 - **Schedule charts now mark individual hours with unusually long gaps, so a route’s typical frequency does not hide a slower hour.**
 - **Routes without service in the selected period are now hidden from the map, so route cards no longer contradict the map.**
