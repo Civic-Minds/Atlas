@@ -13,7 +13,7 @@
     41.9,
     -73.7
   ],
-  "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-hudson-link-gtfs-2312.zip?alt=media",
+  "feedUrl": "https://s3.amazonaws.com/datatools-511ny/public/Hudson_Link.zip",
   "lastFeedExpiry": "20261001",
   "lastFeedVersion": "UTC: 25-Mar-2026 23:59",
   "lastRefreshedAt": "2026-08-07",

@@ -64,6 +64,12 @@ confirmed no anomalies for Hudson Link, SETD, Trinity Metro, or Whatcom. The
 Loudoun, KCATA, and Island Transit warnings remain open for review. No agency
 configuration, production artifact, PMTiles file, or R2 object was changed.
 
+## Explicitly approved live refresh batch — 2026-10-07
+
+Ryan approved a production refresh for `hudsonlink`, `loudoun-transit`, `setd`,
+`trinitymetro`, and `whatcomtransit`. KCATA, Island Transit, Tulare County,
+Annapolis, Broward, and Longview remain out of scope.
+
 ## Previous read-only audit — 2026-09-26
 
 The registry contains 80 records whose schedules were expired before the audit

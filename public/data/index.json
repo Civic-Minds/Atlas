@@ -4771,7 +4771,7 @@
         49,
         -122
       ],
-      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-washington-whatcom-transportation-authority-gtfs-284.zip?alt=media",
+      "feedUrl": "https://github.com/whatcomtrans/publicwtadata/raw/master/GTFS/wta_gtfs_latest.zip",
       "lastFeedExpiry": "20260919",
       "lastFeedVersion": "S1000173-S1000174",
       "lastRefreshedAt": "2026-08-07",
@@ -5077,7 +5077,7 @@
         41.9,
         -73.7
       ],
-      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-hudson-link-gtfs-2312.zip?alt=media",
+      "feedUrl": "https://s3.amazonaws.com/datatools-511ny/public/Hudson_Link.zip",
       "lastFeedExpiry": "20261001",
       "lastFeedVersion": "UTC: 25-Mar-2026 23:59",
       "lastRefreshedAt": "2026-08-07",
@@ -5798,8 +5798,8 @@
         46.23,
         -123.73
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/tld-4211/tld-4211-202607280034/tld-4211-202607280034.zip",
-      "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-4211/tld-4211-202607280034/tld-4211-202607280034.zip",
+      "feedUrl": "https://oregon-gtfs.trilliumtransit.com/gtfs_data/clatsopcounty-or-us/clatsopcounty-or-us.zip",
+      "mdbFeedUrl": "https://oregon-gtfs.trilliumtransit.com/gtfs_data/clatsopcounty-or-us/clatsopcounty-or-us.zip",
       "timezone": "America/Los_Angeles",
       "lastFeedExpiry": "20270531",
       "lastFeedVersion": "UTC: 30-Sep-2026 16:44",
@@ -8951,7 +8951,7 @@
         32.73,
         -97.29
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-2890/mdb-2890-202606170131/mdb-2890-202606170131.zip",
+      "feedUrl": "https://gtfsdata.ridetm.org/gtfs/fwtatransitdata.zip",
       "lastFeedExpiry": "20270130",
       "lastFeedVersion": "SEPTEMBER 2026_20260806",
       "region": "Texas",
@@ -13426,7 +13426,7 @@
         39.08,
         -77.65
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-1053/mdb-1053-202604210103/mdb-1053-202604210103.zip",
+      "feedUrl": "https://www.loudoun.gov/loudountransitgtfs",
       "lastFeedExpiry": "20260926",
       "lastFeedVersion": "S1000079",
       "region": "Virginia",

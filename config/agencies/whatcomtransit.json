@@ -13,7 +13,7 @@
     49,
     -122
   ],
-  "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-washington-whatcom-transportation-authority-gtfs-284.zip?alt=media",
+  "feedUrl": "https://github.com/whatcomtrans/publicwtadata/raw/master/GTFS/wta_gtfs_latest.zip",
   "lastFeedExpiry": "20260919",
   "lastFeedVersion": "S1000173-S1000174",
   "lastRefreshedAt": "2026-08-07",

@@ -13,8 +13,8 @@
     46.23,
     -123.73
   ],
-  "feedUrl": "https://files.mobilitydatabase.org/tld-4211/tld-4211-202607280034/tld-4211-202607280034.zip",
-  "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-4211/tld-4211-202607280034/tld-4211-202607280034.zip",
+  "feedUrl": "https://oregon-gtfs.trilliumtransit.com/gtfs_data/clatsopcounty-or-us/clatsopcounty-or-us.zip",
+  "mdbFeedUrl": "https://oregon-gtfs.trilliumtransit.com/gtfs_data/clatsopcounty-or-us/clatsopcounty-or-us.zip",
   "timezone": "America/Los_Angeles",
   "lastFeedExpiry": "20270531",
   "lastFeedVersion": "UTC: 30-Sep-2026 16:44",
