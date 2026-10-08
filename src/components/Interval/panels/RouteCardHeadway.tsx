@@ -189,9 +189,6 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   );
   const hasWeekdayTierVariation = currentRoute.directions.some(direction => direction.weekdayTierVariation);
   const selectedPeriod = period !== 'all' ? TIME_PERIODS.find(p => p.key === period) : undefined;
-  const activePeriodRangeText = selectedPeriod
-    ? activePeriodRanges(currentRoute.directions, selectedPeriod.startHour, selectedPeriod.endHour).join(', ')
-    : '';
   const hasPeriodService = period === 'all' || directionGroups.some(group =>
     group.realTier.some(direction => routeCardDisplayHeadway(direction, period) != null) ||
     group.span.length > 0,
@@ -210,6 +207,13 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   const primaryMultiBranch = directionGroups
     .filter(g => g.realTier.length >= 2)
     .sort((a, b) => b.realTier.length - a.realTier.length)[0];
+  const activePeriodRangeText = selectedPeriod
+    ? activePeriodRanges(
+      sparklineSourceDirections(currentRoute.directions, primaryMultiBranch?.realTier),
+      Math.max(0, selectedPeriod.startHour - 1),
+      selectedPeriod.endHour,
+    ).join(', ')
+    : '';
   const coreGroups = directionGroups.filter(group => shouldShowTrunkSummary(group.realTier, period));
   const hasCoreSummary = coreGroups.length > 0;
   const primaryCoreHeadway = primaryMultiBranch && shouldShowTrunkSummary(primaryMultiBranch.realTier, period)
