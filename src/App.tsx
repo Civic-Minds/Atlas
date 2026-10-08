@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router';
 import { Map as MapIcon, Search, X, Info, History as HistoryIcon, ChevronDown, FlaskConical } from 'lucide-react';
 import { PILL_SURFACE, FLOATING_CARD, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_HEADER, Z_MODAL_TOP, SIDEBAR_LEFT_FALLBACK, APP_TAB_ACTIVE, APP_TAB_INACTIVE, ICON_BTN } from './styles';
 import { R2_PUBLIC_URL, getAgencyArtifactUrls, getAgencyCatalogUrl, FEATURES, FEATURE_ROUTES, ATLAS_MODE } from '../shared/config';
+import AtlasBrand from './components/AtlasBrand';
 import { isAgencyVisibleInBrowser } from '../shared/agencyVisibility';
 import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig';
 const Interval = React.lazy(() => import('./apps/Interval'));
@@ -539,10 +540,7 @@ export default function App() {
           <MapIcon className="w-3.5 h-3.5 text-white" />
         </button>
 
-        <div className="flex flex-col leading-tight">
-          <span className="text-xs sm:text-sm font-black text-[var(--text-primary)]">Atlas</span>
-          <span className="text-[8px] sm:text-[10px] text-[var(--text-dim)]">by Civic Minds</span>
-        </div>
+        <AtlasBrand />
 
         {!inFrequentServiceStory && !inResearch && <div className="flex items-center gap-2 flex-1 min-w-0 lg:flex-none">
         <div className="flex-1 min-w-0 sm:flex">
