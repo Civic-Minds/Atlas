@@ -18,6 +18,29 @@ export function selectedRouteFilterNotice(options: {
   return `Service runs about every 30 minutes: ${options.activeRange}. ${options.periodLabel} service is measured from ${options.periodRange}; this route is shown because you selected it.`;
 }
 
+export function periodServiceNotice(periodLabel: string, periodRange: string, partial: boolean): { title: string; detail: string } {
+  return partial
+    ? {
+      title: `Limited service during ${periodLabel}`,
+      detail: `Service only runs for part of this period (${periodRange}).`,
+    }
+    : {
+      title: `No scheduled service during ${periodLabel}`,
+      detail: `${periodRange}. It is hidden from the map for this period.`,
+    };
+}
+
+export function unevenServiceNotice(periodLabel: string, longestGap: number): { title: string; detail: string } {
+  return {
+    title: `Service is uneven during ${periodLabel}.`,
+    detail: `Longest gap: ${longestGap} minutes.`,
+  };
+}
+
+export function selectedRouteOutsideFilterNotice(maxHeadway: number, periodLabel: string): string {
+  return `This route does not meet the ${maxHeadway}-minute filter across the full ${periodLabel} window. The full route remains visible because it is selected.`;
+}
+
 export const EXPIRED_FEED_EXPLANATION =
   'Atlas keeps showing the most recent feed it could verify while we look for a newer public feed.';
 

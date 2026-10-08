@@ -36,7 +36,7 @@ import { shouldShowDirectionSections } from '../../../utils/routeCardDirectionLa
 import type { VariantFamily } from '../../../utils/routeVariants';
 import { currentAtlasUrl } from '../../../utils/reportIssue';
 import { ROUTE_DATA_QUALITY_WARNING, ROUTE_DATA_QUALITY_WARNING_MESSAGE } from '../../../../shared/routeDataQuality';
-import { expiredFeedNotice, selectedRouteFilterNotice } from '../../../content/noticeCopy';
+import { expiredFeedNotice, periodServiceNotice, selectedRouteFilterNotice, selectedRouteOutsideFilterNotice, unevenServiceNotice } from '../../../content/noticeCopy';
 
 function medianHeadway(values: number[]): number {
   const sorted = [...values].sort((a, b) => a - b);
@@ -202,6 +202,16 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   // the card already has a qualifying combined trunk summary, do not contradict it
   // with an individual branch's terminal gap (#381).
   const unevenGap = FEATURES.unevenBanner ? unevenPeriodMaxGap(directionGroups, period) : 0;
+  const periodNotice = selectedPeriod && !hasPeriodService
+    ? periodServiceNotice(
+      selectedPeriod.label,
+      formatPeriodRangeLong(selectedPeriod.startHour, selectedPeriod.endHour),
+      hasPartialPeriodService,
+    )
+    : null;
+  const unevenNotice = selectedPeriod && unevenGap > 0
+    ? unevenServiceNotice(selectedPeriod.label, unevenGap)
+    : null;
 
   // Largest multi-branch direction group — same branches as WESTBOUND/EASTBOUND rows.
   const primaryMultiBranch = directionGroups
@@ -415,27 +425,23 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           </>
         );
       })()}
-      {selectedPeriod && !hasPeriodService && (
+      {periodNotice && (
         <div className="mt-4 mb-3 rounded-xl bg-[var(--bg-app)] px-3 py-2.5">
           <p className="text-[10px] font-black text-[var(--text-primary)]">
-            {hasPartialPeriodService
-              ? `Limited service during ${selectedPeriod.label}`
-              : `No scheduled service during ${selectedPeriod.label}`}
+            {periodNotice.title}
           </p>
           <p className="text-[9px] font-bold text-[var(--text-dim)] mt-0.5">
-            {hasPartialPeriodService
-              ? `Service only runs for part of this period (${formatPeriodRangeLong(selectedPeriod.startHour, selectedPeriod.endHour)}).`
-              : `${formatPeriodRangeLong(selectedPeriod.startHour, selectedPeriod.endHour)}. It is hidden from the map for this period.`}
+            {periodNotice.detail}
           </p>
         </div>
       )}
-      {selectedPeriod && unevenGap > 0 && (
+      {unevenNotice && (
         <div className="mt-4 mb-3 rounded-xl bg-[var(--bg-app)] px-3 py-2.5">
           <p className="text-[10px] font-black text-[var(--text-primary)]">
-            Service is uneven during {selectedPeriod.label}.
+            {unevenNotice.title}
           </p>
           <p className="text-[9px] font-bold text-[var(--text-dim)] mt-0.5">
-            Longest gap: {unevenGap} minutes.
+            {unevenNotice.detail}
           </p>
         </div>
       )}
@@ -449,7 +455,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                   periodLabel: selectedPeriod.label,
                   periodRange: formatPeriodRangeLong(selectedPeriod.startHour, selectedPeriod.endHour),
                 })
-                : `This route does not meet the ${maxHeadway}-minute filter across the full ${selectedPeriod?.label ?? 'the selected schedule'} window. The full route remains visible because it is selected.`}
+                : selectedRouteOutsideFilterNotice(maxHeadway, selectedPeriod?.label ?? 'the selected schedule')}
             </p>
           </div>
         )}
