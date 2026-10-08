@@ -1,6 +1,7 @@
 import type { GeoJSON } from 'geojson';
 import type { ShapeProperties } from '../hooks/useAgencyData';
 import { PERIOD_KEYS, TIME_PERIODS, type PeriodKey } from '../../shared/config';
+import { hasAnyPeriodCoverage, periodCoverageValue, PERIOD_COVERAGE_MAX_HEADWAY } from '../../shared/periodEligibility';
 
 export type ServicePeriod = PeriodKey | 'all';
 
@@ -117,19 +118,17 @@ export function buildRouteServiceSummary(p: ShapeProperties): RouteServiceSummar
   // so an unsustained median cannot pass an active-period frequency filter (#524).
   // Span routes are school/special-service clusters, not regular frequency, so their
   // short maximum gap must never qualify them as frequent service.
-  const coverage = p.worstDirectionPeriodCoverageHeadway
-    ?? p.periodCoverageHeadway
-    ?? (p.tier === 'span' ? undefined : p.maxGapByPeriod);
+  const hasCoverage = hasAnyPeriodCoverage(p);
   const regularPeriods = firstAvailableByPeriod(p.worstDirectionHeadwayByPeriod, p.headwayByPeriod);
-  const filterPeriods = coverage === undefined ? regularPeriods : Object.fromEntries(
+  const filterPeriods = !hasCoverage ? regularPeriods : Object.fromEntries(
     PERIOD_KEYS.map(key => {
       // A sustained period should be filtered by its actual cadence only when it covers
       // the window (coverage <= 60). If the period is unsustained or has no service for most
       // of the window (e.g. Calgary overnight routes starting around 5 AM), use the full-window
       // coverage value so a late-start route cannot pass as frequent or receive a normal tier (#507).
       const sustained = p.headwayByPeriodSustained?.[key];
-      const covVal = coverage[key] ?? null;
-      if (sustained === true && covVal != null && covVal <= 60) {
+      const covVal = periodCoverageValue(p, key) ?? null;
+      if (sustained === true && covVal != null && covVal <= PERIOD_COVERAGE_MAX_HEADWAY) {
         return [key, regularPeriods?.[key] ?? null];
       }
       return [key, covVal];

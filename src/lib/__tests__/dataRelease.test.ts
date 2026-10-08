@@ -15,6 +15,7 @@ describe('data releases', () => {
         pmtilesKey: 'atlas/releases/release-test/atlas.pmtiles',
         overviewPmtilesKey: 'atlas/releases/release-test/atlas-overview.pmtiles',
         agencyPrefix: 'atlas/releases/release-test/agencies',
+        routeArtifactSchemaVersion: 2,
       }),
     }));
 

@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router';
 import { Map as MapIcon, Search, X, Info, History as HistoryIcon, ChevronDown, FlaskConical } from 'lucide-react';
 import { PILL_SURFACE, FLOATING_CARD, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_HEADER, Z_MODAL_TOP, SIDEBAR_LEFT_FALLBACK, APP_TAB_ACTIVE, APP_TAB_INACTIVE, ICON_BTN } from './styles';
 import { R2_PUBLIC_URL, getAgencyArtifactUrls, getAgencyCatalogUrl, FEATURES, FEATURE_ROUTES, ATLAS_MODE } from '../shared/config';
+import AtlasBrand from './components/AtlasBrand';
 import { isAgencyVisibleInBrowser } from '../shared/agencyVisibility';
 import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig';
 const Interval = React.lazy(() => import('./apps/Interval'));
@@ -187,7 +188,6 @@ export default function App() {
   // Search scans / map filters / prefetch run from this so keystrokes can
   // paint first. See useDebouncedValue for why this isn't useDeferredValue.
   const deferredQuery = useDebouncedValue(query);
-  const [stats, setStats] = useState<{ total: number; matching: number; limitedService: number } | null>(null);
   const [resetViewKey, setResetViewKey] = useState(0);
   const [infoOpen, setInfoOpen] = useState(false);
   const [appLinksOpen, setAppLinksOpen] = useState(false);
@@ -519,7 +519,7 @@ export default function App() {
     <CorridorMapOverlayProvider>
     <HistoryMapOverlayProvider>
     <LiveVehiclesMapOverlayProvider>
-    <div className={`relative h-screen w-screen bg-[var(--bg-app)] text-[var(--text-primary)] font-sans overflow-hidden transition-colors ${TRANSITION_BASE}`}>
+    <div className={`relative h-dvh w-screen bg-[var(--bg-app)] text-[var(--text-primary)] font-sans overflow-hidden transition-colors ${TRANSITION_BASE}`}>
       {/* Unified header row — left and right sections share one flex container so they can never overlap */}
       <div className={`absolute ${inFrequentServiceStory ? 'top-0 left-0 right-0 bg-[var(--bg-app)] px-6 py-6' : 'top-6 left-6 right-6'} ${infoOpen ? Z_MODAL_TOP : Z_HEADER} flex items-center justify-between pointer-events-none`}>
       <div ref={headerLeftRef} className="flex items-center gap-2 pointer-events-auto flex-1 max-w-[calc(100%-3rem)] sm:max-w-none mr-2 sm:mr-0">
@@ -540,10 +540,7 @@ export default function App() {
           <MapIcon className="w-3.5 h-3.5 text-white" />
         </button>
 
-        <div className="flex flex-col leading-tight">
-          <span className="text-xs sm:text-sm font-black text-[var(--text-primary)]">Atlas</span>
-          <span className="text-[8px] sm:text-[10px] text-[var(--text-dim)]">by Civic Minds</span>
-        </div>
+        <AtlasBrand />
 
         {!inFrequentServiceStory && !inResearch && <div className="flex items-center gap-2 flex-1 min-w-0 lg:flex-none">
         <div className="flex-1 min-w-0 sm:flex">
@@ -724,7 +721,6 @@ export default function App() {
               setLightMode={setLightMode}
               query={deferredQuery}
               setQuery={setQuery}
-              onStatsChange={setStats}
               resetViewKey={resetViewKey}
               showUi={inFrequency || inFrequentService}
               showSelectionUi={inLive || inNight}

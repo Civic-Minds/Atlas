@@ -19,6 +19,7 @@
   "lastFeedVersion": "1",
   "lastRefreshedAt": "2026-08-07",
   "lastFeedCheckAt": "20261007",
+  "pmtilesPending": true,
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20281230",

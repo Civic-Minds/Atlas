@@ -5,12 +5,12 @@ import { HEADWAY_TIERS, getTierColor } from '../utils/colors';
 import { isLivePollingRoute } from '../utils/livePolling';
 import { TIME_PERIODS, PERIOD_LABELS as PERIOD_LABELS_BY_KEY, PERIOD_KEYS, type PeriodKey } from '../../shared/config';
 import { buildModeFilterClause, buildTileHeadwayFilterClause, tileLimitedServiceExpr, tileRouteKeyExpr } from '../../shared/tileFilterExprs';
-import { NO_PERIOD_SERVICE_TILE_VALUE } from '../../shared/pmtilesProps';
 import { effectiveMode, ON_DEMAND_MODE } from '../../shared/modes';
 import { effectiveRouteHeadway } from '../utils/effectiveHeadway';
 import { collectStopHubSiblings } from '../utils/stopHub';
 import { isHiddenByIrregularFilter, isLimitedService } from '../../shared/irregularRoutes';
 import { buildRouteKey } from '../utils/routeKey';
+import { hasPeriodSummary } from '../../shared/periodEligibility';
 
 export type DayType = 'Weekday' | 'Saturday' | 'Sunday';
 
@@ -34,7 +34,7 @@ export interface ShapeProperties extends BaseShapeProperties {
 }
 
 export const routeKey = (p: ShapeProperties) => buildRouteKey(
-  (p as any).agencySlug ?? p.agencyName ?? '',
+  p.agencySlug ?? p.agencyName ?? '',
   p.routeId,
   p.routeBranch,
 );
@@ -68,7 +68,7 @@ export interface IntervalFilters {
   day: DayType;
   period: TimePeriod;
   selectedStop: string | null; // stopId
-  selectedRoute?: string | null; // force-include the full geometry of this route even if it doesn't match frequency/agency/etc filters
+  selectedRoute?: string | null; // identifies the route whose details are open; it must still pass map filters
   bounds?: ViewportBounds | null; // current map viewport; stats are scoped to it when set
   hideSpan?: boolean; // hide routes with no sustained tier (irregular/peak-only/school-run service)
   hideLimitedService?: boolean; // hide explicitly time-limited service without hiding regular infrequent routes
@@ -110,8 +110,8 @@ export function passesRouteFilter(
   // route appear as if it fully passed; it only lets it *in* so that function can look.
   options?: { skipFrequency?: boolean },
 ): boolean {
-  const isCorridor = !!(p as any).isCorridor;
-  const corridorRouteIds = (p as any).routeIds as string[] | undefined;
+  const isCorridor = !!p.isCorridor;
+  const corridorRouteIds = p.routeIds;
   // routesForStop drives stop-card sidebar and map dimming (sibling stopHeadways match)
 
   // Strip -corridors suffix so corridor layers (keyed as "{slug}-corridors") still pass the agency filter.
@@ -169,12 +169,7 @@ export function passesRouteFilter(
     // An explicit null period summary means no scheduled service in that
     // period. Do not let the all-day fallback make the route look like an
     // active-period match (the agency card may still list it as inventory).
-    const hasPeriodSummary = p.headwayByPeriod != null
-      && Object.prototype.hasOwnProperty.call(p.headwayByPeriod, filters.period);
-    const hasLegacyLateSummary = filters.period === 'late'
-      && p.headwayByPeriod != null
-      && Object.prototype.hasOwnProperty.call(p.headwayByPeriod, 'lateNight');
-    if (hasPeriodSummary || hasLegacyLateSummary) return false;
+    if (hasPeriodSummary(p, filters.period)) return false;
     // No period data — fall through to all-day check below.
   }
   // All-day check: use worst-direction headway (AI-182) so both directions must qualify.
@@ -490,13 +485,10 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
       // Frequency = All means any service in the selected period, including one-direction
       // or irregular service. The strict worst-direction coverage metric is reserved for
       // actual frequency thresholds; using it here hides routes such as Nashville 87 PM peak.
-      const headwayClause = buildTileHeadwayFilterClause(period, maxHeadway);
-      if (selectedRoute) {
-        const routeKeyExpr: any = tileRouteKeyExpr();
-        clauses.push(['any', ['==', routeKeyExpr, selectedRoute], headwayClause]);
-      } else {
-        clauses.push(headwayClause);
-      }
+      // Do not OR the selected route into the tile filter: an out-of-period
+      // selection must stay filtered off the map (period-eligibility honesty).
+      // MapLibre 6-safe headway/period predicate lives in buildTileHeadwayFilterClause.
+      clauses.push(buildTileHeadwayFilterClause(period, maxHeadway));
     }
 
     return clauses.length === 1 ? clauses[0] : ['all', ...clauses];

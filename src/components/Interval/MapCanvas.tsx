@@ -19,6 +19,7 @@ import { Z_PANEL, MAP_BADGE } from '../../styles';
 import { LIVE_POLLING_ROUTES } from '../../../shared/livePollingConfig';
 import { useColorVision } from '../../context/ColorVisionContext';
 import { tileEffectiveHeadwayExpr, tileRouteKeyExpr } from '../../../shared/tileFilterExprs';
+import { effectiveRouteHeadway } from '../../utils/effectiveHeadway';
 import { syncUrlParams } from '../../utils/syncUrlParams';
 import { buildFocusedRoutePaint, buildSelectedRouteLineOpacity } from '../../utils/routeFocus';
 import { dedupeRouteKeysByDisplay, splitRouteKey } from '../../utils/routeKey';
@@ -522,13 +523,13 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         const properties = feature.properties as Record<string, any> | null;
         if (!properties?.routeId || !properties.routeShortName) return [];
         if (feature.geometry.type !== 'LineString' && feature.geometry.type !== 'MultiLineString') return [];
-        const periodHeadway = properties.headwayByPeriod?.[period];
+        const periodHeadway = effectiveRouteHeadway(properties as ShapeProperties, period);
         return [{
           ...feature,
           properties: {
             ...properties,
             agencySlug: properties.agencySlug ?? slug,
-            localHeadwayColor: localRouteHeadwayColor(periodHeadway ?? properties.headway, colorMode),
+            localHeadwayColor: localRouteHeadwayColor(periodHeadway, colorMode),
           },
         }];
       });
@@ -784,14 +785,15 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   );
 
   const nightServiceFeatures = useMemo(() => {
-    if (!layers) return [];
+    if (!nightServiceView || !layers) return [];
     return Object.values(layers).flatMap(collection => collection.features.filter(feature => {
       const properties = feature.properties as Record<string, any> | null;
       return feature.geometry.type === 'LineString' && (properties?.[nightServiceKey(nightServiceFrequency)] === true || (nightServiceFrequency === 60 && properties?.nightService === true));
     }));
-  }, [layers, nightServiceFrequency]);
+  }, [layers, nightServiceFrequency, nightServiceView]);
 
   const frequentServiceFeatures = useMemo(() => {
+    if (!frequentServiceView || !layers) return [];
     const key = frequentServiceQueryKey(frequentServiceFrequency, frequentServiceWindow);
     const grouped = new Map<string, GeoJSON.Feature[]>();
     for (const feature of Object.values(layers ?? {}).flatMap(collection => collection.features)) {
@@ -822,7 +824,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         frequentServiceBand: frequentServiceBand(feature.properties as Record<string, any>, frequentServiceWindow, frequentServiceFrequency),
       },
     })));
-  }, [frequentServiceDays, frequentServiceFrequency, frequentServiceWindow, layers, selectedModes]);
+  }, [frequentServiceDays, frequentServiceFrequency, frequentServiceView, frequentServiceWindow, layers, selectedModes]);
 
   useLayoutEffect(() => {
     frequencySegmentOverlayRef.current = frequencySegmentOverlay;
@@ -921,10 +923,11 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       mapRef.current = map;
 
       map.on('load', async () => {
-      setZoom(map.getZoom());
+        if (cancelled) return;
+        setZoom(map.getZoom());
 
-      await protocolReady;
-      if (cancelled) return;
+        await protocolReady;
+        if (cancelled) return;
 
       // Keep PMTiles out of the initial style. A stalled route-tile request must
       // not prevent MapLibre from reaching this point or block local GeoJSON.
@@ -1820,7 +1823,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     }
 
     const selectedRouteFilter = selectedRoute
-      ? routeKeyMatchExpression(selectedRoute)
+      ? concatFilters(routeFilter, routeKeyMatchExpression(selectedRoute))
       : ['==', ['get', 'routeId'], ''];
     if (map.getLayer('selected-route-layer')) map.setFilter('selected-route-layer', selectedRouteFilter as any);
     if (map.getLayer('selected-local-route-layer')) map.setFilter('selected-local-route-layer', selectedRouteFilter as any);
@@ -1838,9 +1841,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       const hitRouteFilter = (!fareView && !nightServiceView && !frequentServiceView)
         ? concatFilters(
             routeFilter,
-            selectedRoute
-              ? ['any', routeKeyMatchExpression(selectedRoute), buildZoomHeadwayGateExpression(headwayExpr)]
-              : buildZoomHeadwayGateExpression(headwayExpr),
+            buildZoomHeadwayGateExpression(headwayExpr),
           )
         : routeFilter;
       if (hasOverviewRoutesHit) map.setFilter('overview-routes-hit-layer', hitRouteFilter as any);

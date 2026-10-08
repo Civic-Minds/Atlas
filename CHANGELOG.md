@@ -15,6 +15,39 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **History now exposes current route-mode filters, and its header no longer offers unrelated Research navigation.**
 - **History route details now give the route title priority and use a compact agency back link.**
 - **History route names now match the normal route list, and agency summaries use shorter labels.**
+- History adherence now limits concurrent R2 snapshot reads, preventing large requests from exhausting connections.
+- GTFS processing now preserves weekday/weekend service buckets, frequency-based stop headways, and full-day rail schedule metrics.
+- Rail-like shapes are no longer treated as street geometry, and refresh registry writes are atomic.
+- Map rendering, standalone page navigation, and tile proxy caching are now faster and more resilient.
+- Standalone pages now use a simpler Atlas wordmark that better matches the rest of the product.
+- Documentation and legal pages now share the site header for consistent navigation.
+- Documentation and legal pages now use one shared Atlas navigation path instead of duplicate back links.
+- Atlas branding now comes from one shared component across the map and standalone pages.
+- Public About pages no longer show research links that are unavailable in the public build.
+- Public navigation no longer exposes disabled research routes.
+- The public About page now uses a quieter map link instead of a lone oversized button.
+- The public About map link now uses clearer action language.
+- The public About map link now invites visitors to try Atlas directly.
+- The About hero now focuses on Atlas’s purpose and actions without a redundant marketing callout.
+- The About page now uses a simpler editorial layout focused on the questions Atlas helps answer.
+- The About page now gives Atlas a clearer editorial landing page with shared navigation, a schedule-to-insight diagram, and direct research paths.
+- Overnight frequency filters no longer show routes whose full selected-period coverage is too sparse ([#524](https://github.com/Civic-Minds/Atlas/issues/524)).
+
+- **Route schedule data now uses one shared contract across the app and processing tools, reducing mismatches between map filters and route cards.**
+- **Route directories now read one shared feature contract, keeping research and Night Service indexes aligned with processed route data.**
+- **Build-time environment settings now use one typed contract across browser, API, and worker checks, reducing configuration drift.**
+- **Selected routes now explain when service only covers part of the selected time window, so frequency filters are easier to understand.**
+- **Schedule charts now mark individual hours with unusually long gaps, so a route’s typical frequency does not hide a slower hour.**
+- **Routes without service in the selected period are now hidden from the map, so route cards no longer contradict the map.**
+- **Frequency filters now ignore shared-stop and all-day frequencies when the selected period has no full-window service, so false overnight lines stay off the map ([#524](https://github.com/Civic-Minds/Atlas/issues/524)).**
+- **Period filtering now shares one full-window service rule across map data and route cards, so older artifacts cannot reintroduce false frequent service.**
+- **Shared route-data changes now fail closed until every agency artifact is reprocessed, preventing stale JSON from being repackaged into new PMTiles.**
+- **Local archive recovery now validates missing GTFS inputs before they can be used in a full derived-data rebuild.**
+- **PMTiles builds now stream large merged GeoJSON layers instead of failing while serializing them in memory.**
+- **Agencies without route-line data are now explicitly excluded from the PMTiles coverage failure gate until their feed is usable.**
+- **Five approved agencies now use their validated replacement GTFS sources for the production refresh.**
+- **Hudson Link, Loudoun Transit, and Whatcom Transit now serve refreshed production data; SETD and Trinity Metro were already current.**
+- **Expanded route schedule direction controls now match Atlas’s standard filter buttons.**
 - **Large R2 archive jobs now reuse connections instead of creating a new client for every file, preventing History verification from exhausting sockets.**
 - **Export and Share now support Social (1200×630), Standard (1600×900), and High resolution (2400×1350) PNGs, with equal-weight actions and click-outside dismissal.**
 - **Night Service now uses the shared header for its 30-minute and 60-minute filters and search, keeping the panel from duplicating controls.**

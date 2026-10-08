@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { computePeriodCoverageHeadways } from '../headway-utils';
+import { adaptiveMedianHeadwayInWindow, computeHourMaxGaps, computePeriodCoverageHeadways, computePeriodHeadways, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, hasGenuineBranchPattern, hasSustainedFrequentService, hasSustainedNightService, headsignOverlapMinHeadway, isSustainedHeadway, medianHeadwayInWindow, nightServiceDepartureTimes, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow } from '../headway-utils';
 import { TIME_PERIODS } from '../../shared/config';
 
 describe('computePeriodCoverageHeadways', () => {
@@ -54,7 +54,6 @@ describe('computePeriodCoverageHeadways', () => {
     expect(computePeriodCoverageHeadways([...plain, ...extended])).toMatchObject({ late: 10, overnight: 10 });
   });
 });
-import { adaptiveMedianHeadwayInWindow, computePeriodHeadways, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, hasGenuineBranchPattern, hasSustainedFrequentService, hasSustainedNightService, headsignOverlapMinHeadway, isSustainedHeadway, medianHeadwayInWindow, nightServiceDepartureTimes, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow } from '../headway-utils';
 
 describe('medianHeadwayInWindow', () => {
   it('does not expose a sparse two-departure cluster as an hourly headway', () => {
@@ -534,5 +533,20 @@ describe('headsignOverlapMinHeadway', () => {
 
   it('returns null for an empty input', () => {
     expect(headsignOverlapMinHeadway([], 20)).toBeNull();
+  });
+});
+
+describe('computeHourMaxGaps', () => {
+  it('assigns a long gap to the hour where it starts', () => {
+    expect(computeHourMaxGaps([19 * 60 + 29, 20 * 60 + 29, 21 * 60 + 29, 22 * 60 + 29], [19, 20, 21, 22])).toEqual({
+      19: 60,
+      20: 60,
+      21: 60,
+      22: null,
+    });
+  });
+
+  it('ignores gaps that start outside the requested hour', () => {
+    expect(computeHourMaxGaps([18 * 60 + 59, 20 * 60], [19, 20])).toEqual({ 19: null, 20: null });
   });
 });

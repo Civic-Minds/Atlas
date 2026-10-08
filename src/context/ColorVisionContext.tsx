@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 
 interface ColorVisionContextValue {
   colorVisionFriendly: boolean;
@@ -23,8 +23,13 @@ export function ColorVisionProvider({ children }: { children: ReactNode }) {
     document.documentElement.dataset.colorVision = colorVisionFriendly ? 'high-contrast' : 'normal';
   }, [colorVisionFriendly]);
 
+  const value = useMemo(
+    () => ({ colorVisionFriendly, setColorVisionFriendly }),
+    [colorVisionFriendly]
+  );
+
   return (
-    <ColorVisionContext.Provider value={{ colorVisionFriendly, setColorVisionFriendly }}>
+    <ColorVisionContext.Provider value={value}>
       {children}
     </ColorVisionContext.Provider>
   );

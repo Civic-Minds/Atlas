@@ -189,6 +189,19 @@ describe('applyAnalysisCriteria', () => {
     expect(weekday).toMatchObject({ tier: '30', weekdayTierVariation: true });
   });
 
+  it('keeps full-day departure times in a rail weekday rollup', () => {
+    const days = ['Monday', 'Tuesday'] as const;
+    const results = applyAnalysisCriteria(days.map(day => raw({
+      route: 'rail-full-day',
+      day,
+      routeType: '2',
+      departureTimes: [480, 600, 840, 1080, 1320],
+    })));
+    const weekday = results.find(item => item.route === 'rail-full-day' && item.day === 'Weekday');
+
+    expect(weekday?.times).toEqual([480, 600, 840, 1080, 1320]);
+  });
+
   it('correctly falls to infrequent/span rather than a false tight tier when a day bucket mixes two separate overnight blocks (real TTC 300 pattern)', () => {
     // Tail of one night's run (233-263, non-extended) plus the start of the next night's run
     // (1512+, extended) landing in the same calendar-day bucket -- a real GTFS quirk confirmed

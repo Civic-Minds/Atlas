@@ -7,7 +7,7 @@ import type { Agency, FareOverride } from '../../App';
 import { useLiveAdherence, agencyHeadwayDelta, agencyTripSummary } from '../../hooks/useLiveAdherence';
 import { isLivePollingRoute, getLiveRouteConfig } from '../../utils/livePolling';
 import { findVariantFamily } from '../../utils/routeVariants';
-import { shortenAgencyName, searchOverlayHidesPanel } from '../../utils/format';
+import { getRouteLabel, shortenAgencyName, searchOverlayHidesPanel, titleCase } from '../../utils/format';
 import { normalizeStopName, type StopEntry } from '../../apps/corridor-search';
 import { labelDirectionGroups, sortDirectionGroupIds } from '../../utils/directionLabel';
 import { hasDirectionPeriodService, routeCardDisplayHeadway, routeListDisplayHeadway } from '../../utils/effectiveHeadway';
@@ -804,7 +804,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
 
   const disambigDetails = useMemo(() => {
     if (!disambiguationRoutes) return null;
-    return disambiguationRoutes
+    const details = disambiguationRoutes
       .map(key => {
         for (const [slug, fc] of Object.entries(nonCorridorLayers)) {
           const f = fc.features.find(feat => {
@@ -819,6 +819,13 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         }
         return { key, shortName: key, longName: '', agencyName: '', color: 'var(--text-dim)' };
       })
+      .filter((route, index, routes) => {
+        const displayKey = `${route.agencyName.trim().toLowerCase()}::${titleCase(getRouteLabel(route.shortName, route.longName, route.agencyName)).trim().toLowerCase().replace(/\s+/g, ' ')}`;
+        return routes.findIndex(candidate => {
+          const candidateKey = `${candidate.agencyName.trim().toLowerCase()}::${titleCase(getRouteLabel(candidate.shortName, candidate.longName, candidate.agencyName)).trim().toLowerCase().replace(/\s+/g, ' ')}`;
+          return candidateKey === displayKey;
+        }) === index;
+      })
       .sort((a, b) => {
         const agencyCmp = a.agencyName.localeCompare(b.agencyName);
         if (agencyCmp !== 0) return agencyCmp;
@@ -826,6 +833,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         if (!isNaN(nA) && !isNaN(nB)) return nA - nB;
         return a.shortName.localeCompare(b.shortName, undefined, { numeric: true });
       });
+    return details;
   }, [disambiguationRoutes, nonCorridorLayers]);
 
   const hasSuggestions = recentSearches.length > 0 || recentlyViewed.length > 0 || notableRoutes.length > 0 || (fareView && suggestedFareAgencies.length > 0);

@@ -4771,24 +4771,37 @@
         49,
         -122
       ],
-      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-washington-whatcom-transportation-authority-gtfs-284.zip?alt=media",
-      "lastFeedExpiry": "20260919",
-      "lastFeedVersion": "S1000173-S1000174",
-      "lastRefreshedAt": "2026-08-07",
+      "feedUrl": "https://github.com/whatcomtrans/publicwtadata/raw/master/GTFS/wta_gtfs_latest.zip",
+      "lastFeedExpiry": "20270206",
+      "lastFeedVersion": "S1000178",
+      "lastRefreshedAt": "2026-10-08",
       "cities": [
         "Bellingham, Washington",
         "Abbotsford, British Columbia",
         "South Surrey, British Columbia"
       ],
-      "lastFeedCheckAt": "20261007",
-      "expiredFeedCheckCount": 2,
-      "expiredFeedCheckSince": "20260622",
-      "expiredFeedCheckExpiry": "20260919",
+      "lastFeedCheckAt": "20261008",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20270206",
       "timezone": "America/Los_Angeles",
-      "feedRefreshStatus": "stale",
-      "feedRefreshError": "all available feeds expired (latest 20260919)",
-      "feedRefreshErrorAt": "20261007",
-      "feedRefreshRetryCount": 2
+      "feedRefreshStatus": "current",
+      "feedRefreshError": null,
+      "feedRefreshErrorAt": null,
+      "feedRefreshRetryCount": 0,
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 171
+        },
+        "checkedAt": "2026-10-08"
+      }
     },
     {
       "slug": "islandtransit",
@@ -5077,24 +5090,37 @@
         41.9,
         -73.7
       ],
-      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-hudson-link-gtfs-2312.zip?alt=media",
-      "lastFeedExpiry": "20261001",
-      "lastFeedVersion": "UTC: 25-Mar-2026 23:59",
-      "lastRefreshedAt": "2026-08-07",
+      "feedUrl": "https://s3.amazonaws.com/datatools-511ny/public/Hudson_Link.zip",
+      "lastFeedExpiry": "20270628",
+      "lastFeedVersion": "S1000138",
+      "lastRefreshedAt": "2026-10-08",
       "cities": [
         "Greenburgh, New York",
         "White Plains, New York",
         "Paterson, New Jersey"
       ],
-      "lastFeedCheckAt": "20261007",
-      "expiredFeedCheckCount": 2,
-      "expiredFeedCheckSince": "20260622",
-      "expiredFeedCheckExpiry": "20261001",
+      "lastFeedCheckAt": "20261008",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20270628",
       "timezone": "America/New_York",
-      "feedRefreshStatus": "stale",
-      "feedRefreshError": "all available feeds expired (latest 20261001)",
-      "feedRefreshErrorAt": "20261007",
-      "feedRefreshRetryCount": 2
+      "feedRefreshStatus": "current",
+      "feedRefreshError": null,
+      "feedRefreshErrorAt": null,
+      "feedRefreshRetryCount": 0,
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 30
+        },
+        "checkedAt": "2026-10-08"
+      }
     },
     {
       "slug": "wsf",
@@ -5798,8 +5824,8 @@
         46.23,
         -123.73
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/tld-4211/tld-4211-202607280034/tld-4211-202607280034.zip",
-      "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-4211/tld-4211-202607280034/tld-4211-202607280034.zip",
+      "feedUrl": "https://oregon-gtfs.trilliumtransit.com/gtfs_data/clatsopcounty-or-us/clatsopcounty-or-us.zip",
+      "mdbFeedUrl": "https://oregon-gtfs.trilliumtransit.com/gtfs_data/clatsopcounty-or-us/clatsopcounty-or-us.zip",
       "timezone": "America/Los_Angeles",
       "lastFeedExpiry": "20270531",
       "lastFeedVersion": "UTC: 30-Sep-2026 16:44",
@@ -5823,7 +5849,7 @@
         },
         "checkedAt": "2026-10-03"
       },
-      "lastFeedCheckAt": "20261007",
+      "lastFeedCheckAt": "20261008",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
       "expiredFeedCheckExpiry": "20270531",
@@ -8951,7 +8977,7 @@
         32.73,
         -97.29
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-2890/mdb-2890-202606170131/mdb-2890-202606170131.zip",
+      "feedUrl": "https://gtfsdata.ridetm.org/gtfs/fwtatransitdata.zip",
       "lastFeedExpiry": "20270130",
       "lastFeedVersion": "SEPTEMBER 2026_20260806",
       "region": "Texas",
@@ -8965,7 +8991,7 @@
         "Mansfield, Texas",
         "Flower Mound, Texas"
       ],
-      "lastFeedCheckAt": "20261007",
+      "lastFeedCheckAt": "20261008",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
       "expiredFeedCheckExpiry": "20270130",
@@ -13426,11 +13452,11 @@
         39.08,
         -77.65
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-1053/mdb-1053-202604210103/mdb-1053-202604210103.zip",
-      "lastFeedExpiry": "20260926",
-      "lastFeedVersion": "S1000079",
+      "feedUrl": "https://www.loudoun.gov/loudountransitgtfs",
+      "lastFeedExpiry": "20270327",
+      "lastFeedVersion": "S1000085",
       "region": "Virginia",
-      "lastRefreshedAt": "2026-08-07",
+      "lastRefreshedAt": "2026-10-08",
       "cities": [
         "Leesburg, Virginia",
         "Reston, Virginia",
@@ -13438,15 +13464,28 @@
         "Washington, District of Columbia",
         "Downtown DC, District of Columbia"
       ],
-      "lastFeedCheckAt": "20261007",
-      "expiredFeedCheckCount": 2,
-      "expiredFeedCheckSince": "20260622",
-      "expiredFeedCheckExpiry": "20260926",
+      "lastFeedCheckAt": "20261008",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20270327",
       "timezone": "America/New_York",
-      "feedRefreshStatus": "stale",
-      "feedRefreshError": "all available feeds expired (latest 20260926)",
-      "feedRefreshErrorAt": "20261007",
-      "feedRefreshRetryCount": 2
+      "feedRefreshStatus": "current",
+      "feedRefreshError": null,
+      "feedRefreshErrorAt": null,
+      "feedRefreshRetryCount": 0,
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 123
+        },
+        "checkedAt": "2026-10-08"
+      }
     },
     {
       "slug": "cue-bus",
@@ -16723,6 +16762,7 @@
       "lastFeedVersion": "1",
       "lastRefreshedAt": "2026-08-07",
       "lastFeedCheckAt": "20261007",
+      "pmtilesPending": true,
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
       "expiredFeedCheckExpiry": "20281230",

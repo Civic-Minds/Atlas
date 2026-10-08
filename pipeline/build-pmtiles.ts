@@ -8,6 +8,7 @@ import { getAgencyArtifactUrls, pmtilesMinZoomForHeadway } from '../shared/confi
 import { runWithConcurrency } from './utils.js';
 import { prepareAgencyRouteFeaturesForTiles } from './prepareAgencyRoutesForTiles.js';
 import { simplifyLine } from './geometry.js';
+import { assertRouteArtifactSchema, ROUTE_ARTIFACT_SCHEMA_VERSION } from '../shared/artifactSchema.js';
 
 console.log(`env: ${LOADED_ENV_FILE} (bucket=${process.env.R2_BUCKET_NAME ?? '?'})`);
 
@@ -20,6 +21,41 @@ interface Feature {
 interface FeatureCollection {
   type: string;
   features: Feature[];
+}
+
+async function writeGeoJsonFeatureCollection(filePath: string, features: Feature[]): Promise<void> {
+  const stream = fs.createWriteStream(filePath, { encoding: 'utf8' });
+  const write = (chunk: string): Promise<void> => new Promise((resolve, reject) => {
+    const onError = (error: Error) => {
+      stream.off('drain', onDrain);
+      reject(error);
+    };
+    const onDrain = () => {
+      stream.off('error', onError);
+      resolve();
+    };
+    stream.once('error', onError);
+    if (stream.write(chunk)) {
+      stream.off('error', onError);
+      resolve();
+    } else {
+      stream.once('drain', onDrain);
+    }
+  });
+
+  try {
+    await write('{"type":"FeatureCollection","features":[');
+    for (let i = 0; i < features.length; i++) {
+      await write(`${i === 0 ? '' : ','}${JSON.stringify(features[i])}`);
+    }
+    await new Promise<void>((resolve, reject) => {
+      stream.once('error', reject);
+      stream.end(']}', resolve);
+    });
+  } catch (error) {
+    stream.destroy();
+    throw error;
+  }
 }
 
 /**
@@ -121,6 +157,7 @@ async function main() {
         ? JSON.parse(fs.readFileSync(localPath, 'utf8')) as FeatureCollection
         : await fetchJson(url, 5);
       if (data && data.features) {
+        assertRouteArtifactSchema(data, `${slug}.json`);
         fs.writeFileSync(path.join(releaseAgencyDir, `${slug}.json`), JSON.stringify(data));
         allRoutes.push(...prepareAgencyRouteFeaturesForTiles(data.features, slug));
       } else if (!data) {
@@ -218,10 +255,12 @@ async function main() {
   const overviewPmtilesPath = path.join(tmpDir, 'atlas-overview.pmtiles');
 
   console.log(`Writing merged GeoJSON layers to temp directory...`);
-  fs.writeFileSync(routesPath, JSON.stringify({ type: 'FeatureCollection', features: allRoutes }));
-  fs.writeFileSync(stopsPath, JSON.stringify({ type: 'FeatureCollection', features: allStops }));
-  fs.writeFileSync(corridorsPath, JSON.stringify({ type: 'FeatureCollection', features: allCorridors }));
-  fs.writeFileSync(overviewRoutesPath, JSON.stringify({ type: 'FeatureCollection', features: buildOverviewRoutes(allRoutes) }));
+  await Promise.all([
+    writeGeoJsonFeatureCollection(routesPath, allRoutes),
+    writeGeoJsonFeatureCollection(stopsPath, allStops),
+    writeGeoJsonFeatureCollection(corridorsPath, allCorridors),
+    writeGeoJsonFeatureCollection(overviewRoutesPath, buildOverviewRoutes(allRoutes)),
+  ]);
 
   // Build each layer separately (avoids tippecanoe memory pressure on large inputs),
   // then merge into a single atlas.pmtiles with tile-join.
@@ -275,6 +314,7 @@ async function main() {
   const releaseManifest = {
     releaseId,
     generatedAt: new Date().toISOString(),
+    routeArtifactSchemaVersion: ROUTE_ARTIFACT_SCHEMA_VERSION,
     pmtilesKey: `${releasePrefix}/atlas.pmtiles`,
     overviewPmtilesKey: `${releasePrefix}/atlas-overview.pmtiles`,
     agencyPrefix,

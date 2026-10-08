@@ -19,7 +19,7 @@ import {
   type CardReportButtonHandle,
 } from '../cardUi';
 import { CARD_NOTICE, CARD_NOTICE_FOOTER } from '../../../styles';
-import { FEATURES, SPARKLINE_HOURS, TIME_PERIODS, formatPeriodRangeLong, periodKeyForHour } from '../../../../shared/config';
+import { FEATURES, SPARKLINE_HOURS, TIME_PERIODS, formatPeriodHourLong, formatPeriodRangeLong, periodKeyForHour } from '../../../../shared/config';
 import { effectiveRouteHeadway, hasDirectionPeriodService, routeCardCoverageText, routeCardDisplayHeadway, routeCardDisplayHeadwayRange } from '../../../utils/effectiveHeadway';
 import { buildRouteServiceSummary, metricValueForPeriod } from '../../../utils/routeFacts';
 import { unevenPeriodMaxGap } from '../../../utils/routeCardUneven';
@@ -36,7 +36,7 @@ import { shouldShowDirectionSections } from '../../../utils/routeCardDirectionLa
 import type { VariantFamily } from '../../../utils/routeVariants';
 import { currentAtlasUrl } from '../../../utils/reportIssue';
 import { ROUTE_DATA_QUALITY_WARNING, ROUTE_DATA_QUALITY_WARNING_MESSAGE } from '../../../../shared/routeDataQuality';
-import { expiredFeedNotice } from '../../../content/noticeCopy';
+import { expiredFeedNotice, periodServiceNotice, selectedRouteFilterNotice, selectedRouteOutsideFilterNotice, unevenServiceNotice } from '../../../content/noticeCopy';
 
 function medianHeadway(values: number[]): number {
   const sorted = [...values].sort((a, b) => a - b);
@@ -92,6 +92,32 @@ function sparklineHeadwayByHour(
     out[h] = hw < periodRep * 0.75 ? periodRep : hw;
   }
   return out;
+}
+
+function sparklineMaxGapByHour(
+  directions: ShapeProperties[],
+  hours: readonly number[],
+): Record<number, number | null> {
+  return Object.fromEntries(hours.map(h => {
+    const values = directions
+      .map(d => d.maxGapByHour?.[h])
+      .filter((v): v is number => v != null);
+    return [h, values.length > 0 ? Math.max(...values) : null];
+  }));
+}
+
+function activePeriodRanges(directions: ShapeProperties[], startHour: number, endHour: number): string[] {
+  const ranges: Array<[number, number]> = [];
+  let runStart: number | null = null;
+  for (let hour = startHour; hour <= endHour; hour++) {
+    const active = hour < endHour && directions.some(direction => direction.headwayByHour?.[hour] != null);
+    if (active && runStart === null) runStart = hour;
+    if ((!active || hour === endHour) && runStart !== null) {
+      ranges.push([runStart, hour]);
+      runStart = null;
+    }
+  }
+  return ranges.map(([start, end]) => formatPeriodRangeLong(start, end));
 }
 
 export interface DirectionGroup {
@@ -181,6 +207,23 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   const primaryMultiBranch = directionGroups
     .filter(g => g.realTier.length >= 2)
     .sort((a, b) => b.realTier.length - a.realTier.length)[0];
+  const activePeriodRangeText = selectedPeriod
+    ? activePeriodRanges(
+      sparklineSourceDirections(currentRoute.directions, primaryMultiBranch?.realTier),
+      Math.max(0, selectedPeriod.startHour - 1),
+      selectedPeriod.endHour,
+    ).join(', ')
+    : '';
+  const periodNotice = selectedPeriod && !hasPeriodService
+      ? periodServiceNotice(
+      formatPeriodRangeLong(selectedPeriod.startHour, selectedPeriod.endHour),
+      hasPartialPeriodService,
+      activePeriodRangeText,
+    )
+    : null;
+  const unevenNotice = selectedPeriod && hasPeriodService && unevenGap > 0
+    ? unevenServiceNotice(unevenGap)
+    : null;
   const coreGroups = directionGroups.filter(group => shouldShowTrunkSummary(group.realTier, period));
   const hasCoreSummary = coreGroups.length > 0;
   const primaryCoreHeadway = primaryMultiBranch && shouldShowTrunkSummary(primaryMultiBranch.realTier, period)
@@ -339,6 +382,9 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
         const hoveredMerged = showTrunkSparkline
           ? defaultMerged
           : sparklineHeadwayByHour(hoveredSparklineDirs, HOURS);
+        const mergedMaxGaps = showTrunkSparkline
+          ? sparklineMaxGapByHour(primaryMultiBranch!.realTier, HOURS)
+          : sparklineMaxGapByHour(hoveredSingleBranch ? hoveredSparklineDirs : defaultSparklineDirs, HOURS);
         // A hovered destination can have no hourly data in the active period.
         // Falling back to the route chart keeps the chart mounted, so its layout
         // does not shift under the pointer and cause hover flicker (#550).
@@ -366,6 +412,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           <>
             <HeadwaySparkline
               byHour={merged}
+              maxGapByHour={mergedMaxGaps}
               stackedByHour={stackedByHour}
               directionOptions={directionOptions}
               period={period}
@@ -378,35 +425,26 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           </>
         );
       })()}
-      {selectedPeriod && !hasPeriodService && (
+      {periodNotice && (
         <div className="mt-4 mb-3 rounded-xl bg-[var(--bg-app)] px-3 py-2.5">
-          <p className="text-[10px] font-black text-[var(--text-primary)]">
-            {hasPartialPeriodService
-              ? `Limited service during ${selectedPeriod.label}`
-              : `No scheduled service during ${selectedPeriod.label}`}
-          </p>
-          <p className="text-[9px] font-bold text-[var(--text-dim)] mt-0.5">
-            {hasPartialPeriodService
-              ? `Service only runs for part of this period (${formatPeriodRangeLong(selectedPeriod.startHour, selectedPeriod.endHour)}).`
-              : `${formatPeriodRangeLong(selectedPeriod.startHour, selectedPeriod.endHour)}. This route may run during another period.`}
-          </p>
+          <p className="text-[10px] font-normal text-[var(--text-primary)]">{periodNotice}</p>
         </div>
       )}
-      {selectedPeriod && unevenGap > 0 && (
+      {unevenNotice && (
         <div className="mt-4 mb-3 rounded-xl bg-[var(--bg-app)] px-3 py-2.5">
-          <p className="text-[10px] font-black text-[var(--text-primary)]">
-            Service is uneven during {selectedPeriod.label}.
-          </p>
-          <p className="text-[9px] font-bold text-[var(--text-dim)] mt-0.5">
-            Longest gap: {unevenGap} minutes.
-          </p>
+          <p className="text-[10px] font-black text-[var(--text-primary)]">{unevenNotice}</p>
         </div>
       )}
       <SidebarCardList>
         {selectedRouteOutOfFilter && !(hasCoreSummary && coreHeadway != null && coreHeadway <= maxHeadway) && (
           <div className={CARD_NOTICE_FOOTER}>
             <p className={CARD_NOTICE}>
-              This route does not meet the {maxHeadway}-minute filter in every direction during {selectedPeriod?.label ?? 'the selected schedule'}, but remains visible because it is selected.
+              {selectedPeriod && activePeriodRangeText
+                ? selectedRouteFilterNotice({
+                  activeRange: activePeriodRangeText,
+                  periodRange: formatPeriodRangeLong(selectedPeriod.startHour, selectedPeriod.endHour),
+                })
+                : selectedRouteOutsideFilterNotice(maxHeadway)}
             </p>
           </div>
         )}

@@ -11,14 +11,11 @@ const getR2PublicUrl = (): string => {
     return process.env.R2_PUBLIC_URL;
   }
   // Vite dev: same-origin proxy (see vite.config.ts) avoids R2 CORS on localhost.
-  // @ts-ignore
   if (typeof window !== 'undefined' && typeof import.meta !== 'undefined' && import.meta?.env?.DEV) {
     return `${window.location.origin}/atlas-data`;
   }
   // Vite client-side environment variable fallback
-  // @ts-ignore
   if (typeof import.meta !== 'undefined' && import.meta?.env?.VITE_R2_PUBLIC_URL) {
-    // @ts-ignore
     return import.meta.env.VITE_R2_PUBLIC_URL;
   }
   return DEFAULT_R2_PUBLIC_URL;
@@ -27,9 +24,7 @@ const getR2PublicUrl = (): string => {
 export const R2_PUBLIC_URL = getR2PublicUrl().replace(/\/$/, '');
 
 const getBetaR2PublicUrl = (): string => {
-  // @ts-ignore
   if (typeof import.meta !== 'undefined' && import.meta?.env?.VITE_BETA_R2_PUBLIC_URL) {
-    // @ts-ignore
     return import.meta.env.VITE_BETA_R2_PUBLIC_URL;
   }
   // Staging R2's public development host is intentionally not browser-CORS enabled.
@@ -45,7 +40,6 @@ export const BETA_R2_PUBLIC_URL = getBetaR2PublicUrl().replace(/\/$/, '');
 // off by default until that's resolved. Env-driven rather than a hardcoded constant so production
 // and beta can build the same main commit with different feature exposure.
 function envFlag(name: 'VITE_LIVE_ENABLED' | 'VITE_HISTORY_ENABLED' | 'VITE_CORRIDORS_ENABLED' | 'VITE_BETA_BUILD' | 'VITE_PREVIEW_BUILD' | 'VITE_CARD_CLICK_TO_FLAG_ENABLED' | 'VITE_UNEVEN_BANNER_ENABLED' | 'VITE_MAP_EXPORT_ENABLED'): boolean {
-  // @ts-ignore
   return typeof import.meta !== 'undefined' && import.meta?.env?.[name] === 'true';
 }
 
@@ -63,11 +57,9 @@ export const UNEVEN_BANNER_ENABLED = envFlag('VITE_UNEVEN_BANNER_ENABLED');
 export type AtlasMode = 'public' | 'preview' | 'beta' | 'dev';
 
 function getAtlasMode(): AtlasMode {
-  // @ts-ignore
   const configured = typeof import.meta !== 'undefined' ? import.meta?.env?.VITE_ATLAS_MODE : undefined;
   if (configured === 'public' || configured === 'preview' || configured === 'beta' || configured === 'dev') return configured;
   // Preserve the existing defaults when the explicit mode is not configured yet.
-  // @ts-ignore
   if (typeof import.meta !== 'undefined' && import.meta?.env?.DEV) return 'dev';
   if (envFlag('VITE_PREVIEW_BUILD')) return 'preview';
   return envFlag('VITE_BETA_BUILD') ? 'beta' : 'public';
@@ -239,6 +231,9 @@ export interface HeadwayPeriodRange {
 }
 
 export type HeadwayByPeriodRange = Partial<Record<PeriodKey, HeadwayPeriodRange | null>>;
+
+/** Longest departure gap starting within each sparkline hour. */
+export type HeadwayByHourMaxGap = Partial<Record<number, number | null>>;
 
 export interface HeadwayTier {
   max: number;

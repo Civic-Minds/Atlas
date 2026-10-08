@@ -13,22 +13,35 @@
     41.9,
     -73.7
   ],
-  "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-hudson-link-gtfs-2312.zip?alt=media",
-  "lastFeedExpiry": "20261001",
-  "lastFeedVersion": "UTC: 25-Mar-2026 23:59",
-  "lastRefreshedAt": "2026-08-07",
+  "feedUrl": "https://s3.amazonaws.com/datatools-511ny/public/Hudson_Link.zip",
+  "lastFeedExpiry": "20270628",
+  "lastFeedVersion": "S1000138",
+  "lastRefreshedAt": "2026-10-08",
   "cities": [
     "Greenburgh, New York",
     "White Plains, New York",
     "Paterson, New Jersey"
   ],
-  "lastFeedCheckAt": "20261007",
-  "expiredFeedCheckCount": 2,
-  "expiredFeedCheckSince": "20260622",
-  "expiredFeedCheckExpiry": "20261001",
+  "lastFeedCheckAt": "20261008",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270628",
   "timezone": "America/New_York",
-  "feedRefreshStatus": "stale",
-  "feedRefreshError": "all available feeds expired (latest 20261001)",
-  "feedRefreshErrorAt": "20261007",
-  "feedRefreshRetryCount": 2
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 30
+    },
+    "checkedAt": "2026-10-08"
+  }
 }

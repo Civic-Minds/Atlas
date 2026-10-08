@@ -1,5 +1,6 @@
 import type { PeriodKey } from './config.js';
 import { NO_PERIOD_SERVICE_TILE_VALUE, periodHeadwayFlatKeys } from './pmtilesProps.js';
+import { PERIOD_COVERAGE_MAX_HEADWAY } from './periodEligibility.js';
 import { buildEffectiveModeExpression, ON_DEMAND_MODE, VIRTUAL_LRT_MODE } from './modes.js';
 
 type PeriodFilter = PeriodKey | 'all';
@@ -80,7 +81,7 @@ export function tileEffectiveHeadwayExpr(period?: PeriodFilter): unknown[] {
     ];
     const qualifiedCadence = [
       'case',
-      ['all', ['==', ['get', `hps_${period}`], true], ['<=', coverage, 60]],
+      ['all', ['==', ['get', `hps_${period}`], true], ['<=', coverage, PERIOD_COVERAGE_MAX_HEADWAY]],
       regularPeriod,
       coverage,
     ];

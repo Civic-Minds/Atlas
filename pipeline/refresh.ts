@@ -12,7 +12,7 @@
  *
  * The index.json stores feed sources + metadata. Artifact URLs are derived from slug.
  */
-import { readFileSync, writeFileSync } from 'fs';
+import { readFileSync, writeFileSync, renameSync } from 'fs';
 import { execFileSync } from 'child_process';
 import { resolve } from 'path';
 // loadEnv first so shared/config sees staging R2_PUBLIC_URL
@@ -65,6 +65,12 @@ const rawArgs = process.argv.slice(2);
 const forceRefresh = rawArgs.includes('--force');
 const forceCountryLaunch = rawArgs.includes(COUNTRY_LAUNCH_FLAG);
 const onlySlugs = rawArgs.filter(a => !FLAG_ARGS.has(a));
+
+function writeJsonAtomically(filePath: string, value: unknown): void {
+  const tempPath = `${filePath}.tmp-${process.pid}`;
+  writeFileSync(tempPath, `${JSON.stringify(value, null, 2)}\n`);
+  renameSync(tempPath, filePath);
+}
 
 // All agencies with a feedUrl get history snapshots — no manual opt-in needed.
 
@@ -652,7 +658,7 @@ async function main() {
       // Clear staged flag once data is live so the next deploy shows the agency.
       if (agency.staged) delete agency.staged;
       // Write after each agency so a mid-run crash doesn't lose lastFeedExpiry for completed ones.
-      writeFileSync(indexPath, JSON.stringify(index, null, 2));
+      writeJsonAtomically(indexPath, index);
       writeAgencySource(agency);
     } catch (e) {
       failures++;

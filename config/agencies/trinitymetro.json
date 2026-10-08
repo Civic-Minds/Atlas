@@ -6,7 +6,7 @@
     32.73,
     -97.29
   ],
-  "feedUrl": "https://files.mobilitydatabase.org/mdb-2890/mdb-2890-202606170131/mdb-2890-202606170131.zip",
+  "feedUrl": "https://gtfsdata.ridetm.org/gtfs/fwtatransitdata.zip",
   "lastFeedExpiry": "20270130",
   "lastFeedVersion": "SEPTEMBER 2026_20260806",
   "region": "Texas",
@@ -20,7 +20,7 @@
     "Mansfield, Texas",
     "Flower Mound, Texas"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261008",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270130",

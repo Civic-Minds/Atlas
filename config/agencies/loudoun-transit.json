@@ -6,11 +6,11 @@
     39.08,
     -77.65
   ],
-  "feedUrl": "https://files.mobilitydatabase.org/mdb-1053/mdb-1053-202604210103/mdb-1053-202604210103.zip",
-  "lastFeedExpiry": "20260926",
-  "lastFeedVersion": "S1000079",
+  "feedUrl": "https://www.loudoun.gov/loudountransitgtfs",
+  "lastFeedExpiry": "20270327",
+  "lastFeedVersion": "S1000085",
   "region": "Virginia",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-10-08",
   "cities": [
     "Leesburg, Virginia",
     "Reston, Virginia",
@@ -18,13 +18,26 @@
     "Washington, District of Columbia",
     "Downtown DC, District of Columbia"
   ],
-  "lastFeedCheckAt": "20261007",
-  "expiredFeedCheckCount": 2,
-  "expiredFeedCheckSince": "20260622",
-  "expiredFeedCheckExpiry": "20260926",
+  "lastFeedCheckAt": "20261008",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270327",
   "timezone": "America/New_York",
-  "feedRefreshStatus": "stale",
-  "feedRefreshError": "all available feeds expired (latest 20260926)",
-  "feedRefreshErrorAt": "20261007",
-  "feedRefreshRetryCount": 2
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 123
+    },
+    "checkedAt": "2026-10-08"
+  }
 }

@@ -1,19 +1,8 @@
-export interface ResearchFrequentServiceFlags {
-  daytime15: boolean;
-  daytime30: boolean;
-  extended15: boolean;
-  extended30: boolean;
-}
+import type { RouteIndexFrequentServiceFlags, RouteIndexProperties } from '../shared/routeIndexProperties.js';
 
-interface RouteFeatureProperties {
-  researchFrequentService?: ResearchFrequentServiceFlags;
-  routeShortName?: string | null;
-  routeLongName?: string | null;
-  routeColor?: string | null;
-  directionId?: number | null;
-  headsign?: string | null;
-  day?: string | null;
-}
+export type ResearchFrequentServiceFlags = RouteIndexFrequentServiceFlags;
+
+type RouteFeatureProperties = RouteIndexProperties;
 
 interface RouteFeature { properties: RouteFeatureProperties; }
 

@@ -1,5 +1,6 @@
 import type { ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
 import { isHourInPeriod } from '../../shared/config';
+import { hasAnyPeriodCoverage, hasNoPeriodService, hasPeriodCoverageValue, hasPeriodSummary, isUnsustainedWithoutCoverage, periodCoverageValue, PERIOD_COVERAGE_MAX_HEADWAY } from '../../shared/periodEligibility';
 import { buildRouteServiceSummary, metricValueForPeriod } from './routeFacts';
 
 /** Headway shown on route cards and lists — the same route-level metric used by the filter. */
@@ -28,7 +29,12 @@ export function routeCardDisplayHeadway(p: ShapeProperties, period: TimePeriod):
   // when the branch has no more specific display metric.
   const branchHeadway = metricValueForPeriod(summary.display, period);
   if (branchHeadway != null) return branchHeadway;
-  if (period !== 'all') return summary.shared.byHeadsignPeriod?.[period] ?? null;
+  if (period !== 'all') {
+    // An explicit null means this branch has no service in the selected period.
+    // Do not replace that with a shared-stop cadence from another pattern or direction.
+    if (hasNoPeriodService(p, period)) return null;
+    return summary.shared.byHeadsignPeriod?.[period] ?? null;
+  }
   return branchHeadway;
 }
 
@@ -47,10 +53,12 @@ export function hasPeriodCoverage(p: ShapeProperties, period: TimePeriod): boole
  */
 export function hasDirectionPeriodService(p: ShapeProperties, period: TimePeriod): boolean {
   if (period === 'all') return true;
-  const coverage = p.worstDirectionPeriodCoverageHeadway ?? p.periodCoverageHeadway;
-  if (coverage && coverage[period] != null) return true;
-  if (p.headwayByPeriod && p.headwayByPeriod[period] != null) return true;
-  if (p.headsignMinStopHeadwayByPeriod?.[period] != null) return true;
+  const worstCoverage = p.worstDirectionPeriodCoverageHeadway?.[period];
+  const directionCoverage = p.periodCoverageHeadway?.[period];
+  if (worstCoverage != null || directionCoverage != null) return true;
+  if (p.headwayByPeriod && Object.prototype.hasOwnProperty.call(p.headwayByPeriod, period)) {
+    return p.headwayByPeriod[period] != null;
+  }
   if (p.headwayByHour) {
     for (const [hourStr, val] of Object.entries(p.headwayByHour)) {
       if (val != null && isHourInPeriod(Number(hourStr), period)) {
@@ -58,6 +66,9 @@ export function hasDirectionPeriodService(p: ShapeProperties, period: TimePeriod
       }
     }
   }
+  if (p.worstDirectionPeriodCoverageHeadway && Object.prototype.hasOwnProperty.call(p.worstDirectionPeriodCoverageHeadway, period)) return false;
+  if (p.periodCoverageHeadway && Object.prototype.hasOwnProperty.call(p.periodCoverageHeadway, period)) return false;
+  if (p.headsignMinStopHeadwayByPeriod?.[period] != null) return true;
   return false;
 }
 
@@ -100,6 +111,28 @@ export function routeListDisplayHeadway(features: readonly ShapeProperties[], pe
 export function effectiveRouteHeadway(p: ShapeProperties, period: TimePeriod): number | null {
   const summary = buildRouteServiceSummary(p);
   if (period !== 'all') {
+    const hasExplicitPeriodValue = hasPeriodSummary(p, period);
+    // Older artifacts can mark a period as unsustained without publishing its
+    // full-window gap. The median is not enough to prove filterable service.
+    if (isUnsustainedWithoutCoverage(p, period)) return null;
+    const coverage = periodCoverageValue(p, period);
+    // An explicit no-service period, or a period whose full-window coverage is too sparse,
+    // must not be replaced by a shared-stop cadence from a shorter part of the route.
+    if (hasExplicitPeriodValue && p.headwayByPeriod?.[period] == null) {
+      return null;
+    }
+    if (coverage != null && coverage > PERIOD_COVERAGE_MAX_HEADWAY) {
+      return coverage;
+    }
+    // A published coverage field with a null value is an explicit statement that
+    // this direction has no usable full-window coverage. Do not replace it with
+    // a shared-stop cadence from a shorter part of the period.
+    if (coverage == null && hasPeriodCoverageValue(p, period)) {
+      return null;
+    }
+    if (coverage == null && hasAnyPeriodCoverage(p) && !hasPeriodCoverageValue(p, period)) {
+      return metricValueForPeriod(summary.filter, period);
+    }
     const sharedHeadway = summary.shared.byHeadsignPeriod?.[period];
     if (sharedHeadway != null) return sharedHeadway;
   }

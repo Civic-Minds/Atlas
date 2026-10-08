@@ -13,22 +13,35 @@
     49,
     -122
   ],
-  "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-washington-whatcom-transportation-authority-gtfs-284.zip?alt=media",
-  "lastFeedExpiry": "20260919",
-  "lastFeedVersion": "S1000173-S1000174",
-  "lastRefreshedAt": "2026-08-07",
+  "feedUrl": "https://github.com/whatcomtrans/publicwtadata/raw/master/GTFS/wta_gtfs_latest.zip",
+  "lastFeedExpiry": "20270206",
+  "lastFeedVersion": "S1000178",
+  "lastRefreshedAt": "2026-10-08",
   "cities": [
     "Bellingham, Washington",
     "Abbotsford, British Columbia",
     "South Surrey, British Columbia"
   ],
-  "lastFeedCheckAt": "20261007",
-  "expiredFeedCheckCount": 2,
-  "expiredFeedCheckSince": "20260622",
-  "expiredFeedCheckExpiry": "20260919",
+  "lastFeedCheckAt": "20261008",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270206",
   "timezone": "America/Los_Angeles",
-  "feedRefreshStatus": "stale",
-  "feedRefreshError": "all available feeds expired (latest 20260919)",
-  "feedRefreshErrorAt": "20261007",
-  "feedRefreshRetryCount": 2
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 171
+    },
+    "checkedAt": "2026-10-08"
+  }
 }

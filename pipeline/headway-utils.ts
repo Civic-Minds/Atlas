@@ -1,4 +1,4 @@
-import { HEADWAY_TIERS, TIME_PERIODS, type HeadwayByPeriod, type HeadwayByPeriodMaxGap, type HeadwayByPeriodRange, type PeriodKey } from '../shared/config.js';
+import { HEADWAY_TIERS, TIME_PERIODS, type HeadwayByHourMaxGap, type HeadwayByPeriod, type HeadwayByPeriodMaxGap, type HeadwayByPeriodRange, type PeriodKey } from '../shared/config.js';
 
 const PERIODS = Object.fromEntries(
   TIME_PERIODS.map(p => [p.key, { start: p.startHour * 60, end: p.endHour * 60 }]),
@@ -449,6 +449,24 @@ export function computePeriodMaxGaps(departureTimes: number[]): HeadwayByPeriodM
       }
     }
     result[key] = maxGap;
+  }
+  return result;
+}
+
+/** Return the largest gap that starts during each 60-minute sparkline hour. */
+export function computeHourMaxGaps(departureTimes: number[], hours: readonly number[]): HeadwayByHourMaxGap {
+  const times = [...new Set(departureTimes)].sort((a, b) => a - b);
+  const result: HeadwayByHourMaxGap = {};
+  for (const hour of hours) {
+    const start = hour * 60;
+    const end = start + 60;
+    let maxGap: number | null = null;
+    for (let i = 0; i < times.length - 1; i++) {
+      if (times[i] < start || times[i] >= end) continue;
+      const gap = times[i + 1] - times[i];
+      maxGap = maxGap == null ? gap : Math.max(maxGap, gap);
+    }
+    result[hour] = maxGap;
   }
   return result;
 }

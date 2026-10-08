@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   normalizeNrtAnalysisResult,
+  expandFrequencyOffsets,
   hasNightServiceAtShapeEndpoints,
   selectTerminalDepartureTimes,
   selectPeriodCoverageHeadway,
@@ -55,6 +56,17 @@ describe('normalizeNrtAnalysisResult', () => {
   it('leaves non-span results unchanged', () => {
     const regular = { ...result, tier: '60' };
     expect(normalizeNrtAnalysisResult(regular)).toBe(regular);
+  });
+});
+
+describe('expandFrequencyOffsets', () => {
+  it('expands a frequency block relative to the representative trip', () => {
+    expect(expandFrequencyOffsets(360, 360, 480, 30)).toEqual([0, 30, 60, 90]);
+  });
+
+  it('rejects invalid or empty frequency blocks', () => {
+    expect(expandFrequencyOffsets(360, 480, 360, 30)).toEqual([]);
+    expect(expandFrequencyOffsets(360, 360, 480, 0)).toEqual([]);
   });
 });
 

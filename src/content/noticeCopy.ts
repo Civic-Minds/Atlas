@@ -10,6 +10,29 @@ export function expiredFeedNotice(agencyName: string, expDateStr?: string, manua
   return `Atlas's latest ${label} ended${expDateStr ? ` on ${expDateStr}` : ''}. We haven't been able to locate and verify a newer feed yet.`;
 }
 
+export function selectedRouteFilterNotice(options: {
+  activeRange: string;
+  periodRange: string;
+}): string {
+  return `Service runs about every 30 minutes from ${options.activeRange}, but not throughout the selected ${options.periodRange} period.`;
+}
+
+export function periodServiceNotice(periodRange: string, partial: boolean, activeRange?: string): string {
+  return partial
+    ? `Limited service during the selected ${activeRange || periodRange} period.`
+    : `No scheduled service during the selected ${periodRange} period.`;
+}
+
+export function unevenServiceNotice(longestGap: number): string {
+  return `Service runs throughout the selected period, but not consistently. Longest gap: ${longestGap} minutes.`;
+}
+
+export function selectedRouteOutsideFilterNotice(maxHeadway: number): string {
+  return maxHeadway === Infinity
+    ? 'This route does not run during the selected period.'
+    : `This route does not meet the selected ${maxHeadway}-minute filter for the full selected period.`;
+}
+
 export const EXPIRED_FEED_EXPLANATION =
   'Atlas keeps showing the most recent feed it could verify while we look for a newer public feed.';
 

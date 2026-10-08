@@ -8,6 +8,7 @@ import { periodKeyForHour, isHourInPeriod, SPARKLINE_HOURS, TIME_PERIODS } from 
 import { PERIOD_LABELS } from '../../hooks/useIntervalStats';
 import type { TimePeriod } from '../../hooks/useIntervalStats';
 import type { HeadwayByPeriod, HeadwayByHour } from '../../hooks/useAgencyData';
+import type { HeadwayByHourMaxGap } from '../../../shared/config';
 import { CONTROL_ACTIVE, CONTROL_INACTIVE } from '../../styles';
 
 const HOURS = SPARKLINE_HOURS;
@@ -56,6 +57,7 @@ const PERIOD_OVERVIEW_BANDS = TIME_PERIODS.map(period => {
 
 interface HourlySparklineProps {
   byHour: HeadwayByHour;
+  maxGapByHour?: HeadwayByHourMaxGap;
   stackedByHour?: Record<number, { label: string; headway: number; color: string }[]>;
   directionOptions?: { key: string; label: string; byHour: HeadwayByHour }[];
   period?: string;
@@ -71,7 +73,7 @@ interface HourlySparklineProps {
   expanded?: boolean;
 }
 
-export function HeadwaySparkline({ byHour, stackedByHour, directionOptions, period, onPeriodChange, onPeriodHover, onHourHover, allowExpand = false, reserveStackedLegendSpace = false, title = 'Schedule overview', expanded = false }: HourlySparklineProps) {
+export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directionOptions, period, onPeriodChange, onPeriodHover, onHourHover, allowExpand = false, reserveStackedLegendSpace = false, title = 'Schedule overview', expanded = false }: HourlySparklineProps) {
   const { colorVisionFriendly } = useColorVision();
   const colorMode = colorVisionFriendly ? 'friendly' : 'default';
   const [hoveredPeriod, setHoveredPeriod] = useState<string | null>(null);
@@ -195,6 +197,7 @@ export function HeadwaySparkline({ byHour, stackedByHour, directionOptions, peri
         <div className="relative z-10 flex items-end gap-px">
           {HOURS.map(h => {
             const hw = displayedByHour[h];
+            const maxGap = maxGapByHour?.[h];
             const hasValue = hw != null;
             const freq = hw ? 1 / hw : 0;
             const barH = hasValue
@@ -211,7 +214,9 @@ export function HeadwaySparkline({ byHour, stackedByHour, directionOptions, peri
             const segmentTotalFreq = segments.reduce((sum, segment) => sum + 1 / segment.headway, 0);
             // Hovered-but-inactive bars show their tier color at reduced opacity as a preview
             const barColor = hasValue
-              ? (inActivePeriod || inHovered ? headwayToTierColor(hw, colorMode) : 'var(--border-primary)')
+              ? (inActivePeriod || inHovered
+                  ? headwayToTierColor(maxGap != null && hw != null && maxGap - hw >= 15 && maxGap / hw >= 1.7 ? maxGap : hw, colorMode)
+                  : 'var(--border-primary)')
               : undefined;
             const opacity = !hasValue ? undefined
               : inActivePeriod ? 'opacity-90'
@@ -221,7 +226,9 @@ export function HeadwaySparkline({ byHour, stackedByHour, directionOptions, peri
               <div
                 key={h}
                 className="flex-1 min-w-0 flex flex-col items-center"
-                title={hasValue ? formatHourTitle(h, hw) : undefined}
+                title={hasValue
+                  ? `${formatHourTitle(h, hw)}${maxGap != null && maxGap > hw ? `; longest gap ${maxGap} min` : ''}`
+                  : undefined}
               >
                 <div style={{ height: H }} className="flex items-end justify-center w-full">
                   {hasValue && (
@@ -310,7 +317,7 @@ export function HeadwaySparkline({ byHour, stackedByHour, directionOptions, peri
                     role="tab"
                     aria-selected={expandedDirection === option.key}
                     onClick={() => setExpandedDirection(option.key)}
-                    className={`h-8 px-3 flex items-center justify-center rounded-full border text-[10px] font-bold transition-colors ${expandedDirection === option.key ? CONTROL_ACTIVE : CONTROL_INACTIVE}`}
+                    className={`h-7 px-2.5 flex items-center justify-center text-[11px] font-bold rounded-full border transition-colors ${expandedDirection === option.key ? CONTROL_ACTIVE : CONTROL_INACTIVE}`}
                   >
                     {option.label}
                   </button>
