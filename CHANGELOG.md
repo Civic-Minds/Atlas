@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 - Standalone pages now use a simpler Atlas wordmark that better matches the rest of the product.
 - Documentation and legal pages now share the site header for consistent navigation.
+- Documentation and legal pages now use one shared Atlas navigation path instead of duplicate back links.
 - The About hero now focuses on Atlas’s purpose and actions without a redundant marketing callout.
 - The About page now uses a simpler editorial layout focused on the questions Atlas helps answer.
 - The About page now gives Atlas a clearer editorial landing page with shared navigation, a schedule-to-insight diagram, and direct research paths.
