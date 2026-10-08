@@ -442,10 +442,9 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
               {selectedPeriod && activePeriodRangeText
                 ? selectedRouteFilterNotice({
                   activeRange: activePeriodRangeText,
-                  periodLabel: selectedPeriod.label,
                   periodRange: formatPeriodRangeLong(selectedPeriod.startHour, selectedPeriod.endHour),
                 })
-                : selectedRouteOutsideFilterNotice(maxHeadway, selectedPeriod?.label ?? 'the selected schedule')}
+                : selectedRouteOutsideFilterNotice(maxHeadway)}
             </p>
           </div>
         )}

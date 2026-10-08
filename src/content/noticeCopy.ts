@@ -12,10 +12,9 @@ export function expiredFeedNotice(agencyName: string, expDateStr?: string, manua
 
 export function selectedRouteFilterNotice(options: {
   activeRange: string;
-  periodLabel: string;
   periodRange: string;
 }): string {
-  return `Service runs about every 30 minutes: ${options.activeRange}. ${options.periodLabel} service is measured from ${options.periodRange}; this route is shown because you selected it.`;
+  return `Service runs about every 30 minutes from ${options.activeRange}, but not throughout the selected ${options.periodRange} period.`;
 }
 
 export function periodServiceNotice(periodRange: string, partial: boolean, activeRange?: string): string {
@@ -28,8 +27,10 @@ export function unevenServiceNotice(longestGap: number): string {
   return `Service runs throughout the selected period, but not consistently. Longest gap: ${longestGap} minutes.`;
 }
 
-export function selectedRouteOutsideFilterNotice(maxHeadway: number, periodLabel: string): string {
-  return `This route does not meet the ${maxHeadway}-minute filter across the full ${periodLabel} window. The full route remains visible because it is selected.`;
+export function selectedRouteOutsideFilterNotice(maxHeadway: number): string {
+  return maxHeadway === Infinity
+    ? 'This route does not run during the selected period.'
+    : `This route does not meet the selected ${maxHeadway}-minute filter for the full selected period.`;
 }
 
 export const EXPIRED_FEED_EXPLANATION =

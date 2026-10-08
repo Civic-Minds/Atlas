@@ -450,7 +450,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   });
 
   const selectedRouteOutOfFilter = useMemo(() => {
-    if (!selectedRoute || frequentServiceView || maxHeadway === Infinity) return false;
+    if (!selectedRoute || frequentServiceView || (maxHeadway === Infinity && period === 'all')) return false;
     const { agencySlug: slug, routeId, routeBranch } = splitRouteKey(selectedRoute);
     const features = layers[slug]?.features.filter(f => {
       const p = f.properties as ShapeProperties;
