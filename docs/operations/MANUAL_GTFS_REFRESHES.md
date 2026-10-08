@@ -31,6 +31,32 @@ required routes, trips, stop times, and calendar service.
 No agency from this audit is approved for a live refresh. The 47 genuinely
 expired agencies remain a source-recovery queue, not a batch refresh list.
 
+## Follow-up source recovery — 2026-10-07
+
+A fresh full audit again found 495 current feeds, 52 expired feeds, and 5
+unavailable feeds. Read-only processing of newly located sources produced the
+following refresh candidates; none has been written to R2.
+
+| Agency | Replacement URL | Result |
+| --- | --- | --- |
+| `kcata` | `https://ridekc.org/static-gtfs` | Official current feed through 2027-01-02; 2,499 route features; review quality 80/100 because 2 routes have stop-frequency mismatches. |
+| `hudsonlink` | `https://s3.amazonaws.com/datatools-511ny/public/Hudson_Link.zip` | 511NY source through 2027-06-28; 59 route features; healthy quality. |
+| `islandtransit` | `https://passio3.com/islandtransit/passioTransit/gtfs/google_transit.zip` | Agency Passio source through 2026-11-06; 553 route features; review quality 70/100 because 7 route shapes needed correction. |
+| `loudoun-transit` | `https://www.loudoun.gov/loudountransitgtfs` | Official county feed through 2027-03-27; 632 route features; healthy quality. |
+| `setd` | `https://oregon-gtfs.trilliumtransit.com/gtfs_data/clatsopcounty-or-us/clatsopcounty-or-us.zip` | Oregon ODOT/Trillium feed through 2027-05-31; 71 route features; healthy quality. |
+| `trinitymetro` | `https://gtfsdata.ridetm.org/gtfs/fwtatransitdata.zip` | Official Trinity Metro feed through 2027-01-30; 1,752 route features; healthy quality. |
+| `whatcomtransit` | `https://github.com/whatcomtrans/publicwtadata/raw/master/GTFS/wta_gtfs_latest.zip` | Agency repository feed through 2027-02-06; 1,049 route features; healthy quality. |
+
+`tulare-county-transit` also has a current-looking Peak Transit source with
+service through 2027-01-31, but the feed identifies the agency as RIDE Tulare
+County rather than Atlas's existing TCAT record. It remains a manual identity
+review, with 396 route features and 3 shape corrections. `annapolis` still
+ends 2026-09-30, `broward-transit` ends 2026-09-26, and `longview` ends
+2026-09-30; those are not replacements.
+
+All eight listed candidates were processed with `--dry-run`; no agency
+configuration, production artifact, PMTiles file, or R2 object was changed.
+
 ## Previous read-only audit — 2026-09-26
 
 The registry contains 80 records whose schedules were expired before the audit
