@@ -29,7 +29,7 @@ export default function AboutPage() {
         <SiteHeader />
 
         <section className="max-w-5xl py-24 sm:py-32">
-          <h1 className="max-w-4xl text-5xl font-black tracking-[-0.04em] sm:text-7xl">A map for <span className="inline-block w-[12ch] whitespace-nowrap">{headlineVerbs[headlineVerbIndex]}</span> how transit works.</h1>
+          <h1 className="max-w-4xl text-5xl font-black tracking-[-0.04em] sm:text-7xl">A map for <span className="block"><span className="inline-block w-[12ch] whitespace-nowrap">{headlineVerbs[headlineVerbIndex]}</span></span>{' '}how transit works.</h1>
           <p className="mt-8 max-w-2xl text-xl leading-8 text-[var(--text-muted)]">Atlas turns published schedules into a clearer picture of where transit goes, how often it comes, and when it is useful.</p>
         </section>
 

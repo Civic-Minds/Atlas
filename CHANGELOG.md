@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Fixed the rotating About headline so its final line no longer jumps to the side of the changing word.
 - Reworked the About hero so its explanation sits naturally beneath the headline instead of getting lost beside it.
 - Unified the About page’s explanatory sections so the network dimensions and Atlas overview use the same editorial structure.
 - Removed duplicate About-page action buttons now that the shared header provides the same destinations.
