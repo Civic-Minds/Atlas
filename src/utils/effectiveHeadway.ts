@@ -28,7 +28,12 @@ export function routeCardDisplayHeadway(p: ShapeProperties, period: TimePeriod):
   // when the branch has no more specific display metric.
   const branchHeadway = metricValueForPeriod(summary.display, period);
   if (branchHeadway != null) return branchHeadway;
-  if (period !== 'all') return summary.shared.byHeadsignPeriod?.[period] ?? null;
+  if (period !== 'all') {
+    // An explicit null means this branch has no service in the selected period.
+    // Do not replace that with a shared-stop cadence from another pattern or direction.
+    if (p.headwayByPeriod && Object.prototype.hasOwnProperty.call(p.headwayByPeriod, period)) return null;
+    return summary.shared.byHeadsignPeriod?.[period] ?? null;
+  }
   return branchHeadway;
 }
 
@@ -48,8 +53,10 @@ export function hasPeriodCoverage(p: ShapeProperties, period: TimePeriod): boole
 export function hasDirectionPeriodService(p: ShapeProperties, period: TimePeriod): boolean {
   if (period === 'all') return true;
   const coverage = p.worstDirectionPeriodCoverageHeadway ?? p.periodCoverageHeadway;
-  if (coverage && coverage[period] != null) return true;
-  if (p.headwayByPeriod && p.headwayByPeriod[period] != null) return true;
+  if (coverage && Object.prototype.hasOwnProperty.call(coverage, period)) return coverage[period] != null;
+  if (p.headwayByPeriod && Object.prototype.hasOwnProperty.call(p.headwayByPeriod, period)) {
+    return p.headwayByPeriod[period] != null;
+  }
   if (p.headsignMinStopHeadwayByPeriod?.[period] != null) return true;
   if (p.headwayByHour) {
     for (const [hourStr, val] of Object.entries(p.headwayByHour)) {

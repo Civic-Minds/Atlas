@@ -427,12 +427,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
       })()}
       {periodNotice && (
         <div className="mt-4 mb-3 rounded-xl bg-[var(--bg-app)] px-3 py-2.5">
-          <p className="text-[10px] font-black text-[var(--text-primary)]">
-            {periodNotice.title}
-          </p>
-          <p className="text-[9px] font-bold text-[var(--text-dim)] mt-0.5">
-            {periodNotice.detail}
-          </p>
+          <p className="text-[10px] font-black text-[var(--text-primary)]">{periodNotice}</p>
         </div>
       )}
       {unevenNotice && (

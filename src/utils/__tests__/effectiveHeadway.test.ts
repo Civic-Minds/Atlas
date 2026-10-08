@@ -218,6 +218,17 @@ describe('effectiveRouteHeadway', () => {
     expect(routeCardDisplayHeadway(p, 'midday')).toBe(10);
   });
 
+  it('does not replace an explicit no-service period with a shared-stop cadence', () => {
+    const p = {
+      ...base,
+      headway: 22,
+      headwayByPeriod: { overnight: null },
+      headsignMinStopHeadwayByPeriod: { overnight: 10 },
+    } as ShapeProperties;
+
+    expect(routeCardDisplayHeadway(p, 'overnight')).toBeNull();
+  });
+
   it('shows the active cadence while full-period coverage still records multi-hour voids (#507)', () => {
     const p = {
       headway: 10,
@@ -268,6 +279,7 @@ describe('effectiveRouteHeadway', () => {
     const withZeroService = {
       periodCoverageHeadway: { overnight: null },
       headwayByPeriod: { midday: 10 },
+      headsignMinStopHeadwayByPeriod: { overnight: 10 },
       headwayByHour: { 12: 10 },
     } as unknown as ShapeProperties;
     expect(hasDirectionPeriodService(withZeroService, 'overnight')).toBe(false);

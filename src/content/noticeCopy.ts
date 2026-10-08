@@ -18,16 +18,10 @@ export function selectedRouteFilterNotice(options: {
   return `Service runs about every 30 minutes: ${options.activeRange}. ${options.periodLabel} service is measured from ${options.periodRange}; this route is shown because you selected it.`;
 }
 
-export function periodServiceNotice(periodLabel: string, periodRange: string, partial: boolean): { title: string; detail: string } {
+export function periodServiceNotice(periodLabel: string, periodRange: string, partial: boolean): string {
   return partial
-    ? {
-      title: `Limited service during ${periodLabel}`,
-      detail: `Service only runs for part of this period (${periodRange}).`,
-    }
-    : {
-      title: `No scheduled service during ${periodLabel}`,
-      detail: `${periodRange}. It is hidden from the map for this period.`,
-    };
+    ? `Limited service during ${periodLabel} (${periodRange}).`
+    : `No scheduled service during ${periodLabel} (${periodRange}).`;
 }
 
 export function unevenServiceNotice(periodLabel: string, longestGap: number): { title: string; detail: string } {
