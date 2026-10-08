@@ -1,4 +1,4 @@
-import { Moon, Zap } from 'lucide-react';
+import { ArrowRight, Moon, Zap } from 'lucide-react';
 import { FEATURE_ROUTES } from '../../shared/config';
 import { FLOATING_CARD } from '../styles';
 
@@ -14,18 +14,32 @@ export default function ResearchPage() {
         </div>
 
         <div className="mt-10 grid gap-4 sm:grid-cols-2">
-          <a href="/apps/night" className={`${FLOATING_CARD} group p-5 transition-colors hover:border-[var(--accent-border)]`}>
-            <Moon className="h-5 w-5 text-[var(--accent)]" />
-            <h2 className="mt-5 text-lg font-black text-[var(--text-primary)] group-hover:text-[var(--accent)]">Night Service</h2>
-            <p className="mt-2 text-sm font-bold leading-6 text-[var(--text-muted)]">Find routes with sustained service from 2am to 6am.</p>
-            <span className="mt-5 inline-flex h-8 items-center rounded-full border px-3 text-xs font-bold text-[var(--text-primary)]">See overnight routes →</span>
+          <a href="/apps/night" className={`${FLOATING_CARD} group relative overflow-hidden p-6 transition-all hover:-translate-y-1 hover:border-[var(--accent-border)]`}>
+            <div className="absolute inset-x-0 top-0 h-1 bg-indigo-400" />
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-500 dark:bg-indigo-950/40 dark:text-indigo-300">
+                <Moon className="h-5 w-5" />
+              </div>
+              <span className="text-right text-xs font-black uppercase tracking-[0.16em] text-[var(--text-dim)]">Overnight coverage</span>
+            </div>
+            <p className="mt-8 text-3xl font-black tracking-tight text-[var(--text-primary)]">2–6 AM</p>
+            <h2 className="mt-2 text-lg font-black text-[var(--text-primary)] group-hover:text-[var(--accent)]">Night Service</h2>
+            <p className="mt-2 text-sm font-bold leading-6 text-[var(--text-muted)]">Find routes that keep running while most of the network is asleep.</p>
+            <span className="mt-6 inline-flex h-9 items-center gap-2 rounded-full border px-4 text-xs font-black text-[var(--text-primary)]">See overnight routes <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" /></span>
           </a>
 
-          <a href={FEATURE_ROUTES.frequentService.story} className={`${FLOATING_CARD} group p-5 transition-colors hover:border-[var(--accent-border)]`}>
-            <Zap className="h-5 w-5 text-[var(--accent)]" />
-            <h2 className="mt-5 text-lg font-black text-[var(--text-primary)] group-hover:text-[var(--accent)]">Frequent Service</h2>
-            <p className="mt-2 text-sm font-bold leading-6 text-[var(--text-muted)]">Learn what frequent service means, then explore routes that meet Atlas’s sustained-frequency thresholds.</p>
-            <span className="mt-5 inline-flex h-8 items-center rounded-full border px-3 text-xs font-bold text-[var(--text-primary)]">Understand the threshold →</span>
+          <a href={FEATURE_ROUTES.frequentService.story} className={`${FLOATING_CARD} group relative overflow-hidden p-6 transition-all hover:-translate-y-1 hover:border-[var(--accent-border)]`}>
+            <div className="absolute inset-x-0 top-0 h-1 bg-amber-400" />
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-amber-50 text-amber-500 dark:bg-amber-950/40 dark:text-amber-300">
+                <Zap className="h-5 w-5" />
+              </div>
+              <span className="text-right text-xs font-black uppercase tracking-[0.16em] text-[var(--text-dim)]">Frequency that matters</span>
+            </div>
+            <p className="mt-8 text-3xl font-black tracking-tight text-[var(--text-primary)]">15 / 30 min</p>
+            <h2 className="mt-2 text-lg font-black text-[var(--text-primary)] group-hover:text-[var(--accent)]">Frequent Service</h2>
+            <p className="mt-2 text-sm font-bold leading-6 text-[var(--text-muted)]">Learn what frequent service means, then see which routes meet the threshold.</p>
+            <span className="mt-6 inline-flex h-9 items-center gap-2 rounded-full border px-4 text-xs font-black text-[var(--text-primary)]">Read the service story <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" /></span>
           </a>
         </div>
       </div>
