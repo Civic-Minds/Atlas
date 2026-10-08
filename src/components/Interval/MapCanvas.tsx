@@ -1898,6 +1898,16 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         const focusedPaint = buildFocusedRoutePaint(historyRouteMatch, DIM_OPACITY, DIM_WIDTH);
         setRouteLayerPaint(map, 'line-opacity', focusedPaint.opacity as any);
         setRouteLayerPaint(map, 'line-width', focusedPaint.width as any);
+        if (map.getLayer('history-routes-layer')) {
+          map.setPaintProperty('history-routes-layer', 'line-opacity', ['case', ['get', 'selected'], 1.0, DIM_OPACITY] as any);
+          map.setPaintProperty('history-routes-layer', 'line-width', [
+            'interpolate', ['linear'], ['zoom'],
+            8, ['case', ['get', 'selected'], 3.5, DIM_WIDTH],
+            11, ['case', ['get', 'selected'], 4.0, DIM_WIDTH],
+            14, ['case', ['get', 'selected'], 4.5, DIM_WIDTH],
+            17, ['case', ['get', 'selected'], 5.0, DIM_WIDTH],
+          ] as any);
+        }
       } else if (historyOverlay?.slug) {
         // History agency selection keeps the whole agency visible while dimming
         // the surrounding network, matching route-level focus without hiding context.
@@ -1912,6 +1922,10 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
           14, ['case', historyAgencyMatch, 3.8, DIM_WIDTH],
           17, ['case', historyAgencyMatch, 4.5, DIM_WIDTH],
         ] as any);
+        if (map.getLayer('history-routes-layer')) {
+          map.setPaintProperty('history-routes-layer', 'line-opacity', 0.85);
+          map.setPaintProperty('history-routes-layer', 'line-width', 2.5);
+        }
       } else if (selectedRoute) {
         const selKey = selectedRoute;
         const routeMatch: any = routeKeyMatchExpression(selKey);

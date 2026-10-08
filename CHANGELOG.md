@@ -5,7 +5,15 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
-
+- **Research landing-page copy now describes schedule patterns precisely instead of implying a broader view of transit operations.**
+- **Research view links now describe the insight users will get instead of repeating generic “Open” actions.**
+- **The Research landing page now opens with a clearer invitation and puts the research tools first.**
+- **The Research landing page now starts with its actual title instead of repeating “Research” as a label.**
+- **The Research page now introduces Frequent Service through its explanatory story before sending users to the interactive map.**
+- **History now fades unselected routes when a route is selected, making the active historical line easier to follow on the map.**
+- **History now exposes current route-mode filters, and its header no longer offers unrelated Research navigation.**
+- **History route details now give the route title priority and use a compact agency back link.**
+- **History route names now match the normal route list, and agency summaries use shorter labels.**
 - **Large R2 archive jobs now reuse connections instead of creating a new client for every file, preventing History verification from exhausting sockets.**
 - **Export and Share now support Social (1200×630), Standard (1600×900), and High resolution (2400×1350) PNGs, with equal-weight actions and click-outside dismissal.**
 - **Night Service now uses the shared header for its 30-minute and 60-minute filters and search, keeping the panel from duplicating controls.**
