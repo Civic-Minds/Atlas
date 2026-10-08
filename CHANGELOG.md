@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- Removed duplicate About-page action buttons now that the shared header provides the same destinations.
 - Reordered the standalone-page menu so Research and Docs come before the Atlas destination.
 - Fixed the About headline layout so its rotating word no longer shifts the surrounding text.
 - Added a compact shared menu to Atlas’s standalone pages so users can move between the map, research, and documentation without relying on a back link.

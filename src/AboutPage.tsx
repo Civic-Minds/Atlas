@@ -34,14 +34,6 @@ export default function AboutPage() {
           </div>
           <div className="max-w-md pb-1">
             <p className="text-lg leading-8 text-[var(--text-muted)]">Atlas turns published schedules into a clearer picture of where transit goes, how often it comes, and when it is useful.</p>
-            <div className="mt-7 flex flex-wrap gap-2">
-              <a href="/" className="inline-flex h-10 items-center gap-2 rounded-full border border-[var(--border-primary)] px-5 text-sm font-black hover:border-[var(--accent-border)]">
-                Open the map <ArrowRight className="h-4 w-4" />
-              </a>
-              <a href="/research" className="inline-flex h-10 items-center rounded-full border border-[var(--border-primary)] px-5 text-sm font-bold hover:border-[var(--accent-border)]">
-                Explore research
-              </a>
-            </div>
           </div>
         </section>
 
