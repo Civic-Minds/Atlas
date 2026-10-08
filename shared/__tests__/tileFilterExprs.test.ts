@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { featureFilter } from '@maplibre/maplibre-gl-style-spec';
-import { buildModeFilterClause, tileEffectiveHeadwayExpr, tileLimitedServiceExpr, tilePeriodServiceExpr } from '../tileFilterExprs';
+import { buildModeFilterClause, buildTileHeadwayFilterClause, tileEffectiveHeadwayExpr, tileLimitedServiceExpr, tilePeriodServiceExpr } from '../tileFilterExprs';
 import { flattenPeriodHeadwayProps, NO_PERIOD_SERVICE_TILE_VALUE } from '../pmtilesProps';
 import { ON_DEMAND_MODE, VIRTUAL_LRT_MODE } from '../modes';
 
@@ -148,6 +148,22 @@ describe('tilePeriodServiceExpr', () => {
   it('fails closed when no period-specific fields exist', () => {
     const compiled = compileFilter(tilePeriodServiceExpr('pmPeak'));
     expect(compiled.filter({ zoom: 10 }, feat({ headway: 5 }) as any)).toBe(false);
+  });
+});
+
+describe('buildTileHeadwayFilterClause', () => {
+  it('uses the boolean period-service predicate for an unbounded period filter', () => {
+    const clause = buildTileHeadwayFilterClause('late', Infinity);
+    expect(clause).toEqual(tilePeriodServiceExpr('late'));
+    expect(() => compileFilter(clause)).not.toThrow();
+  });
+
+  it('keeps the numeric sentinel ceiling for an unbounded all-day filter', () => {
+    expect(buildTileHeadwayFilterClause('all', Infinity)).toEqual([
+      '<=',
+      tileEffectiveHeadwayExpr('all'),
+      NO_PERIOD_SERVICE_TILE_VALUE - 1,
+    ]);
   });
 });
 
