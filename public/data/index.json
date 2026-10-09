@@ -6539,12 +6539,31 @@
       "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-emery-go-round-gtfs-2224.zip?alt=media",
       "lastFeedExpiry": "20271127",
       "lastFeedVersion": null,
-      "lastRefreshedAt": "2026-08-10",
-      "lastFeedCheckAt": "20261007",
+      "lastRefreshedAt": "2026-10-09",
+      "lastFeedCheckAt": "20261009",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
       "expiredFeedCheckExpiry": "20271127",
-      "timezone": "America/Los_Angeles"
+      "timezone": "America/Los_Angeles",
+      "lastFeedSourceKind": "configured",
+      "lastFeedSourceUrl": "https://emerygoround.com/data/emerygoround-ca-us.zip",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 5
+        },
+        "checkedAt": "2026-10-09"
+      },
+      "feedRefreshStatus": "current",
+      "feedRefreshError": null,
+      "feedRefreshErrorAt": null,
+      "feedRefreshRetryCount": 0
     },
     {
       "slug": "stanford",
