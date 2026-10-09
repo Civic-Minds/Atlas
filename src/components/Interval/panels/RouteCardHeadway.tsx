@@ -36,7 +36,7 @@ import { shouldShowDirectionSections } from '../../../utils/routeCardDirectionLa
 import type { VariantFamily } from '../../../utils/routeVariants';
 import { currentAtlasUrl } from '../../../utils/reportIssue';
 import { ROUTE_DATA_QUALITY_WARNING, ROUTE_DATA_QUALITY_WARNING_MESSAGE } from '../../../../shared/routeDataQuality';
-import { expiredFeedNotice, periodServiceNotice, selectedRouteFilterNotice, selectedRouteOutsideFilterNotice, unevenServiceNotice } from '../../../content/noticeCopy';
+import { expiredFeedNotice, NO_ROUTE_SHAPE_NOTICE, periodServiceNotice, selectedRouteFilterNotice, selectedRouteOutsideFilterNotice, unevenServiceNotice } from '../../../content/noticeCopy';
 
 function medianHeadway(values: number[]): number {
   const sorted = [...values].sort((a, b) => a - b);
@@ -187,6 +187,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   const hasRouteDataQualityWarning = currentRoute.directions.some(
     direction => direction.routeDataQualityWarning === ROUTE_DATA_QUALITY_WARNING,
   );
+  const hasNoRouteShape = currentRoute.directions.some(direction => direction.noRouteShape);
   const hasWeekdayTierVariation = currentRoute.directions.some(direction => direction.weekdayTierVariation);
   const selectedPeriod = period !== 'all' ? TIME_PERIODS.find(p => p.key === period) : undefined;
   const hasPeriodService = period === 'all' || directionGroups.some(group =>
@@ -587,8 +588,17 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
             );
           });
         })()}
-        {(routeIsStale || routeAgency?.feedReviewStatus === 'review' || routeOverrideNote || hasRouteDataQualityWarning || hasWeekdayTierVariation) && onInfoOpen && (
+        {(routeIsStale || routeAgency?.feedReviewStatus === 'review' || routeOverrideNote || hasRouteDataQualityWarning || hasNoRouteShape || hasWeekdayTierVariation) && onInfoOpen && (
           <div className={`${CARD_NOTICE_FOOTER} space-y-1`}>
+            {hasNoRouteShape && (
+              <CardHelpNotice
+                message={NO_ROUTE_SHAPE_NOTICE}
+                onLearnMore={() => onInfoOpen('about', {
+                  helpTopic: 'no-route-shape',
+                  agencyName: routeAgency?.name,
+                })}
+              />
+            )}
             {hasRouteDataQualityWarning && (
               <CardHelpNotice
                 message={ROUTE_DATA_QUALITY_WARNING_MESSAGE}

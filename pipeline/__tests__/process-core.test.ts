@@ -1,8 +1,10 @@
 import { describe, expect, it } from 'vitest';
+import JSZip from 'jszip';
 import {
   normalizeNrtAnalysisResult,
   expandFrequencyOffsets,
   hasNightServiceAtShapeEndpoints,
+  processGtfsBuffer,
   selectTerminalDepartureTimes,
   selectPeriodCoverageHeadway,
 } from '../process-core';
@@ -117,5 +119,44 @@ describe('hasNightServiceAtShapeEndpoints', () => {
 
     expect(hasNightServiceAtShapeEndpoints(['origin'], pooledRouteDepartures)).toBe(true);
     expect(hasNightServiceAtShapeEndpoints(['origin'], renderedPatternDepartures)).toBe(false);
+  });
+});
+
+describe('processGtfsBuffer mapless routes', () => {
+  it('keeps schedule-backed routes searchable when the feed has no shapes', async () => {
+    const zip = new JSZip();
+    zip.file('agency.txt', 'agency_id,agency_name,agency_url,agency_timezone\na,Mapless Transit,https://example.test,America/Toronto\n');
+    zip.file('routes.txt', 'route_id,route_short_name,route_long_name,route_type\nr1,1,Main Street,3\n');
+    zip.file('stops.txt', 'stop_id,stop_name,stop_lat,stop_lon\ns1,First Stop,43.65,-79.38\ns2,Last Stop,43.66,-79.37\n');
+    zip.file('calendar.txt', 'service_id,monday,tuesday,wednesday,thursday,friday,saturday,sunday,start_date,end_date\nweekday,1,1,1,1,1,0,0,20260101,20261231\n');
+    zip.file('trips.txt', [
+      'route_id,service_id,trip_id,trip_headsign,direction_id',
+      'r1,weekday,t1,Downtown,0',
+      'r1,weekday,t2,Downtown,0',
+      'r1,weekday,t3,Downtown,0',
+      'r1,weekday,t4,Downtown,0',
+      'r1,weekday,t5,Downtown,0',
+      'r1,weekday,t6,Downtown,0',
+    ].join('\n') + '\n');
+    zip.file('stop_times.txt', [
+      'trip_id,arrival_time,departure_time,stop_id,stop_sequence',
+      't1,08:00:00,08:00:00,s1,1', 't1,08:15:00,08:15:00,s2,2',
+      't2,08:30:00,08:30:00,s1,1', 't2,08:45:00,08:45:00,s2,2',
+      't3,09:00:00,09:00:00,s1,1', 't3,09:15:00,09:15:00,s2,2',
+      't4,09:30:00,09:30:00,s1,1', 't4,09:45:00,09:45:00,s2,2',
+      't5,10:00:00,10:00:00,s1,1', 't5,10:15:00,10:15:00,s2,2',
+      't6,10:30:00,10:30:00,s1,1', 't6,10:45:00,10:45:00,s2,2',
+    ].join('\n') + '\n');
+
+    const result = await processGtfsBuffer(await zip.generateAsync({ type: 'nodebuffer' }), undefined, { slug: 'mapless-transit' });
+    const route = JSON.parse(result.geojson).features.find((feature: any) => feature.properties.routeShortName === '1');
+
+    expect(route.geometry).toEqual({ type: 'Point', coordinates: [-79.38, 43.65] });
+    expect(route.properties.noRouteShape).toBe(true);
+    expect(route.properties.routeShortName).toBe('1');
+    expect(route.properties.headway).toBe(30);
+    expect(route.properties.headwayByPeriod.midday).toBe(30);
+    expect(result.feedQuality.status).not.toBe('unusable');
+    expect(result.center).toEqual([43.65, -79.38]);
   });
 });

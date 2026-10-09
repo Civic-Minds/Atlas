@@ -27,6 +27,14 @@ export function unevenServiceNotice(longestGap: number): string {
   return `Service runs throughout the selected period, but not consistently. Longest gap: ${longestGap} minutes.`;
 }
 
+export const NO_ROUTE_SHAPE_NOTICE = 'Route map unavailable.';
+
+export const NO_ROUTE_SHAPE_EXPLANATION =
+  'This route\'s source feed includes schedule information but does not include a usable map shape.';
+
+export const NO_ROUTE_SHAPE_DETAIL =
+  'Atlas can still show the route\'s schedule, stops, and frequency, but it cannot draw the route line.';
+
 export function selectedRouteOutsideFilterNotice(maxHeadway: number): string {
   return maxHeadway === Infinity
     ? 'This route does not run during the selected period.'

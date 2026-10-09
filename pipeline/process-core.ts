@@ -341,6 +341,26 @@ export async function processGtfsBuffer(
     tripStops.push(st);
     stopTimesByTripId.set(st.trip_id, tripStops);
   }
+  const fallbackPointForResult = (result: AnalysisResult): number[] | null => {
+    const serviceIds = new Set(result.serviceIds ?? []);
+    const trip = (gtfs.trips ?? []).find(candidate => {
+      if (candidate.route_id !== result.route || String(candidate.direction_id ?? '0') !== String(result.dir)) return false;
+      if (serviceIds.size > 0 && !serviceIds.has(candidate.service_id)) return false;
+      if (!result.headsign) return true;
+      const route = routeById.get(candidate.route_id);
+      const rawHeadsign = candidate.trip_headsign?.trim() || null;
+      const candidateHeadsign = resolveDisplayHeadsign(rawHeadsign, route?.route_short_name ?? candidate.route_id, route?.route_long_name?.trim() ?? null);
+      return candidateHeadsign === resolveDisplayHeadsign(result.headsign, route?.route_short_name ?? candidate.route_id, route?.route_long_name?.trim() ?? null);
+    });
+    if (!trip) return null;
+    const firstStop = [...(stopTimesByTripId.get(trip.trip_id) ?? [])]
+      .sort((a, b) => Number(a.stop_sequence) - Number(b.stop_sequence))
+      .map(stopTime => stopsById.get(stopTime.stop_id))
+      .find((stop): stop is { lat: number; lon: number } => stop != null);
+    return firstStop
+      ? [Math.round(firstStop.lon * 100000) / 100000, Math.round(firstStop.lat * 100000) / 100000]
+      : null;
+  };
   // Track first visit per (trip_id, stop_id) to avoid double-counting loop routes
   // where the terminus appears at both the start and end of the same trip.
   const stopFirstVisit = new Map<string, Set<string>>();
@@ -370,9 +390,10 @@ export async function processGtfsBuffer(
       : (hKey && headsignDisplayShape.has(hKey))
       ? headsignDisplayShape.get(hKey)
       : routeDirToDisplayShape.get(key);
-    if (!shapeId) continue;
-    const points = shapeById.get(shapeId);
-    if (!points || points.length < 2) continue;
+    const points = shapeId ? shapeById.get(shapeId) : undefined;
+    const hasRouteShape = points != null && points.length >= 2;
+    const fallbackPoint = hasRouteShape ? null : fallbackPointForResult(result);
+    if (!hasRouteShape && !fallbackPoint) continue;
 
     const route = routeById.get(result.route);
     const shortName = route?.route_short_name ?? result.route;
@@ -403,17 +424,22 @@ export async function processGtfsBuffer(
 
     const newFeature: GeoJsonFeature = {
       type: 'Feature',
-      geometry: {
-        type: 'LineString',
-        coordinates: points.map(([lat, lon]) => [
-          Math.round(lon * 100000) / 100000,
-          Math.round(lat * 100000) / 100000,
-        ]),
-      },
+      geometry: hasRouteShape
+        ? {
+            type: 'LineString',
+            coordinates: points!.map(([lat, lon]) => [
+              Math.round(lon * 100000) / 100000,
+              Math.round(lat * 100000) / 100000,
+            ]),
+          }
+        : { type: 'Point', coordinates: fallbackPoint! },
       properties: {
         routeId: result.route,
         directionId: parseInt(result.dir),
-        routeDataQualityWarning: routeDataQualityWarningForShape(shapeId, gtfs.shapeAnomalies),
+        routeDataQualityWarning: hasRouteShape && shapeId
+          ? routeDataQualityWarningForShape(shapeId, gtfs.shapeAnomalies)
+          : undefined,
+        noRouteShape: !hasRouteShape,
         tier: result.tier,
         weekdayTierVariation: result.weekdayTierVariation,
         edgeGapAllowance: result.edgeGapAllowance,
@@ -449,7 +475,7 @@ export async function processGtfsBuffer(
       },
     };
     dedupedFeatures.set(dedupeKey, newFeature);
-    featureShapeId.set(newFeature, shapeId);
+    if (hasRouteShape && shapeId) featureShapeId.set(newFeature, shapeId);
     featureBranchTripCount.set(newFeature, result.times.length);
   }
   const features = [...dedupedFeatures.values()];
@@ -738,10 +764,19 @@ export async function processGtfsBuffer(
     // scoped map selected for the feature's other metrics. Using the route-level map here can
     // pool departures from a different branch/pattern and make a route appear to cover the
     // whole 2am–6am window when this rendered pattern does not (#518).
-    const coords = (feature.geometry as { type: 'LineString'; coordinates: number[][] }).coordinates;
-    const shapePts: [number, number][] = coords.map(([lon, lat]) => [lat, lon]);
-    const nightShapeStops = projectStopsOntoShape([...stopMap.keys()], stopsById, shapePts)
-      .filter(p => p.dev2 <= MAX_STOP_DEV2);
+    const isMapless = feature.geometry.type !== 'LineString';
+    const metricStopIds = [...metricStopMap.keys()].filter(stopId => stopsById.has(stopId));
+    const maplessStopProjection = metricStopIds.map((stopId, index) => ({
+      stopId,
+      t: metricStopIds.length <= 1 ? 0 : index / (metricStopIds.length - 1),
+      dev2: 0,
+    }));
+    const shapePts: [number, number][] = isMapless
+      ? []
+      : feature.geometry.coordinates.map(([lon, lat]) => [lat, lon]);
+    const nightShapeStops = isMapless
+      ? maplessStopProjection
+      : projectStopsOntoShape([...stopMap.keys()], stopsById, shapePts).filter(p => p.dev2 <= MAX_STOP_DEV2);
     const nightEndpointStopIds = [...new Set([
       nightShapeStops[0]?.stopId,
       nightShapeStops.at(-1)?.stopId,
@@ -810,8 +845,9 @@ export async function processGtfsBuffer(
     }
     // Coverage needs only one departure, so publish it before the legacy median bail-outs.
     // Project separately to keep historical stopOrder and geometry completely unchanged.
-    const coverageStops = projectStopsOntoShape([...metricStopMap.keys()], stopsById, shapePts)
-      .filter(p => p.dev2 <= MAX_STOP_DEV2);
+    const coverageStops = isMapless
+      ? maplessStopProjection
+      : projectStopsOntoShape([...metricStopMap.keys()], stopsById, shapePts).filter(p => p.dev2 <= MAX_STOP_DEV2);
     feature.properties.stopPeriodCoverageHeadways = Object.fromEntries(
       coverageStops.map(({ stopId }) => [stopId, allStopPeriodCoverageHw[stopId]]),
     );
@@ -819,8 +855,12 @@ export async function processGtfsBuffer(
 
     // Step 2: project all stops onto this feature's specific shape, then filter to stops
     // within MAX_STOP_DEV_DEG of the shape (excludes stops from other headsign branches).
-    const allProjected = projectStopsOntoShape(Object.keys(allStopHw), stopsById, shapePts);
-    const onShape = allProjected.filter(p => p.dev2 <= MAX_STOP_DEV2);
+    const allProjected = isMapless
+      ? Object.keys(allStopHw)
+        .map(stopId => maplessStopProjection.find(p => p.stopId === stopId))
+        .filter((p): p is { stopId: string; t: number; dev2: number } => p != null)
+      : projectStopsOntoShape(Object.keys(allStopHw), stopsById, shapePts);
+    const onShape = isMapless ? allProjected : allProjected.filter(p => p.dev2 <= MAX_STOP_DEV2);
 
     if (onShape.length > 1) {
       feature.properties.stopOrder = onShape.map(p => p.stopId);
@@ -1147,7 +1187,9 @@ export async function processGtfsBuffer(
   } // end !allRailFeed
 
   let center: [number, number] | null = null;
-  const allCoords = features.flatMap(f => f.geometry.coordinates);
+  const allCoords = features.flatMap(f =>
+    f.geometry.type === 'LineString' ? f.geometry.coordinates : [f.geometry.coordinates],
+  );
   if (allCoords.length > 0) {
     const avgLat = allCoords.reduce((s, c) => s + c[1], 0) / allCoords.length;
     const avgLon = allCoords.reduce((s, c) => s + c[0], 0) / allCoords.length;
@@ -1186,7 +1228,7 @@ export async function processGtfsBuffer(
   const timezone = gtfs.agencies?.[0]?.agency_timezone?.trim() || null;
   const mainFeatures = [...features, ...stopFeatures];
   const routeFeatures = features.filter(feature =>
-    feature.geometry.type === 'LineString' && feature.properties.routeShortName != null,
+    feature.properties.routeShortName != null,
   );
   const routeHeadwayMismatches = routeFeatures.filter(feature => {
     const headway = Number(feature.properties.headway);

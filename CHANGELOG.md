@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **Routes with schedule data but no usable map shape now remain searchable with a clear map-availability notice.**
 - **PMTiles releases now verify full coverage locally and use a bounded live smoke check, preventing R2 read failures from blocking otherwise valid releases.**
 - **Large R2 fallback uploads now use a stable IPv4 connection, reducing failed PMTiles releases on networks with broken IPv6 paths.**
 - **Refresh now reprocesses current feeds whose stored route artifact uses an old or missing schema, preventing PMTiles rebuild failures after pipeline upgrades.**
