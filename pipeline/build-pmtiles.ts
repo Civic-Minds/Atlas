@@ -9,6 +9,7 @@ import { runWithConcurrency } from './utils.js';
 import { prepareAgencyRouteFeaturesForTiles } from './prepareAgencyRoutesForTiles.js';
 import { simplifyLine } from './geometry.js';
 import { assertRouteArtifactSchema, ROUTE_ARTIFACT_SCHEMA_VERSION } from '../shared/artifactSchema.js';
+import { consumeDataRefreshMarker, dataRefreshGuardError, readDataRefreshMarker } from './dataRefreshMarker.js';
 
 console.log(`env: ${LOADED_ENV_FILE} (bucket=${process.env.R2_BUCKET_NAME ?? '?'})`);
 
@@ -111,6 +112,16 @@ async function fetchJson(url: string, retries = 5): Promise<FeatureCollection | 
 
 async function main() {
   const dryRun = process.argv.includes('--dry-run');
+  const allowStaleData = process.argv.includes('--allow-stale-data');
+  if (!dryRun && !allowStaleData) {
+    const guardError = dataRefreshGuardError(readDataRefreshMarker());
+    if (guardError) {
+      throw new Error(`${guardError} Use --allow-stale-data only for an explicitly intentional repack.`);
+    }
+    console.log('Data refresh handoff verified; building PMTiles from freshly refreshed artifacts.');
+  } else if (allowStaleData) {
+    console.warn('WARNING: --allow-stale-data bypasses the refresh-to-PMTiles guard.');
+  }
   const localPreviewDir = process.env.ATLAS_LOCAL_PREVIEW_DIR
     ? path.resolve(process.env.ATLAS_LOCAL_PREVIEW_DIR)
     : null;
@@ -291,6 +302,15 @@ async function main() {
   const overviewSize = fs.statSync(overviewRoutesPm).size;
   console.log(`atlas-overview.pmtiles size: ${(overviewSize/1024/1024).toFixed(1)} MB`);
 
+  // Verify the complete archive locally before uploading it. The same check
+  // over R2 requires tens of thousands of range requests and can fail because
+  // of transient object-store/network errors, even when the archive is sound.
+  console.log('Verifying full PMTiles coverage locally before upload...');
+  execSync('npm run verify-pmtiles-coverage', {
+    stdio: 'inherit',
+    env: { ...process.env, PMTILES_LOCAL_PATH: pmtilesPath },
+  });
+
   if (dryRun) {
     console.log(`Dry run complete: ${pmtilesPath}`);
     fs.copyFileSync(overviewRoutesPm, overviewPmtilesPath);
@@ -341,6 +361,7 @@ async function main() {
     path.resolve('tmp/atlas-release-manifest.json'),
     JSON.stringify(releaseManifest, null, 2),
   );
+  consumeDataRefreshMarker();
   console.log(`Immutable release uploaded: ${releaseId}. Run coverage verification, then publish the pointer.`);
 
   // Cleanup

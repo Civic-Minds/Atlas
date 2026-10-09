@@ -15,6 +15,7 @@
 import { readFileSync, writeFileSync, renameSync } from 'fs';
 import { execFileSync } from 'child_process';
 import { resolve } from 'path';
+import { clearDataRefreshHandoff, writeDataRefreshMarker, writeRefreshRunResult, type RefreshAgencyStatus } from './dataRefreshMarker.js';
 // loadEnv first so shared/config sees staging R2_PUBLIC_URL
 import { LOADED_ENV_FILE, isProductionPublicR2Bucket } from './loadEnv.js';
 import { r2Put, r2Get, r2PutArchive, r2PutArchiveJson, r2GetArchive, rawFeedArchiveKey } from './r2.js';
@@ -52,6 +53,7 @@ import { isActiveProductionFeed } from '../shared/feedAvailability.js';
 import { recordFeedCheck, type FeedCheckFields } from './feedCheckTracking.js';
 import { buildFeedCandidates, type FeedCandidate } from './feedSourceCandidates.js';
 import { resolveFeedUrl } from './feedUrl.js';
+import { ROUTE_ARTIFACT_SCHEMA_VERSION } from '../shared/artifactSchema.js';
 
 console.log(`  env: ${LOADED_ENV_FILE} (bucket=${process.env.R2_BUCKET_NAME ?? '?'}${isProductionPublicR2Bucket() ? ' [PRODUCTION]' : ' [non-prod]'})`);
 
@@ -197,6 +199,7 @@ interface AgencyEntry {
   stopsUrl: string;
   corridorsUrl?: string;
   feedUrl: string | null;
+  feedFallbackUrls?: string[];
   feedApiKeyEnvVar?: string;
   feedApiKeyParam?: string;
   mdbFeedUrl?: string | null;
@@ -223,6 +226,8 @@ interface AgencyEntry {
   overrideNote?: string;
   overrideNoteRoutes?: string[];
   feedReviewStatus?: 'review' | 'verified';
+  lastFeedSourceKind?: FeedCandidate['kind'] | null;
+  lastFeedSourceUrl?: string | null;
   feedQuality?: FeedQuality;
 }
 
@@ -273,7 +278,7 @@ async function refreshAgency(
   // Primary key: feed_end_date. Fallback: feed_version (for agencies without feed_info expiry).
   const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
   const configuredFeedUrl = resolveFeedUrl(agency.feedUrl, agency.feedApiKeyEnvVar, agency.feedApiKeyParam);
-  const feedCandidates = buildFeedCandidates(configuredFeedUrl, agency.mdbFeedUrl);
+  const feedCandidates = buildFeedCandidates(configuredFeedUrl, agency.mdbFeedUrl, agency.feedFallbackUrls);
   let buf: Buffer | null = null;
   let peekedExpiry: string | null = null;
   let peekedVersion: string | null = null;
@@ -323,6 +328,15 @@ async function refreshAgency(
   }
   if (selectedCandidate.kind !== 'configured' || selectedCandidate.url !== configuredFeedUrl) {
     writeLog(`\n  [info] using ${selectedCandidate.kind} source: ${selectedCandidate.url}\n`);
+  }
+
+  agency.lastFeedSourceKind = selectedCandidate.kind;
+  try {
+    const sourceUrl = new URL(selectedCandidate.url);
+    if (agency.feedApiKeyEnvVar) sourceUrl.searchParams.delete(agency.feedApiKeyParam ?? 'api_key');
+    agency.lastFeedSourceUrl = sourceUrl.toString();
+  } catch {
+    agency.lastFeedSourceUrl = selectedCandidate.url;
   }
 
   recordFeedCheck(agency as FeedCheckFields, { feedExpiry: peekedExpiry, todayYmd: today });
@@ -391,7 +405,23 @@ async function refreshAgency(
     lastFeedVersion: agency.lastFeedVersion,
   });
   if (skipDecision.skip) {
-    return { summary: skipDecision.reason };
+    // A current feed can still have a legacy processed artifact. Do not let
+    // skip-if-unchanged preserve an artifact that the PMTiles builder cannot
+    // safely consume.
+    let artifactNeedsReprocess = false;
+    try {
+      const artifact = await r2Get(`atlas/${agency.slug}.json`);
+      if (!artifact) {
+        artifactNeedsReprocess = true;
+      } else {
+        const parsed = JSON.parse(artifact) as { atlasSchemaVersion?: number };
+        artifactNeedsReprocess = parsed.atlasSchemaVersion !== ROUTE_ARTIFACT_SCHEMA_VERSION;
+      }
+    } catch {
+      artifactNeedsReprocess = true;
+    }
+    if (!artifactNeedsReprocess) return { summary: skipDecision.reason };
+    writeLog(`\n  ${agency.slug.padEnd(12)} ... reprocessing (current feed, legacy or missing route artifact)\n`);
   }
 
   const clearedOverrideNote = clearOverrideUserFacingOnFeedChange(agency, peekedExpiry, peekedVersion);
@@ -584,6 +614,7 @@ function writeAgencySource(agency: AgencyEntry): void {
 }
 
 async function main() {
+  clearDataRefreshHandoff();
   const indexPath = resolve('public/data/index.json');
   const index: { agencies: AgencyEntry[] } = JSON.parse(readFileSync(indexPath, 'utf8'));
 
@@ -614,6 +645,7 @@ async function main() {
   let stale = 0;
   let uploads = 0;
   let countryLaunchSkips = 0;
+  const refreshStatuses: Record<string, RefreshAgencyStatus> = {};
   const allNightServiceRoutes: NightServiceRouteEntry[] = [];
   const refreshedNightServiceAgencySlugs = new Set<string>();
   let existingNightServiceIndex: NightServiceIndexFile | null = null;
@@ -639,6 +671,7 @@ async function main() {
         const country = resolveAgencyCountry(agency);
         if (isCountryLaunchBlocked(country, countryRegistry)) {
           countryLaunchSkips++;
+          refreshStatuses[agency.slug] = 'skipped';
           console.log(
             `  ${agency.slug.padEnd(12)} ... skipped (unlaunched country: ${country} — ` +
               `pass ${COUNTRY_LAUNCH_FLAG} after explicit maintainer approval)`,
@@ -650,6 +683,7 @@ async function main() {
       const summary = result.summary;
       if (result.processed) refreshedNightServiceAgencySlugs.add(agency.slug);
       if (result.stale) stale++;
+      refreshStatuses[agency.slug] = result.processed ? 'processed' : result.stale ? 'stale' : 'unchanged';
       if (result.processed) {
         uploads++;
         if (result.hiddenRoutes) refreshedHiddenRoutes.set(agency.slug, result.hiddenRoutes);
@@ -662,6 +696,7 @@ async function main() {
       writeAgencySource(agency);
     } catch (e) {
       failures++;
+      refreshStatuses[agency.slug] = 'failed';
       console.log(`  ${agency.slug.padEnd(12)} ... FAILED — ${e instanceof Error ? e.message : e}${logBuffer}`);
     }
   });
@@ -674,15 +709,21 @@ async function main() {
   }
   await runWithConcurrency(tasks, 5);
 
+  const refreshResult = writeRefreshRunResult(targets.map(agency => agency.slug), refreshStatuses);
+
   console.log(`\n  index.json updated. ${targets.length - failures}/${targets.length} succeeded.`);
   if (countryLaunchSkips > 0) {
     console.log(
       `  ${countryLaunchSkips} skipped — unlaunched country (no production-visible agencies yet)`,
     );
   }
-  if (uploads > 0) {
-    bumpCacheBuild();
-    console.log(`  cache build bumped (${uploads} agencies uploaded)`);
+  if (refreshResult.complete) {
+    if (uploads > 0) bumpCacheBuild();
+    writeDataRefreshMarker('refresh', targets.map(agency => agency.slug));
+    console.log(`  ${uploads > 0 ? `cache build bumped (${uploads} agencies uploaded)` : 'no agency data changed'}`);
+  }
+  if (!refreshResult.complete) {
+    console.error('  Refresh incomplete — PMTiles rebuild is blocked until every requested agency succeeds or is unchanged.');
   }
   if (failures > 0) {
     console.warn(`${failures} agencies failed to refresh (see warnings above). Continuing so action succeeds.`);

@@ -45,5 +45,7 @@
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://oregon-gtfs.trilliumtransit.com/gtfs_data/clatsopcounty-or-us/clatsopcounty-or-us.zip"
 }

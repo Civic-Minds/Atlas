@@ -12,23 +12,38 @@
     38.4,
     -121.93
   ],
-  "feedUrl": "http://data.trilliumtransit.com/gtfs/vacavillecitycoach-ca-us/vacavillecitycoach-ca-us.zip",
+  "feedUrl": "https://myride.citycoach.com/GTFS/google_transit.zip",
   "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-city-coach-gtfs-599.zip?alt=media",
-  "lastFeedExpiry": "20260630",
-  "lastFeedVersion": "2.2.26",
-  "lastRefreshedAt": "20260811",
+  "lastFeedExpiry": "20261231",
+  "lastFeedVersion": "6.18.26",
+  "lastRefreshedAt": "2026-10-08",
   "websiteUrl": "https://citycoach.com/",
   "cities": [
     "Vacaville, California"
   ],
   "timezone": "America/Los_Angeles",
   "lastRawArchiveKey": "20260630-9771867b4141da3d",
-  "lastFeedCheckAt": "20261007",
-  "expiredFeedCheckCount": 4,
-  "expiredFeedCheckSince": "20260622",
-  "expiredFeedCheckExpiry": "20260630",
-  "feedRefreshStatus": "stale",
-  "feedRefreshError": "all available feeds expired (latest 20260630)",
-  "feedRefreshErrorAt": "20261007",
-  "feedRefreshRetryCount": 2
+  "lastFeedCheckAt": "20261008",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261231",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://myride.citycoach.com/GTFS/google_transit.zip",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 17
+    },
+    "checkedAt": "2026-10-08"
+  }
 }

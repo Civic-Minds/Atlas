@@ -44,6 +44,7 @@ import {
   type AgencyCountrySource,
 } from './countryLaunchGate.js';
 import { buildHiddenRoutesForAgency, mergeHiddenRoutes, type HiddenRoutesFile } from './hiddenRoutes.js';
+import { clearDataRefreshHandoff, writeDataRefreshMarker } from './dataRefreshMarker.js';
 
 console.log(`  env: ${LOADED_ENV_FILE} (bucket=${process.env.R2_BUCKET_NAME ?? '?'}${isProductionPublicR2Bucket() ? ' [PRODUCTION]' : ' [non-prod]'})`);
 
@@ -125,6 +126,7 @@ function loadAgencyCountryHints(slugToLoad: string): { region?: string | null; c
 }
 
 async function main() {
+  if (!dryRun) clearDataRefreshHandoff();
   // Fail fast on unlaunched countries before any download / parse work.
   // --dry-run is always fine (local disk only).
   if (!dryRun) {
@@ -321,6 +323,7 @@ async function main() {
   } catch (e) {
     console.warn(`  [warn] hidden-routes.json write failed — ${e instanceof Error ? e.message : e}`);
   }
+  writeDataRefreshMarker('process', [slug]);
 }
 
 main().catch(e => {

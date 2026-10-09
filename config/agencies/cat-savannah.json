@@ -11,23 +11,38 @@
     32.221,
     -80.959
   ],
-  "feedUrl": "https://files.mobilitydatabase.org/mdb-2080/latest.zip",
+  "feedUrl": "https://catchacat.org/wp-content/uploads/CAT_S70_GTFSExport_2026-08-27.zip",
   "region": "Georgia",
-  "lastFeedExpiry": "20250727",
-  "lastFeedVersion": "S1000046",
-  "lastRefreshedAt": "20260811",
+  "lastFeedExpiry": "20261122",
+  "lastFeedVersion": "S1000070",
+  "lastRefreshedAt": "2026-10-08",
   "websiteUrl": "http://www.catchacat.org",
   "cities": [
     "Savannah, Georgia"
   ],
   "timezone": "America/New_York",
   "lastRawArchiveKey": "20250727-6723aa5560da6d1c",
-  "lastFeedCheckAt": "20261007",
-  "expiredFeedCheckCount": 4,
-  "expiredFeedCheckSince": "20260622",
-  "expiredFeedCheckExpiry": "20250727",
-  "feedRefreshStatus": "stale",
-  "feedRefreshError": "all available feeds expired (latest 20250727)",
-  "feedRefreshErrorAt": "20261007",
-  "feedRefreshRetryCount": 2
+  "lastFeedCheckAt": "20261008",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261122",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://catchacat.org/wp-content/uploads/CAT_S70_GTFSExport_2026-08-27.zip",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 92
+    },
+    "checkedAt": "2026-10-08"
+  }
 }

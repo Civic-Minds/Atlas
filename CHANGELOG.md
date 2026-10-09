@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **PMTiles releases now verify full coverage locally and use a bounded live smoke check, preventing R2 read failures from blocking otherwise valid releases.**
+- **Large R2 fallback uploads now use a stable IPv4 connection, reducing failed PMTiles releases on networks with broken IPv6 paths.**
+- **Refresh now reprocesses current feeds whose stored route artifact uses an old or missing schema, preventing PMTiles rebuild failures after pipeline upgrades.**
+- **Emery Go-Round is no longer excluded from PMTiles after its current feed passed route-quality checks.**
+- **A coordinated production refresh published current data for 14 agencies and advanced the shared cache version, keeping the live map and registry aligned.**
+- **Coordinated data releases now stop before PMTiles when any requested agency fails or remains stale, preventing partial refreshes from becoming map releases.**
+- **PMTiles rebuilds now require a successful data refresh first, preventing stale agency artifacts from becoming a new map release.**
 - **MapLibre GL is now on a patched release**, addressing a critical security vulnerability without changing Atlas’s map behaviour.
 - **Research landing-page copy now describes schedule patterns precisely instead of implying a broader view of transit operations.**
 - **Research view links now describe the insight users will get instead of repeating generic “Open” actions.**

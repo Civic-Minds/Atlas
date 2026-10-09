@@ -45,6 +45,15 @@ agencies.forEach((a: any, i: number) => {
   if (a.supplementalFeedUrls && !Array.isArray(a.supplementalFeedUrls)) {
     fail('supplementalFeedUrls must be array', slug);
   }
+  if (a.feedFallbackUrls && (!Array.isArray(a.feedFallbackUrls) || a.feedFallbackUrls.some((url: any) => typeof url !== 'string'))) {
+    fail('feedFallbackUrls must be an array of URLs', slug);
+  }
+  if (a.feedApiKeyEnvVar && typeof a.feedApiKeyEnvVar !== 'string') {
+    fail('feedApiKeyEnvVar must be a string', slug);
+  }
+  if (a.feedApiKeyParam && typeof a.feedApiKeyParam !== 'string') {
+    fail('feedApiKeyParam must be a string', slug);
+  }
 });
 
 if (errors) {

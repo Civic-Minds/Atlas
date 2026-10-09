@@ -22,6 +22,18 @@ describe('expired source audit', () => {
     ]);
   });
 
+  it('keeps documented fallback sources ahead of Mobility Database fallbacks', () => {
+    expect(buildFeedCandidates(
+      'https://example.com/expired.zip',
+      'https://files.mobilitydatabase.org/mdb-1993/latest.zip',
+      ['https://agency.example/current.zip'],
+    )).toEqual([
+      { kind: 'configured', url: 'https://example.com/expired.zip' },
+      { kind: 'fallback', url: 'https://agency.example/current.zip' },
+      { kind: 'configured', url: 'https://files.mobilitydatabase.org/mdb-1993/latest.zip' },
+    ]);
+  });
+
   it('derives a latest fallback when the configured feed is a dated Mobility Database ZIP', () => {
     expect(buildFeedCandidates(
       'https://files.mobilitydatabase.org/mdb-1993/mdb-1993-202605291824/mdb-1993-202605291824.zip',

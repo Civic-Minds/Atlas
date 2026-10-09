@@ -39,5 +39,7 @@
       "featureCount": 123
     },
     "checkedAt": "2026-10-08"
-  }
+  },
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://www.loudoun.gov/loudountransitgtfs"
 }

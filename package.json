@@ -30,6 +30,7 @@
     "audit-active-feeds": "npx tsx pipeline/audit-active-feeds.ts",
     "audit-current-gtfs": "npx tsx pipeline/audit-current-gtfs.ts",
     "build-pmtiles": "npx tsx pipeline/build-pmtiles.ts",
+    "verify-pmtiles-remote": "npx tsx pipeline/verify-pmtiles-remote.ts",
     "build-pmtiles:staging": "ATLAS_ENV=staging npx tsx pipeline/build-pmtiles.ts",
     "build-pmtiles-incremental": "npx tsx pipeline/build-pmtiles-incremental.ts",
     "build-pmtiles-incremental:staging": "ATLAS_ENV=staging npx tsx pipeline/build-pmtiles-incremental.ts",

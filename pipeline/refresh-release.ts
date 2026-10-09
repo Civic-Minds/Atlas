@@ -13,6 +13,7 @@
  */
 import { execFileSync } from 'node:child_process';
 import './loadEnv.js';
+import { readRefreshRunResult } from './dataRefreshMarker.js';
 
 const args = process.argv.slice(2);
 if (args.length === 0) {
@@ -29,8 +30,18 @@ function run(script: string, scriptArgs: string[] = []): void {
 }
 
 run('refresh', args);
+
+const requestedSlugs = args.filter(arg => !arg.startsWith('--')).sort();
+process.env.PMTILES_REMOTE_SMOKE_SLUGS = requestedSlugs.join(',');
+const refreshResult = readRefreshRunResult();
+if (!refreshResult || !refreshResult.complete || refreshResult.requestedSlugs.join('\n') !== requestedSlugs.join('\n')) {
+  const statuses = refreshResult
+    ? Object.entries(refreshResult.statuses).map(([slug, status]) => `${slug}: ${status}`).join(', ')
+    : 'no refresh result was written';
+  throw new Error(`Refresh-release stopped before PMTiles: the requested batch was incomplete (${statuses}).`);
+}
 run('build-pmtiles');
-run('verify-pmtiles-coverage');
+run('verify-pmtiles-remote', []);
 run('build-history');
 run('publish-data-release');
 

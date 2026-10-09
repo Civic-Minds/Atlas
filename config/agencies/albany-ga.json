@@ -6,10 +6,10 @@
     31.5827,
     -84.1616
   ],
-  "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11834/ats_albany_ga_us(2).zip",
-  "lastFeedExpiry": "20240630",
-  "lastFeedVersion": null,
-  "lastRefreshedAt": "20260811",
+  "feedUrl": "https://gtfs.remix.com/ats_albany_ga_us.zip",
+  "lastFeedExpiry": "20261231",
+  "lastFeedVersion": "Updated: Sep 18, 2026, 5:21 PM",
+  "lastRefreshedAt": "2026-10-08",
   "region": "Georgia",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2146/latest.zip",
   "bbox": [
@@ -23,12 +23,27 @@
   ],
   "timezone": "America/New_York",
   "lastRawArchiveKey": "20240630-cc0eb0e68ef49960",
-  "lastFeedCheckAt": "20261007",
-  "expiredFeedCheckCount": 4,
-  "expiredFeedCheckSince": "20260622",
-  "expiredFeedCheckExpiry": "20240630",
-  "feedRefreshStatus": "stale",
-  "feedRefreshError": "all available feeds expired (latest 20240630)",
-  "feedRefreshErrorAt": "20261007",
-  "feedRefreshRetryCount": 2
+  "lastFeedCheckAt": "20261008",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261231",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://gtfs.remix.com/ats_albany_ga_us.zip",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 4
+    },
+    "checkedAt": "2026-10-08"
+  }
 }

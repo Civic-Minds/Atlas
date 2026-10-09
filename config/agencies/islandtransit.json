@@ -22,13 +22,15 @@
     "Everett, Washington",
     "Bellingham, Washington"
   ],
-  "lastFeedCheckAt": "20261007",
-  "expiredFeedCheckCount": 2,
+  "lastFeedCheckAt": "20261008",
+  "expiredFeedCheckCount": 3,
   "expiredFeedCheckSince": "20260622",
   "expiredFeedCheckExpiry": "20261001",
   "timezone": "America/Los_Angeles",
   "feedRefreshStatus": "stale",
   "feedRefreshError": "all available feeds expired (latest 20261001)",
-  "feedRefreshErrorAt": "20261007",
-  "feedRefreshRetryCount": 2
+  "feedRefreshErrorAt": "20261008",
+  "feedRefreshRetryCount": 3,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-washington-island-transit-gtfs-280.zip?alt=media"
 }

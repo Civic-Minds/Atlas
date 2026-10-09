@@ -37,7 +37,7 @@
  *     for the exact rectangle test.
  *
  * Usage:
- *   npx tsx pipeline/build-pmtiles-incremental.ts <slug> [--dry-run] [--i-am-launching-country]
+ *   npx tsx pipeline/build-pmtiles-incremental.ts <slug> [--dry-run] [--allow-stale-data] [--i-am-launching-country]
  *
  * --dry-run runs both safety checks and the full tippecanoe/tile-join build
  * locally, then reports what WOULD be uploaded (size, feature counts, which
@@ -49,6 +49,9 @@
  * --i-am-launching-country: required (with explicit maintainer approval) to
  * upload tiles for a country that still has zero production-visible agencies.
  * See AGENTS.md § Production Data Rules / pipeline/countryLaunchGate.ts.
+ *
+ * --allow-stale-data: explicit escape hatch for an intentional repack without
+ * a preceding refresh. It is never needed for the normal refresh workflow.
  */
 import fs from 'fs';
 import path from 'path';
@@ -76,6 +79,7 @@ import {
   resolveAgencyCountry,
   type AgencyCountrySource,
 } from './countryLaunchGate.js';
+import { consumeDataRefreshMarker, dataRefreshGuardError, readDataRefreshMarker } from './dataRefreshMarker.js';
 
 console.log(`env: ${LOADED_ENV_FILE} (bucket=${process.env.R2_BUCKET_NAME ?? '?'})`);
 
@@ -262,20 +266,31 @@ async function collectAgencyFeatures(slug: string): Promise<{ routes: Feature[];
   return { routes, stops, corridors };
 }
 
-function parseArgs(argv: string[]): { slug: string; dryRun: boolean; forceCountryLaunch: boolean } {
+function parseArgs(argv: string[]): { slug: string; dryRun: boolean; allowStaleData: boolean; forceCountryLaunch: boolean } {
   const dryRun = argv.includes('--dry-run');
+  const allowStaleData = argv.includes('--allow-stale-data');
   const forceCountryLaunch = argv.includes(COUNTRY_LAUNCH_FLAG);
   const slug = argv.find(a => !a.startsWith('--'));
   if (!slug) {
     throw new Error(
-      `Usage: npx tsx pipeline/build-pmtiles-incremental.ts <slug> [--dry-run] [${COUNTRY_LAUNCH_FLAG}]`,
+      `Usage: npx tsx pipeline/build-pmtiles-incremental.ts <slug> [--dry-run] [--allow-stale-data] [${COUNTRY_LAUNCH_FLAG}]`,
     );
   }
-  return { slug, dryRun, forceCountryLaunch };
+  return { slug, dryRun, allowStaleData, forceCountryLaunch };
 }
 
 async function main() {
-  const { slug, dryRun, forceCountryLaunch } = parseArgs(process.argv.slice(2));
+  const { slug, dryRun, allowStaleData, forceCountryLaunch } = parseArgs(process.argv.slice(2));
+
+  if (!dryRun && !allowStaleData) {
+    const guardError = dataRefreshGuardError(readDataRefreshMarker());
+    if (guardError) {
+      throw new Error(`${guardError} Use --allow-stale-data only for an explicitly intentional repack.`);
+    }
+    console.log('Data refresh handoff verified; building incremental PMTiles from freshly refreshed artifacts.');
+  } else if (allowStaleData) {
+    console.warn('WARNING: --allow-stale-data bypasses the refresh-to-PMTiles guard.');
+  }
 
   console.log(`Loading agency index from public/data/index.json...`);
   const index = JSON.parse(fs.readFileSync('public/data/index.json', 'utf-8')) as {
@@ -391,6 +406,7 @@ async function main() {
 
     console.log(`\nUploading merged atlas.pmtiles to Cloudflare R2 (streaming)...`);
     await r2PutFile('atlas.pmtiles', mergedPath, 'application/octet-stream');
+    consumeDataRefreshMarker();
     console.log(`PMTiles uploaded: ${pmtilesUrl}`);
     console.log(`Incremental build complete for "${slug}". Consider running \`npm run verify-pmtiles-coverage\` to confirm.`);
 

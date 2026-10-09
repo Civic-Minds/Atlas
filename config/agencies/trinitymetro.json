@@ -41,5 +41,7 @@
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://gtfsdata.ridetm.org/gtfs/fwtatransitdata.zip"
 }
