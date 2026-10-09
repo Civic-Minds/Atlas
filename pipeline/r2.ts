@@ -92,6 +92,8 @@ async function rclonePutFile(key: string, filePath: string, bucket: string): Pro
       '--s3-chunk-size', '32M',
       '--s3-upload-concurrency', '1',
       '--no-check-dest',
+      '--bind', '0.0.0.0',
+      '--disable-http2',
       '--retries', '10',
       '--low-level-retries', '20',
     ], { maxBuffer: 2 * 1024 * 1024 });

@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **Large R2 fallback uploads now use a stable IPv4 connection, reducing failed PMTiles releases on networks with broken IPv6 paths.**
 - **Refresh now reprocesses current feeds whose stored route artifact uses an old or missing schema, preventing PMTiles rebuild failures after pipeline upgrades.**
 - **Emery Go-Round is no longer excluded from PMTiles after its current feed passed route-quality checks.**
 - **A coordinated production refresh published current data for 14 agencies and advanced the shared cache version, keeping the live map and registry aligned.**
