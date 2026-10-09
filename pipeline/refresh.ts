@@ -53,6 +53,7 @@ import { isActiveProductionFeed } from '../shared/feedAvailability.js';
 import { recordFeedCheck, type FeedCheckFields } from './feedCheckTracking.js';
 import { buildFeedCandidates, type FeedCandidate } from './feedSourceCandidates.js';
 import { resolveFeedUrl } from './feedUrl.js';
+import { ROUTE_ARTIFACT_SCHEMA_VERSION } from '../shared/artifactSchema.js';
 
 console.log(`  env: ${LOADED_ENV_FILE} (bucket=${process.env.R2_BUCKET_NAME ?? '?'}${isProductionPublicR2Bucket() ? ' [PRODUCTION]' : ' [non-prod]'})`);
 
@@ -404,7 +405,23 @@ async function refreshAgency(
     lastFeedVersion: agency.lastFeedVersion,
   });
   if (skipDecision.skip) {
-    return { summary: skipDecision.reason };
+    // A current feed can still have a legacy processed artifact. Do not let
+    // skip-if-unchanged preserve an artifact that the PMTiles builder cannot
+    // safely consume.
+    let artifactNeedsReprocess = false;
+    try {
+      const artifact = await r2Get(`atlas/${agency.slug}.json`);
+      if (!artifact) {
+        artifactNeedsReprocess = true;
+      } else {
+        const parsed = JSON.parse(artifact) as { atlasSchemaVersion?: number };
+        artifactNeedsReprocess = parsed.atlasSchemaVersion !== ROUTE_ARTIFACT_SCHEMA_VERSION;
+      }
+    } catch {
+      artifactNeedsReprocess = true;
+    }
+    if (!artifactNeedsReprocess) return { summary: skipDecision.reason };
+    writeLog(`\n  ${agency.slug.padEnd(12)} ... reprocessing (current feed, legacy or missing route artifact)\n`);
   }
 
   const clearedOverrideNote = clearOverrideUserFacingOnFeedChange(agency, peekedExpiry, peekedVersion);

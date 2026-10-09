@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **Refresh now reprocesses current feeds whose stored route artifact uses an old or missing schema, preventing PMTiles rebuild failures after pipeline upgrades.**
 - **Emery Go-Round is no longer excluded from PMTiles after its current feed passed route-quality checks.**
 - **A coordinated production refresh published current data for 14 agencies and advanced the shared cache version, keeping the live map and registry aligned.**
 - **Coordinated data releases now stop before PMTiles when any requested agency fails or remains stale, preventing partial refreshes from becoming map releases.**
