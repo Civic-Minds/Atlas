@@ -302,6 +302,15 @@ async function main() {
   const overviewSize = fs.statSync(overviewRoutesPm).size;
   console.log(`atlas-overview.pmtiles size: ${(overviewSize/1024/1024).toFixed(1)} MB`);
 
+  // Verify the complete archive locally before uploading it. The same check
+  // over R2 requires tens of thousands of range requests and can fail because
+  // of transient object-store/network errors, even when the archive is sound.
+  console.log('Verifying full PMTiles coverage locally before upload...');
+  execSync('npm run verify-pmtiles-coverage', {
+    stdio: 'inherit',
+    env: { ...process.env, PMTILES_LOCAL_PATH: pmtilesPath },
+  });
+
   if (dryRun) {
     console.log(`Dry run complete: ${pmtilesPath}`);
     fs.copyFileSync(overviewRoutesPm, overviewPmtilesPath);

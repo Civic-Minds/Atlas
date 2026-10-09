@@ -32,6 +32,7 @@ function run(script: string, scriptArgs: string[] = []): void {
 run('refresh', args);
 
 const requestedSlugs = args.filter(arg => !arg.startsWith('--')).sort();
+process.env.PMTILES_REMOTE_SMOKE_SLUGS = requestedSlugs.join(',');
 const refreshResult = readRefreshRunResult();
 if (!refreshResult || !refreshResult.complete || refreshResult.requestedSlugs.join('\n') !== requestedSlugs.join('\n')) {
   const statuses = refreshResult
@@ -40,7 +41,7 @@ if (!refreshResult || !refreshResult.complete || refreshResult.requestedSlugs.jo
   throw new Error(`Refresh-release stopped before PMTiles: the requested batch was incomplete (${statuses}).`);
 }
 run('build-pmtiles');
-run('verify-pmtiles-coverage');
+run('verify-pmtiles-remote', []);
 run('build-history');
 run('publish-data-release');
 
