@@ -36,7 +36,7 @@ import { parseFrequentServiceDays, type FrequentServiceFrequency, type FrequentS
 import type { NightServiceFrequency } from '../shared/nightService';
 const FrequentServiceStory = React.lazy(() => import('./apps/FrequentServiceStory'));
 const ResearchPage = React.lazy(() => import('./apps/ResearchPage'));
-import { BWG_ON_DEMAND_AGENCY, CALEDON_ON_DEMAND_AGENCY, BRAMPTON_ON_DEMAND_AGENCY, MUSKOKA_DRT_ON_DEMAND_AGENCY, ST_ALBERT_ON_DEMAND_AGENCY, LEAMINGTON_LT_GO_ON_DEMAND_AGENCY, WINKLER_ON_DEMAND_AGENCY, C_TRAN_CURRENT_SERVICE_AREA, COBOURG_ON_DEMAND_SERVICE_AREA, CYRIDE_EASE_SERVICE_AREA, EDMONTON_ON_DEMAND_SERVICE_AREA, GORALEIGH_MICROLINK_SERVICE_AREA, GRT_ROUTE_79_SERVICE_AREA, HAMILTON_MY_RIDE_SERVICE_AREA, METRO_MICRO_SERVICE_AREA, MOUNTAIN_LINE_GO_SERVICE_AREA, MVTA_CONNECT_SERVICE_AREA, UTA_ON_DEMAND_SERVICE_AREA } from './data/onDemandServiceAreas';
+import { BWG_ON_DEMAND_AGENCY, CALEDON_ON_DEMAND_AGENCY, BRAMPTON_ON_DEMAND_AGENCY, MUSKOKA_DRT_ON_DEMAND_AGENCY, ST_ALBERT_ON_DEMAND_AGENCY, LEAMINGTON_LT_GO_ON_DEMAND_AGENCY, WINKLER_ON_DEMAND_AGENCY, C_TRAN_CURRENT_SERVICE_AREA, COBOURG_ON_DEMAND_SERVICE_AREA, CYRIDE_EASE_SERVICE_AREA, EDMONTON_ON_DEMAND_SERVICE_AREA, GORALEIGH_MICROLINK_SERVICE_AREA, GRT_ROUTE_79_SERVICE_AREA, HAMILTON_MY_RIDE_SERVICE_AREA, METRO_MICRO_SERVICE_AREA, MOUNTAIN_LINE_GO_SERVICE_AREA, MVTA_CONNECT_SERVICE_AREA, UTA_ON_DEMAND_SERVICE_AREA, ASPEN_DOWNTOWNER_SERVICE_AREA, BAY_TRANSIT_EXPRESS_SERVICE_AREA, CAT_DIAL_A_RIDE_SERVICE_AREA, DURANGO_MICROTRANSIT_SERVICE_AREA, GLTC_FLEX_SERVICE_AREA, ISLAND_TRANSIT_GO_SERVICE_AREA, SAM_RIDES_SERVICE_AREA, SNOQUALMIE_DOOR_TO_DOOR_SERVICE_AREA, TCTD_DIAL_A_RIDE_SERVICE_AREA, VALLEY_METRO_METROFLX_SERVICE_AREA } from './data/onDemandServiceAreas';
 import type { OnDemandAvailability, OnDemandPickup, OnDemandZoneDetails } from '../shared/onDemandAvailability';
 
 export interface FareOverride {
@@ -454,17 +454,27 @@ export default function App() {
       })
       .then((data: { agencies: Agency[] }) => {
         const onDemandBySlug: Record<string, Partial<Agency>> = ATLAS_MODE === 'public' ? {} : {
+          'bay-transit': { onDemandServiceArea: BAY_TRANSIT_EXPRESS_SERVICE_AREA },
+          'columbia-area-transit': { onDemandServiceArea: CAT_DIAL_A_RIDE_SERVICE_AREA },
           ctran: { onDemandServiceArea: C_TRAN_CURRENT_SERVICE_AREA },
           cobourg: { onDemandServiceArea: COBOURG_ON_DEMAND_SERVICE_AREA },
           cyride: { onDemandServiceArea: CYRIDE_EASE_SERVICE_AREA },
+          'durango-transit': { onDemandServiceArea: DURANGO_MICROTRANSIT_SERVICE_AREA },
           edmonton: { onDemandServiceArea: EDMONTON_ON_DEMAND_SERVICE_AREA },
+          gltc: { onDemandServiceArea: GLTC_FLEX_SERVICE_AREA },
           goraleigh: { onDemandServiceArea: GORALEIGH_MICROLINK_SERVICE_AREA },
           grt: { onDemandServiceArea: GRT_ROUTE_79_SERVICE_AREA },
           hamilton: { onDemandServiceArea: HAMILTON_MY_RIDE_SERVICE_AREA },
+          islandtransit: { onDemandServiceArea: ISLAND_TRANSIT_GO_SERVICE_AREA },
           'metro-transit': { onDemandServiceArea: METRO_MICRO_SERVICE_AREA },
           mountainline: { onDemandServiceArea: MOUNTAIN_LINE_GO_SERVICE_AREA },
           mvta: { onDemandServiceArea: MVTA_CONNECT_SERVICE_AREA },
+          rfta: { onDemandServiceArea: ASPEN_DOWNTOWNER_SERVICE_AREA },
+          sam: { onDemandServiceArea: SAM_RIDES_SERVICE_AREA },
+          'snoqualmie-valley': { onDemandServiceArea: SNOQUALMIE_DOOR_TO_DOOR_SERVICE_AREA },
+          tillamook: { onDemandServiceArea: TCTD_DIAL_A_RIDE_SERVICE_AREA },
           uta: { onDemandServiceArea: UTA_ON_DEMAND_SERVICE_AREA },
+          'valley-metro-roanoke': { onDemandServiceArea: VALLEY_METRO_METROFLX_SERVICE_AREA },
         };
         const enriched = [
           ...data.agencies.map(agency => ({ ...agency, ...(onDemandBySlug[agency.slug] ?? {}) })),

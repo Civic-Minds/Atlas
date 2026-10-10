@@ -18,6 +18,7 @@ import {
   METRO_MICRO_SERVICE_AREA,
   UTA_ON_DEMAND_SERVICE_AREA,
 } from '../onDemandServiceAreas';
+import * as Services from '../onDemandServiceAreas';
 import { HSR_MY_RIDE_STOP_FEATURES } from '../hsrMyRideStops';
 import { HAMILTON_TRANS_CAB_SERVICE_AREAS, HAMILTON_TRANS_CAB_TRANSFER_POINTS } from '../transCabServiceArea';
 import { isOnDemandActive, isOnDemandStopShown, isOnDemandZoneShown, onDemandPickupSentence } from '../../../shared/onDemandAvailability';
@@ -274,5 +275,52 @@ describe('paratransit stays off the on-demand map', () => {
       return [service?.serviceName, service?.onDemandServiceArea?.serviceName];
     });
     expect(names.some(name => typeof name === 'string' && /paratransit/i.test(name))).toBe(false);
+  });
+});
+
+describe('GTFS-Flex batch from agency feeds', () => {
+  const batch = {
+    'valley-metro-roanoke': [Services.VALLEY_METRO_METROFLX_SERVICE_AREA, ['area_1362']],
+    gltc: [Services.GLTC_FLEX_SERVICE_AREA, ['area_1261']],
+    'snoqualmie-valley': [Services.SNOQUALMIE_DOOR_TO_DOOR_SERVICE_AREA, ['area_486', 'area_1149']],
+    rfta: [Services.ASPEN_DOWNTOWNER_SERVICE_AREA, ['area_294']],
+    'durango-transit': [Services.DURANGO_MICROTRANSIT_SERVICE_AREA, ['area_274']],
+    sam: [Services.SAM_RIDES_SERVICE_AREA, ['area_1279']],
+    tillamook: [Services.TCTD_DIAL_A_RIDE_SERVICE_AREA, ['area_427']],
+    'columbia-area-transit': [Services.CAT_DIAL_A_RIDE_SERVICE_AREA, ['1a']],
+    'bay-transit': [Services.BAY_TRANSIT_EXPRESS_SERVICE_AREA, ['area_1054']],
+  } as const;
+
+  it('keeps only the public zone from each feed, never paratransit or deviation buffers', () => {
+    for (const [slug, [service, ids]] of Object.entries(batch)) {
+      const props = service.features.map(feature => feature.properties as { agencySlug: string; flexLocationId: string });
+      expect(props.map(p => p.flexLocationId)).toEqual(ids);
+      expect(props.every(p => p.agencySlug === slug)).toBe(true);
+      for (const feature of service.features) {
+        const ring = feature.geometry.coordinates[0];
+        expect(ring.length).toBeGreaterThan(20);
+        expect(ring[0]).toEqual(ring.at(-1));
+      }
+    }
+  });
+
+  it('runs MetroFLX at night Monday–Saturday and in the daytime on Sunday', () => {
+    const hours = Services.VALLEY_METRO_METROFLX_SERVICE_AREA.availability;
+    expect(isOnDemandActive(hours, 'Saturday', 'late')).toBe(true);
+    expect(isOnDemandActive(hours, 'Weekday', 'midday')).toBe(false);
+    expect(isOnDemandActive(hours, 'Sunday', 'midday')).toBe(true);
+    expect(isOnDemandActive(hours, 'Sunday', 'late')).toBe(false);
+  });
+
+  it('uses the agency page hours where the feed disagrees', () => {
+    expect(isOnDemandActive(Services.GLTC_FLEX_SERVICE_AREA.availability, 'Sunday', 'midday')).toBe(false);
+    expect(isOnDemandActive(Services.ASPEN_DOWNTOWNER_SERVICE_AREA.availability, 'Weekday', 'amPeak')).toBe(false);
+    expect(isOnDemandActive(Services.ISLAND_TRANSIT_GO_SERVICE_AREA.availability, 'Saturday', 'midday')).toBe(false);
+  });
+
+  it('draws Island Transit GO! as its 47 published stops with no inferred zone', () => {
+    expect(Services.ISLAND_TRANSIT_GO_SERVICE_AREA.features).toHaveLength(0);
+    expect(Services.ISLAND_TRANSIT_GO_SERVICE_AREA.stopFeatures).toHaveLength(47);
+    expect(onDemandPickupSentence(Services.ISLAND_TRANSIT_GO_SERVICE_AREA, undefined)).toContain('47 set stops');
   });
 });
