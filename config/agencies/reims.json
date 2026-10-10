@@ -6,7 +6,9 @@
     49.2583,
     4.0317
   ],
-  "feedUrl": "https://api.grandest2.cityway.fr/exs/GTFS?Key=OPENDATA&OperatorCode=REI",
+  "feedUrl": "https://api.grandest2.cityway.fr/exs/GTFS?OperatorCode=REI",
+  "feedApiKeyEnvVar": "GRAND_EST_API_KEY",
+  "feedApiKeyParam": "Key",
   "mdbFeedUrl": null,
   "hiddenInProduction": true,
   "pmtilesPending": true,
