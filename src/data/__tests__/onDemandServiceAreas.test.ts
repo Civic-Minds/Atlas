@@ -10,6 +10,7 @@ import {
   GRT_ROUTE_79_SERVICE_AREA,
   HAMILTON_MY_RIDE_SERVICE_AREA,
   C_TRAN_CURRENT_SERVICE_AREA,
+  CYRIDE_EASE_SERVICE_AREA,
   METRO_MICRO_SERVICE_AREA,
   WATA_PARATRANSIT_SERVICE_AREA,
 } from '../onDemandServiceAreas';
@@ -105,4 +106,20 @@ describe('BWG on-demand service area', () => {
     expect(WATA_PARATRANSIT_SERVICE_AREA.features[0].geometry.type).toBe('Polygon');
   });
 
+});
+
+describe('CyRide EASE on-demand service area', () => {
+  it('keeps the agency-supplied EASE polygon closed and tied to City Hall', () => {
+    expect(CYRIDE_EASE_SERVICE_AREA.features).toHaveLength(1);
+    const ring = CYRIDE_EASE_SERVICE_AREA.features[0].geometry.coordinates[0];
+    expect(ring).toHaveLength(13);
+    expect(ring[0]).toEqual(ring.at(-1));
+    expect(CYRIDE_EASE_SERVICE_AREA.stopFeatures.map(stop => stop.properties?.stopId)).toEqual(['5102284']);
+  });
+
+  it('only shows EASE during its weekday operating window', () => {
+    expect(isOnDemandActive(CYRIDE_EASE_SERVICE_AREA.availability, 'Weekday', 'midday')).toBe(true);
+    expect(isOnDemandActive(CYRIDE_EASE_SERVICE_AREA.availability, 'Weekday', 'overnight')).toBe(false);
+    expect(isOnDemandActive(CYRIDE_EASE_SERVICE_AREA.availability, 'Saturday', 'midday')).toBe(false);
+  });
 });

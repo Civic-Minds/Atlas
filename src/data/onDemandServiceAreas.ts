@@ -107,6 +107,35 @@ export const GRT_ROUTE_79_SERVICE_AREAS: GeoJSON.Feature<GeoJSON.Polygon>[] = [
   polygonFeature('grt', GRT_ROUTE_79_SOURCE_URL, GRT_ROUTE_79_SOURCE_LABEL, [[-80.49714293713683, 43.45442424046199], [-80.4968017410051, 43.45390443185388], [-80.4976861192888, 43.45214574688964], [-80.50111913351175, 43.45309873175288], [-80.49714293713683, 43.45442424046199]], 'King Street / Victoria Street (Central Station)'),
 ];
 
+const CYRIDE_EASE_SOURCE_URL = 'https://www.cyride.com/schedules/school-year-schedule/weekdays/east-ames-service-extension-ease';
+const CYRIDE_EASE_SOURCE_LABEL = 'CyRide EASE service outline (agency-supplied)';
+
+/** EASE zone polygon supplied by CyRide as KML (2026-10-10); riders also connect at City Hall. */
+export const CYRIDE_EASE_SERVICE_AREAS: GeoJSON.Feature<GeoJSON.Polygon>[] = [
+  polygonFeature('cyride', CYRIDE_EASE_SOURCE_URL, CYRIDE_EASE_SOURCE_LABEL, [[-93.61025658312204, 42.02464504633932], [-93.61026110652278, 42.02142179861838], [-93.60487195585947, 42.02136668774721], [-93.60443110036336, 42.00575687762633], [-93.5770566702295, 42.00762215242096], [-93.57428183329577, 42.00843152062329], [-93.57247759156358, 42.00993608728371], [-93.57167213486146, 42.01182605716128], [-93.57025935084171, 42.04497313109907], [-93.58737242915379, 42.04515537698747], [-93.60094288260386, 42.03747140021152], [-93.60114691040607, 42.02571450568428], [-93.61025658312204, 42.02464504633932]], 'East Ames'),
+];
+
+/** The single fixed-route stop EASE serves outside its zone (CyRide GTFS stop_id 5102284). */
+const CYRIDE_EASE_STOP_FEATURES: GeoJSON.Feature<GeoJSON.Point>[] = [
+  { type: 'Feature', properties: { stopId: '5102284', stopName: 'City Hall Westbound', agencySlug: 'cyride', serviceType: 'on-demand' }, geometry: { type: 'Point', coordinates: [-93.617828, 42.025934] } },
+];
+
+export const CYRIDE_EASE_SERVICE_AREA = {
+  features: CYRIDE_EASE_SERVICE_AREAS,
+  stopFeatures: CYRIDE_EASE_STOP_FEATURES,
+  sourceUrl: CYRIDE_EASE_SOURCE_URL,
+  sourceLabel: CYRIDE_EASE_SOURCE_LABEL,
+  sourceRetrievedAt: '2026-10-10',
+  serviceHours: 'Monday–Friday 7 a.m.–6:30 p.m.; book in the Ride Pingo app or call (515) 239-5600',
+  bookingUrl: CYRIDE_EASE_SOURCE_URL,
+  serviceName: 'East Ames Service Extension (EASE)',
+  availability: {
+    Weekday: [{ startHour: 7, endHour: 18.5 }],
+    Saturday: [],
+    Sunday: [],
+  } satisfies OnDemandAvailability,
+};
+
 export const HAMILTON_MY_RIDE_SERVICE_AREA = {
   features: [] as GeoJSON.Feature<GeoJSON.Polygon>[],
   stopFeatures: HSR_MY_RIDE_STOP_FEATURES,
