@@ -1,4 +1,5 @@
 import type { ShapeProperties } from '../hooks/useIntervalStats';
+import { lineCoordinates } from '../../shared/routeGeometry';
 
 export type DirectionBranchGroup = {
   dirId: number;
@@ -19,8 +20,8 @@ function featureForBranch(d: ShapeProperties, features: GeoJSON.Feature[]): GeoJ
 
 function branchGeometryScore(d: ShapeProperties, features: GeoJSON.Feature[]): number {
   const f = featureForBranch(d, features);
-  const geom = f?.geometry as GeoJSON.LineString | undefined;
-  return geom?.coordinates?.length ?? 0;
+  // A Point (route with no map shape) has no line length; never let it outscore a real line.
+  return lineCoordinates(f?.geometry).length;
 }
 
 /**

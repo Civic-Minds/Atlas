@@ -35,6 +35,8 @@ import { nightServiceKey } from '../../../shared/nightService';
 import { markAtlasLatest } from '../../lib/performance';
 import { isOnDemandActive } from '../../../shared/onDemandAvailability';
 import { buildRouteSortKeyExpression } from '../../utils/routeSort';
+import { fitTargetForPoints, routeFitTarget } from '../../utils/routeFitTarget';
+import { lineCoordinates } from '../../../shared/routeGeometry';
 
 const CORRIDOR_BAND_COLOR = '#64748b';
 const ON_DEMAND_AREA_COLOR = '#64748b';
@@ -1660,51 +1662,36 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     // agencySlug is added to features only in build-pmtiles, not the raw R2 GeoJSON,
     // so match by slug (from selectedRoute key) + routeId separately.
     const { agencySlug: routeSlug, routeId, routeBranch } = splitRouteKey(selectedRoute);
-    let minLng = 180, maxLng = -180, minLat = 90, maxLat = -90;
-    let found = false;
-
     const fc = layers?.[routeSlug];
-    if (fc) {
-      for (const f of fc.features) {
-        const properties = f.properties as any;
-        if (properties?.routeId !== routeId) continue;
-        if (routeBranch && properties?.routeBranch !== routeBranch) continue;
-        const geom = f.geometry as any;
-        if (!geom?.coordinates) continue;
-        const coords: [number, number][] = geom.type === 'LineString' ? geom.coordinates : geom.coordinates.flat();
-        for (const [lng, lat] of coords) {
-          if (lng < minLng) minLng = lng;
-          if (lng > maxLng) maxLng = lng;
-          if (lat < minLat) minLat = lat;
-          if (lat > maxLat) maxLat = lat;
-          found = true;
-        }
-      }
-    }
+    // routeFitTarget handles routes with no drawn line (noRouteShape Point features):
+    // they zoom to their stops, or to the route's point, instead of throwing.
+    let target = fc
+      ? routeFitTarget(fc.features, properties =>
+        properties.routeId === routeId && (!routeBranch || properties.routeBranch === routeBranch))
+      : null;
 
-    if (!found && map.getLayer('routes-layer')) {
+    if (!target && map.getLayer('routes-layer')) {
       const rendered = map.queryRenderedFeatures(undefined, { layers: ['routes-layer'] })
         .filter((f: maplibregl.MapGeoJSONFeature) => routeKey(f.properties as any) === selectedRoute);
-      for (const f of rendered) {
-        const geom = f.geometry as any;
-        const coords: [number, number][] = geom.type === 'LineString' ? geom.coordinates : geom.coordinates.flat();
-        for (const [lng, lat] of coords) {
-          if (lng < minLng) minLng = lng;
-          if (lng > maxLng) maxLng = lng;
-          if (lat < minLat) minLat = lat;
-          if (lat > maxLat) maxLat = lat;
-          found = true;
-        }
-      }
+      target = fitTargetForPoints(rendered.flatMap(f => lineCoordinates(f.geometry)));
     }
 
-    if (found && minLng < maxLng) {
+    if (target?.kind === 'bounds') {
       // Asymmetric padding: route card sits on the left (~sidebar + panel width).
       // Uniform padding (80) centers the line in the full canvas so the west end
       // hides under the card — same issue live vehicles already avoided with left: 320.
-      map.fitBounds([[minLng, minLat], [maxLng, maxLat]], {
+      map.fitBounds(target.bounds, {
         padding: { top: 80, bottom: 80, left: 320, right: 80 },
         maxZoom: 14,
+      });
+      fittedRouteRef.current = selectedRoute;
+    } else if (target?.kind === 'point') {
+      map.flyTo({
+        center: target.center,
+        zoom: Math.max(map.getZoom(), 14),
+        padding: { top: 80, bottom: 80, left: 320, right: 80 },
+        duration: 900,
+        essential: true,
       });
       fittedRouteRef.current = selectedRoute;
     }

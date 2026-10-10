@@ -65,3 +65,23 @@ export function tilesForAgency(agency: CoverageAgency, zoom: number, maxTiles = 
   addTile(centerTile);
   return tiles;
 }
+
+type RouteArtifact = {
+  features?: Array<{
+    geometry?: { type?: string } | null;
+    properties?: Record<string, unknown> | null;
+  }>;
+} | null | undefined;
+
+/**
+ * Whether a published route artifact is schedule-only: it has route features, but none of them is
+ * a line. Feeds without usable shapes publish their routes as Points (noRouteShape), and PMTiles
+ * keep lines only, so such an agency legitimately has zero route features in the archive. It must
+ * not fail the coverage gate (that would block every release); an agency that does have lines and
+ * is still missing from the archive is a real gap and keeps failing.
+ */
+export function isScheduleOnlyRouteArtifact(artifact: RouteArtifact): boolean {
+  const routes = (artifact?.features ?? []).filter(f => f?.properties?.routeId != null && f.properties.stopId == null);
+  if (routes.length === 0) return false;
+  return routes.every(f => f.geometry?.type !== 'LineString' && f.geometry?.type !== 'MultiLineString');
+}

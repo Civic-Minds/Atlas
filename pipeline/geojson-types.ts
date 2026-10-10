@@ -1,6 +1,7 @@
 export interface GeoJsonFeature {
   type: 'Feature';
-  geometry: { type: 'LineString'; coordinates: number[][] };
+  geometry: { type: 'LineString'; coordinates: number[][] }
+    | { type: 'Point'; coordinates: number[] };
   properties: Record<string, unknown>;
 }
 

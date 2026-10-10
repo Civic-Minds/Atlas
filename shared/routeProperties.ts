@@ -24,6 +24,8 @@ export interface RouteProperties {
   maxGapByPeriod?: HeadwayByPeriodMaxGap;
   headwayByPeriodSustained?: HeadwayByPeriodSustained;
   routeDataQualityWarning?: RouteDataQualityWarning;
+  /** The feed has schedule data for this route but no usable line geometry. */
+  noRouteShape?: boolean;
   headwayByHour?: HeadwayByHour;
   maxGapByHour?: HeadwayByHourMaxGap;
   routeShortName: string | null;

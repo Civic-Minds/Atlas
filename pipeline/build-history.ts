@@ -22,6 +22,8 @@ import { r2ListArchive, r2GetArchive, r2Get, r2Put } from './r2.js';
 import { runWithConcurrency } from './utils.js';
 import { resolveCurrentHistoryRoute } from './historyIdentity.js';
 import { historyRouteKey } from './historyRouteKey.js';
+import { historyGeometryForRoute } from './historyGeometry.js';
+import { isDrawableLineCoordinates, lineStringCoordinatesOrNull } from '../shared/routeGeometry.js';
 import type { HeadwayByPeriod } from '../shared/config.js';
 
 config({ path: resolve('.env.local') });
@@ -146,7 +148,7 @@ async function loadCurrentHeadways(slug: string): Promise<Record<string, {
   try {
     const raw = await r2Get(`atlas/${slug}.json`);
     if (!raw) return {};
-    const fc = JSON.parse(raw) as { features?: Array<{ geometry?: { coordinates?: number[][] }; properties?: Record<string, unknown> }> };
+    const fc = JSON.parse(raw) as { features?: Array<{ geometry?: { type?: string; coordinates?: unknown }; properties?: Record<string, unknown> }> };
     const current: Record<string, {
       headway: number;
       routeLongName?: string;
@@ -169,9 +171,14 @@ async function loadCurrentHeadways(slug: string): Promise<Record<string, {
           routeType: p.routeType as number | string | undefined,
           busSubType: p.busSubType ? String(p.busSubType) : undefined,
           headwayByPeriod: p.headwayByPeriod as HeadwayByPeriod | undefined,
-          geometry: feature.geometry?.coordinates,
+          geometry: lineStringCoordinatesOrNull(feature.geometry) ?? undefined,
         };
       }
+    }
+    // The most frequent pattern may be a route with no map shape (a Point). Its bare [lon, lat]
+    // is never stored as a line; borrow another shaped pattern of the same route, or store none.
+    for (const [routeShortName, route] of Object.entries(current)) {
+      route.geometry ??= historyGeometryForRoute(fc.features ?? [], routeShortName) ?? undefined;
     }
     return current;
   } catch {
@@ -374,7 +381,7 @@ async function main() {
       // Build snapshot list from archived change events
       const snapshots: Array<{ label: string; year: number; weekdayHeadwayMin: number; headwayByPeriod?: HeadwayByPeriod; geometry?: number[][] }> = changes.map(c => {
         const { year, label } = parsePeriodKey(c.periodKey);
-        return { label: c.label ?? label, year, weekdayHeadwayMin: c.headway, headwayByPeriod: c.headwayByPeriod, geometry: c.geometry };
+        return { label: c.label ?? label, year, weekdayHeadwayMin: c.headway, headwayByPeriod: c.headwayByPeriod, geometry: isDrawableLineCoordinates(c.geometry) ? c.geometry : undefined };
       });
 
       const materializeAllPeriods = coverageBySlug[slug]?.materializeAllPeriods === true;

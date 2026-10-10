@@ -10,16 +10,16 @@ import { countriesForAgencies } from '../../shared/regionCountry';
 import type { Agency } from '../App';
 import { isFeedExpired } from '../utils/feedFreshness';
 import { trackEvent } from '../lib/analytics';
-import { EXPIRED_FEED_CADENCE, EXPIRED_FEED_CONTEXT, EXPIRED_FEED_EXPLANATION, MANUAL_FEED_CONTEXT, expiredFeedCheckHistory, expiredFeedNotice } from '../content/noticeCopy';
+import { EXPIRED_FEED_CADENCE, EXPIRED_FEED_CONTEXT, EXPIRED_FEED_EXPLANATION, MANUAL_FEED_CONTEXT, NO_ROUTE_SHAPE_DETAIL, NO_ROUTE_SHAPE_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice } from '../content/noticeCopy';
 import RegionFilterPills from './RegionFilterPills';
 
 interface HistoryAgencySummary { slug: string; name: string; region: string; routes: unknown[] }
 
-type View = 'home' | 'agencies' | 'agency-detail' | 'outdated-schedule' | 'new-schedule-data' | 'corrected-data' | 'beta-rollout' | 'route-data-quality' | 'edge-gap-allowance' | 'weekday-variation' | 'sources';
+type View = 'home' | 'agencies' | 'agency-detail' | 'outdated-schedule' | 'new-schedule-data' | 'corrected-data' | 'beta-rollout' | 'route-data-quality' | 'no-route-shape' | 'edge-gap-allowance' | 'weekday-variation' | 'sources';
 export type Tab = 'about' | 'agencies' | 'history' | 'live';
 export type InfoFeatureFilter = 'all' | 'live' | 'history';
 type AgencyListFilter = InfoFeatureFilter | 'outdated';
-export type HelpTopic = 'outdated-schedule' | 'new-schedule-data' | 'corrected-data' | 'beta-rollout' | 'route-data-quality' | 'edge-gap-allowance' | 'weekday-variation';
+export type HelpTopic = 'outdated-schedule' | 'new-schedule-data' | 'corrected-data' | 'beta-rollout' | 'route-data-quality' | 'no-route-shape' | 'edge-gap-allowance' | 'weekday-variation';
 export type HelpContext = {
   topic: HelpTopic;
   agencyName?: string;
@@ -141,6 +141,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
         : helpContext?.topic === 'corrected-data' ? 'corrected-data'
         : helpContext?.topic === 'beta-rollout' ? 'beta-rollout'
         : helpContext?.topic === 'route-data-quality' ? 'route-data-quality'
+        : helpContext?.topic === 'no-route-shape' ? 'no-route-shape'
         : helpContext?.topic === 'edge-gap-allowance' ? 'edge-gap-allowance'
         : helpContext?.topic === 'weekday-variation' ? 'weekday-variation'
         : tabToView(defaultTab ?? 'about'),
@@ -288,6 +289,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
     : view === 'corrected-data' ? 'Corrected data'
     : view === 'beta-rollout' ? 'Beta testing'
     : view === 'route-data-quality' ? 'Route data quality'
+    : view === 'no-route-shape' ? 'Route map unavailable'
     : view === 'edge-gap-allowance' ? 'Frequency allowance'
     : view === 'weekday-variation' ? 'Weekday variation'
     : view === 'sources' ? 'Sources'
@@ -729,6 +731,17 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
               </p>
               <p className="text-xs text-[var(--text-dim)] leading-relaxed">
                 The line may be incomplete or adjusted. The schedule information is separate from the map geometry.
+              </p>
+            </div>
+          )}
+
+          {view === 'no-route-shape' && (
+            <div className="h-full overflow-y-auto px-5 py-4 space-y-4">
+              <p className="text-xs text-[var(--text-dim)] leading-relaxed">
+                {NO_ROUTE_SHAPE_EXPLANATION}
+              </p>
+              <p className="text-xs text-[var(--text-dim)] leading-relaxed">
+                {NO_ROUTE_SHAPE_DETAIL}
               </p>
             </div>
           )}

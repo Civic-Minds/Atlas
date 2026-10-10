@@ -28,6 +28,7 @@ import { fetchAgencyGeo, getCachedAgencyGeo } from '../lib/agencyGeo';
 import { type RouteFeature, type RouteGroup } from './corridor-types';
 import { ServiceTimeline } from './ServiceTimeline';
 import { StopInput } from './StopInput';
+import { lineStringCoordinatesOrNull } from '../../shared/routeGeometry';
 import { PERIOD_KEYS, type HeadwayByPeriod } from '../../shared/config';
 import type { DayType } from '../../shared/dayTypes';
 
@@ -328,7 +329,8 @@ export default function Corridors({
         }
         if (fromIdx === -1 || toIdx === -1 || fromIdx >= toIdx) continue;
 
-        const coords = f.geometry?.coordinates;
+        // Routes with no map shape are Points; only clip real lines.
+        const coords = lineStringCoordinatesOrNull(f.geometry);
         const stopPositions = p.stopPositions;
         let coordinates: number[][] | undefined;
         if (coords && stopPositions && stopPositions.length === p.stopOrder.length) {

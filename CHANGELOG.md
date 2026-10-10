@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 - **Frequency filters now require every direction of a route to meet the threshold, so routes no longer slip through on a single busy stretch, routes with a few occasional extra trips (like TTC 100) no longer drop out, and the route list, counts, and map always agree.**
 - **Route lines are drawing on the map again — the map looked for its route files in the wrong folder, and the map library's background helper was missing from the site after the MapLibre 6 upgrade.**
+- **Routes whose feed has schedules but no map shape now stay searchable and zoom to their stops, without ever replacing a route line that already draws.**
 - **PMTiles releases now verify full coverage locally and use a bounded live smoke check, preventing R2 read failures from blocking otherwise valid releases.**
 - **Large R2 fallback uploads now use a stable IPv4 connection, reducing failed PMTiles releases on networks with broken IPv6 paths.**
 - **Refresh now reprocesses current feeds whose stored route artifact uses an old or missing schema, preventing PMTiles rebuild failures after pipeline upgrades.**

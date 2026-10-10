@@ -153,6 +153,32 @@ export interface ProcessResult {
   feedQuality: FeedQuality;
 }
 
+/**
+ * Stop order for a route with no usable shape: the stop_sequence order of the candidate trip that
+ * serves the most known stops. Rows are sorted by numeric stop_sequence (file order is not
+ * meaningful), unknown stops are dropped, and a stop revisited by a loop is kept at its first visit.
+ */
+export function representativeStopSequence(
+  candidateTrips: ReadonlyArray<{ trip_id: string }>,
+  stopTimesByTripId: ReadonlyMap<string, ReadonlyArray<{ stop_id: string; stop_sequence: string | number }> | undefined>,
+  hasStop: (stopId: string) => boolean,
+): string[] {
+  let best: string[] = [];
+  for (const trip of candidateTrips) {
+    const tripStops = stopTimesByTripId.get(trip.trip_id) ?? [];
+    if (tripStops.length <= best.length) continue;
+    const sequence: string[] = [];
+    const seen = new Set<string>();
+    for (const stopTime of [...tripStops].sort((a, b) => Number(a.stop_sequence) - Number(b.stop_sequence))) {
+      if (!hasStop(stopTime.stop_id) || seen.has(stopTime.stop_id)) continue;
+      seen.add(stopTime.stop_id);
+      sequence.push(stopTime.stop_id);
+    }
+    if (sequence.length > best.length) best = sequence;
+  }
+  return best;
+}
+
 export async function processGtfsBuffer(
   buf: Buffer,
   onStatus?: (msg: string) => void,
@@ -341,6 +367,31 @@ export async function processGtfsBuffer(
     tripStops.push(st);
     stopTimesByTripId.set(st.trip_id, tripStops);
   }
+  // Routes whose feed has no usable shape are published as a Point with noRouteShape. Their stop
+  // order comes from one representative trip's stop_sequence (the matching trip that serves the
+  // most stops), not from the order stops happen to appear in stop_times.txt.
+  const tripsByRouteDir = new Map<string, NonNullable<typeof gtfs.trips>>();
+  for (const trip of gtfs.trips ?? []) {
+    const key = `${trip.route_id}::${String(trip.direction_id ?? '0')}`;
+    const list = tripsByRouteDir.get(key) ?? [];
+    list.push(trip);
+    tripsByRouteDir.set(key, list);
+  }
+  const maplessStopSequenceForResult = (result: AnalysisResult): string[] => {
+    const serviceIds = new Set(result.serviceIds ?? []);
+    const route = routeById.get(result.route);
+    const shortName = route?.route_short_name ?? result.route;
+    const longName = route?.route_long_name?.trim() ?? null;
+    const wantedHeadsign = result.headsign ? resolveDisplayHeadsign(result.headsign, shortName, longName) : null;
+    const candidates = (tripsByRouteDir.get(`${result.route}::${String(result.dir)}`) ?? []).filter(candidate => {
+      if (serviceIds.size > 0 && !serviceIds.has(candidate.service_id)) return false;
+      if (wantedHeadsign == null) return true;
+      const rawHeadsign = candidate.trip_headsign?.trim() || null;
+      return resolveDisplayHeadsign(rawHeadsign, shortName, longName) === wantedHeadsign;
+    });
+    return representativeStopSequence(candidates, stopTimesByTripId, stopId => stopsById.has(stopId));
+  };
+  const maplessStopSequence = new Map<GeoJsonFeature, string[]>();
   // Track first visit per (trip_id, stop_id) to avoid double-counting loop routes
   // where the terminus appears at both the start and end of the same trip.
   const stopFirstVisit = new Map<string, Set<string>>();
@@ -370,9 +421,14 @@ export async function processGtfsBuffer(
       : (hKey && headsignDisplayShape.has(hKey))
       ? headsignDisplayShape.get(hKey)
       : routeDirToDisplayShape.get(key);
-    if (!shapeId) continue;
-    const points = shapeById.get(shapeId);
-    if (!points || points.length < 2) continue;
+    const points = shapeId ? shapeById.get(shapeId) : undefined;
+    const hasRouteShape = points != null && points.length >= 2;
+    const maplessSequence = hasRouteShape ? [] : maplessStopSequenceForResult(result);
+    const firstMaplessStop = maplessSequence.length > 0 ? stopsById.get(maplessSequence[0]) : undefined;
+    const fallbackPoint = firstMaplessStop
+      ? [Math.round(firstMaplessStop.lon * 100000) / 100000, Math.round(firstMaplessStop.lat * 100000) / 100000]
+      : null;
+    if (!hasRouteShape && !fallbackPoint) continue;
 
     const route = routeById.get(result.route);
     const shortName = route?.route_short_name ?? result.route;
@@ -392,10 +448,17 @@ export async function processGtfsBuffer(
     const newHeadway = result.serviceClass === 'irregular' || result.tier === 'span'
       ? null
       : Math.round(initialPeriodHeadways.midday ?? result.medianHeadway);
-    // Skip if: new result is span (null headway) — span never beats a real tier.
+    // A drawn line always beats a mapless Point for the same slot, whichever is more frequent
+    // and whichever arrives first: when two route IDs share a short name and only one has
+    // shapes, reprocessing must never turn a line that draws today into a point.
+    const existingHasShape = existing?.geometry.type === 'LineString';
+    if (existing && existingHasShape && !hasRouteShape) continue;
+    const replacesMaplessWithShape = existing != null && !existingHasShape && hasRouteShape;
+    // Otherwise skip if: new result is span (null headway) — span never beats a real tier.
     // Or if existing already has an equal or better real headway.
     if (
       existing &&
+      !replacesMaplessWithShape &&
       (newHeadway == null ||
        (existing.properties.headway != null &&
         (existing.properties.headway as number) <= newHeadway))
@@ -403,17 +466,22 @@ export async function processGtfsBuffer(
 
     const newFeature: GeoJsonFeature = {
       type: 'Feature',
-      geometry: {
-        type: 'LineString',
-        coordinates: points.map(([lat, lon]) => [
-          Math.round(lon * 100000) / 100000,
-          Math.round(lat * 100000) / 100000,
-        ]),
-      },
+      geometry: hasRouteShape
+        ? {
+            type: 'LineString',
+            coordinates: points!.map(([lat, lon]) => [
+              Math.round(lon * 100000) / 100000,
+              Math.round(lat * 100000) / 100000,
+            ]),
+          }
+        : { type: 'Point', coordinates: fallbackPoint! },
       properties: {
         routeId: result.route,
         directionId: parseInt(result.dir),
-        routeDataQualityWarning: routeDataQualityWarningForShape(shapeId, gtfs.shapeAnomalies),
+        routeDataQualityWarning: hasRouteShape && shapeId
+          ? routeDataQualityWarningForShape(shapeId, gtfs.shapeAnomalies)
+          : undefined,
+        noRouteShape: !hasRouteShape,
         tier: result.tier,
         weekdayTierVariation: result.weekdayTierVariation,
         edgeGapAllowance: result.edgeGapAllowance,
@@ -448,8 +516,10 @@ export async function processGtfsBuffer(
           ?? routeDirToHeadsign.get(key) ?? null,
       },
     };
+    if (existing) maplessStopSequence.delete(existing);
     dedupedFeatures.set(dedupeKey, newFeature);
-    featureShapeId.set(newFeature, shapeId);
+    if (!hasRouteShape) maplessStopSequence.set(newFeature, maplessSequence);
+    if (hasRouteShape && shapeId) featureShapeId.set(newFeature, shapeId);
     featureBranchTripCount.set(newFeature, result.times.length);
   }
   const features = [...dedupedFeatures.values()];
@@ -738,10 +808,29 @@ export async function processGtfsBuffer(
     // scoped map selected for the feature's other metrics. Using the route-level map here can
     // pool departures from a different branch/pattern and make a route appear to cover the
     // whole 2am–6am window when this rendered pattern does not (#518).
-    const coords = (feature.geometry as { type: 'LineString'; coordinates: number[][] }).coordinates;
-    const shapePts: [number, number][] = coords.map(([lon, lat]) => [lat, lon]);
-    const nightShapeStops = projectStopsOntoShape([...stopMap.keys()], stopsById, shapePts)
-      .filter(p => p.dev2 <= MAX_STOP_DEV2);
+    const isMapless = feature.geometry.type !== 'LineString';
+    // Mapless: order stops by the representative trip's stop_sequence. Stops that trip does not
+    // serve (other patterns pooled into the same metric map) follow in first-seen order.
+    const representativeSequence = isMapless ? (maplessStopSequence.get(feature) ?? []) : [];
+    const representativeStopIds = new Set(representativeSequence);
+    const metricStopIdSet = new Set([...metricStopMap.keys()].filter(stopId => stopsById.has(stopId)));
+    const metricStopIds = isMapless
+      ? [
+          ...representativeSequence.filter(stopId => metricStopIdSet.has(stopId)),
+          ...[...metricStopIdSet].filter(stopId => !representativeStopIds.has(stopId)),
+        ]
+      : [];
+    const maplessStopProjection = metricStopIds.map((stopId, index) => ({
+      stopId,
+      t: metricStopIds.length <= 1 ? 0 : index / (metricStopIds.length - 1),
+      dev2: 0,
+    }));
+    const shapePts: [number, number][] = feature.geometry.type === 'LineString'
+      ? feature.geometry.coordinates.map(([lon, lat]) => [lat, lon])
+      : [];
+    const nightShapeStops = isMapless
+      ? maplessStopProjection
+      : projectStopsOntoShape([...stopMap.keys()], stopsById, shapePts).filter(p => p.dev2 <= MAX_STOP_DEV2);
     const nightEndpointStopIds = [...new Set([
       nightShapeStops[0]?.stopId,
       nightShapeStops.at(-1)?.stopId,
@@ -810,8 +899,9 @@ export async function processGtfsBuffer(
     }
     // Coverage needs only one departure, so publish it before the legacy median bail-outs.
     // Project separately to keep historical stopOrder and geometry completely unchanged.
-    const coverageStops = projectStopsOntoShape([...metricStopMap.keys()], stopsById, shapePts)
-      .filter(p => p.dev2 <= MAX_STOP_DEV2);
+    const coverageStops = isMapless
+      ? maplessStopProjection
+      : projectStopsOntoShape([...metricStopMap.keys()], stopsById, shapePts).filter(p => p.dev2 <= MAX_STOP_DEV2);
     feature.properties.stopPeriodCoverageHeadways = Object.fromEntries(
       coverageStops.map(({ stopId }) => [stopId, allStopPeriodCoverageHw[stopId]]),
     );
@@ -819,8 +909,10 @@ export async function processGtfsBuffer(
 
     // Step 2: project all stops onto this feature's specific shape, then filter to stops
     // within MAX_STOP_DEV_DEG of the shape (excludes stops from other headsign branches).
-    const allProjected = projectStopsOntoShape(Object.keys(allStopHw), stopsById, shapePts);
-    const onShape = allProjected.filter(p => p.dev2 <= MAX_STOP_DEV2);
+    const allProjected = isMapless
+      ? maplessStopProjection.filter(p => allStopHw[p.stopId] != null)
+      : projectStopsOntoShape(Object.keys(allStopHw), stopsById, shapePts);
+    const onShape = isMapless ? allProjected : allProjected.filter(p => p.dev2 <= MAX_STOP_DEV2);
 
     if (onShape.length > 1) {
       feature.properties.stopOrder = onShape.map(p => p.stopId);
@@ -1147,7 +1239,9 @@ export async function processGtfsBuffer(
   } // end !allRailFeed
 
   let center: [number, number] | null = null;
-  const allCoords = features.flatMap(f => f.geometry.coordinates);
+  const allCoords = features.flatMap(f =>
+    f.geometry.type === 'LineString' ? f.geometry.coordinates : [f.geometry.coordinates],
+  );
   if (allCoords.length > 0) {
     const avgLat = allCoords.reduce((s, c) => s + c[1], 0) / allCoords.length;
     const avgLon = allCoords.reduce((s, c) => s + c[0], 0) / allCoords.length;
@@ -1186,7 +1280,7 @@ export async function processGtfsBuffer(
   const timezone = gtfs.agencies?.[0]?.agency_timezone?.trim() || null;
   const mainFeatures = [...features, ...stopFeatures];
   const routeFeatures = features.filter(feature =>
-    feature.geometry.type === 'LineString' && feature.properties.routeShortName != null,
+    feature.properties.routeShortName != null,
   );
   const routeHeadwayMismatches = routeFeatures.filter(feature => {
     const headway = Number(feature.properties.headway);

@@ -18,8 +18,8 @@ import path from 'path';
 import { PMTiles, type Source } from 'pmtiles';
 import { PbfReader } from 'pbf';
 import { VectorTile } from '@mapbox/vector-tile';
-import { R2_PUBLIC_URL } from '../shared/config.js';
-import { tilesForAgency } from './pmtilesCoverage.js';
+import { getAgencyArtifactUrls, R2_PUBLIC_URL } from '../shared/config.js';
+import { isScheduleOnlyRouteArtifact, tilesForAgency } from './pmtilesCoverage.js';
 import { runWithConcurrency } from './utils.js';
 
 interface Agency {
@@ -105,7 +105,7 @@ async function main() {
 
   const localManifestPath = 'tmp/atlas-release-manifest.json';
   const localManifest = fs.existsSync(localManifestPath)
-    ? JSON.parse(fs.readFileSync(localManifestPath, 'utf8')) as { pmtilesKey?: string }
+    ? JSON.parse(fs.readFileSync(localManifestPath, 'utf8')) as { pmtilesKey?: string; agencyPrefix?: string }
     : null;
   const pmtilesUrl = process.env.PMTILES_URL
     ?? (localManifest?.pmtilesKey ? `${R2_PUBLIC_URL}/${localManifest.pmtilesKey}` : `${R2_PUBLIC_URL}/atlas.pmtiles`);
@@ -207,7 +207,40 @@ async function main() {
   }
 
   const allMissing = agencies.filter(a => !foundSlugs.has(a.slug));
-  const missing = allMissing.filter(a => !a.pmtilesPending && a.lastFeedExpiry);
+  const unexplainedMissing = allMissing.filter(a => !a.pmtilesPending && a.lastFeedExpiry);
+
+  // Agencies whose feed has schedules but no usable shapes publish their routes as Points, and
+  // the tiles keep lines only, so they have nothing to find here. Read the route artifact that
+  // belongs to this archive and let those through; anything with lines (or an unreadable
+  // artifact) still fails closed.
+  const artifactDir = process.env.PMTILES_AGENCY_ARTIFACT_DIR;
+  const loadRouteArtifact = async (slug: string): Promise<unknown> => {
+    if (artifactDir) {
+      const localPath = path.join(artifactDir, `${slug}.json`);
+      return fs.existsSync(localPath) ? JSON.parse(fs.readFileSync(localPath, 'utf8')) : null;
+    }
+    const url = !process.env.PMTILES_URL && !localPmtilesPath && localManifest?.agencyPrefix
+      ? `${R2_PUBLIC_URL}/${localManifest.agencyPrefix}/${slug}.json`
+      : getAgencyArtifactUrls(slug).url;
+    const res = await fetch(url, { signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS) });
+    return res.ok ? res.json() : null;
+  };
+  const scheduleOnly: Agency[] = [];
+  const missing: Agency[] = [];
+  for (const agency of unexplainedMissing) {
+    let artifact: unknown = null;
+    try {
+      artifact = await loadRouteArtifact(agency.slug);
+    } catch (e) {
+      console.error(`Could not read route artifact for ${agency.slug}:`, (e as Error).message);
+    }
+    if (isScheduleOnlyRouteArtifact(artifact as Parameters<typeof isScheduleOnlyRouteArtifact>[0])) scheduleOnly.push(agency);
+    else missing.push(agency);
+  }
+  if (scheduleOnly.length > 0) {
+    console.log(`\n${scheduleOnly.length} agenc${scheduleOnly.length === 1 ? 'y has' : 'ies have'} schedules but no drawable route lines (feed has no usable shapes — not counted as a failure):`);
+    for (const a of scheduleOnly) console.log(`  - ${a.slug} (${a.name})`);
+  }
   const stillPending = allMissing.filter(a => a.pmtilesPending && a.lastFeedExpiry);
   const resolvedPending = agencies.filter(a => a.pmtilesPending && foundSlugs.has(a.slug));
 
@@ -222,7 +255,7 @@ async function main() {
   }
 
   if (missing.length === 0) {
-    console.log(`\nOK — all ${agencies.length - stillPending.length} non-pending agencies have route features present in the PMTiles archive.`);
+    console.log(`\nOK — all ${agencies.length - stillPending.length - scheduleOnly.length} non-pending agencies with route lines have route features present in the PMTiles archive.`);
     return;
   }
 

@@ -82,8 +82,9 @@ export function useNearbyRoutes(
       const { slug } = stop;
 
       for (const f of layers[slug]?.features ?? []) {
-        if (f.geometry.type === 'Point') continue;
+        // Route vs stop by properties, not geometry: routes with no map shape are Points too.
         const p = f.properties as unknown as ShapeProperties;
+        if ((p as any).stopId != null) continue;
         if (!p.routeId || !routeIds.has(p.routeId)) continue;
         if (p.day !== undefined && p.day !== currentDay) continue;
 
@@ -93,7 +94,7 @@ export function useNearbyRoutes(
         const routeFeatures = (layers[slug]?.features ?? [])
           .filter(candidate => {
             const candidateProps = candidate.properties as unknown as ShapeProperties;
-            return candidate.geometry.type !== 'Point' &&
+            return (candidateProps as any).stopId == null &&
               candidateProps.routeId === p.routeId &&
               (candidateProps.day === undefined || candidateProps.day === currentDay);
           })
