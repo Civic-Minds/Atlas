@@ -1,6 +1,7 @@
 {
   "slug": "rioc-tram",
   "name": "Roosevelt Island Tramway",
+  "displayArea": "Roosevelt Island",
   "websiteUrl": "https://rioc.ny.gov/tramtransportation.htm",
   "region": "New York",
   "center": [

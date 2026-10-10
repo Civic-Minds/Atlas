@@ -1,6 +1,7 @@
 {
   "slug": "yamhill",
   "name": "Yamhill County Transit Area",
+  "displayArea": "Yamhill County",
   "websiteUrl": "http://ycta.connexionz.net/rtt/public/",
   "center": [
     45.2276,

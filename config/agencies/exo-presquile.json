@@ -1,6 +1,7 @@
 {
   "slug": "exo-presquile",
   "name": "exo (La Presqu'île)",
+  "displayArea": "La Presqu'île",
   "websiteUrl": "https://exo.quebec/fr/planifier-trajet/autobus/CITPI",
   "region": "Quebec",
   "center": [

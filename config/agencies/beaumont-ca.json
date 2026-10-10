@@ -1,6 +1,7 @@
 {
   "slug": "beaumont-ca",
   "name": "Beaumont Transit",
+  "displayArea": "Beaumont",
   "websiteUrl": "https://www.beaumontca.gov/index.aspx?NID=90",
   "region": "California",
   "center": [

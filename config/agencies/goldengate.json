@@ -1,6 +1,7 @@
 {
   "slug": "goldengate",
   "name": "Golden Gate Transit",
+  "displayArea": "Marin & Sonoma",
   "websiteUrl": "http://www.goldengate.org",
   "center": [
     37.9841,

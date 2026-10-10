@@ -1,6 +1,7 @@
 {
   "slug": "mbta",
   "name": "Massachusetts Bay Transportation Authority",
+  "displayArea": "Boston",
   "websiteUrl": "http://www.capecodrta.org/",
   "region": "Massachusetts",
   "center": [

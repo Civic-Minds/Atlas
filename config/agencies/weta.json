@@ -1,6 +1,7 @@
 {
   "slug": "weta",
   "name": "San Francisco Bay Area Water Emergency Transportation Authority (WETA)",
+  "displayArea": "San Francisco Bay",
   "websiteUrl": "https://sanfranciscobayferry.com/",
   "center": [
     37.8167,

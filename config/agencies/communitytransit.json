@@ -1,6 +1,7 @@
 {
   "slug": "communitytransit",
   "name": "Community Transit (Everett)",
+  "displayArea": "Snohomish County",
   "websiteUrl": "https://www.communitytransit.org/",
   "center": [
     47.9,

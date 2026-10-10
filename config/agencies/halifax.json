@@ -1,6 +1,7 @@
 {
   "slug": "halifax",
   "name": "Halifax Transit",
+  "displayArea": "Halifax",
   "websiteUrl": "http://www.halifax.ca/transit",
   "region": "Nova Scotia",
   "center": [

@@ -1,6 +1,7 @@
 {
   "slug": "slorta",
   "name": "San Luis Obispo Regional Transit Authority (SLORTA)",
+  "displayArea": "San Luis Obispo County",
   "websiteUrl": "https://www.slorta.org/",
   "center": [
     35.28,

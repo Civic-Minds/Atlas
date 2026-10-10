@@ -1,6 +1,7 @@
 {
   "slug": "exo-sudouest",
   "name": "exo (Sud-Ouest)",
+  "displayArea": "Sud-Ouest",
   "websiteUrl": "https://exo.quebec/fr/planifier-trajet/autobus/CITSO",
   "region": "Quebec",
   "center": [
