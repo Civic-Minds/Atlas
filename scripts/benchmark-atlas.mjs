@@ -39,6 +39,8 @@ if (!scenarios.length) throw new Error('No matching scenarios');
 function urlFor(scenario) {
   const params = new URLSearchParams({ h: '10', p: 'evening', lat: scenario.lat, lon: scenario.lon, z: scenario.z });
   if (hasFlag('data-saver')) params.set('dataSaver', '1');
+  // Keep benchmark runs against deployed sites out of visitor analytics.
+  params.set('atlas_internal', '1');
   return `${target.replace(/\/$/, '')}/?${params}`;
 }
 

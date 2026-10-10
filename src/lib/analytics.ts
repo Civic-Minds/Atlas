@@ -1,3 +1,5 @@
+import { isInternalTestSession } from './internalTest';
+
 const measurementId = import.meta.env.VITE_GA_MEASUREMENT_ID as string | undefined;
 const atlasMode = (import.meta.env.VITE_ATLAS_MODE as string | undefined)
   ?? (import.meta.env.VITE_PREVIEW_BUILD === 'true' ? 'preview'
@@ -25,7 +27,7 @@ export function getAnalyticsConsent(): AnalyticsConsent | null {
 }
 
 function loadAnalytics() {
-  if (initialized || !import.meta.env.PROD || !measurementId || typeof window === 'undefined') return;
+  if (initialized || isInternalTestSession() || !import.meta.env.PROD || !measurementId || typeof window === 'undefined') return;
 
   window.dataLayer = window.dataLayer || [];
   window.gtag = function gtag(..._args: unknown[]) {
@@ -61,7 +63,7 @@ export function setAnalyticsConsent(consent: AnalyticsConsent) {
 }
 
 export function initAnalytics() {
-  if (getAnalyticsConsent() === 'denied') {
+  if (isInternalTestSession() || getAnalyticsConsent() === 'denied') {
     analyticsDisabled = true;
     pendingEvents = [];
     return;
