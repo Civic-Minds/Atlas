@@ -24413,6 +24413,256 @@
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0
+    },
+    {
+      "slug": "ottumwa",
+      "name": "10-15 Transit",
+      "websiteUrl": "https://www.1015transit.com/",
+      "center": [
+        41.15,
+        -92.52
+      ],
+      "timezone": "America/Chicago",
+      "feedUrl": "http://data.trilliumtransit.com/gtfs/10-15transit-ia-us/10-15transit-ia-us.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-195/latest.zip",
+      "region": "Iowa",
+      "staged": true,
+      "lastFeedExpiry": "20270301",
+      "lastFeedVersion": "UTC: 20-Aug-2026 23:12",
+      "lastRefreshedAt": "2026-09-10",
+      "feedQuality": {
+        "status": "review",
+        "score": 90,
+        "reasons": [
+          "1 schedule-data warning — Atlas found a minor issue while reading the schedule."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 1,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 6
+        },
+        "checkedAt": "2026-09-10"
+      }
+    },
+    {
+      "slug": "mckinley-county",
+      "name": "A:Shiwi Transit",
+      "websiteUrl": "https://www.ashiwi.org/Transit.html",
+      "center": [
+        35.3,
+        -108.79
+      ],
+      "timezone": "America/Denver",
+      "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/7763/AshiwiGTFS.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-66242/latest.zip",
+      "region": "New Mexico",
+      "staged": true,
+      "lastFeedExpiry": "20280131",
+      "lastFeedVersion": "20260321",
+      "lastRefreshedAt": "2026-09-10",
+      "feedQuality": {
+        "status": "review",
+        "score": 90,
+        "reasons": [
+          "1 schedule-data warning — Atlas found a minor issue while reading the schedule."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 1,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 8
+        },
+        "checkedAt": "2026-09-10"
+      }
+    },
+    {
+      "slug": "bowling-green",
+      "name": "City of Bowling Green",
+      "center": [
+        36.97,
+        -86.44
+      ],
+      "timezone": "America/Chicago",
+      "feedUrl": "https://gobg.ridesystems.net/Secure/Admin/Reports/GTFSDownload.aspx",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-40184/latest.zip",
+      "region": "Kentucky",
+      "staged": true,
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null,
+      "lastRefreshedAt": "2026-09-10",
+      "feedQuality": {
+        "status": "review",
+        "score": 90,
+        "reasons": [
+          "1 schedule-data warning — Atlas found a minor issue while reading the schedule."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 1,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 5
+        },
+        "checkedAt": "2026-09-10"
+      }
+    },
+    {
+      "slug": "knox-county",
+      "name": "City of Galesburg",
+      "center": [
+        40.96,
+        -90.37
+      ],
+      "timezone": "US/Central",
+      "feedUrl": "https://gis.ci.galesburg.il.us/cityofgalesburg-il-us.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-50502/latest.zip",
+      "region": "Illinois",
+      "staged": true,
+      "lastFeedExpiry": "20270131",
+      "lastFeedVersion": "26.32",
+      "lastRefreshedAt": "2026-09-10",
+      "feedQuality": {
+        "status": "review",
+        "score": 90,
+        "reasons": [
+          "1 schedule-data warning — Atlas found a minor issue while reading the schedule."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 1,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 12
+        },
+        "checkedAt": "2026-09-10"
+      }
+    },
+    {
+      "slug": "sevier-county",
+      "name": "City of Gatlinburg Trolley",
+      "websiteUrl": "https://www.gatlinburg.com/trolley/",
+      "center": [
+        35.73,
+        -83.47
+      ],
+      "timezone": "America/New_York",
+      "feedUrl": "http://gatlinburg.connexionz.net/rtt/public/utility/gtfs.aspx",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-6775/latest.zip",
+      "region": "Tennessee",
+      "staged": true,
+      "lastFeedExpiry": "20271231",
+      "lastFeedVersion": "20260515",
+      "lastRefreshedAt": "2026-09-10",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 12
+        },
+        "checkedAt": "2026-09-10"
+      }
+    },
+    {
+      "slug": "howard-county",
+      "name": "City of Kokomo",
+      "websiteUrl": "https://www.kokomompo.com/cityline-trolley/",
+      "center": [
+        40.47,
+        -86.13
+      ],
+      "timezone": "America/New_York",
+      "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11767/CityofKokomo_Transit.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-50145/latest.zip",
+      "region": "Indiana",
+      "staged": true,
+      "lastFeedExpiry": "20280504",
+      "lastFeedVersion": "20260610",
+      "lastRefreshedAt": "2026-09-10",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 6
+        },
+        "checkedAt": "2026-09-10"
+      }
+    },
+    {
+      "slug": "sierra-vista",
+      "name": "City of Sierra Vista",
+      "websiteUrl": "https://sierravistaaz.gov/our-city/bus-service/route-information",
+      "center": [
+        31.55,
+        -110.27
+      ],
+      "timezone": "America/Phoenix",
+      "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/12009/VistaTransit_AZ_GTFS.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-679/latest.zip",
+      "region": "Arizona",
+      "staged": true,
+      "lastFeedExpiry": "20270331",
+      "lastFeedVersion": "20250522",
+      "lastRefreshedAt": "2026-09-10",
+      "feedQuality": {
+        "status": "review",
+        "score": 90,
+        "reasons": [
+          "1 schedule-data warning — Atlas found a minor issue while reading the schedule."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 1,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 3
+        },
+        "checkedAt": "2026-09-10"
+      }
+    },
+    {
+      "slug": "kittitas-county",
+      "name": "City of Ellensburg Public Transit (Central Transit)",
+      "websiteUrl": "https://centraltransit.org/",
+      "center": [
+        47,
+        -120.55
+      ],
+      "timezone": "America/Los_Angeles",
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/ellensburg-wa-us/ellensburg-wa-us.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2456/latest.zip",
+      "region": "Washington",
+      "staged": true,
+      "lastFeedExpiry": "20261101",
+      "lastFeedVersion": "UTC: 02-Sep-2026 21:07",
+      "lastRefreshedAt": "2026-09-10",
+      "feedQuality": {
+        "status": "review",
+        "score": 90,
+        "reasons": [
+          "1 schedule-data warning — Atlas found a minor issue while reading the schedule."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 1,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 36
+        },
+        "checkedAt": "2026-09-10"
+      }
     }
   ]
 }

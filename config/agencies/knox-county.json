@@ -6,7 +6,10 @@
     -90.37
   ],
   "timezone": "US/Central",
-  "feedUrl": null,
+  "feedUrl": "https://gis.ci.galesburg.il.us/cityofgalesburg-il-us.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-50502/latest.zip",
+  "region": "Illinois",
+  "staged": true,
   "lastFeedExpiry": "20270131",
   "lastFeedVersion": "26.32",
   "lastRefreshedAt": "2026-09-10",

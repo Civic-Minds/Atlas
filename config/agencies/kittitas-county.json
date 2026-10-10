@@ -1,12 +1,16 @@
 {
   "slug": "kittitas-county",
   "name": "City of Ellensburg Public Transit (Central Transit)",
+  "websiteUrl": "https://centraltransit.org/",
   "center": [
     47,
     -120.55
   ],
   "timezone": "America/Los_Angeles",
-  "feedUrl": null,
+  "feedUrl": "https://data.trilliumtransit.com/gtfs/ellensburg-wa-us/ellensburg-wa-us.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2456/latest.zip",
+  "region": "Washington",
+  "staged": true,
   "lastFeedExpiry": "20261101",
   "lastFeedVersion": "UTC: 02-Sep-2026 21:07",
   "lastRefreshedAt": "2026-09-10",
