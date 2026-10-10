@@ -1,4 +1,5 @@
 import type { GeoJSON } from 'geojson';
+import type { OnDemandAvailability } from '../../shared/onDemandAvailability';
 
 const SOURCE_URL = 'https://www.hamilton.ca/home-neighbourhood/hsr/schedule-route-tools/trans-cab';
 const SOURCE_LABEL = 'City of Hamilton Trans-Cab service-zone maps';
@@ -33,15 +34,16 @@ export const HAMILTON_TRANS_CAB_SERVICE_AREAS: GeoJSON.Feature<GeoJSON.Polygon>[
   ]),
 ];
 
+/** Each transfer point carries the zone it serves, as drawn in the City's zone Shapefiles. */
 export const HAMILTON_TRANS_CAB_TRANSFER_POINTS: GeoJSON.Feature<GeoJSON.Point>[] = [
   {
     type: 'Feature',
-    properties: { agencySlug: 'hamilton', serviceType: 'on-demand-transfer-point', stopName: 'Bell Manor Loop' },
+    properties: { agencySlug: 'hamilton', serviceType: 'on-demand-transfer-point', stopName: 'Bell Manor Loop', areaName: 'Lower North Stoney Creek' },
     geometry: { type: 'Point', coordinates: [-79.743016, 43.232972] },
   },
   {
     type: 'Feature',
-    properties: { agencySlug: 'hamilton', serviceType: 'on-demand-transfer-point', stopName: 'Garth Street and Rymal Road West' },
+    properties: { agencySlug: 'hamilton', serviceType: 'on-demand-transfer-point', stopName: 'Garth Street and Rymal Road West', areaName: 'West Glanbrook' },
     geometry: { type: 'Point', coordinates: [-79.912301, 43.20714] },
   },
 ];
@@ -51,6 +53,13 @@ export const HAMILTON_TRANS_CAB_SOURCE = {
   sourceLabel: SOURCE_LABEL,
   sourceRetrievedAt: '2026-10-03',
   serviceHours: 'Mon–Fri 4:30 a.m.–2:00 a.m.; Sat 4:30 a.m.–2:00 a.m.; Sun/holidays 5:30 a.m.–1:00 a.m.',
+  hoursNote: 'Holidays follow Sunday hours.',
   bookingUrl: SOURCE_URL,
   serviceName: 'Trans-Cab',
+  // Hours past 24 run into the next morning (26 = 2:00 a.m.).
+  availability: {
+    Weekday: [{ startHour: 4.5, endHour: 26 }],
+    Saturday: [{ startHour: 4.5, endHour: 26 }],
+    Sunday: [{ startHour: 5.5, endHour: 25 }],
+  } satisfies OnDemandAvailability,
 };
