@@ -11,6 +11,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Selecting an on-demand zone or service now fades the rest of the map, so you can see exactly which area and stops it covers.**
 - **Agencies running more than one on-demand service now show each zone under its own service name, instead of one combined name that implied a single service.**
 - **Links that open an on-demand service now take the map to that service's area, instead of leaving it wherever you last looked.**
+- The weekly refresh now keeps an agency's live data instead of publishing a sharply smaller feed, and can reach the map release again because it no longer discards its own refreshed files or treats agencies that kept their data as failures ([#655](https://github.com/Civic-Minds/Atlas/issues/655)).
+- A hidden agency's data can now be corrected while it stays hidden, and the map build no longer fails because a hidden agency is missing from the map tiles ([#615](https://github.com/Civic-Minds/Atlas/issues/615)).
 - The map's top bar no longer links to Research or shows a "More" menu on larger screens; Research is reached from the About page ([#651](https://github.com/Civic-Minds/Atlas/issues/651)).
 - On the beta site, tapping a route or stop on a phone now opens its card as a panel at the bottom of the screen that you drag up for detail, so the map stays visible ([#647](https://github.com/Civic-Minds/Atlas/issues/647)).
 - On phones, route cards no longer break stop names mid-word, the search bar stays on one line, and headings across the app no longer appear in all capitals ([#644](https://github.com/Civic-Minds/Atlas/issues/644), [#645](https://github.com/Civic-Minds/Atlas/issues/645), [#646](https://github.com/Civic-Minds/Atlas/issues/646)).
