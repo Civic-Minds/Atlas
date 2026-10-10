@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- Agencies whose schedule runs past the end date in their feed's summary file no longer show as outdated after a refresh, because the recorded end date now follows the schedule itself.
 - On the beta site, compare mode puts two maps side by side with the same frequency filter, each for its own day and time, so you can see which routes change or disappear.
 - Test sessions and locally run builds no longer count as visitors in Atlas analytics, so visitor numbers reflect real traffic only.
 - **On-demand zone cards now list hours from the agency's schedule data, bold today's line, and say plainly whether the zone is running at the selected time — or that its hours aren't confirmed — with booking details and trip rules shown separately.**

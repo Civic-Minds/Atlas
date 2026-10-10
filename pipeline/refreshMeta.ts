@@ -54,6 +54,18 @@ export function shouldStampFeedMeta(featureCount: number): boolean {
   return featureCount > 0;
 }
 
+/**
+ * The processed expiry comes from feed_info.txt only, while the peeked expiry
+ * also counts calendar.txt/calendar_dates.txt. Agencies often leave feed_info
+ * stale while extending their calendar, so record the later valid date; the
+ * expired-feed check and skip-unchanged comparison already use the peeked one.
+ */
+export function laterFeedExpiry(feedExpiry: string | null, peekedExpiry: string | null): string | null {
+  const valid = [feedExpiry, peekedExpiry].filter((d): d is string => !!d && /^\d{8}$/.test(d));
+  if (valid.length) return valid.sort().at(-1)!;
+  return feedExpiry ?? peekedExpiry ?? null;
+}
+
 /** Apply feed metadata after a successful non-empty refresh. */
 export function stampFeedMeta(
   agency: FeedMetaFields,
@@ -65,7 +77,7 @@ export function stampFeedMeta(
     todayYmd: string;
   },
 ): void {
-  agency.lastFeedExpiry = opts.feedExpiry ?? opts.peekedExpiry ?? null;
+  agency.lastFeedExpiry = laterFeedExpiry(opts.feedExpiry, opts.peekedExpiry);
   agency.lastFeedVersion = opts.feedVersion ?? opts.peekedVersion ?? null;
   agency.lastRefreshedAt = opts.todayYmd;
   agency.feedRefreshStatus = 'current';

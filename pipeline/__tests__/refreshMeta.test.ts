@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { isFeedExpired, markFeedStale, shouldReplaceExpiredFeed, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta, stampSupplementalFeedMeta } from '../refreshMeta.js';
+import { isFeedExpired, laterFeedExpiry, markFeedStale, shouldReplaceExpiredFeed, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta, stampSupplementalFeedMeta } from '../refreshMeta.js';
 import { isCurrentProductionFeed, isStaleProductionFeed } from '../../shared/feedAvailability.js';
 
 describe('feed expiry checks', () => {
@@ -64,6 +64,26 @@ describe('stampFeedMeta', () => {
     expect(agency.lastFeedExpiry).toBe('20251231');
     expect(agency.lastFeedVersion).toBe('v2');
     expect(agency.lastRefreshedAt).toBe('2026-07-19');
+  });
+
+  it('keeps the calendar end when feed_info ends earlier', () => {
+    // coast-transit-ms: feed_info ends 20260930, calendar.txt runs to 20261231.
+    const agency: { lastFeedExpiry?: string | null } = {};
+    stampFeedMeta(agency, {
+      feedExpiry: '20260930',
+      feedVersion: '20260316',
+      peekedExpiry: '20261231',
+      peekedVersion: '20260316',
+      todayYmd: '2026-10-07',
+    });
+    expect(agency.lastFeedExpiry).toBe('20261231');
+  });
+
+  it('picks the later valid expiry and falls back when either is missing', () => {
+    expect(laterFeedExpiry('20270101', '20261231')).toBe('20270101');
+    expect(laterFeedExpiry(null, '20261231')).toBe('20261231');
+    expect(laterFeedExpiry('20261231', null)).toBe('20261231');
+    expect(laterFeedExpiry(null, null)).toBeNull();
   });
 
   it('clears stale state after a successful refresh', () => {
