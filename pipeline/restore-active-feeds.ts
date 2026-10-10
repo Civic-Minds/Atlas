@@ -13,7 +13,8 @@ import './loadEnv.js';
 import JSZip from 'jszip';
 import { parseCsv } from './parseGtfs.js';
 import { effectiveFeedExpiry } from './feedFreshness.js';
-import { processGtfsBuffer, type GtfsPreprocess } from './process-core.js';
+import { type GtfsPreprocess } from './process-core.js';
+import { downloadFeedBuffer, loadSupplementalFeeds, processAgencyFeeds } from './agencyFeeds.js';
 import {
   rawFeedArchiveKey,
   r2CopyCurrentFeedToArchive,
@@ -35,6 +36,7 @@ interface Agency extends FeedAvailabilityEntry {
   center?: [number, number];
   timezone?: string | null;
   feedUrl?: string | null;
+  supplementalFeedUrls?: string[];
   agencyId?: string;
   routeTypes?: number[];
   preprocess?: GtfsPreprocess;
@@ -97,39 +99,6 @@ function compareCandidates(a: Candidate, b: Candidate): number {
   return a.key.localeCompare(b.key);
 }
 
-async function downloadFeed(url: string): Promise<Buffer> {
-  try {
-    const response = await fetch(url, {
-      redirect: 'follow',
-      headers: { 'User-Agent': 'atlas-frequency-map/1.0' },
-      signal: AbortSignal.timeout(180_000),
-    });
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    return Buffer.from(await response.arrayBuffer());
-  } catch (fetchError) {
-    try {
-      const { execFileSync } = await import('node:child_process');
-      return execFileSync('curl', ['-fsSL', url], { maxBuffer: 128 * 1024 * 1024, timeout: 180_000 });
-    } catch {
-      throw fetchError instanceof Error ? fetchError : new Error(String(fetchError));
-    }
-  }
-}
-
-function processOptions(agency: Agency) {
-  return {
-    slug: agency.slug,
-    agencyId: agency.agencyId,
-    routeTypes: agency.routeTypes,
-    preprocess: agency.preprocess,
-    excludeRouteShortNames: agency.excludeRouteShortNames,
-    excludeTripHeadsigns: agency.excludeTripHeadsigns,
-    skipLetterSuffixMerge: agency.skipLetterSuffixMerge,
-    mergeEquivalentShapeVariants: agency.mergeEquivalentShapeVariants,
-    manualBaseFare: agency.fare,
-  };
-}
-
 async function newestArchiveCandidate(slug: string): Promise<Candidate | null> {
   const prefix = `gtfs/archive/${slug}/`;
   const keys = (await r2ListArchive(prefix)).filter(key => key.endsWith('.zip'));
@@ -156,9 +125,10 @@ async function archiveExistingActive(agency: Agency): Promise<void> {
 
 async function restoreAgency(agency: Agency, candidate: Candidate): Promise<{ agency: Agency; hiddenRoutes: ReturnType<typeof buildHiddenRoutesForAgency> }> {
   console.log(`\n${agency.slug}: ${candidate.stem} (service through ${candidate.info.expiry ?? 'unknown'})`);
-  const result = await processGtfsBuffer(candidate.body, message => console.log(`  ${message}`), {
-    ...processOptions(agency),
-  });
+  // Supplementals (e.g. a separate rail zip) are not archived, so they come from
+  // their configured URLs; any failure fails this agency instead of restoring main-only data.
+  const supplementalFeeds = await loadSupplementalFeeds(agency, downloadFeedBuffer);
+  const result = await processAgencyFeeds(candidate.body, supplementalFeeds, agency, {}, message => console.log(`  ${message}`));
   if (result.featureCount === 0) throw new Error('processed feed produced 0 route features');
 
   await archiveExistingActive(agency);
@@ -204,7 +174,7 @@ async function main(): Promise<void> {
       let candidate = await newestArchiveCandidate(agency.slug);
       if (!candidate && agency.feedUrl) {
         console.log(`\n${agency.slug}: no archived ZIP; trying ${agency.feedUrl}`);
-        const body = await downloadFeed(agency.feedUrl);
+        const body = await downloadFeedBuffer(agency.feedUrl);
         const info = await readFeedInfo(body);
         candidate = { key: '', stem: '', body, info };
       }

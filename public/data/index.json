@@ -9466,8 +9466,8 @@
         38.651,
         -90.2899
       ],
-      "feedUrl": "https://www.metrostlouis.org/Transit/google_transit.zip",
-      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-190/latest.zip",
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-190/mdb-190-202605290001/mdb-190-202605290001.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-190/mdb-190-202605290001/mdb-190-202605290001.zip",
       "lastFeedExpiry": "20261025",
       "lastFeedVersion": null,
       "region": "Missouri",
@@ -14068,6 +14068,7 @@
         -110.7
       ],
       "feedUrl": "https://GTFS-RT.suntran.com/TMGTFSRealTimeWebService/Static/SunTranGTFS.zip",
+      "hiddenInProduction": true,
       "region": "Arizona",
       "cities": [
         "Tucson, Arizona",
@@ -15046,6 +15047,7 @@
         -82.1
       ],
       "feedUrl": "http://data.trilliumtransit.com/gtfs/spacecoast-fl-us/spacecoast-fl-us.zip",
+      "hiddenInProduction": true,
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-348/mdb-348-202404220004/mdb-348-202404220004.zip",
       "region": "Florida",
       "lastFeedExpiry": "20290629",
