@@ -1,4 +1,5 @@
 import React from 'react';
+import { Check, X } from 'lucide-react';
 import type { ShapeProperties, TimePeriod, HoveredBranch } from '../../../hooks/useIntervalStats';
 import type { Agency } from '../../../App';
 import type { OpenInfoFn } from '../../InfoPanel';
@@ -34,6 +35,8 @@ import {
 } from '../../../utils/routeCardTrunk';
 import { shouldShowDirectionSections } from '../../../utils/routeCardDirectionLayout';
 import type { VariantFamily } from '../../../utils/routeVariants';
+import type { CompareRouteRow } from '../compareTypes';
+import { SideBadge } from '../CompareControl';
 import { currentAtlasUrl } from '../../../utils/reportIssue';
 import { ROUTE_DATA_QUALITY_WARNING, ROUTE_DATA_QUALITY_WARNING_MESSAGE } from '../../../../shared/routeDataQuality';
 import { featurePassesHeadwayFilter, routeFilterHeadway } from '../../../../shared/routeHeadwayFilter';
@@ -151,6 +154,8 @@ export interface RouteCardHeadwayProps {
   hideSpan: boolean;
   routeIsStale: boolean;
   selectedRouteOutOfFilter: boolean;
+  /** Compare mode: this route on each side. */
+  compareRows?: CompareRouteRow[] | null;
   expDateStr: string;
   hoveredBranch: HoveredBranch | null;
   setHoveredBranch: (b: HoveredBranch | null) => void;
@@ -173,6 +178,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   hideSpan,
   routeIsStale,
   selectedRouteOutOfFilter,
+  compareRows = null,
   expDateStr,
   hoveredBranch,
   setHoveredBranch,
@@ -365,6 +371,24 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           />
         </div>
       </SidebarCardHeaderBlock>
+      {compareRows && (
+        <div className="mb-3 divide-y divide-[var(--border-primary)] rounded-xl bg-[var(--bg-app)] px-3">
+          {compareRows.map(row => (
+            <div key={row.label} className="flex items-center justify-between gap-3 py-2 text-[11px] font-bold text-[var(--text-primary)]">
+              <span className="flex min-w-0 items-center gap-1.5">
+                <SideBadge side={row.label} />
+                <span className="truncate">{row.title.charAt(0).toUpperCase() + row.title.slice(1)}</span>
+              </span>
+              <span className="flex shrink-0 items-center gap-1.5 whitespace-nowrap">
+                {!row.runs ? 'No service' : row.headway != null ? `about every ${row.headway} min` : 'No regular service'}
+                {row.passes
+                  ? <Check className="h-3.5 w-3.5 text-[var(--accent)]" aria-label="Meets the filter" />
+                  : <X className="h-3.5 w-3.5 text-[var(--text-dim)]" aria-label="Does not meet the filter" />}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
       {FEATURES.beta && variantFamily && (
         <p className="text-[10px] text-[var(--text-dim)] -mt-1 mb-3">
           Includes variants {variantFamily.members.map(m => m.shortName).join(', ')}

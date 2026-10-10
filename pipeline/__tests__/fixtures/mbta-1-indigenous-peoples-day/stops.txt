@@ -1,0 +1,3 @@
+stop_id,stop_name,stop_lat,stop_lon
+110,Massachusetts Ave opp Holyoke St,42.373111,-71.117653
+64,Nubian,42.329789,-71.083887

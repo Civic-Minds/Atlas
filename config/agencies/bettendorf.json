@@ -1,6 +1,7 @@
 {
   "slug": "bettendorf",
   "name": "Bettendorf Transit",
+  "displayArea": "Bettendorf",
   "websiteUrl": "https://www.bettendorf.org/departments/engineering___public_",
   "center": [
     41.53,

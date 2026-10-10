@@ -1,6 +1,7 @@
 {
   "slug": "lirr",
   "name": "MTA Long Island Rail Road",
+  "displayArea": "Long Island",
   "websiteUrl": "https://new.mta.info/agency/long-island-rail-road",
   "region": "New York",
   "center": [

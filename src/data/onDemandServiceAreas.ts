@@ -9,6 +9,7 @@ import { METRO_MICRO_FLEX_FEATURES } from './metroMicroFlexData';
 import { GTFS_FLEX_METADATA } from './metroMicroFlexMetadata';
 import { C_TRAN_CURRENT_FLEX_FEATURES } from './ctranCurrentFlexData';
 import { C_TRAN_CURRENT_FLEX_STOPS } from './ctranCurrentFlexStops';
+import { ASPEN_DOWNTOWNER_FEATURES, BAY_TRANSIT_EXPRESS_FEATURES, CAT_DIAL_A_RIDE_FEATURES, DURANGO_MICROTRANSIT_FEATURES, GLTC_FLEX_FEATURES, ISLAND_TRANSIT_GO_STOPS, SAM_RIDES_FEATURES, SNOQUALMIE_DOOR_TO_DOOR_FEATURES, TCTD_DIAL_A_RIDE_FEATURES, VALLEY_METRO_METROFLX_FEATURES } from './flexBatchData';
 import type { OnDemandAvailability, OnDemandPickup } from '../../shared/onDemandAvailability';
 import { BETA_ROLLOUT_NOTICE } from '../../shared/rolloutNotice';
 
@@ -644,4 +645,187 @@ export const BRAMPTON_ON_DEMAND_AGENCY = {
       Sunday: [],
     } satisfies OnDemandAvailability,
   },
+};
+
+// Public on-demand zones from agencies' own GTFS-Flex feeds (Trillium-hosted, retrieved 2026-10-10).
+// Hours, booking and pickup come from each agency's official page; where the feed disagrees, the page wins.
+// Fields the page is silent on are left unset.
+const FLEX_RETRIEVED_AT = '2026-10-10';
+
+export const VALLEY_METRO_METROFLX_SERVICE_AREA = {
+  features: VALLEY_METRO_METROFLX_FEATURES,
+  sourceUrl: 'https://www.valleymetro.com/services/metroflx',
+  sourceLabel: 'Valley Metro GTFS-Flex feed and MetroFLX page',
+  sourceRetrievedAt: FLEX_RETRIEVED_AT,
+  serviceName: 'MetroFLX',
+  serviceHours: 'Monday–Saturday 8:45 p.m.–12:45 a.m.; Sunday 9 a.m.–6 p.m.',
+  hoursNote: 'Last trips 12:15 a.m. (5:30 p.m. on Sundays). No service on major holidays.',
+  bookingInfo: 'Call 540-343-1721 to schedule.',
+  pickup: { method: 'door-to-door' } satisfies OnDemandPickup,
+  bookingUrl: 'https://www.valleymetro.com/services/metroflx',
+  availability: {
+    Weekday: [{ startHour: 20.75, endHour: 24.75 }],
+    Saturday: [{ startHour: 20.75, endHour: 24.75 }],
+    Sunday: [{ startHour: 9, endHour: 18 }],
+  } satisfies OnDemandAvailability,
+};
+
+export const GLTC_FLEX_SERVICE_AREA = {
+  features: GLTC_FLEX_FEATURES,
+  sourceUrl: 'https://gltconline.com/flex/',
+  sourceLabel: 'GLTC GTFS-Flex feed and GLTC Flex page',
+  sourceRetrievedAt: FLEX_RETRIEVED_AT,
+  serviceName: 'GLTC Flex',
+  serviceHours: 'Monday–Saturday 5:15 a.m.–7:15 p.m.',
+  bookingInfo: 'Book in the GLTC Flex app or call GLTC Dispatch at 434-455-5099.',
+  bookingUrl: 'https://gltconline.com/flex/',
+  availability: {
+    Weekday: [{ startHour: 5.25, endHour: 19.25 }],
+    Saturday: [{ startHour: 5.25, endHour: 19.25 }],
+    Sunday: [],
+  } satisfies OnDemandAvailability,
+};
+
+export const SNOQUALMIE_DOOR_TO_DOOR_SERVICE_AREA = {
+  features: SNOQUALMIE_DOOR_TO_DOOR_FEATURES,
+  sourceUrl: 'https://svtbus.org/door-to-door/',
+  sourceLabel: 'Snoqualmie Valley Transportation GTFS-Flex feed and Door-to-Door page',
+  sourceRetrievedAt: FLEX_RETRIEVED_AT,
+  serviceName: 'Door-to-Door',
+  serviceHours: 'Weekdays 6 a.m.–8 p.m.; weekends 6:30 a.m.–7 p.m.',
+  bookingInfo: 'Call 425-888-7001, from 1 day to 1 month ahead (3–5 days recommended).',
+  tripRules: 'The agency’s data lists shorter hours for trips in the Carnation, Duvall and Monroe area: weekdays 7:30 a.m.–4:30 p.m., weekends 8 a.m.–4 p.m.',
+  pickup: { method: 'door-to-door' } satisfies OnDemandPickup,
+  bookingUrl: 'https://svtbus.org/door-to-door/',
+  availability: {
+    Weekday: [{ startHour: 6, endHour: 20 }],
+    Saturday: [{ startHour: 6.5, endHour: 19 }],
+    Sunday: [{ startHour: 6.5, endHour: 19 }],
+  } satisfies OnDemandAvailability,
+};
+
+const ASPEN_DOWNTOWNER_DAILY = {
+  Weekday: [{ startHour: 10, endHour: 23 }],
+  Saturday: [{ startHour: 10, endHour: 23 }],
+  Sunday: [{ startHour: 10, endHour: 23 }],
+} satisfies OnDemandAvailability;
+
+export const ASPEN_DOWNTOWNER_SERVICE_AREA = {
+  features: ASPEN_DOWNTOWNER_FEATURES,
+  sourceUrl: 'https://www.aspen.gov/270/Downtowner',
+  sourceLabel: 'RFTA GTFS-Flex feed and City of Aspen Downtowner page',
+  sourceRetrievedAt: FLEX_RETRIEVED_AT,
+  serviceName: 'Downtowner',
+  serviceHours: 'Daily 10 a.m.–11 p.m.',
+  bookingInfo: 'Free. Book in the Ride Roaring Fork app; call (970) 705-4438 for help booking.',
+  pickup: { method: 'door-to-door' } satisfies OnDemandPickup,
+  bookingUrl: 'https://www.aspen.gov/270/Downtowner',
+  availability: ASPEN_DOWNTOWNER_DAILY,
+};
+
+const DURANGO_MICROTRANSIT_DAILY = {
+  Weekday: [{ startHour: 17, endHour: 24 }],
+  Saturday: [{ startHour: 17, endHour: 24 }],
+  Sunday: [{ startHour: 17, endHour: 24 }],
+} satisfies OnDemandAvailability;
+
+export const DURANGO_MICROTRANSIT_SERVICE_AREA = {
+  features: DURANGO_MICROTRANSIT_FEATURES,
+  sourceUrl: 'https://www.durangoco.gov/1724/DuranGO-Microtransit',
+  sourceLabel: 'Durango Transit GTFS-Flex feed and DuranGO! Microtransit page',
+  sourceRetrievedAt: FLEX_RETRIEVED_AT,
+  serviceName: 'DuranGO! Microtransit',
+  serviceHours: 'Daily 5 p.m.–midnight',
+  bookingInfo: 'Book in the DuranGO! app; rides cannot be booked by phone.',
+  pickup: { method: 'curb-to-curb' } satisfies OnDemandPickup,
+  bookingUrl: 'https://www.durangoco.gov/1724/DuranGO-Microtransit',
+  availability: DURANGO_MICROTRANSIT_DAILY,
+};
+
+export const SAM_RIDES_SERVICE_AREA = {
+  features: SAM_RIDES_FEATURES,
+  sourceUrl: 'https://www.ci.sandy.or.us/transit/page/sam-rides-demand-response-dial-ride-service',
+  sourceLabel: 'Sandy Area Metro GTFS-Flex feed and SAM rides page',
+  sourceRetrievedAt: FLEX_RETRIEVED_AT,
+  serviceName: 'SAM rides',
+  serviceHours: 'Weekdays 5:30 a.m.–9 p.m.; Saturday 10:15 a.m.–4:30 p.m.; no Sunday service',
+  bookingInfo: 'Call 503-668-3466, up to 2 weeks ahead or by 5 p.m. the day before.',
+  tripRules: 'Pickups must be within 3 miles of Sandy.',
+  bookingUrl: 'https://www.ci.sandy.or.us/transit/page/sam-rides-demand-response-dial-ride-service',
+  availability: {
+    Weekday: [{ startHour: 5.5, endHour: 21 }],
+    Saturday: [{ startHour: 10.25, endHour: 16.5 }],
+    Sunday: [],
+  } satisfies OnDemandAvailability,
+};
+
+export const TCTD_DIAL_A_RIDE_SERVICE_AREA = {
+  features: TCTD_DIAL_A_RIDE_FEATURES,
+  sourceUrl: 'https://nwconnector.org/dial-a-ride-tctd/',
+  sourceLabel: 'Tillamook County Transportation District GTFS-Flex feed and Dial-A-Ride page',
+  sourceRetrievedAt: FLEX_RETRIEVED_AT,
+  serviceName: 'TCTD Dial-A-Ride',
+  serviceHours: 'Weekdays 6 a.m.–6 p.m.',
+  bookingInfo: 'Call 503-815-8283 (weekdays 8 a.m.–5 p.m.), up to 2 weeks ahead.',
+  pickup: { method: 'door-to-door' } satisfies OnDemandPickup,
+  bookingUrl: 'https://nwconnector.org/dial-a-ride-tctd/',
+  availability: {
+    Weekday: [{ startHour: 6, endHour: 18 }],
+    Saturday: [],
+    Sunday: [],
+  } satisfies OnDemandAvailability,
+};
+
+export const CAT_DIAL_A_RIDE_SERVICE_AREA = {
+  features: CAT_DIAL_A_RIDE_FEATURES,
+  sourceUrl: 'https://www.ridecatbus.org/dial-a-ride/',
+  sourceLabel: 'Columbia Area Transit GTFS-Flex feed and Dial-A-Ride page',
+  sourceRetrievedAt: FLEX_RETRIEVED_AT,
+  serviceName: 'CAT Dial-A-Ride',
+  serviceHours: 'Weekdays 8:15 a.m.–4:45 p.m.',
+  hoursNote: 'No holiday service.',
+  bookingInfo: 'Call (541) 386-4202, ideally the day before.',
+  bookingUrl: 'https://www.ridecatbus.org/dial-a-ride/',
+  availability: {
+    Weekday: [{ startHour: 8.25, endHour: 16.75 }],
+    Saturday: [],
+    Sunday: [],
+  } satisfies OnDemandAvailability,
+};
+
+export const BAY_TRANSIT_EXPRESS_SERVICE_AREA = {
+  features: BAY_TRANSIT_EXPRESS_FEATURES,
+  sourceUrl: 'https://www.baytransit.org/express/',
+  sourceLabel: 'Bay Transit GTFS-Flex feed and Bay Transit Express page',
+  sourceRetrievedAt: FLEX_RETRIEVED_AT,
+  serviceName: 'Bay Transit Express',
+  serviceHours: 'Weekdays 8 a.m.–5 p.m.',
+  bookingInfo: 'Book in the Bay Transit Express app or web portal, or call 804-693-6977.',
+  pickup: { method: 'virtual-stops', note: 'Riders meet the vehicle at a nearby corner shown in the app.' } satisfies OnDemandPickup,
+  bookingUrl: 'https://www.baytransit.org/express/',
+  availability: {
+    Weekday: [{ startHour: 8, endHour: 17 }],
+    Saturday: [],
+    Sunday: [],
+  } satisfies OnDemandAvailability,
+};
+
+export const ISLAND_TRANSIT_GO_SERVICE_AREA = {
+  features: [] as GeoJSON.Feature<GeoJSON.Polygon>[],
+  stopFeatures: ISLAND_TRANSIT_GO_STOPS,
+  sourceUrl: 'https://www.islandtransit.org/on-demand',
+  sourceLabel: 'Island Transit GTFS-Flex feed and GO! on-demand page',
+  sourceRetrievedAt: FLEX_RETRIEVED_AT,
+  serviceName: 'Island Transit GO!',
+  serviceHours: 'Weekdays: Zone 3 (Oak Harbor) 8 a.m.–6 p.m.; Zone 58 (Clinton) 8 a.m.–5 p.m.',
+  // Stops are not tied to drawn zones, so the map uses the shorter Zone 58 day for both.
+  hoursNote: 'Zone 3 (Oak Harbor) runs until 6 p.m.',
+  bookingInfo: 'Book in the Island Transit GO! app or online, or call 360-678-7771 at least 2 hours ahead.',
+  pickup: { method: 'fixed-stops' } satisfies OnDemandPickup,
+  bookingUrl: 'https://www.islandtransit.org/on-demand',
+  availability: {
+    Weekday: [{ startHour: 8, endHour: 17 }],
+    Saturday: [],
+    Sunday: [],
+  } satisfies OnDemandAvailability,
 };

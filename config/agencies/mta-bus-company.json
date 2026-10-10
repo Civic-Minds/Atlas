@@ -1,6 +1,7 @@
 {
   "slug": "mta-bus-company",
   "name": "MTA Bus Company",
+  "displayArea": "New York City",
   "websiteUrl": "https://new.mta.info",
   "center": [
     40.7377,

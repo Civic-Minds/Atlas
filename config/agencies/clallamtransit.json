@@ -1,6 +1,7 @@
 {
   "slug": "clallamtransit",
   "name": "Clallam Transit System",
+  "displayArea": "Clallam County",
   "websiteUrl": "https://www.clallamtransit.com/",
   "center": [
     48.1,

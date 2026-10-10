@@ -1,6 +1,7 @@
 {
   "slug": "culvercitybus",
   "name": "Culver City Bus",
+  "displayArea": "Culver City",
   "websiteUrl": "https://www.culvercity.org/how-do-i/find/culver-city-bus",
   "center": [
     34.0073,

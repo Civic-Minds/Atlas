@@ -243,8 +243,11 @@ replacement feed:
 
 ## Verified replacements awaiting refresh
 
-The following 67 agencies have a current ZIP with matching agency identity and
-can be refreshed using the configured or automatically derived source:
+The following 66 agencies, from the 2026-09-26 audit, had a current ZIP with
+matching agency identity and could be refreshed using the configured or
+automatically derived source. As of 2026-10-10, 64 of them have a current
+schedule in the registry; `grand-junction` was rejected in the 2026-10-07
+review and `kenosha` has no recorded expiry:
 
 `abqride`, `arvin`, `athens-oh`, `avta`, `blacksburg`, `carson-circuit`, `carta-chattanooga`, `clemson-cat`, `davenport`, `duke`, `elmonte`, `emta`, `eugene-ltd`, `gold-coast`, `goldengate`, `goraleigh`, `grand-junction`, `indygo`, `jfk-airtrain`, `mont-tremblant`, `mountainmetro`, `rts`, `sacrt`,
 `culvercitybus`, `imperial-valley`, `kingcountymetro`, `mata`, `marta`, `montebello`, `mst`, `nice`, `omahametro`, `pace-bus`, `pgc-the-bus`, `regina`, `ripta`,
@@ -262,8 +265,13 @@ npm run audit-expired-sources
 ```
 
 Once a replacement is validated by agency identity and active service dates,
-update its config and run:
+update its config and run the refresh and release together:
 
 ```sh
-npm run refresh -- <slug>
+npm run refresh-release -- <slug>
 ```
+
+The refresh refuses an agency flagged red by the release diff gate (for
+example, more than 20% of its live stops or routes lost). Review
+`tmp/release-diff/`, then accept that one flag with
+`--allow <slug>:<flag>`, or reviewed drops with `--allow-drop`.

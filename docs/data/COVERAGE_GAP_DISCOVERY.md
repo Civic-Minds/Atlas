@@ -1,4 +1,4 @@
-# Finding New Agency Candidates
+# Finding new agency candidates
 
 Maintainer and contributor runbook for discovering new transit agencies to add to Atlas, and looking up their feeds. This is repository documentation, not user-facing product documentation.
 
@@ -12,7 +12,7 @@ npm run find-mdb -- "[search query]" <slug> "[lat,lon]"
 npm run find-mdb -- "Hamilton Street Railway" hamilton "43.25,-79.87"
 ```
 
-## Coverage Gap Discovery
+## Coverage gap discovery
 
 ```bash
 npm run discover-gaps

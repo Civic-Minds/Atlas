@@ -1,6 +1,7 @@
 {
   "slug": "jeffersontransit",
   "name": "Jefferson Transit",
+  "displayArea": "Jefferson County, WA",
   "websiteUrl": "https://jeffersontransit.com/",
   "center": [
     47.98,

@@ -1,6 +1,7 @@
 {
   "slug": "gwinnett-transit",
   "name": "Gwinnett County Transit",
+  "displayArea": "Gwinnett County",
   "websiteUrl": "https://www.ridegwinnett.com/",
   "center": [
     33.96,

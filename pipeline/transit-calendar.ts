@@ -153,7 +153,13 @@ export function detectReferenceDate(
             const datesMidMs = datesMid.getTime();
             const diffDays = Math.abs(calendarRefMs - datesMidMs) / 86400000;
             if (diffDays > 90 && datesMidMs < calendarRefMs && addedSpanDays < 365) {
-                return `${datesMid.getFullYear()}${String(datesMid.getMonth() + 1).padStart(2, '0')}${String(datesMid.getDate()).padStart(2, '0')}`;
+                const datesRef = `${datesMid.getFullYear()}${String(datesMid.getMonth() + 1).padStart(2, '0')}${String(datesMid.getDate()).padStart(2, '0')}`;
+                // Never land before the period this reference date stands for. SCT's
+                // calendar runs to the open-ended 20991231, so the calendar midpoint is
+                // decades out and holiday exceptions (May-Dec) win, but their midpoint
+                // (Sep 9) is before the newest period starts (Oct 1), which dropped all
+                // 15 routes that only run in that period (#658).
+                return datesRef < bestStartDate ? bestStartDate : datesRef;
             }
         }
     }
@@ -193,6 +199,142 @@ function nearestDateForDayName(referenceDate: string, day: DayName): string {
     if (diff < -3) diff += 7;
     const result = new Date(ry, rm, rd + diff);
     return `${result.getFullYear()}${String(result.getMonth() + 1).padStart(2, '0')}${String(result.getDate()).padStart(2, '0')}`;
+}
+
+function ymdToDate(ymd: string): Date {
+    return new Date(parseInt(ymd.substring(0, 4)), parseInt(ymd.substring(4, 6)) - 1, parseInt(ymd.substring(6, 8)));
+}
+
+function addDaysYmd(ymd: string, days: number): string {
+    const d = ymdToDate(ymd);
+    const r = new Date(d.getFullYear(), d.getMonth(), d.getDate() + days);
+    return `${r.getFullYear()}${String(r.getMonth() + 1).padStart(2, '0')}${String(r.getDate()).padStart(2, '0')}`;
+}
+
+/** Same-weekday dates looked at on each side of the reference week. */
+const TYPICAL_WINDOW_WEEKS = 4;
+const ALL_DAY_NAMES: DayName[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+interface RepresentativeWeek {
+    /** Days added to every day's nearest date to reach the representative week (multiple of 7). */
+    shiftDays: number;
+    /** Days whose nearest date had an untypical service set (usually a holiday). */
+    atypicalDays: Set<DayName>;
+    /** Days with calendar.txt service in range on the reference date. */
+    analyzedDays: Set<DayName>;
+    /** Days whose calendar.txt services are removed on most dates (placeholder calendars). */
+    emptyIsTypical: Set<DayName>;
+}
+
+/**
+ * Chooses the week whose calendar_dates removals (exception_type 2) stand for the
+ * feed's typical service (#658).
+ *
+ * The reference date used to be the only input: each day read the removals on the
+ * nearest date with that weekday. When that date is a holiday (TTC Thanksgiving
+ * Monday, Labour Day), the regular service is removed, the day empties, and the
+ * single-occurrence fallback picks the holiday service, which the Weekday union then
+ * merged with the regular Tue-Fri service, roughly halving weekday headways.
+ *
+ * For each day, the calendar.txt services in range on the reference date are taken,
+ * and each same-weekday date within ±4 weeks that lies inside all of their ranges
+ * yields the set still running after that date's removals. A set is typical when no
+ * other set occurs more often. A date is holiday-like when its set is not typical,
+ * services in a typical set were removed, and anything running instead runs on no
+ * other date in the window. A superseded overlapping period (TAG Grenoble), removed
+ * on most dates, stays removed because its removal is part of the typical set.
+ *
+ * When no day of the reference week is holiday-like, nothing changes. Otherwise the
+ * whole week moves by the fewest weeks (later first on ties) to a week where every
+ * day is typical and keeps service. The whole week moves, not single days, so all
+ * days describe the same week and the Weekday union never mixes a university-break
+ * week with a term week. No hardcoded holiday list: the feed's own pattern decides.
+ * If no such week exists (a short feed), the shift is 0.
+ */
+function representativeWeek(
+    calendar: GtfsCalendar[],
+    removalsByDate: ReadonlyMap<string, ReadonlySet<string>>,
+    referenceDate: string,
+): RepresentativeWeek {
+    const result: RepresentativeWeek = { shiftDays: 0, atypicalDays: new Set(), analyzedDays: new Set(), emptyIsTypical: new Set() };
+    if (removalsByDate.size === 0) return result;
+
+    type DayInfo = {
+        nearest: string;
+        ranges: Array<{ id: string; start: string; end: string }>;
+        /** How many window dates had each surviving set. */
+        counts: Map<string, number>;
+        best: number;
+        /** How many window dates each service survived on. */
+        runs: Map<string, number>;
+    };
+    const days = new Map<DayName, DayInfo>();
+    const survivingKey = (info: DayInfo, date: string) => {
+        const removed = removalsByDate.get(date);
+        return info.ranges.filter(r => !removed?.has(r.id)).map(r => r.id).sort().join('\u0000');
+    };
+    const insideAll = (info: DayInfo, date: string) => info.ranges.every(r => date >= r.start && date <= r.end);
+
+    for (const day of ALL_DAY_NAMES) {
+        const field = DAY_FIELD_MAP[day];
+        const rangeById = new Map<string, { id: string; start: string; end: string }>();
+        for (const c of calendar) {
+            if (c[field] !== '1' || c.start_date === c.end_date) continue;
+            if (referenceDate < c.start_date || referenceDate > c.end_date) continue;
+            const r = rangeById.get(c.service_id);
+            rangeById.set(c.service_id, r
+                ? { id: c.service_id, start: c.start_date < r.start ? c.start_date : r.start, end: c.end_date > r.end ? c.end_date : r.end }
+                : { id: c.service_id, start: c.start_date, end: c.end_date });
+        }
+        if (rangeById.size === 0) continue;
+        const info: DayInfo = { nearest: nearestDateForDayName(referenceDate, day), ranges: [...rangeById.values()], counts: new Map(), best: 0, runs: new Map() };
+        for (let k = -TYPICAL_WINDOW_WEEKS; k <= TYPICAL_WINDOW_WEEKS; k++) {
+            const date = addDaysYmd(info.nearest, 7 * k);
+            if (!insideAll(info, date)) continue;
+            const key = survivingKey(info, date);
+            info.counts.set(key, (info.counts.get(key) ?? 0) + 1);
+            for (const id of key.split('\u0000').filter(Boolean)) info.runs.set(id, (info.runs.get(id) ?? 0) + 1);
+        }
+        info.best = Math.max(0, ...info.counts.values());
+        days.set(day, info);
+        result.analyzedDays.add(day);
+        const samples = [...info.counts.values()].reduce((a, b) => a + b, 0);
+        if (samples >= 2 && (info.counts.get('') ?? 0) * 2 > samples) result.emptyIsTypical.add(day);
+    }
+
+    const isTypical = (info: DayInfo, date: string) => insideAll(info, date) && (info.counts.get(survivingKey(info, date)) ?? 0) === info.best;
+    // Holiday-like: the date removes services that normally run, and anything it runs
+    // instead runs on no other date in the window (a one-day replacement, like OC
+    // Transpo's Thanksgiving service). A set that recurs (a seasonal or term change,
+    // a school-holiday fortnight in Grenoble) is not a holiday and keeps the existing
+    // behavior.
+    const isHolidayLike = (info: DayInfo, date: string) => {
+        if (!insideAll(info, date) || isTypical(info, date)) return false;
+        const ids = survivingKey(info, date).split('\u0000').filter(Boolean);
+        return [...info.counts].some(([key, count]) => {
+            if (count !== info.best) return false;
+            const typical = new Set(key.split('\u0000').filter(Boolean));
+            const missing = [...typical].some(id => !ids.includes(id));
+            const extrasAreOneOff = ids.every(id => typical.has(id) || info.runs.get(id) === 1);
+            return missing && extrasAreOneOff;
+        });
+    };
+    for (const [day, info] of days) {
+        if (isHolidayLike(info, info.nearest)) result.atypicalDays.add(day);
+    }
+    if (result.atypicalDays.size === 0) return result;
+
+    for (let k = 1; k <= TYPICAL_WINDOW_WEEKS; k++) {
+        for (const shift of [7 * k, -7 * k]) {
+            const ok = [...days.values()].every(info => {
+                const date = addDaysYmd(info.nearest, shift);
+                // A day that has service in the reference week must keep it.
+                return isTypical(info, date) && (survivingKey(info, date) !== '' || survivingKey(info, info.nearest) === '');
+            });
+            if (ok) { result.shiftDays = shift; return result; }
+        }
+    }
+    return result;
 }
 
 export function getActiveServiceIds(
@@ -252,11 +394,38 @@ export function getActiveServiceIds(
     // the overlap. Without this, both periods' trips get merged on the same reference
     // date, doubling apparent departures and halving the computed headway (confirmed on
     // TAG Grenoble Tram A: real 10 min, computed 5 min from two overlapping services).
+    //
+    // The removals are read from a representative week, not always the literal
+    // nearest date: a holiday (TTC Thanksgiving Monday, Labour Day) removes the regular
+    // service on that one date only, and checking it emptied the day so the
+    // single-occurrence fallback below picked the holiday service, which then merged
+    // with the regular Tue-Fri service in the Weekday union and roughly halved weekday
+    // headways (#658). See representativeWeek.
+    let unresolvedHolidayRemoval = false;
+    // Set when a holiday date was swapped for the typical week: calendar_dates-only
+    // services added on the holiday but not on the typical date are holiday
+    // replacements (WMATA's break-week weekday service), so Step 2 leaves them out.
+    let holidaySwap: { holiday: string; typical: string } | null = null;
     if (referenceDate) {
-        const checkDate = nearestDateForDayName(referenceDate, day);
+        const removalsByDate = new Map<string, Set<string>>();
         for (const cd of (calendarDates ?? [])) {
-            if (cd.exception_type === '2' && cd.date === checkDate) active.delete(cd.service_id);
+            if (cd.exception_type !== '2') continue;
+            const set = removalsByDate.get(cd.date) ?? new Set<string>();
+            set.add(cd.service_id);
+            removalsByDate.set(cd.date, set);
         }
+        const nearest = nearestDateForDayName(referenceDate, day);
+        const week = representativeWeek(calendar, removalsByDate, referenceDate);
+        const checkDate = addDaysYmd(nearest, week.shiftDays);
+        const atypical = week.atypicalDays.has(day);
+        if (atypical && week.shiftDays !== 0) holidaySwap = { holiday: nearest, typical: checkDate };
+        const hadActive = active.size > 0;
+        for (const id of removalsByDate.get(checkDate) ?? []) active.delete(id);
+        // The removals emptied a day whose calendar.txt service normally runs (a holiday
+        // with no typical week to use instead, e.g. a one-week feed): skip the
+        // single-occurrence fallback below rather than pick the holiday service.
+        unresolvedHolidayRemoval = week.analyzedDays.has(day) && !week.emptyIsTypical.has(day)
+            && hadActive && active.size === 0;
     }
 
     // Step 2: calendar_dates-only services (and all-zero placeholder calendar entries)
@@ -271,10 +440,14 @@ export function getActiveServiceIds(
     const MIN_WEEKLY_OCCURRENCES = 3;
     const DOW_NAMES: DayName[] = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const candidateDates = new Map<string, number[]>();
+    const addedOnHoliday = new Set<string>();
+    const addedOnTypical = new Set<string>();
 
     for (const cd of (calendarDates ?? [])) {
         if (calendarServiceIds.has(cd.service_id)) continue;
         if (cd.exception_type !== '1') continue;
+        if (holidaySwap && cd.date === holidaySwap.holiday) addedOnHoliday.add(cd.service_id);
+        if (holidaySwap && cd.date === holidaySwap.typical) addedOnTypical.add(cd.service_id);
 
         if (referenceDate) {
             const cy = parseInt(cd.date.substring(0, 4));
@@ -296,6 +469,10 @@ export function getActiveServiceIds(
             existing.push(ts);
             candidateDates.set(cd.service_id, existing);
         }
+    }
+
+    for (const id of addedOnHoliday) {
+        if (!addedOnTypical.has(id)) candidateDates.delete(id);
     }
 
     // First pass: add regular and weekly services.
@@ -331,7 +508,13 @@ export function getActiveServiceIds(
     // it rather than all of them. Correct representative-day behaviour is preserved; the
     // WSF/daily-service_id pattern still works because each selected service_id still
     // contains all trips for that operating day.
-    if (active.size === 0) {
+    //
+    // Not when removals emptied a day whose calendar.txt service normally runs and no
+    // typical week could be used instead (very short feeds): the closest
+    // single-occurrence service is then the holiday replacement itself. Leaving the day
+    // empty is safe because the other days still carry the regular service; merging
+    // the holiday is not (#658).
+    if (active.size === 0 && !unresolvedHolidayRemoval) {
         const singles = [...candidateDates.entries()].filter(([, dates]) => dates.length === 1);
         if (referenceDate && singles.length > 0) {
             const refMs = (() => {

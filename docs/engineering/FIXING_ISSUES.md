@@ -1,7 +1,8 @@
-# Fixing Issues
+# Fixing issues
 
-The canonical entry point is this page. The repository-level working rules in
-`AGENTS.md` point here for Atlas-specific validation guidance.
+Start with the root [`FIXING_ISSUES.md`](../../FIXING_ISSUES.md) to classify the fix's
+scope (single agency, group, shared UI, or shared pipeline/data). This page indexes
+the detailed runbooks; local agent instruction files point here.
 
 Choose the detailed runbook that matches the change:
 

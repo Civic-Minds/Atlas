@@ -1,6 +1,7 @@
 {
   "slug": "stm",
   "name": "STM (Montréal)",
+  "displayArea": "Montréal",
   "websiteUrl": "https://www.stm.info",
   "searchAliases": [
     "Montreal"

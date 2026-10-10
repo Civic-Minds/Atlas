@@ -1,6 +1,7 @@
 {
   "slug": "smart",
   "name": "SMART (Detroit suburbs)",
+  "displayArea": "Detroit suburbs",
   "region": "Michigan",
   "center": [
     42.4,

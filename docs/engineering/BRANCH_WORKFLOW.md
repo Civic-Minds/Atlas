@@ -1,4 +1,4 @@
-# Branch and Deployment Workflow
+# Branch and deployment workflow
 
 Atlas has one source branch and three deployments. The `main` branch is the source of truth for Public, Preview, and Beta; deployment mode is a Vercel environment setting, not a code branch.
 
@@ -8,7 +8,7 @@ Atlas has one source branch and three deployments. The `main` branch is the sour
 - Start short-lived feature, fix, or data branches from the latest `origin/main`.
 - Open pull requests into `main`. Keep unrelated work in separate branches and worktrees.
 - Do not use a long-lived `beta` branch for feature flags, UI experiments, or agency visibility. The historical `beta` branch is legacy and must not receive new work.
-- `main` is protected and requires a pull request plus the `Type Check · Test · Build` CI check. Direct pushes and force-pushes stay disabled.
+- `main` branch protection blocks force-pushes and deletion. It does not enforce a required review or status check, so opening a pull request and waiting for the `Type Check · Test · Build` CI check is the working rule rather than a GitHub setting.
 
 Typical start:
 
@@ -29,9 +29,11 @@ All Vercel projects build the same `main` commit:
 | Preview | `preview` | Automatic from `main` | Stable outreach/demo link for agencies |
 | Beta | `beta` | Manual promotion from `main` | Experimental feature validation |
 
+The 2026-09-28 topology check in [`../FEATURE_FLAGS.md`](../FEATURE_FLAGS.md#verified-deployment-topology) found Preview attached to the `atlas-beta` Vercel project, so it shares Beta's configuration rather than running as an independently configured `preview` deployment. Re-verify before relying on the Preview row above.
+
 Keep differences between the deployments in project-scoped Vercel environment variables, not source branches. `VITE_ATLAS_MODE` is the source of truth; legacy `VITE_BETA_BUILD` and `VITE_PREVIEW_BUILD` values are compatibility fallbacks only.
 
-Every pull request runs the normal build and a second build with the beta flags enabled. A green beta build proves that the same source can serve both deployments; it does not approve a feature for production.
+CI runs on every pull request into `main` and every push to `main`: the normal build plus a second build with the beta flags enabled. A green beta build proves that the same source can serve both deployments; it does not approve a feature for production.
 
 ## Feature work
 
@@ -44,7 +46,7 @@ Every pull request runs the normal build and a second build with the beta flags 
 
 ## Deployment verification
 
-Run `npm run verify:deployments` after a deployment change or when a hosted site appears stale. It checks that each hostname serves its app shell and the matching mode-specific catalog rather than falling back to `index.json`. The check accepts `ATLAS_PUBLIC_URL`, `ATLAS_PREVIEW_URL`, and `ATLAS_BETA_URL` overrides for protected or temporary hostnames.
+Run `npm run verify:deployments` after a deployment change or when a hosted site appears stale. It checks that each hostname serves its app shell and the matching mode-specific catalog rather than falling back to the single-page app's `index.html`. It does not prove which mode a hostname was built with. The check accepts `ATLAS_PUBLIC_URL`, `ATLAS_PREVIEW_URL`, and `ATLAS_BETA_URL` overrides for protected or temporary hostnames.
 
 For Preview, also open the outreach URL and verify the current on-demand demo manually. The catalog check catches stale builds; the browser check confirms the map overlay and route interactions.
 

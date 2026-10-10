@@ -1,8 +1,8 @@
-# GitHub Issue Filing Guidelines
+# GitHub issue filing guidelines
 
-Rules for **all AI agents** (Claude, Grok, Gemini, Codex) filing issues in `Civic-Minds/Atlas`.
+Rules for **all AI agents** (Claude, Grok, Gemini, Codex) filing issues in `Civic-Minds/Atlas`. GitHub Issues is the bug tracker; Linear (team Civic Minds, project Atlas) is the AI-managed to-do list, not a place to file bugs.
 
-## General Rules
+## General rules
 
 - **Use issue Types, not Labels** — Set the issue type (`Bug`, `Task`, `Feature`, etc.) via `--type`. Do NOT apply a label that just restates the type as a substitute or duplicate — this means `bug`, but also `enhancement`, `feature`, `task`, or anything else that says the same thing the Type field already says. Labels are for dimensions the Type doesn't capture (`data-quality`, `pipeline`, `live`, `user-reported`).
   - Exception: `data override` label — always apply this label for data override issues (it drives the in-app "Learn more" link).
@@ -19,7 +19,7 @@ Rules for **all AI agents** (Claude, Grok, Gemini, Codex) filing issues in `Civi
 
 ---
 
-## Handling Screenshots
+## Handling screenshots
 
 Ryan will often provide a screenshot with a brief note like "log this as an issue." The agent's job:
 
@@ -117,7 +117,7 @@ Still set `--type Bug` (or `Task`) — a different body template is not a substi
 
 ---
 
-## Standard Issues (bugs, features, tasks)
+## Standard issues (bugs, features, tasks)
 
 ### Format
 
@@ -168,7 +168,7 @@ Linear: I can confirm there's more than 4 routes on the screen right now too [Im
 
 ---
 
-## Data Override Issues (user-facing)
+## Data override issues (user-facing)
 
 These issues are linked from the app UI ("Learn more →") when we apply overrides to fix bad GTFS data. **Regular people will read these.** The first sentence must explain the situation in plain language.
 
@@ -186,7 +186,7 @@ These issues are linked from the app UI ("Learn more →") when we apply overrid
 
 ---
 
-**Override:** `{field}: {value}` in `index.json`
+**Override:** `{field}: {value}` in `config/agencies/{slug}.json`
 **Reason:** {technical detail about the upstream GTFS problem}
 **Fix:** {what needs to happen upstream for us to remove this override}
 **Added:** {month year}
@@ -203,7 +203,7 @@ it until the transit agency fixes their schedule data.
 
 ---
 
-**Override:** `excludeRouteShortNames: ["LOS"]` in `index.json`
+**Override:** `excludeRouteShortNames: ["LOS"]` in `config/agencies/stratford.json`
 **Reason:** The upstream GTFS feed marks LOS as operating every Thursday–Sunday year-round
 via incorrect `calendar.txt` entries.
 **Fix:** Remove `LOS` from `excludeRouteShortNames` once Stratford Transit corrects their
@@ -213,7 +213,7 @@ GTFS `calendar.txt` to reflect actual seasonal dates.
 
 ---
 
-## Integration / Multi-Repo Issues
+## Integration / multi-repo issues
 
 For issues that coordinate changes across multiple tools (e.g., `Transit Stats`, `Bridge`, `Dispatch`, or `Reroute` consuming `Atlas` datasets or APIs).
 
@@ -297,7 +297,7 @@ Remove the dependency on local Firestore route collections and manual GTFS CSV u
 ---
 
 
-## Issue Lifecycle
+## Issue lifecycle
 
 ### Investigation notes
 
@@ -312,7 +312,7 @@ Post real findings as issue comments while investigating, not just at close time
 | 1 | Fix the bug (code and/or data reprocess as needed) |
 | 2 | Update `CHANGELOG.md` **`[Unreleased]`** first |
 | 3 | Commit with a short grouped summary + one `Closes #N` line **per issue** |
-| 4 | Push to `main` (or merge PR) — GitHub auto-closes linked issues |
+| 4 | Merge the PR into `main` — GitHub auto-closes linked issues |
 
 **Do not** use issue ranges (`Closes #80-84` does not work). List each number:
 
@@ -354,18 +354,18 @@ Closes #84
 **Standard issues (bugs, features):**
 1. Create issue describing the problem (`gh issue create`)
 2. Fix later (could be same session or weeks later)
-3. Changelog entry → commit with `Closes #XX` → push
-4. GitHub auto-closes on push/merge
+3. Changelog entry → commit with `Closes #XX` → PR into `main`
+4. GitHub auto-closes on merge
 
 **Data override issues:**
 
-The override is **not** a frontend hack. A feed-specific normalization rule (or `excludeRouteShortNames` when whole routes must be removed) tells the pipeline to strip or correct bad records before publishing artifacts to R2 (`atlas/{slug}.json`, etc.). The agency/route card shows "We corrected this data" opening an in-app explanation when `overrideNote` is set. GitHub issues remain for internal tracking only.
+The override is **not** a frontend hack. A feed-specific normalization rule (or `excludeRouteShortNames` when whole routes must be removed) tells the pipeline to strip or correct bad records before publishing artifacts to R2 (`atlas/{slug}.json`, etc.). Agency config lives in `config/agencies/{slug}.json`; `npm run build:agency-index` regenerates `public/data/index.json` from those files. The agency/route card shows "We corrected this data" opening an in-app explanation when `overrideNote` is set. GitHub issues remain for internal tracking only.
 
 1. Create the GitHub issue (`data override` label) documenting what upstream got wrong
-2. Add the corrective preprocessing/configuration plus a plain-language `overrideNote` to `index.json`
-3. Re-process or refresh the agency so R2 artifacts are rebuilt without the bad routes
+2. Add the corrective preprocessing/configuration plus a plain-language `overrideNote` to `config/agencies/{slug}.json`, then regenerate `index.json`
+3. Refresh the agency through the release flow (`npm run refresh-release -- <slug>`) so its agency data and map tiles are rebuilt without the bad routes and go live together. Standalone tile uploads refuse without an override.
 4. Changelog + **commit with `Closes #N`**
-5. **When upstream publishes a new GTFS file:** weekly refresh clears `overrideNote` from `index.json` (the card stops linking until you re-verify). Any corrective preprocessing/configuration remains so bad data does not silently reappear while you check. If the bad data is still there, file a **new** issue, restore `overrideNote`, and commit with `Closes #N`. If upstream fixed it, remove the corrective override too.
+5. **When upstream publishes a new GTFS file:** the next refresh or processing run that sees the new feed clears `overrideNote` (and `issueUrl`) from the agency config (the card stops linking until you re-verify). Any corrective preprocessing/configuration remains so bad data does not silently reappear while you check. If the bad data is still there, file a **new** issue, restore `overrideNote`, and commit with `Closes #N`. If upstream fixed it, remove the corrective override too.
 
 ### Data-quality review history
 
@@ -382,7 +382,7 @@ If the feed still has a problem, add a new feed-specific GitHub issue and `overr
 
 ---
 
-## Issue Fields (Priority / Effort)
+## Issue fields (Priority / Effort)
 
 Civic-Minds org-level custom Issue Fields — **not** GitHub Projects (there is no Project for Atlas; don't go looking for one). They show up in the right sidebar of the issue page itself, under "Fields."
 
@@ -399,7 +399,7 @@ Civic-Minds org-level custom Issue Fields — **not** GitHub Projects (there is 
   EOF
   ```
   `field_id` is the field's numeric id. `value` is the **option's name as a string** (e.g. `"Medium"`), not its numeric option id — passing the option id there fails with a 422.
-- Current field ids: `Priority` = `39256322` (options: Urgent/High/Medium/Low), `Effort` = `39256325` (options: High/Medium/Low). Re-check with the `issue-fields` call above if these ever stop working — ids aren't guaranteed stable.
+- Current field ids: `Priority` = `39256322` (options: Urgent/High/Medium/Low), `Effort` = `39256325` (options: High/Medium/Low). The org also defines `Start date` (`39256323`) and `Target date` (`39256324`). Re-check with the `issue-fields` call above if these ever stop working — ids aren't guaranteed stable.
 
 ## `gh` on this machine
 
@@ -409,11 +409,11 @@ Civic-Minds org-level custom Issue Fields — **not** GitHub Projects (there is 
 | `gh issue view` / `gh issue list` | Yes |
 | `gh issue edit` / `comment` / `close` | Yes (confirmed 2026-07-16 — previously thought blocked; that was stale) |
 
-Prefer commit-based auto-close for normal bug fixes (still the standard workflow below) — `gh issue close` is fine for issue hygiene (e.g. closing something already fixed on `main` but never linked to a `Closes #N` commit), just don't use it to skip the changelog → commit → auto-close flow for new fixes.
+Prefer commit-based auto-close for normal bug fixes (still the standard workflow above) — `gh issue close` is fine for issue hygiene (e.g. closing something already fixed on `main` but never linked to a `Closes #N` commit), just don't use it to skip the changelog → commit → auto-close flow for new fixes.
 
 ---
 
-## `gh` Quick Reference
+## `gh` quick reference
 
 ```bash
 # Standard bug

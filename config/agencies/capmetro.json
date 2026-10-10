@@ -1,6 +1,7 @@
 {
   "slug": "capmetro",
   "name": "Capital Metro (Austin)",
+  "displayArea": "Austin",
   "websiteUrl": "http://www.capmetro.org",
   "center": [
     30.27,

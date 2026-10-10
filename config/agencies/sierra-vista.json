@@ -1,12 +1,16 @@
 {
   "slug": "sierra-vista",
   "name": "City of Sierra Vista",
+  "websiteUrl": "https://sierravistaaz.gov/our-city/bus-service/route-information",
   "center": [
     31.55,
     -110.27
   ],
   "timezone": "America/Phoenix",
-  "feedUrl": null,
+  "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/12009/VistaTransit_AZ_GTFS.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-679/latest.zip",
+  "region": "Arizona",
+  "staged": true,
   "lastFeedExpiry": "20270331",
   "lastFeedVersion": "20250522",
   "lastRefreshedAt": "2026-09-10",

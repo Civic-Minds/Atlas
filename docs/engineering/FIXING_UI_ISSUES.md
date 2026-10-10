@@ -1,4 +1,4 @@
-# Fixing Shared UI Issues
+# Fixing shared UI issues
 
 Use this runbook for shared map, filter, route-selection, panel, and layout behavior.
 

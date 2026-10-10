@@ -36,6 +36,9 @@ jobs:
       - name: Validate index.json
         run: npm run validate-index
 
+      - name: Check index.json and catalogs match config/agencies
+        run: npm run check:agency-index
+
       - name: Test
         run: npm run test
 

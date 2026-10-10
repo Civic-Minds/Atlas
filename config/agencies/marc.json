@@ -1,6 +1,7 @@
 {
   "slug": "marc",
   "name": "MARC Train (MTA Maryland)",
+  "displayArea": "Maryland",
   "websiteUrl": "https://mta.maryland.gov/",
   "region": "Maryland",
   "center": [

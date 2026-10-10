@@ -20,6 +20,28 @@ function removed(service_id: string, date: string): GtfsCalendarDate {
   return { service_id, date, exception_type: '2' };
 }
 
+const WEEKDAY_NAMES = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'] as const;
+
+function ymd(d: Date): string {
+  return `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
+}
+
+/** Every Monday-Friday date from start to end inclusive, as YYYYMMDD. */
+function weekdaysBetween(start: string, end: string): string[] {
+  const out: string[] = [];
+  const d = new Date(+start.slice(0, 4), +start.slice(4, 6) - 1, +start.slice(6, 8));
+  for (; ymd(d) <= end; d.setDate(d.getDate() + 1)) {
+    if (d.getDay() >= 1 && d.getDay() <= 5) out.push(ymd(d));
+  }
+  return out;
+}
+
+function weekdayUnion(calendar: GtfsCalendar[], calendarDates: GtfsCalendarDate[], ref: string): string[] {
+  const ids = new Set<string>();
+  for (const day of WEEKDAY_NAMES) for (const id of getActiveServiceIds(calendar, calendarDates, day, ref)) ids.add(id);
+  return [...ids].sort();
+}
+
 describe('detectReferenceDate', () => {
   it('ignores calendarDates that recur across multiple years (Emery Go-Round pattern)', () => {
     // Real dominant service: weekday + Sat + Sun, all starting the same date.
@@ -98,18 +120,35 @@ describe('detectReferenceDate', () => {
 
 describe('getActiveServiceIds', () => {
   it('applies calendar_dates exception_type=2 to calendar.txt services (Grenoble pattern)', () => {
-    // Two overlapping weekday periods; the superseded one is cancelled via type 2
-    // on the nearest Monday to the reference date (20240615 is a Saturday → Monday 20240617).
+    // Two overlapping weekday periods; the superseded one is cancelled via type 2 on
+    // every date of the overlap, as the real TAG Grenoble feed does (a removal on one
+    // date only is a holiday, covered below). 20240615 is a Saturday → Monday 20240617.
     const calendar = [
       cal('old', 'mo,tu,we,th,fr', '20240101', '20241231'),
       cal('new', 'mo,tu,we,th,fr', '20240601', '20241231'),
     ];
-    const calendarDates = [
-      removed('old', '20240617'), // nearest Monday to 20240615
-    ];
+    const calendarDates = weekdaysBetween('20240603', '20240830').map(d => removed('old', d));
     const active = getActiveServiceIds(calendar, calendarDates, 'Monday', '20240615');
     expect(active.has('new')).toBe(true);
     expect(active.has('old')).toBe(false);
+  });
+
+  it('keeps the superseded period removed when a school-holiday week is the reference week (Grenoble pattern)', () => {
+    // Term service 'term' and holiday-week service 'vac' overlap. Each date removes the
+    // one not running: 'vac' on term dates, 'term' on the two holiday weeks. A holiday
+    // week swaps one service for another rather than removing normal service, so it is
+    // read as before, and the two periods are never both counted.
+    const calendar = [
+      cal('term', 'mo,tu,we,th,fr', '20261001', '20261218'),
+      cal('vac', 'mo,tu,we,th,fr', '20261001', '20261218'),
+    ];
+    const holidayWeeks = new Set(weekdaysBetween('20261019', '20261030'));
+    const calendarDates = weekdaysBetween('20261001', '20261218').map(d =>
+      removed(holidayWeeks.has(d) ? 'term' : 'vac', d));
+    for (const day of WEEKDAY_NAMES) {
+      expect([...getActiveServiceIds(calendar, calendarDates, day, '20261021')]).toEqual(['vac']);
+      expect([...getActiveServiceIds(calendar, calendarDates, day, '20261111')]).toEqual(['term']);
+    }
   });
 
   it('keeps both overlapping calendar services when no type-2 removal applies', () => {
@@ -166,5 +205,84 @@ describe('getActiveServiceIds', () => {
     const active = getActiveServiceIds(calendar, [], 'Monday', '20240615');
     expect(active.has('special_monday')).toBe(true);
     expect(active.has('weekend')).toBe(false);
+  });
+});
+
+describe('getActiveServiceIds holiday in the reference week (#658)', () => {
+  // TTC shape: regular Mon-Fri service 1, an all-zero placeholder holiday service 4
+  // added on Thanksgiving Monday, which also removes service 1.
+  const calendar = [
+    cal('1', 'mo,tu,we,th,fr', '20260930', '20261031'),
+    cal('4', '', '20260930', '20261031'),
+  ];
+  const calendarDates = [added('4', '20261012'), removed('1', '20261012')];
+
+  it('reads a holiday Monday from a typical week instead of picking the holiday service', () => {
+    expect([...getActiveServiceIds(calendar, calendarDates, 'Monday', '20261015')]).toEqual(['1']);
+    expect(weekdayUnion(calendar, calendarDates, '20261015')).toEqual(['1']);
+  });
+
+  it('leaves weeks without a holiday unchanged', () => {
+    expect([...getActiveServiceIds(calendar, calendarDates, 'Monday', '20261022')]).toEqual(['1']);
+  });
+
+  it('handles a feed that starts mid-week with the holiday in its first week', () => {
+    // Starts on a Thursday (Oct 8), so the holiday Monday is the feed's first Monday and
+    // the typical week has to come from after it.
+    const midWeek = [cal('1', 'mo,tu,we,th,fr', '20261008', '20261106'), cal('4', '', '20261008', '20261106')];
+    expect([...getActiveServiceIds(midWeek, calendarDates, 'Monday', '20261010')]).toEqual(['1']);
+  });
+
+  it('leaves the day empty rather than merging the holiday service when no typical week exists (short feed)', () => {
+    const shortFeed = [cal('1', 'mo,tu,we,th,fr', '20261012', '20261016'), cal('4', '', '20261012', '20261016')];
+    expect(getActiveServiceIds(shortFeed, calendarDates, 'Monday', '20261014').size).toBe(0);
+    expect(weekdayUnion(shortFeed, calendarDates, '20261014')).toEqual(['1']);
+  });
+
+  it('moves the whole week so every day describes the same week', () => {
+    // Monday is a holiday, and an alternating service 'alt' runs only in odd weeks.
+    // Moving Monday alone to the next week would read 'alt' from a different week than
+    // Tuesday-Friday; moving the whole week keeps the days consistent.
+    const cal3 = [cal('reg', 'mo,tu,we,th,fr', '20260928', '20261127'), cal('alt', 'mo,tu,we,th,fr', '20260928', '20261127')];
+    const evenWeeks = new Set([...weekdaysBetween('20261005', '20261009'), ...weekdaysBetween('20261019', '20261023'),
+      ...weekdaysBetween('20261102', '20261106'), ...weekdaysBetween('20261116', '20261120')]);
+    const dates = [
+      ...weekdaysBetween('20260928', '20261127').filter(d => evenWeeks.has(d)).map(d => removed('alt', d)),
+      removed('reg', '20261012'),
+    ];
+    // Reference week Oct 12-16 is an odd week ('alt' runs); Monday Oct 12 also lost 'reg'.
+    // The next odd week (Oct 26-30) is read for every day.
+    for (const day of WEEKDAY_NAMES) {
+      expect([...getActiveServiceIds(cal3, dates, day, '20261014')].sort()).toEqual(['alt', 'reg']);
+    }
+  });
+
+  it('does not mix a university-break week with term weeks', () => {
+    // 'term' runs in term weeks, 'break' in break weeks; each removes the other. A break
+    // week swaps services rather than removing normal service, so it is read as before,
+    // and the Weekday union never holds both.
+    const term = [cal('term', 'mo,tu,we,th,fr', '20261101', '20270131'), cal('break', 'mo,tu,we,th,fr', '20261101', '20270131')];
+    const breakDates = new Set(weekdaysBetween('20261221', '20270101'));
+    const dates = weekdaysBetween('20261102', '20270129').map(d => removed(breakDates.has(d) ? 'term' : 'break', d));
+    expect(weekdayUnion(term, dates, '20261224')).toEqual(['break']);
+  });
+
+  it('leaves out a calendar_dates-only replacement service added on the holiday (WMATA pattern)', () => {
+    // 'hol' replaces the regular service on holidays and break days, often enough that
+    // its Tuesday count alone would pass the regular-service threshold.
+    const cal2 = [cal('reg', 'mo,tu,we,th,fr', '20260913', '20270327')];
+    const holDates = ['20261013', '20261103', '20261222', '20261229', '20270126'];
+    const dates = holDates.flatMap(d => [added('hol', d), removed('reg', d)]);
+    expect([...getActiveServiceIds(cal2, dates, 'Tuesday', '20261219')]).toEqual(['reg']);
+  });
+
+  it('does not touch feeds that only use calendar_dates.txt', () => {
+    // Regular weekday service listed date by date, skipping the holiday; the holiday
+    // service has one date. Step 2 already excludes it.
+    const dates = [
+      ...weekdaysBetween('20260928', '20261030').filter(d => d !== '20261012').map(d => added('wk', d)),
+      added('hol', '20261012'),
+    ];
+    expect([...getActiveServiceIds([], dates, 'Monday', '20261015')]).toEqual(['wk']);
   });
 });

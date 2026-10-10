@@ -7,7 +7,9 @@
     48.2594,
     7.4542
   ],
-  "feedUrl": "https://api.grandest2.cityway.fr/exs/GTFS?Key=OPENDATA&OperatorCode=CCSelestat",
+  "feedUrl": "https://api.grandest2.cityway.fr/exs/GTFS?OperatorCode=CCSelestat",
+  "feedApiKeyEnvVar": "GRAND_EST_API_KEY",
+  "feedApiKeyParam": "Key",
   "mdbFeedUrl": null,
   "hiddenInProduction": true,
   "pmtilesPending": true,

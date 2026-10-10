@@ -1,12 +1,16 @@
 {
   "slug": "howard-county",
   "name": "City of Kokomo",
+  "websiteUrl": "https://www.kokomompo.com/cityline-trolley/",
   "center": [
     40.47,
     -86.13
   ],
   "timezone": "America/New_York",
-  "feedUrl": null,
+  "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11767/CityofKokomo_Transit.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-50145/latest.zip",
+  "region": "Indiana",
+  "staged": true,
   "lastFeedExpiry": "20280504",
   "lastFeedVersion": "20260610",
   "lastRefreshedAt": "2026-09-10",

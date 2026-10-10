@@ -7,7 +7,9 @@
     42.733,
     -84.556
   ],
-  "feedUrl": "http://developers.cata.org/gtfsdownload.ashx?key=5b4690ed-0a69-4320-897b-7d92def4b96f&data=base",
+  "feedUrl": "http://developers.cata.org/gtfsdownload.ashx?data=base",
+  "feedApiKeyEnvVar": "CATA_LANSING_API_KEY",
+  "feedApiKeyParam": "key",
   "lastFeedExpiry": "20261220",
   "lastFeedVersion": "26-06 (Aug24-Dec20)_20260917",
   "lastRefreshedAt": "2026-10-03",

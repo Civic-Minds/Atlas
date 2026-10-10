@@ -54,6 +54,37 @@ export function shouldStampFeedMeta(featureCount: number): boolean {
   return featureCount > 0;
 }
 
+const YMD = /^\d{8}$/;
+const validYmd = (d: string | null | undefined): d is string => !!d && YMD.test(d);
+
+/** Placeholder calendar ends (e.g. 20500101) are capped this far out. */
+export const PLACEHOLDER_EXPIRY_YEARS = 2;
+
+/** YYYYMMDD (or YYYY-MM-DD) plus whole years, as YYYYMMDD. */
+export function addYearsYmd(ymd: string, years: number): string {
+  const d = ymd.replace(/-/g, '');
+  return `${Number(d.slice(0, 4)) + years}${d.slice(4, 8)}`;
+}
+
+/**
+ * The expiry to record for a refreshed feed. The processed expiry comes from
+ * feed_info.txt only, while the peeked expiry also counts calendar.txt and
+ * calendar_dates.txt. Agencies often leave feed_info stale while extending
+ * their calendar, so the calendar end is used, but capped at feed_info end + 2
+ * years and today + 2 years (today + 2 years alone without feed_info), so a
+ * placeholder far-future end never stops an agency from showing as outdated.
+ * The recorded value is the later of feed_info end and that capped end.
+ */
+export function recordedFeedExpiry(feedExpiry: string | null, peekedExpiry: string | null, todayYmd: string): string | null {
+  const today = todayYmd.replace(/-/g, '');
+  const limits = [addYearsYmd(today, PLACEHOLDER_EXPIRY_YEARS)];
+  if (validYmd(feedExpiry)) limits.push(addYearsYmd(feedExpiry, PLACEHOLDER_EXPIRY_YEARS));
+  const capped = validYmd(peekedExpiry) ? [peekedExpiry, ...limits].sort()[0] : null;
+  const valid = [feedExpiry, capped].filter(validYmd);
+  if (valid.length) return valid.sort().at(-1)!;
+  return feedExpiry ?? peekedExpiry ?? null;
+}
+
 /** Apply feed metadata after a successful non-empty refresh. */
 export function stampFeedMeta(
   agency: FeedMetaFields,
@@ -65,7 +96,7 @@ export function stampFeedMeta(
     todayYmd: string;
   },
 ): void {
-  agency.lastFeedExpiry = opts.feedExpiry ?? opts.peekedExpiry ?? null;
+  agency.lastFeedExpiry = recordedFeedExpiry(opts.feedExpiry, opts.peekedExpiry, opts.todayYmd);
   agency.lastFeedVersion = opts.feedVersion ?? opts.peekedVersion ?? null;
   agency.lastRefreshedAt = opts.todayYmd;
   agency.feedRefreshStatus = 'current';

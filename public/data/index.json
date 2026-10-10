@@ -828,6 +828,7 @@
     {
       "slug": "octranspo",
       "name": "OC Transpo (Ottawa)",
+      "displayArea": "Ottawa",
       "websiteUrl": "https://www.octranspo.com",
       "searchAliases": [
         "Ottawa"
@@ -1212,6 +1213,7 @@
     {
       "slug": "stratford",
       "name": "Stratford Transit",
+      "displayArea": "Stratford",
       "websiteUrl": "https://www.stratford.ca/en/live-here/transit.aspx",
       "region": "Ontario",
       "center": [
@@ -1368,6 +1370,7 @@
     {
       "slug": "upexpress",
       "name": "UP Express (Toronto)",
+      "displayArea": "Toronto",
       "websiteUrl": "https://www.upexpress.com",
       "region": "Ontario",
       "center": [
@@ -1538,6 +1541,7 @@
     {
       "slug": "rem",
       "name": "REM (Montréal)",
+      "displayArea": "Montréal",
       "websiteUrl": "https://rem.info/fr",
       "searchAliases": [
         "Montreal"
@@ -1577,6 +1581,7 @@
     {
       "slug": "rtc",
       "name": "RTC (Québec)",
+      "displayArea": "Québec",
       "websiteUrl": "https://www.rtcquebec.ca",
       "region": "Quebec",
       "center": [
@@ -1742,6 +1747,7 @@
     {
       "slug": "stlevis",
       "name": "STLévis",
+      "displayArea": "Lévis",
       "websiteUrl": "http://www.stlevis.ca/",
       "region": "Quebec",
       "center": [
@@ -1788,6 +1794,7 @@
     {
       "slug": "stm",
       "name": "STM (Montréal)",
+      "displayArea": "Montréal",
       "websiteUrl": "https://www.stm.info",
       "searchAliases": [
         "Montreal"
@@ -1979,6 +1986,7 @@
     {
       "slug": "exo",
       "name": "exo (Trains)",
+      "displayArea": "Greater Montréal",
       "websiteUrl": "https://exo.quebec/fr/planifier-trajet/train",
       "region": "Quebec",
       "center": [
@@ -2022,6 +2030,7 @@
     {
       "slug": "exo-presquile",
       "name": "exo (La Presqu'île)",
+      "displayArea": "La Presqu'île",
       "websiteUrl": "https://exo.quebec/fr/planifier-trajet/autobus/CITPI",
       "region": "Quebec",
       "center": [
@@ -2056,6 +2065,7 @@
     {
       "slug": "exo-sudouest",
       "name": "exo (Sud-Ouest)",
+      "displayArea": "Sud-Ouest",
       "websiteUrl": "https://exo.quebec/fr/planifier-trajet/autobus/CITSO",
       "region": "Quebec",
       "center": [
@@ -2095,6 +2105,7 @@
     {
       "slug": "exo-lrrs",
       "name": "exo (Le Richelain–Roussillon)",
+      "displayArea": "Le Richelain–Roussillon",
       "websiteUrl": "https://exo.quebec/fr/planifier-trajet/autobus/LRRS",
       "region": "Quebec",
       "center": [
@@ -2133,6 +2144,7 @@
     {
       "slug": "exo-laurentides",
       "name": "exo (Laurentides)",
+      "displayArea": "Laurentides",
       "websiteUrl": "https://exo.quebec/fr/planifier-trajet/autobus/CITLA",
       "region": "Quebec",
       "center": [
@@ -2215,6 +2227,7 @@
     {
       "slug": "exo-vallee-richelieu",
       "name": "exo (Vallée du Richelieu)",
+      "displayArea": "Vallée du Richelieu",
       "websiteUrl": "https://exo.quebec/fr/planifier-trajet/autobus/CITVR",
       "region": "Quebec",
       "center": [
@@ -2674,6 +2687,7 @@
     {
       "slug": "halifax",
       "name": "Halifax Transit",
+      "displayArea": "Halifax",
       "websiteUrl": "http://www.halifax.ca/transit",
       "region": "Nova Scotia",
       "center": [
@@ -2961,6 +2975,7 @@
     {
       "slug": "port-huron",
       "name": "Blue Water Area Transit (Port Huron)",
+      "displayArea": "Port Huron",
       "websiteUrl": "https://bwbus.com",
       "center": [
         42.97,
@@ -3096,6 +3111,7 @@
     {
       "slug": "smart",
       "name": "SMART (Detroit suburbs)",
+      "displayArea": "Detroit suburbs",
       "region": "Michigan",
       "center": [
         42.4,
@@ -3399,6 +3415,7 @@
     {
       "slug": "cdta",
       "name": "Capital District Transportation Authority",
+      "displayArea": "Albany",
       "websiteUrl": "http://www.cdta.org",
       "region": "New York",
       "center": [
@@ -3636,6 +3653,7 @@
     {
       "slug": "laketran",
       "name": "Laketran (Lake County, OH)",
+      "displayArea": "Lake County, OH",
       "websiteUrl": "https://laketran.com/",
       "region": "Ohio",
       "center": [
@@ -3709,7 +3727,9 @@
         42.733,
         -84.556
       ],
-      "feedUrl": "http://developers.cata.org/gtfsdownload.ashx?key=5b4690ed-0a69-4320-897b-7d92def4b96f&data=base",
+      "feedUrl": "http://developers.cata.org/gtfsdownload.ashx?data=base",
+      "feedApiKeyEnvVar": "CATA_LANSING_API_KEY",
+      "feedApiKeyParam": "key",
       "lastFeedExpiry": "20261220",
       "lastFeedVersion": "26-06 (Aug24-Dec20)_20260917",
       "lastRefreshedAt": "2026-10-03",
@@ -3786,6 +3806,7 @@
     {
       "slug": "mbta",
       "name": "Massachusetts Bay Transportation Authority",
+      "displayArea": "Boston",
       "websiteUrl": "http://www.capecodrta.org/",
       "region": "Massachusetts",
       "center": [
@@ -4106,6 +4127,7 @@
     {
       "slug": "south-okanagan",
       "name": "BC Transit (South Okanagan-Similkameen)",
+      "displayArea": "South Okanagan",
       "websiteUrl": "https://www.bctransit.com/",
       "region": "British Columbia",
       "center": [
@@ -4188,6 +4210,7 @@
     {
       "slug": "cowichan",
       "name": "BC Transit (Cowichan Valley)",
+      "displayArea": "Cowichan Valley",
       "websiteUrl": "https://www.bctransit.com/",
       "region": "British Columbia",
       "center": [
@@ -4302,6 +4325,7 @@
     {
       "slug": "squamish",
       "name": "BC Transit (Squamish)",
+      "displayArea": "Squamish",
       "websiteUrl": "https://www.bctransit.com/",
       "region": "British Columbia",
       "center": [
@@ -4585,6 +4609,7 @@
     {
       "slug": "communitytransit",
       "name": "Community Transit (Everett)",
+      "displayArea": "Snohomish County",
       "websiteUrl": "https://www.communitytransit.org/",
       "center": [
         47.9,
@@ -4686,6 +4711,7 @@
     {
       "slug": "kitsaptransit",
       "name": "Kitsap Transit",
+      "displayArea": "Kitsap County",
       "center": [
         47.6,
         -122.65
@@ -4782,6 +4808,7 @@
     {
       "slug": "skagittransit",
       "name": "Skagit Transit",
+      "displayArea": "Skagit County",
       "websiteUrl": "https://www.skagittransit.org",
       "center": [
         48.4743,
@@ -4862,6 +4889,7 @@
     {
       "slug": "islandtransit",
       "name": "Island Transit (Whidbey Island)",
+      "displayArea": "Whidbey Island",
       "websiteUrl": "https://www.islandtransit.org/",
       "center": [
         48.22,
@@ -4898,6 +4926,7 @@
     {
       "slug": "jeffersontransit",
       "name": "Jefferson Transit",
+      "displayArea": "Jefferson County, WA",
       "websiteUrl": "https://jeffersontransit.com/",
       "center": [
         47.98,
@@ -4926,6 +4955,7 @@
     {
       "slug": "clallamtransit",
       "name": "Clallam Transit System",
+      "displayArea": "Clallam County",
       "websiteUrl": "https://www.clallamtransit.com/",
       "center": [
         48.1,
@@ -6176,6 +6206,7 @@
     {
       "slug": "goldengate",
       "name": "Golden Gate Transit",
+      "displayArea": "Marin & Sonoma",
       "websiteUrl": "http://www.goldengate.org",
       "center": [
         37.9841,
@@ -6231,6 +6262,7 @@
     {
       "slug": "weta",
       "name": "San Francisco Bay Area Water Emergency Transportation Authority (WETA)",
+      "displayArea": "San Francisco Bay",
       "websiteUrl": "https://sanfranciscobayferry.com/",
       "center": [
         37.8167,
@@ -6316,6 +6348,7 @@
     {
       "slug": "westcat",
       "name": "WestCAT (Pinole)",
+      "displayArea": "Pinole",
       "websiteUrl": "http://www.westcat.org/",
       "center": [
         38.0027,
@@ -6966,6 +6999,7 @@
     {
       "slug": "riovista",
       "name": "Rio Vista Delta Breeze",
+      "displayArea": "Rio Vista",
       "center": [
         38.219,
         -121.907
@@ -7589,6 +7623,7 @@
     {
       "slug": "smart-or",
       "name": "South Metro Area Regional Transit (SMART)",
+      "displayArea": "Wilsonville",
       "websiteUrl": "https://www.ridesmart.com/",
       "center": [
         45.2868,
@@ -7729,6 +7764,7 @@
     {
       "slug": "yamhill",
       "name": "Yamhill County Transit Area",
+      "displayArea": "Yamhill County",
       "websiteUrl": "http://ycta.connexionz.net/rtt/public/",
       "center": [
         45.2276,
@@ -7827,6 +7863,7 @@
     {
       "slug": "metrolink",
       "name": "Metrolink",
+      "displayArea": "Southern California",
       "websiteUrl": "http://www.metrolinktrains.com",
       "center": [
         34.05,
@@ -8562,6 +8599,7 @@
     {
       "slug": "slotransit",
       "name": "City of San Luis Obispo Transit",
+      "displayArea": "San Luis Obispo",
       "websiteUrl": "https://www.slocity.org/government/department-directory/public-works/slo-transit-bus",
       "center": [
         35.28,
@@ -8584,6 +8622,7 @@
     {
       "slug": "slorta",
       "name": "San Luis Obispo Regional Transit Authority (SLORTA)",
+      "displayArea": "San Luis Obispo County",
       "websiteUrl": "https://www.slorta.org/",
       "center": [
         35.28,
@@ -8744,6 +8783,7 @@
     {
       "slug": "valleymetro",
       "name": "Valley Metro (Phoenix)",
+      "displayArea": "Phoenix",
       "websiteUrl": "https://www.valleymetro.org/",
       "center": [
         33.45,
@@ -9007,6 +9047,7 @@
     {
       "slug": "capmetro",
       "name": "Capital Metro (Austin)",
+      "displayArea": "Austin",
       "websiteUrl": "http://www.capmetro.org",
       "center": [
         30.27,
@@ -9638,6 +9679,7 @@
     {
       "slug": "culvercitybus",
       "name": "Culver City Bus",
+      "displayArea": "Culver City",
       "websiteUrl": "https://www.culvercity.org/how-do-i/find/culver-city-bus",
       "center": [
         34.0073,
@@ -10046,6 +10088,7 @@
     {
       "slug": "cta",
       "name": "Chicago Transit Authority (CTA)",
+      "displayArea": "Chicago",
       "websiteUrl": "http://transitchicago.com",
       "center": [
         41.8781,
@@ -10098,6 +10141,7 @@
     {
       "slug": "metra",
       "name": "Metra (Chicago)",
+      "displayArea": "Chicago",
       "websiteUrl": "http://www.metrarail.com/",
       "center": [
         41.8781,
@@ -10129,6 +10173,7 @@
     {
       "slug": "pace-bus",
       "name": "Pace Bus (Chicago suburbs)",
+      "displayArea": "Chicago suburbs",
       "websiteUrl": "https://www.pacebus.com",
       "center": [
         41.9,
@@ -10251,6 +10296,7 @@
     {
       "slug": "gwinnett-transit",
       "name": "Gwinnett County Transit",
+      "displayArea": "Gwinnett County",
       "websiteUrl": "https://www.ridegwinnett.com/",
       "center": [
         33.96,
@@ -10275,6 +10321,7 @@
     {
       "slug": "miami-dade-transit",
       "name": "Miami-Dade Transit",
+      "displayArea": "Miami-Dade County",
       "websiteUrl": "http://www.miamidade.gov/transit",
       "center": [
         25.7617,
@@ -10412,6 +10459,7 @@
     {
       "slug": "septa",
       "name": "SEPTA (Philadelphia)",
+      "displayArea": "Philadelphia",
       "websiteUrl": "https://septa.org/",
       "region": "Pennsylvania",
       "center": [
@@ -10581,6 +10629,7 @@
     {
       "slug": "marc",
       "name": "MARC Train (MTA Maryland)",
+      "displayArea": "Maryland",
       "websiteUrl": "https://mta.maryland.gov/",
       "region": "Maryland",
       "center": [
@@ -10667,6 +10716,7 @@
     {
       "slug": "fairfax",
       "name": "Fairfax Connector",
+      "displayArea": "Fairfax County",
       "websiteUrl": "http://www.fairfaxcounty.gov/connector/routes/",
       "region": "Virginia",
       "center": [
@@ -10781,6 +10831,7 @@
     {
       "slug": "nyct-subway",
       "name": "MTA NYCT Subway",
+      "displayArea": "New York City",
       "websiteUrl": "http://www.mta.info",
       "region": "New York",
       "center": [
@@ -10834,6 +10885,7 @@
     {
       "slug": "nyct-bus-manhattan",
       "name": "MTA NYCT Bus (Manhattan)",
+      "displayArea": "Manhattan",
       "websiteUrl": "http://www.mta.info",
       "center": [
         40.776,
@@ -10884,6 +10936,7 @@
     {
       "slug": "nyct-bus-brooklyn",
       "name": "MTA NYCT Bus (Brooklyn)",
+      "displayArea": "Brooklyn",
       "websiteUrl": "http://www.mta.info",
       "center": [
         40.65,
@@ -10986,6 +11039,7 @@
     {
       "slug": "nyct-bus-bronx",
       "name": "MTA NYCT Bus (Bronx)",
+      "displayArea": "Bronx",
       "websiteUrl": "http://www.mta.info",
       "center": [
         40.845,
@@ -11086,6 +11140,7 @@
     {
       "slug": "mta-bus-company",
       "name": "MTA Bus Company",
+      "displayArea": "New York City",
       "websiteUrl": "https://new.mta.info",
       "center": [
         40.7377,
@@ -11113,6 +11168,7 @@
     {
       "slug": "lirr",
       "name": "MTA Long Island Rail Road",
+      "displayArea": "Long Island",
       "websiteUrl": "https://new.mta.info/agency/long-island-rail-road",
       "region": "New York",
       "center": [
@@ -11169,6 +11225,7 @@
     {
       "slug": "mnr",
       "name": "Metro-North Railroad (MNR)",
+      "displayArea": "New York & Connecticut",
       "websiteUrl": "http://www.mta.info/mnr",
       "region": "New York",
       "center": [
@@ -11206,6 +11263,7 @@
     {
       "slug": "njt-rail",
       "name": "NJ Transit Rail",
+      "displayArea": "New Jersey",
       "websiteUrl": "http://www.njtransit.com/",
       "region": "New Jersey",
       "center": [
@@ -11243,6 +11301,7 @@
     {
       "slug": "njt-bus",
       "name": "NJ Transit Bus",
+      "displayArea": "New Jersey",
       "websiteUrl": "http://www.njtransit.com/",
       "region": "New Jersey",
       "center": [
@@ -11281,6 +11340,7 @@
     {
       "slug": "path",
       "name": "PATH (Port Authority Trans-Hudson)",
+      "displayArea": "New York & New Jersey",
       "region": "New Jersey",
       "center": [
         40.7318,
@@ -11415,6 +11475,7 @@
     {
       "slug": "tor",
       "name": "Transport of Rockland (TOR)",
+      "displayArea": "Rockland County",
       "region": "New York",
       "center": [
         41.1,
@@ -11493,6 +11554,7 @@
     {
       "slug": "part",
       "name": "Putnam Area Rapid Transit (PART)",
+      "displayArea": "Putnam County",
       "websiteUrl": "http://www.putnamcountyny.com/PART/",
       "region": "New York",
       "center": [
@@ -11522,6 +11584,7 @@
     {
       "slug": "dutchess",
       "name": "Dutchess County Public Transit",
+      "displayArea": "Dutchess County",
       "websiteUrl": "https://www.dutchessny.gov/Departments/Public-Transit/Routes",
       "region": "New York",
       "center": [
@@ -13684,6 +13747,7 @@
     {
       "slug": "cue-bus",
       "name": "CUE Bus (Fairfax)",
+      "displayArea": "Fairfax",
       "websiteUrl": "http://www.ridesystems.net",
       "center": [
         38.85,
@@ -13707,6 +13771,7 @@
     {
       "slug": "pgc-the-bus",
       "name": "Prince George's County (The Bus)",
+      "displayArea": "Prince George's County",
       "websiteUrl": "https://www.princegeorgescountymd.gov/1120/Countys-TheBus",
       "center": [
         38.85,
@@ -13759,6 +13824,8 @@
       "lastFeedExpiry": "20250630",
       "lastFeedVersion": "20230718",
       "region": "Washington DC",
+      "hiddenInProduction": true,
+      "issueUrl": "https://github.com/Civic-Minds/Atlas/issues/682",
       "lastRefreshedAt": "20260811",
       "websiteUrl": "https://www.dcstreetcar.com/",
       "cities": [
@@ -13778,6 +13845,8 @@
     {
       "slug": "fred-transit",
       "name": "Fredericksburg Regional Transit",
+      "hiddenInProduction": true,
+      "issueUrl": "https://github.com/Civic-Minds/Atlas/issues/684",
       "websiteUrl": "http://www.ridefred.com/",
       "center": [
         38.3204,
@@ -13862,6 +13931,7 @@
     {
       "slug": "wata",
       "name": "Williamsburg Area Transit Authority",
+      "displayArea": "Williamsburg",
       "websiteUrl": "http://www.gowata.org",
       "center": [
         37.3,
@@ -14190,6 +14260,7 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-17/latest.zip",
       "region": "Arizona",
+      "hiddenInProduction": true,
       "lastRefreshedAt": "2026-08-10",
       "lastFeedExpiry": "20270101",
       "lastFeedVersion": null,
@@ -15866,8 +15937,8 @@
         35.96,
         -83.92
       ],
-      "feedUrl": "http://www.knoxvilletn.gov/UserFiles/Servers/Server_109478/File/KAT/gtfs-kat.zip",
-      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1121/latest.zip",
+      "feedUrl": "https://knoxville.syncromatics.com/gtfs",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3512/latest.zip",
       "region": "Tennessee",
       "lastFeedExpiry": "20991231",
       "lastFeedVersion": "MARCH 3/14",
@@ -16597,6 +16668,7 @@
     {
       "slug": "lcta",
       "name": "Luzerne County Transportation Authority",
+      "displayArea": "Wilkes-Barre",
       "websiteUrl": "http://www.lctabus.com/",
       "center": [
         41.25,
@@ -16707,6 +16779,7 @@
     {
       "slug": "mountain-transit-ca",
       "name": "Mountain Transit (Big Bear Lake)",
+      "displayArea": "Big Bear Lake",
       "websiteUrl": "http://www.mountaintransit.org/?referrer=gtfs",
       "region": "California",
       "center": [
@@ -16923,7 +16996,7 @@
         32.6,
         -94.643
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/ntd-60081/latest.zip",
+      "feedUrl": "https://cloud.longviewtexas.gov/maps/LongviewTransitGTFS/LongviewTransitGTFS.zip",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-60081/latest.zip",
       "lastFeedExpiry": "20260930",
       "lastFeedVersion": "2.0",
@@ -17142,6 +17215,7 @@
     {
       "slug": "martin-county",
       "name": "Martin County Public Transit",
+      "displayArea": "Martin County, FL",
       "websiteUrl": "https://www.martin.fl.us/transit",
       "region": "Florida",
       "center": [
@@ -17188,6 +17262,7 @@
     {
       "slug": "indian-river",
       "name": "Indian River Transit",
+      "displayArea": "Indian River County",
       "websiteUrl": "http://www.ridesystems.net",
       "region": "Florida",
       "center": [
@@ -17218,6 +17293,7 @@
     {
       "slug": "collier",
       "name": "Collier Area Transit (Naples)",
+      "displayArea": "Naples",
       "websiteUrl": "https://ridecat.com/",
       "region": "Florida",
       "center": [
@@ -17597,6 +17673,7 @@
     {
       "slug": "blacksburg",
       "name": "Blacksburg Transit",
+      "displayArea": "Blacksburg",
       "websiteUrl": "https://ridebt.org/",
       "center": [
         37.1452,
@@ -17773,6 +17850,7 @@
     {
       "slug": "coralville",
       "name": "Coralville Transit",
+      "displayArea": "Coralville",
       "websiteUrl": "http://www.coralville.org/166/Bus-Schedules-Route-Maps",
       "center": [
         41.68,
@@ -18010,6 +18088,7 @@
     {
       "slug": "coast-nh",
       "name": "COAST (Seacoast NH)",
+      "displayArea": "Seacoast NH",
       "websiteUrl": "http://www.coastbus.org/",
       "center": [
         43.07,
@@ -18320,6 +18399,7 @@
     {
       "slug": "annapolis",
       "name": "Annapolis Transit",
+      "displayArea": "Annapolis",
       "websiteUrl": "https://www.annapolis.gov/159/Transportation",
       "center": [
         38.98,
@@ -18699,6 +18779,7 @@
     {
       "slug": "bettendorf",
       "name": "Bettendorf Transit",
+      "displayArea": "Bettendorf",
       "websiteUrl": "https://www.bettendorf.org/departments/engineering___public_",
       "center": [
         41.53,
@@ -18928,7 +19009,7 @@
         39.0871,
         -108.5512
       ],
-      "feedUrl": "https://data.trilliumtransit.com/gtfs/grandvalleytransit-co-us/grandvalleytransit-co-us--flex-v2.zip",
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-161/latest.zip",
       "lastFeedExpiry": "20251105",
       "lastFeedVersion": "Nov_05_2024",
       "lastRefreshedAt": "20260811",
@@ -19011,6 +19092,7 @@
     {
       "slug": "ncsu-wolfline",
       "name": "NCSU Wolfline",
+      "displayArea": "Raleigh",
       "websiteUrl": "https://transportation.ncsu.edu/wolfline/",
       "center": [
         35.78,
@@ -19040,6 +19122,7 @@
     {
       "slug": "clemson-cat",
       "name": "Clemson Area Transit (CATbus)",
+      "displayArea": "Clemson",
       "websiteUrl": "catbus.transloc.com",
       "center": [
         34.6823,
@@ -19282,6 +19365,7 @@
     {
       "slug": "dekalb",
       "name": "DeKalb Public Transit",
+      "displayArea": "DeKalb",
       "websiteUrl": "https://cityofdekalb.com/1287/Maps-Schedules",
       "center": [
         41.93,
@@ -19382,6 +19466,7 @@
     {
       "slug": "staten-island-ferry",
       "name": "Staten Island Ferry",
+      "displayArea": "Staten Island",
       "websiteUrl": "https://www1.nyc.gov/html/dot/html/ferrybus/staten-island-ferry.shtml",
       "region": "New York",
       "center": [
@@ -19412,6 +19497,7 @@
     {
       "slug": "nyc-ferry",
       "name": "NYC Ferry",
+      "displayArea": "New York City",
       "websiteUrl": "https://www.ferry.nyc/",
       "region": "New York",
       "center": [
@@ -19467,6 +19553,7 @@
     {
       "slug": "rioc-tram",
       "name": "Roosevelt Island Tramway",
+      "displayArea": "Roosevelt Island",
       "websiteUrl": "https://rioc.ny.gov/tramtransportation.htm",
       "region": "New York",
       "center": [
@@ -19677,6 +19764,7 @@
     {
       "slug": "kern-transit",
       "name": "Kern Transit",
+      "displayArea": "Kern County",
       "websiteUrl": "http://kerntransit.org/?referrer=gtfs",
       "region": "California",
       "center": [
@@ -19707,6 +19795,7 @@
     {
       "slug": "banning",
       "name": "Banning Connect",
+      "displayArea": "Banning",
       "websiteUrl": "http://www.ci.banning.ca.us/351/Bus-Schedules",
       "region": "California",
       "center": [
@@ -19737,6 +19826,7 @@
     {
       "slug": "beaumont-ca",
       "name": "Beaumont Transit",
+      "displayArea": "Beaumont",
       "websiteUrl": "https://www.beaumontca.gov/index.aspx?NID=90",
       "region": "California",
       "center": [
@@ -19898,6 +19988,7 @@
     {
       "slug": "basin-transit",
       "name": "Basin Transit",
+      "displayArea": "Morongo Basin",
       "websiteUrl": "http://www.mbtabus.com/",
       "region": "California",
       "center": [
@@ -19951,6 +20042,7 @@
     {
       "slug": "arvin",
       "name": "Arvin Transit",
+      "displayArea": "Arvin",
       "websiteUrl": "https://www.arvin.org/202/Routes-Schedules-Fares",
       "region": "California",
       "center": [
@@ -19980,6 +20072,7 @@
     {
       "slug": "moorpark",
       "name": "Moorpark City Transit",
+      "displayArea": "Moorpark",
       "websiteUrl": "https://www.moorparkca.gov/227/Bus-Ride-Guide",
       "region": "California",
       "center": [
@@ -20051,6 +20144,7 @@
     {
       "slug": "laguna-beach",
       "name": "Laguna Beach Transit",
+      "displayArea": "Laguna Beach",
       "websiteUrl": "http://www.lagunabeachcity.net/cityhall/transit_and_trolleys/",
       "region": "California",
       "center": [
@@ -20139,6 +20233,7 @@
     {
       "slug": "snoqualmie-valley",
       "name": "Snoqualmie Valley Transportation",
+      "displayArea": "Snoqualmie Valley",
       "websiteUrl": "http://www.svtbus.org/",
       "region": "Washington",
       "center": [
@@ -20963,7 +21058,9 @@
         49.2583,
         4.0317
       ],
-      "feedUrl": "https://api.grandest2.cityway.fr/exs/GTFS?Key=OPENDATA&OperatorCode=REI",
+      "feedUrl": "https://api.grandest2.cityway.fr/exs/GTFS?OperatorCode=REI",
+      "feedApiKeyEnvVar": "GRAND_EST_API_KEY",
+      "feedApiKeyParam": "Key",
       "mdbFeedUrl": null,
       "hiddenInProduction": true,
       "pmtilesPending": true,
@@ -21358,7 +21455,9 @@
         49.7719,
         4.72
       ],
-      "feedUrl": "https://api.grandest2.cityway.fr/exs/GTFS?Key=OPENDATA&OperatorCode=CHM",
+      "feedUrl": "https://api.grandest2.cityway.fr/exs/GTFS?OperatorCode=CHM",
+      "feedApiKeyEnvVar": "GRAND_EST_API_KEY",
+      "feedApiKeyParam": "Key",
       "mdbFeedUrl": null,
       "hiddenInProduction": true,
       "pmtilesPending": true,
@@ -21393,7 +21492,9 @@
         48.0794,
         7.3586
       ],
-      "feedUrl": "https://api.grandest2.cityway.fr/exs/GTFS?Key=OPENDATA&OperatorCode=CAC",
+      "feedUrl": "https://api.grandest2.cityway.fr/exs/GTFS?OperatorCode=CAC",
+      "feedApiKeyEnvVar": "GRAND_EST_API_KEY",
+      "feedApiKeyParam": "Key",
       "mdbFeedUrl": null,
       "hiddenInProduction": true,
       "pmtilesPending": true,
@@ -21500,7 +21601,9 @@
         48.1734,
         6.449
       ],
-      "feedUrl": "https://api.grandest2.cityway.fr/exs/GTFS?Key=OPENDATA&OperatorCode=IMAGINE",
+      "feedUrl": "https://api.grandest2.cityway.fr/exs/GTFS?OperatorCode=IMAGINE",
+      "feedApiKeyEnvVar": "GRAND_EST_API_KEY",
+      "feedApiKeyParam": "Key",
       "mdbFeedUrl": null,
       "hiddenInProduction": true,
       "pmtilesPending": true,
@@ -22275,7 +22378,9 @@
         48.2594,
         7.4542
       ],
-      "feedUrl": "https://api.grandest2.cityway.fr/exs/GTFS?Key=OPENDATA&OperatorCode=CCSelestat",
+      "feedUrl": "https://api.grandest2.cityway.fr/exs/GTFS?OperatorCode=CCSelestat",
+      "feedApiKeyEnvVar": "GRAND_EST_API_KEY",
+      "feedApiKeyParam": "Key",
       "mdbFeedUrl": null,
       "hiddenInProduction": true,
       "pmtilesPending": true,
@@ -22363,7 +22468,9 @@
         48.9566,
         4.3631
       ],
-      "feedUrl": "https://api.grandest2.cityway.fr/exs/GTFS?Key=OPENDATA&OperatorCode=CEC",
+      "feedUrl": "https://api.grandest2.cityway.fr/exs/GTFS?OperatorCode=CEC",
+      "feedApiKeyEnvVar": "GRAND_EST_API_KEY",
+      "feedApiKeyParam": "Key",
       "mdbFeedUrl": null,
       "hiddenInProduction": true,
       "pmtilesPending": true,
@@ -23456,7 +23563,7 @@
         },
         "checkedAt": "2026-10-07"
       },
-      "lastFeedExpiry": "20260930",
+      "lastFeedExpiry": "20261231",
       "lastFeedVersion": "20260316",
       "lastRefreshedAt": "2026-10-07",
       "lastFeedCheckAt": "20261007",
@@ -24311,6 +24418,256 @@
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0
+    },
+    {
+      "slug": "ottumwa",
+      "name": "10-15 Transit",
+      "websiteUrl": "https://www.1015transit.com/",
+      "center": [
+        41.15,
+        -92.52
+      ],
+      "timezone": "America/Chicago",
+      "feedUrl": "http://data.trilliumtransit.com/gtfs/10-15transit-ia-us/10-15transit-ia-us.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-195/latest.zip",
+      "region": "Iowa",
+      "staged": true,
+      "lastFeedExpiry": "20270301",
+      "lastFeedVersion": "UTC: 20-Aug-2026 23:12",
+      "lastRefreshedAt": "2026-09-10",
+      "feedQuality": {
+        "status": "review",
+        "score": 90,
+        "reasons": [
+          "1 schedule-data warning — Atlas found a minor issue while reading the schedule."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 1,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 6
+        },
+        "checkedAt": "2026-09-10"
+      }
+    },
+    {
+      "slug": "mckinley-county",
+      "name": "A:Shiwi Transit",
+      "websiteUrl": "https://www.ashiwi.org/Transit.html",
+      "center": [
+        35.3,
+        -108.79
+      ],
+      "timezone": "America/Denver",
+      "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/7763/AshiwiGTFS.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-66242/latest.zip",
+      "region": "New Mexico",
+      "staged": true,
+      "lastFeedExpiry": "20280131",
+      "lastFeedVersion": "20260321",
+      "lastRefreshedAt": "2026-09-10",
+      "feedQuality": {
+        "status": "review",
+        "score": 90,
+        "reasons": [
+          "1 schedule-data warning — Atlas found a minor issue while reading the schedule."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 1,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 8
+        },
+        "checkedAt": "2026-09-10"
+      }
+    },
+    {
+      "slug": "bowling-green",
+      "name": "City of Bowling Green",
+      "center": [
+        36.97,
+        -86.44
+      ],
+      "timezone": "America/Chicago",
+      "feedUrl": "https://gobg.ridesystems.net/Secure/Admin/Reports/GTFSDownload.aspx",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-40184/latest.zip",
+      "region": "Kentucky",
+      "staged": true,
+      "lastFeedExpiry": null,
+      "lastFeedVersion": null,
+      "lastRefreshedAt": "2026-09-10",
+      "feedQuality": {
+        "status": "review",
+        "score": 90,
+        "reasons": [
+          "1 schedule-data warning — Atlas found a minor issue while reading the schedule."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 1,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 5
+        },
+        "checkedAt": "2026-09-10"
+      }
+    },
+    {
+      "slug": "knox-county",
+      "name": "City of Galesburg",
+      "center": [
+        40.96,
+        -90.37
+      ],
+      "timezone": "US/Central",
+      "feedUrl": "https://gis.ci.galesburg.il.us/cityofgalesburg-il-us.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-50502/latest.zip",
+      "region": "Illinois",
+      "staged": true,
+      "lastFeedExpiry": "20270131",
+      "lastFeedVersion": "26.32",
+      "lastRefreshedAt": "2026-09-10",
+      "feedQuality": {
+        "status": "review",
+        "score": 90,
+        "reasons": [
+          "1 schedule-data warning — Atlas found a minor issue while reading the schedule."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 1,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 12
+        },
+        "checkedAt": "2026-09-10"
+      }
+    },
+    {
+      "slug": "sevier-county",
+      "name": "City of Gatlinburg Trolley",
+      "websiteUrl": "https://www.gatlinburg.com/trolley/",
+      "center": [
+        35.73,
+        -83.47
+      ],
+      "timezone": "America/New_York",
+      "feedUrl": "http://gatlinburg.connexionz.net/rtt/public/utility/gtfs.aspx",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-6775/latest.zip",
+      "region": "Tennessee",
+      "staged": true,
+      "lastFeedExpiry": "20271231",
+      "lastFeedVersion": "20260515",
+      "lastRefreshedAt": "2026-09-10",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 12
+        },
+        "checkedAt": "2026-09-10"
+      }
+    },
+    {
+      "slug": "howard-county",
+      "name": "City of Kokomo",
+      "websiteUrl": "https://www.kokomompo.com/cityline-trolley/",
+      "center": [
+        40.47,
+        -86.13
+      ],
+      "timezone": "America/New_York",
+      "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11767/CityofKokomo_Transit.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-50145/latest.zip",
+      "region": "Indiana",
+      "staged": true,
+      "lastFeedExpiry": "20280504",
+      "lastFeedVersion": "20260610",
+      "lastRefreshedAt": "2026-09-10",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 6
+        },
+        "checkedAt": "2026-09-10"
+      }
+    },
+    {
+      "slug": "sierra-vista",
+      "name": "City of Sierra Vista",
+      "websiteUrl": "https://sierravistaaz.gov/our-city/bus-service/route-information",
+      "center": [
+        31.55,
+        -110.27
+      ],
+      "timezone": "America/Phoenix",
+      "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/12009/VistaTransit_AZ_GTFS.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-679/latest.zip",
+      "region": "Arizona",
+      "staged": true,
+      "lastFeedExpiry": "20270331",
+      "lastFeedVersion": "20250522",
+      "lastRefreshedAt": "2026-09-10",
+      "feedQuality": {
+        "status": "review",
+        "score": 90,
+        "reasons": [
+          "1 schedule-data warning — Atlas found a minor issue while reading the schedule."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 1,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 3
+        },
+        "checkedAt": "2026-09-10"
+      }
+    },
+    {
+      "slug": "kittitas-county",
+      "name": "City of Ellensburg Public Transit (Central Transit)",
+      "websiteUrl": "https://centraltransit.org/",
+      "center": [
+        47,
+        -120.55
+      ],
+      "timezone": "America/Los_Angeles",
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/ellensburg-wa-us/ellensburg-wa-us.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2456/latest.zip",
+      "region": "Washington",
+      "staged": true,
+      "lastFeedExpiry": "20261101",
+      "lastFeedVersion": "UTC: 02-Sep-2026 21:07",
+      "lastRefreshedAt": "2026-09-10",
+      "feedQuality": {
+        "status": "review",
+        "score": 90,
+        "reasons": [
+          "1 schedule-data warning — Atlas found a minor issue while reading the schedule."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 1,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 36
+        },
+        "checkedAt": "2026-09-10"
+      }
     }
   ]
 }

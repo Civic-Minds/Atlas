@@ -21,6 +21,8 @@ Use this page as the documentation index. The root [README](../README.md) explai
 - [Route service metrics](data/ROUTE_SERVICE_METRICS.md)
 - [Live polling and history archiving](operations/LIVE_POLLING.md)
 - [Agency backlog](data/AGENCY_BACKLOG.md)
+- [Reprocessing shared route data](operations/DATA_REPROCESSING.md)
+- [Staging R2](operations/STAGING.md)
 - [Manual GTFS refresh queue](operations/MANUAL_GTFS_REFRESHES.md)
 - [Manually maintained GTFS sources](operations/MANUAL_GTFS_SOURCES.md)
 - [Known issues](operations/KNOWN_ISSUES.md)

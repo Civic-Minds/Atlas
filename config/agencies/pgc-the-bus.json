@@ -1,6 +1,7 @@
 {
   "slug": "pgc-the-bus",
   "name": "Prince George's County (The Bus)",
+  "displayArea": "Prince George's County",
   "websiteUrl": "https://www.princegeorgescountymd.gov/1120/Countys-TheBus",
   "center": [
     38.85,

@@ -7,7 +7,9 @@
     48.1734,
     6.449
   ],
-  "feedUrl": "https://api.grandest2.cityway.fr/exs/GTFS?Key=OPENDATA&OperatorCode=IMAGINE",
+  "feedUrl": "https://api.grandest2.cityway.fr/exs/GTFS?OperatorCode=IMAGINE",
+  "feedApiKeyEnvVar": "GRAND_EST_API_KEY",
+  "feedApiKeyParam": "Key",
   "mdbFeedUrl": null,
   "hiddenInProduction": true,
   "pmtilesPending": true,

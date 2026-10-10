@@ -30,8 +30,8 @@ Run the read-only audit before changing a source:
 npm run audit-feed-freshness
 ```
 
-Run the production refresh only after validating a replacement feed by agency identity and active service calendar:
+Run the production refresh and release only after validating a replacement feed by agency identity and active service calendar:
 
 ```sh
-npm run refresh -- <slug>
+npm run refresh-release -- <slug>
 ```

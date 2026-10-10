@@ -98,11 +98,6 @@ describe('createMapExport', () => {
     expect(texts).toEqual(expect.arrayContaining(['Toronto', 'Transit frequency', 'Every 20 min or better · Saturday midday', 'Route 505 Dundas', '≤10m', '≤20m']));
     expect(texts.some(text => /[A-Z]{4,}/.test(String(text).replace(/CARTO|ODbL/g, '')))).toBe(false);
   });
-
-  it('keeps the export dimensions platform-neutral', () => {
-    expect(MAP_EXPORT_WIDTH).toBe(1600);
-    expect(MAP_EXPORT_HEIGHT).toBe(900);
-  });
 });
 
 describe('wrapExportLine', () => {

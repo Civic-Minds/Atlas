@@ -1,6 +1,7 @@
 {
   "slug": "smart-or",
   "name": "South Metro Area Regional Transit (SMART)",
+  "displayArea": "Wilsonville",
   "websiteUrl": "https://www.ridesmart.com/",
   "center": [
     45.2868,
