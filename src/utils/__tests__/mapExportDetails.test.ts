@@ -62,14 +62,22 @@ describe('pickExportPlace', () => {
     expect(pickExportPlace([...many, ...samples({ ttc: 5 })], AGENCIES)).toBe('Toronto');
   });
 
-  it('uses two places, then the region, for multi-city views', () => {
-    expect(pickExportPlace(samples({ ttc: 8, miway: 7, brampton: 2 }), AGENCIES)).toBe('Toronto and Mississauga');
-    expect(pickExportPlace(samples({ ttc: 10, miway: 8, brampton: 7 }), AGENCIES)).toBe('Toronto and area');
-    expect(pickExportPlace(samples({ ttc: 10, stm: 8, mbta: 7 }), AGENCIES)).toBe('Ontario, Quebec and more');
+  it('leaves the name out unless one place clearly fills the view', () => {
+    expect(pickExportPlace(samples({ ttc: 8, miway: 7, brampton: 2 }), AGENCIES)).toBeNull();
+    expect(pickExportPlace(samples({ ttc: 10, miway: 8, brampton: 7 }), AGENCIES)).toBeNull();
+    expect(pickExportPlace(samples({ ttc: 10, stm: 8, mbta: 7 }), AGENCIES)).toBeNull();
+    // A border view: the city that clearly dominates is still named.
+    expect(pickExportPlace(samples({ ttc: 30, miway: 6 }), AGENCIES)).toBe('Toronto');
+    expect(pickExportPlace(samples({ ttc: 20, miway: 10 }), AGENCIES)).toBeNull();
   });
 
-  it('falls back gracefully when nothing is drawn', () => {
-    expect(pickExportPlace([], AGENCIES)).toBe('Transit map');
+  it('never names a view after an agency it cannot place', () => {
+    expect(pickExportPlace(samples({ unknown: 30 }), AGENCIES)).toBeNull();
+    expect(pickExportPlace(samples({ unknown: 10, ttc: 10 }), AGENCIES)).toBeNull();
+  });
+
+  it('shows no name when nothing is drawn', () => {
+    expect(pickExportPlace([], AGENCIES)).toBeNull();
   });
 });
 
@@ -96,6 +104,7 @@ describe('describeMapExport', () => {
   it('describes a filtered view with a readable file name', () => {
     const details = describeMapExport(BASE, samples({ ttc: 30 }), AGENCIES);
     expect(details.place).toBe('Toronto');
+    expect(details.title).toBe('Toronto');
     expect(details.lines).toEqual(['Transit frequency', 'Every 20 min or better · Saturday midday']);
     expect(details.filename).toBe('atlas-toronto-20min-saturday-midday.png');
   });
@@ -110,6 +119,14 @@ describe('describeMapExport', () => {
     const details = describeMapExport({ ...BASE, maxHeadway: Infinity, period: 'all', day: 'Weekday', zoom: 6 }, samples({ ttc: 3 }), AGENCIES);
     expect(details.lines).toContain('Zoomed out, so some less frequent routes are hidden');
     expect(details.filename).toBe('atlas-toronto-all-routes-weekday-all-day.png');
+  });
+
+  it('uses the view name as the heading and leaves the place out of a multi-city view', () => {
+    const details = describeMapExport(BASE, samples({ ttc: 10, stm: 8, mbta: 7 }), AGENCIES);
+    expect(details.place).toBeNull();
+    expect(details.title).toBe('Transit frequency');
+    expect(details.lines).toEqual(['Every 20 min or better · Saturday midday']);
+    expect(details.filename).toBe('atlas-20min-saturday-midday.png');
   });
 
   it('keeps file names to lowercase letters, numbers and dashes', () => {

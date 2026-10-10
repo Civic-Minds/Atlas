@@ -16,8 +16,10 @@ export interface MapExportKeyItem {
 
 /** Everything the exported image says about the view, all derived from the map's own state. */
 export interface MapExportDetails {
-  /** Short place name for the view, e.g. "Toronto". */
-  place: string;
+  /** Place name, only when one city clearly fills the view (e.g. "Toronto"); otherwise null. */
+  place: string | null;
+  /** Large heading: the place when known, otherwise the view name. */
+  title: string;
   /** Plain-language description lines, e.g. ["Transit frequency", "Route 504 King", "Every 20 min or better · Saturday midday"]. */
   lines: string[];
   key: MapExportKeyItem[];
@@ -170,23 +172,26 @@ export function buildExportKey(candidates: MapExportKeyItem[], drawnColors: Iter
   });
 }
 
-function agencyPlace(agency: Agency | undefined, slug: string): string {
-  if (!agency) return slug;
+function agencyPlace(agency: Agency | undefined): string | null {
+  if (!agency) return null;
   if (agency.displayArea) return agency.displayArea;
   // A place written in the agency's own name ("STM (Montréal)", "OC Transpo (Ottawa)") is the
   // most reliable label; the stop-density city can be a neighbourhood in large cities.
   const fromName = agencyDisplayParts(agency.name).secondary;
   if (fromName) return fromName;
   const city = agency.cities?.[0]?.split(',')[0]?.trim();
-  if (city) return city;
-  return agencyDisplayParts(agency.name).primary;
+  return city || null;
 }
 
+/** Share of the drawn routes one place must have before the image is named after it. */
+export const PLACE_DOMINANCE_SHARE = 0.7;
+
 /**
- * Pick a short place name from the routes drawn in view. One place that draws most of the
- * routes names the view; otherwise two places, then a shared region, then a count of networks.
+ * Name the view only when one place clearly fills it: that place's agencies must draw at least
+ * PLACE_DOMINANCE_SHARE of the routes in view. Otherwise return null and show no name, so the
+ * image never names a place that could misdescribe the map.
  */
-export function pickExportPlace(samples: RenderedRouteSample[], agencies: Agency[]): string {
+export function pickExportPlace(samples: RenderedRouteSample[], agencies: Agency[]): string | null {
   const routesBySlug = new Map<string, Set<string>>();
   for (const sample of samples) {
     if (!sample.agencySlug) continue;
@@ -194,31 +199,20 @@ export function pickExportPlace(samples: RenderedRouteSample[], agencies: Agency
     routes.add(sample.routeKey);
     routesBySlug.set(sample.agencySlug, routes);
   }
-  if (routesBySlug.size === 0) return 'Transit map';
+  if (routesBySlug.size === 0) return null;
 
   const bySlug = new Map(agencies.map(agency => [agency.slug, agency]));
   const placeCounts = new Map<string, number>();
-  const regionCounts = new Map<string, number>();
   let total = 0;
   for (const [slug, routes] of routesBySlug) {
-    const agency = bySlug.get(slug);
-    const place = agencyPlace(agency, slug);
-    placeCounts.set(place, (placeCounts.get(place) ?? 0) + routes.size);
-    const region = agency?.region ?? '';
-    regionCounts.set(region, (regionCounts.get(region) ?? 0) + routes.size);
+    // Routes from an agency with no known place still count toward the total, so they can
+    // stop another place from looking dominant, but never name the view themselves.
+    const place = agencyPlace(bySlug.get(slug));
+    if (place) placeCounts.set(place, (placeCounts.get(place) ?? 0) + routes.size);
     total += routes.size;
   }
-  const rank = (counts: Map<string, number>) => [...counts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
-  const places = rank(placeCounts);
-  const regions = rank(regionCounts);
-  const [top, second] = places;
-  if (places.length === 1 || top[1] / total >= 0.5) return top[0];
-  if (second && (top[1] + second[1]) / total >= 0.75) return `${top[0]} and ${second[0]}`;
-  const named = regions.map(([region]) => region).filter(Boolean);
-  if (regions.length === 1 && named.length === 1) return `${top[0]} and area`;
-  if (named.length === 2 && regions.length === 2) return `${named[0]} and ${named[1]}`;
-  if (named.length >= 2) return `${named[0]}, ${named[1]} and more`;
-  return `${top[0]}, ${second[0]} and more`;
+  const [top] = [...placeCounts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+  return top && top[1] / total >= PLACE_DOMINANCE_SHARE ? top[0] : null;
 }
 
 export function slugifyForFilename(text: string): string {
@@ -231,8 +225,8 @@ export function slugifyForFilename(text: string): string {
     .replace(/^-|-$/g, '');
 }
 
-function filenameParts(state: MapExportState, place: string): string[] {
-  const parts = ['atlas', place];
+function filenameParts(state: MapExportState, place: string | null): string[] {
+  const parts = place ? ['atlas', place] : ['atlas'];
   switch (state.view) {
     case 'frequency':
       if (state.routeShortName) parts.push(`route ${state.routeShortName}`);
@@ -255,7 +249,7 @@ function filenameParts(state: MapExportState, place: string): string[] {
   return parts;
 }
 
-export function buildExportFilename(state: MapExportState, place: string): string {
+export function buildExportFilename(state: MapExportState, place: string | null): string {
   const slug = filenameParts(state, place).map(slugifyForFilename).filter(Boolean).join('-');
   return `${slug || 'atlas-map'}.png`;
 }
@@ -266,7 +260,9 @@ export function describeMapExport(state: MapExportState, samples: RenderedRouteS
   const drawnColors = samples.map(sample => sample.color).filter((color): color is string => !!color);
   const key = buildExportKey(keyCandidates(state), drawnColors);
 
-  const lines = [sentenceCase(state.viewTitle || 'Transit map')];
+  const viewName = sentenceCase(state.viewTitle || 'Transit map');
+  // With no clear place, the view name becomes the heading instead of a guessed place.
+  const lines = place ? [viewName] : [];
   if (state.view === 'frequency' && state.routeLabel) lines.push(`Route ${state.routeLabel}`);
   const filter = filterLine(state);
   if (filter) lines.push(filter);
@@ -276,5 +272,5 @@ export function describeMapExport(state: MapExportState, samples: RenderedRouteS
   }
 
   const keyTitle = state.view === 'fares' ? 'Base fare' : state.view === 'night' ? undefined : 'Frequency';
-  return { place, lines, key, keyTitle, filename: buildExportFilename(state, place) };
+  return { place, title: place ?? viewName, lines, key, keyTitle, filename: buildExportFilename(state, place) };
 }

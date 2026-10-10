@@ -72,7 +72,7 @@ export default function MapExportDialog({ open, sourceSize, prepareSource, descr
       const details = describe([[x / pixelRatio, y / pixelRatio], [(x + width) / pixelRatio, (y + height) / pixelRatio]]);
       const blob = await createMapExport({
         source,
-        title: details.place,
+        title: details.title,
         lines: details.lines,
         key: details.key,
         keyTitle: details.keyTitle,
@@ -80,7 +80,7 @@ export default function MapExportDialog({ open, sourceSize, prepareSource, descr
         size,
       });
       if (mode === 'share') {
-        await shareMapExport(blob, details.place, details.filename);
+        await shareMapExport(blob, details.title, details.filename);
       } else {
         downloadMapExport(blob, details.filename);
       }
