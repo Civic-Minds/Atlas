@@ -27,7 +27,7 @@ import {
 } from './r2.js';
 import { buildAgencyIndex } from './agencyIndex.js';
 import { buildHiddenRoutesForAgency, mergeHiddenRoutes, type HiddenRoutesFile } from './hiddenRoutes.js';
-import { isActiveProductionFeed, isStaleProductionFeed, type FeedAvailabilityEntry, todayUtcYmd } from '../shared/feedAvailability.js';
+import { isActiveProductionFeed, isStalePrimaryProductionFeed, type FeedAvailabilityEntry, todayUtcYmd } from '../shared/feedAvailability.js';
 import { bumpPublicDataVersion } from './dataVersion.js';
 
 interface Agency extends FeedAvailabilityEntry {
@@ -162,7 +162,7 @@ async function restoreAgency(agency: Agency, candidate: Candidate): Promise<{ ag
 
 async function main(): Promise<void> {
   const index = JSON.parse(readFileSync(indexPath, 'utf8')) as { agencies: Agency[] };
-  const targets = index.agencies.filter(agency => isStaleProductionFeed(agency, today));
+  const targets = index.agencies.filter(agency => isStalePrimaryProductionFeed(agency, today));
   const archiveKeys = await r2ListArchive('gtfs/archive/');
   console.log(`Restoring ${targets.length} stale active agencies from ${archiveKeys.length} archive objects.`);
 

@@ -13,9 +13,10 @@
  *   npm run reprocess-derived-artifacts -- --only-slug nfta --only-slug wmata
  *
  * Supplemental feeds (index.json `supplementalFeedUrls`, e.g. separate rail
- * zips) are not archived, so they are read from ATLAS_LOCAL_ARCHIVE_DIR as
- * <slug>--supplemental-<n>.zip when present, otherwise downloaded from their
- * configured URL. A missing supplemental fails the agency (no main-only output).
+ * zips) are read from ATLAS_LOCAL_ARCHIVE_DIR as <slug>--supplemental-<n>.zip
+ * when present, then from the raw zip refresh archived for them
+ * (`lastSupplementalFeeds`), otherwise downloaded from their configured URL.
+ * A missing supplemental fails the agency (no main-only output).
  *
  * Fail-closed: an agency is refused (nothing written, live data and its stale
  * notice left as they are) when the newest archived zip cannot be identified,
@@ -28,7 +29,7 @@ import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node
 import { resolve } from 'node:path';
 import './loadEnv.js';
 import { type GtfsPreprocess } from './process-core.js';
-import { downloadFeedBuffer, loadSupplementalFeeds, processAgencyFeeds } from './agencyFeeds.js';
+import { downloadFeedBuffer, loadSupplementalFeeds, processAgencyFeeds, supplementalArchiveStem } from './agencyFeeds.js';
 import { r2Get, r2GetArchiveBuffer, r2ListArchiveObjects, r2Put } from './r2.js';
 import { bumpPublicDataVersion } from './dataVersion.js';
 import { runWithConcurrency } from './utils.js';
@@ -48,6 +49,7 @@ interface Agency {
   agencyId?: string;
   agencyName?: string;
   supplementalFeedUrls?: string[];
+  lastSupplementalFeeds?: Array<{ rawArchiveKey: string | null }>;
   routeTypes?: number[];
   preprocess?: GtfsPreprocess;
   excludeRouteShortNames?: string[];
@@ -117,9 +119,13 @@ function localArchivePath(fileStem: string): string | null {
 }
 
 async function readSupplementalFeed(agency: Agency, url: string): Promise<Buffer> {
-  const position = (agency.supplementalFeedUrls ?? []).indexOf(url) + 1;
-  const localPath = localArchivePath(`${agency.slug}--supplemental-${position}`);
-  return localPath ? readFileSync(localPath) : downloadFeedBuffer(url);
+  const index = (agency.supplementalFeedUrls ?? []).indexOf(url);
+  const stem = supplementalArchiveStem(agency.slug, index);
+  const localPath = localArchivePath(stem);
+  if (localPath) return readFileSync(localPath);
+  const archiveKey = agency.lastSupplementalFeeds?.[index]?.rawArchiveKey;
+  const archived = archiveKey ? await r2GetArchiveBuffer(`gtfs/archive/${stem}/${archiveKey}.zip`) : null;
+  return archived ?? downloadFeedBuffer(url);
 }
 
 async function processAgency(agency: Agency): Promise<ReportRow> {

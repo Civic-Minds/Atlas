@@ -2,6 +2,7 @@
  * Pure helpers for refresh.ts feed-metadata stamping.
  * Separated so unit tests can cover stamp decisions without R2.
  */
+import type { SupplementalFeedMeta } from '../shared/feedAvailability.js';
 
 export interface FeedMetaFields {
   lastFeedExpiry?: string | null;
@@ -13,6 +14,7 @@ export interface FeedMetaFields {
   feedRefreshError?: string | null;
   feedRefreshErrorAt?: string | null;
   feedRefreshRetryCount?: number;
+  lastSupplementalFeeds?: SupplementalFeedMeta[];
 }
 
 /** Whether a feed's declared service end date is before the refresh date. */
@@ -70,6 +72,20 @@ export function stampFeedMeta(
   agency.feedRefreshError = null;
   agency.feedRefreshErrorAt = null;
   agency.feedRefreshRetryCount = 0;
+}
+
+/**
+ * Record each supplemental feed's expiry, version and raw archive key next to
+ * the main feed's lastFeed* fields, in supplementalFeedUrls order. Freshness
+ * checks read these through effectiveFeedExpiry so an expired supplemental
+ * (e.g. a separate rail feed) marks the agency outdated (#630).
+ */
+export function stampSupplementalFeedMeta(agency: FeedMetaFields, feeds: SupplementalFeedMeta[]): void {
+  if (feeds.length === 0) {
+    delete agency.lastSupplementalFeeds;
+    return;
+  }
+  agency.lastSupplementalFeeds = feeds.map(({ feedExpiry, feedVersion, rawArchiveKey }) => ({ feedExpiry, feedVersion, rawArchiveKey }));
 }
 
 /** Preserve the last good artifact while recording that a refresh needs another attempt. */
