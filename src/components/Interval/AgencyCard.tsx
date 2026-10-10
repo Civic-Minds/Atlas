@@ -20,7 +20,6 @@ import {
   formatOnDemandHoursLines,
   onDemandPickupSentence,
   onDemandRunningNote,
-  onDemandRunningState,
   resolveOnDemandZone,
   type OnDemandAvailability,
 } from '../../../shared/onDemandAvailability';
@@ -417,7 +416,6 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
     const showsShadedArea = zoneName
       ? true
       : service.features.some(feature => resolveOnDemandZone(service, (feature.properties as { areaName?: string } | undefined)?.areaName).sameServiceAsParent);
-    const runningState = onDemandRunningState(zone.availability, day, period);
     const runningNote = onDemandRunningNote(zone.availability, day, period);
     return (
       <div
@@ -456,7 +454,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
           <div className="px-1">
             <p className="text-[10px] font-black text-[var(--text-dim)]">Service hours</p>
             <p
-              className={`text-[11px] font-bold leading-relaxed mt-1 ${runningState === 'running' ? 'text-[var(--accent)]' : 'text-[var(--text-dim)]'}`}
+              className="text-[11px] leading-relaxed text-[var(--text-muted)] mt-1"
               data-testid="on-demand-running-note"
             >
               {runningNote}
