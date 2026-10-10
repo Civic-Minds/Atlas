@@ -275,3 +275,40 @@ describe('processGtfsBuffer mapless stop order', () => {
     expect(route.geometry).toEqual({ type: 'Point', coordinates: [-79.38, 43.65] });
   });
 });
+
+describe('processGtfsBuffer stop data', () => {
+  it('keeps per-stop headways, stop order, and the stops index for weekday service', async () => {
+    const zip = new JSZip();
+    zip.file('agency.txt', 'agency_id,agency_name,agency_url,agency_timezone\na,Stop Transit,https://example.test,America/Toronto\n');
+    zip.file('routes.txt', 'route_id,route_short_name,route_long_name,route_type\nr1,1,Main Street,3\n');
+    zip.file('stops.txt', 'stop_id,stop_name,stop_lat,stop_lon\ns1,First Stop,43.65,-79.38\ns2,Middle Stop,43.655,-79.375\ns3,Last Stop,43.66,-79.37\n');
+    zip.file('calendar.txt', 'service_id,monday,tuesday,wednesday,thursday,friday,saturday,sunday,start_date,end_date\nweekday,1,1,1,1,1,0,0,20260101,20261231\n');
+    zip.file('shapes.txt', [
+      'shape_id,shape_pt_lat,shape_pt_lon,shape_pt_sequence',
+      'sh1,43.65,-79.38,1',
+      'sh1,43.655,-79.375,2',
+      'sh1,43.66,-79.37,3',
+    ].join('\n') + '\n');
+    const trips = ['route_id,service_id,trip_id,trip_headsign,direction_id,shape_id'];
+    const stopTimes = ['trip_id,arrival_time,departure_time,stop_id,stop_sequence'];
+    for (let start = 6 * 60; start <= 22 * 60; start += 10) {
+      const id = `t${start}`;
+      trips.push(`r1,weekday,${id},Downtown,0,sh1`);
+      stopTimes.push(
+        `${id},${hm(start)},${hm(start)},s1,1`,
+        `${id},${hm(start + 5)},${hm(start + 5)},s2,2`,
+        `${id},${hm(start + 10)},${hm(start + 10)},s3,3`,
+      );
+    }
+    zip.file('trips.txt', trips.join('\n') + '\n');
+    zip.file('stop_times.txt', stopTimes.join('\n') + '\n');
+
+    const result = await processGtfsBuffer(await zip.generateAsync({ type: 'nodebuffer' }), undefined, { slug: 'stop-transit' });
+    const route = JSON.parse(result.geojson).features
+      .find((feature: any) => feature.properties.routeShortName === '1' && feature.properties.day === 'Weekday');
+
+    expect(route.properties.stopOrder).toEqual(['s1', 's2', 's3']);
+    expect(Object.keys(route.properties.stopHeadways ?? {})).toEqual(expect.arrayContaining(['s1', 's2', 's3']));
+    expect(Object.keys(JSON.parse(result.stopsJson))).toEqual(expect.arrayContaining(['s1', 's2', 's3']));
+  });
+});

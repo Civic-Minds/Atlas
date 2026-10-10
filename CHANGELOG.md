@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **Processing an agency once again keeps its stop frequencies, stop lists, and frequent/night service flags — a weekday-service change on Oct 8 had silently dropped them for every agency processed since.**
 - **Frequency filters now require every direction of a route to meet the threshold, so routes no longer slip through on a single busy stretch, routes with a few occasional extra trips (like TTC 100) no longer drop out, and the route list, counts, and map always agree.**
 - **Route lines are drawing on the map again — the map looked for its route files in the wrong folder, and the map library's background helper was missing from the site after the MapLibre 6 upgrade.**
 - **Routes whose feed has schedules but no map shape now stay searchable and zoom to their stops, without ever replacing a route line that already draws.**
