@@ -17,15 +17,30 @@
  * when present, then from the raw zip refresh archived for them
  * (`lastSupplementalFeeds`), otherwise downloaded from their configured URL.
  * A missing supplemental fails the agency (no main-only output).
+ *
+ * Fail-closed: an agency is refused (nothing written, live data and its stale
+ * notice left as they are) when the newest archived zip cannot be identified,
+ * when the source zip's service dates are expired or older than the live
+ * feed's, or when the output would lose more than 20% of the live stops or
+ * routes. Pass --allow-drop to accept a reviewed drop. Agencies with no
+ * archived zip and no local recovery input are skipped.
  */
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import './loadEnv.js';
 import { type GtfsPreprocess } from './process-core.js';
 import { downloadFeedBuffer, loadSupplementalFeeds, processAgencyFeeds, supplementalArchiveStem } from './agencyFeeds.js';
-import { r2GetArchiveBuffer, r2ListArchive, r2Put } from './r2.js';
+import { r2Get, r2GetArchiveBuffer, r2ListArchiveObjects, r2Put } from './r2.js';
 import { bumpPublicDataVersion } from './dataVersion.js';
 import { runWithConcurrency } from './utils.js';
+import {
+  countArtifacts,
+  feedDateRefusal,
+  outputDropRefusal,
+  peekFeedDates,
+  selectArchiveForAgency,
+  type ArtifactCounts,
+} from './archiveSelection.js';
 import { ROUTE_ARTIFACT_SCHEMA_VERSION } from '../shared/artifactSchema.js';
 
 interface Agency {
@@ -55,9 +70,16 @@ interface ReportRow {
   sourceKey?: string;
   featureCount?: number;
   schemaVersion?: number;
-  status: 'processed' | 'skipped' | 'failed';
+  status: 'processed' | 'skipped' | 'refused' | 'failed';
   reason?: string;
+  selection?: string;
+  feedExpiry?: string | null;
+  liveFeedExpiry?: string | null;
+  liveCounts?: ArtifactCounts | null;
+  outputCounts?: ArtifactCounts;
 }
+
+class Refusal extends Error {}
 
 const indexPath = resolve('public/data/index.json');
 const outputDir = resolve('tmp/derived-reprocess');
@@ -65,6 +87,8 @@ const localArchiveDir = process.env.ATLAS_LOCAL_ARCHIVE_DIR
   ? resolve(process.env.ATLAS_LOCAL_ARCHIVE_DIR)
   : null;
 const writeToR2 = process.argv.includes('--write');
+const allowDrop = process.argv.includes('--allow-drop');
+const todayYmd = new Date().toISOString().slice(0, 10).replace(/-/g, '');
 const onlySlugs = process.argv.flatMap((arg, i, all) => (arg === '--only-slug' && all[i + 1] ? [all[i + 1]] : []));
 const concurrency = Math.max(1, Number(process.env.REPROCESS_CONCURRENCY ?? 2));
 
@@ -75,15 +99,17 @@ function shouldProcess(agency: Agency): boolean {
     && (!!agency.lastFeedExpiry || !!agency.lastRefreshedAt);
 }
 
-async function selectArchiveKey(agency: Agency): Promise<string | null> {
-  const prefix = `gtfs/archive/${agency.slug}/`;
-  const keys = (await r2ListArchive(prefix)).filter(key => key.endsWith('.zip')).sort();
-  if (keys.length === 0) return null;
-  if (agency.lastRawArchiveKey) {
-    const exact = `${prefix}${agency.lastRawArchiveKey}.zip`;
-    if (keys.includes(exact)) return exact;
-  }
-  return keys.at(-1) ?? null;
+async function selectArchiveKey(agency: Agency): Promise<{ key: string; reason: string } | null> {
+  const selection = selectArchiveForAgency(await r2ListArchiveObjects(`gtfs/archive/${agency.slug}/`), agency);
+  if (selection.ok) return { key: selection.key, reason: selection.reason };
+  if (selection.noArchive) return null;
+  throw new Refusal(selection.reason);
+}
+
+async function readLiveCounts(slug: string): Promise<ArtifactCounts | null> {
+  const geojson = await r2Get(`atlas/${slug}.json`);
+  if (!geojson) return null;
+  return countArtifacts(geojson, await r2Get(`atlas/${slug}-stops.json`));
 }
 
 function localArchivePath(fileStem: string): string | null {
@@ -103,20 +129,39 @@ async function readSupplementalFeed(agency: Agency, url: string): Promise<Buffer
 }
 
 async function processAgency(agency: Agency): Promise<ReportRow> {
+  const row: ReportRow = { slug: agency.slug, status: 'failed', liveFeedExpiry: agency.lastFeedExpiry ?? null };
   try {
     const localPath = localArchivePath(agency.slug);
-    const sourceKey = localPath ? null : await selectArchiveKey(agency);
-    if (!sourceKey && !localPath) throw new Error('no archived GTFS snapshot or validated local recovery input');
+    const selected = localPath ? null : await selectArchiveKey(agency);
+    if (!selected && !localPath) {
+      return { ...row, status: 'skipped', reason: 'no archived GTFS zip or local recovery input; live data left as is' };
+    }
+    const sourceKey = selected?.key ?? null;
+    row.sourceKey = sourceKey ?? `local:${localPath}`;
+    row.selection = selected?.reason ?? 'local recovery input';
     const body = localPath
       ? readFileSync(localPath)
       : await r2GetArchiveBuffer(sourceKey!);
     if (!body) throw new Error(`could not read ${sourceKey ?? localPath}`);
 
-    console.log(`\n${agency.slug}: ${sourceKey}`);
+    console.log(`\n${agency.slug}: ${row.sourceKey} (${row.selection})`);
+    const { feedExpiry } = await peekFeedDates(body);
+    row.feedExpiry = feedExpiry;
+    const dateRefusal = feedDateRefusal(feedExpiry, agency.lastFeedExpiry, todayYmd);
+    if (dateRefusal) throw new Refusal(dateRefusal);
+
     const supplementalFeeds = await loadSupplementalFeeds(agency, url => readSupplementalFeed(agency, url));
     const result = await processAgencyFeeds(body, supplementalFeeds, agency, {}, message => process.stdout.write(`  ${message}`));
     for (const supp of result.supplementalFeatureCounts) console.log(`  + supplemental ${supp.url}: ${supp.featureCount} features`);
     if (result.featureCount === 0) throw new Error('processed feed produced 0 route features');
+
+    row.outputCounts = countArtifacts(result.geojson, result.stopsJson);
+    row.liveCounts = await readLiveCounts(agency.slug);
+    if (!allowDrop) {
+      if (!row.liveCounts) throw new Refusal('live artifacts could not be read, so the output cannot be checked for a drop (pass --allow-drop after review)');
+      const dropRefusal = outputDropRefusal(row.liveCounts, row.outputCounts);
+      if (dropRefusal) throw new Refusal(`${dropRefusal} (pass --allow-drop after review)`);
+    }
 
     const agencyDir = resolve(outputDir, agency.slug);
     mkdirSync(agencyDir, { recursive: true });
@@ -138,16 +183,16 @@ async function processAgency(agency: Agency): Promise<ReportRow> {
     }
 
     return {
-      slug: agency.slug,
-      sourceKey: sourceKey ?? `local:${localPath}`,
+      ...row,
       featureCount: result.featureCount,
       schemaVersion: ROUTE_ARTIFACT_SCHEMA_VERSION,
       status: 'processed',
     };
   } catch (error) {
     const reason = error instanceof Error ? error.message : String(error);
-    console.error(`  FAILED ${agency.slug}: ${reason}`);
-    return { slug: agency.slug, status: 'failed', reason };
+    const status = error instanceof Refusal ? 'refused' : 'failed';
+    console.error(`  ${status.toUpperCase()} ${agency.slug}: ${reason}`);
+    return { ...row, status, reason };
   }
 }
 
@@ -176,6 +221,7 @@ async function main(): Promise<void> {
       targets: targets.length,
       processed: rows.filter(row => row.status === 'processed').length,
       skipped: rows.filter(row => row.status === 'skipped').length,
+      refused: rows.filter(row => row.status === 'refused').length,
       failed: rows.filter(row => row.status === 'failed').length,
     },
     agencies: rows,
@@ -184,7 +230,8 @@ async function main(): Promise<void> {
   console.log(`\nWrote ${report.totals.processed} reprocessed agencies to ${outputDir}`);
   console.log(`Report: ${resolve(outputDir, 'report.json')}`);
   if (writeToR2) await bumpPublicDataVersion(`derived artifact reprocess (${report.totals.processed})`);
-  if (report.totals.failed > 0) process.exitCode = 1;
+  for (const row of rows.filter(r => r.status === 'refused')) console.log(`  refused ${row.slug}: ${row.reason}`);
+  if (report.totals.failed > 0 || report.totals.refused > 0) process.exitCode = 1;
 }
 
 main().catch(error => {

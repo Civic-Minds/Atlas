@@ -8574,7 +8574,7 @@
         34.3,
         -116.1
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/tld-461/tld-461-202606060105/tld-461-202606060105.zip",
+      "feedUrl": "https://sunlinebus.com/gtfs",
       "lastFeedExpiry": "20991231",
       "lastFeedVersion": "6/5/2026",
       "region": "California",
@@ -9466,8 +9466,8 @@
         38.651,
         -90.2899
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-190/mdb-190-202605290001/mdb-190-202605290001.zip",
-      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-190/mdb-190-202605290001/mdb-190-202605290001.zip",
+      "feedUrl": "https://www.metrostlouis.org/Transit/google_transit.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-190/latest.zip",
       "lastFeedExpiry": "20261025",
       "lastFeedVersion": null,
       "region": "Missouri",
