@@ -12,6 +12,7 @@ Atlas gates immature features (thin agency coverage, no scaling plan, or genuine
 | `CORRIDORS_ENABLED` | `/apps/corridors`, `Corridors.tsx` | off | off | Not good enough as a feature yet (Ryan, 2026-07-28). The panel is intentionally invisible in layout (not a CSS accident) — do not “fix” positioning until the feature is ready to ship. |
 | `UNEVEN_BANNER_ENABLED` | "Service is uneven" route-card banner, `RouteCardHeadway.tsx` | off | on | The excess/ratio threshold deciding when a period's worst gap is worth surfacing (#345) needs more real-feed tuning than a single main push should carry. |
 | `MOBILE_ROUTE_SHEET_ENABLED` | Route and stop cards open as a bottom sheet on phones (`SidebarControls.tsx`) | off | on (follows `beta`/`dev` mode) | New phone layout to try on real phones before replacing the floating card for everyone ([#647](https://github.com/Civic-Minds/Atlas/issues/647)). |
+| `COMPARE_MODE_ENABLED` | Compare mode: two synced maps side by side with one shared filter, each side with its own day and time (`Interval.tsx`, `CompareControl.tsx`) | off | on (follows `beta`/`dev` mode) | New feature; the second map doubles map rendering work, so it is tried on beta first. The `cday`/`cp` URL params are ignored when off. |
 | `ATLAS_MODE=preview` | Preview title and research-app visibility | off | not configured for the stable domains | Stable Preview uses the Beta project's production deployment; there is no separate Preview project or verified `preview` mode. |
 
 ## How it works
