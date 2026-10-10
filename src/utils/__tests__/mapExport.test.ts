@@ -6,7 +6,9 @@ import {
   MAP_EXPORT_SIZES,
   MAP_EXPORT_WIDTH,
   MapExportBlockedError,
+  mapExportFilename,
   waitForMapExportReady,
+  wrapExportLine,
   type MapExportReadinessTarget,
 } from '../mapExport';
 
@@ -19,6 +21,11 @@ function mockCanvasContext() {
     imageSmoothingEnabled: false,
     imageSmoothingQuality: 'low',
     fillRect: vi.fn(),
+    beginPath: vi.fn(),
+    moveTo: vi.fn(),
+    arcTo: vi.fn(),
+    closePath: vi.fn(),
+    fill: vi.fn(),
     drawImage: vi.fn(),
     fillText: vi.fn(),
     measureText: vi.fn((text: string) => ({ width: text.length * 8 })),
@@ -60,7 +67,7 @@ describe('createMapExport', () => {
       MAP_EXPORT_WIDTH,
       MAP_EXPORT_HEIGHT - 72 - 38,
     );
-    expect(context.fillText).toHaveBeenCalledWith('Night service', 28, 30);
+    expect(context.fillText).toHaveBeenCalledWith('Night service', 28, 34);
   });
 
   it('draws the whole phone screen without cropping or stretching it', async () => {
@@ -75,13 +82,60 @@ describe('createMapExport', () => {
     expect(Math.abs(dw / dh - 1170 / 2532)).toBeLessThan(0.002);
   });
 
+  it('draws the place, filter lines and colour key', async () => {
+    const context = mockCanvasContext();
+    const source = sourceCanvas(1600, 1000);
+    await createMapExport({
+      source,
+      title: 'Toronto',
+      lines: ['Transit frequency', 'Every 20 min or better · Saturday midday'],
+      key: [{ color: '#22863a', label: '≤10m' }, { color: '#f59e0b', label: '≤20m' }],
+      keyTitle: 'Frequency',
+      lightMode: true,
+    });
+    const texts = vi.mocked(context.fillText).mock.calls.map(call => call[0]);
+    expect(texts).toEqual(expect.arrayContaining(['Toronto', 'Transit frequency', 'Every 20 min or better · Saturday midday', 'Frequency', '≤10m', '≤20m']));
+    expect(texts.some(text => /[A-Z]{4,}/.test(String(text).replace(/CARTO|ODbL/g, '')))).toBe(false);
+  });
+
   it('keeps the export dimensions platform-neutral', () => {
     expect(MAP_EXPORT_WIDTH).toBe(1600);
     expect(MAP_EXPORT_HEIGHT).toBe(900);
   });
 });
 
+describe('wrapExportLine', () => {
+  const measure = (text: string) => text.length * 10;
+
+  it('wraps between filter parts instead of cutting text off', () => {
+    expect(wrapExportLine(measure, 'Every 20 min or better · Saturday midday', 250)).toEqual(['Every 20 min or better', 'Saturday midday']);
+  });
+
+  it('keeps every word when one part is wider than the image', () => {
+    const lines = wrapExportLine(measure, 'Route 505 Dundas West to Broadview Station', 150);
+    expect(lines.join(' ')).toBe('Route 505 Dundas West to Broadview Station');
+    expect(lines.every(line => measure(line) <= 150)).toBe(true);
+  });
+});
+
+describe('mapExportFilename', () => {
+  it('uses lowercase letters, numbers and dashes only', () => {
+    expect(mapExportFilename('atlas-montréal-20min-saturday-midday.png')).toBe('atlas-montreal-20min-saturday-midday.png');
+    expect(mapExportFilename('  ')).toBe('atlas-map.png');
+  });
+});
+
 describe('getMapExportLayout', () => {
+  it('grows the header to fit the description lines', () => {
+    expect(getMapExportLayout(2880, 1800, MAP_EXPORT_SIZES[1], 3).headerHeight).toBeGreaterThan(getMapExportLayout(2880, 1800).headerHeight);
+  });
+
+  it('keeps text readable on a narrow phone image', () => {
+    const layout = getMapExportLayout(390, 844, MAP_EXPORT_SIZES[2], 2);
+    expect(layout.scale).toBeLessThan(1);
+    expect(layout.height).toBe(layout.headerHeight + layout.mapRect.height + layout.footerHeight);
+  });
+
   it('keeps the preset size for landscape screens', () => {
     const layout = getMapExportLayout(2880, 1800);
     expect(layout.width).toBe(1600);

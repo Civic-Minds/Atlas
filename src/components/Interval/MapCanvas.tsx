@@ -29,6 +29,8 @@ import { getMapContextAgenciesFromFeatures, isMapContextOutsideClick, type MapCo
 import { MapContextPanel } from './MapContextPanel';
 import MapExportDialog from '../MapExportDialog';
 import { waitForMapExportReady } from '../../utils/mapExport';
+import { describeMapExport, type MapExportBox, type MapExportDetails, type MapExportView, type RenderedRouteSample } from '../../utils/mapExportDetails';
+import { getRouteLabel, titleCase } from '../../utils/format';
 import { frequentServiceBand, frequentServiceFeatureKey, frequentServiceQueryKey, type FrequentServiceFrequency, type FrequentServiceWindow } from '../../../shared/frequentService';
 import { effectiveMode, ON_DEMAND_MODE } from '../../../shared/modes';
 import type { NightServiceFrequency } from '../../../shared/nightService';
@@ -59,6 +61,18 @@ function isOnDemandFeatureActive(
   const zoneId = (feature.properties as { areaName?: string } | undefined)?.areaName;
   const zone = zoneId ? service.zoneMetadata?.[zoneId] : undefined;
   return isOnDemandActive(zone ? zone.availability : service.availability, day, period);
+}
+
+/** MapLibre's evaluated colour ({ r, g, b, a } in 0–1) as a hex string. */
+function paintColorToHex(value: unknown): string | null {
+  if (typeof value === 'string') return value;
+  if (!value || typeof value !== 'object') return null;
+  const { r, g, b, a } = value as { r?: number; g?: number; b?: number; a?: number };
+  if (typeof r !== 'number' || typeof g !== 'number' || typeof b !== 'number') return null;
+  // MapLibre keeps colours premultiplied by alpha.
+  const alpha = typeof a === 'number' && a > 0 ? a : 1;
+  const channel = (n: number) => Math.round(Math.max(0, Math.min(1, n / alpha)) * 255).toString(16).padStart(2, '0');
+  return `#${channel(r)}${channel(g)}${channel(b)}`;
 }
 
 function MapNoticePill({ children, className = '' }: { children: React.ReactNode; className?: string }) {
@@ -360,6 +374,80 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       },
     });
     return map!.getCanvas();
+  }, []);
+
+  // Read at export time (not captured by the callback) so the image always describes the
+  // filters that are on screen right now.
+  const exportStateRef = useRef({
+    agencies, maxHeadway, period, day, q, selectedRoute, selectedModes, colorMode, exportTitle,
+    fareView, nightServiceView, nightServiceFrequency, frequentServiceView, frequentServiceDays,
+    frequentServiceFrequency, frequentServiceWindow, liveRoutesOnly,
+  });
+  exportStateRef.current = {
+    agencies, maxHeadway, period, day, q, selectedRoute, selectedModes, colorMode, exportTitle,
+    fareView, nightServiceView, nightServiceFrequency, frequentServiceView, frequentServiceDays,
+    frequentServiceFrequency, frequentServiceWindow, liveRoutesOnly,
+  };
+  const describeExport = useCallback((box?: MapExportBox): MapExportDetails => {
+    const map = mapRef.current;
+    const state = exportStateRef.current;
+    const view: MapExportView = state.fareView ? 'fares'
+      : state.nightServiceView ? 'night'
+      : state.frequentServiceView ? 'frequent-service'
+      : state.liveRoutesOnly || state.exportTitle !== 'Transit Frequency' ? 'other'
+      : 'frequency';
+
+    // Only routes actually drawn: hidden-by-zoom routes stay in the query results with zero
+    // opacity, so read each feature's evaluated paint and skip the invisible ones.
+    const samples: RenderedRouteSample[] = [];
+    let routeLabel: string | null = null;
+    let routeShortName: string | null = null;
+    if (map) {
+      const drawnLayers = ['overview-routes-layer', 'routes-layer', 'local-routes-layer', 'selected-route-layer', 'selected-local-route-layer', 'night-service-routes-layer', 'frequent-service-routes-layer']
+        .filter(layer => map.getLayer(layer) && map.getLayoutProperty(layer, 'visibility') !== 'none');
+      // Only the part of the map that ends up in the image (exports crop to their own shape).
+      const features = drawnLayers.length > 0 ? map.queryRenderedFeatures(box, { layers: drawnLayers }) : [];
+      for (const feature of features) {
+        const paint = (feature.layer as { paint?: Record<string, unknown> }).paint ?? {};
+        const opacity = typeof paint['line-opacity'] === 'number' ? paint['line-opacity'] : 1;
+        if (opacity < 0.05) continue;
+        const props = feature.properties as Record<string, unknown>;
+        const agencySlug = typeof props.agencySlug === 'string' ? props.agencySlug : null;
+        samples.push({
+          agencySlug,
+          routeKey: `${agencySlug}::${props.routeId ?? ''}::${props.routeBranch ?? ''}`,
+          color: paintColorToHex(paint['line-color']),
+        });
+        if (!routeLabel && state.selectedRoute && feature.layer.id.startsWith('selected-')) {
+          const agencyName = state.agencies.find(agency => agency.slug === agencySlug)?.name ?? null;
+          const shortName = typeof props.routeShortName === 'string' ? props.routeShortName : null;
+          const longName = typeof props.routeLongName === 'string' ? props.routeLongName : null;
+          const label = titleCase(getRouteLabel(shortName, longName, agencyName));
+          if (label) {
+            routeLabel = label;
+            routeShortName = shortName ?? longName;
+          }
+        }
+      }
+    }
+
+    return describeMapExport({
+      view,
+      viewTitle: state.exportTitle,
+      colorMode: state.colorMode,
+      maxHeadway: state.maxHeadway,
+      day: state.day,
+      period: state.period,
+      zoom: map?.getZoom() ?? 11,
+      selectedModes: state.selectedModes,
+      query: state.q,
+      routeLabel,
+      routeShortName,
+      nightServiceFrequency: state.nightServiceFrequency,
+      frequentServiceDays: state.frequentServiceDays,
+      frequentServiceFrequency: state.frequentServiceFrequency,
+      frequentServiceWindow: state.frequentServiceWindow,
+    }, samples, state.agencies);
   }, []);
   const [mapContextMenu, setMapContextMenu] = useState<{ x: number; y: number; lat: number; lon: number } | null>(null);
   const mapContextPanelRef = useRef<HTMLDivElement>(null);
@@ -2214,7 +2302,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         open={exportDialogOpen}
         sourceSize={exportDialogOpen && mapRef.current ? { width: mapRef.current.getCanvas().width, height: mapRef.current.getCanvas().height } : null}
         prepareSource={prepareExportSource}
-        defaultTitle={exportTitle}
+        describe={describeExport}
         lightMode={lightMode}
         onClose={() => setExportDialogOpen(false)}
       />
