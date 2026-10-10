@@ -3,6 +3,8 @@ import JSZip from 'jszip';
 import {
   archiveKeyServiceDate,
   countArtifacts,
+  includeHiddenArgError,
+  isReprocessTarget,
   feedDateRefusal,
   outputDropRefusal,
   peekFeedDates,
@@ -167,5 +169,32 @@ describe('output drop guard', () => {
 
   it('refuses a drop just past 20%', () => {
     expect(outputDropRefusal({ stops: 100, stopPoints: 100, routes: 10 }, { stops: 79, stopPoints: 100, routes: 10 })).toMatch(/stops 100 -> 79/);
+  });
+});
+
+describe('isReprocessTarget', () => {
+  const live = { lastFeedExpiry: '20261128' };
+
+  it('skips hidden agencies by default', () => {
+    expect(isReprocessTarget(live)).toBe(true);
+    expect(isReprocessTarget({ ...live, hiddenInProduction: true })).toBe(false);
+  });
+
+  it('processes a hidden agency only when hidden ones are explicitly included', () => {
+    expect(isReprocessTarget({ ...live, hiddenInProduction: true }, { includeHidden: true })).toBe(true);
+  });
+
+  it('never processes staged, pending or never-refreshed agencies, even with includeHidden', () => {
+    expect(isReprocessTarget({ ...live, hiddenInProduction: true, staged: true }, { includeHidden: true })).toBe(false);
+    expect(isReprocessTarget({ ...live, hiddenInProduction: true, pmtilesPending: true }, { includeHidden: true })).toBe(false);
+    expect(isReprocessTarget({ hiddenInProduction: true }, { includeHidden: true })).toBe(false);
+  });
+});
+
+describe('includeHiddenArgError', () => {
+  it('requires --only-slug with --include-hidden', () => {
+    expect(includeHiddenArgError(true, [])).toMatch(/--only-slug/);
+    expect(includeHiddenArgError(true, ['sun-tran'])).toBeNull();
+    expect(includeHiddenArgError(false, [])).toBeNull();
   });
 });
