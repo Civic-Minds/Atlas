@@ -35,9 +35,10 @@ import { bumpPublicDataVersion } from './dataVersion.js';
 import { runWithConcurrency } from './utils.js';
 import {
   countArtifacts,
+  dropGuardRefusal,
   feedDateRefusal,
-  outputDropRefusal,
   peekFeedDates,
+  readLiveArtifactCounts,
   selectArchiveForAgency,
   type ArtifactCounts,
 } from './archiveSelection.js';
@@ -106,12 +107,6 @@ async function selectArchiveKey(agency: Agency): Promise<{ key: string; reason: 
   throw new Refusal(selection.reason);
 }
 
-async function readLiveCounts(slug: string): Promise<ArtifactCounts | null> {
-  const geojson = await r2Get(`atlas/${slug}.json`);
-  if (!geojson) return null;
-  return countArtifacts(geojson, await r2Get(`atlas/${slug}-stops.json`));
-}
-
 function localArchivePath(fileStem: string): string | null {
   if (!localArchiveDir) return null;
   const path = resolve(localArchiveDir, `${fileStem}.zip`);
@@ -156,12 +151,9 @@ async function processAgency(agency: Agency): Promise<ReportRow> {
     if (result.featureCount === 0) throw new Error('processed feed produced 0 route features');
 
     row.outputCounts = countArtifacts(result.geojson, result.stopsJson);
-    row.liveCounts = await readLiveCounts(agency.slug);
-    if (!allowDrop) {
-      if (!row.liveCounts) throw new Refusal('live artifacts could not be read, so the output cannot be checked for a drop (pass --allow-drop after review)');
-      const dropRefusal = outputDropRefusal(row.liveCounts, row.outputCounts);
-      if (dropRefusal) throw new Refusal(`${dropRefusal} (pass --allow-drop after review)`);
-    }
+    row.liveCounts = await readLiveArtifactCounts(agency.slug, r2Get);
+    const dropRefusal = dropGuardRefusal(row.liveCounts, row.outputCounts, { allowDrop, allowMissingLive: false });
+    if (dropRefusal) throw new Refusal(dropRefusal);
 
     const agencyDir = resolve(outputDir, agency.slug);
     mkdirSync(agencyDir, { recursive: true });

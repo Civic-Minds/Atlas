@@ -62,6 +62,7 @@ jobs:
       # Persist feed metadata through the protected-branch workflow before the
       # independent PMTiles verification gate.
       - name: Open or update refresh pull request
+        id: refresh-pr
         uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -74,6 +75,20 @@ jobs:
           branch: automation/weekly-gtfs-refresh
           delete-branch: true
           labels: data-quality,pipeline
+
+      # create-pull-request moves the refreshed files onto its branch and
+      # hard-resets this checkout to origin/main. Put them back so PMTiles,
+      # History and the release are built from the refreshed index that the
+      # refresh marker was stamped with (HEAD stays on main).
+      - name: Restore refreshed files after the pull request step
+        env:
+          REFRESH_HEAD_SHA: ${{ steps.refresh-pr.outputs.pull-request-head-sha }}
+        run: |
+          if [ -n "$REFRESH_HEAD_SHA" ]; then
+            git checkout "$REFRESH_HEAD_SHA" -- .
+            git reset --quiet
+          fi
+          git diff --shortstat
 
       - name: Install tippecanoe
         run: sudo apt-get install -y tippecanoe
