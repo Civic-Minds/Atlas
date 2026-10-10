@@ -1,6 +1,7 @@
 import type { GeoJSON } from 'geojson';
 import { HSR_MY_RIDE_STOP_FEATURES } from './hsrMyRideStops';
 import { LEAMINGTON_LT_GO_STOP_FEATURES } from './leamingtonLtGoStops';
+import { COBOURG_ON_DEMAND_STOP_FEATURES } from './cobourgOnDemandStops';
 import { EDMONTON_ON_DEMAND_FEATURES, EDMONTON_ON_DEMAND_STOPS, EDMONTON_ON_DEMAND_ZONE_METADATA } from './edmontonOnDemandData';
 import { HAMILTON_TRANS_CAB_SERVICE_AREAS, HAMILTON_TRANS_CAB_SOURCE, HAMILTON_TRANS_CAB_TRANSFER_POINTS } from './transCabServiceArea';
 import { METRO_MICRO_FLEX_FEATURES } from './metroMicroFlexData';
@@ -229,6 +230,24 @@ export const EDMONTON_ON_DEMAND_SERVICE_AREA = {
   tripRules: 'Trips run from a signed On Demand stop in the neighbourhood to an assigned transit hub, not door to door.',
   bookingUrl: 'https://www.edmonton.ca/ets/on-demand-transit',
   zoneMetadata: EDMONTON_ON_DEMAND_ZONE_METADATA,
+};
+
+/** Stop-to-stop service; the Town publishes stops but no zone boundary, so no polygon is drawn. */
+export const COBOURG_ON_DEMAND_SERVICE_AREA = {
+  features: [] as GeoJSON.Feature<GeoJSON.Polygon>[],
+  stopFeatures: COBOURG_ON_DEMAND_STOP_FEATURES,
+  sourceUrl: 'https://www.cobourg.ca/home-property/public-transit/',
+  sourceLabel: 'Town of Cobourg On Demand stop map',
+  sourceRetrievedAt: '2026-10-10',
+  serviceName: 'Cobourg Transit On Demand',
+  serviceHours: 'Monday–Friday 6:15 a.m.–9 p.m.; Saturday 8:15 a.m.–6:45 p.m.; Sunday 8:45 a.m.–3:45 p.m.',
+  tripRules: 'Trips run between Cobourg Transit On Demand stops, not door to door.',
+  bookingUrl: 'https://book.cobourgtransit.rideco.com/login',
+  availability: {
+    Weekday: [{ startHour: 6.25, endHour: 21 }],
+    Saturday: [{ startHour: 8.25, endHour: 18.75 }],
+    Sunday: [{ startHour: 8.75, endHour: 15.75 }],
+  } satisfies OnDemandAvailability,
 };
 
 export const METRO_MICRO_SERVICE_AREA = {
