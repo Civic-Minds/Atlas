@@ -25,3 +25,25 @@ export function effectiveFeedExpiry(opts: {
   }
   return dates.length ? dates.sort().at(-1)! : null;
 }
+
+/**
+ * Return the first date the feed offers service: the earliest calendar.txt
+ * start_date or added calendar_dates entry, falling back to feed_info
+ * feed_start_date when the feed has neither.
+ */
+export function effectiveFeedStart(opts: {
+  feedInfoStart?: unknown;
+  calendarStarts?: unknown[];
+  calendarDates?: Array<{ date?: unknown; exception_type?: unknown }>;
+}): string | null {
+  const dates: string[] = [];
+  for (const start of opts.calendarStarts ?? []) {
+    if (validYmd(start)) dates.push(start);
+  }
+  for (const entry of opts.calendarDates ?? []) {
+    if (String(entry.exception_type ?? '') === '2') continue;
+    if (validYmd(entry.date)) dates.push(entry.date);
+  }
+  if (dates.length) return dates.sort()[0];
+  return validYmd(opts.feedInfoStart) ? opts.feedInfoStart : null;
+}

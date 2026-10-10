@@ -10,11 +10,14 @@
  * must not keep rewriting unlaunched-country R2 data by accident. See
  * AGENTS.md § Production Data Rules / pipeline/countryLaunchGate.ts.
  *
- * Drop guard: an agency whose rebuilt data would lose more than 20% of its live
- * stops, stop points or routes is refused (shared with reprocess-derived-artifacts).
- * Nothing is written for it, its live data and metadata stay as they are, and
- * the rest of the run continues. Pass --allow-drop (with specific slugs) to
- * accept a reviewed drop.
+ * Release diff gate (releaseDiff.ts, shared with reprocess-derived-artifacts and
+ * publish-data-release): an agency is refused when its rebuilt data would lose
+ * more than 20% of its live stops, stop points or routes, lose a mode, match
+ * another agency's output, become empty, shift headways broadly, or is already
+ * expired. Nothing is written for it, its live data and metadata stay as they
+ * are, and the rest of the run continues. Pass --allow-drop (with specific
+ * slugs) to accept reviewed drops, or --allow <slug>:<flag> to accept one
+ * reviewed flag for one agency. The report is written to tmp/release-diff/.
  *
  * The index.json stores feed sources + metadata. Artifact URLs are derived from slug.
  */
@@ -62,7 +65,25 @@ import { recordFeedCheck, type FeedCheckFields } from './feedCheckTracking.js';
 import { buildFeedCandidates, type FeedCandidate } from './feedSourceCandidates.js';
 import { resolveFeedUrl } from './feedUrl.js';
 import { ROUTE_ARTIFACT_SCHEMA_VERSION } from '../shared/artifactSchema.js';
-import { countArtifacts, dropGuardRefusal, readLiveArtifactCounts } from './archiveSelection.js';
+import { peekFeedDates } from './archiveSelection.js';
+import {
+  applyOverrides,
+  blockReason,
+  buildGateReport,
+  cachedSummaryReader,
+  evaluateRun,
+  formatGateSummary,
+  gateRunId,
+  parseGateOverrides,
+  readLiveSummary,
+  summarizeArtifact,
+  unknownOverrideSlugs,
+  writeGateReport,
+  ALLOW_DROP_FLAG,
+  type GateFlag,
+  type GatePeer,
+  type RegistryAgency,
+} from './releaseDiff.js';
 
 console.log(`  env: ${LOADED_ENV_FILE} (bucket=${process.env.R2_BUCKET_NAME ?? '?'}${isProductionPublicR2Bucket() ? ' [PRODUCTION]' : ' [non-prod]'})`);
 
@@ -71,13 +92,22 @@ if (!process.env.R2_ACCESS_KEY_ID) {
   process.exit(1);
 }
 
-const ALLOW_DROP_FLAG = '--allow-drop';
-const FLAG_ARGS = new Set(['--force', COUNTRY_LAUNCH_FLAG, ALLOW_DROP_FLAG]);
-const rawArgs = process.argv.slice(2);
+const FLAG_ARGS = new Set(['--force', COUNTRY_LAUNCH_FLAG]);
+// --allow <slug>:<flag> and --allow-drop are pulled out first so they are never read as slugs.
+const gateOverrides = parseGateOverrides(process.argv.slice(2));
+const rawArgs = gateOverrides.rest;
 const forceRefresh = rawArgs.includes('--force');
-const allowDrop = rawArgs.includes(ALLOW_DROP_FLAG);
 const forceCountryLaunch = rawArgs.includes(COUNTRY_LAUNCH_FLAG);
 const onlySlugs = rawArgs.filter(a => !FLAG_ARGS.has(a));
+
+// Release diff gate state for this run: registry for duplicate peers, outputs
+// already gated (their new data is what peers will see), cached live summaries
+// and every flag raised, for the report.
+let gateRegistry: RegistryAgency[] = [];
+const gateRunPeers: GatePeer[] = [];
+const gateFlags: GateFlag[] = [];
+const gateChecked: string[] = [];
+const readRefreshLive = cachedSummaryReader(slug => readLiveSummary(slug, r2Get));
 
 function writeJsonAtomically(filePath: string, value: unknown): void {
   const tempPath = `${filePath}.tmp-${process.pid}`;
@@ -482,19 +512,29 @@ async function refreshAgency(
     return { summary: `stale (${reason})`, stale: true };
   }
 
-  // Drop guard (shared with reprocess): checked before anything is written, so
-  // a refused agency keeps its live artifacts, archive and metadata unchanged.
-  const dropRefusal = dropGuardRefusal(
-    await readLiveArtifactCounts(agency.slug, r2Get),
-    countArtifacts(geojson, stopsJson),
-    { allowDrop, allowMissingLive: true },
-  );
+  // Release diff gate (shared with reprocess and publish): checked before
+  // anything is written, so a refused agency keeps its live artifacts, archive
+  // and metadata unchanged.
+  const next = summarizeArtifact(geojson, stopsJson);
+  const { feedStart } = await peekFeedDates(buf);
+  const agencyFlags = await evaluateRun({
+    candidates: [{ slug: agency.slug, next, service: { start: feedStart, end: feedExpiry ?? peekedExpiry } }],
+    getLive: readRefreshLive,
+    registry: gateRegistry,
+    todayYmd: today,
+    allowMissingLive: true,
+    extraPeers: [...gateRunPeers],
+  });
+  gateChecked.push(agency.slug);
+  gateFlags.push(...agencyFlags);
+  const dropRefusal = blockReason(agency.slug, applyOverrides(agencyFlags, gateOverrides));
   if (dropRefusal) {
     for (const key of Object.keys(agency)) delete (agency as unknown as Record<string, unknown>)[key];
     Object.assign(agency, agencyBeforeRebuild);
     writeLog(`  [warn] refused: ${dropRefusal} — retaining the live artifact\n`);
     return { summary: `refused (${dropRefusal})`, refused: true };
   }
+  gateRunPeers.push({ slug: agency.slug, summary: next });
 
   const currentStops = (JSON.parse(stopsMetaJson) as { stops?: AuditedStop[] }).stops ?? [];
   const stopBaselineKey = `stops-meta/${agency.slug}/latest.json`;
@@ -596,6 +636,12 @@ async function main() {
   clearDataRefreshHandoff();
   const indexPath = resolve('public/data/index.json');
   const index: { agencies: AgencyEntry[] } = JSON.parse(readFileSync(indexPath, 'utf8'));
+  gateRegistry = index.agencies as unknown as RegistryAgency[];
+  const overrideErrors = [...gateOverrides.errors, ...unknownOverrideSlugs(gateOverrides, index.agencies.map(a => a.slug))];
+  if (overrideErrors.length) {
+    console.error(overrideErrors.join('\n'));
+    process.exit(1);
+  }
 
   // Load fare overrides from R2 — takes precedence over legacy fare field in index.json
   let fareOverrides: Record<string, { adult?: number }> = {};
@@ -690,6 +736,9 @@ async function main() {
   }
   await runWithConcurrency(tasks, 5);
 
+  const gateReport = buildGateReport(gateRunId('refresh'), 'refresh', gateChecked, gateOverrides, applyOverrides(gateFlags, gateOverrides));
+  console.log(`\n${formatGateSummary(gateReport, writeGateReport(gateReport))}`);
+
   const refreshResult = writeRefreshRunResult(targets.map(agency => agency.slug), refreshStatuses);
 
   console.log(`\n  index.json updated. ${targets.length - failures}/${targets.length} succeeded.`);
@@ -710,7 +759,7 @@ async function main() {
     console.error('  Refresh failed for some agencies — PMTiles rebuild is blocked until none fail.');
   }
   if (refused.length > 0) {
-    console.warn(`${refused.length} agencies refused by the drop guard and kept their live data (review, then rerun with ${ALLOW_DROP_FLAG}): ${refused.sort().join(', ')}`);
+    console.warn(`${refused.length} agencies refused by the release diff gate and kept their live data (review the report, then rerun with ${ALLOW_DROP_FLAG} or --allow <slug>:<flag>): ${refused.sort().join(', ')}`);
   }
   if (failures > 0) {
     console.warn(`${failures} agencies failed to refresh (see warnings above). Continuing so action succeeds.`);
