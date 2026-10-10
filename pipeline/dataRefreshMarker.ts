@@ -46,6 +46,7 @@ export function writeDataRefreshMarker(
 export function writeRefreshRunResult(
   requestedSlugs: string[],
   statuses: Record<string, RefreshAgencyStatus>,
+  outputPath = REFRESH_RESULT_PATH,
 ): RefreshRunResult {
   const result: RefreshRunResult = {
     generatedAt: new Date().toISOString(),
@@ -53,8 +54,8 @@ export function writeRefreshRunResult(
     statuses,
     complete: Object.values(statuses).every(status => status === 'processed' || status === 'unchanged'),
   };
-  fs.mkdirSync(path.dirname(REFRESH_RESULT_PATH), { recursive: true });
-  fs.writeFileSync(REFRESH_RESULT_PATH, `${JSON.stringify(result, null, 2)}\n`);
+  fs.mkdirSync(path.dirname(outputPath), { recursive: true });
+  fs.writeFileSync(outputPath, `${JSON.stringify(result, null, 2)}\n`);
   return result;
 }
 
