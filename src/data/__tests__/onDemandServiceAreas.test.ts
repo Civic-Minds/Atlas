@@ -11,6 +11,7 @@ import {
   HAMILTON_MY_RIDE_SERVICE_AREA,
   C_TRAN_CURRENT_SERVICE_AREA,
   CYRIDE_EASE_SERVICE_AREA,
+  MUSKOKA_DRT_ON_DEMAND_AGENCY,
   METRO_MICRO_SERVICE_AREA,
   WATA_PARATRANSIT_SERVICE_AREA,
 } from '../onDemandServiceAreas';
@@ -122,5 +123,22 @@ describe('CyRide EASE on-demand service area', () => {
     expect(isOnDemandActive(CYRIDE_EASE_SERVICE_AREA.availability, 'Weekday', 'midday')).toBe(true);
     expect(isOnDemandActive(CYRIDE_EASE_SERVICE_AREA.availability, 'Weekday', 'overnight')).toBe(false);
     expect(isOnDemandActive(CYRIDE_EASE_SERVICE_AREA.availability, 'Saturday', 'midday')).toBe(false);
+  });
+});
+
+describe('Muskoka District DRT on-demand service area', () => {
+  it('keeps the District Phase 1.2 polygon closed and beta-only', () => {
+    expect(MUSKOKA_DRT_ON_DEMAND_AGENCY.betaOnly).toBe(true);
+    expect(MUSKOKA_DRT_ON_DEMAND_AGENCY.onDemandOnly).toBe(true);
+    const ring = MUSKOKA_DRT_ON_DEMAND_AGENCY.onDemandServiceArea.features[0].geometry.coordinates[0];
+    expect(ring).toHaveLength(72);
+    expect(ring[0]).toEqual(ring.at(-1));
+  });
+
+  it('only shows District DRT on weekdays 7 a.m.–7 p.m.', () => {
+    const { availability } = MUSKOKA_DRT_ON_DEMAND_AGENCY.onDemandServiceArea;
+    expect(isOnDemandActive(availability, 'Weekday', 'midday')).toBe(true);
+    expect(isOnDemandActive(availability, 'Weekday', 'overnight')).toBe(false);
+    expect(isOnDemandActive(availability, 'Saturday', 'midday')).toBe(false);
   });
 });

@@ -199,6 +199,45 @@ export const WATA_PARATRANSIT_SERVICE_AREA = {
   availability: WATA_GTFS_FLEX_SERVICE.availability,
 };
 
+const MUSKOKA_DRT_SOURCE_URL = 'https://services1.arcgis.com/5Av2OaC0epjp7wD3/arcgis/rest/services/District_DRT_Phase_1_2_Service_Area/FeatureServer/0';
+const MUSKOKA_DRT_SOURCE_LABEL = 'District of Muskoka DRT Phase 1.2 service-area layer';
+
+/** Phase 1.2 boundary from the District's Muskoka Transit map layer (shared by the District, 2026-10-10). */
+export const MUSKOKA_DRT_SERVICE_AREAS: GeoJSON.Feature<GeoJSON.Polygon>[] = [
+  polygonFeature('muskoka-drt', MUSKOKA_DRT_SOURCE_URL, MUSKOKA_DRT_SOURCE_LABEL, [[-79.4077152, 44.9529788], [-79.4032798, 44.9561251], [-79.3728407, 44.9774685], [-79.3439002, 44.9848119], [-79.3081787, 44.9958112], [-79.3067381, 44.9958082], [-79.3052975, 44.9958051], [-79.3042755, 44.995055], [-79.3032535, 44.994305], [-79.2934102, 44.9632788], [-79.2866319, 44.9539609], [-79.2864992, 44.9536933], [-79.2966717, 44.9513184], [-79.3069017, 44.9528217], [-79.315803, 44.9547237], [-79.3247044, 44.9566257], [-79.3328826, 44.9410456], [-79.3367645, 44.9380121], [-79.3371182, 44.9375305], [-79.3418409, 44.9346937], [-79.3427982, 44.9328802], [-79.3432247, 44.9304398], [-79.3423143, 44.922776], [-79.3413954, 44.9190104], [-79.342168, 44.9152448], [-79.3402223, 44.9097488], [-79.3389749, 44.9062743], [-79.3370644, 44.8844842], [-79.316817, 44.8621791], [-79.3072504, 44.8597086], [-79.3066488, 44.8584999], [-79.3058082, 44.8518377], [-79.3049624, 44.8504717], [-79.303916, 44.8490171], [-79.3030869, 44.8470107], [-79.3044458, 44.8423644], [-79.3050614, 44.8415642], [-79.3052579, 44.8415559], [-79.3103344, 44.844052], [-79.3152368, 44.8428652], [-79.3191929, 44.8330676], [-79.3217043, 44.8316157], [-79.3252953, 44.8308877], [-79.3292206, 44.834774], [-79.3278866, 44.8421985], [-79.3262193, 44.8486372], [-79.3233728, 44.8498247], [-79.3210232, 44.85286], [-79.3333512, 44.8622671], [-79.3401877, 44.8784994], [-79.3632891, 44.8953735], [-79.3744411, 44.9057426], [-79.3802287, 44.9043417], [-79.3823942, 44.9040877], [-79.3834324, 44.9045138], [-79.3836606, 44.9051671], [-79.3845995, 44.9062938], [-79.3855446, 44.9074313], [-79.3869595, 44.9080818], [-79.3893576, 44.9090797], [-79.3922771, 44.909778], [-79.3929347, 44.9110871], [-79.3954027, 44.912433], [-79.398119, 44.9142205], [-79.4128431, 44.9211411], [-79.4172611, 44.9300973], [-79.4143063, 44.9322555], [-79.4075591, 44.9288784], [-79.4001746, 44.9279133], [-79.3946318, 44.924222], [-79.3911119, 44.9290531], [-79.4077152, 44.9529788]], 'Gravenhurst–Bracebridge'),
+];
+
+export const MUSKOKA_DRT_ON_DEMAND_AGENCY = {
+  slug: 'muskoka-drt',
+  name: 'District DRT (Muskoka)',
+  region: 'Ontario',
+  center: [44.913, -79.352] as [number, number],
+  url: '',
+  bbox: [44.8308877, -79.4172611, 44.9958112, -79.2864992] as [number, number, number, number],
+  cities: ['Gravenhurst, Ontario', 'Bracebridge, Ontario'],
+  displayArea: 'Gravenhurst–Bracebridge',
+  onDemandOnly: true,
+  hiddenInProduction: true,
+  betaOnly: true,
+  rolloutNotice: BETA_ROLLOUT_NOTICE,
+  websiteUrl: 'https://www.muskoka.on.ca/DRT',
+  onDemandServiceArea: {
+    features: MUSKOKA_DRT_SERVICE_AREAS,
+    sourceUrl: MUSKOKA_DRT_SOURCE_URL,
+    sourceLabel: MUSKOKA_DRT_SOURCE_LABEL,
+    sourceRetrievedAt: '2026-10-10',
+    serviceName: 'District DRT',
+    serviceHours: 'Monday–Friday 7 a.m.–7 p.m.; no service on statutory holidays. Book in the Blaise Transit app or call 705-645-2100 ext. 4419.',
+    tripRules: 'Curb-to-curb within the shaded area; there are no fixed stops.',
+    bookingUrl: 'https://www.muskoka.on.ca/en/community-services-and-support/district-drt.aspx',
+    availability: {
+      Weekday: [{ startHour: 7, endHour: 19 }],
+      Saturday: [],
+      Sunday: [],
+    } satisfies OnDemandAvailability,
+  },
+};
+
 export const BWG_ON_DEMAND_AGENCY = {
   slug: 'bwg',
   name: 'BWG Transit',
