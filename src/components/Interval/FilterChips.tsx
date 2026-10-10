@@ -186,7 +186,7 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds
         )}
         {[...byRegion.entries()].map(([region, groups]) => (
           <div key={region}>
-            <p className="px-2 pt-2 pb-0.5 text-[8px] font-black text-[var(--text-dim)] uppercase tracking-widest">{region}</p>
+            <p className="px-2 pt-2 pb-0.5 text-[10px] font-black text-[var(--text-dim)]">{region}</p>
             {groups.map(g => {
               const active = g.slugs.every(s => selectedAgencies.has(s));
               const { primary, secondary } = agencyDisplayParts(g.name, g.cities, g.displayArea);
@@ -363,7 +363,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
           <div className={`absolute top-10 right-0 ${FLOATING_CARD} p-3 w-72 ${PANEL_ENTER_TOP} flex flex-col gap-3`}>
             {/* Frequency */}
             <div>
-              <p className="text-[8px] font-black text-[var(--text-dim)] uppercase tracking-widest mb-1.5">Frequency</p>
+              <p className="text-[10px] font-black text-[var(--text-dim)] mb-1.5">Frequency</p>
               <div className="flex flex-wrap gap-1">
                 {HEADWAY_TIERS.map(({ max, label }) => {
                   const color = isFinite(max) ? getTierColor(String(max), colorMode) : 'var(--text-dim)';
@@ -378,7 +378,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
             </div>
             {/* Day */}
             <div>
-              <p className="text-[8px] font-black text-[var(--text-dim)] uppercase tracking-widest mb-1.5">Day</p>
+              <p className="text-[10px] font-black text-[var(--text-dim)] mb-1.5">Day</p>
               <div className="flex gap-1">
                 {DAY_TYPES.map(d => (
                   <button key={d} onClick={() => setDay(d)} className={compactOptBtn(day === d, colorMode === 'friendly')}>
@@ -389,7 +389,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
             </div>
             {/* Time */}
             <div>
-              <p className="text-[8px] font-black text-[var(--text-dim)] uppercase tracking-widest mb-1.5">Time</p>
+              <p className="text-[10px] font-black text-[var(--text-dim)] mb-1.5">Time</p>
               <div className="flex flex-wrap gap-1">
                 {PERIOD_KEYS.map(p => (
                   <button key={p} onClick={() => setPeriod(p)} className={compactOptBtn(period === p, colorMode === 'friendly')}>
@@ -400,7 +400,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
             </div>
             {/* Mode */}
             <div>
-              <p className="text-[8px] font-black text-[var(--text-dim)] uppercase tracking-widest mb-1.5">Mode</p>
+              <p className="text-[10px] font-black text-[var(--text-dim)] mb-1.5">Mode</p>
               <div className="flex flex-wrap gap-1">
                 {MODES.map(m => (
                   <button key={m.id} onClick={() => toggleMode(m.id)} className={compactOptBtn(modeIsActive(m.id), colorMode === 'friendly')}>

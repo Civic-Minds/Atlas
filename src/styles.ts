@@ -97,7 +97,7 @@ export const PANEL_SECTION_HEAD = 'px-4 py-2 text-[10px] font-black tracking-wid
 export const PANEL_SEARCH_HEAD = 'px-4 text-[10px] font-bold text-[var(--accent)] tracking-wide mb-1.5';
 
 /** Sub-section label (In this area / Elsewhere) */
-export const PANEL_SEARCH_SUBHEAD = 'px-4 pt-2 pb-0.5 text-[9px] font-bold uppercase tracking-wide text-[var(--text-dim)]';
+export const PANEL_SEARCH_SUBHEAD = 'px-4 pt-2 pb-0.5 text-[10px] font-bold text-[var(--text-dim)]';
 
 /** Scrollable body inside a floating panel */
 export const PANEL_BODY = 'flex-1 overflow-y-auto custom-scrollbar min-h-0';

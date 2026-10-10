@@ -96,7 +96,7 @@ export function ServiceTimeline({
       </div>
 
       <div className="mt-6 flex items-center gap-3 flex-wrap">
-        <span className="text-[9px] text-[var(--text-dim)] uppercase tracking-wider font-bold">Frequency</span>
+        <span className="text-[10px] text-[var(--text-dim)] font-bold">Frequency</span>
         {[
           { label: '≤10 min', hw: 10 },
           { label: '≤15 min', hw: 15 },

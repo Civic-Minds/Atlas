@@ -70,7 +70,7 @@ export default function RouteDirectionRow({ label, headway, colorHeadway, headwa
       onMouseLeave={onHoverEnd}
     >
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <span className={`font-bold flex-1 min-w-0 leading-snug break-words ${clickable ? '' : 'text-[var(--text-primary)]'}`}>
+        <span className={`font-bold flex-1 min-w-[6rem] leading-snug break-words ${clickable ? '' : 'text-[var(--text-primary)]'}`}>
           {label}
         </span>
         {edgeGapAllowance && (
