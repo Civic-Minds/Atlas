@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- Agencies sourced from MobilityDatabase now follow its always-current feed link instead of a dated copy or the retired Google mirror, so new schedules show up on the next refresh instead of after the old one expires ([#627](https://github.com/Civic-Minds/Atlas/issues/627), [#629](https://github.com/Civic-Minds/Atlas/issues/629)).
 - Agencies with a separate rail feed (NFTA, LA Metro, WMATA, SEPTA) keep their rail lines on every processing path again, because process, refresh, and reprocess now share one loader that merges every feed and stamps the data version the map build requires ([#106](https://github.com/Civic-Minds/Atlas/issues/106), [#121](https://github.com/Civic-Minds/Atlas/issues/121), [#204](https://github.com/Civic-Minds/Atlas/issues/204)).
 - Map image exports now wait until every route has loaded (or explain why they cannot) and keep phone screens whole and sharp, so a saved image is never missing routes or stretched.
 - **The map and the route cards can no longer come from different builds — a data release now only goes live when its map tiles and agency data were built together under the app's current rules, and the site shows no route data rather than an unmatched map.**
