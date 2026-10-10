@@ -42,6 +42,8 @@ export type AuditKind = typeof AUDIT_KINDS[number];
 
 export interface AuditMismatch {
   agency: string;
+  /** agency::routeId[::branch:x] — the identity the app counts as one route. */
+  routeKey: string;
   route: string;
   day: string;
   period: AuditPeriod;
@@ -54,8 +56,10 @@ export interface AuditResult {
   routes: number;
   checks: number;
   mismatches: AuditMismatch[];
-  /** Distinct agency::route::day keys with at least one mismatch, per kind. */
+  /** Distinct route-days (routeKey::day) with at least one mismatch, per kind. */
   routesByKind: Record<AuditMismatch['kind'], Set<string>>;
+  /** Distinct routes (routeKey, any day) with at least one mismatch, per kind. */
+  distinctRoutesByKind: Record<AuditMismatch['kind'], Set<string>>;
 }
 
 function clone<T>(value: T): T {
@@ -93,7 +97,7 @@ function isRouteLine(f: Feature): boolean {
 }
 
 function routeKeyOf(agency: string, p: Record<string, any>): string {
-  return `${agency}::${p.routeId}${p.routeBranch ? `::branch:${p.routeBranch}` : ''}::${p.day ?? ''}`;
+  return `${agency}::${p.routeId}${p.routeBranch ? `::branch:${p.routeBranch}` : ''}`;
 }
 
 /**
@@ -130,10 +134,12 @@ export function auditAgencyFeatures(agency: string, rawFeatures: Feature[]): Aud
     checks: 0,
     mismatches: [],
     routesByKind: Object.fromEntries(AUDIT_KINDS.map(kind => [kind, new Set<string>()])) as AuditResult['routesByKind'],
+    distinctRoutesByKind: Object.fromEntries(AUDIT_KINDS.map(kind => [kind, new Set<string>()])) as AuditResult['distinctRoutesByKind'],
   };
   const record = (m: AuditMismatch) => {
     result.mismatches.push(m);
-    result.routesByKind[m.kind].add(`${m.agency}::${m.route}::${m.day}`);
+    result.routesByKind[m.kind].add(`${m.routeKey}::${m.day}`);
+    result.distinctRoutesByKind[m.kind].add(m.routeKey);
   };
 
   // Group by route + branch + day (the unit the app counts as "a route").
@@ -143,7 +149,7 @@ export function auditAgencyFeatures(agency: string, rawFeatures: Feature[]): Aud
     if (!isRouteLine(raw)) continue;
     const client = clientFeatures[i].properties as Record<string, any>;
     const tile = asTileProperties(tileSource[i].properties as Record<string, unknown>);
-    const key = routeKeyOf(agency, client);
+    const key = `${routeKeyOf(agency, client)}::${client.day ?? ''}`;
     const group = groups.get(key) ?? [];
     group.push({ client, tile });
     groups.set(key, group);
@@ -153,7 +159,8 @@ export function auditAgencyFeatures(agency: string, rawFeatures: Feature[]): Aud
   const baseFilters = { agencies: new Set<string>(), modes: new Set<number>() };
   for (const group of groups.values()) {
     const sample = group[0].client;
-    const routeLabel = String(sample.routeShortName ?? sample.routeId);
+    const routeLabel = String(sample.routeShortName || sample.routeId);
+    const routeKey = routeKeyOf(agency, sample);
     const day = String(sample.day ?? '');
     const directions = new Map<number, Record<string, any>[]>();
     for (const { client } of group) {
@@ -175,20 +182,20 @@ export function auditAgencyFeatures(agency: string, rawFeatures: Feature[]): Aud
           anyTile ||= onMap;
           if (inMemory !== onMap) {
             record({
-              agency, route: routeLabel, day, period, maxHeadway, kind: 'feature-disagree',
+              agency, routeKey, route: routeLabel, day, period, maxHeadway, kind: 'feature-disagree',
               detail: `dir ${client.directionId} "${client.headsign ?? ''}": app=${inMemory} map=${onMap}`,
             });
           }
         }
         if (anyClient !== anyTile) {
-          record({ agency, route: routeLabel, day, period, maxHeadway, kind: anyClient ? 'route-app-only' : 'route-map-only', detail: `app=${anyClient} map=${anyTile}` });
+          record({ agency, routeKey, route: routeLabel, day, period, maxHeadway, kind: anyClient ? 'route-app-only' : 'route-map-only', detail: `app=${anyClient} map=${anyTile}` });
         }
         if ((anyClient || anyTile) && maxHeadway !== Infinity) {
           const over = directionValues.filter(([, v]) => v != null && v > maxHeadway);
           if (over.length > 0) {
             const detail = `passes (app=${anyClient} map=${anyTile}) but ${over.map(([d, v]) => `dir ${d}=${v}`).join(', ')}`;
-            if (anyClient) record({ agency, route: routeLabel, day, period, maxHeadway, kind: 'app-passes-slow-direction', detail });
-            if (anyTile) record({ agency, route: routeLabel, day, period, maxHeadway, kind: 'map-passes-slow-direction', detail });
+            if (anyClient) record({ agency, routeKey, route: routeLabel, day, period, maxHeadway, kind: 'app-passes-slow-direction', detail });
+            if (anyTile) record({ agency, routeKey, route: routeLabel, day, period, maxHeadway, kind: 'map-passes-slow-direction', detail });
           }
         }
       }

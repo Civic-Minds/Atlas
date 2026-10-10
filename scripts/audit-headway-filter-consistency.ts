@@ -43,6 +43,9 @@ async function main() {
   const totals = { agencies: 0, missing: 0, routes: 0, checks: 0 };
   const routesByKind: Record<string, Set<string>> = Object.fromEntries(kinds.map(k => [k, new Set<string>()]));
   const agenciesByKind: Record<string, Set<string>> = Object.fromEntries(kinds.map(k => [k, new Set<string>()]));
+  const distinctRoutesByKind: Record<string, Set<string>> = Object.fromEntries(kinds.map(k => [k, new Set<string>()]));
+  // Same, excluding Frequency = All (Infinity), i.e. only real "every N min or less" thresholds.
+  const thresholdRoutesByKind: Record<string, Set<string>> = Object.fromEntries(kinds.map(k => [k, new Set<string>()]));
   const examples: Record<string, AuditMismatch[]> = Object.fromEntries(kinds.map(k => [k, []]));
 
   let next = 0;
@@ -62,6 +65,8 @@ async function main() {
           if (result.routesByKind[kind].size > 0) agenciesByKind[kind].add(slug);
         }
         for (const m of result.mismatches) {
+          distinctRoutesByKind[m.kind].add(m.routeKey);
+          if (m.maxHeadway !== Infinity) thresholdRoutesByKind[m.kind].add(m.routeKey);
           if (examples[m.kind].length < exampleCount) examples[m.kind].push(m);
         }
       } catch (err) {
@@ -74,7 +79,7 @@ async function main() {
 
   console.log(`Audited ${totals.agencies} agencies (${totals.missing} unavailable), ${totals.routes} route-days, ${totals.checks} feature checks`);
   for (const kind of kinds) {
-    console.log(`\n${kind}: ${routesByKind[kind].size} route-days across ${agenciesByKind[kind].size} agencies`);
+    console.log(`\n${kind}: ${distinctRoutesByKind[kind].size} routes (${thresholdRoutesByKind[kind].size} at a real N-minute threshold), ${routesByKind[kind].size} route-days, ${agenciesByKind[kind].size} agencies`);
     for (const m of examples[kind]) {
       console.log(`  ${m.agency} ${m.route} ${m.day} ${m.period} <=${m.maxHeadway}: ${m.detail}`);
     }
