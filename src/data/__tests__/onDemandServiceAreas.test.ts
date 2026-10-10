@@ -12,6 +12,7 @@ import {
   C_TRAN_CURRENT_SERVICE_AREA,
   CYRIDE_EASE_SERVICE_AREA,
   MUSKOKA_DRT_ON_DEMAND_AGENCY,
+  ST_ALBERT_ON_DEMAND_AGENCY,
   METRO_MICRO_SERVICE_AREA,
   WATA_PARATRANSIT_SERVICE_AREA,
 } from '../onDemandServiceAreas';
@@ -140,5 +141,20 @@ describe('Muskoka District DRT on-demand service area', () => {
     expect(isOnDemandActive(availability, 'Weekday', 'midday')).toBe(true);
     expect(isOnDemandActive(availability, 'Weekday', 'overnight')).toBe(false);
     expect(isOnDemandActive(availability, 'Saturday', 'midday')).toBe(false);
+  });
+});
+
+describe('St. Albert on-demand service area', () => {
+  it('keeps the agency Flex zone closed and beta-only', () => {
+    expect(ST_ALBERT_ON_DEMAND_AGENCY.betaOnly).toBe(true);
+    const ring = ST_ALBERT_ON_DEMAND_AGENCY.onDemandServiceArea.features[0].geometry.coordinates[0];
+    expect(ring[0]).toEqual(ring.at(-1));
+  });
+
+  it('follows the Flex service windows: weekday evenings and Sunday daytime', () => {
+    const { availability } = ST_ALBERT_ON_DEMAND_AGENCY.onDemandServiceArea;
+    expect(isOnDemandActive(availability, 'Weekday', 'midday')).toBe(false);
+    expect(isOnDemandActive(availability, 'Weekday', 'late')).toBe(true);
+    expect(isOnDemandActive(availability, 'Sunday', 'midday')).toBe(true);
   });
 });

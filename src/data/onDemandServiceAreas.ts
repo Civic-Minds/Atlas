@@ -238,6 +238,45 @@ export const MUSKOKA_DRT_ON_DEMAND_AGENCY = {
   },
 };
 
+const ST_ALBERT_SOURCE_URL = 'https://stalbert.ca/city/transit/tools/via/';
+const ST_ALBERT_SOURCE_LABEL = 'St. Albert Transit GTFS-Flex export (agency-supplied)';
+
+/** Zone from St. Albert Transit's GTFS-Flex export (2026-09-29); trips run between the 470 bus stops inside it. */
+export const ST_ALBERT_ON_DEMAND_SERVICE_AREAS: GeoJSON.Feature<GeoJSON.Polygon>[] = [
+  polygonFeature('st-albert', ST_ALBERT_SOURCE_URL, ST_ALBERT_SOURCE_LABEL, [[-113.679648, 53.659179], [-113.682995, 53.635114], [-113.662138, 53.612869], [-113.650894, 53.594433], [-113.646175, 53.590256], [-113.600855, 53.61623], [-113.590608, 53.610974], [-113.588765, 53.619159], [-113.579066, 53.622977], [-113.575074, 53.625394], [-113.565106, 53.633308], [-113.564656, 53.65202], [-113.600855, 53.660603], [-113.606005, 53.669452], [-113.613043, 53.672808], [-113.639972, 53.677549], [-113.677201, 53.673139], [-113.679648, 53.659179]], 'St. Albert'),
+];
+
+export const ST_ALBERT_ON_DEMAND_AGENCY = {
+  slug: 'st-albert',
+  name: 'St. Albert Transit (StAT)',
+  region: 'Alberta',
+  center: [53.634, -113.624] as [number, number],
+  url: '',
+  bbox: [53.590256, -113.682995, 53.677549, -113.564656] as [number, number, number, number],
+  cities: ['St. Albert, Alberta'],
+  displayArea: 'St. Albert',
+  onDemandOnly: true,
+  hiddenInProduction: true,
+  betaOnly: true,
+  rolloutNotice: BETA_ROLLOUT_NOTICE,
+  websiteUrl: ST_ALBERT_SOURCE_URL,
+  onDemandServiceArea: {
+    features: ST_ALBERT_ON_DEMAND_SERVICE_AREAS,
+    sourceUrl: ST_ALBERT_SOURCE_URL,
+    sourceLabel: ST_ALBERT_SOURCE_LABEL,
+    sourceRetrievedAt: '2026-09-29',
+    serviceName: 'StAT On-Demand',
+    serviceHours: 'Monday–Friday 6:35 p.m.–midnight; Saturday 6:30 p.m.–midnight; Sunday 5:55 a.m.–7 p.m.',
+    tripRules: 'Pickups and drop-offs are at St. Albert Transit bus stops inside the shaded area, not door to door.',
+    bookingUrl: ST_ALBERT_SOURCE_URL,
+    availability: {
+      Weekday: [{ startHour: 18.583, endHour: 24 }],
+      Saturday: [{ startHour: 18.5, endHour: 24 }],
+      Sunday: [{ startHour: 5.917, endHour: 19 }],
+    } satisfies OnDemandAvailability,
+  },
+};
+
 export const BWG_ON_DEMAND_AGENCY = {
   slug: 'bwg',
   name: 'BWG Transit',
