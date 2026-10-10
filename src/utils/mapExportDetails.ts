@@ -20,10 +20,14 @@ export interface MapExportDetails {
   place: string | null;
   /** Large heading: the place when known, otherwise the view name. */
   title: string;
-  /** Plain-language description lines, e.g. ["Transit frequency", "Route 504 King", "Every 20 min or better · Saturday midday"]. */
+  /** Small label above the heading: the view name, only when the heading is a place. */
+  eyebrow: string | null;
+  /** Plain-language description lines, e.g. ["Every 20 min or better · Saturday midday"]. */
   lines: string[];
+  /** The selected route with its drawn colour, only when it is in the view. */
+  route: { label: string; color: string } | null;
   key: MapExportKeyItem[];
-  /** Small heading above the key, matching the app's legend. */
+  /** Small heading before the key, only where the colours need naming (fares). */
   keyTitle?: string;
   /** Lowercase file name without special characters, e.g. "atlas-toronto-20min-saturday-midday.png". */
   filename: string;
@@ -48,6 +52,8 @@ export interface MapExportState {
   /** Display label of the selected route, only when it is drawn in the view. */
   routeLabel?: string | null;
   routeShortName?: string | null;
+  /** Colour the selected route is drawn in. */
+  routeColor?: string | null;
   nightServiceFrequency?: NightServiceFrequency;
   frequentServiceDays?: DayType[];
   frequentServiceFrequency?: FrequentServiceFrequency;
@@ -262,8 +268,10 @@ export function describeMapExport(state: MapExportState, samples: RenderedRouteS
 
   const viewName = sentenceCase(state.viewTitle || 'Transit map');
   // With no clear place, the view name becomes the heading instead of a guessed place.
-  const lines = place ? [viewName] : [];
-  if (state.view === 'frequency' && state.routeLabel) lines.push(`Route ${state.routeLabel}`);
+  const lines: string[] = [];
+  const route = state.view === 'frequency' && state.routeLabel
+    ? { label: `Route ${state.routeLabel}`, color: state.routeColor ?? '#71717a' }
+    : null;
   const filter = filterLine(state);
   if (filter) lines.push(filter);
   if (state.view === 'frequency') {
@@ -271,6 +279,16 @@ export function describeMapExport(state: MapExportState, samples: RenderedRouteS
     if (state.query?.trim()) lines.push(`Matching “${state.query.trim()}”`);
   }
 
-  const keyTitle = state.view === 'fares' ? 'Base fare' : state.view === 'night' ? undefined : 'Frequency';
-  return { place, title: place ?? viewName, lines, key, keyTitle, filename: buildExportFilename(state, place) };
+  // The view name above the heading already says what the colours mean, except for fares.
+  const keyTitle = state.view === 'fares' ? 'Base fare' : undefined;
+  return {
+    place,
+    title: place ?? viewName,
+    eyebrow: place ? viewName : null,
+    lines,
+    route,
+    key,
+    keyTitle,
+    filename: buildExportFilename(state, place),
+  };
 }

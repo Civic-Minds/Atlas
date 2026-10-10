@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 - Exported map images now name the place when one city clearly fills the view, describe the active filter and selected route in plain words, include a colour key matching the map, and save with a descriptive file name, so anyone receiving the image can tell what it shows.
+- Exported map images now use a clean poster layout with the selected route drawn bold so it stands out, and a link back to the map.
 - Map image exports now wait until every route has loaded (or explain why they cannot) and keep phone screens whole and sharp, so a saved image is never missing routes or stretched.
 - **The map and the route cards can no longer come from different builds — a data release now only goes live when its map tiles and agency data were built together under the app's current rules, and the site shows no route data rather than an unmatched map.**
 - **Frequency filters now require every direction of a route to meet the threshold, so routes no longer slip through on a single busy stretch, routes with a few occasional extra trips (like TTC 100) no longer drop out, and the route list, counts, and map always agree.**

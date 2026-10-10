@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Download, Share2, X } from 'lucide-react';
 import { FLOATING_CARD, Z_MODAL_BG, Z_MODAL_TOP } from '../styles';
-import { canShareMapExport, createMapExport, DEFAULT_MAP_EXPORT_SIZE, downloadMapExport, getMapExportLayout, getMapExportOutputSize, MAP_EXPORT_SIZES, measureMapExportLines, MapExportBlockedError, shareMapExport, type MapExportSize, type MapExportSizeId } from '../utils/mapExport';
+import { canShareMapExport, createMapExport, DEFAULT_MAP_EXPORT_SIZE, downloadMapExport, getMapExportLayout, getMapExportOutputSize, MAP_EXPORT_SIZES, MapExportBlockedError, type MapExportText, shareMapExport, type MapExportSize, type MapExportSizeId } from '../utils/mapExport';
 import type { MapExportBox, MapExportDetails } from '../utils/mapExportDetails';
 
 interface Props {
@@ -10,13 +10,15 @@ interface Props {
   sourceSize: { width: number; height: number } | null;
   /** Resolves with the map canvas once the current view has fully loaded and drawn. */
   prepareSource: () => Promise<HTMLCanvasElement>;
+  /** Undo any export-only styling prepareSource applied to the map. */
+  releaseSource?: () => void;
   /** Describes the view as drawn right now: place, filter, colour key and file name. */
   describe: (box?: MapExportBox) => MapExportDetails;
   lightMode: boolean;
   onClose: () => void;
 }
 
-export default function MapExportDialog({ open, sourceSize, prepareSource, describe, lightMode, onClose }: Props) {
+export default function MapExportDialog({ open, sourceSize, prepareSource, releaseSource, describe, lightMode, onClose }: Props) {
   const [exportingMode, setExportingMode] = useState<'download' | 'share' | null>(null);
   const [waitingForMap, setWaitingForMap] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -26,16 +28,16 @@ export default function MapExportDialog({ open, sourceSize, prepareSource, descr
   const openRef = useRef(open);
   openRef.current = open;
 
-  const [previewLines, setPreviewLines] = useState<string[]>([]);
+  const [previewText, setPreviewText] = useState<MapExportText>({ title: '' });
 
   useEffect(() => {
     if (!open) return;
     setShareSupported(canShareMapExport());
-    // Header lines change the image height on phones, so size the preview with them.
+    // The heading and key change the image height on phones, so size the preview with them.
     try {
-      setPreviewLines(describe().lines);
+      setPreviewText(describe());
     } catch {
-      setPreviewLines([]);
+      setPreviewText({ title: '' });
     }
   }, [open, describe]);
 
@@ -44,7 +46,7 @@ export default function MapExportDialog({ open, sourceSize, prepareSource, descr
   const selectedSize: MapExportSize = MAP_EXPORT_SIZES.find(candidate => candidate.id === selectedSizeId) ?? DEFAULT_MAP_EXPORT_SIZE;
   const outputSize = (size: MapExportSize) => {
     if (!sourceSize || sourceSize.width === 0 || sourceSize.height === 0) return size;
-    return getMapExportOutputSize(sourceSize.width, sourceSize.height, size, previewLines);
+    return getMapExportOutputSize(sourceSize.width, sourceSize.height, size, previewText);
   };
   const selectedOutput = outputSize(selectedSize);
 
@@ -66,19 +68,22 @@ export default function MapExportDialog({ open, sourceSize, prepareSource, descr
       if (!openRef.current) return;
       // Describe the view only now that every route is drawn, so the text and key match the image.
       // Landscape exports crop the screen to the preset's shape: describe only what stays in.
-      const layout = getMapExportLayout(source.width, source.height, size, measureMapExportLines(describe().lines, source.width, source.height, size).length);
+      const layout = getMapExportLayout(source.width, source.height, size, describe());
       const pixelRatio = source.clientWidth > 0 ? source.width / source.clientWidth : 1;
       const { x, y, width, height } = layout.sourceRect;
       const details = describe([[x / pixelRatio, y / pixelRatio], [(x + width) / pixelRatio, (y + height) / pixelRatio]]);
       const blob = await createMapExport({
         source,
         title: details.title,
+        eyebrow: details.eyebrow,
         lines: details.lines,
+        route: details.route,
         key: details.key,
         keyTitle: details.keyTitle,
         lightMode,
         size,
       });
+      releaseSource?.();
       if (mode === 'share') {
         await shareMapExport(blob, details.title, details.filename);
       } else {
@@ -89,6 +94,7 @@ export default function MapExportDialog({ open, sourceSize, prepareSource, descr
       if (shareError instanceof DOMException && shareError.name === 'AbortError') return;
       setError(shareError instanceof MapExportBlockedError ? shareError.message : 'The map was not ready. Try again in a moment.');
     } finally {
+      releaseSource?.();
       setExportingMode(null);
     }
   };

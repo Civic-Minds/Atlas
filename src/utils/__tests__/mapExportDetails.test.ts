@@ -105,13 +105,17 @@ describe('describeMapExport', () => {
     const details = describeMapExport(BASE, samples({ ttc: 30 }), AGENCIES);
     expect(details.place).toBe('Toronto');
     expect(details.title).toBe('Toronto');
-    expect(details.lines).toEqual(['Transit frequency', 'Every 20 min or better · Saturday midday']);
+    expect(details.eyebrow).toBe('Transit frequency');
+    expect(details.lines).toEqual(['Every 20 min or better · Saturday midday']);
+    expect(details.route).toBeNull();
+    expect(details.keyTitle).toBeUndefined();
     expect(details.filename).toBe('atlas-toronto-20min-saturday-midday.png');
   });
 
   it('includes the selected route and modes', () => {
-    const details = describeMapExport({ ...BASE, routeLabel: '505 — Dundas', routeShortName: '505', selectedModes: [3, 1] }, samples({ ttc: 30 }), AGENCIES);
-    expect(details.lines).toEqual(['Transit frequency', 'Route 505 — Dundas', 'Every 20 min or better · Saturday midday · Subway and Bus']);
+    const details = describeMapExport({ ...BASE, routeLabel: '505 — Dundas', routeShortName: '505', routeColor: '#15803d', selectedModes: [3, 1] }, samples({ ttc: 30 }), AGENCIES);
+    expect(details.route).toEqual({ label: 'Route 505 — Dundas', color: '#15803d' });
+    expect(details.lines).toEqual(['Every 20 min or better · Saturday midday · Subway and Bus']);
     expect(details.filename).toBe('atlas-toronto-route-505-20min-saturday-midday.png');
   });
 
@@ -125,6 +129,7 @@ describe('describeMapExport', () => {
     const details = describeMapExport(BASE, samples({ ttc: 10, stm: 8, mbta: 7 }), AGENCIES);
     expect(details.place).toBeNull();
     expect(details.title).toBe('Transit frequency');
+    expect(details.eyebrow).toBeNull();
     expect(details.lines).toEqual(['Every 20 min or better · Saturday midday']);
     expect(details.filename).toBe('atlas-20min-saturday-midday.png');
   });

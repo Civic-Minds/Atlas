@@ -26,6 +26,10 @@ function mockCanvasContext() {
     arcTo: vi.fn(),
     closePath: vi.fn(),
     fill: vi.fn(),
+    stroke: vi.fn(),
+    save: vi.fn(),
+    restore: vi.fn(),
+    clip: vi.fn(),
     drawImage: vi.fn(),
     fillText: vi.fn(),
     measureText: vi.fn((text: string) => ({ width: text.length * 8 })),
@@ -56,24 +60,20 @@ describe('createMapExport', () => {
     const blob = await createMapExport({ source, title: 'Night service', lightMode: true });
 
     expect(blob.type).toBe('image/png');
-    expect(context.drawImage).toHaveBeenCalledWith(
-      source,
-      0,
-      25.3125,
-      100,
-      49.375,
-      0,
-      72,
-      MAP_EXPORT_WIDTH,
-      MAP_EXPORT_HEIGHT - 72 - 38,
-    );
-    expect(context.fillText).toHaveBeenCalledWith('Night service', 28, 34);
+    const [, , , , , dx, dy, dw, dh] = vi.mocked(context.drawImage).mock.calls[0] as unknown as number[];
+    // The map sits in a frame with even side margins, between the heading and the footer.
+    expect(dx).toBe(56);
+    expect(dw).toBe(MAP_EXPORT_WIDTH - 112);
+    expect(dy).toBeGreaterThan(100);
+    expect(dy + dh).toBeLessThan(MAP_EXPORT_HEIGHT - 50);
+    const texts = vi.mocked(context.fillText).mock.calls.map(call => call[0]);
+    expect(texts).toEqual(expect.arrayContaining(['Night service', 'Explore the map at transitatlas.fyi']));
   });
 
   it('draws the whole phone screen without cropping or stretching it', async () => {
     const context = mockCanvasContext();
     const source = sourceCanvas(1170, 2532);
-    await createMapExport({ source, title: 'Transit Frequency', lightMode: true });
+    await createMapExport({ source, title: 'Transit frequency', lightMode: true });
 
     const [, sx, sy, sw, sh, , , dw, dh] = vi.mocked(context.drawImage).mock.calls[0] as unknown as number[];
     expect([sx, sy, sw, sh]).toEqual([0, 0, 1170, 2532]);
@@ -88,13 +88,14 @@ describe('createMapExport', () => {
     await createMapExport({
       source,
       title: 'Toronto',
-      lines: ['Transit frequency', 'Every 20 min or better · Saturday midday'],
+      eyebrow: 'Transit frequency',
+      lines: ['Every 20 min or better · Saturday midday'],
+      route: { label: 'Route 505 Dundas', color: '#15803d' },
       key: [{ color: '#22863a', label: '≤10m' }, { color: '#f59e0b', label: '≤20m' }],
-      keyTitle: 'Frequency',
       lightMode: true,
     });
     const texts = vi.mocked(context.fillText).mock.calls.map(call => call[0]);
-    expect(texts).toEqual(expect.arrayContaining(['Toronto', 'Transit frequency', 'Every 20 min or better · Saturday midday', 'Frequency', '≤10m', '≤20m']));
+    expect(texts).toEqual(expect.arrayContaining(['Toronto', 'Transit frequency', 'Every 20 min or better · Saturday midday', 'Route 505 Dundas', '≤10m', '≤20m']));
     expect(texts.some(text => /[A-Z]{4,}/.test(String(text).replace(/CARTO|ODbL/g, '')))).toBe(false);
   });
 
@@ -127,11 +128,19 @@ describe('mapExportFilename', () => {
 
 describe('getMapExportLayout', () => {
   it('grows the header to fit the description lines', () => {
-    expect(getMapExportLayout(2880, 1800, MAP_EXPORT_SIZES[1], 3).headerHeight).toBeGreaterThan(getMapExportLayout(2880, 1800).headerHeight);
+    const lines = { title: 'Toronto', lines: ['One', 'Two', 'Three'] };
+    expect(getMapExportLayout(2880, 1800, MAP_EXPORT_SIZES[1], lines).headerHeight).toBeGreaterThan(getMapExportLayout(2880, 1800).headerHeight);
+  });
+
+  it('gives a phone image its own row for the selected route', () => {
+    const text = { title: 'Toronto', lines: ['Every 20 min or better'] };
+    const withRoute = getMapExportLayout(1170, 2532, MAP_EXPORT_SIZES[1], { ...text, route: { label: 'Route 505 Dundas', color: '#15803d' } });
+    const without = getMapExportLayout(1170, 2532, MAP_EXPORT_SIZES[1], text);
+    expect(withRoute.headerHeight).toBeGreaterThan(without.headerHeight);
   });
 
   it('keeps text readable on a narrow phone image', () => {
-    const layout = getMapExportLayout(390, 844, MAP_EXPORT_SIZES[2], 2);
+    const layout = getMapExportLayout(390, 844, MAP_EXPORT_SIZES[2], { title: 'Toronto', lines: ['One', 'Two'] });
     expect(layout.scale).toBeLessThan(1);
     expect(layout.height).toBe(layout.headerHeight + layout.mapRect.height + layout.footerHeight);
   });

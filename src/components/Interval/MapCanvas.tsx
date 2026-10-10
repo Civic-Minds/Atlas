@@ -75,6 +75,48 @@ function paintColorToHex(value: unknown): string | null {
   return `#${channel(r)}${channel(g)}${channel(b)}`;
 }
 
+const EXPORT_SELECTED_LAYERS = ['selected-route-layer', 'selected-local-route-layer'] as const;
+const EXPORT_CASING_SUFFIX = '-export-casing';
+const exportSavedWidths = new WeakMap<maplibregl.Map, Map<string, unknown>>();
+
+/**
+ * Draw the selected route bolder, over an outline in the basemap's background colour, for
+ * the exported image only. Returns false when no route is selected in the view.
+ */
+function emphasizeSelectedRouteForExport(map: maplibregl.Map, lightMode: boolean): boolean {
+  const layers = EXPORT_SELECTED_LAYERS.filter(id => map.getLayer(id) && map.getLayoutProperty(id, 'visibility') !== 'none'
+    && map.queryRenderedFeatures(undefined, { layers: [id] }).length > 0);
+  if (layers.length === 0) return false;
+  restoreSelectedRouteAfterExport(map);
+  const saved = new Map<string, unknown>();
+  for (const id of layers) {
+    const layer = map.getLayer(id)!;
+    saved.set(id, map.getPaintProperty(id, 'line-width'));
+    map.addLayer({
+      id: `${id}${EXPORT_CASING_SUFFIX}`,
+      type: 'line',
+      source: layer.source,
+      ...(layer.sourceLayer ? { 'source-layer': layer.sourceLayer } : {}),
+      filter: map.getFilter(id) as any,
+      paint: { 'line-color': lightMode ? '#ffffff' : '#0b0b0d', 'line-width': 10, 'line-opacity': 0.95 },
+      layout: { 'line-cap': 'round', 'line-join': 'round' },
+    }, id);
+    map.setPaintProperty(id, 'line-width', 6);
+  }
+  exportSavedWidths.set(map, saved);
+  return true;
+}
+
+function restoreSelectedRouteAfterExport(map: maplibregl.Map) {
+  const saved = exportSavedWidths.get(map);
+  if (!saved) return;
+  for (const [id, width] of saved) {
+    if (map.getLayer(`${id}${EXPORT_CASING_SUFFIX}`)) map.removeLayer(`${id}${EXPORT_CASING_SUFFIX}`);
+    if (map.getLayer(id)) map.setPaintProperty(id, 'line-width', width as any);
+  }
+  exportSavedWidths.delete(map);
+}
+
 function MapNoticePill({ children, className = '' }: { children: React.ReactNode; className?: string }) {
   return (
     <div className={`absolute bottom-6 left-6 right-24 sm:right-56 flex justify-center ${Z_PANEL} pointer-events-none`}>
@@ -373,7 +415,22 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         return layers.length > 0 && map.queryRenderedFeatures(undefined, { layers }).length > 0;
       },
     });
+    // In the image, the selected route gets a bolder line with an outline in the map's
+    // background colour, so it stands out without changing any tier colour.
+    if (map && emphasizeSelectedRouteForExport(map, exportStateRef.current.lightMode)) {
+      await new Promise<void>(resolve => {
+        const timer = setTimeout(resolve, 3000);
+        map.once('idle', () => {
+          clearTimeout(timer);
+          resolve();
+        });
+        map.triggerRepaint();
+      });
+    }
     return map!.getCanvas();
+  }, []);
+  const releaseExportSource = useCallback(() => {
+    if (mapRef.current) restoreSelectedRouteAfterExport(mapRef.current);
   }, []);
 
   // Read at export time (not captured by the callback) so the image always describes the
@@ -381,12 +438,12 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   const exportStateRef = useRef({
     agencies, maxHeadway, period, day, q, selectedRoute, selectedModes, colorMode, exportTitle,
     fareView, nightServiceView, nightServiceFrequency, frequentServiceView, frequentServiceDays,
-    frequentServiceFrequency, frequentServiceWindow, liveRoutesOnly,
+    frequentServiceFrequency, frequentServiceWindow, liveRoutesOnly, lightMode,
   });
   exportStateRef.current = {
     agencies, maxHeadway, period, day, q, selectedRoute, selectedModes, colorMode, exportTitle,
     fareView, nightServiceView, nightServiceFrequency, frequentServiceView, frequentServiceDays,
-    frequentServiceFrequency, frequentServiceWindow, liveRoutesOnly,
+    frequentServiceFrequency, frequentServiceWindow, liveRoutesOnly, lightMode,
   };
   const describeExport = useCallback((box?: MapExportBox): MapExportDetails => {
     const map = mapRef.current;
@@ -402,6 +459,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     const samples: RenderedRouteSample[] = [];
     let routeLabel: string | null = null;
     let routeShortName: string | null = null;
+    let routeColor: string | null = null;
     if (map) {
       const drawnLayers = ['overview-routes-layer', 'routes-layer', 'local-routes-layer', 'selected-route-layer', 'selected-local-route-layer', 'night-service-routes-layer', 'frequent-service-routes-layer']
         .filter(layer => map.getLayer(layer) && map.getLayoutProperty(layer, 'visibility') !== 'none');
@@ -426,6 +484,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
           if (label) {
             routeLabel = label;
             routeShortName = shortName ?? longName;
+            routeColor = paintColorToHex(paint['line-color']);
           }
         }
       }
@@ -443,6 +502,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       query: state.q,
       routeLabel,
       routeShortName,
+      routeColor,
       nightServiceFrequency: state.nightServiceFrequency,
       frequentServiceDays: state.frequentServiceDays,
       frequentServiceFrequency: state.frequentServiceFrequency,
@@ -2302,6 +2362,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         open={exportDialogOpen}
         sourceSize={exportDialogOpen && mapRef.current ? { width: mapRef.current.getCanvas().width, height: mapRef.current.getCanvas().height } : null}
         prepareSource={prepareExportSource}
+        releaseSource={releaseExportSource}
         describe={describeExport}
         lightMode={lightMode}
         onClose={() => setExportDialogOpen(false)}
