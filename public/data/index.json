@@ -267,6 +267,44 @@
       "feedRefreshRetryCount": 0
     },
     {
+      "slug": "cobourg",
+      "name": "Cobourg Transit",
+      "websiteUrl": "https://www.cobourg.ca/home-property/public-transit/",
+      "region": "Ontario",
+      "center": [
+        43.9697,
+        -78.1709
+      ],
+      "bbox": [
+        43.956302,
+        -78.200631,
+        43.983092,
+        -78.141071
+      ],
+      "cities": [
+        "Cobourg, Ontario"
+      ],
+      "timezone": "America/Toronto",
+      "feedUrl": null,
+      "manualFeedSource": true,
+      "lastFeedExpiry": "20261230",
+      "lastFeedVersion": "152",
+      "lastRefreshedAt": "2026-10-10",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 1
+        },
+        "checkedAt": "2026-10-10"
+      }
+    },
+    {
       "slug": "cornwall",
       "name": "Cornwall Transit",
       "websiteUrl": "https://www.cornwall.ca/en/live-here/cornwall-transit.aspx",
