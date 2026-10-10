@@ -10383,7 +10383,7 @@
       ],
       "feedUrl": "https://www3.septa.org/developer/google_bus.zip",
       "supplementalFeedUrls": [
-        "https://files.mobilitydatabase.org/mdb-503/mdb-503-202608050051/mdb-503-202608050051.zip"
+        "https://www3.septa.org/developer/google_rail.zip"
       ],
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-502/mdb-502-202608050207/mdb-502-202608050207.zip",
       "lastFeedExpiry": "20270220",
