@@ -94,8 +94,8 @@ describe('tile rules fingerprint', () => {
   //  - if it cannot (comments, types, refactors), just update the hash here.
   it('changes only together with a deliberate TILE_RULES_VERSION decision', () => {
     expect({ version: TILE_RULES_VERSION, fingerprint: tileRulesFingerprint() }).toEqual({
-      version: 1,
-      fingerprint: '4548b3f18dea5898657205d6d3c42fc0e0c45f83b5feb44a472c74d9ac24a7c0',
+      version: 2,
+      fingerprint: '5579c5b929aacab7445a7d9df78c1ee40f966dbc4fd6ce5aa7682a8749104f87',
     });
   });
 });

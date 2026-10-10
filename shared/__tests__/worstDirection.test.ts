@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { stampWorstDirectionHeadways, type WorstDirectionFeature } from '../worstDirection';
+import {
+  selectDirectionCoveragePool,
+  selectDirectionPeriodPool,
+  stampWorstDirectionHeadways,
+  type WorstDirectionFeature,
+} from '../worstDirection';
 
 function feat(opts: {
   routeShortName: string;
@@ -9,6 +14,7 @@ function feat(opts: {
   headwayByPeriod?: Record<string, number | null>;
   headwayByPeriodSustained?: Record<string, boolean>;
   tier?: string;
+  periodCoverageHeadway?: Record<string, number | null>;
 }): WorstDirectionFeature {
   return {
     properties: {
@@ -21,6 +27,7 @@ function feat(opts: {
         ? { headwayByPeriodSustained: opts.headwayByPeriodSustained }
         : {}),
       ...(opts.tier !== undefined ? { tier: opts.tier } : {}),
+      ...(opts.periodCoverageHeadway ? { periodCoverageHeadway: opts.periodCoverageHeadway } : {}),
     },
   };
 }
@@ -217,5 +224,94 @@ describe('stampWorstDirectionHeadways', () => {
     ];
     stampWorstDirectionHeadways(features);
     expect(features[2].properties.worstDirectionHeadwayByPeriod).toEqual({ amPeak: 23 });
+  });
+
+  describe('period coverage uses the same pool as the period headway (#658)', () => {
+    const route = (directionId: number, o: Omit<Parameters<typeof feat>[0], 'routeShortName' | 'day' | 'directionId'>) =>
+      feat({ routeShortName: 'C', day: 'Weekday', directionId, ...o });
+
+    it('a rare variant that does not run in the period no longer sets the coverage (TTC 506 High Park)', () => {
+      const features = [
+        route(0, { tier: '15', headwayByPeriod: { midday: 10 }, headwayByPeriodSustained: { midday: true }, periodCoverageHeadway: { midday: 13 } }),
+        route(1, { tier: '10', headwayByPeriod: { midday: 10 }, headwayByPeriodSustained: { midday: true }, periodCoverageHeadway: { midday: 10 } }),
+        // 7 overnight trips: no midday headway, one huge midday gap.
+        route(1, { tier: 'infrequent', headwayByPeriod: { midday: null }, periodCoverageHeadway: { midday: 345 } }),
+      ];
+      stampWorstDirectionHeadways(features);
+      for (const f of features) {
+        expect(f.properties.worstDirectionPeriodCoverageHeadway?.midday).toBe(13);
+        expect(f.properties.worstDirectionHeadwayByPeriod?.midday).toBe(10);
+      }
+    });
+
+    it('an infrequent sibling is set aside for coverage when a steady regular pattern runs (TTC 100 via Linkwood)', () => {
+      const features = [
+        route(0, { tier: '10', headwayByPeriod: { midday: 8 }, headwayByPeriodSustained: { midday: true }, periodCoverageHeadway: { midday: 12 } }),
+        route(1, { tier: '15', headwayByPeriod: { midday: 8 }, headwayByPeriodSustained: { midday: true }, periodCoverageHeadway: { midday: 12 } }),
+        route(1, { tier: 'infrequent', headwayByPeriod: { midday: 15 }, headwayByPeriodSustained: { midday: false }, periodCoverageHeadway: { midday: 286 } }),
+      ];
+      stampWorstDirectionHeadways(features);
+      expect(features[0].properties.worstDirectionPeriodCoverageHeadway?.midday).toBe(12);
+    });
+
+    it('a direction whose patterns are all minor still counts, and its gap still fails the route', () => {
+      // Every pattern in direction 1 is infrequent and unsteady: nothing is set aside, the
+      // direction keeps its own worst coverage and the route cannot pass on direction 0 alone.
+      const features = [
+        route(0, { tier: '10', headwayByPeriod: { midday: 8 }, headwayByPeriodSustained: { midday: true }, periodCoverageHeadway: { midday: 10 } }),
+        route(1, { tier: 'infrequent', headwayByPeriod: { midday: 14 }, headwayByPeriodSustained: { midday: false }, periodCoverageHeadway: { midday: 329 } }),
+        route(1, { tier: 'infrequent', headwayByPeriod: { midday: 30 }, headwayByPeriodSustained: { midday: false }, periodCoverageHeadway: { midday: 120 } }),
+      ];
+      stampWorstDirectionHeadways(features);
+      expect(features[0].properties.worstDirectionPeriodCoverageHeadway?.midday).toBe(329);
+    });
+
+    it('a direction that runs nothing in the period falls back to every sibling (late start still fails)', () => {
+      const features = [
+        route(0, { tier: '10', headwayByPeriod: { overnight: 20 }, headwayByPeriodSustained: { overnight: true }, periodCoverageHeadway: { overnight: 25 } }),
+        route(1, { tier: '30', headwayByPeriod: { overnight: null }, periodCoverageHeadway: { overnight: 150 } }),
+        route(1, { tier: 'span', periodCoverageHeadway: { overnight: 200 } }),
+      ];
+      stampWorstDirectionHeadways(features);
+      expect(features[0].properties.worstDirectionPeriodCoverageHeadway?.overnight).toBe(200);
+    });
+
+    it('with no steady pattern, a direction is judged by the patterns that run, regular first (NYCT B17)', () => {
+      const features = [
+        route(0, { tier: '30', headwayByPeriod: { midday: 8 }, headwayByPeriodSustained: { midday: true }, periodCoverageHeadway: { midday: 12 } }),
+        route(1, { tier: '20', headwayByPeriod: { midday: 9 }, headwayByPeriodSustained: { midday: false }, periodCoverageHeadway: { midday: 26 } }),
+        route(1, { tier: 'infrequent', headwayByPeriod: { midday: 167 }, headwayByPeriodSustained: { midday: false }, periodCoverageHeadway: { midday: 309 } }),
+        route(1, { tier: 'span', periodCoverageHeadway: { midday: 336 } }),
+      ];
+      stampWorstDirectionHeadways(features);
+      expect(features[0].properties.worstDirectionPeriodCoverageHeadway?.midday).toBe(26);
+    });
+
+    it('keeps a span pattern out of the pool when a real pattern runs (TTC 84 Pioneer Village via Oakdale)', () => {
+      const features = [
+        route(0, { tier: '60', headwayByPeriod: { amPeak: 6 }, headwayByPeriodSustained: { amPeak: true }, periodCoverageHeadway: { amPeak: 16 } }),
+        route(1, { tier: '30', headwayByPeriod: { amPeak: 12 }, headwayByPeriodSustained: { amPeak: true }, periodCoverageHeadway: { amPeak: 14 } }),
+        route(1, { tier: 'span', headwayByPeriod: { amPeak: 25 }, headwayByPeriodSustained: { amPeak: true }, periodCoverageHeadway: { amPeak: 62 } }),
+      ];
+      stampWorstDirectionHeadways(features);
+      expect(features[0].properties.worstDirectionPeriodCoverageHeadway?.amPeak).toBe(16);
+      expect(features[0].properties.worstDirectionHeadwayByPeriod?.amPeak).toBe(12);
+    });
+
+    it('the headway pool and the coverage pool are the same patterns whenever one is steady', () => {
+      const candidates = [
+        { id: 'main', tier: '10', sustained: true },
+        { id: 'extension', tier: 'infrequent', sustained: true },
+        { id: 'ghost', tier: '10', sustained: false },
+      ];
+      expect(selectDirectionPeriodPool(candidates).map(c => c.id)).toEqual(['main']);
+      expect(selectDirectionCoveragePool(candidates).map(c => c.id)).toEqual(['main']);
+      const onlyExtension = [candidates[1], candidates[2]];
+      expect(selectDirectionPeriodPool(onlyExtension).map(c => c.id)).toEqual(['extension']);
+      expect(selectDirectionCoveragePool(onlyExtension).map(c => c.id)).toEqual(['extension']);
+      // No steady pattern: the headway pool is empty, coverage still keeps the direction.
+      expect(selectDirectionPeriodPool([candidates[2]])).toEqual([]);
+      expect(selectDirectionCoveragePool([candidates[2]]).map(c => c.id)).toEqual(['ghost']);
+    });
   });
 });
