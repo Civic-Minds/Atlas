@@ -178,6 +178,8 @@ export interface AgencyGateInput {
 export interface GatePeer {
   slug: string;
   summary: ArtifactSummary;
+  /** Hidden or staged: a match is reported yellow, since the copy does not reach users. */
+  hidden?: boolean;
 }
 
 const flag = (slug: string, name: GateFlagName, level: GateLevel, message: string): GateFlag => ({ slug, flag: name, level, message });
@@ -230,15 +232,17 @@ export function evaluateAgency(input: AgencyGateInput, peers: GatePeer[], todayY
 
   for (const peer of peers) {
     if (peer.slug === slug || next.counts.routes === 0) continue;
+    const level: GateLevel = peer.hidden ? 'yellow' : 'red';
+    const note = peer.hidden ? ` (${peer.slug} is hidden, so this does not block)` : '';
     if (peer.summary.contentHash === next.contentHash) {
-      flags.push(flag(slug, 'duplicate', 'red', `route output is identical to ${peer.slug}`));
+      flags.push(flag(slug, 'duplicate', level, `route output is identical to ${peer.slug}${note}`));
       continue;
     }
     const [small, large] = [next.routeSignatures.length, peer.summary.routeSignatures.length].sort((a, b) => a - b);
     if (small < DUPLICATE_MIN_ROUTES || small / large < DUPLICATE_SIMILARITY) continue;
     const similarity = routeSimilarity(next, peer.summary);
     if (similarity >= DUPLICATE_SIMILARITY) {
-      flags.push(flag(slug, 'duplicate', 'red', `route output is ${Math.round(similarity * 100)}% the same as ${peer.slug} (route IDs and shape endpoints)`));
+      flags.push(flag(slug, 'duplicate', level, `route output is ${Math.round(similarity * 100)}% the same as ${peer.slug} (route IDs and shape endpoints)${note}`));
     }
   }
 
@@ -293,10 +297,12 @@ export interface RegistryAgency {
  * Evaluate a whole run. Every candidate is compared with its live summary;
  * duplicate peers are the other candidates (as they will be published) plus
  * the live output of registry agencies near each candidate that are not in
- * the run. Hidden or staged agencies are never peers (a hidden copy, as in
- * #621, does not reach users), but a hidden candidate is still checked
- * against visible peers (sun-tran vs slorta, #615). Publish passes an empty
- * registry: the release already holds every agency users will see.
+ * the run, plus every hidden or staged registry agency wherever it is. A match
+ * with a hidden or staged agency is yellow (the copy does not reach users,
+ * #621, #674); a hidden candidate is still red against a visible peer
+ * (sun-tran vs slorta, #615). Publish passes only the hidden and staged
+ * agencies as registry, since the release holds every visible one.
+ * `getHiddenLive` reads hidden peers (default `getLive`).
  * `getLive` should cache: a slug can be asked for more than once.
  */
 export async function evaluateRun(options: {
@@ -305,6 +311,7 @@ export async function evaluateRun(options: {
   registry: RegistryAgency[];
   todayYmd: string;
   allowMissingLive: boolean;
+  getHiddenLive?: (slug: string) => Promise<ArtifactSummary | null>;
   /** Outputs already produced earlier in the same run (refresh gates one agency at a time). */
   extraPeers?: GatePeer[];
   concurrency?: number;
@@ -316,7 +323,14 @@ export async function evaluateRun(options: {
   const flags: GateFlag[] = [];
   const notPeers = new Set(options.registry.filter(a => a.hiddenInProduction || a.staged).map(a => a.slug));
   const runPeers: GatePeer[] = [...options.candidates.map(c => ({ slug: c.slug, summary: c.next })), ...extraPeers]
-    .filter(peer => !notPeers.has(peer.slug));
+    .map(peer => (notPeers.has(peer.slug) ? { ...peer, hidden: true } : peer));
+  const getHiddenLive = options.getHiddenLive ?? options.getLive;
+  const hiddenPeers: GatePeer[] = [];
+  for (const slug of notPeers) {
+    if (inRun.has(slug)) continue;
+    const summary = await getHiddenLive(slug);
+    if (summary) hiddenPeers.push({ slug, summary, hidden: true });
+  }
   const worker = async () => {
     for (let candidate = queue.shift(); candidate; candidate = queue.shift()) {
       const live = await options.getLive(candidate.slug);
@@ -328,7 +342,7 @@ export async function evaluateRun(options: {
       }
       flags.push(...evaluateAgency(
         { slug: candidate.slug, live, next: candidate.next, service: candidate.service, allowMissingLive: options.allowMissingLive },
-        [...runPeers, ...outside],
+        [...runPeers, ...outside, ...hiddenPeers],
         options.todayYmd,
       ));
     }

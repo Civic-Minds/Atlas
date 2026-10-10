@@ -121,8 +121,10 @@ const candidates: GateCandidate[] = await runWithConcurrency(includedSlugs.map(s
 const gateFlags = await evaluateRun({
   candidates,
   getLive: cachedSummaryReader(slug => readLiveSummary(slug, getPublic, livePrefixes)),
-  // Peers are the release's own agencies only: after publish, nothing else is visible.
-  registry: [],
+  // Visible peers are the release's own agencies; hidden and staged agencies
+  // (read from atlas/<slug>.json) are peers whose matches only warn.
+  registry: (indexAgencies as Array<{ slug: string; hiddenInProduction?: boolean; staged?: boolean }>).filter(a => a.hiddenInProduction || a.staged),
+  getHiddenLive: cachedSummaryReader(slug => readLiveSummary(slug, getPublic, ['atlas'])),
   todayYmd: new Date().toISOString().slice(0, 10).replace(/-/g, ''),
   allowMissingLive: true,
 });

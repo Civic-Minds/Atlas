@@ -19,7 +19,7 @@ import {
 
 // Fixtures are trimmed to route-line endpoints and the properties the gate reads.
 // Real (2026-10-10 public release and eac22dac reprocess dry run): slorta,
-// barrie, rtl, the njt-rail light rail lines, TTC live lines.
+// barrie, rtl, mountainline, the njt-rail light rail lines, TTC live lines.
 // Reconstructed: ttc-holiday.json (real TTC lines with weekday headways halved
 // by script, the Oct 12 double-counted holiday service) and the 14 commuter
 // rail lines in njt-rail-live.json (real line names, approximate endpoints;
@@ -198,7 +198,27 @@ describe('release diff gate: hidden agencies', () => {
   const slorta = summarizeArtifact(fixture('slorta.json'), null);
   const copy = summarizeArtifact(fixture('slorta.json'), null);
 
-  it('never counts a hidden or staged copy as a peer (#621), but still checks a hidden candidate (#615)', async () => {
+  it('mountainline matching a hidden ycat (#674) is yellow in the report and does not block', async () => {
+    const mountainline = summarizeArtifact(fixture('mountainline.json'), null);
+    const ycatCopy = summarizeArtifact(fixture('mountainline.json'), null);
+    const flags = await evaluateRun({
+      candidates: [{ slug: 'mountainline', next: mountainline }],
+      getLive: async slug => (slug === 'mountainline' ? mountainline : null),
+      getHiddenLive: async slug => (slug === 'ycat' ? ycatCopy : null),
+      // Registry centers are 350 km apart: hidden peers are checked regardless of distance.
+      registry: [{ slug: 'mountainline', center: [35.2, -111.65] }, { slug: 'ycat', center: [32.73, -114.63], hiddenInProduction: true }],
+      todayYmd: TODAY,
+      allowMissingLive: true,
+    });
+    expect(names(flags)).toEqual(['mountainline:duplicate:yellow']);
+    expect(flags[0].message).toMatch(/identical to ycat \(ycat is hidden, so this does not block\)/);
+    expect(applyOverrides(flags, { allowDrop: false, allow: [] }).blocked).toEqual([]);
+    // Before hiding, both visible: red on both sides.
+    const visible = evaluateAgency({ slug: 'mountainline', live: mountainline, next: mountainline, allowMissingLive: true }, [{ slug: 'ycat', summary: ycatCopy }], TODAY);
+    expect(names(visible)).toEqual(['mountainline:duplicate:red']);
+  });
+
+  it('only warns about a hidden or staged copy (#621), but a hidden candidate is still red against a visible one (#615)', async () => {
     const registry = [
       { slug: 'slorta', center: [35.28, -120.66] },
       { slug: 'slorta-hidden-copy', center: [35.28, -120.66], hiddenInProduction: true },
@@ -211,7 +231,7 @@ describe('release diff gate: hidden agencies', () => {
       todayYmd: TODAY,
       allowMissingLive: true,
     });
-    expect(names(visible)).toEqual(['slorta:added:yellow']);
+    expect(names(visible)).toEqual(['slorta:added:yellow', 'slorta:duplicate:yellow']);
     const hidden = await evaluateRun({
       candidates: [{ slug: 'sun-tran', next: copy }],
       getLive: async slug => (slug === 'slorta' ? slorta : null),

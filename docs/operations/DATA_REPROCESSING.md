@@ -60,7 +60,7 @@ These commands write public R2 data. Get explicit approval immediately before ru
 
 - **What counts as live:** `refresh` and `reprocess` compare with `atlas/<slug>.json`. `publish-data-release` compares each snapshot in the new release with the same agency in the public release (`atlas/release.json`).
 - **Hidden agencies:** checked by `refresh` and `reprocess`, where their data is written. They are not part of a release.
-- **Duplicate peers:** the other agencies in the same run, plus the live output of registry agencies near the new output. At publish, peers are the agencies in the new release and nothing else. A hidden or staged agency is never a peer, since a hidden copy does not reach users (#621). A hidden agency that is itself being checked is still compared with visible peers (#615).
+- **Duplicate peers:** the other agencies in the same run, plus the live output of registry agencies near the new output. At publish, peers are the agencies in the new release and nothing else. Every hidden or staged agency is also a peer, wherever it is. A match with one is a yellow `duplicate` that does not block, since the hidden copy does not reach users (#621, #674). A hidden agency that is itself being checked is still red against a visible peer (#615).
 
 | Flag | Level | Fires when |
 |---|---|---|

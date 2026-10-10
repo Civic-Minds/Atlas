@@ -97,8 +97,9 @@ async function main(): Promise<void> {
   const flags = await evaluateRun({
     candidates,
     getLive: cachedSummaryReader(slug => readLiveSummary(slug, get, prefixes)),
-    // Like publish, a release is compared with itself only: nothing outside it is visible.
-    registry: newRelease ? [] : index.agencies,
+    // Like publish: visible peers are the release itself, hidden/staged ones only warn.
+    registry: newRelease ? index.agencies.filter(a => (a as { hiddenInProduction?: boolean; staged?: boolean }).hiddenInProduction || (a as { staged?: boolean }).staged) : index.agencies,
+    getHiddenLive: cachedSummaryReader(slug => readLiveSummary(slug, get, ['atlas'])),
     todayYmd,
     allowMissingLive: true,
   });
