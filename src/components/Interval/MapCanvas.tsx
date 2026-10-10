@@ -36,7 +36,7 @@ import { effectiveMode, ON_DEMAND_MODE } from '../../../shared/modes';
 import type { NightServiceFrequency } from '../../../shared/nightService';
 import { nightServiceKey } from '../../../shared/nightService';
 import { markAtlasLatest } from '../../lib/performance';
-import { isOnDemandActive } from '../../../shared/onDemandAvailability';
+import { isOnDemandStopShown, isOnDemandZoneShown, onDemandHoursConfirmed, onDemandStopZoneNames } from '../../../shared/onDemandAvailability';
 import { buildRouteSortKeyExpression } from '../../utils/routeSort';
 import { fitTargetForPoints, routeFitTarget } from '../../utils/routeFitTarget';
 import { lineCoordinates } from '../../../shared/routeGeometry';
@@ -50,17 +50,8 @@ const LiveVehiclesLayer = import.meta.env.VITE_LIVE_ENABLED === 'true'
   ? React.lazy(() => import('./map/LiveVehiclesLayer'))
   : null;
 
-type OnDemandService = NonNullable<Agency['onDemandServiceArea']>;
-
-function isOnDemandFeatureActive(
-  service: OnDemandService,
-  feature: GeoJSON.Feature,
-  day: DayType,
-  period: TimePeriod,
-): boolean {
-  const zoneId = (feature.properties as { areaName?: string } | undefined)?.areaName;
-  const zone = zoneId ? service.zoneMetadata?.[zoneId] : undefined;
-  return isOnDemandActive(zone ? zone.availability : service.availability, day, period);
+function featureAreaName(feature: GeoJSON.Feature): string | undefined {
+  return (feature.properties as { areaName?: string } | undefined)?.areaName;
 }
 
 /** MapLibre's evaluated colour ({ r, g, b, a } in 0–1) as a hex string. */
@@ -530,39 +521,57 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
 
   const [mapContextAgencies, setMapContextAgencies] = useState<MapContextAgency[]>([]);
 
-  const onDemandAgencies = useMemo(() => agencies.filter(agency => {
-    if (!(selectedAgencies?.has(agency.slug) ?? true)) return false;
-    const service = agency.onDemandServiceArea;
-    if (!service) return false;
-    return service.features.length === 0
-      ? isOnDemandActive(service.availability, day, period)
-      : service.features.some(feature => isOnDemandFeatureActive(service, feature, day, period));
-  }), [agencies, day, period, selectedAgencies]);
+  // Each zone and stop is filtered on its own hours (zones/stops that aren't
+  // running are hidden, like fixed routes); ones with no hours on file stay
+  // visible but are drawn muted so they never read as confirmed service.
+  const onDemandAgencies = useMemo(() => (
+    selectedModes.size === 0 || selectedModes.has(ON_DEMAND_MODE)
+      ? agencies.filter(agency => agency.onDemandServiceArea && (selectedAgencies?.has(agency.slug) ?? true))
+      : []
+  ), [agencies, selectedAgencies, selectedModes]);
   const onDemandServiceAreaData = useMemo<GeoJSON.FeatureCollection<GeoJSON.Polygon | GeoJSON.MultiPolygon>>(() => ({
     type: 'FeatureCollection',
-    features: (selectedModes.size === 0 || selectedModes.has(ON_DEMAND_MODE) ? onDemandAgencies : [])
-      .flatMap(agency => (agency.onDemandServiceArea?.features ?? []).filter(feature => isOnDemandFeatureActive(agency.onDemandServiceArea!, feature, day, period)).map(feature => ({
-        ...feature,
-        properties: {
-          ...(feature.properties ?? {}),
-          agencySlug: agency.slug,
-          agencyName: agency.name,
-          onDemandZoneId: (feature.properties as { areaName?: string } | undefined)?.areaName ?? feature.id,
-        },
-      }))),
-  }), [day, onDemandAgencies, period, selectedModes]);
+    features: onDemandAgencies.flatMap(agency => {
+      const service = agency.onDemandServiceArea!;
+      return service.features
+        .filter(feature => isOnDemandZoneShown(service, featureAreaName(feature), day, period))
+        .map(feature => {
+          const areaName = featureAreaName(feature);
+          return {
+            ...feature,
+            properties: {
+              ...(feature.properties ?? {}),
+              agencySlug: agency.slug,
+              agencyName: agency.name,
+              onDemandZoneId: areaName ?? feature.id,
+              hoursConfirmed: onDemandHoursConfirmed(service, areaName ? [areaName] : [], day),
+            },
+          };
+        });
+    }),
+  }), [day, onDemandAgencies, period]);
   const onDemandStopData = useMemo<GeoJSON.FeatureCollection<GeoJSON.Point>>(() => ({
     type: 'FeatureCollection',
-    features: (selectedModes.size === 0 || selectedModes.has(ON_DEMAND_MODE) ? onDemandAgencies : [])
-      .flatMap(agency => (agency.onDemandServiceArea?.stopFeatures ?? []).map(feature => ({
-        ...feature,
-        properties: {
-          ...(feature.properties ?? {}),
-          agencySlug: agency.slug,
-          agencyName: agency.name,
-        },
-      }))),
-  }), [onDemandAgencies, selectedModes]);
+    features: onDemandAgencies.flatMap(agency => {
+      const service = agency.onDemandServiceArea!;
+      return (service.stopFeatures ?? [])
+        .filter(feature => isOnDemandStopShown(service, feature.properties, day, period))
+        .map(feature => {
+          const zones = onDemandStopZoneNames(service, feature.properties);
+          return {
+            ...feature,
+            properties: {
+              ...(feature.properties ?? {}),
+              agencySlug: agency.slug,
+              agencyName: agency.name,
+              // A stop inside exactly one zone opens that zone's card when clicked.
+              ...(zones.length === 1 ? { onDemandZoneId: zones[0] } : {}),
+              hoursConfirmed: onDemandHoursConfirmed(service, zones, day),
+            },
+          };
+        });
+    }),
+  }), [day, onDemandAgencies, period]);
 
   const updateMapContext = useCallback(() => {
     const map = mapRef.current;
@@ -863,7 +872,9 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         setDisambiguationRoutesRef.current(null);
         setQueryRef.current?.('');
         if (serviceAreaHits[0]?.layer?.id === 'on-demand-stop-points') {
-          onOnDemandStopClickRef.current?.(serviceAreaSlug);
+          const stopZoneId = serviceAreaHits[0]?.properties?.onDemandZoneId as string | undefined;
+          if (stopZoneId) onOnDemandZoneClickRef.current?.({ slug: serviceAreaSlug, zoneId: stopZoneId });
+          else onOnDemandStopClickRef.current?.(serviceAreaSlug);
         } else {
           const zoneId = serviceAreaHits[0]?.properties?.onDemandZoneId as string | undefined;
           if (zoneId) onOnDemandZoneClickRef.current?.({ slug: serviceAreaSlug, zoneId });
@@ -1135,7 +1146,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         id: 'on-demand-service-area-fill',
         type: 'fill',
         source: 'on-demand-service-areas',
-        paint: { 'fill-color': ON_DEMAND_AREA_COLOR, 'fill-opacity': 0.12 },
+        paint: { 'fill-color': ON_DEMAND_AREA_COLOR, 'fill-opacity': ['case', ['==', ['get', 'hoursConfirmed'], false], 0.05, 0.12] },
         layout: { visibility: 'none' },
       });
       map.addLayer({
@@ -1145,7 +1156,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         paint: {
           'line-color': ON_DEMAND_AREA_COLOR,
           'line-width': 2,
-          'line-opacity': 0.95,
+          'line-opacity': ['case', ['==', ['get', 'hoursConfirmed'], false], 0.4, 0.95],
           'line-dasharray': [2, 1.5],
         },
         layout: { visibility: 'none' },
@@ -1164,6 +1175,8 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
           'circle-radius': ['interpolate', ['linear'], ['zoom'], 9, 2, 12, 3.5, 15, 5],
           'circle-stroke-color': '#ffffff',
           'circle-stroke-width': ['interpolate', ['linear'], ['zoom'], 9, 0.75, 12, 1.25, 15, 1.5],
+          'circle-opacity': ['case', ['==', ['get', 'hoursConfirmed'], false], 0.4, 1],
+          'circle-stroke-opacity': ['case', ['==', ['get', 'hoursConfirmed'], false], 0.4, 1],
         },
         layout: { visibility: 'none' },
       });

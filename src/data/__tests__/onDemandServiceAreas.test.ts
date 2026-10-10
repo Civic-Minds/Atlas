@@ -21,7 +21,7 @@ import {
 } from '../onDemandServiceAreas';
 import { HSR_MY_RIDE_STOP_FEATURES } from '../hsrMyRideStops';
 import { HAMILTON_TRANS_CAB_SERVICE_AREAS, HAMILTON_TRANS_CAB_TRANSFER_POINTS } from '../transCabServiceArea';
-import { isOnDemandActive } from '../../../shared/onDemandAvailability';
+import { isOnDemandActive, isOnDemandStopShown, isOnDemandZoneShown, onDemandPickupSentence } from '../../../shared/onDemandAvailability';
 
 describe('BWG on-demand service area', () => {
   it('keeps the captured Argo polygon closed and non-trivial', () => {
@@ -212,5 +212,57 @@ describe('Edmonton On Demand areas', () => {
     }
     expect(EDMONTON_ON_DEMAND_SERVICE_AREA.zoneMetadata['Keswick'].availability?.Weekday).toEqual([]);
     expect(EDMONTON_ON_DEMAND_SERVICE_AREA.zoneMetadata['Glenora East'].availability).toBeUndefined();
+  });
+});
+
+describe('Hamilton Trans-Cab hours and transfer points', () => {
+  it('runs Trans-Cab zones on their published hours, including after midnight', () => {
+    for (const zone of HAMILTON_TRANS_CAB_SERVICE_AREAS) {
+      const areaName = (zone.properties as { areaName: string }).areaName;
+      expect(isOnDemandZoneShown(HAMILTON_MY_RIDE_SERVICE_AREA, areaName, 'Saturday', 'midday')).toBe(true);
+      expect(isOnDemandZoneShown(HAMILTON_MY_RIDE_SERVICE_AREA, areaName, 'Saturday', 'late')).toBe(true);
+      expect(isOnDemandZoneShown(HAMILTON_MY_RIDE_SERVICE_AREA, areaName, 'Weekday', 'overnight')).toBe(false);
+    }
+  });
+
+  it('ties each transfer point to the zone it serves and hides it with that zone', () => {
+    expect(HAMILTON_TRANS_CAB_TRANSFER_POINTS.map(point => point.properties?.areaName)).toEqual(['Lower North Stoney Creek', 'West Glanbrook']);
+    expect(isOnDemandStopShown(HAMILTON_MY_RIDE_SERVICE_AREA, HAMILTON_TRANS_CAB_TRANSFER_POINTS[0].properties, 'Weekday', 'overnight')).toBe(false);
+    expect(onDemandPickupSentence(HAMILTON_MY_RIDE_SERVICE_AREA, 'West Glanbrook')).toBe('This zone has 1 transfer point, shown on the map.');
+    expect(onDemandPickupSentence(HAMILTON_MY_RIDE_SERVICE_AREA, 'Lower East Stoney Creek')).toBeNull();
+  });
+
+  it('keeps myRide stops visible while their hours are unconfirmed, even when no Trans-Cab zone runs', () => {
+    expect(isOnDemandStopShown(HAMILTON_MY_RIDE_SERVICE_AREA, HSR_MY_RIDE_STOP_FEATURES[0].properties, 'Weekday', 'overnight')).toBe(true);
+  });
+});
+
+describe('GRT Route 79 connection areas', () => {
+  it('keeps every Route 79 area on the weekday-only schedule', () => {
+    for (const zone of GRT_ROUTE_79_SERVICE_AREAS) {
+      const areaName = (zone.properties as { areaName: string }).areaName;
+      expect(isOnDemandZoneShown(GRT_ROUTE_79_SERVICE_AREA, areaName, 'Saturday', 'midday')).toBe(false);
+      expect(isOnDemandZoneShown(GRT_ROUTE_79_SERVICE_AREA, areaName, 'Weekday', 'amPeak')).toBe(true);
+    }
+  });
+
+  it('labels only the Kitchener areas as connection points', () => {
+    expect(onDemandPickupSentence(GRT_ROUTE_79_SERVICE_AREA, 'Route 204 iXpress Connection')).toBe('This area is a connection point.');
+    expect(onDemandPickupSentence(GRT_ROUTE_79_SERVICE_AREA, 'GRT Breslau')).toBeNull();
+  });
+});
+
+describe('on-demand pickup methods stated by agencies', () => {
+  it('describes Muskoka as curb to curb, St. Albert as set stops, and Leamington by its drawn stops', () => {
+    expect(onDemandPickupSentence(MUSKOKA_DRT_ON_DEMAND_AGENCY.onDemandServiceArea, undefined)).toContain('curb to curb');
+    expect(onDemandPickupSentence(ST_ALBERT_ON_DEMAND_AGENCY.onDemandServiceArea, 'St. Albert')).not.toContain('shown on the map');
+    expect(onDemandPickupSentence(LEAMINGTON_LT_GO_ON_DEMAND_AGENCY.onDemandServiceArea, undefined)).toBe('Pickups and drop-offs are at 118 set stops, shown on the map.');
+  });
+
+  it('keeps booking details out of the hours text', () => {
+    for (const service of [CYRIDE_EASE_SERVICE_AREA, MUSKOKA_DRT_ON_DEMAND_AGENCY.onDemandServiceArea, LEAMINGTON_LT_GO_ON_DEMAND_AGENCY.onDemandServiceArea]) {
+      expect(service.serviceHours).not.toMatch(/book|call/i);
+      expect(service.bookingInfo).toMatch(/call/);
+    }
   });
 });

@@ -9,7 +9,7 @@ import { GTFS_FLEX_METADATA } from './metroMicroFlexMetadata';
 import { C_TRAN_CURRENT_FLEX_FEATURES } from './ctranCurrentFlexData';
 import { C_TRAN_CURRENT_FLEX_STOPS } from './ctranCurrentFlexStops';
 import { GTFS_FLEX_FEATURES as WATA_GTFS_FLEX_FEATURES, GTFS_FLEX_SERVICE as WATA_GTFS_FLEX_SERVICE } from './wataFlexData';
-import type { OnDemandAvailability } from '../../shared/onDemandAvailability';
+import type { OnDemandAvailability, OnDemandPickup } from '../../shared/onDemandAvailability';
 import { BETA_ROLLOUT_NOTICE } from '../../shared/rolloutNotice';
 
 /**
@@ -130,7 +130,8 @@ export const CYRIDE_EASE_SERVICE_AREA = {
   sourceUrl: CYRIDE_EASE_SOURCE_URL,
   sourceLabel: CYRIDE_EASE_SOURCE_LABEL,
   sourceRetrievedAt: '2026-10-10',
-  serviceHours: 'Monday–Friday 7 a.m.–6:30 p.m.; book in the Ride Pingo app or call (515) 239-5600',
+  serviceHours: 'Monday–Friday 7 a.m.–6:30 p.m.',
+  bookingInfo: 'Book in the Ride Pingo app or call (515) 239-5600.',
   bookingUrl: CYRIDE_EASE_SOURCE_URL,
   serviceName: 'East Ames Service Extension (EASE)',
   availability: {
@@ -157,7 +158,12 @@ export const HAMILTON_MY_RIDE_SERVICE_AREA = {
   zoneMetadata: Object.fromEntries(
     HAMILTON_TRANS_CAB_SERVICE_AREAS.map(zone => [
       (zone.properties as { areaName: string }).areaName,
-      { serviceName: HAMILTON_TRANS_CAB_SOURCE.serviceName, serviceHours: HAMILTON_TRANS_CAB_SOURCE.serviceHours },
+      {
+        serviceName: HAMILTON_TRANS_CAB_SOURCE.serviceName,
+        serviceHours: HAMILTON_TRANS_CAB_SOURCE.serviceHours,
+        hoursNote: HAMILTON_TRANS_CAB_SOURCE.hoursNote,
+        availability: HAMILTON_TRANS_CAB_SOURCE.availability,
+      },
     ]),
   ),
 };
@@ -171,6 +177,12 @@ export const GRT_ROUTE_79_SERVICE_AREA = {
   bookingUrl: GRT_ROUTE_79_SOURCE_URL,
   serviceName: 'Route 79 Breslau On-Demand',
   tripRules: 'The Kitchener connection points only serve trips that start or end in Breslau.',
+  zoneMetadata: Object.fromEntries(
+    GRT_ROUTE_79_SERVICE_AREAS
+      .map(zone => (zone.properties as { areaName: string }).areaName)
+      .filter(areaName => areaName !== 'GRT Breslau')
+      .map(areaName => [areaName, { pickup: { method: 'connection-points' } as OnDemandPickup }]),
+  ),
   availability: {
     Weekday: [
       { startHour: 6, endHour: 10 },
@@ -310,8 +322,10 @@ export const MUSKOKA_DRT_ON_DEMAND_AGENCY = {
     sourceLabel: MUSKOKA_DRT_SOURCE_LABEL,
     sourceRetrievedAt: '2026-10-10',
     serviceName: 'District DRT',
-    serviceHours: 'Monday–Friday 7 a.m.–7 p.m.; no service on statutory holidays. Book in the Blaise Transit app or call 705-645-2100 ext. 4419.',
-    tripRules: 'Curb-to-curb within the shaded area; there are no fixed stops.',
+    serviceHours: 'Monday–Friday 7 a.m.–7 p.m.; no service on statutory holidays.',
+    hoursNote: 'No service on statutory holidays.',
+    bookingInfo: 'Book in the Blaise Transit app or call 705-645-2100 ext. 4419.',
+    pickup: { method: 'curb-to-curb', note: 'There are no fixed stops.' } satisfies OnDemandPickup,
     bookingUrl: 'https://www.muskoka.on.ca/en/community-services-and-support/district-drt.aspx',
     availability: {
       Weekday: [{ startHour: 7, endHour: 19 }],
@@ -350,7 +364,7 @@ export const ST_ALBERT_ON_DEMAND_AGENCY = {
     sourceRetrievedAt: '2026-09-29',
     serviceName: 'StAT On-Demand',
     serviceHours: 'Monday–Friday 6:35 p.m.–midnight; Saturday 6:30 p.m.–midnight; Sunday 5:55 a.m.–7 p.m.',
-    tripRules: 'Pickups and drop-offs are at St. Albert Transit bus stops inside the shaded area, not door to door.',
+    pickup: { method: 'fixed-stops', note: 'Trips use the St. Albert Transit bus stops inside the shaded area.' } satisfies OnDemandPickup,
     bookingUrl: ST_ALBERT_SOURCE_URL,
     availability: {
       Weekday: [{ startHour: 18.583, endHour: 24 }],
@@ -381,8 +395,9 @@ export const LEAMINGTON_LT_GO_ON_DEMAND_AGENCY = {
     sourceLabel: 'Town of Leamington LT-Go stop map',
     sourceRetrievedAt: '2026-10-10',
     serviceName: 'LT-Go On-Demand',
-    serviceHours: 'Monday–Friday 6 a.m.–9:30 p.m.; Saturday 7 a.m.–9:30 p.m.; Sunday 8 a.m.–7 p.m. Book in the Blaise Transit app or call 519-325-5960.',
-    tripRules: 'Pickups and drop-offs are at the pre-set LT-Go stops shown on the map.',
+    serviceHours: 'Monday–Friday 6 a.m.–9:30 p.m.; Saturday 7 a.m.–9:30 p.m.; Sunday 8 a.m.–7 p.m.',
+    bookingInfo: 'Book in the Blaise Transit app or call 519-325-5960.',
+    pickup: { method: 'fixed-stops' } satisfies OnDemandPickup,
     bookingUrl: 'https://www.leamington.ca/our-community/transit/ltgo-on-demand-transit/',
     availability: {
       Weekday: [{ startHour: 6, endHour: 21.5 }],

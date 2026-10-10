@@ -37,7 +37,7 @@ import type { NightServiceFrequency } from '../shared/nightService';
 const FrequentServiceStory = React.lazy(() => import('./apps/FrequentServiceStory'));
 const ResearchPage = React.lazy(() => import('./apps/ResearchPage'));
 import { BWG_ON_DEMAND_AGENCY, CALEDON_ON_DEMAND_AGENCY, BRAMPTON_ON_DEMAND_AGENCY, MUSKOKA_DRT_ON_DEMAND_AGENCY, ST_ALBERT_ON_DEMAND_AGENCY, LEAMINGTON_LT_GO_ON_DEMAND_AGENCY, C_TRAN_CURRENT_SERVICE_AREA, COBOURG_ON_DEMAND_SERVICE_AREA, CYRIDE_EASE_SERVICE_AREA, EDMONTON_ON_DEMAND_SERVICE_AREA, GRT_ROUTE_79_SERVICE_AREA, HAMILTON_MY_RIDE_SERVICE_AREA, METRO_MICRO_SERVICE_AREA, UTA_ON_DEMAND_SERVICE_AREA, WATA_PARATRANSIT_SERVICE_AREA } from './data/onDemandServiceAreas';
-import type { OnDemandAvailability } from '../shared/onDemandAvailability';
+import type { OnDemandAvailability, OnDemandPickup, OnDemandZoneDetails } from '../shared/onDemandAvailability';
 
 export interface FareOverride {
   adult?: number;      // base card/electronic fare (fallback when GeoJSON baseFare is absent)
@@ -113,17 +113,19 @@ export interface Agency {
     sourceUrl: string;
     sourceLabel: string;
     sourceRetrievedAt?: string;
+    /** Source wording for hours; shown only when structured availability is missing. */
     serviceHours?: string;
+    /** Qualifiers structured hours can't express, e.g. holidays. */
+    hoursNote?: string;
+    /** How to book (app, phone), kept apart from the hours. */
+    bookingInfo?: string;
     bookingUrl?: string;
     serviceName?: string;
     /** Agency booking restriction riders must know, e.g. which trips a zone can serve. */
     tripRules?: string;
     availability?: OnDemandAvailability;
-    zoneMetadata?: Record<string, {
-      serviceName?: string;
-      serviceHours?: string;
-      availability?: OnDemandAvailability;
-    }>;
+    pickup?: OnDemandPickup;
+    zoneMetadata?: Record<string, OnDemandZoneDetails>;
   };
 }
 
