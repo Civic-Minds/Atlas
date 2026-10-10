@@ -13,10 +13,10 @@ const hamilton = {
   onDemandServiceArea: HAMILTON_MY_RIDE_SERVICE_AREA,
 } as unknown as Agency;
 
-function renderZoneCard(zoneId: string | null, day: 'Weekday' | 'Saturday' | 'Sunday', period: 'midday' | 'overnight') {
+function renderZoneCard(zoneId: string | null, day: 'Weekday' | 'Saturday' | 'Sunday', period: 'midday' | 'overnight', agency: Agency = hamilton) {
   return render(
     <AgencyCard
-      agency={hamilton}
+      agency={agency}
       layers={{}}
       day={day}
       period={period}
@@ -47,11 +47,18 @@ describe('on-demand zone card', () => {
     expect(screen.getByText('Not running at this time')).toBeInTheDocument();
   });
 
-  it('never claims service when hours are not on file', () => {
+  it('shows myRide running on its own published hours', () => {
     renderZoneCard(null, 'Saturday', 'midday');
+    expect(screen.getByText('Running during Saturday midday')).toBeInTheDocument();
+  });
+
+  it('never claims service when hours are not on file', () => {
+    const { availability: _omit, ...withoutHours } = HAMILTON_MY_RIDE_SERVICE_AREA;
+    const noHoursService = { ...withoutHours, serviceHours: 'Hours vary; check the app.' };
+    renderZoneCard(null, 'Saturday', 'midday', { ...hamilton, onDemandServiceArea: noHoursService } as unknown as Agency);
     expect(screen.getByText('Hours not confirmed for this time')).toBeInTheDocument();
     expect(screen.queryByText(/^Running/)).toBeNull();
-    expect(screen.getByText(HAMILTON_MY_RIDE_SERVICE_AREA.serviceHours)).not.toHaveClass('font-bold');
+    expect(screen.getByText('Hours vary; check the app.')).not.toHaveClass('font-bold');
   });
 });
 

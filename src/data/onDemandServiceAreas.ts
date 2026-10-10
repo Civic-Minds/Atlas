@@ -152,9 +152,16 @@ export const HAMILTON_MY_RIDE_SERVICE_AREA = {
   sourceUrl: 'https://www.hamilton.ca/home-neighbourhood/hsr/schedule-route-tools/hsr-myride-demand',
   sourceLabel: 'HSR myRide service details',
   sourceRetrievedAt: '2026-09-24',
-  serviceHours: 'On-demand trips operate within Waterdown; booking windows and availability are confirmed in the HSR myRide app or by phone.',
+  serviceHours: 'Monday–Friday 5 a.m.–1:30 a.m.; Saturday 6 a.m.–1:30 a.m.; Sunday 6 a.m.–12:30 a.m.',
   bookingUrl: 'https://www.hamilton.ca/home-neighbourhood/hsr/schedule-route-tools/hsr-myride-demand',
   serviceName: 'myRide Waterdown On-Demand',
+  // From the HSR myRide GTFS-Flex booking windows (stop_times, regular calendar); each day's
+  // 00:00–01:30 window belongs to the previous evening's service.
+  availability: {
+    Weekday: [{ startHour: 5, endHour: 25.5 }],
+    Saturday: [{ startHour: 6, endHour: 25.5 }],
+    Sunday: [{ startHour: 6, endHour: 24.5 }],
+  } satisfies OnDemandAvailability,
   zoneMetadata: Object.fromEntries(
     HAMILTON_TRANS_CAB_SERVICE_AREAS.map(zone => [
       (zone.properties as { areaName: string }).areaName,

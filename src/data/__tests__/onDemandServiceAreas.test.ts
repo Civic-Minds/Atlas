@@ -232,8 +232,9 @@ describe('Hamilton Trans-Cab hours and transfer points', () => {
     expect(onDemandPickupSentence(HAMILTON_MY_RIDE_SERVICE_AREA, 'Lower East Stoney Creek')).toBeNull();
   });
 
-  it('keeps myRide stops visible while their hours are unconfirmed, even when no Trans-Cab zone runs', () => {
-    expect(isOnDemandStopShown(HAMILTON_MY_RIDE_SERVICE_AREA, HSR_MY_RIDE_STOP_FEATURES[0].properties, 'Weekday', 'overnight')).toBe(true);
+  it('shows myRide stops on myRide hours, independent of Trans-Cab zones', () => {
+    expect(isOnDemandStopShown(HAMILTON_MY_RIDE_SERVICE_AREA, HSR_MY_RIDE_STOP_FEATURES[0].properties, 'Weekday', 'late')).toBe(true);
+    expect(isOnDemandStopShown(HAMILTON_MY_RIDE_SERVICE_AREA, HSR_MY_RIDE_STOP_FEATURES[0].properties, 'Weekday', 'overnight')).toBe(false);
   });
 });
 
