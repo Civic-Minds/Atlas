@@ -2,6 +2,7 @@ import type { GeoJSON } from 'geojson';
 import { HSR_MY_RIDE_STOP_FEATURES } from './hsrMyRideStops';
 import { LEAMINGTON_LT_GO_STOP_FEATURES } from './leamingtonLtGoStops';
 import { COBOURG_ON_DEMAND_STOP_FEATURES } from './cobourgOnDemandStops';
+import { MVTA_CONNECT_FEATURES, MVTA_CONNECT_STOPS } from './mvtaConnectData';
 import { EDMONTON_ON_DEMAND_FEATURES, EDMONTON_ON_DEMAND_STOPS, EDMONTON_ON_DEMAND_ZONE_METADATA } from './edmontonOnDemandData';
 import { HAMILTON_TRANS_CAB_SERVICE_AREAS, HAMILTON_TRANS_CAB_SOURCE, HAMILTON_TRANS_CAB_TRANSFER_POINTS } from './transCabServiceArea';
 import { METRO_MICRO_FLEX_FEATURES } from './metroMicroFlexData';
@@ -351,6 +352,30 @@ export const MOUNTAIN_LINE_GO_SERVICE_AREA = {
     Saturday: [{ startHour: 8, endHour: 17 }],
     Sunday: [{ startHour: 8, endHour: 17 }],
   } satisfies OnDemandAvailability,
+};
+
+const MVTA_CONNECT_DAILY = {
+  Weekday: [{ startHour: 6, endHour: 21 }],
+  Saturday: [{ startHour: 6, endHour: 21 }],
+  Sunday: [{ startHour: 6, endHour: 21 }],
+} satisfies OnDemandAvailability;
+
+/** MVTA Connect zones and stops from MVTA's GTFS-Flex export; every service runs daily 6 a.m.–9 p.m. per its booking windows. */
+export const MVTA_CONNECT_SERVICE_AREA = {
+  features: MVTA_CONNECT_FEATURES,
+  stopFeatures: MVTA_CONNECT_STOPS,
+  sourceUrl: 'https://www.mvta.com/new-riders/mvta-connect/',
+  sourceLabel: 'MVTA Connect GTFS-Flex export (agency-supplied)',
+  sourceRetrievedAt: '2026-10-10',
+  serviceName: 'MVTA Connect',
+  serviceHours: 'Daily 6 a.m.–9 p.m.',
+  bookingUrl: 'https://www.mvta.com/new-riders/mvta-connect/',
+  availability: MVTA_CONNECT_DAILY,
+  zoneMetadata: {
+    "Central Zone": { serviceName: 'MVTA Connect', serviceHours: 'Daily 6 a.m.–9 p.m.', availability: MVTA_CONNECT_DAILY },
+    "Eagan": { serviceName: 'MVTA Connect', serviceHours: 'Daily 6 a.m.–9 p.m.', availability: MVTA_CONNECT_DAILY },
+    "Shakopee\u2013Prior Lake": { serviceName: 'MVTA Connect', serviceHours: 'Daily 6 a.m.–9 p.m.', availability: MVTA_CONNECT_DAILY },
+  },
 };
 
 export const METRO_MICRO_SERVICE_AREA = {
