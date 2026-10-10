@@ -2,7 +2,7 @@
 import { idbGet, idbSet, idbPruneStale } from './idbCache';
 import { BETA_R2_PUBLIC_URL, getAgencyArtifactUrls, R2_PUBLIC_URL } from '../../shared/config';
 import { CACHE_BUILD } from '../../shared/cacheBuild';
-import { stampWorstDirectionHeadways } from '../../shared/worstDirection';
+import { normalizeRouteFilterFeatures } from '../../shared/routeHeadwayFilter';
 import { dataReleaseAgencyUrl, resolveDataRelease } from './dataRelease';
 
 export interface AgencyGeoSource {
@@ -145,7 +145,8 @@ function pruneOnce(dataVer: string) {
 
 /** Apply route-level safeguards to already-published GeoJSON on the client. */
 function normalizeAgencyFeatures(data: GeoJSON.FeatureCollection): void {
-  stampWorstDirectionHeadways(
+  // Same inputs the PMTiles build uses, so the in-memory filter matches the map filter.
+  normalizeRouteFilterFeatures(
     data.features as Array<{ properties: Record<string, unknown> }>,
   );
 }

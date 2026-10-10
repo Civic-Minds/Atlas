@@ -35,10 +35,12 @@ export function tileRouteKeyExpr(): unknown[] {
  * style-spec compiler when combined with direction/day clauses.
  */
 export function tileEffectiveHeadwayExpr(period?: PeriodFilter): unknown[] {
+  // This expression is the single definition of the frequency-filter rule: in-memory surfaces
+  // evaluate it via shared/routeHeadwayFilter.ts. Worst direction decides. minStopHeadway (the
+  // busiest stop) is deliberately not a fallback: a busy stretch must never make a route pass.
   const allDay: unknown[] = [
     'coalesce',
     ['get', 'worstDirectionHeadway'],
-    ['get', 'minStopHeadway'],
     ['get', 'headway'],
   ];
   if (period && period !== 'all') {

@@ -164,7 +164,9 @@ describe('computeFrequencySegmentOverlay', () => {
     expect(overlay.segments).toEqual([]);
   });
 
-  it('uses branch cadence across the full shared core despite noisy stop values', () => {
+  // Owner rule: a combined shared-core cadence (two 30-minute branches = "every 15") is a busiest
+  // stretch in one direction. It must never draw a route that fails the filter in every branch.
+  it('does not draw a combined shared-core cadence on branches that fail the filter', () => {
     const result = computeFrequencySegmentOverlay({
       marta: {
         type: 'FeatureCollection',
@@ -175,12 +177,11 @@ describe('computeFrequencySegmentOverlay', () => {
       },
     }, 'evening', 15);
 
-    expect(result.segments).toHaveLength(2);
-    expect(result.segments.every(segment => segment.geometry.coordinates[0][0] === 0)).toBe(true);
-    expect(result.segments.every(segment => segment.geometry.coordinates.at(-1)![0] === 0.02)).toBe(true);
+    expect(result.segments).toHaveLength(0);
+    expect(result.partialMatches).toHaveLength(0);
   });
 
-  it('keeps the earliest shared stop when terminal loops reverse stop order', () => {
+  it('does not draw a shared core for failing branches even when terminal loops reverse stop order', () => {
     const result = computeFrequencySegmentOverlay({
       marta: {
         type: 'FeatureCollection',
@@ -191,11 +192,11 @@ describe('computeFrequencySegmentOverlay', () => {
       },
     }, 'evening', 15);
 
-    expect(result.segments).toHaveLength(2);
-    expect(result.segments.every(segment => segment.geometry.coordinates[0][0] === 0)).toBe(true);
+    expect(result.segments).toHaveLength(0);
+    expect(result.partialMatches).toHaveLength(0);
   });
 
-  it('includes the shape lead-in when a shared core starts at a terminal stop', () => {
+  it('does not draw a shared core lead-in for failing branches', () => {
     const result = computeFrequencySegmentOverlay({
       marta: {
         type: 'FeatureCollection',
@@ -206,8 +207,8 @@ describe('computeFrequencySegmentOverlay', () => {
       },
     }, 'evening', 15);
 
-    expect(result.segments).toHaveLength(2);
-    expect(result.segments.every(segment => segment.geometry.coordinates[0][0] === 0)).toBe(true);
+    expect(result.segments).toHaveLength(0);
+    expect(result.partialMatches).toHaveLength(0);
   });
 
   it('clips uneven stop coverage after the route-level both-direction metric passes', () => {

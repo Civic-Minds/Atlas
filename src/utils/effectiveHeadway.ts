@@ -1,9 +1,9 @@
 import type { ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
 import { isHourInPeriod } from '../../shared/config';
-import { hasAnyPeriodCoverage, hasNoPeriodService, hasPeriodCoverageValue, hasPeriodSummary, isUnsustainedWithoutCoverage, periodCoverageValue, PERIOD_COVERAGE_MAX_HEADWAY } from '../../shared/periodEligibility';
+import { hasNoPeriodService } from '../../shared/periodEligibility';
 import { buildRouteServiceSummary, metricValueForPeriod } from './routeFacts';
 
-/** Headway shown on route cards and lists — the same route-level metric used by the filter. */
+/** Headway shown on route cards and lists (display only — filter decisions use shared/routeHeadwayFilter). */
 export function routeCardDisplayHeadway(p: ShapeProperties, period: TimePeriod): number | null {
   // A numeric gap inside a short-turn/peak-only cluster is not sustained route
   // service. Keep limited branches out of normal route-card/list cadence rows.
@@ -105,36 +105,4 @@ export function routeListDisplayHeadway(features: readonly ShapeProperties[], pe
     .map(feature => routeCardDisplayHeadway(feature, period))
     .filter((value): value is number => value != null);
   return values.length > 0 ? Math.min(...values) : null;
-}
-
-/** Headway for display/filtering — mirrors passesRouteFilter period + all-day fallback. */
-export function effectiveRouteHeadway(p: ShapeProperties, period: TimePeriod): number | null {
-  const summary = buildRouteServiceSummary(p);
-  if (period !== 'all') {
-    const hasExplicitPeriodValue = hasPeriodSummary(p, period);
-    // Older artifacts can mark a period as unsustained without publishing its
-    // full-window gap. The median is not enough to prove filterable service.
-    if (isUnsustainedWithoutCoverage(p, period)) return null;
-    const coverage = periodCoverageValue(p, period);
-    // An explicit no-service period, or a period whose full-window coverage is too sparse,
-    // must not be replaced by a shared-stop cadence from a shorter part of the route.
-    if (hasExplicitPeriodValue && p.headwayByPeriod?.[period] == null) {
-      return null;
-    }
-    if (coverage != null && coverage > PERIOD_COVERAGE_MAX_HEADWAY) {
-      return coverage;
-    }
-    // A published coverage field with a null value is an explicit statement that
-    // this direction has no usable full-window coverage. Do not replace it with
-    // a shared-stop cadence from a shorter part of the period.
-    if (coverage == null && hasPeriodCoverageValue(p, period)) {
-      return null;
-    }
-    if (coverage == null && hasAnyPeriodCoverage(p) && !hasPeriodCoverageValue(p, period)) {
-      return metricValueForPeriod(summary.filter, period);
-    }
-    const sharedHeadway = summary.shared.byHeadsignPeriod?.[period];
-    if (sharedHeadway != null) return sharedHeadway;
-  }
-  return metricValueForPeriod(summary.filter, period);
 }

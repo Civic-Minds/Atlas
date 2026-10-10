@@ -22,6 +22,17 @@ function routeDayKey(routeShortName: string, routeBranch: string | null | undefi
   return `${routeShortName}::${routeBranch ?? ''}::${day ?? ''}`;
 }
 
+/**
+ * Route identity for worst-direction grouping. Many rail/ferry lines (MBTA Red Line, Metro-North,
+ * LA Metro rail, PATH) publish no short name; they still need a worst-direction value, or the
+ * filter falls back to each direction's own headway and one fast direction passes the route.
+ */
+function routeGroupName(props: WorstDirectionFeature['properties']): string | undefined {
+  if (props.routeShortName) return props.routeShortName;
+  const routeId = props.routeId;
+  return routeId != null && routeId !== '' ? `id:${String(routeId)}` : undefined;
+}
+
 function maxNum(a: number | undefined, b: number): number {
   return a == null ? b : Math.max(a, b);
 }
@@ -49,8 +60,9 @@ export function stampWorstDirectionHeadways(features: WorstDirectionFeature[]): 
   // does not erase that direction's service. Never invent an absent direction.
   const coverageGroups = new Map<string, WorstDirectionFeature[]>();
   for (const f of features) {
-    if (!f.properties?.routeShortName || f.properties.directionId == null) continue;
-    const key = routeDayKey(f.properties.routeShortName, f.properties.routeBranch, f.properties.day);
+    const name = f.properties ? routeGroupName(f.properties) : undefined;
+    if (!name || f.properties.directionId == null) continue;
+    const key = routeDayKey(name, f.properties.routeBranch, f.properties.day);
     const group = coverageGroups.get(key) ?? [];
     group.push(f);
     coverageGroups.set(key, group);
@@ -81,7 +93,7 @@ export function stampWorstDirectionHeadways(features: WorstDirectionFeature[]): 
   for (const f of features) {
     if (!f.properties) continue;
     if (f.properties.tier === 'span') continue;
-    const sn = f.properties.routeShortName as string | undefined;
+    const sn = routeGroupName(f.properties);
     if (!sn) continue;
     const dirId = f.properties.directionId;
     if (dirId == null) continue;
@@ -157,7 +169,7 @@ export function stampWorstDirectionHeadways(features: WorstDirectionFeature[]): 
 
   for (const f of features) {
     if (!f.properties) continue;
-    const sn = f.properties.routeShortName as string | undefined;
+    const sn = routeGroupName(f.properties);
     if (!sn) continue;
     const key = routeDayKey(sn, f.properties.routeBranch, f.properties.day);
     const coverage = coverageStamps.get(key);

@@ -186,4 +186,16 @@ describe('stampWorstDirectionHeadways', () => {
     expect(features[0].properties.worstDirectionPeriodCoverageHeadway?.overnight).toBe(150);
     expect(features[1].properties.worstDirectionPeriodCoverageHeadway?.overnight).toBe(150);
   });
+
+  it('stamps routes that publish no short name by route id (rail lines like MBTA Red, Metro-North)', () => {
+    const red = (directionId: number, midday: number, routeId = 'Red') => ({
+      properties: { routeShortName: '', routeId, day: 'Weekday', directionId, headway: midday, headwayByPeriod: { midday } },
+    }) as WorstDirectionFeature;
+    const features = [red(0, 9), red(1, 14), red(0, 30, 'Blue'), red(1, 5, 'Blue')];
+    stampWorstDirectionHeadways(features);
+    expect(features[0].properties.worstDirectionHeadwayByPeriod?.midday).toBe(14);
+    expect(features[1].properties.worstDirectionHeadwayByPeriod?.midday).toBe(14);
+    expect(features[2].properties.worstDirectionHeadwayByPeriod?.midday).toBe(30);
+    expect(features[3].properties.worstDirectionHeadway).toBe(30);
+  });
 });

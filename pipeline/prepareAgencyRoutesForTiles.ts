@@ -9,7 +9,7 @@
  * older stamp logic. Client GeoJSON loads restamp in agencyGeo/geoWorker — this
  * is the same contract for the tile path.
  */
-import { stampWorstDirectionHeadways } from '../shared/worstDirection.js';
+import { normalizeRouteFilterFeatures } from '../shared/routeHeadwayFilter.js';
 import { flattenPeriodHeadwayProps } from '../shared/pmtilesProps.js';
 
 export type RouteFeatureForTiles = {
@@ -24,16 +24,11 @@ export function prepareAgencyRouteFeaturesForTiles(
   agencySlug: string,
 ): RouteFeatureForTiles[] {
   // Older published GeoJSON predates periodCoverageHeadway but still carries
-  // maxGapByPeriod. Preserve that full-window bound before the route-level
-  // worst-direction stamps are calculated.
-  for (const f of features) {
-    const props = f.properties;
-    if (props && props.periodCoverageHeadway == null && props.maxGapByPeriod != null) {
-      props.periodCoverageHeadway = props.maxGapByPeriod;
-    }
-  }
-  // Stamp whole FC (including any non-LineString) so route+day groups are complete.
-  stampWorstDirectionHeadways(features as Parameters<typeof stampWorstDirectionHeadways>[0]);
+  // maxGapByPeriod; preserve that full-window bound, then stamp route-level
+  // worst-direction values over the whole FC (including any non-LineString) so
+  // route+day groups are complete. The client applies the same normalization on
+  // load, so the in-memory filter reads the same inputs as the tiles.
+  normalizeRouteFilterFeatures(features as Parameters<typeof normalizeRouteFilterFeatures>[0]);
 
   const out: RouteFeatureForTiles[] = [];
   for (const f of features) {
