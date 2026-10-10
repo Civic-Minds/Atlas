@@ -69,6 +69,9 @@ export const ATLAS_MODE = getAtlasMode();
 export const BETA_BUILD = ATLAS_MODE !== 'public';
 export const PREVIEW_BUILD = ATLAS_MODE === 'preview';
 export const RESEARCH_APPS_ENABLED = ATLAS_MODE === 'beta' || ATLAS_MODE === 'dev';
+// Route and stop cards open as a bottom sheet on phones instead of a narrow floating panel.
+// Beta-only while the layout is tried on real phones (Ryan, 2026-10-10, #647).
+export const MOBILE_ROUTE_SHEET_ENABLED = ATLAS_MODE === 'beta' || ATLAS_MODE === 'dev';
 
 export function getAgencyCatalogUrl(mode: AtlasMode = ATLAS_MODE): string {
   return `/data/catalog-${mode}.json`;
@@ -88,6 +91,7 @@ export const FEATURES = {
   frequentService: RESEARCH_APPS_ENABLED,
   // Map-image export graduated from beta to every deployment (Ryan, 2026-10-10).
   mapExport: true,
+  mobileRouteSheet: MOBILE_ROUTE_SHEET_ENABLED,
   cardClickToFlag: CARD_CLICK_TO_FLAG_ENABLED,
   unevenBanner: UNEVEN_BANNER_ENABLED,
 } as const;
