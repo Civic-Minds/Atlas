@@ -3,7 +3,7 @@ import { Protocol, PMTiles } from 'pmtiles';
 import { R2_PUBLIC_URL } from '../../shared/config';
 import { currentAgencyDataVersion, resolveAgencyDataVersion } from './agencyGeo';
 import { RetryingFetchSource } from './pmtilesRetrySource';
-import { dataReleaseApiUrl, dataReleaseAssetUrl, resolveDataRelease, type DataRelease } from './dataRelease';
+import { dataReleaseApiUrl, dataReleaseAssetUrl, resolveDataRelease, verifiedReleaseRequired, type DataRelease } from './dataRelease';
 import maplibreWorkerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
 
 // MapLibre 6 locates its worker at runtime via `new URL('./maplibre-gl-worker.mjs',
@@ -21,11 +21,13 @@ export function getAtlasPmtilesUrl(): string {
     }
     return dataReleaseAssetUrl(activeRelease, activeRelease.pmtilesKey);
   }
-  // Keep deployed requests same-origin and expose the range headers PMTiles needs.
-  const browserUrl = typeof window !== 'undefined' && import.meta.env.PROD
-    ? `${window.location.origin}/api/atlas-pmtiles`
-    : `${R2_PUBLIC_URL}/atlas.pmtiles`;
-  return `${browserUrl}?v=${currentAgencyDataVersion()}`;
+  // No verified release: the proxy refuses to serve unpaired legacy tiles, so
+  // the map draws no routes rather than routes that disagree with the cards.
+  if (typeof window !== 'undefined' && verifiedReleaseRequired()) {
+    return `${window.location.origin}/api/atlas-pmtiles?release_id=unavailable`;
+  }
+  // Local development only: unpublished previews still use the root archive.
+  return `${R2_PUBLIC_URL}/atlas.pmtiles?v=${currentAgencyDataVersion()}`;
 }
 
 export function getAtlasOverviewPmtilesUrl(): string {
@@ -35,10 +37,10 @@ export function getAtlasOverviewPmtilesUrl(): string {
     }
     return dataReleaseAssetUrl(activeRelease, activeRelease.overviewPmtilesKey);
   }
-  const browserUrl = typeof window !== 'undefined' && import.meta.env.PROD
-    ? `${window.location.origin}/api/atlas-pmtiles?variant=overview`
-    : `${R2_PUBLIC_URL}/atlas-overview.pmtiles`;
-  return `${browserUrl}${browserUrl.includes('?') ? '&' : '?'}v=${currentAgencyDataVersion()}`;
+  if (typeof window !== 'undefined' && verifiedReleaseRequired()) {
+    return `${window.location.origin}/api/atlas-pmtiles?release_id=unavailable&variant=overview`;
+  }
+  return `${R2_PUBLIC_URL}/atlas-overview.pmtiles?v=${currentAgencyDataVersion()}`;
 }
 
 const protocol = new Protocol();

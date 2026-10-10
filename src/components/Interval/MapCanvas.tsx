@@ -28,6 +28,7 @@ import { buildSharedHoverSegments } from '../../utils/sharedHoverSegments';
 import { getMapContextAgenciesFromFeatures, isMapContextOutsideClick, type MapContextAgency } from '../../utils/mapContext';
 import { MapContextPanel } from './MapContextPanel';
 import MapExportDialog from '../MapExportDialog';
+import { waitForMapExportReady } from '../../utils/mapExport';
 import { frequentServiceBand, frequentServiceFeatureKey, frequentServiceQueryKey, type FrequentServiceFrequency, type FrequentServiceWindow } from '../../../shared/frequentService';
 import { effectiveMode, ON_DEMAND_MODE } from '../../../shared/modes';
 import type { NightServiceFrequency } from '../../../shared/nightService';
@@ -255,6 +256,10 @@ interface MapCanvasProps {
   searchBarWidth?: number;
   exportEnabled?: boolean;
   exportTitle?: string;
+  /** True while agency route data for the current view is still downloading. */
+  agencyDataLoading?: boolean;
+  /** Number of agencies whose route data failed to load. */
+  agencyDataFailedCount?: number;
 }
 
 const MapCanvasInner: React.FC<MapCanvasProps> = ({
@@ -316,6 +321,8 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   searchBarWidth,
   exportEnabled = false,
   exportTitle = 'Transit map',
+  agencyDataLoading = false,
+  agencyDataFailedCount = 0,
 }) => {
   const { colorVisionFriendly } = useColorVision();
   const colorMode: ColorVisionMode = colorVisionFriendly ? 'friendly' : 'default';
@@ -327,6 +334,33 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   const [zoom, setZoom] = useState(11);
   const [mapHint, setMapHint] = useState<string | null>(null);
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
+  const agencyDataLoadingRef = useRef(agencyDataLoading);
+  agencyDataLoadingRef.current = agencyDataLoading;
+  const agencyDataFailedCountRef = useRef(agencyDataFailedCount);
+  agencyDataFailedCountRef.current = agencyDataFailedCount;
+  const prepareExportSource = useCallback(async () => {
+    const map = mapRef.current;
+    const routeLayers = ['overview-routes-layer', 'routes-layer', 'local-routes-layer', 'night-service-routes-layer', 'frequent-service-routes-layer'];
+    await waitForMapExportReady({
+      map: map ?? {
+        // No map yet: report "not loaded" until the timeout gives a plain message.
+        loaded: () => false,
+        areTilesLoaded: () => false,
+        isMoving: () => false,
+        triggerRepaint: () => undefined,
+        once: () => undefined,
+        off: () => undefined,
+      },
+      isDataLoading: () => agencyDataLoadingRef.current,
+      hasFailedData: () => agencyDataFailedCountRef.current > 0,
+      hasRenderedRoutes: () => {
+        if (!map) return false;
+        const layers = routeLayers.filter(layer => map.getLayer(layer) && map.getLayoutProperty(layer, 'visibility') !== 'none');
+        return layers.length > 0 && map.queryRenderedFeatures(undefined, { layers }).length > 0;
+      },
+    });
+    return map!.getCanvas();
+  }, []);
   const [mapContextMenu, setMapContextMenu] = useState<{ x: number; y: number; lat: number; lon: number } | null>(null);
   const mapContextPanelRef = useRef<HTMLDivElement>(null);
   const hintTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -2178,7 +2212,8 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       </div>
       <MapExportDialog
         open={exportDialogOpen}
-        source={exportDialogOpen ? mapRef.current?.getCanvas() ?? null : null}
+        sourceSize={exportDialogOpen && mapRef.current ? { width: mapRef.current.getCanvas().width, height: mapRef.current.getCanvas().height } : null}
+        prepareSource={prepareExportSource}
         defaultTitle={exportTitle}
         lightMode={lightMode}
         onClose={() => setExportDialogOpen(false)}

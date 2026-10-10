@@ -666,6 +666,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
         nightServiceFrequency={nightServiceFrequency}
         exportEnabled={exportEnabled}
         exportTitle={exportTitle}
+        agencyDataLoading={isLoading}
+        agencyDataFailedCount={failedSlugs.size}
         frequentServiceView={frequentServiceView}
         frequentServiceDays={frequentServiceDays}
         frequentServiceFrequency={frequentServiceFrequency}

@@ -23,7 +23,7 @@ import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
 import { resolve, dirname } from 'path';
 // loadEnv first so shared/config sees staging/prod R2_PUBLIC_URL
 import { LOADED_ENV_FILE, isProductionPublicR2Bucket } from './loadEnv.js';
-import { processGtfsBuffer } from './process-core.js';
+import { loadSupplementalFeeds, processAgencyFeeds, type AgencyFeedConfig } from './agencyFeeds.js';
 import { r2Put, r2Get, r2PutArchive, rawFeedArchiveKey } from './r2.js';
 import { bumpPublicDataVersion } from './dataVersion.js';
 import { R2_PUBLIC_URL } from '../shared/config.js';
@@ -163,30 +163,21 @@ async function main() {
   console.log(`\nAtlas — processing ${zipPath}`);
 
   const indexPath = resolve('public/data/index.json');
-  let preprocess: import('./process-core.js').GtfsPreprocess | undefined;
-  let agencyId: string | undefined;
-  let agencyNameFilter: string | undefined;
-  let excludeRouteShortNames: string[] | undefined;
-  let excludeTripHeadsigns: string[] | undefined;
-  let mergeEquivalentShapeVariants: boolean | undefined;
+  let agencyConfig: AgencyFeedConfig = { slug };
   let previousFeedExpiry: string | null = null;
   let issueUrl: string | undefined;
   let manualBaseFare: number | undefined;
   if (existsSync(indexPath)) {
     const index = JSON.parse(readFileSync(indexPath, 'utf8')) as {
-      agencies: Array<{ slug: string; agencyId?: string; agencyName?: string; preprocess?: import('./process-core.js').GtfsPreprocess; excludeRouteShortNames?: string[]; excludeTripHeadsigns?: string[]; mergeEquivalentShapeVariants?: boolean; issueUrl?: string; fare?: number; lastFeedExpiry?: string | null }>;
+      agencies: Array<AgencyFeedConfig & { issueUrl?: string; lastFeedExpiry?: string | null }>;
     };
     const entry = index.agencies.find(a => a.slug === slug);
-    preprocess = entry?.preprocess;
-    agencyId = entry?.agencyId;
-    agencyNameFilter = entry?.agencyName;
-    excludeRouteShortNames = entry?.excludeRouteShortNames;
-    excludeTripHeadsigns = entry?.excludeTripHeadsigns;
-    mergeEquivalentShapeVariants = entry?.mergeEquivalentShapeVariants;
+    if (entry) agencyConfig = entry;
     previousFeedExpiry = entry?.lastFeedExpiry ?? null;
     issueUrl = entry?.issueUrl;
     if (entry?.fare != null) manualBaseFare = entry.fare; // legacy fallback
   }
+  const { excludeRouteShortNames } = agencyConfig;
 
   if (excludeRouteShortNames?.length) {
     const present = await routeShortNamesInGtfsZip(buf);
@@ -206,9 +197,15 @@ async function main() {
     // fare-overrides.json not yet uploaded — continue with legacy value or undefined
   }
 
-  const { geojson, corridorsGeojson, stopsJson, tripsJson, stopsMetaJson, featureCount, center: computedCenter, timezone, livePollingSidecar, feedExpiry, feedVersion, shapeAnomalies, feedQuality } = await processGtfsBuffer(buf, msg => {
+  // Supplemental feeds (e.g. a separate rail zip) always come from the agency's
+  // configured URLs; any failure aborts rather than publishing a main-only artifact.
+  const supplementalFeeds = await loadSupplementalFeeds(agencyConfig, downloadToBuffer);
+  const { geojson, corridorsGeojson, stopsJson, tripsJson, stopsMetaJson, featureCount, center: computedCenter, timezone, livePollingSidecar, feedExpiry, feedVersion, shapeAnomalies, feedQuality, supplementalFeatureCounts } = await processAgencyFeeds(buf, supplementalFeeds, agencyConfig, { manualBaseFare, force }, msg => {
     process.stdout.write(`  ${msg.padEnd(60, ' ')}\r`);
-  }, { agencyId, agencyName: agencyNameFilter, preprocess, excludeRouteShortNames, excludeTripHeadsigns, mergeEquivalentShapeVariants, slug, manualBaseFare, force });
+  });
+  for (const supp of supplementalFeatureCounts) {
+    console.log(`\n  + supplemental ${supp.url}: ${supp.featureCount} features`);
+  }
   const center = argCenter ?? computedCenter ?? [0, 0];
 
   const todayYmd = todayUtcYmd().replace(/-/g, '');

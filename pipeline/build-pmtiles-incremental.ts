@@ -39,6 +39,10 @@
  * Usage:
  *   npx tsx pipeline/build-pmtiles-incremental.ts <slug> [--dry-run] [--allow-stale-data] [--i-am-launching-country]
  *
+ * A live (non --dry-run) upload also requires --allow-unpaired-pmtiles-upload:
+ * it writes the legacy root atlas.pmtiles, which is not part of a verified data
+ * release (see pipeline/releaseGuard.ts). Use refresh-release instead.
+ *
  * --dry-run runs both safety checks and the full tippecanoe/tile-join build
  * locally, then reports what WOULD be uploaded (size, feature counts, which
  * layers changed) and stops — no R2 write. Without --dry-run, it uploads for
@@ -80,6 +84,7 @@ import {
   type AgencyCountrySource,
 } from './countryLaunchGate.js';
 import { consumeDataRefreshMarker, dataRefreshGuardError, readDataRefreshMarker } from './dataRefreshMarker.js';
+import { unpairedUploadError } from './releaseGuard.js';
 
 console.log(`env: ${LOADED_ENV_FILE} (bucket=${process.env.R2_BUCKET_NAME ?? '?'})`);
 
@@ -281,6 +286,11 @@ function parseArgs(argv: string[]): { slug: string; dryRun: boolean; allowStaleD
 
 async function main() {
   const { slug, dryRun, allowStaleData, forceCountryLaunch } = parseArgs(process.argv.slice(2));
+
+  // The merged archive goes to the legacy root atlas.pmtiles, outside any
+  // verified data release, so it is never paired with agency data.
+  const unpairedError = dryRun ? null : unpairedUploadError(process.argv.slice(2), 'build-pmtiles-incremental');
+  if (unpairedError) throw new Error(unpairedError);
 
   if (!dryRun && !allowStaleData) {
     const guardError = dataRefreshGuardError(readDataRefreshMarker());

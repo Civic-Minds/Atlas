@@ -11,11 +11,14 @@
  * last refreshed — those facts change far less often than schedules/shapes.
  *
  * Usage: npx tsx scripts/publish-stops-meta-only.ts <path/to/feed.zip> <slug>
+ *
+ * The zip is the agency's main feed; any supplemental feeds configured in
+ * public/data/index.json are downloaded and merged so their stops are kept.
  */
-import { readFileSync } from 'fs';
+import { existsSync, readFileSync } from 'fs';
 import { resolve } from 'path';
 import { config } from 'dotenv';
-import { processGtfsBuffer } from '../pipeline/process-core.js';
+import { downloadFeedBuffer, loadSupplementalFeeds, processAgencyFeeds, type AgencyFeedConfig } from '../pipeline/agencyFeeds.js';
 import { r2Put } from '../pipeline/r2.js';
 
 config({ path: resolve('.env.local') });
@@ -28,7 +31,13 @@ async function main() {
   }
 
   const buf = readFileSync(resolve(zipPath));
-  const result = await processGtfsBuffer(buf, msg => console.log('  ' + msg));
+  const indexPath = resolve('public/data/index.json');
+  const index = existsSync(indexPath)
+    ? JSON.parse(readFileSync(indexPath, 'utf8')) as { agencies: AgencyFeedConfig[] }
+    : { agencies: [] };
+  const agency = index.agencies.find(entry => entry.slug === slug) ?? { slug };
+  const supplementalFeeds = await loadSupplementalFeeds(agency, downloadFeedBuffer);
+  const result = await processAgencyFeeds(buf, supplementalFeeds, agency, {}, msg => console.log('  ' + msg));
 
   const meta = JSON.parse(result.stopsMetaJson) as { stopCount: number };
   console.log(`Derived stops-meta for ${slug}: ${meta.stopCount} stops`);

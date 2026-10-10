@@ -15,9 +15,18 @@ permissions:
   contents: write
   pull-requests: write
 
+# Never run two data releases at once: overlapping runs could publish tiles
+# and agency data from different builds. Queue instead of cancelling, so a
+# run that is mid-upload always finishes.
+concurrency:
+  group: atlas-data-release
+  cancel-in-progress: false
+
 jobs:
   refresh:
     runs-on: ubuntu-latest
+    # Full runs take about 50-85 minutes.
+    timeout-minutes: 180
     steps:
       - uses: actions/checkout@v4
 
@@ -82,15 +91,6 @@ jobs:
         run: npm run verify-pmtiles-coverage
         env:
           R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
-
-      - name: Publish verified data release
-        run: npm run publish-data-release
-        env:
-          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
-          R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
-          R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
-          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
-          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
 
       # NOT gated on inputs.agencies: this always processes the entire
       # atlas-archive/history/ tree (~12k files) regardless of which agencies

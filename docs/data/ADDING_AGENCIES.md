@@ -42,11 +42,14 @@ This is the single canonical procedure for adding or updating an agency. [`AGENC
    ```bash
    npm run refresh -- <slug> --force
    ```
-7. **Rebuild and upload PMTiles — do not skip this:**
+7. **Build and publish a data release — do not skip this:**
    ```bash
-   npm run build-pmtiles
-   npm run upload-pmtiles
+   npm run build-pmtiles          # builds tiles + agency snapshots under one release ID
+   npm run verify-pmtiles-remote
+   npm run build-history
+   npm run publish-data-release   # refuses unless tiles and agency data carry the same release ID
    ```
+   (`npm run refresh-release -- <slug>` runs refresh plus all of these in order.) Do not use `upload-pmtiles` or a hand-run `rclone` copy of `atlas.pmtiles`: the root archive is not paired with any agency data, the deployed app no longer reads it, and the script refuses without `--allow-unpaired-pmtiles-upload`.
    The per-agency GeoJSON (from step 3) is what powers search and the sidebar route cards. It is **not** what renders routes on the map — that's a single aggregate `atlas.pmtiles` file built from *every* agency's current GeoJSON, and it only updates when you explicitly rebuild and upload it.
 
    **This step has been skipped before and shipped silently broken agencies** — the route exists in search results and the sidebar card, with real headway data, but nothing draws on the map, because the aggregate tile file was never rebuilt to include it. It doesn't error; it just quietly renders nothing for that agency. Confirmed twice: a newly-added agency (GTrans) that never got its first PMTiles build, and an existing agency (LA Metro) whose rail lines were added to the feed but the PMTiles rebuild step was missed on that change.
@@ -55,7 +58,7 @@ This is the single canonical procedure for adding or updating an agency. [`AGENC
    ```bash
    npm run verify-pmtiles-coverage
    ```
-   PMTiles builds now require a successful `refresh` or real `process` handoff first, so stale agency artifacts cannot be repackaged accidentally. `--allow-stale-data` is reserved for an explicitly intentional repack. This compares every agency slug in `index.json` against which slugs actually have route features in the deployed PMTiles and fails loudly on any gap. Run it after every `build-pmtiles` + `upload-pmtiles`, not just when adding a brand-new agency — it also catches an existing agency whose feed changed (new routes, new mode) without a rebuild.
+   PMTiles builds now require a successful `refresh` or real `process` handoff first, so stale agency artifacts cannot be repackaged accidentally. `--allow-stale-data` is reserved for an explicitly intentional repack. This compares every agency slug in `index.json` against which slugs actually have route features in the deployed PMTiles and fails loudly on any gap. Run it after every `build-pmtiles`, not just when adding a brand-new agency — it also catches an existing agency whose feed changed (new routes, new mode) without a rebuild.
 8. Commit the agency source file (`config/agencies/<slug>.json`) and regenerated `public/data/index.json`. PMTiles upload is a separate live action (goes straight to R2, not part of git history) — see `docs/ARCHITECTURE.md` for the R2 bucket layout.
 
 **Mid-week data fix cache bust**: the browser caches agency GeoJSON in IndexedDB keyed by `${slug}-${weekVersion}`. If you re-process an *existing* agency mid-week (e.g. fixing a wrong feed), the IDB cache won't update automatically. Bump `CACHE_BUILD` in `shared/cacheBuild.ts` to invalidate old entries and force a fresh fetch from R2.
@@ -82,8 +85,10 @@ npm run build-pmtiles-incremental -- <slug> --dry-run
 
 # Once you're satisfied and have explicit go-ahead to write to the live bucket
 # (same production-data gate as npm run build-pmtiles):
-npm run build-pmtiles-incremental -- <slug>
+npm run build-pmtiles-incremental -- <slug> --allow-unpaired-pmtiles-upload
 ```
+
+A live incremental upload writes the legacy root `atlas.pmtiles`, which is outside any verified data release; deployed builds only read release tiles, so it will not appear on the public map. Use it for local previews, and publish through a full release.
 
 `--dry-run` still downloads the real deployed `atlas.pmtiles` and runs the real tippecanoe/tile-join steps locally (so the size/feature-count report reflects reality), it just stops before the final upload. After a real (non-dry-run) run, still run `npm run verify-pmtiles-coverage` to confirm.
 
