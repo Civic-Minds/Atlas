@@ -613,6 +613,12 @@ export const CALEDON_ON_DEMAND_AGENCY = {
     sourceLabel: CALEDON_SOURCE_LABEL,
     sourceRetrievedAt: '2026-09-22',
     serviceHours: 'Mon–Fri 5:30 a.m.–8:00 p.m.; Sat–Sun 7:00 a.m.–7:00 p.m.',
+    // Town of Caledon by email (2026-10-10): door-to-door within the zones; Brampton and YRT
+    // transfers use designated points at BRT stops on Mayfield Rd and two YRT stops on Barons St.
+    pickup: {
+      method: 'door-to-door',
+      note: 'Transfers to Brampton Transit or York Region Transit use designated pickup points at their bus stops, set when you book.',
+    } satisfies OnDemandPickup,
     bookingUrl: CALEDON_SOURCE_URL,
     availability: {
       Weekday: [{ startHour: 5.5, endHour: 20 }],
