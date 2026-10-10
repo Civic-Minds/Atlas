@@ -13,10 +13,10 @@
     46.5,
     -72
   ],
-  "feedUrl": "https://exo.quebec/xdata/trains/google_transit.zip",
+  "feedUrl": "https://exo.quebec/uploads/ressources-telechargeables/a-propos/donnees-ouvertes/trains/google_transit.zip",
   "lastFeedExpiry": "20270103",
   "lastFeedVersion": null,
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-exo-gtfs-748.zip?alt=media",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-748/latest.zip",
   "gtfsFares": true,
   "lastRefreshedAt": "2026-08-07",
   "cities": [

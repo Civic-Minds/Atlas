@@ -1953,10 +1953,10 @@
         46.5,
         -72
       ],
-      "feedUrl": "https://exo.quebec/xdata/trains/google_transit.zip",
+      "feedUrl": "https://exo.quebec/uploads/ressources-telechargeables/a-propos/donnees-ouvertes/trains/google_transit.zip",
       "lastFeedExpiry": "20270103",
       "lastFeedVersion": null,
-      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-exo-gtfs-748.zip?alt=media",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-748/latest.zip",
       "gtfsFares": true,
       "lastRefreshedAt": "2026-08-07",
       "cities": [
@@ -1996,10 +1996,10 @@
         45.81,
         -73.54
       ],
-      "feedUrl": "https://exo.quebec/xdata/citpi/google_transit.zip",
+      "feedUrl": "https://exo.quebec/uploads/ressources-telechargeables/a-propos/donnees-ouvertes/citpi/google_transit.zip",
       "lastFeedExpiry": "20270103",
       "lastFeedVersion": null,
-      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-exo-la-presquile-gtfs-743.zip?alt=media",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-743/latest.zip",
       "gtfsFares": true,
       "lastRefreshedAt": "2026-08-07",
       "cities": [
@@ -2030,10 +2030,10 @@
         45.75,
         -73.26
       ],
-      "feedUrl": "https://exo.quebec/xdata/citso/google_transit.zip",
+      "feedUrl": "https://exo.quebec/uploads/ressources-telechargeables/a-propos/donnees-ouvertes/citso/google_transit.zip",
       "lastFeedExpiry": "20270103",
       "lastFeedVersion": null,
-      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-exo-sud-ouest-gtfs-742.zip?alt=media",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-742/latest.zip",
       "gtfsFares": true,
       "lastRefreshedAt": "2026-08-07",
       "cities": [
@@ -2069,10 +2069,10 @@
         45.81,
         -73
       ],
-      "feedUrl": "https://exo.quebec/xdata/lrrs/google_transit.zip",
+      "feedUrl": "https://exo.quebec/uploads/ressources-telechargeables/a-propos/donnees-ouvertes/lrrs/google_transit.zip",
       "lastFeedExpiry": "20270103",
       "lastFeedVersion": null,
-      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-exo-le-richelain-roussillon-gtfs-2142.zip?alt=media",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2142/latest.zip",
       "gtfsFares": true,
       "lastRefreshedAt": "2026-08-07",
       "cities": [
@@ -2107,10 +2107,10 @@
         46.06,
         -73.4
       ],
-      "feedUrl": "https://exo.quebec/xdata/citla/google_transit.zip",
+      "feedUrl": "https://exo.quebec/uploads/ressources-telechargeables/a-propos/donnees-ouvertes/citla/google_transit.zip",
       "lastFeedExpiry": "20270103",
       "lastFeedVersion": null,
-      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-exo-laurentides-gtfs-744.zip?alt=media",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-744/latest.zip",
       "gtfsFares": true,
       "lastRefreshedAt": "2026-08-07",
       "cities": [
@@ -2147,10 +2147,10 @@
         46.1,
         -73.15
       ],
-      "feedUrl": "https://exo.quebec/xdata/mrclm/google_transit.zip",
+      "feedUrl": "https://exo.quebec/uploads/ressources-telechargeables/a-propos/donnees-ouvertes/mrclm/google_transit.zip",
       "lastFeedExpiry": "20270103",
       "lastFeedVersion": null,
-      "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-terrebonne-mascouche-gtfs-754.zip?alt=media",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-754/latest.zip",
       "gtfsFares": true,
       "lastRefreshedAt": "2026-08-07",
       "cities": [
@@ -2189,7 +2189,8 @@
         45.7,
         -72.9
       ],
-      "feedUrl": "https://exo.quebec/xdata/citvr/google_transit.zip",
+      "feedUrl": "https://exo.quebec/uploads/ressources-telechargeables/a-propos/donnees-ouvertes/citvr/google_transit.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-752/latest.zip",
       "lastFeedExpiry": "20270103",
       "lastFeedVersion": null,
       "gtfsFares": true,

@@ -13,10 +13,10 @@
     46.06,
     -73.4
   ],
-  "feedUrl": "https://exo.quebec/xdata/citla/google_transit.zip",
+  "feedUrl": "https://exo.quebec/uploads/ressources-telechargeables/a-propos/donnees-ouvertes/citla/google_transit.zip",
   "lastFeedExpiry": "20270103",
   "lastFeedVersion": null,
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-exo-laurentides-gtfs-744.zip?alt=media",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-744/latest.zip",
   "gtfsFares": true,
   "lastRefreshedAt": "2026-08-07",
   "cities": [
