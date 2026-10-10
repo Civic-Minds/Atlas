@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- On the beta site, tapping a route or stop on a phone now opens its card as a panel at the bottom of the screen that you drag up for detail, so the map stays visible ([#647](https://github.com/Civic-Minds/Atlas/issues/647)).
 - On phones, route cards no longer break stop names mid-word, the search bar stays on one line, and headings across the app no longer appear in all capitals ([#644](https://github.com/Civic-Minds/Atlas/issues/644), [#645](https://github.com/Civic-Minds/Atlas/issues/645), [#646](https://github.com/Civic-Minds/Atlas/issues/646)).
 - An agency whose separate rail feed has run out now shows as outdated even when its bus feed is still current, and refresh archives those rail feeds so reprocessing rebuilds from the exact same inputs ([#630](https://github.com/Civic-Minds/Atlas/issues/630)).
 - The button to save the map as an image is now on for everyone, not just the beta site.
