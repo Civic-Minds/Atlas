@@ -15249,12 +15249,13 @@
     {
       "slug": "durango-transit",
       "name": "Durango Transit",
-      "websiteUrl": "https://co-durango.civicplus.com/333/Transit",
+      "websiteUrl": "https://durangoco.gov/333/Transit",
       "center": [
         37.27,
         -107.88
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-2290/latest.zip",
+      "feedUrl": "https://www.durangoco.gov/DocumentCenter/View/17688/Durango-Transit-GTFS-Data",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-456/latest.zip",
       "lastFeedExpiry": "20261201",
       "region": "Colorado",
       "lastFeedVersion": "UTC: 21-May-2026 20:09",
