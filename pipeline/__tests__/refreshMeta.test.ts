@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { isFeedExpired, markFeedStale, shouldReplaceExpiredFeed, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta, stampSupplementalFeedMeta } from '../refreshMeta.js';
+import { isFeedExpired, markFeedStale, recordedFeedExpiry, shouldReplaceExpiredFeed, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta, stampSupplementalFeedMeta } from '../refreshMeta.js';
 import { isCurrentProductionFeed, isStaleProductionFeed } from '../../shared/feedAvailability.js';
 
 describe('feed expiry checks', () => {
@@ -64,6 +64,44 @@ describe('stampFeedMeta', () => {
     expect(agency.lastFeedExpiry).toBe('20251231');
     expect(agency.lastFeedVersion).toBe('v2');
     expect(agency.lastRefreshedAt).toBe('2026-07-19');
+  });
+
+  it('keeps the calendar end when feed_info ends earlier', () => {
+    // coast-transit-ms: feed_info ends 20260930, calendar.txt runs to 20261231.
+    const agency: { lastFeedExpiry?: string | null } = {};
+    stampFeedMeta(agency, {
+      feedExpiry: '20260930',
+      feedVersion: '20260316',
+      peekedExpiry: '20261231',
+      peekedVersion: '20260316',
+      todayYmd: '2026-10-07',
+    });
+    expect(agency.lastFeedExpiry).toBe('20261231');
+  });
+
+  it('picks the later valid expiry and falls back when either is missing', () => {
+    expect(recordedFeedExpiry('20270101', '20261231', '2026-10-07')).toBe('20270101');
+    expect(recordedFeedExpiry('20261231', null, '2026-10-07')).toBe('20261231');
+    expect(recordedFeedExpiry(null, null, '2026-10-07')).toBeNull();
+  });
+
+  it('caps a placeholder calendar end at today + 2 years', () => {
+    // bc-ferries style: feed_info ends 20270331, calendar runs to 20500101.
+    expect(recordedFeedExpiry('20270331', '20500101', '2026-10-07')).toBe('20281007');
+  });
+
+  it('caps at feed_info end + 2 years when that is sooner', () => {
+    expect(recordedFeedExpiry('20251001', '20500101', '20261007')).toBe('20271001');
+  });
+
+  it('leaves a real calendar extension within the cap unaffected', () => {
+    // coast-transit-ms: feed_info ends 20260930, calendar.txt runs to 20261231.
+    expect(recordedFeedExpiry('20260930', '20261231', '2026-10-07')).toBe('20261231');
+  });
+
+  it('without feed_info, caps the calendar end at today + 2 years only', () => {
+    expect(recordedFeedExpiry(null, '20500101', '2026-10-07')).toBe('20281007');
+    expect(recordedFeedExpiry(null, '20261231', '2026-10-07')).toBe('20261231');
   });
 
   it('clears stale state after a successful refresh', () => {

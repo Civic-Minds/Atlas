@@ -141,6 +141,26 @@ describe('release diff gate: yellow and clean cases', () => {
     expect(applyOverrides(flags, { allowDrop: false, allow: [] }).blocked).toEqual([]);
   });
 
+  it('warns, without blocking, about a placeholder far-future calendar end (bc-ferries 20500101)', () => {
+    const live = countsOnly(50, 50, 20);
+    const flags = evaluateAgency(
+      { slug: 'bc-ferries', live, next: live, service: { end: '20270331', calendarEnd: '20500101' }, allowMissingLive: true },
+      [],
+      TODAY,
+    );
+    expect(names(flags)).toEqual(['bc-ferries:placeholder-expiry:yellow']);
+    expect(applyOverrides(flags, { allowDrop: false, allow: [] }).blocked).toEqual([]);
+    // Without a separate calendar end, the service end itself is checked.
+    expect(names(evaluateAgency({ slug: 'bc-ferries', live, next: live, service: { end: '20500101' }, allowMissingLive: true }, [], TODAY)))
+      .toEqual(['bc-ferries:placeholder-expiry:yellow']);
+  });
+
+  it('does not flag a calendar end within 2 years (coast-transit-ms 20261231)', () => {
+    const live = countsOnly(300, 300, 12);
+    expect(evaluateAgency({ slug: 'coast-transit-ms', live, next: live, service: { end: '20260930', calendarEnd: '20261231' }, allowMissingLive: true }, [], '20260901'))
+      .toEqual([]);
+  });
+
   it('passes a clean agency (barrie) against its live data and a different agency nearby', async () => {
     const live = summarizeArtifact(fixture('barrie-live.json'), fixture('barrie-live-stops.json'));
     const next = summarizeArtifact(fixture('barrie-new.json'), fixture('barrie-new-stops.json'));

@@ -73,6 +73,7 @@ These commands write public R2 data. Get explicit approval immediately before ru
 | `expired` | red | Service has already ended and the output differs from live. |
 | `expired` | yellow | Service has ended, but the output is unchanged from live. This keeps long-expired agencies from blocking every release. |
 | `future-start` | yellow | Service does not start until a future date (refresh and reprocess, which read the zip). |
+| `placeholder-expiry` | yellow | The calendar runs more than 2 years past today, likely a placeholder end date; the recorded expiry is capped so the agency can still show as outdated. |
 | `added` | yellow | The agency has no live artifact to compare with (for example, new to the release), or its live artifact predates route schema v2. No before/after diff is taken. The duplicate and date checks still run. Reprocess still refuses an agency whose live artifact cannot be read at all. |
 
 A red flag blocks only its own agency. In refresh and reprocess, that agency keeps its live data and the rest of the batch continues. At publish, the pointer does not move. Yellow flags are informational and never block.
