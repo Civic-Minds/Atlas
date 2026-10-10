@@ -1,7 +1,10 @@
 /**
  * upload-pmtiles.ts — Re-upload a pre-built atlas.pmtiles to R2.
  *
- * Usage: npx tsx pipeline/upload-pmtiles.ts <path-to-atlas.pmtiles>
+ * Usage: npx tsx pipeline/upload-pmtiles.ts <path-to-atlas.pmtiles> --allow-unpaired-pmtiles-upload
+ *
+ * Refuses by default: the legacy root atlas.pmtiles is not paired with any
+ * agency data release. Normal publishing goes through refresh-release.
  *
  * Uses multipart upload so large files (800+ MB) succeed even on flaky links.
  */
@@ -10,6 +13,7 @@ import path from 'path';
 import dotenv from 'dotenv';
 import { S3Client } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
+import { unpairedUploadError } from './releaseGuard.js';
 
 dotenv.config({ path: '.env.local' });
 dotenv.config();
@@ -21,7 +25,9 @@ function requireEnv(key: string): string {
 }
 
 async function main() {
-  const filePath = process.argv[2] || 'tmp/geojson-build/atlas.pmtiles';
+  const unpairedError = unpairedUploadError(process.argv.slice(2), 'upload-pmtiles');
+  if (unpairedError) throw new Error(unpairedError);
+  const filePath = process.argv.slice(2).find(arg => !arg.startsWith('--')) || 'tmp/geojson-build/atlas.pmtiles';
   const absPath = path.resolve(filePath);
 
   if (!fs.existsSync(absPath)) {

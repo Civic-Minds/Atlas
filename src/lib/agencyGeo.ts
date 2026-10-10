@@ -3,7 +3,7 @@ import { idbGet, idbSet, idbPruneStale } from './idbCache';
 import { BETA_R2_PUBLIC_URL, getAgencyArtifactUrls, R2_PUBLIC_URL } from '../../shared/config';
 import { CACHE_BUILD } from '../../shared/cacheBuild';
 import { normalizeRouteFilterFeatures } from '../../shared/routeHeadwayFilter';
-import { dataReleaseAgencyUrl, resolveDataRelease } from './dataRelease';
+import { dataReleaseAgencyUrl, NoVerifiedDataReleaseError, resolveDataRelease, verifiedReleaseRequired } from './dataRelease';
 
 export interface AgencyGeoSource {
   slug: string;
@@ -164,6 +164,8 @@ export async function fetchAgencyGeo(agency: AgencyGeoSource): Promise<GeoJSON.F
   const arts = getAgencyArtifactUrls(agency.slug, { betaOnly: agency.betaOnly });
   const releaseBase = agency.betaOnly ? BETA_R2_PUBLIC_URL : R2_PUBLIC_URL;
   const release = await resolveDataRelease(releaseBase);
+  // Beta-only agencies live in a bucket that has no release pointer yet.
+  if (!release && !agency.betaOnly && verifiedReleaseRequired()) throw new NoVerifiedDataReleaseError();
   const fetchUrl = release
     ? dataReleaseAgencyUrl(release, agency.slug, agency.betaOnly)
     : agency.url || arts.url;
@@ -242,6 +244,7 @@ export async function fetchAgencyCorridors(slug: string, corridorsUrl: string): 
   let pending = corridorsInflight.get(slug);
   if (!pending) {
     const release = await resolveDataRelease();
+    if (!release && verifiedReleaseRequired()) throw new NoVerifiedDataReleaseError();
     const dataVer = release?.releaseId ?? await resolveAgencyDataVersion();
     const fetchUrl = release
       ? dataReleaseAgencyUrl(release, `${slug}-corridors`)

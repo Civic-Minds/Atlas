@@ -8,7 +8,8 @@ import { getAgencyArtifactUrls, pmtilesMinZoomForHeadway } from '../shared/confi
 import { runWithConcurrency } from './utils.js';
 import { prepareAgencyRouteFeaturesForTiles } from './prepareAgencyRoutesForTiles.js';
 import { simplifyLine } from './geometry.js';
-import { assertRouteArtifactSchema, ROUTE_ARTIFACT_SCHEMA_VERSION } from '../shared/artifactSchema.js';
+import { assertRouteArtifactSchema, ROUTE_ARTIFACT_SCHEMA_VERSION, TILE_RULES_VERSION } from '../shared/artifactSchema.js';
+import { currentCodeVersion, RELEASE_STAMP_FIELD } from './releaseGuard.js';
 import { consumeDataRefreshMarker, dataRefreshGuardError, readDataRefreshMarker } from './dataRefreshMarker.js';
 
 console.log(`env: ${LOADED_ENV_FILE} (bucket=${process.env.R2_BUCKET_NAME ?? '?'})`);
@@ -128,6 +129,9 @@ async function main() {
   if (dryRun) {
     console.log('Dry run: building PMTiles locally without uploading to R2.');
   }
+  // One ID stamps the tiles and every agency snapshot of this build, so
+  // publish-data-release can prove they were built together.
+  const releaseId = `${dryRun ? 'local' : 'release'}-${Date.now().toString(36)}`;
   console.log(`Loading agency index from public/data/index.json...`);
   const index = JSON.parse(fs.readFileSync('public/data/index.json', 'utf-8')) as { agencies: any[] };
   const agencies = index.agencies || [];
@@ -169,6 +173,7 @@ async function main() {
         : await fetchJson(url, 5);
       if (data && data.features) {
         assertRouteArtifactSchema(data, `${slug}.json`);
+        (data as unknown as Record<string, unknown>)[RELEASE_STAMP_FIELD] = releaseId;
         fs.writeFileSync(path.join(releaseAgencyDir, `${slug}.json`), JSON.stringify(data));
         allRoutes.push(...prepareAgencyRouteFeaturesForTiles(data.features, slug));
       } else if (!data) {
@@ -292,10 +297,10 @@ async function main() {
   execSync(`tippecanoe -o "${corridorsPm}" -z14 --no-tile-size-limit -l corridors "${corridorsPath}" --force`, { stdio: 'inherit' });
 
   console.log("Building atlas-overview.pmtiles ...");
-  execSync(`tippecanoe -o "${overviewRoutesPm}" -z7 --no-tile-size-limit -l routes "${overviewRoutesPath}" --force`, { stdio: 'inherit' });
+  execSync(`tippecanoe -o "${overviewRoutesPm}" -z7 --no-tile-size-limit -n "${releaseId}" -l routes "${overviewRoutesPath}" --force`, { stdio: 'inherit' });
 
   console.log("Merging into atlas.pmtiles via tile-join ...");
-  execSync(`tile-join -o "${pmtilesPath}" --force --no-tile-size-limit "${routesPm}" "${stopsPm}" "${corridorsPm}"`, { stdio: 'inherit' });
+  execSync(`tile-join -o "${pmtilesPath}" --force --no-tile-size-limit --name="${releaseId}" "${routesPm}" "${stopsPm}" "${corridorsPm}"`, { stdio: 'inherit' });
 
   const size = fs.statSync(pmtilesPath).size;
   console.log(`atlas.pmtiles size: ${(size/1024/1024).toFixed(1)} MB`);
@@ -317,7 +322,9 @@ async function main() {
     fs.writeFileSync(
       path.resolve('tmp/atlas-preview-manifest.json'),
       JSON.stringify({
-        releaseId: `local-${Date.now().toString(36)}`,
+        releaseId,
+        routeArtifactSchemaVersion: ROUTE_ARTIFACT_SCHEMA_VERSION,
+        tileRulesVersion: TILE_RULES_VERSION,
         pmtilesKey: 'atlas.pmtiles',
         overviewPmtilesKey: 'atlas-overview.pmtiles',
         agencyPrefix: 'atlas/preview-agencies',
@@ -328,13 +335,14 @@ async function main() {
     return;
   }
 
-  const releaseId = `release-${Date.now().toString(36)}`;
   const releasePrefix = `atlas/releases/${releaseId}`;
   const agencyPrefix = `${releasePrefix}/agencies`;
   const releaseManifest = {
     releaseId,
     generatedAt: new Date().toISOString(),
     routeArtifactSchemaVersion: ROUTE_ARTIFACT_SCHEMA_VERSION,
+    tileRulesVersion: TILE_RULES_VERSION,
+    codeVersion: currentCodeVersion(),
     pmtilesKey: `${releasePrefix}/atlas.pmtiles`,
     overviewPmtilesKey: `${releasePrefix}/atlas-overview.pmtiles`,
     agencyPrefix,
