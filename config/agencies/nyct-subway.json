@@ -1,6 +1,7 @@
 {
   "slug": "nyct-subway",
   "name": "MTA NYCT Subway",
+  "displayArea": "New York City",
   "websiteUrl": "http://www.mta.info",
   "region": "New York",
   "center": [

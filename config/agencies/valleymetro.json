@@ -1,6 +1,7 @@
 {
   "slug": "valleymetro",
   "name": "Valley Metro (Phoenix)",
+  "displayArea": "Phoenix",
   "websiteUrl": "https://www.valleymetro.org/",
   "center": [
     33.45,

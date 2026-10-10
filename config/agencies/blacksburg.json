@@ -1,6 +1,7 @@
 {
   "slug": "blacksburg",
   "name": "Blacksburg Transit",
+  "displayArea": "Blacksburg",
   "websiteUrl": "https://ridebt.org/",
   "center": [
     37.1452,

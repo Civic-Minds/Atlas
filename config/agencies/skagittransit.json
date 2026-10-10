@@ -1,6 +1,7 @@
 {
   "slug": "skagittransit",
   "name": "Skagit Transit",
+  "displayArea": "Skagit County",
   "websiteUrl": "https://www.skagittransit.org",
   "center": [
     48.4743,

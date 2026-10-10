@@ -1,6 +1,7 @@
 {
   "slug": "pace-bus",
   "name": "Pace Bus (Chicago suburbs)",
+  "displayArea": "Chicago suburbs",
   "websiteUrl": "https://www.pacebus.com",
   "center": [
     41.9,

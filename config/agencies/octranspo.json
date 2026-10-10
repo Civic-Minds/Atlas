@@ -1,6 +1,7 @@
 {
   "slug": "octranspo",
   "name": "OC Transpo (Ottawa)",
+  "displayArea": "Ottawa",
   "websiteUrl": "https://www.octranspo.com",
   "searchAliases": [
     "Ottawa"

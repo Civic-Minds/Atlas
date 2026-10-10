@@ -1,6 +1,7 @@
 {
   "slug": "mnr",
   "name": "Metro-North Railroad (MNR)",
+  "displayArea": "New York & Connecticut",
   "websiteUrl": "http://www.mta.info/mnr",
   "region": "New York",
   "center": [

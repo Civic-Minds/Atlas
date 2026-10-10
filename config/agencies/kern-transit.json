@@ -1,6 +1,7 @@
 {
   "slug": "kern-transit",
   "name": "Kern Transit",
+  "displayArea": "Kern County",
   "websiteUrl": "http://kerntransit.org/?referrer=gtfs",
   "region": "California",
   "center": [

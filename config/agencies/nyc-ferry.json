@@ -1,6 +1,7 @@
 {
   "slug": "nyc-ferry",
   "name": "NYC Ferry",
+  "displayArea": "New York City",
   "websiteUrl": "https://www.ferry.nyc/",
   "region": "New York",
   "center": [
