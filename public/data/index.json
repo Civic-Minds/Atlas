@@ -4976,6 +4976,8 @@
         -70.2
       ],
       "feedUrl": "https://gtfs.gptd.cadavl.com/GPTD/GTFS/GTFS_GPTD.zip",
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
       "lastFeedExpiry": "20261105",
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-10-07",
@@ -8425,6 +8427,8 @@
         -120.99
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2273/mdb-2273-202606030124/mdb-2273-202606030124.zip",
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
       "lastFeedExpiry": "20270630",
       "lastFeedVersion": "20260602",
       "region": "California",
@@ -15770,7 +15774,7 @@
     },
     {
       "slug": "modesto",
-      "name": "Modesto Area Express",
+      "name": "Stanislaus Regional Transit Authority (The S)",
       "websiteUrl": "http://www.stanrta.org",
       "center": [
         37.64,

@@ -13,6 +13,8 @@
     -70.2
   ],
   "feedUrl": "https://gtfs.gptd.cadavl.com/GPTD/GTFS/GTFS_GPTD.zip",
+  "hiddenInProduction": true,
+  "pmtilesPending": true,
   "lastFeedExpiry": "20261105",
   "lastFeedVersion": null,
   "lastRefreshedAt": "2026-10-07",
