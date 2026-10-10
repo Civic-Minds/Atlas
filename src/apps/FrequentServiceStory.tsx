@@ -45,7 +45,7 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
     <div ref={storyScrollRef} className="h-full overflow-x-hidden overflow-y-auto bg-[var(--bg-app)] text-[var(--text-primary)]">
       <article className="mx-auto max-w-6xl px-5 pb-24 pt-28 sm:px-8 sm:pt-32">
         <header className="mx-auto max-w-4xl text-center">
-          <p className="text-[0.7rem] uppercase tracking-[0.24em] font-black text-[var(--accent)]">Atlas research</p>
+          <p className="text-[0.7rem] font-black text-[var(--accent)]">Atlas research</p>
           <h1 className="mt-5 text-4xl sm:text-6xl font-black tracking-[-0.045em] leading-[0.98]">What happens when you miss the bus?</h1>
           <div className="mx-auto mt-6 max-w-2xl space-y-4 text-left text-base leading-8 text-[var(--text-muted)] sm:text-lg">
             <p>Miss one when the next vehicle comes in 10 minutes? Annoying, but manageable. Miss one when the next one takes 30? That can change your whole trip.</p>
@@ -136,7 +136,7 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
             <div className="mt-8 overflow-x-auto">
               <table className="w-full min-w-[34rem] text-left text-sm">
                 <caption className="sr-only">Population within a ten-minute walk of frequent transit by headway threshold</caption>
-                <thead className="border-b border-[var(--border-primary)] text-xs uppercase tracking-[0.14em] text-[var(--text-dim)]">
+                <thead className="border-b border-[var(--border-primary)] text-xs text-[var(--text-dim)]">
                   <tr>
                     <th className="pb-3 pr-4 font-black">Country</th>
                     <th className="pb-3 pr-4 font-black">15 min</th>

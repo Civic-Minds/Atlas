@@ -13,7 +13,7 @@ export { default as CardDirectionRow } from './RouteDirectionRow';
 export const CARD_EYEBROW = 'text-xs font-bold text-[var(--text-muted)] leading-tight mb-0.5';
 export const CARD_TITLE = 'text-sm font-black text-[var(--text-primary)] leading-tight';
 export const CARD_LIST_ROUTE = 'text-[11px] font-bold text-[var(--text-primary)] leading-snug';
-export const CARD_SECTION = 'text-[9px] font-black uppercase tracking-wider text-[var(--text-dim)]';
+export const CARD_SECTION = 'text-[10px] font-black text-[var(--text-dim)]';
 
 const REPORT_REASONS = [
   'Route or agency is missing',

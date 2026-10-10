@@ -175,7 +175,7 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
                   {s.routes.length === 1 ? `Route ${s.routes[0]}` : `Routes ${s.routes.join(', ')}`}
                 </span>
               )}
-              <span className="text-[8px] font-black text-[var(--text-dim)] uppercase tracking-wider truncate max-w-full">
+              <span className="text-[10px] font-black text-[var(--text-dim)] truncate max-w-full">
                 {shortenAgencyName(s.agencyName || '')}
               </span>
             </div>

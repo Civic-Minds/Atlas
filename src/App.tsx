@@ -568,9 +568,11 @@ export default function App() {
           />
           {!query && (
             <span
-              className="absolute left-8 top-1/2 -translate-y-1/2 text-xs font-bold text-[var(--text-dim)] pointer-events-none select-none"
+              className="absolute left-8 right-2 top-1/2 -translate-y-1/2 text-xs font-bold text-[var(--text-dim)] pointer-events-none select-none whitespace-nowrap overflow-hidden text-ellipsis"
             >
-              {searchPlaceholder}
+              {/* The search pill is narrow on phones: a one-word hint stays on one line. */}
+              <span className="sm:hidden">Search</span>
+              <span className="hidden sm:inline">{searchPlaceholder}</span>
             </span>
           )}
           {query !== '' && (
