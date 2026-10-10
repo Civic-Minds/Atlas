@@ -15,6 +15,7 @@ import { parseCsv } from './parseGtfs.js';
 import { effectiveFeedExpiry } from './feedFreshness.js';
 import { type GtfsPreprocess } from './process-core.js';
 import { downloadFeedBuffer, loadSupplementalFeeds, processAgencyFeeds } from './agencyFeeds.js';
+import { resolveFeedUrl } from './feedUrl.js';
 import {
   rawFeedArchiveKey,
   r2CopyCurrentFeedToArchive,
@@ -36,6 +37,8 @@ interface Agency extends FeedAvailabilityEntry {
   center?: [number, number];
   timezone?: string | null;
   feedUrl?: string | null;
+  feedApiKeyEnvVar?: string;
+  feedApiKeyParam?: string;
   supplementalFeedUrls?: string[];
   agencyId?: string;
   routeTypes?: number[];
@@ -174,7 +177,7 @@ async function main(): Promise<void> {
       let candidate = await newestArchiveCandidate(agency.slug);
       if (!candidate && agency.feedUrl) {
         console.log(`\n${agency.slug}: no archived ZIP; trying ${agency.feedUrl}`);
-        const body = await downloadFeedBuffer(agency.feedUrl);
+        const body = await downloadFeedBuffer(resolveFeedUrl(agency.feedUrl, agency.feedApiKeyEnvVar, agency.feedApiKeyParam)!);
         const info = await readFeedInfo(body);
         candidate = { key: '', stem: '', body, info };
       }
