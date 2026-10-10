@@ -16,7 +16,6 @@ import {
   ST_ALBERT_ON_DEMAND_AGENCY,
   LEAMINGTON_LT_GO_ON_DEMAND_AGENCY,
   METRO_MICRO_SERVICE_AREA,
-  WATA_PARATRANSIT_SERVICE_AREA,
   UTA_ON_DEMAND_SERVICE_AREA,
 } from '../onDemandServiceAreas';
 import { HSR_MY_RIDE_STOP_FEATURES } from '../hsrMyRideStops';
@@ -105,19 +104,6 @@ describe('BWG on-demand service area', () => {
     expect(C_TRAN_CURRENT_SERVICE_AREA.sourceUrl).toBe('https://www.c-tran.com/images/Google/TheCurrent_GTFSFlex.zip');
   });
 
-  it('keeps WATA paratransit geometry and hours sourced from its Flex feed', () => {
-    expect(WATA_PARATRANSIT_SERVICE_AREA.features).toHaveLength(1);
-    expect(WATA_PARATRANSIT_SERVICE_AREA.sourceUrl).toBe(
-      'https://data.trilliumtransit.com/gtfs/williamsburg-va-us/williamsburg-va-us--flex-v2.zip',
-    );
-    expect(WATA_PARATRANSIT_SERVICE_AREA.serviceName).toBe('Paratransit');
-    expect(WATA_PARATRANSIT_SERVICE_AREA.serviceHours).toBe(
-      'Weekdays: 6:00 a.m.–9:00 p.m.; Saturday: 6:00 a.m.–9:00 p.m.; Sunday: 8:00 a.m.–6:00 p.m.',
-    );
-    expect(isOnDemandActive(WATA_PARATRANSIT_SERVICE_AREA.availability, 'Sunday', 'amPeak')).toBe(true);
-    expect(isOnDemandActive(WATA_PARATRANSIT_SERVICE_AREA.availability, 'Sunday', 'overnight')).toBe(false);
-    expect(WATA_PARATRANSIT_SERVICE_AREA.features[0].geometry.type).toBe('Polygon');
-  });
 
 });
 
@@ -277,5 +263,16 @@ describe('Hamilton pickup methods from hamilton.ca', () => {
 describe('on-demand data hygiene', () => {
   it('never draws placeholder zones', () => {
     expect(METRO_MICRO_SERVICE_AREA.features.some(zone => /placeholder/i.test(String((zone.properties as { areaName?: string } | null)?.areaName)))).toBe(false);
+  });
+});
+
+describe('paratransit stays off the on-demand map', () => {
+  it('attaches no eligibility-only paratransit service', async () => {
+    const services = await import('../onDemandServiceAreas');
+    const names = Object.values(services).flatMap(value => {
+      const service = (value as { onDemandServiceArea?: { serviceName?: string }; serviceName?: string });
+      return [service?.serviceName, service?.onDemandServiceArea?.serviceName];
+    });
+    expect(names.some(name => typeof name === 'string' && /paratransit/i.test(name))).toBe(false);
   });
 });
