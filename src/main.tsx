@@ -11,13 +11,14 @@ import { inject } from '@vercel/analytics';
 import { injectSpeedInsights } from '@vercel/speed-insights';
 import AnalyticsConsent from './components/AnalyticsConsent';
 import { ColorVisionProvider } from './context/ColorVisionContext';
+import { isInternalTestSession } from './lib/internalTest';
 
 const DiagnosticsUnevenPage = React.lazy(() => import('./DiagnosticsUnevenPage'));
 const DiagnosticsPerformancePage = React.lazy(() => import('./DiagnosticsPerformancePage'));
 
 // Collect page views only from deployed builds; local development should not
 // pollute the production and beta analytics data.
-if (import.meta.env.PROD) {
+if (import.meta.env.PROD && !isInternalTestSession()) {
   inject();
   injectSpeedInsights();
 }

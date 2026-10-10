@@ -1,3 +1,5 @@
+// Run on a deployed hostname; jsdom defaults to localhost, which analytics skips.
+// @vitest-environment-options {"url": "https://transitatlas.fyi/"}
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('analytics startup queue', () => {
@@ -54,6 +56,14 @@ describe('analytics startup queue', () => {
     initAnalytics();
 
     expect(gtag).not.toHaveBeenCalled();
+    expect(document.head.querySelector('script[src*="googletagmanager"]')).toBeNull();
+  });
+
+  it('does not initialize for an internal test session', async () => {
+    window.history.replaceState({}, '', '/?atlas_internal=1');
+    const { initAnalytics } = await import('../analytics');
+    initAnalytics();
+
     expect(document.head.querySelector('script[src*="googletagmanager"]')).toBeNull();
   });
 });
