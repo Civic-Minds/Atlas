@@ -14,7 +14,7 @@
     -122.2
   ],
   "feedUrl": "https://gtfs-static.translink.ca/gtfs/google_transit.zip",
-  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-696/mdb-696-202608080041/mdb-696-202608080041.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-696/latest.zip",
   "lastFeedExpiry": "20270103",
   "lastFeedVersion": "26SEP_20261002",
   "gtfsFares": true,

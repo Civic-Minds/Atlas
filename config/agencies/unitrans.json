@@ -14,7 +14,7 @@
     -121.59
   ],
   "feedUrl": "https://unitrans.ucdavis.edu/media/gtfs/Unitrans_GTFS.zip",
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-unitrans-gtfs-82.zip?alt=media",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-82/latest.zip",
   "lastFeedExpiry": "20261213",
   "lastFeedVersion": "Fall2026_V5",
   "lastRefreshedAt": "2026-10-07",

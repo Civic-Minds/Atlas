@@ -7,7 +7,7 @@
     -93.3
   ],
   "feedUrl": "http://srv.mvta.com/InfoPoint/GTFS-Zip.ashx",
-  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-206/mdb-206-202607280034/mdb-206-202607280034.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-206/latest.zip",
   "lastFeedExpiry": "20261101",
   "lastFeedVersion": "20260909",
   "region": "Minnesota",

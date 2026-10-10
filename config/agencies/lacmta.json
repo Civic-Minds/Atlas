@@ -6,8 +6,8 @@
     34.05,
     -118.24
   ],
-  "feedUrl": "https://files.mobilitydatabase.org/mdb-29/mdb-29-202609090113/mdb-29-202609090113.zip",
-  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-29/mdb-29-202609090113/mdb-29-202609090113.zip",
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-29/latest.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-29/latest.zip",
   "lastFeedExpiry": "20261212",
   "lastFeedVersion": "",
   "region": "California",

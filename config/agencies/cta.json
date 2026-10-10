@@ -7,7 +7,7 @@
     -87.6298
   ],
   "feedUrl": "https://www.transitchicago.com/downloads/sch_data/google_transit.zip",
-  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-389/mdb-389-202608070138/mdb-389-202608070138.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-389/latest.zip",
   "lastFeedExpiry": "20261130",
   "lastFeedVersion": null,
   "region": "Illinois",

@@ -13,7 +13,7 @@
     -96.5
   ],
   "feedUrl": "https://ridematbus.com/gtfs",
-  "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-80003/ntd-80003-202608100019/ntd-80003-202608100019.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-80003/latest.zip",
   "region": "North Dakota",
   "lastFeedExpiry": "",
   "lastFeedVersion": "9/7/2026 Schedule",

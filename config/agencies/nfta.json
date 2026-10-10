@@ -19,7 +19,7 @@
   "supplementalFeedUrls": [
     "https://metro.nfta.com/__googletransit/rail/google_transit.zip"
   ],
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-niagara-frontier-transportation-authority-nfta-gtfs-465.zip?alt=media",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-401/latest.zip",
   "lastRefreshedAt": "2026-10-07",
   "cities": [
     "Buffalo, New York",

@@ -13,8 +13,8 @@
     44.9,
     -63.27
   ],
-  "feedUrl": "https://files.mobilitydatabase.org/mdb-734/mdb-734-202608240120/mdb-734-202608240120.zip",
-  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-734/mdb-734-202608240120/mdb-734-202608240120.zip",
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-734/latest.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-734/latest.zip",
   "lastFeedExpiry": "20261129",
   "lastFeedVersion": "2026_08_August_20260806",
   "lastRefreshedAt": "2026-09-17",

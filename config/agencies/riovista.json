@@ -13,7 +13,7 @@
     -121.61
   ],
   "feedUrl": "http://data.trilliumtransit.com/gtfs/riovista-ca-us/riovista-ca-us.zip",
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-rio-vista-delta-breeze-gtfs-81.zip?alt=media",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-81/latest.zip",
   "lastFeedExpiry": "20250131",
   "lastFeedVersion": "UTC: 23-Feb-2024 22:27",
   "lastRefreshedAt": "20260811",

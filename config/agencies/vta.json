@@ -14,7 +14,7 @@
     -121.55
   ],
   "feedUrl": "https://gtfs.vta.org/gtfs_vta.zip",
-  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-57/mdb-57-202607160107/mdb-57-202607160107.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-57/latest.zip",
   "lastFeedExpiry": "20261025",
   "lastFeedVersion": "2026-08-27_10:32",
   "lastRefreshedAt": "2026-09-07",

@@ -13,7 +13,7 @@
     48.5,
     -122.3
   ],
-  "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-washington-island-transit-gtfs-280.zip?alt=media",
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-280/latest.zip",
   "lastFeedExpiry": "20261001",
   "lastFeedVersion": "UTC: 06-May-2026 16:22",
   "lastRefreshedAt": "2026-08-07",

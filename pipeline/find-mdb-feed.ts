@@ -1,8 +1,8 @@
 #!/usr/bin/env npx tsx
 /**
  * find-mdb-feed.ts — search Mobility Database for a GTFS feed by name/city/provider.
- * Prints the best current hosted URL (for feedUrl) + a suggested mdbFeedUrl (legacy GCS if available)
- * and a ready-to-paste snippet for public/data/index.json (artifact URLs are derived).
+ * Prints the stable latest.zip URL for each match (never a dated snapshot, which
+ * stops picking up new schedules, #629) and a ready-to-paste config snippet.
  *
  * Usage:
  *   npx tsx pipeline/find-mdb-feed.ts "Philadelphia" septa "39.95,-75.16"
@@ -24,6 +24,11 @@ interface MdbFeed {
   feed_name?: string;
   locations?: { country_code?: string; subdivision_name?: string; municipality?: string }[];
   latest_dataset?: { hosted_url?: string; downloaded_at?: string };
+}
+
+/** Stable URL that always serves the newest dataset for an MDB feed id. */
+function stableLatestUrl(feed: MdbFeed): string {
+  return `https://files.mobilitydatabase.org/${feed.id}/latest.zip`;
 }
 
 async function getMdbToken(): Promise<string> {
@@ -67,17 +72,6 @@ async function searchFeeds(token: string, query: string): Promise<MdbFeed[]> {
   return all;
 }
 
-function toMdbLatestStyle(hosted: string | undefined): string | null {
-  if (!hosted) return null;
-  // Try to map files.mobility.../mdb-XXX/... or similar to legacy GCS if pattern matches numeric id at end
-  const m = hosted.match(/mdb-(\d+)[^/]*\.zip/);
-  if (m) {
-    // We don't have a perfect mapping; the audit script + GCS listing is the source of truth for legacy names.
-    // For now return null so caller can fall back.
-  }
-  return null;
-}
-
 async function main() {
   const searchTerm = process.argv[2];
   const slug = process.argv[3];
@@ -102,17 +96,16 @@ async function main() {
 
   for (const m of matches.slice(0, 5)) {
     const hosted = m.latest_dataset?.hosted_url;
-    const legacy = toMdbLatestStyle(hosted); // placeholder
     console.log(`Provider: ${m.provider}`);
     console.log(`  Feed name: ${m.feed_name || '(none)'}`);
     console.log(`  Locations: ${(m.locations || []).map(l => [l.municipality, l.subdivision_name].filter(Boolean).join(', ')).join(' | ')}`);
-    console.log(`  Current hosted (MDB): ${hosted || '(none)'}`);
-    console.log(`  Suggested feedUrl (use this): ${hosted || 'https://storage.googleapis.com/storage/v1/b/mdb-latest/o/REPLACE-WITH-ID.zip?alt=media'}`);
+    console.log(`  Current dataset (MDB): ${hosted || '(none)'}`);
+    console.log(`  Suggested feedUrl (use this): ${hosted ? stableLatestUrl(m) : '(no hosted dataset)'}`);
     console.log('');
   }
 
   const best = matches[0];
-  const bestHosted = best.latest_dataset?.hosted_url || '';
+  const bestHosted = best.latest_dataset?.hosted_url ? stableLatestUrl(best) : '';
 
   console.log('--- Suggested index.json snippet (edit bbox/region as needed) ---');
   console.log(JSON.stringify({
@@ -122,7 +115,6 @@ async function main() {
     center: center.split(',').map(Number),
     bbox: [0,0,0,0], // compute after first process or approximate
     feedUrl: bestHosted || 'TODO-mdb-latest',
-    mdbFeedUrl: bestHosted || 'TODO',
     lastFeedExpiry: null,
     lastFeedVersion: null
   }, null, 2));

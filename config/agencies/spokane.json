@@ -14,7 +14,7 @@
     -117.08
   ],
   "feedUrl": "https://www.spokanetransit.com/gtfs",
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-washington-spokane-transit-authority-sta-gtfs-290.zip?alt=media",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-290/latest.zip",
   "lastFeedExpiry": "20270116",
   "lastFeedVersion": "SEPT 2026v3_20260914",
   "lastRefreshedAt": "2026-10-03",

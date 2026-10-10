@@ -13,7 +13,7 @@
     -121.89
   ],
   "feedUrl": "https://api.actransit.org/transit/gtfs/download",
-  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2455/mdb-2455-202608100019/mdb-2455-202608100019.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2455/latest.zip",
   "lastFeedExpiry": "20270403",
   "lastFeedVersion": "S1000256",
   "lastRefreshedAt": "2026-08-10",

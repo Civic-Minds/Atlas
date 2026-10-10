@@ -14,7 +14,7 @@
     -123.23
   ],
   "feedUrl": "http://www.corvallistransit.com/rtt/public/resource/gtfs.zip",
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-oregon-city-of-corvallis-gtfs-2283.zip?alt=media",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2283/latest.zip",
   "lastFeedExpiry": "20271231",
   "lastFeedVersion": "20260921",
   "lastRefreshedAt": "2026-10-03",

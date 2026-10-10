@@ -10,7 +10,7 @@
   "feedUrl": "http://scheduledata.rgrta.com/google_transit.zip",
   "lastFeedExpiry": "20270103",
   "lastFeedVersion": "JunSept26_Merged",
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-rochester-genesee-regional-transportation-authority-rgrta-gtfs-533.zip?alt=media",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-533/latest.zip",
   "lastRefreshedAt": "2026-09-07",
   "cities": [
     "Rochester, New York",

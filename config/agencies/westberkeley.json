@@ -14,7 +14,7 @@
     -122.27
   ],
   "feedUrl": "https://gtfs.calitp.org/production/WestBerkeleyShuttleGTFS.zip",
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-west-berkeley-shuttle-gtfs-2238.zip?alt=media",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2238/latest.zip",
   "lastFeedExpiry": "20211231",
   "lastFeedVersion": null,
   "lastRefreshedAt": "20260811",

@@ -14,7 +14,7 @@
     -122.32
   ],
   "feedUrl": "https://gtfs.remix.com/trinity_county_ca.zip",
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-trinity-transit-gtfs-2709.zip?alt=media",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2709/latest.zip",
   "lastFeedExpiry": "20261231",
   "lastFeedVersion": "Updated: Aug 20, 2026, 5:19 PM",
   "lastRefreshedAt": "2026-08-27",

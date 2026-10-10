@@ -14,7 +14,7 @@
     -121.57
   ],
   "feedUrl": "http://data.trilliumtransit.com/gtfs/caltrain-ca-us/caltrain-ca-us.zip",
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-caltrain-gtfs-54.zip?alt=media",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-54/latest.zip",
   "lastFeedExpiry": "20270131",
   "lastFeedVersion": "UTC: 10-Jun-2026 22:25",
   "lastRefreshedAt": "2026-08-13",

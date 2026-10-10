@@ -10,7 +10,7 @@
   "feedUrl": "https://www.centro.org/CentroGTFS/CentroGTFS.zip",
   "lastFeedExpiry": "20270228",
   "lastFeedVersion": null,
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-centro-gtfs-534.zip?alt=media",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-534/latest.zip",
   "lastRefreshedAt": "2026-08-27",
   "cities": [
     "Syracuse, New York",

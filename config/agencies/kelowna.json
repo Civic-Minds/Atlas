@@ -14,7 +14,7 @@
   "cities": [
     "Kelowna, British Columbia"
   ],
-  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2555/mdb-2555-202608100117/mdb-2555-202608100117.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2555/latest.zip",
   "lastFeedCheckAt": "20261007",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
