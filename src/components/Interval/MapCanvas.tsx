@@ -295,6 +295,8 @@ interface MapCanvasProps {
   selectedModes?: Set<number>;
   selectedAgencies?: Set<string>;
   initialMapCenter?: { lat: number; lon: number; zoom: number };
+  /** On-demand agency named in the opening URL (`?ondemand=`); frames its zones when the URL has no lat/lon. */
+  initialOnDemandSlug?: string | null;
   onTileLoadingChange?: (loading: boolean) => void;
   onBasemapLoadingChange?: (loading: boolean) => void;
   setQuery?: (q: string) => void;
@@ -361,6 +363,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   selectedModes = new Set(),
   selectedAgencies,
   initialMapCenter,
+  initialOnDemandSlug = null,
   onTileLoadingChange,
   onBasemapLoadingChange,
   onClearSelection,
@@ -1828,6 +1831,27 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       });
     }
   }, [selectedAgencySlug, agencies, mapLoaded]);
+
+  // A shared `?ondemand=<slug>` link without lat/lon opens on that service's zones and stops,
+  // not wherever the viewer's saved view last was.
+  const framedInitialOnDemand = useRef(false);
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapLoaded || framedInitialOnDemand.current || !initialOnDemandSlug || initialMapCenter) return;
+    const service = agencies.find(a => a.slug === initialOnDemandSlug)?.onDemandServiceArea;
+    if (!service) return;
+    framedInitialOnDemand.current = true;
+    const points: number[][] = [
+      ...service.features.flatMap(feature => feature.geometry.type === 'Polygon'
+        ? feature.geometry.coordinates.flat()
+        : feature.geometry.coordinates.flat(2)),
+      ...(service.stopFeatures ?? []).map(stop => stop.geometry.coordinates),
+    ];
+    if (points.length === 0) return;
+    const lons = points.map(point => point[0]);
+    const lats = points.map(point => point[1]);
+    map.fitBounds([[Math.min(...lons), Math.min(...lats)], [Math.max(...lons), Math.max(...lats)]], { padding: 64, maxZoom: 13, duration: 0 });
+  }, [initialOnDemandSlug, initialMapCenter, agencies, mapLoaded]);
 
   // Handle Reset View — guard with resetViewKey === 0 to skip initial mount trigger
   useEffect(() => {
