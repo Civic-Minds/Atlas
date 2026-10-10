@@ -21,7 +21,8 @@ import { useColorVision } from '../../context/ColorVisionContext';
 import { tileEffectiveHeadwayExpr, tileRouteKeyExpr } from '../../../shared/tileFilterExprs';
 import { routeFilterHeadway } from '../../../shared/routeHeadwayFilter';
 import { syncUrlParams } from '../../utils/syncUrlParams';
-import { buildFocusedRoutePaint, buildSelectedRouteLineOpacity } from '../../utils/routeFocus';
+import { buildFocusCase, buildFocusedRoutePaint, buildSelectedRouteLineOpacity, FOCUS_DIM_OPACITY } from '../../utils/routeFocus';
+import { isOnDemandStopFocused, isOnDemandZoneFocused, ON_DEMAND_FOCUSED_PROP, type OnDemandFocusTarget } from './map/onDemandFocus';
 import { dedupeRouteKeysByDisplay, splitRouteKey } from '../../utils/routeKey';
 import { computeFrequencySegmentOverlay, buildPartialMatchFilterExpression, broadenFilterForPartialMatches } from '../../utils/frequencySegments';
 import { buildSharedHoverSegments } from '../../utils/sharedHoverSegments';
@@ -36,13 +37,17 @@ import { effectiveMode, ON_DEMAND_MODE } from '../../../shared/modes';
 import type { NightServiceFrequency } from '../../../shared/nightService';
 import { nightServiceKey } from '../../../shared/nightService';
 import { markAtlasLatest } from '../../lib/performance';
-import { isOnDemandActive } from '../../../shared/onDemandAvailability';
+import { isOnDemandStopShown, isOnDemandZoneShown, onDemandHoursConfirmed, onDemandStopZoneNames } from '../../../shared/onDemandAvailability';
 import { buildRouteSortKeyExpression } from '../../utils/routeSort';
 import { fitTargetForPoints, routeFitTarget } from '../../utils/routeFitTarget';
 import { lineCoordinates } from '../../../shared/routeGeometry';
 
 const CORRIDOR_BAND_COLOR = '#64748b';
 const ON_DEMAND_AREA_COLOR = '#64748b';
+// Selected on-demand features keep their normal paint; the rest fade like routes behind a selection.
+const ON_DEMAND_FOCUS_MATCH = ['!=', ['get', ON_DEMAND_FOCUSED_PROP], false];
+// Zone fills are already faint (0.12), so fade them proportionally instead of to the shared 0.18.
+const ON_DEMAND_FADED_FILL_OPACITY = 0.03;
 const FREQUENT_15_COLOR = HEADWAY_TIERS.find(tier => tier.max === 15)?.color ?? '#3da44d';
 const FREQUENT_30_COLOR = HEADWAY_TIERS.find(tier => tier.max === 30)?.color ?? '#e07b2a';
 // Keep the Live/Deck.gl graph out of public builds entirely when Live is disabled.
@@ -50,17 +55,8 @@ const LiveVehiclesLayer = import.meta.env.VITE_LIVE_ENABLED === 'true'
   ? React.lazy(() => import('./map/LiveVehiclesLayer'))
   : null;
 
-type OnDemandService = NonNullable<Agency['onDemandServiceArea']>;
-
-function isOnDemandFeatureActive(
-  service: OnDemandService,
-  feature: GeoJSON.Feature,
-  day: DayType,
-  period: TimePeriod,
-): boolean {
-  const zoneId = (feature.properties as { areaName?: string } | undefined)?.areaName;
-  const zone = zoneId ? service.zoneMetadata?.[zoneId] : undefined;
-  return isOnDemandActive(zone ? zone.availability : service.availability, day, period);
+function featureAreaName(feature: GeoJSON.Feature): string | undefined {
+  return (feature.properties as { areaName?: string } | undefined)?.areaName;
 }
 
 /** MapLibre's evaluated colour ({ r, g, b, a } in 0–1) as a hex string. */
@@ -294,6 +290,10 @@ interface MapCanvasProps {
   setSelectedAgencySlug?: (slug: string | null) => void;
   onOnDemandStopClick?: (slug: string) => void;
   onOnDemandZoneClick?: (selection: { slug: string; zoneId: string }) => void;
+  /** Selected on-demand service: its zone(s) and stops stay full strength, everything else fades. */
+  selectedOnDemandSlug?: string | null;
+  /** Selected zone within selectedOnDemandSlug; null focuses the whole service. */
+  selectedOnDemandZoneId?: string | null;
   fareView?: boolean;
   nightServiceView?: boolean;
   nightServiceFrequency?: NightServiceFrequency;
@@ -304,6 +304,8 @@ interface MapCanvasProps {
   selectedModes?: Set<number>;
   selectedAgencies?: Set<string>;
   initialMapCenter?: { lat: number; lon: number; zoom: number };
+  /** On-demand agency named in the opening URL (`?ondemand=`); frames its zones when the URL has no lat/lon. */
+  initialOnDemandSlug?: string | null;
   onTileLoadingChange?: (loading: boolean) => void;
   onBasemapLoadingChange?: (loading: boolean) => void;
   setQuery?: (q: string) => void;
@@ -360,6 +362,8 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   setSelectedAgencySlug,
   onOnDemandStopClick,
   onOnDemandZoneClick,
+  selectedOnDemandSlug = null,
+  selectedOnDemandZoneId = null,
   fareView = false,
   nightServiceView = false,
   nightServiceFrequency = 60,
@@ -370,6 +374,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   selectedModes = new Set(),
   selectedAgencies,
   initialMapCenter,
+  initialOnDemandSlug = null,
   onTileLoadingChange,
   onBasemapLoadingChange,
   onClearSelection,
@@ -530,39 +535,62 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
 
   const [mapContextAgencies, setMapContextAgencies] = useState<MapContextAgency[]>([]);
 
-  const onDemandAgencies = useMemo(() => agencies.filter(agency => {
-    if (!(selectedAgencies?.has(agency.slug) ?? true)) return false;
-    const service = agency.onDemandServiceArea;
-    if (!service) return false;
-    return service.features.length === 0
-      ? isOnDemandActive(service.availability, day, period)
-      : service.features.some(feature => isOnDemandFeatureActive(service, feature, day, period));
-  }), [agencies, day, period, selectedAgencies]);
+  // Each zone and stop is filtered on its own hours (zones/stops that aren't
+  // running are hidden, like fixed routes); ones with no hours on file stay
+  // visible but are drawn muted so they never read as confirmed service.
+  const onDemandAgencies = useMemo(() => (
+    selectedModes.size === 0 || selectedModes.has(ON_DEMAND_MODE)
+      ? agencies.filter(agency => agency.onDemandServiceArea && (selectedAgencies?.has(agency.slug) ?? true))
+      : []
+  ), [agencies, selectedAgencies, selectedModes]);
+  const onDemandFocus = useMemo<OnDemandFocusTarget | null>(() => (
+    selectedOnDemandSlug ? { slug: selectedOnDemandSlug, zoneId: selectedOnDemandZoneId ?? null } : null
+  ), [selectedOnDemandSlug, selectedOnDemandZoneId]);
   const onDemandServiceAreaData = useMemo<GeoJSON.FeatureCollection<GeoJSON.Polygon | GeoJSON.MultiPolygon>>(() => ({
     type: 'FeatureCollection',
-    features: (selectedModes.size === 0 || selectedModes.has(ON_DEMAND_MODE) ? onDemandAgencies : [])
-      .flatMap(agency => (agency.onDemandServiceArea?.features ?? []).filter(feature => isOnDemandFeatureActive(agency.onDemandServiceArea!, feature, day, period)).map(feature => ({
-        ...feature,
-        properties: {
-          ...(feature.properties ?? {}),
-          agencySlug: agency.slug,
-          agencyName: agency.name,
-          onDemandZoneId: (feature.properties as { areaName?: string } | undefined)?.areaName ?? feature.id,
-        },
-      }))),
-  }), [day, onDemandAgencies, period, selectedModes]);
+    features: onDemandAgencies.flatMap(agency => {
+      const service = agency.onDemandServiceArea!;
+      return service.features
+        .filter(feature => isOnDemandZoneShown(service, featureAreaName(feature), day, period))
+        .map(feature => {
+          const areaName = featureAreaName(feature);
+          return {
+            ...feature,
+            properties: {
+              ...(feature.properties ?? {}),
+              agencySlug: agency.slug,
+              agencyName: agency.name,
+              onDemandZoneId: areaName ?? feature.id,
+              hoursConfirmed: onDemandHoursConfirmed(service, areaName ? [areaName] : [], day),
+              ...(onDemandFocus ? { [ON_DEMAND_FOCUSED_PROP]: isOnDemandZoneFocused(onDemandFocus, agency.slug, areaName ?? feature.id) } : {}),
+            },
+          };
+        });
+    }),
+  }), [day, onDemandAgencies, onDemandFocus, period]);
   const onDemandStopData = useMemo<GeoJSON.FeatureCollection<GeoJSON.Point>>(() => ({
     type: 'FeatureCollection',
-    features: (selectedModes.size === 0 || selectedModes.has(ON_DEMAND_MODE) ? onDemandAgencies : [])
-      .flatMap(agency => (agency.onDemandServiceArea?.stopFeatures ?? []).map(feature => ({
-        ...feature,
-        properties: {
-          ...(feature.properties ?? {}),
-          agencySlug: agency.slug,
-          agencyName: agency.name,
-        },
-      }))),
-  }), [onDemandAgencies, selectedModes]);
+    features: onDemandAgencies.flatMap(agency => {
+      const service = agency.onDemandServiceArea!;
+      return (service.stopFeatures ?? [])
+        .filter(feature => isOnDemandStopShown(service, feature.properties, day, period))
+        .map(feature => {
+          const zones = onDemandStopZoneNames(service, feature.properties);
+          return {
+            ...feature,
+            properties: {
+              ...(feature.properties ?? {}),
+              agencySlug: agency.slug,
+              agencyName: agency.name,
+              // A stop inside exactly one zone opens that zone's card when clicked.
+              ...(zones.length === 1 ? { onDemandZoneId: zones[0] } : {}),
+              hoursConfirmed: onDemandHoursConfirmed(service, zones, day),
+              ...(onDemandFocus ? { [ON_DEMAND_FOCUSED_PROP]: isOnDemandStopFocused(onDemandFocus, agency.slug, zones) } : {}),
+            },
+          };
+        });
+    }),
+  }), [day, onDemandAgencies, onDemandFocus, period]);
 
   const updateMapContext = useCallback(() => {
     const map = mapRef.current;
@@ -863,7 +891,9 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         setDisambiguationRoutesRef.current(null);
         setQueryRef.current?.('');
         if (serviceAreaHits[0]?.layer?.id === 'on-demand-stop-points') {
-          onOnDemandStopClickRef.current?.(serviceAreaSlug);
+          const stopZoneId = serviceAreaHits[0]?.properties?.onDemandZoneId as string | undefined;
+          if (stopZoneId) onOnDemandZoneClickRef.current?.({ slug: serviceAreaSlug, zoneId: stopZoneId });
+          else onOnDemandStopClickRef.current?.(serviceAreaSlug);
         } else {
           const zoneId = serviceAreaHits[0]?.properties?.onDemandZoneId as string | undefined;
           if (zoneId) onOnDemandZoneClickRef.current?.({ slug: serviceAreaSlug, zoneId });
@@ -1135,7 +1165,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         id: 'on-demand-service-area-fill',
         type: 'fill',
         source: 'on-demand-service-areas',
-        paint: { 'fill-color': ON_DEMAND_AREA_COLOR, 'fill-opacity': 0.12 },
+        paint: { 'fill-color': ON_DEMAND_AREA_COLOR, 'fill-opacity': buildFocusCase(ON_DEMAND_FOCUS_MATCH, ['case', ['==', ['get', 'hoursConfirmed'], false], 0.05, 0.12], ON_DEMAND_FADED_FILL_OPACITY) as any },
         layout: { visibility: 'none' },
       });
       map.addLayer({
@@ -1145,7 +1175,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         paint: {
           'line-color': ON_DEMAND_AREA_COLOR,
           'line-width': 2,
-          'line-opacity': 0.95,
+          'line-opacity': buildFocusCase(ON_DEMAND_FOCUS_MATCH, ['case', ['==', ['get', 'hoursConfirmed'], false], 0.4, 0.95], FOCUS_DIM_OPACITY) as any,
           'line-dasharray': [2, 1.5],
         },
         layout: { visibility: 'none' },
@@ -1164,6 +1194,8 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
           'circle-radius': ['interpolate', ['linear'], ['zoom'], 9, 2, 12, 3.5, 15, 5],
           'circle-stroke-color': '#ffffff',
           'circle-stroke-width': ['interpolate', ['linear'], ['zoom'], 9, 0.75, 12, 1.25, 15, 1.5],
+          'circle-opacity': buildFocusCase(ON_DEMAND_FOCUS_MATCH, ['case', ['==', ['get', 'hoursConfirmed'], false], 0.4, 1], FOCUS_DIM_OPACITY) as any,
+          'circle-stroke-opacity': buildFocusCase(ON_DEMAND_FOCUS_MATCH, ['case', ['==', ['get', 'hoursConfirmed'], false], 0.4, 1], FOCUS_DIM_OPACITY) as any,
         },
         layout: { visibility: 'none' },
       });
@@ -1816,6 +1848,27 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     }
   }, [selectedAgencySlug, agencies, mapLoaded]);
 
+  // A shared `?ondemand=<slug>` link without lat/lon opens on that service's zones and stops,
+  // not wherever the viewer's saved view last was.
+  const framedInitialOnDemand = useRef(false);
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapLoaded || framedInitialOnDemand.current || !initialOnDemandSlug || initialMapCenter) return;
+    const service = agencies.find(a => a.slug === initialOnDemandSlug)?.onDemandServiceArea;
+    if (!service) return;
+    framedInitialOnDemand.current = true;
+    const points: number[][] = [
+      ...service.features.flatMap(feature => feature.geometry.type === 'Polygon'
+        ? feature.geometry.coordinates.flat()
+        : feature.geometry.coordinates.flat(2)),
+      ...(service.stopFeatures ?? []).map(stop => stop.geometry.coordinates),
+    ];
+    if (points.length === 0) return;
+    const lons = points.map(point => point[0]);
+    const lats = points.map(point => point[1]);
+    map.fitBounds([[Math.min(...lons), Math.min(...lats)], [Math.max(...lons), Math.max(...lats)]], { padding: 64, maxZoom: 13, duration: 0 });
+  }, [initialOnDemandSlug, initialMapCenter, agencies, mapLoaded]);
+
   // Handle Reset View — guard with resetViewKey === 0 to skip initial mount trigger
   useEffect(() => {
     const map = mapRef.current;
@@ -2139,9 +2192,12 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
             17, 3.5,
           ]);
         }
-      } else if (hoveredSearchRoute) {
-        // Hovering a search result: spotlight that route, fade the rest
-        const hoverMatch: any = routeKeyMatchExpression(hoveredSearchRoute);
+      } else if (hoveredSearchRoute || onDemandFocus) {
+        // Hovering a search result spotlights that route and fades the rest. A selected
+        // on-demand zone/service matches no fixed route, so the same fade dims every route.
+        const hoverMatch: any = hoveredSearchRoute
+          ? routeKeyMatchExpression(hoveredSearchRoute)
+          : ['==', ['get', 'routeId'], ''];
         setRouteLayerPaint(map, 'line-opacity', buildFocusedRouteLineOpacityExpression(hoverMatch, headwayExpr, colorMode) as any);
         setRouteLayerPaint(map, 'line-width', [
           'interpolate', ['linear'], ['zoom'],
@@ -2194,6 +2250,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       const isDefaultRouteFocusState = !historyOverlay
         && !selectedRoute
         && !hoveredSearchRoute
+        && !onDemandFocus
         && !nightServiceView
         && !frequentServiceView
         && !(selectedStop && routesForStop?.siblingIdsByAgency);
@@ -2243,14 +2300,15 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       }
     }
 
-  }, [mapLoaded, q, selectedRoute, hoveredSearchRoute, hoveredBranch, selectedStop, routesForStop, maxHeadway, zoom, showRouteLayers, liveRoutesOnly, filterToAgencies, agencies, tileFilter, fareView, nightServiceView, frequentServiceView, historyOverlay, layers, frequencySegmentOverlay, colorMode]);
+  }, [mapLoaded, q, selectedRoute, hoveredSearchRoute, hoveredBranch, selectedStop, routesForStop, maxHeadway, zoom, showRouteLayers, liveRoutesOnly, filterToAgencies, agencies, tileFilter, fareView, nightServiceView, frequentServiceView, historyOverlay, layers, frequencySegmentOverlay, colorMode, onDemandFocus]);
 
   // Force-reset route paint when selection clears (guards against stuck highlight state).
   useEffect(() => {
     const map = mapRef.current;
-    if (!map || !mapLoaded || selectedRoute || historyOverlay) return;
+    // A selected on-demand zone keeps its own route fade from the main styling effect.
+    if (!map || !mapLoaded || selectedRoute || historyOverlay || onDemandFocus) return;
     resetRoutesLayerDefaultPaint(map);
-  }, [selectedRoute, mapLoaded, historyOverlay]);
+  }, [selectedRoute, mapLoaded, historyOverlay, onDemandFocus]);
 
   // Overlay layers (corridors, history, live vehicles) — extracted to hooks
   useCorridorLayer(mapRef, mapLoaded, showCorridorBand || showCorridors, selectedCorridorFamily);

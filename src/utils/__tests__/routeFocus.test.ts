@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { createPropertyExpression, latest, type StylePropertySpecification } from '@maplibre/maplibre-gl-style-spec';
-import { buildDefaultRouteLineOpacityExpression } from '../colors';
-import { buildSelectedRouteLineOpacity } from '../routeFocus';
+import { buildDefaultRouteLineOpacityExpression, buildFocusedRouteLineOpacityExpression } from '../colors';
+import { buildFocusCase, buildFocusedRoutePaint, buildSelectedRouteLineOpacity, FOCUS_DIM_OPACITY } from '../routeFocus';
 
 const routeMatch = ['==', ['get', 'routeId'], '201'];
 const branchMatch = ['all', routeMatch, ['==', ['get', 'directionId'], 0]];
@@ -52,5 +52,31 @@ describe('selected route context opacity (Calgary 201 overnight)', () => {
     const local = buildSelectedRouteLineOpacity(0.9, [routeMatch, 1]);
     expect(opacity(local, { routeId: 'other' })).toBe(0.9);
     expect(opacity(local, { routeId: '201' })).toBe(1);
+  });
+});
+
+describe('shared selection fade (routes and on-demand zones)', () => {
+  const onDemandMatch = ['!=', ['get', 'onDemandFocused'], false];
+  const normal = ['case', ['==', ['get', 'hoursConfirmed'], false], 0.4, 0.95];
+  const paint = buildFocusCase(onDemandMatch, normal, FOCUS_DIM_OPACITY);
+
+  it('fades on-demand features outside the selection to the route fade value', () => {
+    expect(opacity(paint, { onDemandFocused: false })).toBe(FOCUS_DIM_OPACITY);
+    expect(opacity(paint, { onDemandFocused: true })).toBe(0.95);
+  });
+
+  it('keeps normal styling with no selection, and muted hours stay muted when selected', () => {
+    expect(opacity(paint, {})).toBe(0.95);
+    expect(opacity(paint, { onDemandFocused: true, hoursConfirmed: false })).toBe(0.4);
+  });
+
+  it('uses the same case builder as fixed-route focus', () => {
+    expect(buildFocusedRoutePaint(routeMatch).opacity).toEqual(buildFocusCase(routeMatch, 1, FOCUS_DIM_OPACITY));
+  });
+
+  it('fades every fixed route when an on-demand zone is selected, without revealing zoom-gated ones', () => {
+    const faded = buildFocusedRouteLineOpacityExpression(['==', ['get', 'routeId'], ''], ['get', 'headway']);
+    expect(opacity(faded, { routeId: '201', headway: 10 })).toBe(FOCUS_DIM_OPACITY);
+    expect(opacity(faded, { routeId: '201', headway: 10000 }, 8)).toBe(0);
   });
 });

@@ -661,6 +661,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
         setSelectedAgencySlug={setSelectedAgencySlug}
         onOnDemandStopClick={handleOnDemandStopClick}
         onOnDemandZoneClick={handleOnDemandZoneClick}
+        selectedOnDemandSlug={selectedRoute || selectedStop ? null : selectedOnDemandSlug}
+        selectedOnDemandZoneId={selectedOnDemandZoneId}
         fareView={fareView}
         nightServiceView={nightServiceView}
         nightServiceFrequency={nightServiceFrequency}
@@ -675,6 +677,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
         selectedModes={selectedModes}
         selectedAgencies={selectedAgencies}
         initialMapCenter={initialMapCenter}
+        initialOnDemandSlug={initialMapCenter ? null : searchParams.get('ondemand')?.split('::', 1)[0] ?? null}
         onTileLoadingChange={setIsTilesLoading}
         onBasemapLoadingChange={setIsBasemapLoading}
         setQuery={setQuery}
