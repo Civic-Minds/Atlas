@@ -13,7 +13,8 @@
     45.7,
     -72.9
   ],
-  "feedUrl": "https://exo.quebec/xdata/citvr/google_transit.zip",
+  "feedUrl": "https://exo.quebec/uploads/ressources-telechargeables/a-propos/donnees-ouvertes/citvr/google_transit.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-752/latest.zip",
   "lastFeedExpiry": "20270103",
   "lastFeedVersion": null,
   "gtfsFares": true,

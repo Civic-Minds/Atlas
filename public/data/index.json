@@ -1953,8 +1953,8 @@
         46.5,
         -72
       ],
-      "feedUrl": "https://exo.quebec/xdata/trains/google_transit.zip",
-      "lastFeedExpiry": "20270103",
+      "feedUrl": "https://exo.quebec/uploads/ressources-telechargeables/a-propos/donnees-ouvertes/trains/google_transit.zip",
+      "lastFeedExpiry": null,
       "lastFeedVersion": null,
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-748/latest.zip",
       "gtfsFares": true,
@@ -1996,8 +1996,8 @@
         45.81,
         -73.54
       ],
-      "feedUrl": "https://exo.quebec/xdata/citpi/google_transit.zip",
-      "lastFeedExpiry": "20270103",
+      "feedUrl": "https://exo.quebec/uploads/ressources-telechargeables/a-propos/donnees-ouvertes/citpi/google_transit.zip",
+      "lastFeedExpiry": null,
       "lastFeedVersion": null,
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-743/latest.zip",
       "gtfsFares": true,
@@ -2030,8 +2030,8 @@
         45.75,
         -73.26
       ],
-      "feedUrl": "https://exo.quebec/xdata/citso/google_transit.zip",
-      "lastFeedExpiry": "20270103",
+      "feedUrl": "https://exo.quebec/uploads/ressources-telechargeables/a-propos/donnees-ouvertes/citso/google_transit.zip",
+      "lastFeedExpiry": null,
       "lastFeedVersion": null,
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-742/latest.zip",
       "gtfsFares": true,
@@ -2069,8 +2069,8 @@
         45.81,
         -73
       ],
-      "feedUrl": "https://exo.quebec/xdata/lrrs/google_transit.zip",
-      "lastFeedExpiry": "20270103",
+      "feedUrl": "https://exo.quebec/uploads/ressources-telechargeables/a-propos/donnees-ouvertes/lrrs/google_transit.zip",
+      "lastFeedExpiry": null,
       "lastFeedVersion": null,
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2142/latest.zip",
       "gtfsFares": true,
@@ -2107,8 +2107,8 @@
         46.06,
         -73.4
       ],
-      "feedUrl": "https://exo.quebec/xdata/citla/google_transit.zip",
-      "lastFeedExpiry": "20270103",
+      "feedUrl": "https://exo.quebec/uploads/ressources-telechargeables/a-propos/donnees-ouvertes/citla/google_transit.zip",
+      "lastFeedExpiry": null,
       "lastFeedVersion": null,
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-744/latest.zip",
       "gtfsFares": true,
@@ -2147,8 +2147,8 @@
         46.1,
         -73.15
       ],
-      "feedUrl": "https://exo.quebec/xdata/mrclm/google_transit.zip",
-      "lastFeedExpiry": "20270103",
+      "feedUrl": "https://exo.quebec/uploads/ressources-telechargeables/a-propos/donnees-ouvertes/mrclm/google_transit.zip",
+      "lastFeedExpiry": null,
       "lastFeedVersion": null,
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-754/latest.zip",
       "gtfsFares": true,
@@ -2189,7 +2189,8 @@
         45.7,
         -72.9
       ],
-      "feedUrl": "https://exo.quebec/xdata/citvr/google_transit.zip",
+      "feedUrl": "https://exo.quebec/uploads/ressources-telechargeables/a-propos/donnees-ouvertes/citvr/google_transit.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-752/latest.zip",
       "lastFeedExpiry": "20270103",
       "lastFeedVersion": null,
       "gtfsFares": true,
@@ -4975,6 +4976,8 @@
         -70.2
       ],
       "feedUrl": "https://gtfs.gptd.cadavl.com/GPTD/GTFS/GTFS_GPTD.zip",
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
       "lastFeedExpiry": "20261105",
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-10-07",
@@ -8424,6 +8427,8 @@
         -120.99
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2273/latest.zip",
+      "hiddenInProduction": true,
+      "pmtilesPending": true,
       "lastFeedExpiry": "20270630",
       "lastFeedVersion": "20260602",
       "region": "California",
@@ -11041,6 +11046,33 @@
       }
     },
     {
+      "slug": "mta-bus-company",
+      "name": "MTA Bus Company",
+      "websiteUrl": "https://new.mta.info",
+      "center": [
+        40.7377,
+        -73.8799
+      ],
+      "bbox": [
+        40.55,
+        -74.03,
+        40.95,
+        -73.69
+      ],
+      "feedUrl": "https://rrgtfsfeeds.s3.amazonaws.com/gtfs_busco.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-510/latest.zip",
+      "region": "New York",
+      "staged": true,
+      "cities": [
+        "Jamaica, New York",
+        "Flushing, New York",
+        "Astoria, New York",
+        "The Bronx, New York",
+        "Manhattan, New York"
+      ],
+      "timezone": "America/New_York"
+    },
+    {
       "slug": "lirr",
       "name": "MTA Long Island Rail Road",
       "websiteUrl": "https://new.mta.info/agency/long-island-rail-road",
@@ -13012,6 +13044,10 @@
         -76.61
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-466/latest.zip",
+      "supplementalFeedUrls": [
+        "https://mdotmta-gtfs.s3.amazonaws.com/mdotmta_gtfs_lightrail.zip",
+        "https://mdotmta-gtfs.s3.amazonaws.com/mdotmta_gtfs_metro.zip"
+      ],
       "lastFeedExpiry": "20270206",
       "lastFeedVersion": "20260821",
       "region": "Maryland",
@@ -15034,8 +15070,8 @@
     },
     {
       "slug": "scat",
-      "name": "SCAT (Sarasota County)",
-      "websiteUrl": "https://321transit.com",
+      "name": "Breeze Transit (Sarasota County)",
+      "websiteUrl": "https://www.scgov.net/government/breeze-transit",
       "center": [
         27.34,
         -82.53
@@ -15046,11 +15082,10 @@
         27.7,
         -82.1
       ],
-      "feedUrl": "http://data.trilliumtransit.com/gtfs/spacecoast-fl-us/spacecoast-fl-us.zip",
+      "feedUrl": "https://breezerider.tripsparkhost.com/gtfs/Static/google_transit.zip",
       "hiddenInProduction": true,
-      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-348/latest.zip",
       "region": "Florida",
-      "lastFeedExpiry": "20290629",
+      "lastFeedExpiry": null,
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-08-10",
       "cities": [
@@ -15061,7 +15096,7 @@
       "lastFeedCheckAt": "20261007",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20290629",
+      "expiredFeedCheckExpiry": null,
       "timezone": "America/New_York"
     },
     {
@@ -15248,12 +15283,13 @@
     {
       "slug": "durango-transit",
       "name": "Durango Transit",
-      "websiteUrl": "https://co-durango.civicplus.com/333/Transit",
+      "websiteUrl": "https://durangoco.gov/333/Transit",
       "center": [
         37.27,
         -107.88
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-2290/latest.zip",
+      "feedUrl": "https://www.durangoco.gov/DocumentCenter/View/17688/Durango-Transit-GTFS-Data",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-456/latest.zip",
       "lastFeedExpiry": "20261201",
       "region": "Colorado",
       "lastFeedVersion": "UTC: 21-May-2026 20:09",
@@ -15738,7 +15774,7 @@
     },
     {
       "slug": "modesto",
-      "name": "Modesto Area Express",
+      "name": "Stanislaus Regional Transit Authority (The S)",
       "websiteUrl": "http://www.stanrta.org",
       "center": [
         37.64,
