@@ -1,0 +1,1046 @@
+route_id,service_id,trip_id,trip_headsign,direction_id,shape_id
+506,1,50810441,East - 506 Carlton towards Main Street Station,0,1122891
+506,1,50810440,East - 506 Carlton towards Main Street Station,0,1122891
+506,1,50810540,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810439,East - 506 Carlton towards Main Street Station,0,1122891
+506,1,50810539,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810438,East - 506 Carlton towards Main Street Station,0,1122891
+506,1,50810538,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810437,East - 506 Carlton towards Main Street Station,0,1122891
+506,1,50810486,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810537,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810436,East - 506 Carlton towards Main Street Station,0,1122891
+506,1,50810485,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810487,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810435,East - 506 Carlton towards Main Street Station,0,1122891
+506,1,50810484,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810488,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810434,East - 506 Carlton towards Main Street Station,0,1122891
+506,1,50810483,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810489,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810433,East - 506 Carlton towards Main Street Station,0,1122891
+506,1,50810482,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810490,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810432,East - 506 Carlton towards Main Street Station,0,1122891
+506,1,50810481,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810491,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810431,East - 506 Carlton towards Main Street Station,0,1122891
+506,1,50810480,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810492,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810479,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810493,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810478,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810494,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810477,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810495,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810476,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810496,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810475,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810497,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810498,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810474,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810499,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810473,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810500,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810472,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810501,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810471,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810502,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810430,East - 506 Carlton towards Main Street Station,0,1122891
+506,1,50810503,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810470,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810504,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810469,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810505,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810468,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810506,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810467,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810507,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810508,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810466,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810509,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810465,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810510,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810464,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810511,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810463,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810512,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810462,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810513,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810461,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810514,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810460,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810515,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810459,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810516,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810458,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810517,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810457,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810518,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810456,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810519,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810455,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810520,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810454,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810521,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810453,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810522,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810452,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810429,East - 506 Carlton towards Main Street Station,0,1122891
+506,1,50810523,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810451,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810524,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810450,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810525,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810449,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810526,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810448,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810527,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810447,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810528,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810446,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810529,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810445,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810530,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810444,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810531,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810443,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810532,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810442,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810533,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810618,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810534,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810617,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810535,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810616,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810536,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810615,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810621,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810614,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810622,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810613,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810623,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810612,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810624,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810611,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810625,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810610,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810626,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810609,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810627,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810608,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810628,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810607,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810629,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810698,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810606,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810630,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810631,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810605,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810632,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810604,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810633,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810603,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810697,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810602,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810634,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810635,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810601,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810636,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810600,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810637,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810599,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810638,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810543,East - 506 Carlton towards Main Street Station,0,1122891
+506,1,50810598,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810639,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810640,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810597,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810641,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810596,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810642,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810595,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810643,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810594,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810644,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810645,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810593,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810646,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810592,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810647,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810591,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810648,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810590,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810649,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810650,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810589,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810651,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810588,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810652,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810587,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810653,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810586,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810654,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810655,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810585,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810656,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810584,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810657,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810583,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810582,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810658,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810581,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810659,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810580,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810660,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810579,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810696,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810578,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810577,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810661,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810576,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810662,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810575,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810663,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810574,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810664,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810573,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810665,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810572,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810666,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810571,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810667,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810570,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810668,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810569,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810669,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810542,East - 506 Carlton Short Turn,0,1122893
+506,1,50810541,East - 506 Carlton Short Turn,0,1122893
+506,1,50810568,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810670,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810567,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810671,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810566,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810672,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810565,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810673,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810564,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810674,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810563,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810675,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810562,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810676,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810561,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810677,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810560,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810678,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810559,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810679,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810558,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810680,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810557,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810681,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810556,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810682,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810555,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810683,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810554,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810684,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810553,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810685,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810552,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810686,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810551,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810687,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810550,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810688,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810549,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810689,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810548,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810690,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810547,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810691,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810546,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810692,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810545,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810693,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810544,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810694,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810619,East - 506 Carlton towards Main Street Station,0,1122895
+506,1,50810695,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810620,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,1,50810703,West - 506 Carlton towards High Park,1,1122899
+506,1,50810702,West - 506 Carlton towards High Park,1,1122899
+506,1,50810701,West - 506 Carlton towards High Park,1,1122899
+506,1,50810700,West - 506 Carlton towards High Park,1,1122899
+506,1,50810784,West - 506 Carlton towards High Park,1,1122896
+506,1,50810699,West - 506 Carlton towards High Park,1,1122899
+506,1,50810783,West - 506 Carlton towards High Park,1,1122896
+506,1,50810782,West - 506 Carlton towards High Park,1,1122896
+506,1,50810781,West - 506 Carlton towards High Park,1,1122896
+506,1,50810780,West - 506 Carlton towards High Park,1,1122896
+506,1,50810864,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810779,West - 506 Carlton towards High Park,1,1122896
+506,1,50810865,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810778,West - 506 Carlton towards High Park,1,1122896
+506,1,50810866,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810777,West - 506 Carlton towards High Park,1,1122896
+506,1,50810867,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810776,West - 506 Carlton towards High Park,1,1122896
+506,1,50810785,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810775,West - 506 Carlton towards High Park,1,1122896
+506,1,50810786,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810774,West - 506 Carlton towards High Park,1,1122896
+506,1,50810787,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810773,West - 506 Carlton towards High Park,1,1122896
+506,1,50810788,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810772,West - 506 Carlton towards High Park,1,1122902
+506,1,50810789,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810705,West - 506 Carlton towards High Park,1,1122899
+506,1,50810771,West - 506 Carlton towards High Park,1,1122902
+506,1,50810790,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810770,West - 506 Carlton towards High Park,1,1122902
+506,1,50810791,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810769,West - 506 Carlton towards High Park,1,1122902
+506,1,50810863,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810768,West - 506 Carlton towards High Park,1,1122902
+506,1,50810792,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810793,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810767,West - 506 Carlton towards High Park,1,1122902
+506,1,50810794,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810766,West - 506 Carlton towards High Park,1,1122902
+506,1,50810795,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810765,West - 506 Carlton towards High Park,1,1122902
+506,1,50810796,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810764,West - 506 Carlton towards High Park,1,1122902
+506,1,50810797,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810798,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810763,West - 506 Carlton towards High Park,1,1122902
+506,1,50810799,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810762,West - 506 Carlton towards High Park,1,1122902
+506,1,50810800,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810761,West - 506 Carlton towards High Park,1,1122902
+506,1,50810801,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810760,West - 506 Carlton towards High Park,1,1122902
+506,1,50810802,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810803,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810759,West - 506 Carlton towards High Park,1,1122902
+506,1,50810804,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810758,West - 506 Carlton towards High Park,1,1122902
+506,1,50810805,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810757,West - 506 Carlton towards High Park,1,1122902
+506,1,50810806,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810756,West - 506 Carlton towards High Park,1,1122902
+506,1,50810807,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810755,West - 506 Carlton towards High Park,1,1122902
+506,1,50810808,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810754,West - 506 Carlton towards High Park,1,1122902
+506,1,50810809,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810753,West - 506 Carlton towards High Park,1,1122902
+506,1,50810810,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810752,West - 506 Carlton towards High Park,1,1122902
+506,1,50810811,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810751,West - 506 Carlton towards High Park,1,1122902
+506,1,50810812,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810750,West - 506 Carlton towards High Park,1,1122902
+506,1,50810813,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810749,West - 506 Carlton towards High Park,1,1122902
+506,1,50810814,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810748,West - 506 Carlton towards High Park,1,1122902
+506,1,50810815,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810747,West - 506 Carlton towards High Park,1,1122902
+506,1,50810816,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810746,West - 506 Carlton towards High Park,1,1122902
+506,1,50810817,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810745,West - 506 Carlton towards High Park,1,1122902
+506,1,50810818,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810744,West - 506 Carlton towards High Park,1,1122902
+506,1,50810819,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810743,West - 506 Carlton towards High Park,1,1122902
+506,1,50810820,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810742,West - 506 Carlton towards High Park,1,1122902
+506,1,50810821,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810741,West - 506 Carlton towards High Park,1,1122902
+506,1,50810822,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810740,West - 506 Carlton towards High Park,1,1122902
+506,1,50810823,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810739,West - 506 Carlton towards High Park,1,1122902
+506,1,50810824,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810738,West - 506 Carlton towards High Park,1,1122902
+506,1,50810825,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810737,West - 506 Carlton towards High Park,1,1122902
+506,1,50810826,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810736,West - 506 Carlton towards High Park,1,1122902
+506,1,50810827,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810735,West - 506 Carlton towards High Park,1,1122902
+506,1,50810828,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810734,West - 506 Carlton towards High Park,1,1122902
+506,1,50810829,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810733,West - 506 Carlton towards High Park,1,1122902
+506,1,50810830,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810732,West - 506 Carlton towards High Park,1,1122902
+506,1,50810831,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810731,West - 506 Carlton towards High Park,1,1122902
+506,1,50810832,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810730,West - 506 Carlton towards High Park,1,1122902
+506,1,50810833,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810729,West - 506 Carlton towards High Park,1,1122902
+506,1,50810834,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810728,West - 506 Carlton towards High Park,1,1122902
+506,1,50810835,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810727,West - 506 Carlton towards High Park,1,1122902
+506,1,50810836,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810726,West - 506 Carlton towards High Park,1,1122902
+506,1,50810837,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810725,West - 506 Carlton towards High Park,1,1122902
+506,1,50810838,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810724,West - 506 Carlton towards High Park,1,1122902
+506,1,50810839,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810704,West - 506 Carlton towards High Park,1,1122899
+506,1,50810723,West - 506 Carlton towards High Park,1,1122902
+506,1,50810840,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810722,West - 506 Carlton towards High Park,1,1122902
+506,1,50810870,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810721,West - 506 Carlton towards High Park,1,1122902
+506,1,50810841,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810868,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810720,West - 506 Carlton towards High Park,1,1122902
+506,1,50810869,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810719,West - 506 Carlton towards High Park,1,1122902
+506,1,50810842,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810718,West - 506 Carlton towards High Park,1,1122902
+506,1,50810843,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810717,West - 506 Carlton towards High Park,1,1122902
+506,1,50810844,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810845,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810716,West - 506 Carlton towards High Park,1,1122902
+506,1,50810846,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810715,West - 506 Carlton towards High Park,1,1122902
+506,1,50810847,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810714,West - 506 Carlton towards High Park,1,1122902
+506,1,50810848,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810713,West - 506 Carlton towards High Park,1,1122902
+506,1,50810849,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810850,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810712,West - 506 Carlton towards High Park,1,1122902
+506,1,50810851,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810711,West - 506 Carlton towards High Park,1,1122902
+506,1,50810852,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810710,West - 506 Carlton towards High Park,1,1122902
+506,1,50810853,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810709,West - 506 Carlton towards High Park,1,1122902
+506,1,50810854,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810855,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810708,West - 506 Carlton towards High Park,1,1122902
+506,1,50810856,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810707,West - 506 Carlton towards High Park,1,1122902
+506,1,50810857,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810706,West - 506 Carlton towards High Park,1,1122902
+506,1,50810858,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810917,West - 506 Carlton towards High Park,1,1122902
+506,1,50810859,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810860,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810916,West - 506 Carlton towards High Park,1,1122902
+506,1,50810861,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810915,West - 506 Carlton towards High Park,1,1122902
+506,1,50810862,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810914,West - 506 Carlton towards High Park,1,1122902
+506,1,50810920,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810913,West - 506 Carlton towards High Park,1,1122902
+506,1,50810921,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810922,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810912,West - 506 Carlton towards High Park,1,1122902
+506,1,50810923,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810911,West - 506 Carlton towards High Park,1,1122902
+506,1,50810924,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810910,West - 506 Carlton towards High Park,1,1122902
+506,1,50810925,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810909,West - 506 Carlton towards High Park,1,1122902
+506,1,50810926,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810908,West - 506 Carlton towards High Park,1,1122902
+506,1,50810927,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810907,West - 506 Carlton towards High Park,1,1122902
+506,1,50810928,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810906,West - 506 Carlton towards High Park,1,1122902
+506,1,50810929,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810905,West - 506 Carlton towards High Park,1,1122902
+506,1,50810930,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810904,West - 506 Carlton towards High Park,1,1122902
+506,1,50810931,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810903,West - 506 Carlton towards High Park,1,1122902
+506,1,50810932,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810902,West - 506 Carlton towards High Park,1,1122902
+506,1,50810933,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810901,West - 506 Carlton towards High Park,1,1122902
+506,1,50810934,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810900,West - 506 Carlton towards High Park,1,1122902
+506,1,50810935,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810899,West - 506 Carlton towards High Park,1,1122902
+506,1,50810936,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810872,West - 506 Carlton Short Turn towards Coxwell and Queen,1,1122898
+506,1,50810871,West - 506 Carlton Short Turn towards Coxwell and Queen,1,1122898
+506,1,50810898,West - 506 Carlton towards High Park,1,1122902
+506,1,50810937,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810897,West - 506 Carlton towards High Park,1,1122902
+506,1,50810938,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810896,West - 506 Carlton towards High Park,1,1122902
+506,1,50810939,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810895,West - 506 Carlton towards High Park,1,1122902
+506,1,50810940,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810894,West - 506 Carlton towards High Park,1,1122902
+506,1,50810941,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810893,West - 506 Carlton towards High Park,1,1122902
+506,1,50810942,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810892,West - 506 Carlton towards High Park,1,1122902
+506,1,50810943,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810891,West - 506 Carlton towards High Park,1,1122902
+506,1,50810944,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810890,West - 506 Carlton towards High Park,1,1122902
+506,1,50810945,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810889,West - 506 Carlton towards High Park,1,1122902
+506,1,50810946,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810888,West - 506 Carlton towards High Park,1,1122902
+506,1,50810947,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810887,West - 506 Carlton towards High Park,1,1122902
+506,1,50810948,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810886,West - 506 Carlton towards High Park,1,1122902
+506,1,50810949,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810885,West - 506 Carlton towards High Park,1,1122902
+506,1,50810950,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810884,West - 506 Carlton towards High Park,1,1122902
+506,1,50810951,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810873,West - 506 Carlton Short Turn towards Coxwell and Queen,1,1122898
+506,1,50810883,West - 506 Carlton towards High Park,1,1122902
+506,1,50810952,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810882,West - 506 Carlton towards High Park,1,1122902
+506,1,50810953,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810881,West - 506 Carlton towards High Park,1,1122902
+506,1,50810954,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810880,West - 506 Carlton towards High Park,1,1122902
+506,1,50810955,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810879,West - 506 Carlton towards High Park,1,1122902
+506,1,50810956,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810878,West - 506 Carlton towards High Park,1,1122902
+506,1,50810957,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810877,West - 506 Carlton towards High Park,1,1122902
+506,1,50810958,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810876,West - 506 Carlton towards High Park,1,1122902
+506,1,50810959,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810875,West - 506 Carlton towards High Park,1,1122902
+506,1,50810960,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810874,West - 506 Carlton towards High Park,1,1122902
+506,1,50810961,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810918,West - 506 Carlton towards High Park,1,1122902
+506,1,50810962,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810963,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,1,50810919,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50906784,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906772,East - 506 Carlton towards Main Street Station,0,1122891
+506,4,50906785,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906771,East - 506 Carlton towards Main Street Station,0,1122891
+506,4,50906770,East - 506 Carlton towards Main Street Station,0,1122891
+506,4,50906786,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906763,East - 506 Carlton towards Main Street Station,0,1122888
+506,4,50906769,East - 506 Carlton towards Main Street Station,0,1122891
+506,4,50906787,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906762,East - 506 Carlton towards Main Street Station,0,1122888
+506,4,50906768,East - 506 Carlton towards Main Street Station,0,1122891
+506,4,50906761,East - 506 Carlton towards Main Street Station,0,1122888
+506,4,50906788,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906767,East - 506 Carlton towards Main Street Station,0,1122891
+506,4,50906760,East - 506 Carlton towards Main Street Station,0,1122888
+506,4,50906766,East - 506 Carlton towards Main Street Station,0,1122891
+506,4,50906789,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906759,East - 506 Carlton towards Main Street Station,0,1122888
+506,4,50906765,East - 506 Carlton towards Main Street Station,0,1122891
+506,4,50906790,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906758,East - 506 Carlton towards Main Street Station,0,1122888
+506,4,50906764,East - 506 Carlton towards Main Street Station,0,1122891
+506,4,50906757,East - 506 Carlton towards Main Street Station,0,1122888
+506,4,50906791,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906756,East - 506 Carlton towards Main Street Station,0,1122888
+506,4,50906792,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906755,East - 506 Carlton towards Main Street Station,0,1122888
+506,4,50906793,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906778,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906777,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906794,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906776,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906795,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906775,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906780,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906774,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906781,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906779,East - 506 Carlton towards Main Street Station,0,1122891
+506,4,50906773,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906783,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906854,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906782,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906878,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906879,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906877,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906880,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906876,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906881,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906875,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906797,East - 506 Carlton towards Main Street Station,0,1122891
+506,4,50906882,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906874,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906883,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906873,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906884,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906872,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906885,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906871,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906886,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906870,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906887,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906869,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906888,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906868,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906889,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906867,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906890,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906866,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906891,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906865,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906892,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906864,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906893,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906863,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906894,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906862,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906895,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906861,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906896,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906860,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906897,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906859,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906898,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906858,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906899,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906857,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906960,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906856,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906900,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906855,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906901,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906817,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906961,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906902,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906816,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906903,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906815,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906904,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906814,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906905,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906813,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906906,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906853,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906907,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906796,East - 506 Carlton towards Main Street Station,0,1122891
+506,4,50906852,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906908,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906851,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906909,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906910,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906850,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906911,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906849,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906912,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906848,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906913,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906847,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906914,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906846,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906915,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906845,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906916,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906844,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906917,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906843,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906918,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906842,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906919,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906920,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906841,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906921,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906840,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906922,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906839,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906923,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906838,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906924,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906837,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906925,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906836,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906926,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906835,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906927,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906834,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906928,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906833,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906929,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906930,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906832,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906931,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906831,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906932,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906830,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906933,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906829,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906934,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906828,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906935,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906827,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906936,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906826,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906937,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906825,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906938,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906824,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906939,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906940,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906823,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906941,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906822,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906942,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906821,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906943,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906820,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906944,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906819,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906945,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906818,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906812,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906946,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906811,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906947,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906810,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906948,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906809,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906949,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906808,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906950,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906807,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906951,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906806,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906798,East - 506 Carlton Short Turn,0,1122893
+506,4,50906952,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906805,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906953,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906804,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906954,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906803,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906955,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906802,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906956,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906801,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906957,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906800,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906958,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906799,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906959,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906986,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906988,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906985,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906989,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906984,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906990,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906983,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906991,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906982,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906992,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906981,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906962,East - 506 Carlton Short Turn,0,1122893
+506,4,50906993,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906980,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906994,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906979,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906995,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906978,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906996,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906977,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906997,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906976,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906998,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906975,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50906999,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906974,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50907000,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906973,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50907001,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906972,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50907002,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906971,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50907003,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906970,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50907004,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906969,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50907005,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906968,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50907006,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906967,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50907007,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906966,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50907008,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906965,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50907009,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906964,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50907010,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906963,East - 506 Carlton towards Main Street Station,0,1122895
+506,4,50907011,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50906987,East - 506B Carlton Replacement Bus towards Broadview & Gerrard,0,1122889
+506,4,50907016,West - 506 Carlton towards High Park,1,1122899
+506,4,50907015,West - 506 Carlton towards High Park,1,1122899
+506,4,50907014,West - 506 Carlton towards High Park,1,1122899
+506,4,50907013,West - 506 Carlton towards High Park,1,1122899
+506,4,50907033,West - 506 Carlton towards High Park,1,1122896
+506,4,50907012,West - 506 Carlton towards High Park,1,1122899
+506,4,50907032,West - 506 Carlton towards High Park,1,1122896
+506,4,50907110,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907031,West - 506 Carlton towards High Park,1,1122896
+506,4,50907111,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907030,West - 506 Carlton towards High Park,1,1122896
+506,4,50907112,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907029,West - 506 Carlton towards High Park,1,1122896
+506,4,50907028,West - 506 Carlton towards High Park,1,1122896
+506,4,50907113,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907027,West - 506 Carlton towards High Park,1,1122896
+506,4,50907114,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907026,West - 506 Carlton towards High Park,1,1122896
+506,4,50907025,West - 506 Carlton towards High Park,1,1122896
+506,4,50907115,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907024,West - 506 Carlton towards High Park,1,1122896
+506,4,50907116,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907023,West - 506 Carlton towards High Park,1,1122896
+506,4,50907117,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907022,West - 506 Carlton towards High Park,1,1122896
+506,4,50907021,West - 506 Carlton towards High Park,1,1122896
+506,4,50907118,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907020,West - 506 Carlton towards High Park,1,1122896
+506,4,50907119,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907019,West - 506 Carlton towards High Park,1,1122896
+506,4,50907018,West - 506 Carlton towards High Park,1,1122896
+506,4,50907120,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907017,West - 506 Carlton towards High Park,1,1122896
+506,4,50907121,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907046,West - 506 Carlton towards High Park,1,1122902
+506,4,50907034,West - 506 Carlton towards High Park,1,1122899
+506,4,50907070,West - 506 Carlton towards High Park,1,1122902
+506,4,50907071,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907069,West - 506 Carlton towards High Park,1,1122902
+506,4,50907072,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907068,West - 506 Carlton towards High Park,1,1122902
+506,4,50907073,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907067,West - 506 Carlton towards High Park,1,1122902
+506,4,50907074,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907066,West - 506 Carlton towards High Park,1,1122902
+506,4,50907075,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907065,West - 506 Carlton towards High Park,1,1122902
+506,4,50907076,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907064,West - 506 Carlton towards High Park,1,1122902
+506,4,50907077,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907063,West - 506 Carlton towards High Park,1,1122902
+506,4,50907078,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907062,West - 506 Carlton towards High Park,1,1122902
+506,4,50907079,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907061,West - 506 Carlton towards High Park,1,1122902
+506,4,50907080,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907060,West - 506 Carlton towards High Park,1,1122902
+506,4,50907081,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907059,West - 506 Carlton towards High Park,1,1122902
+506,4,50907082,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907058,West - 506 Carlton towards High Park,1,1122902
+506,4,50907083,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907057,West - 506 Carlton towards High Park,1,1122902
+506,4,50907084,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907056,West - 506 Carlton towards High Park,1,1122902
+506,4,50907085,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907055,West - 506 Carlton towards High Park,1,1122902
+506,4,50907086,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907054,West - 506 Carlton towards High Park,1,1122902
+506,4,50907087,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907053,West - 506 Carlton towards High Park,1,1122902
+506,4,50907088,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907052,West - 506 Carlton towards High Park,1,1122902
+506,4,50907089,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907051,West - 506 Carlton towards High Park,1,1122902
+506,4,50907090,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907050,West - 506 Carlton towards High Park,1,1122902
+506,4,50907091,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907049,West - 506 Carlton towards High Park,1,1122902
+506,4,50907092,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907048,West - 506 Carlton towards High Park,1,1122902
+506,4,50907093,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907047,West - 506 Carlton towards High Park,1,1122902
+506,4,50907094,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907045,West - 506 Carlton towards High Park,1,1122902
+506,4,50907095,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907044,West - 506 Carlton towards High Park,1,1122902
+506,4,50907096,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907043,West - 506 Carlton towards High Park,1,1122902
+506,4,50907097,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907042,West - 506 Carlton towards High Park,1,1122902
+506,4,50907098,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907041,West - 506 Carlton towards High Park,1,1122902
+506,4,50907099,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907040,West - 506 Carlton towards High Park,1,1122902
+506,4,50907100,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907039,West - 506 Carlton towards High Park,1,1122902
+506,4,50907101,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907102,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907038,West - 506 Carlton towards High Park,1,1122902
+506,4,50907103,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907037,West - 506 Carlton towards High Park,1,1122902
+506,4,50907104,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907036,West - 506 Carlton towards High Park,1,1122902
+506,4,50907105,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907035,West - 506 Carlton towards High Park,1,1122902
+506,4,50907106,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907191,West - 506 Carlton towards High Park,1,1122902
+506,4,50907107,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907190,West - 506 Carlton towards High Park,1,1122902
+506,4,50907108,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907189,West - 506 Carlton towards High Park,1,1122902
+506,4,50907109,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907188,West - 506 Carlton towards High Park,1,1122902
+506,4,50907193,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907187,West - 506 Carlton towards High Park,1,1122902
+506,4,50907194,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907195,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907186,West - 506 Carlton towards High Park,1,1122902
+506,4,50907196,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907185,West - 506 Carlton towards High Park,1,1122902
+506,4,50907197,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907184,West - 506 Carlton towards High Park,1,1122902
+506,4,50907198,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907183,West - 506 Carlton towards High Park,1,1122902
+506,4,50907199,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907182,West - 506 Carlton towards High Park,1,1122902
+506,4,50907200,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907181,West - 506 Carlton towards High Park,1,1122902
+506,4,50907201,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907180,West - 506 Carlton towards High Park,1,1122902
+506,4,50907202,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907179,West - 506 Carlton towards High Park,1,1122902
+506,4,50907203,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907178,West - 506 Carlton towards High Park,1,1122902
+506,4,50907204,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907205,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907177,West - 506 Carlton towards High Park,1,1122902
+506,4,50907206,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907176,West - 506 Carlton towards High Park,1,1122902
+506,4,50907207,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907175,West - 506 Carlton towards High Park,1,1122902
+506,4,50907208,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907174,West - 506 Carlton towards High Park,1,1122902
+506,4,50907209,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907173,West - 506 Carlton towards High Park,1,1122902
+506,4,50907210,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907172,West - 506 Carlton towards High Park,1,1122902
+506,4,50907211,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907171,West - 506 Carlton towards High Park,1,1122902
+506,4,50907212,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907170,West - 506 Carlton towards High Park,1,1122902
+506,4,50907213,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907169,West - 506 Carlton towards High Park,1,1122902
+506,4,50907214,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907215,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907168,West - 506 Carlton towards High Park,1,1122902
+506,4,50907216,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907167,West - 506 Carlton towards High Park,1,1122902
+506,4,50907217,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907166,West - 506 Carlton towards High Park,1,1122902
+506,4,50907218,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907165,West - 506 Carlton towards High Park,1,1122902
+506,4,50907219,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907164,West - 506 Carlton towards High Park,1,1122902
+506,4,50907220,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907163,West - 506 Carlton towards High Park,1,1122902
+506,4,50907162,West - 506 Carlton towards High Park,1,1122902
+506,4,50907221,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907222,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907161,West - 506 Carlton towards High Park,1,1122902
+506,4,50907223,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907160,West - 506 Carlton towards High Park,1,1122902
+506,4,50907262,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907159,West - 506 Carlton towards High Park,1,1122902
+506,4,50907224,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907158,West - 506 Carlton towards High Park,1,1122902
+506,4,50907225,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907157,West - 506 Carlton towards High Park,1,1122902
+506,4,50907226,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907156,West - 506 Carlton towards High Park,1,1122902
+506,4,50907227,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907155,West - 506 Carlton towards High Park,1,1122902
+506,4,50907228,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907154,West - 506 Carlton towards High Park,1,1122902
+506,4,50907229,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907153,West - 506 Carlton towards High Park,1,1122902
+506,4,50907230,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907152,West - 506 Carlton towards High Park,1,1122902
+506,4,50907231,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907151,West - 506 Carlton towards High Park,1,1122902
+506,4,50907232,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907150,West - 506 Carlton towards High Park,1,1122902
+506,4,50907233,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907149,West - 506 Carlton towards High Park,1,1122902
+506,4,50907234,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907148,West - 506 Carlton towards High Park,1,1122902
+506,4,50907235,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907147,West - 506 Carlton towards High Park,1,1122902
+506,4,50907236,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907146,West - 506 Carlton towards High Park,1,1122902
+506,4,50907237,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907145,West - 506 Carlton towards High Park,1,1122902
+506,4,50907238,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907144,West - 506 Carlton towards High Park,1,1122902
+506,4,50907239,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907143,West - 506 Carlton towards High Park,1,1122902
+506,4,50907240,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907142,West - 506 Carlton towards High Park,1,1122902
+506,4,50907241,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907141,West - 506 Carlton towards High Park,1,1122902
+506,4,50907242,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907140,West - 506 Carlton towards High Park,1,1122902
+506,4,50907122,West - 506 Carlton Short Turn towards Coxwell and Queen,1,1122898
+506,4,50907243,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907139,West - 506 Carlton towards High Park,1,1122902
+506,4,50907244,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907138,West - 506 Carlton towards High Park,1,1122902
+506,4,50907245,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907137,West - 506 Carlton towards High Park,1,1122902
+506,4,50907246,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907136,West - 506 Carlton towards High Park,1,1122902
+506,4,50907247,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907135,West - 506 Carlton towards High Park,1,1122902
+506,4,50907248,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907134,West - 506 Carlton towards High Park,1,1122902
+506,4,50907249,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907133,West - 506 Carlton towards High Park,1,1122902
+506,4,50907250,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907132,West - 506 Carlton towards High Park,1,1122902
+506,4,50907251,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907131,West - 506 Carlton towards High Park,1,1122902
+506,4,50907252,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907130,West - 506 Carlton towards High Park,1,1122902
+506,4,50907253,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907129,West - 506 Carlton towards High Park,1,1122902
+506,4,50907254,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907128,West - 506 Carlton towards High Park,1,1122902
+506,4,50907255,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907127,West - 506 Carlton towards High Park,1,1122902
+506,4,50907256,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907126,West - 506 Carlton towards High Park,1,1122902
+506,4,50907257,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907125,West - 506 Carlton towards High Park,1,1122902
+506,4,50907258,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907124,West - 506 Carlton towards High Park,1,1122902
+506,4,50907123,West - 506 Carlton towards High Park,1,1122902
+506,4,50907259,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907260,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907261,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907192,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907263,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897
+506,4,50907264,West - 506B Carlton Replacement Bus towards Spadina Station,1,1122897

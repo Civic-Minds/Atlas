@@ -15933,8 +15933,8 @@
         35.96,
         -83.92
       ],
-      "feedUrl": "http://www.knoxvilletn.gov/UserFiles/Servers/Server_109478/File/KAT/gtfs-kat.zip",
-      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1121/latest.zip",
+      "feedUrl": "https://knoxville.syncromatics.com/gtfs",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3512/latest.zip",
       "region": "Tennessee",
       "lastFeedExpiry": "20991231",
       "lastFeedVersion": "MARCH 3/14",
@@ -16992,7 +16992,7 @@
         32.6,
         -94.643
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/ntd-60081/latest.zip",
+      "feedUrl": "https://cloud.longviewtexas.gov/maps/LongviewTransitGTFS/LongviewTransitGTFS.zip",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-60081/latest.zip",
       "lastFeedExpiry": "20260930",
       "lastFeedVersion": "2.0",
@@ -19005,7 +19005,7 @@
         39.0871,
         -108.5512
       ],
-      "feedUrl": "https://data.trilliumtransit.com/gtfs/grandvalleytransit-co-us/grandvalleytransit-co-us--flex-v2.zip",
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-161/latest.zip",
       "lastFeedExpiry": "20251105",
       "lastFeedVersion": "Nov_05_2024",
       "lastRefreshedAt": "20260811",
