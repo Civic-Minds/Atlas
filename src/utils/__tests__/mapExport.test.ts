@@ -6,7 +6,9 @@ import {
   MAP_EXPORT_SIZES,
   MAP_EXPORT_WIDTH,
   MapExportBlockedError,
+  mapExportFilename,
   waitForMapExportReady,
+  wrapExportLine,
   type MapExportReadinessTarget,
 } from '../mapExport';
 
@@ -19,6 +21,15 @@ function mockCanvasContext() {
     imageSmoothingEnabled: false,
     imageSmoothingQuality: 'low',
     fillRect: vi.fn(),
+    beginPath: vi.fn(),
+    moveTo: vi.fn(),
+    arcTo: vi.fn(),
+    closePath: vi.fn(),
+    fill: vi.fn(),
+    stroke: vi.fn(),
+    save: vi.fn(),
+    restore: vi.fn(),
+    clip: vi.fn(),
     drawImage: vi.fn(),
     fillText: vi.fn(),
     measureText: vi.fn((text: string) => ({ width: text.length * 8 })),
@@ -49,24 +60,20 @@ describe('createMapExport', () => {
     const blob = await createMapExport({ source, title: 'Night service', lightMode: true });
 
     expect(blob.type).toBe('image/png');
-    expect(context.drawImage).toHaveBeenCalledWith(
-      source,
-      0,
-      25.3125,
-      100,
-      49.375,
-      0,
-      72,
-      MAP_EXPORT_WIDTH,
-      MAP_EXPORT_HEIGHT - 72 - 38,
-    );
-    expect(context.fillText).toHaveBeenCalledWith('Night service', 28, 30);
+    const [, , , , , dx, dy, dw, dh] = vi.mocked(context.drawImage).mock.calls[0] as unknown as number[];
+    // The map sits in a frame with even side margins, between the heading and the footer.
+    expect(dx).toBe(56);
+    expect(dw).toBe(MAP_EXPORT_WIDTH - 112);
+    expect(dy).toBeGreaterThan(100);
+    expect(dy + dh).toBeLessThan(MAP_EXPORT_HEIGHT - 50);
+    const texts = vi.mocked(context.fillText).mock.calls.map(call => call[0]);
+    expect(texts).toEqual(expect.arrayContaining(['Night service', 'Explore the map at transitatlas.fyi']));
   });
 
   it('draws the whole phone screen without cropping or stretching it', async () => {
     const context = mockCanvasContext();
     const source = sourceCanvas(1170, 2532);
-    await createMapExport({ source, title: 'Transit Frequency', lightMode: true });
+    await createMapExport({ source, title: 'Transit frequency', lightMode: true });
 
     const [, sx, sy, sw, sh, , , dw, dh] = vi.mocked(context.drawImage).mock.calls[0] as unknown as number[];
     expect([sx, sy, sw, sh]).toEqual([0, 0, 1170, 2532]);
@@ -75,13 +82,69 @@ describe('createMapExport', () => {
     expect(Math.abs(dw / dh - 1170 / 2532)).toBeLessThan(0.002);
   });
 
+  it('draws the place, filter lines and colour key', async () => {
+    const context = mockCanvasContext();
+    const source = sourceCanvas(1600, 1000);
+    await createMapExport({
+      source,
+      title: 'Toronto',
+      eyebrow: 'Transit frequency',
+      lines: ['Every 20 min or better · Saturday midday'],
+      route: { label: 'Route 505 Dundas', color: '#15803d' },
+      key: [{ color: '#22863a', label: '≤10m' }, { color: '#f59e0b', label: '≤20m' }],
+      lightMode: true,
+    });
+    const texts = vi.mocked(context.fillText).mock.calls.map(call => call[0]);
+    expect(texts).toEqual(expect.arrayContaining(['Toronto', 'Transit frequency', 'Every 20 min or better · Saturday midday', 'Route 505 Dundas', '≤10m', '≤20m']));
+    expect(texts.some(text => /[A-Z]{4,}/.test(String(text).replace(/CARTO|ODbL/g, '')))).toBe(false);
+  });
+
   it('keeps the export dimensions platform-neutral', () => {
     expect(MAP_EXPORT_WIDTH).toBe(1600);
     expect(MAP_EXPORT_HEIGHT).toBe(900);
   });
 });
 
+describe('wrapExportLine', () => {
+  const measure = (text: string) => text.length * 10;
+
+  it('wraps between filter parts instead of cutting text off', () => {
+    expect(wrapExportLine(measure, 'Every 20 min or better · Saturday midday', 250)).toEqual(['Every 20 min or better', 'Saturday midday']);
+  });
+
+  it('keeps every word when one part is wider than the image', () => {
+    const lines = wrapExportLine(measure, 'Route 505 Dundas West to Broadview Station', 150);
+    expect(lines.join(' ')).toBe('Route 505 Dundas West to Broadview Station');
+    expect(lines.every(line => measure(line) <= 150)).toBe(true);
+  });
+});
+
+describe('mapExportFilename', () => {
+  it('uses lowercase letters, numbers and dashes only', () => {
+    expect(mapExportFilename('atlas-montréal-20min-saturday-midday.png')).toBe('atlas-montreal-20min-saturday-midday.png');
+    expect(mapExportFilename('  ')).toBe('atlas-map.png');
+  });
+});
+
 describe('getMapExportLayout', () => {
+  it('grows the header to fit the description lines', () => {
+    const lines = { title: 'Toronto', lines: ['One', 'Two', 'Three'] };
+    expect(getMapExportLayout(2880, 1800, MAP_EXPORT_SIZES[1], lines).headerHeight).toBeGreaterThan(getMapExportLayout(2880, 1800).headerHeight);
+  });
+
+  it('gives a phone image its own row for the selected route', () => {
+    const text = { title: 'Toronto', lines: ['Every 20 min or better'] };
+    const withRoute = getMapExportLayout(1170, 2532, MAP_EXPORT_SIZES[1], { ...text, route: { label: 'Route 505 Dundas', color: '#15803d' } });
+    const without = getMapExportLayout(1170, 2532, MAP_EXPORT_SIZES[1], text);
+    expect(withRoute.headerHeight).toBeGreaterThan(without.headerHeight);
+  });
+
+  it('keeps text readable on a narrow phone image', () => {
+    const layout = getMapExportLayout(390, 844, MAP_EXPORT_SIZES[2], { title: 'Toronto', lines: ['One', 'Two'] });
+    expect(layout.scale).toBeLessThan(1);
+    expect(layout.height).toBe(layout.headerHeight + layout.mapRect.height + layout.footerHeight);
+  });
+
   it('keeps the preset size for landscape screens', () => {
     const layout = getMapExportLayout(2880, 1800);
     expect(layout.width).toBe(1600);

@@ -6,6 +6,9 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 - An agency whose separate rail feed has run out now shows as outdated even when its bus feed is still current, and refresh archives those rail feeds so reprocessing rebuilds from the exact same inputs ([#630](https://github.com/Civic-Minds/Atlas/issues/630)).
+- The button to save the map as an image is now on for everyone, not just the beta site.
+- Exported map images now name the place when one city clearly fills the view, describe the active filter and selected route in plain words, include a colour key matching the map, and save with a descriptive file name, so anyone receiving the image can tell what it shows.
+- Exported map images now use a clean poster layout with the selected route drawn bold so it stands out, and a link back to the map.
 - Reprocessing now rebuilds each agency from its newest archived feed and refuses expired, older, or sharply smaller results instead of replacing good live data with a worse feed ([#613](https://github.com/Civic-Minds/Atlas/issues/613)).
 - **Processing an agency once again keeps its stop frequencies, stop lists, and frequent/night service flags — a weekday-service change on Oct 8 had silently dropped them for every agency processed since ([#614](https://github.com/Civic-Minds/Atlas/issues/614)).**
 - Agencies with a separate rail feed (NFTA, LA Metro, WMATA, SEPTA) keep their rail lines on every processing path again, because process, refresh, and reprocess now share one loader that merges every feed and stamps the data version the map build requires ([#106](https://github.com/Civic-Minds/Atlas/issues/106), [#121](https://github.com/Civic-Minds/Atlas/issues/121), [#204](https://github.com/Civic-Minds/Atlas/issues/204)).

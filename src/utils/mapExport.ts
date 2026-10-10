@@ -1,3 +1,5 @@
+import { slugifyForFilename } from './mapExportDetails';
+
 export const MAP_EXPORT_SIZES = [
   { id: 'social', label: 'Social', width: 1200, height: 630 },
   { id: 'standard', label: 'Standard', width: 1600, height: 900 },
@@ -12,20 +14,157 @@ export const DEFAULT_MAP_EXPORT_SIZE = MAP_EXPORT_SIZES[1];
 export const MAP_EXPORT_WIDTH = DEFAULT_MAP_EXPORT_SIZE.width;
 export const MAP_EXPORT_HEIGHT = DEFAULT_MAP_EXPORT_SIZE.height;
 
-interface MapExportOptions {
-  source: HTMLCanvasElement;
+export interface MapExportKeyEntry {
+  color: string;
+  label: string;
+}
+
+/** The selected route, shown beside the heading with its own line colour. */
+export interface MapExportRoute {
+  label: string;
+  color: string;
+}
+
+/** What the image says about the view. Every field comes from the map's own state. */
+export interface MapExportText {
+  /** Large heading, usually the place in view (e.g. "Toronto"). */
   title: string;
+  /** Small label above the heading, e.g. "Transit frequency". */
+  eyebrow?: string | null;
+  /** Smaller lines under the heading: the filter in plain words. */
+  lines?: string[];
+  /** Selected route, when one is drawn in the view. */
+  route?: MapExportRoute | null;
+  /** Colour key, only the colours actually drawn on the map. */
+  key?: MapExportKeyEntry[];
+  /** Small heading before the key, e.g. "Base fare". */
+  keyTitle?: string;
+}
+
+interface MapExportOptions extends MapExportText {
+  source: HTMLCanvasElement;
   lightMode: boolean;
   size?: MapExportSize;
 }
 
-function fitText(context: CanvasRenderingContext2D, text: string, maxWidth: number): string {
-  if (context.measureText(text).width <= maxWidth) return text;
+export const MAP_EXPORT_BRAND = 'Explore the map at transitatlas.fyi';
+export const MAP_EXPORT_CREDIT = 'Map tiles by CARTO, under CC BY 3.0. Data by OpenStreetMap, under ODbL.';
+
+const FONT = 'Inter, ui-sans-serif, system-ui, sans-serif';
+
+/**
+ * Poster measurements in layout units. Landscape units are pixels of the standard 1600px
+ * image; portrait units are pixels of a 666px-wide phone image. Everything scales together.
+ */
+interface PosterMetrics {
+  baseWidth: number;
+  margin: number;
+  top: number;
+  eyebrow: { size: number; row: number };
+  title: { size: number; row: number };
+  line: { size: number; row: number };
+  route: { size: number; row: number; gap: number; swatch: [number, number] };
+  headerPad: number;
+  footerGap: number;
+  key: { size: number; row: number; swatch: [number, number]; gap: number; columnGap: number };
+  brand: { size: number; row: number };
+  credit: { size: number; row: number };
+  footerPad: number;
+  radius: number;
+}
+
+const LANDSCAPE: PosterMetrics = {
+  baseWidth: 1600,
+  margin: 56,
+  top: 48,
+  eyebrow: { size: 15, row: 32 },
+  title: { size: 60, row: 66 },
+  line: { size: 20, row: 28 },
+  route: { size: 18, row: 34, gap: 10, swatch: [30, 7] },
+  headerPad: 32,
+  footerGap: 20,
+  key: { size: 15, row: 26, swatch: [26, 6], gap: 8, columnGap: 28 },
+  brand: { size: 16, row: 0 },
+  credit: { size: 11, row: 20 },
+  footerPad: 22,
+  radius: 12,
+};
+
+const PORTRAIT: PosterMetrics = {
+  baseWidth: 666,
+  margin: 30,
+  top: 24,
+  eyebrow: { size: 14, row: 28 },
+  title: { size: 44, row: 52 },
+  line: { size: 16, row: 22 },
+  route: { size: 15, row: 30, gap: 14, swatch: [28, 7] },
+  headerPad: 18,
+  footerGap: 18,
+  key: { size: 13, row: 22, swatch: [26, 6], gap: 8, columnGap: 24 },
+  brand: { size: 13, row: 20 },
+  credit: { size: 10.5, row: 19 },
+  footerPad: 26,
+  radius: 12,
+};
+
+const font = (weight: number, px: number) => `${weight} ${px}px ${FONT}`;
+const EYEBROW_WEIGHT = 600;
+const TITLE_WEIGHT = 800;
+const LINE_WEIGHT = 500;
+const ROUTE_WEIGHT = 700;
+const KEY_WEIGHT = 600;
+const BRAND_WEIGHT = 700;
+const CREDIT_WEIGHT = 500;
+
+type Measure = (text: string, weight: number, px: number) => number;
+
+/** Text measurer from a canvas, or a rough estimate when no canvas exists (tests, server). */
+function measurerFor(context?: CanvasRenderingContext2D | null): Measure {
+  const ctx = context ?? (typeof document !== 'undefined' ? document.createElement('canvas').getContext('2d') : null);
+  if (!ctx) return (text, _weight, px) => text.length * px * 0.55;
+  return (text, weight, px) => {
+    ctx.font = font(weight, px);
+    return ctx.measureText(text).width;
+  };
+}
+
+function fitText(measure: (text: string) => number, text: string, maxWidth: number): string {
+  if (measure(text) <= maxWidth) return text;
   let result = text;
-  while (result.length > 1 && context.measureText(`${result}…`).width > maxWidth) {
+  while (result.length > 1 && measure(`${result}…`) > maxWidth) {
     result = result.slice(0, -1);
   }
   return `${result}…`;
+}
+
+/**
+ * Wrap a description line to the image width without dropping any words: break between
+ * " · " parts first, then between words. Never shortens with an ellipsis, so a filter is
+ * never shown half-cut.
+ */
+export function wrapExportLine(measure: (text: string) => number, text: string, maxWidth: number): string[] {
+  if (measure(text) <= maxWidth) return [text];
+  const out: string[] = [];
+  let current = '';
+  const push = (piece: string, joiner: string) => {
+    const candidate = current ? `${current}${joiner}${piece}` : piece;
+    if (!current || measure(candidate) <= maxWidth) {
+      current = candidate;
+    } else {
+      out.push(current);
+      current = piece;
+    }
+  };
+  for (const part of text.split(' · ')) {
+    if (measure(part) <= maxWidth) {
+      push(part, ' · ');
+      continue;
+    }
+    // One part is wider than the image on its own: wrap it by words.
+    for (const [index, word] of part.split(' ').entries()) push(word, index === 0 ? ' · ' : ' ');
+  }
+  if (current) out.push(current);
+  return out;
 }
 
 async function canvasToBlob(canvas: HTMLCanvasElement): Promise<Blob> {
@@ -38,14 +177,122 @@ async function canvasToBlob(canvas: HTMLCanvasElement): Promise<Blob> {
   return blob;
 }
 
+interface KeyCell {
+  /** Offset from the row start, in layout units. */
+  x: number;
+  label: string;
+  /** Missing for the key's title cell. */
+  color?: string;
+}
+
+/** Text placed in layout units; the same plan serves every export size of one shape. */
+interface MapExportPlan {
+  metrics: PosterMetrics;
+  portrait: boolean;
+  eyebrow: { text: string; y: number } | null;
+  title: { text: string; y: number };
+  lines: { text: string; y: number }[];
+  route: { label: string; color: string; y: number; beside: boolean } | null;
+  headerHeight: number;
+  keyRows: { cells: KeyCell[]; y: number }[];
+  brand: { text: string; y: number };
+  credit: { text: string; y: number };
+  footerHeight: number;
+}
+
+function planMapExport(text: MapExportText, portrait: boolean, measure: Measure): MapExportPlan {
+  const m = portrait ? PORTRAIT : LANDSCAPE;
+  const textWidth = m.baseWidth - m.margin * 2;
+  const routeWidth = (label: string) => m.route.swatch[0] + m.route.gap + measure(label, ROUTE_WEIGHT, m.route.size);
+  const titleWidth = (value: string) => measure(value, TITLE_WEIGHT, m.title.size);
+
+  const rawTitle = text.title.trim() || 'Transit map';
+  let route: MapExportPlan['route'] = null;
+  let titleMax = textWidth;
+  if (text.route?.label) {
+    const label = fitText(value => routeWidth(value), text.route.label, textWidth);
+    // Landscape puts the route beside the heading when both fit; otherwise it gets its own row.
+    const beside = !portrait && titleWidth(rawTitle) + 40 + routeWidth(label) <= textWidth;
+    if (beside) titleMax = textWidth - routeWidth(label) - 40;
+    route = { label, color: text.route.color, y: 0, beside };
+  }
+
+  let y = m.top;
+  let eyebrow: MapExportPlan['eyebrow'] = null;
+  const eyebrowText = text.eyebrow?.trim();
+  if (eyebrowText) {
+    eyebrow = { text: fitText(value => measure(value, EYEBROW_WEIGHT, m.eyebrow.size), eyebrowText, textWidth), y: y + m.eyebrow.row / 2 };
+    y += m.eyebrow.row;
+  }
+  const title = { text: fitText(titleWidth, rawTitle, titleMax), y: y + m.title.row / 2 };
+  y += m.title.row;
+  if (route?.beside) route.y = title.y;
+
+  const lines = (text.lines ?? [])
+    .flatMap(line => wrapExportLine(value => measure(value, LINE_WEIGHT, m.line.size), line, textWidth))
+    .map(line => {
+      const placed = { text: line, y: y + m.line.row / 2 };
+      y += m.line.row;
+      return placed;
+    });
+  if (route && !route.beside) {
+    y += m.route.gap;
+    route.y = y + m.route.row / 2;
+    y += m.route.row;
+  }
+  const headerHeight = y + m.headerPad;
+
+  // Footer, measured from the map's bottom edge.
+  const brandText = MAP_EXPORT_BRAND;
+  const brandWidth = measure(brandText, BRAND_WEIGHT, m.brand.size);
+  const keyWidth = portrait ? textWidth : textWidth - brandWidth - 40;
+  const cells: Array<{ width: number; label: string; color?: string }> = [];
+  const key = text.key ?? [];
+  if (key.length > 0 && text.keyTitle) cells.push({ width: measure(text.keyTitle, KEY_WEIGHT, m.key.size), label: text.keyTitle });
+  for (const entry of key) {
+    cells.push({ width: m.key.swatch[0] + m.key.gap + measure(entry.label, KEY_WEIGHT, m.key.size), label: entry.label, color: entry.color });
+  }
+  const rows: KeyCell[][] = [];
+  let x = 0;
+  for (const cell of cells) {
+    if (rows.length === 0 || (x > 0 && x + cell.width > keyWidth)) {
+      rows.push([]);
+      x = 0;
+    }
+    rows[rows.length - 1].push({ x, label: cell.label, color: cell.color });
+    x += cell.width + m.key.columnGap;
+  }
+
+  let fy = m.footerGap;
+  const keyRows = rows.map(cellsInRow => {
+    const row = { cells: cellsInRow, y: fy + m.key.row / 2 };
+    fy += m.key.row;
+    return row;
+  });
+  let brand: MapExportPlan['brand'];
+  if (portrait) {
+    brand = { text: brandText, y: fy + m.brand.row / 2 };
+    fy += m.brand.row;
+  } else {
+    // Landscape: the brand sits at the right end of the first key row.
+    if (keyRows.length === 0) fy += m.key.row;
+    brand = { text: brandText, y: m.footerGap + m.key.row / 2 };
+  }
+  const credit = { text: MAP_EXPORT_CREDIT, y: fy + m.credit.row / 2 };
+  fy += m.credit.row;
+  const footerHeight = fy + m.footerPad;
+
+  return { metrics: m, portrait, eyebrow, title, lines, route, headerHeight, keyRows, brand, credit, footerHeight };
+}
+
 export interface MapExportLayout {
   width: number;
   height: number;
-  /** Text and margin scale relative to the standard 1600px layout. */
+  /** Pixels per layout unit (see PosterMetrics). */
   scale: number;
   headerHeight: number;
   footerHeight: number;
-  /** Portrait exports stack the footer text on two lines so it fits a narrow image. */
+  /** Portrait exports stack the footer (key, link, credit) on separate rows. */
   stackedFooter: boolean;
   /** Part of the source canvas that is drawn (in source pixels). */
   sourceRect: { x: number; y: number; width: number; height: number };
@@ -53,21 +300,14 @@ export interface MapExportLayout {
   mapRect: { x: number; y: number; width: number; height: number };
 }
 
-/**
- * Work out the export image size and how the map is placed in it.
- *
- * Landscape screens keep the fixed preset size (a light centre crop to the preset's
- * shape). Portrait screens (phones) keep the screen's own shape instead: the whole
- * visible map is used, nothing is cropped, and the map is never drawn larger than
- * the screen's real pixels, so it is never stretched or blurred.
- */
-export function getMapExportLayout(sourceWidth: number, sourceHeight: number, size: MapExportSize = DEFAULT_MAP_EXPORT_SIZE): MapExportLayout {
-  const scale = size.width / DEFAULT_MAP_EXPORT_SIZE.width;
-  const headerHeight = Math.round(72 * scale);
-
-  if (sourceWidth >= sourceHeight) {
-    const footerHeight = Math.round(38 * scale);
-    const mapRect = { x: 0, y: headerHeight, width: size.width, height: size.height - headerHeight - footerHeight };
+function layoutFromPlan(plan: MapExportPlan, sourceWidth: number, sourceHeight: number, size: MapExportSize): MapExportLayout {
+  const m = plan.metrics;
+  if (!plan.portrait) {
+    const scale = size.width / m.baseWidth;
+    const headerHeight = Math.round(plan.headerHeight * scale);
+    const footerHeight = Math.round(plan.footerHeight * scale);
+    const margin = Math.round(m.margin * scale);
+    const mapRect = { x: margin, y: headerHeight, width: size.width - margin * 2, height: size.height - headerHeight - footerHeight };
     const sourceRatio = sourceWidth / sourceHeight;
     const targetRatio = mapRect.width / mapRect.height;
     const sourceRect = { x: 0, y: 0, width: sourceWidth, height: sourceHeight };
@@ -81,80 +321,165 @@ export function getMapExportLayout(sourceWidth: number, sourceHeight: number, si
     return { width: size.width, height: size.height, scale, headerHeight, footerHeight, stackedFooter: false, sourceRect, mapRect };
   }
 
-  // Portrait: the preset's long edge becomes the image height.
-  const footerHeight = Math.round(56 * scale);
-  const mapHeight = Math.min(size.width - headerHeight - footerHeight, sourceHeight);
-  const mapWidth = Math.min(sourceWidth, Math.round(mapHeight * (sourceWidth / sourceHeight)));
+  // Portrait: keep the screen's own shape (nothing cropped), make the preset's long edge the
+  // image height, and never draw the map larger than the screen's real pixels.
+  const mapUnits = m.baseWidth - m.margin * 2;
+  const ratio = sourceHeight / sourceWidth;
+  const heightUnits = plan.headerHeight + plan.footerHeight + mapUnits * ratio;
+  const scale = Math.min(sourceWidth / mapUnits, size.width / heightUnits);
+  const margin = Math.round(m.margin * scale);
+  const mapWidth = Math.round(mapUnits * scale);
+  const mapHeight = Math.round(mapWidth * ratio);
+  const headerHeight = Math.round(plan.headerHeight * scale);
+  const footerHeight = Math.round(plan.footerHeight * scale);
   return {
-    width: mapWidth,
+    width: mapWidth + margin * 2,
     height: headerHeight + mapHeight + footerHeight,
     scale,
     headerHeight,
     footerHeight,
     stackedFooter: true,
     sourceRect: { x: 0, y: 0, width: sourceWidth, height: sourceHeight },
-    mapRect: { x: 0, y: headerHeight, width: mapWidth, height: mapHeight },
+    mapRect: { x: margin, y: headerHeight, width: mapWidth, height: mapHeight },
   };
 }
 
-/** Compose the rendered map into a shareable, branded image. */
-export async function createMapExport({ source, title, lightMode, size = DEFAULT_MAP_EXPORT_SIZE }: MapExportOptions): Promise<Blob> {
+/**
+ * Work out the export image size and how the map is placed in it.
+ *
+ * Landscape screens keep the fixed preset size (a light centre crop to the map frame's
+ * shape). Portrait screens (phones) keep the screen's own shape instead: the whole visible
+ * map is used, nothing is cropped, and it is never drawn larger than the screen's real
+ * pixels, so it is never stretched or blurred. The header and footer grow to fit `text`.
+ */
+export function getMapExportLayout(
+  sourceWidth: number,
+  sourceHeight: number,
+  size: MapExportSize = DEFAULT_MAP_EXPORT_SIZE,
+  text: MapExportText = { title: '' },
+  context?: CanvasRenderingContext2D | null,
+): MapExportLayout {
+  const plan = planMapExport(text, sourceWidth < sourceHeight, measurerFor(context));
+  return layoutFromPlan(plan, sourceWidth, sourceHeight, size);
+}
+
+/** Output size of an export, including the header and footer this view needs. */
+export function getMapExportOutputSize(sourceWidth: number, sourceHeight: number, size: MapExportSize, text: MapExportText = { title: '' }): { width: number; height: number } {
+  const layout = getMapExportLayout(sourceWidth, sourceHeight, size, text);
+  return { width: layout.width, height: layout.height };
+}
+
+function roundedRectPath(context: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, radius: number) {
+  context.beginPath();
+  context.moveTo(x + radius, y);
+  context.arcTo(x + width, y, x + width, y + height, radius);
+  context.arcTo(x + width, y + height, x, y + height, radius);
+  context.arcTo(x, y + height, x, y, radius);
+  context.arcTo(x, y, x + width, y, radius);
+  context.closePath();
+}
+
+function pill(context: CanvasRenderingContext2D, x: number, centerY: number, width: number, height: number, color: string) {
+  context.fillStyle = color;
+  roundedRectPath(context, x, centerY - height / 2, width, height, height / 2);
+  context.fill();
+}
+
+const POSTER_COLORS = {
+  light: { background: '#f4f1ea', foreground: '#1c1917', muted: '#5f5b55', faint: '#78736c', border: 'rgba(28, 25, 23, 0.14)' },
+  dark: { background: '#121214', foreground: '#f4f4f5', muted: '#b4b4bb', faint: '#9a9aa2', border: 'rgba(244, 244, 245, 0.16)' },
+};
+
+/** Compose the rendered map into a shareable poster: heading, framed map, key and link. */
+export async function createMapExport({ source, lightMode, size = DEFAULT_MAP_EXPORT_SIZE, ...text }: MapExportOptions): Promise<Blob> {
   if (source.width === 0 || source.height === 0) {
     throw new Error('The map is not ready to export');
   }
 
-  const layout = getMapExportLayout(source.width, source.height, size);
   const canvas = document.createElement('canvas');
-  canvas.width = layout.width;
-  canvas.height = layout.height;
   const context = canvas.getContext('2d');
   if (!context) throw new Error('Could not prepare the export image');
+  const plan = planMapExport(text, source.width < source.height, measurerFor(context));
+  const layout = layoutFromPlan(plan, source.width, source.height, size);
+  canvas.width = layout.width;
+  canvas.height = layout.height;
   context.imageSmoothingEnabled = true;
   context.imageSmoothingQuality = 'high';
 
-  const colors = lightMode
-    ? { background: '#f8fafc', foreground: '#18181b', muted: '#52525b', panel: 'rgba(255, 255, 255, 0.94)' }
-    : { background: '#111113', foreground: '#f4f4f5', muted: '#d4d4d8', panel: 'rgba(17, 17, 19, 0.94)' };
-  const { scale, headerHeight, footerHeight, sourceRect, mapRect } = layout;
-  const margin = 28 * scale;
-  const textWidth = canvas.width - margin * 2;
+  const colors = lightMode ? POSTER_COLORS.light : POSTER_COLORS.dark;
+  const m = plan.metrics;
+  const s = layout.scale;
+  const { sourceRect, mapRect } = layout;
+  const left = mapRect.x;
+  const right = mapRect.x + mapRect.width;
+  const footerTop = mapRect.y + mapRect.height;
 
   context.fillStyle = colors.background;
   context.fillRect(0, 0, canvas.width, canvas.height);
+
+  // The map, framed with rounded corners and a hairline border.
+  const radius = m.radius * s;
+  context.save();
+  roundedRectPath(context, mapRect.x, mapRect.y, mapRect.width, mapRect.height, radius);
+  context.clip();
   context.drawImage(source, sourceRect.x, sourceRect.y, sourceRect.width, sourceRect.height, mapRect.x, mapRect.y, mapRect.width, mapRect.height);
+  context.restore();
+  context.strokeStyle = colors.border;
+  context.lineWidth = Math.max(1, s);
+  roundedRectPath(context, mapRect.x, mapRect.y, mapRect.width, mapRect.height, radius);
+  context.stroke();
 
-  context.fillStyle = colors.panel;
-  context.fillRect(0, 0, canvas.width, headerHeight);
-  context.fillRect(0, canvas.height - footerHeight, canvas.width, footerHeight);
-
-  context.fillStyle = colors.foreground;
-  context.font = `800 ${27 * scale}px Inter, ui-sans-serif, system-ui, sans-serif`;
   context.textBaseline = 'middle';
-  context.fillText(fitText(context, title.trim() || 'Transit map', Math.min(830 * scale, textWidth)), margin, 30 * scale);
+  context.textAlign = 'left';
+  if (plan.eyebrow) {
+    context.fillStyle = colors.muted;
+    context.font = font(EYEBROW_WEIGHT, m.eyebrow.size * s);
+    context.fillText(plan.eyebrow.text, left, plan.eyebrow.y * s);
+  }
+  context.fillStyle = colors.foreground;
+  context.font = font(TITLE_WEIGHT, m.title.size * s);
+  context.fillText(plan.title.text, left, plan.title.y * s);
 
   context.fillStyle = colors.muted;
-  context.font = `600 ${13 * scale}px Inter, ui-sans-serif, system-ui, sans-serif`;
-  context.fillText('Atlas by Civic Minds', margin, 53 * scale);
+  context.font = font(LINE_WEIGHT, m.line.size * s);
+  for (const line of plan.lines) context.fillText(line.text, left, line.y * s);
 
-  const brand = 'Atlas by Civic Minds · transitatlas.fyi';
-  const credit = 'Map tiles by CARTO, under CC BY 3.0. Data by OpenStreetMap, under ODbL.';
-  if (layout.stackedFooter) {
+  if (plan.route) {
+    context.font = font(ROUTE_WEIGHT, m.route.size * s);
+    const [swatchWidth, swatchHeight] = m.route.swatch;
+    const labelWidth = context.measureText(plan.route.label).width;
+    const x = plan.route.beside ? right - labelWidth - (swatchWidth + m.route.gap) * s : left;
+    pill(context, x, plan.route.y * s, swatchWidth * s, swatchHeight * s, plan.route.color);
     context.fillStyle = colors.foreground;
-    context.font = `800 ${13 * scale}px Inter, ui-sans-serif, system-ui, sans-serif`;
-    context.fillText(fitText(context, brand, textWidth), margin, canvas.height - footerHeight + 20 * scale);
-    context.fillStyle = colors.muted;
-    context.font = `500 ${10 * scale}px Inter, ui-sans-serif, system-ui, sans-serif`;
-    context.fillText(fitText(context, credit, textWidth), margin, canvas.height - footerHeight + 39 * scale);
-  } else {
-    context.textAlign = 'right';
-    context.fillStyle = colors.foreground;
-    context.font = `800 ${13 * scale}px Inter, ui-sans-serif, system-ui, sans-serif`;
-    context.fillText(brand, canvas.width - margin, canvas.height - 19 * scale);
-    context.textAlign = 'left';
-    context.fillStyle = colors.muted;
-    context.font = `500 ${10 * scale}px Inter, ui-sans-serif, system-ui, sans-serif`;
-    context.fillText(credit, margin, canvas.height - 19 * scale);
+    context.fillText(plan.route.label, x + (swatchWidth + m.route.gap) * s, plan.route.y * s);
   }
+
+  context.font = font(KEY_WEIGHT, m.key.size * s);
+  for (const row of plan.keyRows) {
+    const y = footerTop + row.y * s;
+    for (const cell of row.cells) {
+      const x = left + cell.x * s;
+      if (cell.color) {
+        pill(context, x, y, m.key.swatch[0] * s, m.key.swatch[1] * s, cell.color);
+        context.fillStyle = colors.foreground;
+        context.fillText(cell.label, x + (m.key.swatch[0] + m.key.gap) * s, y);
+      } else {
+        context.fillStyle = colors.muted;
+        context.fillText(cell.label, x, y);
+      }
+    }
+  }
+
+  context.fillStyle = colors.foreground;
+  context.font = font(BRAND_WEIGHT, m.brand.size * s);
+  context.textAlign = plan.portrait ? 'left' : 'right';
+  context.fillText(plan.brand.text, plan.portrait ? left : right, footerTop + plan.brand.y * s);
+
+  context.fillStyle = colors.faint;
+  context.font = font(CREDIT_WEIGHT, m.credit.size * s);
+  const creditFit = fitText(value => context.measureText(value).width, plan.credit.text, mapRect.width);
+  context.fillText(creditFit, plan.portrait ? left : right, footerTop + plan.credit.y * s);
+  context.textAlign = 'left';
 
   return canvasToBlob(canvas);
 }
@@ -252,19 +577,19 @@ export async function waitForMapExportReady({
   throw new MapExportBlockedError('timeout');
 }
 
-export function downloadMapExport(blob: Blob, title: string): void {
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  const slug = title.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'atlas-map';
-  link.href = url;
-  link.download = `${slug}.png`;
-  link.click();
-  URL.revokeObjectURL(url);
+/** File name for an export: lowercase letters, numbers and dashes only. */
+export function mapExportFilename(name: string): string {
+  const base = name.trim().replace(/\.png$/i, '');
+  return `${slugifyForFilename(base) || 'atlas-map'}.png`;
 }
 
-function mapExportFilename(title: string): string {
-  const slug = title.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'atlas-map';
-  return `${slug}.png`;
+export function downloadMapExport(blob: Blob, filename: string): void {
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = mapExportFilename(filename);
+  link.click();
+  URL.revokeObjectURL(url);
 }
 
 /** Whether this browser can send a PNG to its native share sheet. */
@@ -279,9 +604,9 @@ export function canShareMapExport(): boolean {
 }
 
 /** Share the exported PNG through the device/browser's native share sheet. */
-export async function shareMapExport(blob: Blob, title: string): Promise<void> {
+export async function shareMapExport(blob: Blob, title: string, filename: string = title): Promise<void> {
   if (!canShareMapExport()) throw new Error('This browser cannot share image files');
-  const file = new File([blob], mapExportFilename(title), { type: 'image/png' });
+  const file = new File([blob], mapExportFilename(filename), { type: 'image/png' });
   await navigator.share({
     title: `${title.trim() || 'Transit map'} · Atlas`,
     text: 'Map exported from Atlas by Civic Minds',

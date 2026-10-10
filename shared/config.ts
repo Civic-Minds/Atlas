@@ -39,7 +39,7 @@ export const BETA_R2_PUBLIC_URL = getBetaR2PublicUrl().replace(/\/$/, '');
 // Live and History cover a tiny sliver of agencies with no scaling plan yet (Ryan, 2026-07-29) --
 // off by default until that's resolved. Env-driven rather than a hardcoded constant so production
 // and beta can build the same main commit with different feature exposure.
-function envFlag(name: 'VITE_LIVE_ENABLED' | 'VITE_HISTORY_ENABLED' | 'VITE_CORRIDORS_ENABLED' | 'VITE_BETA_BUILD' | 'VITE_PREVIEW_BUILD' | 'VITE_CARD_CLICK_TO_FLAG_ENABLED' | 'VITE_UNEVEN_BANNER_ENABLED' | 'VITE_MAP_EXPORT_ENABLED'): boolean {
+function envFlag(name: 'VITE_LIVE_ENABLED' | 'VITE_HISTORY_ENABLED' | 'VITE_CORRIDORS_ENABLED' | 'VITE_BETA_BUILD' | 'VITE_PREVIEW_BUILD' | 'VITE_CARD_CLICK_TO_FLAG_ENABLED' | 'VITE_UNEVEN_BANNER_ENABLED'): boolean {
   return typeof import.meta !== 'undefined' && import.meta?.env?.[name] === 'true';
 }
 
@@ -73,9 +73,6 @@ export const RESEARCH_APPS_ENABLED = ATLAS_MODE === 'beta' || ATLAS_MODE === 'de
 export function getAgencyCatalogUrl(mode: AtlasMode = ATLAS_MODE): string {
   return `/data/catalog-${mode}.json`;
 }
-// Public map-image export starts on beta so the browser-rendered output can be checked before
-// exposing it on production. Set VITE_MAP_EXPORT_ENABLED to graduate it independently of beta.
-const MAP_EXPORT_ENV_ENABLED = envFlag('VITE_MAP_EXPORT_ENABLED');
 
 /**
  * Single source of truth for feature exposure. Consumers should use this registry for navigation,
@@ -89,7 +86,8 @@ export const FEATURES = {
   history: HISTORY_ENABLED,
   corridors: CORRIDORS_ENABLED,
   frequentService: RESEARCH_APPS_ENABLED,
-  mapExport: BETA_BUILD || MAP_EXPORT_ENV_ENABLED,
+  // Map-image export graduated from beta to every deployment (Ryan, 2026-10-10).
+  mapExport: true,
   cardClickToFlag: CARD_CLICK_TO_FLAG_ENABLED,
   unevenBanner: UNEVEN_BANNER_ENABLED,
 } as const;
