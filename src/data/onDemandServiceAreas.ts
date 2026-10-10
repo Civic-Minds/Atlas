@@ -307,6 +307,52 @@ export const GORALEIGH_MICROLINK_SERVICE_AREA = {
   },
 };
 
+const MOUNTAIN_LINE_GO_SOURCE_URL = 'https://mountainline.az.gov/go/';
+const MOUNTAIN_LINE_GO_SOURCE_LABEL = 'Mountain Line GTFS-Flex feed (agency-supplied)';
+
+/** Mountain Line Go! zone and its 17 connection stops from the GTFS-Flex feed Mountain Line emailed (2026-10-10). */
+export const MOUNTAIN_LINE_GO_SERVICE_AREAS: GeoJSON.Feature<GeoJSON.Polygon>[] = [
+  polygonFeature('mountainline', MOUNTAIN_LINE_GO_SOURCE_URL, MOUNTAIN_LINE_GO_SOURCE_LABEL, [[-111.6117138, 35.2066516], [-111.6094092, 35.2047903], [-111.6073143, 35.2031386], [-111.5955752, 35.211545], [-111.5882867, 35.2151617], [-111.5848508, 35.216353], [-111.5830635, 35.2168277], [-111.5839137, 35.217672], [-111.5877694, 35.2211816], [-111.5907181, 35.2190875], [-111.593726, 35.2169507], [-111.5935618, 35.2166499], [-111.5941321, 35.2161935], [-111.5947517, 35.2156512], [-111.5963566, 35.2151514], [-111.6055308, 35.210283], [-111.6057411, 35.2101939], [-111.6056905, 35.2100315], [-111.6117138, 35.2066516]], 'Mountain Line Go!'),
+];
+
+const MOUNTAIN_LINE_GO_STOPS: GeoJSON.Feature<GeoJSON.Point>[] = [
+  { type: 'Feature', properties: { stopId: "stop_id__a26b9da6-6ed8-472a-bc2d-6e422406c4ff", stopName: "Route 3 Bus Stop OB - Country Club Dr. (Bank of America ATM)", agencySlug: 'mountainline', serviceType: 'on-demand', areaName: 'Mountain Line Go!' }, geometry: { type: 'Point', coordinates: [-111.5776548, 35.2124585] } },
+  { type: 'Feature', properties: { stopId: "stop_id__7639e053-a474-44c4-934e-3828db5bba6d", stopName: "Route 3 Bus Stop IB - Soliere Av. / Country Club Dr.", agencySlug: 'mountainline', serviceType: 'on-demand', areaName: 'Mountain Line Go!' }, geometry: { type: 'Point', coordinates: [-111.5780417, 35.2117915] } },
+  { type: 'Feature', properties: { stopId: "stop_id__7fa447aa-24cb-44b6-88c8-81ae8711dcab", stopName: "Mall Connection Center (MCC)", agencySlug: 'mountainline', serviceType: 'on-demand', areaName: 'Mountain Line Go!' }, geometry: { type: 'Point', coordinates: [-111.5781602, 35.2244045] } },
+  { type: 'Feature', properties: { stopId: "stop_id__8283d8f4-4212-426b-b007-f5fc93716b44", stopName: "Route 2 Bus Stop - WB Kaspar Dr. (Mountain Line Headquarters)", agencySlug: 'mountainline', serviceType: 'on-demand', areaName: 'Mountain Line Go!' }, geometry: { type: 'Point', coordinates: [-111.5926254, 35.2182832] } },
+  { type: 'Feature', properties: { stopId: "stop_id__26475f4e-75fc-4453-99bf-c3911e279750", stopName: "Route 7 Bus Stop  - WB  Huntington Dr. (Walmart Supercenter)", agencySlug: 'mountainline', serviceType: 'on-demand', areaName: 'Mountain Line Go!' }, geometry: { type: 'Point', coordinates: [-111.6172062, 35.1979222] } },
+  { type: 'Feature', properties: { stopId: "stop_id__d6052c27-c76f-48db-b471-259ff073026e", stopName: "Route 66 Bus Stop - EB Rt. 66 / Fourth St (Walgreens)", agencySlug: 'mountainline', serviceType: 'on-demand', areaName: 'Mountain Line Go!' }, geometry: { type: 'Point', coordinates: [-111.6123757, 35.2065491] } },
+  { type: 'Feature', properties: { stopId: "stop_id__798c0f48-e231-4cb3-ac0c-25187d32336e", stopName: "Route 66 Bus Stop - EB Rt. 66 / Fanning Blvd.", agencySlug: 'mountainline', serviceType: 'on-demand', areaName: 'Mountain Line Go!' }, geometry: { type: 'Point', coordinates: [-111.5951202, 35.2158256] } },
+  { type: 'Feature', properties: { stopId: "stop_id__e059fbcd-526a-4b31-bb2d-e5f161bbf001", stopName: "Route 2 Bus Stop - EB Kaspar Dr. (Mountain Line Headquarters)", agencySlug: 'mountainline', serviceType: 'on-demand', areaName: 'Mountain Line Go!' }, geometry: { type: 'Point', coordinates: [-111.5929856, 35.2179066] } },
+  { type: 'Feature', properties: { stopId: "stop_id__81bd6907-56b5-402e-aedc-a5065789bf73", stopName: "Route 7 Bus Stop - NB Fourth St. (Walgreens)", agencySlug: 'mountainline', serviceType: 'on-demand', areaName: 'Mountain Line Go!' }, geometry: { type: 'Point', coordinates: [-111.6133362, 35.2078557] } },
+  { type: 'Feature', properties: { stopId: "stop_id__dd34d0af-00e1-4165-aa02-66c97733fda4", stopName: "Route 66 Bus Stop - EB Rt. 66 / Steves Blvd.", agencySlug: 'mountainline', serviceType: 'on-demand', areaName: 'Mountain Line Go!' }, geometry: { type: 'Point', coordinates: [-111.6060314, 35.2099946] } },
+  { type: 'Feature', properties: { stopId: "stop_id__8e62a091-9fe4-4f77-a84d-d691516bb874", stopName: "Route 7 Bus Stop - SB Fourth St. / Huntington Dr. (Aquaplex)", agencySlug: 'mountainline', serviceType: 'on-demand', areaName: 'Mountain Line Go!' }, geometry: { type: 'Point', coordinates: [-111.6113332, 35.2044708] } },
+  { type: 'Feature', properties: { stopId: "stop_id__5e23b867-be07-44c1-837c-0fa7a524bcf1", stopName: "Route 7 Bus Stop - SB Fourth St. (Farmer\u2019s Market)", agencySlug: 'mountainline', serviceType: 'on-demand', areaName: 'Mountain Line Go!' }, geometry: { type: 'Point', coordinates: [-111.6135035, 35.207194] } },
+  { type: 'Feature', properties: { stopId: "stop_id__572e3a6a-e51f-4a62-bba6-9455b129f57a", stopName: "Route 66 Bus Stop - WB Rt. 66 / Steves Blvd. (Super Pawn)", agencySlug: 'mountainline', serviceType: 'on-demand', areaName: 'Mountain Line Go!' }, geometry: { type: 'Point', coordinates: [-111.6067431, 35.209827] } },
+  { type: 'Feature', properties: { stopId: "stop_id__8ec49f3c-d3e2-42c6-a425-d7ba78607c1c", stopName: "Route 66 Bus Stop - WB Rt. 66 / Fourth St. (Walgreens)", agencySlug: 'mountainline', serviceType: 'on-demand', areaName: 'Mountain Line Go!' }, geometry: { type: 'Point', coordinates: [-111.6123447, 35.2068225] } },
+  { type: 'Feature', properties: { stopId: "stop_id__f34bc133-9e57-4cb7-aee9-d8f775c0a27a", stopName: "Route 66 Bus Stop - WB Rt. 66 / Fanning Dr. (Tacos Los Altos)", agencySlug: 'mountainline', serviceType: 'on-demand', areaName: 'Mountain Line Go!' }, geometry: { type: 'Point', coordinates: [-111.5950201, 35.2161684] } },
+  { type: 'Feature', properties: { stopId: "stop_id__1ea66c96-8421-413a-94e1-6f7bb8852599", stopName: "Route 7 Bus Stop - EB Huntington Dr. (Walmart Supercenter)", agencySlug: 'mountainline', serviceType: 'on-demand', areaName: 'Mountain Line Go!' }, geometry: { type: 'Point', coordinates: [-111.6160458, 35.198757] } },
+  { type: 'Feature', properties: { stopId: "stop_id__e1b2188e-e35a-4f4a-bec6-d4991bb84b55", stopName: "Route 7 Bus Stop - NB Fourth St. / Huntington Dr. (Aquaplex)", agencySlug: 'mountainline', serviceType: 'on-demand', areaName: 'Mountain Line Go!' }, geometry: { type: 'Point', coordinates: [-111.6109436, 35.2044836] } },
+];
+
+export const MOUNTAIN_LINE_GO_SERVICE_AREA = {
+  features: MOUNTAIN_LINE_GO_SERVICE_AREAS,
+  stopFeatures: MOUNTAIN_LINE_GO_STOPS,
+  sourceUrl: MOUNTAIN_LINE_GO_SOURCE_URL,
+  sourceLabel: MOUNTAIN_LINE_GO_SOURCE_LABEL,
+  sourceRetrievedAt: '2026-10-10',
+  serviceName: 'Mountain Line Go!',
+  serviceHours: 'Weekdays 7 a.m.–6 p.m.; weekends 8 a.m.–5 p.m.',
+  bookingInfo: 'Book at least 30 minutes and up to 7 days ahead.',
+  pickup: { method: 'door-to-door', note: 'Trips can also use 17 nearby bus stops, shown on the map.' } satisfies OnDemandPickup,
+  bookingUrl: MOUNTAIN_LINE_GO_SOURCE_URL,
+  availability: {
+    Weekday: [{ startHour: 7, endHour: 18 }],
+    Saturday: [{ startHour: 8, endHour: 17 }],
+    Sunday: [{ startHour: 8, endHour: 17 }],
+  } satisfies OnDemandAvailability,
+};
+
 export const METRO_MICRO_SERVICE_AREA = {
   features: METRO_MICRO_FLEX_FEATURES,
   sourceUrl: 'https://svc.metrotransit.org/mtgtfs/gtfs-flex.zip',
