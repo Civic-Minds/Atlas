@@ -9,7 +9,8 @@
  */
 import JSZip from 'jszip';
 import { parseCsv } from './parseGtfs.js';
-import { effectiveFeedExpiry } from './feedFreshness.js';
+import { effectiveFeedExpiry, effectiveFeedStart } from './feedFreshness.js';
+import { COUNTRY_LAUNCH_FLAG, isCountryLaunchBlocked, resolveAgencyCountry, type AgencyCountrySource } from './countryLaunchGate.js';
 
 export interface ArchiveObject {
   key: string;
@@ -92,11 +93,12 @@ export function selectArchiveForAgency(
 
 
 export interface FeedDates {
+  feedStart: string | null;
   feedExpiry: string | null;
   feedVersion: string | null;
 }
 
-/** Read the latest advertised service date and feed_version from a GTFS zip. */
+/** Read the first and latest advertised service dates and feed_version from a GTFS zip. */
 export async function peekFeedDates(buf: Buffer): Promise<FeedDates> {
   try {
     const zip = await JSZip.loadAsync(buf);
@@ -112,6 +114,11 @@ export async function peekFeedDates(buf: Buffer): Promise<FeedDates> {
     const calendar = await readRows('calendar.txt');
     const calendarDates = await readRows('calendar_dates.txt');
     return {
+      feedStart: effectiveFeedStart({
+        feedInfoStart: feedInfo.feed_start_date,
+        calendarStarts: calendar.map(row => row.start_date),
+        calendarDates,
+      }),
       feedExpiry: effectiveFeedExpiry({
         feedInfoEnd: feedInfo.feed_end_date,
         calendarEnds: calendar.map(row => row.end_date),
@@ -120,7 +127,7 @@ export async function peekFeedDates(buf: Buffer): Promise<FeedDates> {
       feedVersion: feedInfo.feed_version || null,
     };
   } catch {
-    return { feedExpiry: null, feedVersion: null };
+    return { feedStart: null, feedExpiry: null, feedVersion: null };
   }
 }
 
@@ -222,6 +229,23 @@ export function isReprocessTarget(agency: ReprocessCandidate, options: { include
     && (!agency.hiddenInProduction || options.includeHidden === true)
     && !agency.staged
     && (!!agency.lastFeedExpiry || !!agency.lastRefreshedAt);
+}
+
+/**
+ * Reprocess --write skips an agency in a country with zero production-visible
+ * agencies (the same rule as process/refresh, #668), unless
+ * --i-am-launching-country was passed. Dry runs (no --write) are unaffected.
+ */
+export function reprocessCountryLaunchSkip(
+  agency: AgencyCountrySource,
+  registry: AgencyCountrySource[],
+  options: { write: boolean; forceLaunch: boolean },
+): string | null {
+  if (!options.write || options.forceLaunch) return null;
+  const country = resolveAgencyCountry(agency);
+  return isCountryLaunchBlocked(country, registry)
+    ? `unlaunched country: ${country} has no production-visible agencies (pass ${COUNTRY_LAUNCH_FLAG} after explicit maintainer approval)`
+    : null;
 }
 
 /** --include-hidden must name its agencies, so a full run can never pull in every hidden slug. */

@@ -45,8 +45,8 @@ describe('refresh drop guard', () => {
     expect(await readLiveArtifactCounts('missing', get)).toBeNull();
   });
 
-  it('refresh checks the guard before writing any artifact, archive, metadata or history', () => {
-    const guard = refreshSource.indexOf('dropGuardRefusal(');
+  it('refresh checks the release diff gate before writing any artifact, archive, metadata or history', () => {
+    const guard = refreshSource.indexOf('evaluateRun(');
     expect(guard).toBeGreaterThan(0);
     for (const write of [
       'r2Put(`atlas/${agency.slug}.json`',
@@ -58,11 +58,41 @@ describe('refresh drop guard', () => {
       const at = refreshSource.indexOf(write);
       expect(at, write).toBeGreaterThan(guard);
     }
-    expect(refreshSource).toMatch(/allowDrop, allowMissingLive: true/);
-    expect(refreshSource).toMatch(/FLAG_ARGS = new Set\(\[[^\]]*ALLOW_DROP_FLAG/);
+    expect(refreshSource).toMatch(/allowMissingLive: true/);
+    // --allow and --allow-drop are parsed out before slugs are read.
+    expect(refreshSource).toMatch(/const rawArgs = gateOverrides\.rest;/);
   });
 
-  it('reprocess keeps refusing when live data cannot be read', () => {
-    expect(reprocessSource).toMatch(/dropGuardRefusal\(row\.liveCounts, row\.outputCounts, \{ allowDrop, allowMissingLive: false \}\)/);
+  it('reprocess keeps refusing when live data cannot be read, and gates the whole batch before any R2 write', () => {
+    expect(reprocessSource).toMatch(/evaluateRun\(\{[\s\S]*?allowMissingLive: false,/);
+    const gate = reprocessSource.indexOf('await gateProcessedRows(rows');
+    const publish = reprocessSource.indexOf('publishRow(row,');
+    expect(gate).toBeGreaterThan(0);
+    expect(publish).toBeGreaterThan(gate);
+    // The only R2 artifact write is inside publishRow.
+    expect(reprocessSource.match(/r2Put\(/g)).toHaveLength(1);
+    expect(reprocessSource.indexOf('r2Put(')).toBeGreaterThan(reprocessSource.indexOf('async function publishRow'));
+  });
+
+  it('reprocess --write applies the country-launch gate before processing and before any write (#668)', () => {
+    expect(reprocessSource.indexOf('reprocessCountryLaunchSkip(')).toBeLessThan(reprocessSource.indexOf('const targets ='));
+    expect(reprocessSource).toMatch(/const targets = selected\.filter\(agency => shouldProcess\(agency\) && !countrySkips\.has\(agency\.slug\)\)/);
+    const assertAt = reprocessSource.indexOf('assertCountryMayWriteToR2({');
+    expect(assertAt).toBeGreaterThan(reprocessSource.indexOf('async function publishRow'));
+    expect(reprocessSource.indexOf('r2Put(')).toBeGreaterThan(assertAt);
+  });
+
+  it('publish-data-release runs the gate before moving the release pointer', () => {
+    const publishSource = readFileSync(resolve('pipeline/publish-data-release.ts'), 'utf8');
+    const gate = publishSource.indexOf('evaluateRun(');
+    expect(gate).toBeGreaterThan(0);
+    expect(publishSource.indexOf("r2Put('atlas/release.json'")).toBeGreaterThan(publishSource.indexOf('if (gateReport.blocked.length)'));
+    expect(publishSource.indexOf('if (gateReport.blocked.length)')).toBeGreaterThan(gate);
+  });
+
+  it('refresh-release forwards gate overrides to publish and never reads them as slugs', () => {
+    const releaseSource = readFileSync(resolve('pipeline/refresh-release.ts'), 'utf8');
+    expect(releaseSource).toMatch(/requestedSlugs = overrides\.rest\.filter/);
+    expect(releaseSource).toMatch(/run\('publish-data-release', overrideArgs\(overrides\)\)/);
   });
 });

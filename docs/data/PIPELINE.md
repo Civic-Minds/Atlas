@@ -14,7 +14,7 @@ The pipeline downloads each agency's configured primary GTFS feed. Depending on 
 - **Update Frequency:** Feeds are checked and re-downloaded by a weekly scheduled refresh (temporarily paused).
 - **Fallbacks:** The refresh process tries the configured `feedUrl` first, then any `feedFallbackUrls`, then `mdbFeedUrl`, and finally the Mobility Database `latest.zip` equivalent of a dated or retired-mirror Mobility Database URL.
 - **Supplemental feeds:** Agencies that publish some service (often rail) in a separate GTFS zip list it in `supplementalFeedUrls`; every processing path merges those through one shared loader (`pipeline/agencyFeeds.ts`) so those routes are not silently dropped.
-- **Drop guard:** Refresh refuses to publish an agency whose rebuilt data would lose more than 20% of its live stops, stop points or routes, unless the drop is reviewed and accepted with `--allow-drop`.
+- **Release diff gate:** Refresh, reprocess and publish compare each agency's new output with live data before writing. They refuse an agency, or the release, on a red flag: a drop of more than 20%, a lost mode, output identical to another agency's, an emptied agency, a broad weekday headway shift, or expired service. A reviewed flag is accepted with `--allow <slug>:<flag>`, and reviewed drops with `--allow-drop`. See [the gate's flags and thresholds](../operations/DATA_REPROCESSING.md#release-diff-gate).
 
 ### 2. Active schedule detection
 GTFS feeds often package historical, current, and future service periods together. The pipeline checks the calendar dates inside the feed and programmatically determines which schedule is currently active.
