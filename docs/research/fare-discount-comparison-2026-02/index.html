@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CA Transit Discount Comparison</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts for Premium Feel -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <!-- Chart.js for data viz -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+    <header>
+        <h1>Transit Equity Monitor</h1>
+        <div class="subtitle">Comparing Low-Income Transit Programs Across California</div>
+    </header>
+
+    <!-- Interactive Section -->
+    <div class="card" style="margin-bottom: 2rem; border-color: var(--accent-color);">
+        <h2>Am I Eligible?</h2>
+        <p class="subtitle" style="margin-bottom: 1rem;">Enter your details to see which programs you might qualify for.
+        </p>
+
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: end;">
+            <div style="flex: 1; min-width: 200px;">
+                <label
+                    style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary); font-size: 0.9rem;">Annual
+                    Income ($)</label>
+                <input type="number" id="userIncome" placeholder="e.g. 35000"
+                    style="width: 100%; padding: 0.75rem; border-radius: 0.5rem; border: 1px solid var(--border-color); background: rgba(0,0,0,0.2); color:white;">
+            </div>
+            <!-- <div style="flex: 1; min-width: 200px;">
+                <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary); font-size: 0.9rem;">Household Size</label>
+                <select id="userHousehold" style="width: 100%; padding: 0.75rem; border-radius: 0.5rem; border: 1px solid var(--border-color); background: rgba(0,0,0,0.2); color:white;">
+                    <option value="1">1 Person</option>
+                    <option value="2">2 People</option>
+                    <option value="3">3 People</option>
+                    <option value="4">4+ People</option>
+                </select> 
+            </div> -->
+            <button onclick="checkEligibility()"
+                style="padding: 0.75rem 1.5rem; background: var(--accent-color); color: #000; border: none; border-radius: 0.5rem; font-weight: 700; cursor: pointer; transition: background 0.2s;">
+                Check Eligibility
+            </button>
+        </div>
+        <div id="eligibility-results"
+            style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border-color); display: none;">
+            <!-- Results injected here -->
+        </div>
+    </div>
+
+    <div class="dashboard-grid">
+        <!-- Visual Comparison: Income Thresholds -->
+        <div class="card">
+            <h2>Eligibility Thresholds (Single Adult)</h2>
+            <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem;">Annual income limit to
+                qualify for the program.</p>
+            <div id="income-chart-container">
+                <!-- Bars will be injected here JS -->
+            </div>
+        </div>
+
+        <!-- Visual Comparison: Discount Value -->
+        <div class="card">
+            <h2>Discount Magnitude</h2>
+            <div class="chart-container">
+                <canvas id="discountChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detailed Data Table -->
+    <div class="card" style="margin-bottom: 2rem;">
+        <h2>Program Details</h2>
+        <div class="table-container">
+            <table id="programs-table">
+                <thead>
+                    <tr>
+                        <th>Region</th>
+                        <th>Program</th>
+                        <th>Income Limit (1 Person)</th>
+                        <th>Discount Benefit</th>
+                        <th>Verification</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- JS will populate rows -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="footer-note">
+        Data based on early 2026 reports. Sources include agency websites, ChatGPT, and DeepSeek findings. <br>
+        "N/A" indicates no low-income specific program was found for general adults.
+    </div>
+
+    <script>
+        let globalData = [];
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const response = await fetch('./data.json');
+                globalData = await response.json();
+                renderDashboard(globalData);
+            } catch (error) {
+                console.error("Failed to load data:", error);
+                document.body.innerHTML += `<div style="color:red; text-align:center">Error loading data.json</div>`;
+            }
+        });
+
+        function checkEligibility() {
+            const incomeInput = document.getElementById('userIncome');
+            const income = parseInt(incomeInput.value);
+            const resultsDiv = document.getElementById('eligibility-results');
+
+            if (!income || isNaN(income)) {
+                alert("Please enter a valid income amount.");
+                return;
+            }
+
+            resultsDiv.style.display = 'block';
+            resultsDiv.innerHTML = '<h3 style="margin-bottom:1rem; font-size:1rem;">Your Potential Eligibility:</h3><div style="display:grid; gap:0.5rem;">';
+
+            let qualifiedCount = 0;
+
+            globalData.forEach(city => {
+                if (city.incomeThresholdSingle > 0) {
+                    const isEligible = income <= city.incomeThresholdSingle;
+                    const color = isEligible ? 'var(--success-color)' : 'var(--text-secondary)';
+                    const icon = isEligible ? '✅' : '❌';
+                    const text = isEligible ? 'Likely Qualify' : 'Income too high';
+
+                    if (isEligible) qualifiedCount++;
+
+                    resultsDiv.innerHTML += `
+                        <div style="display:flex; justify-content:space-between; padding: 0.75rem; background: rgba(255,255,255,0.03); border-radius: 0.5rem; border-left: 3px solid ${isEligible ? 'var(--success-color)' : 'transparent'}">
+                            <span><strong>${city.region}</strong> (${city.programName})</span>
+                            <span style="color: ${color}; font-weight:600;">${icon} ${text}</span>
+                        </div>
+                    `;
+                }
+            });
+
+            resultsDiv.innerHTML += '</div>';
+
+            if (qualifiedCount === 0) {
+                resultsDiv.innerHTML += `<p style="margin-top:1rem; color:var(--text-secondary); font-size:0.9rem;"><i>Note: Income limits often scale with household size. This check assumes a 1-person household.</i></p>`;
+            }
+        }
+
+        let costChartInstance = null;
+
+        function renderDashboard(data) {
+            renderTable(data);
+            renderIncomeChart(data);
+            renderDiscountChart(data);
+            updateCostChart('transit'); // Default view
+        }
+
+        function addNewCity() {
+            const region = document.getElementById('newRegion').value;
+            const program = document.getElementById('newProgram').value || "Manual Entry";
+            const income = parseInt(document.getElementById('newIncome').value) || 0;
+            const fare = parseFloat(document.getElementById('newFare').value) || 0;
+            const bike = parseFloat(document.getElementById('newBike').value) || 0;
+            const discount = document.getElementById('newDiscount').value || "N/A";
+
+            if (!region) {
+                alert("Region name is required");
+                return;
+            }
+
+            const newEntry = {
+                region: region,
+                programName: program,
+                incomeThresholdSingle: income,
+                incomeDetails: "User Added",
+                discountValue: discount,
+                discountSortValue: 0, // Simplified for manual entry
+                verification: "User Verified",
+                baseFare: fare,
+                bikeShareCost: bike,
+                bikeShareNote: "Manual Entry"
+            };
+
+            globalData.push(newEntry);
+            renderDashboard(globalData);
+
+            // Clear inputs
+            document.querySelectorAll('.input-field').forEach(input => input.value = '');
+
+            console.log("Updated Data JSON (Copy this to save permanently):", JSON.stringify(globalData, null, 2));
+        }
+
+        function updateCostChart(mode) {
+            // Update button styles
+            const btnTransit = document.getElementById('btn-transit');
+            const btnBike = document.getElementById('btn-bike');
+
+            if (mode === 'transit') {
+                btnTransit.className = 'badge badge-program';
+                btnTransit.style.color = 'var(--accent-color)';
+                btnTransit.style.background = 'rgba(56, 189, 248, 0.15)';
+
+                btnBike.className = 'badge';
+                btnBike.style.color = 'var(--text-secondary)';
+                btnBike.style.background = 'rgba(255,255,255,0.1)';
+            } else {
+                btnBike.className = 'badge badge-program';
+                btnBike.style.color = 'var(--accent-color)';
+                btnBike.style.background = 'rgba(56, 189, 248, 0.15)';
+
+                btnTransit.className = 'badge';
+                btnTransit.style.color = 'var(--text-secondary)';
+                btnTransit.style.background = 'rgba(255,255,255,0.1)';
+            }
+
+            const ctx = document.getElementById('costChart').getContext('2d');
+
+            if (costChartInstance) {
+                costChartInstance.destroy();
+            }
+
+            const labels = globalData.map(d => d.region);
+            let dataset = [];
+            let label = "";
+
+            if (mode === 'transit') {
+                label = "Single Ride Fare ($)";
+                dataset = globalData.map(d => d.baseFare || 0); // Handle missing data safely
+            } else {
+                label = "30-min Bike Share Cost ($)";
+                dataset = globalData.map(d => d.bikeShareCost || 0);
+            }
+
+            // Colors: Highlight expensive vs cheap
+            const colors = dataset.map(v => v === 0 ? '#334155' : (v > 5 ? '#f87171' : '#38bdf8'));
+
+            costChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: label,
+                        data: dataset,
+                        backgroundColor: colors,
+                        borderRadius: 6,
+                        borderSkipped: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    const val = context.raw;
+                                    if (val === 0) return "N/A";
+                                    return `$${val.toFixed(2)}`;
+                                },
+                                afterLabel: function (context) {
+                                    if (mode === 'bike') {
+                                        return globalData[context.dataIndex].bikeShareNote || "";
+                                    }
+                                    return null;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(255,255,255,0.1)' },
+                            ticks: {
+                                color: '#94a3b8',
+                                callback: function (value) { return '$' + value; }
+                            }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#94a3b8' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderTable(data) {
+            const tbody = document.querySelector('#programs-table tbody');
+            tbody.innerHTML = '';
+
+            data.forEach(item => {
+                const tr = document.createElement('tr');
+
+                const incomeDisplay = item.incomeThresholdSingle > 0
+                    ? `$${item.incomeThresholdSingle.toLocaleString()}`
+                    : '<span style="color: var(--text-secondary)">--</span>';
+
+                const programBadge = item.programName.includes("N/A")
+                    ? `<span class="badge badge-na">No Program</span>`
+                    : `<span class="badge badge-program">${item.programName}</span>`;
+
+                tr.innerHTML = `
+                    <td><strong>${item.region}</strong></td>
+                    <td>${programBadge}</td>
+                    <td>${incomeDisplay}<div style="font-size:0.8rem; color:var(--text-secondary)">${item.incomeDetails}</div></td>
+                    <td class="value-highlight">${item.discountValue}</td>
+                    <td style="font-size: 0.9rem;">${item.verification}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderIncomeChart(data) {
+            const container = document.getElementById('income-chart-container');
+            container.innerHTML = '';
+
+            // Find max for scaling
+            const maxIncome = Math.max(...data.map(d => d.incomeThresholdSingle || 0));
+
+            data.forEach(item => {
+                const value = item.incomeThresholdSingle || 0;
+                const percentage = maxIncome > 0 ? (value / maxIncome) * 100 : 0;
+                const displayValue = value > 0 ? `$${value.toLocaleString()}` : 'N/A';
+
+                const html = `
+                    <div class="bar-chart-row">
+                        <div class="bar-label">${item.region}</div>
+                        <div class="bar-track">
+                             <div class="bar-fill" style="width: ${percentage}%; opacity: ${value ? 1 : 0.3}">
+                                <span class="bar-value-text">${displayValue}</span>
+                             </div>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += html;
+            });
+        }
+
+        function renderDiscountChart(data) {
+            const ctx = document.getElementById('discountChart').getContext('2d');
+
+            // Filter out N/A for cleaner chart, or keep them with 0
+            const labels = data.map(d => d.region);
+            const values = data.map(d => d.discountSortValue); // rough approximation percentage
+            const colors = values.map(v => v > 0 ? '#38bdf8' : '#334155');
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Estimated Discount Value (%)',
+                        data: values,
+                        backgroundColor: colors,
+                        borderRadius: 6,
+                        borderSkipped: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    const item = data[context.dataIndex];
+                                    return item.discountValue;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            grid: { color: 'rgba(255,255,255,0.1)' },
+                            ticks: { color: '#94a3b8' }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#94a3b8' }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>
