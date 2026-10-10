@@ -4,7 +4,7 @@ import JSZip from 'jszip';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { processGtfsBuffer } from '../process-core';
 import { parseGtfsZip } from '../parseGtfs';
-import { getActiveServiceIds } from '../transit-calendar';
+import { detectReferenceDate, getActiveServiceIds } from '../transit-calendar';
 import { computeRawDepartures } from '../transit-phase1';
 
 // #658: a holiday in the feed's reference week (Thanksgiving / Indigenous Peoples' Day,
@@ -79,5 +79,45 @@ describe('holiday in the reference week (#658)', () => {
       const tuesday = raw.find(r => r.day === 'Tuesday' && r.dir === dir);
       expect(monday?.departureTimes).toEqual(tuesday?.departureTimes);
     }
+  });
+});
+
+describe('reference date inside the service period (SCT, #658)', () => {
+  // Real SCT calendar.txt / calendar_dates.txt. Every service runs to the open-ended
+  // 20991231, so the calendar midpoint is decades out and the holiday exceptions
+  // (May-Dec 2026) override it. Their midpoint (Sep 9) is before the newest period
+  // starts (Oct 1), which dropped every route that only runs in that period (SCT
+  // Central, 15 routes). trip_counts.txt is the real trips.txt reduced to counts.
+  const dir = resolve(FIXTURES, 'sct-open-ended-calendar');
+  const csv = (file: string) => {
+    const [header, ...rows] = readFileSync(resolve(dir, file), 'utf8').trim().split('\n');
+    const cols = header.split(',');
+    return rows.map(row => Object.fromEntries(row.split(',').map((v, i) => [cols[i], v])));
+  };
+  const calendar = csv('calendar.txt') as any[];
+  const calendarDates = csv('calendar_dates.txt') as any[];
+  const trips = csv('trip_counts.txt').flatMap((r: any) =>
+    Array.from({ length: Number(r.trips) }, () => ({ route_id: r.route_id, service_id: r.service_id })));
+
+  beforeAll(() => {
+    vi.useFakeTimers({ toFake: ['Date'], now: new Date('2026-10-10T12:00:00') });
+  });
+  afterAll(() => {
+    vi.useRealTimers();
+  });
+
+  it('keeps the reference date at or after the start of the newest period', () => {
+    const ref = detectReferenceDate(calendar, calendarDates, trips);
+    expect(ref >= '20261001').toBe(true);
+    const routes = (day: 'Monday' | 'Saturday' | 'Sunday') => {
+      const ids = getActiveServiceIds(calendar, calendarDates, day, ref);
+      return new Set(trips.filter(t => ids.has(t.service_id)).map(t => t.route_id));
+    };
+    const allRoutes = new Set(trips.map(t => t.route_id));
+    // Every route in the feed runs on at least one day type (24 routes, as the
+    // official feed lists for the next two weeks).
+    const running = new Set([...routes('Monday'), ...routes('Saturday'), ...routes('Sunday')]);
+    expect(running.size).toBe(allRoutes.size);
+    expect(getActiveServiceIds(calendar, calendarDates, 'Monday', ref).has('272-1')).toBe(true);
   });
 });

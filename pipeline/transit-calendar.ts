@@ -153,7 +153,13 @@ export function detectReferenceDate(
             const datesMidMs = datesMid.getTime();
             const diffDays = Math.abs(calendarRefMs - datesMidMs) / 86400000;
             if (diffDays > 90 && datesMidMs < calendarRefMs && addedSpanDays < 365) {
-                return `${datesMid.getFullYear()}${String(datesMid.getMonth() + 1).padStart(2, '0')}${String(datesMid.getDate()).padStart(2, '0')}`;
+                const datesRef = `${datesMid.getFullYear()}${String(datesMid.getMonth() + 1).padStart(2, '0')}${String(datesMid.getDate()).padStart(2, '0')}`;
+                // Never land before the period this reference date stands for. SCT's
+                // calendar runs to the open-ended 20991231, so the calendar midpoint is
+                // decades out and holiday exceptions (May-Dec) win, but their midpoint
+                // (Sep 9) is before the newest period starts (Oct 1), which dropped all
+                // 15 routes that only run in that period (#658).
+                return datesRef < bestStartDate ? bestStartDate : datesRef;
             }
         }
     }
