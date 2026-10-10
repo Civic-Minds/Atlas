@@ -15066,8 +15066,8 @@
     },
     {
       "slug": "scat",
-      "name": "SCAT (Sarasota County)",
-      "websiteUrl": "https://321transit.com",
+      "name": "Breeze Transit (Sarasota County)",
+      "websiteUrl": "https://www.scgov.net/government/breeze-transit",
       "center": [
         27.34,
         -82.53
@@ -15078,11 +15078,10 @@
         27.7,
         -82.1
       ],
-      "feedUrl": "http://data.trilliumtransit.com/gtfs/spacecoast-fl-us/spacecoast-fl-us.zip",
+      "feedUrl": "https://breezerider.tripsparkhost.com/gtfs/Static/google_transit.zip",
       "hiddenInProduction": true,
-      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-348/mdb-348-202404220004/mdb-348-202404220004.zip",
       "region": "Florida",
-      "lastFeedExpiry": "20290629",
+      "lastFeedExpiry": null,
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-08-10",
       "cities": [
@@ -15093,7 +15092,7 @@
       "lastFeedCheckAt": "20261007",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20290629",
+      "expiredFeedCheckExpiry": null,
       "timezone": "America/New_York"
     },
     {
