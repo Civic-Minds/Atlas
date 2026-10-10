@@ -20,7 +20,7 @@ import {
 } from '../cardUi';
 import { CARD_NOTICE, CARD_NOTICE_FOOTER } from '../../../styles';
 import { FEATURES, SPARKLINE_HOURS, TIME_PERIODS, formatPeriodHourLong, formatPeriodRangeLong, periodKeyForHour } from '../../../../shared/config';
-import { effectiveRouteHeadway, hasDirectionPeriodService, routeCardCoverageText, routeCardDisplayHeadway, routeCardDisplayHeadwayRange } from '../../../utils/effectiveHeadway';
+import { hasDirectionPeriodService, routeCardCoverageText, routeCardDisplayHeadway, routeCardDisplayHeadwayRange } from '../../../utils/effectiveHeadway';
 import { buildRouteServiceSummary, metricValueForPeriod } from '../../../utils/routeFacts';
 import { unevenPeriodMaxGap } from '../../../utils/routeCardUneven';
 import {
@@ -36,6 +36,7 @@ import { shouldShowDirectionSections } from '../../../utils/routeCardDirectionLa
 import type { VariantFamily } from '../../../utils/routeVariants';
 import { currentAtlasUrl } from '../../../utils/reportIssue';
 import { ROUTE_DATA_QUALITY_WARNING, ROUTE_DATA_QUALITY_WARNING_MESSAGE } from '../../../../shared/routeDataQuality';
+import { featurePassesHeadwayFilter, routeFilterHeadway } from '../../../../shared/routeHeadwayFilter';
 import { expiredFeedNotice, periodServiceNotice, selectedRouteFilterNotice, selectedRouteOutsideFilterNotice, unevenServiceNotice } from '../../../content/noticeCopy';
 
 function medianHeadway(values: number[]): number {
@@ -436,7 +437,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
         </div>
       )}
       <SidebarCardList>
-        {selectedRouteOutOfFilter && !(hasCoreSummary && coreHeadway != null && coreHeadway <= maxHeadway) && (
+        {selectedRouteOutOfFilter && (
           <div className={CARD_NOTICE_FOOTER}>
             <p className={CARD_NOTICE}>
               {selectedPeriod && activePeriodRangeText
@@ -538,8 +539,10 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                 )}
                 <div className="space-y-1">
                   {group.realTier.map((d, i) => {
-                    const branchFilterHeadway = effectiveRouteHeadway(d, period);
-                    const dimmed = maxHeadway !== Infinity && (branchFilterHeadway ?? Infinity) > maxHeadway;
+                    // Dimming and colour follow the one frequency rule (worst direction decides),
+                    // exactly as the map does; the row's own cadence stays display-only (#564).
+                    const branchFilterHeadway = routeFilterHeadway(d, period);
+                    const dimmed = maxHeadway !== Infinity && !featurePassesHeadwayFilter(d, period, maxHeadway);
                     return (() => {
                       const displayH = hoveredHour != null
                         ? buildRouteServiceSummary(d).branch.byHour?.[hoveredHour] ?? routeCardDisplayHeadway(d, period)

@@ -19,7 +19,7 @@ import { Z_PANEL, MAP_BADGE } from '../../styles';
 import { LIVE_POLLING_ROUTES } from '../../../shared/livePollingConfig';
 import { useColorVision } from '../../context/ColorVisionContext';
 import { tileEffectiveHeadwayExpr, tileRouteKeyExpr } from '../../../shared/tileFilterExprs';
-import { effectiveRouteHeadway } from '../../utils/effectiveHeadway';
+import { routeFilterHeadway } from '../../../shared/routeHeadwayFilter';
 import { syncUrlParams } from '../../utils/syncUrlParams';
 import { buildFocusedRoutePaint, buildSelectedRouteLineOpacity } from '../../utils/routeFocus';
 import { dedupeRouteKeysByDisplay, splitRouteKey } from '../../utils/routeKey';
@@ -523,7 +523,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         const properties = feature.properties as Record<string, any> | null;
         if (!properties?.routeId || !properties.routeShortName) return [];
         if (feature.geometry.type !== 'LineString' && feature.geometry.type !== 'MultiLineString') return [];
-        const periodHeadway = effectiveRouteHeadway(properties as ShapeProperties, period);
+        const periodHeadway = routeFilterHeadway(properties, period);
         return [{
           ...feature,
           properties: {

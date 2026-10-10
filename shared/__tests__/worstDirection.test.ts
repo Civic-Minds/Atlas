@@ -186,4 +186,36 @@ describe('stampWorstDirectionHeadways', () => {
     expect(features[0].properties.worstDirectionPeriodCoverageHeadway?.overnight).toBe(150);
     expect(features[1].properties.worstDirectionPeriodCoverageHeadway?.overnight).toBe(150);
   });
+
+  it('stamps routes that publish no short name by route id (rail lines like MBTA Red, Metro-North)', () => {
+    const red = (directionId: number, midday: number, routeId = 'Red') => ({
+      properties: { routeShortName: '', routeId, day: 'Weekday', directionId, headway: midday, headwayByPeriod: { midday } },
+    }) as WorstDirectionFeature;
+    const features = [red(0, 9), red(1, 14), red(0, 30, 'Blue'), red(1, 5, 'Blue')];
+    stampWorstDirectionHeadways(features);
+    expect(features[0].properties.worstDirectionHeadwayByPeriod?.midday).toBe(14);
+    expect(features[1].properties.worstDirectionHeadwayByPeriod?.midday).toBe(14);
+    expect(features[2].properties.worstDirectionHeadwayByPeriod?.midday).toBe(30);
+    expect(features[3].properties.worstDirectionHeadway).toBe(30);
+  });
+  it('drops an occasional extension when the direction has a steady main pattern', () => {
+    const features = [
+      feat({ routeShortName: 'X', day: 'Weekday', directionId: 0, tier: '10', headway: 5, headwayByPeriod: { amPeak: 5 }, headwayByPeriodSustained: { amPeak: true } }),
+      feat({ routeShortName: 'X', day: 'Weekday', directionId: 0, tier: 'infrequent', headway: 40, headwayByPeriod: { amPeak: 23 }, headwayByPeriodSustained: { amPeak: true } }),
+      feat({ routeShortName: 'X', day: 'Weekday', directionId: 1, tier: '10', headway: 4, headwayByPeriod: { amPeak: 4 }, headwayByPeriodSustained: { amPeak: true } }),
+    ];
+    stampWorstDirectionHeadways(features);
+    expect(features[0].properties.worstDirectionHeadwayByPeriod).toEqual({ amPeak: 5 });
+  });
+
+  it('never lets a direction vanish: a non-steady main pattern keeps the extension in the check', () => {
+    // TransLink 99 shape (#602): eastbound main pattern non-steady, only the extension is steady.
+    const features = [
+      feat({ routeShortName: 'Y', day: 'Weekday', directionId: 0, tier: '10', headway: 3, headwayByPeriod: { amPeak: 4 }, headwayByPeriodSustained: { amPeak: false } }),
+      feat({ routeShortName: 'Y', day: 'Weekday', directionId: 0, tier: 'infrequent', headway: 9, headwayByPeriod: { amPeak: 23 }, headwayByPeriodSustained: { amPeak: true } }),
+      feat({ routeShortName: 'Y', day: 'Weekday', directionId: 1, tier: '10', headway: 3, headwayByPeriod: { amPeak: 3 }, headwayByPeriodSustained: { amPeak: true } }),
+    ];
+    stampWorstDirectionHeadways(features);
+    expect(features[2].properties.worstDirectionHeadwayByPeriod).toEqual({ amPeak: 23 });
+  });
 });

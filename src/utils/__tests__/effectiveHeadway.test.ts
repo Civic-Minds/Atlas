@@ -1,8 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { effectiveRouteHeadway, hasDirectionPeriodService, routeCardCoverageText, routeCardDisplayHeadway, routeCardTypicalText, routeListDisplayHeadway } from '../effectiveHeadway';
+import { routeFilterHeadway } from '../../../shared/routeHeadwayFilter';
+import { hasDirectionPeriodService, routeCardCoverageText, routeCardDisplayHeadway, routeCardTypicalText, routeListDisplayHeadway } from '../effectiveHeadway';
 import type { ShapeProperties } from '../../hooks/useIntervalStats';
 
-describe('effectiveRouteHeadway', () => {
+describe('route filter headway and card display', () => {
   const base: ShapeProperties = {
     routeId: '1',
     directionId: 0,
@@ -38,8 +39,8 @@ describe('effectiveRouteHeadway', () => {
       headway: 10,
       headwayByPeriod: { midday: 10, pmPeak: 6 },
     } as ShapeProperties;
-    expect(effectiveRouteHeadway(p, 'midday')).toBe(10);
-    expect(effectiveRouteHeadway(p, 'pmPeak')).toBe(6);
+    expect(routeFilterHeadway(p, 'midday')).toBe(10);
+    expect(routeFilterHeadway(p, 'pmPeak')).toBe(6);
   });
 
   it('does not expose clustered period gaps from limited-service branches', () => {
@@ -74,10 +75,10 @@ describe('effectiveRouteHeadway', () => {
       worstDirectionHeadwayByPeriod: { midday: 8 },
     } as ShapeProperties;
     expect(routeCardDisplayHeadway(p, 'midday')).toBe(6);
-    expect(effectiveRouteHeadway(p, 'midday')).toBe(8);
+    expect(routeFilterHeadway(p, 'midday')).toBe(8);
   });
 
-  it('uses the headsign-scoped trunk cadence for active branch filtering', () => {
+  it('shows the branch cadence but filters on the worst direction, never the headsign trunk (#564, owner rule)', () => {
     const p = {
       ...base,
       headway: 9,
@@ -86,7 +87,7 @@ describe('effectiveRouteHeadway', () => {
       headsignMinStopHeadwayByPeriod: { midday: 4 },
     } as ShapeProperties;
     expect(routeCardDisplayHeadway(p, 'midday')).toBe(9);
-    expect(effectiveRouteHeadway(p, 'midday')).toBe(4);
+    expect(routeFilterHeadway(p, 'midday')).toBe(22);
   });
 
   it('keeps the active period cadence for display while filtering unsustained data conservatively', () => {
@@ -101,7 +102,7 @@ describe('effectiveRouteHeadway', () => {
     expect(routeListDisplayHeadway([p], 'midday')).toBe(2);
     // Without a full-window coverage value, the filter must not treat the median as
     // sustained service. The card still shows the active cadence above.
-    expect(effectiveRouteHeadway(p, 'midday')).toBeNull();
+    expect(routeFilterHeadway(p, 'midday')).toBeNull();
   });
 
   it('does not let an unsustained legacy median create service without coverage data', () => {
@@ -111,7 +112,7 @@ describe('effectiveRouteHeadway', () => {
       headwayByPeriodSustained: { overnight: false },
     } as ShapeProperties;
 
-    expect(effectiveRouteHeadway(p, 'overnight')).toBeNull();
+    expect(routeFilterHeadway(p, 'overnight')).toBeNull();
   });
 
   it('does not show a false composite 2-minute branch when route-level service is 12 minutes', () => {
@@ -124,7 +125,7 @@ describe('effectiveRouteHeadway', () => {
       headwayByPeriodSustained: { midday: true },
     } as ShapeProperties;
     expect(routeCardDisplayHeadway(p, 'midday')).toBe(2);
-    expect(effectiveRouteHeadway(p, 'midday')).toBe(12);
+    expect(routeFilterHeadway(p, 'midday')).toBe(12);
   });
 
   it('falls back to all-day headway when period is all', () => {
@@ -134,7 +135,7 @@ describe('effectiveRouteHeadway', () => {
       worstDirectionHeadway: 12,
       headwayByPeriod: { pmPeak: 6 },
     } as ShapeProperties;
-    expect(effectiveRouteHeadway(p, 'all')).toBe(12);
+    expect(routeFilterHeadway(p, 'all')).toBe(12);
   });
 
   it('keeps the TTC 900 display metric consistent across route cards and lists', () => {
@@ -156,8 +157,8 @@ describe('effectiveRouteHeadway', () => {
     // #314: minStopHeadway no longer drives the filter metric on its own -- with no
     // worstDirectionHeadwayByPeriod present, the filter falls back to this branch's own
     // period headway, not the best qualifying stop.
-    expect(effectiveRouteHeadway(p, 'pmPeak')).toBe(9);
-    expect(effectiveRouteHeadway(p, 'all')).toBe(9);
+    expect(routeFilterHeadway(p, 'pmPeak')).toBe(9);
+    expect(routeFilterHeadway(p, 'all')).toBe(9);
   });
 
   it('uses the best active-period display cadence across route directions', () => {
@@ -204,7 +205,7 @@ describe('effectiveRouteHeadway', () => {
     expect(routeListDisplayHeadway([outbound, inbound], 'pmPeak')).toBe(9);
     // #314: no worstDirectionHeadwayByPeriod on this fixture, so the filter falls back to
     // inbound's own period headway (9), not its 1-min minStopHeadway.
-    expect(effectiveRouteHeadway(inbound, 'pmPeak')).toBe(9);
+    expect(routeFilterHeadway(inbound, 'pmPeak')).toBe(9);
   });
 
   it('Near You does not show overnight hourly spikes when period summary is null (#206)', () => {
@@ -236,7 +237,7 @@ describe('effectiveRouteHeadway', () => {
       headsignMinStopHeadwayByPeriod: { overnight: 10 },
     } as ShapeProperties;
 
-    expect(effectiveRouteHeadway(p, 'overnight')).toBeNull();
+    expect(routeFilterHeadway(p, 'overnight')).toBeNull();
   });
 
   it('does not replace an explicit no-service period with a shared-stop cadence', () => {
@@ -259,7 +260,7 @@ describe('effectiveRouteHeadway', () => {
       tier: '10',
     } as ShapeProperties;
     expect(routeCardDisplayHeadway(p, 'overnight')).toBe(10);
-    expect(effectiveRouteHeadway(p, 'overnight')).toBe(171);
+    expect(routeFilterHeadway(p, 'overnight')).toBe(171);
   });
 
   it('preserves active-service cadence on cards while filtering by full-period coverage (#507)', () => {
@@ -271,7 +272,7 @@ describe('effectiveRouteHeadway', () => {
       tier: '30',
     } as ShapeProperties;
     expect(routeCardDisplayHeadway(p, 'overnight')).toBe(24);
-    expect(effectiveRouteHeadway(p, 'overnight')).toBe(190);
+    expect(routeFilterHeadway(p, 'overnight')).toBe(190);
   });
 
   it('preserves cadence for sustained infrequent routes with coverage > 60m', () => {
@@ -283,7 +284,7 @@ describe('effectiveRouteHeadway', () => {
       tier: '60',
     } as ShapeProperties;
     expect(routeCardDisplayHeadway(p, 'midday')).toBe(60);
-    expect(effectiveRouteHeadway(p, 'midday')).toBe(61);
+    expect(routeFilterHeadway(p, 'midday')).toBe(61);
   });
 
   it('does not replace null worst-direction coverage with a shared-stop cadence', () => {
@@ -295,7 +296,7 @@ describe('effectiveRouteHeadway', () => {
       worstDirectionPeriodCoverageHeadway: { overnight: null },
       headsignMinStopHeadwayByPeriod: { overnight: 29 },
     } as ShapeProperties;
-    expect(effectiveRouteHeadway(p, 'overnight')).toBeNull();
+    expect(routeFilterHeadway(p, 'overnight')).toBeNull();
   });
 
   it('detects partial period service for routes starting late or ending early (#507)', () => {
