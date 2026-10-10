@@ -1,0 +1,10 @@
+stop_id,stop_name,stop_lat,stop_lon
+1079,Gerrard St East at Ashdale Ave,43.67239,-79.321719
+1085,Gerrard St East at Coxwell Ave,43.672761,-79.319529
+1252,High Park Loop,43.647681,-79.458045
+1800,Coxwell Ave at Gerrard St East,43.675096,-79.320091
+1108,Gerrard St East at St Matthews Rd,43.664968,-79.354903
+1794,Coxwell Ave at Lower Gerrard St East,43.673091,-79.319449
+1758,Broadview Ave at Gerrard St East,43.665663,-79.352794
+14741,Main Street Station,43.688861,-79.301804
+14776,Spadina Station,43.667424,-79.403665
