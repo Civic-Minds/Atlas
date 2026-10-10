@@ -1,6 +1,8 @@
 {
   "slug": "fred-transit",
   "name": "Fredericksburg Regional Transit",
+  "hiddenInProduction": true,
+  "issueUrl": "https://github.com/Civic-Minds/Atlas/issues/684",
   "websiteUrl": "http://www.ridefred.com/",
   "center": [
     38.3204,
