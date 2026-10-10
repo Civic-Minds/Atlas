@@ -1,6 +1,7 @@
 {
   "slug": "islandtransit",
   "name": "Island Transit (Whidbey Island)",
+  "displayArea": "Whidbey Island",
   "websiteUrl": "https://www.islandtransit.org/",
   "center": [
     48.22,

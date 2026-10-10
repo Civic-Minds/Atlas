@@ -1,6 +1,7 @@
 {
   "slug": "snoqualmie-valley",
   "name": "Snoqualmie Valley Transportation",
+  "displayArea": "Snoqualmie Valley",
   "websiteUrl": "http://www.svtbus.org/",
   "region": "Washington",
   "center": [

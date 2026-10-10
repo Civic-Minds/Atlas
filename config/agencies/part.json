@@ -1,6 +1,7 @@
 {
   "slug": "part",
   "name": "Putnam Area Rapid Transit (PART)",
+  "displayArea": "Putnam County",
   "websiteUrl": "http://www.putnamcountyny.com/PART/",
   "region": "New York",
   "center": [

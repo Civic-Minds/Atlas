@@ -1,12 +1,16 @@
 {
   "slug": "ottumwa",
   "name": "10-15 Transit",
+  "websiteUrl": "https://www.1015transit.com/",
   "center": [
     41.15,
     -92.52
   ],
   "timezone": "America/Chicago",
-  "feedUrl": null,
+  "feedUrl": "http://data.trilliumtransit.com/gtfs/10-15transit-ia-us/10-15transit-ia-us.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-195/latest.zip",
+  "region": "Iowa",
+  "staged": true,
   "lastFeedExpiry": "20270301",
   "lastFeedVersion": "UTC: 20-Aug-2026 23:12",
   "lastRefreshedAt": "2026-09-10",

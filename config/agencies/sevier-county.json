@@ -1,12 +1,16 @@
 {
   "slug": "sevier-county",
   "name": "City of Gatlinburg Trolley",
+  "websiteUrl": "https://www.gatlinburg.com/trolley/",
   "center": [
     35.73,
     -83.47
   ],
   "timezone": "America/New_York",
-  "feedUrl": null,
+  "feedUrl": "http://gatlinburg.connexionz.net/rtt/public/utility/gtfs.aspx",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-6775/latest.zip",
+  "region": "Tennessee",
+  "staged": true,
   "lastFeedExpiry": "20271231",
   "lastFeedVersion": "20260515",
   "lastRefreshedAt": "2026-09-10",

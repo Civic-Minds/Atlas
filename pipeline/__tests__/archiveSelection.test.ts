@@ -8,6 +8,7 @@ import {
   feedDateRefusal,
   outputDropRefusal,
   peekFeedDates,
+  reprocessCountryLaunchSkip,
   selectArchiveForAgency,
   type ArchiveObject,
 } from '../archiveSelection.js';
@@ -124,6 +125,24 @@ describe('feedDateRefusal', () => {
   });
 });
 
+describe('reprocessCountryLaunchSkip (#668)', () => {
+  const registry = [
+    { slug: 'ttc', region: 'Ontario', center: [43.65, -79.38] as [number, number] },
+    { slug: 'metz', region: 'Grand Est', center: [49.12, 6.18] as [number, number], hiddenInProduction: true },
+  ];
+
+  it('skips an unlaunched-country agency on --write, even when named with --include-hidden', () => {
+    expect(reprocessCountryLaunchSkip(registry[1], registry, { write: true, forceLaunch: false }))
+      .toMatch(/unlaunched country: France.*--i-am-launching-country/);
+  });
+
+  it('allows it with --i-am-launching-country, in a dry run, and for launched countries', () => {
+    expect(reprocessCountryLaunchSkip(registry[1], registry, { write: true, forceLaunch: true })).toBeNull();
+    expect(reprocessCountryLaunchSkip(registry[1], registry, { write: false, forceLaunch: false })).toBeNull();
+    expect(reprocessCountryLaunchSkip(registry[0], registry, { write: true, forceLaunch: false })).toBeNull();
+  });
+});
+
 describe('peekFeedDates', () => {
   it('uses the latest calendar date, not only feed_info', async () => {
     const zip = new JSZip();
@@ -131,11 +150,19 @@ describe('peekFeedDates', () => {
     zip.file('calendar.txt', 'service_id,start_date,end_date\nwk,20260101,20261128\n');
     zip.file('calendar_dates.txt', 'service_id,date,exception_type\nwk,20261231,2\n');
     const buf = await zip.generateAsync({ type: 'nodebuffer' });
-    expect(await peekFeedDates(buf)).toEqual({ feedExpiry: '20261128', feedVersion: 'v7' });
+    expect(await peekFeedDates(buf)).toEqual({ feedStart: '20260101', feedExpiry: '20261128', feedVersion: 'v7' });
+  });
+
+  it('reads a future start from calendar.txt (Breeze/scat starts Oct 19)', async () => {
+    const zip = new JSZip();
+    zip.file('feed_info.txt', 'feed_publisher_name,feed_start_date,feed_end_date\nX,20261001,20261204\n');
+    zip.file('calendar.txt', 'service_id,start_date,end_date\nwk,20261019,20261204\n');
+    const buf = await zip.generateAsync({ type: 'nodebuffer' });
+    expect((await peekFeedDates(buf)).feedStart).toBe('20261019');
   });
 
   it('returns nulls for an unreadable zip', async () => {
-    expect(await peekFeedDates(Buffer.from('not a zip'))).toEqual({ feedExpiry: null, feedVersion: null });
+    expect(await peekFeedDates(Buffer.from('not a zip'))).toEqual({ feedStart: null, feedExpiry: null, feedVersion: null });
   });
 });
 

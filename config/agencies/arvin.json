@@ -1,6 +1,7 @@
 {
   "slug": "arvin",
   "name": "Arvin Transit",
+  "displayArea": "Arvin",
   "websiteUrl": "https://www.arvin.org/202/Routes-Schedules-Fares",
   "region": "California",
   "center": [

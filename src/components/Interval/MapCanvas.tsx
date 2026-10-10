@@ -270,6 +270,8 @@ interface MapCanvasProps {
   onMapContextOpenChange?: (open: boolean) => void;
   onMapContextAgencyCountChange?: (count: number) => void;
   onMapContextRouteCountChange?: (count: number) => void;
+  /** Route keys drawn in view, counted the same way as the route-count badge (compare mode labels). */
+  onRenderedRouteKeysChange?: (keys: Set<string>) => void;
   day?: DayType;
   routesForStop?: {
     slug: string;
@@ -304,6 +306,13 @@ interface MapCanvasProps {
   selectedModes?: Set<number>;
   selectedAgencies?: Set<string>;
   initialMapCenter?: { lat: number; lon: number; zoom: number };
+  /**
+   * Second map in compare mode: follows the first map's camera, so it never writes the URL or
+   * saved view, has no map controls or context menu, and does not expose itself for debugging.
+   */
+  secondary?: boolean;
+  /** Receives the MapLibre map once it has loaded (and null when it is removed), for camera sync. */
+  onMapReady?: (map: maplibregl.Map | null) => void;
   /** On-demand agency named in the opening URL (`?ondemand=`); frames its zones when the URL has no lat/lon. */
   initialOnDemandSlug?: string | null;
   onTileLoadingChange?: (loading: boolean) => void;
@@ -347,6 +356,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   onMapContextOpenChange,
   onMapContextAgencyCountChange,
   onMapContextRouteCountChange,
+  onRenderedRouteKeysChange,
   day = 'Weekday',
   routesForStop,
   showRouteLayers = true,
@@ -374,6 +384,8 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   selectedModes = new Set(),
   selectedAgencies,
   initialMapCenter,
+  secondary = false,
+  onMapReady,
   initialOnDemandSlug = null,
   onTileLoadingChange,
   onBasemapLoadingChange,
@@ -592,19 +604,24 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     }),
   }), [day, onDemandAgencies, onDemandFocus, period]);
 
+  const renderedRouteKeysRef = useRef(onRenderedRouteKeysChange);
+  renderedRouteKeysRef.current = onRenderedRouteKeysChange;
+  const reportsRenderedRoutes = !!onRenderedRouteKeysChange;
   const updateMapContext = useCallback(() => {
     const map = mapRef.current;
-    if (!showMapContext || !map || !mapLoaded) {
+    if ((!showMapContext && !reportsRenderedRoutes) || !map || !mapLoaded) {
       setMapContextAgencies([]);
       return;
     }
     const layers = ['overview-routes-layer', 'routes-layer', 'local-routes-layer'].filter(layer => map.getLayer(layer));
     const features = layers.length > 0 ? map.queryRenderedFeatures(undefined, { layers }) : [];
-    setMapContextAgencies(getMapContextAgenciesFromFeatures(agencies, features));
-  }, [agencies, mapLoaded, showMapContext]);
+    const contextAgencies = getMapContextAgenciesFromFeatures(agencies, features);
+    if (showMapContext) setMapContextAgencies(contextAgencies);
+    renderedRouteKeysRef.current?.(new Set(contextAgencies.flatMap(agency => agency.routes.map(route => route.key))));
+  }, [agencies, mapLoaded, showMapContext, reportsRenderedRoutes]);
 
   useEffect(() => {
-    if (!mapLoaded || !showMapContext) return;
+    if (!mapLoaded || (!showMapContext && !reportsRenderedRoutes)) return;
     const map = mapRef.current;
     if (!map) return;
     updateMapContext();
@@ -779,6 +796,10 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   const onOnDemandStopClickRef = useRef(onOnDemandStopClick);
   const onOnDemandZoneClickRef = useRef(onOnDemandZoneClick);
   const onBoundsChangeRef = useRef(onBoundsChange);
+  const onMapReadyRef = useRef(onMapReady);
+  onMapReadyRef.current = onMapReady;
+  const secondaryRef = useRef(secondary);
+  secondaryRef.current = secondary;
   const onTileLoadingChangeRef = useRef(onTileLoadingChange);
   const onBasemapLoadingChangeRef = useRef(onBasemapLoadingChange);
   const onClearSelectionRef = useRef(onClearSelection);
@@ -1561,7 +1582,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       // Deck.gl is attached lazily when Live Vehicles first needs markers
       // (see useLiveVehiclesLayer) so Frequency Map doesn't pay the deck bundle cost.
       if (import.meta.env.DEV) {
-        (window as any).__map = map;
+        (window as any)[secondary ? '__mapB' : '__map'] = map;
       }
 
       // Start loading nearby agency data as soon as the map is ready. Waiting for
@@ -1571,12 +1592,14 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       onBoundsChangeRef.current(bounds, map.getZoom());
       setBoundsAndZoom(bounds, map.getZoom());
       setMapLoaded(true);
+      onMapReadyRef.current?.(map);
     });
 
     })();
 
     return () => {
       cancelled = true;
+      onMapReadyRef.current?.(null);
       cleanupMap?.remove();
       if (mapRef.current === cleanupMap) mapRef.current = null;
     };
@@ -1668,15 +1691,18 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     const onMove = () => {
       const c = map.getCenter();
       const z = map.getZoom();
-      saveView(c.lat, c.lng, z);
       setZoom(z);
-      // Shared merge reads window.location at call time so concurrent writers
-      // (day/route/filters) and React Router path switches don't clobber params.
-      syncUrlParams({
-        lat: c.lat.toFixed(5),
-        lon: c.lng.toFixed(5),
-        z: z.toFixed(2),
-      });
+      // The compare-mode second map follows the first one; only the first owns the URL view.
+      if (!secondaryRef.current) {
+        saveView(c.lat, c.lng, z);
+        // Shared merge reads window.location at call time so concurrent writers
+        // (day/route/filters) and React Router path switches don't clobber params.
+        syncUrlParams({
+          lat: c.lat.toFixed(5),
+          lon: c.lng.toFixed(5),
+          z: z.toFixed(2),
+        });
+      }
       const b = map.getBounds();
       const bounds = { s: b.getSouth(), w: b.getWest(), n: b.getNorth(), e: b.getEast() };
       onBoundsChangeRef.current(bounds, z);
@@ -1695,6 +1721,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     if (!map || !mapLoaded) return;
     const onContextMenu = (e: maplibregl.MapMouseEvent) => {
       e.preventDefault();
+      if (secondaryRef.current) return;
       setMapContextMenu({ x: e.point.x, y: e.point.y, lat: e.lngLat.lat, lon: e.lngLat.lng });
     };
     const closeMenu = () => setMapContextMenu(null);
@@ -2382,7 +2409,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       )}
 
       {/* Map controls — one stack keeps the gaps identical at every map size. */}
-      <div className={`absolute bottom-6 right-3 ${Z_PANEL} flex flex-col gap-2 pointer-events-auto`}>
+      {!secondary && <div className={`absolute bottom-6 right-3 ${Z_PANEL} flex flex-col gap-2 pointer-events-auto`}>
         {exportEnabled && (
           <button
             onClick={() => setExportDialogOpen(true)}
@@ -2415,7 +2442,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         >
           <LocateFixed className="w-3.5 h-3.5" />
         </button>
-      </div>
+      </div>}
       <MapExportDialog
         open={exportDialogOpen}
         sourceSize={exportDialogOpen && mapRef.current ? { width: mapRef.current.getCanvas().width, height: mapRef.current.getCanvas().height } : null}

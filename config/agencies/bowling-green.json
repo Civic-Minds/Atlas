@@ -6,7 +6,10 @@
     -86.44
   ],
   "timezone": "America/Chicago",
-  "feedUrl": null,
+  "feedUrl": "https://gobg.ridesystems.net/Secure/Admin/Reports/GTFSDownload.aspx",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-40184/latest.zip",
+  "region": "Kentucky",
+  "staged": true,
   "lastFeedExpiry": null,
   "lastFeedVersion": null,
   "lastRefreshedAt": "2026-09-10",

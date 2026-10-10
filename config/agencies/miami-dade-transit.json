@@ -1,6 +1,7 @@
 {
   "slug": "miami-dade-transit",
   "name": "Miami-Dade Transit",
+  "displayArea": "Miami-Dade County",
   "websiteUrl": "http://www.miamidade.gov/transit",
   "center": [
     25.7617,

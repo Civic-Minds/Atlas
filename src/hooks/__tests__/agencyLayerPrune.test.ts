@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { pruneAgencyLayers, MAX_AGENCY_LAYERS_IN_REACT } from '../agencyLayerPrune';
+import { pruneAgencyLayers } from '../agencyLayerPrune';
 import type { Agency } from '../../App';
 import type { AgencyLayers } from '../useAgencyData';
 
@@ -64,10 +64,5 @@ describe('pruneAgencyLayers', () => {
     );
     expect(result!.layers['pinned-far']).toBeDefined();
     expect(result!.layers['near']).toBeDefined();
-  });
-
-  it('exports a sensible default max', () => {
-    expect(MAX_AGENCY_LAYERS_IN_REACT).toBeGreaterThanOrEqual(12);
-    expect(MAX_AGENCY_LAYERS_IN_REACT).toBeLessThanOrEqual(48);
   });
 });

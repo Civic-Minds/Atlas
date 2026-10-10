@@ -1,6 +1,7 @@
 {
   "slug": "kitsaptransit",
   "name": "Kitsap Transit",
+  "displayArea": "Kitsap County",
   "center": [
     47.6,
     -122.65

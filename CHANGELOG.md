@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 - Agencies whose schedules list a far-future end date no longer lose the routes of their newest service period when holiday exceptions pull the measured week before it starts, so SCT shows 24 routes instead of 10 ([#658](https://github.com/Civic-Minds/Atlas/issues/658)).
 - Weekday frequencies are no longer shown about twice as often as buses really run when a holiday like Thanksgiving falls in the week a feed is measured from, because holiday service is no longer counted on top of the regular weekday service ([#658](https://github.com/Civic-Minds/Atlas/issues/658)).
+- On the beta site, compare mode puts two maps side by side with the same frequency filter, each for its own day and time, so you can see which routes change or disappear.
 - Test sessions and locally run builds no longer count as visitors in Atlas analytics, so visitor numbers reflect real traffic only.
 - **On-demand zone cards now list hours from the agency's schedule data, bold today's line, and say plainly whether the zone is running at the selected time — or that its hours aren't confirmed — with booking details and trip rules shown separately.**
 - **On-demand cards describe how pickup works for the zone you clicked — door to door, set stops, or trips to and from a transfer point — using only what the agency publishes, instead of one generic line about virtual stops.**
@@ -15,6 +16,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Agencies running more than one on-demand service now show each zone under its own service name, instead of one combined name that implied a single service.**
 - **Links that open an on-demand service now take the map to that service's area, instead of leaving it wherever you last looked.**
 - The weekly refresh now keeps an agency's live data instead of publishing a sharply smaller feed, and can reach the map release again because it no longer discards its own refreshed files or treats agencies that kept their data as failures ([#655](https://github.com/Civic-Minds/Atlas/issues/655)).
+- Every data refresh, reprocess and release now checks each agency's new data against what's live and holds back anything that looks wrong, such as one agency's routes published under another's name, missing rail lines, sharp drops, holiday-skewed frequencies or expired schedules, until someone reviews it ([#671](https://github.com/Civic-Minds/Atlas/issues/671)).
+- Rebuilding agency data can no longer publish an agency in a country Atlas hasn't launched yet, matching the rule regular refreshes already follow ([#668](https://github.com/Civic-Minds/Atlas/issues/668)).
 - A hidden agency's data can now be corrected while it stays hidden, and the map build no longer fails because a hidden agency is missing from the map tiles ([#615](https://github.com/Civic-Minds/Atlas/issues/615)).
 - The map's top bar no longer links to Research or shows a "More" menu on larger screens; Research is reached from the About page ([#651](https://github.com/Civic-Minds/Atlas/issues/651)).
 - On the beta site, tapping a route or stop on a phone now opens its card as a panel at the bottom of the screen that you drag up for detail, so the map stays visible ([#647](https://github.com/Civic-Minds/Atlas/issues/647)).

@@ -1,6 +1,7 @@
 {
   "slug": "basin-transit",
   "name": "Basin Transit",
+  "displayArea": "Morongo Basin",
   "websiteUrl": "http://www.mbtabus.com/",
   "region": "California",
   "center": [

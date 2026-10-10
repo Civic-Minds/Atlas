@@ -271,5 +271,7 @@ update its config and run the refresh and release together:
 npm run refresh-release -- <slug>
 ```
 
-The refresh refuses an agency whose rebuilt data would lose more than 20% of
-its live stops or routes; pass `--allow-drop` only after reviewing the drop.
+The refresh refuses an agency flagged red by the release diff gate (for
+example, more than 20% of its live stops or routes lost). Review
+`tmp/release-diff/`, then accept that one flag with
+`--allow <slug>:<flag>`, or reviewed drops with `--allow-drop`.
