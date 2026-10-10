@@ -13824,6 +13824,8 @@
       "lastFeedExpiry": "20250630",
       "lastFeedVersion": "20230718",
       "region": "Washington DC",
+      "hiddenInProduction": true,
+      "issueUrl": "https://github.com/Civic-Minds/Atlas/issues/682",
       "lastRefreshedAt": "20260811",
       "websiteUrl": "https://www.dcstreetcar.com/",
       "cities": [
