@@ -14,7 +14,7 @@
     -72
   ],
   "feedUrl": "https://exo.quebec/uploads/ressources-telechargeables/a-propos/donnees-ouvertes/trains/google_transit.zip",
-  "lastFeedExpiry": "20270103",
+  "lastFeedExpiry": null,
   "lastFeedVersion": null,
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-748/latest.zip",
   "gtfsFares": true,

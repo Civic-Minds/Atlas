@@ -1954,7 +1954,7 @@
         -72
       ],
       "feedUrl": "https://exo.quebec/uploads/ressources-telechargeables/a-propos/donnees-ouvertes/trains/google_transit.zip",
-      "lastFeedExpiry": "20270103",
+      "lastFeedExpiry": null,
       "lastFeedVersion": null,
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-748/latest.zip",
       "gtfsFares": true,
@@ -1997,7 +1997,7 @@
         -73.54
       ],
       "feedUrl": "https://exo.quebec/uploads/ressources-telechargeables/a-propos/donnees-ouvertes/citpi/google_transit.zip",
-      "lastFeedExpiry": "20270103",
+      "lastFeedExpiry": null,
       "lastFeedVersion": null,
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-743/latest.zip",
       "gtfsFares": true,
@@ -2031,7 +2031,7 @@
         -73.26
       ],
       "feedUrl": "https://exo.quebec/uploads/ressources-telechargeables/a-propos/donnees-ouvertes/citso/google_transit.zip",
-      "lastFeedExpiry": "20270103",
+      "lastFeedExpiry": null,
       "lastFeedVersion": null,
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-742/latest.zip",
       "gtfsFares": true,
@@ -2070,7 +2070,7 @@
         -73
       ],
       "feedUrl": "https://exo.quebec/uploads/ressources-telechargeables/a-propos/donnees-ouvertes/lrrs/google_transit.zip",
-      "lastFeedExpiry": "20270103",
+      "lastFeedExpiry": null,
       "lastFeedVersion": null,
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2142/latest.zip",
       "gtfsFares": true,
@@ -2108,7 +2108,7 @@
         -73.4
       ],
       "feedUrl": "https://exo.quebec/uploads/ressources-telechargeables/a-propos/donnees-ouvertes/citla/google_transit.zip",
-      "lastFeedExpiry": "20270103",
+      "lastFeedExpiry": null,
       "lastFeedVersion": null,
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-744/latest.zip",
       "gtfsFares": true,
@@ -2148,7 +2148,7 @@
         -73.15
       ],
       "feedUrl": "https://exo.quebec/uploads/ressources-telechargeables/a-propos/donnees-ouvertes/mrclm/google_transit.zip",
-      "lastFeedExpiry": "20270103",
+      "lastFeedExpiry": null,
       "lastFeedVersion": null,
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-754/latest.zip",
       "gtfsFares": true,
