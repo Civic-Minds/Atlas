@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { lonLatToTile, tilesForAgency } from '../pmtilesCoverage.js';
+import { isScheduleOnlyRouteArtifact, lonLatToTile, tilesForAgency } from '../pmtilesCoverage.js';
 
 describe('PMTiles coverage sampling', () => {
   it('always samples the center tile for agencies without a bbox', () => {
@@ -18,5 +18,20 @@ describe('PMTiles coverage sampling', () => {
     const center = lonLatToTile(-73.5, 45.5, 12);
 
     expect(tiles.filter(tile => tile.x === center.x && tile.y === center.y)).toHaveLength(1);
+  });
+});
+
+describe('isScheduleOnlyRouteArtifact', () => {
+  const route = (type: string) => ({ geometry: { type }, properties: { routeId: 'r1' } });
+  const stop = { geometry: { type: 'Point' }, properties: { stopId: 's1' } };
+
+  it('treats an agency whose routes are all mapless Points as schedule-only', () => {
+    expect(isScheduleOnlyRouteArtifact({ features: [route('Point'), route('Point'), stop] })).toBe(true);
+  });
+
+  it('keeps failing agencies that have any drawn line, or no readable artifact', () => {
+    expect(isScheduleOnlyRouteArtifact({ features: [route('LineString'), route('Point')] })).toBe(false);
+    expect(isScheduleOnlyRouteArtifact({ features: [stop] })).toBe(false);
+    expect(isScheduleOnlyRouteArtifact(null)).toBe(false);
   });
 });

@@ -753,8 +753,9 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       if (routeIdToClosest.size === 0) continue;
 
       for (const f of fc.features) {
-        if (f.geometry.type === 'Point') continue;
+        // Route vs stop by properties, not geometry: routes with no map shape are Points too.
         const p = f.properties as unknown as ShapeProperties;
+        if ((p as any).stopId != null) continue;
         if (!p.routeId || !routeIdToClosest.has(p.routeId)) continue;
         if (p.day !== undefined && p.day !== currentDay) continue;
 

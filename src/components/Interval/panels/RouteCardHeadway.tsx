@@ -188,7 +188,10 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   const hasRouteDataQualityWarning = currentRoute.directions.some(
     direction => direction.routeDataQualityWarning === ROUTE_DATA_QUALITY_WARNING,
   );
-  const hasNoRouteShape = currentRoute.directions.some(direction => direction.noRouteShape);
+  // Only say the map is unavailable when nothing of this route is drawn. A route with one
+  // shaped direction still shows its line, so a missing shape on the other is not news.
+  const hasNoRouteShape = currentRoute.directions.length > 0
+    && currentRoute.directions.every(direction => direction.noRouteShape);
   const hasWeekdayTierVariation = currentRoute.directions.some(direction => direction.weekdayTierVariation);
   const selectedPeriod = period !== 'all' ? TIME_PERIODS.find(p => p.key === period) : undefined;
   const hasPeriodService = period === 'all' || directionGroups.some(group =>

@@ -48,6 +48,7 @@ import {
 import { buildHiddenRoutesForAgency, mergeHiddenRoutes, type HiddenRoutesFile, type HiddenRouteRecord } from './hiddenRoutes.js';
 import type { FeedQuality } from '../shared/feedQuality.js';
 import { historyRouteKey } from './historyRouteKey.js';
+import { historyGeometryForRoute } from './historyGeometry.js';
 import { effectiveFeedExpiry } from './feedFreshness.js';
 import { isActiveProductionFeed } from '../shared/feedAvailability.js';
 import { recordFeedCheck, type FeedCheckFields } from './feedCheckTracking.js';
@@ -133,14 +134,8 @@ async function writeHistorySnapshot(slug: string, geojson: string, feedExpiry: s
     changed.push(routeShortName);
     const key = `history/${slug}/${routeShortName}/${periodKey}.json`;
     // Capture the route's geometry at this historical period for map rendering in History app (AI-162, AI-161)
-    let geometry: number[][] | null = null;
-    for (const f of fc.features) {
-      const p = f.properties;
-      if (historyRouteKey(p) === routeShortName && p.day === 'Weekday' && (p.directionId === 0 || p.directionId === '0')) {
-        geometry = (f.geometry as any)?.coordinates || null;
-        break;
-      }
-    }
+    // Only a real line is stored; routes with no map shape (Point features) store null.
+    const geometry = historyGeometryForRoute(fc.features, routeShortName);
     const body = JSON.stringify({ headway: route.headway, prevHeadway, tier: route.tier, routeLongName: route.routeLongName ?? null, headwayByPeriod: route.headwayByPeriod ?? null, geometry, processedAt });
     routeWrites.push(() => r2PutArchiveJson(key, body));
   }

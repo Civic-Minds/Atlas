@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { ChevronLeft, ChevronRight, X, Search, TrendingUp, History as HistoryIcon } from 'lucide-react';
 import { useHistoryMapOverlay } from '../context/HistoryMapOverlay';
 import { R2_PUBLIC_URL, type HeadwayByPeriod } from '../../shared/config';
+import { isDrawableLineCoordinates } from '../../shared/routeGeometry';
 import { FLOATING_CARD, PANEL_ENTER, TRANSITION_SLOW, SEARCH_PILL, SEARCH_FIELD, LIST_ROW, AGENCY_LIST_ROW, AGENCY_LIST_PRIMARY, PANEL_TITLE_BAR, PANEL_TITLE, Z_PANEL, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH, CONTROL_ACTIVE } from '../styles';
 import RouteListRow from '../components/RouteListRow';
 import { shortenAgencyName, titleCase } from '../utils/format';
@@ -548,11 +549,14 @@ export default function History({ active, initialAgencySlug, onInfoOpen, query, 
         historicalRouteGeometries = [];
         agency.routes.forEach(route => {
           const snap = route.snapshots.find(s => s.year === selectedYear) || route.snapshots[route.snapshots.length - 1];
-          if (route.routeShortName === selectedRouteShortName) routeGeometry = snap?.geometry;
-          if (snap && snap.geometry) {
+          // Older snapshots can hold a bare [lon, lat] from a route with no map shape;
+          // only real lines are drawn or used for camera bounds.
+          const snapGeometry = isDrawableLineCoordinates(snap?.geometry) ? snap.geometry : undefined;
+          if (route.routeShortName === selectedRouteShortName) routeGeometry = snapGeometry;
+          if (snap && snapGeometry) {
             historicalRouteGeometries!.push({
               routeShortName: route.routeShortName,
-              coordinates: snap.geometry,
+              coordinates: snapGeometry,
               headway: snap.weekdayHeadwayMin
             });
           }
@@ -560,7 +564,8 @@ export default function History({ active, initialAgencySlug, onInfoOpen, query, 
       } else if (selectedRouteShortName) {
         const rt = agency.routes.find(r => r.routeShortName === selectedRouteShortName);
         if (rt && rt.snapshots.length > 0) {
-          routeGeometry = rt.snapshots[rt.snapshots.length - 1]?.geometry;
+          const latest = rt.snapshots[rt.snapshots.length - 1]?.geometry;
+          routeGeometry = isDrawableLineCoordinates(latest) ? latest : undefined;
         }
       }
       setOverlay({

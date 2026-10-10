@@ -367,7 +367,8 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
   const routeNamesMap = useMemo(() => {
     const map = new Map<string, string>();
     for (const f of allFeatures) {
-      if (f.geometry.type !== 'Point' && (f.properties as any).routeId) {
+      // Route vs stop by properties: routes with no map shape are Points too.
+      if ((f.properties as any).routeId && (f.properties as any).stopId == null) {
         const p = f.properties as any;
         const key = `${p.agencySlug}::${p.routeId}`;
         if (p.routeShortName) {

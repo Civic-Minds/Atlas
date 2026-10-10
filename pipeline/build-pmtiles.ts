@@ -308,7 +308,7 @@ async function main() {
   console.log('Verifying full PMTiles coverage locally before upload...');
   execSync('npm run verify-pmtiles-coverage', {
     stdio: 'inherit',
-    env: { ...process.env, PMTILES_LOCAL_PATH: pmtilesPath },
+    env: { ...process.env, PMTILES_LOCAL_PATH: pmtilesPath, PMTILES_AGENCY_ARTIFACT_DIR: releaseAgencyDir },
   });
 
   if (dryRun) {

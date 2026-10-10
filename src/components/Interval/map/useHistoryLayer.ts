@@ -4,6 +4,7 @@ import { getTierColor } from '../../../hooks/useIntervalStats';
 import { useHistoryMapOverlay, type HistoryMapStop } from '../../../context/HistoryMapOverlay';
 import { StopCardHtml } from '../../../lib/mapHtml';
 import { useColorVision } from '../../../context/ColorVisionContext';
+import { isDrawableLineCoordinates, lineCoordinates } from '../../../../shared/routeGeometry';
 
 /** History map layers: route shape, time-scrubber routes, and stop markers. */
 export function useHistoryLayer(
@@ -29,7 +30,7 @@ export function useHistoryLayer(
     const source = map.getSource('history-route-shape') as maplibregl.GeoJSONSource;
     if (!source) return;
 
-    if (historyOverlay && historyOverlay.routeGeometry && historyOverlay.routeGeometry.length > 1) {
+    if (historyOverlay && isDrawableLineCoordinates(historyOverlay.routeGeometry)) {
       source.setData({
         type: 'FeatureCollection',
         features: [{
@@ -52,7 +53,9 @@ export function useHistoryLayer(
     if (!source) return;
 
     if (historyOverlay?.historicalRouteGeometries && historyOverlay.historicalRouteGeometries.length > 0) {
-      const features = historyOverlay.historicalRouteGeometries.map(r => ({
+      const features = historyOverlay.historicalRouteGeometries
+        .filter(r => isDrawableLineCoordinates(r.coordinates))
+        .map(r => ({
         type: 'Feature' as const,
         geometry: { type: 'LineString' as const, coordinates: r.coordinates },
         properties: {
@@ -88,8 +91,8 @@ export function useHistoryLayer(
     // If we have historical route geometry (from per-period snapshot), fit to it (supports discontinued routes).
     // For an agency selection, fit the complete set of historical routes rather
     // than flying to the catalog centre, which can land on a single suburb.
-    const routeGeometry = historyOverlay.routeGeometry;
-    const hasRouteGeometry = Boolean(routeGeometry && routeGeometry.length > 1);
+    const routeGeometry = isDrawableLineCoordinates(historyOverlay.routeGeometry) ? historyOverlay.routeGeometry : undefined;
+    const hasRouteGeometry = Boolean(routeGeometry);
     const hasHistoricalRouteGeometry = Boolean(
       historyOverlay.historicalRouteGeometries && historyOverlay.historicalRouteGeometries.length > 0,
     );
@@ -107,6 +110,7 @@ export function useHistoryLayer(
     } else if (historyOverlay.historicalRouteGeometries && historyOverlay.historicalRouteGeometries.length > 0) {
       let minLng = 180, maxLng = -180, minLat = 90, maxLat = -90;
       for (const route of historyOverlay.historicalRouteGeometries) {
+        if (!isDrawableLineCoordinates(route.coordinates)) continue;
         for (const [lng, lat] of route.coordinates) {
           minLng = Math.min(minLng, lng);
           maxLng = Math.max(maxLng, lng);
@@ -133,9 +137,7 @@ export function useHistoryLayer(
             }).filter(feature => String(feature.properties?.agencySlug ?? '') === historyOverlay.slug);
             let minLng = 180, maxLng = -180, minLat = 90, maxLat = -90;
             for (const feature of features) {
-              const geometry = feature.geometry as GeoJSON.LineString | GeoJSON.MultiLineString;
-              const coordinates = geometry.type === 'LineString' ? geometry.coordinates : geometry.coordinates.flat();
-              for (const [lng, lat] of coordinates) {
+              for (const [lng, lat] of lineCoordinates(feature.geometry)) {
                 minLng = Math.min(minLng, lng);
                 maxLng = Math.max(maxLng, lng);
                 minLat = Math.min(minLat, lat);
@@ -163,10 +165,7 @@ export function useHistoryLayer(
             if (features.length === 0) return;
             let minLng = 180, maxLng = -180, minLat = 90, maxLat = -90;
             features.forEach(f => {
-              const coords = (f.geometry as any).type === 'LineString'
-                ? (f.geometry as any).coordinates
-                : (f.geometry as any).coordinates.flat();
-              coords.forEach(([lng, lat]: [number, number]) => {
+              lineCoordinates(f.geometry).forEach(([lng, lat]: [number, number]) => {
                 if (lng < minLng) minLng = lng; if (lng > maxLng) maxLng = lng;
                 if (lat < minLat) minLat = lat; if (lat > maxLat) maxLat = lat;
               });
