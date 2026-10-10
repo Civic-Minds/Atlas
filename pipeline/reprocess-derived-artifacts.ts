@@ -11,6 +11,11 @@
  * Run:
  *   npm run reprocess-derived-artifacts
  *   npm run reprocess-derived-artifacts -- --only-slug nfta --only-slug wmata
+ *   npm run reprocess-derived-artifacts -- --only-slug sun-tran --include-hidden
+ *
+ * Hidden (hiddenInProduction) agencies are skipped unless --include-hidden is
+ * passed, which only applies to slugs named with --only-slug. The agency stays
+ * hidden; only its R2 artifacts are corrected.
  *
  * Supplemental feeds (index.json `supplementalFeedUrls`, e.g. separate rail
  * zips) are read from ATLAS_LOCAL_ARCHIVE_DIR as <slug>--supplemental-<n>.zip
@@ -35,9 +40,12 @@ import { bumpPublicDataVersion } from './dataVersion.js';
 import { runWithConcurrency } from './utils.js';
 import {
   countArtifacts,
+  dropGuardRefusal,
   feedDateRefusal,
-  outputDropRefusal,
+  includeHiddenArgError,
+  isReprocessTarget,
   peekFeedDates,
+  readLiveArtifactCounts,
   selectArchiveForAgency,
   type ArtifactCounts,
 } from './archiveSelection.js';
@@ -91,12 +99,10 @@ const allowDrop = process.argv.includes('--allow-drop');
 const todayYmd = new Date().toISOString().slice(0, 10).replace(/-/g, '');
 const onlySlugs = process.argv.flatMap((arg, i, all) => (arg === '--only-slug' && all[i + 1] ? [all[i + 1]] : []));
 const concurrency = Math.max(1, Number(process.env.REPROCESS_CONCURRENCY ?? 2));
+const includeHidden = process.argv.includes('--include-hidden');
 
 function shouldProcess(agency: Agency): boolean {
-  return !agency.pmtilesPending
-    && !agency.hiddenInProduction
-    && !agency.staged
-    && (!!agency.lastFeedExpiry || !!agency.lastRefreshedAt);
+  return isReprocessTarget(agency, { includeHidden });
 }
 
 async function selectArchiveKey(agency: Agency): Promise<{ key: string; reason: string } | null> {
@@ -104,12 +110,6 @@ async function selectArchiveKey(agency: Agency): Promise<{ key: string; reason: 
   if (selection.ok) return { key: selection.key, reason: selection.reason };
   if (selection.noArchive) return null;
   throw new Refusal(selection.reason);
-}
-
-async function readLiveCounts(slug: string): Promise<ArtifactCounts | null> {
-  const geojson = await r2Get(`atlas/${slug}.json`);
-  if (!geojson) return null;
-  return countArtifacts(geojson, await r2Get(`atlas/${slug}-stops.json`));
 }
 
 function localArchivePath(fileStem: string): string | null {
@@ -156,12 +156,9 @@ async function processAgency(agency: Agency): Promise<ReportRow> {
     if (result.featureCount === 0) throw new Error('processed feed produced 0 route features');
 
     row.outputCounts = countArtifacts(result.geojson, result.stopsJson);
-    row.liveCounts = await readLiveCounts(agency.slug);
-    if (!allowDrop) {
-      if (!row.liveCounts) throw new Refusal('live artifacts could not be read, so the output cannot be checked for a drop (pass --allow-drop after review)');
-      const dropRefusal = outputDropRefusal(row.liveCounts, row.outputCounts);
-      if (dropRefusal) throw new Refusal(`${dropRefusal} (pass --allow-drop after review)`);
-    }
+    row.liveCounts = await readLiveArtifactCounts(agency.slug, r2Get);
+    const dropRefusal = dropGuardRefusal(row.liveCounts, row.outputCounts, { allowDrop, allowMissingLive: false });
+    if (dropRefusal) throw new Refusal(dropRefusal);
 
     const agencyDir = resolve(outputDir, agency.slug);
     mkdirSync(agencyDir, { recursive: true });
@@ -197,6 +194,8 @@ async function processAgency(agency: Agency): Promise<ReportRow> {
 }
 
 async function main(): Promise<void> {
+  const argError = includeHiddenArgError(includeHidden, onlySlugs);
+  if (argError) throw new Error(argError);
   rmSync(outputDir, { recursive: true, force: true });
   mkdirSync(outputDir, { recursive: true });
 
@@ -204,7 +203,7 @@ async function main(): Promise<void> {
   const rows: ReportRow[] = [];
   const selected = onlySlugs.length ? index.agencies.filter(agency => onlySlugs.includes(agency.slug)) : index.agencies;
   const targets = selected.filter(shouldProcess);
-  console.log(`Reprocessing ${targets.length} production-visible agencies from archived GTFS (concurrency ${concurrency}).`);
+  console.log(`Reprocessing ${targets.length} ${includeHidden ? 'named (hidden included)' : 'production-visible'} agencies from archived GTFS (concurrency ${concurrency}).`);
 
   rows.push(...selected
     .filter(agency => !shouldProcess(agency))

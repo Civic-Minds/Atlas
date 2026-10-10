@@ -17,6 +17,18 @@ describe('weekly refresh workflow contract', () => {
     expect(workflow).not.toContain('      - name: Commit updated files if changed');
   });
 
+  it('restores the refreshed files the pull request step resets, before PMTiles', () => {
+    const workflow = readFileSync(resolve('.github/workflows/refresh-feeds.yml'), 'utf8');
+    const persist = workflow.indexOf('      - name: Open or update refresh pull request');
+    const restore = workflow.indexOf('      - name: Restore refreshed files after the pull request step');
+    const build = workflow.indexOf('      - name: Rebuild PMTiles vector tiles');
+    expect(restore).toBeGreaterThan(persist);
+    expect(build).toBeGreaterThan(restore);
+    expect(workflow).toMatch(/id: refresh-pr\n\s+uses: peter-evans\/create-pull-request@/);
+    expect(workflow).toContain('${{ steps.refresh-pr.outputs.pull-request-head-sha }}');
+    expect(workflow).toContain('git checkout "$REFRESH_HEAD_SHA" -- .');
+  });
+
   it('publishes the release pointer exactly once, after every derived artifact', () => {
     const workflow = readFileSync(resolve('.github/workflows/refresh-feeds.yml'), 'utf8');
     const publishSteps = workflow.split('      - name: Publish verified data release').length - 1;

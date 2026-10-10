@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { dataRefreshGuardError, hashIndex, type DataRefreshMarker, writeRefreshRunResult } from '../dataRefreshMarker';
+import { canRebuildPmtilesAfterRefresh, dataRefreshGuardError, hashIndex, type DataRefreshMarker, writeRefreshRunResult } from '../dataRefreshMarker';
 
 describe('data refresh marker guard', () => {
   it('rejects PMTiles builds without a successful refresh', () => {
@@ -28,5 +28,13 @@ describe('data refresh marker guard', () => {
   it('marks a batch incomplete when one requested agency is stale', () => {
     const result = writeRefreshRunResult(['good', 'bad'], { good: 'processed', bad: 'stale' });
     expect(result.complete).toBe(false);
+  });
+
+  it('lets a full run rebuild PMTiles when agencies kept their live data, but not when one failed', () => {
+    const kept = writeRefreshRunResult(['a', 'b', 'c', 'd'], { a: 'processed', b: 'stale', c: 'skipped', d: 'refused' });
+    expect(kept.complete).toBe(false);
+    expect(canRebuildPmtilesAfterRefresh(kept)).toBe(true);
+    const failed = writeRefreshRunResult(['a', 'b'], { a: 'processed', b: 'failed' });
+    expect(canRebuildPmtilesAfterRefresh(failed)).toBe(false);
   });
 });

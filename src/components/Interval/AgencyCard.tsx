@@ -16,6 +16,13 @@ import { CARD_TITLE, CardDirectionRow, CardHelpNotice, CardReportButton } from '
 import { buildRouteFacts } from '../../utils/routeFacts';
 import { currentAtlasUrl } from '../../utils/reportIssue';
 import { getRolloutNotice } from '../../../shared/rolloutNotice';
+import {
+  formatOnDemandHoursLines,
+  onDemandPickupSentence,
+  onDemandRunningNote,
+  resolveOnDemandZone,
+  type OnDemandAvailability,
+} from '../../../shared/onDemandAvailability';
 
 interface RouteRow {
   routeId: string;
@@ -126,6 +133,51 @@ function getRoutes(
 function frequencyFilterLabel(maxHeadway: number): string | null {
   if (maxHeadway === Infinity) return null;
   return HEADWAY_TIERS.find(t => t.max === maxHeadway)?.label ?? `≤${maxHeadway}m`;
+}
+
+/** Separate services that own some zones (e.g. Hamilton Trans-Cab beside myRide), listed once each. */
+function otherZoneServices(service: NonNullable<Agency['onDemandServiceArea']>): { serviceName: string; serviceHours?: string; availability?: OnDemandAvailability }[] {
+  const seen = new Map<string, { serviceHours?: string; availability?: OnDemandAvailability }>();
+  for (const zone of Object.values(service.zoneMetadata ?? {})) {
+    if (zone.serviceName && zone.serviceName !== service.serviceName && !seen.has(zone.serviceName)) {
+      seen.set(zone.serviceName, { serviceHours: zone.serviceHours, availability: zone.availability });
+    }
+  }
+  return [...seen].map(([serviceName, hours]) => ({ serviceName, ...hours }));
+}
+
+/**
+ * Hours built from structured availability; the line covering the selected
+ * day is bold. Falls back to the agency's own wording, unbolded, when no
+ * structured hours exist.
+ */
+export function OnDemandHoursText({
+  availability,
+  serviceHours,
+  day,
+  className,
+}: {
+  availability?: OnDemandAvailability;
+  serviceHours?: string;
+  day?: DayType;
+  className: string;
+}) {
+  const lines = formatOnDemandHoursLines(availability);
+  if (lines.length === 0) {
+    return serviceHours ? <p className={className}>{serviceHours}</p> : null;
+  }
+  return (
+    <>
+      {lines.map(line => (
+        <p
+          key={line.text}
+          className={`${className} ${day && line.dayTypes.includes(day) ? 'font-bold text-[var(--text-primary)]' : ''}`}
+        >
+          {line.text}
+        </p>
+      ))}
+    </>
+  );
 }
 
 export function buildHeaderSummary(
@@ -357,9 +409,14 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
       : undefined;
     const zoneName = (selectedZone?.properties as { areaName?: string } | undefined)?.areaName;
     const zoneDisplayName = zoneName?.replace(/\s+Area$/, '');
-    const zoneMetadata = zoneName ? service.zoneMetadata?.[zoneName] : undefined;
-    const serviceName = zoneMetadata?.serviceName ?? service.serviceName ?? agencyNamePrimary;
-    const serviceHours = zoneMetadata?.serviceHours ?? service.serviceHours;
+    const zone = resolveOnDemandZone(service, zoneName);
+    const serviceName = zone.serviceName ?? service.serviceName ?? agencyNamePrimary;
+    const pickupSentence = onDemandPickupSentence(service, zoneName);
+    // Only claim a shaded area when one belongs to this service (Hamilton's shaded zones are Trans-Cab, not myRide).
+    const showsShadedArea = zoneName
+      ? true
+      : service.features.some(feature => resolveOnDemandZone(service, (feature.properties as { areaName?: string } | undefined)?.areaName).sameServiceAsParent);
+    const runningNote = onDemandRunningNote(zone.availability, day, period);
     return (
       <div
         ref={ref}
@@ -379,14 +436,43 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
         <div className="flex-1 overflow-y-auto custom-scrollbar px-4 py-4 space-y-4">
           <div>
             <p className="text-[10px] font-black text-[var(--text-dim)]">On-demand service</p>
-            <p className="text-[11px] leading-relaxed text-[var(--text-muted)] mt-1">
-              {service.stopFeatures?.length ? 'Virtual pickup locations are shown on the map; they are not fixed-route stops.' : 'The shaded map area shows where this on-demand service operates.'}
-            </p>
+            {showsShadedArea && (
+              <p className="text-[11px] leading-relaxed text-[var(--text-muted)] mt-1">
+                The shaded map area shows where this on-demand service operates.
+              </p>
+            )}
+            {pickupSentence && (
+              <p className="text-[11px] leading-relaxed text-[var(--text-muted)] mt-1">{pickupSentence}</p>
+            )}
           </div>
-          {serviceHours && (
+          {zone.tripRules && (
             <div className="px-1">
-              <p className="text-[10px] font-black text-[var(--text-dim)]">Service hours</p>
-              <p className="text-[11px] leading-relaxed text-[var(--text-muted)] mt-1">{serviceHours}</p>
+              <p className="text-[10px] font-black text-[var(--text-dim)]">Trip rules</p>
+              <p className="text-[11px] leading-relaxed text-[var(--text-muted)] mt-1">{zone.tripRules}</p>
+            </div>
+          )}
+          <div className="px-1">
+            <p className="text-[10px] font-black text-[var(--text-dim)]">Service hours</p>
+            <p
+              className="text-[11px] leading-relaxed text-[var(--text-muted)] mt-1"
+              data-testid="on-demand-running-note"
+            >
+              {runningNote}
+            </p>
+            <OnDemandHoursText
+              availability={zone.availability}
+              serviceHours={zone.serviceHours}
+              day={day}
+              className="text-[11px] leading-relaxed text-[var(--text-muted)] mt-1"
+            />
+            {zone.availability && zone.hoursNote && (
+              <p className="text-[10px] leading-snug text-[var(--text-dim)] mt-1">{zone.hoursNote}</p>
+            )}
+          </div>
+          {zone.bookingInfo && (
+            <div className="px-1">
+              <p className="text-[10px] font-black text-[var(--text-dim)]">Booking</p>
+              <p className="text-[11px] leading-relaxed text-[var(--text-muted)] mt-1">{zone.bookingInfo}</p>
             </div>
           )}
         </div>
@@ -469,9 +555,26 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
                 )}
               </div>
               <p className="text-[10px] font-bold text-[var(--text-primary)] mt-0.5">{agency.onDemandServiceArea.serviceName}</p>
-              {agency.onDemandServiceArea.serviceHours && (
-                <p className="text-[10px] leading-snug text-[var(--text-muted)] mt-0.5">{agency.onDemandServiceArea.serviceHours}</p>
+              <OnDemandHoursText
+                availability={agency.onDemandServiceArea.availability}
+                serviceHours={agency.onDemandServiceArea.serviceHours}
+                day={day}
+                className="text-[10px] leading-snug text-[var(--text-muted)] mt-0.5"
+              />
+              {agency.onDemandServiceArea.tripRules && (
+                <p className="text-[10px] leading-snug text-[var(--text-muted)] mt-0.5">{agency.onDemandServiceArea.tripRules}</p>
               )}
+              {otherZoneServices(agency.onDemandServiceArea).map(zoneService => (
+                <div key={zoneService.serviceName} className="mt-1.5">
+                  <p className="text-[10px] font-bold text-[var(--text-primary)]">{zoneService.serviceName}</p>
+                  <OnDemandHoursText
+                    availability={zoneService.availability}
+                    serviceHours={zoneService.serviceHours}
+                    day={day}
+                    className="text-[10px] leading-snug text-[var(--text-muted)] mt-0.5"
+                  />
+                </div>
+              ))}
             </div>
           )}
           {routeFilters.length > 0 && (

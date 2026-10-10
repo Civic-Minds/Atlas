@@ -12,7 +12,7 @@ export interface DataRefreshMarker {
   complete: true;
 }
 
-export type RefreshAgencyStatus = 'processed' | 'unchanged' | 'stale' | 'failed' | 'skipped';
+export type RefreshAgencyStatus = 'processed' | 'unchanged' | 'stale' | 'failed' | 'skipped' | 'refused';
 
 export interface RefreshRunResult {
   generatedAt: string;
@@ -56,6 +56,18 @@ export function writeRefreshRunResult(
   fs.mkdirSync(path.dirname(REFRESH_RESULT_PATH), { recursive: true });
   fs.writeFileSync(REFRESH_RESULT_PATH, `${JSON.stringify(result, null, 2)}\n`);
   return result;
+}
+
+/**
+ * Whether PMTiles may be rebuilt after a refresh run. `complete` (every agency
+ * processed or unchanged) is what refresh-release requires for a targeted
+ * batch. A full run always has agencies that kept their live data (country-
+ * gated, stale, drop-refused); their artifacts still match, so only a failed
+ * agency blocks the rebuild.
+ */
+export function canRebuildPmtilesAfterRefresh(result: RefreshRunResult): boolean {
+  return result.requestedSlugs.length > 0
+    && Object.values(result.statuses).every(status => status !== 'failed');
 }
 
 export function readRefreshRunResult(): RefreshRunResult | null {

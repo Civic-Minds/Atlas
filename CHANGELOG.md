@@ -6,6 +6,14 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 - Test sessions and locally run builds no longer count as visitors in Atlas analytics, so visitor numbers reflect real traffic only.
+- **On-demand zone cards now list hours from the agency's schedule data, bold today's line, and say plainly whether the zone is running at the selected time — or that its hours aren't confirmed — with booking details and trip rules shown separately.**
+- **On-demand cards describe how pickup works for the zone you clicked — door to door, set stops, or trips to and from a transfer point — using only what the agency publishes, instead of one generic line about virtual stops.**
+- **On-demand zones and their pickup points now disappear from the map when they aren't running, matching fixed routes, and services without confirmed hours are drawn faded instead of looking like confirmed service.**
+- **Selecting an on-demand zone or service now fades the rest of the map, so you can see exactly which area and stops it covers.**
+- **Agencies running more than one on-demand service now show each zone under its own service name, instead of one combined name that implied a single service.**
+- **Links that open an on-demand service now take the map to that service's area, instead of leaving it wherever you last looked.**
+- The weekly refresh now keeps an agency's live data instead of publishing a sharply smaller feed, and can reach the map release again because it no longer discards its own refreshed files or treats agencies that kept their data as failures ([#655](https://github.com/Civic-Minds/Atlas/issues/655)).
+- A hidden agency's data can now be corrected while it stays hidden, and the map build no longer fails because a hidden agency is missing from the map tiles ([#615](https://github.com/Civic-Minds/Atlas/issues/615)).
 - The map's top bar no longer links to Research or shows a "More" menu on larger screens; Research is reached from the About page ([#651](https://github.com/Civic-Minds/Atlas/issues/651)).
 - On the beta site, tapping a route or stop on a phone now opens its card as a panel at the bottom of the screen that you drag up for detail, so the map stays visible ([#647](https://github.com/Civic-Minds/Atlas/issues/647)).
 - On phones, route cards no longer break stop names mid-word, the search bar stays on one line, and headings across the app no longer appear in all capitals ([#644](https://github.com/Civic-Minds/Atlas/issues/644), [#645](https://github.com/Civic-Minds/Atlas/issues/645), [#646](https://github.com/Civic-Minds/Atlas/issues/646)).

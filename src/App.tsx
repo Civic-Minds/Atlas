@@ -36,8 +36,8 @@ import { parseFrequentServiceDays, type FrequentServiceFrequency, type FrequentS
 import type { NightServiceFrequency } from '../shared/nightService';
 const FrequentServiceStory = React.lazy(() => import('./apps/FrequentServiceStory'));
 const ResearchPage = React.lazy(() => import('./apps/ResearchPage'));
-import { BWG_ON_DEMAND_AGENCY, CALEDON_ON_DEMAND_AGENCY, BRAMPTON_ON_DEMAND_AGENCY, C_TRAN_CURRENT_SERVICE_AREA, GRT_ROUTE_79_SERVICE_AREA, HAMILTON_MY_RIDE_SERVICE_AREA, METRO_MICRO_SERVICE_AREA, WATA_PARATRANSIT_SERVICE_AREA } from './data/onDemandServiceAreas';
-import type { OnDemandAvailability } from '../shared/onDemandAvailability';
+import { BWG_ON_DEMAND_AGENCY, CALEDON_ON_DEMAND_AGENCY, BRAMPTON_ON_DEMAND_AGENCY, MUSKOKA_DRT_ON_DEMAND_AGENCY, ST_ALBERT_ON_DEMAND_AGENCY, LEAMINGTON_LT_GO_ON_DEMAND_AGENCY, WINKLER_ON_DEMAND_AGENCY, C_TRAN_CURRENT_SERVICE_AREA, COBOURG_ON_DEMAND_SERVICE_AREA, CYRIDE_EASE_SERVICE_AREA, EDMONTON_ON_DEMAND_SERVICE_AREA, GORALEIGH_MICROLINK_SERVICE_AREA, GRT_ROUTE_79_SERVICE_AREA, HAMILTON_MY_RIDE_SERVICE_AREA, METRO_MICRO_SERVICE_AREA, MOUNTAIN_LINE_GO_SERVICE_AREA, MVTA_CONNECT_SERVICE_AREA, UTA_ON_DEMAND_SERVICE_AREA } from './data/onDemandServiceAreas';
+import type { OnDemandAvailability, OnDemandPickup, OnDemandZoneDetails } from '../shared/onDemandAvailability';
 
 export interface FareOverride {
   adult?: number;      // base card/electronic fare (fallback when GeoJSON baseFare is absent)
@@ -113,15 +113,19 @@ export interface Agency {
     sourceUrl: string;
     sourceLabel: string;
     sourceRetrievedAt?: string;
+    /** Source wording for hours; shown only when structured availability is missing. */
     serviceHours?: string;
+    /** Qualifiers structured hours can't express, e.g. holidays. */
+    hoursNote?: string;
+    /** How to book (app, phone), kept apart from the hours. */
+    bookingInfo?: string;
     bookingUrl?: string;
     serviceName?: string;
+    /** Agency booking restriction riders must know, e.g. which trips a zone can serve. */
+    tripRules?: string;
     availability?: OnDemandAvailability;
-    zoneMetadata?: Record<string, {
-      serviceName?: string;
-      serviceHours?: string;
-      availability?: OnDemandAvailability;
-    }>;
+    pickup?: OnDemandPickup;
+    zoneMetadata?: Record<string, OnDemandZoneDetails>;
   };
 }
 
@@ -451,16 +455,26 @@ export default function App() {
       .then((data: { agencies: Agency[] }) => {
         const onDemandBySlug: Record<string, Partial<Agency>> = ATLAS_MODE === 'public' ? {} : {
           ctran: { onDemandServiceArea: C_TRAN_CURRENT_SERVICE_AREA },
+          cobourg: { onDemandServiceArea: COBOURG_ON_DEMAND_SERVICE_AREA },
+          cyride: { onDemandServiceArea: CYRIDE_EASE_SERVICE_AREA },
+          edmonton: { onDemandServiceArea: EDMONTON_ON_DEMAND_SERVICE_AREA },
+          goraleigh: { onDemandServiceArea: GORALEIGH_MICROLINK_SERVICE_AREA },
           grt: { onDemandServiceArea: GRT_ROUTE_79_SERVICE_AREA },
           hamilton: { onDemandServiceArea: HAMILTON_MY_RIDE_SERVICE_AREA },
           'metro-transit': { onDemandServiceArea: METRO_MICRO_SERVICE_AREA },
-          wata: { onDemandServiceArea: WATA_PARATRANSIT_SERVICE_AREA },
+          mountainline: { onDemandServiceArea: MOUNTAIN_LINE_GO_SERVICE_AREA },
+          mvta: { onDemandServiceArea: MVTA_CONNECT_SERVICE_AREA },
+          uta: { onDemandServiceArea: UTA_ON_DEMAND_SERVICE_AREA },
         };
         const enriched = [
           ...data.agencies.map(agency => ({ ...agency, ...(onDemandBySlug[agency.slug] ?? {}) })),
           BWG_ON_DEMAND_AGENCY,
           CALEDON_ON_DEMAND_AGENCY,
           BRAMPTON_ON_DEMAND_AGENCY,
+          MUSKOKA_DRT_ON_DEMAND_AGENCY,
+          ST_ALBERT_ON_DEMAND_AGENCY,
+          LEAMINGTON_LT_GO_ON_DEMAND_AGENCY,
+          WINKLER_ON_DEMAND_AGENCY,
         ]
           .filter((a: Agency) => isAgencyVisibleInBrowser(a, { mode: ATLAS_MODE }))
           .map((a: Agency) => {

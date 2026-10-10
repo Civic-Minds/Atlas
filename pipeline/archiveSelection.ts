@@ -169,3 +169,64 @@ export function outputDropRefusal(live: ArtifactCounts, next: ArtifactCounts, ma
     .map(field => `${field} ${live[field]} -> ${next[field]}`);
   return drops.length ? `output would drop sharply against live data (${drops.join(', ')})` : null;
 }
+
+/** Count the live route and stops artifacts for an agency, or null when there is no live route artifact. */
+export async function readLiveArtifactCounts(
+  slug: string,
+  get: (key: string) => Promise<string | null>,
+): Promise<ArtifactCounts | null> {
+  const geojson = await get(`atlas/${slug}.json`);
+  if (!geojson) return null;
+  return countArtifacts(geojson, await get(`atlas/${slug}-stops.json`));
+}
+
+/**
+ * The drop guard shared by reprocess and refresh: refuse output that would
+ * replace live data with a sharply smaller result unless --allow-drop was
+ * passed after review. `allowMissingLive` decides what happens when there is
+ * no live artifact to compare against: reprocess refuses (it only rebuilds
+ * agencies that are already live), refresh allows it (first publish of a new
+ * agency, or rebuilding a missing artifact).
+ */
+export function dropGuardRefusal(
+  live: ArtifactCounts | null,
+  next: ArtifactCounts,
+  options: { allowDrop: boolean; allowMissingLive: boolean },
+): string | null {
+  if (options.allowDrop) return null;
+  if (!live) {
+    return options.allowMissingLive
+      ? null
+      : 'live artifacts could not be read, so the output cannot be checked for a drop (pass --allow-drop after review)';
+  }
+  const refusal = outputDropRefusal(live, next);
+  return refusal ? `${refusal} (pass --allow-drop after review)` : null;
+}
+
+export interface ReprocessCandidate {
+  hiddenInProduction?: boolean;
+  staged?: boolean;
+  pmtilesPending?: boolean;
+  lastFeedExpiry?: string | null;
+  lastRefreshedAt?: string | null;
+}
+
+/**
+ * Whether reprocess-derived-artifacts picks up an agency. Hidden agencies are
+ * skipped by default; includeHidden (only allowed together with --only-slug)
+ * lets a named hidden agency be corrected in R2 while it stays hidden. Staged
+ * and pmtilesPending agencies are never picked up.
+ */
+export function isReprocessTarget(agency: ReprocessCandidate, options: { includeHidden?: boolean } = {}): boolean {
+  return !agency.pmtilesPending
+    && (!agency.hiddenInProduction || options.includeHidden === true)
+    && !agency.staged
+    && (!!agency.lastFeedExpiry || !!agency.lastRefreshedAt);
+}
+
+/** --include-hidden must name its agencies, so a full run can never pull in every hidden slug. */
+export function includeHiddenArgError(includeHidden: boolean, onlySlugs: string[]): string | null {
+  return includeHidden && onlySlugs.length === 0
+    ? '--include-hidden requires --only-slug <slug> (it only applies to agencies named explicitly)'
+    : null;
+}
