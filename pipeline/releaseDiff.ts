@@ -483,7 +483,7 @@ export function buildGateReport(runId: string, command: string, checked: string[
 }
 
 export function formatGateMarkdown(report: GateReport): string {
-  const row = (f: GateFlag) => `| ${f.slug} | ${f.level}${f.allowed ? ' (allowed)' : ''} | ${f.flag} | ${f.message.replace(/\|/g, '\\|')} |`;
+  const row = (f: GateFlag) => `| ${f.slug} | ${f.level}${f.allowed ? ' (allowed)' : ''} | ${f.flag} | ${f.message.replace(/\\/g, '\\\\').replace(/\|/g, '\\|')} |`;
   const section = (title: string, flags: GateFlag[]) => (flags.length
     ? [`## ${title}`, '', '| agency | level | flag | detail |', '|---|---|---|---|', ...flags.map(row), '']
     : [`## ${title}`, '', 'None.', '']);
