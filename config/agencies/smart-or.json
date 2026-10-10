@@ -14,7 +14,7 @@
     -122.69
   ],
   "feedUrl": "https://mysmartbus.com/gtfs",
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-oregon-south-metro-area-regional-transit-smart-gtfs-2706.zip?alt=media",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2706/latest.zip",
   "lastFeedExpiry": "",
   "lastFeedVersion": "FY27 Q1",
   "lastRefreshedAt": "2026-10-07",

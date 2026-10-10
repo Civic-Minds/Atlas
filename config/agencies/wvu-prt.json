@@ -7,8 +7,8 @@
     39.6345,
     -79.9553
   ],
-  "feedUrl": "https://files.mobilitydatabase.org/tld-7068_1/tld-7068_1-202601060114/tld-7068_1-202601060114.zip",
-  "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-7068_1/tld-7068_1-202601060114/tld-7068_1-202601060114.zip",
+  "feedUrl": "https://files.mobilitydatabase.org/tld-7068_1/latest.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-7068_1/latest.zip",
   "preprocess": "wvu-prt-shapes",
   "lastFeedExpiry": "20261218",
   "lastFeedVersion": "2",

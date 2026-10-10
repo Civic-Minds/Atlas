@@ -10,7 +10,7 @@
   "feedUrl": "http://data.trilliumtransit.com/gtfs/lakecounty-oh-us/lakecounty-oh-us.zip",
   "lastFeedExpiry": "20270125",
   "lastFeedVersion": "September 2026",
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-ohio-laketran-gtfs-410.zip?alt=media",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-410/latest.zip",
   "lastRefreshedAt": "2026-10-07",
   "cities": [
     "Cleveland, Ohio"

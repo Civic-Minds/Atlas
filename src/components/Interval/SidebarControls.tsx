@@ -41,6 +41,7 @@ import { buildRouteFacts, buildRouteServiceSummary, buildRouteStopMetric, metric
 import { collectStopHubSiblings, getDistanceMeters } from '../../utils/stopHub';
 import { splitRouteKey } from '../../utils/routeKey';
 import { isFeedExpired } from '../../utils/feedFreshness';
+import { effectiveFeedExpiry } from '../../../shared/feedAvailability';
 import { trackEvent } from '../../lib/analytics';
 
 interface SidebarControlsProps {
@@ -976,10 +977,10 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     ? (((currentRoute as any).baseFare as number | undefined) ?? fareOverrides[routeSlug]?.adult ?? routeAgency?.fare ?? null)
     : null;
   const routeIsStale = (() => {
-    return isFeedExpired(routeAgency?.lastFeedExpiry);
+    return isFeedExpired(routeAgency ? effectiveFeedExpiry(routeAgency) : null);
   })();
   const expDateStr = (() => {
-    const exp = routeAgency?.lastFeedExpiry;
+    const exp = routeAgency ? effectiveFeedExpiry(routeAgency) : null;
     if (!exp || exp.length !== 8) return '';
     const y = exp.slice(0, 4);
     const m = exp.slice(4, 6);

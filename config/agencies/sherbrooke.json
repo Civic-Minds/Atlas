@@ -14,7 +14,7 @@
     -71.82
   ],
   "feedUrl": "https://gtfs.sts.qc.ca:8443/gtfs/client/GTFS_clients.zip",
-  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1996/mdb-1996-202608070111/mdb-1996-202608070111.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1996/latest.zip",
   "lastFeedExpiry": "20261220",
   "lastFeedVersion": null,
   "lastRefreshedAt": "2026-08-10",

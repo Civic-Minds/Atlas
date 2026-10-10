@@ -14,7 +14,7 @@
     -115.3224
   ],
   "feedUrl": "https://schedule.ivtransit.com/gtfs/data.zip",
-  "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-5547/tld-5547-202501020017/tld-5547-202501020017.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-5547/latest.zip",
   "lastRefreshedAt": "2026-10-03",
   "lastFeedExpiry": "20261231",
   "lastFeedVersion": "2026-08-27",

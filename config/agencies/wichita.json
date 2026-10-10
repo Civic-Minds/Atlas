@@ -8,7 +8,7 @@
     -97.34
   ],
   "feedUrl": "https://bus.wichitatransit.org/InfoPoint/gtfs-zip.ashx",
-  "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-395/tld-395-202606120001/tld-395-202606120001.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-395/latest.zip",
   "lastFeedExpiry": "20260814",
   "lastFeedVersion": "20260611",
   "lastRefreshedAt": "2026-08-10",

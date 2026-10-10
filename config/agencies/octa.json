@@ -7,7 +7,7 @@
     -117.91
   ],
   "feedUrl": "https://www.octa.net/current/google_transit.zip",
-  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-15/mdb-15-202608100000/mdb-15-202608100000.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-15/latest.zip",
   "lastFeedExpiry": "20261107",
   "lastFeedVersion": null,
   "region": "California",

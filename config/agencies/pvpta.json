@@ -7,7 +7,7 @@
     -118.39
   ],
   "feedUrl": "http://data.trilliumtransit.com/gtfs/pvpta-ca-us/pvpta-ca-us.zip",
-  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-35/mdb-35-202607250037/mdb-35-202607250037.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-35/latest.zip",
   "lastFeedExpiry": "20270122",
   "lastFeedVersion": "UTC: 09-Sep-2026 18:25",
   "region": "California",

@@ -9,7 +9,7 @@
   "feedUrl": "https://www.gobroomecounty.com/sites/default/files/dept/transit/BCT_GTFS.zip",
   "lastFeedExpiry": "20271231",
   "lastFeedVersion": "20260822",
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-broome-county-transit-bc-transit-gtfs-239.zip?alt=media",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2079/latest.zip",
   "lastRefreshedAt": "2026-08-27",
   "websiteUrl": "https://gobroomecounty.com/transit",
   "lastFeedCheckAt": "20261007",

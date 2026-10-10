@@ -6,8 +6,8 @@
     25.7617,
     -80.1918
   ],
-  "feedUrl": "https://files.mobilitydatabase.org/mdb-331/mdb-331-202608010003/mdb-331-202608010003.zip",
-  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-331/mdb-331-202608010003/mdb-331-202608010003.zip",
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-331/latest.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-331/latest.zip",
   "lastFeedExpiry": "20271231",
   "lastFeedVersion": null,
   "region": "Florida",

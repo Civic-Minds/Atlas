@@ -9,6 +9,7 @@ import { agencyQualifiesForHistory, agencyQualifiesForHistoryExplore } from '../
 import { countriesForAgencies } from '../../shared/regionCountry';
 import type { Agency } from '../App';
 import { isFeedExpired } from '../utils/feedFreshness';
+import { effectiveFeedExpiry } from '../../shared/feedAvailability';
 import { trackEvent } from '../lib/analytics';
 import { EXPIRED_FEED_CADENCE, EXPIRED_FEED_CONTEXT, EXPIRED_FEED_EXPLANATION, MANUAL_FEED_CONTEXT, NO_ROUTE_SHAPE_DETAIL, NO_ROUTE_SHAPE_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice } from '../content/noticeCopy';
 import RegionFilterPills from './RegionFilterPills';
@@ -203,7 +204,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
       if (agencyFeatureFilters.size > 0 && ![...agencyFeatureFilters].some(filter =>
         (filter === 'live' && liveBySlug.has(a.slug))
         || (filter === 'history' && historyBySlug.has(a.slug))
-        || (filter === 'outdated' && isFeedExpired(a.lastFeedExpiry))
+        || (filter === 'outdated' && isFeedExpired(effectiveFeedExpiry(a)))
       )) continue;
       seen.add(a.region ?? 'Other');
     }
@@ -222,7 +223,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
       if (agencyFeatureFilters.size > 0 && ![...agencyFeatureFilters].some(filter =>
         (filter === 'live' && liveBySlug.has(a.slug))
         || (filter === 'history' && historyBySlug.has(a.slug))
-        || (filter === 'outdated' && isFeedExpired(a.lastFeedExpiry))
+        || (filter === 'outdated' && isFeedExpired(effectiveFeedExpiry(a)))
       )) return false;
       if (regionFilter.size > 0 && !regionFilter.has(a.region ?? 'Other')) return false;
       if (!q) return true;

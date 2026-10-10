@@ -14,7 +14,7 @@
     -122.11
   ],
   "feedUrl": "http://data.trilliumtransit.com/gtfs/westcat-ca-us/westcat-ca-us.zip",
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-westcat-gtfs-78.zip?alt=media",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-78/latest.zip",
   "lastFeedExpiry": "20270611",
   "lastFeedVersion": "UTC: 03-Sep-2026 17:27",
   "lastRefreshedAt": "2026-09-07",

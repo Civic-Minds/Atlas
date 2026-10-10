@@ -23,7 +23,7 @@
     "Upland, California",
     "Chino, California"
   ],
-  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-97/mdb-97-202607310117/mdb-97-202607310117.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-97/latest.zip",
   "lastFeedCheckAt": "20261007",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,

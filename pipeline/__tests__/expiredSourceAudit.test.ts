@@ -12,6 +12,41 @@ describe('expired source audit', () => {
     )).toBe('https://files.mobilitydatabase.org/mdb-1993/latest.zip');
   });
 
+  it('derives the latest URL for non-mdb Mobility Database ids', () => {
+    expect(mobilityDatabaseLatestUrl(
+      'https://files.mobilitydatabase.org/tld-7068_1/tld-7068_1-202601060114/tld-7068_1-202601060114.zip',
+    )).toBe('https://files.mobilitydatabase.org/tld-7068_1/latest.zip');
+    expect(mobilityDatabaseLatestUrl(
+      'https://files.mobilitydatabase.org/ntd-60190/ntd-60190-202601240120/ntd-60190-202601240120.zip',
+    )).toBe('https://files.mobilitydatabase.org/ntd-60190/latest.zip');
+  });
+
+  it('maps the retired Google-hosted mirror to the current latest URL (#627)', () => {
+    expect(mobilityDatabaseLatestUrl(
+      'https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-washington-island-transit-gtfs-280.zip?alt=media',
+    )).toBe('https://files.mobilitydatabase.org/mdb-280/latest.zip');
+    expect(mobilityDatabaseLatestUrl(
+      'https://storage.googleapis.com/mdb-latest/ca-ontario-go-transit-gtfs-1993.zip',
+    )).toBe('https://files.mobilitydatabase.org/mdb-1993/latest.zip');
+  });
+
+  it('adds a latest fallback behind a retired mirror URL (#627)', () => {
+    expect(buildFeedCandidates(
+      'https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-washington-island-transit-gtfs-280.zip?alt=media',
+    )).toEqual([
+      {
+        kind: 'configured',
+        url: 'https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-washington-island-transit-gtfs-280.zip?alt=media',
+      },
+      { kind: 'mdb-latest', url: 'https://files.mobilitydatabase.org/mdb-280/latest.zip' },
+    ]);
+  });
+
+  it('leaves non-Mobility Database URLs alone', () => {
+    expect(mobilityDatabaseLatestUrl('https://agency.example/gtfs.zip')).toBeNull();
+    expect(mobilityDatabaseLatestUrl('https://files.mobilitydatabase.org/mdb-280/latest.zip')).toBeNull();
+  });
+
   it('adds a latest candidate without duplicating an existing latest URL', () => {
     expect(buildFeedCandidates(
       'https://files.mobilitydatabase.org/mdb-1993/mdb-1993-202605291824/mdb-1993-202605291824.zip',

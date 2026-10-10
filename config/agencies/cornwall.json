@@ -16,7 +16,7 @@
   "feedUrl": "https://metrolinx.tmix.se/gtfs/gtfs-cornwall.zip",
   "lastFeedExpiry": "20261231",
   "lastFeedVersion": "1/20260930 22:00:00/20261001 00:00:00",
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-cornwall-transit-gtfs-718.zip?alt=media",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-718/latest.zip",
   "lastRefreshedAt": "2026-10-03",
   "lastFeedCheckAt": "20261007",
   "expiredFeedCheckCount": 0,

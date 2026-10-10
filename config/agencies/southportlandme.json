@@ -20,7 +20,7 @@
   "cities": [
     "Portland, Maine"
   ],
-  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2642/mdb-2642-202608100103/mdb-2642-202608100103.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2642/latest.zip",
   "lastFeedCheckAt": "20261007",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,

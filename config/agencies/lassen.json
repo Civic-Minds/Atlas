@@ -14,7 +14,7 @@
     -120.1
   ],
   "feedUrl": "http://data.trilliumtransit.com/gtfs/lassen-ca-us/lassen-ca-us.zip",
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-lassen-rural-bus-lrb-gtfs-118.zip?alt=media",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-118/latest.zip",
   "lastFeedExpiry": "20270501",
   "lastFeedVersion": "UTC: 14-Sep-2026 21:59",
   "lastRefreshedAt": "2026-10-03",

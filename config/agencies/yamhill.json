@@ -14,7 +14,7 @@
     -122.77
   ],
   "feedUrl": "http://ycta.connexionz.net/rtt/public/resource/gtfs.zip",
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-oregon-yamhill-county-transit-area-gtfs-250.zip?alt=media",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-250/latest.zip",
   "lastFeedExpiry": "20271231",
   "lastFeedVersion": "20260823",
   "lastRefreshedAt": "2026-08-27",

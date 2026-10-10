@@ -16,7 +16,7 @@
   "feedUrl": "https://www.stlaval.ca/datas/opendata/GTF_STL.zip",
   "lastFeedExpiry": "20261030",
   "lastFeedVersion": "20261006044637",
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-societe-de-transport-de-laval-gtfs-3190.zip?alt=media",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3190/latest.zip",
   "lastRefreshedAt": "2026-10-07",
   "cities": [
     "Laval, Quebec",

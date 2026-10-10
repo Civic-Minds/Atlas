@@ -16,7 +16,7 @@
   "feedUrl": "http://www.myridebarrie.ca/gtfs/google_transit.zip",
   "lastFeedExpiry": "20261226",
   "lastFeedVersion": "20260920",
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-barrie-transit-gtfs-3.zip?alt=media",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3/latest.zip",
   "lastRefreshedAt": "2026-10-03",
   "cities": [
     "Barrie, Ontario"

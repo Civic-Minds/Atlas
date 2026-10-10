@@ -1,5 +1,6 @@
 import { isAgencyVisibleInBrowser, type BrowserAgencyVisibility } from './agencyVisibility';
 import type { AtlasMode } from './config';
+import type { SupplementalFeedMeta } from './feedAvailability';
 
 /** Fields the browser needs; pipeline feed URLs and source credentials never ship here. */
 export interface AgencyCatalogEntry extends BrowserAgencyVisibility {
@@ -12,6 +13,7 @@ export interface AgencyCatalogEntry extends BrowserAgencyVisibility {
   bbox?: [number, number, number, number];
   displayArea?: string;
   lastFeedExpiry?: string | null;
+  lastSupplementalFeeds?: SupplementalFeedMeta[];
   lastRefreshedAt?: string | null;
   lastFeedCheckAt?: string | null;
   expiredFeedCheckCount?: number;

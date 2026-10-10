@@ -10,7 +10,7 @@
   "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11346/gtfs.zip",
   "lastFeedExpiry": "20261107",
   "lastFeedVersion": "AUGUST 2026_20260722",
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-ohio-stark-area-regional-transit-authority-sarta-gtfs-818.zip?alt=media",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2001/latest.zip",
   "lastRefreshedAt": "2026-08-07",
   "cities": [
     "Canton, Ohio",
