@@ -38,7 +38,7 @@ describe('on-demand zone card', () => {
     expect(screen.getByText('Mon–Sat 4:30 a.m.–2:00 a.m.')).toHaveClass('font-bold');
     expect(screen.getByText('Sun 5:30 a.m.–1:00 a.m.')).not.toHaveClass('font-bold');
     expect(screen.getByText('Holidays follow Sunday hours.')).toBeInTheDocument();
-    expect(screen.getByText('This zone has 1 transfer point, shown on the map.')).toBeInTheDocument();
+    expect(screen.getByText("Every trip starts or ends at this zone's transfer point, shown on the map.")).toBeInTheDocument();
     expect(screen.queryByText(/not fixed-route stops/)).toBeNull();
   });
 
@@ -66,6 +66,6 @@ describe('on-demand service card without a zone', () => {
   it('does not claim a shaded area that belongs to a different service', () => {
     renderZoneCard(null, 'Saturday', 'midday');
     expect(screen.queryByText(/shaded map area/)).toBeNull();
-    expect(screen.getByText('This service has 138 stops, shown on the map.')).toBeInTheDocument();
+    expect(screen.getByText('Pickups and drop-offs are at 138 set stops, shown on the map.')).toBeInTheDocument();
   });
 });

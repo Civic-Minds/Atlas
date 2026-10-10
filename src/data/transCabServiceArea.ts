@@ -56,6 +56,8 @@ export const HAMILTON_TRANS_CAB_SOURCE = {
   hoursNote: 'Holidays follow Sunday hours.',
   bookingUrl: SOURCE_URL,
   serviceName: 'Trans-Cab',
+  // hamilton.ca: "Trans-Cab trips must be made to and from the transfer point".
+  pickup: { method: 'transfer-point-trips' } as const,
   // Hours past 24 run into the next morning (26 = 2:00 a.m.).
   availability: {
     Weekday: [{ startHour: 4.5, endHour: 26 }],

@@ -155,6 +155,8 @@ export const HAMILTON_MY_RIDE_SERVICE_AREA = {
   serviceHours: 'Monday–Friday 5 a.m.–1:30 a.m.; Saturday 6 a.m.–1:30 a.m.; Sunday 6 a.m.–12:30 a.m.',
   bookingUrl: 'https://www.hamilton.ca/home-neighbourhood/hsr/schedule-route-tools/hsr-myride-demand',
   serviceName: 'myRide Waterdown On-Demand',
+  // hamilton.ca: myRide is "a 'stop-to-stop' service" between its listed stops.
+  pickup: { method: 'fixed-stops' } satisfies OnDemandPickup,
   // From the HSR myRide GTFS-Flex booking windows (stop_times, regular calendar); each day's
   // 00:00–01:30 window belongs to the previous evening's service.
   availability: {
@@ -170,6 +172,7 @@ export const HAMILTON_MY_RIDE_SERVICE_AREA = {
         serviceHours: HAMILTON_TRANS_CAB_SOURCE.serviceHours,
         hoursNote: HAMILTON_TRANS_CAB_SOURCE.hoursNote,
         availability: HAMILTON_TRANS_CAB_SOURCE.availability,
+        pickup: HAMILTON_TRANS_CAB_SOURCE.pickup,
       },
     ]),
   ),
@@ -246,6 +249,7 @@ export const EDMONTON_ON_DEMAND_SERVICE_AREA = {
   sourceLabel: 'City of Edmonton On Demand Transit map',
   sourceRetrievedAt: '2026-10-10',
   serviceName: 'ETS On Demand',
+  pickup: { method: 'fixed-stops' } satisfies OnDemandPickup,
   tripRules: 'Trips run from a signed On Demand stop in the neighbourhood to an assigned transit hub, not door to door.',
   bookingUrl: 'https://www.edmonton.ca/ets/on-demand-transit',
   zoneMetadata: EDMONTON_ON_DEMAND_ZONE_METADATA,
@@ -259,6 +263,7 @@ export const COBOURG_ON_DEMAND_SERVICE_AREA = {
   sourceLabel: 'Town of Cobourg On Demand stop map',
   sourceRetrievedAt: '2026-10-10',
   serviceName: 'Cobourg Transit On Demand',
+  pickup: { method: 'fixed-stops' } satisfies OnDemandPickup,
   serviceHours: 'Monday–Friday 6:15 a.m.–9 p.m.; Saturday 8:15 a.m.–6:45 p.m.; Sunday 8:45 a.m.–3:45 p.m.',
   tripRules: 'Trips run between Cobourg Transit On Demand stops, not door to door.',
   bookingUrl: 'https://book.cobourgtransit.rideco.com/login',

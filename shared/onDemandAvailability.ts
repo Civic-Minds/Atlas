@@ -29,7 +29,7 @@ export function isOnDemandActive(
 const DAY_TYPE_ORDER: readonly DayType[] = ['Weekday', 'Saturday', 'Sunday'];
 
 /** How riders are picked up, stated only where the agency's data says so. */
-export type OnDemandPickupMethod = 'door-to-door' | 'curb-to-curb' | 'virtual-stops' | 'fixed-stops' | 'connection-points';
+export type OnDemandPickupMethod = 'door-to-door' | 'curb-to-curb' | 'virtual-stops' | 'fixed-stops' | 'connection-points' | 'transfer-point-trips';
 
 export interface OnDemandPickup {
   method: OnDemandPickupMethod;
@@ -254,6 +254,11 @@ export function onDemandPickupSentence(service: OnDemandServiceDetails, areaName
       break;
     case 'connection-points':
       sentence = 'This area is a connection point.';
+      break;
+    case 'transfer-point-trips':
+      sentence = count > 0
+        ? `Every trip starts or ends at this zone's ${count === 1 ? 'transfer point' : 'transfer points'}, shown on the map.`
+        : 'Every trip starts or ends at a transfer point.';
       break;
     default:
       if (count > 0) {

@@ -228,8 +228,6 @@ describe('Hamilton Trans-Cab hours and transfer points', () => {
   it('ties each transfer point to the zone it serves and hides it with that zone', () => {
     expect(HAMILTON_TRANS_CAB_TRANSFER_POINTS.map(point => point.properties?.areaName)).toEqual(['Lower North Stoney Creek', 'West Glanbrook']);
     expect(isOnDemandStopShown(HAMILTON_MY_RIDE_SERVICE_AREA, HAMILTON_TRANS_CAB_TRANSFER_POINTS[0].properties, 'Weekday', 'overnight')).toBe(false);
-    expect(onDemandPickupSentence(HAMILTON_MY_RIDE_SERVICE_AREA, 'West Glanbrook')).toBe('This zone has 1 transfer point, shown on the map.');
-    expect(onDemandPickupSentence(HAMILTON_MY_RIDE_SERVICE_AREA, 'Lower East Stoney Creek')).toBeNull();
   });
 
   it('shows myRide stops on myRide hours, independent of Trans-Cab zones', () => {
@@ -265,5 +263,13 @@ describe('on-demand pickup methods stated by agencies', () => {
       expect(service.serviceHours).not.toMatch(/book|call/i);
       expect(service.bookingInfo).toMatch(/call/);
     }
+  });
+});
+
+describe('Hamilton pickup methods from hamilton.ca', () => {
+  it('describes Trans-Cab trips as to or from a transfer point and myRide as set stops', () => {
+    expect(onDemandPickupSentence(HAMILTON_MY_RIDE_SERVICE_AREA, 'West Glanbrook')).toBe("Every trip starts or ends at this zone's transfer point, shown on the map.");
+    expect(onDemandPickupSentence(HAMILTON_MY_RIDE_SERVICE_AREA, 'Lower East Stoney Creek')).toBe('Every trip starts or ends at a transfer point.');
+    expect(onDemandPickupSentence(HAMILTON_MY_RIDE_SERVICE_AREA, undefined)).toMatch(/^Pickups and drop-offs are at \d+ set stops, shown on the map\.$/);
   });
 });
