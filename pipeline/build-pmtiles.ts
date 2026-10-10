@@ -8,6 +8,7 @@ import { getAgencyArtifactUrls, pmtilesMinZoomForHeadway } from '../shared/confi
 import { runWithConcurrency } from './utils.js';
 import { prepareAgencyRouteFeaturesForTiles } from './prepareAgencyRoutesForTiles.js';
 import { simplifyLine } from './geometry.js';
+import { isBuiltIntoTiles } from './pmtilesCoverage.js';
 import { assertRouteArtifactSchema, ROUTE_ARTIFACT_SCHEMA_VERSION, TILE_RULES_VERSION } from '../shared/artifactSchema.js';
 import { currentCodeVersion, RELEASE_STAMP_FIELD } from './releaseGuard.js';
 import { consumeDataRefreshMarker, dataRefreshGuardError, readDataRefreshMarker } from './dataRefreshMarker.js';
@@ -155,7 +156,7 @@ async function main() {
     // lastFeedExpiry even though it has published the agency artifacts. Use the
     // refresh marker as the second signal instead of treating an empty expiry as
     // proof that there is nothing to include.
-    if (agency.pmtilesPending || agency.hiddenInProduction || agency.staged || (!agency.lastFeedExpiry && !agency.lastRefreshedAt)) {
+    if (!isBuiltIntoTiles(agency)) {
       console.log(`Skipping ${slug}: not production-visible or has no published refresh marker.`);
       return;
     }

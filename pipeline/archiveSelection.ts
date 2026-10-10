@@ -202,3 +202,31 @@ export function dropGuardRefusal(
   const refusal = outputDropRefusal(live, next);
   return refusal ? `${refusal} (pass --allow-drop after review)` : null;
 }
+
+export interface ReprocessCandidate {
+  hiddenInProduction?: boolean;
+  staged?: boolean;
+  pmtilesPending?: boolean;
+  lastFeedExpiry?: string | null;
+  lastRefreshedAt?: string | null;
+}
+
+/**
+ * Whether reprocess-derived-artifacts picks up an agency. Hidden agencies are
+ * skipped by default; includeHidden (only allowed together with --only-slug)
+ * lets a named hidden agency be corrected in R2 while it stays hidden. Staged
+ * and pmtilesPending agencies are never picked up.
+ */
+export function isReprocessTarget(agency: ReprocessCandidate, options: { includeHidden?: boolean } = {}): boolean {
+  return !agency.pmtilesPending
+    && (!agency.hiddenInProduction || options.includeHidden === true)
+    && !agency.staged
+    && (!!agency.lastFeedExpiry || !!agency.lastRefreshedAt);
+}
+
+/** --include-hidden must name its agencies, so a full run can never pull in every hidden slug. */
+export function includeHiddenArgError(includeHidden: boolean, onlySlugs: string[]): string | null {
+  return includeHidden && onlySlugs.length === 0
+    ? '--include-hidden requires --only-slug <slug> (it only applies to agencies named explicitly)'
+    : null;
+}

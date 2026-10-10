@@ -85,3 +85,29 @@ export function isScheduleOnlyRouteArtifact(artifact: RouteArtifact): boolean {
   if (routes.length === 0) return false;
   return routes.every(f => f.geometry?.type !== 'LineString' && f.geometry?.type !== 'MultiLineString');
 }
+
+export interface TileInclusionAgency {
+  pmtilesPending?: boolean;
+  hiddenInProduction?: boolean;
+  staged?: boolean;
+  lastFeedExpiry?: string | null;
+  lastRefreshedAt?: string | null;
+}
+
+/**
+ * Whether build-pmtiles puts this agency into the tiles. Hidden, staged and
+ * pending agencies stay out (their R2 artifacts may still be updated), so the
+ * coverage gate must expect them to be missing. One predicate for the build,
+ * the coverage gate and the release smoke sample keeps the three in step.
+ */
+export function isBuiltIntoTiles(agency: TileInclusionAgency): boolean {
+  return !agency.pmtilesPending
+    && !agency.hiddenInProduction
+    && !agency.staged
+    && (!!agency.lastFeedExpiry || !!agency.lastRefreshedAt);
+}
+
+/** An agency the coverage gate fails on when it has no route features in the archive. */
+export function mustAppearInTiles(agency: TileInclusionAgency): boolean {
+  return isBuiltIntoTiles(agency) && !!agency.lastFeedExpiry;
+}
