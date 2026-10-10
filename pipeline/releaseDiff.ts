@@ -16,6 +16,8 @@
  *   yellow expired       service has ended, but the output is unchanged from live
  *   yellow headway-shift a smaller share of routes halves or doubles
  *   yellow future-start  service does not start until a future date
+ *   yellow placeholder-expiry the calendar end is more than 2 years past today,
+ *                        likely a placeholder; the recorded expiry is capped
  *   yellow added         no live artifact to compare with (new to the release),
  *                        or the live one predates route schema v2; no diff is taken
  *
@@ -28,8 +30,9 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { getGtfsModeName } from '../shared/modes.js';
 import { countArtifacts, dropGuardRefusal, type ArtifactCounts } from './archiveSelection.js';
+import { addYearsYmd, PLACEHOLDER_EXPIRY_YEARS } from './refreshMeta.js';
 
-export const GATE_FLAGS = ['drop', 'empty', 'mode-lost', 'duplicate', 'headway-shift', 'expired', 'future-start', 'added'] as const;
+export const GATE_FLAGS = ['drop', 'empty', 'mode-lost', 'duplicate', 'headway-shift', 'expired', 'future-start', 'placeholder-expiry', 'added'] as const;
 export type GateFlagName = typeof GATE_FLAGS[number];
 export type GateLevel = 'red' | 'yellow';
 
@@ -75,6 +78,8 @@ export interface ArtifactSummary {
 export interface ServiceWindow {
   start?: string | null;
   end?: string | null;
+  /** Latest calendar end (calendar.txt / calendar_dates), when it differs from `end`. */
+  calendarEnd?: string | null;
 }
 
 interface LineFeature {
@@ -256,6 +261,12 @@ export function evaluateAgency(input: AgencyGateInput, peers: GatePeer[], todayY
   const start = input.service?.start ?? null;
   if (start && /^\d{8}$/.test(start) && start > todayYmd) {
     flags.push(flag(slug, 'future-start', 'yellow', `service does not start until ${start}`));
+  }
+  const calendarEnd = input.service?.calendarEnd ?? end;
+  const placeholderAfter = addYearsYmd(todayYmd, PLACEHOLDER_EXPIRY_YEARS);
+  if (calendarEnd && /^\d{8}$/.test(calendarEnd) && calendarEnd > placeholderAfter) {
+    flags.push(flag(slug, 'placeholder-expiry', 'yellow',
+      `calendar runs to ${calendarEnd}, more than ${PLACEHOLDER_EXPIRY_YEARS} years out; likely a placeholder, recorded expiry is capped`));
   }
   return flags;
 }

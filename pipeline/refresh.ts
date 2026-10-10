@@ -518,7 +518,7 @@ async function refreshAgency(
   const next = summarizeArtifact(geojson, stopsJson);
   const { feedStart } = await peekFeedDates(buf);
   const agencyFlags = await evaluateRun({
-    candidates: [{ slug: agency.slug, next, service: { start: feedStart, end: feedExpiry ?? peekedExpiry } }],
+    candidates: [{ slug: agency.slug, next, service: { start: feedStart, end: feedExpiry ?? peekedExpiry, calendarEnd: peekedExpiry } }],
     getLive: readRefreshLive,
     registry: gateRegistry,
     todayYmd: today,
