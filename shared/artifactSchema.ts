@@ -40,7 +40,7 @@ export function assertRouteArtifactSchema(
  * fingerprint test in pipeline/__tests__/releaseGuard.test.ts forces the
  * decision whenever the underlying files change.
  */
-export const TILE_RULES_VERSION = 1;
+export const TILE_RULES_VERSION = 2;
 
 /** Releases published before the stamp existed count as the baseline rules. */
 export function releaseTileRulesVersion(release: { tileRulesVersion?: unknown }): number | null {

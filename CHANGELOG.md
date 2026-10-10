@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- Frequent routes like TTC 506, 63, 84 and 100 show again under weekday "every 20 min" — one rare trip pattern no longer makes a whole route look like it leaves hours without service ([#658](https://github.com/Civic-Minds/Atlas/issues/658)).
 - Test sessions and locally run builds no longer count as visitors in Atlas analytics, so visitor numbers reflect real traffic only.
 - **On-demand zone cards now list hours from the agency's schedule data, bold today's line, and say plainly whether the zone is running at the selected time — or that its hours aren't confirmed — with booking details and trip rules shown separately.**
 - **On-demand cards describe how pickup works for the zone you clicked — door to door, set stops, or trips to and from a transfer point — using only what the agency publishes, instead of one generic line about virtual stops.**

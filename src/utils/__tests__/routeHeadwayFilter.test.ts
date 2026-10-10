@@ -89,6 +89,47 @@ describe('the one frequency-filter rule: worst direction decides', () => {
     expect(routePassesHeadwayFilter(features, 'amPeak', 'Weekday', 10)).toBe(false);
   });
 
+  // #658: weekday coverage took the worst pattern per direction, so one rare variant failed the
+  // whole route. Coverage now uses the same pool as the period headway.
+  it('TTC 506/63/84/100 weekday: a rare variant no longer sets the route coverage', () => {
+    // Live values before the fix (wdpch amPeak/midday): 506 136/345, 63 85/338, 84 62/322, 100 17/286.
+    const expected: Record<string, { amPeak: number; midday: number }> = {
+      '506': { amPeak: 13, midday: 13 },
+      '63': { amPeak: 13, midday: 10 },
+      '84': { amPeak: 16, midday: 14 },
+      '100': { amPeak: 12, midday: 12 },
+    };
+    for (const [route, coverage] of Object.entries(expected)) {
+      const features = routeFeatures('ttc', route);
+      expect(features.length).toBeGreaterThan(1);
+      for (const p of features) expect(p.worstDirectionPeriodCoverageHeadway).toMatchObject(coverage);
+      expect(routePassesHeadwayFilter(features, 'amPeak', 'Weekday', 20)).toBe(true);
+      expect(routePassesHeadwayFilter(features, 'midday', 'Weekday', 20)).toBe(true);
+    }
+  });
+
+  it('TTC 506 weekday: the 7-trip High Park pattern is set aside, the worst direction still decides', () => {
+    const features = routeFeatures('ttc', '506');
+    const highPark = features.find((p: any) => p.headsign === 'High Park');
+    expect(highPark.tier).toBe('infrequent');
+    expect(highPark.periodCoverageHeadway.midday).toBe(345);
+    // No midday cadence of its own, so this feature reads the route coverage (13), not 345.
+    expect(routeFilterHeadway(highPark, 'midday')).toBe(13);
+    expect(routePassesHeadwayFilter(features, 'midday', 'Weekday', 10)).toBe(true);
+    expect(routePassesHeadwayFilter(features, 'midday', 'Weekday', 5)).toBe(false);
+  });
+
+  it('CTA 77 Belmont weekday midday: the unsteady Belmont & Central short turn does not sink the route', () => {
+    // Westbound Cumberland every 10 (coverage 10); Belmont & Central (tier infrequent, not
+    // steady at midday) left a 280-minute gap and used to fail the route at every threshold.
+    const features = routeFeatures('cta', '77');
+    const central = features.find((p: any) => p.headsign === 'Belmont & Central');
+    expect(central.periodCoverageHeadway.midday).toBe(280);
+    for (const p of features) expect(p.worstDirectionPeriodCoverageHeadway.midday).toBe(10);
+    expect(routePassesHeadwayFilter(features, 'midday', 'Weekday', 10)).toBe(true);
+    expect(routePassesHeadwayFilter(features, 'midday', 'Weekday', 5)).toBe(false);
+  });
+
   it('never lets the busiest stop decide the all-day filter', () => {
     const p = { routeId: 'x', day: 'Weekday', headway: 25, minStopHeadway: 8 };
     expect(routeFilterHeadway(p, 'all')).toBe(25);

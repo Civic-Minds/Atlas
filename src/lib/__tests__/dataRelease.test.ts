@@ -17,6 +17,7 @@ describe('data releases', () => {
         overviewPmtilesKey: 'atlas/releases/release-test/atlas-overview.pmtiles',
         agencyPrefix: 'atlas/releases/release-test/agencies',
         routeArtifactSchemaVersion: 2,
+        tileRulesVersion: TILE_RULES_VERSION,
       }),
     }));
 
@@ -44,9 +45,10 @@ describe('data releases', () => {
     agencyPrefix: 'atlas/releases/release-test/agencies',
     routeArtifactSchemaVersion: ROUTE_ARTIFACT_SCHEMA_VERSION,
   };
+  const stamped = { ...complete, tileRulesVersion: TILE_RULES_VERSION };
 
   it('treats a release without a tile-rules stamp as the baseline rules', () => {
-    expect(isCompatibleDataRelease(complete)).toBe(TILE_RULES_VERSION === 1);
+    expect(isCompatibleDataRelease(complete)).toBe((TILE_RULES_VERSION as number) === 1);
   });
 
   it('rejects a release whose tiles were built under different rules than this app', () => {
@@ -58,7 +60,7 @@ describe('data releases', () => {
   it('retries the release pointer once after a server error', async () => {
     const fetchMock = vi.fn()
       .mockResolvedValueOnce({ ok: false, status: 503 })
-      .mockResolvedValue({ ok: true, status: 200, json: async () => complete });
+      .mockResolvedValue({ ok: true, status: 200, json: async () => stamped });
     vi.stubGlobal('fetch', fetchMock);
     await expect(resolveDataRelease('https://data.example')).resolves.toMatchObject({ releaseId: 'release-test' });
     expect(fetchMock).toHaveBeenCalledTimes(2);
@@ -67,7 +69,7 @@ describe('data releases', () => {
   it('retries the release pointer once after a network error', async () => {
     const fetchMock = vi.fn()
       .mockRejectedValueOnce(new Error('offline'))
-      .mockResolvedValue({ ok: true, json: async () => complete });
+      .mockResolvedValue({ ok: true, json: async () => stamped });
     vi.stubGlobal('fetch', fetchMock);
     await expect(resolveDataRelease('https://data.example')).resolves.toMatchObject({ releaseId: 'release-test' });
     expect(fetchMock).toHaveBeenCalledTimes(2);
