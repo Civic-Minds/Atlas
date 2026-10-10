@@ -21,7 +21,8 @@ import { useColorVision } from '../../context/ColorVisionContext';
 import { tileEffectiveHeadwayExpr, tileRouteKeyExpr } from '../../../shared/tileFilterExprs';
 import { routeFilterHeadway } from '../../../shared/routeHeadwayFilter';
 import { syncUrlParams } from '../../utils/syncUrlParams';
-import { buildFocusedRoutePaint, buildSelectedRouteLineOpacity } from '../../utils/routeFocus';
+import { buildFocusCase, buildFocusedRoutePaint, buildSelectedRouteLineOpacity, FOCUS_DIM_OPACITY } from '../../utils/routeFocus';
+import { isOnDemandStopFocused, isOnDemandZoneFocused, ON_DEMAND_FOCUSED_PROP, type OnDemandFocusTarget } from './map/onDemandFocus';
 import { dedupeRouteKeysByDisplay, splitRouteKey } from '../../utils/routeKey';
 import { computeFrequencySegmentOverlay, buildPartialMatchFilterExpression, broadenFilterForPartialMatches } from '../../utils/frequencySegments';
 import { buildSharedHoverSegments } from '../../utils/sharedHoverSegments';
@@ -43,6 +44,10 @@ import { lineCoordinates } from '../../../shared/routeGeometry';
 
 const CORRIDOR_BAND_COLOR = '#64748b';
 const ON_DEMAND_AREA_COLOR = '#64748b';
+// Selected on-demand features keep their normal paint; the rest fade like routes behind a selection.
+const ON_DEMAND_FOCUS_MATCH = ['!=', ['get', ON_DEMAND_FOCUSED_PROP], false];
+// Zone fills are already faint (0.12), so fade them proportionally instead of to the shared 0.18.
+const ON_DEMAND_FADED_FILL_OPACITY = 0.03;
 const FREQUENT_15_COLOR = HEADWAY_TIERS.find(tier => tier.max === 15)?.color ?? '#3da44d';
 const FREQUENT_30_COLOR = HEADWAY_TIERS.find(tier => tier.max === 30)?.color ?? '#e07b2a';
 // Keep the Live/Deck.gl graph out of public builds entirely when Live is disabled.
@@ -285,6 +290,10 @@ interface MapCanvasProps {
   setSelectedAgencySlug?: (slug: string | null) => void;
   onOnDemandStopClick?: (slug: string) => void;
   onOnDemandZoneClick?: (selection: { slug: string; zoneId: string }) => void;
+  /** Selected on-demand service: its zone(s) and stops stay full strength, everything else fades. */
+  selectedOnDemandSlug?: string | null;
+  /** Selected zone within selectedOnDemandSlug; null focuses the whole service. */
+  selectedOnDemandZoneId?: string | null;
   fareView?: boolean;
   nightServiceView?: boolean;
   nightServiceFrequency?: NightServiceFrequency;
@@ -353,6 +362,8 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   setSelectedAgencySlug,
   onOnDemandStopClick,
   onOnDemandZoneClick,
+  selectedOnDemandSlug = null,
+  selectedOnDemandZoneId = null,
   fareView = false,
   nightServiceView = false,
   nightServiceFrequency = 60,
@@ -532,6 +543,9 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       ? agencies.filter(agency => agency.onDemandServiceArea && (selectedAgencies?.has(agency.slug) ?? true))
       : []
   ), [agencies, selectedAgencies, selectedModes]);
+  const onDemandFocus = useMemo<OnDemandFocusTarget | null>(() => (
+    selectedOnDemandSlug ? { slug: selectedOnDemandSlug, zoneId: selectedOnDemandZoneId ?? null } : null
+  ), [selectedOnDemandSlug, selectedOnDemandZoneId]);
   const onDemandServiceAreaData = useMemo<GeoJSON.FeatureCollection<GeoJSON.Polygon | GeoJSON.MultiPolygon>>(() => ({
     type: 'FeatureCollection',
     features: onDemandAgencies.flatMap(agency => {
@@ -548,11 +562,12 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
               agencyName: agency.name,
               onDemandZoneId: areaName ?? feature.id,
               hoursConfirmed: onDemandHoursConfirmed(service, areaName ? [areaName] : [], day),
+              ...(onDemandFocus ? { [ON_DEMAND_FOCUSED_PROP]: isOnDemandZoneFocused(onDemandFocus, agency.slug, areaName ?? feature.id) } : {}),
             },
           };
         });
     }),
-  }), [day, onDemandAgencies, period]);
+  }), [day, onDemandAgencies, onDemandFocus, period]);
   const onDemandStopData = useMemo<GeoJSON.FeatureCollection<GeoJSON.Point>>(() => ({
     type: 'FeatureCollection',
     features: onDemandAgencies.flatMap(agency => {
@@ -570,11 +585,12 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
               // A stop inside exactly one zone opens that zone's card when clicked.
               ...(zones.length === 1 ? { onDemandZoneId: zones[0] } : {}),
               hoursConfirmed: onDemandHoursConfirmed(service, zones, day),
+              ...(onDemandFocus ? { [ON_DEMAND_FOCUSED_PROP]: isOnDemandStopFocused(onDemandFocus, agency.slug, zones) } : {}),
             },
           };
         });
     }),
-  }), [day, onDemandAgencies, period]);
+  }), [day, onDemandAgencies, onDemandFocus, period]);
 
   const updateMapContext = useCallback(() => {
     const map = mapRef.current;
@@ -1149,7 +1165,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         id: 'on-demand-service-area-fill',
         type: 'fill',
         source: 'on-demand-service-areas',
-        paint: { 'fill-color': ON_DEMAND_AREA_COLOR, 'fill-opacity': ['case', ['==', ['get', 'hoursConfirmed'], false], 0.05, 0.12] },
+        paint: { 'fill-color': ON_DEMAND_AREA_COLOR, 'fill-opacity': buildFocusCase(ON_DEMAND_FOCUS_MATCH, ['case', ['==', ['get', 'hoursConfirmed'], false], 0.05, 0.12], ON_DEMAND_FADED_FILL_OPACITY) as any },
         layout: { visibility: 'none' },
       });
       map.addLayer({
@@ -1159,7 +1175,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         paint: {
           'line-color': ON_DEMAND_AREA_COLOR,
           'line-width': 2,
-          'line-opacity': ['case', ['==', ['get', 'hoursConfirmed'], false], 0.4, 0.95],
+          'line-opacity': buildFocusCase(ON_DEMAND_FOCUS_MATCH, ['case', ['==', ['get', 'hoursConfirmed'], false], 0.4, 0.95], FOCUS_DIM_OPACITY) as any,
           'line-dasharray': [2, 1.5],
         },
         layout: { visibility: 'none' },
@@ -1178,8 +1194,8 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
           'circle-radius': ['interpolate', ['linear'], ['zoom'], 9, 2, 12, 3.5, 15, 5],
           'circle-stroke-color': '#ffffff',
           'circle-stroke-width': ['interpolate', ['linear'], ['zoom'], 9, 0.75, 12, 1.25, 15, 1.5],
-          'circle-opacity': ['case', ['==', ['get', 'hoursConfirmed'], false], 0.4, 1],
-          'circle-stroke-opacity': ['case', ['==', ['get', 'hoursConfirmed'], false], 0.4, 1],
+          'circle-opacity': buildFocusCase(ON_DEMAND_FOCUS_MATCH, ['case', ['==', ['get', 'hoursConfirmed'], false], 0.4, 1], FOCUS_DIM_OPACITY) as any,
+          'circle-stroke-opacity': buildFocusCase(ON_DEMAND_FOCUS_MATCH, ['case', ['==', ['get', 'hoursConfirmed'], false], 0.4, 1], FOCUS_DIM_OPACITY) as any,
         },
         layout: { visibility: 'none' },
       });
@@ -2176,9 +2192,12 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
             17, 3.5,
           ]);
         }
-      } else if (hoveredSearchRoute) {
-        // Hovering a search result: spotlight that route, fade the rest
-        const hoverMatch: any = routeKeyMatchExpression(hoveredSearchRoute);
+      } else if (hoveredSearchRoute || onDemandFocus) {
+        // Hovering a search result spotlights that route and fades the rest. A selected
+        // on-demand zone/service matches no fixed route, so the same fade dims every route.
+        const hoverMatch: any = hoveredSearchRoute
+          ? routeKeyMatchExpression(hoveredSearchRoute)
+          : ['==', ['get', 'routeId'], ''];
         setRouteLayerPaint(map, 'line-opacity', buildFocusedRouteLineOpacityExpression(hoverMatch, headwayExpr, colorMode) as any);
         setRouteLayerPaint(map, 'line-width', [
           'interpolate', ['linear'], ['zoom'],
@@ -2231,6 +2250,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       const isDefaultRouteFocusState = !historyOverlay
         && !selectedRoute
         && !hoveredSearchRoute
+        && !onDemandFocus
         && !nightServiceView
         && !frequentServiceView
         && !(selectedStop && routesForStop?.siblingIdsByAgency);
@@ -2280,14 +2300,15 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       }
     }
 
-  }, [mapLoaded, q, selectedRoute, hoveredSearchRoute, hoveredBranch, selectedStop, routesForStop, maxHeadway, zoom, showRouteLayers, liveRoutesOnly, filterToAgencies, agencies, tileFilter, fareView, nightServiceView, frequentServiceView, historyOverlay, layers, frequencySegmentOverlay, colorMode]);
+  }, [mapLoaded, q, selectedRoute, hoveredSearchRoute, hoveredBranch, selectedStop, routesForStop, maxHeadway, zoom, showRouteLayers, liveRoutesOnly, filterToAgencies, agencies, tileFilter, fareView, nightServiceView, frequentServiceView, historyOverlay, layers, frequencySegmentOverlay, colorMode, onDemandFocus]);
 
   // Force-reset route paint when selection clears (guards against stuck highlight state).
   useEffect(() => {
     const map = mapRef.current;
-    if (!map || !mapLoaded || selectedRoute || historyOverlay) return;
+    // A selected on-demand zone keeps its own route fade from the main styling effect.
+    if (!map || !mapLoaded || selectedRoute || historyOverlay || onDemandFocus) return;
     resetRoutesLayerDefaultPaint(map);
-  }, [selectedRoute, mapLoaded, historyOverlay]);
+  }, [selectedRoute, mapLoaded, historyOverlay, onDemandFocus]);
 
   // Overlay layers (corridors, history, live vehicles) — extracted to hooks
   useCorridorLayer(mapRef, mapLoaded, showCorridorBand || showCorridors, selectedCorridorFamily);

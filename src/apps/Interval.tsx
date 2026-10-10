@@ -661,6 +661,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
         setSelectedAgencySlug={setSelectedAgencySlug}
         onOnDemandStopClick={handleOnDemandStopClick}
         onOnDemandZoneClick={handleOnDemandZoneClick}
+        selectedOnDemandSlug={selectedRoute || selectedStop ? null : selectedOnDemandSlug}
+        selectedOnDemandZoneId={selectedOnDemandZoneId}
         fareView={fareView}
         nightServiceView={nightServiceView}
         nightServiceFrequency={nightServiceFrequency}
