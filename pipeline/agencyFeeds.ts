@@ -81,6 +81,15 @@ export async function downloadFeedBuffer(url: string): Promise<Buffer> {
   }
 }
 
+/**
+ * Archive folder for a supplemental feed's raw zips, by 1-based position in
+ * supplementalFeedUrls. Kept outside `gtfs/archive/<slug>/` so per-slug archive
+ * lookups never mistake a supplemental for the main feed.
+ */
+export function supplementalArchiveStem(slug: string, index: number): string {
+  return `${slug}--supplemental-${index + 1}`;
+}
+
 export function isZipBuffer(buf: Buffer): boolean {
   return buf.length >= 4 && buf[0] === 0x50 && buf[1] === 0x4b;
 }

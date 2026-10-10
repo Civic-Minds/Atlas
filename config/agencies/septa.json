@@ -15,7 +15,7 @@
   ],
   "feedUrl": "https://www3.septa.org/developer/google_bus.zip",
   "supplementalFeedUrls": [
-    "https://files.mobilitydatabase.org/mdb-503/latest.zip"
+    "https://www3.septa.org/developer/google_rail.zip"
   ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-502/latest.zip",
   "lastFeedExpiry": "20270220",

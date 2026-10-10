@@ -8574,7 +8574,7 @@
         34.3,
         -116.1
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/tld-461/latest.zip",
+      "feedUrl": "https://sunlinebus.com/gtfs",
       "lastFeedExpiry": "20991231",
       "lastFeedVersion": "6/5/2026",
       "region": "California",
@@ -10383,7 +10383,7 @@
       ],
       "feedUrl": "https://www3.septa.org/developer/google_bus.zip",
       "supplementalFeedUrls": [
-        "https://files.mobilitydatabase.org/mdb-503/latest.zip"
+        "https://www3.septa.org/developer/google_rail.zip"
       ],
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-502/latest.zip",
       "lastFeedExpiry": "20270220",
@@ -14068,6 +14068,7 @@
         -110.7
       ],
       "feedUrl": "https://GTFS-RT.suntran.com/TMGTFSRealTimeWebService/Static/SunTranGTFS.zip",
+      "hiddenInProduction": true,
       "region": "Arizona",
       "cities": [
         "Tucson, Arizona",
@@ -15046,6 +15047,7 @@
         -82.1
       ],
       "feedUrl": "http://data.trilliumtransit.com/gtfs/spacecoast-fl-us/spacecoast-fl-us.zip",
+      "hiddenInProduction": true,
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-348/latest.zip",
       "region": "Florida",
       "lastFeedExpiry": "20290629",

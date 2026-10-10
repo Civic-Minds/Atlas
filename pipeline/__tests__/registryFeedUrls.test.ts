@@ -9,7 +9,6 @@ import {
 // Agencies still on a frozen source, each with the reason it was left in place.
 // Remove an entry once its feed is moved to a stable URL.
 const KNOWN_FROZEN_SOURCES: Record<string, string> = {
-  metrostlouis: 'moving to the official metrostlouis.org feed in #610',
   'dc-streetcar': 'expired at MDB latest too; needs an official source',
   'fred-transit': 'MDB feed deprecated, successor has no latest.zip',
   glendalebeeline: 'MDB feed deprecated, successor has no latest.zip',
