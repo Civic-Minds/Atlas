@@ -37,6 +37,8 @@ function maxNum(a: number | undefined, b: number): number {
   return a == null ? b : Math.max(a, b);
 }
 
+type PeriodCandidate = { hw: number; tier: string | null | undefined; sustained: boolean };
+
 /** Real destination tiers — not limited/span-only decoration. */
 function isInfrequentTier(tier: string | null | undefined): boolean {
   return tier === 'infrequent';
@@ -51,8 +53,9 @@ function isInfrequentTier(tier: string | null | undefined): boolean {
  *    Peak-only / ghost period patterns (TTC 63 St Clair midday) are unsustained and drop out.
  *    Two real destinations with different cadence (TTC 507 Long Branch 8 vs Marine Parade 25)
  *    keep the outer bar — dense trunk service is the frequency cut-back / stop path, not this score.
- * 2. All-day: same worst-direction idea, but drop pure `infrequent` siblings when the direction
- *    also has a regular tier pattern (peak short-turn debris shouldn't set all-day filter).
+ * 2. All-day and period alike: drop pure `infrequent` siblings when the direction also has a
+ *    regular tier pattern (short-turn / extension debris shouldn't set the filter). For a period,
+ *    a regular pattern counts when it runs in that period, even if unsustained there.
  */
 export function stampWorstDirectionHeadways(features: WorstDirectionFeature[]): void {
   // Coverage includes unsustained windows. A direction with no departures must
@@ -87,8 +90,8 @@ export function stampWorstDirectionHeadways(features: WorstDirectionFeature[]): 
   }
   // route+day → directionId → candidate all-day headways with tier
   const dirAllDay = new Map<string, Map<number, Array<{ hw: number; tier: string | null | undefined }>>>();
-  // route+day → directionId → period → worst (max) real period headway
-  const dirWorstByPeriod = new Map<string, Map<number, HeadwayByPeriod>>();
+  // route+day → directionId → period → candidate period headways with tier
+  const dirPeriodCandidates = new Map<string, Map<number, Map<PeriodKey, PeriodCandidate[]>>>();
 
   for (const f of features) {
     if (!f.properties) continue;
@@ -118,23 +121,23 @@ export function stampWorstDirectionHeadways(features: WorstDirectionFeature[]): 
     const byPeriod = f.properties.headwayByPeriod;
     if (byPeriod) {
       const sustained = f.properties.headwayByPeriodSustained;
-      let dirMap = dirWorstByPeriod.get(key);
+      let dirMap = dirPeriodCandidates.get(key);
       if (!dirMap) {
         dirMap = new Map();
-        dirWorstByPeriod.set(key, dirMap);
+        dirPeriodCandidates.set(key, dirMap);
       }
-      let existing = dirMap.get(dirId);
-      if (!existing) {
-        existing = {};
-        dirMap.set(dirId, existing);
+      let periods = dirMap.get(dirId);
+      if (!periods) {
+        periods = new Map();
+        dirMap.set(dirId, periods);
       }
       for (const [pk, v] of Object.entries(byPeriod) as [PeriodKey, number | null | undefined][]) {
         if (v == null) continue;
-        // Not real cadence for this window (edge bunch / barely-running short-turn) — skip.
-        if (sustained?.[pk] === false) continue;
-        // Worst real destination in this direction for the period (not the densest).
-        const cur = existing[pk];
-        existing[pk] = cur == null ? v : Math.max(cur, v);
+        const list = periods.get(pk) ?? [];
+        // Not real cadence for this window (edge bunch / barely-running short-turn) is kept as a
+        // candidate only so it still counts as the direction's main service below.
+        list.push({ hw: v, tier: f.properties.tier, sustained: sustained?.[pk] !== false });
+        periods.set(pk, list);
       }
     }
   }
@@ -153,15 +156,25 @@ export function stampWorstDirectionHeadways(features: WorstDirectionFeature[]): 
     if (routeWorst != null) routeWorstHw.set(key, routeWorst);
   }
 
-  // Period: already per-direction max of real values — collapse max across directions.
+  // Period: same rule as all-day, per direction. When the direction has a regular-tier pattern
+  // running in the period, occasional `infrequent` siblings (TransLink 99's three AM Boundary
+  // Loop extension trips, every 23) do not count against it. Then the worst sustained value per
+  // direction, then the worst direction. Unsustained values never set the bar; the coverage
+  // stamp above still fails a direction that leaves most of the window without service.
   const routeWorstHwByPeriod = new Map<string, HeadwayByPeriod>();
-  for (const [key, dirMap] of dirWorstByPeriod) {
+  for (const [key, dirMap] of dirPeriodCandidates) {
     const worst: HeadwayByPeriod = {};
-    for (const byPeriod of dirMap.values()) {
-      for (const [pk, v] of Object.entries(byPeriod) as [PeriodKey, number | null | undefined][]) {
-        if (v == null) continue;
-        const cur = worst[pk];
-        worst[pk] = cur == null ? v : Math.max(cur, v);
+    for (const periods of dirMap.values()) {
+      for (const [pk, candidates] of periods) {
+        // Pick the pool after the sustained check, so a direction that runs in the period always
+        // contributes a value: dropping a sibling must never make a whole direction vanish.
+        const sustained = candidates.filter(c => c.sustained);
+        const regular = sustained.filter(c => !isInfrequentTier(c.tier));
+        const pool = regular.length > 0 ? regular : sustained;
+        for (const c of pool) {
+          const cur = worst[pk];
+          worst[pk] = cur == null ? c.hw : Math.max(cur, c.hw);
+        }
       }
     }
     if (Object.keys(worst).length > 0) routeWorstHwByPeriod.set(key, worst);

@@ -102,7 +102,8 @@ function routeKeyOf(agency: string, p: Record<string, any>): string {
 
 /**
  * Independent per-direction sustained headway (does not read the stamped worst-direction
- * fields). Period: the slowest real (sustained, non-span) destination in that direction.
+ * fields). Period: the slowest real (sustained, non-span) destination in that direction,
+ * ignoring infrequent-tier siblings when a sustained regular pattern runs in the period.
  * All day: the slowest regular-tier destination (infrequent siblings dropped when a regular
  * pattern exists). Returns undefined when that direction has no such value.
  */
@@ -113,9 +114,12 @@ function directionSustainedValue(features: Record<string, any>[], period: AuditP
     const use = regular.length > 0 ? regular : pool;
     return use.length ? Math.max(...use.map(p => p.headway as number)) : undefined;
   }
-  const values = features
-    .filter(p => p.tier !== 'span')
-    .filter(p => p.headwayByPeriodSustained?.[period] !== false)
+  // Occasional short-turn / extension patterns (tier infrequent) do not count against a direction
+  // whose regular pattern runs in this period (TransLink 99's AM Boundary Loop trips).
+  const sustained = features.filter(p => p.tier !== 'span' && typeof p.headwayByPeriod?.[period] === 'number'
+    && p.headwayByPeriodSustained?.[period] !== false);
+  const regular = sustained.filter(p => p.tier !== 'infrequent');
+  const values = (regular.length > 0 ? regular : sustained)
     .map(p => p.headwayByPeriod?.[period])
     .filter((v): v is number => typeof v === 'number');
   return values.length ? Math.max(...values) : undefined;

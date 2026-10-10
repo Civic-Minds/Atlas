@@ -8,12 +8,12 @@ const fixture = JSON.parse(readFileSync(path.join(__dirname, '../../../scripts/_
   agencies: Record<string, Array<{ properties: Record<string, any> }>>;
 };
 
-function routeFeatures(agency: string, shortName: string) {
+function routeFeatures(agency: string, shortName: string, day = 'Weekday') {
   const features = JSON.parse(JSON.stringify(fixture.agencies[agency]));
   normalizeRouteFilterFeatures(features);
   return features
     .map((f: { properties: Record<string, any> }) => f.properties)
-    .filter((p: Record<string, any>) => p.routeShortName === shortName);
+    .filter((p: Record<string, any>) => p.routeShortName === shortName && p.day === day);
 }
 
 const appPasses = (p: object, period: 'all' | 'overnight', maxHeadway: number) =>
@@ -50,15 +50,43 @@ describe('the one frequency-filter rule: worst direction decides', () => {
     expect(routePassesHeadwayFilter(features, 'overnight', 'Weekday', 30)).toBe(true);
   });
 
-  it('TransLink 99 AM peak: rows keep their own cadence (#564) but the slow branch decides the filter', () => {
+  it('TransLink 99 AM peak: known case, still fails every-20 (#602)', () => {
+    // Frozen current behaviour, not the desired one. The main eastbound pattern (Commercial-
+    // Broadway, every 4) is marked non-steady because it runs every 16-19 min before 7:00, so the
+    // only steady eastbound value left is the 3-trip Boundary Loop extension (every 23). The
+    // extension is kept on purpose: dropping it would make eastbound vanish from the check.
+    // #602 fixes this in processing; when it lands, this should flip to passing at 20.
     const features = routeFeatures('translink', '099');
     const ubc = features.find((p: any) => p.headsign === 'UBC Exchange');
-    // The display half of #564 (a branch row shows its own cadence, not the route-wide worst) is
-    // unchanged and covered in effectiveHeadway.test.ts. The eligibility half is reversed by the
-    // owner rule: the Boundary Loop branch runs every 23 min in AM peak, so 99 is not "every 20".
     expect(routeFilterHeadway(ubc, 'amPeak')).toBe(23);
     expect(routePassesHeadwayFilter(features, 'amPeak', 'Weekday', 20)).toBe(false);
     expect(routePassesHeadwayFilter(features, 'amPeak', 'Weekday', 30)).toBe(true);
+  });
+
+  it('MiWay 3 Saturday overnight fails every-20: a whole direction is sparse', () => {
+    const features = routeFeatures('miway', '3', 'Saturday');
+    expect(features).toHaveLength(2);
+    expect(routePassesHeadwayFilter(features, 'overnight', 'Saturday', 20)).toBe(false);
+    expect(routePassesHeadwayFilter(features, 'overnight', 'Saturday', 60)).toBe(false);
+    for (const p of features) expect(featurePassesHeadwayFilter(p, 'overnight', 20)).toBe(false);
+  });
+
+  it('TTC 100 AM peak: the occasional Don Valley via Linkwood trips do not sink the route', () => {
+    // Northbound Don Valley every 5 (steady); the via-Linkwood variant (tier infrequent) every 15.
+    const features = routeFeatures('ttc', '100');
+    const donValley = features.find((p: any) => p.headsign === 'Don Valley');
+    expect(routeFilterHeadway(donValley, 'amPeak')).toBe(9);
+    expect(routePassesHeadwayFilter(features, 'amPeak', 'Weekday', 10)).toBe(true);
+    expect(routePassesHeadwayFilter(features, 'amPeak', 'Weekday', 5)).toBe(false);
+  });
+
+  it('LA Metro 51 AM peak: the Victoria / Tamcliff short-turn does not sink the route', () => {
+    // Southbound Avalon every 12 (steady); Victoria / Tamcliff (tier infrequent) every 24.
+    const features = routeFeatures('lacmta', '51');
+    const avalon = features.find((p: any) => p.headsign === 'Avalon Station Layover');
+    expect(routeFilterHeadway(avalon, 'amPeak')).toBe(13);
+    expect(routePassesHeadwayFilter(features, 'amPeak', 'Weekday', 15)).toBe(true);
+    expect(routePassesHeadwayFilter(features, 'amPeak', 'Weekday', 10)).toBe(false);
   });
 
   it('never lets the busiest stop decide the all-day filter', () => {
