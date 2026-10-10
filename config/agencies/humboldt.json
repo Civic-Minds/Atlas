@@ -14,7 +14,7 @@
     -123.2
   ],
   "feedUrl": "https://hta.optibus.co/public_api/v1/feeds/gtfs",
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-humboldt-county-gtfs-3032.zip?alt=media",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3032/latest.zip",
   "lastFeedExpiry": "20270630",
   "lastFeedVersion": "UTC: 30-Sep-2026 17:52",
   "lastRefreshedAt": "2026-10-03",

@@ -14,7 +14,7 @@
     -121.04
   ],
   "feedUrl": "https://oregon-gtfs.trilliumtransit.com/gtfs_data/basin-or-us/basin-or-us.zip",
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-oregon-basin-transit-service-bts-gtfs-125.zip?alt=media",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-125/latest.zip",
   "lastFeedExpiry": "20270201",
   "lastFeedVersion": "UTC: 21-Aug-2026 20:59",
   "lastRefreshedAt": "2026-08-27",

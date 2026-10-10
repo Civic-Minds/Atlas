@@ -20,7 +20,7 @@
   "cities": [
     "Moncton, New Brunswick"
   ],
-  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1111/mdb-1111-202607170044/mdb-1111-202607170044.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1111/latest.zip",
   "lastFeedCheckAt": "20261007",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,

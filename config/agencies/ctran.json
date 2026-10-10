@@ -14,7 +14,7 @@
     -122.32
   ],
   "feedUrl": "https://www.c-tran.com/images/Google/GoogleTransitUpload.zip",
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-washington-c-tran-gtfs-258.zip?alt=media",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-258/latest.zip",
   "lastFeedExpiry": "20270109",
   "lastFeedVersion": "20260913-20270109",
   "lastRefreshedAt": "2026-10-03",

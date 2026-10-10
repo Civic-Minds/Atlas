@@ -7,7 +7,7 @@
     42.3314,
     -83.0458
   ],
-  "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-michigan-detroit-people-mover-gtfs-2281.zip?alt=media",
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-2281/latest.zip",
   "lastFeedExpiry": "20271231",
   "lastFeedVersion": "1",
   "lastRefreshedAt": "2026-08-07",

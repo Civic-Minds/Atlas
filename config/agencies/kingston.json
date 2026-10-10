@@ -16,7 +16,7 @@
   "feedUrl": "https://api.cityofkingston.ca/gtfs/gtfs.zip",
   "lastFeedExpiry": "20271004",
   "lastFeedVersion": "1/20261004 16:24:38/20261005 04:00:00",
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-kingston-transit-gtfs-733.zip?alt=media",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-733/latest.zip",
   "lastRefreshedAt": "2026-10-07",
   "cities": [
     "Kingston, Ontario"

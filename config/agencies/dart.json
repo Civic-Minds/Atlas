@@ -7,7 +7,7 @@
     -96.8
   ],
   "feedUrl": "http://www.dart.org/transitdata/latest/google_transit.zip",
-  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-152/mdb-152-202607200103/mdb-152-202607200103.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-152/latest.zip",
   "lastFeedExpiry": "20261018",
   "lastFeedVersion": "V741-218-217-20261004",
   "region": "Texas",

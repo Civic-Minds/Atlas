@@ -21,7 +21,7 @@
     "Bossier City, Louisiana",
     "Shreveport, Louisiana"
   ],
-  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1060/mdb-1060-202503200012/mdb-1060-202503200012.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1060/latest.zip",
   "lastFeedCheckAt": "20261007",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,

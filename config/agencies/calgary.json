@@ -16,7 +16,7 @@
   "feedUrl": "https://data.calgary.ca/download/npk7-z3bj/application%2Fzip",
   "lastFeedExpiry": "20261220",
   "lastFeedVersion": null,
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-alberta-calgary-transit-gtfs-712.zip?alt=media",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-712/latest.zip",
   "lastRefreshedAt": "2026-09-15",
   "cities": [
     "Calgary, Alberta",

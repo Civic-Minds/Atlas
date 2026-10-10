@@ -23,7 +23,7 @@
     "League City, Texas",
     "Baytown, Texas"
   ],
-  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2060/mdb-2060-202607120126/mdb-2060-202607120126.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2060/latest.zip",
   "lastFeedCheckAt": "20261007",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,

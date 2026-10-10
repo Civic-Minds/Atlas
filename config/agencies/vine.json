@@ -14,7 +14,7 @@
     -122.04
   ],
   "feedUrl": "https://data.trilliumtransit.com/gtfs/vinetransit-ca-us/vinetransit-ca-us.zip",
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-vine-transit-gtfs-1288.zip?alt=media",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1288/latest.zip",
   "lastFeedExpiry": "20270109",
   "lastFeedVersion": "UTC: 14-Sep-2026 16:38",
   "lastRefreshedAt": "2026-10-03",

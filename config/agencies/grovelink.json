@@ -13,8 +13,8 @@
     45.64,
     -122.72
   ],
-  "feedUrl": "https://files.mobilitydatabase.org/mdb-253/mdb-253-202607310135/mdb-253-202607310135.zip",
-  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-253/mdb-253-202607310135/mdb-253-202607310135.zip",
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-253/latest.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-253/latest.zip",
   "timezone": "America/Los_Angeles",
   "lastFeedExpiry": "20270201",
   "lastFeedVersion": "UTC: 30-Jul-2026 16:18",

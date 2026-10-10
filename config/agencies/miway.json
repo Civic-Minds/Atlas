@@ -16,7 +16,7 @@
   "feedUrl": "https://www.miapp.ca/GTFS/google_transit.zip",
   "lastFeedExpiry": "20261025",
   "lastFeedVersion": "1",
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-miway-gtfs-730.zip?alt=media",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-730/latest.zip",
   "lastRefreshedAt": "2026-08-07",
   "cities": [
     "Mississauga, Ontario",

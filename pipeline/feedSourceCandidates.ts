@@ -5,12 +5,35 @@ export interface FeedCandidate {
   url: string;
 }
 
-/** Turn a dated Mobility Database ZIP URL into its current-feed equivalent. */
+/**
+ * Turn a dated Mobility Database ZIP URL, or a URL on the retired Google-hosted
+ * mdb-latest mirror (frozen since 2026-06-04, #627), into its current-feed
+ * equivalent on files.mobilitydatabase.org.
+ */
 export function mobilityDatabaseLatestUrl(url: string): string | null {
-  const match = url.match(
+  const dated = url.match(
     /^https:\/\/files\.mobilitydatabase\.org\/([^/]+)\/\1-\d+\/\1-\d+\.zip$/,
   );
-  return match ? `https://files.mobilitydatabase.org/${match[1]}/latest.zip` : null;
+  if (dated) return `https://files.mobilitydatabase.org/${dated[1]}/latest.zip`;
+  const mirror = url.match(
+    /^https:\/\/storage\.googleapis\.com\/(?:storage\/v1\/b\/)?mdb-latest\/(?:o\/)?[^/?]*-gtfs-(\d+)\.zip(?:\?alt=media)?$/,
+  );
+  return mirror ? `https://files.mobilitydatabase.org/mdb-${mirror[1]}/latest.zip` : null;
+}
+
+/** True for URLs on the retired Google-hosted Mobility Database mirror (#627). */
+export function isRetiredMobilityDatabaseMirror(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    return parsed.hostname === 'storage.googleapis.com' && parsed.pathname.includes('mdb-latest');
+  } catch {
+    return false;
+  }
+}
+
+/** True for a dated snapshot that never picks up newer schedules (#629). */
+export function isDatedMobilityDatabaseSnapshot(url: string): boolean {
+  return /^https:\/\/files\.mobilitydatabase\.org\/([^/]+)\/\1-\d+\/\1-\d+\.zip$/.test(url);
 }
 
 /** Return configured sources followed by safe, automatically-derived fallbacks. */

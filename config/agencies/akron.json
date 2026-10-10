@@ -10,7 +10,7 @@
   "feedUrl": "https://www.yourmetrobus.org/Data/Sites/2/gtfs-data/metro_rta_gtfs.zip",
   "lastFeedExpiry": "20270116",
   "lastFeedVersion": "Updated: Aug 6, 2026, 12:06 PM",
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-ohio-akron-metro-regional-transit-authority-metro-gtfs-411.zip?alt=media",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2071/latest.zip",
   "lastRefreshedAt": "2026-08-24",
   "cities": [
     "Akron, Ohio",
