@@ -19,10 +19,10 @@ import { PMTiles, type Source } from 'pmtiles';
 import { PbfReader } from 'pbf';
 import { VectorTile } from '@mapbox/vector-tile';
 import { getAgencyArtifactUrls, R2_PUBLIC_URL } from '../shared/config.js';
-import { isScheduleOnlyRouteArtifact, tilesForAgency } from './pmtilesCoverage.js';
+import { isScheduleOnlyRouteArtifact, mustAppearInTiles, tilesForAgency, type TileInclusionAgency } from './pmtilesCoverage.js';
 import { runWithConcurrency } from './utils.js';
 
-interface Agency {
+interface Agency extends TileInclusionAgency {
   slug: string;
   name: string;
   center: [number, number]; // [lat, lon]
@@ -31,7 +31,6 @@ interface Agency {
   // issue tracked in a GitHub issue. Excluded from the pass/fail result so the
   // checker doesn't fail loudly on agencies with a known cause; still sampled
   // so we notice (and print) if the underlying issue actually gets resolved.
-  pmtilesPending?: boolean;
 }
 
 // Cap the sampling zoom — tippecanoe:minzoom for infrequent routes tops out at 11
@@ -178,7 +177,7 @@ async function main() {
   // Sierra Vista on R2). Re-scan only the agencies that were missed, one at a
   // time, before treating them as a failed publication. This keeps the broad
   // scan rate-limited while making the final decision deterministic.
-  const initialMissing = agencies.filter(a => !foundSlugs.has(a.slug) && !a.pmtilesPending && a.lastFeedExpiry);
+  const initialMissing = agencies.filter(a => !foundSlugs.has(a.slug) && mustAppearInTiles(a));
   if (initialMissing.length > 0) {
     console.log(`Rechecking ${initialMissing.length} initially missing agencies sequentially...`);
     for (const agency of initialMissing) {
@@ -207,7 +206,8 @@ async function main() {
   }
 
   const allMissing = agencies.filter(a => !foundSlugs.has(a.slug));
-  const unexplainedMissing = allMissing.filter(a => !a.pmtilesPending && a.lastFeedExpiry);
+  // Hidden, staged and pending agencies are left out by build-pmtiles on purpose.
+  const unexplainedMissing = allMissing.filter(mustAppearInTiles);
 
   // Agencies whose feed has schedules but no usable shapes publish their routes as Points, and
   // the tiles keep lines only, so they have nothing to find here. Read the route artifact that
@@ -255,7 +255,7 @@ async function main() {
   }
 
   if (missing.length === 0) {
-    console.log(`\nOK — all ${agencies.length - stillPending.length - scheduleOnly.length} non-pending agencies with route lines have route features present in the PMTiles archive.`);
+    console.log(`\nOK — all ${agencies.filter(mustAppearInTiles).length - scheduleOnly.length} built agencies with route lines have route features present in the PMTiles archive (hidden, staged and pending agencies are left out of the tiles).`);
     return;
   }
 

@@ -13,6 +13,7 @@ import { PMTiles } from 'pmtiles';
 import './loadEnv.js';
 import { r2Put } from './r2.js';
 import { bumpPublicDataVersion } from './dataVersion.js';
+import { isBuiltIntoTiles, type TileInclusionAgency } from './pmtilesCoverage.js';
 import { R2_PUBLIC_URL } from '../shared/config.js';
 import {
   currentCodeVersion,
@@ -51,7 +52,7 @@ async function pmtilesName(key: string): Promise<unknown> {
 function sampleAgencySlugs(): string[] {
   const index = JSON.parse(fs.readFileSync('public/data/index.json', 'utf8')) as { agencies?: Array<Record<string, unknown>> };
   const included = (index.agencies ?? [])
-    .filter(a => !a.pmtilesPending && !a.hiddenInProduction && !a.staged && (a.lastFeedExpiry || a.lastRefreshedAt))
+    .filter(a => isBuiltIntoTiles(a as TileInclusionAgency))
     .map(a => String(a.slug));
   const requested = (process.env.PMTILES_REMOTE_SMOKE_SLUGS ?? '').split(',').map(s => s.trim()).filter(s => included.includes(s));
   const stride = Math.max(1, Math.floor(included.length / 4));
