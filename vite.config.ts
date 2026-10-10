@@ -147,6 +147,10 @@ export default defineConfig(({ mode }) => {
       tailwindcss(),
       ...(useLocalPreviews ? [localPmtilesPreview, localAgencyDataPreview] : []),
     ],
+    // MapLibre spawns its worker as `type: 'module'` (see src/lib/mapStyle.ts).
+    worker: {
+      format: 'es',
+    },
     build: {
       rollupOptions: {
         output: {

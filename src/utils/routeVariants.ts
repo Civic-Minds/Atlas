@@ -1,5 +1,5 @@
 import type { ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
-import { effectiveRouteHeadway } from './effectiveHeadway';
+import { routeFilterHeadway } from '../../shared/routeHeadwayFilter';
 import { hasSharedTrunk } from './routeBranchGeometry';
 
 /** Numeric base + optional single letter suffix: 1, 1A, 23B — the GRTC-style variant pattern. */
@@ -57,7 +57,7 @@ export function findVariantFamily(
     if (p.routeShortName !== shortName) continue;
     const variant = p.routeVariant?.trim();
     if (!variant || !p.routeId) continue;
-    const hw = effectiveRouteHeadway(p, period);
+    const hw = routeFilterHeadway(p, period);
     const current = explicitByVariant.get(variant);
     if (!current) explicitByVariant.set(variant, { routeId: String(p.routeId), best: hw });
     else if (hw != null && (current.best == null || hw < current.best)) current.best = hw;
@@ -76,7 +76,7 @@ export function findVariantFamily(
     const sn = p.routeShortName;
     if (!sn || !p.routeId) continue;
     if (sn !== base && !(BASE_RE.test(sn) && sn.match(BASE_RE)![1] === base)) continue;
-    const hw = effectiveRouteHeadway(p, period);
+    const hw = routeFilterHeadway(p, period);
     const cur = byShort.get(sn);
     if (!cur) byShort.set(sn, { routeId: String(p.routeId), best: hw, shapes: [p] });
     else {

@@ -33,7 +33,7 @@ export default {
     // `release_id` avoids stale Vercel cache entries created for the old `release` query.
     // Keep accepting `release` so older deployed bundles continue to work.
     const release = params.get('release_id') ?? params.get('release');
-    const releasePath = release && /^release-[a-z0-9]+$/.test(release) ? `releases/${release}/` : '';
+    const releasePath = release && /^release-[a-z0-9]+$/.test(release) ? `atlas/releases/${release}/` : '';
     const filename = `${releasePath}${variant === 'overview' ? 'atlas-overview.pmtiles' : 'atlas.pmtiles'}`;
     const range = request.headers.get('range');
     const upstream = await fetch(`${PMTILES_BASE_URL}${filename}`, {

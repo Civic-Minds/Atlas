@@ -6,11 +6,10 @@ import { isLivePollingRoute } from '../utils/livePolling';
 import { TIME_PERIODS, PERIOD_LABELS as PERIOD_LABELS_BY_KEY, PERIOD_KEYS, type PeriodKey } from '../../shared/config';
 import { buildModeFilterClause, buildTileHeadwayFilterClause, tileLimitedServiceExpr, tileRouteKeyExpr } from '../../shared/tileFilterExprs';
 import { effectiveMode, ON_DEMAND_MODE } from '../../shared/modes';
-import { effectiveRouteHeadway } from '../utils/effectiveHeadway';
+import { featurePassesHeadwayFilter, headwayFilterApplies } from '../../shared/routeHeadwayFilter';
 import { collectStopHubSiblings } from '../utils/stopHub';
 import { isHiddenByIrregularFilter, isLimitedService } from '../../shared/irregularRoutes';
 import { buildRouteKey } from '../utils/routeKey';
-import { hasPeriodSummary } from '../../shared/periodEligibility';
 
 export type DayType = 'Weekday' | 'Saturday' | 'Sunday';
 
@@ -85,15 +84,6 @@ export interface ViewportBounds {
   e: number;
 }
 
-// Resolves the numeric headway ceiling for tier-based filtering.
-// 'infrequent' = all-day but no frequency tier → Infinity (shows only at "All").
-// 'span' and null → null (not subject to the numeric filter).
-function resolveTierVal(p: ShapeProperties): number | null {
-  if (p.tier === 'infrequent') return Infinity;
-  if (p.tier != null && p.tier !== 'span') return parseInt(p.tier as unknown as string);
-  return null;
-}
-
 // Shared filter predicate for both visibleFeatures and filteredLayers.
 // slug is passed explicitly so the caller can use p.agencySlug (flat array path)
 // or the layer key (per-layer iteration path).
@@ -102,12 +92,9 @@ export function passesRouteFilter(
   slug: string,
   filters: { maxHeadway: number; agencies: Set<string>; modes: Set<number>; day: string; period?: TimePeriod; hideSpan?: boolean; hideLimitedService?: boolean; livePollingOnly?: boolean; showCorridors?: boolean; showCorridorBand?: boolean; selectedRoute?: string | null },
   routesForStop: { slug: string; routeIds: Set<string> } | null,
-  // skipFrequency: day/agency/mode/hideSpan/live-polling still apply, but the worst-direction
-  // frequency check (#314/#315) does not. Used only for the #317 qualifying-segment overlay,
-  // which needs partial-match routes (frequent on part of their length, not the whole thing) --
-  // exactly what the frequency check exists to exclude everywhere else. The overlay does its own
-  // per-stop-range check via computeFrequencySegmentOverlay, so this doesn't let an unqualified
-  // route appear as if it fully passed; it only lets it *in* so that function can look.
+  // skipFrequency: day/agency/mode/hideSpan/live-polling still apply, but the frequency check
+  // does not. Used only to feed the #317 qualifying-segment overlay, which applies the same
+  // shared frequency rule itself (computeFrequencySegmentOverlay) before drawing anything.
   options?: { skipFrequency?: boolean },
 ): boolean {
   const isCorridor = !!p.isCorridor;
@@ -152,48 +139,20 @@ export function passesRouteFilter(
   if (filters.hideSpan && isHiddenByIrregularFilter(p)) return false;
   if (filters.hideLimitedService && isLimitedService(p)) return false;
   if (options?.skipFrequency) return true;
-  // When a specific period is active, use the route's worst-direction headway for that period
-  // (falling back to the branch's own headwayByPeriod) -- both directions must qualify, not just
-  // this one branch. minStopHeadwayByPeriod is deliberately NOT used as a fallback here: it can
-  // reflect a shared-core combined frequency, or one good stop, that only applies to part of the
-  // route -- letting it drive pass/fail without clipping geometry to match would show a partial
-  // route as if the whole thing qualified (#314/#315). The #317 overlay is the one place that
-  // wants exactly those partial routes, and it opts in via skipFrequency above.
-  if (filters.period && filters.period !== 'all') {
-    const periodHw = effectiveRouteHeadway(p, filters.period);
-    if (periodHw != null) {
-      if (periodHw > filters.maxHeadway) return false;
-      return true;
-    }
-    if (p.periodCoverageHeadway !== undefined || p.worstDirectionPeriodCoverageHeadway !== undefined) return false;
-    // An explicit null period summary means no scheduled service in that
-    // period. Do not let the all-day fallback make the route look like an
-    // active-period match (the agency card may still list it as inventory).
-    if (hasPeriodSummary(p, filters.period)) return false;
-    // No period data — fall through to all-day check below.
-  }
-  // All-day check: use worst-direction headway (AI-182) so both directions must qualify.
-  // Falls back to minStopHeadway for routes without bidirectional data.
-  const filterHw = effectiveRouteHeadway(p, 'all');
-  if (filterHw != null) {
-    if (filterHw > filters.maxHeadway) return false;
-  } else {
-    const tierVal = resolveTierVal(p);
-    if (tierVal != null) {
-      if (tierVal > filters.maxHeadway) return false;
-    } else if (p.headway != null) {
-      if (p.headway > filters.maxHeadway) return false;
-    } else if (p.routeId != null) {
-      if (filters.maxHeadway !== Infinity) return false;
-    }
-  }
-  return true;
+  // Stops and other non-route features are not subject to the frequency threshold.
+  if (p.routeId == null && !isCorridor) return true;
+  // The one frequency rule (shared/routeHeadwayFilter.ts): worst direction decides, busiest
+  // stretch / shared trunk never makes a route pass, and the decision is identical to the
+  // PMTiles map filter for the same feature.
+  return featurePassesHeadwayFilter(p, filters.period, filters.maxHeadway);
 }
 
 /**
- * A route is represented by one or more direction/branch features. Keep route
- * selection aligned with the agency list: one qualifying feature is enough for
- * the route to be considered inside the active filter.
+ * A route is represented by one or more direction/branch features. Worst-direction values are
+ * stamped route-wide on every feature, so a feature can only pass when every direction meets the
+ * threshold; "some feature passes" is therefore the worst-direction rule and matches what the map
+ * draws. (A feature that fails on its own — an unsustained short-turn — is hidden on the map but
+ * does not make the route's regular service fail.)
  */
 export function anyFeaturePassesRouteFilter(
   features: GeoJSON.Feature[],
@@ -477,11 +436,11 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
     const modeClause = buildModeFilterClause(modes);
     if (modeClause) clauses.push(modeClause);
 
-    // Headway pill — mirrors passesRouteFilter (period, worst-direction, min-stop).
+    // Headway pill — the same clause passesRouteFilter evaluates in memory (routeHeadwayFilter).
     // A period filter must still exclude routes with no service when Frequency is set
     // to All. Use a threshold just below the no-service sentinel so real headways pass
     // without turning the period filter into an all-day filter.
-    if (maxHeadway !== Infinity || (period && period !== 'all')) {
+    if (headwayFilterApplies(period, maxHeadway)) {
       // Frequency = All means any service in the selected period, including one-direction
       // or irregular service. The strict worst-direction coverage metric is reserved for
       // actual frequency thresholds; using it here hides routes such as Nashville 87 PM peak.

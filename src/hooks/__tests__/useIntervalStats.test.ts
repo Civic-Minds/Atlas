@@ -575,7 +575,9 @@ describe('useIntervalStats', () => {
     expect(tf).toContain('999999');
   });
 
-  it('period filter falls back to headwayByHour if period data is missing', () => {
+  // Matches the map: a period filter fails closed when an artifact has no period data, rather
+  // than borrowing an hourly or all-day value the PMTiles filter cannot see.
+  it('period filter fails closed like the map when period data is missing', () => {
     const layers: AgencyLayers = {
       'test': {
         type: 'FeatureCollection',
@@ -602,7 +604,7 @@ describe('useIntervalStats', () => {
       maxHeadway: 15,
       period: 'midday' as const,
     }));
-    expect(result.current.stats?.matching).toBe(1);
+    expect(result.current.stats?.matching).toBe(0);
   });
 
   it('does not count routes with explicit no-service period data as active matches', () => {

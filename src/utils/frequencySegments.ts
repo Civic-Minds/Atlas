@@ -3,7 +3,7 @@ import type { AgencyLayers } from '../hooks/useAgencyData';
 import type { PeriodKey } from '../../shared/config';
 import { clipBetweenStopIndices, clipLinestring } from '../apps/corridor-geometry';
 import { headwayToTierColor, type ColorVisionMode } from './colors';
-import { effectiveRouteHeadway } from './effectiveHeadway';
+import { featurePassesHeadwayFilter } from '../../shared/routeHeadwayFilter';
 
 /** Identifies one route feature (a single direction/headsign/day shape) for MapLibre filter matching. */
 export interface FrequencySegmentRouteKey {
@@ -127,13 +127,12 @@ function addClippedSegments(
 }
 
 /**
- * Partial-segment rendering is only allowed after the route itself passes the same
- * route-level frequency metric as the main filter. Otherwise one direction with a
- * qualifying stretch can pull an otherwise excluded route back onto the map.
+ * Partial-segment rendering is only allowed on a feature that already passes the one frequency
+ * rule (shared/routeHeadwayFilter: worst direction decides, identical to the map filter).
+ * Otherwise a busy stretch in one direction could pull an excluded route back onto the map.
  */
 function routePassesFrequencyFilter(p: ShapeProperties, period: TimePeriod, maxHeadway: number): boolean {
-  const routeHeadway = effectiveRouteHeadway(p, period);
-  return routeHeadway != null && routeHeadway <= maxHeadway;
+  return featurePassesHeadwayFilter(p, period, maxHeadway);
 }
 
 /**
@@ -236,6 +235,10 @@ export function computeFrequencySegmentOverlay(
         .filter(({ p }) => !/drop[- ]?offs?\s+only/i.test(p.headsign ?? ''));
       const distinctHeadsigns = new Set(branches.map(({ p }) => p.headsign ?? ''));
       if (branches.length < 2 || distinctHeadsigns.size < 2) continue;
+      // A combined shared-core cadence is one direction's busiest stretch. It may only narrow the
+      // display of a route that already passes in every direction, never make a failing route
+      // (or branch) appear on the map.
+      if (!branches.every(({ p }) => routePassesFrequencyFilter(p, period, maxHeadway))) continue;
       if (!branches.some(({ p }) => (branchHeadway(p, period) ?? Infinity) > maxHeadway)) continue;
 
       const ref = branches[0].p;
