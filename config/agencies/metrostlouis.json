@@ -6,8 +6,8 @@
     38.651,
     -90.2899
   ],
-  "feedUrl": "https://files.mobilitydatabase.org/mdb-190/mdb-190-202605290001/mdb-190-202605290001.zip",
-  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-190/mdb-190-202605290001/mdb-190-202605290001.zip",
+  "feedUrl": "https://www.metrostlouis.org/Transit/google_transit.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-190/latest.zip",
   "lastFeedExpiry": "20261025",
   "lastFeedVersion": null,
   "region": "Missouri",
