@@ -128,4 +128,10 @@ describe('supplemental feed archiving (#630)', () => {
     expect(source).toMatch(/r2PutArchive\(`gtfs\/archive\/\$\{supplementalArchiveStem\(agency\.slug, index\)\}\//);
     expect(source).toContain('stampSupplementalFeedMeta(agency, supplementalMeta)');
   });
+
+  it('restore only targets agencies whose main feed is stale', () => {
+    const source = readFileSync(resolve(root, 'pipeline/restore-active-feeds.ts'), 'utf8');
+    expect(source).toContain('isStalePrimaryProductionFeed(agency, today)');
+    expect(source).not.toMatch(/\bisStaleProductionFeed\(/);
+  });
 });

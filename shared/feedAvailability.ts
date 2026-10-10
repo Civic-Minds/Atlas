@@ -67,3 +67,15 @@ export function isStaleProductionFeed(
 ): boolean {
   return isActiveProductionFeed(agency, today) && !isCurrentFeedExpiry(effectiveFeedExpiry(agency), today);
 }
+
+/**
+ * Stale judged on the main feed alone. restore-active-feeds can only replace a
+ * stale main feed from its archive, so an expired supplemental must not make a
+ * current agency a restore target.
+ */
+export function isStalePrimaryProductionFeed(
+  agency: FeedAvailabilityEntry,
+  today = todayUtcYmd(),
+): boolean {
+  return isStaleProductionFeed({ ...agency, lastSupplementalFeeds: undefined }, today);
+}

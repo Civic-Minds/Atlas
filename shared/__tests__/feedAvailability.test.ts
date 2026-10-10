@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { effectiveFeedExpiry, isActiveProductionFeed, isCurrentFeedExpiry, isCurrentProductionFeed, isStaleProductionFeed } from '../feedAvailability.js';
+import { effectiveFeedExpiry, isActiveProductionFeed, isStalePrimaryProductionFeed, isCurrentFeedExpiry, isCurrentProductionFeed, isStaleProductionFeed } from '../feedAvailability.js';
 
 describe('isCurrentFeedExpiry', () => {
   it('accepts service through today or later', () => {
@@ -49,5 +49,18 @@ describe('effectiveFeedExpiry', () => {
     const undated = { feedExpiry: null, feedVersion: 'v1', rawArchiveKey: null };
     expect(effectiveFeedExpiry({ lastFeedExpiry: '20261212', lastSupplementalFeeds: [undated] })).toBe('20261212');
     expect(effectiveFeedExpiry({ lastFeedExpiry: null, lastSupplementalFeeds: [undated] })).toBeNull();
+  });
+});
+
+describe('isStalePrimaryProductionFeed', () => {
+  it('does not make a current main feed a restore target because its supplemental expired', () => {
+    const agency = {
+      lastFeedExpiry: '20261212',
+      lastRefreshedAt: '20261007',
+      lastSupplementalFeeds: [{ feedExpiry: '20261021', feedVersion: null, rawArchiveKey: null }],
+    };
+    expect(isStaleProductionFeed(agency, '20261022')).toBe(true);
+    expect(isStalePrimaryProductionFeed(agency, '20261022')).toBe(false);
+    expect(isStalePrimaryProductionFeed({ ...agency, lastFeedExpiry: '20261001' }, '20261022')).toBe(true);
   });
 });
