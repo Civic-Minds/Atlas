@@ -227,8 +227,10 @@ export async function processGtfsBuffer(
   for (const dayType of DAY_TYPES) {
     activeServiceIdsByDay.set(
       dayType,
+      // Spread each Set: flatMap only flattens arrays, so returning the Set itself
+      // stored Set objects instead of service ids and emptied all stop data.
       new Set(calendarDaysForType(dayType).flatMap(day =>
-        getActiveServiceIds(gtfs.calendar ?? [], gtfs.calendarDates ?? [], day, refDate),
+        [...getActiveServiceIds(gtfs.calendar ?? [], gtfs.calendarDates ?? [], day, refDate)],
       )),
     );
   }
