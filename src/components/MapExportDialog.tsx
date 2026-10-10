@@ -1,21 +1,28 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Download, Share2, X } from 'lucide-react';
 import { FLOATING_CARD, Z_MODAL_BG, Z_MODAL_TOP } from '../styles';
-import { canShareMapExport, createMapExport, DEFAULT_MAP_EXPORT_SIZE, downloadMapExport, MAP_EXPORT_SIZES, shareMapExport, type MapExportSize, type MapExportSizeId } from '../utils/mapExport';
+import { canShareMapExport, createMapExport, DEFAULT_MAP_EXPORT_SIZE, downloadMapExport, getMapExportLayout, MAP_EXPORT_SIZES, MapExportBlockedError, shareMapExport, type MapExportSize, type MapExportSizeId } from '../utils/mapExport';
 
 interface Props {
   open: boolean;
-  source: HTMLCanvasElement | null;
+  /** Size of the map canvas in device pixels, used to show the real output size. */
+  sourceSize: { width: number; height: number } | null;
+  /** Resolves with the map canvas once the current view has fully loaded and drawn. */
+  prepareSource: () => Promise<HTMLCanvasElement>;
   defaultTitle: string;
   lightMode: boolean;
   onClose: () => void;
 }
 
-export default function MapExportDialog({ open, source, defaultTitle, lightMode, onClose }: Props) {
+export default function MapExportDialog({ open, sourceSize, prepareSource, defaultTitle, lightMode, onClose }: Props) {
   const [exportingMode, setExportingMode] = useState<'download' | 'share' | null>(null);
+  const [waitingForMap, setWaitingForMap] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [shareSupported, setShareSupported] = useState(false);
   const [selectedSizeId, setSelectedSizeId] = useState<MapExportSizeId>(DEFAULT_MAP_EXPORT_SIZE.id);
+
+  const openRef = useRef(open);
+  openRef.current = open;
 
   useEffect(() => {
     if (open) setShareSupported(canShareMapExport());
@@ -24,13 +31,29 @@ export default function MapExportDialog({ open, source, defaultTitle, lightMode,
   if (!open) return null;
 
   const selectedSize: MapExportSize = MAP_EXPORT_SIZES.find(candidate => candidate.id === selectedSizeId) ?? DEFAULT_MAP_EXPORT_SIZE;
+  const outputSize = (size: MapExportSize) => {
+    if (!sourceSize || sourceSize.width === 0 || sourceSize.height === 0) return size;
+    const layout = getMapExportLayout(sourceSize.width, sourceSize.height, size);
+    return { width: layout.width, height: layout.height };
+  };
+  const selectedOutput = outputSize(selectedSize);
 
   const handleExport = async (mode: 'download' | 'share') => {
-    if (!source || exportingMode) return;
+    if (exportingMode) return;
     setExportingMode(mode);
     setError(null);
     try {
       const size = MAP_EXPORT_SIZES.find(candidate => candidate.id === selectedSizeId) ?? DEFAULT_MAP_EXPORT_SIZE;
+      // Never export a half-loaded map: wait until every route for this view is drawn.
+      setWaitingForMap(true);
+      let source: HTMLCanvasElement;
+      try {
+        source = await prepareSource();
+      } finally {
+        setWaitingForMap(false);
+      }
+      // The dialog was closed while waiting; do not save anything unexpectedly.
+      if (!openRef.current) return;
       const blob = await createMapExport({ source, title: defaultTitle, lightMode, size });
       if (mode === 'share') {
         await shareMapExport(blob, defaultTitle);
@@ -40,7 +63,7 @@ export default function MapExportDialog({ open, source, defaultTitle, lightMode,
       onClose();
     } catch (shareError) {
       if (shareError instanceof DOMException && shareError.name === 'AbortError') return;
-      setError('The map was not ready. Try again in a moment.');
+      setError(shareError instanceof MapExportBlockedError ? shareError.message : 'The map was not ready. Try again in a moment.');
     } finally {
       setExportingMode(null);
     }
@@ -61,13 +84,14 @@ export default function MapExportDialog({ open, source, defaultTitle, lightMode,
         <div className="flex items-start justify-between gap-4">
           <div>
             <h2 id="map-export-title" className="text-sm font-black text-[var(--text-primary)]">Export map image</h2>
-            <p className="mt-1 text-[11px] font-bold text-[var(--text-dim)]">{selectedSize.width} × {selectedSize.height} PNG with Atlas attribution.</p>
+            <p className="mt-1 text-[11px] font-bold text-[var(--text-dim)]">{selectedOutput.width} × {selectedOutput.height} PNG with Atlas attribution.</p>
           </div>
           <button type="button" onClick={onClose} aria-label="Close export dialog" className="text-[var(--text-dim)] hover:text-[var(--text-primary)]">
             <X className="h-4 w-4" />
           </button>
         </div>
 
+        {waitingForMap && <p role="status" className="mt-2 text-[11px] font-bold text-[var(--text-dim)]">Map still loading. The image will save once every route is drawn.</p>}
         {error && <p role="alert" className="mt-2 text-[11px] font-bold text-red-500">{error}</p>}
 
         <div className="mt-5 grid grid-cols-3 gap-1 rounded-xl border border-[var(--border-primary)] p-1">
@@ -80,7 +104,7 @@ export default function MapExportDialog({ open, source, defaultTitle, lightMode,
               className={`rounded-lg px-2 py-2 text-[10px] font-black transition-colors ${selectedSizeId === size.id ? 'bg-[var(--accent-bg)] text-[var(--accent)]' : 'text-[var(--text-dim)] hover:bg-[var(--bg-btn-hover)] hover:text-[var(--text-primary)]'}`}
             >
               <span className="block">{size.label}</span>
-              <span className="mt-0.5 block text-[9px] font-bold opacity-75">{size.width} × {size.height}</span>
+              <span className="mt-0.5 block text-[9px] font-bold opacity-75">{outputSize(size).width} × {outputSize(size).height}</span>
             </button>
           ))}
         </div>
@@ -89,21 +113,21 @@ export default function MapExportDialog({ open, source, defaultTitle, lightMode,
           <button
             type="button"
             onClick={() => void handleExport('download')}
-            disabled={!source || !!exportingMode}
+            disabled={!!exportingMode}
             className="flex items-center gap-1.5 rounded-full border border-[var(--border-primary)] px-3.5 py-2 text-xs font-black text-[var(--text-primary)] hover:bg-[var(--bg-btn-hover)] disabled:cursor-not-allowed disabled:opacity-50"
           >
             <Download className="h-3.5 w-3.5" />
-            {exportingMode === 'download' ? 'Preparing download…' : 'Download PNG'}
+            {exportingMode === 'download' ? (waitingForMap ? 'Map still loading…' : 'Preparing download…') : 'Download PNG'}
           </button>
           {shareSupported && (
             <button
               type="button"
               onClick={() => void handleExport('share')}
-              disabled={!source || !!exportingMode}
+              disabled={!!exportingMode}
               className="flex items-center gap-1.5 rounded-full border border-[var(--border-primary)] px-3.5 py-2 text-xs font-black text-[var(--text-primary)] hover:bg-[var(--bg-btn-hover)] disabled:cursor-not-allowed disabled:opacity-50"
             >
               <Share2 className="h-3.5 w-3.5" />
-              {exportingMode === 'share' ? 'Preparing share…' : 'Share image'}
+              {exportingMode === 'share' ? (waitingForMap ? 'Map still loading…' : 'Preparing share…') : 'Share image'}
             </button>
           )}
         </div>
