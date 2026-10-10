@@ -9,7 +9,6 @@ recorded under the same conditions.
 - **Public baseline:** the commit currently deployed at `www.transitatlas.fyi`.
 - **Candidate:** the approved public-safe build being evaluated.
 - Use the same map URL, browser, device, viewport, and feature settings for both.
-- Do not push the divergent local `main` branch just to run this test.
 
 ## Fixed test matrix
 
@@ -59,8 +58,9 @@ load and must remain visible in the results.
 The committed runner uses the same three scenarios, a fixed 1440×900 viewport,
 a fresh browser context for cold runs, and a reused context for warm runs. It
 waits for Atlas’s `network-data-ready` signal and for the loading badge to
-disappear. Older deployed builds without that signal use the visible route
-count after loading has settled; otherwise the run is recorded as a timeout.
+disappear. Older deployed builds without that signal fall back to the legacy
+catalog-ready mark or the visible route count after loading has settled;
+otherwise the run is recorded as a timeout.
 
 ```bash
 npm run benchmark -- --target https://www.transitatlas.fyi --network library-wifi --runs 5 --output reports/benchmarks/public-library.json
@@ -71,8 +71,9 @@ Useful options are `--scenario ottawa-city`, `--timeout 60000`, `--headed`, and
 Reports are detailed local JSON artifacts and remain ignored; copy only the
 summarized results into the tracked CSV described below.
 
-For a local public-style candidate, use `VITE_ATLAS_MODE=public` and
-`VITE_BETA_BUILD=false`, then run the same command with the local target.
+For a local public-style candidate, run `npm run dev:public` (sets
+`VITE_ATLAS_MODE=public`), then run the same command with the local target
+(the runner defaults to `http://localhost:5100`).
 
 ## Results log
 

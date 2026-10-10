@@ -1,4 +1,4 @@
-# The Atlas Pipeline: How We Calculate Transit Frequency
+# The Atlas pipeline: how we calculate transit frequency
 
 This document describes the methodology used by the Atlas data processing pipeline to turn raw General Transit Feed Specification (GTFS) schedule feeds into the frequency layers rendered on the map.
 
@@ -6,34 +6,36 @@ By standardizing feed schedules across different transit agencies, this pipeline
 
 ---
 
-## Technical Methodology
+## Technical methodology
 
-### 1. Fetching the Feeds
-The pipeline downloads each agency's configured primary GTFS feed. Depending on the agency, that may be an official feed, a provider-hosted mirror, a [Transitland](https://www.transit.land/) archive, or a [Mobility Database](https://mobilitydatabase.org/) dataset. Some agencies also have a configured Mobility Database fallback when the primary feed fails.
+### 1. Fetching the feeds
+The pipeline downloads each agency's configured primary GTFS feed. Depending on the agency, that may be an official feed, a provider-hosted mirror, a [Transitland](https://www.transit.land/) archive, or a [Mobility Database](https://mobilitydatabase.org/) dataset. Some agencies also have configured fallback sources for when the primary feed fails.
 
-- **Update Frequency:** Feeds are checked and re-downloaded automatically every week.
-- **Fallbacks:** The refresh process uses `mdbFeedUrl` only when the configured `feedUrl` fails; it can also merge explicitly configured supplemental feeds.
+- **Update Frequency:** Feeds are checked and re-downloaded by a weekly scheduled refresh (temporarily paused).
+- **Fallbacks:** The refresh process tries the configured `feedUrl` first, then any `feedFallbackUrls`, then `mdbFeedUrl`, and finally the Mobility Database `latest.zip` equivalent of a dated or retired-mirror Mobility Database URL.
+- **Supplemental feeds:** Agencies that publish some service (often rail) in a separate GTFS zip list it in `supplementalFeedUrls`; every processing path merges those through one shared loader (`pipeline/agencyFeeds.ts`) so those routes are not silently dropped.
+- **Drop guard:** Refresh refuses to publish an agency whose rebuilt data would lose more than 20% of its live stops, stop points or routes, unless the drop is reviewed and accepted with `--allow-drop`.
 
-### 2. Active Schedule Detection
+### 2. Active schedule detection
 GTFS feeds often package historical, current, and future service periods together. The pipeline checks the calendar dates inside the feed and programmatically determines which schedule is currently active.
 
 - **Resolution:** It looks for active dates closest to the execution day to ensure the map shows what is actually running now, rather than an expired or future schedule.
 - **Service Types:** Departures are split into Weekday, Saturday, and Sunday schedules.
 
-### 3. Route Shape Selection
+### 3. Route shape selection
 Transit routes often have multiple routing variants, such as branches, short-turns, or trips to the garage. To keep the map clean, the pipeline isolates two specific shapes for each route:
 
 - **Display Shape:** Geometry is selected per route and headsign, using the active trip patterns and their geographic lengths so the displayed feature represents the relevant service pattern.
 - **Analysis Shapes:** Departure analysis uses representative shape groups for bus routes so short-turns and branches do not silently distort the route's frequency. Rail routes and agency-specific overrides can use different shape rules.
 
-### 4. Counting Departures
+### 4. Counting departures
 Instead of trusting the optional headway fields in GTFS feeds (which agencies often leave blank or format incorrectly), Atlas counts departures directly from `stop_times.txt`.
 
 - **Event Parsing:** The pipeline extracts departure times for every stop on a route.
 - **Grouping:** Departures are grouped by route, direction, day type, and stop.
 - **Time Windows:** Departures are analyzed within defined service windows (such as Midday or PM Peak) to isolate headway variations throughout the day.
 
-### 5. Calculating Headways
+### 5. Calculating headways
 A route's frequency is calculated as the median gap (headway) between consecutive departures.
 
 - **Why the Median:** We use the median instead of the mean (average) because it is much more resistant to outliers. For example, if a bus runs every 10 minutes all day but has one 60-minute gap for a driver shift change, the median headway remains 10 minutes, representing the typical rider experience.
@@ -49,7 +51,7 @@ When actual weekdays qualify for different tiers, the route card flags that
 weekday schedules vary and explains that the displayed tier reflects the
 slowest weekday.
 
-### 6. Assigning Frequency Tiers
+### 6. Assigning frequency tiers
 Atlas uses sustained service thresholds to assign frequency tiers. It tests the analyzed gaps across each service window, allowing a small number of grace-period violations, then stores headway metrics separately for display and filtering. The current surface thresholds are:
 
 - **≤10 minutes**
@@ -74,18 +76,19 @@ The default 07:00–22:00 weekday/Saturday and 09:00–21:00 Sunday windows are 
 
 `routeHasIrregularDirection` is applied when a route/day has a direction with no non-irregular service pattern. This preserves the whole-route hiding behavior for genuinely one-sided or uneven routes while allowing predictable evening-only service to remain visible.
 
-### 8. Generating Output & Distribution
+### 8. Generating output & distribution
 To maintain a serverless architecture, the pipeline converts the processed data into static files:
 
 - **Route GeoJSON:** Contains route geometries populated with headways and frequency tiers.
 - **Stops Index:** A lightweight JSON lookup of stop coordinates and names, used by the Corridors app for search.
-- **Vector Tiles:** Route shapes and stops are compiled into a single `atlas.pmtiles` archive for fast rendering.
+- **Vector Tiles:** Route shapes and stops are compiled into an `atlas.pmtiles` archive (plus a low-zoom `atlas-overview.pmtiles`) for fast rendering.
+- **Data releases:** The tiles and the agency route data used to build them are uploaded together as an immutable release under `atlas/releases/{id}/`; `atlas/release.json` points the client at the active release, so the map and route cards always come from the same build.
 - **Storage:** All generated files are uploaded to Cloudflare R2, which serves them directly to the client.
 
-### 9. Loading Data on the Map
+### 9. Loading data on the map
 The frontend client uses lazy loading to keep the application fast and responsive:
 
-- **Viewport Loading:** The map only requests GeoJSON files for transit agencies currently visible in the user's viewport.
+- **Viewport Loading:** The map only requests GeoJSON files (from the active data release) for transit agencies currently visible in the user's viewport.
 - **Vector Tile Queries:** MapLibre GL dynamically queries the PMTiles archive for geometries as the user pans and zooms.
 
 ---

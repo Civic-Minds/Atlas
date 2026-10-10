@@ -1,10 +1,10 @@
-# Technical Roadmap
+# Technical roadmap
 
 Engineering direction for Atlas infrastructure and the live data layer.
 
 ---
 
-## Live Data Infrastructure
+## Live data infrastructure
 
 The goal is to make Atlas a stable live-data provider for multiple products without
 forcing each consumer to poll GTFS-RT or access private R2. The previous hosted live
@@ -34,27 +34,27 @@ Why Postgres and not just R2: R2 is a file store, not a query engine. Pattern qu
 
 ---
 
-## Rendering & Visualization
+## Rendering and visualization
 
-- [ ] **maplibre-gl v6 migration**: keep isolated from public rollout work. This is a major bump from the current v5.24.0 baseline, not a routine Dependabot update. The earlier v6 attempt required ESM import/type changes and still reproduced a production-only failure where MapLibre read PMTiles metadata but never requested route tiles; v5.24.0 restored deployed route rendering. Before merging a future v6 PR, verify both local and deployed/preview builds: basemap, PMTiles route tiles, route counts, route clicks/cards, frequency/mode/day filters, live vehicles, history, and console/network errors. Keep the upgrade in its own branch until every check passes.
+- [x] **maplibre-gl v6 migration**: shipped. Atlas runs MapLibre 6.4.1 (#593), with follow-up fixes for the bundled map worker (#599) and local dev rendering (#649). For future major bumps, verify both local and deployed/preview builds: basemap, PMTiles route tiles, route counts, route clicks/cards, frequency/mode/day filters, live vehicles, history, and console/network errors.
 - [x] **Deck.gl vehicle rendering**: current vehicle positions use GPU-rendered Deck.gl layers over MapLibre.
 - [ ] **Archived vehicle path animation**: use `TripsLayer` to animate vehicle paths over time from the `atlas-live` archive.
 - [ ] **Line offsets for overlapping routes**: when multiple routes share the same road segment, offset each line laterally so they render as parallel bands rather than stacked on top of each other. Requires pre-computing overlap groups in the pipeline and storing an `offsetIndex` property in PMTiles features, then using MapLibre's `line-offset` paint expression.
 
 ---
 
-## Pipeline & CI
+## Pipeline and CI
 
 - [ ] **Split weekly feed refresh per country/region**: currently one combined `refresh-feeds.yml` job processes the full agency registry in one run, so one bad feed can't easily be isolated or re-run independently. Splitting refresh by country wouldn't fully decouple things on its own, though — `build-pmtiles` still merges every agency into one combined tileset regardless of how refresh is split, so this needs a real design (does PMTiles building become incremental/per-region too, or stay combined?) before it's an actionable task. Prompted by considering UK/Europe as a new region to validate.
 
-## Data Quality
+## Data quality
 
-- [ ] **Explicit `country` field per agency**: agency configs currently only have `region` (free text: "Ontario", "Jalisco", "Grand Est") with no `country` field at all. `shared/regionCountry.ts` works around this with a region→country lookup table (fine for now — low cost, one new entry per country added), but the more correct long-term fix is backfilling an explicit `country` field across all agency configs, removing the string-matching fragility entirely. Bigger one-time migration (467+ files) than the lookup-table workaround, which is why it's deferred rather than done alongside `regionCountry.ts`.
+- [ ] **Explicit `country` field per agency**: agency configs currently only have `region` (free text: "Ontario", "Jalisco", "Grand Est") with no `country` field at all. `shared/regionCountry.ts` works around this with a region→country lookup table (fine for now — low cost, one new entry per country added), but the more correct long-term fix is backfilling an explicit `country` field across all agency configs, removing the string-matching fragility entirely. Bigger one-time migration (700+ files) than the lookup-table workaround, which is why it's deferred rather than done alongside `regionCountry.ts`.
 - [ ] **Per-agency name normalizer**: `titleCase(str, agencyAcronyms?)` accepts an optional agency-specific acronym map merged with the global `TRANSIT_ACRONYMS` table at call time. Rules live in a `nameAcronyms` field per agency in `index.json` (only agencies that need overrides add an entry). Fixes cases where the global table is wrong for a specific agency — e.g. "St" means Street in most stop names, but GO Transit uses "ST" as the Stouffville line code. Currently handled by excluding the entry globally; per-agency injection would let GO use the override without affecting every other agency.
 
 ---
 
-## Data & Analysis
+## Data and analysis
 
 - [ ] **Transit isochrones**: "how far can you reach in 30 min by transit?" Compute travel-time matrices from GTFS using OpenTripPlanner or Valhalla (self-hosted or managed). Render as a filled polygon overlay on the map. Shows algorithmic depth beyond visualization.
 - [ ] **Census / equity overlay**: join frequency scores to US Census tract data (income, car-ownership, density) via the Census API. Color tracts by transit access vs. need, surface which communities are under-served. Turns Atlas from a visualization into a planning analysis tool — directly relevant to urban planning work.

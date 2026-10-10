@@ -1,4 +1,4 @@
-# Product Decisions
+# Product decisions
 
 ## 2026-07-29 — Curate History around meaningful service change
 

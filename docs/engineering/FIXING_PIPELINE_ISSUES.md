@@ -1,4 +1,4 @@
-# Fixing Pipeline and Data Issues
+# Fixing pipeline and data issues
 
 Use this runbook for shared processing, metrics, transformations, and published data. Browser spot-checks alone never validate a pipeline change.
 

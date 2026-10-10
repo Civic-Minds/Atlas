@@ -1,4 +1,4 @@
-# Product Roadmap
+# Product roadmap
 
 User experience and the workflow of a transit professional using Atlas.
 
@@ -14,7 +14,7 @@ User experience and the workflow of a transit professional using Atlas.
 
 **Bar for a new app:** needs the map + Atlas-processed data, and answers a question the Frequency Map can't answer cleanly. Otherwise it's a panel, toggle, or contextual mode.
 
-## Live Data Layer (Expanding)
+## Live data layer (expanding)
 
 - [ ] **Restore live vehicle map**: live vehicle positions for configured agencies after the hosted data path and coverage are rebuilt
 - [ ] **Restore schedule adherence panel**: on-demand comparison of scheduled vs. actual headway for supported routes
@@ -22,16 +22,16 @@ User experience and the workflow of a transit professional using Atlas.
 
 ---
 
-## Map & Filter Improvements
+## Map and filter improvements
 
 - [ ] **Customizable time period hour ranges**: TIME_PERIODS drives both the pipeline and frontend filter. Per-user hour overrides would work as a display preference via the headwayByHour fallback path — e.g. letting someone define "my commute is 7:30–9am" and see headways for exactly that window. Would not affect baked tile colors but would work for card display and route filtering.
 - [ ] **Bus sub-type filter**: distinguish Express, BRT, and Long-distance bus from local bus in the Mode filter
-- [ ] **On-demand transit zones**: show flex/microtransit service areas on the map alongside fixed routes, using GTFS-Flex zone geometry and service hours (no booking rules needed)
+- [ ] **On-demand transit zones**: show flex/microtransit service areas on the map alongside fixed routes, using GTFS-Flex zone geometry and service hours (no booking rules needed). Beta only so far: a handful of agencies show hand-built service areas with day and time filtering; not yet public or generated from feeds
 - [ ] **Ferries**: Toronto Island Ferry and Montreal navettes fluviales — contingent on GTFS feed availability
 
 ---
 
-## Design Principles
+## Design principles
 
 - Every view should be usable by a transit planner without data science training
 - Default performance metric is headway consistency, not timepoint adherence — headway is what passengers experience

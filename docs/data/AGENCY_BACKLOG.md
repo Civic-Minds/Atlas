@@ -1,8 +1,8 @@
-# Agency Backlog
+# Agency backlog
 
 Prioritized work queue for expanding Atlas static coverage. Machine-generated candidates land in `tmp/gap-candidates.json` via `npm run discover-gaps`; triage rows here.
 
-Permanent blockers (no GTFS, dead feeds, on-demand only) belong in [`KNOWN_ISSUES.md`](../operations/KNOWN_ISSUES.md) § Missing Agencies — not this file.
+Permanent blockers (no GTFS, dead feeds, on-demand only) belong in [`KNOWN_ISSUES.md`](../operations/KNOWN_ISSUES.md) § Missing agencies — not this file.
 
 **Priority axis:** population-weighted — largest uncovered metros first.
 
@@ -36,7 +36,7 @@ These candidates were researched but still need processing or a final feed decis
 | done | `cheyenne` | Cheyenne Transit Program | Wyoming | National RTAP CTP_gtfs |
 | done | `rapid-city` | Rapid Transit System | South Dakota | National RTAP rts_corc_gtfs |
 | done | `sioux-city` | Sioux City Transit System | Iowa | mdb-191 |
-| blocked | `cdmx` | CDMX multi-operator GTFS | Mexico City | Official datos.cdmx download timed out / MDB latest 403 |
+| blocked | `cdmx` | CDMX multi-operator GTFS | Mexico City | Official datos.cdmx download timed out / MDB latest 403. The Metro alone is now covered separately as `mexico-city-metro` |
 | done | `casper` | Casper Area Transit | Wyoming | Current Passio feed |
 
 ## Recently researched (2026-08-18 — smaller mountain and northern-city sweep)
@@ -53,7 +53,7 @@ These candidates were researched but still need processing or a final feed decis
 
 ## Research sweep (2026-09-08 — active GTFS gap candidates)
 
-These agencies passed the first sweep: active downloadable feeds, scheduled trips, and no route-report anomaly flags. They are processed to R2 and are waiting for the next approved PMTiles rebuild.
+These agencies passed the first sweep: active downloadable feeds, scheduled trips, and no route-report anomaly flags. They are processed to R2 and listed in the public catalog.
 
 | Status | Slug | Agency | Region | Notes |
 |--------|------|--------|--------|-------|
@@ -81,18 +81,18 @@ Held for follow-up: Link Transit (`chelan`) had nine repaired/truncated shapes, 
 
 ## Research sweep (2026-09-10 — active GTFS gap candidates)
 
-These agencies passed a fresh feed download, scheduled-service, and route-report check. Their GeoJSON is now in R2; they need the next approved PMTiles rebuild before their routes appear on the map.
+These agencies passed a fresh feed download, scheduled-service, and route-report check, and their GeoJSON was processed to R2. They are not registered yet: their `config/agencies/` files have no `feedUrl` or `region` and the slugs are missing from `config/agencies/order.json`, so they are not in `index.json`. They need registering and a data release before they appear.
 
 | Status | Slug | Agency | Region | Notes |
 |--------|------|--------|--------|-------|
-| done | `ottumwa` | 10-15 Transit | Iowa | mdb-195 |
-| done | `mckinley-county` | A:Shiwi Transit | New Mexico | ntd-66242 |
-| done | `bowling-green` | City of Bowling Green | Kentucky | ntd-40184 |
-| done | `knox-county` | City of Galesburg | Illinois | ntd-50502 |
-| done | `sevier-county` | City of Gatlinburg Trolley | Tennessee | tld-6775 |
-| done | `howard-county` | City of Kokomo | Indiana | ntd-50145 |
-| done | `sierra-vista` | City of Sierra Vista | Arizona | tld-679 |
-| done | `kittitas-county` | City of Ellensburg Public Transit (Central Transit) | Washington | mdb-2456 |
+| todo | `ottumwa` | 10-15 Transit | Iowa | mdb-195 |
+| todo | `mckinley-county` | A:Shiwi Transit | New Mexico | ntd-66242 |
+| todo | `bowling-green` | City of Bowling Green | Kentucky | ntd-40184 |
+| todo | `knox-county` | City of Galesburg | Illinois | ntd-50502 |
+| todo | `sevier-county` | City of Gatlinburg Trolley | Tennessee | tld-6775 |
+| todo | `howard-county` | City of Kokomo | Indiana | ntd-50145 |
+| todo | `sierra-vista` | City of Sierra Vista | Arizona | tld-679 |
+| todo | `kittitas-county` | City of Ellensburg Public Transit (Central Transit) | Washington | mdb-2456 |
 
 ## Recently completed (2026-07-16 — Seattle specialty)
 
@@ -221,12 +221,12 @@ These agencies passed a fresh feed download, scheduled-service, and route-report
 | done | `evansville` | METS (Evansville) | Indiana | ntd-50043 (stale calendar end ~2025-01) |
 | done | `kenosha` | Kenosha Area Transit | Wisconsin | Trillium feed (stale ~2024; NTD waived) |
 
-## Blocked from Tier 1–2 (no public fixed-route GTFS)
+## Blocked from tier 1–2 (no public fixed-route GTFS)
 
 | Status | Slug | Agency | Region | Notes |
 |--------|------|--------|--------|-------|
 | blocked | `peterborough` | Peterborough Transit | Ontario | No public URL; tmix 404; not in MDB |
-| blocked | `brantford` | Brantford Transit | Ontario | No public URL; tmix 404; not in MDB |
+| done | `brantford` | Brantford Transit | Ontario | No public URL or MDB entry; added as a manual feed source |
 | blocked | `brockville` | Brockville Transit | Ontario | Official site publishes schedules and maps, but no public static GTFS URL found; not in MDB |
 | blocked | `cape-breton` | Transit Cape Breton | Nova Scotia | No public GTFS found |
 | blocked | `sts-saguenay` | STS Saguenay | Quebec | Données Québec points at STS Sherbrooke host; no Saguenay zip |
@@ -284,7 +284,7 @@ Actionable Tier 2 todos exhausted. Remaining items are **blocked** (see above + 
 
 ---
 
-## Tier 3 — State / corridor completion
+## Tier 3 — state / corridor completion
 
 | Status | Slug | Agency | Region | Notes |
 |--------|------|--------|--------|-------|
@@ -304,7 +304,7 @@ Actionable Tier 2 todos exhausted. Remaining items are **blocked** (see above + 
 
 ## France expansion — blocked (no shapes)
 
-Permanent until upstream ships `shapes.txt` on the real network feed. Details in [`KNOWN_ISSUES.md`](../operations/KNOWN_ISSUES.md) § Missing Agencies and [`International expansion`](../research/international-expansion-2026-09/BRIEF.md) § France.
+Permanent until upstream ships `shapes.txt` on the real network feed. Details in [`KNOWN_ISSUES.md`](../operations/KNOWN_ISSUES.md) § Missing agencies and [`International expansion`](../research/international-expansion-2026-09/BRIEF.md) § France.
 
 | Status | Slug | Agency | Region | Notes |
 |--------|------|--------|--------|-------|
@@ -315,7 +315,7 @@ Permanent until upstream ships `shapes.txt` on the real network feed. Details in
 
 ---
 
-## Tier 4 — Secondary metros (HANDOFF / discover-gaps)
+## Tier 4 — secondary metros (discover-gaps)
 
 Run `npm run discover-gaps -- --min-pop 100000` for fresh ranked list. Notables from prior sessions:
 
@@ -335,7 +335,7 @@ Triage steps specific to this backlog:
 2. Pick rows → add `todo` entries here (or promote directly)
 3. `npm run find-mdb -- "Agency Name" slug "lat,lon"` to confirm feed
 
-Then process and publish — see [`MAP_UPDATES.md`](./MAP_UPDATES.md) § Batch Processing and Publishing for the actual steps (config, refresh, PMTiles rebuild + verify) — and mark `done` here plus note it in `CHANGELOG.md` once published.
+Then process and publish — see [`MAP_UPDATES.md`](./MAP_UPDATES.md) § Batch processing and publishing for the actual steps (config, `order.json`, `refresh-release`) — and mark `done` here plus note it in `CHANGELOG.md` once published.
 
 ---
 

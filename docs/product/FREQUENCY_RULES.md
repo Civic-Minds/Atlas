@@ -1,4 +1,4 @@
-# Frequency Filter Rules
+# Frequency filter rules
 
 These are the rules for "every N min or less". Read this before touching frequency filter code.
 
