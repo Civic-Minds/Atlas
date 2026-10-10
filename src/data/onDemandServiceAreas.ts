@@ -347,6 +347,47 @@ export const MUSKOKA_DRT_ON_DEMAND_AGENCY = {
   },
 };
 
+const WINKLER_SOURCE_URL = 'https://www.winkler.ca/';
+const WINKLER_SOURCE_LABEL = 'City of Winkler On-Demand Transit service zone (agency-supplied)';
+
+/** Service zone the City of Winkler emailed as GeoJSON (2024-11-05 export, received 2026-10-10); two separate pieces. */
+export const WINKLER_ON_DEMAND_SERVICE_AREAS: GeoJSON.Feature<GeoJSON.Polygon>[] = [
+  polygonFeature('winkler', WINKLER_SOURCE_URL, WINKLER_SOURCE_LABEL, [[-97.9783008, 49.1778446], [-97.9783129, 49.1834679], [-97.9783219, 49.1923396], [-97.9783819, 49.1998413], [-97.9672797, 49.1998634], [-97.9562176, 49.1998843], [-97.9477443, 49.1998866], [-97.9447689, 49.1998845], [-97.9390086, 49.1998883], [-97.9337496, 49.199889], [-97.9333356, 49.1998893], [-97.9331461, 49.1998896], [-97.9111109, 49.1999076], [-97.8996293, 49.1999154], [-97.8996449, 49.192625], [-97.8996896, 49.1778552], [-97.9087838, 49.1778568], [-97.9087838, 49.1775715], [-97.9087906, 49.1703471], [-97.9087723, 49.163554], [-97.9087716, 49.1628167], [-97.9185833, 49.1628054], [-97.9198251, 49.1628037], [-97.9206611, 49.1628029], [-97.9280895, 49.1627935], [-97.9306388, 49.1627903], [-97.9315583, 49.1627893], [-97.953794, 49.1627772], [-97.9648417, 49.1627702], [-97.9649221, 49.1751747], [-97.9684832, 49.1751696], [-97.9760075, 49.1751585], [-97.9760239, 49.1778457], [-97.9783008, 49.1778446]], 'Winkler'),
+  polygonFeature('winkler', WINKLER_SOURCE_URL, WINKLER_SOURCE_LABEL, [[-98.0021383, 49.1919164], [-98.0017235, 49.1903899], [-98.0017176, 49.1875389], [-98.0049455, 49.1879215], [-98.0048666, 49.1921499], [-98.0021383, 49.1919164]], 'Winkler'),
+];
+
+export const WINKLER_ON_DEMAND_AGENCY = {
+  slug: 'winkler',
+  name: 'Winkler On-Demand Transit',
+  region: 'Manitoba',
+  center: [49.1813, -97.9523] as [number, number],
+  url: '',
+  bbox: [49.1627702, -98.0049455, 49.1999154, -97.8996293] as [number, number, number, number],
+  cities: ['Winkler, Manitoba'],
+  displayArea: 'Winkler',
+  onDemandOnly: true,
+  hiddenInProduction: true,
+  betaOnly: true,
+  rolloutNotice: BETA_ROLLOUT_NOTICE,
+  websiteUrl: WINKLER_SOURCE_URL,
+  onDemandServiceArea: {
+    features: WINKLER_ON_DEMAND_SERVICE_AREAS,
+    sourceUrl: WINKLER_SOURCE_URL,
+    sourceLabel: WINKLER_SOURCE_LABEL,
+    sourceRetrievedAt: '2026-10-10',
+    serviceName: 'Winkler On-Demand Transit',
+    serviceHours: 'Weekdays 6 a.m.–6 p.m.; Saturday 9 a.m.–6 p.m.',
+    bookingInfo: 'Book 15 minutes to 7 days ahead.',
+    pickup: { method: 'door-to-door' } satisfies OnDemandPickup,
+    bookingUrl: WINKLER_SOURCE_URL,
+    availability: {
+      Weekday: [{ startHour: 6, endHour: 18 }],
+      Saturday: [{ startHour: 9, endHour: 18 }],
+      Sunday: [],
+    } satisfies OnDemandAvailability,
+  },
+};
+
 const ST_ALBERT_SOURCE_URL = 'https://stalbert.ca/city/transit/tools/via/';
 const ST_ALBERT_SOURCE_LABEL = 'St. Albert Transit GTFS-Flex export (agency-supplied)';
 
