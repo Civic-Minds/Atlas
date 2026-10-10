@@ -60,6 +60,7 @@ describe('BWG on-demand service area', () => {
   it('keeps the four GRT Route 79 submission polygons closed and labelled', () => {
     expect(GRT_ROUTE_79_SERVICE_AREAS).toHaveLength(4);
     expect(GRT_ROUTE_79_SERVICE_AREA.serviceName).toBe('Route 79 Breslau On-Demand');
+    expect(GRT_ROUTE_79_SERVICE_AREA.tripRules).toContain('start or end in Breslau');
     for (const area of GRT_ROUTE_79_SERVICE_AREAS) {
       const ring = area.geometry.coordinates[0];
       expect(ring[0]).toEqual(ring.at(-1));

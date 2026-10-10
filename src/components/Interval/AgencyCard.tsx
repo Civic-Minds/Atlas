@@ -383,6 +383,12 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
               {service.stopFeatures?.length ? 'Virtual pickup locations are shown on the map; they are not fixed-route stops.' : 'The shaded map area shows where this on-demand service operates.'}
             </p>
           </div>
+          {service.tripRules && (
+            <div className="px-1">
+              <p className="text-[9px] font-black uppercase tracking-wide text-[var(--text-dim)]">Trip rules</p>
+              <p className="text-[11px] leading-relaxed text-[var(--text-muted)] mt-1">{service.tripRules}</p>
+            </div>
+          )}
           {serviceHours && (
             <div className="px-1">
               <p className="text-[10px] font-black text-[var(--text-dim)]">Service hours</p>
@@ -471,6 +477,9 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
               <p className="text-[10px] font-bold text-[var(--text-primary)] mt-0.5">{agency.onDemandServiceArea.serviceName}</p>
               {agency.onDemandServiceArea.serviceHours && (
                 <p className="text-[10px] leading-snug text-[var(--text-muted)] mt-0.5">{agency.onDemandServiceArea.serviceHours}</p>
+              )}
+              {agency.onDemandServiceArea.tripRules && (
+                <p className="text-[10px] leading-snug text-[var(--text-muted)] mt-0.5">{agency.onDemandServiceArea.tripRules}</p>
               )}
             </div>
           )}

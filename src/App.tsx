@@ -116,6 +116,8 @@ export interface Agency {
     serviceHours?: string;
     bookingUrl?: string;
     serviceName?: string;
+    /** Agency booking restriction riders must know, e.g. which trips a zone can serve. */
+    tripRules?: string;
     availability?: OnDemandAvailability;
     zoneMetadata?: Record<string, {
       serviceName?: string;

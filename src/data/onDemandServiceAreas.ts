@@ -155,6 +155,7 @@ export const GRT_ROUTE_79_SERVICE_AREA = {
   serviceHours: 'Monday–Friday: 6–10 a.m., 2–6 p.m., and 10:45–11:45 p.m.',
   bookingUrl: GRT_ROUTE_79_SOURCE_URL,
   serviceName: 'Route 79 Breslau On-Demand',
+  tripRules: 'The Kitchener connection points only serve trips that start or end in Breslau.',
   availability: {
     Weekday: [
       { startHour: 6, endHour: 10 },
