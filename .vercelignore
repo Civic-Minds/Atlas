@@ -10,4 +10,5 @@ tmp
 pipeline/
 scripts/*
 !scripts/build-agency-catalog.ts
+!scripts/agencyIndexGeneration.ts
 types/
