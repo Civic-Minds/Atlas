@@ -43,6 +43,7 @@ afterEach(() => {
   clearAgencyGeoCache();
   clearDataReleaseCache();
   vi.restoreAllMocks();
+  vi.unstubAllEnvs();
 });
 
 describe('fetchAgencyGeo', () => {
@@ -88,5 +89,20 @@ describe('fetchAgencyGeo', () => {
     await fetchAgencyGeo(agency);
     const geoCall = fetchMock.mock.calls.find((c: unknown[]) => String(c[0]).includes('ttc.json'));
     expect(String(geoCall?.[0])).toContain('v=test-v1');
+  });
+
+  it('fails closed in deployed builds when no verified release exists', async () => {
+    vi.stubEnv('PROD', true);
+    const fetchMock = mockFetch();
+    vi.stubGlobal('fetch', fetchMock);
+    await expect(fetchAgencyGeo(agency)).rejects.toThrow('No verified Atlas data release');
+    // Never falls back to the live, unpaired agency file.
+    expect(fetchMock.mock.calls.some((c: unknown[]) => String(c[0]).includes('ttc.json'))).toBe(false);
+  });
+
+  it('keeps the fallback for beta-only agencies, whose bucket has no release pointer', async () => {
+    vi.stubEnv('PROD', true);
+    vi.stubGlobal('fetch', mockFetch());
+    await expect(fetchAgencyGeo({ ...agency, slug: 'beta-agency', betaOnly: true })).resolves.toBeTruthy();
   });
 });

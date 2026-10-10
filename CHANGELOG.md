@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **The map and the route cards can no longer come from different builds — a data release now only goes live when its map tiles and agency data were built together under the app's current rules, and the site shows no route data rather than an unmatched map.**
 - **Frequency filters now require every direction of a route to meet the threshold, so routes no longer slip through on a single busy stretch, routes with a few occasional extra trips (like TTC 100) no longer drop out, and the route list, counts, and map always agree.**
 - **Route lines are drawing on the map again — the map looked for its route files in the wrong folder, and the map library's background helper was missing from the site after the MapLibre 6 upgrade.**
 - **Routes whose feed has schedules but no map shape now stay searchable and zoom to their stops, without ever replacing a route line that already draws.**

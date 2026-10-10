@@ -33,7 +33,16 @@ export default {
     // `release_id` avoids stale Vercel cache entries created for the old `release` query.
     // Keep accepting `release` so older deployed bundles continue to work.
     const release = params.get('release_id') ?? params.get('release');
-    const releasePath = release && /^release-[a-z0-9]+$/.test(release) ? `atlas/releases/${release}/` : '';
+    // Only serve tiles that belong to a verified data release. The legacy root
+    // atlas.pmtiles is not paired with any agency data, so serving it would
+    // draw a map that disagrees with the route cards; no tiles beats wrong tiles.
+    if (!release || !/^release-[a-z0-9]+$/.test(release)) {
+      return new Response('No verified data release requested', {
+        status: 404,
+        headers: { 'Cache-Control': 'no-store', 'Access-Control-Allow-Origin': '*' },
+      });
+    }
+    const releasePath = `atlas/releases/${release}/`;
     const filename = `${releasePath}${variant === 'overview' ? 'atlas-overview.pmtiles' : 'atlas.pmtiles'}`;
     const range = request.headers.get('range');
     const upstream = await fetch(`${PMTILES_BASE_URL}${filename}`, {
