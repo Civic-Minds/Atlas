@@ -16,6 +16,7 @@ import {
   LEAMINGTON_LT_GO_ON_DEMAND_AGENCY,
   METRO_MICRO_SERVICE_AREA,
   WATA_PARATRANSIT_SERVICE_AREA,
+  UTA_ON_DEMAND_SERVICE_AREA,
 } from '../onDemandServiceAreas';
 import { HSR_MY_RIDE_STOP_FEATURES } from '../hsrMyRideStops';
 import { HAMILTON_TRANS_CAB_SERVICE_AREAS, HAMILTON_TRANS_CAB_TRANSFER_POINTS } from '../transCabServiceArea';
@@ -183,5 +184,20 @@ describe('Hamilton on-demand services stay separate', () => {
     }
     const names = [HAMILTON_MY_RIDE_SERVICE_AREA.serviceName, ...Object.values(HAMILTON_MY_RIDE_SERVICE_AREA.zoneMetadata).map(zone => zone.serviceName)];
     expect(names.some(name => name.includes(' and '))).toBe(false);
+  });
+});
+
+describe('UTA On Demand zones', () => {
+  it('gives every zone polygon its own hours', () => {
+    expect(UTA_ON_DEMAND_SERVICE_AREA.features).toHaveLength(8);
+    for (const zone of UTA_ON_DEMAND_SERVICE_AREA.features) {
+      const areaName = (zone.properties as { areaName: string }).areaName;
+      expect(UTA_ON_DEMAND_SERVICE_AREA.zoneMetadata[areaName as keyof typeof UTA_ON_DEMAND_SERVICE_AREA.zoneMetadata].availability).toBeDefined();
+    }
+  });
+
+  it('hides weekday-only zones on Sunday', () => {
+    expect(isOnDemandActive(UTA_ON_DEMAND_SERVICE_AREA.zoneMetadata['Tooele County'].availability, 'Sunday', 'midday')).toBe(false);
+    expect(isOnDemandActive(UTA_ON_DEMAND_SERVICE_AREA.zoneMetadata['Salt Lake City Westside'].availability, 'Sunday', 'midday')).toBe(true);
   });
 });
