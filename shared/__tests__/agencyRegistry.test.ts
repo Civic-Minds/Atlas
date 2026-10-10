@@ -20,18 +20,11 @@ const order = JSON.parse(readFileSync(join(AGENCY_DIR, 'order.json'), 'utf8')) a
 const agencyFiles = readdirSync(AGENCY_DIR).filter(file => file.endsWith('.json') && file !== 'order.json');
 const index = JSON.parse(readFileSync(join(REPO, 'public/data/index.json'), 'utf8')) as { agencies: Agency[] };
 
-// Known gap, tracked in #667: added 2026-09-10 without an order.json entry, then dropped by
-// the next index build. Remove each slug from this list as it is resolved; never add to it.
-const UNLISTED_AGENCY_FILES_667 = [
-  'bowling-green', 'howard-county', 'kittitas-county', 'knox-county',
-  'mckinley-county', 'ottumwa', 'sevier-county', 'sierra-vista',
-];
-
 describe('agency registry -> index.json', () => {
-  it('every agency file is listed in order.json, apart from the known #667 exceptions', () => {
+  it('every agency file is listed in order.json (#667)', () => {
     const listed = new Set(order);
     const unlisted = agencyFiles.map(file => file.replace(/\.json$/, '')).filter(slug => !listed.has(slug)).sort();
-    expect(unlisted).toEqual(UNLISTED_AGENCY_FILES_667);
+    expect(unlisted).toEqual([]);
   });
 });
 

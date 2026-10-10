@@ -1,12 +1,16 @@
 {
   "slug": "mckinley-county",
   "name": "A:Shiwi Transit",
+  "websiteUrl": "https://www.ashiwi.org/Transit.html",
   "center": [
     35.3,
     -108.79
   ],
   "timezone": "America/Denver",
-  "feedUrl": null,
+  "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/7763/AshiwiGTFS.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-66242/latest.zip",
+  "region": "New Mexico",
+  "staged": true,
   "lastFeedExpiry": "20280131",
   "lastFeedVersion": "20260321",
   "lastRefreshedAt": "2026-09-10",
