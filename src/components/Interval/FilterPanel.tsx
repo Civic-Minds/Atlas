@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Settings, X, ArrowLeft, Search } from 'lucide-react';
+import { CompareSidePicker, SideBadge, type CompareSide } from './CompareControl';
 import { ICON_BTN, DROPDOWN_PANEL, SEARCH_FIELD, SEARCH_PILL, FILTER_OPTION, CONTROL_ACTIVE, CONTROL_INACTIVE, dropdownAnim, TRANSITION_BASE, Z_MODAL_TOP } from '../../styles';
 import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
 import { FILTER_MODES, ON_DEMAND_MODE } from '../../../shared/modes';
@@ -49,6 +50,13 @@ interface FilterPanelProps {
   setShowMapLegend: (v: boolean | ((prev: boolean) => boolean)) => void;
   dataSaver: boolean;
   setDataSaver: (v: boolean | ((prev: boolean) => boolean)) => void;
+  /** Compare mode controls (phones reach them here); undefined when compare is unavailable. */
+  compare?: {
+    side: CompareSide | null;
+    onStart: () => void;
+    onExit: () => void;
+    onChange: (side: CompareSide) => void;
+  };
 }
 
 export interface HiddenRoute {
@@ -99,6 +107,7 @@ const SETTINGS = [
 ] as const;
 
 export const FilterPanel: React.FC<FilterPanelProps> = ({
+  compare,
   lightMode,
   setLightMode,
   hideSpan,
@@ -709,6 +718,28 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                       );
                     })}
                   </div>
+
+                  {compare && (
+                    <div className="px-5 pt-2 pb-3">
+                      <div className="flex items-center justify-between">
+                        <p className="text-[10px] font-bold text-[var(--text-dim)]">Compare with another day or time</p>
+                        <button
+                          type="button"
+                          onClick={compare.side ? compare.onExit : compare.onStart}
+                          className={`h-7 px-2.5 flex items-center justify-center text-[10px] font-bold rounded-full border transition-colors ${compare.side ? CONTROL_ACTIVE : CONTROL_INACTIVE}`}
+                          aria-pressed={!!compare.side}
+                        >
+                          {compare.side ? 'Stop comparing' : 'Compare'}
+                        </button>
+                      </div>
+                      {compare.side && (
+                        <div className="mt-2">
+                          <p className="mb-2 flex items-center gap-1.5 text-[10px] font-bold text-[var(--text-dim)]"><SideBadge side="B" /> The day and time above are map A; pick map B here.</p>
+                          <CompareSidePicker side={compare.side} onChange={compare.onChange} />
+                        </div>
+                      )}
+                    </div>
+                  )}
 
                   {/* Transit Modes */}
                   <div className="px-5 pt-2 pb-1">

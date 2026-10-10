@@ -43,6 +43,7 @@ import { splitRouteKey } from '../../utils/routeKey';
 import { isFeedExpired } from '../../utils/feedFreshness';
 import { effectiveFeedExpiry } from '../../../shared/feedAvailability';
 import { trackEvent } from '../../lib/analytics';
+import type { CompareRouteRow } from './compareTypes';
 import { FEATURES } from '../../../shared/config';
 import { PHONE_MEDIA_QUERY, useMediaQuery } from '../../hooks/useMediaQuery';
 
@@ -87,6 +88,7 @@ interface SidebarControlsProps {
   hoveredBranch: HoveredBranch | null;
   setHoveredBranch: (b: HoveredBranch | null) => void;
   selectedRouteOutOfFilter?: boolean;
+  compareRows?: CompareRouteRow[] | null;
   onDirectFromStop?: (stop: StopEntry) => void;
   onInfoOpen?: OpenInfoFn;
   searchEnterRef?: React.MutableRefObject<(() => void) | null>;
@@ -135,6 +137,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   hoveredBranch,
   setHoveredBranch,
   selectedRouteOutOfFilter = false,
+  compareRows = null,
   onDirectFromStop,
   onInfoOpen,
   searchEnterRef,
@@ -1154,6 +1157,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                   hideSpan={hideSpan}
                   routeIsStale={routeIsStale}
                   selectedRouteOutOfFilter={selectedRouteOutOfFilter}
+                  compareRows={compareRows}
                   expDateStr={expDateStr}
                   hoveredBranch={hoveredBranch}
                   setHoveredBranch={setHoveredBranch}

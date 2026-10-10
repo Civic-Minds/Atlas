@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react'
 import { createPortal } from 'react-dom';
 import { useSearchParams } from 'react-router';
 import { useAgencyData } from '../hooks/useAgencyData';
-import { anyFeaturePassesRouteFilter, useIntervalStats, routeKey, PERIOD_KEYS, type HoveredBranch, type ShapeProperties } from '../hooks/useIntervalStats';
+import { anyFeaturePassesRouteFilter, useIntervalStats, routeKey, PERIOD_KEYS, PERIOD_LABELS, type HoveredBranch, type ShapeProperties } from '../hooks/useIntervalStats';
 import type { ViewportBounds, TimePeriod, DayType } from '../hooks/useIntervalStats';
 import { useNearbyRoutes } from '../hooks/useNearbyRoutes';
 import { MapCanvas } from '../components/Interval/MapCanvas';
@@ -17,7 +17,11 @@ import { TRANSITION_BASE, TRANSITION_SLOW, Z_PANEL, MAP_BADGE, MAP_BADGE_COUNT, 
 import type { Agency, FareOverride } from '../App';
 import type { OpenInfoFn } from '../components/InfoPanel';
 import type { StopEntry } from './corridor-search';
-import { ATLAS_MODE, R2_PUBLIC_URL, VIEWPORT_BBOX_PAD } from '../../shared/config';
+import { ATLAS_MODE, FEATURES, R2_PUBLIC_URL, VIEWPORT_BBOX_PAD } from '../../shared/config';
+import type * as maplibregl from 'maplibre-gl';
+import { CompareControl, CompareSidePicker, SideBadge, compareSideLabel, defaultCompareSide, type CompareSide } from '../components/Interval/CompareControl';
+import { buildCompareRow } from '../utils/compareRows';
+import { DAY_TYPES, type DayType as DayTypeName } from '../../shared/dayTypes';
 import { findVariantFamily } from '../utils/routeVariants';
 import { splitRouteKey } from '../utils/routeKey';
 import { resolveRouteSelectionForDay } from '../utils/routeSelection';
@@ -102,6 +106,39 @@ function readSavedAgenciesOff(): Set<string> {
   } catch {
     return new Set();
   }
+}
+
+const EMPTY_LAYERS: Record<string, GeoJSON.FeatureCollection> = {};
+const IGNORE_BOUNDS = () => {};
+
+/** Where the other compare side is, for "8 not on Sunday" / "8 not during midday". */
+function compareOtherPhrase(self: CompareSide, other: CompareSide): string {
+  if (self.day !== other.day) return `on ${other.day}`;
+  return other.period === 'all' ? 'all day' : `during ${PERIOD_LABELS[other.period].replace(/\b(Peak|Midday|Evening|Late|Overnight)\b/g, w => w.toLowerCase())}`;
+}
+
+/** Label on each compare map: which side it is, and how its routes differ from the other side. */
+function CompareSideLabel({ side, title, counts, otherPhrase }: {
+  side: 'A' | 'B';
+  title: string;
+  counts: { total: number; only: number } | null;
+  /** "on Sunday" or "during midday": where the other side is. */
+  otherPhrase: string;
+}) {
+  const heading = title.charAt(0).toUpperCase() + title.slice(1);
+  return (
+    <div className={`absolute ${side === 'A' ? 'top-[68px]' : 'top-3 sm:top-[68px]'} left-1/2 -translate-x-1/2 sm:left-auto sm:translate-x-0 sm:right-4 ${Z_PANEL} pointer-events-none`}>
+      <div className={`${MAP_BADGE} h-8 gap-1.5 whitespace-nowrap`}>
+        <SideBadge side={side} />
+        <span className="text-xs font-black text-[var(--text-primary)]">{heading}</span>
+        {counts && (
+          <span className="text-xs font-semibold text-[var(--text-dim)]">
+            · {counts.total} {counts.total === 1 ? 'route' : 'routes'}, {counts.only} not {otherPhrase}
+          </span>
+        )}
+      </div>
+    </div>
+  );
 }
 
 export default function Interval({ agencies, allAgencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, filterToAgencies = false, onHistoryRouteClick, onDirectFromStop, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, pendingNightRoute, onPendingNightRouteHandled, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, onSelectedMapAgencyChange, onSelectionActiveChange, headerPortalContainer, fareView = false, nightServiceView = false, nightServiceFrequency = 60, setNightServiceFrequency, frequentServiceView = false, frequentServiceDays = ['Weekday'], frequentServiceFrequency = 15, frequentServiceWindow = 'daytime', setFrequentServiceDays, setFrequentServiceFrequency, setFrequentServiceWindow, showMapContext = false, showMatchPercentage = false, sidebarLeft, searchBarWidth, searchEnterRef, analyticsApp = 'frequency', hideLowQuality, setHideLowQuality, feedQualityEnabled = false, showMapLegend, setShowMapLegend, dataSaver, setDataSaver, exportEnabled = false, exportTitle = 'Transit map' }: Props) {
@@ -295,6 +332,20 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   });
   const [livePollingOnly, setLivePollingOnly] = useState(false);
 
+  // Compare mode (beta): side A is the normal day/time; side B has its own day and time. Everything
+  // else (frequency, modes, agencies, irregular-route settings) is shared, so both sides use the
+  // same filter rule and only the day/time differs.
+  const compareAvailable = FEATURES.compareMode && showRouteLayers && !fareView && !nightServiceView
+    && !frequentServiceView && !liveRoutesOnly && !filterToAgencies;
+  const [compareSide, setCompareSide] = useState<CompareSide | null>(() => {
+    if (!FEATURES.compareMode) return null;
+    const cday = searchParams.get('cday');
+    if (!cday || !(DAY_TYPES as readonly string[]).includes(cday)) return null;
+    const cp = searchParams.get('cp') ?? 'all';
+    return { day: cday as DayTypeName, period: (cp === 'all' || PERIOD_KEYS.includes(cp as any)) ? cp as TimePeriod : 'all' };
+  });
+  const compareActive = compareAvailable && compareSide != null;
+
   const previousAnalyticsFilters = useRef<{
     maxHeadway: number;
     day: DayType;
@@ -448,6 +499,100 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     showCorridorBand: false,
     hoveredBranch,
   });
+
+  // Side B runs the same filter with its own day and time. With compare off it gets no layers,
+  // so the extra pass costs nothing.
+  const compareB = compareSide ?? { day, period };
+  const compareStats = useIntervalStats(compareActive ? layers : EMPTY_LAYERS, {
+    query,
+    maxHeadway,
+    agencies: selectedAgencies,
+    modes: selectedModes,
+    day: compareB.day,
+    period: compareB.period,
+    selectedStop,
+    selectedRoute,
+    bounds,
+    hideSpan,
+    hideLimitedService,
+    livePollingOnly,
+    showCorridors: false,
+    showCorridorBand: false,
+    hoveredBranch,
+  });
+
+  useEffect(() => {
+    syncUrlParams({
+      cday: compareActive ? compareSide!.day : null,
+      cp: compareActive ? compareSide!.period : null,
+    });
+  }, [compareActive, compareSide]);
+
+  // Keep the two maps on the same view: whichever one the user moves leads.
+  const [mapA, setMapA] = useState<maplibregl.Map | null>(null);
+  const [mapB, setMapB] = useState<maplibregl.Map | null>(null);
+  useEffect(() => {
+    if (!compareActive || !mapA || !mapB) return;
+    let syncing = false;
+    const follow = (from: maplibregl.Map, to: maplibregl.Map) => () => {
+      if (syncing) return;
+      syncing = true;
+      to.jumpTo({ center: from.getCenter(), zoom: from.getZoom(), bearing: from.getBearing(), pitch: from.getPitch() });
+      syncing = false;
+    };
+    const aToB = follow(mapA, mapB);
+    const bToA = follow(mapB, mapA);
+    aToB();
+    mapA.on('move', aToB);
+    mapB.on('move', bToA);
+    return () => {
+      mapA.off('move', aToB);
+      mapB.off('move', bToA);
+    };
+  }, [compareActive, mapA, mapB]);
+
+  const startCompare = useCallback(() => setCompareSide(defaultCompareSide({ day, period })), [day, period]);
+  const exitCompare = useCallback(() => setCompareSide(null), []);
+
+  // Side labels: how many routes each map draws in view, and how many of those the other map does
+  // not draw. Counted from what is on screen, the same way as the route-count badge.
+  const [renderedA, setRenderedA] = useState<Set<string> | null>(null);
+  const [renderedB, setRenderedB] = useState<Set<string> | null>(null);
+  const compareCounts = useMemo(() => {
+    if (!compareActive || !renderedA || !renderedB) return null;
+    const only = (x: Set<string>, y: Set<string>) => [...x].filter(key => !y.has(key)).length;
+    return { a: { total: renderedA.size, only: only(renderedA, renderedB) }, b: { total: renderedB.size, only: only(renderedB, renderedA) } };
+  }, [compareActive, renderedA, renderedB]);
+
+  // Route card rows: each side's frequency and whether it passes, from the same helpers the map
+  // and route lists use (worst direction decides).
+  const compareRows = useMemo(() => {
+    if (!compareActive || !selectedRoute) return null;
+    const { agencySlug: slug, routeId, routeBranch } = splitRouteKey(selectedRoute);
+    const routeFeatures = layers[slug]?.features.filter(f => {
+      const p = f.properties as ShapeProperties;
+      return p?.routeId === routeId && (!routeBranch || p.routeBranch === routeBranch);
+    }) ?? [];
+    const filters = {
+      maxHeadway,
+      agencies: selectedAgencies,
+      modes: selectedModes,
+      hideSpan,
+      hideLimitedService,
+      livePollingOnly,
+      showCorridors: false,
+      showCorridorBand: false,
+      selectedRoute: null,
+    };
+    // Short titles keep the rows on one line: only name what differs between the sides.
+    const title = (side: CompareSide) => side.day !== compareSide!.day || side.day !== day
+      ? (side.period === compareSide!.period && side.period === period ? side.day : compareSideLabel(side))
+      : PERIOD_LABELS[side.period];
+    return [
+      buildCompareRow('A', { day, period }, routeFeatures, slug, filters, title({ day, period })),
+      buildCompareRow('B', compareSide!, routeFeatures, slug, filters, title(compareSide!)),
+    ];
+  }, [compareActive, selectedRoute, layers, day, period, compareSide, maxHeadway, selectedAgencies, selectedModes, hideSpan, hideLimitedService, livePollingOnly]);
 
   const selectedRouteOutOfFilter = useMemo(() => {
     if (!selectedRoute || frequentServiceView || (maxHeadway === Infinity && period === 'all')) return false;
@@ -619,72 +764,148 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   return (
     <div className={`relative w-full h-full transition-colors ${TRANSITION_BASE}`}>
 
-      <MapCanvas
-        agencies={agencies}
-        layers={layers}
-        filteredLayers={filteredLayers}
-        mapFilteredLayers={mapFilteredLayers}
-        maxHeadway={maxHeadway}
-        period={period}
-        q={q}
-        selectedRoute={selectedRoute}
-        highlightRoutes={highlightRoutes}
-        hoveredSearchRoute={hoveredSearchRoute}
-        hoveredBranch={hoveredBranch}
-        setSelectedRoute={setSelectedRoute}
-        selectedStop={selectedStop}
-        setSelectedStop={setSelectedStop}
-        setDisambiguationRoutes={setDisambiguationRoutes}
-        lightMode={lightMode}
-        matchesQuery={matchesQuery}
-        routesForStop={routesForStop}
-        onBoundsChange={onBoundsChange}
-        resetViewKey={resetViewKey}
-        onLocate={onLocate}
-        showMapContext={showMapContext}
-        mapContextOpen={mapContextOpen}
-        mapContextView={mapContextView}
-        onMapContextOpenChange={setMapContextOpen}
-        onMapContextAgencyCountChange={setMapContextAgencyCount}
-        onMapContextRouteCountChange={setMapContextRouteCount}
-        day={day}
-        showRouteLayers={showRouteLayers}
-        liveRoutesOnly={liveRoutesOnly}
-        showCorridorBand={false}
-        showCorridors={false}
-        selectedCorridorFamily={selectedCorridorFamily}
-        hideSpan={hideSpan}
-        filterToAgencies={filterToAgencies}
-        onHistoryRouteClick={onHistoryRouteClick}
-        tileFilter={tileFilter}
-        selectedAgencySlug={selectedAgencySlug}
-        setSelectedAgencySlug={setSelectedAgencySlug}
-        onOnDemandStopClick={handleOnDemandStopClick}
-        onOnDemandZoneClick={handleOnDemandZoneClick}
-        selectedOnDemandSlug={selectedRoute || selectedStop ? null : selectedOnDemandSlug}
-        selectedOnDemandZoneId={selectedOnDemandZoneId}
-        fareView={fareView}
-        nightServiceView={nightServiceView}
-        nightServiceFrequency={nightServiceFrequency}
-        exportEnabled={exportEnabled}
-        exportTitle={exportTitle}
-        agencyDataLoading={isLoading}
-        agencyDataFailedCount={failedSlugs.size}
-        frequentServiceView={frequentServiceView}
-        frequentServiceDays={frequentServiceDays}
-        frequentServiceFrequency={frequentServiceFrequency}
-        frequentServiceWindow={frequentServiceWindow}
-        selectedModes={selectedModes}
-        selectedAgencies={selectedAgencies}
-        initialMapCenter={initialMapCenter}
-        initialOnDemandSlug={initialMapCenter ? null : searchParams.get('ondemand')?.split('::', 1)[0] ?? null}
-        onTileLoadingChange={setIsTilesLoading}
-        onBasemapLoadingChange={setIsBasemapLoading}
-        setQuery={setQuery}
-        onClearSelection={clearMapSelection}
-        sidebarLeft={sidebarLeft}
-        searchBarWidth={searchBarWidth}
-      />
+      <div className={`absolute inset-0 flex ${compareActive ? 'flex-col sm:flex-row gap-1 bg-[var(--text-primary)]' : ''}`}>
+        <div className="relative flex-1 min-h-0 min-w-0">
+          <MapCanvas
+            agencies={agencies}
+            layers={layers}
+            filteredLayers={filteredLayers}
+            mapFilteredLayers={mapFilteredLayers}
+            maxHeadway={maxHeadway}
+            period={period}
+            q={q}
+            selectedRoute={selectedRoute}
+            highlightRoutes={highlightRoutes}
+            hoveredSearchRoute={hoveredSearchRoute}
+            hoveredBranch={hoveredBranch}
+            setSelectedRoute={setSelectedRoute}
+            selectedStop={selectedStop}
+            setSelectedStop={setSelectedStop}
+            setDisambiguationRoutes={setDisambiguationRoutes}
+            lightMode={lightMode}
+            matchesQuery={matchesQuery}
+            routesForStop={routesForStop}
+            onBoundsChange={onBoundsChange}
+            resetViewKey={resetViewKey}
+            onLocate={onLocate}
+            showMapContext={showMapContext}
+            mapContextOpen={mapContextOpen}
+            mapContextView={mapContextView}
+            onMapContextOpenChange={setMapContextOpen}
+            onMapContextAgencyCountChange={setMapContextAgencyCount}
+            onMapContextRouteCountChange={setMapContextRouteCount}
+            day={day}
+            showRouteLayers={showRouteLayers}
+            liveRoutesOnly={liveRoutesOnly}
+            showCorridorBand={false}
+            showCorridors={false}
+            selectedCorridorFamily={selectedCorridorFamily}
+            hideSpan={hideSpan}
+            filterToAgencies={filterToAgencies}
+            onHistoryRouteClick={onHistoryRouteClick}
+            tileFilter={tileFilter}
+            selectedAgencySlug={selectedAgencySlug}
+            setSelectedAgencySlug={setSelectedAgencySlug}
+            onOnDemandStopClick={handleOnDemandStopClick}
+            onOnDemandZoneClick={handleOnDemandZoneClick}
+            selectedOnDemandSlug={selectedRoute || selectedStop ? null : selectedOnDemandSlug}
+            selectedOnDemandZoneId={selectedOnDemandZoneId}
+            fareView={fareView}
+            nightServiceView={nightServiceView}
+            nightServiceFrequency={nightServiceFrequency}
+            exportEnabled={exportEnabled && !compareActive}
+            exportTitle={exportTitle}
+            agencyDataLoading={isLoading}
+            agencyDataFailedCount={failedSlugs.size}
+            frequentServiceView={frequentServiceView}
+            frequentServiceDays={frequentServiceDays}
+            frequentServiceFrequency={frequentServiceFrequency}
+            frequentServiceWindow={frequentServiceWindow}
+            selectedModes={selectedModes}
+            selectedAgencies={selectedAgencies}
+            initialMapCenter={initialMapCenter}
+            initialOnDemandSlug={initialMapCenter ? null : searchParams.get('ondemand')?.split('::', 1)[0] ?? null}
+            onTileLoadingChange={setIsTilesLoading}
+            onBasemapLoadingChange={setIsBasemapLoading}
+            setQuery={setQuery}
+            onClearSelection={clearMapSelection}
+            sidebarLeft={sidebarLeft}
+            searchBarWidth={searchBarWidth}
+            onMapReady={setMapA}
+        onRenderedRouteKeysChange={compareActive ? setRenderedA : undefined}
+          />
+          {compareActive && <CompareSideLabel side="A" title={compareSideLabel({ day, period })} counts={compareCounts?.a ?? null} otherPhrase={compareOtherPhrase({ day, period }, compareSide!)} />}
+        </div>
+        {compareActive && (
+          <div className="relative flex-1 min-h-0 min-w-0">
+              <MapCanvas
+                agencies={agencies}
+                layers={layers}
+                filteredLayers={compareStats.filteredLayers}
+                mapFilteredLayers={compareStats.mapFilteredLayers}
+                maxHeadway={maxHeadway}
+                period={compareB.period}
+                q={compareStats.q}
+                selectedRoute={selectedRoute}
+                highlightRoutes={highlightRoutes}
+                hoveredSearchRoute={hoveredSearchRoute}
+                hoveredBranch={hoveredBranch}
+                setSelectedRoute={setSelectedRoute}
+                selectedStop={selectedStop}
+                setSelectedStop={setSelectedStop}
+                setDisambiguationRoutes={setDisambiguationRoutes}
+                lightMode={lightMode}
+                matchesQuery={compareStats.matchesQuery}
+                routesForStop={compareStats.routesForStop}
+                onBoundsChange={IGNORE_BOUNDS}
+                resetViewKey={resetViewKey}
+                onLocate={onLocate}
+                showMapContext={false}
+                mapContextOpen={mapContextOpen}
+                mapContextView={mapContextView}
+                day={compareB.day}
+                showRouteLayers={showRouteLayers}
+                liveRoutesOnly={liveRoutesOnly}
+                showCorridorBand={false}
+                showCorridors={false}
+                selectedCorridorFamily={selectedCorridorFamily}
+                hideSpan={hideSpan}
+                filterToAgencies={filterToAgencies}
+                onHistoryRouteClick={onHistoryRouteClick}
+                tileFilter={compareStats.tileFilter}
+                selectedAgencySlug={selectedAgencySlug}
+                setSelectedAgencySlug={setSelectedAgencySlug}
+                onOnDemandStopClick={handleOnDemandStopClick}
+                onOnDemandZoneClick={handleOnDemandZoneClick}
+                selectedOnDemandSlug={selectedRoute || selectedStop ? null : selectedOnDemandSlug}
+                selectedOnDemandZoneId={selectedOnDemandZoneId}
+                fareView={fareView}
+                nightServiceView={nightServiceView}
+                nightServiceFrequency={nightServiceFrequency}
+                exportEnabled={false}
+                exportTitle={exportTitle}
+                agencyDataLoading={isLoading}
+                agencyDataFailedCount={failedSlugs.size}
+                frequentServiceView={frequentServiceView}
+                frequentServiceDays={frequentServiceDays}
+                frequentServiceFrequency={frequentServiceFrequency}
+                frequentServiceWindow={frequentServiceWindow}
+                selectedModes={selectedModes}
+                selectedAgencies={selectedAgencies}
+                initialMapCenter={initialMapCenter}
+                initialOnDemandSlug={null}
+                setQuery={setQuery}
+                onClearSelection={clearMapSelection}
+                sidebarLeft={sidebarLeft}
+                searchBarWidth={searchBarWidth}
+                secondary
+                onMapReady={setMapB}
+        onRenderedRouteKeysChange={setRenderedB}
+              />
+            <CompareSideLabel side="B" title={compareSideLabel(compareSide!)} counts={compareCounts?.b ?? null} otherPhrase={compareOtherPhrase(compareSide!, { day, period })} />
+          </div>
+        )}
+      </div>
 
       <MapAttribution />
 
@@ -710,7 +931,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
               </span>
             </div>
           )}
-          {stats && (stats.total > 0 || !isLoading) && (
+          {!compareActive && stats && (stats.total > 0 || !isLoading) && (
               <div className="hidden sm:flex gap-2">
                 <div className={`${MAP_BADGE} h-8`}>
                   {showMapContext ? (
@@ -842,6 +1063,9 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
               nightServiceFrequency={nightServiceFrequency}
               setNightServiceFrequency={setNightServiceFrequency}
             />
+            {compareAvailable && (
+              <CompareControl compareSide={compareActive ? compareSide : null} onStart={startCompare} onExit={exitCompare} onChange={setCompareSide} />
+            )}
           </div>
           {!hideFilterPanel && (
               <FilterPanel
@@ -876,6 +1100,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
               setShowMapLegend={setShowMapLegend}
               dataSaver={dataSaver}
               setDataSaver={setDataSaver}
+              compare={compareAvailable ? { side: compareActive ? compareSide : null, onStart: startCompare, onExit: exitCompare, onChange: setCompareSide } : undefined}
             />
           )}
         </div>,
@@ -925,7 +1150,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
         bounds={bounds}
         hoveredBranch={hoveredBranch}
         setHoveredBranch={setHoveredBranch}
-        selectedRouteOutOfFilter={selectedRouteOutOfFilter}
+        selectedRouteOutOfFilter={selectedRouteOutOfFilter && !compareActive}
+        compareRows={compareRows}
         onDirectFromStop={onDirectFromStop}
         onInfoOpen={onInfoOpen}
         searchEnterRef={searchEnterRef}
