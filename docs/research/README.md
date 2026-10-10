@@ -13,4 +13,8 @@ Use [`PROJECT-TEMPLATE.md`](PROJECT-TEMPLATE.md) when starting a new research pr
 - `frequent-service-*` — frequent-service analysis and catalog inputs.
 - `north-america-*` — standalone regional audit reports.
 
+## Historical snapshots
+
+- `fare-discount-comparison-2026-02/` — unverified February 2026 prototype comparing California low-income fare programs; not used in the product.
+
 Historical snapshots remain intact. The canonical file and any derived exports are documented in each project README when a project has its own folder.
