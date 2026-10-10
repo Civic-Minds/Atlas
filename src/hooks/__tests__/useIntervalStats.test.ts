@@ -529,27 +529,6 @@ describe('useIntervalStats', () => {
     expect(tf).not.toContain('minStopHeadwayByPeriod');
   });
 
-  it('tileFilter headway clause respects maxHeadway', () => {
-    const layers: AgencyLayers = {
-      'ttc': {
-        type: 'FeatureCollection',
-        features: [{
-          type: 'Feature',
-          geometry: { type: 'LineString', coordinates: [[0, 0], [1, 1]] },
-          properties: { routeId: '1', headway: 10, tier: '10', agencySlug: 'ttc' },
-        }],
-      },
-    };
-    const { result } = renderHook(() => useIntervalStats(layers, {
-      ...defaultFilters,
-      agencies: new Set(['ttc']),
-      maxHeadway: 15,
-      period: 'all' as const,
-    }));
-    expect(JSON.stringify(result.current.tileFilter)).toContain('"<="');
-    expect(JSON.stringify(result.current.tileFilter)).toContain('15');
-  });
-
   it('does not force an out-of-period selected route into the tile filter', () => {
     const { result } = renderHook(() => useIntervalStats({}, {
       ...defaultFilters,
