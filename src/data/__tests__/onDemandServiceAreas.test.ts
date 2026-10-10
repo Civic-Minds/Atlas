@@ -11,6 +11,7 @@ import {
   HAMILTON_MY_RIDE_SERVICE_AREA,
   C_TRAN_CURRENT_SERVICE_AREA,
   CYRIDE_EASE_SERVICE_AREA,
+  EDMONTON_ON_DEMAND_SERVICE_AREA,
   MUSKOKA_DRT_ON_DEMAND_AGENCY,
   ST_ALBERT_ON_DEMAND_AGENCY,
   LEAMINGTON_LT_GO_ON_DEMAND_AGENCY,
@@ -199,5 +200,17 @@ describe('UTA On Demand zones', () => {
   it('hides weekday-only zones on Sunday', () => {
     expect(isOnDemandActive(UTA_ON_DEMAND_SERVICE_AREA.zoneMetadata['Tooele County'].availability, 'Sunday', 'midday')).toBe(false);
     expect(isOnDemandActive(UTA_ON_DEMAND_SERVICE_AREA.zoneMetadata['Salt Lake City Westside'].availability, 'Sunday', 'midday')).toBe(true);
+  });
+});
+
+describe('Edmonton On Demand areas', () => {
+  it('keeps every area closed and only claims hours where the City publishes them', () => {
+    expect(EDMONTON_ON_DEMAND_SERVICE_AREA.features.length).toBe(99);
+    for (const area of EDMONTON_ON_DEMAND_SERVICE_AREA.features) {
+      const ring = area.geometry.coordinates[0];
+      expect(ring[0]).toEqual(ring.at(-1));
+    }
+    expect(EDMONTON_ON_DEMAND_SERVICE_AREA.zoneMetadata['Keswick'].availability?.Weekday).toEqual([]);
+    expect(EDMONTON_ON_DEMAND_SERVICE_AREA.zoneMetadata['Glenora East'].availability).toBeUndefined();
   });
 });

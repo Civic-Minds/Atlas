@@ -1,6 +1,7 @@
 import type { GeoJSON } from 'geojson';
 import { HSR_MY_RIDE_STOP_FEATURES } from './hsrMyRideStops';
 import { LEAMINGTON_LT_GO_STOP_FEATURES } from './leamingtonLtGoStops';
+import { EDMONTON_ON_DEMAND_FEATURES, EDMONTON_ON_DEMAND_STOPS, EDMONTON_ON_DEMAND_ZONE_METADATA } from './edmontonOnDemandData';
 import { HAMILTON_TRANS_CAB_SERVICE_AREAS, HAMILTON_TRANS_CAB_SOURCE, HAMILTON_TRANS_CAB_TRANSFER_POINTS } from './transCabServiceArea';
 import { METRO_MICRO_FLEX_FEATURES } from './metroMicroFlexData';
 import { GTFS_FLEX_METADATA } from './metroMicroFlexMetadata';
@@ -216,6 +217,18 @@ export const UTA_ON_DEMAND_SERVICE_AREA = {
     "West Provo/Orem \u2014 Utah Valley Hospital": { serviceName: 'UTA On Demand', serviceHours: "Monday\u2013Saturday 6 a.m.\u20139 p.m.", availability: { Weekday: [{ startHour: 6, endHour: 21 }], Saturday: [{ startHour: 6, endHour: 21 }], Sunday: [] } satisfies OnDemandAvailability },
     "West Provo/Orem \u2014 Orem Station": { serviceName: 'UTA On Demand', serviceHours: "Monday\u2013Saturday 6 a.m.\u20139 p.m.", availability: { Weekday: [{ startHour: 6, endHour: 21 }], Saturday: [{ startHour: 6, endHour: 21 }], Sunday: [] } satisfies OnDemandAvailability },
   },
+};
+
+export const EDMONTON_ON_DEMAND_SERVICE_AREA = {
+  features: EDMONTON_ON_DEMAND_FEATURES,
+  stopFeatures: EDMONTON_ON_DEMAND_STOPS,
+  sourceUrl: 'https://www.edmonton.ca/ets/on-demand-transit',
+  sourceLabel: 'City of Edmonton On Demand Transit map',
+  sourceRetrievedAt: '2026-10-10',
+  serviceName: 'ETS On Demand',
+  tripRules: 'Trips run from a signed On Demand stop in the neighbourhood to an assigned transit hub, not door to door.',
+  bookingUrl: 'https://www.edmonton.ca/ets/on-demand-transit',
+  zoneMetadata: EDMONTON_ON_DEMAND_ZONE_METADATA,
 };
 
 export const METRO_MICRO_SERVICE_AREA = {
