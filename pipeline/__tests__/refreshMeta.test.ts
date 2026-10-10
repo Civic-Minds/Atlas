@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { isFeedExpired, markFeedStale, shouldReplaceExpiredFeed, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta } from '../refreshMeta.js';
+import { isFeedExpired, markFeedStale, shouldReplaceExpiredFeed, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta, stampSupplementalFeedMeta } from '../refreshMeta.js';
+import { isCurrentProductionFeed, isStaleProductionFeed } from '../../shared/feedAvailability.js';
 
 describe('feed expiry checks', () => {
   it('recognizes a feed that ended before the refresh date', () => {
@@ -122,5 +123,26 @@ describe('stampFeedMeta', () => {
     });
     expect(agency.lastFeedExpiry).toBe('20250101');
     expect(agency.lastFeedVersion).toBe('peek');
+  });
+});
+
+describe('supplemental feed metadata (#630)', () => {
+  it('records each supplemental expiry and archive key, and an expired rail feed makes the agency stale', () => {
+    const agency: Parameters<typeof stampSupplementalFeedMeta>[0] = {};
+    stampFeedMeta(agency, { feedExpiry: null, feedVersion: null, peekedExpiry: '20261212', peekedVersion: null, todayYmd: '2026-10-10' });
+    stampSupplementalFeedMeta(agency, [{ feedExpiry: '20261021', feedVersion: null, rawArchiveKey: '20261021-abc' }]);
+
+    expect(agency.lastFeedExpiry).toBe('20261212');
+    expect(agency.lastSupplementalFeeds).toEqual([{ feedExpiry: '20261021', feedVersion: null, rawArchiveKey: '20261021-abc' }]);
+    expect(isCurrentProductionFeed(agency, '20261021')).toBe(true);
+    expect(isStaleProductionFeed(agency, '20261022')).toBe(true);
+  });
+
+  it('clears stale supplemental metadata when an agency no longer has supplementals', () => {
+    const agency: Parameters<typeof stampSupplementalFeedMeta>[0] = {
+      lastSupplementalFeeds: [{ feedExpiry: '20260829', feedVersion: 'v1', rawArchiveKey: 'k' }],
+    };
+    stampSupplementalFeedMeta(agency, []);
+    expect(agency).not.toHaveProperty('lastSupplementalFeeds');
   });
 });

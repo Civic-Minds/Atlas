@@ -2,7 +2,7 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import JSZip from 'jszip';
-import { loadSupplementalFeeds, processAgencyFeeds, type AgencyFeedConfig } from '../agencyFeeds.js';
+import { loadSupplementalFeeds, processAgencyFeeds, supplementalArchiveStem, type AgencyFeedConfig } from '../agencyFeeds.js';
 import { processGtfsBuffer } from '../process-core.js';
 import { routeArtifactSchemaError } from '../../shared/artifactSchema.js';
 
@@ -111,5 +111,21 @@ describe('every artifact-writing path uses the shared agency feed loader', () =>
       }
     }
     expect(offenders).toEqual([]);
+  });
+});
+
+describe('supplemental feed archiving (#630)', () => {
+  const root = resolve(__dirname, '../..');
+
+  it('archives supplementals outside the main feed archive prefix', () => {
+    const stem = supplementalArchiveStem('lacmta', 0);
+    expect(stem).toBe('lacmta--supplemental-1');
+    expect(`gtfs/archive/${stem}/20261021-abc.zip`.startsWith('gtfs/archive/lacmta/')).toBe(false);
+  });
+
+  it('refresh archives every supplemental zip and stamps its metadata', () => {
+    const source = readFileSync(resolve(root, 'pipeline/refresh.ts'), 'utf8');
+    expect(source).toMatch(/r2PutArchive\(`gtfs\/archive\/\$\{supplementalArchiveStem\(agency\.slug, index\)\}\//);
+    expect(source).toContain('stampSupplementalFeedMeta(agency, supplementalMeta)');
   });
 });

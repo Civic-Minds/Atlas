@@ -21,7 +21,7 @@ import { LOADED_ENV_FILE, isProductionPublicR2Bucket } from './loadEnv.js';
 import { r2Put, r2Get, r2PutArchive, r2PutArchiveJson, r2GetArchive, rawFeedArchiveKey } from './r2.js';
 import JSZip from 'jszip';
 import { GtfsValidationError, type GtfsPreprocess } from './process-core.js';
-import { loadSupplementalFeeds, processAgencyFeeds, type SupplementalFeed } from './agencyFeeds.js';
+import { loadSupplementalFeeds, processAgencyFeeds, supplementalArchiveStem, type SupplementalFeed } from './agencyFeeds.js';
 import { buildAgencyIndex } from './agencyIndex.js';
 import { buildNightServiceIndex, extractNightServiceRoutes, mergeNightServiceIndex, type NightServiceIndexFile, type NightServiceRouteEntry } from './nightServiceIndex.js';
 import { buildFrequentServiceIndex, extractFrequentServiceRoutes, type FrequentServiceRouteEntry } from './frequentServiceIndex.js';
@@ -39,7 +39,7 @@ import {
 } from './overrideAudit.js';
 import { readFeedReviewHistory, shouldReviewNextFeed } from './feedReview.js';
 import { compareStopSnapshots, formatStopAuditLog, type AuditedStop } from './stopAudit.js';
-import { candidateIsOlderThanActive, decideRefreshSkipUnchanged, isFeedExpired, markFeedStale, shouldReplaceExpiredFeed, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta } from './refreshMeta.js';
+import { candidateIsOlderThanActive, decideRefreshSkipUnchanged, isFeedExpired, markFeedStale, shouldReplaceExpiredFeed, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta, stampSupplementalFeedMeta } from './refreshMeta.js';
 import {
   COUNTRY_LAUNCH_FLAG,
   isCountryLaunchBlocked,
@@ -51,7 +51,7 @@ import type { FeedQuality } from '../shared/feedQuality.js';
 import { historyRouteKey } from './historyRouteKey.js';
 import { historyGeometryForRoute } from './historyGeometry.js';
 import { effectiveFeedExpiry } from './feedFreshness.js';
-import { isActiveProductionFeed } from '../shared/feedAvailability.js';
+import { isActiveProductionFeed, type SupplementalFeedMeta } from '../shared/feedAvailability.js';
 import { recordFeedCheck, type FeedCheckFields } from './feedCheckTracking.js';
 import { buildFeedCandidates, type FeedCandidate } from './feedSourceCandidates.js';
 import { resolveFeedUrl } from './feedUrl.js';
@@ -200,6 +200,7 @@ interface AgencyEntry {
   feedApiKeyParam?: string;
   mdbFeedUrl?: string | null;
   supplementalFeedUrls?: string[];
+  lastSupplementalFeeds?: SupplementalFeedMeta[];
   lastFeedExpiry?: string | null;
   lastFeedVersion?: string | null;
   lastRefreshedAt?: string | null;
@@ -504,6 +505,12 @@ async function refreshAgency(
   if (archiveKey) {
     await r2PutArchive(`gtfs/archive/${agency.slug}/${archiveKey}.zip`, buf, 'application/zip');
   }
+  // Archive each supplemental zip too, so reprocess can rebuild from the exact inputs (#630).
+  const supplementalMeta = await Promise.all(supplementalFeeds.map(async (feed, index) => {
+    const rawArchiveKey = rawFeedArchiveKey(feed.feedExpiry, feed.feedVersion, feed.buf);
+    await r2PutArchive(`gtfs/archive/${supplementalArchiveStem(agency.slug, index)}/${rawArchiveKey}.zip`, feed.buf, 'application/zip');
+    return { feedExpiry: feed.feedExpiry, feedVersion: feed.feedVersion, rawArchiveKey };
+  }));
   if (shouldStampFeedMeta(featureCount)) {
     stampFeedMeta(agency, {
       feedExpiry,
@@ -512,6 +519,7 @@ async function refreshAgency(
       peekedVersion,
       todayYmd: todayUtcYmd(),
     });
+    stampSupplementalFeedMeta(agency, supplementalMeta);
   }
 
   // Write a compact headway snapshot for history tracking (all agencies with a feedUrl).
