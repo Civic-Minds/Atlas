@@ -2,7 +2,8 @@
  * Contract tests on the real agency registry: config/agencies/*.json -> order.json ->
  * public/data/index.json -> the per-mode browser catalogs. Hidden, staged and beta-only
  * agencies must land in exactly the catalogs they belong in, and no agency file may be
- * silently left out of the index (#667).
+ * silently left out of the index (#667). Byte-for-byte drift between config and the
+ * generated files is checked separately by `npm run check:agency-index` (#666).
  */
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -27,11 +28,6 @@ const UNLISTED_AGENCY_FILES_667 = [
 ];
 
 describe('agency registry -> index.json', () => {
-  it('index.json is exactly the registry files in order.json order (no hand edits)', () => {
-    const fromRegistry = order.map(slug => JSON.parse(readFileSync(join(AGENCY_DIR, `${slug}.json`), 'utf8')));
-    expect(index.agencies).toEqual(fromRegistry);
-  });
-
   it('every agency file is listed in order.json, apart from the known #667 exceptions', () => {
     const listed = new Set(order);
     const unlisted = agencyFiles.map(file => file.replace(/\.json$/, '')).filter(slug => !listed.has(slug)).sort();
