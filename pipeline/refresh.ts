@@ -10,12 +10,18 @@
  * must not keep rewriting unlaunched-country R2 data by accident. See
  * AGENTS.md § Production Data Rules / pipeline/countryLaunchGate.ts.
  *
+ * Drop guard: an agency whose rebuilt data would lose more than 20% of its live
+ * stops, stop points or routes is refused (shared with reprocess-derived-artifacts).
+ * Nothing is written for it, its live data and metadata stay as they are, and
+ * the rest of the run continues. Pass --allow-drop (with specific slugs) to
+ * accept a reviewed drop.
+ *
  * The index.json stores feed sources + metadata. Artifact URLs are derived from slug.
  */
 import { readFileSync, writeFileSync, renameSync } from 'fs';
 import { execFileSync } from 'child_process';
 import { resolve } from 'path';
-import { clearDataRefreshHandoff, writeDataRefreshMarker, writeRefreshRunResult, type RefreshAgencyStatus } from './dataRefreshMarker.js';
+import { canRebuildPmtilesAfterRefresh, clearDataRefreshHandoff, writeDataRefreshMarker, writeRefreshRunResult, type RefreshAgencyStatus } from './dataRefreshMarker.js';
 // loadEnv first so shared/config sees staging R2_PUBLIC_URL
 import { LOADED_ENV_FILE, isProductionPublicR2Bucket } from './loadEnv.js';
 import { r2Put, r2Get, r2PutArchive, r2PutArchiveJson, r2GetArchive, rawFeedArchiveKey } from './r2.js';
@@ -56,6 +62,7 @@ import { recordFeedCheck, type FeedCheckFields } from './feedCheckTracking.js';
 import { buildFeedCandidates, type FeedCandidate } from './feedSourceCandidates.js';
 import { resolveFeedUrl } from './feedUrl.js';
 import { ROUTE_ARTIFACT_SCHEMA_VERSION } from '../shared/artifactSchema.js';
+import { countArtifacts, dropGuardRefusal, readLiveArtifactCounts } from './archiveSelection.js';
 
 console.log(`  env: ${LOADED_ENV_FILE} (bucket=${process.env.R2_BUCKET_NAME ?? '?'}${isProductionPublicR2Bucket() ? ' [PRODUCTION]' : ' [non-prod]'})`);
 
@@ -64,9 +71,11 @@ if (!process.env.R2_ACCESS_KEY_ID) {
   process.exit(1);
 }
 
-const FLAG_ARGS = new Set(['--force', COUNTRY_LAUNCH_FLAG]);
+const ALLOW_DROP_FLAG = '--allow-drop';
+const FLAG_ARGS = new Set(['--force', COUNTRY_LAUNCH_FLAG, ALLOW_DROP_FLAG]);
 const rawArgs = process.argv.slice(2);
 const forceRefresh = rawArgs.includes('--force');
+const allowDrop = rawArgs.includes(ALLOW_DROP_FLAG);
 const forceCountryLaunch = rawArgs.includes(COUNTRY_LAUNCH_FLAG);
 const onlySlugs = rawArgs.filter(a => !FLAG_ARGS.has(a));
 
@@ -89,6 +98,7 @@ interface RefreshAgencyResult {
   summary: string;
   processed?: boolean;
   stale?: boolean;
+  refused?: boolean;
   hiddenRoutes?: HiddenRouteRecord[];
 }
 
@@ -413,6 +423,8 @@ async function refreshAgency(
     writeLog(`\n  ${agency.slug.padEnd(12)} ... reprocessing (current feed, legacy or missing route artifact)\n`);
   }
 
+  // A drop-guard refusal must leave the agency's metadata exactly as it was.
+  const agencyBeforeRebuild = structuredClone(agency);
   const clearedOverrideNote = clearOverrideUserFacingOnFeedChange(agency, peekedExpiry, peekedVersion);
   const feedChanged = upstreamFeedChanged(agency, peekedExpiry, peekedVersion);
   if (feedChanged) {
@@ -468,6 +480,20 @@ async function refreshAgency(
     writeLog(`  [warn] ${reason} — retaining the last good artifact (flex/microtransit feed?)\n`);
     markFeedStale(agency, { reason, todayYmd: today });
     return { summary: `stale (${reason})`, stale: true };
+  }
+
+  // Drop guard (shared with reprocess): checked before anything is written, so
+  // a refused agency keeps its live artifacts, archive and metadata unchanged.
+  const dropRefusal = dropGuardRefusal(
+    await readLiveArtifactCounts(agency.slug, r2Get),
+    countArtifacts(geojson, stopsJson),
+    { allowDrop, allowMissingLive: true },
+  );
+  if (dropRefusal) {
+    for (const key of Object.keys(agency)) delete (agency as unknown as Record<string, unknown>)[key];
+    Object.assign(agency, agencyBeforeRebuild);
+    writeLog(`  [warn] refused: ${dropRefusal} — retaining the live artifact\n`);
+    return { summary: `refused (${dropRefusal})`, refused: true };
   }
 
   const currentStops = (JSON.parse(stopsMetaJson) as { stops?: AuditedStop[] }).stops ?? [];
@@ -598,6 +624,7 @@ async function main() {
   let stale = 0;
   let uploads = 0;
   let countryLaunchSkips = 0;
+  const refused: string[] = [];
   const refreshStatuses: Record<string, RefreshAgencyStatus> = {};
   const allNightServiceRoutes: NightServiceRouteEntry[] = [];
   const refreshedNightServiceAgencySlugs = new Set<string>();
@@ -636,14 +663,15 @@ async function main() {
       const summary = result.summary;
       if (result.processed) refreshedNightServiceAgencySlugs.add(agency.slug);
       if (result.stale) stale++;
-      refreshStatuses[agency.slug] = result.processed ? 'processed' : result.stale ? 'stale' : 'unchanged';
+      if (result.refused) refused.push(agency.slug);
+      refreshStatuses[agency.slug] = result.processed ? 'processed' : result.stale ? 'stale' : result.refused ? 'refused' : 'unchanged';
       if (result.processed) {
         uploads++;
         if (result.hiddenRoutes) refreshedHiddenRoutes.set(agency.slug, result.hiddenRoutes);
       }
       console.log(`  ${agency.slug.padEnd(12)} ... ${summary}${logBuffer}`);
       // Clear staged flag once data is live so the next deploy shows the agency.
-      if (agency.staged) delete agency.staged;
+      if (agency.staged && !result.refused) delete agency.staged;
       // Write after each agency so a mid-run crash doesn't lose lastFeedExpiry for completed ones.
       writeJsonAtomically(indexPath, index);
       writeAgencySource(agency);
@@ -670,13 +698,19 @@ async function main() {
       `  ${countryLaunchSkips} skipped — unlaunched country (no production-visible agencies yet)`,
     );
   }
-  if (refreshResult.complete) {
+  // A full run always has agencies that kept their live data (country-gated,
+  // stale, drop-refused); those still match the tiles, so only a failure
+  // blocks the PMTiles rebuild. refresh-release still requires `complete`.
+  if (canRebuildPmtilesAfterRefresh(refreshResult)) {
     if (uploads > 0) bumpCacheBuild();
     writeDataRefreshMarker('refresh', targets.map(agency => agency.slug));
     console.log(`  ${uploads > 0 ? `cache build bumped (${uploads} agencies uploaded)` : 'no agency data changed'}`);
   }
-  if (!refreshResult.complete) {
-    console.error('  Refresh incomplete — PMTiles rebuild is blocked until every requested agency succeeds or is unchanged.');
+  if (!canRebuildPmtilesAfterRefresh(refreshResult)) {
+    console.error('  Refresh failed for some agencies — PMTiles rebuild is blocked until none fail.');
+  }
+  if (refused.length > 0) {
+    console.warn(`${refused.length} agencies refused by the drop guard and kept their live data (review, then rerun with ${ALLOW_DROP_FLAG}): ${refused.sort().join(', ')}`);
   }
   if (failures > 0) {
     console.warn(`${failures} agencies failed to refresh (see warnings above). Continuing so action succeeds.`);
