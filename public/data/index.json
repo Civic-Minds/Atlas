@@ -14256,6 +14256,7 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-17/latest.zip",
       "region": "Arizona",
+      "hiddenInProduction": true,
       "lastRefreshedAt": "2026-08-10",
       "lastFeedExpiry": "20270101",
       "lastFeedVersion": null,
