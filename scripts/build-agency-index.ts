@@ -1,28 +1,12 @@
 #!/usr/bin/env npx tsx
 /** Generate the runtime agency index from the per-agency source files. */
-import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { generateAgencyIndex } from './agencyIndexGeneration.js';
 
 const root = resolve(import.meta.dirname, '..');
-const sourceDir = resolve(root, 'config/agencies');
 const outputPath = resolve(root, 'public/data/index.json');
-const orderPath = resolve(sourceDir, 'order.json');
 
-const files = readdirSync(sourceDir)
-  .filter(name => name.endsWith('.json'))
-  .filter(name => name !== 'order.json');
-const order = files.length > 0 && existsSync(orderPath)
-  ? JSON.parse(readFileSync(orderPath, 'utf8')) as string[]
-  : files.map(name => name.replace(/\.json$/, '')).sort();
-const agencies = order.map(slug => JSON.parse(readFileSync(resolve(sourceDir, `${slug}.json`), 'utf8')));
-
-if (agencies.length === 0) throw new Error('No agency source files found');
-const slugs = new Set<string>();
-for (const agency of agencies) {
-  if (!agency.slug || slugs.has(agency.slug)) throw new Error(`Invalid or duplicate agency slug: ${agency.slug}`);
-  slugs.add(agency.slug);
-}
-
-const json = JSON.stringify({ agencies }, null, 2);
-writeFileSync(outputPath, `${json}\n`);
+const { contents, agencies } = generateAgencyIndex(resolve(root, 'config/agencies'));
+writeFileSync(outputPath, contents);
 console.log(`Generated ${outputPath} from ${agencies.length} agency files`);
