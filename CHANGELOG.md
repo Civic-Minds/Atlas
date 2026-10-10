@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- **Route lines are drawing on the map again — since the Oct 9 data release, the map looked for its route files in the wrong folder and showed only the basemap.**
 - **PMTiles releases now verify full coverage locally and use a bounded live smoke check, preventing R2 read failures from blocking otherwise valid releases.**
 - **Large R2 fallback uploads now use a stable IPv4 connection, reducing failed PMTiles releases on networks with broken IPv6 paths.**
 - **Refresh now reprocesses current feeds whose stored route artifact uses an old or missing schema, preventing PMTiles rebuild failures after pipeline upgrades.**
