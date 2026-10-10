@@ -379,7 +379,8 @@ export const MVTA_CONNECT_SERVICE_AREA = {
 };
 
 export const METRO_MICRO_SERVICE_AREA = {
-  features: METRO_MICRO_FLEX_FEATURES,
+  // The Flex export includes a "Bloomington placeholder" location that is not a running zone.
+  features: METRO_MICRO_FLEX_FEATURES.filter(feature => !/placeholder/i.test(String((feature.properties as { areaName?: string } | null)?.areaName ?? ''))),
   sourceUrl: 'https://svc.metrotransit.org/mtgtfs/gtfs-flex.zip',
   sourceLabel: 'Metro Transit GTFS-Flex feed',
   sourceRetrievedAt: '2026-09-24',
@@ -394,7 +395,7 @@ export const C_TRAN_CURRENT_SERVICE_AREA = {
   sourceUrl: 'https://www.c-tran.com/images/Google/TheCurrent_GTFSFlex.zip',
   sourceLabel: 'C-TRAN GTFS-Flex feed and official service-area layers',
   sourceRetrievedAt: '2026-09-24',
-  serviceHours: 'Service hours vary by zone; The Current operates six published service zones.',
+  serviceHours: 'Service hours vary by zone.',
   bookingUrl: 'https://www.c-tran.com/thecurrent',
   serviceName: 'The Current',
 };

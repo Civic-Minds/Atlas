@@ -89,7 +89,7 @@ describe('BWG on-demand service area', () => {
   });
 
   it('keeps the published Metro micro Flex zones source-backed', () => {
-    expect(METRO_MICRO_SERVICE_AREA.features).toHaveLength(5);
+    expect(METRO_MICRO_SERVICE_AREA.features).toHaveLength(4);
     expect(METRO_MICRO_SERVICE_AREA.sourceUrl).toBe('https://svc.metrotransit.org/mtgtfs/gtfs-flex.zip');
     const northMinneapolis = METRO_MICRO_SERVICE_AREA.zoneMetadata?.['North Minneapolis Area'];
     expect(northMinneapolis?.serviceHours).toBe('Weekdays: 5:30 a.m.–10:30 p.m.; Saturday: 7:00 a.m.–10:30 p.m.; Sunday: 7:00 a.m.–10:30 p.m.');
@@ -271,5 +271,11 @@ describe('Hamilton pickup methods from hamilton.ca', () => {
     expect(onDemandPickupSentence(HAMILTON_MY_RIDE_SERVICE_AREA, 'West Glanbrook')).toBe("Every trip starts or ends at this zone's transfer point, shown on the map.");
     expect(onDemandPickupSentence(HAMILTON_MY_RIDE_SERVICE_AREA, 'Lower East Stoney Creek')).toBe('Every trip starts or ends at a transfer point.');
     expect(onDemandPickupSentence(HAMILTON_MY_RIDE_SERVICE_AREA, undefined)).toMatch(/^Pickups and drop-offs are at \d+ set stops, shown on the map\.$/);
+  });
+});
+
+describe('on-demand data hygiene', () => {
+  it('never draws placeholder zones', () => {
+    expect(METRO_MICRO_SERVICE_AREA.features.some(zone => /placeholder/i.test(String((zone.properties as { areaName?: string } | null)?.areaName)))).toBe(false);
   });
 });

@@ -2,8 +2,8 @@ import type { GeoJSON } from 'geojson';
 
 /** LT-Go on-demand stop locations from the Town of Leamington's Google My Maps layer (retrieved 2026-10-10). */
 export const LEAMINGTON_LT_GO_STOP_FEATURES: GeoJSON.Feature<GeoJSON.Point>[] = [
-  { type: 'Feature', properties: { stopName: "<![CDATA[Elliot and St Michael's Church]]>", agencySlug: 'leamington', serviceType: 'on-demand' }, geometry: { type: 'Point', coordinates: [-82.606272, 42.053312] } },
-  { type: 'Feature', properties: { stopName: "<![CDATA[Queen's Hill @ Ellison]]>", agencySlug: 'leamington', serviceType: 'on-demand' }, geometry: { type: 'Point', coordinates: [-82.608309, 42.040206] } },
+  { type: 'Feature', properties: { stopName: "Elliot and St Michael's Church", agencySlug: 'leamington', serviceType: 'on-demand' }, geometry: { type: 'Point', coordinates: [-82.606272, 42.053312] } },
+  { type: 'Feature', properties: { stopName: "Queen's Hill @ Ellison", agencySlug: 'leamington', serviceType: 'on-demand' }, geometry: { type: 'Point', coordinates: [-82.608309, 42.040206] } },
   { type: 'Feature', properties: { stopName: "Alderton and Danforth", agencySlug: 'leamington', serviceType: 'on-demand' }, geometry: { type: 'Point', coordinates: [-82.592385, 42.042019] } },
   { type: 'Feature', properties: { stopName: "Anfred and Sturgeon Meadows", agencySlug: 'leamington', serviceType: 'on-demand' }, geometry: { type: 'Point', coordinates: [-82.583379, 42.052453] } },
   { type: 'Feature', properties: { stopName: "Bennie and Alderton", agencySlug: 'leamington', serviceType: 'on-demand' }, geometry: { type: 'Point', coordinates: [-82.582602, 42.042646] } },
