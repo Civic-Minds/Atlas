@@ -173,3 +173,15 @@ describe('Leamington LT-Go on-demand stops', () => {
     expect(LEAMINGTON_LT_GO_ON_DEMAND_AGENCY.onDemandServiceArea.stopFeatures).toHaveLength(118);
   });
 });
+
+describe('Hamilton on-demand services stay separate', () => {
+  it('labels every shaded zone Trans-Cab only, never combined with myRide', () => {
+    expect(HAMILTON_MY_RIDE_SERVICE_AREA.serviceName).toBe('myRide Waterdown On-Demand');
+    for (const zone of HAMILTON_MY_RIDE_SERVICE_AREA.features) {
+      const areaName = (zone.properties as { areaName: string }).areaName;
+      expect(HAMILTON_MY_RIDE_SERVICE_AREA.zoneMetadata[areaName].serviceName).toBe('Trans-Cab');
+    }
+    const names = [HAMILTON_MY_RIDE_SERVICE_AREA.serviceName, ...Object.values(HAMILTON_MY_RIDE_SERVICE_AREA.zoneMetadata).map(zone => zone.serviceName)];
+    expect(names.some(name => name.includes(' and '))).toBe(false);
+  });
+});

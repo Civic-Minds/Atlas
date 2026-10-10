@@ -128,6 +128,17 @@ function frequencyFilterLabel(maxHeadway: number): string | null {
   return HEADWAY_TIERS.find(t => t.max === maxHeadway)?.label ?? `≤${maxHeadway}m`;
 }
 
+/** Separate services that own some zones (e.g. Hamilton Trans-Cab beside myRide), listed once each. */
+function otherZoneServices(service: NonNullable<Agency['onDemandServiceArea']>): { serviceName: string; serviceHours?: string }[] {
+  const seen = new Map<string, string | undefined>();
+  for (const zone of Object.values(service.zoneMetadata ?? {})) {
+    if (zone.serviceName && zone.serviceName !== service.serviceName && !seen.has(zone.serviceName)) {
+      seen.set(zone.serviceName, zone.serviceHours);
+    }
+  }
+  return [...seen].map(([serviceName, serviceHours]) => ({ serviceName, serviceHours }));
+}
+
 export function buildHeaderSummary(
   routes: RouteRow[],
   maxHeadway: number,
@@ -481,6 +492,14 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
               {agency.onDemandServiceArea.tripRules && (
                 <p className="text-[10px] leading-snug text-[var(--text-muted)] mt-0.5">{agency.onDemandServiceArea.tripRules}</p>
               )}
+              {otherZoneServices(agency.onDemandServiceArea).map(zoneService => (
+                <div key={zoneService.serviceName} className="mt-1.5">
+                  <p className="text-[10px] font-bold text-[var(--text-primary)]">{zoneService.serviceName}</p>
+                  {zoneService.serviceHours && (
+                    <p className="text-[10px] leading-snug text-[var(--text-muted)] mt-0.5">{zoneService.serviceHours}</p>
+                  )}
+                </div>
+              ))}
             </div>
           )}
           {routeFilters.length > 0 && (

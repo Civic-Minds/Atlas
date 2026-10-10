@@ -138,15 +138,26 @@ export const CYRIDE_EASE_SERVICE_AREA = {
   } satisfies OnDemandAvailability,
 };
 
+/**
+ * Hamilton runs two separate on-demand services. myRide Waterdown is stop-based
+ * (no zone polygon); every shaded zone belongs to Trans-Cab alone, so each zone
+ * carries its own service name rather than a combined label.
+ */
 export const HAMILTON_MY_RIDE_SERVICE_AREA = {
   features: HAMILTON_TRANS_CAB_SERVICE_AREAS,
   stopFeatures: [...HSR_MY_RIDE_STOP_FEATURES, ...HAMILTON_TRANS_CAB_TRANSFER_POINTS],
-  sourceUrl: HAMILTON_TRANS_CAB_SOURCE.sourceUrl,
-  sourceLabel: `${HAMILTON_TRANS_CAB_SOURCE.sourceLabel}; HSR myRide service details`,
-  sourceRetrievedAt: '2026-10-03',
-  serviceHours: HAMILTON_TRANS_CAB_SOURCE.serviceHours,
-  bookingUrl: HAMILTON_TRANS_CAB_SOURCE.bookingUrl,
-  serviceName: 'Trans-Cab and myRide On-Demand',
+  sourceUrl: 'https://www.hamilton.ca/home-neighbourhood/hsr/schedule-route-tools/hsr-myride-demand',
+  sourceLabel: 'HSR myRide service details',
+  sourceRetrievedAt: '2026-09-24',
+  serviceHours: 'On-demand trips operate within Waterdown; booking windows and availability are confirmed in the HSR myRide app or by phone.',
+  bookingUrl: 'https://www.hamilton.ca/home-neighbourhood/hsr/schedule-route-tools/hsr-myride-demand',
+  serviceName: 'myRide Waterdown On-Demand',
+  zoneMetadata: Object.fromEntries(
+    HAMILTON_TRANS_CAB_SERVICE_AREAS.map(zone => [
+      (zone.properties as { areaName: string }).areaName,
+      { serviceName: HAMILTON_TRANS_CAB_SOURCE.serviceName, serviceHours: HAMILTON_TRANS_CAB_SOURCE.serviceHours },
+    ]),
+  ),
 };
 
 export const GRT_ROUTE_79_SERVICE_AREA = {
