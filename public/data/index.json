@@ -11042,6 +11042,33 @@
       }
     },
     {
+      "slug": "mta-bus-company",
+      "name": "MTA Bus Company",
+      "websiteUrl": "https://new.mta.info",
+      "center": [
+        40.7377,
+        -73.8799
+      ],
+      "bbox": [
+        40.55,
+        -74.03,
+        40.95,
+        -73.69
+      ],
+      "feedUrl": "https://rrgtfsfeeds.s3.amazonaws.com/gtfs_busco.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-510/latest.zip",
+      "region": "New York",
+      "staged": true,
+      "cities": [
+        "Jamaica, New York",
+        "Flushing, New York",
+        "Astoria, New York",
+        "The Bronx, New York",
+        "Manhattan, New York"
+      ],
+      "timezone": "America/New_York"
+    },
+    {
       "slug": "lirr",
       "name": "MTA Long Island Rail Road",
       "websiteUrl": "https://new.mta.info/agency/long-island-rail-road",
@@ -13013,6 +13040,10 @@
         -76.61
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-466/latest.zip",
+      "supplementalFeedUrls": [
+        "https://mdotmta-gtfs.s3.amazonaws.com/mdotmta_gtfs_lightrail.zip",
+        "https://mdotmta-gtfs.s3.amazonaws.com/mdotmta_gtfs_metro.zip"
+      ],
       "lastFeedExpiry": "20270206",
       "lastFeedVersion": "20260821",
       "region": "Maryland",
