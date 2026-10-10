@@ -111,6 +111,12 @@ export const FARE_TIERS: FareTier[] = [
   { max: Infinity, label: '$8+', color: '#f87171' },
 ];
 
+/** Fare legend tiers in the colours the map draws for this colour mode. */
+export function getFareTiers(mode: ColorVisionMode = 'default'): FareTier[] {
+  if (mode !== 'friendly') return FARE_TIERS;
+  return FARE_TIERS.map((tier, index) => ({ ...tier, color: COLOR_VISION_FARE_COLORS[index] }));
+}
+
 export function getFareColor(fare: number | null | undefined, mode: ColorVisionMode = 'default'): string {
   if (fare == null) return '#6b7280';
   if (mode === 'friendly') {
@@ -159,7 +165,7 @@ export function buildZoomHeadwayGateExpression(headwayExpr: unknown): unknown[] 
 }
 
 /** Headway ceiling at a fixed zoom — mirrors buildZoomHeadwayGateExpression step stops. */
-function headwayThresholdForZoom(zoom: number): number {
+export function headwayThresholdForZoom(zoom: number): number {
   let threshold = MAP_ZOOM_DEFAULT_MAX_HEADWAY;
   for (const [z, maxHw] of MAP_ZOOM_HEADWAY_STEPS) {
     if (zoom >= z) threshold = maxHw;

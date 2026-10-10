@@ -23,6 +23,7 @@ import { ViewportProvider } from './context/ViewportContext';
 const InfoPanel = React.lazy(() => import('./components/InfoPanel'));
 import type { Tab, InfoFeatureFilter, OpenInfoOptions, HelpContext } from './components/InfoPanel';
 import type { FeedRefreshMeta } from '../shared/feedRefresh';
+import type { SupplementalFeedMeta } from '../shared/feedAvailability';
 import { agencyQualifiesForHistory, agencyQualifiesForHistoryExplore } from '../shared/historyEligibility';
 import ErrorBoundary from './components/ErrorBoundary';
 import { DAY_TYPES, getNowDay, type DayType } from '../shared/dayTypes';
@@ -62,6 +63,8 @@ export interface Agency {
   /** Optional service-area label for regional agencies; avoids presenting one stop-density city as the agency's home. */
   displayArea?: string;
   lastFeedExpiry?: string | null;
+  /** Expiry/version/archive key per supplemental feed (e.g. separate rail GTFS), in supplementalFeedUrls order. */
+  lastSupplementalFeeds?: SupplementalFeedMeta[];
   lastRefreshedAt?: string | null;
   lastFeedCheckAt?: string | null;
   expiredFeedCheckCount?: number;
@@ -565,9 +568,11 @@ export default function App() {
           />
           {!query && (
             <span
-              className="absolute left-8 top-1/2 -translate-y-1/2 text-xs font-bold text-[var(--text-dim)] pointer-events-none select-none"
+              className="absolute left-8 right-2 top-1/2 -translate-y-1/2 text-xs font-bold text-[var(--text-dim)] pointer-events-none select-none whitespace-nowrap overflow-hidden text-ellipsis"
             >
-              {searchPlaceholder}
+              {/* The search pill is narrow on phones: a one-word hint stays on one line. */}
+              <span className="sm:hidden">Search</span>
+              <span className="hidden sm:inline">{searchPlaceholder}</span>
             </span>
           )}
           {query !== '' && (

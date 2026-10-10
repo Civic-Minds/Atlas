@@ -13,10 +13,10 @@
     45.81,
     -73
   ],
-  "feedUrl": "https://exo.quebec/xdata/lrrs/google_transit.zip",
-  "lastFeedExpiry": "20270103",
+  "feedUrl": "https://exo.quebec/uploads/ressources-telechargeables/a-propos/donnees-ouvertes/lrrs/google_transit.zip",
+  "lastFeedExpiry": null,
   "lastFeedVersion": null,
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-exo-le-richelain-roussillon-gtfs-2142.zip?alt=media",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2142/latest.zip",
   "gtfsFares": true,
   "lastRefreshedAt": "2026-08-07",
   "cities": [

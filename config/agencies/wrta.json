@@ -10,7 +10,7 @@
   "feedUrl": "https://gtfs.wrta.cadavl.com/WRTA/GTFS/GTFS_WRTA.zip",
   "lastFeedExpiry": "20270104",
   "lastFeedVersion": null,
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-massachusetts-worcester-regional-transit-authority-wrta-gtfs-432.zip?alt=media",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-432/latest.zip",
   "lastRefreshedAt": "2026-10-07",
   "cities": [
     "Worcester, Massachusetts"

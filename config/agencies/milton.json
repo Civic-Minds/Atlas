@@ -16,7 +16,7 @@
   "feedUrl": "http://metrolinx.tmix.se/gtfs/gtfs-milton.zip",
   "lastFeedExpiry": "20270102",
   "lastFeedVersion": "1/20260930 22:00:00/20261001 00:00:00",
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-milton-transit-gtfs-759.zip?alt=media",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-759/latest.zip",
   "lastRefreshedAt": "2026-10-03",
   "cities": [
     "Milton, Ontario",

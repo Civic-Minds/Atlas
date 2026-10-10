@@ -265,9 +265,19 @@ export async function r2Get(key: string): Promise<string | null> {
   return r2GetRaw(key, requireEnv('R2_BUCKET_NAME'));
 }
 
+export interface R2ObjectInfo {
+  key: string;
+  lastModified: Date | null;
+  size: number | null;
+}
+
 async function r2ListAll(bucket: string, prefix: string): Promise<string[]> {
+  return (await r2ListAllObjects(bucket, prefix)).map(obj => obj.key);
+}
+
+async function r2ListAllObjects(bucket: string, prefix: string): Promise<R2ObjectInfo[]> {
   const client = getR2Client();
-  const keys: string[] = [];
+  const keys: R2ObjectInfo[] = [];
   let token: string | undefined;
   do {
     const maxAttempts = 4;
@@ -287,7 +297,14 @@ async function r2ListAll(bucket: string, prefix: string): Promise<string[]> {
       }
     }
     if (!res) throw lastErr;
-    for (const obj of res.Contents ?? []) if (obj.Key) keys.push(obj.Key);
+    for (const obj of res.Contents ?? []) {
+      if (!obj.Key) continue;
+      keys.push({
+        key: obj.Key,
+        lastModified: obj.LastModified ? new Date(obj.LastModified) : null,
+        size: typeof obj.Size === 'number' ? obj.Size : null,
+      });
+    }
     token = res.IsTruncated ? res.NextContinuationToken : undefined;
   } while (token);
   return keys;
@@ -299,4 +316,9 @@ export async function r2List(prefix: string): Promise<string[]> {
 
 export async function r2ListArchive(prefix: string): Promise<string[]> {
   return r2ListAll(requireEnv('R2_ARCHIVE_BUCKET_NAME'), prefix);
+}
+
+/** List archive objects with their LastModified timestamps (read-only). */
+export async function r2ListArchiveObjects(prefix: string): Promise<R2ObjectInfo[]> {
+  return r2ListAllObjects(requireEnv('R2_ARCHIVE_BUCKET_NAME'), prefix);
 }

@@ -16,7 +16,7 @@
   "feedUrl": "https://gtfs.winnipegtransit.com/google_transit.zip",
   "lastFeedExpiry": "20261212",
   "lastFeedVersion": null,
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-manitoba-winnipeg-transit-gtfs-717.zip?alt=media",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-717/latest.zip",
   "lastRefreshedAt": "2026-08-27",
   "cities": [
     "Winnipeg, Manitoba",

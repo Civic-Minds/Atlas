@@ -14,7 +14,7 @@
     -121.71
   ],
   "feedUrl": "https://oregon-gtfs.trilliumtransit.com/gtfs_data/sandy-or-us/sandy-or-us.zip",
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-oregon-sandy-area-metro-sam-gtfs-261.zip?alt=media",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-261/latest.zip",
   "lastFeedExpiry": "20261201",
   "lastFeedVersion": "UTC: 04-Sep-2026 18:59",
   "lastRefreshedAt": "2026-10-07",

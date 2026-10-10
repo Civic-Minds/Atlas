@@ -14,7 +14,7 @@
     -122.65
   ],
   "feedUrl": "http://api.511.org/transit/datafeeds?operator_id=SR",
-  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2948/mdb-2948-202608100136/mdb-2948-202608100136.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2948/latest.zip",
   "lastFeedExpiry": "20991231",
   "lastFeedVersion": "20260809",
   "lastRefreshedAt": "2026-08-10",

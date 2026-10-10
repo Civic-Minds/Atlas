@@ -14,7 +14,7 @@
     -121.69
   ],
   "feedUrl": "http://api.511.org/transit/datafeeds?operator_id=3D",
-  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1974/mdb-1974-202607220202/mdb-1974-202607220202.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1974/latest.zip",
   "lastFeedExpiry": "20271231",
   "lastFeedVersion": "20260721",
   "lastRefreshedAt": "2026-08-10",

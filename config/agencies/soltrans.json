@@ -14,7 +14,7 @@
     -121.75
   ],
   "feedUrl": "https://soltrans.connexionz.net/rtt/public/resource/gtfs.zip",
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-soltrans-gtfs-80.zip?alt=media",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-80/latest.zip",
   "lastFeedExpiry": "20271231",
   "lastFeedVersion": "20261002",
   "lastRefreshedAt": "2026-10-03",

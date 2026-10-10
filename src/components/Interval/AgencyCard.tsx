@@ -378,14 +378,14 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
         </div>
         <div className="flex-1 overflow-y-auto custom-scrollbar px-4 py-4 space-y-4">
           <div>
-            <p className="text-[9px] font-black uppercase tracking-wide text-[var(--text-dim)]">On-demand service</p>
+            <p className="text-[10px] font-black text-[var(--text-dim)]">On-demand service</p>
             <p className="text-[11px] leading-relaxed text-[var(--text-muted)] mt-1">
               {service.stopFeatures?.length ? 'Virtual pickup locations are shown on the map; they are not fixed-route stops.' : 'The shaded map area shows where this on-demand service operates.'}
             </p>
           </div>
           {serviceHours && (
             <div className="px-1">
-              <p className="text-[9px] font-black uppercase tracking-wide text-[var(--text-dim)]">Service hours</p>
+              <p className="text-[10px] font-black text-[var(--text-dim)]">Service hours</p>
               <p className="text-[11px] leading-relaxed text-[var(--text-muted)] mt-1">{serviceHours}</p>
             </div>
           )}
@@ -461,7 +461,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
           {!agency.onDemandOnly && agency.onDemandServiceArea?.serviceName && (
             <div className="mt-2 border-t border-[var(--border-primary)] pt-2">
               <div className="flex items-baseline justify-between gap-2">
-                <p className="text-[9px] font-black uppercase tracking-wide text-[var(--accent)]">On-demand service</p>
+                <p className="text-[10px] font-black text-[var(--accent)]">On-demand service</p>
                 {agency.onDemandServiceArea.sourceUrl && (
                   <a href={agency.onDemandServiceArea.sourceUrl} target="_blank" rel="noopener noreferrer" className="shrink-0 text-[10px] text-[var(--accent)] hover:underline">
                     Details →

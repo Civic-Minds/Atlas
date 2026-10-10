@@ -23,7 +23,7 @@
     "Troy, Michigan",
     "Farmington Hills, Michigan"
   ],
-  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-414/mdb-414-202606180051/mdb-414-202606180051.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-414/latest.zip",
   "lastFeedCheckAt": "20261007",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,

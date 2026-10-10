@@ -14,7 +14,7 @@
     -122.13
   ],
   "feedUrl": "http://www.samtrans.com/Assets/GTFS/samtrans/ST-GTFS.zip",
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-san-mateo-county-transit-district-samtrans-gtfs-49.zip?alt=media",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2708/latest.zip",
   "lastFeedExpiry": "20261114",
   "lastFeedVersion": "Revision2",
   "lastRefreshedAt": "2026-10-03",

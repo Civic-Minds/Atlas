@@ -20,7 +20,8 @@ import { clearDataRefreshHandoff, writeDataRefreshMarker, writeRefreshRunResult,
 import { LOADED_ENV_FILE, isProductionPublicR2Bucket } from './loadEnv.js';
 import { r2Put, r2Get, r2PutArchive, r2PutArchiveJson, r2GetArchive, rawFeedArchiveKey } from './r2.js';
 import JSZip from 'jszip';
-import { processGtfsBuffer, GtfsValidationError, type GtfsPreprocess } from './process-core.js';
+import { GtfsValidationError, type GtfsPreprocess } from './process-core.js';
+import { loadSupplementalFeeds, processAgencyFeeds, supplementalArchiveStem, type SupplementalFeed } from './agencyFeeds.js';
 import { buildAgencyIndex } from './agencyIndex.js';
 import { buildNightServiceIndex, extractNightServiceRoutes, mergeNightServiceIndex, type NightServiceIndexFile, type NightServiceRouteEntry } from './nightServiceIndex.js';
 import { buildFrequentServiceIndex, extractFrequentServiceRoutes, type FrequentServiceRouteEntry } from './frequentServiceIndex.js';
@@ -38,7 +39,7 @@ import {
 } from './overrideAudit.js';
 import { readFeedReviewHistory, shouldReviewNextFeed } from './feedReview.js';
 import { compareStopSnapshots, formatStopAuditLog, type AuditedStop } from './stopAudit.js';
-import { candidateIsOlderThanActive, decideRefreshSkipUnchanged, isFeedExpired, markFeedStale, shouldReplaceExpiredFeed, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta } from './refreshMeta.js';
+import { candidateIsOlderThanActive, decideRefreshSkipUnchanged, isFeedExpired, markFeedStale, shouldReplaceExpiredFeed, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta, stampSupplementalFeedMeta } from './refreshMeta.js';
 import {
   COUNTRY_LAUNCH_FLAG,
   isCountryLaunchBlocked,
@@ -50,7 +51,7 @@ import type { FeedQuality } from '../shared/feedQuality.js';
 import { historyRouteKey } from './historyRouteKey.js';
 import { historyGeometryForRoute } from './historyGeometry.js';
 import { effectiveFeedExpiry } from './feedFreshness.js';
-import { isActiveProductionFeed } from '../shared/feedAvailability.js';
+import { isActiveProductionFeed, type SupplementalFeedMeta } from '../shared/feedAvailability.js';
 import { recordFeedCheck, type FeedCheckFields } from './feedCheckTracking.js';
 import { buildFeedCandidates, type FeedCandidate } from './feedSourceCandidates.js';
 import { resolveFeedUrl } from './feedUrl.js';
@@ -199,6 +200,7 @@ interface AgencyEntry {
   feedApiKeyParam?: string;
   mdbFeedUrl?: string | null;
   supplementalFeedUrls?: string[];
+  lastSupplementalFeeds?: SupplementalFeedMeta[];
   lastFeedExpiry?: string | null;
   lastFeedVersion?: string | null;
   lastRefreshedAt?: string | null;
@@ -343,9 +345,7 @@ async function refreshAgency(
   }
 
   const hasSupplementals = (agency.supplementalFeedUrls?.length ?? 0) > 0;
-  const supplementalFeeds: Array<{
-    url: string;
-    buf: Buffer;
+  const supplementalFeeds: Array<SupplementalFeed & {
     feedExpiry: string | null;
     feedVersion: string | null;
   }> = [];
@@ -353,25 +353,19 @@ async function refreshAgency(
   // Download and inspect every part before rebuilding anything. A primary feed
   // can be expired while a supplemental feed is still current, so only skip
   // when all dated parts have ended.
-  if (agency.supplementalFeedUrls?.length) {
-    for (const suppUrl of agency.supplementalFeedUrls) {
-      let suppBuf: Buffer;
-      try {
-        suppBuf = await downloadFeed(suppUrl);
-      } catch (error) {
-        const reason = `supplemental feed failed (${error instanceof Error ? error.message : String(error)})`;
-        markFeedStale(agency, { reason, todayYmd: today });
-        writeLog(`\n  [warn] ${reason} — retaining the last good artifact\n`);
-        return { summary: `stale (${reason})`, stale: true };
-      }
-      if (suppBuf.length < 4 || suppBuf[0] !== 0x50 || suppBuf[1] !== 0x4b) {
-        const reason = `supplemental feed was not a ZIP (${suppBuf.length} bytes)`;
-        markFeedStale(agency, { reason, todayYmd: today });
-        writeLog(`\n  [warn] ${reason} — retaining the last good artifact\n`);
-        return { summary: `stale (${reason})`, stale: true };
-      }
-      const { feedExpiry, feedVersion } = await peekFeedInfo(suppBuf);
-      supplementalFeeds.push({ url: suppUrl, buf: suppBuf, feedExpiry, feedVersion });
+  if (hasSupplementals) {
+    let loaded: SupplementalFeed[];
+    try {
+      loaded = await loadSupplementalFeeds(agency, downloadFeed);
+    } catch (error) {
+      const reason = error instanceof Error ? error.message : String(error);
+      markFeedStale(agency, { reason, todayYmd: today });
+      writeLog(`\n  [warn] ${reason} — retaining the last good artifact\n`);
+      return { summary: `stale (${reason})`, stale: true };
+    }
+    for (const feed of loaded) {
+      const { feedExpiry, feedVersion } = await peekFeedInfo(feed.buf);
+      supplementalFeeds.push({ ...feed, feedExpiry, feedVersion });
     }
   }
 
@@ -439,16 +433,10 @@ async function refreshAgency(
 
   let primary;
   try {
-    primary = await processGtfsBuffer(buf, undefined, {
-      routeTypes: agency.routeTypes,
-      agencyId: agency.agencyId,
-      agencyName: agency.agencyName,
-      preprocess: agency.preprocess,
-      excludeRouteShortNames: agency.excludeRouteShortNames,
-      excludeTripHeadsigns: agency.excludeTripHeadsigns,
-      skipLetterSuffixMerge: agency.skipLetterSuffixMerge,
-      mergeEquivalentShapeVariants: agency.mergeEquivalentShapeVariants,
-      slug: agency.slug,
+    // Main feed plus every supplemental (e.g. a separate rail zip), merged and
+    // schema-stamped in one shared place. Skip-if-unchanged only checks the
+    // primary feed; supplemental feeds always reprocess.
+    primary = await processAgencyFeeds(buf, supplementalFeeds, agency, {
       manualBaseFare: manualBaseFareOverride,
       // Soft: skip this agency rather than aborting the whole weekly refresh.
       // process CLI fails hard unless --force.
@@ -463,52 +451,15 @@ async function refreshAgency(
     }
     throw err;
   }
+  for (const { url, featureCount: suppCount } of primary.supplementalFeatureCounts) {
+    writeLog(`\n    ↳ ${url.slice(url.lastIndexOf('/') + 1)} +${suppCount} features`);
+  }
+  if (primary.supplementalFeatureCounts.length) writeLog('\n    ');
 
-  let { geojson, corridorsGeojson, stopsJson, tripsJson, stopsMetaJson, featureCount } = primary;
+  const { geojson, corridorsGeojson, stopsJson, tripsJson, stopsMetaJson, featureCount } = primary;
   const { feedExpiry, feedVersion, timezone } = primary;
   agency.feedQuality = primary.feedQuality;
   agency.timezone = timezone ?? agency.timezone;
-
-  // Merge supplemental feeds (e.g. separate rail zip alongside a bus zip).
-  // Skip-if-unchanged only checks the primary feed; supplemental feeds always reprocess.
-  if (agency.supplementalFeedUrls?.length) {
-    const mainFeatures = (JSON.parse(geojson) as GeoJsonFc).features;
-    const corridorFeatures = (JSON.parse(corridorsGeojson) as GeoJsonFc).features;
-    const stopsIndex = JSON.parse(stopsJson) as Record<string, unknown>;
-    const tripsIndex = JSON.parse(tripsJson) as Record<string, unknown>;
-    const stopsMeta = JSON.parse(stopsMetaJson) as { generatedAt: string; stopCount: number; stops: unknown[] };
-
-    for (const { url: suppUrl, buf: suppBuf } of supplementalFeeds) {
-      const label = suppUrl.slice(suppUrl.lastIndexOf('/') + 1);
-      writeLog(`\n    ↳ ${label} ... `);
-      const supp = await processGtfsBuffer(suppBuf, undefined, {
-        routeTypes: agency.routeTypes,
-        agencyId: agency.agencyId,
-        agencyName: agency.agencyName,
-        preprocess: agency.preprocess,
-        excludeRouteShortNames: agency.excludeRouteShortNames,
-        excludeTripHeadsigns: agency.excludeTripHeadsigns,
-        mergeEquivalentShapeVariants: agency.mergeEquivalentShapeVariants,
-        slug: agency.slug,
-        manualBaseFare: manualBaseFareOverride,
-      });
-      mainFeatures.push(...(JSON.parse(supp.geojson) as GeoJsonFc).features);
-      corridorFeatures.push(...(JSON.parse(supp.corridorsGeojson) as GeoJsonFc).features);
-      Object.assign(stopsIndex, JSON.parse(supp.stopsJson));
-      Object.assign(tripsIndex, JSON.parse(supp.tripsJson));
-      stopsMeta.stops.push(...(JSON.parse(supp.stopsMetaJson) as { stops: unknown[] }).stops);
-      featureCount += supp.featureCount;
-      writeLog(`+${supp.featureCount} features`);
-    }
-    writeLog('\n    ');
-
-    geojson = JSON.stringify({ type: 'FeatureCollection', features: mainFeatures });
-    corridorsGeojson = JSON.stringify({ type: 'FeatureCollection', features: corridorFeatures });
-    stopsJson = JSON.stringify(stopsIndex);
-    tripsJson = JSON.stringify(tripsIndex);
-    stopsMeta.stopCount = stopsMeta.stops.length;
-    stopsMetaJson = JSON.stringify(stopsMeta);
-  }
 
   if (featureCount === 0) {
     // Do not stamp lastFeedExpiry / lastFeedVersion / lastRefreshedAt — that made
@@ -554,6 +505,12 @@ async function refreshAgency(
   if (archiveKey) {
     await r2PutArchive(`gtfs/archive/${agency.slug}/${archiveKey}.zip`, buf, 'application/zip');
   }
+  // Archive each supplemental zip too, so reprocess can rebuild from the exact inputs (#630).
+  const supplementalMeta = await Promise.all(supplementalFeeds.map(async (feed, index) => {
+    const rawArchiveKey = rawFeedArchiveKey(feed.feedExpiry, feed.feedVersion, feed.buf);
+    await r2PutArchive(`gtfs/archive/${supplementalArchiveStem(agency.slug, index)}/${rawArchiveKey}.zip`, feed.buf, 'application/zip');
+    return { feedExpiry: feed.feedExpiry, feedVersion: feed.feedVersion, rawArchiveKey };
+  }));
   if (shouldStampFeedMeta(featureCount)) {
     stampFeedMeta(agency, {
       feedExpiry,
@@ -562,6 +519,7 @@ async function refreshAgency(
       peekedVersion,
       todayYmd: todayUtcYmd(),
     });
+    stampSupplementalFeedMeta(agency, supplementalMeta);
   }
 
   // Write a compact headway snapshot for history tracking (all agencies with a feedUrl).

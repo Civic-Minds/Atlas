@@ -10,7 +10,7 @@
   "feedUrl": "https://cdn.mbta.com/MBTA_GTFS.zip",
   "lastFeedExpiry": "20261212",
   "lastFeedVersion": "Fall 2026, 2026-10-06T18:13:43+00:00, version D",
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-massachusetts-massachusetts-bay-transportation-authority-mbta-gtfs-437.zip?alt=media",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-437/latest.zip",
   "gtfsFares": true,
   "lastRefreshedAt": "2026-10-07",
   "cities": [

@@ -647,7 +647,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                 <div className="block sm:hidden border-t border-[var(--border-primary)] pb-4">
                   {/* Frequency */}
                   <div className="px-5 pt-4 pb-1">
-                    <p className="text-[9px] font-bold text-[var(--text-dim)] uppercase tracking-wide">Frequency</p>
+                    <p className="text-[10px] font-bold text-[var(--text-dim)]">Frequency</p>
                   </div>
                   <div className="px-5 pb-3 flex flex-wrap gap-1.5">
                     {HEADWAY_TIERS.map(({ max, label }) => {
@@ -670,7 +670,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
 
                   {/* Day of Service */}
                   <div className="px-5 pt-2 pb-1">
-                    <p className="text-[9px] font-bold text-[var(--text-dim)] uppercase tracking-wide">Day of Service</p>
+                    <p className="text-[10px] font-bold text-[var(--text-dim)]">Day of service</p>
                   </div>
                   <div className="px-5 pb-3 flex gap-1.5">
                     {DAY_TYPES.map(dayType => {
@@ -691,7 +691,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
 
                   {/* Time Period */}
                   <div className="px-5 pt-2 pb-1">
-                    <p className="text-[9px] font-bold text-[var(--text-dim)] uppercase tracking-wide">Time Period</p>
+                    <p className="text-[10px] font-bold text-[var(--text-dim)]">Time period</p>
                   </div>
                   <div className="px-5 pb-3 flex flex-wrap gap-1.5">
                     {Object.entries(PERIOD_LABELS).map(([key, label]) => {
@@ -712,7 +712,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
 
                   {/* Transit Modes */}
                   <div className="px-5 pt-2 pb-1">
-                    <p className="text-[9px] font-bold text-[var(--text-dim)] uppercase tracking-wide">Transit Modes</p>
+                    <p className="text-[10px] font-bold text-[var(--text-dim)]">Transit modes</p>
                   </div>
                   <div className="px-5 pb-3 flex flex-wrap gap-1.5">
                     {AVAILABLE_FILTER_MODES.map(({ id, label }) => {

@@ -14,7 +14,7 @@
     -122.26
   ],
   "feedUrl": "https://gtfs.sanfranciscobayferry.com/gtfs.zip",
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-san-francisco-bay-area-water-emergency-transportation-authority-gtfs-3143.zip?alt=media",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3143/latest.zip",
   "lastFeedExpiry": "20261101",
   "lastFeedVersion": "UTC: 18-Aug-2026 20:52",
   "lastRefreshedAt": "2026-08-27",

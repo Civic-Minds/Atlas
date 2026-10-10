@@ -13,7 +13,7 @@
     -122.59
   ],
   "feedUrl": "http://api.511.org/transit/datafeeds?operator_id=PE",
-  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2947/mdb-2947-202607220015/mdb-2947-202607220015.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2947/latest.zip",
   "lastFeedExpiry": "20991231",
   "lastFeedVersion": "20260721",
   "lastRefreshedAt": "2026-08-10",

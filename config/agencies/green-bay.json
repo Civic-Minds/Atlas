@@ -7,7 +7,7 @@
     -88.0133
   ],
   "feedUrl": "https://www.greenbaywi.gov/DocumentCenter/View/12124/Transit-Data-March-2026",
-  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-917/mdb-917-202406071503/mdb-917-202406071503.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-917/latest.zip",
   "lastFeedExpiry": "20270404",
   "lastFeedVersion": null,
   "lastRefreshedAt": "2026-10-08",

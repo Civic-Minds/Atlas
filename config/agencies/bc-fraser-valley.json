@@ -18,7 +18,7 @@
     "Burnaby, British Columbia",
     "New Westminster, British Columbia"
   ],
-  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1991/mdb-1991-202608100127/mdb-1991-202608100127.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1991/latest.zip",
   "lastFeedCheckAt": "20261007",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,

@@ -14,7 +14,7 @@
     -73.9129
   ],
   "feedUrl": "https://data.trilliumtransit.com/gtfs/rooseveltisland-ny-us/rooseveltisland-ny-us.zip",
-  "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-3364/tld-3364-202607230108/tld-3364-202607230108.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-3364/latest.zip",
   "lastFeedExpiry": "20270201",
   "lastFeedVersion": "UTC: 22-Jul-2026 20:17",
   "lastRefreshedAt": "2026-08-10",

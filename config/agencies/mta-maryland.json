@@ -7,6 +7,10 @@
     -76.61
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-466/latest.zip",
+  "supplementalFeedUrls": [
+    "https://mdotmta-gtfs.s3.amazonaws.com/mdotmta_gtfs_lightrail.zip",
+    "https://mdotmta-gtfs.s3.amazonaws.com/mdotmta_gtfs_metro.zip"
+  ],
   "lastFeedExpiry": "20270206",
   "lastFeedVersion": "20260821",
   "region": "Maryland",

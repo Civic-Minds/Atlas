@@ -16,7 +16,7 @@
   "feedUrl": "https://opendata.burlington.ca/gtfs-rt/GTFS_Data.zip",
   "lastFeedExpiry": "20261219",
   "lastFeedVersion": null,
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-burlington-transit-gtfs-724.zip?alt=media",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-724/latest.zip",
   "lastRefreshedAt": "2026-10-03",
   "cities": [
     "Burlington, Ontario",

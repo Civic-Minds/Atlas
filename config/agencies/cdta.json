@@ -10,7 +10,7 @@
   "feedUrl": "https://www.cdta.org/schedules/google_transit.zip",
   "lastFeedExpiry": "20261128",
   "lastFeedVersion": "Major",
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-capital-district-transportation-authority-cdta-gtfs-538.zip?alt=media",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-538/latest.zip",
   "lastRefreshedAt": "2026-08-24",
   "cities": [
     "West Albany, New York",

@@ -16,7 +16,7 @@
   "feedUrl": "https://contenu.sto.ca/GTFS/GTFS.zip",
   "lastFeedExpiry": "20261122",
   "lastFeedVersion": null,
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-quebec-societe-de-transport-de-loutaouais-gtfs-740.zip?alt=media",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-740/latest.zip",
   "lastRefreshedAt": "2026-10-03",
   "cities": [
     "Gatineau, Quebec",

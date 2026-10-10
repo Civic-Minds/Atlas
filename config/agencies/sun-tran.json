@@ -13,6 +13,7 @@
     -110.7
   ],
   "feedUrl": "https://GTFS-RT.suntran.com/TMGTFSRealTimeWebService/Static/SunTranGTFS.zip",
+  "hiddenInProduction": true,
   "region": "Arizona",
   "cities": [
     "Tucson, Arizona",
