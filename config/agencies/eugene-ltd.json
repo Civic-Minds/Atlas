@@ -13,7 +13,7 @@
     -122.12
   ],
   "feedUrl": "https://feed.ltd.org/TMGTFSRealTimeWebService/GTFS/google_transit.zip",
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-oregon-lane-transit-district-ltd-gtfs-131.zip?alt=media",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-131/latest.zip",
   "lastFeedExpiry": "20270130",
   "lastFeedVersion": "2609a",
   "lastRefreshedAt": "2026-10-03",

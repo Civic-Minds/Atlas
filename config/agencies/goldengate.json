@@ -14,7 +14,7 @@
     -122.32
   ],
   "feedUrl": "https://realtime.goldengate.org/gtfsstatic/GTFSTransitData.zip",
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-golden-gate-transit-gtfs-67.zip?alt=media",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-67/latest.zip",
   "lastFeedExpiry": "20261212",
   "lastFeedVersion": null,
   "lastRefreshedAt": "2026-10-03",

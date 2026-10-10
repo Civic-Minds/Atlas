@@ -14,7 +14,7 @@
     -121.21
   ],
   "feedUrl": "https://iportal.sacrt.com/gtfs/Roseville/google_transit.zip",
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-roseville-transit-gtfs-1067.zip?alt=media",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1067/latest.zip",
   "lastFeedExpiry": "20261231",
   "lastFeedVersion": "Roseville_April_2025-26",
   "lastRefreshedAt": "2026-08-07",

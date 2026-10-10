@@ -14,7 +14,7 @@
     -121.61
   ],
   "feedUrl": "https://gtfs.remix.com/redding_area_bus_authority.zip",
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-redding-redding-area-bu-gtfs-3031.zip?alt=media",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3031/latest.zip",
   "lastFeedExpiry": "20261231",
   "lastFeedVersion": "Updated: Oct 5, 2026, 3:44 AM",
   "lastRefreshedAt": "2026-10-07",

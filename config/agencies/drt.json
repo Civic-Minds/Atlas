@@ -16,7 +16,7 @@
   "feedUrl": "https://maps.durham.ca/OpenDataGTFS/GTFS_Durham_TXT.zip",
   "lastFeedExpiry": "20261018",
   "lastFeedVersion": null,
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-durham-region-transit-gtfs-726.zip?alt=media",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-726/latest.zip",
   "lastRefreshedAt": "2026-08-27",
   "cities": [
     "Oshawa, Ontario",

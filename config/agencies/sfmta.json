@@ -14,7 +14,7 @@
     -122.37
   ],
   "feedUrl": "https://muni-gtfs.apps.sfmta.com/data/muni_gtfs-current.zip",
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-san-francisco-san-francisco-m-gtfs-2886.zip?alt=media",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2886/latest.zip",
   "lastFeedExpiry": "20260828",
   "lastFeedVersion": null,
   "lastRefreshedAt": "2026-08-10",

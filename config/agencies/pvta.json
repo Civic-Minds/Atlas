@@ -10,7 +10,7 @@
   "feedUrl": "https://www.pvta.com/g_trans/google_transit.zip",
   "lastFeedExpiry": "20261219",
   "lastFeedVersion": null,
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-massachusetts-pioneer-valley-transit-authority-pvta-gtfs-1234.zip?alt=media",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2416/latest.zip",
   "gtfsFares": true,
   "lastRefreshedAt": "2026-08-27",
   "cities": [

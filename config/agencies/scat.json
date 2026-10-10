@@ -13,7 +13,7 @@
     -82.1
   ],
   "feedUrl": "http://data.trilliumtransit.com/gtfs/spacecoast-fl-us/spacecoast-fl-us.zip",
-  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-348/mdb-348-202404220004/mdb-348-202404220004.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-348/latest.zip",
   "region": "Florida",
   "lastFeedExpiry": "20290629",
   "lastFeedVersion": null,

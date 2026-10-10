@@ -16,7 +16,7 @@
   "feedUrl": "https://opendata.citywindsor.ca/Uploads/google_transit.zip",
   "lastFeedExpiry": "20261228",
   "lastFeedVersion": "142491ff-2412-4981-84a3-6fc126ad18f9",
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-transit-windsor-gtfs-720.zip?alt=media",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-720/latest.zip",
   "lastRefreshedAt": "2026-10-03",
   "cities": [
     "Windsor, Ontario",

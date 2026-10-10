@@ -16,7 +16,7 @@
   "feedUrl": "https://www.arcgis.com/sharing/rest/content/items/a355aabd5a8c490186bdce559c9c75fb/data",
   "lastFeedExpiry": "20261101",
   "lastFeedVersion": "20260907",
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-brampton-transit-gtfs-729.zip?alt=media",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1994/latest.zip",
   "lastRefreshedAt": "2026-08-27",
   "cities": [
     "Brampton, Ontario",

@@ -18,7 +18,7 @@
     "Los Angeles, California",
     "Koreatown, California"
   ],
-  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-37/mdb-37-202607290113/mdb-37-202607290113.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-37/latest.zip",
   "lastFeedCheckAt": "20261007",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,

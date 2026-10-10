@@ -20,7 +20,7 @@
   "cities": [
     "Youngstown, Ohio"
   ],
-  "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-1717/tld-1717-202606230015/tld-1717-202606230015.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-1717/latest.zip",
   "lastFeedCheckAt": "20261007",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,

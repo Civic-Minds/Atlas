@@ -14,7 +14,7 @@
     -122.33
   ],
   "feedUrl": "http://developer.trimet.org/schedule/gtfs.zip",
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-oregon-trimet-portland-streetcar-gtfs-247.zip?alt=media",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-247/latest.zip",
   "lastFeedExpiry": "20270227",
   "lastFeedVersion": "20260913-20260924-0900",
   "lastRefreshedAt": "2026-10-03",

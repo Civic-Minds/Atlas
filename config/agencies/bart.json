@@ -14,7 +14,7 @@
     -121.78
   ],
   "feedUrl": "http://www.bart.gov/dev/schedules/google_transit.zip",
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-bay-area-rapid-transit-bart-gtfs-53.zip?alt=media",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-53/latest.zip",
   "lastFeedExpiry": "20270110",
   "lastFeedVersion": "72",
   "lastRefreshedAt": "2026-08-10",

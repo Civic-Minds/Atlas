@@ -10,7 +10,7 @@
   "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=44",
   "lastFeedExpiry": "20261122",
   "lastFeedVersion": "202610060/20261005 21:00:00/20261006 04:00:00",
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-british-columbia-bc-transit-whistler-transit-system-gtfs-702.zip?alt=media",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2583/latest.zip",
   "lastRefreshedAt": "2026-10-07",
   "lastFeedCheckAt": "20261007",
   "expiredFeedCheckCount": 0,

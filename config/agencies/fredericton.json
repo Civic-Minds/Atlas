@@ -16,7 +16,7 @@
   "feedUrl": "https://fredericton.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/gtfs.zip",
   "lastFeedExpiry": "20261219",
   "lastFeedVersion": "202610060/20261005 23:30:00/20261006 04:00:00",
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-new-brunswick-fredericton-transit-gtfs-764.zip?alt=media",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2460/latest.zip",
   "lastRefreshedAt": "2026-10-07",
   "cities": [
     "Fredericton, New Brunswick"

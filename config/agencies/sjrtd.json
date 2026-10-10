@@ -18,7 +18,7 @@
     "Tracy, California",
     "Modesto, California"
   ],
-  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-886/mdb-886-202607270026/mdb-886-202607270026.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-886/latest.zip",
   "lastFeedCheckAt": "20261007",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,

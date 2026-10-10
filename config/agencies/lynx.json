@@ -7,7 +7,7 @@
     -81.38
   ],
   "feedUrl": "http://gtfsrt.golynx.com/gtfsrt/google_transit.zip",
-  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-347/mdb-347-202607300104/mdb-347-202607300104.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-347/latest.zip",
   "lastFeedExpiry": "20261212",
   "lastFeedVersion": null,
   "region": "Florida",

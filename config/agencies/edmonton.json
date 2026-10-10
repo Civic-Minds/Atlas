@@ -16,7 +16,7 @@
   "feedUrl": "https://gtfs.edmonton.ca/TMGTFSRealTimeWebService/GTFS/GTFS.zip",
   "lastFeedExpiry": "20261128",
   "lastFeedVersion": "261002_1029",
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-alberta-edmonton-transit-system-gtfs-714.zip?alt=media",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-714/latest.zip",
   "lastRefreshedAt": "2026-10-07",
   "cities": [
     "Edmonton, Alberta",

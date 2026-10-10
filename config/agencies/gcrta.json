@@ -17,7 +17,7 @@
     "Lakewood, Ohio",
     "Elyria, Ohio"
   ],
-  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-406/mdb-406-202607290022/mdb-406-202607290022.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-406/latest.zip",
   "lastFeedCheckAt": "20261007",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,

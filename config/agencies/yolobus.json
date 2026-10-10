@@ -14,7 +14,7 @@
     -121.45
   ],
   "feedUrl": "https://avl.yctd.org/RealTime/google_transit.zip",
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-yolo-county-transportation-district-gtfs-1295.zip?alt=media",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1295/latest.zip",
   "lastFeedExpiry": "20270630",
   "lastFeedVersion": null,
   "lastRefreshedAt": "2026-10-03",

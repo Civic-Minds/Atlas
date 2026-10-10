@@ -14,7 +14,7 @@
     -121.98
   ],
   "feedUrl": "https://transportation-forms.stanford.edu/google/google_transit.zip",
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-stanford-marguerite-shuttle-sms-gtfs-59.zip?alt=media",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-59/latest.zip",
   "lastFeedExpiry": "20270926",
   "lastFeedVersion": "2026-10-03T16:41:58Z+eta154",
   "lastRefreshedAt": "2026-10-07",

@@ -7,7 +7,7 @@
     -118.31
   ],
   "feedUrl": "https://ridegtrans.com/gtfs.zip",
-  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2270/mdb-2270-202607210042/mdb-2270-202607210042.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2270/latest.zip",
   "lastFeedExpiry": "20261010",
   "lastFeedVersion": "S1000133",
   "region": "California",

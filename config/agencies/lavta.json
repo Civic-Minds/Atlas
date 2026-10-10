@@ -14,7 +14,7 @@
   ],
   "feedUrl": "https://api.511.org/transit/datafeeds?operator_id=WH",
   "feedApiKeyEnvVar": "MUNI_511_API_KEY",
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-california-livermore-amador-valley-transit-authority-gtfs-64.zip?alt=media",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-64/latest.zip",
   "lastFeedExpiry": "20270129",
   "lastFeedVersion": "20260922",
   "lastRefreshedAt": "2026-10-08",

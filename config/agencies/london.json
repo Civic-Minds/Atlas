@@ -17,7 +17,7 @@
   "feedUrl": "https://www.londontransit.ca/gtfsfeed/google_transit.zip",
   "lastFeedExpiry": "20261128",
   "lastFeedVersion": "2026 September + Trippers_20260924",
-  "mdbFeedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-london-transit-commission-gtfs-2.zip?alt=media",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2/latest.zip",
   "lastRefreshedAt": "2026-10-03",
   "cities": [
     "London, Ontario"
