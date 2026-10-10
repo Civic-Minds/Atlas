@@ -1,5 +1,6 @@
 import type { GeoJSON } from 'geojson';
 import { HSR_MY_RIDE_STOP_FEATURES } from './hsrMyRideStops';
+import { LEAMINGTON_LT_GO_STOP_FEATURES } from './leamingtonLtGoStops';
 import { METRO_MICRO_FLEX_FEATURES } from './metroMicroFlexData';
 import { GTFS_FLEX_METADATA } from './metroMicroFlexMetadata';
 import { C_TRAN_CURRENT_FLEX_FEATURES } from './ctranCurrentFlexData';
@@ -273,6 +274,38 @@ export const ST_ALBERT_ON_DEMAND_AGENCY = {
       Weekday: [{ startHour: 18.583, endHour: 24 }],
       Saturday: [{ startHour: 18.5, endHour: 24 }],
       Sunday: [{ startHour: 5.917, endHour: 19 }],
+    } satisfies OnDemandAvailability,
+  },
+};
+
+export const LEAMINGTON_LT_GO_ON_DEMAND_AGENCY = {
+  slug: 'leamington',
+  name: 'LT-Go (Leamington)',
+  region: 'Ontario',
+  center: [42.0365, -82.5994] as [number, number],
+  url: '',
+  bbox: [42.013602, -82.622378, 42.059424, -82.57644] as [number, number, number, number],
+  cities: ['Leamington, Ontario'],
+  displayArea: 'Leamington',
+  onDemandOnly: true,
+  hiddenInProduction: true,
+  betaOnly: true,
+  rolloutNotice: BETA_ROLLOUT_NOTICE,
+  websiteUrl: 'https://www.leamington.ca/our-community/transit/ltgo-on-demand-transit/',
+  onDemandServiceArea: {
+    features: [] as GeoJSON.Feature<GeoJSON.Polygon>[],
+    stopFeatures: LEAMINGTON_LT_GO_STOP_FEATURES,
+    sourceUrl: 'https://www.leamington.ca/our-community/transit/ltgo-on-demand-transit/#LTGObusstoplocations',
+    sourceLabel: 'Town of Leamington LT-Go stop map',
+    sourceRetrievedAt: '2026-10-10',
+    serviceName: 'LT-Go On-Demand',
+    serviceHours: 'Monday–Friday 6 a.m.–9:30 p.m.; Saturday 7 a.m.–9:30 p.m.; Sunday 8 a.m.–7 p.m. Book in the Blaise Transit app or call 519-325-5960.',
+    tripRules: 'Pickups and drop-offs are at the pre-set LT-Go stops shown on the map.',
+    bookingUrl: 'https://www.leamington.ca/our-community/transit/ltgo-on-demand-transit/',
+    availability: {
+      Weekday: [{ startHour: 6, endHour: 21.5 }],
+      Saturday: [{ startHour: 7, endHour: 21.5 }],
+      Sunday: [{ startHour: 8, endHour: 19 }],
     } satisfies OnDemandAvailability,
   },
 };

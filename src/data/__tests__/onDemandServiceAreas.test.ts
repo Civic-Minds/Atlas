@@ -13,6 +13,7 @@ import {
   CYRIDE_EASE_SERVICE_AREA,
   MUSKOKA_DRT_ON_DEMAND_AGENCY,
   ST_ALBERT_ON_DEMAND_AGENCY,
+  LEAMINGTON_LT_GO_ON_DEMAND_AGENCY,
   METRO_MICRO_SERVICE_AREA,
   WATA_PARATRANSIT_SERVICE_AREA,
 } from '../onDemandServiceAreas';
@@ -156,5 +157,12 @@ describe('St. Albert on-demand service area', () => {
     expect(isOnDemandActive(availability, 'Weekday', 'midday')).toBe(false);
     expect(isOnDemandActive(availability, 'Weekday', 'late')).toBe(true);
     expect(isOnDemandActive(availability, 'Sunday', 'midday')).toBe(true);
+  });
+});
+
+describe('Leamington LT-Go on-demand stops', () => {
+  it('keeps all 118 published stops and no inferred zone', () => {
+    expect(LEAMINGTON_LT_GO_ON_DEMAND_AGENCY.onDemandServiceArea.features).toHaveLength(0);
+    expect(LEAMINGTON_LT_GO_ON_DEMAND_AGENCY.onDemandServiceArea.stopFeatures).toHaveLength(118);
   });
 });
