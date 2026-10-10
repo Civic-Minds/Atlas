@@ -7,12 +7,22 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Dependencies and build output
 node_modules
 dist
 dist-ssr
-tmp
-*.local
 *.tsbuildinfo
+
+# Scratch and local working files
+tmp
+scratch/
+*.local
+
+# Test and coverage output
+coverage/
+test-results/
+playwright-report/
+.playwright-mcp/
 
 # Editor directories and files
 .vscode/*
@@ -24,34 +34,18 @@ tmp
 *.njsproj
 *.sln
 *.sw?
-.env.local
 
-# GTFS data files — keep in /Desktop/Data/GTFS/, not in repo
+# Environment files and local secrets (.env.example stays tracked)
+.env*
+!.env.example
+.dev.vars*
+.vercel
+
+# Raw GTFS zips live outside the repo
 public/data/samples/*.zip
 !public/data/samples/gtfs-sample.zip
 
-# Environment files with secrets
-.env
-server/.env
-
-# Session handoff notes
-HANDOFF.md
-handoff.txt
-
-# Issue filing guidelines (local reference)
-docs/ISSUES.md
-
-# Planning and integration docs
-INTEGRATION.md
-release-notes.txt
-ATLASLOG.md
-
-scratch/
-reports/benchmarks/
-gtfs-test-log.md
-.vercel
-.env*
-!.env.example
+# Generated per-agency data (only catalogs and the index are tracked)
 public/data/*.json
 !public/data/index.json
 !public/data/index.schema.json
@@ -61,7 +55,18 @@ public/data/*.json
 !public/data/catalog-beta.json
 !public/data/catalog-dev.json
 
+# Local benchmark output
+reports/benchmarks/
+gtfs-test-log.md
+
+# Session handoff and local planning notes
+HANDOFF.md
+handoff.txt
+INTEGRATION.md
+release-notes.txt
+ATLASLOG.md
+
 # Wrangler local dev state and captured feed samples
-workers/**/.wrangler/
+.wrangler/
 workers/gtfs-rt-archiver/burlington/
 workers/gtfs-rt-archiver/hamilton/
