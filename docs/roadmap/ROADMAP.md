@@ -4,14 +4,14 @@ Atlas is a regional transit atlas for understanding where transit runs frequentl
 
 - **[Vision](../product/VISION.md)**: Product philosophy — frequency mapping to live performance evidence and long-term accumulation of real service data.
 
-### Product & Platform
+### Product and platform
 - **[Product](./PRODUCT.md)**: Map apps (Frequency Map, Corridors, History), live data layer, filters, design principles.
 - **[Platform](./PLATFORM.md)**: History & change analysis, public tools (shareable views, multi-agency merges).
 - **[Technical](./TECHNICAL.md)**: Future engineering direction for live data, rendering, and analysis infrastructure.
 
 ---
 
-### Reference & Research
+### Reference and research
 - **[Strategy](../product/STRATEGY.md)**: competitive landscape and long-term product positioning.
 - **[Research](../product/RESEARCH.md)**: agency pain points and problem statements informing Atlas's direction.
 - **[Product Decisions](../product/DECISIONS.md)**: durable product and architecture decisions that apply across Atlas.

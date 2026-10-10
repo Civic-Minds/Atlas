@@ -16,8 +16,13 @@ export ATLAS_ENV=staging
 npm run process:staging -- <feed> <slug> "Name" "lat,lon"
 npm run refresh:staging -- <slug> --force
 npm run build-pmtiles:staging
+npm run publish-data-release
 npm run dev:staging
 ```
+
+`build-pmtiles:staging` uploads an immutable release under `atlas/releases/{id}/`
+in the staging bucket; the staging app only reads it after `publish-data-release`
+(run with `ATLAS_ENV=staging` exported) moves the bucket's `atlas/release.json`.
 
 Country-launch hard gate **does not apply** to non-`atlas` buckets.
 

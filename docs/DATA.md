@@ -2,14 +2,14 @@
 
 Atlas is built from publicly available transit data and publishes the processing choices behind the map so the results can be understood and checked. This page is the index for Atlas data documentation.
 
-## Current Coverage & Status
+## Coverage and status
 
 - **[Agencies](data/AGENCIES.md)**: Current coverage and regions.
 - **[Live Polling](operations/LIVE_POLLING.md)**: Live GTFS-RT integration status — active/parked agencies, keys in hand, history archiving.
 - **[History Coverage](data/DATA_HISTORY.md)**: Historical headway snapshots backfill log, candidate systems, and deferred agencies.
 - **[Known Issues](operations/KNOWN_ISSUES.md)**: Current data and coverage limitations.
 
-## Expansion Planning
+## Expansion planning
 
 - **[Agency Backlog](data/AGENCY_BACKLOG.md)**: Coverage expansion queue and discovery notes.
 
@@ -27,7 +27,7 @@ Atlas is built from publicly available transit data and publishes the processing
 - **[Coverage Gap Discovery](data/COVERAGE_GAP_DISCOVERY.md)**: Finding new agency candidates and looking up their feeds.
 - **[Fixing Issues](engineering/FIXING_ISSUES.md)**: Scoping a fix to its blast radius and choosing the pipeline/data or UI validation runbook.
 
-## History Archives
+## History archives
 
 History is a curated view of past schedule periods. Coverage varies by agency
 and period, depending on the availability and quality of archived schedule data.
@@ -51,9 +51,9 @@ For historical periods Atlas publishes:
 
 Sacramento (SacRT) is the prototype for period-level materialization: its
 official archive contains multiple dated periods, including periods with
-unchanged route values. The `materializeAllPeriods` build flag is merged and
-available per-agency, pending a decision on the date-level UI and storage
-costs before enabling it more broadly.
+unchanged route values. `materializeAllPeriods` is a per-agency flag in
+`history/{slug}/coverage.json` that `build-history` reads; the MDB, MBTA, and
+NORTA backfill scripts set it for every agency they backfill.
 
 ## Procedures and maintenance
 

@@ -1,14 +1,14 @@
-# Adding a Transit Agency
+# Adding a transit agency
 
 Maintainer and contributor runbook for onboarding one new agency (or a small batch) into Atlas. This is repository documentation, not user-facing product documentation.
 
 This is the single canonical procedure for adding or updating an agency. [`AGENCY_BACKLOG.md`](AGENCY_BACKLOG.md) § Workflow points here so there is one source of truth for the actual mechanics. See [`MAP_UPDATES.md`](MAP_UPDATES.md) for keeping already-published agencies current (refreshes, batch publishing) and [`COVERAGE_GAP_DISCOVERY.md`](COVERAGE_GAP_DISCOVERY.md) for finding new candidates in the first place.
 
-## Integrating a New Transit Agency
+## Integrating a new transit agency
 
 **Stop before step 3 if this is the first agency for a country with zero live agencies yet** (e.g. any France/Belgium/Spain candidate right now). Steps 1-2 (dry-run + local preview) are always fine to run freely — nothing in them touches R2. Step 3 onward writes real data to the live bucket: for an already-live country, that's routine once an agency is validated; for a brand-new country, publishing its first agency is a country-launch decision, not just a routine agency add, and needs separate maintainer sign-off. `hiddenInProduction` only hides an agency from the UI *after* its data is already live on R2 — it is not a substitute for staying offline, and a previously-hidden agency should not be treated as precedent for publishing the next one in the same country.
 
-**Hard refuse:** `npm run process` and `npm run build-pmtiles-incremental` without `--dry-run` will exit with an error for any country that still has zero production-visible agencies (France and Mexico today). `npm run refresh` skips those agencies so weekly jobs don't keep rewriting them. After Ryan explicitly authorizes the country launch (or an intentional pre-launch R2 fix), re-run with `--i-am-launching-country`. See `pipeline/countryLaunchGate.ts` and AGENTS.md § Production Data Rules.
+**Hard refuse:** `npm run process` and `npm run build-pmtiles-incremental` without `--dry-run` will exit with an error for any country that still has zero production-visible agencies (France and Mexico today). `npm run refresh` skips those agencies so weekly jobs don't keep rewriting them. After Ryan explicitly authorizes the country launch (or an intentional pre-launch R2 fix), re-run with `--i-am-launching-country`. See `pipeline/countryLaunchGate.ts`.
 
 1. Obtain the GTFS ZIP download link (preferring a stable agency URL or Mobility Database link).
 2. **Optional but recommended for a new/unfamiliar feed**: preview it locally first, with nothing written to R2 or any repo file:
@@ -23,7 +23,7 @@ This is the single canonical procedure for adding or updating an agency. [`AGENC
    ```
    Reads the dry-run preview and prints a route × direction × day frequency table, plus three flags that have each caught a real bug before: a terminal headway far above the best headway anywhere on the route (Niagara 301, #241), near-duplicate headsigns on the same route+direction (Niagara typo, #242), and shapes that needed truncation/de-interleaving during parsing (Guadalajara, #219/#244 — recorded in `<slug>-shape-anomalies.json` alongside the other preview artifacts). A flag isn't automatically a bug — branching routes legitimately have faster segments than their terminal, for instance — but each one is worth a manual look before publishing. Pass `--live` to run the same report against an already-published agency's current R2 data instead (shape-anomaly detection isn't available in `--live` mode — it's only captured during parsing).
 
-   With the dry-run preview on disk, `npm run dev` will also serve that agency's search results and sidebar route cards locally — the dev server checks `tmp/process-preview/<slug>/` for any `/atlas-data/<slug>*.json` request before falling back to the real R2 proxy, so a brand-new (or not-yet-registered) agency can be browsed in the actual app before anything is published. This works even without a PMTiles build; see § Incremental PMTiles Build below for also previewing the agency's routes drawn on the map itself.
+   With the dry-run preview on disk and `VITE_USE_LOCAL_PREVIEWS=true` set (local previews are opt-in), the dev server serves files from `tmp/process-preview/<slug>/` for any unversioned `/atlas-data/atlas/<slug>*.json` request before falling back to the real R2 proxy. Caveat: when a published data release is reachable, the app loads agency data from that release's `atlas/releases/{id}/agencies/` path instead, which this override does not intercept. See § Incremental PMTiles build below for previewing the agency's routes drawn on the map itself.
 3. Process the feed for real (already-live countries only — France/Mexico/etc. hard-refuse without the launch flag):
    ```bash
    npm run process -- <feed-url-or-local-zip> <slug> "[Display Name]" "[lat,lon]"
@@ -33,7 +33,8 @@ This is the single canonical procedure for adding or updating an agency. [`AGENC
 4. Add or edit `config/agencies/<slug>.json` with `region`, `feedUrl`, `mdbFeedUrl`, and `bbox`.
    - **Check the slug isn't already taken by a different agency before writing the file** — `cat config/agencies/<slug>.json` first if it already exists, and compare the `name`/`region` against what you're about to add. A common city name (e.g. "Nice") can coincidentally collide with an existing agency's slug (e.g. NICE Bus, Nassau NY); `scripts/build-agency-index.ts` only rejects two *different files* sharing a slug, so it cannot catch one file's content being silently overwritten in place. On a real collision, disambiguate with a suffix (`nice-fr`, matching the existing `springfield-mo` pattern) rather than reusing the slug.
    - **bbox vs. center**: if an agency's service area is larger than ±0.4/0.5° from its center (e.g. statewide or regional services like Bustang), add an explicit `bbox: [s, w, n, e]`. Without it, the GeoJSON won't load into the sidebar for viewports outside the ±0.5° window — route cards won't appear even though PMTiles renders the routes.
-   - If the official URL is dead or unreliable, use the Mobility Database stable mirror: find the feed at github.com/MobilityData/mobility-database-catalogs, then `https://storage.googleapis.com/storage/v1/b/mdb-latest/o/{feed-id}.zip?alt=media` (GRT and Niagara already use this).
+   - If the official URL is dead or unreliable, use the Mobility Database current-feed URL `https://files.mobilitydatabase.org/{feed-id}/latest.zip` (e.g. `mdb-721`); `npm run find-mdb` prints it. Do not use dated snapshot URLs or the retired Google-hosted `mdb-latest` mirror (frozen since 2026-06-04) — refresh rewrites both to `latest.zip` as a fallback, but new configs should point at `latest.zip` directly.
+   - **Add the slug to `config/agencies/order.json`.** `build:agency-index` only includes slugs listed there; an agency file that isn't in `order.json` is silently left out of `index.json`.
 5. Generate the runtime index:
    ```bash
    npm run build:agency-index
@@ -44,13 +45,13 @@ This is the single canonical procedure for adding or updating an agency. [`AGENC
    ```
 7. **Build and publish a data release — do not skip this:**
    ```bash
-   npm run build-pmtiles          # builds tiles + agency snapshots under one release ID
+   npm run build-pmtiles          # builds tiles + agency snapshots and uploads an immutable release under atlas/releases/{id}/
    npm run verify-pmtiles-remote
    npm run build-history
-   npm run publish-data-release   # refuses unless tiles and agency data carry the same release ID
+   npm run publish-data-release   # moves atlas/release.json; refuses unless tiles and agency data carry the same release ID
    ```
-   (`npm run refresh-release -- <slug>` runs refresh plus all of these in order.) Do not use `upload-pmtiles` or a hand-run `rclone` copy of `atlas.pmtiles`: the root archive is not paired with any agency data, the deployed app no longer reads it, and the script refuses without `--allow-unpaired-pmtiles-upload`.
-   The per-agency GeoJSON (from step 3) is what powers search and the sidebar route cards. It is **not** what renders routes on the map — that's a single aggregate `atlas.pmtiles` file built from *every* agency's current GeoJSON, and it only updates when you explicitly rebuild and upload it.
+   (`npm run refresh-release -- <slug>` runs refresh plus all of these in order, and stops before PMTiles if the refresh batch is incomplete — e.g. an agency refused by the 20% drop guard; pass `--allow-drop` only after reviewing the drop.) Do not use `upload-pmtiles` or a hand-run `rclone` copy of `atlas.pmtiles`: the root archive is not paired with any agency data, the deployed app no longer reads it, and the script refuses without `--allow-unpaired-pmtiles-upload`.
+   The deployed app reads both the map tiles and the per-agency route data (search, sidebar route cards) from the active data release. Routes are drawn from an aggregate `atlas.pmtiles` archive built from *every* agency's current GeoJSON, and the public map only changes when a new release is built and published.
 
    **This step has been skipped before and shipped silently broken agencies** — the route exists in search results and the sidebar card, with real headway data, but nothing draws on the map, because the aggregate tile file was never rebuilt to include it. It doesn't error; it just quietly renders nothing for that agency. Confirmed twice: a newly-added agency (GTrans) that never got its first PMTiles build, and an existing agency (LA Metro) whose rail lines were added to the feed but the PMTiles rebuild step was missed on that change.
 
@@ -58,23 +59,23 @@ This is the single canonical procedure for adding or updating an agency. [`AGENC
    ```bash
    npm run verify-pmtiles-coverage
    ```
-   PMTiles builds now require a successful `refresh` or real `process` handoff first, so stale agency artifacts cannot be repackaged accidentally. `--allow-stale-data` is reserved for an explicitly intentional repack. This compares every agency slug in `index.json` against which slugs actually have route features in the deployed PMTiles and fails loudly on any gap. Run it after every `build-pmtiles`, not just when adding a brand-new agency — it also catches an existing agency whose feed changed (new routes, new mode) without a rebuild.
-8. Commit the agency source file (`config/agencies/<slug>.json`) and regenerated `public/data/index.json`. PMTiles upload is a separate live action (goes straight to R2, not part of git history) — see `docs/ARCHITECTURE.md` for the R2 bucket layout.
+   PMTiles builds require a successful `refresh` or real `process` handoff first, so stale agency artifacts cannot be repackaged accidentally. `--allow-stale-data` is reserved for an explicitly intentional repack. The coverage check compares every agency slug in `index.json` against which slugs actually have route features in the PMTiles archive and fails loudly on any gap; agencies that are `hiddenInProduction` or marked `pmtilesPending` are exempt. `build-pmtiles` already runs it against the local archive before uploading; run it standalone to re-check the release named in `tmp/atlas-release-manifest.json` (or the root archive when no manifest is present). It also catches an existing agency whose feed changed (new routes, new mode) without a rebuild.
+8. Commit the agency source file (`config/agencies/<slug>.json`) and regenerated `public/data/index.json`. Publishing the data release is a separate live action (goes straight to R2, not part of git history) — see [`ARCHITECTURE.md`](../ARCHITECTURE.md) for the R2 bucket layout.
 
-**Mid-week data fix cache bust**: the browser caches agency GeoJSON in IndexedDB keyed by `${slug}-${weekVersion}`. If you re-process an *existing* agency mid-week (e.g. fixing a wrong feed), the IDB cache won't update automatically. Bump `CACHE_BUILD` in `shared/cacheBuild.ts` to invalidate old entries and force a fresh fetch from R2.
+**Browser cache**: the browser caches agency GeoJSON in IndexedDB keyed by slug plus the active release ID (or the R2 `atlas/data-version.json` stamp when no release is available), so publishing a new data release invalidates old entries automatically. A mid-week fix to an existing agency reaches browsers once it is published in a release. `CACHE_BUILD` in `shared/cacheBuild.ts` only affects the bundle-local weekly fallback key used when neither is reachable.
 
-## Incremental PMTiles Build (single new, isolated agency)
+## Incremental PMTiles build (single new, isolated agency)
 
-A full `npm run build-pmtiles` downloads every agency's GeoJSON and retippecanoes the entire archive — expensive, and unnecessary just to validate one small new agency (e.g. proof-of-concept international coverage). `pipeline/build-pmtiles-incremental.ts` (`npm run build-pmtiles-incremental -- <slug> [--dry-run]`) instead builds tippecanoe outputs for just that one agency's routes/stops/corridors and `tile-join`s them into the *already-deployed* `atlas.pmtiles`, without touching any other agency's tiles. Live incremental builds use the same refresh handoff guard as full builds.
+A full `npm run build-pmtiles` downloads every agency's GeoJSON and retippecanoes the entire archive — expensive, and unnecessary just to validate one small new agency (e.g. proof-of-concept international coverage). `pipeline/build-pmtiles-incremental.ts` (`npm run build-pmtiles-incremental -- <slug> [--dry-run]`) instead builds tippecanoe outputs for just that one agency's routes/stops/corridors and `tile-join`s them into the legacy root `atlas.pmtiles` on R2 (not the active release archive), without touching any other agency's tiles. Live incremental builds use the same refresh handoff guard as full builds.
 
 **When this is safe**: a brand-new agency, not yet published, whose service area does not geographically overlap any existing Atlas agency.
 
 **When this is NOT safe — use the full `npm run build-pmtiles` instead**:
 - **Updating an existing, already-published agency** (new routes, a feed refresh, a data fix). Incremental tile-join can only *add* tiles, never remove them — "replacing" an existing agency's tiles this way would leave both the old and new versions of its features present (duplicate/stale rendering), not a clean update. Removing the old version first is a genuinely harder problem and is intentionally out of scope for this script.
-- **A new agency whose bbox overlaps any existing agency's bbox**, even partially. The stops layer is built with tippecanoe `--drop-densest-as-needed` (see step 7 above), which decides which stops to drop at each zoom *relative to everything else sharing a tile*. A full rebuild makes that decision once, jointly, across every agency's stops. Tile-joining a new agency's independently-built `stops.pmtiles` into the existing archive does not redo that joint decision for any tile the two agencies share — you'd get whatever each side's tippecanoe run decided in isolation, which is a different (and wrong) answer than a full rebuild would produce for that shared area. This is the same category of "silently wrong, not loudly broken" risk called out in the PMTiles-skip warning above, just triggered by overlap instead of a skipped rebuild.
+- **A new agency whose bbox overlaps any existing agency's bbox**, even partially. The stops layer is built with tippecanoe `--drop-densest-as-needed`, which decides which stops to drop at each zoom *relative to everything else sharing a tile*. A full rebuild makes that decision once, jointly, across every agency's stops. Tile-joining a new agency's independently-built `stops.pmtiles` into the existing archive does not redo that joint decision for any tile the two agencies share — you'd get whatever each side's tippecanoe run decided in isolation, which is a different (and wrong) answer than a full rebuild would produce for that shared area. This is the same category of "silently wrong, not loudly broken" risk called out in the PMTiles-skip warning above, just triggered by overlap instead of a skipped rebuild.
 
 The script enforces both boundaries itself before doing any tippecanoe/tile-join work, and refuses with a clear error rather than guessing:
-1. Scans the deployed `atlas.pmtiles` (via bounded HTTP range requests near the agency's own bbox — no full download needed just to check) for the slug. Refuses if it's already present.
+1. Scans the root `atlas.pmtiles` (via bounded HTTP range requests near the agency's own bbox — no full download needed just to check) for the slug. Refuses if it's already present.
 2. Compares the agency's bbox (explicit `bbox` in `index.json`, or the same center-padding fallback the rest of the app uses when one isn't set) against every other agency's bbox. Refuses on any rectangle overlap — deliberately conservative (bbox rectangles, not real geometry): a false "safe" here ships a real map correctness bug, so it errs toward refusing.
 
 Both checks are pure logic, unit tested in `pipeline/__tests__/incrementalPmtilesSafety.test.ts` without needing tippecanoe or real R2 access.
@@ -90,13 +91,13 @@ npm run build-pmtiles-incremental -- <slug> --allow-unpaired-pmtiles-upload
 
 A live incremental upload writes the legacy root `atlas.pmtiles`, which is outside any verified data release; deployed builds only read release tiles, so it will not appear on the public map. Use it for local previews, and publish through a full release.
 
-`--dry-run` still downloads the real deployed `atlas.pmtiles` and runs the real tippecanoe/tile-join steps locally (so the size/feature-count report reflects reality), it just stops before the final upload. After a real (non-dry-run) run, still run `npm run verify-pmtiles-coverage` to confirm.
+`--dry-run` still downloads the real root `atlas.pmtiles` and runs the real tippecanoe/tile-join steps locally (so the size/feature-count report reflects reality), it just stops before the final upload. After a real (non-dry-run) run, still run `npm run verify-pmtiles-coverage` to confirm.
 
 **Previewing the dry-run's merged tiles visually, before ever uploading**: copy the local dry-run output to the well-known preview path and restart the local dev server:
 ```bash
 cp tmp/incremental-pmtiles-build/<slug>/atlas.pmtiles tmp/atlas-pmtiles-preview.pmtiles
 ```
-`vite.config.ts`'s dev proxy checks for this file on every `atlas.pmtiles` request and serves it directly (with proper Range-request support) instead of proxying to R2, falling back to the normal proxy when the file isn't present — so the new agency's routes render on the local map exactly as they would in production, with zero writes to the live bucket. Requires a dev server restart to pick up (`vite.config.ts` changes need one); delete the preview file (or just don't create it) to go back to normal behavior.
+`vite.config.ts`'s dev proxy serves this file directly (with proper Range-request support) for `atlas.pmtiles` requests instead of proxying to R2, with zero writes to the live bucket. It only does so when `VITE_USE_LOCAL_PREVIEWS=true` is set **and** a matching `tmp/atlas-preview-manifest.json` exists (written by `npm run build-pmtiles -- --dry-run`; the incremental script does not write one) — a preview archive without its manifest is ignored so local tiles are never paired with live agency data. Requires a dev server restart to pick up; delete the preview file to go back to normal behavior.
 
 ---
 

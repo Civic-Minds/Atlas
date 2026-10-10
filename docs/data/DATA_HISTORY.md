@@ -1,25 +1,25 @@
-# Historical Data Coverage (History App)
+# Historical data coverage (History app)
 
 Atlas's **History** app displays route frequency changes over a 10-year period. This document details the history model, the status of audited systems, and deferred agencies.
 
 ---
 
-## History Model & Eligibility
+## History model & eligibility
 
-For an agency to show up in the History app, it must satisfy the eligibility criteria defined in the frontend:
-*   **Distinct Years**: Must have at least **10 distinct years** of historical snapshots (`MIN_HISTORY_DISTINCT_YEARS >= 10` in `shared/historyEligibility.ts`).
-*   **Change Detection**: Must have at least **1 route** with a recorded headway change that differs from current live data.
+For an agency to show up in the History app, it must satisfy both of these:
+*   **Distinct Years** (frontend eligibility): Must have at least **10 distinct years** across its route snapshots and any `history/{slug}/coverage.json` coverage years (`MIN_HISTORY_DISTINCT_YEARS = 10` in `shared/historyEligibility.ts`).
+*   **Change Detection** (`pipeline/build-history.ts`): Must have at least **1 route** with a recorded headway change that differs from current live data before it is compiled into the history config at all.
 
-### Data Sourcing
+### Data sourcing
 Historical snapshots are compiled via two methods:
 1.  **Weekly Snapshots (Automated)**: Since the pipeline's launch, weekly runs (`refresh.ts`) automatically archive headway changes under `history/{slug}/{routeShortName}/{periodKey}.json` in `atlas-archive`.
 2.  **Historical Backfilling (One-off)**: Running `pipeline/backfill-mdb-history.ts` fetches dataset archives from the **Mobility Database (MDB) API** dating back to ~2013-2016, processes them chronologically, and writes the snapshot history.
 
 ---
 
-## Audited Agencies Status Log
+## Audited agencies status log
 
-### 1. Active & Fully Backfilled (10+ Years)
+### 1. Active & fully backfilled (10+ years)
 
 | Agency (Slug) | MDB Feed ID | Years Covered | Snapshots Compiled | Status / Notes |
 | --- | --- | --- | --- | --- |
@@ -47,7 +47,7 @@ The trip-time-over-years experiment is intended to start with rail because align
 
 ### 3. Research candidates (1–9 live years)
 
-These 20 agencies are the current research pool for reaching the 10-year History threshold. Counts below come from the live `history-config.json` catalog as of 2026-09-28; unusual future-dated years need validation before being treated as real coverage. The pool combines agencies close to eligibility with agencies that have a strong historical service-change story or an unusually promising archive source.
+These 21 agencies are the research pool for reaching the 10-year History threshold. Counts below come from the live `history-config.json` catalog as of 2026-09-28; unusual future-dated years need validation before being treated as real coverage. The pool combines agencies close to eligibility with agencies that have a strong historical service-change story or an unusually promising archive source.
 
 | Agency | Live years | Gap to threshold | Research result |
 | --- | ---: | ---: | --- |
@@ -97,7 +97,7 @@ These are local-only dry-run results. They have not been published to R2.
 
 ---
 
-### 4. Deferred / Low-Feasibility Agencies
+### 4. Deferred / low-feasibility agencies
 
 These agencies were audited but cannot be backfilled automatically due to missing datasets or API restrictions:
 
