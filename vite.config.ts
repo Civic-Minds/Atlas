@@ -164,6 +164,11 @@ export default defineConfig(({ mode }) => {
         },
       },
     },
+    // MapLibre 6 loads its worker from a sibling file next to the module;
+    // Vite's dep pre-bundling drops that file, so routes never render in dev.
+    optimizeDeps: {
+      exclude: ['maplibre-gl'],
+    },
     server: {
       port: 5100,
       strictPort: true,
