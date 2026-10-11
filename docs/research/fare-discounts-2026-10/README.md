@@ -1,6 +1,6 @@
 # Fare discounts
 
-**Status:** NOT VERIFIED: audit found problems; fix pending (Linear CIV-48).
+**Status:** PARTLY VERIFIED (2026-10-11): 47% of sampled quotes are verbatim, 76% verbatim or near-verbatim; 15% are not on the cited page (Linear CIV-48).
 
 Snapshot date: `2026-10-10` (files last rebuilt 2026-10-11)
 Scope: 549 Atlas agencies in Canada, the United States and Mexico
@@ -48,6 +48,52 @@ blank or nonstandard category (`universal`, `general-reduced`).
 
 Treat these counts as unverified until CIV-48 closes.
 
+### Verification pass (2026-10-11)
+
+An independent check of the rebuilt files, run after the rebuild report.
+
+**Quote check.** 200 unique `sourceUrl`s were sampled (seed 20261011,
+including every URL behind an audit fix), covering 242 verified or partial
+rows. Each page was freshly fetched with curl (PDFs through `pdftotext`) and
+the row's quote was compared after normalising whitespace and quote marks.
+
+| Result | Rows | Share of the 212 checkable rows |
+|---|---:|---:|
+| Verbatim on the cited page | 100 | 47% |
+| Near-verbatim (at least 80% of the quote's words on the page, but reworded or split) | 61 | 29% |
+| Not on the cited page | 32 | 15% |
+| Evidence is a description, not a quote (all in B02-B03) | 19 | 9% |
+| Fetch failed (403, 404, timeout; not checkable) | 30 | not counted |
+
+- **B01-B03 have a column shift:** in some rows the quote sits in
+  `dateAccessed` and `evidence` holds the confidence word. B02-B03 rows often
+  hold a description ("Official fares page lists ...") instead of a quote.
+- **B19 and B20 are weakest:** 16 of their 24 checkable sampled rows are not on
+  the cited page.
+- **B11, B12, B14 and B21** had no not-on-page results in the sample.
+
+**Audit fixes, checked by hand (15 rows, 13 agencies):** 8 fixed, 6 partly
+fixed, 1 not fixed.
+
+- **Fixed:** CUE (fare-free), Greeley (now greeleyco.gov, but the two Greeley
+  rows are duplicates), MARTA reduced fare, Mason City (paratransit removed;
+  the page could not be loaded to confirm nothing else), RiverCities, TriMet,
+  Staten Island Ferry.
+- **Partly fixed:**
+  - GET and Saint-Jean-sur-Richelieu: rows say "amount not found", but the
+    cited pages list reduced prices (GET $.80 single, $28 31-day; SJSR monthly
+    44 $).
+  - Cowichan (BC Transit): the quote is now on the page, but the $45 fee is
+    not.
+  - Redwood Coast: the quote is verbatim, but the page says the free fares were
+    grant-funded only through September 2025.
+  - SMART Telluride: the cited PDF is dead; the quote matches an archived
+    November 2024 board packet, not a current fare page.
+  - MARTA homeless-ticket row: it cites a `dev.itsmarta.com` test address; the
+    live page is `itsmarta.com/tsp_home.aspx`.
+- **Not fixed:** exo Presqu'île. The cited page now redirects to the general
+  fares page, and the French quote is not on it.
+
 ## Recommendation
 
 No decision. Do not use this data in Atlas until an independent quote-on-page
@@ -85,9 +131,10 @@ of the CSVs confirms that no verified row has a blank program, eligibility or
 amount field. The quotes themselves have not been re-checked against the cited
 pages.
 
-**Next step:** re-run the audit's automated quote-on-page check across all
-verified rows, and spot-check the corrected agencies, before marking this
-folder verified (CIV-48).
+**Next step (CIV-48):** fix the B01-B03 column shift and replace description
+evidence with real quotes; re-source the not-on-page rows (concentrated in
+B19-B20); apply the partly-fixed corrections above; dedupe Greeley. Then
+re-run the quote check on the rows not sampled here.
 
 **Overlap with other research:**
 
@@ -110,5 +157,7 @@ folder verified (CIV-48).
 | `checkpoint-B01-2026-10-10.md` ... `B21` | Per-batch checkpoints |
 | `audit-2026-10-10.md` | Independent audit of the October 10 pass |
 | `fix-prompt-2026-10-10.md` | Corrections requested after the audit |
-| `rebuild-report-2026-10-10.md` | Researcher's report on the rebuild (unverified) |
+| `rebuild-report-2026-10-10.md` | Researcher's report on the rebuild |
+| `verification-2026-10-11-quote-check.json` | Per-row results of the 2026-10-11 quote check |
+| `verification-2026-10-11-audit-fixes.json` | Hand check of the 15 audit-fix rows |
 | `archive-stale/` | Superseded files kept for history: an early B07 CSV that still has not-yet-checked rows, a B08 checkpoint with the old file-name pattern, and an early B03 checkpoint (`checkpoint-B03-2026-10-10-early.md`, from a separate `fare-discounts-2026-10-10` folder) |

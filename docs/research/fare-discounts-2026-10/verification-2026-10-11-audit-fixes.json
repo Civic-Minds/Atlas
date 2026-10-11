@@ -1,0 +1,140 @@
+{
+ "checkedAt": "2026-10-11",
+ "rows": [
+  {
+   "slug": "get",
+   "programName": "Reduced Fares",
+   "fixed": "partly",
+   "quoteVerbatim": true,
+   "officialDomain": true,
+   "problem": "Status/eligibility fix is correct, but discountValue says 'amount not found' while the same page lists reduced amounts (single $.80, day $1.70, 31-day $28.00). Category 'disability' is narrow; program also covers seniors 65+ and Medicare.",
+   "pageEvidence": "Reduced Fares* Single Ride $.80 Day Pass $1.70** 31 Day Pass $28.00 15 Day Pass $19"
+  },
+  {
+   "slug": "rct",
+   "programName": "RCTA free rides and reduced fare",
+   "fixed": "partly",
+   "quoteVerbatim": true,
+   "officialDomain": true,
+   "problem": "Quote is now verbatim, but the page says the free fares were grant-funded through September 2025 (more than a year ago); status 'verified-official' for a free program that may have lapsed is not current-proof.",
+   "pageEvidence": "Seniors (65+) Free* Free* Free* Disabled Free* Free* Free* *Free with Proof of Eligibility – Grant Funded through September 2025"
+  },
+  {
+   "slug": "rivercities",
+   "programName": "RiverCities Transit reduced fare",
+   "fixed": "yes",
+   "quoteVerbatim": true,
+   "officialDomain": true,
+   "problem": "Minor: first quote part uses pipes for table cells (page text is 'Reduced $0.50 $1.00'). 'Students' in eligibleGroup belong to a separate student pass, not the reduced fare. Notes field repeats the same sentence 3 times.",
+   "pageEvidence": "One Way Day Pass Adult (19-64) $1.00 $2.00 Reduced $0.50 $1.00 18 and Under with proper identification Free Free ... Reduced Citizens age 65 and older, Medicare cardholders, and people with disabilities."
+  },
+  {
+   "slug": "trimet",
+   "programName": "Honored Citizen Fare",
+   "fixed": "yes",
+   "quoteVerbatim": true,
+   "officialDomain": true,
+   "problem": null,
+   "pageEvidence": "If you participate in an assistance program or your household income is less than double the federal poverty level, you qualify for an Honored Citizen Hop card with reduced fare ($1.40 for 2½ hours or $28/month)."
+  },
+  {
+   "slug": "greeley",
+   "programName": "Greeley reduced fares",
+   "fixed": "yes",
+   "quoteVerbatim": true,
+   "officialDomain": true,
+   "problem": "Row appears twice in fixrows.json (exact duplicate) - dedupe.",
+   "pageEvidence": "31-day Pass - must be purchased at GET office $50.00 Adult $20.00 Senior (60+) and Persons with disabilities (must show proof) Annual Pass ... $240.00 Adult $92.00 Senior (60+), Persons with disabilities, and Medicare card holders (must show proof)"
+  },
+  {
+   "slug": "greeley",
+   "programName": "Greeley reduced fares",
+   "fixed": "yes",
+   "quoteVerbatim": true,
+   "officialDomain": true,
+   "problem": "Duplicate of the previous greeley row.",
+   "pageEvidence": "$20.00 Senior (60+) and Persons with disabilities (must show proof)"
+  },
+  {
+   "slug": "smart-telluride",
+   "programName": "SMART seasonal fare-free service",
+   "fixed": "partly",
+   "quoteVerbatim": true,
+   "officialDomain": true,
+   "problem": "Live URL is dead (curl 403, then 404; WebFetch 403); quote verified only via a Wayback Machine copy. Source is a Nov 2024 board packet describing consultant options, not a current fare page, so 'currently free' may be stale.",
+   "pageEvidence": "Fare free bus service within the SMART District: The Lawson Hill Route, the Lawson/Hill Mountain Village Routes and Offseason Routes are currently free. This option would make the Down Valley Route and the Rico Route free as well."
+  },
+  {
+   "slug": "mason-city",
+   "programName": "No in-scope fixed-route discount found",
+   "fixed": "yes",
+   "quoteVerbatim": "unverifiable",
+   "officialDomain": true,
+   "problem": "Paratransit fare is removed and status is none-found (fix done in data). Page could not be fetched (curl 403, WebFetch 403, no Wayback copy), so absence of a fixed-route discount was not independently confirmed. Evidence field is a note, not a quote.",
+   "pageEvidence": "(page blocked - HTTP 403)"
+  },
+  {
+   "slug": "marta",
+   "programName": "Transportation Assistance Program for the Homeless",
+   "fixed": "partly",
+   "quoteVerbatim": true,
+   "officialDomain": true,
+   "problem": "Quote now matches its own page, but sourceUrl is the dev.itsmarta.com host; identical text is live on production https://itsmarta.com/tsp_home.aspx - swap the URL.",
+   "pageEvidence": "The Transportation Assistance Program provides 50% off Breeze round trip and 7-Day tickets to eligible organizations to purchase for homeless recipients."
+  },
+  {
+   "slug": "marta",
+   "programName": "Reduced Fare Program",
+   "fixed": "yes",
+   "quoteVerbatim": true,
+   "officialDomain": true,
+   "problem": null,
+   "pageEvidence": "We offer Reduced Fare Breeze Cards to eligible senior citizens, people with disabilities and Medicare cardholders. ... Fare is unchanged; Reduced Fare rides are still $1.00."
+  },
+  {
+   "slug": "cue-bus",
+   "programName": "CUE Bus fare-free service",
+   "fixed": "yes",
+   "quoteVerbatim": true,
+   "officialDomain": true,
+   "problem": "Verified via WebFetch (curl got 403).",
+   "pageEvidence": "The CUE Bus offers fare-free service throughout the City of Fairfax"
+  },
+  {
+   "slug": "staten-island-ferry",
+   "programName": "Fare-free Staten Island Ferry",
+   "fixed": "yes",
+   "quoteVerbatim": true,
+   "officialDomain": true,
+   "problem": null,
+   "pageEvidence": "NYC DOT operates the Staten Island Ferry, providing free service between Staten Island and Lower Manhattan every day of the week, year-round."
+  },
+  {
+   "slug": "exo-presquile",
+   "programName": "Exo reduced fare",
+   "fixed": "no",
+   "quoteVerbatim": false,
+   "officialDomain": true,
+   "problem": "Cited URL /fr/titres-tarifs/refonte-tarifaire redirects to the generic /fr/titres-tarifs page, which has no reduced-fare text; the French quote is not on it (client.exo.quebec variant redirects to homepage). pagesSearched lists different (English) URLs than sourceUrl.",
+   "pageEvidence": "Titres et tarifs Vous avez accès à plusieurs types de titres en fonction de vos besoins et habitudes de transport."
+  },
+  {
+   "slug": "sjsr",
+   "programName": "Tarif réduit",
+   "fixed": "partly",
+   "quoteVerbatim": true,
+   "officialDomain": true,
+   "problem": "All three quote parts verbatim and eligibility correct, but discountValue says 'amount not found' while the page lists reduced prices (10 passages réduit 16,50 $ zone 1 / 23,25 $ zone 2; monthly réduit 44 $ / 66,50 $). pagesSearched omits the cited page.",
+   "pageEvidence": "12 à 17 ans Tarif réduit Étudiant à temps complet Tarif réduit ... 60 ans et plus Tarif réduit (avec preuve - pièce d'identité requise); 10 passages (réduit **) 16,50 $ 23,25 $ ... Titre mensuel (réduit **) 44 $ 66,50 $"
+  },
+  {
+   "slug": "cowichan",
+   "programName": "BC Bus Pass Program",
+   "fixed": "partly",
+   "quoteVerbatim": true,
+   "officialDomain": true,
+   "problem": "Quote now on the cited gov.bc.ca page, but the '$45 annual fee' / 'no annual fee' amounts are not on that page (it only says an invoice will outline the fee). pagesSearched omits the cited page.",
+   "pageEvidence": "We provide subsidized annual bus passes to: Low-income seniors People receiving disability assistance from the Province of British Columbia ... We will mail you an invoice if you need to pay a fee"
+  }
+ ]
+}
