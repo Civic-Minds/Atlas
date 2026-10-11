@@ -17,7 +17,7 @@ import { PERIOD_KEYS, TIME_PERIODS, SPARKLINE_HOURS, type PeriodKey, type Headwa
 import { ROUTE_ARTIFACT_SCHEMA_VERSION } from '../shared/artifactSchema.js';
 import { DAY_TYPES, WEEKDAYS, type DayName, type DayType } from '../types/gtfs.js';
 import { ALL_DAYS } from '../shared/dayTypes.js';
-import { t2m } from './transit-utils.js';
+import { expandFrequencyWindow, expandTripFrequencyWindows, t2m, type FrequencyWindow } from './transit-utils.js';
 import { adaptiveMedianHeadwayInWindow, computeHourMaxGaps, computePeriodHeadways, computePeriodHeadwayRanges, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, hasGenuineBranchPattern, hasSustainedFrequentService, hasSustainedNightService, headsignOverlapMinHeadway, headwayToTier, medianHeadwayInWindow, nightServiceDepartureTimes, NIGHT_SERVICE_WINDOW_END_MIN, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
 import { computeRouteBaseFares, detectBusSubType } from './route-metadata.js';
 import { buildStopsMeta } from './stopsMeta.js';
@@ -50,13 +50,9 @@ export function normalizeNrtAnalysisResult(result: AnalysisResult): AnalysisResu
   return { ...result, tier: headwayToTier(result.medianHeadway) };
 }
 
-/**
- * A frequencies.txt row is treated as one scheduled trip when its window is the
- * representative trip's own run time (within this tolerance, minutes) and the
- * literal expansion would give no more than SINGLE_TRIP_WINDOW_MAX_DEPARTURES.
- */
-const SINGLE_TRIP_WINDOW_SPAN_TOLERANCE_MIN = 1;
-const SINGLE_TRIP_WINDOW_MAX_DEPARTURES = 3;
+// The one-trip-per-window rule (#702, #706) lives in transit-utils so route-level
+// (transit-phase1) and stop-level expansion share it.
+export type { FrequencyWindow };
 
 /**
  * Return offsets for the repeated departures described by one frequencies.txt row.
@@ -66,10 +62,10 @@ const SINGLE_TRIP_WINDOW_MAX_DEPARTURES = 3;
  * instead write one row per scheduled trip: the window is exactly that trip's
  * run time and headway_secs is a meaningless value below it, so the literal
  * expansion invents a second departure just before the window ends (#702).
- * When `tripSpanMinutes` is given and the window matches it with only a couple
- * of generated departures, only the scheduled trip itself is returned. Long
- * windows (genuine all-day frequency blocks, even when the exporter stretched
- * stop_times to the window) still expand normally.
+ * When `tripSpanMinutes` is given and the row is one scheduled trip
+ * (isSingleTripFrequencyWindow in transit-utils), only that trip is returned.
+ * Long windows (genuine all-day frequency blocks, even when the exporter
+ * stretched stop_times to the window) still expand normally.
  */
 export function expandFrequencyOffsets(
   firstTripDeparture: number,
@@ -77,26 +73,11 @@ export function expandFrequencyOffsets(
   end: number,
   headwayMinutes: number,
   tripSpanMinutes?: number,
+  tripFrequencyRowCount?: number,
 ): number[] {
-  if (!Number.isFinite(firstTripDeparture) || !Number.isFinite(start) || !Number.isFinite(end) || !Number.isFinite(headwayMinutes) || headwayMinutes <= 0 || end <= start) return [];
-  const offsets: number[] = [];
-  for (let generated = start; generated < end; generated += headwayMinutes) offsets.push(generated - firstTripDeparture);
-  if (
-    tripSpanMinutes !== undefined &&
-    Number.isFinite(tripSpanMinutes) &&
-    offsets.length > 1 &&
-    offsets.length <= SINGLE_TRIP_WINDOW_MAX_DEPARTURES &&
-    Math.abs((end - start) - tripSpanMinutes) <= SINGLE_TRIP_WINDOW_SPAN_TOLERANCE_MIN
-  ) {
-    return offsets.slice(0, 1);
-  }
-  return offsets;
-}
-
-export interface FrequencyWindow {
-  start: number;
-  end: number;
-  headwayMinutes: number;
+  if (!Number.isFinite(firstTripDeparture)) return [];
+  return expandFrequencyWindow({ start, end, headwayMinutes }, tripSpanMinutes, tripFrequencyRowCount)
+    .map(generated => generated - firstTripDeparture);
 }
 
 /**
@@ -113,21 +94,8 @@ export function expandTripFrequencyOffsets(
   windows: readonly FrequencyWindow[],
   tripSpanMinutes?: number,
 ): number[] {
-  const offsets: number[] = [];
-  // The earlier row (file order) wins wherever rows overlap: its departures are
-  // kept whole, and a later row only fills hours no earlier row covers. That is
-  // safe because rows on one trip describe one vehicle pattern, so overlapping
-  // rows are alternative descriptions of the same hours, not extra buses; the
-  // kept row's own headway is never cut, and a later row can only add service
-  // outside the earlier windows.
-  windows.forEach((window, index) => {
-    for (const offset of expandFrequencyOffsets(firstTripDeparture, window.start, window.end, window.headwayMinutes, tripSpanMinutes)) {
-      const generated = firstTripDeparture + offset;
-      if (windows.slice(0, index).some(prior => generated >= prior.start && generated < prior.end)) continue;
-      if (!offsets.includes(offset)) offsets.push(offset);
-    }
-  });
-  return offsets;
+  if (!Number.isFinite(firstTripDeparture)) return [];
+  return expandTripFrequencyWindows(windows, tripSpanMinutes).map(generated => generated - firstTripDeparture);
 }
 
 /**

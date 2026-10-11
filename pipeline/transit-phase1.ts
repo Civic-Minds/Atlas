@@ -4,39 +4,53 @@ import {
     RawRouteDepartures,
     ALL_DAYS,
 } from '../types/gtfs';
-import { t2m, getModeName } from './transit-utils';
+import { t2m, getModeName, expandTripFrequencyWindows, type FrequencyWindow } from './transit-utils';
 import { detectReferenceDate, getActiveServiceIds } from './transit-calendar';
 import { isRailLikeRoute } from '../shared/modes';
 
 /**
  * Expand frequency-based trips into individual departure times.
  * Rejects headways < 60 seconds (invalid for scheduled transit analysis).
- * Uses integer-second arithmetic to avoid floating-point accumulation.
+ * Uses the same rules as stop-level expansion in process-core
+ * (expandTripFrequencyWindows): a row that is one scheduled trip adds only that
+ * trip (#702, #706), and a later row's departures inside an earlier row's
+ * window on the same trip are not counted twice (#711).
  */
-function expandFrequencies(frequencies: GtfsFrequency[] | undefined): Map<string, number[]> {
+function expandFrequencies(
+    frequencies: GtfsFrequency[] | undefined,
+    stopTimes: GtfsData['stopTimes'],
+): Map<string, number[]> {
     const expanded = new Map<string, number[]>();
     if (!frequencies || frequencies.length === 0) return expanded;
 
-    const byTrip = new Map<string, GtfsFrequency[]>();
+    const byTrip = new Map<string, FrequencyWindow[]>();
     for (const freq of frequencies) {
+        const startMins = t2m(freq.start_time);
+        const endMins = t2m(freq.end_time);
+        const headwaySecs = parseInt(freq.headway_secs);
+        if (startMins === null || endMins === null || Number.isNaN(headwaySecs) || headwaySecs < 60) continue;
         if (!byTrip.has(freq.trip_id)) byTrip.set(freq.trip_id, []);
-        byTrip.get(freq.trip_id)!.push(freq);
+        byTrip.get(freq.trip_id)!.push({ start: startMins, end: endMins, headwayMinutes: headwaySecs / 60 });
     }
 
-    for (const [tripId, entries] of byTrip) {
-        const departures: number[] = [];
-        for (const freq of entries) {
-            const startMins = t2m(freq.start_time);
-            const endMins = t2m(freq.end_time);
-            const headwaySecs = parseInt(freq.headway_secs);
-            if (startMins === null || endMins === null || Number.isNaN(headwaySecs) || headwaySecs < 60) continue;
-
-            const startSecs = startMins * 60;
-            const endSecs = endMins * 60;
-            for (let s = startSecs; s < endSecs; s += headwaySecs) {
-                departures.push(s / 60);
-            }
+    // First-to-last stop_times span per frequency trip, measured the same way as
+    // process-core (earliest and latest departure_time or arrival_time).
+    const spanBounds = new Map<string, [number, number]>();
+    for (const st of stopTimes ?? []) {
+        if (!byTrip.has(st.trip_id)) continue;
+        const mins = t2m(st.departure_time || st.arrival_time);
+        if (mins === null) continue;
+        const bounds = spanBounds.get(st.trip_id);
+        if (!bounds) spanBounds.set(st.trip_id, [mins, mins]);
+        else {
+            if (mins < bounds[0]) bounds[0] = mins;
+            if (mins > bounds[1]) bounds[1] = mins;
         }
+    }
+
+    for (const [tripId, windows] of byTrip) {
+        const bounds = spanBounds.get(tripId);
+        const departures = expandTripFrequencyWindows(windows, bounds ? bounds[1] - bounds[0] : undefined);
         if (departures.length > 0) expanded.set(tripId, departures);
     }
 
@@ -81,7 +95,7 @@ function buildTripDepartures(
     // Map stopId to stop_name
     const stopNameById = new Map((gtfs.stops ?? []).map(s => [s.stop_id, s.stop_name]));
 
-    const freqExpanded = expandFrequencies(gtfs.frequencies);
+    const freqExpanded = expandFrequencies(gtfs.frequencies, stopTimes);
 
     const result = new Map<string, { depTime: number; routeId: string; dirId: string; serviceId: string; missingDir: boolean; shapeId: string | null; headsign: string | null; routeVariant: string | null }>();
     for (const trip of trips) {
