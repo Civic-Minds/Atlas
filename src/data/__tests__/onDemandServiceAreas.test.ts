@@ -140,6 +140,9 @@ describe('CyRide EASE on-demand service area', () => {
     expect(isOnDemandActive(zone.availability, 'Sunday', 'late')).toBe(false);
     // Weekday can't separate Friday from Monday-Thursday, so it stays unknown rather than claimed.
     expect(zone.availability?.Weekday).toBeUndefined();
+    // School-year service: gone after the last night of the 2026-27 year.
+    expect(isOnDemandZoneShown(CYRIDE_EASE_SERVICE_AREA, 'Ames city limits', 'Saturday', 'late', '2027-05-09')).toBe(true);
+    expect(isOnDemandZoneShown(CYRIDE_EASE_SERVICE_AREA, 'Ames city limits', 'Saturday', 'late', '2027-05-10')).toBe(false);
   });
 
   it('only shows EASE during its weekday operating window', () => {

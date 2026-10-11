@@ -154,9 +154,14 @@ export const CYRIDE_EASE_SERVICE_AREA = {
     'Ames city limits': {
       serviceName: 'Moonlight Express',
       serviceHours: 'Friday and Saturday nights 10:30 p.m.\u20132 a.m. during the Iowa State school year',
-      hoursNote: 'Mid-August to May only, and not on blackout weekends.',
+      hoursNote: "Doesn't run on ISU break weekends, Thanksgiving, Easter or finals week.",
       availability: { Saturday: [{ startHour: 22.5, endHour: 26 }], Sunday: [] },
       hoursSource: { url: 'https://www.cyride.com/schedules/school-year-schedule/moonlight-express', retrievedAt: '2026-10-11' },
+      // Season end: CyRide GTFS 20260827 calendar `MLX,0,0,0,0,1,1,0,20260817,20270514`
+      // (https://www.cyride.net/gtf/gtfs.zip), narrowed by the page's "Friday/Saturday of Finals
+      // Week in May" (ISU finals May 10-13, 2027): last night is Saturday May 8 into May 9.
+      // Re-check in May 2027 for the next school year.
+      validUntil: '2027-05-09',
     },
   },
 };
