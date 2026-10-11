@@ -289,6 +289,7 @@ describe('GTFS-Flex batch from agency feeds', () => {
     tillamook: [Services.TCTD_DIAL_A_RIDE_SERVICE_AREA, ['area_427']],
     'columbia-area-transit': [Services.CAT_DIAL_A_RIDE_SERVICE_AREA, ['1a']],
     'bay-transit': [Services.BAY_TRANSIT_EXPRESS_SERVICE_AREA, ['area_1054']],
+    'all-points-transit': [Services.ALL_POINTS_DIAL_A_RIDE_SERVICE_AREA, ['area_746']],
   } as const;
 
   it('keeps only the public zone from each feed, never paratransit or deviation buffers', () => {
