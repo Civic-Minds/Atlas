@@ -276,3 +276,27 @@ describe('partial-weekday routes (#710)', () => {
     }
   });
 });
+
+describe('partial-weekday decision is per route direction (#710)', () => {
+  it('does not mark a route partial when each weekday runs on its own shape', () => {
+    const results = applyAnalysisCriteriaToDays(WEEKDAYS.map((day, index) => raw({
+      route: 'shape-per-day', day, shapeId: `shape-${index}`, departureTimes: Array.from({ length: 30 }, (_, i) => 420 + i * 30),
+    })));
+    const weekday = results.filter(item => item.route === 'shape-per-day' && item.day === 'Weekday');
+    expect(weekday.length).toBe(5);
+    for (const item of weekday) {
+      expect(item.partialWeekday).toBeUndefined();
+      expect(item.tier).toBe('30');
+    }
+  });
+
+  it('uses the route-direction weekday count when it is supplied', () => {
+    const rows = (['Tuesday', 'Wednesday'] as const).map(day => raw({ route: 'cd-added', day, departureTimes: Array.from({ length: 30 }, (_, i) => 420 + i * 12) }));
+    const partial = applyAnalysisCriteriaToDays(rows).find(item => item.day === 'Weekday');
+    const full = applyAnalysisCriteriaToDays(rows, undefined, undefined, new Map([['cd-added::0', 5]])).find(item => item.day === 'Weekday');
+    expect(partial?.partialWeekday).toBe(true);
+    expect(full?.partialWeekday).toBeUndefined();
+    expect(full?.tier).toBe('15');
+  });
+});
+
