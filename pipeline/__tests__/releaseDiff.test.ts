@@ -31,7 +31,7 @@ const TODAY = '20261010';
 
 /** A summary carrying only counts, for the drop cases where only counts matter. */
 function countsOnly(stops: number, stopPoints: number, routes: number): ArtifactSummary {
-  return { counts: { stops, stopPoints, routes }, modes: ['Bus'], contentHash: `counts-${stops}-${stopPoints}-${routes}`, routeSignatures: [], weekdayHeadways: {}, weekdayTiers: {}, centroid: null };
+  return { counts: { stops, stopPoints, routes }, modes: ['Bus'], contentHash: `counts-${stops}-${stopPoints}-${routes}`, routeSignatures: [], weekdayHeadways: {}, weekdayTiers: {}, weekdayDirectionHeadway: {}, centroid: null };
 }
 
 const names = (flags: GateFlag[]) => flags.map(f => `${f.slug}:${f.flag}:${f.level}`).sort();
@@ -304,6 +304,47 @@ describe('release diff gate: hidden agencies', () => {
       allowMissingLive: true,
     });
     expect(names(hidden)).toEqual(['sun-tran:added:yellow', 'sun-tran:duplicate:red']);
+  });
+});
+
+describe('release diff gate: weekday headway lost (#710)', () => {
+  // Shapes of the 2026-10-11 dry run on 65ab63cb: limited lines keep tier
+  // 'infrequent' and drop their headway.
+  const line = (routeId: string, directionId: number, headway: number | null) => ({
+    type: 'Feature',
+    geometry: { type: 'LineString', coordinates: [[routeId.length, directionId], [1, 1]] },
+    properties: { routeId, directionId, day: 'Weekday', tier: headway == null ? 'infrequent' : headway <= 30 ? '30' : '60', headway },
+  });
+  const artifact = (features: unknown[]) => JSON.stringify({ type: 'FeatureCollection', features });
+  const network = (headwayFor: (routeId: string, directionId: number) => number | null) =>
+    artifact(['1', '2', '3', '4', '5'].flatMap(id => [0, 1].map(dir => line(id, dir, headwayFor(id, dir)))));
+  const live = summarizeArtifact(network(() => 30), null);
+
+  it('is red when most of an agency loses its weekday headways (lanta: every route shown as limited)', () => {
+    const next = summarizeArtifact(network(id => (id === '5' ? 30 : null)), null);
+    const flags = evaluateAgency({ slug: 'lanta', live, next, allowMissingLive: true }, [], TODAY);
+    // 30 -> infrequent is also a 2-step tier move, which route-shift lists.
+    expect(names(flags)).toEqual(['lanta:headway-lost:red', 'lanta:route-shift:yellow']);
+    expect(flags.find(f => f.flag === 'headway-lost')!.message).toMatch(/^8 of 10 weekday route\/directions .* \(80%; 1 d0, 1 d1, 2 d0/);
+    expect(applyOverrides(flags, { allowDrop: false, allow: [] }).blocked).toEqual(['lanta']);
+    expect(applyOverrides(flags, parseGateOverrides(['--allow', 'lanta:headway-lost'])).blocked).toEqual([]);
+  });
+
+  it('is yellow when one direction loses its headway while the other keeps it (kalamazoo 1 d1)', () => {
+    const next = summarizeArtifact(network((id, dir) => (id === '1' && dir === 1 ? null : 30)), null);
+    // The route-level median is still 30, so route-shift alone never sees it.
+    expect(next.weekdayHeadways['1']).toBe(30);
+    const flags = evaluateAgency({ slug: 'kalamazoo', live, next, allowMissingLive: true }, [], TODAY);
+    expect(names(flags)).toEqual(['kalamazoo:headway-lost:yellow']);
+    expect(flags[0].message).toBe('1 of 10 weekday route/directions with a headway live have none now (10%; 1 d1)');
+  });
+
+  it('stays quiet for unchanged routes and for route/directions dropped outright', () => {
+    expect(evaluateAgency({ slug: 'x', live, next: live, allowMissingLive: true }, [], TODAY)).toEqual([]);
+    const dropped = JSON.parse(network(() => 30)) as { features: Array<{ properties: { routeId: string; directionId: number } }> };
+    dropped.features = dropped.features.filter(f => !(f.properties.routeId === '1' && f.properties.directionId === 1));
+    const flags = evaluateAgency({ slug: 'x', live, next: summarizeArtifact(JSON.stringify(dropped), null), allowMissingLive: true }, [], TODAY);
+    expect(flags.filter(f => f.flag === 'headway-lost')).toEqual([]);
   });
 });
 
