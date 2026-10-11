@@ -84,6 +84,13 @@ describe('on-demand zone gate (CIV-50)', () => {
     expect(at('2025-09-01')).toContain('red:stale-source');
   });
 
+  it('lets ordinary booking text about accessible vehicles through, but not an "accessible" service name', () => {
+    const vans = snapshot([{ area: { sourceUrl: 'x', sourceLabel: 'x', sourceRetrievedAt: '2026-10-01', availability: {}, bookingInfo: 'All trips use wheelchair-accessible vans. Mobility devices welcome.' } }], [{ slug: 'test', features: [square('z')] }]);
+    expect(flags(vans)).not.toContain('red:paratransit');
+    const named = snapshot([{ area: { sourceUrl: 'x', sourceLabel: 'x', sourceRetrievedAt: '2026-10-01', availability: {}, serviceName: 'Accessible Transit Service' } }], [{ slug: 'test', features: [square('z')] }]);
+    expect(flags(named)).toContain('red:paratransit');
+  });
+
   it('blocks a temporary zone past its end date', () => {
     const area = { sourceUrl: 'x', sourceLabel: 'x', sourceRetrievedAt: '2026-10-01', availability: {}, zoneMetadata: { Glenora: { validUntil: '2026-09-30' } } };
     expect(flags(snapshot([{ area }], [{ slug: 'test', features: [square('z')] }]))).toContain('red:expired-zone');

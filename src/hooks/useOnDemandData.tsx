@@ -16,30 +16,45 @@ export interface OnDemandData {
   requestGeometry: (slugs: readonly string[]) => void;
 }
 
+/** Wait between automatic retries of a failed index load, and how many to try. */
+export const ON_DEMAND_RETRY_MS = 30_000;
+export const ON_DEMAND_RETRY_LIMIT = 3;
+
 /**
  * Index once on-demand is first shown on the map, geometry per service on request. A failure sets
- * status 'error'; a failed index is retried the next time on-demand is shown, and a failed service
- * the next time it's requested.
+ * status 'error' (the map says so). A failed index retries on its own every 30 s, a few times, while
+ * on-demand is shown, and again whenever it's shown anew; a failed service retries on its next request.
  */
 export function useOnDemandData(enabled: boolean = FEATURES.onDemand): OnDemandData {
   const [status, setStatus] = useState<OnDemandLoadStatus>(enabled ? 'idle' : 'off');
   const [index, setIndex] = useState<OnDemandIndex | null>(null);
   const [geometries, setGeometries] = useState<ReadonlyMap<string, OnDemandGeometry>>(new Map());
   const [visible, setVisible] = useState(false);
+  const [retryTick, setRetryTick] = useState(0);
   const requested = useRef(new Set<string>());
   const failed = useRef(new Set<string>());
+  // In-flight and retry bookkeeping live in refs, so hiding on-demand mid-load can't strand a load.
+  const loading = useRef(false);
+  const retries = useRef(0);
 
   useEffect(() => {
-    if (!enabled || !visible || index || status === 'loading') return;
-    let cancelled = false;
+    if (!enabled || !visible || index || loading.current) return;
+    loading.current = true;
     setStatus('loading');
     loadOnDemandIndex()
-      .then(loaded => { if (!cancelled) { setIndex(loaded); setStatus('ready'); } })
-      .catch(() => { if (!cancelled) setStatus('error'); });
-    return () => { cancelled = true; };
-    // Re-run only when on-demand is shown again; status is read, not watched.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [enabled, visible, index]);
+      .then(loaded => { retries.current = 0; setIndex(loaded); setStatus('ready'); })
+      .catch(() => {
+        setStatus('error');
+        if (retries.current < ON_DEMAND_RETRY_LIMIT) {
+          retries.current += 1;
+          setTimeout(() => setRetryTick(t => t + 1), ON_DEMAND_RETRY_MS);
+        }
+      })
+      .finally(() => { loading.current = false; });
+  }, [enabled, visible, index, retryTick]);
+
+  // Showing on-demand again after the automatic retries ran out starts a fresh round.
+  useEffect(() => { if (visible) retries.current = 0; }, [visible]);
 
   const requestGeometry = useCallback((slugs: readonly string[]) => {
     if (!index) return;

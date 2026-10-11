@@ -29,13 +29,18 @@ export interface OnDemandSnapshot {
 const STALE_YELLOW_DAYS = 180;
 const STALE_RED_DAYS = 365;
 const ZONE_AREA_DROP = 0.3;
-// "ADA" stays case-sensitive so Ada County doesn't read as ADA paratransit.
+// Words that mark eligibility-only service anywhere riders read about it. "ADA" stays
+// case-sensitive so Ada County doesn't read as ADA paratransit.
 const ELIGIBILITY_ONLY = [
   /\bADA\b/,
-  /paratransit|eligib|seniors? only|disabled only|medicaid|\bNEMT\b|specialized|wheel-?trans|accessible|mobility|seniors and persons with disabilities/i,
+  /paratransit|eligib|seniors? only|disabled only|medicaid|\bNEMT\b|specialized|wheel-?trans|seniors and persons with disabilities/i,
 ];
+// Words that only mean eligibility-only in a service or zone name or the eligibility text: booking
+// notes say "wheelchair-accessible vans" and agencies say "mobility" about ordinary service.
+const ELIGIBILITY_ONLY_IN_NAMES = /accessible|mobility/i;
 /** Rider-facing fields that would say who may ride. */
 const ELIGIBILITY_FIELDS = ['serviceName', 'sourceLabel', 'tripRules', 'bookingInfo', 'hoursNote', 'eligibility', 'serviceHours'];
+const NAME_FIELDS = ['serviceName', 'eligibility'];
 
 type Ring = [number, number][];
 
@@ -70,13 +75,13 @@ function hasHours(entry: OnDemandIndexEntry | undefined): boolean {
   return !!area.availability || Object.values(area.zoneMetadata ?? {}).some(zone => !!zone.availability);
 }
 
-function serviceText(entry: OnDemandIndexEntry, geometry: OnDemandGeometry | undefined): string {
+function serviceText(entry: OnDemandIndexEntry, geometry: OnDemandGeometry | undefined, fields: readonly string[]): string {
   const area = entry.area as Record<string, unknown>;
-  const texts: unknown[] = [...ELIGIBILITY_FIELDS.map(field => area[field]), entry.agency?.name];
-  for (const zone of Object.values((area.zoneMetadata ?? {}) as Record<string, Record<string, unknown>>)) {
-    texts.push(...ELIGIBILITY_FIELDS.map(field => zone?.[field]));
+  const texts: unknown[] = [...fields.map(field => area[field]), entry.agency?.name];
+  for (const [name, zone] of Object.entries((area.zoneMetadata ?? {}) as Record<string, Record<string, unknown>>)) {
+    texts.push(name, ...fields.map(field => zone?.[field]));
   }
-  for (const f of geometry?.features ?? []) texts.push(f.id, f.properties?.name, f.properties?.serviceName);
+  for (const f of geometry?.features ?? []) texts.push(f.id, f.properties?.name, f.properties?.areaName, f.properties?.serviceName);
   return texts.filter(t => typeof t === 'string' || typeof t === 'number').join(' ');
 }
 
@@ -114,9 +119,14 @@ export function evaluateOnDemandRelease(
         add(entry.slug, 'invalid', 'red', `stop ${stop.id ?? '?'} is not a valid point`);
       }
     }
-    const text = serviceText(entry, geometry);
-    if (ELIGIBILITY_ONLY.some(pattern => pattern.test(text))) add(entry.slug, 'paratransit', 'red', 'looks eligibility-only; never drawn');
+    const text = serviceText(entry, geometry, ELIGIBILITY_FIELDS);
+    const names = serviceText(entry, geometry, NAME_FIELDS);
+    if (ELIGIBILITY_ONLY.some(pattern => pattern.test(text)) || ELIGIBILITY_ONLY_IN_NAMES.test(names)) {
+      add(entry.slug, 'paratransit', 'red', 'looks eligibility-only; never drawn');
+    }
     if (/placeholder/i.test(text)) add(entry.slug, 'placeholder', 'red', 'placeholder zone');
+    // The release build already keeps unpromoted services out of the public audience; this guards
+    // files that were hand-edited or carried over from a live release, which skip that build.
     if (options.audience === 'public' && !options.promoted.has(entry.slug)) {
       add(entry.slug, 'leak', 'red', 'service not promoted is in the public release');
     }
