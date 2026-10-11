@@ -4,6 +4,7 @@ import { ON_DEMAND_PUBLIC } from '../../../shared/config';
 import { isAgencyVisibleInBrowser } from '../../../shared/agencyVisibility';
 import { buildOnDemandRelease, releaseFiles, releaseWithHeldServices } from '../../data/onDemandExport';
 import { ATTACHED_ON_DEMAND_SERVICES, STANDALONE_ON_DEMAND_AGENCIES } from '../../data/onDemandRegistry';
+import { loadOnDemandSources } from '../../data/onDemandSources';
 import { applyOnDemand, loadOnDemandGeometry, loadOnDemandIndex } from '../onDemandLoader';
 import type { OnDemandGeometry } from '../../../shared/onDemandData';
 
@@ -51,7 +52,7 @@ describe('on-demand R2 round trip (CIV-50)', () => {
     const agencies = applyOnDemand(catalog, index, new Map());
     expect(agencies.every(a => !a.onDemandServiceArea)).toBe(true);
     const standalone = agencies.filter(a => a.onDemandOnly);
-    expect(standalone).toHaveLength(STANDALONE_ON_DEMAND_AGENCIES.length);
+    expect(standalone).toHaveLength(STANDALONE_ON_DEMAND_AGENCIES.length + loadOnDemandSources().filter(source => source.agency).length);
     for (const agency of standalone) expect(isAgencyVisibleInBrowser(agency, { mode: 'public' })).toBe(ON_DEMAND_PUBLIC);
   });
 

@@ -1,0 +1,495 @@
+{
+  "slug": "omnitrans",
+  "area": {
+    "serviceName": "OmniRide",
+    "sourceUrl": "https://omnitrans.org/promotions/omniride/",
+    "sourceLabel": "Omnitrans OmniRide page and its three Google My Maps zone maps",
+    "sourceRetrievedAt": "2026-10-11",
+    "bookingUrl": "https://omnitrans.org/promotions/omniride/",
+    "pickup": {
+      "method": "virtual-stops"
+    },
+    "zoneMetadata": {
+      "Chino/Chino Hills": {
+        "serviceName": "OmniRide",
+        "serviceHours": "Weekdays from 6 AM to 8 PM.",
+        "hoursNote": "Holiday service is not stated on the OmniRide page.",
+        "availability": {
+          "Weekday": [
+            {
+              "startHour": 6,
+              "endHour": 20
+            }
+          ],
+          "Saturday": [],
+          "Sunday": []
+        },
+        "hoursSource": {
+          "url": "https://omnitrans.org/promotions/omniride/",
+          "retrievedAt": "2026-10-11"
+        }
+      },
+      "Upland": {
+        "serviceName": "OmniRide",
+        "serviceHours": "Weekdays from 6 AM to 8 PM.",
+        "hoursNote": "Holiday service is not stated on the OmniRide page.",
+        "availability": {
+          "Weekday": [
+            {
+              "startHour": 6,
+              "endHour": 20
+            }
+          ],
+          "Saturday": [],
+          "Sunday": []
+        },
+        "hoursSource": {
+          "url": "https://omnitrans.org/promotions/omniride/",
+          "retrievedAt": "2026-10-11"
+        }
+      },
+      "Bloomington": {
+        "serviceName": "OmniRide",
+        "serviceHours": "Seven days a week from 5 AM to 10 PM.",
+        "hoursNote": "Holiday service is not stated on the OmniRide page.",
+        "availability": {
+          "Weekday": [
+            {
+              "startHour": 5,
+              "endHour": 22
+            }
+          ],
+          "Saturday": [
+            {
+              "startHour": 5,
+              "endHour": 22
+            }
+          ],
+          "Sunday": [
+            {
+              "startHour": 5,
+              "endHour": 22
+            }
+          ]
+        },
+        "hoursSource": {
+          "url": "https://omnitrans.org/promotions/omniride/",
+          "retrievedAt": "2026-10-11"
+        }
+      }
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "omnitrans",
+        "serviceType": "on-demand",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=13eTr7fXWkoYdvc-pkWmlfTKYth3cgAs&forcekml=1",
+        "sourceLabel": "Omnitrans OmniRide Chino/Chino Hills map (Google My Maps, 2024)",
+        "sourceRetrievedAt": "2026-10-11",
+        "areaName": "Chino/Chino Hills"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -117.689021,
+              34.012759
+            ],
+            [
+              -117.689143,
+              34.019257
+            ],
+            [
+              -117.739876,
+              34.019542
+            ],
+            [
+              -117.740186,
+              34.024619
+            ],
+            [
+              -117.748403,
+              34.023854
+            ],
+            [
+              -117.770678,
+              34.023106
+            ],
+            [
+              -117.772792,
+              33.998763
+            ],
+            [
+              -117.778509,
+              33.998612
+            ],
+            [
+              -117.77707,
+              33.972477
+            ],
+            [
+              -117.786681,
+              33.96682
+            ],
+            [
+              -117.776723,
+              33.949718
+            ],
+            [
+              -117.749431,
+              33.943017
+            ],
+            [
+              -117.729005,
+              33.952544
+            ],
+            [
+              -117.707905,
+              33.95237
+            ],
+            [
+              -117.666558,
+              33.922284
+            ],
+            [
+              -117.653388,
+              33.922494
+            ],
+            [
+              -117.663357,
+              33.950503
+            ],
+            [
+              -117.650343,
+              33.953547
+            ],
+            [
+              -117.650515,
+              33.969102
+            ],
+            [
+              -117.679997,
+              33.969031
+            ],
+            [
+              -117.687068,
+              33.976799
+            ],
+            [
+              -117.687188,
+              33.991017
+            ],
+            [
+              -117.675065,
+              33.991055
+            ],
+            [
+              -117.675323,
+              34.012722
+            ],
+            [
+              -117.689021,
+              34.012759
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "omnitrans",
+        "serviceType": "on-demand",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1ZezaQsZnNHshp3RvoMV7h_LGfrhQarM&forcekml=1",
+        "sourceLabel": "Omnitrans OmniRide Upland map (Google My Maps, 2024)",
+        "sourceRetrievedAt": "2026-10-11",
+        "areaName": "Upland"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -117.684522,
+              34.151076
+            ],
+            [
+              -117.694352,
+              34.122016
+            ],
+            [
+              -117.69877,
+              34.096223
+            ],
+            [
+              -117.698813,
+              34.09537
+            ],
+            [
+              -117.69819,
+              34.082941
+            ],
+            [
+              -117.694059,
+              34.0837
+            ],
+            [
+              -117.68545,
+              34.086157
+            ],
+            [
+              -117.677008,
+              34.08659
+            ],
+            [
+              -117.656584,
+              34.086274
+            ],
+            [
+              -117.63208,
+              34.085987
+            ],
+            [
+              -117.632509,
+              34.091816
+            ],
+            [
+              -117.628303,
+              34.091816
+            ],
+            [
+              -117.627702,
+              34.121096
+            ],
+            [
+              -117.615386,
+              34.12106
+            ],
+            [
+              -117.615275,
+              34.133051
+            ],
+            [
+              -117.626452,
+              34.133211
+            ],
+            [
+              -117.637916,
+              34.151289
+            ],
+            [
+              -117.684522,
+              34.151076
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "omnitrans",
+        "serviceType": "on-demand",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1LZ-JakXzjejwc8nkJHMQI39sAvQEA28&forcekml=1",
+        "sourceLabel": "Omnitrans OmniRide Bloomington map (Google My Maps, 2024)",
+        "sourceRetrievedAt": "2026-10-11",
+        "areaName": "Bloomington"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -117.361091,
+              34.070464
+            ],
+            [
+              -117.355359,
+              34.070434
+            ],
+            [
+              -117.354417,
+              34.070574
+            ],
+            [
+              -117.353439,
+              34.07083
+            ],
+            [
+              -117.352603,
+              34.070738
+            ],
+            [
+              -117.35163,
+              34.070327
+            ],
+            [
+              -117.350728,
+              34.069771
+            ],
+            [
+              -117.348466,
+              34.069382
+            ],
+            [
+              -117.34861,
+              34.077736
+            ],
+            [
+              -117.376955,
+              34.077736
+            ],
+            [
+              -117.453459,
+              34.077434
+            ],
+            [
+              -117.453717,
+              34.047942
+            ],
+            [
+              -117.435468,
+              34.047995
+            ],
+            [
+              -117.409572,
+              34.048233
+            ],
+            [
+              -117.4095,
+              34.040567
+            ],
+            [
+              -117.409439,
+              34.036702
+            ],
+            [
+              -117.40948,
+              34.034071
+            ],
+            [
+              -117.402562,
+              34.034
+            ],
+            [
+              -117.39949,
+              34.033929
+            ],
+            [
+              -117.39697,
+              34.033898
+            ],
+            [
+              -117.395312,
+              34.03389
+            ],
+            [
+              -117.393414,
+              34.03383
+            ],
+            [
+              -117.383076,
+              34.033984
+            ],
+            [
+              -117.376323,
+              34.033846
+            ],
+            [
+              -117.371912,
+              34.033842
+            ],
+            [
+              -117.371406,
+              34.033649
+            ],
+            [
+              -117.369967,
+              34.032818
+            ],
+            [
+              -117.368247,
+              34.03207
+            ],
+            [
+              -117.366856,
+              34.031556
+            ],
+            [
+              -117.36512,
+              34.030898
+            ],
+            [
+              -117.36195,
+              34.031321
+            ],
+            [
+              -117.359225,
+              34.034773
+            ],
+            [
+              -117.357977,
+              34.036915
+            ],
+            [
+              -117.357908,
+              34.038331
+            ],
+            [
+              -117.358371,
+              34.039163
+            ],
+            [
+              -117.359829,
+              34.040196
+            ],
+            [
+              -117.363041,
+              34.04202
+            ],
+            [
+              -117.365551,
+              34.043143
+            ],
+            [
+              -117.368685,
+              34.044659
+            ],
+            [
+              -117.369822,
+              34.047919
+            ],
+            [
+              -117.370364,
+              34.051665
+            ],
+            [
+              -117.370211,
+              34.055482
+            ],
+            [
+              -117.370213,
+              34.063227
+            ],
+            [
+              -117.361032,
+              34.063217
+            ],
+            [
+              -117.361056,
+              34.067384
+            ],
+            [
+              -117.361091,
+              34.070464
+            ]
+          ]
+        ]
+      }
+    }
+  ],
+  "notes": "Zones come from the three 2024 Google My Maps embedded on the OmniRide page. The Upland map also holds fixed-route lines and points, which are left out. The older OmniRide Feb 2022 ArcGIS layers are stale and not used. GTFS has no Flex data."
+}
