@@ -4,6 +4,7 @@ import {
   dropCoincidentTemplateDepartures,
   expandTripFrequencyOffsets,
   firstVisitStopTimes,
+  isStretchedBlockTrip,
   processGtfsBuffer,
   windowsRepeatedByTimetable,
 } from '../process-core';
@@ -342,5 +343,63 @@ describe('processGtfsBuffer single-trip rows next to a timetable (#721)', () => 
     // Terminal departures 06:21 (the 05:50 trip), 06:31, 07:01, 07:38, 08:08, 08:45 in the AM
     // peak: gaps 10/30/37/30/37, median 30. Losing the 05:50 trip gives 34.
     expect(line.headwayByPeriod?.amPeak).toBe(30);
+  });
+});
+
+// waco 20501231 zip, route TL-56 (#9 South Terrace), trip TL-2634, service TL-82 (Mon-Fri):
+// one TransLoc block trip timed only at its first stop (05:00) and last stop (19:15), with
+// frequencies 05:00-19:15 every 2807 s. Stop list shortened; the untimed stops stay untimed.
+const WACO_STOPS: Array<[string, number, string, number, number]> = [
+  ['TL-254', 1, '05:00:00', 31.55195, -97.13303], ['TL-258', 50, '', 31.54891, -97.12274],
+  ['TL-262', 90, '', 31.53019, -97.11363], ['TL-268', 150, '', 31.4962, -97.15132],
+  ['TL-281', 280, '19:15:00', 31.54718, -97.12572],
+];
+
+function wacoSouthTerraceFixtureZip(): JSZip {
+  const zip = new JSZip();
+  zip.file('agency.txt', 'agency_id,agency_name,agency_url,agency_timezone\na,Waco Transit,https://example.test,America/Chicago\n');
+  zip.file('routes.txt', 'route_id,route_short_name,route_long_name,route_type\nTL-56,9,South Terrace,3\n');
+  zip.file('stops.txt', ['stop_id,stop_name,stop_lat,stop_lon', ...WACO_STOPS.map(([id, , , lat, lon]) => `${id},${id},${lat},${lon}`)].join('\n') + '\n');
+  zip.file('calendar.txt', 'service_id,monday,tuesday,wednesday,thursday,friday,saturday,sunday,start_date,end_date\nTL-82,1,1,1,1,1,0,0,20250626,20501230\n');
+  zip.file('shapes.txt', ['shape_id,shape_pt_lat,shape_pt_lon,shape_pt_sequence', ...WACO_STOPS.map(([, , , lat, lon], i) => `TL-56,${lat},${lon},${i + 1}`)].join('\n') + '\n');
+  zip.file('trips.txt', 'route_id,service_id,trip_id,trip_headsign,direction_id,shape_id\nTL-56,TL-82,TL-2634,S 8th ST,0,TL-56\n');
+  zip.file('stop_times.txt', ['trip_id,arrival_time,departure_time,stop_id,stop_sequence', ...WACO_STOPS.map(([id, seq, time]) => `TL-2634,${time},${time},${id},${seq}`)].join('\n') + '\n');
+  zip.file('frequencies.txt', 'trip_id,start_time,end_time,headway_secs\nTL-2634,05:00:00,19:15:00,2807\n');
+  return zip;
+}
+
+describe('processGtfsBuffer stretched TransLoc block trips (#722)', () => {
+  it('keeps waco TL-56 daytime service at every stop, not shifted into the night', async () => {
+    const route = await weekdayRoutes(wacoSouthTerraceFixtureZip(), 'waco');
+    const [southTerrace] = route('9');
+    // Hand count: 19 departures, 05:00 to 19:02, every 46.8 min. Nothing after 19:15, so the
+    // evening has one bus (19:02, then a 238-min wait to 23:00) and late has none; the 05:00
+    // first bus is the overnight period's only departure (180 min after 02:00).
+    expect(southTerrace.headwayByPeriod).toMatchObject({ amPeak: 47, midday: 47, pmPeak: 47 });
+    expect(southTerrace.headwayByPeriod?.late ?? null).toBeNull();
+    expect(southTerrace.periodCoverageHeadway).toMatchObject({ amPeak: 47, midday: 47, pmPeak: 47, evening: 238, overnight: 180 });
+    expect(southTerrace.periodCoverageHeadway?.late ?? null).toBeNull();
+    expect(southTerrace.stopPeriodHeadways?.['TL-281']).toMatchObject({ amPeak: 47, midday: 47, pmPeak: 47 });
+  });
+});
+
+describe('isStretchedBlockTrip (#722)', () => {
+  const stops = (times: string[]) => times.map((time, i) => ({ stop_sequence: String(i + 1), departure_time: time, arrival_time: time }));
+  const window = (start: string, end: string, secs: number) => ({ start: m(start), end: m(end), headwayMinutes: secs / 60 });
+
+  it('matches a TransLoc block timed only at its start and end', () => {
+    expect(isStretchedBlockTrip(stops(['05:00:00', '', '', '19:15:00']), [window('05:00', '19:15', 2807)])).toBe(true);
+  });
+
+  it('leaves a real trip alone even when its run time equals its window', () => {
+    // Every stop timed: a 60-min trip with a 06:00-07:00 window every 10 min is real run-time data.
+    expect(isStretchedBlockTrip(stops(['06:00:00', '06:20:00', '06:40:00', '07:00:00']), [window('06:00', '07:00', 600)])).toBe(false);
+    // Only the ends timed, but the stops between are real and the window does not match.
+    expect(isStretchedBlockTrip(stops(['00:00:00', '', '00:45:00']), [window('07:00', '18:30', 1350)])).toBe(false);
+  });
+
+  it('leaves a single-trip row to the #702 rule', () => {
+    // waco TL-2533: 18:38-19:30 every 3005 s, two departures.
+    expect(isStretchedBlockTrip(stops(['18:38:00', '', '19:30:00']), [window('18:38', '19:30', 3005)])).toBe(false);
   });
 });

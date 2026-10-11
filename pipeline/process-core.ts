@@ -98,6 +98,39 @@ export function isSingleTripWindow(window: FrequencyWindow, tripSpanMinutes?: nu
     && Math.abs((window.end - window.start) - tripSpanMinutes) <= SINGLE_TRIP_WINDOW_SPAN_TOLERANCE_MIN;
 }
 
+/**
+ * TransLoc block exports write one frequency trip per vehicle block, timed
+ * only at its first stop (the block's start) and last stop (the block's end),
+ * with the stops between untimed: waco TL-56 05:00 ... 19:15 across 26 stops
+ * with a 05:00-19:15 window every 2807 s, clemson-cat Gold 07:00 ... 18:07.
+ * The last stop's time is not one run's offset, so adding each generated
+ * departure to it put that stop's service 14 hours late, and since the last
+ * stop is the route terminal, the route showed only evening and overnight
+ * service (#722).
+ *
+ * Recognised by that exact signature: exactly two timed stops, the first and
+ * last in stop_sequence order, matching the earliest window start and latest
+ * window end, with more departures than a single-trip row (#702) has.
+ */
+export function isStretchedBlockTrip(
+  tripStops: ReadonlyArray<{ stop_sequence?: string | number; departure_time?: string; arrival_time?: string }>,
+  windows: readonly FrequencyWindow[],
+): boolean {
+  if (tripStops.length < 2 || windows.length === 0) return false;
+  const ordered = [...tripStops].sort((a, b) => Number(a.stop_sequence) - Number(b.stop_sequence));
+  const timeOf = (st: { departure_time?: string; arrival_time?: string }) => t2m(st.departure_time || st.arrival_time || '');
+  const timed = ordered.filter(st => timeOf(st) !== null);
+  if (timed.length !== 2 || timed[0] !== ordered[0] || timed[1] !== ordered[ordered.length - 1]) return false;
+  const first = timeOf(timed[0])!;
+  const last = timeOf(timed[1])!;
+  const start = Math.min(...windows.map(window => window.start));
+  const end = Math.max(...windows.map(window => window.end));
+  const departures = windows.reduce((sum, window) => sum + (window.headwayMinutes > 0 && window.end > window.start ? Math.ceil((window.end - window.start) / window.headwayMinutes) : 0), 0);
+  return departures > SINGLE_TRIP_WINDOW_MAX_DEPARTURES
+    && Math.abs(first - start) <= SINGLE_TRIP_WINDOW_SPAN_TOLERANCE_MIN
+    && Math.abs(last - end) <= SINGLE_TRIP_WINDOW_SPAN_TOLERANCE_MIN;
+}
+
 export interface FrequencyWindow {
   start: number;
   end: number;
@@ -987,13 +1020,17 @@ export async function processGtfsBuffer(
         : allOffsets.filter(offset => !droppedWindows.some(window => first + offset >= window.start && first + offset < window.end));
       if (!tripStops || !groups || offsets.length === 0) continue;
       const visits = firstVisitStopTimes(tripStops);
+      const stretched = isStretchedBlockTrip(tripStops, windows);
       for (const offset of offsets) {
         // Count each station once per trip as well: a trip that serves two
         // platforms of one parent station adds one departure to the station.
         const seenParents = new Set<string>();
         for (const st of visits) {
-          const base = t2m(st.departure_time || st.arrival_time);
-          if (base === null) continue;
+          const literal = t2m(st.departure_time || st.arrival_time);
+          if (literal === null) continue;
+          // A stretched block's literal times are not run-time offsets: every
+          // timed stop gets the generated start itself (run time unknown).
+          const base = stretched ? first : literal;
           const mins = base + offset;
           const parentId = childToParent.get(st.stop_id);
           const countParent = parentId !== undefined && !seenParents.has(parentId);
