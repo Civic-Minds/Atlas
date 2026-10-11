@@ -14,6 +14,7 @@ import { DEFAULT_CRITERIA, getTiersForCriteria } from './defaults';
 import { SURFACE_TIER_MAXES, TIME_PERIODS } from '../shared/config.js';
 import { isRailLikeRoute } from '../shared/modes.js';
 import { computeRawDepartures } from './transit-phase1';
+import { forCrossMidnightWindow } from './headway-utils';
 
 export type TierDeterminerContext = {
     rawDepartureTimes: readonly number[];
@@ -300,9 +301,9 @@ const representativeRollupEntry = <T extends { result: AnalysisResult }>(
 ): T => entries[representativeIndexByCount(entries.map(entry => entry.result.times.length))];
 
 /**
- * Index of the day whose departure count is closest to the median count; the
- * earliest such day wins a tie. Shared with the stop-level Weekday grouping in
- * process-core so stop and route metrics describe the same weekday (#710).
+ * Mon-Fri index of the representative weekday, or null when the median weekday has no
+ * service. Shared with the stop-level Weekday grouping in process-core so stop and route
+ * metrics describe the same weekday (#710).
  */
 export function representativeWeekdayIndex(countsByWeekday: number[]): number | null {
     // Mon-Fri departure counts, 0 for a day without service. The median weekday decides:
@@ -312,6 +313,10 @@ export function representativeWeekdayIndex(countsByWeekday: number[]): number | 
     return representativeIndexByCount(countsByWeekday);
 }
 
+/**
+ * Index of the day whose departure count is closest to the median count; the
+ * earliest such day wins a tie.
+ */
 export function representativeIndexByCount(counts: number[]): number {
     const sorted = [...counts].sort((a, b) => a - b);
     // Lower middle for an even count: the worse of the two middle days decides.
@@ -359,7 +364,10 @@ export function previousNightTailDays(rawData: readonly RawRouteDepartures[]): S
         const previousDay = ALL_DAYS[(dayIndex + ALL_DAYS.length - 1) % ALL_DAYS.length];
         const previous = span.get(`${route}::${dir}::${previousDay}`);
         if (!previous) continue;
-        if (first + 1440 - previous.last <= PREVIOUS_NIGHT_TAIL_MAX_GAP_MIN) tails.add(key);
+        // A negative gap means the previous day already runs past this day's first departure in
+        // 24:00+ times; these trips are then not its continuation.
+        const gap = first + 1440 - previous.last;
+        if (gap >= 0 && gap <= PREVIOUS_NIGHT_TAIL_MAX_GAP_MIN) tails.add(key);
     }
     return tails;
 }
@@ -599,7 +607,11 @@ export function applyAnalysisCriteria(
         // it. Such a route is shown as infrequent ("limited") with no headway or timetable,
         // not as a frequency tier taken from the days it does run (#710).
         const weekdayIndex = dayType === 'Weekday'
-            ? representativeWeekdayIndex(WEEKDAYS.map(day => entries.find(e => e.day === day)?.result.times.length ?? 0))
+            // A weekday whose only service is the previous night's tail counts as unserved (#718).
+            ? representativeWeekdayIndex(WEEKDAYS.map(day => {
+                const entry = entries.find(e => e.day === day);
+                return entry && !entry.result.previousNightTail ? entry.result.times.length : 0;
+            }))
             : undefined;
         const partialWeekday = dayType === 'Weekday' && weekdayIndex === null;
         const repEntry = weekdayIndex != null
@@ -672,7 +684,10 @@ export function applyAnalysisCriteria(
             // period still draws it as limited while a frequency threshold hides it. A day that
             // only carries the previous night's tail marks no period (#718).
             partialWeekdayPeriods: partialWeekday
-                ? TIME_PERIODS.filter(p => ownServiceEntries.some(e => e.rawTimes.some(t => t >= p.startHour * 60 && t < p.endHour * 60))).map(p => p.key)
+                // 00:00-form times get the same +24 h copy the period headways use, so a
+                // 00:30 departure counts toward the late period.
+                ? TIME_PERIODS.filter(p => ownServiceEntries.some(e =>
+                    forCrossMidnightWindow(e.rawTimes, p.endHour * 60).some(t => t >= p.startHour * 60 && t < p.endHour * 60))).map(p => p.key)
                 : undefined,
             previousNightTailOnly: previousNightTailOnly || undefined,
             weekdayTierVariation: (weekdayTierVariation && !noTimetable) || undefined,

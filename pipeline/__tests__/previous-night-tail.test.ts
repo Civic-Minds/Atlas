@@ -136,6 +136,44 @@ describe('a day whose only service is the previous night\'s tail (#718)', () => 
     expect(weekday.serviceClass).toBe('regular');
   });
 
+  it('a route on two weekday nights stays limited and drawn under any frequency (tail day is unserved)', async () => {
+    // Mon+Tue 17:00-23:30, each night's tail 00:00-02:00 under a Tue+Wed service. Wednesday's
+    // only trips are Tuesday night's tail, so only 2 of 5 weekdays have service of their own.
+    const features = await routeFeatures(await syntheticFeed([
+      { id: 'nights', days: '1100000', departures: range(17 * 60, 23 * 60 + 30, 30) },
+      { id: 'tails', days: '0110000', departures: range(0, 120, 30) },
+    ]), 'tail-two-nights');
+    const weekday = features.find(p => p.day === 'Weekday');
+    expect(weekday.tier).toBe('infrequent');
+    expect(weekday.headway).toBeNull();
+    expect(weekday.partialWeekdayServiceByPeriod).toMatchObject({ amPeak: false, midday: false, evening: true, late: true });
+    expect(routePassesHeadwayFilter(features, 'evening', 'Weekday', Infinity)).toBe(true);
+    expect(routePassesHeadwayFilter(features, 'late', 'Weekday', Infinity)).toBe(true);
+    expect(routePassesHeadwayFilter(features, 'evening', 'Weekday', 60)).toBe(false);
+    expect(routePassesHeadwayFilter(features, 'amPeak', 'Weekday', Infinity)).toBe(false);
+  });
+
+  it('a partial-weekday route that runs only after midnight still marks the late period', async () => {
+    // Thu+Fri 00:30-01:30 only (plus nothing the evening before): 00:30 is late, not no period.
+    const features = await routeFeatures(await syntheticFeed([
+      { id: 'late', days: '0001100', departures: range(30, 90, 30) },
+    ]), 'tail-after-midnight-only');
+    const weekday = features.find(p => p.day === 'Weekday');
+    expect(weekday.tier).toBe('infrequent');
+    expect(weekday.partialWeekdayServiceByPeriod).toMatchObject({ late: true, evening: false });
+  });
+
+  it('leaves genuine 05:00 early-Sunday service alone', async () => {
+    // Saturday runs to 23:59; Sunday has only 05:00-05:50. Five hours apart: not a tail.
+    const early = await routeFeatures(await syntheticFeed([
+      { id: 'sat', days: '0000010', departures: [...range(7 * 60, 23 * 60 + 30, 30), 23 * 60 + 59] },
+      { id: 'sun', days: '0000001', departures: range(5 * 60, 5 * 60 + 50, 10) },
+    ]), 'tail-five-am');
+    const sunday = early.find(p => p.day === 'Sunday');
+    expect(sunday.tier).toBe('10');
+    expect(sunday.headway).toBe(10);
+  });
+
   it('leaves a day with its own service alone even when it also carries a tail', async () => {
     const both = await routeFeatures(await syntheticFeed([
       { id: 'sat', days: '0000010', departures: range(7 * 60, 23 * 60 + 30, 30) },
@@ -163,5 +201,10 @@ describe('previousNightTailDays', () => {
     expect(previousNightTailDays([raw('Saturday', range(1020, 1300, 30)), raw('Sunday', range(60, 150, 30))]).size).toBe(0);
     expect(previousNightTailDays([raw('Saturday', range(1020, 1420, 30)), raw('Sunday', [...range(0, 120, 30), 400])]).size).toBe(0);
     expect(previousNightTailDays([raw('Sunday', range(0, 120, 30))]).size).toBe(0);
+    // The previous day already runs past 24:00 (24:00+ times reach 25:00), so this day's
+    // 00:00-02:00 trips are not its continuation: the gap is negative.
+    expect(previousNightTailDays([raw('Saturday', range(1020, 1500, 30)), raw('Sunday', range(0, 120, 30))]).size).toBe(0);
+    // A genuine 05:00 Sunday start after a 23:59 finish.
+    expect(previousNightTailDays([raw('Saturday', [...range(1020, 1410, 30), 1439]), raw('Sunday', range(300, 350, 10))]).size).toBe(0);
   });
 });
