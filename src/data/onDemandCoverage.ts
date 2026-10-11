@@ -58,7 +58,6 @@ export const ON_DEMAND_NOT_MAPPED: Readonly<Record<string, OnDemandNotMapped>> =
   'trimet': { serviceName: 'SPOT Southwest' },
   'tulsa-transit': { serviceName: 'Broken Arrow On-Demand' },
   'valley-regional-transit': { serviceName: 'Route 150 On-Demand' },
-  'cdta': { serviceName: 'CDTA FLEX' },
   'dutchess': { serviceName: 'Dutchess Flex' },
   'fast-ca': { serviceName: 'FAST Connect' },
   'godurham': { serviceName: 'GoDurham Connect' },
@@ -69,12 +68,9 @@ export const ON_DEMAND_NOT_MAPPED: Readonly<Record<string, OnDemandNotMapped>> =
   'metrohouston': { serviceName: 'curb2curb' },
   'nice': { serviceName: 'NICE Mini' },
   'omniride': { serviceName: 'On-demand service' },
-  'pace-bus': { serviceName: 'Pace On Demand' },
   'rtcsnv': { serviceName: 'RTC OnDemand' },
   'riovista': { serviceName: 'Delta Breeze' },
   'rts': { serviceName: 'RTS On Demand' },
-  'saint-john': { serviceName: 'FLEX' },
-  'santaclarita': { serviceName: 'Go! Santa Clarita' },
   'smart-ca': { serviceName: 'SMART Connect' },
   'sportran': { serviceName: 'SporTran OnDemand' },
   'torrance-transit': { serviceName: 'Connect Torrance' },
@@ -82,7 +78,6 @@ export const ON_DEMAND_NOT_MAPPED: Readonly<Record<string, OnDemandNotMapped>> =
   'via': { serviceName: 'VIA Link' },
   'vine': { serviceName: 'On-demand service' },
   'nashvillemta': { serviceName: 'WeGo Link' },
-  'wrta': { serviceName: 'Via-WRTA' },
   'yolobus': { serviceName: 'BeeLine' },
 };
 
