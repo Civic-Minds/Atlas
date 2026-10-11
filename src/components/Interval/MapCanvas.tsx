@@ -21,7 +21,7 @@ import { useColorVision } from '../../context/ColorVisionContext';
 import { tileEffectiveHeadwayExpr, tileRouteKeyExpr } from '../../../shared/tileFilterExprs';
 import { routeFilterHeadway } from '../../../shared/routeHeadwayFilter';
 import { syncUrlParams } from '../../utils/syncUrlParams';
-import { buildFocusCase, buildFocusedRoutePaint, buildSelectedRouteLineOpacity, FOCUS_DIM_OPACITY } from '../../utils/routeFocus';
+import { buildFocusCase, buildFocusedRoutePaint, FOCUS_DIM_OPACITY } from '../../utils/routeFocus';
 import { isOnDemandStopFocused, isOnDemandZoneFocused, ON_DEMAND_FOCUSED_PROP, type OnDemandFocusTarget } from './map/onDemandFocus';
 import { dedupeRouteKeysByDisplay, splitRouteKey } from '../../utils/routeKey';
 import { computeFrequencySegmentOverlay, buildPartialMatchFilterExpression, broadenFilterForPartialMatches } from '../../utils/frequencySegments';
@@ -2179,20 +2179,12 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       } else if (selectedRoute) {
         const selKey = selectedRoute;
         const routeMatch: any = routeKeyMatchExpression(selKey);
-        const partialMatch = frequencySegmentOverlay.partialMatches.length > 0
-          ? buildPartialMatchFilterExpression(frequencySegmentOverlay.partialMatches)
-          : undefined;
-        const setSelectedOpacity = (focusCases: unknown[]) => {
-          if (hasRoutes) map.setPaintProperty('routes-layer', 'line-opacity', buildSelectedRouteLineOpacity(
-            buildDefaultRouteLineOpacityExpression(headwayExpr, partialMatch), focusCases,
-          ) as any);
-          if (hasLocalRoutes) map.setPaintProperty('local-routes-layer', 'line-opacity',
-            buildSelectedRouteLineOpacity(0.9, focusCases) as any);
-        };
         if (hoveredBranch?.isCore) {
           // The clipped shared-hover-segments overlay is the only bright geometry for a
           // combined-row hover. Never brighten the full route as a proxy for the shared section.
-          setSelectedOpacity([routeMatch, 0.4]);
+          setRouteLayerPaint(map, 'line-opacity', [
+            'case', routeMatch, 0.4, DIM_OPACITY,
+          ]);
           setRouteLayerPaint(map, 'line-width', [
             'case', routeMatch, 1.5, DIM_WIDTH,
           ]);
@@ -2205,12 +2197,16 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
             ['==', ['get', 'directionId'], hoveredBranch.directionId],
             branchHeadSignMatch,
           ];
-          setSelectedOpacity([branchMatch, 1.0, routeMatch, 0.4]);
+          setRouteLayerPaint(map, 'line-opacity', [
+            'case', branchMatch, 1.0, routeMatch, 0.4, DIM_OPACITY,
+          ]);
           setRouteLayerPaint(map, 'line-width', [
             'case', branchMatch, 3.5, routeMatch, 1.5, DIM_WIDTH,
           ]);
         } else {
-          setSelectedOpacity([routeMatch, 1.0]);
+          // Same fade as History, stops and search hover: the selected route stands out
+          // and the rest of the network stays faintly visible and clickable.
+          setRouteLayerPaint(map, 'line-opacity', buildFocusedRouteLineOpacityExpression(routeMatch, headwayExpr, colorMode) as any);
           setRouteLayerPaint(map, 'line-width', [
             'interpolate', ['linear'], ['zoom'],
             8, ['case', routeMatch, 3.5, 1.5],
