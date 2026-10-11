@@ -13,7 +13,7 @@ import { normalizeGtfs, type GtfsPreprocess, type GtfsTransformOptions } from '.
 import { validateGtfs, type ValidationReport } from './validation.js';
 import { resolveDisplayHeadsign } from '../shared/headsignDisplay.js';
 import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig.js';
-import { TIME_PERIODS, SPARKLINE_HOURS, type PeriodKey, type HeadwayByPeriod, type HeadwayByPeriodMaxGap, type HeadwayByPeriodSustained } from '../shared/config.js';
+import { PERIOD_KEYS, TIME_PERIODS, SPARKLINE_HOURS, type PeriodKey, type HeadwayByPeriod, type HeadwayByPeriodMaxGap, type HeadwayByPeriodSustained } from '../shared/config.js';
 import { ROUTE_ARTIFACT_SCHEMA_VERSION } from '../shared/artifactSchema.js';
 import { DAY_TYPES, WEEKDAYS, type DayName, type DayType } from '../types/gtfs.js';
 import { ALL_DAYS } from '../shared/dayTypes.js';
@@ -569,6 +569,9 @@ export async function processGtfsBuffer(
         headwayRangeByPeriod: computePeriodHeadwayRanges(result.times),
         maxGapByPeriod: computePeriodMaxGaps(result.times),
         headwayByPeriodSustained: computePeriodSustained(result.times),
+        partialWeekdayServiceByPeriod: result.partialWeekday
+          ? Object.fromEntries(PERIOD_KEYS.map(key => [key, result.partialWeekdayPeriods?.includes(key) ?? false]))
+          : undefined,
         headwayByHour: (() => {
           const byHour: HeadwayByHour = {};
           for (const h of SPARKLINE_HOURS) {

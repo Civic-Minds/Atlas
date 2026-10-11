@@ -3,6 +3,10 @@ import { resolve } from 'node:path';
 import JSZip from 'jszip';
 import { describe, expect, it } from 'vitest';
 import { processGtfsBuffer } from '../process-core';
+import { routePassesHeadwayFilter } from '../../shared/routeHeadwayFilter';
+import { isLimitedService } from '../../shared/irregularRoutes';
+import { tileLimitedServiceExpr } from '../../shared/tileFilterExprs';
+import { prepareAgencyRouteFeaturesForTiles as prepareAgencyRoutesForTiles } from '../prepareAgencyRoutesForTiles';
 
 // #710: the Weekday stop groups used to pool every service that runs on any of Mon-Fri
 // into one departure timeline. Two timetables that never run on the same day (Mon-Thu
@@ -208,5 +212,55 @@ describe('Weekday stop groups use one representative weekday (#710)', () => {
 
     expect(weekday.headwayByPeriod.midday).toBe(10);
     for (const headway of Object.values(weekday.stopHeadways) as number[]) expect(headway).toBe(10);
+  });
+
+  it('a partial-weekday route still draws as limited under "any frequency" in a period it runs', async () => {
+    // TL-24 runs Thu+Fri 17:45-02:45. Weekday evening + any frequency must show it (limited);
+    // a frequency threshold (every 30) must hide it. uga C-N (Thu-Fri from 18:30) likewise.
+    for (const [fixture, slug] of [['clemson-tl24-thu-fri', 'clemson-cat'], ['uga-cn-night-services', 'uga']] as const) {
+      const weekday = (await routeFeatures(await fixtureZip(fixture), slug)).filter(p => p.day === 'Weekday');
+      expect(weekday.every(p => p.tier === 'infrequent'), fixture).toBe(true);
+      expect(routePassesHeadwayFilter(weekday, 'evening', 'Weekday', Infinity), fixture).toBe(true);
+      expect(routePassesHeadwayFilter(weekday, 'evening', 'Weekday', 30), fixture).toBe(false);
+      expect(routePassesHeadwayFilter(weekday, 'evening', 'Weekday', 60), fixture).toBe(false);
+      // No service in the morning on any weekday: hidden even under "any frequency".
+      expect(routePassesHeadwayFilter(weekday, 'amPeak', 'Weekday', Infinity), fixture).toBe(false);
+    }
+  });
+
+  it('the same rule holds on the tile path (flattened properties)', async () => {
+    const result = await processGtfsBuffer(await fixtureZip('clemson-tl24-thu-fri'), undefined, { slug: 'clemson-cat' });
+    const tiles = prepareAgencyRoutesForTiles(JSON.parse(result.geojson).features, 'clemson-cat')
+      .map(f => f.properties)
+      .filter((p: any) => p.day === 'Weekday');
+    expect(tiles.length).toBeGreaterThan(0);
+    expect(tiles.every((p: any) => p.pws_evening === true && p.pws_amPeak === false)).toBe(true);
+    expect(routePassesHeadwayFilter(tiles, 'evening', 'Weekday', Infinity)).toBe(true);
+    expect(routePassesHeadwayFilter(tiles, 'evening', 'Weekday', 30)).toBe(false);
+  });
+
+  it('a frequent all-week route is unchanged by the partial-weekday rule', async () => {
+    const features = await routeFeatures(await syntheticFeed([{ id: 'daily', days: '1111111', every: 12 }]), 'frequent');
+    const weekday = features.filter(p => p.day === 'Weekday');
+    expect(weekday[0].partialWeekdayServiceByPeriod).toBeUndefined();
+    expect(routePassesHeadwayFilter(weekday, 'evening', 'Weekday', Infinity)).toBe(true);
+    expect(routePassesHeadwayFilter(weekday, 'midday', 'Weekday', 15)).toBe(true);
+    expect(routePassesHeadwayFilter(weekday, 'midday', 'Weekday', 10)).toBe(false);
+  });
+
+  it('the "hide limited" toggle decides whether a partial-weekday route shows under any frequency', async () => {
+    // Ryan, 2026-10-11: TL-24 behaves like any other limited route. Toggle off: shown as
+    // limited under "Weekday evening, any frequency". Toggle on: hidden. Thresholds hide it.
+    const weekday = (await routeFeatures(await fixtureZip('clemson-tl24-thu-fri'), 'clemson-cat')).filter(p => p.day === 'Weekday');
+    const visible = (hideLimited: boolean, maxHeadway: number) =>
+      weekday.filter(p => !(hideLimited && isLimitedService(p))).length > 0
+      && routePassesHeadwayFilter(weekday.filter(p => !(hideLimited && isLimitedService(p))), 'evening', 'Weekday', maxHeadway);
+
+    expect(weekday.every(p => p.serviceClass === 'time-limited')).toBe(true);
+    expect(visible(false, Infinity)).toBe(true);
+    expect(visible(true, Infinity)).toBe(false);
+    expect(visible(false, 30)).toBe(false);
+    // The map's tile clause for the toggle keys on the same serviceClass value.
+    expect(JSON.stringify(tileLimitedServiceExpr())).toContain('"time-limited"');
   });
 });

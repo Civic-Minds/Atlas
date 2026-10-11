@@ -331,7 +331,7 @@ export function applyAnalysisCriteria(
     criteria: AnalysisCriteria = DEFAULT_CRITERIA,
     tierDeterminer: TierDeterminer = determineTierWithEdgeGapAllowance,
 ): AnalysisResult[] {
-    const perDayResults = new Map<string, { dayType: DayType; day: DayName; result: AnalysisResult }>();
+    const perDayResults = new Map<string, { dayType: DayType; day: DayName; result: AnalysisResult; rawTimes: number[] }>();
 
     for (const raw of rawData) {
         const dayType = DAY_TO_TYPE[raw.day];
@@ -508,15 +508,15 @@ export function applyAnalysisCriteria(
             routeVariant: raw.routeVariant,
             ...resourceStats
         };
-        perDayResults.set(`${raw.route}::${raw.dir}::${raw.headsign ?? ''}::${raw.shapeId ?? ''}::${raw.routeVariant ?? ''}::${raw.day}`, { dayType, day: raw.day, result });
+        perDayResults.set(`${raw.route}::${raw.dir}::${raw.headsign ?? ''}::${raw.shapeId ?? ''}::${raw.routeVariant ?? ''}::${raw.day}`, { dayType, day: raw.day, result, rawTimes: raw.departureTimes });
     }
 
     // Roll up per-day results into day-type summaries
-    const rollupGroups = new Map<string, { dayType: DayType; entries: { day: DayName; result: AnalysisResult }[] }>();
+    const rollupGroups = new Map<string, { dayType: DayType; entries: { day: DayName; result: AnalysisResult; rawTimes: number[] }[] }>();
     for (const [, entry] of perDayResults) {
         const key = `${entry.result.route}::${entry.result.dir}::${entry.result.headsign ?? ''}::${entry.result.shapeId ?? ''}::${entry.result.routeVariant ?? ''}::${entry.dayType}`;
         if (!rollupGroups.has(key)) rollupGroups.set(key, { dayType: entry.dayType, entries: [] });
-        rollupGroups.get(key)!.entries.push({ day: entry.day, result: entry.result });
+        rollupGroups.get(key)!.entries.push({ day: entry.day, result: entry.result, rawTimes: entry.rawTimes });
     }
 
     const results: AnalysisResult[] = [];
@@ -610,12 +610,19 @@ export function applyAnalysisCriteria(
             serviceSpan: span,
             tier: partialWeekday ? 'infrequent' : worstTier,
             partialWeekday: partialWeekday || undefined,
+            // Periods it runs in on the weekdays it does serve, so "any frequency" in that
+            // period still draws it as limited while a frequency threshold hides it.
+            partialWeekdayPeriods: partialWeekday
+                ? TIME_PERIODS.filter(p => entries.some(e => e.rawTimes.some(t => t >= p.startHour * 60 && t < p.endHour * 60))).map(p => p.key)
+                : undefined,
             weekdayTierVariation: (weekdayTierVariation && !partialWeekday) || undefined,
             edgeGapAllowance: (() => {
                 const sides = new Set(entries.map(e => e.result.edgeGapAllowance).filter(Boolean));
                 return sides.size > 1 ? 'both' : [...sides][0];
             })(),
-            serviceClass,
+            // Partial-weekday routes are limited service: the "hide limited" toggle hides them
+            // on every surface (map, lists, counts), like any other time-limited route (#710).
+            serviceClass: partialWeekday ? 'time-limited' : serviceClass,
             tripCount: avgTrips,
             gaps: stats.gaps,
             times: rollupTimes,

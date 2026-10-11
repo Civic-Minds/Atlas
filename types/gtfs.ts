@@ -294,6 +294,8 @@ export interface AnalysisResult {
     weekdayTierVariation?: boolean;
     /** Runs on some weekdays but not on the representative weekday: Weekday tier is infrequent, no headway (#710). */
     partialWeekday?: boolean;
+    /** For a partial-weekday rollup: periods with departures on the weekdays it does run. */
+    partialWeekdayPeriods?: Array<'amPeak' | 'midday' | 'pmPeak' | 'evening' | 'late' | 'overnight'>;
     /** Whether a genuine opening or closing service edge used the small edge-gap allowance. */
     edgeGapAllowance?: 'opening' | 'closing' | 'both';
     /** Whether service is regular, scheduled only during part of the day, or genuinely irregular. */

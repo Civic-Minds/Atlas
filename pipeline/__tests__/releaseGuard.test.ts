@@ -92,10 +92,13 @@ describe('tile rules fingerprint', () => {
   //    until a release built with the new rules is published
   //    (npm run refresh-release, or the Refresh GTFS feeds workflow);
   //  - if it cannot (comments, types, refactors), just update the hash here.
+  // #710 added pws_<period> (partial-weekday service) keys and the overview allowlist entry.
+  // No version bump: older tiles lack pws and evaluate exactly as before, and older apps
+  // ignore the new keys.
   it('changes only together with a deliberate TILE_RULES_VERSION decision', () => {
     expect({ version: TILE_RULES_VERSION, fingerprint: tileRulesFingerprint() }).toEqual({
       version: 1,
-      fingerprint: '4548b3f18dea5898657205d6d3c42fc0e0c45f83b5feb44a472c74d9ac24a7c0',
+      fingerprint: '8fbcac405c06e3a1f4e54cf3780f21fafbb1837df667fc0d480e0c62bfd6cc1e',
     });
   });
 });
