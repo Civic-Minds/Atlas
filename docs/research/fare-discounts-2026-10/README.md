@@ -111,4 +111,4 @@ folder verified (CIV-48).
 | `audit-2026-10-10.md` | Independent audit of the October 10 pass |
 | `fix-prompt-2026-10-10.md` | Corrections requested after the audit |
 | `rebuild-report-2026-10-10.md` | Researcher's report on the rebuild (unverified) |
-| `archive-stale/` | Superseded files kept for history: an early B07 CSV that still has not-yet-checked rows, and a B08 checkpoint with the old file-name pattern |
+| `archive-stale/` | Superseded files kept for history: an early B07 CSV that still has not-yet-checked rows, a B08 checkpoint with the old file-name pattern, and an early B03 checkpoint (`checkpoint-B03-2026-10-10-early.md`, from a separate `fare-discounts-2026-10-10` folder) |
