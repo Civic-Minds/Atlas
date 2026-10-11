@@ -296,15 +296,28 @@ export function computeResourceStats(
  */
 const representativeRollupEntry = <T extends { result: AnalysisResult }>(
     entries: T[],
-): T => {
-    const counts = entries.map(entry => entry.result.times.length).sort((a, b) => a - b);
-    const medianCount = counts[Math.floor(counts.length / 2)];
-    return entries.reduce((best, entry) => {
-        const distance = Math.abs(entry.result.times.length - medianCount);
-        const bestDistance = Math.abs(best.result.times.length - medianCount);
-        return distance < bestDistance ? entry : best;
-    }, entries[0]);
-};
+): T => entries[representativeIndexByCount(entries.map(entry => entry.result.times.length))];
+
+/**
+ * Index of the day whose departure count is closest to the median count; the
+ * earliest such day wins a tie. Shared with the stop-level Weekday grouping in
+ * process-core so stop and route metrics describe the same weekday (#710).
+ */
+export function representativeWeekdayIndex(countsByWeekday: number[]): number | null {
+    // Mon-Fri departure counts, 0 for a day without service. The median weekday decides:
+    // a route that runs on fewer than 3 of 5 weekdays has no representative weekday (#710).
+    const sorted = [...countsByWeekday].sort((a, b) => a - b);
+    if (!(sorted[Math.floor((sorted.length - 1) / 2)] > 0)) return null;
+    return representativeIndexByCount(countsByWeekday);
+}
+
+export function representativeIndexByCount(counts: number[]): number {
+    const sorted = [...counts].sort((a, b) => a - b);
+    // Lower middle for an even count: the worse of the two middle days decides.
+    const medianCount = sorted[Math.floor((sorted.length - 1) / 2)];
+    return counts.reduce((bestIndex, count, index) =>
+        Math.abs(count - medianCount) < Math.abs(counts[bestIndex] - medianCount) ? index : bestIndex, 0);
+}
 
 /**
  * Phase 2: Apply analysis criteria to raw departure data.
@@ -318,7 +331,7 @@ export function applyAnalysisCriteria(
     criteria: AnalysisCriteria = DEFAULT_CRITERIA,
     tierDeterminer: TierDeterminer = determineTierWithEdgeGapAllowance,
 ): AnalysisResult[] {
-    const perDayResults = new Map<string, { dayType: DayType; day: DayName; result: AnalysisResult }>();
+    const perDayResults = new Map<string, { dayType: DayType; day: DayName; result: AnalysisResult; rawTimes: number[] }>();
 
     for (const raw of rawData) {
         const dayType = DAY_TO_TYPE[raw.day];
@@ -495,15 +508,15 @@ export function applyAnalysisCriteria(
             routeVariant: raw.routeVariant,
             ...resourceStats
         };
-        perDayResults.set(`${raw.route}::${raw.dir}::${raw.headsign ?? ''}::${raw.shapeId ?? ''}::${raw.routeVariant ?? ''}::${raw.day}`, { dayType, day: raw.day, result });
+        perDayResults.set(`${raw.route}::${raw.dir}::${raw.headsign ?? ''}::${raw.shapeId ?? ''}::${raw.routeVariant ?? ''}::${raw.day}`, { dayType, day: raw.day, result, rawTimes: raw.departureTimes });
     }
 
     // Roll up per-day results into day-type summaries
-    const rollupGroups = new Map<string, { dayType: DayType; entries: { day: DayName; result: AnalysisResult }[] }>();
+    const rollupGroups = new Map<string, { dayType: DayType; entries: { day: DayName; result: AnalysisResult; rawTimes: number[] }[] }>();
     for (const [, entry] of perDayResults) {
         const key = `${entry.result.route}::${entry.result.dir}::${entry.result.headsign ?? ''}::${entry.result.shapeId ?? ''}::${entry.result.routeVariant ?? ''}::${entry.dayType}`;
         if (!rollupGroups.has(key)) rollupGroups.set(key, { dayType: entry.dayType, entries: [] });
-        rollupGroups.get(key)!.entries.push({ day: entry.day, result: entry.result });
+        rollupGroups.get(key)!.entries.push({ day: entry.day, result: entry.result, rawTimes: entry.rawTimes });
     }
 
     const results: AnalysisResult[] = [];
@@ -530,7 +543,17 @@ export function applyAnalysisCriteria(
             ? 'time-limited'
             : 'regular';
 
-        const repEntry = representativeRollupEntry(entries);
+        // Weekday: the representative weekday is chosen over all five weekdays, so a route
+        // that runs on only some of them (clemson-cat TL-24, Thu+Fri nights) has no service on
+        // it. Such a route is shown as infrequent ("limited") with no headway or timetable,
+        // not as a frequency tier taken from the days it does run (#710).
+        const weekdayIndex = dayType === 'Weekday'
+            ? representativeWeekdayIndex(WEEKDAYS.map(day => entries.find(e => e.day === day)?.result.times.length ?? 0))
+            : undefined;
+        const partialWeekday = dayType === 'Weekday' && weekdayIndex === null;
+        const repEntry = weekdayIndex != null
+            ? entries.find(e => e.day === WEEKDAYS[weekdayIndex])!
+            : representativeRollupEntry(entries);
         const rep = repEntry.result;
         // Rail rollup: apply the existing midday representative-day logic on top of
         // the day-type representative selection used by all modes.
@@ -559,7 +582,7 @@ export function applyAnalysisCriteria(
         // Keep the complete representative-day schedule in the result. Rail uses a
         // midday sample for tier stability, but downstream period/hour metrics and
         // sparklines need the morning, evening, and overnight departures too.
-        const rollupTimes = isRailRollup ? rep.times : rollupStatsBase;
+        const rollupTimes = partialWeekday ? [] : isRailRollup ? rep.times : rollupStatsBase;
         const avgTrips = Math.round(entries.reduce((sum, e) => sum + e.result.tripCount, 0) / entries.length);
         const allStarts = entries.map(e => e.result.serviceSpan?.start ?? 0);
         const allEnds = entries.map(e => e.result.serviceSpan?.end ?? 0);
@@ -585,13 +608,21 @@ export function applyAnalysisCriteria(
             baseHeadway: Math.round(stats.baseHeadway * 10) / 10,
             peakWindow: stats.peakWindow,
             serviceSpan: span,
-            tier: worstTier,
-            weekdayTierVariation: weekdayTierVariation || undefined,
+            tier: partialWeekday ? 'infrequent' : worstTier,
+            partialWeekday: partialWeekday || undefined,
+            // Periods it runs in on the weekdays it does serve, so "any frequency" in that
+            // period still draws it as limited while a frequency threshold hides it.
+            partialWeekdayPeriods: partialWeekday
+                ? TIME_PERIODS.filter(p => entries.some(e => e.rawTimes.some(t => t >= p.startHour * 60 && t < p.endHour * 60))).map(p => p.key)
+                : undefined,
+            weekdayTierVariation: (weekdayTierVariation && !partialWeekday) || undefined,
             edgeGapAllowance: (() => {
                 const sides = new Set(entries.map(e => e.result.edgeGapAllowance).filter(Boolean));
                 return sides.size > 1 ? 'both' : [...sides][0];
             })(),
-            serviceClass,
+            // Partial-weekday routes are limited service: the "hide limited" toggle hides them
+            // on every surface (map, lists, counts), like any other time-limited route (#710).
+            serviceClass: partialWeekday ? 'time-limited' : serviceClass,
             tripCount: avgTrips,
             gaps: stats.gaps,
             times: rollupTimes,

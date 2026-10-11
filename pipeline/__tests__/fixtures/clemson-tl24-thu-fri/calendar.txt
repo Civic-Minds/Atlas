@@ -1,0 +1,5 @@
+service_id,monday,tuesday,wednesday,thursday,friday,saturday,sunday,start_date,end_date
+TL-275,0,0,0,0,1,1,0,20240819,20320904
+TL-276,0,0,0,0,0,1,0,20240819,20501230
+TL-293,0,0,0,0,0,0,1,20240901,20501230
+TL-294,0,0,0,1,1,0,0,20240901,20501230

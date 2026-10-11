@@ -5,7 +5,7 @@
 import { parseGtfsZip } from './parseGtfs.js';
 import type { GtfsData, AnalysisResult, RawRouteDepartures } from '../types/gtfs.js';
 import { computeRawDepartures } from './transit-phase1.js';
-import { applyAnalysisCriteria } from './transit-phase2.js';
+import { applyAnalysisCriteria, representativeWeekdayIndex } from './transit-phase2.js';
 import { calculateCorridors } from './transit-logic.js';
 import { detectReferenceDate, getActiveServiceIds } from './transit-calendar.js';
 import { DEFAULT_CRITERIA } from './defaults.js';
@@ -13,7 +13,7 @@ import { normalizeGtfs, type GtfsPreprocess, type GtfsTransformOptions } from '.
 import { validateGtfs, type ValidationReport } from './validation.js';
 import { resolveDisplayHeadsign } from '../shared/headsignDisplay.js';
 import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig.js';
-import { TIME_PERIODS, SPARKLINE_HOURS, type PeriodKey, type HeadwayByPeriod, type HeadwayByPeriodMaxGap, type HeadwayByPeriodSustained } from '../shared/config.js';
+import { PERIOD_KEYS, TIME_PERIODS, SPARKLINE_HOURS, type PeriodKey, type HeadwayByPeriod, type HeadwayByPeriodMaxGap, type HeadwayByPeriodSustained } from '../shared/config.js';
 import { ROUTE_ARTIFACT_SCHEMA_VERSION } from '../shared/artifactSchema.js';
 import { DAY_TYPES, WEEKDAYS, type DayName, type DayType } from '../types/gtfs.js';
 import { ALL_DAYS } from '../shared/dayTypes.js';
@@ -359,6 +359,9 @@ export async function processGtfsBuffer(
   // one of its route::dir keys silently excluded from shape selection, dropping
   // otherwise-valid phase1/phase2 results with `if (!shapeId) continue` further
   // down (Fredericksburg Regional Transit pattern).
+  const activeServiceIdsByCalendarDay = new Map<DayName, Set<string>>(
+    ALL_DAYS.map(day => [day, getActiveServiceIds(gtfs.calendar ?? [], gtfs.calendarDates ?? [], day, refDate)]),
+  );
   const activeServiceIdsByDay = new Map<DayType, Set<string>>();
   const calendarDaysForType = (dayType: DayType): DayName[] =>
     dayType === 'Weekday' ? [...WEEKDAYS] : [dayType as DayName];
@@ -367,14 +370,10 @@ export async function processGtfsBuffer(
       dayType,
       // Spread each Set: flatMap only flattens arrays, so returning the Set itself
       // stored Set objects instead of service ids and emptied all stop data.
-      new Set(calendarDaysForType(dayType).flatMap(day =>
-        [...getActiveServiceIds(gtfs.calendar ?? [], gtfs.calendarDates ?? [], day, refDate)],
-      )),
+      new Set(calendarDaysForType(dayType).flatMap(day => [...activeServiceIdsByCalendarDay.get(day)!])),
     );
   }
-  const activeForShapes = new Set<string>(
-    ALL_DAYS.flatMap(day => [...getActiveServiceIds(gtfs.calendar ?? [], gtfs.calendarDates ?? [], day, refDate)]),
-  );
+  const activeForShapes = new Set<string>(ALL_DAYS.flatMap(day => [...activeServiceIdsByCalendarDay.get(day)!]));
   const shapes = buildShapeSelectionContext(gtfs, routeById, activeForShapes, activeServiceIdsByDay, options?.slug);
   const {
     shapeById,
@@ -420,11 +419,24 @@ export async function processGtfsBuffer(
       serviceIdToDayTypes.set(id, types);
     }
   }
-  type StopTripGroup = { routeId: string; shortName: string; dirId: string; dayType: DayType; headsign: string | null; shapeId: string | null; serviceId: string; routeVariant: string | null };
-  const tripGroupByTripId = new Map<string, StopTripGroup[]>();
+  // The Weekday stop maps (route/direction group, headsign and shape) each describe ONE
+  // representative weekday, picked per map by the same median-count rule phase 2 uses for
+  // each route-level Weekday rollup subgroup (#710). Pooling every service that runs on any
+  // of Mon-Fri interleaved timetables that never run on the same day (cata-state-college
+  // White Loop: Mon-Thu and Friday every 5-6 min shown as every 3) and let a service from
+  // only some weekdays set the weekday value. Only days with service are candidates, so a
+  // feed with no Monday service (Tue-Fri) still has weekday stop data, and a Monday holiday
+  // is already swapped for a typical week by getActiveServiceIds (#658).
+  type StopTripGroup = {
+    routeId: string; shortName: string; dirId: string; dayType: DayType; headsign: string | null;
+    shapeId: string | null; serviceId: string; routeVariant: string | null;
+    // Whether this trip's departures go into the group, headsign and shape maps. Always
+    // true outside Weekday; for Weekday, true only when the trip runs on that map's day.
+    inGroup: boolean; inHeadsign: boolean; inShape: boolean;
+  };
+  const stopTripMeta = new Map<string, { shortName: string; dirId: string; headsign: string | null; shapeId: string | null }>();
   for (const trip of gtfs.trips ?? []) {
-    const dayTypes = serviceIdToDayTypes.get(trip.service_id);
-    if (!dayTypes || dayTypes.size === 0) continue;
+    if (!serviceIdToDayTypes.has(trip.service_id)) continue;
     // Use shortName as the group key so agencies with multiple route_ids per line (e.g. GO Transit
     // date-prefixed IDs like 04260626-LW / 06260926-LW) merge into one combined stop frequency group.
     const route = routeById.get(trip.route_id);
@@ -436,15 +448,76 @@ export async function processGtfsBuffer(
       if (lastStopId) rawHeadsign = stopNameById.get(lastStopId) ?? null;
     }
     const headsign = resolveDisplayHeadsign(rawHeadsign, shortName, longName);
-    tripGroupByTripId.set(trip.trip_id, [...dayTypes].map(dayType => ({
+    stopTripMeta.set(trip.trip_id, { shortName, dirId: String(trip.direction_id ?? '0'), headsign, shapeId: trip.shape_id || null });
+  }
+  const frequencyDepartureCount = new Map<string, number>();
+  for (const frequency of gtfs.frequencies ?? []) {
+    const start = t2m(frequency.start_time);
+    const end = t2m(frequency.end_time);
+    const headway = Number(frequency.headway_secs) / 60;
+    // Same validity rule as phase 1's expandFrequencies: headway_secs under 60 is ignored.
+    if (start === null || end === null || !Number.isFinite(headway) || headway < 1 || end <= start) continue;
+    frequencyDepartureCount.set(frequency.trip_id, (frequencyDepartureCount.get(frequency.trip_id) ?? 0) + Math.ceil((end - start) / headway));
+  }
+  // Stop maps are keyed by short name + direction (plus headsign and shape), while phase 2
+  // groups by route_id + direction + headsign + shape. That difference is deliberate: stop
+  // maps merge route_ids that share a short name (GO date-prefixed ids), and each map picks
+  // its own day so a feature whose display shape runs on fewer days keeps its own shape
+  // data instead of falling back to another pattern's (cata-state-college VE Campus).
+  const weekdayMapKeys = (meta: { shortName: string; dirId: string; headsign: string | null; shapeId: string | null }) => ({
+    group: `${meta.shortName}::${meta.dirId}`,
+    headsign: meta.headsign ? `${meta.shortName}::${meta.dirId}::${meta.headsign}` : null,
+    shape: meta.shapeId,
+  });
+  // Departures per weekday for every Weekday map key, frequencies.txt windows expanded.
+  const weekdayCounts = { group: new Map<string, number[]>(), headsign: new Map<string, number[]>(), shape: new Map<string, number[]>() };
+  for (const trip of gtfs.trips ?? []) {
+    const meta = stopTripMeta.get(trip.trip_id);
+    if (!meta || !serviceIdToDayTypes.get(trip.service_id)!.has('Weekday')) continue;
+    const departures = frequencyDepartureCount.get(trip.trip_id) ?? 1;
+    const keys = weekdayMapKeys(meta);
+    for (const kind of ['group', 'headsign', 'shape'] as const) {
+      const key = keys[kind];
+      if (key == null) continue;
+      const counts = weekdayCounts[kind].get(key) ?? WEEKDAYS.map(() => 0);
+      WEEKDAYS.forEach((day, index) => {
+        if (activeServiceIdsByCalendarDay.get(day)!.has(trip.service_id)) counts[index] += departures;
+      });
+      weekdayCounts[kind].set(key, counts);
+    }
+  }
+  const representativeWeekday = { group: new Map<string, DayName>(), headsign: new Map<string, DayName>(), shape: new Map<string, DayName>() };
+  for (const kind of ['group', 'headsign', 'shape'] as const) {
+    for (const [key, counts] of weekdayCounts[kind]) {
+      // Phase 1 drops a day with fewer than two departures, so the route level never sees
+      // it; count such days as unserved too unless no day has more (single-trip routes).
+      // Same rule as the route-level rollup: the median of all five weekdays decides, so a
+      // route on fewer than 3 of 5 weekdays gets no Weekday stop data.
+      const served = counts.map(count => (count >= 2 ? count : 0));
+      const index = representativeWeekdayIndex(served.some(count => count > 0) ? served : counts);
+      if (index === null) continue;
+      representativeWeekday[kind].set(key, WEEKDAYS[index]);
+    }
+  }
+  const tripGroupByTripId = new Map<string, StopTripGroup[]>();
+  for (const trip of gtfs.trips ?? []) {
+    const meta = stopTripMeta.get(trip.trip_id);
+    if (!meta) continue;
+    const keys = weekdayMapKeys(meta);
+    const runsOnRepresentativeDay = (kind: 'group' | 'headsign' | 'shape'): boolean => {
+      const key = keys[kind];
+      const day = key == null ? undefined : representativeWeekday[kind].get(key);
+      return day != null && activeServiceIdsByCalendarDay.get(day)!.has(trip.service_id);
+    };
+    tripGroupByTripId.set(trip.trip_id, [...serviceIdToDayTypes.get(trip.service_id)!].map(dayType => ({
         routeId: trip.route_id,
-        shortName,
-        dirId: String(trip.direction_id ?? '0'),
+        ...meta,
         dayType,
-        headsign,
-        shapeId: trip.shape_id || null,
         serviceId: trip.service_id,
         routeVariant: trip.route_variant?.trim() || null,
+        inGroup: dayType !== 'Weekday' || runsOnRepresentativeDay('group'),
+        inHeadsign: dayType !== 'Weekday' || runsOnRepresentativeDay('headsign'),
+        inShape: dayType !== 'Weekday' || runsOnRepresentativeDay('shape'),
     })));
   }
   // Max raw stop_time minute seen anywhere for each service_id. Needed below: a service_id
@@ -550,6 +623,8 @@ export async function processGtfsBuffer(
   // Feature → how many departures backed its own (branch-level) headway, so Step 4 below can
   // tell a real branch frequency from a noisy one before trusting it over the terminal-computed
   // value. Not serialized to the GeoJSON output — pipeline-internal only. See issue #263.
+  // Weekday features of routes that skip the representative weekday (#710): no stop metrics.
+  const partialWeekdayFeatures = new Set<GeoJsonFeature>();
   const featureBranchTripCount = new Map<GeoJsonFeature, number>();
   for (const result of results) {
     const key = `${result.route}::${result.dir}`;
@@ -588,7 +663,7 @@ export async function processGtfsBuffer(
     const existing = dedupedFeatures.get(dedupeKey);
     const isRailRoute = route?.route_type === '2' || route?.route_type === 2;
     const initialPeriodHeadways = computePeriodHeadways(result.times);
-    const newHeadway = result.serviceClass === 'irregular' || result.tier === 'span'
+    const newHeadway = result.partialWeekday || result.serviceClass === 'irregular' || result.tier === 'span'
       ? null
       : Math.round(initialPeriodHeadways.midday ?? result.medianHeadway);
     // A drawn line always beats a mapless Point for the same slot, whichever is more frequent
@@ -635,6 +710,9 @@ export async function processGtfsBuffer(
         headwayRangeByPeriod: computePeriodHeadwayRanges(result.times),
         maxGapByPeriod: computePeriodMaxGaps(result.times),
         headwayByPeriodSustained: computePeriodSustained(result.times),
+        partialWeekdayServiceByPeriod: result.partialWeekday
+          ? Object.fromEntries(PERIOD_KEYS.map(key => [key, result.partialWeekdayPeriods?.includes(key) ?? false]))
+          : undefined,
         headwayByHour: (() => {
           const byHour: HeadwayByHour = {};
           for (const h of SPARKLINE_HOURS) {
@@ -664,6 +742,8 @@ export async function processGtfsBuffer(
     if (!hasRouteShape) maplessStopSequence.set(newFeature, maplessSequence);
     if (hasRouteShape && shapeId) featureShapeId.set(newFeature, shapeId);
     featureBranchTripCount.set(newFeature, result.times.length);
+    if (result.partialWeekday) partialWeekdayFeatures.add(newFeature);
+    else partialWeekdayFeatures.delete(newFeature);
   }
   const features = [...dedupedFeatures.values()];
 
@@ -727,12 +807,25 @@ export async function processGtfsBuffer(
         const mins = t2m(timeStr);
         if (mins !== null) {
           const gKey = `${grp.shortName}::${grp.dirId}::${grp.dayType}`;
-          let stopMap = stopDepsByGroup.get(gKey);
-          if (!stopMap) { stopMap = new Map(); stopDepsByGroup.set(gKey, stopMap); }
-          const pushDep = (map: Map<string, number[]>, stopId: string, mins: number) => {
+          const hsKey = grp.headsign ? `${grp.shortName}::${grp.dirId}::${grp.dayType}::${grp.headsign}` : null;
+          const shKey = grp.shapeId ? `${grp.shapeId}::${grp.dayType}` : null;
+          const pushDep = (maps: Map<string, Map<string, number[]>>, key: string, stopId: string, mins: number) => {
+            let map = maps.get(key);
+            if (!map) { map = new Map(); maps.set(key, map); }
             let arr = map.get(stopId);
             if (!arr) { arr = []; map.set(stopId, arr); }
             arr.push(mins);
+          };
+          const night = mins < NIGHT_SHIFT_EARLY_CUTOFF && (serviceIdMaxMinute.get(grp.serviceId) ?? Infinity) < NIGHT_SHIFT_EARLY_CUTOFF;
+          const pushAll = (stopId: string) => {
+            if (grp.inGroup) pushDep(stopDepsByGroup, gKey, stopId, mins);
+            if (hsKey && grp.inHeadsign) pushDep(stopDepsByHeadsignGroup, hsKey, stopId, mins);
+            if (shKey && grp.inShape) pushDep(stopDepsByShapeGroup, shKey, stopId, mins);
+            // Night-service-only shift (#297) -- see stopDepsByGroupNight declaration above.
+            if (night) {
+              if (grp.inGroup) pushDep(stopDepsByGroupNight, gKey, stopId, mins + 1440);
+              if (hsKey && grp.inHeadsign) pushDep(stopDepsByHeadsignGroupNight, hsKey, stopId, mins + 1440);
+            }
           };
           // Only count first visit per (trip, stop) — loop routes visit the terminus
           // at both the start and end of each trip, which would otherwise interleave
@@ -742,61 +835,12 @@ export async function processGtfsBuffer(
           const visitKey = `${grp.dayType}:${st.stop_id}`;
           if (!visitSet.has(visitKey)) {
             visitSet.add(visitKey);
-            pushDep(stopMap, st.stop_id, mins);
-            if (grp.headsign) {
-              const hsKey = `${grp.shortName}::${grp.dirId}::${grp.dayType}::${grp.headsign}`;
-              let hsMap = stopDepsByHeadsignGroup.get(hsKey);
-              if (!hsMap) { hsMap = new Map(); stopDepsByHeadsignGroup.set(hsKey, hsMap); }
-              pushDep(hsMap, st.stop_id, mins);
-            }
-            if (grp.shapeId) {
-              const shKey = `${grp.shapeId}::${grp.dayType}`;
-              let shMap = stopDepsByShapeGroup.get(shKey);
-              if (!shMap) { shMap = new Map(); stopDepsByShapeGroup.set(shKey, shMap); }
-              pushDep(shMap, st.stop_id, mins);
-            }
-            // Night-service-only shift (#297) -- see stopDepsByGroupNight declaration above.
-            if (mins < NIGHT_SHIFT_EARLY_CUTOFF && (serviceIdMaxMinute.get(grp.serviceId) ?? Infinity) < NIGHT_SHIFT_EARLY_CUTOFF) {
-              const shifted = mins + 1440;
-              let nStopMap = stopDepsByGroupNight.get(gKey);
-              if (!nStopMap) { nStopMap = new Map(); stopDepsByGroupNight.set(gKey, nStopMap); }
-              pushDep(nStopMap, st.stop_id, shifted);
-              if (grp.headsign) {
-                const hsKey = `${grp.shortName}::${grp.dirId}::${grp.dayType}::${grp.headsign}`;
-                let nHsMap = stopDepsByHeadsignGroupNight.get(hsKey);
-                if (!nHsMap) { nHsMap = new Map(); stopDepsByHeadsignGroupNight.set(hsKey, nHsMap); }
-                pushDep(nHsMap, st.stop_id, shifted);
-              }
-            }
+            pushAll(st.stop_id);
             // Propagate to parent station so it also gets headways (only count first visit to parent per trip)
             const parentVisitKey = parentId ? `${grp.dayType}:${parentId}` : null;
             if (parentId && parentVisitKey && !visitSet.has(parentVisitKey)) {
               visitSet.add(parentVisitKey);
-              pushDep(stopMap, parentId, mins);
-              if (grp.headsign) {
-                const hsKey = `${grp.shortName}::${grp.dirId}::${grp.dayType}::${grp.headsign}`;
-                let hsMap = stopDepsByHeadsignGroup.get(hsKey);
-                if (!hsMap) { hsMap = new Map(); stopDepsByHeadsignGroup.set(hsKey, hsMap); }
-                pushDep(hsMap, parentId, mins);
-              }
-              if (grp.shapeId) {
-                const shKey = `${grp.shapeId}::${grp.dayType}`;
-                let shMap = stopDepsByShapeGroup.get(shKey);
-                if (!shMap) { shMap = new Map(); stopDepsByShapeGroup.set(shKey, shMap); }
-                pushDep(shMap, parentId, mins);
-              }
-              if (mins < NIGHT_SHIFT_EARLY_CUTOFF && (serviceIdMaxMinute.get(grp.serviceId) ?? Infinity) < NIGHT_SHIFT_EARLY_CUTOFF) {
-                const shifted = mins + 1440;
-                let nStopMap = stopDepsByGroupNight.get(gKey);
-                if (!nStopMap) { nStopMap = new Map(); stopDepsByGroupNight.set(gKey, nStopMap); }
-                pushDep(nStopMap, parentId, shifted);
-                if (grp.headsign) {
-                  const hsKey = `${grp.shortName}::${grp.dirId}::${grp.dayType}::${grp.headsign}`;
-                  let nHsMap = stopDepsByHeadsignGroupNight.get(hsKey);
-                  if (!nHsMap) { nHsMap = new Map(); stopDepsByHeadsignGroupNight.set(hsKey, nHsMap); }
-                  pushDep(nHsMap, parentId, shifted);
-                }
-              }
+              pushAll(parentId);
             }
           }
         }
@@ -813,13 +857,13 @@ export async function processGtfsBuffer(
   };
   const addFrequencyDeparture = (grp: StopTripGroup, stopId: string, mins: number) => {
     const groupKey = `${grp.shortName}::${grp.dirId}::${grp.dayType}`;
-    pushUnique(stopDepsByGroup, groupKey, stopId, mins);
-    if (grp.headsign) pushUnique(stopDepsByHeadsignGroup, `${grp.shortName}::${grp.dirId}::${grp.dayType}::${grp.headsign}`, stopId, mins);
-    if (grp.shapeId) pushUnique(stopDepsByShapeGroup, `${grp.shapeId}::${grp.dayType}`, stopId, mins);
+    if (grp.inGroup) pushUnique(stopDepsByGroup, groupKey, stopId, mins);
+    if (grp.headsign && grp.inHeadsign) pushUnique(stopDepsByHeadsignGroup, `${grp.shortName}::${grp.dirId}::${grp.dayType}::${grp.headsign}`, stopId, mins);
+    if (grp.shapeId && grp.inShape) pushUnique(stopDepsByShapeGroup, `${grp.shapeId}::${grp.dayType}`, stopId, mins);
     if (mins < NIGHT_SHIFT_EARLY_CUTOFF && (serviceIdMaxMinute.get(grp.serviceId) ?? Infinity) < NIGHT_SHIFT_EARLY_CUTOFF) {
       const shifted = mins + 1440;
-      pushUnique(stopDepsByGroupNight, groupKey, stopId, shifted);
-      if (grp.headsign) pushUnique(stopDepsByHeadsignGroupNight, `${grp.shortName}::${grp.dirId}::${grp.dayType}::${grp.headsign}`, stopId, shifted);
+      if (grp.inGroup) pushUnique(stopDepsByGroupNight, groupKey, stopId, shifted);
+      if (grp.headsign && grp.inHeadsign) pushUnique(stopDepsByHeadsignGroupNight, `${grp.shortName}::${grp.dirId}::${grp.dayType}::${grp.headsign}`, stopId, shifted);
     }
   };
   // Group rows by trip (file order) so overlapping windows on one trip can be
@@ -980,7 +1024,7 @@ export async function processGtfsBuffer(
     feature.properties.nightService60 = false;
     const gKey = `${shortName}::${dirId}::${day}`;
     const stopMap = stopDepsByGroup.get(gKey);
-    if (!stopMap) {
+    if (!stopMap || partialWeekdayFeatures.has(feature)) {
       feature.properties.nightService = false;
       continue;
     }

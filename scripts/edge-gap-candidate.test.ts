@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { applyEdgeGapCandidateCriteria } from './edge-gap-candidate';
-import type { RawRouteDepartures } from '../types/gtfs';
+import { applyEdgeGapCandidateCriteria as applyToDays } from './edge-gap-candidate';
+import { WEEKDAYS, type RawRouteDepartures } from '../types/gtfs';
+
+// Each Monday row stands for the same timetable on every weekday: the Weekday rollup needs
+// service on its representative weekday (#710).
+const applyEdgeGapCandidateCriteria = (rows: RawRouteDepartures[]) =>
+  applyToDays(rows.flatMap(row => WEEKDAYS.map(day => ({ ...row, day }))));
 
 const raw = (departureTimes: number[], route = 'edge-test'): RawRouteDepartures => ({
   route,

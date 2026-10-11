@@ -1,0 +1,7 @@
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,stop_url,location_type,parent_station
+TL-45,,Palmetto Smokehouse,,34.6823806911,-82.8376894589,,0,
+TL-141,,Flats,,34.6551384848,-82.8616051737,,0,
+TL-142,,Pier #1,,34.6508485118,-82.8617905939,,0,
+TL-143,,Pier #2,,34.6444333108,-82.8641801030,,0,
+TL-144,,Pier #3,,34.6432121417,-82.8612499864,,0,
+TL-145,,Pier #4,,34.6454338139,-82.8606893996,,0,

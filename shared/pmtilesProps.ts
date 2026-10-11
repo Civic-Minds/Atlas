@@ -8,6 +8,8 @@ const PERIOD_FLAT_PREFIXES = [
   ['minStopHeadwayByPeriod', 'msph'],
   ['worstDirectionHeadwayByPeriod', 'wdph'],
   ['headwayByPeriod', 'hph'],
+  // Partial-weekday routes (#710): true where the route runs in the period on some weekdays.
+  ['partialWeekdayServiceByPeriod', 'pws'],
 ] as const;
 
 // MVT (the format tippecanoe/PMTiles serialize to) has no null value type -- a property written

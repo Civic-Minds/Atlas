@@ -23,6 +23,8 @@ export interface RouteProperties {
   headwayRangeByPeriod?: HeadwayByPeriodRange;
   maxGapByPeriod?: HeadwayByPeriodMaxGap;
   headwayByPeriodSustained?: HeadwayByPeriodSustained;
+  /** Partial-weekday routes (#710): periods with service on the weekdays the route runs. */
+  partialWeekdayServiceByPeriod?: HeadwayByPeriodSustained;
   routeDataQualityWarning?: RouteDataQualityWarning;
   /** The feed has schedule data for this route but no usable line geometry. */
   noRouteShape?: boolean;
