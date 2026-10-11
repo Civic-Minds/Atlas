@@ -7,8 +7,29 @@ import { DEFAULT_BETA_R2_PUBLIC_URL, DEFAULT_R2_PUBLIC_URL } from './shared/conf
 
 // https://vitejs.dev/config/
 // base: '/' for local dev and Vercel, '/Atlas/' for GitHub Pages
-export default defineConfig(({ mode }) => {
+// Dev server only (never `vite build`, so Vercel and CI are unaffected): fail
+// loudly when .env.local is missing, instead of starting a server whose map
+// silently lacks the local settings. Worktrees symlink it to the main
+// checkout's .env.dev-public (no R2 write keys), never to its full .env.local.
+function assertDevEnv(env: Record<string, string>): void {
+  if (process.env.ATLAS_SKIP_ENV_CHECK === '1') return;
+  const missing: string[] = [];
+  if (!existsSync(resolve('.env.local'))) missing.push('.env.local file');
+  if (!process.env.R2_PUBLIC_URL && !env.R2_PUBLIC_URL && !env.VITE_R2_PUBLIC_URL) missing.push('R2_PUBLIC_URL');
+  if (missing.length === 0) return;
+  const red = (text: string) => `\x1b[31m${text}\x1b[0m`;
+  throw new Error(red([
+    `[atlas] Dev env missing: ${missing.join(', ')}.`,
+    'In a worktree, link the dev-only settings (no R2 write keys) from the main checkout:',
+    '  ln -s <main checkout>/.env.dev-public .env.local',
+    'New worktrees: scripts/new-worktree.sh <name> <branch> does this for you.',
+    'Set ATLAS_SKIP_ENV_CHECK=1 to start anyway.',
+  ].join('\n')));
+}
+
+export default defineConfig(({ mode, command, isPreview }) => {
   const env = loadEnv(mode, process.cwd(), '');
+  if (command === 'serve' && !isPreview && !process.env.VITEST) assertDevEnv(env);
   // Prefer process.env so `ATLAS_ENV=staging` / `VITE_R2_PUBLIC_URL=…` (npm run
   // dev:staging) can point the /atlas-data proxy at the staging bucket without
   // editing .env.local. Fall back to Vite-loaded env, then prod default.
