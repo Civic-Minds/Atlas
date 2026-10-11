@@ -317,6 +317,15 @@ export function representativeStopSequence(
   return best;
 }
 
+/**
+ * Grouping key for a route: its short name, or its route_id when the short name is missing,
+ * empty or whitespace-only (#717). Keys only -- displayed names keep the raw short name, so a
+ * feed that publishes no short names (clemson-cat, coast-rta) isn't shown as raw route_ids.
+ */
+export function routeGroupName(route: { route_short_name?: string | null } | undefined, routeId: string): string {
+  return route?.route_short_name?.trim() || routeId;
+}
+
 export async function processGtfsBuffer(
   buf: Buffer,
   onStatus?: (msg: string) => void,
@@ -441,6 +450,8 @@ export async function processGtfsBuffer(
     // date-prefixed IDs like 04260626-LW / 06260926-LW) merge into one combined stop frequency group.
     const route = routeById.get(trip.route_id);
     const shortName = route?.route_short_name ?? trip.route_id;
+    // An empty short name must not become one agency-wide stop group (#717).
+    const groupName = routeGroupName(route, trip.route_id);
     const longName = route?.route_long_name?.trim() ?? null;
     let rawHeadsign = trip.trip_headsign?.trim() || null;
     if (!rawHeadsign) {
@@ -448,7 +459,7 @@ export async function processGtfsBuffer(
       if (lastStopId) rawHeadsign = stopNameById.get(lastStopId) ?? null;
     }
     const headsign = resolveDisplayHeadsign(rawHeadsign, shortName, longName);
-    stopTripMeta.set(trip.trip_id, { shortName, dirId: String(trip.direction_id ?? '0'), headsign, shapeId: trip.shape_id || null });
+    stopTripMeta.set(trip.trip_id, { shortName: groupName, dirId: String(trip.direction_id ?? '0'), headsign, shapeId: trip.shape_id || null });
   }
   const frequencyDepartureCount = new Map<string, number>();
   for (const frequency of gtfs.frequencies ?? []) {
@@ -620,6 +631,9 @@ export async function processGtfsBuffer(
   // Feature → the shapeId it was actually built from, so the per-stop headway
   // resolution loop below can pool departures scoped to that exact physical path.
   const featureShapeId = new Map<GeoJsonFeature, string>();
+  // Feature → its stop-map group name (routeGroupName), which differs from the displayed
+  // routeShortName when the feed's short name is empty (#717).
+  const featureGroupName = new Map<GeoJsonFeature, string>();
   // Feature → how many departures backed its own (branch-level) headway, so Step 4 below can
   // tell a real branch frequency from a noisy one before trusting it over the terminal-computed
   // value. Not serialized to the GeoJSON output — pipeline-internal only. See issue #263.
@@ -657,9 +671,10 @@ export async function processGtfsBuffer(
     // Deduplicate by (shortName, dir, day, headsign) so separate directions and terminuses
     // aren't collapsed together.
     const branchKey = result.routeVariant?.trim() || '';
+    const groupName = routeGroupName(route, result.route);
     const dedupeKey = cleanedForDedup
-      ? `${shortName}::${result.dir}::${result.day}::${cleanedForDedup}::${branchKey}`
-      : `${shortName}::${result.dir}::${result.day}::${branchKey}`;
+      ? `${groupName}::${result.dir}::${result.day}::${cleanedForDedup}::${branchKey}`
+      : `${groupName}::${result.dir}::${result.day}::${branchKey}`;
     const existing = dedupedFeatures.get(dedupeKey);
     const isRailRoute = route?.route_type === '2' || route?.route_type === 2;
     const initialPeriodHeadways = computePeriodHeadways(result.times);
@@ -741,6 +756,7 @@ export async function processGtfsBuffer(
     dedupedFeatures.set(dedupeKey, newFeature);
     if (!hasRouteShape) maplessStopSequence.set(newFeature, maplessSequence);
     if (hasRouteShape && shapeId) featureShapeId.set(newFeature, shapeId);
+    featureGroupName.set(newFeature, groupName);
     featureBranchTripCount.set(newFeature, result.times.length);
     if (result.partialWeekday) partialWeekdayFeatures.add(newFeature);
     else partialWeekdayFeatures.delete(newFeature);
@@ -754,7 +770,7 @@ export async function processGtfsBuffer(
     const p = feature.properties;
     if (p.routeShortName != null && p.directionId != null && p.day) {
       featureStopHeadwaySlots.set(feature, {
-        shortName: p.routeShortName as string,
+        shortName: featureGroupName.get(feature) ?? (p.routeShortName as string),
         dirId: String(p.directionId),
         day: p.day as string,
       });
@@ -957,8 +973,7 @@ export async function processGtfsBuffer(
   for (const [stopId, rids] of routesByStop) {
     const shorts = new Set<string>();
     for (const rid of rids) {
-      const sn = routeById.get(rid)?.route_short_name;
-      if (sn) shorts.add(sn);
+      shorts.add(routeGroupName(routeById.get(rid), rid));
     }
     uniqueShortsByStop.set(stopId, shorts.size);
   }

@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- Routes in feeds that leave the route number blank, like Coast RTA, Clemson CAT, MBTA Commuter Rail and TriMet MAX, are no longer merged with other routes that end at the same stop, so every route shows on the map with its own frequencies instead of hiding or borrowing another route's ([#717](https://github.com/Civic-Minds/Atlas/issues/717)).
 - Routes whose feeds describe the same buses twice, as a timetable plus a frequency template or as a loop that passes a stop twice, no longer show buses several times more often than they run ([#711](https://github.com/Civic-Minds/Atlas/issues/711), [#712](https://github.com/Civic-Minds/Atlas/issues/712)).
 - Routes in feeds that list each scheduled trip as its own frequency window no longer show about twice as many buses as really run ([#702](https://github.com/Civic-Minds/Atlas/issues/702)).
 - Weekday stop and time-of-day frequencies now come from one typical weekday, so a route with a different Friday timetable no longer looks about twice as frequent as it runs, as CATA's White Loop did ([#710](https://github.com/Civic-Minds/Atlas/issues/710)).

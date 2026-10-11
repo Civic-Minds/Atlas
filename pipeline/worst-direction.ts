@@ -6,6 +6,12 @@ function routeDayKey(routeShortName: string, routeBranch: string | null | undefi
   return `${routeShortName}::${routeBranch ?? ''}::${day ?? ''}`;
 }
 
+/** Short name, or route id when it's empty (#717), so no-short-name feeds aren't one big route. */
+function routeGroupName(properties: GeoJsonFeature['properties']): string {
+  const shortName = typeof properties.routeShortName === 'string' ? properties.routeShortName.trim() : '';
+  return shortName || `id:${String(properties.routeId ?? '')}`;
+}
+
 /**
  * Stamp `routeHasIrregularDirection` on every feature of a route+day where at least one
  * direction has no non-span (sustained/real-tier) pattern at all -- e.g. a peak-only commuter
@@ -20,7 +26,7 @@ export function stampRouteIrregularDirection(features: GeoJsonFeature[]): void {
   const limitedKeys = new Set<string>();
 
   for (const f of features) {
-    const sn = f.properties.routeShortName as string;
+    const sn = routeGroupName(f.properties);
     const branch = f.properties.routeBranch as string | null | undefined;
     const dirId = f.properties.directionId as number | null;
     if (dirId == null) continue;
@@ -48,7 +54,7 @@ export function stampRouteIrregularDirection(features: GeoJsonFeature[]): void {
   }
 
   for (const f of features) {
-    const sn = f.properties.routeShortName as string;
+    const sn = routeGroupName(f.properties);
     const key = routeDayKey(sn, f.properties.routeBranch as string | null | undefined, f.properties.day);
     if (irregularKeys.has(key)) f.properties.routeHasIrregularDirection = true;
     if (limitedKeys.has(key)) f.properties.routeHasLimitedDirection = true;
