@@ -125,6 +125,8 @@ export interface Agency {
     serviceName?: string;
     /** Agency booking restriction riders must know, e.g. which trips a zone can serve. */
     tripRules?: string;
+    /** Who may ride, when the agency limits it, e.g. "Riders 13 and older." */
+    eligibility?: string;
     availability?: OnDemandAvailability;
     pickup?: OnDemandPickup;
     zoneMetadata?: Record<string, OnDemandZoneDetails>;

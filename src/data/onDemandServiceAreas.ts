@@ -251,7 +251,7 @@ export const UTA_ON_DEMAND_SERVICE_AREA = {
     "West Provo/Orem \u2014 Provo Rec Center": { serviceName: 'UTA On Demand', serviceHours: "Monday\u2013Saturday 6 a.m.\u20139 p.m.", availability: { Weekday: [{ startHour: 6, endHour: 21 }], Saturday: [{ startHour: 6, endHour: 21 }], Sunday: [] } satisfies OnDemandAvailability },
     "West Provo/Orem \u2014 Utah Valley Hospital": { serviceName: 'UTA On Demand', serviceHours: "Monday\u2013Saturday 6 a.m.\u20139 p.m.", availability: { Weekday: [{ startHour: 6, endHour: 21 }], Saturday: [{ startHour: 6, endHour: 21 }], Sunday: [] } satisfies OnDemandAvailability },
     "West Provo/Orem \u2014 Orem Station": { serviceName: 'UTA On Demand', serviceHours: "Monday\u2013Saturday 6 a.m.\u20139 p.m.", availability: { Weekday: [{ startHour: 6, endHour: 21 }], Saturday: [{ startHour: 6, endHour: 21 }], Sunday: [] } satisfies OnDemandAvailability },
-    "North Utah County": { serviceName: 'UTA On Demand', serviceHours: "Monday\u2013Saturday 6 a.m.\u20139 p.m.", availability: { Weekday: [{ startHour: 6, endHour: 21 }], Saturday: [{ startHour: 6, endHour: 21 }], Sunday: [] } satisfies OnDemandAvailability },
+    "North Utah County": { serviceName: 'UTA On Demand', eligibility: 'Riders 13 and older.', serviceHours: "Monday\u2013Saturday 6 a.m.\u20139 p.m.", availability: { Weekday: [{ startHour: 6, endHour: 21 }], Saturday: [{ startHour: 6, endHour: 21 }], Sunday: [] } satisfies OnDemandAvailability },
   },
 };
 

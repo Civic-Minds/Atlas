@@ -25,6 +25,8 @@ export type OnDemandAreaMeta = Record<string, unknown> & {
   sourceLabel: string;
   sourceRetrievedAt?: string;
   serviceName?: string;
+  /** Who may ride, when the agency limits it (e.g. "Riders 13 and older."); zones can set their own. */
+  eligibility?: string;
 };
 
 export interface OnDemandIndexEntry {

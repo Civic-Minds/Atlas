@@ -450,6 +450,12 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
               <p className="text-[11px] leading-relaxed text-[var(--text-muted)] mt-1">Not on the map yet: {coverageNote.missing}.</p>
             )}
           </div>
+          {zone.eligibility && (
+            <div className="px-1">
+              <p className="text-[10px] font-black text-[var(--text-dim)]">Who can ride</p>
+              <p className="text-[11px] leading-relaxed text-[var(--text-muted)] mt-1">{zone.eligibility}</p>
+            </div>
+          )}
           {zone.tripRules && (
             <div className="px-1">
               <p className="text-[10px] font-black text-[var(--text-dim)]">Trip rules</p>

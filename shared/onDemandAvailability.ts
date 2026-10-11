@@ -43,6 +43,8 @@ export interface OnDemandZoneDetails {
   /** Text-only qualifiers that structured hours can't express, e.g. holidays. */
   hoursNote?: string;
   bookingInfo?: string;
+  /** Who may ride, when the agency limits it, e.g. "Riders 13 and older." Never eligibility-only service. */
+  eligibility?: string;
   availability?: OnDemandAvailability;
   pickup?: OnDemandPickup;
 }
@@ -80,6 +82,7 @@ export function resolveOnDemandZone(service: OnDemandServiceDetails, areaName: s
       serviceHours: service.serviceHours,
       hoursNote: service.hoursNote,
       bookingInfo: service.bookingInfo,
+      eligibility: service.eligibility,
       availability: service.availability,
       pickup: service.pickup,
       tripRules: service.tripRules,
@@ -93,6 +96,7 @@ export function resolveOnDemandZone(service: OnDemandServiceDetails, areaName: s
     serviceHours: zone.availability ? zone.serviceHours : zone.serviceHours ?? service.serviceHours,
     hoursNote: zone.hoursNote ?? service.hoursNote,
     bookingInfo: zone.bookingInfo ?? service.bookingInfo,
+    eligibility: zone.eligibility ?? service.eligibility,
     availability: zone.availability ?? service.availability,
     pickup: zone.pickup ?? service.pickup,
     tripRules: service.tripRules,
