@@ -171,3 +171,19 @@ describe('zones past their last day', () => {
   });
 });
 
+describe('stop-only services', () => {
+  it('lets stops follow their own service hours when that service has no polygon', () => {
+    const service = {
+      features: [{ properties: { areaName: 'Zone 1' } }],
+      availability: undefined,
+      zoneMetadata: {
+        'Zone 1': { availability: { Weekday: [{ startHour: 6, endHour: 21 }] } },
+        'Late Night On-Demand': { serviceName: 'Late Night On-Demand', availability: { Weekday: [{ startHour: 21, endHour: 23 }] } },
+      },
+    };
+    const stop = { areaName: 'Late Night On-Demand' };
+    expect(isOnDemandStopShown(service, stop, 'Weekday', 'evening')).toBe(true);
+    expect(isOnDemandStopShown(service, stop, 'Weekday', 'midday')).toBe(false);
+  });
+});
+

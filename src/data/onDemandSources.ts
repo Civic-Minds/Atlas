@@ -43,13 +43,18 @@ export function sourceProblems(source: OnDemandSource, fileName?: string): strin
   if (!Array.isArray(source.features)) problems.push(`${where}: features must be an array`);
   if ((source.features?.length ?? 0) === 0 && !(source.stopFeatures?.length)) problems.push(`${where}: no zones or stops`);
   const zoneNames = new Set<string>();
+  // Stop-only services (no polygon) are named by their stops' areaName.
+  for (const s of source.stopFeatures ?? []) {
+    const name = (s.properties as { areaName?: string } | null)?.areaName;
+    for (const part of name?.split(', ') ?? []) zoneNames.add(part);
+  }
   for (const f of source.features ?? []) {
     if (f.geometry?.type !== 'Polygon' && f.geometry?.type !== 'MultiPolygon') problems.push(`${where}: zone geometry must be Polygon or MultiPolygon`);
     const name = (f.properties as { areaName?: string } | null)?.areaName;
     if (name) zoneNames.add(name);
   }
   for (const name of Object.keys(source.area?.zoneMetadata ?? {})) {
-    if (!zoneNames.has(name)) problems.push(`${where}: zoneMetadata "${name}" matches no zone's areaName`);
+    if (!zoneNames.has(name)) problems.push(`${where}: zoneMetadata "${name}" matches no zone's or stop's areaName`);
   }
   if (source.agency && source.agency.slug !== source.slug) problems.push(`${where}: agency.slug must equal slug`);
   return problems;

@@ -107,11 +107,18 @@ export function resolveOnDemandZone(service: OnDemandServiceDetails, areaName: s
   };
 }
 
-/** Zone names a stop belongs to: an exact polygon name, or a ", "-joined list of polygon names. */
+/**
+ * Zone names a stop belongs to: an exact polygon name, or a ", "-joined list of polygon names. A
+ * stop-only service with no polygon (Grande Prairie's Late Night, which runs between any two transit
+ * stops) is named by its zoneMetadata entry, so its stops follow their own hours.
+ */
 export function onDemandStopZoneNames(service: OnDemandServiceDetails, stopProperties: unknown): string[] {
   const areaName = areaNameOf(stopProperties);
   if (!areaName) return [];
-  const zoneNames = new Set(service.features.map(feature => areaNameOf(feature.properties)).filter((name): name is string => !!name));
+  const zoneNames = new Set([
+    ...service.features.map(feature => areaNameOf(feature.properties)).filter((name): name is string => !!name),
+    ...Object.keys(service.zoneMetadata ?? {}),
+  ]);
   if (zoneNames.has(areaName)) return [areaName];
   return areaName.split(', ').filter(name => zoneNames.has(name));
 }
