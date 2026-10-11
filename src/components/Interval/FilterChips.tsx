@@ -5,7 +5,7 @@ import { FLOATING_CARD, CHIP_BASE, PANEL_ENTER_TOP, FILTER_OPTION, CONTROL_ACTIV
 import type { Agency } from '../../App';
 import { PERIOD_LABELS, PERIOD_KEYS } from '../../hooks/useIntervalStats';
 import type { TimePeriod, ViewportBounds } from '../../hooks/useIntervalStats';
-import { ATLAS_MODE, formatPeriodRange, periodKeyForHour } from '../../../shared/config';
+import { FEATURES, formatPeriodRange, periodKeyForHour } from '../../../shared/config';
 import { agencyDisplayParts } from '../../utils/format';
 import { bboxInViewport } from '../../utils/agencySearch';
 import { FILTER_MODES, ON_DEMAND_MODE } from '../../../shared/modes';
@@ -41,9 +41,9 @@ interface FilterChipsProps {
   setNightServiceFrequency?: (frequency: NightServiceFrequency) => void;
 }
 
-const MODES = ATLAS_MODE === 'public'
-  ? FILTER_MODES
-  : [...FILTER_MODES, { id: ON_DEMAND_MODE, label: 'On-demand' }];
+const MODES = FEATURES.onDemand
+  ? [...FILTER_MODES, { id: ON_DEMAND_MODE, label: 'On-demand' }]
+  : FILTER_MODES;
 
 export function getNowPeriod(): TimePeriod {
   return periodKeyForHour(new Date().getHours()) ?? 'all';

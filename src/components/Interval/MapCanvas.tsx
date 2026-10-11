@@ -2355,9 +2355,14 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       )}
 
       {/* Geolocate Button Control Overlay */}
-      {mapHint && (
+      {mapHint ? (
         <MapNoticePill className="px-3 py-1.5 text-xs text-[var(--text-muted)]">
           {mapHint}
+        </MapNoticePill>
+      ) : selectedModes.has(ON_DEMAND_MODE) && (
+        // A missing zone must never read as "no on-demand service here" (CIV-23).
+        <MapNoticePill className="px-3 py-1.5 text-xs text-[var(--text-muted)]">
+          On-demand coverage is still growing. Not every service is mapped yet.
         </MapNoticePill>
       )}
 

@@ -460,7 +460,7 @@ export default function App() {
         return r.json();
       })
       .then((data: { agencies: Agency[] }) => {
-        const onDemandBySlug: Record<string, Partial<Agency>> = ATLAS_MODE === 'public' ? {} : {
+        const onDemandBySlug: Record<string, Partial<Agency>> = !FEATURES.onDemand ? {} : {
           'all-points-transit': { onDemandServiceArea: ALL_POINTS_DIAL_A_RIDE_SERVICE_AREA },
           'bay-transit': { onDemandServiceArea: BAY_TRANSIT_EXPRESS_SERVICE_AREA },
           'columbia-area-transit': { onDemandServiceArea: CAT_DIAL_A_RIDE_SERVICE_AREA },

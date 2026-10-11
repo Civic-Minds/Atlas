@@ -12,6 +12,12 @@ import { C_TRAN_CURRENT_FLEX_STOPS } from './ctranCurrentFlexStops';
 import { ALL_POINTS_DIAL_A_RIDE_FEATURES, ASPEN_DOWNTOWNER_FEATURES, BAY_TRANSIT_EXPRESS_FEATURES, CAT_DIAL_A_RIDE_FEATURES, DURANGO_MICROTRANSIT_FEATURES, GLTC_FLEX_FEATURES, ISLAND_TRANSIT_GO_STOPS, SAM_RIDES_FEATURES, SNOQUALMIE_DOOR_TO_DOOR_FEATURES, TCTD_DIAL_A_RIDE_FEATURES, VALLEY_METRO_METROFLX_FEATURES } from './flexBatchData';
 import type { OnDemandAvailability, OnDemandPickup } from '../../shared/onDemandAvailability';
 import { BETA_ROLLOUT_NOTICE } from '../../shared/rolloutNotice';
+import { ON_DEMAND_PUBLIC } from '../../shared/config';
+
+/** Standalone on-demand agencies stay out of the public catalog until the launch flag flips (CIV-23). */
+const ON_DEMAND_ROLLOUT: { hiddenInProduction?: true; betaOnly?: true; rolloutNotice?: string } = ON_DEMAND_PUBLIC
+  ? {}
+  : { hiddenInProduction: true, betaOnly: true, rolloutNotice: BETA_ROLLOUT_NOTICE };
 
 /**
  * Agency-owned service-area geometry for services that do not publish route
@@ -418,9 +424,7 @@ export const MUSKOKA_DRT_ON_DEMAND_AGENCY = {
   cities: ['Gravenhurst, Ontario', 'Bracebridge, Ontario'],
   displayArea: 'Gravenhurst–Bracebridge',
   onDemandOnly: true,
-  hiddenInProduction: true,
-  betaOnly: true,
-  rolloutNotice: BETA_ROLLOUT_NOTICE,
+  ...ON_DEMAND_ROLLOUT,
   websiteUrl: 'https://www.muskoka.on.ca/DRT',
   onDemandServiceArea: {
     features: MUSKOKA_DRT_SERVICE_AREAS,
@@ -460,9 +464,7 @@ export const WINKLER_ON_DEMAND_AGENCY = {
   cities: ['Winkler, Manitoba'],
   displayArea: 'Winkler',
   onDemandOnly: true,
-  hiddenInProduction: true,
-  betaOnly: true,
-  rolloutNotice: BETA_ROLLOUT_NOTICE,
+  ...ON_DEMAND_ROLLOUT,
   websiteUrl: WINKLER_SOURCE_URL,
   onDemandServiceArea: {
     features: WINKLER_ON_DEMAND_SERVICE_AREAS,
@@ -500,9 +502,7 @@ export const ST_ALBERT_ON_DEMAND_AGENCY = {
   cities: ['St. Albert, Alberta'],
   displayArea: 'St. Albert',
   onDemandOnly: true,
-  hiddenInProduction: true,
-  betaOnly: true,
-  rolloutNotice: BETA_ROLLOUT_NOTICE,
+  ...ON_DEMAND_ROLLOUT,
   websiteUrl: ST_ALBERT_SOURCE_URL,
   onDemandServiceArea: {
     features: ST_ALBERT_ON_DEMAND_SERVICE_AREAS,
@@ -531,9 +531,7 @@ export const LEAMINGTON_LT_GO_ON_DEMAND_AGENCY = {
   cities: ['Leamington, Ontario'],
   displayArea: 'Leamington',
   onDemandOnly: true,
-  hiddenInProduction: true,
-  betaOnly: true,
-  rolloutNotice: BETA_ROLLOUT_NOTICE,
+  ...ON_DEMAND_ROLLOUT,
   websiteUrl: 'https://www.leamington.ca/our-community/transit/ltgo-on-demand-transit/',
   onDemandServiceArea: {
     features: [] as GeoJSON.Feature<GeoJSON.Polygon>[],
@@ -564,9 +562,7 @@ export const BWG_ON_DEMAND_AGENCY = {
   cities: ['Bradford, Ontario'],
   displayArea: 'Bradford West Gwillimbury',
   onDemandOnly: true,
-  hiddenInProduction: true,
-  betaOnly: true,
-  rolloutNotice: BETA_ROLLOUT_NOTICE,
+  ...ON_DEMAND_ROLLOUT,
   websiteUrl: 'https://www.townofbwg.com/living-in-bwg/roads-and-transit/transit/',
   onDemandServiceArea: {
     features: [BWG_ON_DEMAND_SERVICE_AREA],
@@ -593,9 +589,7 @@ export const CALEDON_ON_DEMAND_AGENCY = {
   cities: ['Caledon, Ontario'],
   displayArea: 'Caledon',
   onDemandOnly: true,
-  hiddenInProduction: true,
-  betaOnly: true,
-  rolloutNotice: BETA_ROLLOUT_NOTICE,
+  ...ON_DEMAND_ROLLOUT,
   websiteUrl: 'https://www.caledon.ca/en/town-services/transit.aspx',
   onDemandServiceArea: {
     features: CALEDON_ON_DEMAND_SERVICE_AREAS,
@@ -628,9 +622,7 @@ export const BRAMPTON_ON_DEMAND_AGENCY = {
   cities: ['Brampton, Ontario'],
   displayArea: 'Brampton Downtown',
   onDemandOnly: true,
-  hiddenInProduction: true,
-  betaOnly: true,
-  rolloutNotice: BETA_ROLLOUT_NOTICE,
+  ...ON_DEMAND_ROLLOUT,
   websiteUrl: 'https://www.brampton.ca/EN/residents/transit/Pages/Welcome.aspx',
   onDemandServiceArea: {
     features: BRAMPTON_ON_DEMAND_SERVICE_AREAS,

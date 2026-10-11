@@ -12,9 +12,9 @@ import { agencyDisplayParts, formatStoredDate } from '../../utils/format';
 import { presentFeedQualityReason, qualityStatusLabel } from '../../../shared/feedQuality';
 import { useColorVision } from '../../context/ColorVisionContext';
 
-const AVAILABLE_FILTER_MODES = ATLAS_MODE === 'public'
-  ? FILTER_MODES
-  : [...FILTER_MODES, { id: ON_DEMAND_MODE, label: 'On-demand' }];
+const AVAILABLE_FILTER_MODES = FEATURES.onDemand
+  ? [...FILTER_MODES, { id: ON_DEMAND_MODE, label: 'On-demand' }]
+  : FILTER_MODES;
 
 interface FilterPanelProps {
   lightMode: boolean;

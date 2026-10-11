@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import { ON_DEMAND_PUBLIC } from '../../../shared/config';
+import { isAgencyVisibleInBrowser } from '../../../shared/agencyVisibility';
 import {
   BWG_ON_DEMAND_AGENCY,
   BWG_ON_DEMAND_SERVICE_AREA,
@@ -125,8 +127,7 @@ describe('CyRide EASE on-demand service area', () => {
 });
 
 describe('Muskoka District DRT on-demand service area', () => {
-  it('keeps the District Phase 1.2 polygon closed and beta-only', () => {
-    expect(MUSKOKA_DRT_ON_DEMAND_AGENCY.betaOnly).toBe(true);
+  it('keeps the District Phase 1.2 polygon closed', () => {
     expect(MUSKOKA_DRT_ON_DEMAND_AGENCY.onDemandOnly).toBe(true);
     const ring = MUSKOKA_DRT_ON_DEMAND_AGENCY.onDemandServiceArea.features[0].geometry.coordinates[0];
     expect(ring).toHaveLength(72);
@@ -142,8 +143,7 @@ describe('Muskoka District DRT on-demand service area', () => {
 });
 
 describe('St. Albert on-demand service area', () => {
-  it('keeps the agency Flex zone closed and beta-only', () => {
-    expect(ST_ALBERT_ON_DEMAND_AGENCY.betaOnly).toBe(true);
+  it('keeps the agency Flex zone closed', () => {
     const ring = ST_ALBERT_ON_DEMAND_AGENCY.onDemandServiceArea.features[0].geometry.coordinates[0];
     expect(ring[0]).toEqual(ring.at(-1));
   });
@@ -323,5 +323,30 @@ describe('GTFS-Flex batch from agency feeds', () => {
     expect(Services.ISLAND_TRANSIT_GO_SERVICE_AREA.features).toHaveLength(0);
     expect(Services.ISLAND_TRANSIT_GO_SERVICE_AREA.stopFeatures).toHaveLength(47);
     expect(onDemandPickupSentence(Services.ISLAND_TRANSIT_GO_SERVICE_AREA, undefined)).toContain('47 set stops');
+  });
+});
+
+describe('on-demand public launch gate (CIV-23)', () => {
+  const standalones = [
+    Services.BWG_ON_DEMAND_AGENCY,
+    Services.CALEDON_ON_DEMAND_AGENCY,
+    Services.BRAMPTON_ON_DEMAND_AGENCY,
+    Services.MUSKOKA_DRT_ON_DEMAND_AGENCY,
+    Services.ST_ALBERT_ON_DEMAND_AGENCY,
+    Services.LEAMINGTON_LT_GO_ON_DEMAND_AGENCY,
+    Services.WINKLER_ON_DEMAND_AGENCY,
+  ];
+
+  it('keeps every standalone on-demand agency off the public site until launch', () => {
+    for (const agency of standalones) {
+      expect(isAgencyVisibleInBrowser(agency, { mode: 'public' }), agency.slug).toBe(ON_DEMAND_PUBLIC);
+    }
+  });
+
+  it('shows every standalone on-demand agency on beta and preview', () => {
+    for (const agency of standalones) {
+      expect(isAgencyVisibleInBrowser(agency, { mode: 'beta' }), agency.slug).toBe(true);
+      expect(isAgencyVisibleInBrowser(agency, { mode: 'preview' }), agency.slug).toBe(true);
+    }
   });
 });
