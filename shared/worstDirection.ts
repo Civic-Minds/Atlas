@@ -37,11 +37,50 @@ function maxNum(a: number | undefined, b: number): number {
   return a == null ? b : Math.max(a, b);
 }
 
-type PeriodCandidate = { hw: number; tier: string | null | undefined; sustained: boolean };
+type PeriodCandidate = {
+  hw: number;
+  /** This pattern's full-window wait for the period (null/undefined when it has none). */
+  coverage: number | null | undefined;
+  tier: string | null | undefined;
+  sustained: boolean;
+};
 
 /** Real destination tiers — not limited/span-only decoration. */
 function isInfrequentTier(tier: string | null | undefined): boolean {
   return tier === 'infrequent';
+}
+
+/**
+ * The one rule for which patterns speak for a direction in a period (FREQUENCY_RULES rules 2-3).
+ * Candidates are the direction's non-span patterns that run in the period. Patterns that are not
+ * steady there drop out, and occasional `infrequent` siblings drop out when the direction also has
+ * a steady regular pattern. Both the period headway and the period coverage use this same pool, so
+ * a rare variant (TTC 506's 7-trip High Park pattern) can no longer set the route's coverage while
+ * the main pattern sets its headway. Returns an empty pool when no pattern is steady in the period;
+ * callers must then keep the direction in the check (rule 3), never drop it.
+ */
+export function selectDirectionPeriodPool<T extends { tier: string | null | undefined; sustained: boolean }>(
+  candidates: readonly T[],
+): T[] {
+  return preferRegular(candidates.filter(c => c.sustained));
+}
+
+/**
+ * The coverage pool: the period pool when it has patterns, otherwise every pattern that runs in
+ * the period (regular ones first). Patterns that do not run in the period at all never speak for
+ * the direction while one that does exists, so a direction with no steady pattern is still judged
+ * by the service it actually runs (not a 3-trip variant like NYCT B17's E 80 St), and never vanishes.
+ */
+export function selectDirectionCoveragePool<T extends { tier: string | null | undefined; sustained: boolean }>(
+  candidates: readonly T[],
+): T[] {
+  const pool = selectDirectionPeriodPool(candidates);
+  return pool.length > 0 ? pool : preferRegular(candidates);
+}
+
+function preferRegular<T extends { tier: string | null | undefined }>(candidates: readonly T[]): T[] {
+  const regular = candidates.filter(c => !isInfrequentTier(c.tier));
+  return regular.length > 0 ? regular : [...candidates];
 }
 
 /**
@@ -54,13 +93,16 @@ function isInfrequentTier(tier: string | null | undefined): boolean {
  *    Two real destinations with different cadence (TTC 507 Long Branch 8 vs Marine Parade 25)
  *    keep the outer bar — dense trunk service is the frequency cut-back / stop path, not this score.
  * 2. All-day and period alike: drop pure `infrequent` siblings when the direction also has a
- *    regular tier pattern (short-turn / extension debris shouldn't set the filter). For a period,
- *    a regular pattern counts when it runs in that period, even if unsustained there.
+ *    regular tier pattern (short-turn / extension debris shouldn't set the filter).
+ * 3. Period coverage (the full-window wait) uses the same per-direction pool as the period
+ *    headway (`selectDirectionPeriodPool`). When no pattern in a direction is steady in the
+ *    period, the patterns that run there decide (`selectDirectionCoveragePool`); when none runs,
+ *    every sibling's coverage does. A late-start or sparse direction still fails (#507) and never
+ *    vanishes from the check (#601).
  */
 export function stampWorstDirectionHeadways(features: WorstDirectionFeature[]): void {
-  // Coverage includes unsustained windows. A direction with no departures must
-  // fail the whole-route test; an inactive sibling within an active direction
-  // does not erase that direction's service. Never invent an absent direction.
+  // Coverage groups hold every sibling (span included) for the fallback below and the
+  // mixed-artifact guard. Never invent an absent direction.
   const coverageGroups = new Map<string, WorstDirectionFeature[]>();
   for (const f of features) {
     const name = f.properties ? routeGroupName(f.properties) : undefined;
@@ -69,24 +111,6 @@ export function stampWorstDirectionHeadways(features: WorstDirectionFeature[]): 
     const group = coverageGroups.get(key) ?? [];
     group.push(f);
     coverageGroups.set(key, group);
-  }
-  const coverageStamps = new Map<string, HeadwayByPeriod>();
-  for (const [key, group] of coverageGroups) {
-    if (!group.some(f => f.properties.periodCoverageHeadway !== undefined)) continue;
-    const stamp: HeadwayByPeriod = {};
-    const directions = new Set(group.map(f => f.properties.directionId));
-    for (const period of PERIOD_KEYS) {
-      const values = [...directions].map(direction => {
-        const siblings = group.filter(f => f.properties.directionId === direction);
-        // Mixed old/new artifacts cannot establish a complete bound.
-        if (siblings.some(f => f.properties.periodCoverageHeadway === undefined)) return null;
-        const waits = siblings.map(f => f.properties.periodCoverageHeadway?.[period])
-          .filter((v): v is number => v != null);
-        return waits.length ? Math.max(...waits) : null;
-      });
-      stamp[period] = values.some(v => v == null) ? null : Math.max(...values as number[]);
-    }
-    coverageStamps.set(key, stamp);
   }
   // route+day → directionId → candidate all-day headways with tier
   const dirAllDay = new Map<string, Map<number, Array<{ hw: number; tier: string | null | undefined }>>>();
@@ -136,7 +160,12 @@ export function stampWorstDirectionHeadways(features: WorstDirectionFeature[]): 
         const list = periods.get(pk) ?? [];
         // Not real cadence for this window (edge bunch / barely-running short-turn) is kept as a
         // candidate only so it still counts as the direction's main service below.
-        list.push({ hw: v, tier: f.properties.tier, sustained: sustained?.[pk] !== false });
+        list.push({
+          hw: v,
+          coverage: f.properties.periodCoverageHeadway?.[pk],
+          tier: f.properties.tier,
+          sustained: sustained?.[pk] !== false,
+        });
         periods.set(pk, list);
       }
     }
@@ -160,7 +189,7 @@ export function stampWorstDirectionHeadways(features: WorstDirectionFeature[]): 
   // running in the period, occasional `infrequent` siblings (TransLink 99's three AM Boundary
   // Loop extension trips, every 23) do not count against it. Then the worst sustained value per
   // direction, then the worst direction. Unsustained values never set the bar; the coverage
-  // stamp above still fails a direction that leaves most of the window without service.
+  // stamp below still fails a direction that leaves most of the window without service.
   const routeWorstHwByPeriod = new Map<string, HeadwayByPeriod>();
   for (const [key, dirMap] of dirPeriodCandidates) {
     const worst: HeadwayByPeriod = {};
@@ -168,9 +197,7 @@ export function stampWorstDirectionHeadways(features: WorstDirectionFeature[]): 
       for (const [pk, candidates] of periods) {
         // Pick the pool after the sustained check, so a direction that runs in the period always
         // contributes a value: dropping a sibling must never make a whole direction vanish.
-        const sustained = candidates.filter(c => c.sustained);
-        const regular = sustained.filter(c => !isInfrequentTier(c.tier));
-        const pool = regular.length > 0 ? regular : sustained;
+        const pool = selectDirectionPeriodPool(candidates);
         for (const c of pool) {
           const cur = worst[pk];
           worst[pk] = cur == null ? c.hw : Math.max(cur, c.hw);
@@ -178,6 +205,33 @@ export function stampWorstDirectionHeadways(features: WorstDirectionFeature[]): 
       }
     }
     if (Object.keys(worst).length > 0) routeWorstHwByPeriod.set(key, worst);
+  }
+
+  // Coverage: per direction, the worst full-window wait among the same pool the period headway
+  // uses. A direction with no steady pattern in the period keeps every sibling's coverage, so a
+  // direction that leaves most of the window without service still fails the route.
+  const coverageStamps = new Map<string, HeadwayByPeriod>();
+  for (const [key, group] of coverageGroups) {
+    if (!group.some(f => f.properties.periodCoverageHeadway !== undefined)) continue;
+    const stamp: HeadwayByPeriod = {};
+    const directions = new Set(group.map(f => f.properties.directionId as number));
+    const dirMap = dirPeriodCandidates.get(key);
+    for (const period of PERIOD_KEYS) {
+      const values = [...directions].map(direction => {
+        const siblings = group.filter(f => f.properties.directionId === direction);
+        // Mixed old/new artifacts cannot establish a complete bound.
+        if (siblings.some(f => f.properties.periodCoverageHeadway === undefined)) return null;
+        const pool = selectDirectionCoveragePool(dirMap?.get(direction)?.get(period) ?? []);
+        const poolWaits = pool.map(c => c.coverage).filter((v): v is number => v != null);
+        // Use the pool only when every pattern in it reports a coverage value; otherwise fall back.
+        if (pool.length > 0 && poolWaits.length === pool.length) return Math.max(...poolWaits);
+        const waits = siblings.map(f => f.properties.periodCoverageHeadway?.[period])
+          .filter((v): v is number => v != null);
+        return waits.length ? Math.max(...waits) : null;
+      });
+      stamp[period] = values.some(v => v == null) ? null : Math.max(...values as number[]);
+    }
+    coverageStamps.set(key, stamp);
   }
 
   for (const f of features) {

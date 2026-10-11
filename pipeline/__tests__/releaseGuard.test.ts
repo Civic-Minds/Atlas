@@ -97,8 +97,8 @@ describe('tile rules fingerprint', () => {
   // ignore the new keys.
   it('changes only together with a deliberate TILE_RULES_VERSION decision', () => {
     expect({ version: TILE_RULES_VERSION, fingerprint: tileRulesFingerprint() }).toEqual({
-      version: 1,
-      fingerprint: '8fbcac405c06e3a1f4e54cf3780f21fafbb1837df667fc0d480e0c62bfd6cc1e',
+      version: 2,
+      fingerprint: '3fe5c029490e8e1013d2f8e17d90abd4bf3bde1f17beeee5cc49f9841787994f',
     });
   });
 });
