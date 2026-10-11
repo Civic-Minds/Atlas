@@ -304,5 +304,40 @@ describe('Weekday stop groups use one representative weekday (#710)', () => {
     for (const p of weekday) expect(p.partialWeekdayServiceByPeriod).toBeUndefined();
     expect([...new Set(weekday.filter(p => p.tier === '30').map(p => p.directionId))].sort()).toEqual([0, 1]);
   });
+
+  it('a route without direction_id is not part-week when synthesized directions split by weekday', async () => {
+    // Kalamazoo pattern: no direction_id, and the Mon-Thu and Friday services use their own
+    // shapes (29 trips each way). Direction synthesis groups by shape and put a Friday-only
+    // shape in "direction 1", which then looked like a Friday-only route.
+    const zip = new JSZip();
+    zip.file('agency.txt', 'agency_id,agency_name,agency_url,agency_timezone\na,KZ,https://example.test,America/Detroit\n');
+    zip.file('routes.txt', 'route_id,route_short_name,route_long_name,route_type\n1,1,Crosstown,3\n');
+    zip.file('stops.txt', 'stop_id,stop_name,stop_lat,stop_lon\nk,KTC,42.29,-85.58\nm,Middle,42.27,-85.60\nx,Crossroads,42.25,-85.62\n');
+    zip.file('calendar.txt', 'service_id,monday,tuesday,wednesday,thursday,friday,saturday,sunday,start_date,end_date\nmonthu,1,1,1,1,0,0,0,20260105,20261220\nfri,0,0,0,0,1,0,0,20260105,20261220\n');
+    const shapes = ['shape_id,shape_pt_lat,shape_pt_lon,shape_pt_sequence'];
+    for (const [id, pts] of [['10795', ['k', 'x']], ['10791', ['x', 'k']], ['10793', ['k', 'x']], ['10789', ['x', 'k']]] as const) {
+      const coords: Record<string, string> = { k: '42.29,-85.58', x: '42.25,-85.62' };
+      shapes.push(`${id},${coords[pts[0]]},1`, `${id},42.27,-85.60,2`, `${id},${coords[pts[1]]},3`);
+    }
+    zip.file('shapes.txt', shapes.join('\n') + '\n');
+    const trips = ['route_id,service_id,trip_id,trip_headsign,shape_id'];
+    const stopTimes = ['trip_id,arrival_time,departure_time,stop_id,stop_sequence'];
+    for (const [service, outShape, backShape] of [['fri', '10795', '10791'], ['monthu', '10793', '10789']] as const) {
+      for (let i = 0; i < 29; i++) {
+        const start = 6 * 60 + i * 30;
+        for (const [shape, a, b, hs] of [[outShape, 'k', 'x', 'Crossroads'], [backShape, 'x', 'k', 'KTC']] as const) {
+          const id = `${service}-${shape}-${i}`;
+          trips.push(`1,${service},${id},${hs},${shape}`);
+          stopTimes.push(`${id},${hm(start)},${hm(start)},${a},1`, `${id},${hm(start + 10)},${hm(start + 10)},m,2`, `${id},${hm(start + 20)},${hm(start + 20)},${b},3`);
+        }
+      }
+    }
+    zip.file('trips.txt', trips.join('\n') + '\n');
+    zip.file('stop_times.txt', stopTimes.join('\n') + '\n');
+    const weekday = (await routeFeatures(await zip.generateAsync({ type: 'nodebuffer' }), 'synth-dir')).filter(p => p.day === 'Weekday');
+
+    expect(weekday.length).toBeGreaterThan(0);
+    for (const p of weekday) expect(p.partialWeekdayServiceByPeriod).toBeUndefined();
+  });
 });
 

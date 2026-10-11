@@ -191,7 +191,7 @@ export function representativeStopSequence(
  * a route that runs every weekday looked like a Tue+Wed route.
  */
 export function weekdayServiceDaysByRouteDir(
-  gtfs: Pick<GtfsData, 'trips' | 'frequencies' | 'calendar' | 'calendarDates'>,
+  gtfs: Pick<GtfsData, 'trips' | 'frequencies' | 'calendar' | 'calendarDates' | 'synthesizedDirectionRouteIds'>,
   referenceDate: string,
   activeServiceIdsByDay: ReadonlyMap<DayName, ReadonlySet<string>>,
 ): Map<string, number> {
@@ -257,7 +257,27 @@ export function weekdayServiceDaysByRouteDir(
       departures.set(key, counts);
     });
   }
-  return new Map([...departures].map(([key, counts]) => [key, counts.filter(count => count >= 2).length]));
+  const days = new Map([...departures].map(([key, counts]) => [key, counts.filter(count => count >= 2).length]));
+  // A synthesized direction is a guess from shapes, not the feed's direction: Kalamazoo gives
+  // Mon-Thu and Friday trips their own shapes, and the guess put a Friday-only shape in
+  // "direction 1" of a route that runs both ways every weekday. Decide those routes as a whole.
+  const synthesized = gtfs.synthesizedDirectionRouteIds;
+  if (synthesized && synthesized.size > 0) {
+    const routeCounts = new Map<string, number[]>();
+    for (const [key, counts] of departures) {
+      const routeId = key.slice(0, key.lastIndexOf('::'));
+      if (!synthesized.has(routeId)) continue;
+      const sum = routeCounts.get(routeId) ?? [0, 0, 0, 0, 0];
+      counts.forEach((count, index) => { sum[index] += count; });
+      routeCounts.set(routeId, sum);
+    }
+    for (const key of days.keys()) {
+      const routeId = key.slice(0, key.lastIndexOf('::'));
+      const sum = routeCounts.get(routeId);
+      if (sum) days.set(key, sum.filter(count => count >= 2).length);
+    }
+  }
+  return days;
 }
 
 export async function processGtfsBuffer(
