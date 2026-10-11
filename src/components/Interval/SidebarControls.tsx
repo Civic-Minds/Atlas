@@ -962,9 +962,10 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   // visible, and dragged (or tapped) up to read the whole card.
   const isPhone = useMediaQuery(PHONE_MEDIA_QUERY);
   const sheetMode = FEATURES.mobileRouteSheet && isPhone && !!(panelRoute || panelStop) && !hasSearchResults;
-  // Matching the search box width leaves phones with a half-width results list (#695),
-  // so while searching on a phone the list takes the full screen width instead.
-  const matchSearchBarWidth = !!searchBarWidth && !(isPhone && searchFocused);
+  // On phones the search box is too narrow to size panels from (#695, #698): search results
+  // take the full screen width, and route and stop cards keep a fixed width.
+  const matchSearchBarWidth = !!searchBarWidth && !isPhone;
+  const phonePanelWidth = isPhone && !searchFocused ? 'max-sm:w-44' : '';
   const [sheetExpanded, setSheetExpanded] = useState(false);
   const sheetDragStart = useRef<number | null>(null);
   const sheetSubject = selectedRoute ?? (currentStop as { stopId?: string } | null)?.stopId ?? null;
@@ -1027,7 +1028,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     <div
       className={sheetMode
         ? `fixed inset-x-0 bottom-0 ${Z_PANEL} flex flex-col transition-[opacity,transform] duration-200 ease-out ${panelVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`
-        : `${PANEL_SIDEBAR} ${SIDEBAR_PANEL_WIDTH} ${nightServiceView ? 'max-h-[calc(100vh-168px)]' : 'max-h-[calc(100vh-132px)]'} flex flex-col gap-3 transition-[opacity,transform] duration-200 ease-out ${panelVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}
+        : `${PANEL_SIDEBAR} ${SIDEBAR_PANEL_WIDTH} ${phonePanelWidth} ${nightServiceView ? 'max-h-[calc(100vh-168px)]' : 'max-h-[calc(100vh-132px)]'} flex flex-col gap-3 transition-[opacity,transform] duration-200 ease-out ${panelVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}
       style={sheetMode ? undefined : {
         '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px`,
         ...(matchSearchBarWidth ? { width: `${searchBarWidth}px`, maxWidth: 'none' } : {}),

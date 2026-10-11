@@ -9,6 +9,7 @@ import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig';
 const Interval = React.lazy(() => import('./apps/Interval'));
 import type { StopEntry } from './apps/corridor-search';
 import { useDebouncedValue } from './hooks/useDebouncedValue';
+import { PHONE_MEDIA_QUERY, useMediaQuery } from './hooks/useMediaQuery';
 const NightService = React.lazy(() => import('./apps/NightService'));
 // Lazy-loaded and rendered only when their flag is on (shared/config.ts) -- keeps this code out
 // of what main's build actually fetches, not just hidden behind a runtime check.
@@ -320,6 +321,10 @@ export default function App() {
   );
 
   const [searchFocused, setSearchFocused] = useState(false);
+  // On phones the search box is too narrow to read what you type (#698), so while it is
+  // focused it takes the whole top bar and the other header buttons step aside.
+  const isPhone = useMediaQuery(PHONE_MEDIA_QUERY);
+  const phoneSearchExpanded = isPhone && searchFocused;
   const searchBlurTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -423,6 +428,8 @@ export default function App() {
     measure();
     const ro = new ResizeObserver(measure);
     ro.observe(document.documentElement);
+    // The search box also changes size on its own when it expands on phones.
+    if (searchBarRef.current) ro.observe(searchBarRef.current);
     return () => ro.disconnect();
   }, [inCorridors]);
 
@@ -548,7 +555,7 @@ export default function App() {
     <div className={`relative h-dvh w-screen bg-[var(--bg-app)] text-[var(--text-primary)] font-sans overflow-hidden transition-colors ${TRANSITION_BASE}`}>
       {/* Unified header row — left and right sections share one flex container so they can never overlap */}
       <div className={`absolute ${inFrequentServiceStory ? 'top-0 left-0 right-0 bg-[var(--bg-app)] px-6 py-6' : 'top-6 left-6 right-6'} ${infoOpen ? Z_MODAL_TOP : Z_HEADER} flex items-center justify-between pointer-events-none`}>
-      <div ref={headerLeftRef} className="flex items-center gap-2 pointer-events-auto flex-1 max-w-[calc(100%-3rem)] sm:max-w-none mr-2 sm:mr-0">
+      <div ref={headerLeftRef} className={`flex items-center gap-2 pointer-events-auto flex-1 ${phoneSearchExpanded ? '' : 'max-w-[calc(100%-3rem)] mr-2'} sm:max-w-none sm:mr-0`}>
         <button
           type="button"
           onClick={() => {
@@ -566,7 +573,7 @@ export default function App() {
           <MapIcon className="w-3.5 h-3.5 text-white" />
         </button>
 
-        <AtlasBrand />
+        {!phoneSearchExpanded && <AtlasBrand />}
 
         {!inFrequentServiceStory && !inResearch && <div className="flex items-center gap-2 flex-1 min-w-0 lg:flex-none">
         <div className="flex-1 min-w-0 sm:flex">
@@ -646,7 +653,7 @@ export default function App() {
 
         {/* Phones fold Live and History into one menu. Research is reached from the About page,
             not the map's top bar (#651). */}
-        {(showLiveControl || showHistoryControl) && (
+        {(showLiveControl || showHistoryControl) && !phoneSearchExpanded && (
           <>
             <span className="sm:hidden w-px h-4 bg-[var(--border-primary)] shrink-0" aria-hidden="true" />
 
@@ -695,7 +702,7 @@ export default function App() {
         </div>}
       </div>
       {/* Portal target for Interval's right header (FilterChips + Now + FilterPanel) */}
-      <div className="flex items-center gap-2 pointer-events-auto">
+      <div className={`${phoneSearchExpanded ? 'hidden' : 'flex'} items-center gap-2 pointer-events-auto`}>
         <div ref={headerPortalRef} className="flex items-center gap-2" />
         <button
           type="button"
