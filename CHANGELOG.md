@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- A bus that leaves exactly when a time period ends, like a 6:00 AM first trip, no longer makes the route look like it runs in the period before, so overnight, late and peak filters stop showing routes that only start or finish on the boundary.
 - Routes in feeds that time a whole vehicle shift as one trip, like Waco's South Terrace, show their daytime service again instead of only evening and overnight service ([#722](https://github.com/Civic-Minds/Atlas/issues/722)).
 - Routes in feeds that write each frequency-based trip as a template at midnight, like UGA's campus buses, no longer show fake late-night service, because a template's own listed times are no longer counted as a bus ([#721](https://github.com/Civic-Minds/Atlas/issues/721)).
 - Shuttles whose feed lists a second bus restarting on top of the first, like Clemson's Gold route, no longer show a bus every 1 to 5 minutes; they now show about every 15 to 20, the two buses' real combined service ([#711](https://github.com/Civic-Minds/Atlas/issues/711)).

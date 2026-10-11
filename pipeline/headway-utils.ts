@@ -408,12 +408,15 @@ export function computePeriodHeadways(departureTimes: number[]): HeadwayByPeriod
 /** Worst wait across the entire period, including both window edges, rounded up to minutes.
  * Unlike the historical median and max gap, this also measures late starts and early finishes.
  * One departure is enough to measure coverage; no departure inside the window means no service.
+ * A period is [start, end): a departure exactly at the end belongs to the next period. That
+ * includes overnight, whose 30:00 end is the next morning's 06:00 AM-peak start, so a route's
+ * 06:00 first trip no longer reads as overnight service with a 240-min wait (coast-rta TL-147).
  */
 export function computePeriodCoverageHeadways(departureTimes: number[]): HeadwayByPeriod {
   const result: HeadwayByPeriod = {};
   for (const [key, { start, end }] of Object.entries(PERIODS) as [PeriodKey, { start: number; end: number }][]) {
     const times = [...new Set(forCrossMidnightWindow(departureTimes, end))]
-      .filter(t => t >= start && t <= end)
+      .filter(t => t >= start && t < end)
       .sort((a, b) => a - b);
     if (times.length === 0) {
       result[key] = null;

@@ -34,9 +34,18 @@ describe('computePeriodCoverageHeadways', () => {
     expect(Object.values(computePeriodCoverageHeadways([]))).toEqual(TIME_PERIODS.map(() => null));
   });
 
-  it('includes departures exactly at the window boundaries', () => {
+  it('counts a departure at a period boundary in the period it starts, not the one it ends', () => {
     expect(computePeriodCoverageHeadways([360]).amPeak).toBe(180);
-    expect(computePeriodCoverageHeadways([540]).amPeak).toBe(180);
+    // 09:00 opens midday; it is not AM-peak service.
+    expect(computePeriodCoverageHeadways([540])).toMatchObject({ amPeak: null, midday: 360 });
+  });
+
+  it('does not read a 06:00 first trip as overnight service (coast-rta TL-147)', () => {
+    // coast-rta TL-147 (trip TL-1923): one window 06:00-07:00 every 2666 s, departures 06:00 and 06:44.
+    // Overnight ends at 30:00, the next morning's 06:00, which is the AM peak's start.
+    const coverage = computePeriodCoverageHeadways([360, 360 + 2666 / 60]);
+    expect(coverage.overnight).toBeNull();
+    expect(coverage.amPeak).toBe(136);
   });
 
   it('rounds fractional waits up and ignores duplicates without mutating the input', () => {
