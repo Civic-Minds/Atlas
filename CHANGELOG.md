@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- Routes whose feeds describe the same buses twice, as a timetable plus a frequency template or as a loop that passes a stop twice, no longer show buses several times more often than they run ([#711](https://github.com/Civic-Minds/Atlas/issues/711), [#712](https://github.com/Civic-Minds/Atlas/issues/712)).
 - Routes in feeds that list each scheduled trip as its own frequency window no longer show about twice as many buses as really run ([#702](https://github.com/Civic-Minds/Atlas/issues/702)).
 - On phones, search results use the full screen width, the Settings and About panels fit on small screens, the docs and legal pages start with their contents list collapsed, the search box widens to the full top bar while you type, and Escape closes the export dialog ([#694](https://github.com/Civic-Minds/Atlas/issues/694), [#695](https://github.com/Civic-Minds/Atlas/issues/695), [#696](https://github.com/Civic-Minds/Atlas/issues/696), [#697](https://github.com/Civic-Minds/Atlas/issues/697), [#698](https://github.com/Civic-Minds/Atlas/issues/698)).
 - Picking a route on the map fades the rest of the network again, matching History, stops and search, so the chosen route is easy to see ([#700](https://github.com/Civic-Minds/Atlas/issues/700)).
