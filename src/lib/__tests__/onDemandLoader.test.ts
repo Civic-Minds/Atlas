@@ -108,3 +108,24 @@ describe('loading from R2', () => {
     await expect(loadOnDemandIndex('https://r2.test')).rejects.toThrow(/schema/);
   });
 });
+
+describe('temporary zones past their last day (CIV-50)', () => {
+  it('leaves an ended zone, its hours and its own stops out of the release, by the agency\'s local date', () => {
+    // Edmonton's Glenora detour runs until 2026-12-31. At 2027-01-01 03:00 UTC it is still
+    // Dec 31 in Edmonton, so the zone stays; by 2027-01-01 08:00 UTC it's gone.
+    const zones = (now: string) => {
+      const release = buildOnDemandRelease('beta', 't', undefined, undefined, new Date(now));
+      const geometry = release.geometries.find(g => g.slug === 'edmonton')!;
+      const meta = release.index.services.find(s => s.slug === 'edmonton')!.area as unknown as { zoneMetadata: Record<string, unknown> };
+      return { names: geometry.features.map(f => (f.properties as { areaName: string }).areaName), meta: Object.keys(meta.zoneMetadata) };
+    };
+    const before = zones('2027-01-01T03:00:00Z');
+    expect(before.names).toContain('Glenora East');
+    const after = zones('2027-01-01T08:00:00Z');
+    for (const name of ['Glenora East', 'Glenora West', '124 Street & 102 Avenue', '142 Street & Stony Plain Road']) {
+      expect(after.names).not.toContain(name);
+      expect(after.meta).not.toContain(name);
+    }
+    expect(after.names).toContain('Keswick');
+  });
+});

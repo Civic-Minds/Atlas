@@ -36,25 +36,50 @@ export function useOnDemandData(enabled: boolean = FEATURES.onDemand): OnDemandD
   // In-flight and retry bookkeeping live in refs, so hiding on-demand mid-load can't strand a load.
   const loading = useRef(false);
   const retries = useRef(0);
+  const retryTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const mounted = useRef(true);
+
+  const clearRetry = () => {
+    if (retryTimer.current) clearTimeout(retryTimer.current);
+    retryTimer.current = null;
+  };
+
+  useEffect(() => {
+    mounted.current = true;
+    return () => { mounted.current = false; clearRetry(); };
+  }, []);
 
   useEffect(() => {
     if (!enabled || !visible || index || loading.current) return;
     loading.current = true;
+    clearRetry();
     setStatus('loading');
     loadOnDemandIndex()
-      .then(loaded => { retries.current = 0; setIndex(loaded); setStatus('ready'); })
+      .then(loaded => {
+        if (!mounted.current) return;
+        retries.current = 0;
+        setIndex(loaded);
+        setStatus('ready');
+      })
       .catch(() => {
+        if (!mounted.current) return;
         setStatus('error');
         if (retries.current < ON_DEMAND_RETRY_LIMIT) {
           retries.current += 1;
-          setTimeout(() => setRetryTick(t => t + 1), ON_DEMAND_RETRY_MS);
+          retryTimer.current = setTimeout(() => {
+            retryTimer.current = null;
+            if (mounted.current) setRetryTick(t => t + 1);
+          }, ON_DEMAND_RETRY_MS);
         }
       })
       .finally(() => { loading.current = false; });
   }, [enabled, visible, index, retryTick]);
 
   // Showing on-demand again after the automatic retries ran out starts a fresh round.
-  useEffect(() => { if (visible) retries.current = 0; }, [visible]);
+  useEffect(() => {
+    if (!visible) return;
+    retries.current = 0;
+  }, [visible]);
 
   const requestGeometry = useCallback((slugs: readonly string[]) => {
     if (!index) return;
@@ -63,11 +88,13 @@ export function useOnDemandData(enabled: boolean = FEATURES.onDemand): OnDemandD
       requested.current.add(slug);
       loadOnDemandGeometry(index, slug)
         .then(geometry => {
+          if (!mounted.current) return;
           failed.current.delete(slug);
           setGeometries(prev => new Map(prev).set(slug, geometry));
           if (failed.current.size === 0) setStatus('ready');
         })
         .catch(() => {
+          if (!mounted.current) return;
           // Forget the request so the next view change tries again.
           requested.current.delete(slug);
           failed.current.add(slug);

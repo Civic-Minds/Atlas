@@ -53,4 +53,19 @@ describe('useOnDemandData (CIV-50)', () => {
     expect(loadOnDemandIndex).toHaveBeenCalledTimes(2);
     expect(result.current.status).toBe('ready');
   });
+
+  it('clears a pending retry when the map goes away, and ignores a load that lands after', async () => {
+    vi.useFakeTimers();
+    let resolve!: (value: unknown) => void;
+    loadOnDemandIndex.mockRejectedValueOnce(new Error('offline')).mockReturnValueOnce(new Promise(r => { resolve = r; }));
+    const { result, unmount } = renderHook(() => useOnDemandData(true));
+    act(() => result.current.setVisible(true));
+    await act(async () => { await Promise.resolve(); });
+    expect(vi.getTimerCount()).toBe(1);
+    unmount();
+    expect(vi.getTimerCount()).toBe(0);
+    await act(async () => { vi.advanceTimersByTime(ON_DEMAND_RETRY_MS * 2); });
+    expect(loadOnDemandIndex).toHaveBeenCalledTimes(1);
+    resolve(INDEX);
+  });
 });

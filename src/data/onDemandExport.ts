@@ -3,6 +3,9 @@
  * pipeline/publish-on-demand.ts and its round-trip test; never imported by the app.
  */
 import { createHash } from 'node:crypto';
+import fs from 'node:fs';
+import path from 'node:path';
+import { localDateIn } from '../../shared/onDemandAvailability';
 import {
   ON_DEMAND_SCHEMA_VERSION,
   featuresBbox,
@@ -23,10 +26,47 @@ export interface OnDemandRelease {
   geometries: OnDemandGeometry[];
 }
 
-function entryFor(slug: string, area: OnDemandArea, isPublic: boolean, agency?: Record<string, unknown>): {
+const AGENCY_CONFIG_DIR = path.resolve(path.dirname(new URL(import.meta.url).pathname), '../../config/agencies');
+
+/** The agency's IANA time zone from its config, so zone end dates follow its local calendar. */
+function agencyTimeZone(slug: string, agency?: Record<string, unknown>): string | undefined {
+  if (typeof agency?.timezone === 'string') return agency.timezone;
+  try {
+    const config = JSON.parse(fs.readFileSync(path.join(AGENCY_CONFIG_DIR, `${slug}.json`), 'utf8')) as { timezone?: string };
+    return config.timezone;
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * Leave out temporary zones past their last day (validUntil, in the agency's local date), with their
+ * hours and any stops tied only to them, so an ended detour is never published.
+ */
+function withoutExpiredZones(slug: string, area: OnDemandArea, now: Date, agency?: Record<string, unknown>): OnDemandArea {
+  const today = localDateIn(agencyTimeZone(slug, agency), now);
+  const expired = new Set(Object.entries(area.zoneMetadata ?? {})
+    .filter(([, zone]) => zone.validUntil && zone.validUntil < today)
+    .map(([name]) => name));
+  if (expired.size === 0) return area;
+  const areaNameOf = (f: { properties?: unknown }) => (f.properties as { areaName?: string } | null)?.areaName;
+  const keepStop = (f: { properties?: unknown }) => {
+    const names = (areaNameOf(f) ?? '').split(', ').filter(Boolean);
+    return names.length === 0 || names.some(name => !expired.has(name));
+  };
+  return {
+    ...area,
+    features: area.features.filter(f => !expired.has(areaNameOf(f) ?? '')),
+    ...(area.stopFeatures ? { stopFeatures: area.stopFeatures.filter(keepStop) } : {}),
+    zoneMetadata: Object.fromEntries(Object.entries(area.zoneMetadata ?? {}).filter(([name]) => !expired.has(name))),
+  };
+}
+
+function entryFor(slug: string, rawArea: OnDemandArea, isPublic: boolean, agency?: Record<string, unknown>, now: Date = new Date()): {
   entry: Omit<OnDemandIndexEntry, 'geometryKey'>;
   geometry: OnDemandGeometry;
 } {
+  const area = withoutExpiredZones(slug, rawArea, now, agency);
   const { features, stopFeatures, ...meta } = area;
   const geometry: OnDemandGeometry = { slug, features, ...(stopFeatures ? { stopFeatures } : {}) };
   const entry: Omit<OnDemandIndexEntry, 'geometryKey'> = {
@@ -66,18 +106,20 @@ export function buildOnDemandRelease(
   generatedAt = new Date().toISOString(),
   promoted: ReadonlySet<string> = PROMOTED_ON_DEMAND_SLUGS,
   sources: readonly OnDemandSource[] = loadOnDemandSources(),
+  now: Date = new Date(),
 ): OnDemandRelease {
   const registrySlugs = new Set([...Object.keys(ATTACHED_ON_DEMAND_SERVICES), ...STANDALONE_ON_DEMAND_AGENCIES.map(a => a.slug)]);
   const duplicate = sources.find(source => registrySlugs.has(source.slug));
   if (duplicate) throw new Error(`On-demand service ${duplicate.slug} is in both the registry and config/on-demand`);
   const built = [
-    ...Object.entries(ATTACHED_ON_DEMAND_SERVICES).map(([slug, area]) => entryFor(slug, area, promoted.has(slug))),
-    ...STANDALONE_ON_DEMAND_AGENCIES.map(agency => entryFor(agency.slug, agency.onDemandServiceArea as OnDemandArea, promoted.has(agency.slug), agency as unknown as Record<string, unknown>)),
+    ...Object.entries(ATTACHED_ON_DEMAND_SERVICES).map(([slug, area]) => entryFor(slug, area, promoted.has(slug), undefined, now)),
+    ...STANDALONE_ON_DEMAND_AGENCIES.map(agency => entryFor(agency.slug, agency.onDemandServiceArea as OnDemandArea, promoted.has(agency.slug), agency as unknown as Record<string, unknown>, now)),
     ...sources.map(source => entryFor(
       source.slug,
       { ...source.area, features: source.features, ...(source.stopFeatures ? { stopFeatures: source.stopFeatures } : {}) } as OnDemandArea,
       promoted.has(source.slug),
       source.agency,
+      now,
     )),
   ].filter(({ entry }) => audience === 'beta' || entry.public);
   return assembleRelease(built.map(b => b.entry), built.map(b => b.geometry), generatedAt);

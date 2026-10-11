@@ -3,6 +3,7 @@
  * releaseDiff.ts. A red flag holds back only that service: its live version stays published.
  */
 import type { OnDemandGeometry, OnDemandIndex, OnDemandIndexEntry } from '../shared/onDemandData.js';
+import { localDateIn } from '../shared/onDemandAvailability.js';
 
 export type OnDemandFlag =
   | 'invalid'
@@ -143,7 +144,7 @@ export function evaluateOnDemandRelease(
       else if (days > STALE_YELLOW_DAYS) add(entry.slug, 'stale-source', 'yellow', `source checked ${Math.floor(days)} days ago`);
     }
 
-    // A temporary zone past its end date must be re-checked before it's published again.
+    // Backstop only: the release build already drops zones past their end date.
     const zones = Object.entries((entry.area as { zoneMetadata?: Record<string, { validUntil?: string }> }).zoneMetadata ?? {});
     for (const [name, zone] of [['(service)', entry.area as { validUntil?: string }] as const, ...zones]) {
       const until = zone?.validUntil ? Date.parse(`${zone.validUntil}T23:59:59Z`) : NaN;
@@ -152,7 +153,15 @@ export function evaluateOnDemandRelease(
 
     const before = live?.index.services.find(s => s.slug === entry.slug);
     if (before) {
-      const beforeGeometry = live?.geometries.get(entry.slug);
+      // Live zones that have since passed their end date are expected to go, not a drop.
+      const today = localDateIn(typeof entry.agency?.timezone === 'string' ? entry.agency.timezone : undefined, now);
+      const ended = new Set(Object.entries((before.area as { zoneMetadata?: Record<string, { validUntil?: string }> }).zoneMetadata ?? {})
+        .filter(([, zone]) => zone?.validUntil && zone.validUntil < today).map(([name]) => name));
+      const liveGeometry = live?.geometries.get(entry.slug);
+      const beforeGeometry = liveGeometry && {
+        ...liveGeometry,
+        features: liveGeometry.features.filter(f => !ended.has(String((f.properties as { areaName?: string } | null)?.areaName ?? ''))),
+      };
       const beforeZones = beforeGeometry?.features.length ?? 0;
       if (geometry.features.length < beforeZones) {
         add(entry.slug, 'zone-drop', 'red', `zones ${beforeZones} → ${geometry.features.length}`);

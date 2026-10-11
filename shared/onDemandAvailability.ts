@@ -129,8 +129,31 @@ export function onDemandRunningState(
   return isOnDemandActive(availability, day, period) ? 'running' : 'not-running';
 }
 
-/** Whether a polygon should be drawn for the selected day and period. Unknown hours stay visible. */
-export function isOnDemandZoneShown(service: OnDemandServiceDetails, areaName: string | undefined, day: DayType, period: OnDemandPeriod): boolean {
+/**
+ * Today's date (YYYY-MM-DD) where the agency is. With no time zone on file, use the last place on
+ * Earth to reach midnight, so a zone is never dropped before its last day has ended anywhere.
+ */
+export function localDateIn(timeZone: string | null | undefined, now: Date = new Date()): string {
+  try {
+    return new Intl.DateTimeFormat('en-CA', { timeZone: timeZone || 'Etc/GMT+12', year: 'numeric', month: '2-digit', day: '2-digit' }).format(now);
+  } catch {
+    return new Intl.DateTimeFormat('en-CA', { timeZone: 'Etc/GMT+12', year: 'numeric', month: '2-digit', day: '2-digit' }).format(now);
+  }
+}
+
+/** A temporary zone (or service) whose last day, validUntil, is before `today`. */
+export function isOnDemandZoneExpired(service: OnDemandServiceDetails, areaName: string | undefined, today: string): boolean {
+  const zone = areaName ? service.zoneMetadata?.[areaName] : undefined;
+  const until = zone?.validUntil ?? service.validUntil;
+  return !!until && until < today;
+}
+
+/**
+ * Whether a polygon should be drawn for the selected day and period. Unknown hours stay visible; a
+ * temporary zone past its last day (in the agency's local date, `today`) never is.
+ */
+export function isOnDemandZoneShown(service: OnDemandServiceDetails, areaName: string | undefined, day: DayType, period: OnDemandPeriod, today?: string): boolean {
+  if (today && isOnDemandZoneExpired(service, areaName, today)) return false;
   return onDemandRunningState(resolveOnDemandZone(service, areaName).availability, day, period) !== 'not-running';
 }
 
@@ -138,10 +161,10 @@ export function isOnDemandZoneShown(service: OnDemandServiceDetails, areaName: s
  * Whether a stop or transfer point should be drawn. A stop tied to zones follows
  * those zones' hours; a stop with no zone follows the service's own hours.
  */
-export function isOnDemandStopShown(service: OnDemandServiceDetails, stopProperties: unknown, day: DayType, period: OnDemandPeriod): boolean {
+export function isOnDemandStopShown(service: OnDemandServiceDetails, stopProperties: unknown, day: DayType, period: OnDemandPeriod, today?: string): boolean {
   const zones = onDemandStopZoneNames(service, stopProperties);
-  if (zones.length === 0) return isOnDemandZoneShown(service, undefined, day, period);
-  return zones.some(zone => isOnDemandZoneShown(service, zone, day, period));
+  if (zones.length === 0) return isOnDemandZoneShown(service, undefined, day, period, today);
+  return zones.some(zone => isOnDemandZoneShown(service, zone, day, period, today));
 }
 
 /** True when hours for the selected day are on file for this stop or zone. */

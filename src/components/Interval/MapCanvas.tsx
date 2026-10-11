@@ -39,7 +39,7 @@ import { FEATURES } from '../../../shared/config';
 import type { NightServiceFrequency } from '../../../shared/nightService';
 import { nightServiceKey } from '../../../shared/nightService';
 import { markAtlasLatest } from '../../lib/performance';
-import { isOnDemandStopShown, isOnDemandZoneShown, onDemandHoursConfirmed, onDemandStopZoneNames } from '../../../shared/onDemandAvailability';
+import { isOnDemandStopShown, isOnDemandZoneShown, localDateIn, onDemandHoursConfirmed, onDemandStopZoneNames } from '../../../shared/onDemandAvailability';
 import { buildRouteSortKeyExpression } from '../../utils/routeSort';
 import { fitTargetForPoints, routeFitTarget } from '../../utils/routeFitTarget';
 import { lineCoordinates } from '../../../shared/routeGeometry';
@@ -567,8 +567,9 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     type: 'FeatureCollection',
     features: onDemandAgencies.flatMap(agency => {
       const service = agency.onDemandServiceArea!;
+      const today = localDateIn(agency.timezone);
       return service.features
-        .filter(feature => isOnDemandZoneShown(service, featureAreaName(feature), day, period))
+        .filter(feature => isOnDemandZoneShown(service, featureAreaName(feature), day, period, today))
         .map(feature => {
           const areaName = featureAreaName(feature);
           return {
@@ -589,8 +590,9 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     type: 'FeatureCollection',
     features: onDemandAgencies.flatMap(agency => {
       const service = agency.onDemandServiceArea!;
+      const today = localDateIn(agency.timezone);
       return (service.stopFeatures ?? [])
-        .filter(feature => isOnDemandStopShown(service, feature.properties, day, period))
+        .filter(feature => isOnDemandStopShown(service, feature.properties, day, period, today))
         .map(feature => {
           const zones = onDemandStopZoneNames(service, feature.properties);
           return {
