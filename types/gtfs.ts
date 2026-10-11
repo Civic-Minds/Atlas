@@ -292,6 +292,8 @@ export interface AnalysisResult {
     tier: string;
     /** Weekday service produced different tiers on different actual weekdays. */
     weekdayTierVariation?: boolean;
+    /** Runs on some weekdays but not on the representative weekday: Weekday tier is infrequent, no headway (#710). */
+    partialWeekday?: boolean;
     /** Whether a genuine opening or closing service edge used the small edge-gap allowance. */
     edgeGapAllowance?: 'opening' | 'closing' | 'both';
     /** Whether service is regular, scheduled only during part of the day, or genuinely irregular. */

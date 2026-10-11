@@ -5,7 +5,7 @@
 import { parseGtfsZip } from './parseGtfs.js';
 import type { GtfsData, AnalysisResult, RawRouteDepartures } from '../types/gtfs.js';
 import { computeRawDepartures } from './transit-phase1.js';
-import { applyAnalysisCriteria, representativeIndexByCount } from './transit-phase2.js';
+import { applyAnalysisCriteria, representativeWeekdayIndex } from './transit-phase2.js';
 import { calculateCorridors } from './transit-logic.js';
 import { detectReferenceDate, getActiveServiceIds } from './transit-calendar.js';
 import { DEFAULT_CRITERIA } from './defaults.js';
@@ -317,9 +317,15 @@ export async function processGtfsBuffer(
     const start = t2m(frequency.start_time);
     const end = t2m(frequency.end_time);
     const headway = Number(frequency.headway_secs) / 60;
-    if (start === null || end === null || !Number.isFinite(headway) || headway <= 0 || end <= start) continue;
+    // Same validity rule as phase 1's expandFrequencies: headway_secs under 60 is ignored.
+    if (start === null || end === null || !Number.isFinite(headway) || headway < 1 || end <= start) continue;
     frequencyDepartureCount.set(frequency.trip_id, (frequencyDepartureCount.get(frequency.trip_id) ?? 0) + Math.ceil((end - start) / headway));
   }
+  // Stop maps are keyed by short name + direction (plus headsign and shape), while phase 2
+  // groups by route_id + direction + headsign + shape. That difference is deliberate: stop
+  // maps merge route_ids that share a short name (GO date-prefixed ids), and each map picks
+  // its own day so a feature whose display shape runs on fewer days keeps its own shape
+  // data instead of falling back to another pattern's (cata-state-college VE Campus).
   const weekdayMapKeys = (meta: { shortName: string; dirId: string; headsign: string | null; shapeId: string | null }) => ({
     group: `${meta.shortName}::${meta.dirId}`,
     headsign: meta.headsign ? `${meta.shortName}::${meta.dirId}::${meta.headsign}` : null,
@@ -346,11 +352,13 @@ export async function processGtfsBuffer(
   for (const kind of ['group', 'headsign', 'shape'] as const) {
     for (const [key, counts] of weekdayCounts[kind]) {
       // Phase 1 drops a day with fewer than two departures, so the route level never sees
-      // it; skip such days here too unless no day has more (uga C-N: one Mon-Wed trip).
-      const served = WEEKDAYS.filter((_, index) => counts[index] >= 2);
-      const days = served.length > 0 ? served : WEEKDAYS.filter((_, index) => counts[index] > 0);
-      if (days.length === 0) continue;
-      representativeWeekday[kind].set(key, days[representativeIndexByCount(days.map(day => counts[WEEKDAYS.indexOf(day)]))]);
+      // it; count such days as unserved too unless no day has more (single-trip routes).
+      // Same rule as the route-level rollup: the median of all five weekdays decides, so a
+      // route on fewer than 3 of 5 weekdays gets no Weekday stop data.
+      const served = counts.map(count => (count >= 2 ? count : 0));
+      const index = representativeWeekdayIndex(served.some(count => count > 0) ? served : counts);
+      if (index === null) continue;
+      representativeWeekday[kind].set(key, WEEKDAYS[index]);
     }
   }
   const tripGroupByTripId = new Map<string, StopTripGroup[]>();
@@ -474,6 +482,8 @@ export async function processGtfsBuffer(
   // Feature → how many departures backed its own (branch-level) headway, so Step 4 below can
   // tell a real branch frequency from a noisy one before trusting it over the terminal-computed
   // value. Not serialized to the GeoJSON output — pipeline-internal only. See issue #263.
+  // Weekday features of routes that skip the representative weekday (#710): no stop metrics.
+  const partialWeekdayFeatures = new Set<GeoJsonFeature>();
   const featureBranchTripCount = new Map<GeoJsonFeature, number>();
   for (const result of results) {
     const key = `${result.route}::${result.dir}`;
@@ -512,7 +522,7 @@ export async function processGtfsBuffer(
     const existing = dedupedFeatures.get(dedupeKey);
     const isRailRoute = route?.route_type === '2' || route?.route_type === 2;
     const initialPeriodHeadways = computePeriodHeadways(result.times);
-    const newHeadway = result.serviceClass === 'irregular' || result.tier === 'span'
+    const newHeadway = result.partialWeekday || result.serviceClass === 'irregular' || result.tier === 'span'
       ? null
       : Math.round(initialPeriodHeadways.midday ?? result.medianHeadway);
     // A drawn line always beats a mapless Point for the same slot, whichever is more frequent
@@ -588,6 +598,8 @@ export async function processGtfsBuffer(
     if (!hasRouteShape) maplessStopSequence.set(newFeature, maplessSequence);
     if (hasRouteShape && shapeId) featureShapeId.set(newFeature, shapeId);
     featureBranchTripCount.set(newFeature, result.times.length);
+    if (result.partialWeekday) partialWeekdayFeatures.add(newFeature);
+    else partialWeekdayFeatures.delete(newFeature);
   }
   const features = [...dedupedFeatures.values()];
 
@@ -805,7 +817,7 @@ export async function processGtfsBuffer(
     feature.properties.nightService60 = false;
     const gKey = `${shortName}::${dirId}::${day}`;
     const stopMap = stopDepsByGroup.get(gKey);
-    if (!stopMap) {
+    if (!stopMap || partialWeekdayFeatures.has(feature)) {
       feature.properties.nightService = false;
       continue;
     }

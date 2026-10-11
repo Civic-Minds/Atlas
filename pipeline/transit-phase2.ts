@@ -303,9 +303,18 @@ const representativeRollupEntry = <T extends { result: AnalysisResult }>(
  * earliest such day wins a tie. Shared with the stop-level Weekday grouping in
  * process-core so stop and route metrics describe the same weekday (#710).
  */
+export function representativeWeekdayIndex(countsByWeekday: number[]): number | null {
+    // Mon-Fri departure counts, 0 for a day without service. The median weekday decides:
+    // a route that runs on fewer than 3 of 5 weekdays has no representative weekday (#710).
+    const sorted = [...countsByWeekday].sort((a, b) => a - b);
+    if (!(sorted[Math.floor((sorted.length - 1) / 2)] > 0)) return null;
+    return representativeIndexByCount(countsByWeekday);
+}
+
 export function representativeIndexByCount(counts: number[]): number {
     const sorted = [...counts].sort((a, b) => a - b);
-    const medianCount = sorted[Math.floor(sorted.length / 2)];
+    // Lower middle for an even count: the worse of the two middle days decides.
+    const medianCount = sorted[Math.floor((sorted.length - 1) / 2)];
     return counts.reduce((bestIndex, count, index) =>
         Math.abs(count - medianCount) < Math.abs(counts[bestIndex] - medianCount) ? index : bestIndex, 0);
 }
@@ -534,7 +543,17 @@ export function applyAnalysisCriteria(
             ? 'time-limited'
             : 'regular';
 
-        const repEntry = representativeRollupEntry(entries);
+        // Weekday: the representative weekday is chosen over all five weekdays, so a route
+        // that runs on only some of them (clemson-cat TL-24, Thu+Fri nights) has no service on
+        // it. Such a route is shown as infrequent ("limited") with no headway or timetable,
+        // not as a frequency tier taken from the days it does run (#710).
+        const weekdayIndex = dayType === 'Weekday'
+            ? representativeWeekdayIndex(WEEKDAYS.map(day => entries.find(e => e.day === day)?.result.times.length ?? 0))
+            : undefined;
+        const partialWeekday = dayType === 'Weekday' && weekdayIndex === null;
+        const repEntry = weekdayIndex != null
+            ? entries.find(e => e.day === WEEKDAYS[weekdayIndex])!
+            : representativeRollupEntry(entries);
         const rep = repEntry.result;
         // Rail rollup: apply the existing midday representative-day logic on top of
         // the day-type representative selection used by all modes.
@@ -563,7 +582,7 @@ export function applyAnalysisCriteria(
         // Keep the complete representative-day schedule in the result. Rail uses a
         // midday sample for tier stability, but downstream period/hour metrics and
         // sparklines need the morning, evening, and overnight departures too.
-        const rollupTimes = isRailRollup ? rep.times : rollupStatsBase;
+        const rollupTimes = partialWeekday ? [] : isRailRollup ? rep.times : rollupStatsBase;
         const avgTrips = Math.round(entries.reduce((sum, e) => sum + e.result.tripCount, 0) / entries.length);
         const allStarts = entries.map(e => e.result.serviceSpan?.start ?? 0);
         const allEnds = entries.map(e => e.result.serviceSpan?.end ?? 0);
@@ -589,8 +608,9 @@ export function applyAnalysisCriteria(
             baseHeadway: Math.round(stats.baseHeadway * 10) / 10,
             peakWindow: stats.peakWindow,
             serviceSpan: span,
-            tier: worstTier,
-            weekdayTierVariation: weekdayTierVariation || undefined,
+            tier: partialWeekday ? 'infrequent' : worstTier,
+            partialWeekday: partialWeekday || undefined,
+            weekdayTierVariation: (weekdayTierVariation && !partialWeekday) || undefined,
             edgeGapAllowance: (() => {
                 const sides = new Set(entries.map(e => e.result.edgeGapAllowance).filter(Boolean));
                 return sides.size > 1 ? 'both' : [...sides][0];
