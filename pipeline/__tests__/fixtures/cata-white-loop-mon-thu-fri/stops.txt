@@ -1,0 +1,6 @@
+stop_id,stop_name,stop_lat,stop_lon
+152,University Dr at Lot 83 West,40.80462,-77.85201
+361,Beaver Ave at Schlow Library/CATA Office,40.793662,-77.859912
+563,University Drive ramp at The Meridian,40.80123,-77.85152
+564,E Beaver Ave at Calder Commons,40.79886,-77.85297
+565,E Beaver Ave at Beaver Hill Apts,40.796288,-77.856394

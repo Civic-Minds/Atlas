@@ -296,15 +296,19 @@ export function computeResourceStats(
  */
 const representativeRollupEntry = <T extends { result: AnalysisResult }>(
     entries: T[],
-): T => {
-    const counts = entries.map(entry => entry.result.times.length).sort((a, b) => a - b);
-    const medianCount = counts[Math.floor(counts.length / 2)];
-    return entries.reduce((best, entry) => {
-        const distance = Math.abs(entry.result.times.length - medianCount);
-        const bestDistance = Math.abs(best.result.times.length - medianCount);
-        return distance < bestDistance ? entry : best;
-    }, entries[0]);
-};
+): T => entries[representativeIndexByCount(entries.map(entry => entry.result.times.length))];
+
+/**
+ * Index of the day whose departure count is closest to the median count; the
+ * earliest such day wins a tie. Shared with the stop-level Weekday grouping in
+ * process-core so stop and route metrics describe the same weekday (#710).
+ */
+export function representativeIndexByCount(counts: number[]): number {
+    const sorted = [...counts].sort((a, b) => a - b);
+    const medianCount = sorted[Math.floor(sorted.length / 2)];
+    return counts.reduce((bestIndex, count, index) =>
+        Math.abs(count - medianCount) < Math.abs(counts[bestIndex] - medianCount) ? index : bestIndex, 0);
+}
 
 /**
  * Phase 2: Apply analysis criteria to raw departure data.

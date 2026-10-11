@@ -1,0 +1,2 @@
+route_id,agency_id,route_short_name,route_long_name,route_desc,route_type,route_url,route_color,route_text_color,route_sort_order
+57,0,WL,White Loop,,3,https://catabus.com/services-schedules/catabus/system-map/white-loop-campus-route-schedule/,0d0d0d,ffffff,31
