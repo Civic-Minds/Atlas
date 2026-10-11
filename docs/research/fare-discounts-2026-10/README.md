@@ -1,6 +1,6 @@
 # Fare discounts
 
-**Status:** PARTLY VERIFIED (2026-10-11, after repair): of the 276 rows checked against official pages, 193 (70%) are verbatim, 59 (21%) near-verbatim, 11 content-confirmed and 13 blocked; none are known to be off-page. 321 rows remain unchecked (Linear CIV-48).
+**Status:** VERIFIED WITH EXCEPTIONS (2026-10-11). Every non-none-found row was checked against a freshly fetched official page, and none is known to be off-page. 403 of 596 (68%) are verbatim and 127 (21%) near-verbatim. The exceptions: 43 rows on 42 agency sites that block automated fetches, plus 22 rows confirmed only through a browser fetch (Linear CIV-48).
 
 Snapshot date: `2026-10-10` (files last rebuilt 2026-10-11)
 Scope: 549 Atlas agencies in Canada, the United States and Mexico
@@ -38,9 +38,9 @@ Current files after the 2026-10-11 repair (the rebuild reported 592 / 6 / 42):
 
 | researchStatus | Rows |
 |---|---:|
-| `verified-official` | 575 |
-| `partial-official` | 22 |
-| `none-found` | 43 |
+| `verified-official` | 571 |
+| `partial-official` | 25 |
+| `none-found` | 44 |
 
 By program category: low-income 178, other 155, disability 122, fare-free 59,
 senior 57, standard-discount 39, student 10, youth 8, veteran 6. 6 rows use a
@@ -160,8 +160,47 @@ pages.
 - **Near-verbatim:** the 59 rows that matched in substance but not word for
   word are marked `quoteCheck: near-verbatim` and are not counted as verbatim.
 
-**Next step (CIV-48):** quote-check the 321 `unchecked` rows; fetch the 13
-blocked sites through a real browser; tighten the 59 near-verbatim quotes.
+### Full check of the remaining rows (2026-10-11)
+
+The 321 rows outside the first sample were checked the same way, with 288
+pages fetched. 157 were verbatim and 68 near-verbatim. The other 96 were
+re-researched: 39 had quotes not on the page and 57 had failed fetches. New
+quotes were machine-checked: 53 verbatim, 0 mismatches, 11
+content-confirmed, 1 now none-found and 1 image-only (Bettendorf's fares exist
+only as an image). 30 stayed blocked.
+
+Along the way, several rows were corrected. Bustang's senior and disability
+discount is 50%, not 25%. CapMetro's quote was the low-income program's, not
+reduced fare. Kingston, Stratford, Cascades East, CobbLinc and others had
+stale values. REM's free 65+ travel is limited to Montréal-area residents.
+Four sites moved: Key West, Mountain Metro, Sarnia and Roseville.
+
+### Final quoteCheck counts (640 rows)
+
+| quoteCheck | Rows |
+|---|---:|
+| `verbatim` | 403 |
+| `near-verbatim` | 127 |
+| `content-confirmed-not-verbatim` | 22 |
+| `fetch-blocked` | 43 |
+| `image-only` | 1 |
+| `not-applicable` (none-found) | 44 |
+
+### Still blocked (needs a real browser)
+
+43 rows on 42 agency sites refused every automated fetch, so their evidence is
+from the original research and was not re-verified: ace, amarillo, b-line,
+breck-free-ride, burbankbus, clemson-cat, fax, fort-smith, glendalebeeline,
+grand-forks, greensboro, iowa-city, janesville, kenosha, kern-transit, ladot,
+las-cruces, marathon-county, maui-county, mendocino, mexico-city-metro, mmvta,
+pgc-the-bus, riovista, rtcsnv, sheboygan-county, simi-valley, slotransit, smat,
+south-bend, spokane, taft, tampa-international-airport, tcat, tor,
+torrance-transit, um-transit, vail-transit, valleymetro, visalia, vre,
+wichita. Two of these (ace, riovista) still hold description text rather than
+a quote.
+
+**Next step (CIV-48):** fetch the blocked sites in a browser, and tighten the
+127 near-verbatim quotes if exact wording matters.
 
 **Overlap with other research:**
 
