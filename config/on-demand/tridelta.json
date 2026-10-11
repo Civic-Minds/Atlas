@@ -1,0 +1,1047 @@
+{
+  "slug": "tridelta",
+  "area": {
+    "serviceName": "Tri MyRide",
+    "sourceUrl": "https://trideltatransit.com/tri-myride/",
+    "sourceLabel": "Tri MyRide page and service-area GeoJSON",
+    "sourceRetrievedAt": "2026-10-11",
+    "bookingUrl": "https://trideltatransit.com/tri-myride/",
+    "tripRules": "You can travel within the individual areas, but not between them. The Brentwood zone can also go to Los Medanos College Brentwood Campus and John Muir Health Brentwood.",
+    "zoneMetadata": {
+      "Brentwood": {
+        "serviceName": "Tri MyRide",
+        "serviceHours": "Monday to Friday 5:00 am to 9:00 pm. Weekends and holidays 8:00 am to 5:00 pm.",
+        "hoursNote": "Weekend service runs on Martin Luther King Jr. Day, Presidents Day, Memorial Day, Independence Day (actual and observed), Labor Day, Veterans Day, Thanksgiving Day and the day after, Christmas Eve and Christmas Day, and New Year's Day (actual and observed).",
+        "availability": {
+          "Weekday": [
+            {
+              "startHour": 5,
+              "endHour": 21
+            }
+          ],
+          "Saturday": [
+            {
+              "startHour": 8,
+              "endHour": 17
+            }
+          ],
+          "Sunday": [
+            {
+              "startHour": 8,
+              "endHour": 17
+            }
+          ]
+        },
+        "hoursSource": {
+          "url": "https://trideltatransit.com/tri-myride/",
+          "retrievedAt": "2026-10-11"
+        }
+      },
+      "Antioch-Oakley": {
+        "serviceName": "Tri MyRide",
+        "serviceHours": "Monday to Friday 5:00 am to 9:00 pm. Weekends and holidays 8:00 am to 5:00 pm.",
+        "hoursNote": "Weekend service runs on Martin Luther King Jr. Day, Presidents Day, Memorial Day, Independence Day (actual and observed), Labor Day, Veterans Day, Thanksgiving Day and the day after, Christmas Eve and Christmas Day, and New Year's Day (actual and observed).",
+        "availability": {
+          "Weekday": [
+            {
+              "startHour": 5,
+              "endHour": 21
+            }
+          ],
+          "Saturday": [
+            {
+              "startHour": 8,
+              "endHour": 17
+            }
+          ],
+          "Sunday": [
+            {
+              "startHour": 8,
+              "endHour": 17
+            }
+          ]
+        },
+        "hoursSource": {
+          "url": "https://trideltatransit.com/tri-myride/",
+          "retrievedAt": "2026-10-11"
+        }
+      },
+      "Pittsburg-Bay Point": {
+        "serviceName": "Tri MyRide",
+        "serviceHours": "Monday to Friday 5:00 am to 9:00 pm. Weekends and holidays 8:00 am to 5:00 pm.",
+        "hoursNote": "Weekend service runs on Martin Luther King Jr. Day, Presidents Day, Memorial Day, Independence Day (actual and observed), Labor Day, Veterans Day, Thanksgiving Day and the day after, Christmas Eve and Christmas Day, and New Year's Day (actual and observed).",
+        "availability": {
+          "Weekday": [
+            {
+              "startHour": 5,
+              "endHour": 21
+            }
+          ],
+          "Saturday": [
+            {
+              "startHour": 8,
+              "endHour": 17
+            }
+          ],
+          "Sunday": [
+            {
+              "startHour": 8,
+              "endHour": 17
+            }
+          ]
+        },
+        "hoursSource": {
+          "url": "https://trideltatransit.com/tri-myride/",
+          "retrievedAt": "2026-10-11"
+        }
+      }
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "tridelta",
+        "serviceType": "on-demand",
+        "sourceUrl": "https://tmrmap.trideltatransit.com/tri-my-ride-service-area.geojson",
+        "sourceLabel": "Tri MyRide service-area GeoJSON",
+        "sourceRetrievedAt": "2026-10-11",
+        "areaName": "Brentwood"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -121.73945,
+              37.96485
+            ],
+            [
+              -121.74194,
+              37.96166
+            ],
+            [
+              -121.74286,
+              37.9584
+            ],
+            [
+              -121.74341,
+              37.95042
+            ],
+            [
+              -121.73752,
+              37.93598
+            ],
+            [
+              -121.72365,
+              37.93616
+            ],
+            [
+              -121.72351,
+              37.92214
+            ],
+            [
+              -121.722,
+              37.92218
+            ],
+            [
+              -121.71994,
+              37.9227
+            ],
+            [
+              -121.71566,
+              37.92258
+            ],
+            [
+              -121.71513,
+              37.92307
+            ],
+            [
+              -121.71417,
+              37.92318
+            ],
+            [
+              -121.71446,
+              37.92545
+            ],
+            [
+              -121.70879,
+              37.92525
+            ],
+            [
+              -121.70994,
+              37.92286
+            ],
+            [
+              -121.70915,
+              37.92241
+            ],
+            [
+              -121.707,
+              37.92239
+            ],
+            [
+              -121.70684,
+              37.92181
+            ],
+            [
+              -121.69631,
+              37.92192
+            ],
+            [
+              -121.69627,
+              37.92026
+            ],
+            [
+              -121.69501,
+              37.92028
+            ],
+            [
+              -121.69352,
+              37.92122
+            ],
+            [
+              -121.69409,
+              37.92174
+            ],
+            [
+              -121.69388,
+              37.92542
+            ],
+            [
+              -121.69389,
+              37.92551
+            ],
+            [
+              -121.69379,
+              37.92546
+            ],
+            [
+              -121.69383,
+              37.92561
+            ],
+            [
+              -121.69499,
+              37.92556
+            ],
+            [
+              -121.69619,
+              37.92561
+            ],
+            [
+              -121.69616,
+              37.92603
+            ],
+            [
+              -121.69617,
+              37.92696
+            ],
+            [
+              -121.69618,
+              37.92781
+            ],
+            [
+              -121.69605,
+              37.93016
+            ],
+            [
+              -121.69645,
+              37.93064
+            ],
+            [
+              -121.69879,
+              37.93349
+            ],
+            [
+              -121.69948,
+              37.93429
+            ],
+            [
+              -121.70028,
+              37.93488
+            ],
+            [
+              -121.70173,
+              37.93523
+            ],
+            [
+              -121.70259,
+              37.9359
+            ],
+            [
+              -121.70022,
+              37.93741
+            ],
+            [
+              -121.70086,
+              37.93913
+            ],
+            [
+              -121.7021,
+              37.94199
+            ],
+            [
+              -121.70403,
+              37.94336
+            ],
+            [
+              -121.70514,
+              37.94612
+            ],
+            [
+              -121.70551,
+              37.94844
+            ],
+            [
+              -121.71415,
+              37.9528
+            ],
+            [
+              -121.71434,
+              37.96165
+            ],
+            [
+              -121.72326,
+              37.96172
+            ],
+            [
+              -121.7263,
+              37.96491
+            ],
+            [
+              -121.73945,
+              37.96485
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "tridelta",
+        "serviceType": "on-demand",
+        "sourceUrl": "https://tmrmap.trideltatransit.com/tri-my-ride-service-area.geojson",
+        "sourceLabel": "Tri MyRide service-area GeoJSON",
+        "sourceRetrievedAt": "2026-10-11",
+        "areaName": "Antioch-Oakley"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -121.82154,
+              37.96052
+            ],
+            [
+              -121.81801,
+              37.95765
+            ],
+            [
+              -121.809,
+              37.95807
+            ],
+            [
+              -121.80642,
+              37.95909
+            ],
+            [
+              -121.80803,
+              37.95697
+            ],
+            [
+              -121.80589,
+              37.95469
+            ],
+            [
+              -121.80374,
+              37.95384
+            ],
+            [
+              -121.80074,
+              37.95334
+            ],
+            [
+              -121.79677,
+              37.9541
+            ],
+            [
+              -121.77844,
+              37.95427
+            ],
+            [
+              -121.77812,
+              37.95029
+            ],
+            [
+              -121.77747,
+              37.94894
+            ],
+            [
+              -121.77447,
+              37.94962
+            ],
+            [
+              -121.76675,
+              37.94962
+            ],
+            [
+              -121.76664,
+              37.94818
+            ],
+            [
+              -121.75385,
+              37.95018
+            ],
+            [
+              -121.75385,
+              37.95128
+            ],
+            [
+              -121.75063,
+              37.95119
+            ],
+            [
+              -121.75074,
+              37.95728
+            ],
+            [
+              -121.7487,
+              37.95737
+            ],
+            [
+              -121.74742,
+              37.95779
+            ],
+            [
+              -121.74463,
+              37.9577
+            ],
+            [
+              -121.7442,
+              37.95999
+            ],
+            [
+              -121.74291,
+              37.96193
+            ],
+            [
+              -121.73991,
+              37.9654
+            ],
+            [
+              -121.73895,
+              37.9681
+            ],
+            [
+              -121.73895,
+              37.97148
+            ],
+            [
+              -121.7442,
+              37.97896
+            ],
+            [
+              -121.73691,
+              37.9831
+            ],
+            [
+              -121.71171,
+              37.98344
+            ],
+            [
+              -121.71203,
+              37.98504
+            ],
+            [
+              -121.71385,
+              37.9853
+            ],
+            [
+              -121.71375,
+              37.98665
+            ],
+            [
+              -121.71246,
+              37.98674
+            ],
+            [
+              -121.71203,
+              37.98817
+            ],
+            [
+              -121.71407,
+              37.98817
+            ],
+            [
+              -121.71396,
+              37.99062
+            ],
+            [
+              -121.70517,
+              37.99079
+            ],
+            [
+              -121.70495,
+              37.98564
+            ],
+            [
+              -121.70345,
+              37.98623
+            ],
+            [
+              -121.69562,
+              37.98648
+            ],
+            [
+              -121.69595,
+              37.98834
+            ],
+            [
+              -121.69691,
+              37.99054
+            ],
+            [
+              -121.6908,
+              37.99028
+            ],
+            [
+              -121.69069,
+              37.98783
+            ],
+            [
+              -121.68876,
+              37.98716
+            ],
+            [
+              -121.68672,
+              37.98724
+            ],
+            [
+              -121.68662,
+              37.99045
+            ],
+            [
+              -121.64011,
+              37.99079
+            ],
+            [
+              -121.64043,
+              37.98547
+            ],
+            [
+              -121.63882,
+              37.98335
+            ],
+            [
+              -121.62574,
+              37.98335
+            ],
+            [
+              -121.62574,
+              37.98876
+            ],
+            [
+              -121.62939,
+              37.99079
+            ],
+            [
+              -121.63518,
+              37.99189
+            ],
+            [
+              -121.64065,
+              37.99223
+            ],
+            [
+              -121.63893,
+              38.0191
+            ],
+            [
+              -121.64193,
+              38.01927
+            ],
+            [
+              -121.64279,
+              37.99274
+            ],
+            [
+              -121.67711,
+              37.99865
+            ],
+            [
+              -121.69566,
+              37.99848
+            ],
+            [
+              -121.69566,
+              37.99197
+            ],
+            [
+              -121.69737,
+              37.99181
+            ],
+            [
+              -121.70145,
+              37.99493
+            ],
+            [
+              -121.70928,
+              37.99721
+            ],
+            [
+              -121.70874,
+              38.00152
+            ],
+            [
+              -121.71539,
+              38.00592
+            ],
+            [
+              -121.72343,
+              38.00955
+            ],
+            [
+              -121.73244,
+              38.00871
+            ],
+            [
+              -121.73255,
+              38.00457
+            ],
+            [
+              -121.73426,
+              38.00566
+            ],
+            [
+              -121.7497,
+              38.0055
+            ],
+            [
+              -121.75013,
+              38.01192
+            ],
+            [
+              -121.74734,
+              38.01192
+            ],
+            [
+              -121.74734,
+              38.01293
+            ],
+            [
+              -121.75196,
+              38.01259
+            ],
+            [
+              -121.75324,
+              38.00575
+            ],
+            [
+              -121.78113,
+              38.00521
+            ],
+            [
+              -121.78156,
+              38.00732
+            ],
+            [
+              -121.78274,
+              38.00842
+            ],
+            [
+              -121.78252,
+              38.01036
+            ],
+            [
+              -121.79164,
+              38.01079
+            ],
+            [
+              -121.79153,
+              38.01307
+            ],
+            [
+              -121.79411,
+              38.01281
+            ],
+            [
+              -121.79711,
+              38.01248
+            ],
+            [
+              -121.79636,
+              38.01045
+            ],
+            [
+              -121.79711,
+              38.00893
+            ],
+            [
+              -121.79668,
+              38.00099
+            ],
+            [
+              -121.7984,
+              37.99862
+            ],
+            [
+              -121.80569,
+              37.99862
+            ],
+            [
+              -121.80794,
+              37.99794
+            ],
+            [
+              -121.82188,
+              37.9982
+            ],
+            [
+              -121.82456,
+              37.99955
+            ],
+            [
+              -121.82896,
+              38.00065
+            ],
+            [
+              -121.83052,
+              38.00154
+            ],
+            [
+              -121.83464,
+              38.0026
+            ],
+            [
+              -121.83813,
+              38.00134
+            ],
+            [
+              -121.84179,
+              38.00402
+            ],
+            [
+              -121.8445,
+              38.00407
+            ],
+            [
+              -121.84582,
+              38.00328
+            ],
+            [
+              -121.84475,
+              38.00041
+            ],
+            [
+              -121.84318,
+              37.99893
+            ],
+            [
+              -121.84411,
+              37.99802
+            ],
+            [
+              -121.83792,
+              37.99853
+            ],
+            [
+              -121.83822,
+              37.99667
+            ],
+            [
+              -121.83871,
+              37.99456
+            ],
+            [
+              -121.84,
+              37.99329
+            ],
+            [
+              -121.84043,
+              37.98949
+            ],
+            [
+              -121.83979,
+              37.98763
+            ],
+            [
+              -121.83721,
+              37.98611
+            ],
+            [
+              -121.83593,
+              37.9851
+            ],
+            [
+              -121.83593,
+              37.98315
+            ],
+            [
+              -121.82747,
+              37.98291
+            ],
+            [
+              -121.8205,
+              37.97961
+            ],
+            [
+              -121.81664,
+              37.98021
+            ],
+            [
+              -121.8101,
+              37.97953
+            ],
+            [
+              -121.80592,
+              37.98097
+            ],
+            [
+              -121.80313,
+              37.97733
+            ],
+            [
+              -121.80302,
+              37.97463
+            ],
+            [
+              -121.80517,
+              37.97404
+            ],
+            [
+              -121.80559,
+              37.96761
+            ],
+            [
+              -121.80817,
+              37.96778
+            ],
+            [
+              -121.81267,
+              37.9655
+            ],
+            [
+              -121.81728,
+              37.96567
+            ],
+            [
+              -121.81933,
+              37.96462
+            ],
+            [
+              -121.8205,
+              37.96361
+            ],
+            [
+              -121.82061,
+              37.96139
+            ],
+            [
+              -121.82154,
+              37.96052
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "tridelta",
+        "serviceType": "on-demand",
+        "sourceUrl": "https://tmrmap.trideltatransit.com/tri-my-ride-service-area.geojson",
+        "sourceLabel": "Tri MyRide service-area GeoJSON",
+        "sourceRetrievedAt": "2026-10-11",
+        "areaName": "Pittsburg-Bay Point"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -121.90867,
+              38.01719
+            ],
+            [
+              -121.90855,
+              38.03035
+            ],
+            [
+              -121.91773,
+              38.03054
+            ],
+            [
+              -121.91902,
+              38.02766
+            ],
+            [
+              -121.92467,
+              38.02748
+            ],
+            [
+              -121.92502,
+              38.02952
+            ],
+            [
+              -121.94149,
+              38.03313
+            ],
+            [
+              -121.94138,
+              38.02924
+            ],
+            [
+              -121.95055,
+              38.02961
+            ],
+            [
+              -121.95055,
+              38.03406
+            ],
+            [
+              -121.95997,
+              38.03397
+            ],
+            [
+              -121.96044,
+              38.03758
+            ],
+            [
+              -121.97467,
+              38.04156
+            ],
+            [
+              -121.97961,
+              38.04166
+            ],
+            [
+              -121.97973,
+              38.03397
+            ],
+            [
+              -121.98397,
+              38.03313
+            ],
+            [
+              -121.98232,
+              38.03063
+            ],
+            [
+              -121.98503,
+              38.026
+            ],
+            [
+              -121.9855,
+              38.02294
+            ],
+            [
+              -121.97903,
+              38.02377
+            ],
+            [
+              -121.97914,
+              38.01385
+            ],
+            [
+              -121.97291,
+              38.00894
+            ],
+            [
+              -121.96702,
+              38.00922
+            ],
+            [
+              -121.96561,
+              38.00792
+            ],
+            [
+              -121.96185,
+              38.00783
+            ],
+            [
+              -121.95208,
+              38.0043
+            ],
+            [
+              -121.94196,
+              38.00523
+            ],
+            [
+              -121.9422,
+              38.01209
+            ],
+            [
+              -121.9369,
+              38.01218
+            ],
+            [
+              -121.93161,
+              38.00653
+            ],
+            [
+              -121.9209,
+              38.0095
+            ],
+            [
+              -121.92008,
+              38.01395
+            ],
+            [
+              -121.9142,
+              38.01274
+            ],
+            [
+              -121.91137,
+              38.0145
+            ],
+            [
+              -121.91514,
+              38.01765
+            ],
+            [
+              -121.90867,
+              38.01719
+            ]
+          ]
+        ]
+      }
+    }
+  ],
+  "stopFeatures": [
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "tridelta",
+        "serviceType": "on-demand",
+        "stopName": "Los Medanos College/Brentwood",
+        "areaName": "Brentwood"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -121.720624,
+          37.896538
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "tridelta",
+        "serviceType": "on-demand",
+        "stopName": "John Muir Health Brentwood Outpatient Center",
+        "areaName": "Brentwood"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -121.735039,
+          37.924442
+        ]
+      }
+    }
+  ],
+  "notes": "Destination points are the centroids of the two small destination polygons in the agency GeoJSON (Los Medanos College/Brentwood, John Muir Health Brentwood Outpatient Center); they are destinations for the Brentwood zone only, not service zones. Pickup method not stated on the page, so left out. Agency maps dated Jul 2025."
+}
