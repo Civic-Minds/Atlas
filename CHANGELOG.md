@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- Routes in feeds that write each frequency-based trip as a template at midnight, like UGA's campus buses, no longer show fake late-night service, because a template's own listed times are no longer counted as a bus ([#721](https://github.com/Civic-Minds/Atlas/issues/721)).
 - Shuttles whose feed lists a second bus restarting on top of the first, like Clemson's Gold route, no longer show a bus every 1 to 5 minutes; they now show about every 15 to 20, the two buses' real combined service ([#711](https://github.com/Civic-Minds/Atlas/issues/711)).
 - Routes whose feeds describe the same buses twice, as a timetable plus a frequency template or as a loop that passes a stop twice, no longer show buses several times more often than they run ([#711](https://github.com/Civic-Minds/Atlas/issues/711), [#712](https://github.com/Civic-Minds/Atlas/issues/712)).
 - Routes in feeds that list each scheduled trip as its own frequency window no longer show about twice as many buses as really run ([#702](https://github.com/Civic-Minds/Atlas/issues/702)).

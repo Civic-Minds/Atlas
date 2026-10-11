@@ -225,6 +225,18 @@ describe('processGtfsBuffer frequency dedupe on real feed patterns', () => {
     expect(evening.stopPeriodHeadways?.e1?.evening).toBe(30);
   });
 
+  it('does not count a template trip\'s literal 00:00 stop_times as late-night service (#721)', async () => {
+    // uga writes each template at 00:00 (M Milledge 1119047: 00:00-00:35). M's real service
+    // ends with the 18:00 trip, and the template-only route T's windows end at 18:30.
+    const route = await weekdayRoutes(ugaFixtureZip(), 'campus-transit');
+    for (const shortName of ['M', 'T']) {
+      const [feature] = route(shortName);
+      expect(feature.periodCoverageHeadway?.late ?? null).toBeNull();
+      expect(feature.periodCoverageHeadway?.overnight ?? null).toBeNull();
+      expect(feature.headwayByPeriod?.midday).toBe(shortName === 'M' ? 15 : 18);
+    }
+  });
+
   it('counts an hourly loop once per stop, not at both visits (#712)', async () => {
     const route = await weekdayRoutes(grandJunctionFixtureZip(), 'loop-transit');
     const [loop] = route('1');
@@ -297,5 +309,38 @@ describe('processGtfsBuffer stacked TransLoc blocks (#711)', () => {
     // afternoon has one bus every 20.2 min (Gold_03 is Gold_01's departure again).
     expect(gold.stopPeriodHeadways?.['TL-301']).toMatchObject({ amPeak: 15, midday: 15, pmPeak: 20 });
     expect(gold.minStopHeadway).toBeGreaterThanOrEqual(15);
+  });
+});
+
+// cue-bus zip, route TL-2, service TL-10: two early trips written as single-trip frequency
+// rows (TL-739 05:15-05:46 and TL-740 05:50-06:21, 1727 s) next to the scheduled timetable
+// (06:00, 06:30, 07:07, ...). Two stops; every trip takes 31 min, as TL-739/TL-740 do.
+function cueBusFixtureZip(): JSZip {
+  const zip = new JSZip();
+  zip.file('agency.txt', 'agency_id,agency_name,agency_url,agency_timezone\na,CUE,https://example.test,America/New_York\n');
+  zip.file('routes.txt', 'route_id,route_short_name,route_long_name,route_type\nTL-2,Gold,Nutley,3\n');
+  zip.file('stops.txt', 'stop_id,stop_name,stop_lat,stop_lon\nTL-48,Start,38.846,-77.306\nTL-60,Nutley Street,38.883,-77.229\n');
+  zip.file('calendar.txt', 'service_id,monday,tuesday,wednesday,thursday,friday,saturday,sunday,start_date,end_date\nTL-10,1,1,1,1,1,0,0,20250101,20271231\n');
+  zip.file('shapes.txt', 'shape_id,shape_pt_lat,shape_pt_lon,shape_pt_sequence\nsh,38.846,-77.306,1\nsh,38.883,-77.229,2\n');
+  const trips = ['route_id,service_id,trip_id,trip_headsign,direction_id,shape_id'];
+  const stopTimes = ['trip_id,arrival_time,departure_time,stop_id,stop_sequence'];
+  const starts = ['05:15', '05:50', '06:00', '06:30', '07:07', '07:37', '08:14', '08:45'];
+  for (const start of starts) {
+    trips.push(`TL-2,TL-10,t${start},Nutley Street,0,sh`);
+    stopTimes.push(`t${start},${hm(m(start))},${hm(m(start))},TL-48,1`, `t${start},${hm(m(start) + 31)},${hm(m(start) + 31)},TL-60,2`);
+  }
+  zip.file('trips.txt', trips.join('\n') + '\n');
+  zip.file('stop_times.txt', stopTimes.join('\n') + '\n');
+  zip.file('frequencies.txt', 'trip_id,start_time,end_time,headway_secs\nt05:15,05:15:00,05:46:00,1727\nt05:50,05:50:00,06:21:00,1727\n');
+  return zip;
+}
+
+describe('processGtfsBuffer single-trip rows next to a timetable (#721)', () => {
+  it('keeps cue-bus TL-2\'s 05:50 trip whose row holds the 06:00 timetable start', async () => {
+    const route = await weekdayRoutes(cueBusFixtureZip(), 'cue-bus');
+    const [line] = route('Gold');
+    // Terminal departures 06:21 (the 05:50 trip), 06:31, 07:01, 07:38, 08:08, 08:45 in the AM
+    // peak: gaps 10/30/37/30/37, median 30. Losing the 05:50 trip gives 34.
+    expect(line.headwayByPeriod?.amPeak).toBe(30);
   });
 });

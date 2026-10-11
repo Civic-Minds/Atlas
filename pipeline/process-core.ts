@@ -81,16 +81,21 @@ export function expandFrequencyOffsets(
   if (!Number.isFinite(firstTripDeparture) || !Number.isFinite(start) || !Number.isFinite(end) || !Number.isFinite(headwayMinutes) || headwayMinutes <= 0 || end <= start) return [];
   const offsets: number[] = [];
   for (let generated = start; generated < end; generated += headwayMinutes) offsets.push(generated - firstTripDeparture);
-  if (
-    tripSpanMinutes !== undefined &&
-    Number.isFinite(tripSpanMinutes) &&
-    offsets.length > 1 &&
-    offsets.length <= SINGLE_TRIP_WINDOW_MAX_DEPARTURES &&
-    Math.abs((end - start) - tripSpanMinutes) <= SINGLE_TRIP_WINDOW_SPAN_TOLERANCE_MIN
-  ) {
-    return offsets.slice(0, 1);
-  }
+  if (isSingleTripWindow({ start, end, headwayMinutes }, tripSpanMinutes)) return offsets.slice(0, 1);
   return offsets;
+}
+
+/**
+ * True when a frequencies.txt row is one scheduled trip written as a window
+ * (#702): the window is the trip's own run time and the literal expansion
+ * gives only a couple of departures.
+ */
+export function isSingleTripWindow(window: FrequencyWindow, tripSpanMinutes?: number): boolean {
+  if (tripSpanMinutes === undefined || !Number.isFinite(tripSpanMinutes) || !(window.headwayMinutes > 0) || window.end <= window.start) return false;
+  const departures = Math.ceil((window.end - window.start) / window.headwayMinutes);
+  return departures > 1
+    && departures <= SINGLE_TRIP_WINDOW_MAX_DEPARTURES
+    && Math.abs((window.end - window.start) - tripSpanMinutes) <= SINGLE_TRIP_WINDOW_SPAN_TOLERANCE_MIN;
 }
 
 export interface FrequencyWindow {
@@ -814,6 +819,20 @@ export async function processGtfsBuffer(
   // its service_id's max (serviceIdMaxMinute) must also be below it -- see that map's comment.
   const NIGHT_SHIFT_EARLY_CUTOFF = NIGHT_SERVICE_WINDOW_END_MIN - 1440;
 
+  // A trip with usable frequencies.txt rows is a template: GTFS reads its
+  // stop_times only as offsets from each generated start, and the expansion
+  // below adds every departure it really makes. Its literal times are not a
+  // departure of their own (uga writes templates at 00:00, which showed as
+  // fake late-night service, #721). Decided from the rows before any dedupe,
+  // so a template whose windows all repeat the timetable adds nothing.
+  const frequencyTemplateTripIds = new Set<string>();
+  for (const frequency of gtfs.frequencies ?? []) {
+    const start = t2m(frequency.start_time);
+    const end = t2m(frequency.end_time);
+    const headway = Number(frequency.headway_secs) / 60;
+    if (start !== null && end !== null && Number.isFinite(headway) && headway > 0 && end > start) frequencyTemplateTripIds.add(frequency.trip_id);
+  }
+
   for (const st of gtfs.stopTimes ?? []) {
     const trip = tripById.get(st.trip_id);
     if (!trip) continue;
@@ -828,7 +847,7 @@ export async function processGtfsBuffer(
     }
 
     // Per-stop departure collection
-    const tripGroups = tripGroupByTripId.get(st.trip_id) ?? [];
+    const tripGroups = frequencyTemplateTripIds.has(st.trip_id) ? [] : (tripGroupByTripId.get(st.trip_id) ?? []);
     for (const grp of tripGroups) {
       const timeStr = st.departure_time || st.arrival_time;
       if (timeStr) {
@@ -918,7 +937,7 @@ export async function processGtfsBuffer(
       .join('>');
   const scheduleKey = (trip: { trip_id: string; route_id: string; service_id: string; direction_id?: string | number | null }) =>
     `${trip.route_id}::${trip.service_id}::${String(trip.direction_id ?? '')}::${stopPatternByTripId(trip.trip_id)}`;
-  type FrequencyTemplate = { tripId: string; first: number; windows: FrequencyWindow[]; offsets: number[]; departures: number };
+  type FrequencyTemplate = { tripId: string; first: number; tripSpan: number | undefined; windows: FrequencyWindow[]; offsets: number[]; departures: number };
   const templatesByKey = new Map<string, FrequencyTemplate[]>();
   for (const [tripId, windows] of frequencyRowsByTripId) {
     const first = firstDepartureByTripId.get(tripId);
@@ -929,7 +948,7 @@ export async function processGtfsBuffer(
     const offsets = expandTripFrequencyOffsets(first, windows, tripSpan);
     const key = scheduleKey(trip);
     const list = templatesByKey.get(key) ?? [];
-    list.push({ tripId, first, windows, offsets, departures: offsets.length });
+    list.push({ tripId, first, tripSpan, windows, offsets, departures: offsets.length });
     templatesByKey.set(key, list);
   }
   const scheduledStartsByKey = new Map<string, number[]>();
@@ -947,7 +966,14 @@ export async function processGtfsBuffer(
     }
   }
   for (const [key, templates] of templatesByKey) {
-    const repeated = windowsRepeatedByTimetable(templates, scheduledStartsByKey.get(key) ?? []);
+    // A single-trip row (#702) is a trip, not a template, so it never repeats
+    // the timetable: cue-bus TL-2's 05:50-06:21 row holds the 06:00 timetable
+    // start but is its own 05:50 departure. Its literal stop_times no longer
+    // stand in for it (#721), so dropping it would lose a real trip.
+    const repeated = windowsRepeatedByTimetable(
+      templates.map(template => ({ ...template, windows: template.windows.filter(window => !isSingleTripWindow(window, template.tripSpan)) })),
+      scheduledStartsByKey.get(key) ?? [],
+    );
     const distinctOffsets = dropCoincidentTemplateDepartures(templates);
     for (const [index, { tripId, first, windows }] of templates.entries()) {
       const allOffsets = distinctOffsets[index];
