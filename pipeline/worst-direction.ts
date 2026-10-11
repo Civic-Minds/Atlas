@@ -1,15 +1,15 @@
 import type { GeoJsonFeature } from './geojson-types.js';
 import { isIrregularService, isLimitedService } from '../shared/irregularRoutes.js';
+import { routeGroupKey } from '../shared/routeGroupKey.js';
 export { stampWorstDirectionHeadways } from '../shared/worstDirection.js';
 
 function routeDayKey(routeShortName: string, routeBranch: string | null | undefined, day: unknown): string {
   return `${routeShortName}::${routeBranch ?? ''}::${day ?? ''}`;
 }
 
-/** Short name, or route id when it's empty (#717), so no-short-name feeds aren't one big route. */
+/** Short name, or `id:<routeId>` when it's empty (#717), so no-short-name feeds aren't one big route. */
 function routeGroupName(properties: GeoJsonFeature['properties']): string {
-  const shortName = typeof properties.routeShortName === 'string' ? properties.routeShortName.trim() : '';
-  return shortName || `id:${String(properties.routeId ?? '')}`;
+  return routeGroupKey(properties.routeShortName, properties.routeId);
 }
 
 /**

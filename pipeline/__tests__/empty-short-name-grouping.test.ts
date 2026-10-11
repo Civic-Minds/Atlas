@@ -20,11 +20,29 @@ async function fixtureZip(name: string): Promise<Buffer> {
 
 describe('empty route_short_name falls back to route_id for grouping (#717)', () => {
   it('routeGroupName falls back on missing, empty and whitespace-only short names', () => {
-    expect(routeGroupName({ route_short_name: '' }, 'TL-136')).toBe('TL-136');
-    expect(routeGroupName({ route_short_name: '   ' }, 'TL-136')).toBe('TL-136');
-    expect(routeGroupName({}, 'TL-136')).toBe('TL-136');
-    expect(routeGroupName(undefined, 'TL-136')).toBe('TL-136');
+    expect(routeGroupName({ route_short_name: '' }, 'TL-136')).toBe('id:TL-136');
+    expect(routeGroupName({ route_short_name: '   ' }, 'TL-136')).toBe('id:TL-136');
+    expect(routeGroupName({}, 'TL-136')).toBe('id:TL-136');
+    expect(routeGroupName(undefined, 'TL-136')).toBe('id:TL-136');
     expect(routeGroupName({ route_short_name: ' 5 ' }, 'r5')).toBe('5');
+  });
+
+  it('a blank-named route whose route_id equals another route\'s short name stays separate', () => {
+    // Route "5" (blank name) and route "r5" (short name "5") must not share a key.
+    expect(routeGroupName({ route_short_name: '' }, '5')).not.toBe(routeGroupName({ route_short_name: '5' }, 'r5'));
+    const feature = (routeId: string, routeShortName: string, dir: number, irregular: boolean): GeoJsonFeature => ({
+      type: 'Feature',
+      geometry: { type: 'LineString', coordinates: [[0, 0], [1, 1]] },
+      properties: {
+        routeId, routeShortName, directionId: dir, day: 'Weekday',
+        tier: irregular ? 'span' : '60', serviceClass: irregular ? 'irregular' : null, headway: irregular ? null : 60,
+      },
+    } as GeoJsonFeature);
+    const named = [feature('r5', '5', 0, false), feature('r5', '5', 1, false)];
+    const blank = [feature('5', '', 0, false), feature('5', '', 1, true)];
+    stampRouteIrregularDirection([...named, ...blank]);
+    expect(named.map(f => f.properties.routeHasIrregularDirection)).toEqual([undefined, undefined]);
+    expect(blank.map(f => f.properties.routeHasIrregularDirection)).toEqual([true, true]);
   });
 
   // Real coast-rta subset: the 10 direction-0 routes that end at Ivory Wilson Transfer Center

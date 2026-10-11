@@ -12,6 +12,7 @@ import { DEFAULT_CRITERIA } from './defaults.js';
 import { normalizeGtfs, type GtfsPreprocess, type GtfsTransformOptions } from './preprocess/run.js';
 import { validateGtfs, type ValidationReport } from './validation.js';
 import { resolveDisplayHeadsign } from '../shared/headsignDisplay.js';
+import { routeGroupKey } from '../shared/routeGroupKey.js';
 import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig.js';
 import { PERIOD_KEYS, TIME_PERIODS, SPARKLINE_HOURS, type PeriodKey, type HeadwayByPeriod, type HeadwayByPeriodMaxGap, type HeadwayByPeriodSustained } from '../shared/config.js';
 import { ROUTE_ARTIFACT_SCHEMA_VERSION } from '../shared/artifactSchema.js';
@@ -318,12 +319,12 @@ export function representativeStopSequence(
 }
 
 /**
- * Grouping key for a route: its short name, or its route_id when the short name is missing,
- * empty or whitespace-only (#717). Keys only -- displayed names keep the raw short name, so a
- * feed that publishes no short names (clemson-cat, coast-rta) isn't shown as raw route_ids.
+ * Grouping key for a GTFS route (shared routeGroupKey): its short name, or `id:<route_id>` when
+ * the short name is missing, empty or whitespace-only (#717). Keys only -- displayed names keep
+ * the raw short name, so a feed with no short names (clemson-cat, coast-rta) never shows ids.
  */
 export function routeGroupName(route: { route_short_name?: string | null } | undefined, routeId: string): string {
-  return route?.route_short_name?.trim() || routeId;
+  return routeGroupKey(route?.route_short_name, routeId);
 }
 
 export async function processGtfsBuffer(
