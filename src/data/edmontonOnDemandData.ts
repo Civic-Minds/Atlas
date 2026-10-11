@@ -1,7 +1,7 @@
 // Generated from the City of Edmonton's "On Demand Service (Aug 30, 2026)" Google My Maps layer (linked from edmonton.ca),
 // shared by the City's Open Data team on 2026-10-10 as the interim source. Hours by area type from edmonton.ca/ets/on-demand-transit.
 import type { GeoJSON } from 'geojson';
-import type { OnDemandAvailability } from '../../shared/onDemandAvailability';
+import type { OnDemandZoneDetails } from '../../shared/onDemandAvailability';
 
 const SOURCE_URL = 'https://www.edmonton.ca/ets/on-demand-transit';
 const SOURCE_LABEL = 'City of Edmonton On Demand Transit map';
@@ -108,11 +108,23 @@ export const EDMONTON_ON_DEMAND_FEATURES: GeoJSON.Feature<GeoJSON.Polygon>[] = [
   { type: 'Feature', properties: { agencySlug: 'edmonton', serviceType: 'on-demand', sourceUrl: SOURCE_URL, sourceLabel: SOURCE_LABEL, areaName: "65 St and 106 Ave" }, geometry: { type: 'Polygon', coordinates: [[[-113.432198,53.549494],[-113.432144,53.548843],[-113.430551,53.548815],[-113.430589,53.549478],[-113.432198,53.549494]]] } },
 ];
 
-/** Area-type hours; hub and temporary-construction areas have no published hours, so they carry none. */
-export const EDMONTON_ON_DEMAND_ZONE_METADATA: Record<string, { serviceName: string; serviceHours?: string; availability?: OnDemandAvailability }> = {
-  "124 Street & 102 Avenue": { serviceName: 'ETS On Demand' },
+/**
+ * Area-type hours. The temporary Glenora (Wellington Bridge) areas take their hours from the City's
+ * service-adjustment sheet; the other hubs have no published hours, so they carry none.
+ */
+const WELLINGTON_BRIDGE_HOURS: OnDemandZoneDetails & { serviceName: string } = {
+  serviceName: 'ETS On Demand',
+  serviceHours: 'Monday\u2013Friday 7 a.m.\u20137 p.m.; weekends and holidays 9 a.m.\u20134 p.m.',
+  hoursNote: 'Temporary service while the Wellington Bridge is replaced, expected to end in fall 2026.',
+  availability: { Weekday: [{ startHour: 7, endHour: 19 }], Saturday: [{ startHour: 9, endHour: 16 }], Sunday: [{ startHour: 9, endHour: 16 }] },
+  hoursSource: { url: 'https://www.edmonton.ca/sites/default/files/public-files/Wellington-Bridge-Transit-Service-Adjustments.pdf', retrievedAt: '2026-10-11' },
+  validUntil: '2026-12-31',
+};
+
+export const EDMONTON_ON_DEMAND_ZONE_METADATA: Record<string, OnDemandZoneDetails & { serviceName: string }> = {
+  "124 Street & 102 Avenue": WELLINGTON_BRIDGE_HOURS,
   "137 Ave & 156 ST": { serviceName: 'ETS On Demand' },
-  "142 Street & Stony Plain Road": { serviceName: 'ETS On Demand' },
+  "142 Street & Stony Plain Road": WELLINGTON_BRIDGE_HOURS,
   "65 St and 106 Ave": { serviceName: 'ETS On Demand' },
   "Albany": { serviceName: 'ETS On Demand', serviceHours: "Weekdays 6 a.m.\u201310 p.m.; Saturday 9 a.m.\u20137 p.m.; Sunday and holidays 10 a.m.\u20136 p.m.", availability: { Weekday: [{ startHour: 6, endHour: 22 }], Saturday: [{ startHour: 9, endHour: 19 }], Sunday: [{ startHour: 10, endHour: 18 }] } },
   "Alliance Villa": { serviceName: 'ETS On Demand', serviceHours: "Weekdays 7 a.m.\u20137 p.m.; Saturday, Sunday and holidays 9 a.m.\u20134 p.m.", availability: { Weekday: [{ startHour: 7, endHour: 19 }], Saturday: [{ startHour: 9, endHour: 16 }], Sunday: [{ startHour: 9, endHour: 16 }] } },
@@ -146,8 +158,8 @@ export const EDMONTON_ON_DEMAND_ZONE_METADATA: Record<string, { serviceName: str
   "Gainer Industrial": { serviceName: 'ETS On Demand', serviceHours: "Weekdays 6 a.m.\u201310 p.m.; Saturday 9 a.m.\u20137 p.m.; Sunday and holidays 10 a.m.\u20136 p.m.", availability: { Weekday: [{ startHour: 6, endHour: 22 }], Saturday: [{ startHour: 9, endHour: 19 }], Sunday: [{ startHour: 10, endHour: 18 }] } },
   "Gateway Manor": { serviceName: 'ETS On Demand', serviceHours: "Weekdays 7 a.m.\u20137 p.m.; Saturday, Sunday and holidays 9 a.m.\u20134 p.m.", availability: { Weekday: [{ startHour: 7, endHour: 19 }], Saturday: [{ startHour: 9, endHour: 16 }], Sunday: [{ startHour: 9, endHour: 16 }] } },
   "Girard Industrial": { serviceName: 'ETS On Demand', serviceHours: "Weekdays 6 a.m.\u201310 p.m.; Saturday 9 a.m.\u20137 p.m.; Sunday and holidays 10 a.m.\u20136 p.m.", availability: { Weekday: [{ startHour: 6, endHour: 22 }], Saturday: [{ startHour: 9, endHour: 19 }], Sunday: [{ startHour: 10, endHour: 18 }] } },
-  "Glenora East": { serviceName: 'ETS On Demand' },
-  "Glenora West": { serviceName: 'ETS On Demand' },
+  "Glenora East": WELLINGTON_BRIDGE_HOURS,
+  "Glenora West": WELLINGTON_BRIDGE_HOURS,
   "Glenridding Ravine": { serviceName: 'ETS On Demand', serviceHours: "Saturday 9 a.m.\u20137 p.m.; Sunday and holidays 10 a.m.\u20136 p.m.; no weekday service", availability: { Weekday: [], Saturday: [{ startHour: 9, endHour: 19 }], Sunday: [{ startHour: 10, endHour: 18 }] } },
   "Gold Bar": { serviceName: 'ETS On Demand', serviceHours: "Weekdays 6 a.m.\u201310 p.m.; Saturday 9 a.m.\u20137 p.m.; Sunday and holidays 10 a.m.\u20136 p.m.", availability: { Weekday: [{ startHour: 6, endHour: 22 }], Saturday: [{ startHour: 9, endHour: 19 }], Sunday: [{ startHour: 10, endHour: 18 }] } },
   "Grace Garden Court": { serviceName: 'ETS On Demand', serviceHours: "Weekdays 7 a.m.\u20137 p.m.; Saturday, Sunday and holidays 9 a.m.\u20134 p.m.", availability: { Weekday: [{ startHour: 7, endHour: 19 }], Saturday: [{ startHour: 9, endHour: 16 }], Sunday: [{ startHour: 9, endHour: 16 }] } },

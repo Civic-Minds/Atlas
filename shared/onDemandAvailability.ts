@@ -47,6 +47,10 @@ export interface OnDemandZoneDetails {
   eligibility?: string;
   availability?: OnDemandAvailability;
   pickup?: OnDemandPickup;
+  /** Where these hours come from, when it isn't the zone's own source. */
+  hoursSource?: { url: string; retrievedAt: string };
+  /** Last day a temporary zone is expected to run (YYYY-MM-DD); the publish gate blocks it after. */
+  validUntil?: string;
 }
 
 /** Structural subset of an agency's on-demand service used for hours and pickup lookups. */

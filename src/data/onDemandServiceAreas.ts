@@ -10,7 +10,7 @@ import { GTFS_FLEX_METADATA } from './metroMicroFlexMetadata';
 import { C_TRAN_CURRENT_FLEX_FEATURES } from './ctranCurrentFlexData';
 import { C_TRAN_CURRENT_FLEX_STOPS } from './ctranCurrentFlexStops';
 import { ALL_POINTS_DIAL_A_RIDE_FEATURES, ASPEN_DOWNTOWNER_FEATURES, BAY_TRANSIT_EXPRESS_FEATURES, CAT_DIAL_A_RIDE_FEATURES, DURANGO_MICROTRANSIT_FEATURES, GLTC_FLEX_FEATURES, ISLAND_TRANSIT_GO_STOPS, SAM_RIDES_FEATURES, SNOQUALMIE_DOOR_TO_DOOR_FEATURES, TCTD_DIAL_A_RIDE_FEATURES, VALLEY_METRO_METROFLX_FEATURES } from './flexBatchData';
-import type { OnDemandAvailability, OnDemandPickup } from '../../shared/onDemandAvailability';
+import type { OnDemandAvailability, OnDemandPickup, OnDemandZoneDetails } from '../../shared/onDemandAvailability';
 import { BETA_ROLLOUT_NOTICE } from '../../shared/rolloutNotice';
 import { CYRIDE_MOONLIGHT_EXPRESS_FEATURE, RFTA_CARBONDALE_DOWNTOWNER_FEATURE, UTA_NORTH_UTAH_COUNTY_FEATURE } from './onDemandOfficialLayers';
 import { ON_DEMAND_PUBLIC } from '../../shared/config';
@@ -147,9 +147,17 @@ export const CYRIDE_EASE_SERVICE_AREA = {
     Saturday: [],
     Sunday: [],
   } satisfies OnDemandAvailability,
-  // Moonlight Express covers the whole city; its hours aren't confirmed, so it's drawn faded.
   zoneMetadata: {
-    'Ames city limits': { serviceName: 'Moonlight Express' },
+    // Atlas counts a night after midnight as the day it started, and Weekday covers Monday-Friday,
+    // so Friday nights can't be told apart from Monday-Thursday: weekday hours stay unset (faded)
+    // rather than claiming service every night. Saturday night is exact.
+    'Ames city limits': {
+      serviceName: 'Moonlight Express',
+      serviceHours: 'Friday and Saturday nights 10:30 p.m.\u20132 a.m. during the Iowa State school year',
+      hoursNote: 'Mid-August to May only, and not on blackout weekends.',
+      availability: { Saturday: [{ startHour: 22.5, endHour: 26 }], Sunday: [] },
+      hoursSource: { url: 'https://www.cyride.com/schedules/school-year-schedule/moonlight-express', retrievedAt: '2026-10-11' },
+    },
   },
 };
 
@@ -403,15 +411,36 @@ export const METRO_MICRO_SERVICE_AREA = {
   zoneMetadata: GTFS_FLEX_METADATA.zoneMetadata,
 };
 
+// Hours from The Current page and the Rider's Digest effective 2026-09-13 (checked 2026-10-11).
+const C_TRAN_HOURS_SOURCE = { url: 'https://www.c-tran.com/thecurrent', retrievedAt: '2026-10-11' };
+const C_TRAN_ZONE_HOURS: OnDemandZoneDetails = {
+  serviceName: 'The Current',
+  serviceHours: 'Monday\u2013Friday 5:30 a.m.\u20137 p.m.; Saturday and Sunday 8 a.m.\u20136 p.m.',
+  hoursNote: "Holiday hours aren't confirmed.",
+  availability: { Weekday: [{ startHour: 5.5, endHour: 19 }], Saturday: [{ startHour: 8, endHour: 18 }], Sunday: [{ startHour: 8, endHour: 18 }] },
+  hoursSource: C_TRAN_HOURS_SOURCE,
+};
+const C_TRAN_PORT_HOURS: OnDemandZoneDetails = {
+  serviceName: 'The Current',
+  serviceHours: 'Monday\u2013Friday 5:30 a.m.\u20137 p.m.',
+  hoursNote: "Holiday hours aren't confirmed.",
+  availability: { Weekday: [{ startHour: 5.5, endHour: 19 }], Saturday: [], Sunday: [] },
+  hoursSource: C_TRAN_HOURS_SOURCE,
+};
+
 export const C_TRAN_CURRENT_SERVICE_AREA = {
   features: C_TRAN_CURRENT_FLEX_FEATURES,
   stopFeatures: C_TRAN_CURRENT_FLEX_STOPS,
-  sourceUrl: 'https://www.c-tran.com/images/Google/TheCurrent_GTFSFlex.zip',
-  sourceLabel: 'C-TRAN GTFS-Flex feed and official service-area layers',
-  sourceRetrievedAt: '2026-09-24',
-  serviceHours: 'Service hours vary by zone.',
+  // C-TRAN's own service-area layer. The GTFS-Flex zip cited before holds only C-VAN paratransit.
+  sourceUrl: 'https://services5.arcgis.com/T6Y1WlK8fKvVXSi3/arcgis/rest/services/The_Current_Service_Areas/FeatureServer/0',
+  sourceLabel: 'C-TRAN The Current service-area and virtual-stop layers',
+  sourceRetrievedAt: '2026-10-11',
   bookingUrl: 'https://www.c-tran.com/thecurrent',
   serviceName: 'The Current',
+  zoneMetadata: Object.fromEntries(
+    ['La Center', 'Ridgefield', 'Camas/Washougal', 'WSU-Vancouver/Salmon Creek', 'Rose Village', 'Battle Ground', 'Port of Vancouver']
+      .map(zone => [zone, zone === 'Port of Vancouver' ? C_TRAN_PORT_HOURS : C_TRAN_ZONE_HOURS]),
+  ) as Record<string, OnDemandZoneDetails>,
 };
 
 const MUSKOKA_DRT_SOURCE_URL = 'https://services1.arcgis.com/5Av2OaC0epjp7wD3/arcgis/rest/services/District_DRT_Phase_1_2_Service_Area/FeatureServer/0';

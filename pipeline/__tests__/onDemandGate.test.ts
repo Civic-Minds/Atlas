@@ -84,6 +84,13 @@ describe('on-demand zone gate (CIV-50)', () => {
     expect(at('2025-09-01')).toContain('red:stale-source');
   });
 
+  it('blocks a temporary zone past its end date', () => {
+    const area = { sourceUrl: 'x', sourceLabel: 'x', sourceRetrievedAt: '2026-10-01', availability: {}, zoneMetadata: { Glenora: { validUntil: '2026-09-30' } } };
+    expect(flags(snapshot([{ area }], [{ slug: 'test', features: [square('z')] }]))).toContain('red:expired-zone');
+    const later = { ...area, zoneMetadata: { Glenora: { validUntil: '2026-12-31' } } };
+    expect(flags(snapshot([{ area: later }], [{ slug: 'test', features: [square('z')] }]))).not.toContain('red:expired-zone');
+  });
+
   it('lets a reviewed flag through only for the named service and flag', () => {
     const findings = evaluateOnDemandRelease(snapshot([{}], [{ slug: 'test', features: [square('z')] }]), null, { audience: 'public', promoted: NONE, now: NOW });
     expect(heldBack(findings)).toEqual(new Set(['test']));

@@ -104,7 +104,17 @@ describe('BWG on-demand service area', () => {
   it('keeps The Current service areas and virtual stops source-backed', () => {
     expect(C_TRAN_CURRENT_SERVICE_AREA.features).toHaveLength(7);
     expect(C_TRAN_CURRENT_SERVICE_AREA.stopFeatures).toHaveLength(27);
-    expect(C_TRAN_CURRENT_SERVICE_AREA.sourceUrl).toBe('https://www.c-tran.com/images/Google/TheCurrent_GTFSFlex.zip');
+    // Cites C-TRAN's service-area layer, never the Flex zip, which holds only C-VAN paratransit.
+    expect(C_TRAN_CURRENT_SERVICE_AREA.sourceUrl).toContain('The_Current_Service_Areas/FeatureServer');
+  });
+
+  it('runs every zone on its published hours, and Port of Vancouver on weekdays only', () => {
+    for (const feature of C_TRAN_CURRENT_SERVICE_AREA.features) {
+      const areaName = (feature.properties as { areaName: string }).areaName;
+      const zone = resolveOnDemandZone(C_TRAN_CURRENT_SERVICE_AREA, areaName);
+      expect(isOnDemandActive(zone.availability, 'Weekday', 'midday'), areaName).toBe(true);
+      expect(isOnDemandActive(zone.availability, 'Saturday', 'midday'), areaName).toBe(areaName !== 'Port of Vancouver');
+    }
   });
 
 
@@ -119,13 +129,17 @@ describe('CyRide EASE on-demand service area', () => {
     expect(CYRIDE_EASE_SERVICE_AREA.stopFeatures.map(stop => stop.properties?.stopId)).toEqual(['5102284']);
   });
 
-  it('draws Moonlight Express across the Ames city limits as its own service, faded until its hours are confirmed', () => {
+  it('draws Moonlight Express across the Ames city limits as its own service on its published nights', () => {
     const moonlight = CYRIDE_EASE_SERVICE_AREA.features[1];
     expect(moonlight.properties?.areaName).toBe('Ames city limits');
     for (const ring of moonlight.geometry.coordinates) expect(ring[0]).toEqual(ring.at(-1));
     const zone = resolveOnDemandZone(CYRIDE_EASE_SERVICE_AREA, 'Ames city limits');
     expect(zone).toMatchObject({ serviceName: 'Moonlight Express', sameServiceAsParent: false });
-    expect(zone.availability).toBeUndefined();
+    expect(isOnDemandActive(zone.availability, 'Saturday', 'late')).toBe(true);
+    expect(isOnDemandActive(zone.availability, 'Saturday', 'midday')).toBe(false);
+    expect(isOnDemandActive(zone.availability, 'Sunday', 'late')).toBe(false);
+    // Weekday can't separate Friday from Monday-Thursday, so it stays unknown rather than claimed.
+    expect(zone.availability?.Weekday).toBeUndefined();
   });
 
   it('only shows EASE during its weekday operating window', () => {
@@ -212,7 +226,13 @@ describe('Edmonton On Demand areas', () => {
       expect(ring[0]).toEqual(ring.at(-1));
     }
     expect(EDMONTON_ON_DEMAND_SERVICE_AREA.zoneMetadata['Keswick'].availability?.Weekday).toEqual([]);
-    expect(EDMONTON_ON_DEMAND_SERVICE_AREA.zoneMetadata['Glenora East'].availability).toBeUndefined();
+    for (const zone of ['Glenora East', 'Glenora West', '124 Street & 102 Avenue', '142 Street & Stony Plain Road']) {
+      expect(EDMONTON_ON_DEMAND_SERVICE_AREA.zoneMetadata[zone].availability?.Weekday, zone).toEqual([{ startHour: 7, endHour: 19 }]);
+      expect(EDMONTON_ON_DEMAND_SERVICE_AREA.zoneMetadata[zone].validUntil, zone).toBe('2026-12-31');
+    }
+    for (const hub of ['137 Ave & 156 ST', 'Lessard Rd & 57 Ave', '65 St and 106 Ave', 'Meadows Recreation Centre']) {
+      expect(EDMONTON_ON_DEMAND_SERVICE_AREA.zoneMetadata[hub].availability, hub).toBeUndefined();
+    }
   });
 });
 

@@ -11,7 +11,8 @@ export type OnDemandFlag =
   | 'zone-drop'
   | 'hours-lost'
   | 'leak'
-  | 'stale-source';
+  | 'stale-source'
+  | 'expired-zone';
 
 export interface OnDemandFinding {
   slug: string;
@@ -130,6 +131,13 @@ export function evaluateOnDemandRelease(
       const days = (now.getTime() - retrieved) / 86_400_000;
       if (days > STALE_RED_DAYS) add(entry.slug, 'stale-source', 'red', `source checked ${Math.floor(days)} days ago`);
       else if (days > STALE_YELLOW_DAYS) add(entry.slug, 'stale-source', 'yellow', `source checked ${Math.floor(days)} days ago`);
+    }
+
+    // A temporary zone past its end date must be re-checked before it's published again.
+    const zones = Object.entries((entry.area as { zoneMetadata?: Record<string, { validUntil?: string }> }).zoneMetadata ?? {});
+    for (const [name, zone] of [['(service)', entry.area as { validUntil?: string }] as const, ...zones]) {
+      const until = zone?.validUntil ? Date.parse(`${zone.validUntil}T23:59:59Z`) : NaN;
+      if (!Number.isNaN(until) && until < now.getTime()) add(entry.slug, 'expired-zone', 'red', `${name} ran until ${zone!.validUntil}`);
     }
 
     const before = live?.index.services.find(s => s.slug === entry.slug);
