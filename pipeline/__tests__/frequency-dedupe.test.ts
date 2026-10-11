@@ -1,8 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import JSZip from 'jszip';
 import {
+  dropCoincidentTemplateDepartures,
   expandTripFrequencyOffsets,
   firstVisitStopTimes,
+  isStretchedBlockTrip,
   processGtfsBuffer,
   windowsRepeatedByTimetable,
 } from '../process-core';
@@ -224,11 +226,180 @@ describe('processGtfsBuffer frequency dedupe on real feed patterns', () => {
     expect(evening.stopPeriodHeadways?.e1?.evening).toBe(30);
   });
 
+  it('does not count a template trip\'s literal 00:00 stop_times as late-night service (#721)', async () => {
+    // uga writes each template at 00:00 (M Milledge 1119047: 00:00-00:35). M's real service
+    // ends with the 18:00 trip, and the template-only route T's windows end at 18:30.
+    const route = await weekdayRoutes(ugaFixtureZip(), 'campus-transit');
+    for (const shortName of ['M', 'T']) {
+      const [feature] = route(shortName);
+      expect(feature.periodCoverageHeadway?.late ?? null).toBeNull();
+      expect(feature.periodCoverageHeadway?.overnight ?? null).toBeNull();
+      expect(feature.headwayByPeriod?.midday).toBe(shortName === 'M' ? 15 : 18);
+    }
+  });
+
   it('counts an hourly loop once per stop, not at both visits (#712)', async () => {
     const route = await weekdayRoutes(grandJunctionFixtureZip(), 'loop-transit');
     const [loop] = route('1');
     expect(loop.headway).toBe(60);
     expect(loop.headwayByPeriod).toMatchObject({ midday: 60, pmPeak: 60 });
     expect(loop.stopHeadways?.S87).toBe(60);
+  });
+});
+
+// clemson-cat 20501230 zip, route TL-69 (Gold), service TL-272 (Mon-Fri): three TransLoc
+// block trips on one stop pattern, every 1213 s. Gold_02 runs 15 min behind Gold_01 until
+// 13:45, then Gold_03 restarts 0.7 min behind Gold_01's 13:44 pass. Only the first and last
+// stops are timed (the block's start and end), as in the feed.
+const GOLD_STOPS: Array<[string, number, number]> = [
+  ['TL-301', 34.6860294, -82.8250393], ['TL-302', 34.6876091, -82.8191632], ['TL-303', 34.6849145, -82.8158081],
+  ['TL-304', 34.68407, -82.8171458], ['TL-305', 34.6838809, -82.8194462], ['TL-308', 34.6797698, -82.8301056],
+  ['TL-309', 34.6798291, -82.8348944], ['TL-310', 34.6765561, -82.8410815], ['TL-306', 34.6776148, -82.8301743],
+  ['TL-307', 34.6790709, -82.8301814],
+];
+const GOLD_BLOCKS: Array<[string, string, string]> = [
+  ['TL-4257', '07:00', '18:07'], ['TL-4258', '07:15', '13:45'], ['TL-4259', '13:45', '17:52'],
+];
+
+function clemsonGoldFixtureZip(): JSZip {
+  const zip = new JSZip();
+  zip.file('agency.txt', 'agency_id,agency_name,agency_url,agency_timezone\na,Clemson Area Transit,https://example.test,America/New_York\n');
+  zip.file('routes.txt', 'route_id,route_short_name,route_long_name,route_type\nTL-69,Gold,Gold Route,3\n');
+  zip.file('stops.txt', ['stop_id,stop_name,stop_lat,stop_lon', ...GOLD_STOPS.map(([id, lat, lon]) => `${id},${id},${lat},${lon}`)].join('\n') + '\n');
+  zip.file('calendar.txt', 'service_id,monday,tuesday,wednesday,thursday,friday,saturday,sunday,start_date,end_date\nTL-272,1,1,1,1,1,0,0,20240819,20501230\n');
+  zip.file('shapes.txt', ['shape_id,shape_pt_lat,shape_pt_lon,shape_pt_sequence', ...GOLD_STOPS.map(([, lat, lon], i) => `TL-69,${lat},${lon},${i + 1}`)].join('\n') + '\n');
+  const trips = ['route_id,service_id,trip_id,trip_headsign,direction_id,shape_id'];
+  const stopTimes = ['trip_id,arrival_time,departure_time,stop_id,stop_sequence'];
+  const frequencies = ['trip_id,start_time,end_time,headway_secs'];
+  for (const [tripId, start, end] of GOLD_BLOCKS) {
+    trips.push(`TL-69,TL-272,${tripId},,0,TL-69`);
+    GOLD_STOPS.forEach(([stopId], i) => {
+      const time = i === 0 ? `${start}:00` : i === GOLD_STOPS.length - 1 ? `${end}:00` : '';
+      stopTimes.push(`${tripId},${time},${time},${stopId},${i === 0 ? 1 : i * 10 + 10}`);
+    });
+    frequencies.push(`${tripId},${start}:00,${end}:00,1213`);
+  }
+  zip.file('trips.txt', trips.join('\n') + '\n');
+  zip.file('stop_times.txt', stopTimes.join('\n') + '\n');
+  zip.file('frequencies.txt', frequencies.join('\n') + '\n');
+  return zip;
+}
+
+describe('dropCoincidentTemplateDepartures (#711)', () => {
+  it('drops a block that restarts on top of another block, keeps an offset one', () => {
+    const cycle = 1213 / 60;
+    const run = (first: number, end: number) => {
+      const offsets: number[] = [];
+      for (let t = first; t < end; t += cycle) offsets.push(t - first);
+      return { first, offsets };
+    };
+    const [gold1, gold2, gold3] = dropCoincidentTemplateDepartures([
+      run(m('07:00'), m('18:07')), run(m('07:15'), m('13:45')), run(m('13:45'), m('17:52')),
+    ]);
+    expect(gold1).toHaveLength(33);
+    expect(gold2).toHaveLength(20);
+    expect(gold3).toEqual([]);
+  });
+});
+
+describe('processGtfsBuffer stacked TransLoc blocks (#711)', () => {
+  it('gives clemson-cat Gold its two-bus service, not 5 midday and 1 in the afternoon', async () => {
+    const route = await weekdayRoutes(clemsonGoldFixtureZip(), 'clemson-cat');
+    const [gold] = route('Gold');
+    // Hand count at TL-301: Gold_01 + Gold_02 alternate 15/5 min gaps until 13:45, then the
+    // afternoon has one bus every 20.2 min (Gold_03 is Gold_01's departure again).
+    expect(gold.stopPeriodHeadways?.['TL-301']).toMatchObject({ amPeak: 15, midday: 15, pmPeak: 20 });
+    expect(gold.minStopHeadway).toBeGreaterThanOrEqual(15);
+  });
+});
+
+// cue-bus zip, route TL-2, service TL-10: two early trips written as single-trip frequency
+// rows (TL-739 05:15-05:46 and TL-740 05:50-06:21, 1727 s) next to the scheduled timetable
+// (06:00, 06:30, 07:07, ...). Two stops; every trip takes 31 min, as TL-739/TL-740 do.
+function cueBusFixtureZip(): JSZip {
+  const zip = new JSZip();
+  zip.file('agency.txt', 'agency_id,agency_name,agency_url,agency_timezone\na,CUE,https://example.test,America/New_York\n');
+  zip.file('routes.txt', 'route_id,route_short_name,route_long_name,route_type\nTL-2,Gold,Nutley,3\n');
+  zip.file('stops.txt', 'stop_id,stop_name,stop_lat,stop_lon\nTL-48,Start,38.846,-77.306\nTL-60,Nutley Street,38.883,-77.229\n');
+  zip.file('calendar.txt', 'service_id,monday,tuesday,wednesday,thursday,friday,saturday,sunday,start_date,end_date\nTL-10,1,1,1,1,1,0,0,20250101,20271231\n');
+  zip.file('shapes.txt', 'shape_id,shape_pt_lat,shape_pt_lon,shape_pt_sequence\nsh,38.846,-77.306,1\nsh,38.883,-77.229,2\n');
+  const trips = ['route_id,service_id,trip_id,trip_headsign,direction_id,shape_id'];
+  const stopTimes = ['trip_id,arrival_time,departure_time,stop_id,stop_sequence'];
+  const starts = ['05:15', '05:50', '06:00', '06:30', '07:07', '07:37', '08:14', '08:45'];
+  for (const start of starts) {
+    trips.push(`TL-2,TL-10,t${start},Nutley Street,0,sh`);
+    stopTimes.push(`t${start},${hm(m(start))},${hm(m(start))},TL-48,1`, `t${start},${hm(m(start) + 31)},${hm(m(start) + 31)},TL-60,2`);
+  }
+  zip.file('trips.txt', trips.join('\n') + '\n');
+  zip.file('stop_times.txt', stopTimes.join('\n') + '\n');
+  zip.file('frequencies.txt', 'trip_id,start_time,end_time,headway_secs\nt05:15,05:15:00,05:46:00,1727\nt05:50,05:50:00,06:21:00,1727\n');
+  return zip;
+}
+
+describe('processGtfsBuffer single-trip rows next to a timetable (#721)', () => {
+  it('keeps cue-bus TL-2\'s 05:50 trip whose row holds the 06:00 timetable start', async () => {
+    const route = await weekdayRoutes(cueBusFixtureZip(), 'cue-bus');
+    const [line] = route('Gold');
+    // Terminal departures 06:21 (the 05:50 trip), 06:31, 07:01, 07:38, 08:08, 08:45 in the AM
+    // peak: gaps 10/30/37/30/37, median 30. Losing the 05:50 trip gives 34.
+    expect(line.headwayByPeriod?.amPeak).toBe(30);
+  });
+});
+
+// waco 20501231 zip, route TL-56 (#9 South Terrace), trip TL-2634, service TL-82 (Mon-Fri):
+// one TransLoc block trip timed only at its first stop (05:00) and last stop (19:15), with
+// frequencies 05:00-19:15 every 2807 s. Stop list shortened; the untimed stops stay untimed.
+const WACO_STOPS: Array<[string, number, string, number, number]> = [
+  ['TL-254', 1, '05:00:00', 31.55195, -97.13303], ['TL-258', 50, '', 31.54891, -97.12274],
+  ['TL-262', 90, '', 31.53019, -97.11363], ['TL-268', 150, '', 31.4962, -97.15132],
+  ['TL-281', 280, '19:15:00', 31.54718, -97.12572],
+];
+
+function wacoSouthTerraceFixtureZip(): JSZip {
+  const zip = new JSZip();
+  zip.file('agency.txt', 'agency_id,agency_name,agency_url,agency_timezone\na,Waco Transit,https://example.test,America/Chicago\n');
+  zip.file('routes.txt', 'route_id,route_short_name,route_long_name,route_type\nTL-56,9,South Terrace,3\n');
+  zip.file('stops.txt', ['stop_id,stop_name,stop_lat,stop_lon', ...WACO_STOPS.map(([id, , , lat, lon]) => `${id},${id},${lat},${lon}`)].join('\n') + '\n');
+  zip.file('calendar.txt', 'service_id,monday,tuesday,wednesday,thursday,friday,saturday,sunday,start_date,end_date\nTL-82,1,1,1,1,1,0,0,20250626,20501230\n');
+  zip.file('shapes.txt', ['shape_id,shape_pt_lat,shape_pt_lon,shape_pt_sequence', ...WACO_STOPS.map(([, , , lat, lon], i) => `TL-56,${lat},${lon},${i + 1}`)].join('\n') + '\n');
+  zip.file('trips.txt', 'route_id,service_id,trip_id,trip_headsign,direction_id,shape_id\nTL-56,TL-82,TL-2634,S 8th ST,0,TL-56\n');
+  zip.file('stop_times.txt', ['trip_id,arrival_time,departure_time,stop_id,stop_sequence', ...WACO_STOPS.map(([id, seq, time]) => `TL-2634,${time},${time},${id},${seq}`)].join('\n') + '\n');
+  zip.file('frequencies.txt', 'trip_id,start_time,end_time,headway_secs\nTL-2634,05:00:00,19:15:00,2807\n');
+  return zip;
+}
+
+describe('processGtfsBuffer stretched TransLoc block trips (#722)', () => {
+  it('keeps waco TL-56 daytime service at every stop, not shifted into the night', async () => {
+    const route = await weekdayRoutes(wacoSouthTerraceFixtureZip(), 'waco');
+    const [southTerrace] = route('9');
+    // Hand count: 19 departures, 05:00 to 19:02, every 46.8 min. Nothing after 19:15, so the
+    // evening has one bus (19:02, then a 238-min wait to 23:00) and late has none; the 05:00
+    // first bus is the overnight period's only departure (180 min after 02:00).
+    expect(southTerrace.headwayByPeriod).toMatchObject({ amPeak: 47, midday: 47, pmPeak: 47 });
+    expect(southTerrace.headwayByPeriod?.late ?? null).toBeNull();
+    expect(southTerrace.periodCoverageHeadway).toMatchObject({ amPeak: 47, midday: 47, pmPeak: 47, evening: 238, overnight: 180 });
+    expect(southTerrace.periodCoverageHeadway?.late ?? null).toBeNull();
+    expect(southTerrace.stopPeriodHeadways?.['TL-281']).toMatchObject({ amPeak: 47, midday: 47, pmPeak: 47 });
+  });
+});
+
+describe('isStretchedBlockTrip (#722)', () => {
+  const stops = (times: string[]) => times.map((time, i) => ({ stop_sequence: String(i + 1), departure_time: time, arrival_time: time }));
+  const window = (start: string, end: string, secs: number) => ({ start: m(start), end: m(end), headwayMinutes: secs / 60 });
+
+  it('matches a TransLoc block timed only at its start and end', () => {
+    expect(isStretchedBlockTrip(stops(['05:00:00', '', '', '19:15:00']), [window('05:00', '19:15', 2807)])).toBe(true);
+  });
+
+  it('leaves a real trip alone even when its run time equals its window', () => {
+    // Every stop timed: a 60-min trip with a 06:00-07:00 window every 10 min is real run-time data.
+    expect(isStretchedBlockTrip(stops(['06:00:00', '06:20:00', '06:40:00', '07:00:00']), [window('06:00', '07:00', 600)])).toBe(false);
+    // Only the ends timed, but the stops between are real and the window does not match.
+    expect(isStretchedBlockTrip(stops(['00:00:00', '', '00:45:00']), [window('07:00', '18:30', 1350)])).toBe(false);
+  });
+
+  it('leaves a single-trip row to the #702 rule', () => {
+    // waco TL-2533: 18:38-19:30 every 3005 s, two departures.
+    expect(isStretchedBlockTrip(stops(['18:38:00', '', '19:30:00']), [window('18:38', '19:30', 3005)])).toBe(false);
   });
 });
