@@ -17,7 +17,7 @@ import { PERIOD_KEYS, TIME_PERIODS, SPARKLINE_HOURS, type PeriodKey, type Headwa
 import { ROUTE_ARTIFACT_SCHEMA_VERSION } from '../shared/artifactSchema.js';
 import { DAY_TYPES, WEEKDAYS, type DayName, type DayType } from '../types/gtfs.js';
 import { ALL_DAYS } from '../shared/dayTypes.js';
-import { expandFrequencyWindow, expandTripFrequencyWindows, t2m, type FrequencyWindow } from './transit-utils.js';
+import { expandFrequencyWindow, expandTripFrequencyWindows, parseFrequencyWindow, t2m, type FrequencyWindow } from './transit-utils.js';
 import { adaptiveMedianHeadwayInWindow, computeHourMaxGaps, computePeriodHeadways, computePeriodHeadwayRanges, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, hasGenuineBranchPattern, hasSustainedFrequentService, hasSustainedNightService, headsignOverlapMinHeadway, headwayToTier, medianHeadwayInWindow, nightServiceDepartureTimes, NIGHT_SERVICE_WINDOW_END_MIN, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
 import { computeRouteBaseFares, detectBusSubType } from './route-metadata.js';
 import { buildStopsMeta } from './stopsMeta.js';
@@ -839,12 +839,12 @@ export async function processGtfsBuffer(
   // so windows that repeat the feed's own timetable are skipped (#711).
   const frequencyRowsByTripId = new Map<string, FrequencyWindow[]>();
   for (const frequency of gtfs.frequencies ?? []) {
-    const start = t2m(frequency.start_time);
-    const end = t2m(frequency.end_time);
-    const headway = Number(frequency.headway_secs) / 60;
-    if (start === null || end === null || !Number.isFinite(headway) || headway <= 0) continue;
+    // Same row validity as route level (transit-phase1), so both agree on
+    // each trip's row count for the single-row rule (#706).
+    const window = parseFrequencyWindow(frequency);
+    if (!window) continue;
     const rows = frequencyRowsByTripId.get(frequency.trip_id) ?? [];
-    rows.push({ start, end, headwayMinutes: headway });
+    rows.push(window);
     frequencyRowsByTripId.set(frequency.trip_id, rows);
   }
   // Templates and timetable trips are matched on route, service, direction and

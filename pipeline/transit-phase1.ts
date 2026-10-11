@@ -4,7 +4,7 @@ import {
     RawRouteDepartures,
     ALL_DAYS,
 } from '../types/gtfs';
-import { t2m, getModeName, expandTripFrequencyWindows, type FrequencyWindow } from './transit-utils';
+import { t2m, getModeName, expandTripFrequencyWindows, parseFrequencyWindow, type FrequencyWindow } from './transit-utils';
 import { detectReferenceDate, getActiveServiceIds } from './transit-calendar';
 import { isRailLikeRoute } from '../shared/modes';
 
@@ -25,12 +25,10 @@ function expandFrequencies(
 
     const byTrip = new Map<string, FrequencyWindow[]>();
     for (const freq of frequencies) {
-        const startMins = t2m(freq.start_time);
-        const endMins = t2m(freq.end_time);
-        const headwaySecs = parseInt(freq.headway_secs);
-        if (startMins === null || endMins === null || Number.isNaN(headwaySecs) || headwaySecs < 60) continue;
+        const window = parseFrequencyWindow(freq);
+        if (!window) continue;
         if (!byTrip.has(freq.trip_id)) byTrip.set(freq.trip_id, []);
-        byTrip.get(freq.trip_id)!.push({ start: startMins, end: endMins, headwayMinutes: headwaySecs / 60 });
+        byTrip.get(freq.trip_id)!.push(window);
     }
 
     // First-to-last stop_times span per frequency trip, measured the same way as

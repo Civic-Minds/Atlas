@@ -63,6 +63,28 @@ export interface FrequencyWindow {
 }
 
 /**
+ * headway_secs below one minute is not valid scheduled service; such rows are
+ * ignored everywhere frequencies.txt is read.
+ */
+export const MIN_FREQUENCY_HEADWAY_SECS = 60;
+
+/**
+ * Parses one frequencies.txt row into a window, or null when the row is not
+ * usable (bad times, or headway_secs missing or under MIN_FREQUENCY_HEADWAY_SECS).
+ * Route level (transit-phase1) and stop level (process-core) both use this, so
+ * they agree on which rows exist, and so on the single-row rule below.
+ */
+export function parseFrequencyWindow(
+    frequency: { start_time: string; end_time: string; headway_secs: string | number },
+): FrequencyWindow | null {
+    const start = t2m(frequency.start_time);
+    const end = t2m(frequency.end_time);
+    const headwaySecs = Number(frequency.headway_secs);
+    if (start === null || end === null || !Number.isFinite(headwaySecs) || headwaySecs < MIN_FREQUENCY_HEADWAY_SECS) return null;
+    return { start, end, headwayMinutes: headwaySecs / 60 };
+}
+
+/**
  * Some exporters (TransLoc: Coast RTA, Waco, Winter Park) write one
  * frequencies.txt row per scheduled trip: the window is that trip's own run
  * time and headway_secs is a meaningless value below it, so the literal
