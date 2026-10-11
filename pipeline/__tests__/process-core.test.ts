@@ -339,6 +339,7 @@ function frequencyFixtureZip(): JSZip {
     'route_id,route_short_name,route_long_name,route_type',
     'r10,10,Hourly Loop,3',
     'r7x,7X,Express,3',
+    'r7p,7P,Express Timetable,3',
     'r27,27,All Day Shuttle,3',
     'r1,1,Frequent Line,3',
   ].join('\n') + '\n');
@@ -346,6 +347,7 @@ function frequencyFixtureZip(): JSZip {
     'stop_id,stop_name,stop_lat,stop_lon',
     'a1,Loop Start,33.70,-78.90', 'a2,Loop Middle,33.71,-78.89', 'a3,Loop End,33.72,-78.88',
     'x1,Express Start,33.60,-79.00', 'x2,Express End,33.65,-78.95',
+    'p1,Timetable Start,33.40,-79.20', 'p2,Timetable End,33.45,-79.15',
     'c1,Shuttle Start,33.80,-78.80', 'c2,Shuttle End,33.81,-78.79',
     'f1,Line Start,33.50,-79.10', 'f2,Line Middle,33.51,-79.09', 'f3,Line End,33.52,-79.08',
   ].join('\n') + '\n');
@@ -354,6 +356,7 @@ function frequencyFixtureZip(): JSZip {
     'shape_id,shape_pt_lat,shape_pt_lon,shape_pt_sequence',
     'sh10,33.70,-78.90,1', 'sh10,33.71,-78.89,2', 'sh10,33.72,-78.88,3',
     'sh7x,33.60,-79.00,1', 'sh7x,33.65,-78.95,2',
+    'sh7p,33.40,-79.20,1', 'sh7p,33.45,-79.15,2',
     'sh27,33.80,-78.80,1', 'sh27,33.81,-78.79,2',
     'sh1,33.50,-79.10,1', 'sh1,33.51,-79.09,2', 'sh1,33.52,-79.08,3',
   ].join('\n') + '\n');
@@ -377,6 +380,12 @@ function frequencyFixtureZip(): JSZip {
     trips.push(`r7x,weekday,${id},Express,0,sh7x`);
     stopTimes.push(`${id},${hm(start)},${hm(start)},x1,1`, `${id},${hm(start + run)},${hm(start + run)},x2,2`);
     frequencies.push(`${id},${hm(start)},${hm(start + run)},1766`);
+  }
+  // The same four trips as an ordinary stop_times timetable, for comparison.
+  for (const [start, run] of [[360, 60], [375, 45], [795, 45], [870, 40]]) {
+    const id = `timetable${start}`;
+    trips.push(`r7p,weekday,${id},Express Timetable,0,sh7p`);
+    stopTimes.push(`${id},${hm(start)},${hm(start)},p1,1`, `${id},${hm(start + run)},${hm(start + run)},p2,2`);
   }
 
   // Clemson-style genuine all-day block: one row, stop_times stretched across the whole
@@ -413,11 +422,17 @@ describe('processGtfsBuffer frequencies.txt expansion', () => {
     expect(Object.values(loop.stopHeadways ?? {}).every(hw => hw === 60)).toBe(true);
   });
 
-  it('keeps a four-trip express infrequent instead of inventing extra departures (#702)', async () => {
+  it('classifies a four-trip express exactly like the same four trips without frequencies.txt (#702, #706)', async () => {
+    // This express used to come out infrequent only because route-level expansion still
+    // invented a second departure in each window. Its real service is four trips, two of them
+    // before 07:00, which the classifier treats the same as any other two-trip daytime route.
     const route = await weekdayRoutes();
     const express = route('7X');
-    expect(express.tier).toBe('infrequent');
-    expect(express.headway).toBeGreaterThan(60);
+    const plain = route('7P');
+    expect(express.tier).toBe(plain.tier);
+    expect(express.headway).toBe(plain.headway);
+    expect(express.headwayByPeriod).toEqual(plain.headwayByPeriod);
+    expect(Object.values(express.stopHeadways ?? {})).toEqual(Object.values(plain.stopHeadways ?? {}));
   });
 
   it('still expands genuine frequency windows, including stretched all-day blocks', async () => {
