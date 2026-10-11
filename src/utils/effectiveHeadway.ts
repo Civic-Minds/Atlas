@@ -125,12 +125,10 @@ export function routeListDisplayHeadway(features: readonly ShapeProperties[], pe
 
 /**
  * Whether a route list row (sidebar lists, agency card, nearby routes) shows
- * "limited". Any branch with a real cadence wins, so an infrequent short-turn never
- * hides the main pattern's number. List rows keep their per-period display; only
- * All day uses the limited label, matching the route card (#708).
+ * "limited", in any period, using the route card's rule. Any branch with a real
+ * cadence wins, so an infrequent short-turn never hides the main pattern's number (#708).
  */
 export function routeListDisplayLimited(features: readonly ShapeProperties[], period: TimePeriod): boolean {
-  if (period !== 'all') return false;
   return routeListDisplayHeadway(features, period) == null
     && features.some(feature => routeCardDisplayLimited(feature, period));
 }

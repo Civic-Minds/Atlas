@@ -8,7 +8,7 @@ import {
   routeListDisplay,
   routeListDisplayHeadway,
 } from '../../../utils/effectiveHeadway';
-import { getRoutes } from '../AgencyCard';
+import { AgencyCard, getRoutes } from '../AgencyCard';
 import { NearbyRoutesPanel } from '../NearbyRoutesPanel';
 import { routeRowRight } from '../SearchSuggestionsPanel';
 import { RouteCardHeadway } from '../panels/RouteCardHeadway';
@@ -74,7 +74,7 @@ function layersFor(day: 'Weekday' | 'Saturday'): Record<string, GeoJSON.FeatureC
 
 const agencyFilters = { maxHeadway: Infinity, selectedModes: new Set<number>(), hideSpan: false, hideLimitedService: false };
 
-describe('All day infrequent routes show "limited" (#708)', () => {
+describe('Infrequent routes show "limited" on All day and in specific periods (#708)', () => {
   describe('shared rule', () => {
     it('drops the all-day number and marks TL-42 limited on weekdays and weekends', () => {
       for (const p of [tl42Weekday, tl42Saturday]) {
@@ -95,7 +95,7 @@ describe('All day infrequent routes show "limited" (#708)', () => {
       expect(routeCardDisplayLimited(infrequentShortTurn, 'all')).toBe(true);
     });
 
-    it('keeps period behaviour unchanged', () => {
+    it('applies the same rule in a specific period', () => {
       // Midday: infrequent median 56 with a 144 min longest gap was already limited.
       expect(routeCardDisplayHeadway(tl42Saturday, 'midday')).toBeNull();
       expect(routeCardDisplayLimited(tl42Saturday, 'midday')).toBe(true);
@@ -104,8 +104,11 @@ describe('All day infrequent routes show "limited" (#708)', () => {
       // Frequent route periods keep their numbers.
       expect(routeCardDisplayHeadway(frequentSaturday, 'midday')).toBe(12);
       expect(routeListDisplayHeadway([frequentSaturday], 'midday')).toBe(12);
-      // List rows keep their existing per-period display (no new limited label).
-      expect(routeListDisplay([tl42Saturday], 'midday')).toEqual({ headway: null, limited: false });
+      // List rows use the same rule as the route card.
+      expect(routeListDisplay([tl42Saturday], 'midday')).toEqual({ headway: null, limited: true });
+      expect(routeListDisplay([tl42Saturday], 'amPeak')).toEqual({ headway: null, limited: false });
+      expect(routeListDisplay([frequentSaturday], 'midday')).toEqual({ headway: 12, limited: false });
+      expect(routeListDisplay([frequentSaturday, infrequentShortTurn], 'midday')).toEqual({ headway: 12, limited: false });
     });
   });
 
@@ -138,6 +141,18 @@ describe('All day infrequent routes show "limited" (#708)', () => {
       expect(screen.queryByText(/about every 56 min/)).toBeNull();
     });
 
+    it('shows "limited" for TL-42 in Saturday midday', () => {
+      renderCard([tl42Saturday], 'midday');
+      expect(screen.getAllByText('limited').length).toBeGreaterThan(0);
+      expect(screen.queryByText(/about every 56 min/)).toBeNull();
+    });
+
+    it('still shows a frequent route\'s midday number', () => {
+      renderCard([frequentSaturday], 'midday');
+      expect(screen.getByText('about every 12 min')).toBeTruthy();
+      expect(screen.queryByText('limited')).toBeNull();
+    });
+
     it('still shows a frequent route\'s all-day number', () => {
       renderCard([frequentSaturday], 'all');
       expect(screen.getByText('about every 12 min')).toBeTruthy();
@@ -156,10 +171,31 @@ describe('All day infrequent routes show "limited" (#708)', () => {
       }
     });
 
-    it('keeps period rows unchanged', () => {
-      const rows = getRoutes(layersFor('Saturday') as any, SLUG, 'Saturday', 'midday', agencyFilters);
-      expect(rows.find(r => r.routeId === 'TL-42')).toMatchObject({ headway: null, limited: false });
-      expect(rows.find(r => r.routeId === 'F-1')).toMatchObject({ headway: 12, limited: false });
+    it('marks TL-42 limited in a specific period and keeps the frequent number', () => {
+      for (const day of ['Weekday', 'Saturday'] as const) {
+        const rows = getRoutes(layersFor(day) as any, SLUG, day, 'midday', agencyFilters);
+        expect(rows.find(r => r.routeId === 'TL-42')).toMatchObject({ headway: null, limited: true });
+        expect(rows.find(r => r.routeId === 'F-1')).toMatchObject({ headway: 12, limited: false });
+      }
+    });
+
+    it('renders "limited" in the agency card for a specific period', () => {
+      const agency = { slug: SLUG, name: 'The Lift', region: 'Colorado', center: [40.08, -105.93], url: '' } as any;
+      render(
+        <AgencyCard
+          agency={agency}
+          layers={layersFor('Saturday') as any}
+          day="Saturday"
+          period="midday"
+          maxHeadway={Infinity}
+          selectedModes={new Set()}
+          hideSpan={false}
+          hideLimitedService={false}
+          onRouteSelect={() => {}}
+        />,
+      );
+      expect(screen.getByText('limited')).toBeTruthy();
+      expect(screen.getByText('about every 12 min')).toBeTruthy();
     });
   });
 
@@ -176,17 +212,20 @@ describe('All day infrequent routes show "limited" (#708)', () => {
       }
     });
 
-    it('keeps period rows unchanged', () => {
+    it('shows "limited" for TL-42 in a specific period and keeps the frequent number', () => {
       const { result } = renderHook(() => useNearbyRoutes({ lat: STOP_COORDS[1], lon: STOP_COORDS[0] }, layersFor('Saturday'), 'Saturday', 'midday'));
-      expect(result.current.find(r => r.rKey.includes('TL-42'))).toMatchObject({ headway: null, limited: false });
-      expect(result.current.find(r => r.rKey.includes('F-1'))).toMatchObject({ headway: 12 });
+      expect(result.current.find(r => r.rKey.includes('TL-42'))).toMatchObject({ headway: null, limited: true });
+      expect(result.current.find(r => r.rKey.includes('F-1'))).toMatchObject({ headway: 12, limited: false });
+      render(<NearbyRoutesPanel routes={result.current} setSelectedRoute={() => {}} />);
+      expect(screen.getByText('limited')).toBeTruthy();
+      expect(screen.getByText('about every 12 min')).toBeTruthy();
     });
   });
 
   describe('sidebar route lists', () => {
-    it('renders "limited" for TL-42 and the number for the frequent route', () => {
-      const tl42 = routeListDisplay([tl42Saturday], 'all');
-      const frequent = routeListDisplay([frequentSaturday], 'all');
+    it.each(['all', 'midday'] as const)('renders "limited" for TL-42 and the number for the frequent route (%s)', period => {
+      const tl42 = routeListDisplay([tl42Saturday], period);
+      const frequent = routeListDisplay([frequentSaturday], period);
       const { container: limitedRow } = render(<>{routeRowRight('Winter Park', tl42.headway, true, tl42.limited)}</>);
       expect(limitedRow.textContent).toContain('limited');
       expect(limitedRow.textContent).not.toContain('every');
