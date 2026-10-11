@@ -24553,5 +24553,199 @@
       }
     }
   ],
-  "notes": "Converted from NRT's embedded zone map (simplified shapes); re-check after Niagara Region's new website launches. The map data stores coordinates as [lat, lng]; they were swapped to [lon, lat]. Fort Erie is three separate parts in the map and is kept as one MultiPolygon. Thorold is marked inactive in the map with no outline and is left out. The map data also lists one-way travel pairs between some zones (not written as rules): Riverview South to Riverview North; Port Weller and Lakeshore to STC North; STC West 1 to STC West 2. The map also lists transit hub access points per zone; they were not added as stops."
+  "notes": "Converted from NRT's embedded zone map (simplified shapes); re-check after Niagara Region's new website launches. The map data stores coordinates as [lat, lng]; they were swapped to [lon, lat]. Fort Erie is three separate parts in the map and is kept as one MultiPolygon. Thorold is marked inactive in the map with no outline and is left out. The map data also lists one-way travel pairs between some zones (not written as rules): Riverview South to Riverview North; Port Weller and Lakeshore to STC North; STC West 1 to STC West 2. The 12 transit hub access points come from the same map data; each stop's areaName lists every zone the map says it serves.",
+  "stopFeatures": [
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "niagara",
+        "serviceType": "on-demand",
+        "stopName": "St. Catharines Bus Terminal",
+        "areaName": "Lincoln, Pelham, West Lincoln, Grimsby"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.2435,
+          43.160059
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "niagara",
+        "serviceType": "on-demand",
+        "stopName": "Welland Bus Terminal",
+        "areaName": "Pelham, West Lincoln, Wainfleet, Welland"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.246532,
+          42.992782
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "niagara",
+        "serviceType": "on-demand",
+        "stopName": "Port Colborne City Hall",
+        "areaName": "West Lincoln, Wainfleet, Port Colborne, Fort Erie"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.252136,
+          42.88516
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "niagara",
+        "serviceType": "on-demand",
+        "stopName": "Town & Country Plaza",
+        "areaName": "Niagara-on-the-Lake, Niagara Falls"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.099743,
+          43.120741
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "niagara",
+        "serviceType": "on-demand",
+        "stopName": "Fort Erie Town Hall",
+        "areaName": "Port Colborne, Fort Erie"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -78.972986,
+          42.902152
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "niagara",
+        "serviceType": "on-demand",
+        "stopName": "Outlet Collection at Niagara",
+        "areaName": "Niagara-on-the-Lake"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.172291,
+          43.157663
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "niagara",
+        "serviceType": "on-demand",
+        "stopName": "Niagara College Glendale Campus",
+        "areaName": "Niagara-on-the-Lake"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.16624,
+          43.152498
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "niagara",
+        "serviceType": "on-demand",
+        "stopName": "Canadian Drive Hub",
+        "areaName": "Niagara Falls"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.124177,
+          43.064401
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "niagara",
+        "serviceType": "on-demand",
+        "stopName": "Main and Ferry Hub",
+        "areaName": "Niagara Falls"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.09262,
+          43.08908
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "niagara",
+        "serviceType": "on-demand",
+        "stopName": "Morrison-Dorchester Hub",
+        "areaName": "Niagara Falls"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.115785,
+          43.103507
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "niagara",
+        "serviceType": "on-demand",
+        "stopName": "Fort Erie Smart Centre",
+        "areaName": "Fort Erie"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -78.943273,
+          42.906987
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "niagara",
+        "serviceType": "on-demand",
+        "stopName": "Fort Erie Centennial Library",
+        "areaName": "Fort Erie"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -78.918864,
+          42.921022
+        ]
+      }
+    }
+  ]
 }

@@ -220,6 +220,238 @@
           "url": "https://www.viainfo.net/link/",
           "retrievedAt": "2026-10-11"
         }
+      },
+      "Southeast \u2013 Missions National Park": {
+        "serviceName": "VIA Link",
+        "serviceHours": "Every day, 5 a.m. to 11 p.m.",
+        "hoursNote": "VIA Link booklet, Southeast Zone page (https://www.viainfo.net/wp-content/uploads/2026/05/VIA26_Link-Booklet.pdf, linked from https://www.viainfo.net/link/): \"Southeast Zone Service Hours Every day, 5 a.m. - 11 p.m.\"; the map key marks this place with the purple circle labelled \"Additional VIA Link stop\".",
+        "availability": {
+          "Weekday": [
+            {
+              "startHour": 5,
+              "endHour": 23
+            }
+          ],
+          "Saturday": [
+            {
+              "startHour": 5,
+              "endHour": 23
+            }
+          ],
+          "Sunday": [
+            {
+              "startHour": 5,
+              "endHour": 23
+            }
+          ]
+        },
+        "hoursSource": {
+          "url": "https://www.viainfo.net/link/",
+          "retrievedAt": "2026-10-11"
+        }
+      },
+      "Southeast \u2013 Mission San Juan": {
+        "serviceName": "VIA Link",
+        "serviceHours": "Every day, 5 a.m. to 11 p.m.",
+        "hoursNote": "VIA Link booklet, Southeast Zone page (https://www.viainfo.net/wp-content/uploads/2026/05/VIA26_Link-Booklet.pdf, linked from https://www.viainfo.net/link/): \"Southeast Zone Service Hours Every day, 5 a.m. - 11 p.m.\"; the map key marks this place with the purple circle labelled \"Additional VIA Link stop\".",
+        "availability": {
+          "Weekday": [
+            {
+              "startHour": 5,
+              "endHour": 23
+            }
+          ],
+          "Saturday": [
+            {
+              "startHour": 5,
+              "endHour": 23
+            }
+          ],
+          "Sunday": [
+            {
+              "startHour": 5,
+              "endHour": 23
+            }
+          ]
+        },
+        "hoursSource": {
+          "url": "https://www.viainfo.net/link/",
+          "retrievedAt": "2026-10-11"
+        }
+      },
+      "Southeast \u2013 Mission Espada": {
+        "serviceName": "VIA Link",
+        "serviceHours": "Every day, 5 a.m. to 11 p.m.",
+        "hoursNote": "VIA Link booklet, Southeast Zone page (https://www.viainfo.net/wp-content/uploads/2026/05/VIA26_Link-Booklet.pdf, linked from https://www.viainfo.net/link/): \"Southeast Zone Service Hours Every day, 5 a.m. - 11 p.m.\"; the map key marks this place with the purple circle labelled \"Additional VIA Link stop\".",
+        "availability": {
+          "Weekday": [
+            {
+              "startHour": 5,
+              "endHour": 23
+            }
+          ],
+          "Saturday": [
+            {
+              "startHour": 5,
+              "endHour": 23
+            }
+          ],
+          "Sunday": [
+            {
+              "startHour": 5,
+              "endHour": 23
+            }
+          ]
+        },
+        "hoursSource": {
+          "url": "https://www.viainfo.net/link/",
+          "retrievedAt": "2026-10-11"
+        }
+      },
+      "Southeast \u2013 Stinson-Mission Municipal Airport": {
+        "serviceName": "VIA Link",
+        "serviceHours": "Every day, 5 a.m. to 11 p.m.",
+        "hoursNote": "VIA Link booklet, Southeast Zone page (https://www.viainfo.net/wp-content/uploads/2026/05/VIA26_Link-Booklet.pdf, linked from https://www.viainfo.net/link/): \"Southeast Zone Service Hours Every day, 5 a.m. - 11 p.m.\"; the map key marks this place with the purple circle labelled \"Additional VIA Link stop\".",
+        "availability": {
+          "Weekday": [
+            {
+              "startHour": 5,
+              "endHour": 23
+            }
+          ],
+          "Saturday": [
+            {
+              "startHour": 5,
+              "endHour": 23
+            }
+          ],
+          "Sunday": [
+            {
+              "startHour": 5,
+              "endHour": 23
+            }
+          ]
+        },
+        "hoursSource": {
+          "url": "https://www.viainfo.net/link/",
+          "retrievedAt": "2026-10-11"
+        }
+      },
+      "Southeast \u2013 Southside Lions Senior Center": {
+        "serviceName": "VIA Link",
+        "serviceHours": "Every day, 5 a.m. to 11 p.m.",
+        "hoursNote": "VIA Link booklet, Southeast Zone page (https://www.viainfo.net/wp-content/uploads/2026/05/VIA26_Link-Booklet.pdf, linked from https://www.viainfo.net/link/): \"Southeast Zone Service Hours Every day, 5 a.m. - 11 p.m.\"; the map key marks this place with the purple circle labelled \"Additional VIA Link stop\".",
+        "availability": {
+          "Weekday": [
+            {
+              "startHour": 5,
+              "endHour": 23
+            }
+          ],
+          "Saturday": [
+            {
+              "startHour": 5,
+              "endHour": 23
+            }
+          ],
+          "Sunday": [
+            {
+              "startHour": 5,
+              "endHour": 23
+            }
+          ]
+        },
+        "hoursSource": {
+          "url": "https://www.viainfo.net/link/",
+          "retrievedAt": "2026-10-11"
+        }
+      },
+      "Southeast \u2013 HEB on WW White & Lord": {
+        "serviceName": "VIA Link",
+        "serviceHours": "Every day, 5 a.m. to 11 p.m.",
+        "hoursNote": "VIA Link booklet, Southeast Zone page (https://www.viainfo.net/wp-content/uploads/2026/05/VIA26_Link-Booklet.pdf, linked from https://www.viainfo.net/link/): \"Southeast Zone Service Hours Every day, 5 a.m. - 11 p.m.\"; the map key marks this place with the purple circle labelled \"Additional VIA Link stop\".",
+        "availability": {
+          "Weekday": [
+            {
+              "startHour": 5,
+              "endHour": 23
+            }
+          ],
+          "Saturday": [
+            {
+              "startHour": 5,
+              "endHour": 23
+            }
+          ],
+          "Sunday": [
+            {
+              "startHour": 5,
+              "endHour": 23
+            }
+          ]
+        },
+        "hoursSource": {
+          "url": "https://www.viainfo.net/link/",
+          "retrievedAt": "2026-10-11"
+        }
+      },
+      "Southeast \u2013 Sinclair & Glacier Lake": {
+        "serviceName": "VIA Link",
+        "serviceHours": "Every day, 5 a.m. to 11 p.m.",
+        "hoursNote": "VIA Link booklet, Southeast Zone page (https://www.viainfo.net/wp-content/uploads/2026/05/VIA26_Link-Booklet.pdf, linked from https://www.viainfo.net/link/): \"Southeast Zone Service Hours Every day, 5 a.m. - 11 p.m.\"; the map key marks this place with the purple circle labelled \"Additional VIA Link stop\".",
+        "availability": {
+          "Weekday": [
+            {
+              "startHour": 5,
+              "endHour": 23
+            }
+          ],
+          "Saturday": [
+            {
+              "startHour": 5,
+              "endHour": 23
+            }
+          ],
+          "Sunday": [
+            {
+              "startHour": 5,
+              "endHour": 23
+            }
+          ]
+        },
+        "hoursSource": {
+          "url": "https://www.viainfo.net/link/",
+          "retrievedAt": "2026-10-11"
+        }
+      },
+      "Southeast \u2013 Lone Star Bakery Plant": {
+        "serviceName": "VIA Link",
+        "serviceHours": "Every day, 5 a.m. to 11 p.m.",
+        "hoursNote": "VIA Link booklet, Southeast Zone page (https://www.viainfo.net/wp-content/uploads/2026/05/VIA26_Link-Booklet.pdf, linked from https://www.viainfo.net/link/): \"Southeast Zone Service Hours Every day, 5 a.m. - 11 p.m.\"; the map key marks this place with the purple circle labelled \"Additional VIA Link stop\".",
+        "availability": {
+          "Weekday": [
+            {
+              "startHour": 5,
+              "endHour": 23
+            }
+          ],
+          "Saturday": [
+            {
+              "startHour": 5,
+              "endHour": 23
+            }
+          ],
+          "Sunday": [
+            {
+              "startHour": 5,
+              "endHour": 23
+            }
+          ]
+        },
+        "hoursSource": {
+          "url": "https://www.viainfo.net/link/",
+          "retrievedAt": "2026-10-11"
+        }
       }
     }
   },
@@ -11603,8 +11835,312 @@
           ]
         ]
       }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "via",
+        "serviceType": "on-demand",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1lEalfJeDd-nz8tEVQQOQ8_YkCk1LFXs&forcekml=1",
+        "sourceLabel": "VIA Link Southeast zone map, satellite zones (Google My Maps)",
+        "sourceRetrievedAt": "2026-10-11",
+        "areaName": "Southeast \u2013 Missions National Park"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -98.481166,
+              29.360362
+            ],
+            [
+              -98.479621,
+              29.358941
+            ],
+            [
+              -98.476788,
+              29.360886
+            ],
+            [
+              -98.479364,
+              29.362682
+            ],
+            [
+              -98.481166,
+              29.360362
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "via",
+        "serviceType": "on-demand",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1lEalfJeDd-nz8tEVQQOQ8_YkCk1LFXs&forcekml=1",
+        "sourceLabel": "VIA Link Southeast zone map, satellite zones (Google My Maps)",
+        "sourceRetrievedAt": "2026-10-11",
+        "areaName": "Southeast \u2013 Mission San Juan"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -98.456018,
+              29.333615
+            ],
+            [
+              -98.454645,
+              29.331669
+            ],
+            [
+              -98.452413,
+              29.333091
+            ],
+            [
+              -98.454645,
+              29.335036
+            ],
+            [
+              -98.456018,
+              29.333615
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "via",
+        "serviceType": "on-demand",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1lEalfJeDd-nz8tEVQQOQ8_YkCk1LFXs&forcekml=1",
+        "sourceLabel": "VIA Link Southeast zone map, satellite zones (Google My Maps)",
+        "sourceRetrievedAt": "2026-10-11",
+        "areaName": "Southeast \u2013 Mission Espada"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -98.452155,
+              29.317825
+            ],
+            [
+              -98.45164,
+              29.31573
+            ],
+            [
+              -98.448465,
+              29.316778
+            ],
+            [
+              -98.449752,
+              29.319097
+            ],
+            [
+              -98.452155,
+              29.317825
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "via",
+        "serviceType": "on-demand",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1lEalfJeDd-nz8tEVQQOQ8_YkCk1LFXs&forcekml=1",
+        "sourceLabel": "VIA Link Southeast zone map, satellite zones (Google My Maps)",
+        "sourceRetrievedAt": "2026-10-11",
+        "areaName": "Southeast \u2013 Stinson-Mission Municipal Airport"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -98.470609,
+              29.339895
+            ],
+            [
+              -98.467519,
+              29.33765
+            ],
+            [
+              -98.464773,
+              29.340045
+            ],
+            [
+              -98.467519,
+              29.342888
+            ],
+            [
+              -98.470609,
+              29.339895
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "via",
+        "serviceType": "on-demand",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1lEalfJeDd-nz8tEVQQOQ8_YkCk1LFXs&forcekml=1",
+        "sourceLabel": "VIA Link Southeast zone map, satellite zones (Google My Maps)",
+        "sourceRetrievedAt": "2026-10-11",
+        "areaName": "Southeast \u2013 Southside Lions Senior Center"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -98.435314,
+              29.389647
+            ],
+            [
+              -98.43394,
+              29.386581
+            ],
+            [
+              -98.430593,
+              29.388301
+            ],
+            [
+              -98.432052,
+              29.391442
+            ],
+            [
+              -98.435314,
+              29.389647
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "via",
+        "serviceType": "on-demand",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1lEalfJeDd-nz8tEVQQOQ8_YkCk1LFXs&forcekml=1",
+        "sourceLabel": "VIA Link Southeast zone map, satellite zones (Google My Maps)",
+        "sourceRetrievedAt": "2026-10-11",
+        "areaName": "Southeast \u2013 HEB on WW White & Lord"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -98.407964,
+              29.415647
+            ],
+            [
+              -98.406677,
+              29.412432
+            ],
+            [
+              -98.404788,
+              29.414376
+            ],
+            [
+              -98.405733,
+              29.417516
+            ],
+            [
+              -98.407964,
+              29.415647
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "via",
+        "serviceType": "on-demand",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1lEalfJeDd-nz8tEVQQOQ8_YkCk1LFXs&forcekml=1",
+        "sourceLabel": "VIA Link Southeast zone map, satellite zones (Google My Maps)",
+        "sourceRetrievedAt": "2026-10-11",
+        "areaName": "Southeast \u2013 Sinclair & Glacier Lake"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -98.372768,
+              29.386008
+            ],
+            [
+              -98.37221,
+              29.383877
+            ],
+            [
+              -98.368648,
+              29.384139
+            ],
+            [
+              -98.369935,
+              29.386981
+            ],
+            [
+              -98.372768,
+              29.386008
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "via",
+        "serviceType": "on-demand",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1lEalfJeDd-nz8tEVQQOQ8_YkCk1LFXs&forcekml=1",
+        "sourceLabel": "VIA Link Southeast zone map, satellite zones (Google My Maps)",
+        "sourceRetrievedAt": "2026-10-11",
+        "areaName": "Southeast \u2013 Lone Star Bakery Plant"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -98.356111,
+              29.392267
+            ],
+            [
+              -98.355596,
+              29.388079
+            ],
+            [
+              -98.351133,
+              29.388976
+            ],
+            [
+              -98.352334,
+              29.392566
+            ],
+            [
+              -98.356111,
+              29.392267
+            ]
+          ]
+        ]
+      }
     }
   ],
   "stopFeatures": [],
-  "notes": "Each zone map was matched to its zone by the map's own title (Map - Downtown, Map - Southeast, etc.). Display polygons for Northeast Lakeview College were left out. The Southeast map's satellite layer has 10 small boxes, one around each satellite stop; only the St. Hedwig and Sandy Oaks boxes are drawn (as their own zones), and the other 8 boxes were left out because the page gives no hours for them. Holiday hours are not stated. The page lists the Randolph end time for the Northeast Lakeview College link as both 10 p.m. and 9:30 p.m.; recheck."
+  "notes": "Each zone map was matched to its zone by the map's own title (Map - Downtown, Map - Southeast, etc.). Display polygons for Northeast Lakeview College were left out. The Southeast map's satellite layer has 10 small boxes, one around each satellite stop, each drawn as its own zone and named after the KML stop inside it. St. Hedwig and Sandy Oaks use the weekday extension hours. The other 8 use Southeast hours because the VIA Link booklet's Southeast Zone map marks them as Additional VIA Link stops (Sinclair & Glacier Lake is labelled Lakeside on that map, matched by location; the H-E-B box is the H-E-B circle at WW White and Lord, not the Super Regional Warehouse star). Holiday hours are not stated. The page lists the Randolph end time for the Northeast Lakeview College link as both 10 p.m. and 9:30 p.m.; recheck."
 }
