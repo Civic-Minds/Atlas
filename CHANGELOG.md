@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- On phones, search results use the full screen width, the Settings and About panels fit on small screens, the docs and legal pages start with their contents list collapsed, the search box widens to the full top bar while you type, and Escape closes the export dialog ([#694](https://github.com/Civic-Minds/Atlas/issues/694), [#695](https://github.com/Civic-Minds/Atlas/issues/695), [#696](https://github.com/Civic-Minds/Atlas/issues/696), [#697](https://github.com/Civic-Minds/Atlas/issues/697), [#698](https://github.com/Civic-Minds/Atlas/issues/698)).
 - Picking a route on the map fades the rest of the network again, matching History, stops and search, so the chosen route is easy to see ([#700](https://github.com/Civic-Minds/Atlas/issues/700)).
 - Agencies whose schedule runs past the end date in their feed's summary file no longer show as outdated after a refresh, because the recorded end date now follows the schedule itself, capped at two years out so a placeholder end date can't hide an outdated feed.
 - Agencies whose schedules list a far-future end date no longer lose the routes of their newest service period when holiday exceptions pull the measured week before it starts, so SCT shows 24 routes instead of 10 ([#658](https://github.com/Civic-Minds/Atlas/issues/658)).

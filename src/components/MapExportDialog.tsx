@@ -41,6 +41,15 @@ export default function MapExportDialog({ open, sourceSize, prepareSource, relea
     }
   }, [open, describe]);
 
+  useEffect(() => {
+    if (!open) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [open, onClose]);
+
   if (!open) return null;
 
   const selectedSize: MapExportSize = MAP_EXPORT_SIZES.find(candidate => candidate.id === selectedSizeId) ?? DEFAULT_MAP_EXPORT_SIZE;
