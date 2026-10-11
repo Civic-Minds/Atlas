@@ -26,7 +26,7 @@ outputs remain supporting artifacts rather than competing summaries.
   source-backed country and feed research for future coverage.
 - [Fare discounts](fare-discounts-2026-10/README.md): reduced-fare programs,
   focused on low-income fares, for 549 agencies. Verified with exceptions:
-  every row checked, 43 rows on browser-only sites not re-verified (CIV-48).
+  every row checked; 12 rows on bot-protected sites not re-verified (CIV-48).
 
 Product problem research remains in [Product Research](../product/RESEARCH.md),
 while implementation experiments remain in [Experiments](../experiments/).

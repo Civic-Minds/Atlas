@@ -1,6 +1,6 @@
 # Fare discounts
 
-**Status:** VERIFIED WITH EXCEPTIONS (2026-10-11). Every non-none-found row was checked against a freshly fetched official page, and none is known to be off-page. 403 of 596 (68%) are verbatim and 127 (21%) near-verbatim. The exceptions: 43 rows on 42 agency sites that block automated fetches, plus 22 rows confirmed only through a browser fetch (Linear CIV-48).
+**Status:** VERIFIED WITH EXCEPTIONS (2026-10-11). Every non-none-found row was checked against a freshly fetched official page, in a real browser where needed. None is known to be off-page. 422 of 596 (71%) are verbatim and 139 (23%) near-verbatim. The exceptions: 12 rows on 12 sites whose bot checks block even a real browser, plus 22 rows confirmed only through a page-reading tool (Linear CIV-48).
 
 Snapshot date: `2026-10-10` (files last rebuilt 2026-10-11)
 Scope: 549 Atlas agencies in Canada, the United States and Mexico
@@ -38,8 +38,8 @@ Current files after the 2026-10-11 repair (the rebuild reported 592 / 6 / 42):
 
 | researchStatus | Rows |
 |---|---:|
-| `verified-official` | 571 |
-| `partial-official` | 25 |
+| `verified-official` | 570 |
+| `partial-official` | 26 |
 | `none-found` | 44 |
 
 By program category: low-income 178, other 155, disability 122, fare-free 59,
@@ -175,32 +175,37 @@ reduced fare. Kingston, Stratford, Cascades East, CobbLinc and others had
 stale values. REM's free 65+ travel is limited to Montréal-area residents.
 Four sites moved: Key West, Mountain Metro, Sarnia and Roseville.
 
+### Browser pass (2026-10-11)
+
+The 43 blocked rows were opened in a real Chrome browser, one tab at a time.
+24 now read directly: 12 verbatim and 12 near-verbatim. A helper used the
+browser to re-research 7 more (Burbank, Rio Vista, FAX, Visalia, Spokane,
+Clemson and ACE), and all 7 new quotes are verbatim. ACE and Rio Vista now
+have real quotes instead of descriptions. ACE is `partial-official` because
+its page states only the children's discount amount.
+
 ### Final quoteCheck counts (640 rows)
 
 | quoteCheck | Rows |
 |---|---:|
-| `verbatim` | 403 |
-| `near-verbatim` | 127 |
+| `verbatim` | 422 |
+| `near-verbatim` | 139 |
 | `content-confirmed-not-verbatim` | 22 |
-| `fetch-blocked` | 43 |
+| `fetch-blocked` | 12 |
 | `image-only` | 1 |
 | `not-applicable` (none-found) | 44 |
 
-### Still blocked (needs a real browser)
+### Still blocked
 
-43 rows on 42 agency sites refused every automated fetch, so their evidence is
-from the original research and was not re-verified: ace, amarillo, b-line,
-breck-free-ride, burbankbus, clemson-cat, fax, fort-smith, glendalebeeline,
-grand-forks, greensboro, iowa-city, janesville, kenosha, kern-transit, ladot,
-las-cruces, marathon-county, maui-county, mendocino, mexico-city-metro, mmvta,
-pgc-the-bus, riovista, rtcsnv, sheboygan-county, simi-valley, slotransit, smat,
-south-bend, spokane, taft, tampa-international-airport, tcat, tor,
-torrance-transit, um-transit, vail-transit, valleymetro, visalia, vre,
-wichita. Two of these (ace, riovista) still hold description text rather than
-a quote.
+12 rows on 12 sites block even a real browser with a bot check, a country
+block or a timeout. Their evidence is from the original research and was not
+re-verified: amarillo, kenosha, kern-transit, las-cruces, mendocino,
+mexico-city-metro, mmvta, rtcsnv, sheboygan-county, south-bend, taft,
+valleymetro. Each row's notes list the pages tried.
 
-**Next step (CIV-48):** fetch the blocked sites in a browser, and tighten the
-127 near-verbatim quotes if exact wording matters.
+**Next step (CIV-48):** check the 12 blocked rows by hand in a personal
+browser session, and tighten the 139 near-verbatim quotes if exact wording
+matters.
 
 **Overlap with other research:**
 
