@@ -20,7 +20,6 @@ export interface OnDemandNotMapped {
 export const ON_DEMAND_NOT_MAPPED: Readonly<Record<string, OnDemandNotMapped>> = {
   'fort-mcmurray': { serviceName: 'On-demand service' },
   'sunline': { serviceName: 'SunRide' },
-  'niagara': { serviceName: 'NRT OnDemand' },
   'oakville': { serviceName: 'Ride On-Demand' },
   'sjsr': { serviceName: 'Taxibus' },
   'saskatoon': { serviceName: 'On-Demand Transit' },
@@ -44,7 +43,6 @@ export const ON_DEMAND_NOT_MAPPED: Readonly<Record<string, OnDemandNotMapped>> =
   'lethbridge': { serviceName: 'cityLINK' },
   'mta-flint': { serviceName: 'Genesee Connect' },
   'max-transit': { serviceName: 'On-demand service' },
-  'medicine-hat': { serviceName: 'MHTnow' },
   'merced': { serviceName: 'Micro Bus' },
   'milton': { serviceName: 'On-demand service' },
   'mcts': { serviceName: 'FlexRide' },
@@ -62,7 +60,6 @@ export const ON_DEMAND_NOT_MAPPED: Readonly<Record<string, OnDemandNotMapped>> =
   'fast-ca': { serviceName: 'FAST Connect' },
   'lavta': { serviceName: 'Go Tri-Valley' },
   'lacmta': { serviceName: 'Metro Micro' },
-  'lynx': { serviceName: 'NeighborLink' },
   'marta': { serviceName: 'MARTA Reach' },
   'metrohouston': { serviceName: 'curb2curb' },
   'nice': { serviceName: 'NICE Mini' },
