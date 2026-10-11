@@ -9,6 +9,7 @@ import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig';
 const Interval = React.lazy(() => import('./apps/Interval'));
 import type { StopEntry } from './apps/corridor-search';
 import { useDebouncedValue } from './hooks/useDebouncedValue';
+import { PHONE_MEDIA_QUERY, useMediaQuery } from './hooks/useMediaQuery';
 const NightService = React.lazy(() => import('./apps/NightService'));
 // Lazy-loaded and rendered only when their flag is on (shared/config.ts) -- keeps this code out
 // of what main's build actually fetches, not just hidden behind a runtime check.
@@ -36,7 +37,7 @@ import { parseFrequentServiceDays, type FrequentServiceFrequency, type FrequentS
 import type { NightServiceFrequency } from '../shared/nightService';
 const FrequentServiceStory = React.lazy(() => import('./apps/FrequentServiceStory'));
 const ResearchPage = React.lazy(() => import('./apps/ResearchPage'));
-import { BWG_ON_DEMAND_AGENCY, CALEDON_ON_DEMAND_AGENCY, BRAMPTON_ON_DEMAND_AGENCY, MUSKOKA_DRT_ON_DEMAND_AGENCY, ST_ALBERT_ON_DEMAND_AGENCY, LEAMINGTON_LT_GO_ON_DEMAND_AGENCY, WINKLER_ON_DEMAND_AGENCY, C_TRAN_CURRENT_SERVICE_AREA, COBOURG_ON_DEMAND_SERVICE_AREA, CYRIDE_EASE_SERVICE_AREA, EDMONTON_ON_DEMAND_SERVICE_AREA, GORALEIGH_MICROLINK_SERVICE_AREA, GRT_ROUTE_79_SERVICE_AREA, HAMILTON_MY_RIDE_SERVICE_AREA, METRO_MICRO_SERVICE_AREA, MOUNTAIN_LINE_GO_SERVICE_AREA, MVTA_CONNECT_SERVICE_AREA, UTA_ON_DEMAND_SERVICE_AREA, ASPEN_DOWNTOWNER_SERVICE_AREA, BAY_TRANSIT_EXPRESS_SERVICE_AREA, CAT_DIAL_A_RIDE_SERVICE_AREA, DURANGO_MICROTRANSIT_SERVICE_AREA, GLTC_FLEX_SERVICE_AREA, ISLAND_TRANSIT_GO_SERVICE_AREA, SAM_RIDES_SERVICE_AREA, SNOQUALMIE_DOOR_TO_DOOR_SERVICE_AREA, TCTD_DIAL_A_RIDE_SERVICE_AREA, VALLEY_METRO_METROFLX_SERVICE_AREA } from './data/onDemandServiceAreas';
+import { BWG_ON_DEMAND_AGENCY, CALEDON_ON_DEMAND_AGENCY, BRAMPTON_ON_DEMAND_AGENCY, MUSKOKA_DRT_ON_DEMAND_AGENCY, ST_ALBERT_ON_DEMAND_AGENCY, LEAMINGTON_LT_GO_ON_DEMAND_AGENCY, WINKLER_ON_DEMAND_AGENCY, C_TRAN_CURRENT_SERVICE_AREA, COBOURG_ON_DEMAND_SERVICE_AREA, CYRIDE_EASE_SERVICE_AREA, EDMONTON_ON_DEMAND_SERVICE_AREA, GORALEIGH_MICROLINK_SERVICE_AREA, GRT_ROUTE_79_SERVICE_AREA, HAMILTON_MY_RIDE_SERVICE_AREA, METRO_MICRO_SERVICE_AREA, MOUNTAIN_LINE_GO_SERVICE_AREA, MVTA_CONNECT_SERVICE_AREA, UTA_ON_DEMAND_SERVICE_AREA, ALL_POINTS_DIAL_A_RIDE_SERVICE_AREA, ASPEN_DOWNTOWNER_SERVICE_AREA, BAY_TRANSIT_EXPRESS_SERVICE_AREA, CAT_DIAL_A_RIDE_SERVICE_AREA, DURANGO_MICROTRANSIT_SERVICE_AREA, GLTC_FLEX_SERVICE_AREA, ISLAND_TRANSIT_GO_SERVICE_AREA, SAM_RIDES_SERVICE_AREA, SNOQUALMIE_DOOR_TO_DOOR_SERVICE_AREA, TCTD_DIAL_A_RIDE_SERVICE_AREA, VALLEY_METRO_METROFLX_SERVICE_AREA } from './data/onDemandServiceAreas';
 import type { OnDemandAvailability, OnDemandPickup, OnDemandZoneDetails } from '../shared/onDemandAvailability';
 
 export interface FareOverride {
@@ -320,6 +321,10 @@ export default function App() {
   );
 
   const [searchFocused, setSearchFocused] = useState(false);
+  // On phones the search box is too narrow to read what you type (#698), so while it is
+  // focused it takes the whole top bar and the other header buttons step aside.
+  const isPhone = useMediaQuery(PHONE_MEDIA_QUERY);
+  const phoneSearchExpanded = isPhone && searchFocused;
   const searchBlurTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -423,6 +428,8 @@ export default function App() {
     measure();
     const ro = new ResizeObserver(measure);
     ro.observe(document.documentElement);
+    // The search box also changes size on its own when it expands on phones.
+    if (searchBarRef.current) ro.observe(searchBarRef.current);
     return () => ro.disconnect();
   }, [inCorridors]);
 
@@ -454,6 +461,7 @@ export default function App() {
       })
       .then((data: { agencies: Agency[] }) => {
         const onDemandBySlug: Record<string, Partial<Agency>> = ATLAS_MODE === 'public' ? {} : {
+          'all-points-transit': { onDemandServiceArea: ALL_POINTS_DIAL_A_RIDE_SERVICE_AREA },
           'bay-transit': { onDemandServiceArea: BAY_TRANSIT_EXPRESS_SERVICE_AREA },
           'columbia-area-transit': { onDemandServiceArea: CAT_DIAL_A_RIDE_SERVICE_AREA },
           ctran: { onDemandServiceArea: C_TRAN_CURRENT_SERVICE_AREA },
@@ -548,7 +556,7 @@ export default function App() {
     <div className={`relative h-dvh w-screen bg-[var(--bg-app)] text-[var(--text-primary)] font-sans overflow-hidden transition-colors ${TRANSITION_BASE}`}>
       {/* Unified header row — left and right sections share one flex container so they can never overlap */}
       <div className={`absolute ${inFrequentServiceStory ? 'top-0 left-0 right-0 bg-[var(--bg-app)] px-6 py-6' : 'top-6 left-6 right-6'} ${infoOpen ? Z_MODAL_TOP : Z_HEADER} flex items-center justify-between pointer-events-none`}>
-      <div ref={headerLeftRef} className="flex items-center gap-2 pointer-events-auto flex-1 max-w-[calc(100%-3rem)] sm:max-w-none mr-2 sm:mr-0">
+      <div ref={headerLeftRef} className={`flex items-center gap-2 pointer-events-auto flex-1 ${phoneSearchExpanded ? '' : 'max-w-[calc(100%-3rem)] mr-2'} sm:max-w-none sm:mr-0`}>
         <button
           type="button"
           onClick={() => {
@@ -566,7 +574,7 @@ export default function App() {
           <MapIcon className="w-3.5 h-3.5 text-white" />
         </button>
 
-        <AtlasBrand />
+        {!phoneSearchExpanded && <AtlasBrand />}
 
         {!inFrequentServiceStory && !inResearch && <div className="flex items-center gap-2 flex-1 min-w-0 lg:flex-none">
         <div className="flex-1 min-w-0 sm:flex">
@@ -646,7 +654,7 @@ export default function App() {
 
         {/* Phones fold Live and History into one menu. Research is reached from the About page,
             not the map's top bar (#651). */}
-        {(showLiveControl || showHistoryControl) && (
+        {(showLiveControl || showHistoryControl) && !phoneSearchExpanded && (
           <>
             <span className="sm:hidden w-px h-4 bg-[var(--border-primary)] shrink-0" aria-hidden="true" />
 
@@ -695,7 +703,7 @@ export default function App() {
         </div>}
       </div>
       {/* Portal target for Interval's right header (FilterChips + Now + FilterPanel) */}
-      <div className="flex items-center gap-2 pointer-events-auto">
+      <div className={`${phoneSearchExpanded ? 'hidden' : 'flex'} items-center gap-2 pointer-events-auto`}>
         <div ref={headerPortalRef} className="flex items-center gap-2" />
         <button
           type="button"
