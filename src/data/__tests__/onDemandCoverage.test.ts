@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { ON_DEMAND_NOT_MAPPED, ON_DEMAND_PARTLY_MAPPED, onDemandCoverageNote } from '../onDemandCoverage';
 import * as Services from '../onDemandServiceAreas';
+import { loadOnDemandSources } from '../onDemandSources';
 
 // Every slug with a drawn zone, standalone agencies included (App.tsx attaches the rest).
 const MAPPED_SLUGS = [
@@ -15,6 +16,8 @@ const MAPPED_SLUGS = [
   Services.ST_ALBERT_ON_DEMAND_AGENCY.slug,
   Services.LEAMINGTON_LT_GO_ON_DEMAND_AGENCY.slug,
   Services.WINKLER_ON_DEMAND_AGENCY.slug,
+  // Services kept as source JSON (config/on-demand).
+  ...loadOnDemandSources().map(source => source.slug),
 ];
 
 describe('on-demand coverage notes (CIV-23)', () => {

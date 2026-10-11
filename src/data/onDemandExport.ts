@@ -12,6 +12,7 @@ import {
   type OnDemandManifest,
 } from '../../shared/onDemandData';
 import { ATTACHED_ON_DEMAND_SERVICES, PROMOTED_ON_DEMAND_SLUGS, STANDALONE_ON_DEMAND_AGENCIES, type OnDemandArea } from './onDemandRegistry';
+import { loadOnDemandSources, type OnDemandSource } from './onDemandSources';
 
 /** Rollout fields are rebuilt from `public` on load, so they never travel in the files. */
 const ROLLOUT_FIELDS = new Set(['hiddenInProduction', 'betaOnly', 'rolloutNotice', 'onDemandServiceArea']);
@@ -64,10 +65,20 @@ export function buildOnDemandRelease(
   audience: 'beta' | 'public',
   generatedAt = new Date().toISOString(),
   promoted: ReadonlySet<string> = PROMOTED_ON_DEMAND_SLUGS,
+  sources: readonly OnDemandSource[] = loadOnDemandSources(),
 ): OnDemandRelease {
+  const registrySlugs = new Set([...Object.keys(ATTACHED_ON_DEMAND_SERVICES), ...STANDALONE_ON_DEMAND_AGENCIES.map(a => a.slug)]);
+  const duplicate = sources.find(source => registrySlugs.has(source.slug));
+  if (duplicate) throw new Error(`On-demand service ${duplicate.slug} is in both the registry and config/on-demand`);
   const built = [
     ...Object.entries(ATTACHED_ON_DEMAND_SERVICES).map(([slug, area]) => entryFor(slug, area, promoted.has(slug))),
     ...STANDALONE_ON_DEMAND_AGENCIES.map(agency => entryFor(agency.slug, agency.onDemandServiceArea as OnDemandArea, promoted.has(agency.slug), agency as unknown as Record<string, unknown>)),
+    ...sources.map(source => entryFor(
+      source.slug,
+      { ...source.area, features: source.features, ...(source.stopFeatures ? { stopFeatures: source.stopFeatures } : {}) } as OnDemandArea,
+      promoted.has(source.slug),
+      source.agency,
+    )),
   ].filter(({ entry }) => audience === 'beta' || entry.public);
   return assembleRelease(built.map(b => b.entry), built.map(b => b.geometry), generatedAt);
 }
