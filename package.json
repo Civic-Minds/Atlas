@@ -77,7 +77,9 @@
     "upload-pmtiles": "npx tsx pipeline/upload-pmtiles.ts",
     "verify-pmtiles-coverage": "npx tsx pipeline/verify-pmtiles-coverage.ts",
     "report:agency-count": "node -e \"const fs=require('fs');const count=f=>JSON.parse(fs.readFileSync(f,'utf8')).agencies.length;console.log('Registry: '+count('public/data/index.json'));for(const mode of ['public','preview','beta','dev'])console.log(mode[0].toUpperCase()+mode.slice(1)+': '+count('public/data/catalog-'+mode+'.json'));\"",
-    "sync-agency-count": "node -e \"const fs=require('fs');const count=JSON.parse(fs.readFileSync('public/data/index.json','utf8')).agencies.length;const p='docs/AGENCIES.md';fs.writeFileSync(p,fs.readFileSync(p,'utf8').replace(/^(\\d+) agencies as of/m,count+' agencies as of'));console.log('Updated AGENCIES.md: '+count+' agencies');\""
+    "sync-agency-count": "node -e \"const fs=require('fs');const count=JSON.parse(fs.readFileSync('public/data/index.json','utf8')).agencies.length;const p='docs/AGENCIES.md';fs.writeFileSync(p,fs.readFileSync(p,'utf8').replace(/^(\\d+) agencies as of/m,count+' agencies as of'));console.log('Updated AGENCIES.md: '+count+' agencies');\"",
+    "publish-on-demand": "npx tsx pipeline/publish-on-demand.ts",
+    "publish-on-demand:staging": "ATLAS_ENV=staging npx tsx pipeline/publish-on-demand.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1145.0",

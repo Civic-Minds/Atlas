@@ -34,6 +34,7 @@ import { describeMapExport, type MapExportBox, type MapExportDetails, type MapEx
 import { getRouteLabel, titleCase } from '../../utils/format';
 import { frequentServiceBand, frequentServiceFeatureKey, frequentServiceQueryKey, type FrequentServiceFrequency, type FrequentServiceWindow } from '../../../shared/frequentService';
 import { effectiveMode, ON_DEMAND_MODE } from '../../../shared/modes';
+import { useOnDemandStatus } from '../../hooks/useOnDemandData';
 import type { NightServiceFrequency } from '../../../shared/nightService';
 import { nightServiceKey } from '../../../shared/nightService';
 import { markAtlasLatest } from '../../lib/performance';
@@ -537,6 +538,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   };
 
   const { setBoundsAndZoom } = useViewport();
+  const onDemandStatus = useOnDemandStatus();
   const { overlay: historyOverlay } = useHistoryMapOverlay();
   const { overlay: liveOverlay } = useLiveVehiclesMapOverlay();
   const [liveLayerRequested, setLiveLayerRequested] = useState(false);
@@ -2358,6 +2360,11 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       {mapHint ? (
         <MapNoticePill className="px-3 py-1.5 text-xs text-[var(--text-muted)]">
           {mapHint}
+        </MapNoticePill>
+      ) : onDemandStatus === 'error' && (selectedModes.size === 0 || selectedModes.has(ON_DEMAND_MODE)) ? (
+        // Zones that failed to load must not read as "no on-demand service here" (CIV-50).
+        <MapNoticePill className="px-3 py-1.5 text-xs text-[var(--text-muted)]">
+          On-demand areas couldn't load.
         </MapNoticePill>
       ) : selectedModes.has(ON_DEMAND_MODE) && (
         // A missing zone must never read as "no on-demand service here" (CIV-23).

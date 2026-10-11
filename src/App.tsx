@@ -37,7 +37,8 @@ import { parseFrequentServiceDays, type FrequentServiceFrequency, type FrequentS
 import type { NightServiceFrequency } from '../shared/nightService';
 const FrequentServiceStory = React.lazy(() => import('./apps/FrequentServiceStory'));
 const ResearchPage = React.lazy(() => import('./apps/ResearchPage'));
-import { BWG_ON_DEMAND_AGENCY, CALEDON_ON_DEMAND_AGENCY, BRAMPTON_ON_DEMAND_AGENCY, MUSKOKA_DRT_ON_DEMAND_AGENCY, ST_ALBERT_ON_DEMAND_AGENCY, LEAMINGTON_LT_GO_ON_DEMAND_AGENCY, WINKLER_ON_DEMAND_AGENCY, C_TRAN_CURRENT_SERVICE_AREA, COBOURG_ON_DEMAND_SERVICE_AREA, CYRIDE_EASE_SERVICE_AREA, EDMONTON_ON_DEMAND_SERVICE_AREA, GORALEIGH_MICROLINK_SERVICE_AREA, GRT_ROUTE_79_SERVICE_AREA, HAMILTON_MY_RIDE_SERVICE_AREA, METRO_MICRO_SERVICE_AREA, MOUNTAIN_LINE_GO_SERVICE_AREA, MVTA_CONNECT_SERVICE_AREA, UTA_ON_DEMAND_SERVICE_AREA, ALL_POINTS_DIAL_A_RIDE_SERVICE_AREA, ASPEN_DOWNTOWNER_SERVICE_AREA, BAY_TRANSIT_EXPRESS_SERVICE_AREA, CAT_DIAL_A_RIDE_SERVICE_AREA, DURANGO_MICROTRANSIT_SERVICE_AREA, GLTC_FLEX_SERVICE_AREA, ISLAND_TRANSIT_GO_SERVICE_AREA, SAM_RIDES_SERVICE_AREA, SNOQUALMIE_DOOR_TO_DOOR_SERVICE_AREA, TCTD_DIAL_A_RIDE_SERVICE_AREA, VALLEY_METRO_METROFLX_SERVICE_AREA } from './data/onDemandServiceAreas';
+import { applyOnDemand } from './lib/onDemandLoader';
+import { OnDemandStatusProvider, OnDemandViewportLoader, useOnDemandData } from './hooks/useOnDemandData';
 import type { OnDemandAvailability, OnDemandPickup, OnDemandZoneDetails } from '../shared/onDemandAvailability';
 
 export interface FareOverride {
@@ -149,6 +150,13 @@ const APP_TO_PATH: Record<AppId, string> = {
   night: '/apps/night',
 };
 
+/** Fill in R2 artifact URLs for catalog entries that don't carry their own. */
+function withArtifactUrls(a: Agency): Agency {
+  if (a.url) return a;
+  const arts = getAgencyArtifactUrls(a.slug, { betaOnly: a.betaOnly });
+  return { ...a, url: arts.url, stopsUrl: a.stopsUrl ?? arts.stopsUrl, corridorsUrl: a.corridorsUrl ?? arts.corridorsUrl };
+}
+
 export default function App() {
   useEffect(() => {
     markAtlasOnce('app-ready');
@@ -188,7 +196,15 @@ export default function App() {
     navigate(APP_TO_PATH[app]);
   }
 
-  const [agencies, setAgencies] = useState<Agency[]>([]);
+  const [catalogAgencies, setAgencies] = useState<Agency[]>([]);
+  // On-demand zones load from R2 on their own schedule (CIV-50) and merge into the catalog here.
+  const onDemandData = useOnDemandData();
+  const agencies = useMemo(
+    () => applyOnDemand(catalogAgencies, onDemandData.index, onDemandData.geometries)
+      .filter((a: Agency) => isAgencyVisibleInBrowser(a, { mode: ATLAS_MODE }))
+      .map(withArtifactUrls),
+    [catalogAgencies, onDemandData.index, onDemandData.geometries],
+  );
   const [agenciesLoadState, setAgenciesLoadState] = useState<'loading' | 'ready' | 'error'>('loading');
   const [historyAgencySlugs, setHistoryAgencySlugs] = useState<Set<string> | null>(null);
   const [historyExploreAgencyCount, setHistoryExploreAgencyCount] = useState<number | null>(null);
@@ -460,48 +476,9 @@ export default function App() {
         return r.json();
       })
       .then((data: { agencies: Agency[] }) => {
-        const onDemandBySlug: Record<string, Partial<Agency>> = !FEATURES.onDemand ? {} : {
-          'all-points-transit': { onDemandServiceArea: ALL_POINTS_DIAL_A_RIDE_SERVICE_AREA },
-          'bay-transit': { onDemandServiceArea: BAY_TRANSIT_EXPRESS_SERVICE_AREA },
-          'columbia-area-transit': { onDemandServiceArea: CAT_DIAL_A_RIDE_SERVICE_AREA },
-          ctran: { onDemandServiceArea: C_TRAN_CURRENT_SERVICE_AREA },
-          cobourg: { onDemandServiceArea: COBOURG_ON_DEMAND_SERVICE_AREA },
-          cyride: { onDemandServiceArea: CYRIDE_EASE_SERVICE_AREA },
-          'durango-transit': { onDemandServiceArea: DURANGO_MICROTRANSIT_SERVICE_AREA },
-          edmonton: { onDemandServiceArea: EDMONTON_ON_DEMAND_SERVICE_AREA },
-          gltc: { onDemandServiceArea: GLTC_FLEX_SERVICE_AREA },
-          goraleigh: { onDemandServiceArea: GORALEIGH_MICROLINK_SERVICE_AREA },
-          grt: { onDemandServiceArea: GRT_ROUTE_79_SERVICE_AREA },
-          hamilton: { onDemandServiceArea: HAMILTON_MY_RIDE_SERVICE_AREA },
-          islandtransit: { onDemandServiceArea: ISLAND_TRANSIT_GO_SERVICE_AREA },
-          'metro-transit': { onDemandServiceArea: METRO_MICRO_SERVICE_AREA },
-          mountainline: { onDemandServiceArea: MOUNTAIN_LINE_GO_SERVICE_AREA },
-          mvta: { onDemandServiceArea: MVTA_CONNECT_SERVICE_AREA },
-          rfta: { onDemandServiceArea: ASPEN_DOWNTOWNER_SERVICE_AREA },
-          sam: { onDemandServiceArea: SAM_RIDES_SERVICE_AREA },
-          'snoqualmie-valley': { onDemandServiceArea: SNOQUALMIE_DOOR_TO_DOOR_SERVICE_AREA },
-          tillamook: { onDemandServiceArea: TCTD_DIAL_A_RIDE_SERVICE_AREA },
-          uta: { onDemandServiceArea: UTA_ON_DEMAND_SERVICE_AREA },
-          'valley-metro-roanoke': { onDemandServiceArea: VALLEY_METRO_METROFLX_SERVICE_AREA },
-        };
-        const enriched = [
-          ...data.agencies.map(agency => ({ ...agency, ...(onDemandBySlug[agency.slug] ?? {}) })),
-          BWG_ON_DEMAND_AGENCY,
-          CALEDON_ON_DEMAND_AGENCY,
-          BRAMPTON_ON_DEMAND_AGENCY,
-          MUSKOKA_DRT_ON_DEMAND_AGENCY,
-          ST_ALBERT_ON_DEMAND_AGENCY,
-          LEAMINGTON_LT_GO_ON_DEMAND_AGENCY,
-          WINKLER_ON_DEMAND_AGENCY,
-        ]
+        const enriched = data.agencies
           .filter((a: Agency) => isAgencyVisibleInBrowser(a, { mode: ATLAS_MODE }))
-          .map((a: Agency) => {
-            if (!a.url) {
-              const arts = getAgencyArtifactUrls(a.slug, { betaOnly: a.betaOnly });
-              return { ...a, url: arts.url, stopsUrl: a.stopsUrl ?? arts.stopsUrl, corridorsUrl: a.corridorsUrl ?? arts.corridorsUrl };
-            }
-            return a;
-          });
+          .map(withArtifactUrls);
         setAgencies(enriched);
         markAtlasOnce('agency-catalog-ready');
         setAgenciesLoadState('ready');
@@ -550,6 +527,8 @@ export default function App() {
 
   return (
     <ViewportProvider>
+    <OnDemandStatusProvider status={onDemandData.status}>
+    <OnDemandViewportLoader data={onDemandData} />
     <CorridorMapOverlayProvider>
     <HistoryMapOverlayProvider>
     <LiveVehiclesMapOverlayProvider>
@@ -876,6 +855,7 @@ export default function App() {
     </LiveVehiclesMapOverlayProvider>
     </HistoryMapOverlayProvider>
     </CorridorMapOverlayProvider>
+    </OnDemandStatusProvider>
     </ViewportProvider>
   );
 }
