@@ -383,9 +383,25 @@ export function applyAnalysisCriteria(
     rawData: RawRouteDepartures[],
     criteria: AnalysisCriteria = DEFAULT_CRITERIA,
     tierDeterminer: TierDeterminer = determineTierWithEdgeGapAllowance,
+    /**
+     * Weekdays with service per route_id::dir across all of its patterns (#710). When omitted,
+     * counted from rawData: the distinct weekdays any of the route direction's patterns appear on.
+     * Either way, a weekday whose only service is the previous night's tail must not count (#718).
+     */
+    weekdayServiceDays?: ReadonlyMap<string, number>,
 ): AnalysisResult[] {
-    const perDayResults = new Map<string, { dayType: DayType; day: DayName; result: AnalysisResult; rawTimes: number[] }>();
     const tailDays = previousNightTailDays(rawData);
+    const rawWeekdays = new Map<string, Set<DayName>>();
+    for (const raw of rawData) {
+        if (!(WEEKDAYS as readonly DayName[]).includes(raw.day)) continue;
+        // A weekday that only carries the previous night's tail is not a service day (#718).
+        if (tailDays.has(`${raw.route}::${raw.dir}::${raw.day}`)) continue;
+        const key = `${raw.route}::${raw.dir}`;
+        rawWeekdays.set(key, (rawWeekdays.get(key) ?? new Set<DayName>()).add(raw.day));
+    }
+    const routeDirWeekdays = (route: string, dir: string): number =>
+        weekdayServiceDays?.get(`${route}::${dir}`) ?? rawWeekdays.get(`${route}::${dir}`)?.size ?? 0;
+    const perDayResults = new Map<string, { dayType: DayType; day: DayName; result: AnalysisResult; rawTimes: number[] }>();
 
     for (const raw of rawData) {
         const dayType = DAY_TO_TYPE[raw.day];
@@ -613,8 +629,13 @@ export function applyAnalysisCriteria(
                 return entry && !entry.result.previousNightTail ? entry.result.times.length : 0;
             }))
             : undefined;
-        const partialWeekday = dayType === 'Weekday' && weekdayIndex === null;
-        const repEntry = weekdayIndex != null
+        // Whether a route runs on only some weekdays is decided per route direction, across all
+        // of its shapes and patterns, never per pattern: LANTA and Lancaster give each weekday's
+        // service its own shape, so every single pattern runs on one weekday although the route
+        // runs on all five. A pattern of a full-week route keeps the typical served-day rollup.
+        const partialWeekday = dayType === 'Weekday'
+            && routeDirWeekdays(entries[0].result.route, entries[0].result.dir) < 3;
+        const repEntry = weekdayIndex != null && !partialWeekday
             ? entries.find(e => e.day === WEEKDAYS[weekdayIndex])!
             : representativeRollupEntry(entries);
         const rep = repEntry.result;

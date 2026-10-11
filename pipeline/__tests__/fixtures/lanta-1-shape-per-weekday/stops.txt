@@ -1,0 +1,6 @@
+stop_id,stop_name,stop_lat,stop_lon
+3902,MacArthur Commons EB,40.646945,-75.491374
+5725,Casino,40.61394822,-75.35793833
+5987,MacArthur WB (Drop-off only),40.644582,-75.495111
+5988,MacArthur EB,40.643209,-75.494143
+6370,Greenway WB,40.613479,-75.36243

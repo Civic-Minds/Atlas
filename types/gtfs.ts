@@ -148,6 +148,8 @@ export interface GtfsFeedInfo {
 }
 
 export interface GtfsData {
+    /** Routes whose direction_id was synthesized from shapes/headsigns (no direction_id in the feed). */
+    synthesizedDirectionRouteIds?: Set<string>;
     agencies: GtfsAgency[];
     routes: GtfsRoute[];
     trips: GtfsTrip[];

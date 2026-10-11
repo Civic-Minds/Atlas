@@ -2,7 +2,7 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import JSZip from 'jszip';
 import { describe, expect, it } from 'vitest';
-import { processGtfsBuffer } from '../process-core';
+import { processGtfsBuffer, weekdayServiceDaysByRouteDir } from '../process-core';
 import { routePassesHeadwayFilter } from '../../shared/routeHeadwayFilter';
 import { isLimitedService } from '../../shared/irregularRoutes';
 import { tileLimitedServiceExpr } from '../../shared/tileFilterExprs';
@@ -263,4 +263,137 @@ describe('Weekday stop groups use one representative weekday (#710)', () => {
     // The map's tile clause for the toggle keys on the same serviceClass value.
     expect(JSON.stringify(tileLimitedServiceExpr())).toContain('"time-limited"');
   });
+
+  it('LANTA Green Line: one shape per weekday is still a route that runs every weekday', async () => {
+    // Real feed, route 1 weekday services 30/29/28/27/16 (calendar_dates, Mon/Tue/Wed/Thu/Fri
+    // only), each day's trips on their own shape. Every pattern runs on one weekday, the route
+    // on five. Regression from the full dry run: all 72 LANTA weekday features showed limited.
+    const weekday = (await routeFeatures(await fixtureZip('lanta-1-shape-per-weekday'), 'lanta')).filter(p => p.day === 'Weekday');
+
+    expect(weekday.length).toBeGreaterThan(0);
+    for (const p of weekday) {
+      expect(p.partialWeekdayServiceByPeriod).toBeUndefined();
+      expect(p.tier).not.toBe('infrequent');
+      expect(p.headway).toBeGreaterThan(0);
+      expect(p.headwayByPeriod.midday).toBeGreaterThan(0);
+    }
+  });
+
+  it('SLU Streetcar: weekdays added through calendar_dates count as service', async () => {
+    // Real feed, route 100340, service 128666: calendar.txt says Tue+Wed, and calendar_dates
+    // adds it on every Mon, Thu and Fri. It runs every weekday about every 12 minutes.
+    const weekday = (await routeFeatures(await fixtureZip('slu-streetcar-calendar-dates-weekdays'), 'seattle-streetcar')).filter(p => p.day === 'Weekday');
+
+    expect(weekday.map(p => p.directionId).sort()).toEqual([0, 1]);
+    for (const p of weekday) {
+      expect(p.partialWeekdayServiceByPeriod).toBeUndefined();
+      expect(p.headway).toBe(12);
+      expect(p.headwayByPeriod.midday).toBe(12);
+    }
+  });
+
+  it('GCRTA Blue Line: a two-week suspension in the reference week is not part-week service', async () => {
+    // Real feed, route 67 plus 5 stub trips per other service (so the reference date matches
+    // the full feed, Oct 11 2026). The regular Mon-Fri service is removed Oct 5-16 and a
+    // replacement runs on only some of those days, so the reference week shows Blue Line on
+    // Tue+Wed only. Its regular weekly pattern is Mon-Fri, so it is not a limited route.
+    const weekday = (await routeFeatures(await fixtureZip('gcrta-blue-line-suspended-weeks'), 'gcrta'))
+      .filter(p => p.day === 'Weekday' && p.routeId === '67');
+
+    expect(weekday.length).toBeGreaterThan(0);
+    for (const p of weekday) expect(p.partialWeekdayServiceByPeriod).toBeUndefined();
+    expect([...new Set(weekday.filter(p => p.tier === '30').map(p => p.directionId))].sort()).toEqual([0, 1]);
+  });
+
+  it('a route without direction_id is not part-week when synthesized directions split by weekday', async () => {
+    // Kalamazoo pattern: no direction_id, and the Mon-Thu and Friday services use their own
+    // shapes (29 trips each way). Direction synthesis groups by shape and put a Friday-only
+    // shape in "direction 1", which then looked like a Friday-only route.
+    const zip = new JSZip();
+    zip.file('agency.txt', 'agency_id,agency_name,agency_url,agency_timezone\na,KZ,https://example.test,America/Detroit\n');
+    zip.file('routes.txt', 'route_id,route_short_name,route_long_name,route_type\n1,1,Crosstown,3\n');
+    zip.file('stops.txt', 'stop_id,stop_name,stop_lat,stop_lon\nk,KTC,42.29,-85.58\nm,Middle,42.27,-85.60\nx,Crossroads,42.25,-85.62\n');
+    zip.file('calendar.txt', 'service_id,monday,tuesday,wednesday,thursday,friday,saturday,sunday,start_date,end_date\nmonthu,1,1,1,1,0,0,0,20260105,20261220\nfri,0,0,0,0,1,0,0,20260105,20261220\n');
+    const shapes = ['shape_id,shape_pt_lat,shape_pt_lon,shape_pt_sequence'];
+    for (const [id, pts] of [['10795', ['k', 'x']], ['10791', ['x', 'k']], ['10793', ['k', 'x']], ['10789', ['x', 'k']]] as const) {
+      const coords: Record<string, string> = { k: '42.29,-85.58', x: '42.25,-85.62' };
+      shapes.push(`${id},${coords[pts[0]]},1`, `${id},42.27,-85.60,2`, `${id},${coords[pts[1]]},3`);
+    }
+    zip.file('shapes.txt', shapes.join('\n') + '\n');
+    const trips = ['route_id,service_id,trip_id,trip_headsign,shape_id'];
+    const stopTimes = ['trip_id,arrival_time,departure_time,stop_id,stop_sequence'];
+    for (const [service, outShape, backShape] of [['fri', '10795', '10791'], ['monthu', '10793', '10789']] as const) {
+      for (let i = 0; i < 29; i++) {
+        const start = 6 * 60 + i * 30;
+        for (const [shape, a, b, hs] of [[outShape, 'k', 'x', 'Crossroads'], [backShape, 'x', 'k', 'KTC']] as const) {
+          const id = `${service}-${shape}-${i}`;
+          trips.push(`1,${service},${id},${hs},${shape}`);
+          stopTimes.push(`${id},${hm(start)},${hm(start)},${a},1`, `${id},${hm(start + 10)},${hm(start + 10)},m,2`, `${id},${hm(start + 20)},${hm(start + 20)},${b},3`);
+        }
+      }
+    }
+    zip.file('trips.txt', trips.join('\n') + '\n');
+    zip.file('stop_times.txt', stopTimes.join('\n') + '\n');
+    const weekday = (await routeFeatures(await zip.generateAsync({ type: 'nodebuffer' }), 'synth-dir')).filter(p => p.day === 'Weekday');
+
+    expect(weekday.length).toBeGreaterThan(0);
+    for (const p of weekday) expect(p.partialWeekdayServiceByPeriod).toBeUndefined();
+  });
+
+  it('regular-pattern rule: a Mon-Fri service removed on most Mon-Wed dates is not full-week', () => {
+    // Reference date Wed 2026-10-14. Mon-Fri calendar.txt service; calendar_dates removes it on
+    // every Mon, Tue and Wed within 90 days except one each, so its regular pattern is Thu+Fri.
+    const removals: Array<{ service_id: string; date: string; exception_type: string }> = [];
+    const fmt = (d: Date) => `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
+    for (let t = new Date(2026, 6, 16).getTime(); t <= new Date(2027, 0, 12).getTime(); t += 86400000) {
+      const date = new Date(t);
+      if (date.getDay() >= 1 && date.getDay() <= 3 && fmt(date) !== '20261005' && fmt(date) !== '20261006' && fmt(date) !== '20261007') {
+        removals.push({ service_id: 'wk', date: fmt(date), exception_type: '2' });
+      }
+    }
+    const gtfs = (removed: typeof removals) => ({
+      trips: Array.from({ length: 10 }, (_, i) => ({ route_id: 'r', service_id: 'wk', trip_id: `t${i}`, direction_id: '0' })),
+      calendar: [{ service_id: 'wk', monday: '1', tuesday: '1', wednesday: '1', thursday: '1', friday: '1', saturday: '0', sunday: '0', start_date: '20260101', end_date: '20271231' }],
+      calendarDates: removed,
+    }) as any;
+    const active = new Map([['Monday', new Set<string>()], ['Tuesday', new Set<string>()], ['Wednesday', new Set<string>()], ['Thursday', new Set(['wk'])], ['Friday', new Set(['wk'])]]) as any;
+
+    expect(weekdayServiceDaysByRouteDir(gtfs(removals), '20261014', active).get('r::0')).toBe(2);
+    // A short suspension (two Mondays removed) keeps the regular Mon-Fri pattern.
+    expect(weekdayServiceDaysByRouteDir(gtfs(removals.slice(0, 2)), '20261014', active).get('r::0')).toBe(5);
+  });
+
+  it('a feed without direction_id: a real Friday-only route stays limited, a Mon-Fri route does not', async () => {
+    const zip = new JSZip();
+    zip.file('agency.txt', 'agency_id,agency_name,agency_url,agency_timezone\na,ND,https://example.test,America/Detroit\n');
+    zip.file('routes.txt', 'route_id,route_short_name,route_long_name,route_type\nfri,F,Friday Night,3\nwk,W,Weekday,3\n');
+    zip.file('stops.txt', 'stop_id,stop_name,stop_lat,stop_lon\na,A,42.29,-85.58\nm,M,42.27,-85.60\nb,B,42.25,-85.62\n');
+    zip.file('calendar.txt', 'service_id,monday,tuesday,wednesday,thursday,friday,saturday,sunday,start_date,end_date\nfri,0,0,0,0,1,0,0,20260105,20261220\nwk,1,1,1,1,1,0,0,20260105,20261220\n');
+    zip.file('shapes.txt', ['shape_id,shape_pt_lat,shape_pt_lon,shape_pt_sequence',
+      'out,42.29,-85.58,1', 'out,42.27,-85.60,2', 'out,42.25,-85.62,3',
+      'back,42.25,-85.62,1', 'back,42.27,-85.60,2', 'back,42.29,-85.58,3'].join('\n') + '\n');
+    const trips = ['route_id,service_id,trip_id,trip_headsign,shape_id'];
+    const stopTimes = ['trip_id,arrival_time,departure_time,stop_id,stop_sequence'];
+    for (const route of ['fri', 'wk']) {
+      for (let i = 0; i < 20; i++) {
+        const start = 17 * 60 + i * 20 - (route === 'wk' ? 600 : 0);
+        for (const [shape, a, b, hs] of [['out', 'a', 'b', 'B'], ['back', 'b', 'a', 'A']] as const) {
+          const id = `${route}-${shape}-${i}`;
+          trips.push(`${route},${route},${id},${hs},${shape}`);
+          stopTimes.push(`${id},${hm(start)},${hm(start)},${a},1`, `${id},${hm(start + 10)},${hm(start + 10)},m,2`, `${id},${hm(start + 20)},${hm(start + 20)},${b},3`);
+        }
+      }
+    }
+    zip.file('trips.txt', trips.join('\n') + '\n');
+    zip.file('stop_times.txt', stopTimes.join('\n') + '\n');
+    const weekday = (await routeFeatures(await zip.generateAsync({ type: 'nodebuffer' }), 'no-direction')).filter(p => p.day === 'Weekday');
+
+    const fri = weekday.filter(p => p.routeId === 'fri');
+    const wk = weekday.filter(p => p.routeId === 'wk');
+    expect(fri.length).toBeGreaterThan(0);
+    expect(wk.length).toBeGreaterThan(0);
+    for (const p of fri) expect(p.tier).toBe('infrequent');
+    for (const p of wk) expect(p.partialWeekdayServiceByPeriod).toBeUndefined();
+  });
 });
+
