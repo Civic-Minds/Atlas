@@ -119,6 +119,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Frequent Service now separates its interactive map from its research story and explains each filtering step in rider-facing language.**
 - **Beta now offers an optional Data Saver mode that defers background agency details while keeping map exploration available.**
 - **Public, beta, and local builds now keep feature access, agency visibility, data sources, and research navigation aligned with the selected deployment mode.**
+- The map keeps showing routes while data built under the updated frequency rules rolls out, instead of going blank whenever the app and the published data are on different rule versions ([#703](https://github.com/Civic-Minds/Atlas/issues/703)).
 
 ## [3.2.23] - 2026-09-22
 
