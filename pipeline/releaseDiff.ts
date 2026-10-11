@@ -12,12 +12,15 @@
  *   red    mode-lost     a mode present live (e.g. Commuter Rail) is missing from the new output
  *   red    duplicate     route output identical or near-identical to a different agency's
  *   red    headway-shift the weekday headway halves or doubles on a large share of the routes
+ *   red    headway-lost  at least HEADWAY_LOST_RED_SHARE of the live weekday route/directions
+ *                        with a headway still run on weekdays but have no headway now (#710)
  *   red    expired       the new output's service has already ended (output changed)
  *   yellow expired       service has ended, but the output is unchanged from live
  *   yellow headway-shift a smaller share of routes halves or doubles
  *   yellow route-shift   any single route's weekday tier moves 2+ steps or its headway
  *                        halves or doubles, whatever the agency's size (#707); not
  *                        reported when headway-shift already fires for the agency
+ *   yellow headway-lost  a smaller share of route/directions lose their weekday headway
  *   yellow future-start  service does not start until a future date
  *   yellow placeholder-expiry the calendar end is more than 2 years past today,
  *                        likely a placeholder; the recorded expiry is capped
@@ -36,7 +39,7 @@ import { countArtifacts, dropGuardRefusal, type ArtifactCounts } from './archive
 import { TIER_RANK } from './headway-utils.js';
 import { addYearsYmd, PLACEHOLDER_EXPIRY_YEARS } from './refreshMeta.js';
 
-export const GATE_FLAGS = ['drop', 'empty', 'mode-lost', 'duplicate', 'headway-shift', 'route-shift', 'expired', 'future-start', 'placeholder-expiry', 'added'] as const;
+export const GATE_FLAGS = ['drop', 'empty', 'mode-lost', 'duplicate', 'headway-shift', 'route-shift', 'headway-lost', 'expired', 'future-start', 'placeholder-expiry', 'added'] as const;
 export type GateFlagName = typeof GATE_FLAGS[number];
 export type GateLevel = 'red' | 'yellow';
 
@@ -62,6 +65,16 @@ export const HEADWAY_SHIFT_MIN_SHIFTED = 3;
 export const ROUTE_SHIFT_TIER_STEPS = 2;
 /** At most this many routes are named in a route-shift message. */
 const ROUTE_SHIFT_MAX_LISTED = 10;
+/**
+ * headway-lost is red when at least this share of the live weekday
+ * route/directions with a headway lose it while still running on weekdays, and
+ * at least HEADWAY_LOST_RED_MIN of them do. On the 2026-10-11 pre-#710-fix dry
+ * run the broken agencies sat at 100% (lanta 59/59, lancaster 30/30,
+ * seattle-streetcar 4/4) and the next highest were real partial-weekday
+ * routes: roundabout 2/4 (one weekday only), kalamazoo 13/38. 75% splits them.
+ */
+export const HEADWAY_LOST_RED_SHARE = 0.75;
+export const HEADWAY_LOST_RED_MIN = 3;
 /** Route-signature overlap (Jaccard) at or above which two agencies count as near-identical. */
 export const DUPLICATE_SIMILARITY = 0.9;
 /** Both agencies need at least this many routes before near-identity is judged. */
@@ -85,6 +98,12 @@ export interface ArtifactSummary {
    * rail '5'/'8') are left out, so they never count as a tier change.
    */
   weekdayTiers: Record<string, string>;
+  /**
+   * Every weekday route/direction ('routeId|directionId') mapped to whether any
+   * of its weekday lines carries a headway. Lets the gate see one direction
+   * lose its headway while the other keeps it (kalamazoo 1, #710).
+   */
+  weekdayDirectionHeadway: Record<string, boolean>;
   /** Mean of the route line endpoints, [lon, lat], or null with no lines. */
   centroid: [number, number] | null;
 }
@@ -128,6 +147,7 @@ export function summarizeArtifact(geojson: string, stopsJson: string | null): Ar
   const signatures = new Set<string>();
   const headways: Record<string, number[]> = {};
   const tiers: Record<string, string> = {};
+  const directionHeadway: Record<string, boolean> = {};
   let lonSum = 0;
   let latSum = 0;
   let points = 0;
@@ -142,8 +162,13 @@ export function summarizeArtifact(geojson: string, stopsJson: string | null): Ar
       for (const pt of ends) { lonSum += Number(pt[0]); latSum += Number(pt[1]); points++; }
     }
     const headway = Number(p.headway);
-    if (p.day === 'Weekday' && p.headway != null && Number.isFinite(headway) && headway > 0) {
+    const hasHeadway = p.headway != null && Number.isFinite(headway) && headway > 0;
+    if (p.day === 'Weekday' && hasHeadway) {
       (headways[routeId] ??= []).push(headway);
+    }
+    if (p.day === 'Weekday') {
+      const key = `${routeId}|${p.directionId == null ? '' : String(p.directionId)}`;
+      directionHeadway[key] = (directionHeadway[key] ?? false) || hasHeadway;
     }
     const tier = p.tier == null ? '' : String(p.tier);
     if (p.day === 'Weekday' && tier in TIER_RANK && tier !== 'span' && (tiers[routeId] == null || TIER_RANK[tier] < TIER_RANK[tiers[routeId]])) {
@@ -158,6 +183,7 @@ export function summarizeArtifact(geojson: string, stopsJson: string | null): Ar
     routeSignatures: [...signatures].sort(),
     weekdayHeadways: Object.fromEntries(Object.entries(headways).map(([id, values]) => [id, median(values)])),
     weekdayTiers: tiers,
+    weekdayDirectionHeadway: directionHeadway,
     centroid: points ? [lonSum / points, latSum / points] : null,
   };
 }
@@ -195,9 +221,13 @@ export function headwayShift(live: ArtifactSummary, next: ArtifactSummary): Head
  * ROUTE_SHIFT_TIER_STEPS or more, or the headway halves or doubles. Unlike
  * headwayShift's share thresholds this catches one wrong route at a small
  * agency (waco TL-32 60 -> 25, clemson-cat TL-69 infrequent -> 20, #707).
- * Returns one description per route, sorted by route ID.
+ * Returns one description per route, sorted by route ID, plus the
+ * route/directions that lost their weekday headway (#710): compared per route
+ * AND direction, a live route/direction with a weekday headway that still runs
+ * on weekdays but has none now. Route/directions gone entirely are left to the
+ * drop guard. `liveDirections` counts the live route/directions with a headway.
  */
-export function routeShifts(live: ArtifactSummary, next: ArtifactSummary): string[] {
+export function routeShifts(live: ArtifactSummary, next: ArtifactSummary): { shifted: string[]; lost: string[]; liveDirections: number } {
   const [liveTiers, nextTiers] = [live.weekdayTiers, next.weekdayTiers];
   const ids = new Set([...Object.keys(live.weekdayHeadways), ...Object.keys(liveTiers)]);
   const shifted: string[] = [];
@@ -212,7 +242,15 @@ export function routeShifts(live: ArtifactSummary, next: ArtifactSummary): strin
     if (halvedOrDoubled || (parts.length && before != null && after != null)) parts.push(`${before}->${after} min`);
     if (parts.length) shifted.push(`${routeId} ${parts.join(', ')}`);
   }
-  return shifted;
+  const liveWithHeadway = Object.keys(live.weekdayDirectionHeadway).filter(key => live.weekdayDirectionHeadway[key]);
+  const lost = liveWithHeadway
+    .filter(key => next.weekdayDirectionHeadway[key] === false)
+    .sort()
+    .map(key => {
+      const [routeId, directionId] = [key.slice(0, key.lastIndexOf('|')), key.slice(key.lastIndexOf('|') + 1)];
+      return directionId === '' ? routeId : `${routeId} d${directionId}`;
+    });
+  return { shifted, lost, liveDirections: liveWithHeadway.length };
 }
 
 export interface AgencyGateInput {
@@ -285,10 +323,21 @@ export function evaluateAgency(input: AgencyGateInput, peers: GatePeer[], todayY
     // small agency never reaches the share thresholds above (#707). Yellow, so
     // it is listed for review without blocking; skipped when headway-shift
     // already reports the agency.
-    const routes = agencyShift ? [] : routeShifts(live, next);
+    const { shifted, lost: lostDirections, liveDirections } = routeShifts(live, next);
+    const routes = agencyShift ? [] : shifted;
     if (routes.length) {
       flags.push(flag(slug, 'route-shift', 'yellow',
         `${routes.length} route${routes.length === 1 ? '' : 's'} with a weekday tier change of ${ROUTE_SHIFT_TIER_STEPS}+ steps or a halved/doubled headway (${routes.slice(0, ROUTE_SHIFT_MAX_LISTED).join('; ')}${routes.length > ROUTE_SHIFT_MAX_LISTED ? '; ...' : ''})`));
+    }
+
+    // A route/direction that still runs on weekdays but lost its headway drops
+    // out of every weekday frequency filter. Most of an agency at once is the
+    // #710 failure (whole systems shown as limited), so that is red.
+    if (lostDirections.length) {
+      const share = lostDirections.length / liveDirections;
+      const level: GateLevel = share >= HEADWAY_LOST_RED_SHARE && lostDirections.length >= HEADWAY_LOST_RED_MIN ? 'red' : 'yellow';
+      flags.push(flag(slug, 'headway-lost', level,
+        `${lostDirections.length} of ${liveDirections} weekday route/directions with a headway live have none now (${Math.round(share * 100)}%; ${lostDirections.slice(0, ROUTE_SHIFT_MAX_LISTED).join(', ')}${lostDirections.length > ROUTE_SHIFT_MAX_LISTED ? ', ...' : ''})`));
     }
   }
 
