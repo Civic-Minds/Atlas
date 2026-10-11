@@ -962,6 +962,9 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   // visible, and dragged (or tapped) up to read the whole card.
   const isPhone = useMediaQuery(PHONE_MEDIA_QUERY);
   const sheetMode = FEATURES.mobileRouteSheet && isPhone && !!(panelRoute || panelStop) && !hasSearchResults;
+  // Matching the search box width leaves phones with a half-width results list (#695),
+  // so while searching on a phone the list takes the full screen width instead.
+  const matchSearchBarWidth = !!searchBarWidth && !(isPhone && searchFocused);
   const [sheetExpanded, setSheetExpanded] = useState(false);
   const sheetDragStart = useRef<number | null>(null);
   const sheetSubject = selectedRoute ?? (currentStop as { stopId?: string } | null)?.stopId ?? null;
@@ -1027,8 +1030,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         : `${PANEL_SIDEBAR} ${SIDEBAR_PANEL_WIDTH} ${nightServiceView ? 'max-h-[calc(100vh-168px)]' : 'max-h-[calc(100vh-132px)]'} flex flex-col gap-3 transition-[opacity,transform] duration-200 ease-out ${panelVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}
       style={sheetMode ? undefined : {
         '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px`,
-        ...(searchBarWidth ? { width: `${searchBarWidth}px` } : {}),
-        ...(searchBarWidth ? { maxWidth: 'none' } : {}),
+        ...(matchSearchBarWidth ? { width: `${searchBarWidth}px`, maxWidth: 'none' } : {}),
       } as React.CSSProperties}
     >
       {searchFocused && query === '' && (
