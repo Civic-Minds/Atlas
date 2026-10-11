@@ -47,3 +47,21 @@ export function releaseTileRulesVersion(release: { tileRulesVersion?: unknown })
   if (release.tileRulesVersion === undefined) return 1;
   return typeof release.tileRulesVersion === 'number' ? release.tileRulesVersion : null;
 }
+
+/**
+ * Tile-rules versions the deployed app accepts from a data release (an
+ * unstamped release counts as 1). Normally this is just TILE_RULES_VERSION,
+ * but during the v1 -> v2 rollout (#665) the app must keep drawing the live
+ * v1 release until the v2 release is published, so it accepts both. Kept as
+ * literals on purpose: deriving it from TILE_RULES_VERSION would silently
+ * drop v1 the moment the constant is bumped. Anything else still fails closed.
+ *
+ * TODO(#703): Drop tile-rules v1 support after the v2 release is live.
+ * https://github.com/Civic-Minds/Atlas/issues/703
+ */
+export const ACCEPTED_TILE_RULES_VERSIONS: readonly number[] = [1, 2];
+
+export function isAcceptedTileRulesVersion(release: { tileRulesVersion?: unknown }): boolean {
+  const version = releaseTileRulesVersion(release);
+  return version !== null && ACCEPTED_TILE_RULES_VERSIONS.includes(version);
+}

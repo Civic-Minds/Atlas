@@ -1,5 +1,5 @@
 import { BETA_R2_PUBLIC_URL, R2_PUBLIC_URL } from '../../shared/config';
-import { releaseTileRulesVersion, ROUTE_ARTIFACT_SCHEMA_VERSION, TILE_RULES_VERSION } from '../../shared/artifactSchema';
+import { isAcceptedTileRulesVersion, ROUTE_ARTIFACT_SCHEMA_VERSION } from '../../shared/artifactSchema';
 
 export interface DataRelease {
   releaseId: string;
@@ -20,7 +20,7 @@ export function isCompatibleDataRelease(value: Partial<DataRelease> | null | und
   return !!value
     && !!value.releaseId && !!value.pmtilesKey && !!value.overviewPmtilesKey && !!value.agencyPrefix
     && value.routeArtifactSchemaVersion === ROUTE_ARTIFACT_SCHEMA_VERSION
-    && releaseTileRulesVersion(value) === TILE_RULES_VERSION;
+    && isAcceptedTileRulesVersion(value);
 }
 
 /**
