@@ -9,7 +9,7 @@ import { METRO_MICRO_FLEX_FEATURES } from './metroMicroFlexData';
 import { GTFS_FLEX_METADATA } from './metroMicroFlexMetadata';
 import { C_TRAN_CURRENT_FLEX_FEATURES } from './ctranCurrentFlexData';
 import { C_TRAN_CURRENT_FLEX_STOPS } from './ctranCurrentFlexStops';
-import { ASPEN_DOWNTOWNER_FEATURES, BAY_TRANSIT_EXPRESS_FEATURES, CAT_DIAL_A_RIDE_FEATURES, DURANGO_MICROTRANSIT_FEATURES, GLTC_FLEX_FEATURES, ISLAND_TRANSIT_GO_STOPS, SAM_RIDES_FEATURES, SNOQUALMIE_DOOR_TO_DOOR_FEATURES, TCTD_DIAL_A_RIDE_FEATURES, VALLEY_METRO_METROFLX_FEATURES } from './flexBatchData';
+import { ALL_POINTS_DIAL_A_RIDE_FEATURES, ASPEN_DOWNTOWNER_FEATURES, BAY_TRANSIT_EXPRESS_FEATURES, CAT_DIAL_A_RIDE_FEATURES, DURANGO_MICROTRANSIT_FEATURES, GLTC_FLEX_FEATURES, ISLAND_TRANSIT_GO_STOPS, SAM_RIDES_FEATURES, SNOQUALMIE_DOOR_TO_DOOR_FEATURES, TCTD_DIAL_A_RIDE_FEATURES, VALLEY_METRO_METROFLX_FEATURES } from './flexBatchData';
 import type { OnDemandAvailability, OnDemandPickup } from '../../shared/onDemandAvailability';
 import { BETA_ROLLOUT_NOTICE } from '../../shared/rolloutNotice';
 
@@ -825,6 +825,25 @@ export const ISLAND_TRANSIT_GO_SERVICE_AREA = {
   bookingUrl: 'https://www.islandtransit.org/on-demand',
   availability: {
     Weekday: [{ startHour: 8, endHour: 17 }],
+    Saturday: [],
+    Sunday: [],
+  } satisfies OnDemandAvailability,
+};
+
+export const ALL_POINTS_DIAL_A_RIDE_SERVICE_AREA = {
+  features: ALL_POINTS_DIAL_A_RIDE_FEATURES,
+  sourceUrl: 'https://www.allpointstransit.com/dial-a-ride/',
+  sourceLabel: 'All Points Transit GTFS-Flex feed and Dial-A-Ride page',
+  sourceRetrievedAt: FLEX_RETRIEVED_AT,
+  serviceName: 'All Points Dial-A-Ride',
+  serviceHours: 'Weekdays 6 a.m.–4 p.m.',
+  hoursNote: 'No service on the last Friday of the month.',
+  tripRules: 'Open to the public. Days of service in outlying areas may be limited.',
+  bookingInfo: 'Call 970-249-0128 (Montrose County and Norwood) or 970-874-7334 (Delta County) by noon the business day before.',
+  pickup: { method: 'door-to-door' } satisfies OnDemandPickup,
+  bookingUrl: 'https://www.allpointstransit.com/dial-a-ride/',
+  availability: {
+    Weekday: [{ startHour: 6, endHour: 16 }],
     Saturday: [],
     Sunday: [],
   } satisfies OnDemandAvailability,
