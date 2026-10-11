@@ -79,9 +79,10 @@ export const COMPARE_MODE_ENABLED = ATLAS_MODE === 'beta' || ATLAS_MODE === 'dev
 // preview only until Ryan signs off on the public launch (CIV-23); launch flips this one value.
 export const ON_DEMAND_PUBLIC = false;
 export const ON_DEMAND_ENABLED = ON_DEMAND_PUBLIC || BETA_BUILD;
-// Local testing only: read on-demand files from a dev path instead of R2 (CIV-50).
+// Local testing only: read on-demand files from a dev path instead of R2 (CIV-50). Ignored in
+// every built site, so a deployed build can't be pointed at other files.
 export const ON_DEMAND_URL_OVERRIDE: string | undefined =
-  (typeof import.meta !== 'undefined' ? import.meta?.env?.VITE_ON_DEMAND_URL : undefined) || undefined;
+  (typeof import.meta !== 'undefined' && import.meta?.env?.DEV ? import.meta?.env?.VITE_ON_DEMAND_URL : undefined) || undefined;
 
 export function getAgencyCatalogUrl(mode: AtlasMode = ATLAS_MODE): string {
   return `/data/catalog-${mode}.json`;

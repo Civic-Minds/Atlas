@@ -527,7 +527,7 @@ export default function App() {
 
   return (
     <ViewportProvider>
-    <OnDemandStatusProvider status={onDemandData.status}>
+    <OnDemandStatusProvider data={onDemandData}>
     <OnDemandViewportLoader data={onDemandData} />
     <CorridorMapOverlayProvider>
     <HistoryMapOverlayProvider>

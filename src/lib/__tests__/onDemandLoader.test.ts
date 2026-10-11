@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { Agency } from '../../App';
 import { ON_DEMAND_PUBLIC } from '../../../shared/config';
 import { isAgencyVisibleInBrowser } from '../../../shared/agencyVisibility';
-import { buildOnDemandRelease, releaseFiles } from '../../data/onDemandExport';
+import { buildOnDemandRelease, releaseFiles, releaseWithHeldServices } from '../../data/onDemandExport';
 import { ATTACHED_ON_DEMAND_SERVICES, STANDALONE_ON_DEMAND_AGENCIES } from '../../data/onDemandRegistry';
 import { applyOnDemand, loadOnDemandGeometry, loadOnDemandIndex } from '../onDemandLoader';
 import type { OnDemandGeometry } from '../../../shared/onDemandData';
@@ -57,6 +57,24 @@ describe('on-demand R2 round trip (CIV-50)', () => {
 
   it('leaves the catalog alone when the index is unavailable', () => {
     expect(applyOnDemand(catalog, null, new Map())).toEqual(catalog);
+  });
+});
+
+describe('publishing around a held service', () => {
+  const live = buildOnDemandRelease('beta', 't0');
+  const liveSnapshot = { index: live.index, geometries: new Map(live.geometries.map(g => [g.slug, g])) };
+
+  it('keeps the live version of a held service and takes the new version of the rest', () => {
+    const candidate = buildOnDemandRelease('beta', 't1');
+    const changed = { ...candidate, geometries: candidate.geometries.map(g => g.slug === 'uta' ? { ...g, features: g.features.slice(0, 1) } : g) };
+    const release = releaseWithHeldServices(changed, liveSnapshot, new Set(['uta']));
+    expect(release.geometries.find(g => g.slug === 'uta')).toEqual(liveSnapshot.geometries.get('uta'));
+    expect(release.index.services).toHaveLength(live.index.services.length);
+  });
+
+  it('leaves a held service out when it was never live', () => {
+    const release = releaseWithHeldServices(buildOnDemandRelease('beta', 't1'), null, new Set(['uta']));
+    expect(release.index.services.some(s => s.slug === 'uta')).toBe(false);
   });
 });
 

@@ -28,7 +28,13 @@ export interface OnDemandSnapshot {
 const STALE_YELLOW_DAYS = 180;
 const STALE_RED_DAYS = 365;
 const ZONE_AREA_DROP = 0.3;
-const ELIGIBILITY_ONLY = /paratransit|\bADA\b|eligib|seniors? only|disabled only|medicaid|NEMT/i;
+// "ADA" stays case-sensitive so Ada County doesn't read as ADA paratransit.
+const ELIGIBILITY_ONLY = [
+  /\bADA\b/,
+  /paratransit|eligib|seniors? only|disabled only|medicaid|\bNEMT\b|specialized|wheel-?trans|accessible|mobility|seniors and persons with disabilities/i,
+];
+/** Rider-facing fields that would say who may ride. */
+const ELIGIBILITY_FIELDS = ['serviceName', 'sourceLabel', 'tripRules', 'bookingInfo', 'hoursNote', 'eligibility', 'serviceHours'];
 
 type Ring = [number, number][];
 
@@ -64,16 +70,25 @@ function hasHours(entry: OnDemandIndexEntry | undefined): boolean {
 }
 
 function serviceText(entry: OnDemandIndexEntry, geometry: OnDemandGeometry | undefined): string {
-  const names = [entry.area.serviceName, entry.area.sourceLabel, entry.agency?.name];
-  for (const f of geometry?.features ?? []) names.push(String(f.id ?? ''), String(f.properties?.name ?? ''));
-  return names.filter(Boolean).join(' ');
+  const area = entry.area as Record<string, unknown>;
+  const texts: unknown[] = [...ELIGIBILITY_FIELDS.map(field => area[field]), entry.agency?.name];
+  for (const zone of Object.values((area.zoneMetadata ?? {}) as Record<string, Record<string, unknown>>)) {
+    texts.push(...ELIGIBILITY_FIELDS.map(field => zone?.[field]));
+  }
+  for (const f of geometry?.features ?? []) texts.push(f.id, f.properties?.name, f.properties?.serviceName);
+  return texts.filter(t => typeof t === 'string' || typeof t === 'number').join(' ');
 }
 
 /** Problems with a release on its own and against what's live (null live = first publish). */
 export function evaluateOnDemandRelease(
   next: OnDemandSnapshot,
   live: OnDemandSnapshot | null,
-  options: { audience: 'beta' | 'public'; now?: Date },
+  options: {
+    audience: 'beta' | 'public';
+    /** Services promoted to the public site, kept apart from each entry's own `public` field. */
+    promoted: ReadonlySet<string>;
+    now?: Date;
+  },
 ): OnDemandFinding[] {
   const findings: OnDemandFinding[] = [];
   const now = options.now ?? new Date();
@@ -99,9 +114,14 @@ export function evaluateOnDemandRelease(
       }
     }
     const text = serviceText(entry, geometry);
-    if (ELIGIBILITY_ONLY.test(text)) add(entry.slug, 'paratransit', 'red', 'looks eligibility-only; never drawn');
+    if (ELIGIBILITY_ONLY.some(pattern => pattern.test(text))) add(entry.slug, 'paratransit', 'red', 'looks eligibility-only; never drawn');
     if (/placeholder/i.test(text)) add(entry.slug, 'placeholder', 'red', 'placeholder zone');
-    if (options.audience === 'public' && !entry.public) add(entry.slug, 'leak', 'red', 'beta-only service in the public release');
+    if (options.audience === 'public' && !options.promoted.has(entry.slug)) {
+      add(entry.slug, 'leak', 'red', 'service not promoted is in the public release');
+    }
+    if (entry.public !== options.promoted.has(entry.slug)) {
+      add(entry.slug, 'leak', 'red', `marked ${entry.public ? 'public' : 'beta-only'} but ${options.promoted.has(entry.slug) ? '' : 'not '}promoted`);
+    }
 
     const retrieved = entry.area.sourceRetrievedAt ? Date.parse(entry.area.sourceRetrievedAt) : NaN;
     if (Number.isNaN(retrieved)) {

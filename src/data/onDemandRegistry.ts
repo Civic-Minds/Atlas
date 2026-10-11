@@ -73,3 +73,9 @@ export const STANDALONE_ON_DEMAND_AGENCIES = [
   LEAMINGTON_LT_GO_ON_DEMAND_AGENCY,
   WINKLER_ON_DEMAND_AGENCY,
 ] as const;
+
+/**
+ * Services promoted to the public site, one by one (CIV-23). Only these are written to the public
+ * bucket, and the publish gate checks every public release against this list on its own.
+ */
+export const PROMOTED_ON_DEMAND_SLUGS: ReadonlySet<string> = new Set<string>([]);

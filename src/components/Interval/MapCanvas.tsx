@@ -34,7 +34,8 @@ import { describeMapExport, type MapExportBox, type MapExportDetails, type MapEx
 import { getRouteLabel, titleCase } from '../../utils/format';
 import { frequentServiceBand, frequentServiceFeatureKey, frequentServiceQueryKey, type FrequentServiceFrequency, type FrequentServiceWindow } from '../../../shared/frequentService';
 import { effectiveMode, ON_DEMAND_MODE } from '../../../shared/modes';
-import { useOnDemandStatus } from '../../hooks/useOnDemandData';
+import { useOnDemandStatus, useReportOnDemandVisible } from '../../hooks/useOnDemandData';
+import { FEATURES } from '../../../shared/config';
 import type { NightServiceFrequency } from '../../../shared/nightService';
 import { nightServiceKey } from '../../../shared/nightService';
 import { markAtlasLatest } from '../../lib/performance';
@@ -114,9 +115,9 @@ function restoreSelectedRouteAfterExport(map: maplibregl.Map) {
   exportSavedWidths.delete(map);
 }
 
-function MapNoticePill({ children, className = '' }: { children: React.ReactNode; className?: string }) {
+function MapNoticePill({ children, className = '', raised = false }: { children: React.ReactNode; className?: string; raised?: boolean }) {
   return (
-    <div className={`absolute bottom-6 left-6 right-24 sm:right-56 flex justify-center ${Z_PANEL} pointer-events-none`}>
+    <div className={`absolute ${raised ? 'bottom-16' : 'bottom-6'} left-6 right-24 sm:right-56 flex justify-center ${Z_PANEL} pointer-events-none`}>
       <div className={`${MAP_BADGE} h-8 max-w-full ${className}`}>
         {children}
       </div>
@@ -552,11 +553,13 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   // Each zone and stop is filtered on its own hours (zones/stops that aren't
   // running are hidden, like fixed routes); ones with no hours on file stay
   // visible but are drawn muted so they never read as confirmed service.
+  const onDemandShown = FEATURES.onDemand && (selectedModes.size === 0 || selectedModes.has(ON_DEMAND_MODE));
+  useReportOnDemandVisible(onDemandShown);
   const onDemandAgencies = useMemo(() => (
-    selectedModes.size === 0 || selectedModes.has(ON_DEMAND_MODE)
+    onDemandShown
       ? agencies.filter(agency => agency.onDemandServiceArea && (selectedAgencies?.has(agency.slug) ?? true))
       : []
-  ), [agencies, selectedAgencies, selectedModes]);
+  ), [agencies, selectedAgencies, onDemandShown]);
   const onDemandFocus = useMemo<OnDemandFocusTarget | null>(() => (
     selectedOnDemandSlug ? { slug: selectedOnDemandSlug, zoneId: selectedOnDemandZoneId ?? null } : null
   ), [selectedOnDemandSlug, selectedOnDemandZoneId]);
@@ -2357,16 +2360,18 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       )}
 
       {/* Geolocate Button Control Overlay */}
-      {mapHint ? (
-        <MapNoticePill className="px-3 py-1.5 text-xs text-[var(--text-muted)]">
-          {mapHint}
-        </MapNoticePill>
-      ) : onDemandStatus === 'error' && (selectedModes.size === 0 || selectedModes.has(ON_DEMAND_MODE)) ? (
-        // Zones that failed to load must not read as "no on-demand service here" (CIV-50).
+      {onDemandStatus === 'error' && onDemandShown && (
+        // Zones that failed to load must not read as "no on-demand service here" (CIV-50), so no
+        // other hint hides this; a transient hint sits above it instead.
         <MapNoticePill className="px-3 py-1.5 text-xs text-[var(--text-muted)]">
           On-demand areas couldn't load.
         </MapNoticePill>
-      ) : selectedModes.has(ON_DEMAND_MODE) && (
+      )}
+      {mapHint ? (
+        <MapNoticePill raised={onDemandStatus === 'error' && onDemandShown} className="px-3 py-1.5 text-xs text-[var(--text-muted)]">
+          {mapHint}
+        </MapNoticePill>
+      ) : onDemandStatus !== 'error' && selectedModes.has(ON_DEMAND_MODE) && (
         // A missing zone must never read as "no on-demand service here" (CIV-23).
         <MapNoticePill className="px-3 py-1.5 text-xs text-[var(--text-muted)]">
           On-demand coverage is still growing. Not every service is mapped yet.

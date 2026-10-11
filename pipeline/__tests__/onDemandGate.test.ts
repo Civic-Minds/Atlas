@@ -18,14 +18,15 @@ function snapshot(entries: Partial<OnDemandIndexEntry>[], geometries: OnDemandGe
   return { index: { schemaVersion: 1, version: 'v', generatedAt: '', services }, geometries: new Map(geometries.map(g => [g.slug, g])) };
 }
 
-const flags = (s: OnDemandSnapshot, live: OnDemandSnapshot | null = null, audience: 'beta' | 'public' = 'beta') =>
-  evaluateOnDemandRelease(s, live, { audience, now: NOW }).map(f => `${f.severity}:${f.flag}`);
+const NONE = new Set<string>();
+const flags = (s: OnDemandSnapshot, live: OnDemandSnapshot | null = null, audience: 'beta' | 'public' = 'beta', promoted: ReadonlySet<string> = NONE) =>
+  evaluateOnDemandRelease(s, live, { audience, promoted, now: NOW }).map(f => `${f.severity}:${f.flag}`);
 
 describe('on-demand zone gate (CIV-50)', () => {
   it('passes every service Atlas ships today with no red flag', () => {
     const release = buildOnDemandRelease('beta');
     const findings = evaluateOnDemandRelease(
-      { index: release.index, geometries: new Map(release.geometries.map(g => [g.slug, g])) }, null, { audience: 'beta', now: NOW });
+      { index: release.index, geometries: new Map(release.geometries.map(g => [g.slug, g])) }, null, { audience: 'beta', promoted: NONE, now: NOW });
     expect(findings.filter(f => f.severity === 'red')).toEqual([]);
   });
 
@@ -40,8 +41,27 @@ describe('on-demand zone gate (CIV-50)', () => {
       .toContain('red:paratransit');
   });
 
-  it('blocks a beta-only service in the public release', () => {
-    expect(flags(snapshot([{}], [{ slug: 'test', features: [square('z')] }]), null, 'public')).toContain('red:leak');
+  it('blocks a service that was never promoted, even when its entry claims to be public', () => {
+    // A real leak: the entry says public, but the promoted list doesn't name it.
+    const leaked = snapshot([{ public: true }], [{ slug: 'test', features: [square('z')] }]);
+    expect(flags(leaked, null, 'public')).toContain('red:leak');
+    expect(flags(leaked, null, 'public', new Set(['test']))).not.toContain('red:leak');
+  });
+
+  it('blocks a promoted service whose entry is still marked beta-only', () => {
+    expect(flags(snapshot([{}], [{ slug: 'test', features: [square('z')] }]), null, 'beta', new Set(['test']))).toContain('red:leak');
+  });
+
+  it('reads Ada County as a place, not ADA paratransit', () => {
+    const ada = snapshot([{ area: { sourceUrl: 'x', sourceLabel: 'Ada County Highway District map', serviceName: 'Ada County On-Demand', sourceRetrievedAt: '2026-10-01', availability: {} } }], [{ slug: 'test', features: [square('z')] }]);
+    expect(flags(ada)).not.toContain('red:paratransit');
+  });
+
+  it('catches eligibility rules in rider-facing fields, not only names', () => {
+    for (const tripRules of ['Riders must be registered for specialized transit.', 'For seniors and persons with disabilities.', 'Wheel-Trans customers only.']) {
+      const s = snapshot([{ area: { sourceUrl: 'x', sourceLabel: 'x', sourceRetrievedAt: '2026-10-01', availability: {}, tripRules } }], [{ slug: 'test', features: [square('z')] }]);
+      expect(flags(s), tripRules).toContain('red:paratransit');
+    }
   });
 
   it('blocks dropped zones, a shrunken area, lost hours and a removed service', () => {
@@ -54,7 +74,7 @@ describe('on-demand zone gate (CIV-50)', () => {
     expect(flags(shrunk, live)).toContain('red:zone-drop');
     const noHours = snapshot([{ area: { sourceUrl: 'x', sourceLabel: 'x', sourceRetrievedAt: '2026-10-01', availability: undefined } }], [{ slug: 'test', features: [square('a'), square('b')] }]);
     expect(flags(noHours, snapshot([{}], [{ slug: 'test', features: [square('a'), square('b')] }]))).toContain('red:hours-lost');
-    expect(evaluateOnDemandRelease(snapshot([{}], [{ slug: 'test', features: [square('a'), square('b')] }]), live, { audience: 'beta', now: NOW })
+    expect(evaluateOnDemandRelease(snapshot([{}], [{ slug: 'test', features: [square('a'), square('b')] }]), live, { audience: 'beta', promoted: NONE, now: NOW })
       .some(f => f.slug === 'gone' && f.flag === 'zone-drop')).toBe(true);
   });
 
@@ -65,7 +85,7 @@ describe('on-demand zone gate (CIV-50)', () => {
   });
 
   it('lets a reviewed flag through only for the named service and flag', () => {
-    const findings = evaluateOnDemandRelease(snapshot([{}], [{ slug: 'test', features: [square('z')] }]), null, { audience: 'public', now: NOW });
+    const findings = evaluateOnDemandRelease(snapshot([{}], [{ slug: 'test', features: [square('z')] }]), null, { audience: 'public', promoted: NONE, now: NOW });
     expect(heldBack(findings)).toEqual(new Set(['test']));
     expect(heldBack(findings, new Set(['test:leak']))).toEqual(new Set());
     expect(heldBack(findings, new Set(['other:leak']))).toEqual(new Set(['test']));
