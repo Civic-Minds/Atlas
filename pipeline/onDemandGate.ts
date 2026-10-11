@@ -4,6 +4,7 @@
  */
 import type { OnDemandGeometry, OnDemandIndex, OnDemandIndexEntry } from '../shared/onDemandData.js';
 import { localDateIn } from '../shared/onDemandAvailability.js';
+import { agencyTimeZone } from '../src/data/onDemandExport.js';
 
 export type OnDemandFlag =
   | 'invalid'
@@ -65,6 +66,34 @@ function totalArea(geometry: OnDemandGeometry | undefined): number {
   return geometry.features.flatMap(rings).reduce((sum, ring) => sum + ringArea(ring), 0);
 }
 
+/**
+ * Whether a ring crosses or touches itself: a vertex repeated before the closing point (a
+ * figure-eight) or two non-adjacent edges that cross. Map renderers draw such rings unpredictably.
+ */
+export function ringSelfIntersects(ring: Ring): boolean {
+  const n = ring.length - 1; // last point repeats the first
+  if (n < 3) return false;
+  const seen = new Set<string>();
+  for (let i = 0; i < n; i++) {
+    const key = `${ring[i][0]},${ring[i][1]}`;
+    if (seen.has(key)) return true;
+    seen.add(key);
+  }
+  const orient = (a: number[], b: number[], c: number[]) => Math.sign((b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0]));
+  for (let i = 0; i < n; i++) {
+    const a = ring[i], b = ring[i + 1];
+    const minX = Math.min(a[0], b[0]), maxX = Math.max(a[0], b[0]), minY = Math.min(a[1], b[1]), maxY = Math.max(a[1], b[1]);
+    for (let j = i + 2; j < n; j++) {
+      if (i === 0 && j === n - 1) continue; // first and last edges share the closing point
+      const c = ring[j], d = ring[j + 1];
+      if (Math.max(c[0], d[0]) < minX || Math.min(c[0], d[0]) > maxX || Math.max(c[1], d[1]) < minY || Math.min(c[1], d[1]) > maxY) continue;
+      const o1 = orient(a, b, c), o2 = orient(a, b, d), o3 = orient(c, d, a), o4 = orient(c, d, b);
+      if (o1 !== o2 && o3 !== o4 && o1 !== 0 && o2 !== 0 && o3 !== 0 && o4 !== 0) return true;
+    }
+  }
+  return false;
+}
+
 function validCoordinate(c: unknown): boolean {
   return Array.isArray(c) && typeof c[0] === 'number' && typeof c[1] === 'number'
     && c[0] >= -180 && c[0] <= 180 && c[1] >= -90 && c[1] <= 90;
@@ -113,6 +142,10 @@ export function evaluateOnDemandRelease(
           add(entry.slug, 'invalid', 'red', `zone ${feature.id ?? '?'} has an open ring`);
         }
         if (!ring.every(validCoordinate)) add(entry.slug, 'invalid', 'red', `zone ${feature.id ?? '?'} has a coordinate out of range`);
+        else if (ringSelfIntersects(ring)) {
+          const name = (feature.properties as { areaName?: string } | null)?.areaName ?? feature.id ?? '?';
+          add(entry.slug, 'invalid', 'red', `zone ${name} crosses itself`);
+        }
       }
     }
     for (const stop of geometry.stopFeatures ?? []) {
@@ -145,16 +178,16 @@ export function evaluateOnDemandRelease(
     }
 
     // Backstop only: the release build already drops zones past their end date.
+    // The agency's local date, from its config time zone, exactly as the release build reads it.
+    const today = localDateIn(agencyTimeZone(entry.slug, entry.agency), now);
     const zones = Object.entries((entry.area as { zoneMetadata?: Record<string, { validUntil?: string }> }).zoneMetadata ?? {});
     for (const [name, zone] of [['(service)', entry.area as { validUntil?: string }] as const, ...zones]) {
-      const until = zone?.validUntil ? Date.parse(`${zone.validUntil}T23:59:59Z`) : NaN;
-      if (!Number.isNaN(until) && until < now.getTime()) add(entry.slug, 'expired-zone', 'red', `${name} ran until ${zone!.validUntil}`);
+      if (zone?.validUntil && zone.validUntil < today) add(entry.slug, 'expired-zone', 'red', `${name} ran until ${zone.validUntil}`);
     }
 
     const before = live?.index.services.find(s => s.slug === entry.slug);
     if (before) {
       // Live zones that have since passed their end date are expected to go, not a drop.
-      const today = localDateIn(typeof entry.agency?.timezone === 'string' ? entry.agency.timezone : undefined, now);
       const ended = new Set(Object.entries((before.area as { zoneMetadata?: Record<string, { validUntil?: string }> }).zoneMetadata ?? {})
         .filter(([, zone]) => zone?.validUntil && zone.validUntil < today).map(([name]) => name));
       const liveGeometry = live?.geometries.get(entry.slug);

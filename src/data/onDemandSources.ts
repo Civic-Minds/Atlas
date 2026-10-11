@@ -53,6 +53,10 @@ export function sourceProblems(source: OnDemandSource, fileName?: string): strin
     const name = (f.properties as { areaName?: string } | null)?.areaName;
     if (name) zoneNames.add(name);
   }
+  // Every zone and stop names the map data it was taken from, so each shape can be re-fetched.
+  const missingSource = [...(source.features ?? []), ...(source.stopFeatures ?? [])]
+    .filter(f => !(f.properties as { sourceUrl?: string } | null)?.sourceUrl).length;
+  if (missingSource > 0) problems.push(`${where}: ${missingSource} zones/stops have no properties.sourceUrl (the map-data URL)`);
   for (const name of Object.keys(source.area?.zoneMetadata ?? {})) {
     if (!zoneNames.has(name)) problems.push(`${where}: zoneMetadata "${name}" matches no zone's or stop's areaName`);
   }

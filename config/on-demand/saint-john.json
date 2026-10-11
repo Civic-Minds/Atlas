@@ -142364,7 +142364,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Green Head Rd. & Balmoral Cres.",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -142380,7 +142381,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "468 Green Head Road",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -142396,7 +142398,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Dwyer Rd. & Russell Hill Rd.",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -142412,7 +142415,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Dwyer Rd. & Balmoral Cr.",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -142428,7 +142432,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Kingsville Rd. & Violet St.",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -142444,7 +142449,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "162 Milford Road",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -142460,7 +142466,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Milford Rd. & Kingsville Rd.",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -142476,7 +142483,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Milford Road & Allison Street",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -142492,7 +142500,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Dwyer Road & River Hill Dr.",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -142508,7 +142517,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "233 Milford Road",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -142524,7 +142534,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "572 Harding Street West",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -142540,7 +142551,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Manawagonish Rd. & Orange St. West",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -142556,7 +142568,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Green Head Rd. & Milford Rd.",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -142572,7 +142585,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Manawagonish Rd. & Coster St.",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -142588,7 +142602,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Lancaster Mall",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -142604,7 +142619,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Dexter Dr. & Mollins Dr.",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -142620,7 +142636,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Main St. West & Walnut St.",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -142636,7 +142653,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Greendale Cr. & Mollins Dr.",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -142652,7 +142670,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Greendale Cr. & Dever Rd.",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -142668,7 +142687,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Dever Rd. & Green Head Rd.",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -142684,7 +142704,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "230 River Hill Drive",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -142700,7 +142721,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Dominion Park Road & LeBlanc Court",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -142716,7 +142738,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Dominion Park",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -142732,7 +142755,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "670 Ready Street",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -142748,7 +142772,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Dever Road & Hughes Lane",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -142764,7 +142789,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Manawagonish Road & Bayview Drive",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -142780,7 +142806,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "75 Scotiaview Drive",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -142796,7 +142823,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Westwind Place",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -142812,7 +142840,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Fairville Blvd Irving",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -142828,7 +142857,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Across from Fairville Blvd. Plaza",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -142844,7 +142874,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Fairville Blvd & Plaza Av.",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -142860,7 +142891,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Pet Coral - Fairville Blvd.",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -142876,7 +142908,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Fairville Blvd. & Linton Rd.",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -142892,7 +142925,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Manawagonish Rd. ( Hillcrest Village )",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -142908,7 +142942,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Ridgewood",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -142924,7 +142959,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Centennial Dr. & Horsler Dr.",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -142940,7 +142976,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Manawagonish Road",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -142956,7 +142993,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Central Avenue",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -142972,7 +143010,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Anderson Dr. & Lorne Ave.",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -142988,7 +143027,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Fairville Blvd. across from Canadian Tire",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -143004,7 +143044,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Canadian Tire - Fairville Blvd.",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -143020,7 +143061,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Lancaster Mall",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -143036,7 +143078,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Horsler Dr. & Hillcrest Dr.",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -143052,7 +143095,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Manawagonish Rd. & Ambercrest Ct.",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -143068,7 +143112,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Manchester Av. & Manawagonish Rd.",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -143084,7 +143129,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Manchester Av. & Sunset Dr.",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -143100,7 +143146,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Manchester Av. & Dever Rd.",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -143116,7 +143163,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Manchester Av. & Glenwood Dr.",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -143132,7 +143180,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Milford Rd. & Violet St.",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -143148,7 +143197,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Manawagonish Road & Pickard Street",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -143164,7 +143214,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Porter Street & Hawkes Drive",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -143180,7 +143231,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Bay Street & Gault Road",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -143196,7 +143248,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Gault Road & Hayes Avenue",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -143212,7 +143265,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "208 Gault Road",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -143228,7 +143282,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "340 Gault Road",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -143244,7 +143299,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "70 Gault Road",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -143260,7 +143316,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Manawagonish Road & Day Drive",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -143276,7 +143333,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Manawagonish Road & Westgate Drive",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -143292,7 +143350,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Downsview Drive & Westgate Drive",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -143308,7 +143367,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "48 Downsview Drive",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -143324,7 +143384,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Ridge Row & Lewelyn Avenue",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -143340,7 +143401,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "1700 Manawagonish Road",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -143356,7 +143418,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Dantes Drive & Corsica Court",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -143372,7 +143435,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Manawagonish Rd. & Gault Rd.",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -143388,7 +143452,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Sand Cove Road / Lilac Lane",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -143404,7 +143469,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Sand Cove Road / Driftwood Lane",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -143420,7 +143486,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Maritime Opportunity Center",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -143436,7 +143503,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "940 Sand Cove Road",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -143452,7 +143520,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "920 Sand Cove Road",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -143468,7 +143537,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Fairville Blvd. Plaza (Sobeys)",
-        "areaName": "West"
+        "areaName": "West",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/On_Demand_Bus_Stops_West/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -143484,7 +143554,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Woodward Av. & Conifer Cr.",
-        "areaName": "Millidgeville"
+        "areaName": "Millidgeville",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/North_On_Demand_Bus_Stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -143500,7 +143571,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Cedarwood Dr. & Birchdale Cr.",
-        "areaName": "Millidgeville"
+        "areaName": "Millidgeville",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/North_On_Demand_Bus_Stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -143516,7 +143588,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Cedarwood Dr. & Leeward Ln.",
-        "areaName": "Millidgeville"
+        "areaName": "Millidgeville",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/North_On_Demand_Bus_Stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -143532,7 +143605,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Blanchard Ln. & Rivershore Dr.",
-        "areaName": "Millidgeville"
+        "areaName": "Millidgeville",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/North_On_Demand_Bus_Stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -143548,7 +143622,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Admiralty Dr. & Anchorage Av.",
-        "areaName": "Millidgeville"
+        "areaName": "Millidgeville",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/North_On_Demand_Bus_Stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -143564,7 +143639,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Ragged Point Rd. & Batten Terr.",
-        "areaName": "Millidgeville"
+        "areaName": "Millidgeville",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/North_On_Demand_Bus_Stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -143580,7 +143656,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Boars Head Rd. & Woodward Av.",
-        "areaName": "Millidgeville"
+        "areaName": "Millidgeville",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/North_On_Demand_Bus_Stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -143596,7 +143673,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Kennebec Manor - Woodward Avenue",
-        "areaName": "Millidgeville"
+        "areaName": "Millidgeville",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/North_On_Demand_Bus_Stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -143612,7 +143690,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Woodward Avenue",
-        "areaName": "Millidgeville"
+        "areaName": "Millidgeville",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/North_On_Demand_Bus_Stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -143628,7 +143707,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Boars Head Rd. & McIntosh St.",
-        "areaName": "Millidgeville"
+        "areaName": "Millidgeville",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/North_On_Demand_Bus_Stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -143644,7 +143724,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Boars Head Rd. & Cambridge Dr.",
-        "areaName": "Millidgeville"
+        "areaName": "Millidgeville",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/North_On_Demand_Bus_Stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -143660,7 +143741,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Daniel Av. & Millidge Av.",
-        "areaName": "Millidgeville"
+        "areaName": "Millidgeville",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/North_On_Demand_Bus_Stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -143676,7 +143758,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Millidge Av. & Park Lawn Ct.",
-        "areaName": "Millidgeville"
+        "areaName": "Millidgeville",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/North_On_Demand_Bus_Stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -143692,7 +143775,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Kennebecasis Dr. & Meadowbank Av.",
-        "areaName": "Millidgeville"
+        "areaName": "Millidgeville",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/North_On_Demand_Bus_Stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -143708,7 +143792,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Kennebecasis Dr. & Crown Hill Cr.",
-        "areaName": "Millidgeville"
+        "areaName": "Millidgeville",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/North_On_Demand_Bus_Stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -143724,7 +143809,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Bedell Av. & Schofield Ct.",
-        "areaName": "Millidgeville"
+        "areaName": "Millidgeville",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/North_On_Demand_Bus_Stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -143740,7 +143826,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Marlin Dr. & Marlin Ct.",
-        "areaName": "Millidgeville"
+        "areaName": "Millidgeville",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/North_On_Demand_Bus_Stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -143756,7 +143843,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Daniel Av. & Westminster Ct.",
-        "areaName": "Millidgeville"
+        "areaName": "Millidgeville",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/North_On_Demand_Bus_Stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -143772,7 +143860,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Ray St. & Black St.",
-        "areaName": "Millidgeville"
+        "areaName": "Millidgeville",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/North_On_Demand_Bus_Stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -143788,7 +143877,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Hill Heights Rd. & Tudor Ln.",
-        "areaName": "Millidgeville"
+        "areaName": "Millidgeville",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/North_On_Demand_Bus_Stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -143804,7 +143894,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "976 Millidge Avenue",
-        "areaName": "Millidgeville"
+        "areaName": "Millidgeville",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/North_On_Demand_Bus_Stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -143820,7 +143911,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "971 Millidge Avenue",
-        "areaName": "Millidgeville"
+        "areaName": "Millidgeville",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/North_On_Demand_Bus_Stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -143836,7 +143928,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "171 Ragged Point Road",
-        "areaName": "Millidgeville"
+        "areaName": "Millidgeville",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/North_On_Demand_Bus_Stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -143852,7 +143945,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Millidge Av. & University Av.",
-        "areaName": "Millidgeville"
+        "areaName": "Millidgeville",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/North_On_Demand_Bus_Stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -143868,7 +143962,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Old Fire Station (Millidge Ave.)",
-        "areaName": "Millidgeville"
+        "areaName": "Millidgeville",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/North_On_Demand_Bus_Stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -143884,7 +143979,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "20 Daniel Avenue",
-        "areaName": "Millidgeville"
+        "areaName": "Millidgeville",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/North_On_Demand_Bus_Stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -143900,7 +143996,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Black St. & Daniel Av.",
-        "areaName": "Millidgeville"
+        "areaName": "Millidgeville",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/North_On_Demand_Bus_Stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -143916,7 +144013,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Black St. & Daniel Av.",
-        "areaName": "Millidgeville"
+        "areaName": "Millidgeville",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/North_On_Demand_Bus_Stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -143932,7 +144030,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Millidge Av. & Park Lawn Ct.",
-        "areaName": "Millidgeville"
+        "areaName": "Millidgeville",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/North_On_Demand_Bus_Stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -143948,7 +144047,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Kennebecasis Dr. & Meadowbank Av.",
-        "areaName": "Millidgeville"
+        "areaName": "Millidgeville",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/North_On_Demand_Bus_Stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -143964,7 +144064,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Black St. & Ray St.",
-        "areaName": "Millidgeville"
+        "areaName": "Millidgeville",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/North_On_Demand_Bus_Stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -143980,7 +144081,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Woodward Avenue",
-        "areaName": "Millidgeville"
+        "areaName": "Millidgeville",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/North_On_Demand_Bus_Stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -143996,7 +144098,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Woodward Avenue",
-        "areaName": "Millidgeville"
+        "areaName": "Millidgeville",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/North_On_Demand_Bus_Stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -144012,7 +144115,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Boars Head Rd. & Woodward Av.",
-        "areaName": "Millidgeville"
+        "areaName": "Millidgeville",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/North_On_Demand_Bus_Stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -144028,7 +144132,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Boars Head Rd. & Cambridge Dr.",
-        "areaName": "Millidgeville"
+        "areaName": "Millidgeville",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/North_On_Demand_Bus_Stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -144044,7 +144149,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Boars Head Rd. & McIntosh St.",
-        "areaName": "Millidgeville"
+        "areaName": "Millidgeville",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/North_On_Demand_Bus_Stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -144060,7 +144166,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "37 Cedarwood Drive",
-        "areaName": "Millidgeville"
+        "areaName": "Millidgeville",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/North_On_Demand_Bus_Stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -144076,7 +144183,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "81 Cedarwood Drive",
-        "areaName": "Millidgeville"
+        "areaName": "Millidgeville",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/North_On_Demand_Bus_Stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -144092,7 +144200,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Anchorage Av. & Admiralty Dr.",
-        "areaName": "Millidgeville"
+        "areaName": "Millidgeville",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/North_On_Demand_Bus_Stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -144108,7 +144217,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Rivershore Dr. & Blanchard Ln.",
-        "areaName": "Millidgeville"
+        "areaName": "Millidgeville",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/North_On_Demand_Bus_Stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -144124,7 +144234,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Kennebecasis Dr. & Lentook Av.",
-        "areaName": "Millidgeville"
+        "areaName": "Millidgeville",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/North_On_Demand_Bus_Stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -144140,7 +144251,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Kennebecasis Drive & Tucker Park",
-        "areaName": "Millidgeville"
+        "areaName": "Millidgeville",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/North_On_Demand_Bus_Stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -144156,7 +144268,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "1900 Kennebecasis Lift Station",
-        "areaName": "Millidgeville"
+        "areaName": "Millidgeville",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/North_On_Demand_Bus_Stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -144172,7 +144285,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Samuel-de-Champlain",
-        "areaName": "Millidgeville"
+        "areaName": "Millidgeville",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/North_On_Demand_Bus_Stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -144188,7 +144302,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Lakeview Drive & Charles St. East",
-        "areaName": "East"
+        "areaName": "East",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/East_Flex_Bus_Stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -144204,7 +144319,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "McNamara Dr. & Dianne St.",
-        "areaName": "East"
+        "areaName": "East",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/East_Flex_Bus_Stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -144220,7 +144336,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Willie Av. & Summit Dr.",
-        "areaName": "East"
+        "areaName": "East",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/East_Flex_Bus_Stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -144236,7 +144353,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "255 Lakeview Drive",
-        "areaName": "East"
+        "areaName": "East",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/East_Flex_Bus_Stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -144252,7 +144370,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Bing Av. & David St.",
-        "areaName": "East"
+        "areaName": "East",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/East_Flex_Bus_Stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -144268,7 +144387,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Bon Accord Dr. & Inverness Pl.",
-        "areaName": "East"
+        "areaName": "East",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/East_Flex_Bus_Stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -144284,7 +144404,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Mountain View Dr. & Via Calabria St.",
-        "areaName": "East"
+        "areaName": "East",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/East_Flex_Bus_Stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -144300,7 +144421,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "219 Mountain View Dr.",
-        "areaName": "East"
+        "areaName": "East",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/East_Flex_Bus_Stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -144316,7 +144438,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Little River Reservoir (Park Side)",
-        "areaName": "East"
+        "areaName": "East",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/East_Flex_Bus_Stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -144332,7 +144455,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Josselyn Rd.",
-        "areaName": "East"
+        "areaName": "East",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/East_Flex_Bus_Stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -144348,7 +144472,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Eugene's Way & Josselyn Rd.",
-        "areaName": "East"
+        "areaName": "East",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/East_Flex_Bus_Stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -144364,7 +144489,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "McAllister Place",
-        "areaName": "East"
+        "areaName": "East",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/East_Flex_Bus_Stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -144380,7 +144506,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Mountain Rd & Morley Cr. (Church Side)",
-        "areaName": "East"
+        "areaName": "East",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/East_Flex_Bus_Stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -144396,7 +144523,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Mountain Rd & Mountain View Dr (Top of Mountain)",
-        "areaName": "East"
+        "areaName": "East",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/East_Flex_Bus_Stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -144412,7 +144540,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "McAllister Dr & Highmeadow Dr (Highmeadow Side)",
-        "areaName": "East"
+        "areaName": "East",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/East_Flex_Bus_Stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -144428,7 +144557,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Loch Lomond Rd & Bon Accord",
-        "areaName": "East"
+        "areaName": "East",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/East_Flex_Bus_Stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -144444,7 +144574,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "1433 Loch Lomond Rd",
-        "areaName": "East"
+        "areaName": "East",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/East_Flex_Bus_Stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -144460,7 +144591,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Guardian Drugs- Loch Lomond",
-        "areaName": "East"
+        "areaName": "East",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/East_Flex_Bus_Stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -144476,7 +144608,8 @@
         "agencySlug": "saint-john",
         "serviceType": "on-demand",
         "stopName": "Westmorland Rd. & McAllister Dr. (Westbound)",
-        "areaName": "East"
+        "areaName": "East",
+        "sourceUrl": "https://services.arcgis.com/DLk7hgTJeJILuEBg/arcgis/rest/services/East_Flex_Bus_Stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",

@@ -2523,7 +2523,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Towne Centre Mall",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -2539,7 +2540,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Eastlink Centre",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -2555,7 +2557,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Northwestern Polytechnic",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -2571,7 +2574,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Prairie Mall",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -2587,7 +2591,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Resources Rd. - 94 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -2603,7 +2608,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "88 Ave. - 96 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -2619,7 +2625,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "96 St. - 85 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -2635,7 +2642,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "100 St. - 84 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -2651,7 +2659,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Mission Heights Dr. - 83 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -2667,7 +2676,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Mission Heights Dr. - Michaelis Blvd.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -2683,7 +2693,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Mission Heights Dr. - 76 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -2699,7 +2710,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Mission Heights Dr. - Kateri Dr.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -2715,7 +2727,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Kateri Dr. - 71 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -2731,7 +2744,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Westpointe Dr. - 84 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -2747,7 +2761,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "St. Joseph High School",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -2763,7 +2778,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Westpointe Dr. - 81 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -2779,7 +2795,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Westpointe Dr. - 77 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -2795,7 +2812,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "106 St. - 73 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -2811,7 +2829,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Westpointe Dr. - 75 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -2827,7 +2846,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Kateri Dr. - 107 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -2843,7 +2863,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Pinnacle Blvd. - 114 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -2859,7 +2880,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "76 Ave. - Canfor Hauling Rd.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -2875,7 +2897,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Pinnacle Blvd. - Pinnacle Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -2891,7 +2914,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Pinnacle Dr. - Pinnacle Way",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -2907,7 +2931,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Pinnacle St. - Pinnacle Dr.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -2923,7 +2948,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Pinnacle Dr. - Pinnacle Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -2939,7 +2965,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Pinnacle St. - 68 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -2955,7 +2982,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Pinnacle Dr. - Pinnacle Grove",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -2971,7 +2999,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "114 St. - 69 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -2987,7 +3016,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Pinnacle Dr. - 112 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -3003,7 +3033,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Pinnacle Dr. - 112 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -3019,7 +3050,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "114 St. - 71 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -3035,7 +3067,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Pinnacle Dr. - Pinnacle Gate",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -3051,7 +3084,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "114 St. - 73 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -3067,7 +3101,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Pinnacle Dr. - Pinnacle Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -3083,7 +3118,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Westpointe Dr. - 75 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -3099,7 +3135,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Pinnacle Dr. - Pinnacle Way",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -3115,7 +3152,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Westpointe Dr. - 78 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -3131,7 +3169,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Westpointe Dr. - 81 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -3147,7 +3186,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Wespointe Dr. - 84 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -3163,7 +3203,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "116 St. - 97 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -3179,7 +3220,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "104 Ave. - 114C St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -3195,7 +3237,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "104 Ave. - 112 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -3211,7 +3254,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "104 Ave. - 111 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -3227,7 +3271,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "110 St. - 106 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -3243,7 +3288,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Grande Prairie Regional Hospital",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -3259,7 +3305,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "107 Ave. - 109 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -3275,7 +3322,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Industrial Training Centre",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -3291,7 +3339,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "106 St. - 100 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -3307,7 +3356,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Bonnetts Energy Centre",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -3323,7 +3373,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "97 Ave. - 98 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -3339,7 +3390,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "100 St. - 95 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -3355,7 +3407,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "100 St. - 93 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -3371,7 +3424,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "100 St. - 90 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -3387,7 +3441,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "100 St. - 88 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -3403,7 +3458,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "100 St. - 85 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -3419,7 +3475,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "100 St. - 80 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -3435,7 +3492,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Prairie Rd. - 100 St. ",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -3451,7 +3509,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Prairie Rd. - 99 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -3467,7 +3526,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Patterson Dr. - Prairie Rd.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -3483,7 +3543,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Patterson Dr. - 74 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -3499,7 +3560,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "72 Ave. - Patterson Dr.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -3515,7 +3577,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "72 Ave. - 98 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -3531,7 +3594,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "100 St. - 68 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -3547,7 +3611,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "St. Joseph High School",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -3563,7 +3628,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "100 St. - 70 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -3579,7 +3645,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "72 Ave. - 99A St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -3595,7 +3662,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "72 Ave. - 98 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -3611,7 +3679,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "72 Ave. - 94 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -3627,7 +3696,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Poplar Dr. - 72 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -3643,7 +3713,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Poplar Dr. - 76 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -3659,7 +3730,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Poplar Dr. - 79 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -3675,7 +3747,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Prairie Rd. - 97 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -3691,7 +3764,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Patterson Dr. - Prairie Rd.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -3707,7 +3781,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Patterson Dr. - 83 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -3723,7 +3798,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "99 St. - 85 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -3739,7 +3815,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "98 St. - 87 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -3755,7 +3832,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "91 Ave. - 99 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -3771,7 +3849,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "92 Ave. - 98A St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -3787,7 +3866,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "92 Ave. - 97 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -3803,7 +3883,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Resources Rd. - 93 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -3819,7 +3900,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "100 Ave. - 100 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -3835,7 +3917,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Muskoseepi Park",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -3851,7 +3934,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "106 St. - 101 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -3867,7 +3951,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Industrial Training Centre",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -3883,7 +3968,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "107 Ave. - 109 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -3899,7 +3985,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "110 St. - 106 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -3915,7 +4002,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "104 Ave. - 111 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -3931,7 +4019,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "104 Ave. - 112 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -3947,7 +4036,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "104 Ave. - 114B St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -3963,7 +4053,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Canadian Tire on 101 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -3979,7 +4070,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "101 Ave. - 120 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -3995,7 +4087,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "120 St. - 99 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -4011,7 +4104,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "97 Ave. - 119 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -4027,7 +4121,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Winners on 97 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -4043,7 +4138,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Costco",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -4059,7 +4155,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "98 Ave. - 114 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -4075,7 +4172,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "98 Ave. - 112 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -4091,7 +4189,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "112 St. - 96 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -4107,7 +4206,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "96 Ave. - 111 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -4123,7 +4223,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "96 Ave. - 110 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -4139,7 +4240,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "109 St. - 97 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -4155,7 +4257,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Westside Dr. - 107 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -4171,7 +4274,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "106 St. - 100 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -4187,7 +4291,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "108 St. - 117 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -4203,7 +4308,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Royal Oaks Dr. - 107A St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -4219,7 +4325,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Royal Oaks Dr. - 105 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -4235,7 +4342,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Royal Oaks Dr. - 103B St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -4251,7 +4359,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "102 St. - 123 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -4267,7 +4376,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "121 Ave. - 100 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -4283,7 +4393,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "121 Ave. - 99 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -4299,7 +4410,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "100 St. - 114 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -4315,7 +4427,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "100 St. - 110 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -4331,7 +4444,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "100 St. - 102 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -4347,7 +4461,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "92 Ave. - 97 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -4363,7 +4478,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "92 Ave. - 98 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -4379,7 +4495,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "91 Ave - 99 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -4395,7 +4512,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "98 St. - 88 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -4411,7 +4529,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "99 St. - 85 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -4427,7 +4546,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Patterson Dr. - 80 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -4443,7 +4563,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Prairie Rd. - Patterson Dr.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -4459,7 +4580,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Poplar Dr. - 79 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -4475,7 +4597,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Poplar Dr. - 74 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -4491,7 +4614,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Poplar Dr. - 72 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -4507,7 +4631,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Poplar Dr. - 70 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -4523,7 +4648,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Poplar Dr. - 65 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -4539,7 +4665,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "63 Ave. - 96B St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -4555,7 +4682,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Country Club",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -4571,7 +4699,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "99 St. - 63 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -4587,7 +4716,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "100 St. - 67 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -4603,7 +4733,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "St. Joseph High School",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -4619,7 +4750,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "100 St. - 75 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -4635,7 +4767,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "100 St. - 82 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -4651,7 +4784,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "100 St. - 86 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -4667,7 +4801,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "100 St. - 88 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -4683,7 +4818,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "100 St. - 90 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -4699,7 +4835,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "100 St. - 93 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -4715,7 +4852,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "100 St. - 95 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -4731,7 +4869,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "100 St. - 103 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -4747,7 +4886,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "100 St. - 109 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -4763,7 +4903,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "100 St. - 113 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -4779,7 +4920,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "116 Ave. - 99 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -4795,7 +4937,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Crystal Ridge Rd. - 119A Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -4811,7 +4954,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Crystal Ridge Rd. - 121 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -4827,7 +4971,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "121 Ave. - 94A St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -4843,7 +4988,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Lakeland Dr. - 124 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -4859,7 +5005,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "95 St. - Lakeland Dr.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -4875,7 +5022,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Lakeland Dr. - 93 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -4891,7 +5039,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Lakeland Dr. - 90 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -4907,7 +5056,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Crystal Lake Dr. - 128 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -4923,7 +5073,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Crystal Lake Dr. - 124 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -4939,7 +5090,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Crystal Lake Dr. - 89A St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -4955,7 +5107,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Crystal Lake Dr. - 91B St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -4971,7 +5124,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "92 St. - 114 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -4987,7 +5141,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "92 St. - 112 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -5003,7 +5158,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "111 Ave. - 93 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -5019,7 +5175,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "93A St. - 108 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -5035,7 +5192,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "93 St. - 106 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -5051,7 +5209,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "93 St. - 101 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -5067,7 +5226,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "100 Ave. - 94 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -5083,7 +5243,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "100 Ave. - 96 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -5099,7 +5260,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "100 Ave. - 97 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -5115,7 +5277,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "99 Ave. - 97A St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -5131,7 +5294,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "100 Ave. - 96 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -5147,7 +5311,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "100 Ave. - 94 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -5163,7 +5328,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "93 St. - 98 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -5179,7 +5345,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "93 St. - 96 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -5195,7 +5362,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "93 St. - Juno Crossing",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -5211,7 +5379,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "93 Ave. - 92A St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -5227,7 +5396,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "92 Ave. - 90 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -5243,7 +5413,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Willow Dr. - 92 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -5259,7 +5430,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Willow Dr. - 96 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -5275,7 +5447,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "96 Ave. - 91 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -5291,7 +5464,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "92 St. - 96 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -5307,7 +5481,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "92 St. - 102 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -5323,7 +5498,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "104 Ave. - 91 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -5339,7 +5515,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "90 St. - 105 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -5355,7 +5532,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "90 St. - 106 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -5371,7 +5549,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Holy Cross School",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -5387,7 +5566,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "111 St. - 92 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -5403,7 +5583,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "92 St. - 114 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -5419,7 +5600,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Lakeland Dr. - 116 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -5435,7 +5617,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "116 Ave. - 99 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -5451,7 +5634,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "96 St. - 115 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -5467,7 +5651,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "112 Ave. - 96 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -5483,7 +5668,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "96 St. - 108 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -5499,7 +5685,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "108 Ave. - 97 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -5515,7 +5702,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "98 St. - 108 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -5531,7 +5719,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "QEII Hospital",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -5547,7 +5736,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "GP Public Library",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -5563,7 +5753,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "101 St. - 102 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -5579,7 +5770,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "103 Ave. - 101 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -5595,7 +5787,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "102 St. - 104 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -5611,7 +5804,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "102 St. - 107 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -5627,7 +5821,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "108 Ave. - 103 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -5643,7 +5838,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Composite High School",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -5659,7 +5855,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "112 Ave. - 103 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -5675,7 +5872,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "113 Ave. - 102A St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -5691,7 +5889,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "102 St. - 120 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -5707,7 +5906,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "115 Ave. - 100 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -5723,7 +5923,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "115 Ave. - 101 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -5739,7 +5940,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "102 St. - 112 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -5755,7 +5957,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "102 St. - 107 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -5771,7 +5974,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "102 St. - 103 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -5787,7 +5991,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "102 St. - 101 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -5803,7 +6008,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Resources Rd. - 94 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -5819,7 +6025,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "128 Ave. - 107 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -5835,7 +6042,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Poplar Dr. - 82 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -5851,7 +6059,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "128 Ave. - 105 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -5867,7 +6076,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "128 Ave. - 104A St. ",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -5883,7 +6093,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "132 Ave. - Arbour Hills Blvd.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -5899,7 +6110,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "133 Ave. - 102 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -5915,7 +6127,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "128 Ave. - 102 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -5931,7 +6144,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Resources Rd. - 68 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -5947,7 +6161,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "100 St. - 132 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -5963,7 +6178,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "88A St. - 65 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -5979,7 +6195,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "100 St. - 128 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -5995,7 +6212,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "62 Ave. - 90 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -6011,7 +6229,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "100 St. - 124 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -6027,7 +6246,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "90 St. - 65 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -6043,7 +6263,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "97B St. - 126 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -6059,7 +6280,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "97B St. - 124 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -6075,7 +6297,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "123 Ave. - 96 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -6091,7 +6314,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Crystal Ridge Rd. - 121 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -6107,7 +6331,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "97 St. - 119 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -6123,7 +6348,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "121 Ave. - 94A St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -6139,7 +6365,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "88 St. - 104 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -6155,7 +6382,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "102 Ave. - Landing Dr.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -6171,7 +6399,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "86 St. - 69 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -6187,7 +6416,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "86 St. - 71 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -6203,7 +6433,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "72 Ave. - 87A St. ",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -6219,7 +6450,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "72 Ave. - 91 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -6235,7 +6467,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "92 St. - 72 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -6251,7 +6484,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "60 Ave. - O'Brien Lake Crescent East",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -6267,7 +6501,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "60 Ave. - O'Brien Lake Crescent West",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -6283,7 +6518,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "O'Brien Lake Dr. - 112 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -6299,7 +6535,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "O'Brien Lake Dr. -111 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -6315,7 +6552,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "O'Brien Lake Dr. - 68 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -6331,7 +6569,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "109 St. - 86 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -6347,7 +6586,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "109 St. - 87 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -6363,7 +6603,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "89 Ave. - 111A St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -6379,7 +6620,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "89 Ave. - 112 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -6395,7 +6637,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "89 Ave. - 115 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -6411,7 +6654,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "84 Ave. - 118 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -6427,7 +6671,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "200 - 500 Kensington",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -6443,7 +6688,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "84 Ave. - 90 St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -6459,7 +6705,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Willow Dr. - 86A St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -6475,7 +6722,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "91 St. - 90C St.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -6491,7 +6739,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "91 St. - 80A Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -6507,7 +6756,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "105 St. - 119 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -6523,7 +6773,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Lakeland Dr. - 119 Ave.",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -6539,7 +6790,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Coppewood Drive - 120 Ave",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -6555,7 +6807,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "Copperwood Drive - 121 Ave",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -6571,7 +6824,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "8730 122 Ave",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",
@@ -6587,7 +6841,8 @@
         "agencySlug": "grande-prairie-on-demand",
         "serviceType": "on-demand",
         "stopName": "55011 Twp RD 714 ",
-        "areaName": "Late Night On-Demand"
+        "areaName": "Late Night On-Demand",
+        "sourceUrl": "https://services7.arcgis.com/2IF4itZw5lplW9PO/arcgis/rest/services/Transit/FeatureServer/9"
       },
       "geometry": {
         "type": "Point",

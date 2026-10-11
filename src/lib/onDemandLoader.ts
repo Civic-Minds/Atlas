@@ -6,6 +6,7 @@
 import type { Agency } from '../App';
 import { BETA_R2_PUBLIC_URL, FEATURES, ON_DEMAND_URL_OVERRIDE, R2_PUBLIC_URL } from '../../shared/config';
 import { BETA_ROLLOUT_NOTICE } from '../../shared/rolloutNotice';
+import { localDateIn, withoutExpiredOnDemandZones } from '../../shared/onDemandAvailability';
 import {
   ON_DEMAND_PREFIX,
   ON_DEMAND_SCHEMA_VERSION,
@@ -56,17 +57,21 @@ export function applyOnDemand(
   catalog: readonly Agency[],
   index: OnDemandIndex | null,
   geometries: ReadonlyMap<string, OnDemandGeometry>,
+  now: Date = new Date(),
 ): Agency[] {
   if (!index) return [...catalog];
+  const timeZoneOf = new Map(catalog.map(a => [a.slug, a.timezone ?? undefined]));
   const area = (slug: string): Agency['onDemandServiceArea'] | undefined => {
     const entry = index.services.find(s => s.slug === slug);
     const geometry = geometries.get(slug);
     if (!entry || !geometry) return undefined;
-    return {
+    // A zone that ended after this release was published is dropped here too, for every surface.
+    const timeZone = timeZoneOf.get(slug) ?? (entry.agency?.timezone as string | undefined);
+    return withoutExpiredOnDemandZones({
       ...(entry.area as Omit<NonNullable<Agency['onDemandServiceArea']>, 'features'>),
       features: geometry.features as NonNullable<Agency['onDemandServiceArea']>['features'],
       ...(geometry.stopFeatures ? { stopFeatures: geometry.stopFeatures as NonNullable<Agency['onDemandServiceArea']>['stopFeatures'] } : {}),
-    };
+    }, localDateIn(timeZone, now));
   };
   const attached = new Set(index.services.filter(s => !s.agency).map(s => s.slug));
   const merged = catalog.map(agency => {

@@ -24561,7 +24561,8 @@
         "agencySlug": "niagara",
         "serviceType": "on-demand",
         "stopName": "St. Catharines Bus Terminal",
-        "areaName": "Lincoln, Pelham, West Lincoln, Grimsby"
+        "areaName": "Lincoln, Pelham, West Lincoln, Grimsby",
+        "sourceUrl": "https://niagaratransit.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2"
       },
       "geometry": {
         "type": "Point",
@@ -24577,7 +24578,8 @@
         "agencySlug": "niagara",
         "serviceType": "on-demand",
         "stopName": "Welland Bus Terminal",
-        "areaName": "Pelham, West Lincoln, Wainfleet, Welland"
+        "areaName": "Pelham, West Lincoln, Wainfleet, Welland",
+        "sourceUrl": "https://niagaratransit.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2"
       },
       "geometry": {
         "type": "Point",
@@ -24593,7 +24595,8 @@
         "agencySlug": "niagara",
         "serviceType": "on-demand",
         "stopName": "Port Colborne City Hall",
-        "areaName": "West Lincoln, Wainfleet, Port Colborne, Fort Erie"
+        "areaName": "West Lincoln, Wainfleet, Port Colborne, Fort Erie",
+        "sourceUrl": "https://niagaratransit.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2"
       },
       "geometry": {
         "type": "Point",
@@ -24609,7 +24612,8 @@
         "agencySlug": "niagara",
         "serviceType": "on-demand",
         "stopName": "Town & Country Plaza",
-        "areaName": "Niagara-on-the-Lake, Niagara Falls"
+        "areaName": "Niagara-on-the-Lake, Niagara Falls",
+        "sourceUrl": "https://niagaratransit.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2"
       },
       "geometry": {
         "type": "Point",
@@ -24625,7 +24629,8 @@
         "agencySlug": "niagara",
         "serviceType": "on-demand",
         "stopName": "Fort Erie Town Hall",
-        "areaName": "Port Colborne, Fort Erie"
+        "areaName": "Port Colborne, Fort Erie",
+        "sourceUrl": "https://niagaratransit.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2"
       },
       "geometry": {
         "type": "Point",
@@ -24641,7 +24646,8 @@
         "agencySlug": "niagara",
         "serviceType": "on-demand",
         "stopName": "Outlet Collection at Niagara",
-        "areaName": "Niagara-on-the-Lake"
+        "areaName": "Niagara-on-the-Lake",
+        "sourceUrl": "https://niagaratransit.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2"
       },
       "geometry": {
         "type": "Point",
@@ -24657,7 +24663,8 @@
         "agencySlug": "niagara",
         "serviceType": "on-demand",
         "stopName": "Niagara College Glendale Campus",
-        "areaName": "Niagara-on-the-Lake"
+        "areaName": "Niagara-on-the-Lake",
+        "sourceUrl": "https://niagaratransit.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2"
       },
       "geometry": {
         "type": "Point",
@@ -24673,7 +24680,8 @@
         "agencySlug": "niagara",
         "serviceType": "on-demand",
         "stopName": "Canadian Drive Hub",
-        "areaName": "Niagara Falls"
+        "areaName": "Niagara Falls",
+        "sourceUrl": "https://niagaratransit.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2"
       },
       "geometry": {
         "type": "Point",
@@ -24689,7 +24697,8 @@
         "agencySlug": "niagara",
         "serviceType": "on-demand",
         "stopName": "Main and Ferry Hub",
-        "areaName": "Niagara Falls"
+        "areaName": "Niagara Falls",
+        "sourceUrl": "https://niagaratransit.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2"
       },
       "geometry": {
         "type": "Point",
@@ -24705,7 +24714,8 @@
         "agencySlug": "niagara",
         "serviceType": "on-demand",
         "stopName": "Morrison-Dorchester Hub",
-        "areaName": "Niagara Falls"
+        "areaName": "Niagara Falls",
+        "sourceUrl": "https://niagaratransit.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2"
       },
       "geometry": {
         "type": "Point",
@@ -24721,7 +24731,8 @@
         "agencySlug": "niagara",
         "serviceType": "on-demand",
         "stopName": "Fort Erie Smart Centre",
-        "areaName": "Fort Erie"
+        "areaName": "Fort Erie",
+        "sourceUrl": "https://niagaratransit.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2"
       },
       "geometry": {
         "type": "Point",
@@ -24737,7 +24748,8 @@
         "agencySlug": "niagara",
         "serviceType": "on-demand",
         "stopName": "Fort Erie Centennial Library",
-        "areaName": "Fort Erie"
+        "areaName": "Fort Erie",
+        "sourceUrl": "https://niagaratransit.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2"
       },
       "geometry": {
         "type": "Point",

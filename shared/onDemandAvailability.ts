@@ -148,6 +148,31 @@ export function localDateIn(timeZone: string | null | undefined, now: Date = new
   }
 }
 
+/**
+ * The service with every zone past its last day removed, along with its hours and any stops tied
+ * only to it. One rule for every surface: the release build, the map, cards and search all use it.
+ */
+export function withoutExpiredOnDemandZones<T extends {
+  features: readonly { properties?: unknown }[];
+  stopFeatures?: readonly { properties?: unknown }[];
+  zoneMetadata?: Record<string, OnDemandZoneDetails>;
+}>(service: T, today: string): T {
+  const expired = new Set(Object.entries(service.zoneMetadata ?? {})
+    .filter(([, zone]) => zone.validUntil && zone.validUntil < today)
+    .map(([name]) => name));
+  if (expired.size === 0) return service;
+  const keepStop = (stop: { properties?: unknown }) => {
+    const names = (areaNameOf(stop.properties) ?? '').split(', ').filter(Boolean);
+    return names.length === 0 || names.some(name => !expired.has(name));
+  };
+  return {
+    ...service,
+    features: service.features.filter(f => !expired.has(areaNameOf(f.properties) ?? '')),
+    ...(service.stopFeatures ? { stopFeatures: service.stopFeatures.filter(keepStop) } : {}),
+    zoneMetadata: Object.fromEntries(Object.entries(service.zoneMetadata ?? {}).filter(([name]) => !expired.has(name))),
+  };
+}
+
 /** A temporary zone (or service) whose last day, validUntil, is before `today`. */
 export function isOnDemandZoneExpired(service: OnDemandServiceDetails, areaName: string | undefined, today: string): boolean {
   const zone = areaName ? service.zoneMetadata?.[areaName] : undefined;

@@ -1903,7 +1903,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Western Ave & Chapman Dr Eastbound",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -1919,7 +1920,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Crossgates Mall Station",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -1935,7 +1937,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Western Ave & Chapman Dr Westbound",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -1951,7 +1954,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Western Ave & Rapp Rd Westbound",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -1967,7 +1971,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Western Ave & Lawton Terrace Westbound",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -1983,7 +1988,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Crossgates Commons Station (North side of street)",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -1999,7 +2005,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Crossgates Commons Station (South side of street)",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -2015,7 +2022,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Western Ave & Johnston Rd Eastbound",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -2031,7 +2039,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "1 Executive Centre Dr (Honeywell)",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -2047,7 +2056,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "286 Executive Centre Dr",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -2063,7 +2073,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Columbia Circle E. Dr & Executive Centre Dr Northbound",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -2079,7 +2090,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "7 Columbia Cir (Excelsior College)",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -2095,7 +2107,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Columbia Cir E & Columbia Cir W-Pine Bush Preserve",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -2111,7 +2124,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Columbia Cir E. Dr & Executive Centre Dr Southbound",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -2127,7 +2141,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Western Ave & Cornell Ave Eastbound",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -2143,7 +2158,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Western Ave & Highwood Circle Eastbound",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -2159,7 +2175,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Western Ave & Clark Parkway Eastbound",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -2175,7 +2192,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Western Ave & Witte Rd Eastbound",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -2191,7 +2209,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Western Ave & Palma Boulevard Eastbound",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -2207,7 +2226,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Western Ave & Homes Terrace Eastbound",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -2223,7 +2243,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Western Ave & Gabriel Terrace Eastbound",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -2239,7 +2260,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Western Ave & Alton Rd Eastbound",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -2255,7 +2277,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Western Ave & Mercy Care Lane Eastbound",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -2271,7 +2294,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Western Ave & Windingbrook Drive Eastbound",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -2287,7 +2311,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Western Ave & Van Wie Terrace Eastbound",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -2303,7 +2328,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Western Ave & Alton Rd Westbound",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -2319,7 +2345,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Western Ave & Camp Terrace Westbound",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -2335,7 +2362,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Western Ave & Kraus Rd Westbound",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -2351,7 +2379,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Western Ave & Gipp Rd Westbound",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -2367,7 +2396,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Western Ave & York Rd Westbound",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -2383,7 +2413,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Western Ave & Witte Rd Westbound",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -2399,7 +2430,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Western Ave & Serafini Village Westbound",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -2415,7 +2447,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Western Ave & Alvinia Rd Westbound",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -2431,7 +2464,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Western Ave & Windingbrook Drive Westbound",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -2447,7 +2481,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Western Ave & Pauline Avenue Westbound",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -2463,7 +2498,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Western Ave & Norman Avenue Westbound",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -2479,7 +2515,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Hamilton Square (Behind Market 32)",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -2495,7 +2532,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Point of Woods (Knollwood Terr)",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -2511,7 +2549,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Pinehurst Estates",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -2527,7 +2566,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Daughters of Sarah Northbound",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -2543,7 +2583,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Teresian House Eastbound",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -2559,7 +2600,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Frontage Rd & Pitch Pine Rd Southbound",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -2575,7 +2617,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Daughters of Sarah Southbound",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -2591,7 +2634,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Teresian House Westbound",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -2607,7 +2651,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Frontage Rd & Pitch Pine Rd Northbound",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -2623,7 +2668,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Corporate Circle / Stewarts",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -2639,7 +2685,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Dr Shaw Road & State Farm Road Northbound",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -2655,7 +2702,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Washington Square & United Way Westbound",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -2671,7 +2719,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Guilderland YMCA",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -2687,7 +2736,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Ashford Drive / Johnston Road",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -2703,7 +2753,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Colwell Law / Great Oaks Office Park",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -2719,7 +2770,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Woodlake Apartments",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -2735,7 +2787,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Gladwish Avenue and New Karner Road",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -2751,7 +2804,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Gladwish Avenue and Pine Knob Drive",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -2767,7 +2821,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Pine Knob Drive and New Karner Road",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -2783,7 +2838,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Regency Park / Yorkshire Drive",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -2799,7 +2855,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Heritage Village",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -2815,7 +2872,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Presidential Way",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -2831,7 +2889,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Hamilton Parc",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -2847,7 +2906,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Nott Road",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -2863,7 +2923,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Mill Hill Court",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -2879,7 +2940,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Hamilton Square",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -2895,7 +2957,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "14 Corporate Circle",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -2911,7 +2974,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "26 Corporate Circle",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -2927,7 +2991,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "38 Corporate Circle",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -2943,7 +3008,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "52 Corporate Circle",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -2959,7 +3025,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Guilderland Town Hall (Thursdays 4-8:30 p.m. only)",
-        "areaName": "Guilderland"
+        "areaName": "Guilderland",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2801_Guilderland_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -2975,7 +3042,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Walmart (Halfmoon US9)",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -2991,7 +3059,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Pine Ridge Apts",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -3007,7 +3076,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Twin Lakes Apartments",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -3023,7 +3093,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Target at The Crossing",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -3039,7 +3110,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "The Home Depot at The Crossing",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -3055,7 +3127,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Clifton Park-Halfmoon Library",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -3071,7 +3144,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Hannaford (Village Plaza)",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -3087,7 +3161,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Clifton Park Center",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -3103,7 +3178,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Kohl's at The Crossing",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -3119,7 +3195,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Maxwell Dr & Southside Dr",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -3135,7 +3212,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "ALDI at Watkins Plaza",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -3151,7 +3229,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Martindale Trailer Park",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -3167,7 +3246,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "D&R Village",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -3183,7 +3263,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Rite Aid Route 9",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -3199,7 +3280,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Market 32 (Park Avenue Clifton Park)",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -3215,7 +3297,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Old Route 146 & Clifton Park Village Rd",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -3231,7 +3314,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Schuyler Ridge Residential Healthcare",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -3247,7 +3331,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Parkwood Plaza",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -3263,7 +3348,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "South Main Street between Alexander J Ave and Bennington Ave Northbound",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -3279,7 +3365,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "S. Main St and Riverside Park South",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -3295,7 +3382,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Pruyn Hill Rd & Prospect St Eastbound",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -3311,7 +3399,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Mechanicville High School",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -3327,7 +3416,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Park Ave & N. 7th Ave",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -3343,7 +3433,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Park Ave & N. 2nd Ave",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -3359,7 +3450,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Elizabeth St & N. 7th Ave",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -3375,7 +3467,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Elizabeth St & N. 3rd Ave",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -3391,7 +3484,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Price Chopper Plaza Mechanicville/Stillwater",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -3407,7 +3501,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Community Care Family Medicine",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -3423,7 +3518,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Bradley Circle & Cemetery Road",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -3439,7 +3535,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Hudson Ave & General Schuyler Lane Southbound",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -3455,7 +3552,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Hudson Ave & Lake Street Southbound",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -3471,7 +3569,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Hudson Ave & Lake Street Northbound",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -3487,7 +3586,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Hudson Ave & Lansing Road Southbound",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -3503,7 +3603,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Hudson Ave & Lansing Road Northbound",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -3519,7 +3620,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Blue Spruce Apartments",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -3535,7 +3637,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "North Central and William Street Southbound",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -3551,7 +3654,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "North Central and William Street Northbound",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -3567,7 +3671,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "North Pointe Apartments West",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -3583,7 +3688,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "North Pointe Apartments North",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -3599,7 +3705,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "North Central Ave & Park Ave Southbound",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -3615,7 +3722,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "North Central Ave & Park Ave Northbound",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -3631,7 +3739,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "South Central Ave & South St Northbound",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -3647,7 +3756,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "South Central Ave & South St Southbound",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -3663,7 +3773,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Saratoga Ave & Viall Ave Eastbound",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -3679,7 +3790,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Saratoga Ave & Viall Ave Westbound",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -3695,7 +3807,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Village Plaza Rd & McDonough Way East",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -3711,7 +3824,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Village Plaza Rd & McDonough Way West",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -3727,7 +3841,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "East Street and Lefko Street Southbound",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -3743,7 +3858,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "East Street and Lefko Street Northbound",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -3759,7 +3875,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "St. Edward Church",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -3775,7 +3892,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Halfmoon Town Hall",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -3791,7 +3909,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Capital Cardiology",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -3807,7 +3926,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Enterprise Avenue",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -3823,7 +3943,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Halfmoon Diner",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -3839,7 +3960,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Halfmoon Parkway and Sitterly Road (US9 Southbound)",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -3855,7 +3977,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Jack Byrne Ford",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -3871,7 +3994,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Mechanicville Elementary",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -3887,7 +4011,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Ortho NY",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -3903,7 +4028,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "St. Luke's on the Hill",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -3919,7 +4045,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Mechanicville Senior Ctr",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -3935,7 +4062,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Green Grocer",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -3951,7 +4079,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Fellows Road",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -3967,7 +4096,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Hollandale Apartments",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -3983,7 +4113,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Midrise Apartments",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -3999,7 +4130,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Sunmark/Cracker Barrel",
-        "areaName": "Southern Saratoga"
+        "areaName": "Southern Saratoga",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2802_Southern_Saratoga_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -4015,7 +4147,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Ballston Ave & Union St Northbound",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -4031,7 +4164,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "High Rock Ave & Circular St",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -4047,7 +4181,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Ballston Ave Trailhead Northbound",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -4063,7 +4198,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Ballston Ave & W. Fenlon St",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -4079,7 +4215,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Ballston Ave & Union St Southbound",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -4095,7 +4232,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Lake Ave & Nelson Ave Westbound",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -4111,7 +4249,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "West Ave & Washington Ave",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -4127,7 +4266,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "New St & YMCA",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -4143,7 +4283,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Lake Ave & Circular St Westbound",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -4159,7 +4300,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Washington St & Freeman Ln",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -4175,7 +4317,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Kirby Rd at Kirby Village",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -4191,7 +4334,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Lincoln Ave & Broadway",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -4207,7 +4351,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "150 Lincoln Ave",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -4223,7 +4368,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "East Ave & Caroline St Northbound",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -4239,7 +4385,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Kirby Rd & Moore Ave",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -4255,7 +4402,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Lake Ave & Nelson Ave Eastbound",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -4271,7 +4419,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Allen Dr & Kirby Rd",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -4287,7 +4436,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "91 Kirby Rd",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -4303,7 +4453,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Ballston Ave Trailhead Southbound",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -4319,7 +4470,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Saratoga Race Course (Frank Sullivan Place)",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -4335,7 +4487,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "East Ave & Caroline St Southbound",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -4351,7 +4504,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "251 Washington St",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -4367,7 +4521,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Lincoln Ave & Southeast St Westbound",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -4383,7 +4538,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Robin & Allen",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -4399,7 +4555,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Stewarts Ice Cream Plant",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -4415,7 +4572,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Church & Kirby",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -4431,7 +4589,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Clinton St & Vermont St Northbound",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -4447,7 +4606,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Spring St & Putnam St",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -4463,7 +4623,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Van Dam St & Woodlawn Ave Westbound",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -4479,7 +4640,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Clinton St & Embury Dr Northbound",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -4495,7 +4657,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Circular St & Phila St Southbound",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -4511,7 +4674,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "92 East Ave",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -4527,7 +4691,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Van Dam St & Clinton St",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -4543,7 +4708,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Skidmore College / Case Center",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -4559,7 +4725,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Embury Apts",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -4575,7 +4742,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Henry St & Caroline St",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -4591,7 +4759,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Clinton St & Embury Dr Southbound",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -4607,7 +4776,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Henry St & Phila St",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -4623,7 +4793,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Clinton St & Vermont St Southbound",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -4639,7 +4810,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Clinton St & Van Dam St",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -4655,7 +4827,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Van Dam St & Woodlawn Ave Eastbound",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -4671,7 +4844,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Broadway & Ellsworth Jones Pl Southbound",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -4687,7 +4861,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Spring St & Henry St",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -4703,7 +4878,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Circular St & Phila St Northbound",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -4719,7 +4895,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Circular St & Lake Ave Northbound",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -4735,7 +4912,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Lake Ave & East Ave Westbound",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -4751,7 +4929,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Broadway @ Congress Park Southbound",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -4767,7 +4946,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Lake Ave & Henry St Westbound",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -4783,7 +4963,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Broadway @ Congress Park Northbound",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -4799,7 +4980,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Lake Ave & East St Eastbound",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -4815,7 +4997,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Church St & Broadway",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -4831,7 +5014,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "West Ave & Church St",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -4847,7 +5031,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Church St & Myrtle (Saratoga Hospital)",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -4863,7 +5048,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Station Ln & West Ave Eastbound",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -4879,7 +5065,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Church St & Beekman St Eastbound",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -4895,7 +5082,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Lake Ave & Circular St Eastbound",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -4911,7 +5099,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Church St & Woodlawn Ave Eastbound",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -4927,7 +5116,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Church St & Clinton St Eastbound",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -4943,7 +5133,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Church St & Walworth St Eastbound",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -4959,7 +5150,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "High Rock Ave & Excelsior Ave",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -4975,7 +5167,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Excelsior Ave & East Ave Eastbound",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -4991,7 +5184,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Excelsior Ave & Marion Ave Eastbound",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -5007,7 +5201,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Excelsior Ave & Veterans Way",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -5023,7 +5218,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Lake Ave & Henry St Eastbound",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -5039,7 +5235,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Circular St & North St",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -5055,7 +5252,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Circular St & High Rock Ave",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -5071,7 +5269,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Excelsior Ave & Marion Ave Westbound",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -5087,7 +5286,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "256 Station Ln (Saratoga Rail Station)",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -5103,7 +5303,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Church St & Van Rensselaer St (Saratoga Hospital)",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -5119,7 +5320,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Church St & Walworth St Westbound",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -5135,7 +5337,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Church St & Woodlawn Ave Westbound",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -5151,7 +5354,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Lake Ave & Broadway",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -5167,7 +5371,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Church St & Clinton St Westbound",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -5183,7 +5388,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Church St & Beekman St Westbound",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -5199,7 +5405,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Station Ln & West Ave Westbound",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -5215,7 +5422,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Veterans Way & Excelsior Ave",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -5231,7 +5439,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Excelsior Ave & East Ave Westbound",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -5247,7 +5456,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Excelsior Ave & High Rock Ave",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -5263,7 +5473,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "High Rock Ave & Nelson Ave",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -5279,7 +5490,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Circular St & Lake Ave Southbound",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -5295,7 +5507,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Circular St & Henry St",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -5311,7 +5524,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Ballston Ave & Market 32 Plaza",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -5327,7 +5541,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "West Ave & YMCA",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -5343,7 +5558,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Federal St & Stonequist Apartments",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -5359,7 +5575,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Nelson Ave & Union Ave",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -5375,7 +5592,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Broadway & Huestis Ct Southbound",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -5391,7 +5609,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Lincoln Ave & Southeast St Eastbound",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -5407,7 +5626,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Saratoga Springs YMCA / Senior Center",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -5423,7 +5643,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Raymond Watkins Apts",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -5439,7 +5660,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Ballston Ave & South St (Market 32 Plaza)",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -5455,7 +5677,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Nelson Ave & Lincoln Ave",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -5471,7 +5694,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Broadway & Huestis Ct Northbound",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -5487,7 +5711,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Broadway & Lake Ave",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -5503,7 +5728,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Broadway & Division St Northbound",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -5519,7 +5745,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Broadway & Ellsworth Jones Pl Northbound",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -5535,7 +5762,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Maple Ave Hilton",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -5551,7 +5779,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Broadway & Division St Southbound",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -5567,7 +5796,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Broadway & Church St",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -5583,7 +5813,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Washington St & Railroad Pl Westbound",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -5599,7 +5830,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Washington St & Railroad Pl Eastbound",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -5615,7 +5847,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Washington St & Beekman St Eastbound",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -5631,7 +5864,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Washington St & Beekman St Westbound",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -5647,7 +5881,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Washington St & Bensonhurst Ave Westbound",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -5663,7 +5898,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Washington St & Bensonhurst Ave Eastbound",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -5679,7 +5915,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Embury Apartments East Tower",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -5695,7 +5932,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "St. Charles Motel",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -5711,7 +5949,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Price Chopper Ballston Ave",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",
@@ -5727,7 +5966,8 @@
         "agencySlug": "cdta",
         "serviceType": "on-demand",
         "stopName": "Care Lane",
-        "areaName": "Saratoga Springs"
+        "areaName": "Saratoga Springs",
+        "sourceUrl": "https://services2.arcgis.com/A3lMfLhXIUtyxP6p/arcgis/rest/services/20260716_2821_Saratoga_Springs_stops/FeatureServer/0"
       },
       "geometry": {
         "type": "Point",

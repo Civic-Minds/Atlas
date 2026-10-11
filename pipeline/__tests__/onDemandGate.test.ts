@@ -98,6 +98,24 @@ describe('on-demand zone gate (CIV-50)', () => {
     expect(flags(snapshot([{ area: later }], [{ slug: 'test', features: [square('z')] }]))).not.toContain('red:expired-zone');
   });
 
+  it('reads end dates in the agency\'s own time zone, from its config (CyRide, America/Chicago)', () => {
+    const release = buildOnDemandRelease('beta', 't', undefined, undefined, new Date('2027-05-09T12:00:00Z'));
+    const live = { index: release.index, geometries: new Map(release.geometries.map(g => [g.slug, g])) };
+    // 2027-05-10 03:00 UTC is still May 9 in Ames: Moonlight Express hasn't ended, so no flag.
+    const atNight = evaluateOnDemandRelease(live, null, { audience: 'beta', promoted: NONE, now: new Date('2027-05-10T03:00:00Z') });
+    expect(atNight.filter(f => f.slug === 'cyride' && f.flag === 'expired-zone')).toEqual([]);
+    // A day later the build drops it, and the gate doesn't call the live zone a drop.
+    const next = buildOnDemandRelease('beta', 't', undefined, undefined, new Date('2027-05-10T12:00:00Z'));
+    const after = evaluateOnDemandRelease({ index: next.index, geometries: new Map(next.geometries.map(g => [g.slug, g])) }, live,
+      { audience: 'beta', promoted: NONE, now: new Date('2027-05-10T12:00:00Z') });
+    expect(after.filter(f => f.slug === 'cyride' && f.severity === 'red')).toEqual([]);
+  });
+
+  it('blocks a zone outline that crosses itself', () => {
+    const bowtie: GeoJSON.Feature<GeoJSON.Polygon> = { type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [[[-79, 43], [-78.9, 43.1], [-78.9, 43], [-79, 43.1], [-79, 43]]] } };
+    expect(flags(snapshot([{}], [{ slug: 'test', features: [bowtie] }]))).toContain('red:invalid');
+  });
+
   it('lets a reviewed flag through only for the named service and flag', () => {
     const findings = evaluateOnDemandRelease(snapshot([{}], [{ slug: 'test', features: [square('z')] }]), null, { audience: 'public', promoted: NONE, now: NOW });
     expect(heldBack(findings)).toEqual(new Set(['test']));

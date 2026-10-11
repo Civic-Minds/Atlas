@@ -221,7 +221,7 @@
           "retrievedAt": "2026-10-11"
         }
       },
-      "Southeast \u2013 Missions National Park": {
+      "Southeast – Missions National Park": {
         "serviceName": "VIA Link",
         "serviceHours": "Every day, 5 a.m. to 11 p.m.",
         "hoursNote": "VIA Link booklet, Southeast Zone page (https://www.viainfo.net/wp-content/uploads/2026/05/VIA26_Link-Booklet.pdf, linked from https://www.viainfo.net/link/): \"Southeast Zone Service Hours Every day, 5 a.m. - 11 p.m.\"; the map key marks this place with the purple circle labelled \"Additional VIA Link stop\".",
@@ -250,7 +250,7 @@
           "retrievedAt": "2026-10-11"
         }
       },
-      "Southeast \u2013 Mission San Juan": {
+      "Southeast – Mission San Juan": {
         "serviceName": "VIA Link",
         "serviceHours": "Every day, 5 a.m. to 11 p.m.",
         "hoursNote": "VIA Link booklet, Southeast Zone page (https://www.viainfo.net/wp-content/uploads/2026/05/VIA26_Link-Booklet.pdf, linked from https://www.viainfo.net/link/): \"Southeast Zone Service Hours Every day, 5 a.m. - 11 p.m.\"; the map key marks this place with the purple circle labelled \"Additional VIA Link stop\".",
@@ -279,7 +279,7 @@
           "retrievedAt": "2026-10-11"
         }
       },
-      "Southeast \u2013 Mission Espada": {
+      "Southeast – Mission Espada": {
         "serviceName": "VIA Link",
         "serviceHours": "Every day, 5 a.m. to 11 p.m.",
         "hoursNote": "VIA Link booklet, Southeast Zone page (https://www.viainfo.net/wp-content/uploads/2026/05/VIA26_Link-Booklet.pdf, linked from https://www.viainfo.net/link/): \"Southeast Zone Service Hours Every day, 5 a.m. - 11 p.m.\"; the map key marks this place with the purple circle labelled \"Additional VIA Link stop\".",
@@ -308,7 +308,7 @@
           "retrievedAt": "2026-10-11"
         }
       },
-      "Southeast \u2013 Stinson-Mission Municipal Airport": {
+      "Southeast – Stinson-Mission Municipal Airport": {
         "serviceName": "VIA Link",
         "serviceHours": "Every day, 5 a.m. to 11 p.m.",
         "hoursNote": "VIA Link booklet, Southeast Zone page (https://www.viainfo.net/wp-content/uploads/2026/05/VIA26_Link-Booklet.pdf, linked from https://www.viainfo.net/link/): \"Southeast Zone Service Hours Every day, 5 a.m. - 11 p.m.\"; the map key marks this place with the purple circle labelled \"Additional VIA Link stop\".",
@@ -337,7 +337,7 @@
           "retrievedAt": "2026-10-11"
         }
       },
-      "Southeast \u2013 Southside Lions Senior Center": {
+      "Southeast – Southside Lions Senior Center": {
         "serviceName": "VIA Link",
         "serviceHours": "Every day, 5 a.m. to 11 p.m.",
         "hoursNote": "VIA Link booklet, Southeast Zone page (https://www.viainfo.net/wp-content/uploads/2026/05/VIA26_Link-Booklet.pdf, linked from https://www.viainfo.net/link/): \"Southeast Zone Service Hours Every day, 5 a.m. - 11 p.m.\"; the map key marks this place with the purple circle labelled \"Additional VIA Link stop\".",
@@ -366,7 +366,7 @@
           "retrievedAt": "2026-10-11"
         }
       },
-      "Southeast \u2013 HEB on WW White & Lord": {
+      "Southeast – HEB on WW White & Lord": {
         "serviceName": "VIA Link",
         "serviceHours": "Every day, 5 a.m. to 11 p.m.",
         "hoursNote": "VIA Link booklet, Southeast Zone page (https://www.viainfo.net/wp-content/uploads/2026/05/VIA26_Link-Booklet.pdf, linked from https://www.viainfo.net/link/): \"Southeast Zone Service Hours Every day, 5 a.m. - 11 p.m.\"; the map key marks this place with the purple circle labelled \"Additional VIA Link stop\".",
@@ -395,7 +395,7 @@
           "retrievedAt": "2026-10-11"
         }
       },
-      "Southeast \u2013 Sinclair & Glacier Lake": {
+      "Southeast – Sinclair & Glacier Lake": {
         "serviceName": "VIA Link",
         "serviceHours": "Every day, 5 a.m. to 11 p.m.",
         "hoursNote": "VIA Link booklet, Southeast Zone page (https://www.viainfo.net/wp-content/uploads/2026/05/VIA26_Link-Booklet.pdf, linked from https://www.viainfo.net/link/): \"Southeast Zone Service Hours Every day, 5 a.m. - 11 p.m.\"; the map key marks this place with the purple circle labelled \"Additional VIA Link stop\".",
@@ -424,7 +424,7 @@
           "retrievedAt": "2026-10-11"
         }
       },
-      "Southeast \u2013 Lone Star Bakery Plant": {
+      "Southeast – Lone Star Bakery Plant": {
         "serviceName": "VIA Link",
         "serviceHours": "Every day, 5 a.m. to 11 p.m.",
         "hoursNote": "VIA Link booklet, Southeast Zone page (https://www.viainfo.net/wp-content/uploads/2026/05/VIA26_Link-Booklet.pdf, linked from https://www.viainfo.net/link/): \"Southeast Zone Service Hours Every day, 5 a.m. - 11 p.m.\"; the map key marks this place with the purple circle labelled \"Additional VIA Link stop\".",
@@ -469,46 +469,6 @@
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [
-          [
-            [
-              [
-                -98.495664,
-                29.42165
-              ],
-              [
-                -98.495676,
-                29.421653
-              ],
-              [
-                -98.495666,
-                29.421645
-              ],
-              [
-                -98.495664,
-                29.42165
-              ]
-            ]
-          ],
-          [
-            [
-              [
-                -98.495623,
-                29.421724
-              ],
-              [
-                -98.495664,
-                29.42165
-              ],
-              [
-                -98.495662,
-                29.421649
-              ],
-              [
-                -98.495623,
-                29.421724
-              ]
-            ]
-          ],
           [
             [
               [
@@ -1086,54 +1046,6 @@
               [
                 -98.495289,
                 29.422364
-              ]
-            ]
-          ],
-          [
-            [
-              [
-                -98.495161,
-                29.422728
-              ],
-              [
-                -98.495152,
-                29.422724
-              ],
-              [
-                -98.49515,
-                29.422728
-              ],
-              [
-                -98.495161,
-                29.422728
-              ]
-            ]
-          ],
-          [
-            [
-              [
-                -98.495708,
-                29.421569
-              ],
-              [
-                -98.495658,
-                29.421648
-              ],
-              [
-                -98.495662,
-                29.421649
-              ],
-              [
-                -98.495665,
-                29.421643
-              ],
-              [
-                -98.495666,
-                29.421645
-              ],
-              [
-                -98.495708,
-                29.421569
               ]
             ]
           ],
@@ -11656,82 +11568,6 @@
           [
             [
               [
-                -98.39446,
-                29.535367
-              ],
-              [
-                -98.394458,
-                29.535362
-              ],
-              [
-                -98.39445,
-                29.535363
-              ],
-              [
-                -98.394455,
-                29.535365
-              ],
-              [
-                -98.39446,
-                29.535367
-              ]
-            ]
-          ],
-          [
-            [
-              [
-                -98.394445,
-                29.53536
-              ],
-              [
-                -98.394423,
-                29.535346
-              ],
-              [
-                -98.394429,
-                29.535356
-              ],
-              [
-                -98.394444,
-                29.535361
-              ],
-              [
-                -98.394445,
-                29.53536
-              ]
-            ]
-          ],
-          [
-            [
-              [
-                -98.39446,
-                29.535367
-              ],
-              [
-                -98.394448,
-                29.535363
-              ],
-              [
-                -98.394434,
-                29.535365
-              ],
-              [
-                -98.394442,
-                29.535368
-              ],
-              [
-                -98.394461,
-                29.53537
-              ],
-              [
-                -98.39446,
-                29.535367
-              ]
-            ]
-          ],
-          [
-            [
-              [
                 -98.432286,
                 29.595302
               ],
@@ -11844,7 +11680,7 @@
         "sourceUrl": "https://www.google.com/maps/d/kml?mid=1lEalfJeDd-nz8tEVQQOQ8_YkCk1LFXs&forcekml=1",
         "sourceLabel": "VIA Link Southeast zone map, satellite zones (Google My Maps)",
         "sourceRetrievedAt": "2026-10-11",
-        "areaName": "Southeast \u2013 Missions National Park"
+        "areaName": "Southeast – Missions National Park"
       },
       "geometry": {
         "type": "Polygon",
@@ -11882,7 +11718,7 @@
         "sourceUrl": "https://www.google.com/maps/d/kml?mid=1lEalfJeDd-nz8tEVQQOQ8_YkCk1LFXs&forcekml=1",
         "sourceLabel": "VIA Link Southeast zone map, satellite zones (Google My Maps)",
         "sourceRetrievedAt": "2026-10-11",
-        "areaName": "Southeast \u2013 Mission San Juan"
+        "areaName": "Southeast – Mission San Juan"
       },
       "geometry": {
         "type": "Polygon",
@@ -11920,7 +11756,7 @@
         "sourceUrl": "https://www.google.com/maps/d/kml?mid=1lEalfJeDd-nz8tEVQQOQ8_YkCk1LFXs&forcekml=1",
         "sourceLabel": "VIA Link Southeast zone map, satellite zones (Google My Maps)",
         "sourceRetrievedAt": "2026-10-11",
-        "areaName": "Southeast \u2013 Mission Espada"
+        "areaName": "Southeast – Mission Espada"
       },
       "geometry": {
         "type": "Polygon",
@@ -11958,7 +11794,7 @@
         "sourceUrl": "https://www.google.com/maps/d/kml?mid=1lEalfJeDd-nz8tEVQQOQ8_YkCk1LFXs&forcekml=1",
         "sourceLabel": "VIA Link Southeast zone map, satellite zones (Google My Maps)",
         "sourceRetrievedAt": "2026-10-11",
-        "areaName": "Southeast \u2013 Stinson-Mission Municipal Airport"
+        "areaName": "Southeast – Stinson-Mission Municipal Airport"
       },
       "geometry": {
         "type": "Polygon",
@@ -11996,7 +11832,7 @@
         "sourceUrl": "https://www.google.com/maps/d/kml?mid=1lEalfJeDd-nz8tEVQQOQ8_YkCk1LFXs&forcekml=1",
         "sourceLabel": "VIA Link Southeast zone map, satellite zones (Google My Maps)",
         "sourceRetrievedAt": "2026-10-11",
-        "areaName": "Southeast \u2013 Southside Lions Senior Center"
+        "areaName": "Southeast – Southside Lions Senior Center"
       },
       "geometry": {
         "type": "Polygon",
@@ -12034,7 +11870,7 @@
         "sourceUrl": "https://www.google.com/maps/d/kml?mid=1lEalfJeDd-nz8tEVQQOQ8_YkCk1LFXs&forcekml=1",
         "sourceLabel": "VIA Link Southeast zone map, satellite zones (Google My Maps)",
         "sourceRetrievedAt": "2026-10-11",
-        "areaName": "Southeast \u2013 HEB on WW White & Lord"
+        "areaName": "Southeast – HEB on WW White & Lord"
       },
       "geometry": {
         "type": "Polygon",
@@ -12072,7 +11908,7 @@
         "sourceUrl": "https://www.google.com/maps/d/kml?mid=1lEalfJeDd-nz8tEVQQOQ8_YkCk1LFXs&forcekml=1",
         "sourceLabel": "VIA Link Southeast zone map, satellite zones (Google My Maps)",
         "sourceRetrievedAt": "2026-10-11",
-        "areaName": "Southeast \u2013 Sinclair & Glacier Lake"
+        "areaName": "Southeast – Sinclair & Glacier Lake"
       },
       "geometry": {
         "type": "Polygon",
@@ -12110,7 +11946,7 @@
         "sourceUrl": "https://www.google.com/maps/d/kml?mid=1lEalfJeDd-nz8tEVQQOQ8_YkCk1LFXs&forcekml=1",
         "sourceLabel": "VIA Link Southeast zone map, satellite zones (Google My Maps)",
         "sourceRetrievedAt": "2026-10-11",
-        "areaName": "Southeast \u2013 Lone Star Bakery Plant"
+        "areaName": "Southeast – Lone Star Bakery Plant"
       },
       "geometry": {
         "type": "Polygon",

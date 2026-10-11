@@ -130,3 +130,19 @@ describe('temporary zones past their last day (CIV-50)', () => {
     expect(after.names).toContain('Keswick');
   });
 });
+
+describe('ended zones on every surface', () => {
+  it('drops a zone that ended after the release was built, so cards and search never list it', () => {
+    // A release built while Glenora still ran, read by a browser after it ended.
+    const release = buildOnDemandRelease('beta', 't', undefined, undefined, new Date('2026-12-01T12:00:00Z'));
+    const files = releaseFiles(release);
+    const index = JSON.parse(files.get(`v/${release.manifest.version}/index.json`)!);
+    const geometries = new Map<string, OnDemandGeometry>([['edmonton', JSON.parse(files.get(`v/${release.manifest.version}/agencies/edmonton.json`)!)]]);
+    const edmonton = { slug: 'edmonton', name: 'ETS', region: 'Alberta', center: [0, 0], url: 'x', timezone: 'America/Edmonton' } as unknown as Agency;
+    const area = (now: string) => applyOnDemand([edmonton], index, geometries, new Date(now)).find(a => a.slug === 'edmonton')!.onDemandServiceArea!;
+    expect(Object.keys(area('2026-12-31T20:00:00Z').zoneMetadata ?? {})).toContain('Glenora East');
+    const after = area('2027-01-01T12:00:00Z');
+    expect(Object.keys(after.zoneMetadata ?? {})).not.toContain('Glenora East');
+    expect(after.features.some(f => (f.properties as { areaName?: string }).areaName === 'Glenora East')).toBe(false);
+  });
+});

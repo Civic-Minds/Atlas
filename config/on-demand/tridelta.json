@@ -1016,7 +1016,8 @@
         "agencySlug": "tridelta",
         "serviceType": "on-demand",
         "stopName": "Los Medanos College/Brentwood",
-        "areaName": "Brentwood"
+        "areaName": "Brentwood",
+        "sourceUrl": "https://tmrmap.trideltatransit.com/tri-my-ride-service-area.geojson"
       },
       "geometry": {
         "type": "Point",
@@ -1032,7 +1033,8 @@
         "agencySlug": "tridelta",
         "serviceType": "on-demand",
         "stopName": "John Muir Health Brentwood Outpatient Center",
-        "areaName": "Brentwood"
+        "areaName": "Brentwood",
+        "sourceUrl": "https://tmrmap.trideltatransit.com/tri-my-ride-service-area.geojson"
       },
       "geometry": {
         "type": "Point",
