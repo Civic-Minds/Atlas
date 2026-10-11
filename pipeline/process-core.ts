@@ -50,16 +50,46 @@ export function normalizeNrtAnalysisResult(result: AnalysisResult): AnalysisResu
   return { ...result, tier: headwayToTier(result.medianHeadway) };
 }
 
-/** Return offsets for the repeated departures described by one frequencies.txt row. */
+/**
+ * A frequencies.txt row is treated as one scheduled trip when its window is the
+ * representative trip's own run time (within this tolerance, minutes) and the
+ * literal expansion would give no more than SINGLE_TRIP_WINDOW_MAX_DEPARTURES.
+ */
+const SINGLE_TRIP_WINDOW_SPAN_TOLERANCE_MIN = 1;
+const SINGLE_TRIP_WINDOW_MAX_DEPARTURES = 3;
+
+/**
+ * Return offsets for the repeated departures described by one frequencies.txt row.
+ *
+ * Per GTFS, start_time/end_time bound when trips start, so departures are
+ * generated while `generated < end`. Some exporters (TransLoc, e.g. Coast RTA)
+ * instead write one row per scheduled trip: the window is exactly that trip's
+ * run time and headway_secs is a meaningless value below it, so the literal
+ * expansion invents a second departure just before the window ends (#702).
+ * When `tripSpanMinutes` is given and the window matches it with only a couple
+ * of generated departures, only the scheduled trip itself is returned. Long
+ * windows (genuine all-day frequency blocks, even when the exporter stretched
+ * stop_times to the window) still expand normally.
+ */
 export function expandFrequencyOffsets(
   firstTripDeparture: number,
   start: number,
   end: number,
   headwayMinutes: number,
+  tripSpanMinutes?: number,
 ): number[] {
   if (!Number.isFinite(firstTripDeparture) || !Number.isFinite(start) || !Number.isFinite(end) || !Number.isFinite(headwayMinutes) || headwayMinutes <= 0 || end <= start) return [];
   const offsets: number[] = [];
   for (let generated = start; generated < end; generated += headwayMinutes) offsets.push(generated - firstTripDeparture);
+  if (
+    tripSpanMinutes !== undefined &&
+    Number.isFinite(tripSpanMinutes) &&
+    offsets.length > 1 &&
+    offsets.length <= SINGLE_TRIP_WINDOW_MAX_DEPARTURES &&
+    Math.abs((end - start) - tripSpanMinutes) <= SINGLE_TRIP_WINDOW_SPAN_TOLERANCE_MIN
+  ) {
+    return offsets.slice(0, 1);
+  }
   return offsets;
 }
 
@@ -358,12 +388,15 @@ export async function processGtfsBuffer(
   // frequencies.txt describes the repeated departures. Add those generated
   // departures to stop-level metrics after the ordinary stop_times pass below.
   const firstDepartureByTripId = new Map<string, number>();
+  const lastDepartureByTripId = new Map<string, number>();
   const stopTimesByTripId = new Map<string, typeof gtfs.stopTimes>();
   for (const st of gtfs.stopTimes ?? []) {
     const mins = t2m(st.departure_time || st.arrival_time);
     if (mins !== null) {
       const previous = firstDepartureByTripId.get(st.trip_id);
       if (previous === undefined || mins < previous) firstDepartureByTripId.set(st.trip_id, mins);
+      const previousLast = lastDepartureByTripId.get(st.trip_id);
+      if (previousLast === undefined || mins > previousLast) lastDepartureByTripId.set(st.trip_id, mins);
     }
     const tripStops = stopTimesByTripId.get(st.trip_id) ?? [];
     tripStops.push(st);
@@ -689,7 +722,9 @@ export async function processGtfsBuffer(
     const end = t2m(frequency.end_time);
     const headway = Number(frequency.headway_secs) / 60;
     if (first === undefined || !tripStops || !groups || start === null || end === null || !Number.isFinite(headway) || headway <= 0) continue;
-    for (const offset of expandFrequencyOffsets(first, start, end, headway)) {
+    const last = lastDepartureByTripId.get(frequency.trip_id);
+    const tripSpan = last === undefined ? undefined : last - first;
+    for (const offset of expandFrequencyOffsets(first, start, end, headway, tripSpan)) {
       for (const st of tripStops) {
         const base = t2m(st.departure_time || st.arrival_time);
         if (base === null) continue;
