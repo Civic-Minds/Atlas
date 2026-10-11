@@ -1,6 +1,6 @@
 # Fare discounts
 
-**Status:** PARTLY VERIFIED (2026-10-11): 47% of sampled quotes are verbatim, 76% verbatim or near-verbatim; 15% are not on the cited page (Linear CIV-48).
+**Status:** PARTLY VERIFIED (2026-10-11, after repair): of the 276 rows checked against official pages, 193 (70%) are verbatim, 59 (21%) near-verbatim, 11 content-confirmed and 13 blocked; none are known to be off-page. 321 rows remain unchecked (Linear CIV-48).
 
 Snapshot date: `2026-10-10` (files last rebuilt 2026-10-11)
 Scope: 549 Atlas agencies in Canada, the United States and Mexico
@@ -34,13 +34,13 @@ passes, one-off promotions and fare-free days.
 
 ## Results and interpretation
 
-Current files, as reported by the rebuild and recounted from the CSVs:
+Current files after the 2026-10-11 repair (the rebuild reported 592 / 6 / 42):
 
 | researchStatus | Rows |
 |---|---:|
-| `verified-official` | 592 |
-| `partial-official` | 6 |
-| `none-found` | 42 |
+| `verified-official` | 575 |
+| `partial-official` | 22 |
+| `none-found` | 43 |
 
 By program category: low-income 178, other 155, disability 122, fare-free 59,
 senior 57, standard-discount 39, student 10, youth 8, veteran 6. 6 rows use a
@@ -131,10 +131,37 @@ of the CSVs confirms that no verified row has a blank program, eligibility or
 amount field. The quotes themselves have not been re-checked against the cited
 pages.
 
-**Next step (CIV-48):** fix the B01-B03 column shift and replace description
-evidence with real quotes; re-source the not-on-page rows (concentrated in
-B19-B20); apply the partly-fixed corrections above; dedupe Greeley. Then
-re-run the quote check on the rows not sampled here.
+### Repair pass (2026-10-11)
+
+- **Column shift:** 14 B01 rows were missing `pagesSearched`, so every later
+  field was one column off. Fixed.
+- **Re-researched 121 rows** from official pages: the 32 not-on-page rows, all
+  54 B02-B03 rows whose evidence was a description, the 30 sampled rows whose
+  fetch had failed, and the audit-fix rows. New quotes were machine-checked
+  against the saved page text: 96 verbatim, 0 mismatches, 11
+  content-confirmed only (sites readable only through a browser fetch), 1 now
+  none-found. 13 rows stay as they were because the official site blocked
+  every automated fetch (`quoteCheck: fetch-blocked`, for example Torrance,
+  RTC Southern Nevada, Amarillo, Wichita, LADOT, Kern Transit).
+- **Audit fixes:** GET ($0.80 reduced single fare) and Saint-Jean-sur-Richelieu
+  amounts filled; Cowichan's $45 found on BC Transit's seniors page; MARTA
+  re-cited to the live itsmarta.com page; exo Presqu'île and other exo/RTL rows
+  now cite ARTM, the regional fare authority (amounts on the ARTM page are
+  partly missing, so some are `partial-official`); SMART Telluride is
+  `partial-official` (the free routes are confirmed, the off-season page is
+  gone); Redwood Coast's free fares are still advertised on the homepage, so
+  the "through September 2025" note on its fares page looks stale (both are in
+  the notes); Greeley's youth row, a copy of the senior row, now states the
+  real youth free-fare rule.
+- **Corrections found along the way:** several rows had out-of-date amounts
+  or groups (for example Casper, Modesto, Belleville, VINE's Clipper START at
+  20%, Halifax, Sherbrooke, GRT) and were updated. Petaluma's and SamTrans's
+  pilots have passed end dates on official pages and are `partial-official`.
+- **Near-verbatim:** the 59 rows that matched in substance but not word for
+  word are marked `quoteCheck: near-verbatim` and are not counted as verbatim.
+
+**Next step (CIV-48):** quote-check the 321 `unchecked` rows; fetch the 13
+blocked sites through a real browser; tighten the 59 near-verbatim quotes.
 
 **Overlap with other research:**
 
@@ -160,4 +187,10 @@ re-run the quote check on the rows not sampled here.
 | `rebuild-report-2026-10-10.md` | Researcher's report on the rebuild |
 | `verification-2026-10-11-quote-check.json` | Per-row results of the 2026-10-11 quote check |
 | `verification-2026-10-11-audit-fixes.json` | Hand check of the 15 audit-fix rows |
+
+The CSVs have a `quoteCheck` column: `verbatim` (exact match on freshly fetched
+official text), `near-verbatim` (substance matches, wording differs),
+`content-confirmed-not-verbatim` (read through a browser fetch only),
+`fetch-blocked` (official site refused automated fetches; not re-verified),
+`unchecked` (not in the 2026-10-11 sample) or `not-applicable` (none-found).
 | `archive-stale/` | Superseded files kept for history: an early B07 CSV that still has not-yet-checked rows, a B08 checkpoint with the old file-name pattern, and an early B03 checkpoint (`checkpoint-B03-2026-10-10-early.md`, from a separate `fare-discounts-2026-10-10` folder) |

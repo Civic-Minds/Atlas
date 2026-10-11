@@ -25,8 +25,8 @@ outputs remain supporting artifacts rather than competing summaries.
 - [International expansion](international-expansion-2026-09/INDEX.md):
   source-backed country and feed research for future coverage.
 - [Fare discounts](fare-discounts-2026-10/README.md): reduced-fare programs,
-  focused on low-income fares, for 549 agencies. Partly verified: 47% of
-  sampled quotes are verbatim, and fixes remain (CIV-48).
+  focused on low-income fares, for 549 agencies. Partly verified: 70% of
+  checked quotes are verbatim, 321 rows unchecked (CIV-48).
 
 Product problem research remains in [Product Research](../product/RESEARCH.md),
 while implementation experiments remain in [Experiments](../experiments/).
