@@ -263,4 +263,32 @@ describe('Weekday stop groups use one representative weekday (#710)', () => {
     // The map's tile clause for the toggle keys on the same serviceClass value.
     expect(JSON.stringify(tileLimitedServiceExpr())).toContain('"time-limited"');
   });
+
+  it('LANTA Green Line: one shape per weekday is still a route that runs every weekday', async () => {
+    // Real feed, route 1 weekday services 30/29/28/27/16 (calendar_dates, Mon/Tue/Wed/Thu/Fri
+    // only), each day's trips on their own shape. Every pattern runs on one weekday, the route
+    // on five. Regression from the full dry run: all 72 LANTA weekday features showed limited.
+    const weekday = (await routeFeatures(await fixtureZip('lanta-1-shape-per-weekday'), 'lanta')).filter(p => p.day === 'Weekday');
+
+    expect(weekday.length).toBeGreaterThan(0);
+    for (const p of weekday) {
+      expect(p.partialWeekdayServiceByPeriod).toBeUndefined();
+      expect(p.tier).not.toBe('infrequent');
+      expect(p.headway).toBeGreaterThan(0);
+      expect(p.headwayByPeriod.midday).toBeGreaterThan(0);
+    }
+  });
+
+  it('SLU Streetcar: weekdays added through calendar_dates count as service', async () => {
+    // Real feed, route 100340, service 128666: calendar.txt says Tue+Wed, and calendar_dates
+    // adds it on every Mon, Thu and Fri. It runs every weekday about every 12 minutes.
+    const weekday = (await routeFeatures(await fixtureZip('slu-streetcar-calendar-dates-weekdays'), 'seattle-streetcar')).filter(p => p.day === 'Weekday');
+
+    expect(weekday.map(p => p.directionId).sort()).toEqual([0, 1]);
+    for (const p of weekday) {
+      expect(p.partialWeekdayServiceByPeriod).toBeUndefined();
+      expect(p.headway).toBe(12);
+      expect(p.headwayByPeriod.midday).toBe(12);
+    }
+  });
 });

@@ -5,7 +5,7 @@
 import { parseGtfsZip } from './parseGtfs.js';
 import type { GtfsData, AnalysisResult, RawRouteDepartures } from '../types/gtfs.js';
 import { computeRawDepartures } from './transit-phase1.js';
-import { applyAnalysisCriteria, representativeWeekdayIndex } from './transit-phase2.js';
+import { applyAnalysisCriteria, representativeIndexByCount, representativeWeekdayIndex } from './transit-phase2.js';
 import { calculateCorridors } from './transit-logic.js';
 import { detectReferenceDate, getActiveServiceIds } from './transit-calendar.js';
 import { DEFAULT_CRITERIA } from './defaults.js';
@@ -179,6 +179,56 @@ export function representativeStopSequence(
   return best;
 }
 
+/**
+ * Number of weekdays (Mon-Fri) on which each route_id::direction has scheduled service, counted
+ * across ALL of its trips, shapes and patterns (#710). A weekday counts when the direction has
+ * at least two departures that day (phase 1 drops a day with fewer), from services active that
+ * weekday at the reference date, or from a service whose calendar.txt row omits the weekday but
+ * which calendar_dates.txt adds on that weekday at least three times within 90 days of the
+ * reference date (Seattle Streetcar 128666: calendar Tue+Wed, added every Mon/Thu/Fri).
+ * getActiveServiceIds does not read those additions for calendar.txt services, so without this
+ * a route that runs every weekday looked like a Tue+Wed route.
+ */
+export function weekdayServiceDaysByRouteDir(
+  gtfs: Pick<GtfsData, 'trips' | 'frequencies' | 'calendarDates'>,
+  referenceDate: string,
+  activeServiceIdsByDay: ReadonlyMap<DayName, ReadonlySet<string>>,
+): Map<string, number> {
+  const ymd = (date: string) => new Date(Number(date.slice(0, 4)), Number(date.slice(4, 6)) - 1, Number(date.slice(6, 8)));
+  const reference = ymd(referenceDate).getTime();
+  const additions = new Map<string, number[]>();
+  for (const cd of gtfs.calendarDates ?? []) {
+    if (cd.exception_type !== '1') continue;
+    const date = ymd(cd.date);
+    if (Math.abs(date.getTime() - reference) / 86400000 > 90) continue;
+    const dow = date.getDay();
+    if (dow === 0 || dow === 6) continue;
+    const counts = additions.get(cd.service_id) ?? [0, 0, 0, 0, 0];
+    counts[dow - 1] += 1;
+    additions.set(cd.service_id, counts);
+  }
+  const departuresByTrip = new Map<string, number>();
+  for (const frequency of gtfs.frequencies ?? []) {
+    const start = t2m(frequency.start_time);
+    const end = t2m(frequency.end_time);
+    const headway = Number(frequency.headway_secs) / 60;
+    if (start === null || end === null || !Number.isFinite(headway) || headway < 1 || end <= start) continue;
+    departuresByTrip.set(frequency.trip_id, (departuresByTrip.get(frequency.trip_id) ?? 0) + Math.ceil((end - start) / headway));
+  }
+  const departures = new Map<string, number[]>();
+  for (const trip of gtfs.trips ?? []) {
+    const added = additions.get(trip.service_id);
+    const key = `${trip.route_id}::${trip.direction_id?.trim() || '0'}`;
+    WEEKDAYS.forEach((day, index) => {
+      if (!activeServiceIdsByDay.get(day)?.has(trip.service_id) && !((added?.[index] ?? 0) >= 3)) return;
+      const counts = departures.get(key) ?? [0, 0, 0, 0, 0];
+      counts[index] += departuresByTrip.get(trip.trip_id) ?? 1;
+      departures.set(key, counts);
+    });
+  }
+  return new Map([...departures].map(([key, counts]) => [key, counts.filter(count => count >= 2).length]));
+}
+
 export async function processGtfsBuffer(
   buf: Buffer,
   onStatus?: (msg: string) => void,
@@ -253,7 +303,9 @@ export async function processGtfsBuffer(
   onStatus?.('Running phase 1...');
   const raw = computeRawDepartures(gtfs, refDate, shapeFilterForPhase1, options?.slug);
   onStatus?.('Running phase 2...');
-  const analyze = options?.analysisCriteriaFn ?? ((input: RawRouteDepartures[]) => applyAnalysisCriteria(input));
+  const weekdayServiceDays = weekdayServiceDaysByRouteDir(gtfs, refDate, activeServiceIdsByCalendarDay);
+  const analyze = options?.analysisCriteriaFn
+    ?? ((input: RawRouteDepartures[]) => applyAnalysisCriteria(input, undefined, undefined, weekdayServiceDays));
   const results = analyze(raw).map(result =>
     options?.slug === 'niagara' ? normalizeNrtAnalysisResult(result) : result,
   );
@@ -333,14 +385,18 @@ export async function processGtfsBuffer(
   });
   // Departures per weekday for every Weekday map key, frequencies.txt windows expanded.
   const weekdayCounts = { group: new Map<string, number[]>(), headsign: new Map<string, number[]>(), shape: new Map<string, number[]>() };
+  // Map keys fed by at least one route direction that runs on 3+ weekdays (not partial).
+  const servesFullWeek = { group: new Set<string>(), headsign: new Set<string>(), shape: new Set<string>() };
   for (const trip of gtfs.trips ?? []) {
     const meta = stopTripMeta.get(trip.trip_id);
     if (!meta || !serviceIdToDayTypes.get(trip.service_id)!.has('Weekday')) continue;
     const departures = frequencyDepartureCount.get(trip.trip_id) ?? 1;
     const keys = weekdayMapKeys(meta);
+    const fullWeek = (weekdayServiceDays.get(`${trip.route_id}::${trip.direction_id?.trim() || '0'}`) ?? 0) >= 3;
     for (const kind of ['group', 'headsign', 'shape'] as const) {
       const key = keys[kind];
       if (key == null) continue;
+      if (fullWeek) servesFullWeek[kind].add(key);
       const counts = weekdayCounts[kind].get(key) ?? WEEKDAYS.map(() => 0);
       WEEKDAYS.forEach((day, index) => {
         if (activeServiceIdsByCalendarDay.get(day)!.has(trip.service_id)) counts[index] += departures;
@@ -356,7 +412,15 @@ export async function processGtfsBuffer(
       // Same rule as the route-level rollup: the median of all five weekdays decides, so a
       // route on fewer than 3 of 5 weekdays gets no Weekday stop data.
       const served = counts.map(count => (count >= 2 ? count : 0));
-      const index = representativeWeekdayIndex(served.some(count => count > 0) ? served : counts);
+      const usable = served.some(count => count > 0) ? served : counts;
+      let index = representativeWeekdayIndex(usable);
+      // A pattern that runs on fewer weekdays than its route (one shape per weekday, LANTA and
+      // Lancaster) still describes a route that runs every weekday: use its typical served day.
+      // Only a route direction that itself runs on fewer than 3 weekdays has no Weekday data.
+      if (index === null && servesFullWeek[kind].has(key) && usable.some(count => count > 0)) {
+        const days = WEEKDAYS.map((_, i) => i).filter(i => usable[i] > 0);
+        index = days[representativeIndexByCount(days.map(i => usable[i]))];
+      }
       if (index === null) continue;
       representativeWeekday[kind].set(key, WEEKDAYS[index]);
     }

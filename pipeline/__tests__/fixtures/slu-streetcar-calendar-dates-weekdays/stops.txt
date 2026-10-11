@@ -1,0 +1,9 @@
+stop_id,stop_name,stop_lat,stop_lon
+26680,Westlake Hub,47.613121,-122.337318
+26689,Westlake And 7th,47.6156235,-122.337807
+26693,Terry & Thomas,47.6215019,-122.337051
+26698,Terry & Mercer,47.6234169,-122.337044
+26700,Fairview & Campus Drive,47.6276665,-122.332367
+26701,Lake Union Park,47.6258316,-122.336372
+26702,Lake Union Park,47.6259689,-122.336533
+26705,Fairview & Campus Drive,47.6275864,-122.332207
