@@ -188,8 +188,10 @@ describe('UTA On Demand zones', () => {
   it('gives every zone polygon its own hours', () => {
     expect(UTA_ON_DEMAND_SERVICE_AREA.features).toHaveLength(9);
     expect(UTA_ON_DEMAND_SERVICE_AREA.zoneMetadata['North Utah County'].availability.Sunday).toEqual([]);
-    expect(resolveOnDemandZone(UTA_ON_DEMAND_SERVICE_AREA, 'North Utah County').eligibility).toBe('Riders 13 and older.');
-    expect(resolveOnDemandZone(UTA_ON_DEMAND_SERVICE_AREA, 'Tooele County').eligibility).toBeUndefined();
+    for (const zone of UTA_ON_DEMAND_SERVICE_AREA.features) {
+      const areaName = (zone.properties as { areaName: string }).areaName;
+      expect(resolveOnDemandZone(UTA_ON_DEMAND_SERVICE_AREA, areaName).eligibility).toBe('Riders 13 and older; under 13 with a parent or guardian');
+    }
     for (const zone of UTA_ON_DEMAND_SERVICE_AREA.features) {
       const areaName = (zone.properties as { areaName: string }).areaName;
       expect(UTA_ON_DEMAND_SERVICE_AREA.zoneMetadata[areaName as keyof typeof UTA_ON_DEMAND_SERVICE_AREA.zoneMetadata].availability).toBeDefined();
