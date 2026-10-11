@@ -386,19 +386,22 @@ export function applyAnalysisCriteria(
     /**
      * Weekdays with service per route_id::dir across all of its patterns (#710). When omitted,
      * counted from rawData: the distinct weekdays any of the route direction's patterns appear on.
+     * Either way, a weekday whose only service is the previous night's tail must not count (#718).
      */
     weekdayServiceDays?: ReadonlyMap<string, number>,
 ): AnalysisResult[] {
+    const tailDays = previousNightTailDays(rawData);
     const rawWeekdays = new Map<string, Set<DayName>>();
     for (const raw of rawData) {
         if (!(WEEKDAYS as readonly DayName[]).includes(raw.day)) continue;
+        // A weekday that only carries the previous night's tail is not a service day (#718).
+        if (tailDays.has(`${raw.route}::${raw.dir}::${raw.day}`)) continue;
         const key = `${raw.route}::${raw.dir}`;
         rawWeekdays.set(key, (rawWeekdays.get(key) ?? new Set<DayName>()).add(raw.day));
     }
     const routeDirWeekdays = (route: string, dir: string): number =>
         weekdayServiceDays?.get(`${route}::${dir}`) ?? rawWeekdays.get(`${route}::${dir}`)?.size ?? 0;
     const perDayResults = new Map<string, { dayType: DayType; day: DayName; result: AnalysisResult; rawTimes: number[] }>();
-    const tailDays = previousNightTailDays(rawData);
 
     for (const raw of rawData) {
         const dayType = DAY_TO_TYPE[raw.day];

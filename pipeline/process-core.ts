@@ -5,7 +5,7 @@
 import { parseGtfsZip } from './parseGtfs.js';
 import type { GtfsData, AnalysisResult, RawRouteDepartures } from '../types/gtfs.js';
 import { computeRawDepartures } from './transit-phase1.js';
-import { applyAnalysisCriteria, representativeIndexByCount, representativeWeekdayIndex } from './transit-phase2.js';
+import { applyAnalysisCriteria, representativeIndexByCount, previousNightTailDays, representativeWeekdayIndex } from './transit-phase2.js';
 import { calculateCorridors } from './transit-logic.js';
 import { detectReferenceDate, getActiveServiceIds } from './transit-calendar.js';
 import { DEFAULT_CRITERIA } from './defaults.js';
@@ -199,6 +199,10 @@ export function weekdayServiceDaysByRouteDir(
   // must not make a part-week route look like full-week service (it would then show the days
   // it does run as "Weekday").
   additionRule: { windowDays: number; withinCalendarRange: boolean } = { windowDays: 42, withinCalendarRange: true },
+  // route_id::dir::DayName days whose only service is the previous night's after-midnight tail
+  // (previousNightTailDays, #718). They are another night's service, not that weekday's: a
+  // Mon+Tue night route with 00:00-form tails must not count Wednesday as a service day.
+  previousNightTails: ReadonlySet<string> = new Set(),
 ): Map<string, number> {
   const ymd = (date: string) => new Date(Number(date.slice(0, 4)), Number(date.slice(4, 6)) - 1, Number(date.slice(6, 8)));
   const reference = ymd(referenceDate).getTime();
@@ -260,6 +264,7 @@ export function weekdayServiceDaysByRouteDir(
       if (!activeServiceIdsByDay.get(day)?.has(trip.service_id)
         && !((added?.[index] ?? 0) >= 3)
         && !regular.get(trip.service_id)?.[index]) return;
+      if (previousNightTails.has(`${key}::${day}`)) return;
       const counts = departures.get(key) ?? [0, 0, 0, 0, 0];
       counts[index] += departuresByTrip.get(trip.trip_id) ?? 1;
       departures.set(key, counts);
@@ -362,7 +367,9 @@ export async function processGtfsBuffer(
   onStatus?.('Running phase 1...');
   const raw = computeRawDepartures(gtfs, refDate, shapeFilterForPhase1, options?.slug);
   onStatus?.('Running phase 2...');
-  const weekdayServiceDays = weekdayServiceDaysByRouteDir(gtfs, refDate, activeServiceIdsByCalendarDay);
+  // Same tail days phase 2 uses (#718), so the part-week decision (phase 2) and the stop-level
+  // full-week check below both skip a weekday that only carries the previous night's tail.
+  const weekdayServiceDays = weekdayServiceDaysByRouteDir(gtfs, refDate, activeServiceIdsByCalendarDay, undefined, previousNightTailDays(raw));
   const analyze = options?.analysisCriteriaFn
     ?? ((input: RawRouteDepartures[]) => applyAnalysisCriteria(input, undefined, undefined, weekdayServiceDays));
   const results = analyze(raw).map(result =>

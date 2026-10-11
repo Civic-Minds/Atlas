@@ -2,8 +2,8 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import JSZip from 'jszip';
 import { describe, expect, it } from 'vitest';
-import { processGtfsBuffer } from '../process-core';
-import { previousNightTailDays } from '../transit-phase2';
+import { processGtfsBuffer, weekdayServiceDaysByRouteDir } from '../process-core';
+import { applyAnalysisCriteria, previousNightTailDays } from '../transit-phase2';
 import { normalizeRouteFilterFeatures, routePassesHeadwayFilter } from '../../shared/routeHeadwayFilter';
 import type { DayName, RawRouteDepartures } from '../../types/gtfs';
 
@@ -206,5 +206,55 @@ describe('previousNightTailDays', () => {
     expect(previousNightTailDays([raw('Saturday', range(1020, 1500, 30)), raw('Sunday', range(0, 120, 30))]).size).toBe(0);
     // A genuine 05:00 Sunday start after a 23:59 finish.
     expect(previousNightTailDays([raw('Saturday', [...range(1020, 1410, 30), 1439]), raw('Sunday', range(300, 350, 10))]).size).toBe(0);
+  });
+});
+
+describe('the per-direction weekday count skips previous-night tails (#710 + #718)', () => {
+  // Mon+Tue nights 17:00-23:30; each night's after-midnight trips 00:00-02:00 run under a
+  // service active Tue+Wed. Wednesday's trips are Tuesday night's, so the route direction runs
+  // on 2 weekdays, not 3, and must stay limited in every caller of the count.
+  const raw = (day: DayName, departureTimes: number[]): RawRouteDepartures => ({
+    route: 'r', dir: '0', day, routeType: '3', modeName: 'Bus', departureTimes, gaps: [],
+    serviceSpan: { start: departureTimes[0], end: departureTimes[departureTimes.length - 1] },
+    tripCount: departureTimes.length, serviceIds: [],
+  } as RawRouteDepartures);
+  const nights = range(17 * 60, 23 * 60 + 30, 30);
+  const tails = range(0, 120, 30);
+  const rawData = [raw('Monday', nights), raw('Tuesday', [...tails, ...nights]), raw('Wednesday', tails)];
+
+  it('weekdayServiceDaysByRouteDir counts 2 weekdays once the tail days are passed in', () => {
+    const trips = [
+      ...nights.map(t => ({ route_id: 'r', service_id: 'nights', trip_id: `n${t}`, direction_id: '0' })),
+      ...tails.map(t => ({ route_id: 'r', service_id: 'tails', trip_id: `t${t}`, direction_id: '0' })),
+    ];
+    const active = new Map<DayName, Set<string>>([
+      ['Monday', new Set(['nights'])], ['Tuesday', new Set(['nights', 'tails'])], ['Wednesday', new Set(['tails'])],
+      ['Thursday', new Set()], ['Friday', new Set()],
+    ]);
+    const gtfs = { trips, calendar: [], calendarDates: [] } as never;
+    expect(weekdayServiceDaysByRouteDir(gtfs, '20261014', active).get('r::0')).toBe(3);
+    expect(weekdayServiceDaysByRouteDir(gtfs, '20261014', active, undefined, previousNightTailDays(rawData)).get('r::0')).toBe(2);
+  });
+
+  it('phase 2 keeps the route limited with or without a precomputed count', () => {
+    for (const counts of [undefined, new Map([['r::0', 2]])]) {
+      const weekday = applyAnalysisCriteria(rawData, undefined, undefined, counts).find(r => r.day === 'Weekday');
+      expect(weekday?.partialWeekday, String(counts)).toBe(true);
+      expect(weekday?.tier).toBe('infrequent');
+    }
+  });
+
+  it('the full pipeline (route and stop level) keeps it limited with no stop headways', async () => {
+    const features = await routeFeatures(await syntheticFeed([
+      { id: 'nights', days: '1100000', departures: nights },
+      { id: 'tails', days: '0110000', departures: tails },
+    ]), 'tail-two-nights-count');
+    const weekday = features.filter(p => p.day === 'Weekday');
+    expect(weekday.length).toBeGreaterThan(0);
+    for (const p of weekday) {
+      expect(p.tier).toBe('infrequent');
+      expect(p.headway).toBeNull();
+      expect(p.stopHeadways ?? {}).toEqual({});
+    }
   });
 });
