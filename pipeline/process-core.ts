@@ -623,7 +623,8 @@ export async function processGtfsBuffer(
   // Feature → how many departures backed its own (branch-level) headway, so Step 4 below can
   // tell a real branch frequency from a noisy one before trusting it over the terminal-computed
   // value. Not serialized to the GeoJSON output — pipeline-internal only. See issue #263.
-  // Weekday features of routes that skip the representative weekday (#710): no stop metrics.
+  // Weekday features of routes that skip the representative weekday (#710), and days whose only
+  // service is the previous night's after-midnight tail (#718): no stop metrics.
   const partialWeekdayFeatures = new Set<GeoJsonFeature>();
   const featureBranchTripCount = new Map<GeoJsonFeature, number>();
   for (const result of results) {
@@ -663,7 +664,7 @@ export async function processGtfsBuffer(
     const existing = dedupedFeatures.get(dedupeKey);
     const isRailRoute = route?.route_type === '2' || route?.route_type === 2;
     const initialPeriodHeadways = computePeriodHeadways(result.times);
-    const newHeadway = result.partialWeekday || result.serviceClass === 'irregular' || result.tier === 'span'
+    const newHeadway = result.partialWeekday || result.previousNightTailOnly || result.serviceClass === 'irregular' || result.tier === 'span'
       ? null
       : Math.round(initialPeriodHeadways.midday ?? result.medianHeadway);
     // A drawn line always beats a mapless Point for the same slot, whichever is more frequent
@@ -742,7 +743,7 @@ export async function processGtfsBuffer(
     if (!hasRouteShape) maplessStopSequence.set(newFeature, maplessSequence);
     if (hasRouteShape && shapeId) featureShapeId.set(newFeature, shapeId);
     featureBranchTripCount.set(newFeature, result.times.length);
-    if (result.partialWeekday) partialWeekdayFeatures.add(newFeature);
+    if (result.partialWeekday || result.previousNightTailOnly) partialWeekdayFeatures.add(newFeature);
     else partialWeekdayFeatures.delete(newFeature);
   }
   const features = [...dedupedFeatures.values()];
