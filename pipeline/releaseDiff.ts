@@ -15,6 +15,9 @@
  *   red    expired       the new output's service has already ended (output changed)
  *   yellow expired       service has ended, but the output is unchanged from live
  *   yellow headway-shift a smaller share of routes halves or doubles
+ *   yellow route-shift   any single route's weekday tier moves 2+ steps or its headway
+ *                        halves or doubles, whatever the agency's size (#707); not
+ *                        reported when headway-shift already fires for the agency
  *   yellow future-start  service does not start until a future date
  *   yellow placeholder-expiry the calendar end is more than 2 years past today,
  *                        likely a placeholder; the recorded expiry is capped
@@ -30,9 +33,10 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { getGtfsModeName } from '../shared/modes.js';
 import { countArtifacts, dropGuardRefusal, type ArtifactCounts } from './archiveSelection.js';
+import { TIER_RANK } from './headway-utils.js';
 import { addYearsYmd, PLACEHOLDER_EXPIRY_YEARS } from './refreshMeta.js';
 
-export const GATE_FLAGS = ['drop', 'empty', 'mode-lost', 'duplicate', 'headway-shift', 'expired', 'future-start', 'placeholder-expiry', 'added'] as const;
+export const GATE_FLAGS = ['drop', 'empty', 'mode-lost', 'duplicate', 'headway-shift', 'route-shift', 'expired', 'future-start', 'placeholder-expiry', 'added'] as const;
 export type GateFlagName = typeof GATE_FLAGS[number];
 export type GateLevel = 'red' | 'yellow';
 
@@ -54,6 +58,10 @@ export const HEADWAY_SHIFT_YELLOW_SHARE = 0.1;
 /** Headway shifts are only judged with at least this many routes present in both. */
 export const HEADWAY_SHIFT_MIN_ROUTES = 5;
 export const HEADWAY_SHIFT_MIN_SHIFTED = 3;
+/** A single route is flagged when its weekday tier moves at least this many steps (#707). */
+export const ROUTE_SHIFT_TIER_STEPS = 2;
+/** At most this many routes are named in a route-shift message. */
+const ROUTE_SHIFT_MAX_LISTED = 10;
 /** Route-signature overlap (Jaccard) at or above which two agencies count as near-identical. */
 export const DUPLICATE_SIMILARITY = 0.9;
 /** Both agencies need at least this many routes before near-identity is judged. */
@@ -71,6 +79,12 @@ export interface ArtifactSummary {
   routeSignatures: string[];
   /** Median weekday headway per route, from the route lines' `headway`. */
   weekdayHeadways: Record<string, number>;
+  /**
+   * Most frequent weekday tier per route across its directions and variants
+   * ('10' ... 'infrequent'). Tiers outside the headway scale ('span', legacy
+   * rail '5'/'8') are left out, so they never count as a tier change.
+   */
+  weekdayTiers: Record<string, string>;
   /** Mean of the route line endpoints, [lon, lat], or null with no lines. */
   centroid: [number, number] | null;
 }
@@ -113,6 +127,7 @@ export function summarizeArtifact(geojson: string, stopsJson: string | null): Ar
   const modes = new Set<string>();
   const signatures = new Set<string>();
   const headways: Record<string, number[]> = {};
+  const tiers: Record<string, string> = {};
   let lonSum = 0;
   let latSum = 0;
   let points = 0;
@@ -130,6 +145,10 @@ export function summarizeArtifact(geojson: string, stopsJson: string | null): Ar
     if (p.day === 'Weekday' && p.headway != null && Number.isFinite(headway) && headway > 0) {
       (headways[routeId] ??= []).push(headway);
     }
+    const tier = p.tier == null ? '' : String(p.tier);
+    if (p.day === 'Weekday' && tier in TIER_RANK && tier !== 'span' && (tiers[routeId] == null || TIER_RANK[tier] < TIER_RANK[tiers[routeId]])) {
+      tiers[routeId] = tier;
+    }
   }
   return {
     counts,
@@ -138,6 +157,7 @@ export function summarizeArtifact(geojson: string, stopsJson: string | null): Ar
     contentHash: createHash('sha256').update(JSON.stringify(features)).digest('hex'),
     routeSignatures: [...signatures].sort(),
     weekdayHeadways: Object.fromEntries(Object.entries(headways).map(([id, values]) => [id, median(values)])),
+    weekdayTiers: tiers,
     centroid: points ? [lonSum / points, latSum / points] : null,
   };
 }
@@ -168,6 +188,31 @@ export function headwayShift(live: ArtifactSummary, next: ArtifactSummary): Head
     if (after >= before * HEADWAY_SHIFT_RATIO || after * HEADWAY_SHIFT_RATIO <= before) shifted.push(routeId);
   }
   return { compared, shifted: shifted.sort() };
+}
+
+/**
+ * Routes whose weekday service changes a lot on their own: the tier moves
+ * ROUTE_SHIFT_TIER_STEPS or more, or the headway halves or doubles. Unlike
+ * headwayShift's share thresholds this catches one wrong route at a small
+ * agency (waco TL-32 60 -> 25, clemson-cat TL-69 infrequent -> 20, #707).
+ * Returns one description per route, sorted by route ID.
+ */
+export function routeShifts(live: ArtifactSummary, next: ArtifactSummary): string[] {
+  const [liveTiers, nextTiers] = [live.weekdayTiers, next.weekdayTiers];
+  const ids = new Set([...Object.keys(live.weekdayHeadways), ...Object.keys(liveTiers)]);
+  const shifted: string[] = [];
+  for (const routeId of [...ids].sort()) {
+    const parts: string[] = [];
+    const [tierBefore, tierAfter] = [liveTiers[routeId], nextTiers[routeId]];
+    if (tierBefore != null && tierAfter != null && Math.abs(TIER_RANK[tierBefore] - TIER_RANK[tierAfter]) >= ROUTE_SHIFT_TIER_STEPS) {
+      parts.push(`tier ${tierBefore}->${tierAfter}`);
+    }
+    const [before, after] = [live.weekdayHeadways[routeId], next.weekdayHeadways[routeId]];
+    const halvedOrDoubled = before != null && after != null && (after >= before * HEADWAY_SHIFT_RATIO || after * HEADWAY_SHIFT_RATIO <= before);
+    if (halvedOrDoubled || (parts.length && before != null && after != null)) parts.push(`${before}->${after} min`);
+    if (parts.length) shifted.push(`${routeId} ${parts.join(', ')}`);
+  }
+  return shifted;
 }
 
 export interface AgencyGateInput {
@@ -224,14 +269,26 @@ export function evaluateAgency(input: AgencyGateInput, peers: GatePeer[], todayY
     }
 
     const shift = headwayShift(live, next);
+    let agencyShift = false;
     if (shift.compared >= HEADWAY_SHIFT_MIN_ROUTES && shift.shifted.length >= HEADWAY_SHIFT_MIN_SHIFTED) {
       const share = shift.shifted.length / shift.compared;
       const level: GateLevel | null = share >= HEADWAY_SHIFT_RED_SHARE ? 'red' : share >= HEADWAY_SHIFT_YELLOW_SHARE ? 'yellow' : null;
       if (level) {
+        agencyShift = true;
         const examples = shift.shifted.slice(0, 6).map(id => `${id} ${live.weekdayHeadways[id]}->${next.weekdayHeadways[id]} min`).join(', ');
         flags.push(flag(slug, 'headway-shift', level,
           `${shift.shifted.length} of ${shift.compared} routes' weekday headway halves or doubles (${Math.round(share * 100)}%; ${examples}${shift.shifted.length > 6 ? ', ...' : ''})`));
       }
+    }
+
+    // Per-route check, whatever the agency's size: one badly wrong route at a
+    // small agency never reaches the share thresholds above (#707). Yellow, so
+    // it is listed for review without blocking; skipped when headway-shift
+    // already reports the agency.
+    const routes = agencyShift ? [] : routeShifts(live, next);
+    if (routes.length) {
+      flags.push(flag(slug, 'route-shift', 'yellow',
+        `${routes.length} route${routes.length === 1 ? '' : 's'} with a weekday tier change of ${ROUTE_SHIFT_TIER_STEPS}+ steps or a halved/doubled headway (${routes.slice(0, ROUTE_SHIFT_MAX_LISTED).join('; ')}${routes.length > ROUTE_SHIFT_MAX_LISTED ? '; ...' : ''})`));
     }
   }
 

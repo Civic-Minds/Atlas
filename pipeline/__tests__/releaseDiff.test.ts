@@ -24,12 +24,14 @@ import {
 // by script, the Oct 12 double-counted holiday service) and the 14 commuter
 // rail lines in njt-rail-live.json (real line names, approximate endpoints;
 // the pre-Oct 8 artifact is no longer published).
+// Real, weekday lines only (release-mv0iozy4 vs the 2026-10-11 final reprocess
+// dry run): waco, clemson-cat, uga (#707).
 const fixture = (name: string) => readFileSync(resolve('pipeline/__tests__/fixtures/release-diff', name), 'utf8');
 const TODAY = '20261010';
 
 /** A summary carrying only counts, for the drop cases where only counts matter. */
 function countsOnly(stops: number, stopPoints: number, routes: number): ArtifactSummary {
-  return { counts: { stops, stopPoints, routes }, modes: ['Bus'], contentHash: `counts-${stops}-${stopPoints}-${routes}`, routeSignatures: [], weekdayHeadways: {}, centroid: null };
+  return { counts: { stops, stopPoints, routes }, modes: ['Bus'], contentHash: `counts-${stops}-${stopPoints}-${routes}`, routeSignatures: [], weekdayHeadways: {}, weekdayTiers: {}, centroid: null };
 }
 
 const names = (flags: GateFlag[]) => flags.map(f => `${f.slug}:${f.flag}:${f.level}`).sort();
@@ -118,6 +120,48 @@ describe('release diff gate: red flags', () => {
     });
     const flags = evaluateAgency({ slug: 'ttc', live, next: summarizeArtifact(JSON.stringify(holiday), null), allowMissingLive: true }, [], TODAY);
     expect(names(flags)).toEqual(['ttc:headway-shift:yellow']);
+  });
+
+  it('flags one shifted route at an agency too small for headway-shift: waco TL-32 60 -> 25 (#707)', () => {
+    const live = summarizeArtifact(fixture('waco-live.json'), null);
+    const next = summarizeArtifact(fixture('waco-new.json'), null);
+    const flags = evaluateAgency({ slug: 'waco', live, next, allowMissingLive: true }, [], TODAY);
+    expect(names(flags)).toEqual(['waco:route-shift:yellow']);
+    expect(flags[0].message).toMatch(/^1 route .*\(TL-32 60->25 min\)$/);
+  });
+
+  it('flags tier jumps of 2+ steps: clemson-cat TL-24 and TL-69 from infrequent (#707)', () => {
+    const live = summarizeArtifact(fixture('clemson-cat-live.json'), null);
+    const next = summarizeArtifact(fixture('clemson-cat-new.json'), null);
+    expect(live.weekdayTiers).toMatchObject({ 'TL-24': 'infrequent', 'TL-69': 'infrequent' });
+    const flags = evaluateAgency({ slug: 'clemson-cat', live, next, allowMissingLive: true }, [], TODAY);
+    expect(names(flags)).toEqual(['clemson-cat:route-shift:yellow']);
+    expect(flags[0].message).toContain('TL-24 tier infrequent->30, 131->27 min');
+    expect(flags[0].message).toContain('TL-69 tier infrequent->20, 203->5 min');
+  });
+
+  it('flags uga M Milledge 15 -> 4 with its tier unchanged (#707)', () => {
+    const live = summarizeArtifact(fixture('uga-live.json'), null);
+    const next = summarizeArtifact(fixture('uga-new.json'), null);
+    expect([live.weekdayTiers['5738'], next.weekdayTiers['5738']]).toEqual(['20', '20']);
+    const flags = evaluateAgency({ slug: 'uga', live, next, allowMissingLive: true }, [], TODAY);
+    expect(names(flags)).toEqual(['uga:route-shift:yellow']);
+    expect(flags[0].message).toContain('5738 15->4 min');
+  });
+
+  it('takes the most frequent tier across a route\'s directions and ignores tiers off the scale', () => {
+    const line = (routeId: string, tier: string, headway: number | null) => ({
+      type: 'Feature',
+      geometry: { type: 'LineString', coordinates: [[0, 0], [1, 1]] },
+      properties: { routeId, day: 'Weekday', tier, headway },
+    });
+    const artifact = (features: unknown[]) => JSON.stringify({ type: 'FeatureCollection', features });
+    const live = summarizeArtifact(artifact([line('A', '60', 30), line('A', '15', 12), line('A', 'span', null), line('SKYT', '5', 5)]), null);
+    expect(live.weekdayTiers).toEqual({ A: '15' });
+    // A one-step tier move and a headway change under 2x stay quiet; the legacy
+    // rail tier '5' -> '10' (valleymetro SKYT, a correct change) is not a tier change.
+    const next = summarizeArtifact(artifact([line('A', '30', 20), line('A', '20', 18), line('SKYT', '10', 5)]), null);
+    expect(evaluateAgency({ slug: 'x', live, next, allowMissingLive: true }, [], TODAY)).toEqual([]);
   });
 
   it('flags already-expired service as red when the output changes, yellow when unchanged', () => {
