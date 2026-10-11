@@ -185,17 +185,46 @@ export function representativeStopSequence(
  * at least two departures that day (phase 1 drops a day with fewer), from services active that
  * weekday at the reference date, or from a service whose calendar.txt row omits the weekday but
  * which calendar_dates.txt adds on that weekday at least three times within 90 days of the
- * reference date (Seattle Streetcar 128666: calendar Tue+Wed, added every Mon/Thu/Fri).
+ * reference date (Seattle Streetcar 128666: calendar Tue+Wed, added every Mon/Thu/Fri), or
+ * from a calendar.txt service whose regular weekly pattern includes the weekday (see below).
  * getActiveServiceIds does not read those additions for calendar.txt services, so without this
  * a route that runs every weekday looked like a Tue+Wed route.
  */
 export function weekdayServiceDaysByRouteDir(
-  gtfs: Pick<GtfsData, 'trips' | 'frequencies' | 'calendarDates'>,
+  gtfs: Pick<GtfsData, 'trips' | 'frequencies' | 'calendar' | 'calendarDates'>,
   referenceDate: string,
   activeServiceIdsByDay: ReadonlyMap<DayName, ReadonlySet<string>>,
 ): Map<string, number> {
   const ymd = (date: string) => new Date(Number(date.slice(0, 4)), Number(date.slice(4, 6)) - 1, Number(date.slice(6, 8)));
   const reference = ymd(referenceDate).getTime();
+  const DAY = 86400000;
+  // Regular weekly pattern: a calendar.txt service whose range covers the reference date
+  // runs on its flagged weekdays unless calendar_dates removes most of those dates (within
+  // 90 days). A short suspension in the reference week (GCRTA Blue Line, Oct 2026: the
+  // regular Mon-Fri service removed for two weeks) does not make the route a part-week route.
+  const removed = new Set<string>();
+  for (const cd of gtfs.calendarDates ?? []) if (cd.exception_type === '2') removed.add(`${cd.service_id}|${cd.date}`);
+  const regular = new Map<string, boolean[]>();
+  const WEEKDAY_FIELDS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'] as const;
+  for (const cal of gtfs.calendar ?? []) {
+    if (cal.start_date > referenceDate || cal.end_date < referenceDate) continue;
+    const from = Math.max(ymd(cal.start_date).getTime(), reference - 90 * DAY);
+    const to = Math.min(ymd(cal.end_date).getTime(), reference + 90 * DAY);
+    const flags = WEEKDAY_FIELDS.map((field, index) => {
+      if (cal[field] !== '1') return false;
+      let total = 0;
+      let kept = 0;
+      for (let t = from; t <= to; t += DAY) {
+        const date = new Date(t);
+        if (date.getDay() !== index + 1) continue;
+        total += 1;
+        const key = `${date.getFullYear()}${String(date.getMonth() + 1).padStart(2, '0')}${String(date.getDate()).padStart(2, '0')}`;
+        if (!removed.has(`${cal.service_id}|${key}`)) kept += 1;
+      }
+      return total > 0 && kept * 2 > total;
+    });
+    regular.set(cal.service_id, flags);
+  }
   const additions = new Map<string, number[]>();
   for (const cd of gtfs.calendarDates ?? []) {
     if (cd.exception_type !== '1') continue;
@@ -220,7 +249,9 @@ export function weekdayServiceDaysByRouteDir(
     const added = additions.get(trip.service_id);
     const key = `${trip.route_id}::${trip.direction_id?.trim() || '0'}`;
     WEEKDAYS.forEach((day, index) => {
-      if (!activeServiceIdsByDay.get(day)?.has(trip.service_id) && !((added?.[index] ?? 0) >= 3)) return;
+      if (!activeServiceIdsByDay.get(day)?.has(trip.service_id)
+        && !((added?.[index] ?? 0) >= 3)
+        && !regular.get(trip.service_id)?.[index]) return;
       const counts = departures.get(key) ?? [0, 0, 0, 0, 0];
       counts[index] += departuresByTrip.get(trip.trip_id) ?? 1;
       departures.set(key, counts);

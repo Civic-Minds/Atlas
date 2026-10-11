@@ -291,4 +291,18 @@ describe('Weekday stop groups use one representative weekday (#710)', () => {
       expect(p.headwayByPeriod.midday).toBe(12);
     }
   });
+
+  it('GCRTA Blue Line: a two-week suspension in the reference week is not part-week service', async () => {
+    // Real feed, route 67 plus 5 stub trips per other service (so the reference date matches
+    // the full feed, Oct 11 2026). The regular Mon-Fri service is removed Oct 5-16 and a
+    // replacement runs on only some of those days, so the reference week shows Blue Line on
+    // Tue+Wed only. Its regular weekly pattern is Mon-Fri, so it is not a limited route.
+    const weekday = (await routeFeatures(await fixtureZip('gcrta-blue-line-suspended-weeks'), 'gcrta'))
+      .filter(p => p.day === 'Weekday' && p.routeId === '67');
+
+    expect(weekday.length).toBeGreaterThan(0);
+    for (const p of weekday) expect(p.partialWeekdayServiceByPeriod).toBeUndefined();
+    expect([...new Set(weekday.filter(p => p.tier === '30').map(p => p.directionId))].sort()).toEqual([0, 1]);
+  });
 });
+
