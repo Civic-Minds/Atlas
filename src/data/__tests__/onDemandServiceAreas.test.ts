@@ -23,7 +23,7 @@ import {
 import * as Services from '../onDemandServiceAreas';
 import { HSR_MY_RIDE_STOP_FEATURES } from '../hsrMyRideStops';
 import { HAMILTON_TRANS_CAB_SERVICE_AREAS, HAMILTON_TRANS_CAB_TRANSFER_POINTS } from '../transCabServiceArea';
-import { isOnDemandActive, isOnDemandStopShown, isOnDemandZoneShown, onDemandPickupSentence } from '../../../shared/onDemandAvailability';
+import { isOnDemandActive, isOnDemandStopShown, isOnDemandZoneShown, onDemandPickupSentence, resolveOnDemandZone } from '../../../shared/onDemandAvailability';
 
 describe('BWG on-demand service area', () => {
   it('keeps the captured Argo polygon closed and non-trivial', () => {
@@ -112,11 +112,20 @@ describe('BWG on-demand service area', () => {
 
 describe('CyRide EASE on-demand service area', () => {
   it('keeps the agency-supplied EASE polygon closed and tied to City Hall', () => {
-    expect(CYRIDE_EASE_SERVICE_AREA.features).toHaveLength(1);
+    expect(CYRIDE_EASE_SERVICE_AREA.features).toHaveLength(2);
     const ring = CYRIDE_EASE_SERVICE_AREA.features[0].geometry.coordinates[0];
     expect(ring).toHaveLength(13);
     expect(ring[0]).toEqual(ring.at(-1));
     expect(CYRIDE_EASE_SERVICE_AREA.stopFeatures.map(stop => stop.properties?.stopId)).toEqual(['5102284']);
+  });
+
+  it('draws Moonlight Express across the Ames city limits as its own service, faded until its hours are confirmed', () => {
+    const moonlight = CYRIDE_EASE_SERVICE_AREA.features[1];
+    expect(moonlight.properties?.areaName).toBe('Ames city limits');
+    for (const ring of moonlight.geometry.coordinates) expect(ring[0]).toEqual(ring.at(-1));
+    const zone = resolveOnDemandZone(CYRIDE_EASE_SERVICE_AREA, 'Ames city limits');
+    expect(zone).toMatchObject({ serviceName: 'Moonlight Express', sameServiceAsParent: false });
+    expect(zone.availability).toBeUndefined();
   });
 
   it('only shows EASE during its weekday operating window', () => {
@@ -177,7 +186,8 @@ describe('Hamilton on-demand services stay separate', () => {
 
 describe('UTA On Demand zones', () => {
   it('gives every zone polygon its own hours', () => {
-    expect(UTA_ON_DEMAND_SERVICE_AREA.features).toHaveLength(8);
+    expect(UTA_ON_DEMAND_SERVICE_AREA.features).toHaveLength(9);
+    expect(UTA_ON_DEMAND_SERVICE_AREA.zoneMetadata['North Utah County'].availability.Sunday).toEqual([]);
     for (const zone of UTA_ON_DEMAND_SERVICE_AREA.features) {
       const areaName = (zone.properties as { areaName: string }).areaName;
       expect(UTA_ON_DEMAND_SERVICE_AREA.zoneMetadata[areaName as keyof typeof UTA_ON_DEMAND_SERVICE_AREA.zoneMetadata].availability).toBeDefined();
@@ -294,10 +304,13 @@ describe('GTFS-Flex batch from agency feeds', () => {
 
   it('keeps only the public zone from each feed, never paratransit or deviation buffers', () => {
     for (const [slug, [service, ids]] of Object.entries(batch)) {
-      const props = service.features.map(feature => feature.properties as { agencySlug: string; flexLocationId: string });
+      // Zones from official map layers sit beside the feed's (RFTA Carbondale); the feed check is on feed zones.
+      const feedFeatures = service.features.filter(feature => (feature.properties as { flexLocationId?: string }).flexLocationId);
+      const props = feedFeatures.map(feature => feature.properties as { agencySlug: string; flexLocationId: string });
       expect(props.map(p => p.flexLocationId)).toEqual(ids);
       expect(props.every(p => p.agencySlug === slug)).toBe(true);
-      for (const feature of service.features) {
+      expect(service.features.length - feedFeatures.length).toBe(slug === 'rfta' ? 1 : 0);
+      for (const feature of feedFeatures) {
         const ring = feature.geometry.coordinates[0];
         expect(ring.length).toBeGreaterThan(20);
         expect(ring[0]).toEqual(ring.at(-1));

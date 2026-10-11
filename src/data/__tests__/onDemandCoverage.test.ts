@@ -38,7 +38,7 @@ describe('on-demand coverage notes (CIV-23)', () => {
   });
 
   it('names the missing part for a partly mapped service', () => {
-    expect(onDemandCoverageNote({ slug: 'uta', onDemandServiceArea: {} })).toEqual({ kind: 'partly-mapped', missing: 'North Utah County' });
+    expect(onDemandCoverageNote({ slug: 'uta', onDemandServiceArea: {} }, { uta: 'North Utah County' })).toEqual({ kind: 'partly-mapped', missing: 'North Utah County' });
   });
 
   it('says nothing for an agency with no on-demand service', () => {

@@ -97,20 +97,20 @@ export const ON_DEMAND_NOT_MAPPED: Readonly<Record<string, OnDemandNotMapped>> =
 };
 
 /** Mapped agencies whose drawn zones leave out part of the service, and what's missing. */
-export const ON_DEMAND_PARTLY_MAPPED: Readonly<Record<string, string>> = {
-  cyride: 'Moonlight Express',
-  rfta: 'Carbondale Downtowner',
-  uta: 'North Utah County',
-};
+// Empty: every mapped agency's source covers all the zones it runs today (Ryan, 2026-10-11).
+export const ON_DEMAND_PARTLY_MAPPED: Readonly<Record<string, string>> = {};
 
 export type OnDemandCoverageNote =
   | { kind: 'not-mapped'; serviceName: string; url?: string }
   | { kind: 'partly-mapped'; missing: string };
 
 /** The coverage note for an agency card, or null when there's nothing to say (state 1 or 3). */
-export function onDemandCoverageNote(agency: { slug: string; onDemandServiceArea?: unknown }): OnDemandCoverageNote | null {
+export function onDemandCoverageNote(
+  agency: { slug: string; onDemandServiceArea?: unknown },
+  partlyMapped: Readonly<Record<string, string>> = ON_DEMAND_PARTLY_MAPPED,
+): OnDemandCoverageNote | null {
   if (agency.onDemandServiceArea) {
-    const missing = ON_DEMAND_PARTLY_MAPPED[agency.slug];
+    const missing = partlyMapped[agency.slug];
     return missing ? { kind: 'partly-mapped', missing } : null;
   }
   const entry = ON_DEMAND_NOT_MAPPED[agency.slug];
