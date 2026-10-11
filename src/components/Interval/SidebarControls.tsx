@@ -10,7 +10,7 @@ import { findVariantFamily } from '../../utils/routeVariants';
 import { getRouteLabel, shortenAgencyName, searchOverlayHidesPanel, titleCase } from '../../utils/format';
 import { normalizeStopName, type StopEntry } from '../../apps/corridor-search';
 import { labelDirectionGroups, sortDirectionGroupIds } from '../../utils/directionLabel';
-import { hasDirectionPeriodService, routeCardDisplayHeadway, routeListDisplayHeadway } from '../../utils/effectiveHeadway';
+import { hasDirectionPeriodService, routeCardDisplayHeadway, routeListDisplay, type RouteListDisplay } from '../../utils/effectiveHeadway';
 import { combineSuggestedRouteNames, suggestedRouteGroupKey } from '../../utils/routeSuggestion';
 import { dedupeCrossDirectionHeadsigns } from '../../utils/crossDirectionDedup';
 import { searchAgencyGroups, prepareAgencyGroupsForDisplay, SEARCH_AGENCY_DISPLAY_LIMIT, type AgencySearchGroup } from '../../utils/agencySearch';
@@ -290,7 +290,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
 
   // Compute notable routes fallback
   const notableRoutes = useMemo(() => {
-    const routes = new Map<string, { key: string; shortName: string; longNames: string[]; agencyName: string; headway: number }>();
+    const routes = new Map<string, { key: string; shortName: string; longNames: string[]; agencyName: string; headway: number; limited: boolean }>();
     for (const [slug, fc] of Object.entries(nonCorridorLayers)) {
       if (!fc?.features) continue;
       for (const f of fc.features) {
@@ -306,16 +306,19 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
               buildRouteFacts(candidateProps, slug).key === facts.key;
           })
           .map(candidate => candidate.properties as ShapeProperties);
-        const headway = routeListDisplayHeadway(routeFeatures, period) ?? 999;
+        const display = routeListDisplay(routeFeatures, period);
+        const headway = display.headway ?? 999;
+        const limited = display.limited;
         const shortName = facts.shortName;
         const longName = facts.longName || '';
         const agencyName = shortenAgencyName(facts.agencyName);
         const existing = routes.get(groupKey);
         if (!existing) {
-          routes.set(groupKey, { key: facts.key, shortName: slug === 'bart' ? suggestedRouteGroupKey(slug, shortName) : shortName, longNames: longName ? [longName] : [], agencyName, headway });
+          routes.set(groupKey, { key: facts.key, shortName: slug === 'bart' ? suggestedRouteGroupKey(slug, shortName) : shortName, longNames: longName ? [longName] : [], agencyName, headway, limited });
         } else {
           if (longName && !existing.longNames.includes(longName)) existing.longNames.push(longName);
           if (headway < existing.headway) existing.headway = headway;
+          existing.limited = existing.headway >= 999 && (existing.limited || limited);
         }
       }
     }
@@ -330,21 +333,21 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     return notableRoutes.filter(r => !viewedKeys.has(r.key));
   }, [notableRoutes, recentlyViewed]);
 
-  const headwayForRouteKey = useCallback((key: string): number | null => {
+  const displayForRouteKey = useCallback((key: string): RouteListDisplay => {
     const [slug, routeId] = key.split('::');
     const fc = nonCorridorLayers[slug];
     const feat = fc?.features.find(f => {
       const p = f.properties as ShapeProperties;
       return p.routeId === routeId && !(p as { stopId?: string }).stopId;
     });
-    if (!feat) return null;
+    if (!feat) return { headway: null, limited: false };
     const routeFeatures = fc?.features
       .filter(candidate => {
         const p = candidate.properties as ShapeProperties;
         return !p.stopId && p.routeId === routeId && (p.day === undefined || p.day === currentDay);
       })
       .map(candidate => candidate.properties as ShapeProperties) ?? [];
-    return routeListDisplayHeadway(routeFeatures, period);
+    return routeListDisplay(routeFeatures, period);
   }, [nonCorridorLayers, period, currentDay]);
 
   const suggestedFareAgencies = useMemo(() => {
@@ -1044,7 +1047,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
           suggestedRoutes={suggestedRoutes}
           pickRoute={pickRoute}
           fareView={fareView}
-          headwayForRouteKey={headwayForRouteKey}
+          displayForRouteKey={displayForRouteKey}
         />
       )}
       {disambigDetails && disambigDetails.length > 1 && !selectedRoute && (
@@ -1216,7 +1219,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
             setQuery={setQuery}
             setSearchFocused={setSearchFocused}
             saveRecentSearch={saveRecentSearch}
-            headwayForRouteKey={headwayForRouteKey}
+            displayForRouteKey={displayForRouteKey}
             onRouteHover={onSearchRouteHover}
             hasMoreResults={hasMoreSearchResults}
             onShowMoreResults={() => setShowAllSearchResults(true)}

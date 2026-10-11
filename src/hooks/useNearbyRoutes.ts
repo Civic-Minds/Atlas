@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { routeKey } from './useIntervalStats';
 import type { ShapeProperties, DayType, TimePeriod } from './useIntervalStats';
-import { routeCardDisplayHeadway, routeListDisplayHeadway } from '../utils/effectiveHeadway';
+import { routeListDisplay } from '../utils/effectiveHeadway';
 import { shouldHideNumericRouteShortName } from '../utils/format';
 
 const NEARBY_RADIUS_M = 500;
@@ -27,6 +27,8 @@ export interface NearbyRoute {
   agencyName: string;
   agencySlug: string;
   headway: number | null;
+  /** True when the row shows "limited" instead of a cadence (shared rule, #708). */
+  limited: boolean;
   tier: string | null;
   nearestStopName: string;
   distanceMeters: number;
@@ -99,7 +101,7 @@ export function useNearbyRoutes(
               (candidateProps.day === undefined || candidateProps.day === currentDay);
           })
           .map(candidate => candidate.properties as unknown as ShapeProperties);
-        const headway = routeListDisplayHeadway(routeFeatures, period);
+        const { headway, limited } = routeListDisplay(routeFeatures, period);
 
         if (!routeMap.has(mapKey)) {
           routeMap.set(mapKey, {
@@ -112,6 +114,7 @@ export function useNearbyRoutes(
             agencyName: p.agencyName || slug,
             agencySlug: slug,
             headway,
+            limited,
             tier: (p.tier as string | null) ?? null,
             nearestStopName: stop.stopName,
             distanceMeters: stop.distanceMeters,
@@ -121,6 +124,7 @@ export function useNearbyRoutes(
           if (headway != null && (existing.headway === null || headway < existing.headway)) {
             existing.headway = headway;
           }
+          existing.limited = existing.headway == null && (existing.limited || limited);
           if (stop.distanceMeters < existing.distanceMeters) {
             existing.distanceMeters = stop.distanceMeters;
             existing.nearestStopName = stop.stopName;

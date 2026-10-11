@@ -2,10 +2,10 @@ import { describe, it, expect } from 'vitest';
 import { buildAgencyRouteBuckets, buildAgencyRouteFilters, buildHeaderSummary, routeMatchesAgencyFilter } from '../AgencyCard';
 
 const routes = [
-  { routeId: '1', agencySlug: 'ttc', shortName: '1', longName: 'Line 1', headway: 4, tier: '5', routeType: 1, busSubType: undefined, matchesFilter: true },
-  { routeId: '2', agencySlug: 'ttc', shortName: '2', longName: 'Line 2', headway: 4, tier: '5', routeType: 1, busSubType: undefined, matchesFilter: true },
-  { routeId: '900', agencySlug: 'ttc', shortName: '900', longName: 'Airport Express', headway: 9, tier: '10', routeType: 3, busSubType: 'express', matchesFilter: true },
-  { routeId: '36', agencySlug: 'ttc', shortName: '36', longName: 'Finch West', headway: 6, tier: '10', routeType: 3, busSubType: undefined, matchesFilter: false },
+  { routeId: '1', agencySlug: 'ttc', shortName: '1', longName: 'Line 1', headway: 4, limited: false, tier: '5', routeType: 1, busSubType: undefined, matchesFilter: true },
+  { routeId: '2', agencySlug: 'ttc', shortName: '2', longName: 'Line 2', headway: 4, limited: false, tier: '5', routeType: 1, busSubType: undefined, matchesFilter: true },
+  { routeId: '900', agencySlug: 'ttc', shortName: '900', longName: 'Airport Express', headway: 9, limited: false, tier: '10', routeType: 3, busSubType: 'express', matchesFilter: true },
+  { routeId: '36', agencySlug: 'ttc', shortName: '36', longName: 'Finch West', headway: 6, limited: false, tier: '10', routeType: 3, busSubType: undefined, matchesFilter: false },
 ];
 
 describe('agency card filters', () => {
@@ -24,8 +24,8 @@ describe('agency card filters', () => {
 
   it('keeps streetcar and virtual LRT chips distinct', () => {
     const chips = buildAgencyRouteFilters([
-      { routeId: '501', agencySlug: 'ttc', shortName: '501', longName: 'Queen', headway: 8, tier: '10', routeType: 0, busSubType: undefined, matchesFilter: true },
-      { routeId: '5', agencySlug: 'ttc', shortName: '5', longName: 'Line 5 Eglinton', headway: 6, tier: '10', routeType: 0, busSubType: undefined, matchesFilter: true },
+      { routeId: '501', agencySlug: 'ttc', shortName: '501', longName: 'Queen', headway: 8, limited: false, tier: '10', routeType: 0, busSubType: undefined, matchesFilter: true },
+      { routeId: '5', agencySlug: 'ttc', shortName: '5', longName: 'Line 5 Eglinton', headway: 6, limited: false, tier: '10', routeType: 0, busSubType: undefined, matchesFilter: true },
     ]);
     expect(chips).toEqual([
       { key: 'mode:0', label: 'Streetcar', count: 1 },

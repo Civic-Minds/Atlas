@@ -21,7 +21,7 @@ import {
 } from '../cardUi';
 import { CARD_NOTICE, CARD_NOTICE_FOOTER } from '../../../styles';
 import { FEATURES, SPARKLINE_HOURS, TIME_PERIODS, formatPeriodHourLong, formatPeriodRangeLong, periodKeyForHour } from '../../../../shared/config';
-import { hasDirectionPeriodService, routeCardCoverageText, routeCardDisplayHeadway, routeCardDisplayHeadwayRange } from '../../../utils/effectiveHeadway';
+import { hasDirectionPeriodService, routeCardCoverageText, routeCardDisplayHeadway, routeCardDisplayHeadwayRange, routeCardDisplayLimited } from '../../../utils/effectiveHeadway';
 import { buildRouteServiceSummary, metricValueForPeriod } from '../../../utils/routeFacts';
 import { unevenPeriodMaxGap } from '../../../utils/routeCardUneven';
 import {
@@ -274,7 +274,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
         // Not "no scheduled service" -- null means the pipeline didn't compute a value for this
         // period, which can happen even when real service exists (#297). Don't assert absence.
         const range = routeCardDisplayHeadwayRange(direction, period);
-        const isLimited = headway == null && period !== 'all' && hasDirectionPeriodService(direction, period);
+        const isLimited = routeCardDisplayLimited(direction, period);
         return `- ${reportLabel}: ${routeCardCoverageText(direction, period) ?? (headway != null ? `about every ${headway} min` : range ?? (isLimited ? 'limited service' : 'no data for this period'))}`;
       })
       .filter((line): line is string => line !== null);
@@ -580,7 +580,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                       const trunkHw = hoveredHour == null && period !== 'all'
                         ? headsignTrunkHeadway(d, period)
                         : undefined;
-                      const isLimited = displayH == null && hoveredHour == null && period !== 'all' && hasDirectionPeriodService(d, period);
+                      const isLimited = displayH == null && hoveredHour == null && routeCardDisplayLimited(d, period);
                       return (
                         <FlaggableValue key={`r${i}`} reason="Frequency is wrong" reportRef={reportRef} className="block w-full text-left">
                           <CardDirectionRow
