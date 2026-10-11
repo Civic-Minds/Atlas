@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import JSZip from 'jszip';
 import {
+  dropCoincidentTemplateDepartures,
   expandTripFrequencyOffsets,
   firstVisitStopTimes,
   processGtfsBuffer,
@@ -230,5 +231,71 @@ describe('processGtfsBuffer frequency dedupe on real feed patterns', () => {
     expect(loop.headway).toBe(60);
     expect(loop.headwayByPeriod).toMatchObject({ midday: 60, pmPeak: 60 });
     expect(loop.stopHeadways?.S87).toBe(60);
+  });
+});
+
+// clemson-cat 20501230 zip, route TL-69 (Gold), service TL-272 (Mon-Fri): three TransLoc
+// block trips on one stop pattern, every 1213 s. Gold_02 runs 15 min behind Gold_01 until
+// 13:45, then Gold_03 restarts 0.7 min behind Gold_01's 13:44 pass. Only the first and last
+// stops are timed (the block's start and end), as in the feed.
+const GOLD_STOPS: Array<[string, number, number]> = [
+  ['TL-301', 34.6860294, -82.8250393], ['TL-302', 34.6876091, -82.8191632], ['TL-303', 34.6849145, -82.8158081],
+  ['TL-304', 34.68407, -82.8171458], ['TL-305', 34.6838809, -82.8194462], ['TL-308', 34.6797698, -82.8301056],
+  ['TL-309', 34.6798291, -82.8348944], ['TL-310', 34.6765561, -82.8410815], ['TL-306', 34.6776148, -82.8301743],
+  ['TL-307', 34.6790709, -82.8301814],
+];
+const GOLD_BLOCKS: Array<[string, string, string]> = [
+  ['TL-4257', '07:00', '18:07'], ['TL-4258', '07:15', '13:45'], ['TL-4259', '13:45', '17:52'],
+];
+
+function clemsonGoldFixtureZip(): JSZip {
+  const zip = new JSZip();
+  zip.file('agency.txt', 'agency_id,agency_name,agency_url,agency_timezone\na,Clemson Area Transit,https://example.test,America/New_York\n');
+  zip.file('routes.txt', 'route_id,route_short_name,route_long_name,route_type\nTL-69,Gold,Gold Route,3\n');
+  zip.file('stops.txt', ['stop_id,stop_name,stop_lat,stop_lon', ...GOLD_STOPS.map(([id, lat, lon]) => `${id},${id},${lat},${lon}`)].join('\n') + '\n');
+  zip.file('calendar.txt', 'service_id,monday,tuesday,wednesday,thursday,friday,saturday,sunday,start_date,end_date\nTL-272,1,1,1,1,1,0,0,20240819,20501230\n');
+  zip.file('shapes.txt', ['shape_id,shape_pt_lat,shape_pt_lon,shape_pt_sequence', ...GOLD_STOPS.map(([, lat, lon], i) => `TL-69,${lat},${lon},${i + 1}`)].join('\n') + '\n');
+  const trips = ['route_id,service_id,trip_id,trip_headsign,direction_id,shape_id'];
+  const stopTimes = ['trip_id,arrival_time,departure_time,stop_id,stop_sequence'];
+  const frequencies = ['trip_id,start_time,end_time,headway_secs'];
+  for (const [tripId, start, end] of GOLD_BLOCKS) {
+    trips.push(`TL-69,TL-272,${tripId},,0,TL-69`);
+    GOLD_STOPS.forEach(([stopId], i) => {
+      const time = i === 0 ? `${start}:00` : i === GOLD_STOPS.length - 1 ? `${end}:00` : '';
+      stopTimes.push(`${tripId},${time},${time},${stopId},${i === 0 ? 1 : i * 10 + 10}`);
+    });
+    frequencies.push(`${tripId},${start}:00,${end}:00,1213`);
+  }
+  zip.file('trips.txt', trips.join('\n') + '\n');
+  zip.file('stop_times.txt', stopTimes.join('\n') + '\n');
+  zip.file('frequencies.txt', frequencies.join('\n') + '\n');
+  return zip;
+}
+
+describe('dropCoincidentTemplateDepartures (#711)', () => {
+  it('drops a block that restarts on top of another block, keeps an offset one', () => {
+    const cycle = 1213 / 60;
+    const run = (first: number, end: number) => {
+      const offsets: number[] = [];
+      for (let t = first; t < end; t += cycle) offsets.push(t - first);
+      return { first, offsets };
+    };
+    const [gold1, gold2, gold3] = dropCoincidentTemplateDepartures([
+      run(m('07:00'), m('18:07')), run(m('07:15'), m('13:45')), run(m('13:45'), m('17:52')),
+    ]);
+    expect(gold1).toHaveLength(33);
+    expect(gold2).toHaveLength(20);
+    expect(gold3).toEqual([]);
+  });
+});
+
+describe('processGtfsBuffer stacked TransLoc blocks (#711)', () => {
+  it('gives clemson-cat Gold its two-bus service, not 5 midday and 1 in the afternoon', async () => {
+    const route = await weekdayRoutes(clemsonGoldFixtureZip(), 'clemson-cat');
+    const [gold] = route('Gold');
+    // Hand count at TL-301: Gold_01 + Gold_02 alternate 15/5 min gaps until 13:45, then the
+    // afternoon has one bus every 20.2 min (Gold_03 is Gold_01's departure again).
+    expect(gold.stopPeriodHeadways?.['TL-301']).toMatchObject({ amPeak: 15, midday: 15, pmPeak: 20 });
+    expect(gold.minStopHeadway).toBeGreaterThanOrEqual(15);
   });
 });

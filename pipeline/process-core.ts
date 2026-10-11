@@ -130,6 +130,34 @@ export function expandTripFrequencyOffsets(
   return offsets;
 }
 
+/** Departures this close (minutes) from different template trips are one departure. */
+const COINCIDENT_DEPARTURE_TOLERANCE_MIN = 1;
+
+/**
+ * Offsets kept for each template trip of one route, service, direction and
+ * stop pattern, once departures that coincide with an earlier trip's are
+ * dropped (#711).
+ *
+ * TransLoc block exports write one frequency trip per vehicle block, and a
+ * block that takes over mid-day can restart on top of another block's cycle:
+ * clemson-cat Gold_03 starts at 13:45, 0.7 min after Gold_01's 13:44 pass, and
+ * both repeat every 1213 s, so every afternoon departure is listed twice and
+ * the stop headway drops to 1. Riders see one bus, so a departure within
+ * COINCIDENT_DEPARTURE_TOLERANCE_MIN of one already kept (earlier trip in file
+ * order wins) is dropped. Offset vehicles (Gold_02 15 min behind Gold_01,
+ * terrebonne-parish 21's 7 min) are real extra service and stay.
+ */
+export function dropCoincidentTemplateDepartures(
+  templates: ReadonlyArray<{ first: number; offsets: readonly number[] }>,
+): number[][] {
+  const kept: number[] = [];
+  return templates.map(({ first, offsets }) => {
+    const own = offsets.filter(offset => !kept.some(start => Math.abs(start - (first + offset)) <= COINCIDENT_DEPARTURE_TOLERANCE_MIN));
+    kept.push(...own.map(offset => first + offset));
+    return own;
+  });
+}
+
 /**
  * Share of a pattern's generated frequency departures that same-pattern
  * scheduled trips must account for before its templates count as a repeat of
@@ -920,7 +948,9 @@ export async function processGtfsBuffer(
   }
   for (const [key, templates] of templatesByKey) {
     const repeated = windowsRepeatedByTimetable(templates, scheduledStartsByKey.get(key) ?? []);
-    for (const { tripId, first, windows, offsets: allOffsets } of templates) {
+    const distinctOffsets = dropCoincidentTemplateDepartures(templates);
+    for (const [index, { tripId, first, windows }] of templates.entries()) {
+      const allOffsets = distinctOffsets[index];
       const tripStops = stopTimesByTripId.get(tripId);
       const groups = tripGroupByTripId.get(tripId);
       const droppedWindows = windows.filter(window => repeated.has(window));
