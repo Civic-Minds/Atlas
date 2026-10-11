@@ -184,8 +184,8 @@ export function representativeStopSequence(
  * across ALL of its trips, shapes and patterns (#710). A weekday counts when the direction has
  * at least two departures that day (phase 1 drops a day with fewer), from services active that
  * weekday at the reference date, or from a service whose calendar.txt row omits the weekday but
- * which calendar_dates.txt adds on that weekday at least three times within 90 days of the
- * reference date (Seattle Streetcar 128666: calendar Tue+Wed, added every Mon/Thu/Fri), or
+ * which calendar_dates.txt adds on that weekday at least three times within 6 weeks of the
+ * reference date (and inside its calendar.txt range) (Seattle Streetcar 128666: calendar Tue+Wed, added every Mon/Thu/Fri), or
  * from a calendar.txt service whose regular weekly pattern includes the weekday (see below).
  * getActiveServiceIds does not read those additions for calendar.txt services, so without this
  * a route that runs every weekday looked like a Tue+Wed route.
@@ -194,6 +194,11 @@ export function weekdayServiceDaysByRouteDir(
   gtfs: Pick<GtfsData, 'trips' | 'frequencies' | 'calendar' | 'calendarDates' | 'synthesizedDirectionRouteIds'>,
   referenceDate: string,
   activeServiceIdsByDay: ReadonlyMap<DayName, ReadonlySet<string>>,
+  // Additions count only within 6 weeks of the reference date and, for a calendar.txt service,
+  // inside its own date range: an addition from another season, or a few special-event dates,
+  // must not make a part-week route look like full-week service (it would then show the days
+  // it does run as "Weekday").
+  additionRule: { windowDays: number; withinCalendarRange: boolean } = { windowDays: 42, withinCalendarRange: true },
 ): Map<string, number> {
   const ymd = (date: string) => new Date(Number(date.slice(0, 4)), Number(date.slice(4, 6)) - 1, Number(date.slice(6, 8)));
   const reference = ymd(referenceDate).getTime();
@@ -226,10 +231,13 @@ export function weekdayServiceDaysByRouteDir(
     regular.set(cal.service_id, flags);
   }
   const additions = new Map<string, number[]>();
+  const calendarRange = new Map((gtfs.calendar ?? []).map(cal => [cal.service_id, [cal.start_date, cal.end_date] as const]));
   for (const cd of gtfs.calendarDates ?? []) {
     if (cd.exception_type !== '1') continue;
     const date = ymd(cd.date);
-    if (Math.abs(date.getTime() - reference) / 86400000 > 90) continue;
+    if (Math.abs(date.getTime() - reference) / DAY > additionRule.windowDays) continue;
+    const range = additionRule.withinCalendarRange ? calendarRange.get(cd.service_id) : undefined;
+    if (range && (cd.date < range[0] || cd.date > range[1])) continue;
     const dow = date.getDay();
     if (dow === 0 || dow === 6) continue;
     const counts = additions.get(cd.service_id) ?? [0, 0, 0, 0, 0];
