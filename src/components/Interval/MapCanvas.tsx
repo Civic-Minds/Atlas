@@ -14,7 +14,7 @@ import { useHistoryLayer } from './map/useHistoryLayer';
 import type { Agency } from '../../App';
 import type { ShapeProperties, ViewportBounds, TimePeriod, HoveredBranch } from '../../hooks/useIntervalStats';
 import type { DayType } from '../../../shared/dayTypes';
-import { registerProtocol, getAtlasPmtilesUrl, getAtlasOverviewPmtilesUrl, getMapStyle } from '../../lib/mapStyle';
+import { registerProtocol, getAtlasPmtilesUrl, getAtlasOverviewPmtilesUrl, getMapStyle, getActiveDataRelease } from '../../lib/mapStyle';
 import { Z_PANEL, MAP_BADGE } from '../../styles';
 import { LIVE_POLLING_ROUTES } from '../../../shared/livePollingConfig';
 import { useColorVision } from '../../context/ColorVisionContext';
@@ -524,6 +524,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       frequentServiceDays: state.frequentServiceDays,
       frequentServiceFrequency: state.frequentServiceFrequency,
       frequentServiceWindow: state.frequentServiceWindow,
+      releaseGeneratedAt: getActiveDataRelease()?.generatedAt ?? null,
     }, samples, state.agencies);
   }, []);
   const [mapContextMenu, setMapContextMenu] = useState<{ x: number; y: number; lat: number; lon: number } | null>(null);

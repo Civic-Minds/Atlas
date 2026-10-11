@@ -89,6 +89,7 @@ export default function MapExportDialog({ open, sourceSize, prepareSource, relea
         route: details.route,
         key: details.key,
         keyTitle: details.keyTitle,
+        citation: details.citation,
         lightMode,
         size,
       });
@@ -123,7 +124,7 @@ export default function MapExportDialog({ open, sourceSize, prepareSource, relea
         <div className="flex items-start justify-between gap-4">
           <div>
             <h2 id="map-export-title" className="text-sm font-black text-[var(--text-primary)]">Export map image</h2>
-            <p className="mt-1 text-[11px] font-bold text-[var(--text-dim)]">{selectedOutput.width} × {selectedOutput.height} PNG with Atlas attribution.</p>
+            <p className="mt-1 text-[11px] font-bold text-[var(--text-dim)]">{selectedOutput.width} × {selectedOutput.height} PNG with whose schedules it shows, when the data was updated, and the Atlas link.</p>
           </div>
           <button type="button" onClick={onClose} aria-label="Close export dialog" className="text-[var(--text-dim)] hover:text-[var(--text-primary)]">
             <X className="h-4 w-4" />
