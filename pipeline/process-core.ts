@@ -19,7 +19,7 @@ import { ROUTE_ARTIFACT_SCHEMA_VERSION } from '../shared/artifactSchema.js';
 import { DAY_TYPES, WEEKDAYS, type DayName, type DayType } from '../types/gtfs.js';
 import { ALL_DAYS } from '../shared/dayTypes.js';
 import { expandFrequencyWindow, expandTripFrequencyWindows, isSingleTripFrequencyWindow, parseFrequencyWindow, SINGLE_TRIP_WINDOW_MAX_DEPARTURES, SINGLE_TRIP_WINDOW_SPAN_TOLERANCE_MIN, t2m, type FrequencyWindow } from './transit-utils.js';
-import { adaptiveMedianHeadwayInWindow, computeHourMaxGaps, computePeriodHeadways, computePeriodHeadwayRanges, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, hasGenuineBranchPattern, hasSustainedFrequentService, hasSustainedNightService, headsignOverlapMinHeadway, headwayToTier, medianHeadwayInWindow, nightServiceDepartureTimes, NIGHT_SERVICE_WINDOW_END_MIN, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
+import { adaptiveMedianHeadwayInWindow, computeHourMaxGaps, computePeriodHeadways, computePeriodHeadwayRanges, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, hasGenuineBranchPattern, hasSustainedFrequentService, hasSustainedNightService, headsignOverlapMinHeadway, headwayToTier, isThinAllDayTerminalSample, medianHeadwayInWindow, nightServiceDepartureTimes, NIGHT_SERVICE_WINDOW_END_MIN, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
 import { computeRouteBaseFares, detectBusSubType } from './route-metadata.js';
 import { buildStopsMeta } from './stopsMeta.js';
 import { clipLineBetweenPositions, clipLineBetweenStops, projectStopsOntoShape, simplifyLine } from './geometry.js';
@@ -32,6 +32,7 @@ import { routeDataQualityWarningForShape } from './routeDataQuality.js';
 import { deriveRouteBranch } from '../shared/routeBranch.js';
 import { isRailLikeRoute } from '../shared/modes.js';
 import { computePeriodCoverageHeadways } from './headway-utils.js';
+import { makeShapeCoverChecker } from './shapeCoverage.js';
 
 export type { GtfsPreprocess };
 export type { HeadwayByPeriod };
@@ -305,6 +306,8 @@ export interface ProcessOptions extends GtfsTransformOptions {
    * omit this and continue to use the default analysis criteria.
    */
   analysisCriteriaFn?: (raw: RawRouteDepartures[]) => AnalysisResult[];
+  /** Read-only view of the phase 2 results, for tests and audits. Does not change the output. */
+  onAnalysisResults?: (results: readonly AnalysisResult[]) => void;
 }
 
 /** Thrown when validateGtfs reports errors and options.force is not set. */
@@ -560,9 +563,14 @@ export async function processGtfsBuffer(
   // Same tail days phase 2 uses (#718), so the part-week decision (phase 2) and the stop-level
   // full-week check below both skip a weekday that only carries the previous night's tail.
   const weekdayServiceDays = weekdayServiceDaysByRouteDir(gtfs, refDate, activeServiceIdsByCalendarDay, undefined, previousNightTailDays(raw));
+  // A burst or stray-trip pattern is demoted to irregular only when other regular shapes already
+  // draw its road (#732). Unknown geometry counts as not covered, so nothing is hidden blindly.
+  const isShapeCovered = makeShapeCoverChecker(shapeById);
   const analyze = options?.analysisCriteriaFn
-    ?? ((input: RawRouteDepartures[]) => applyAnalysisCriteria(input, undefined, undefined, weekdayServiceDays));
-  const results = analyze(raw).map(result =>
+    ?? ((input: RawRouteDepartures[]) => applyAnalysisCriteria(input, undefined, undefined, weekdayServiceDays, isShapeCovered));
+  const analyzed = analyze(raw);
+  options?.onAnalysisResults?.(analyzed);
+  const results = analyzed.map(result =>
     options?.slug === 'niagara' ? normalizeNrtAnalysisResult(result) : result,
   );
 
@@ -1505,7 +1513,15 @@ export async function processGtfsBuffer(
       const nonTerminalStopHws = onShape.slice(0, -1)
         .map(({ stopId }) => stopHeadways[stopId])
         .filter((v): v is number => v != null);
-      const headway = hasGenuineBranchPattern(terminalComputedHw, nonTerminalStopHws)
+      // A terminal value from the all-day fallback window on fewer than four departures is a
+      // two-gap mean, not a headway: keep the phase 2 branch value (metrolink Riverside, #733).
+      const thinTerminalSample = branchHw != null
+        && terminalMiddayHw == null
+        && terminalHw != null
+        && isThinAllDayTerminalSample(metricStopMap.get(terminalId!) ?? [], branchTripCount);
+      const headway = thinTerminalSample
+        ? branchHw
+        : hasGenuineBranchPattern(terminalComputedHw, nonTerminalStopHws)
         ? resolveTerminalHeadway(terminalComputedHw, branchHw, branchTripCount)
         : terminalComputedHw;
       feature.properties.headway = headway;

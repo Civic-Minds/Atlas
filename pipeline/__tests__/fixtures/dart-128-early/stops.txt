@@ -1,0 +1,53 @@
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,wheelchair_boarding
+13733,13733,YOUNG @ GRIFFIN - W - NS,YOUNG @ GRIFFIN -Westbound -Near Side (before the intersection),32.776874,-96.80188,,,1
+14942,14942,SINGLETON @ MIKE - E - FS,SINGLETON @ MIKE -Eastbound -Far Side (after the intersection),32.778377,-96.914223,,,0
+14943,14943,SINGLETON @ CLYMER - E - NS,SINGLETON @ CLYMER -Eastbound -Near Side (before the intersection),32.778503,-96.909882,,,1
+14975,14975,SINGLETON @ PLUTO - W - MB1,SINGLETON @ PLUTO -Westbound -Mid Block 1 (not near the intersection),32.778995,-96.88514,,,0
+14976,14976,SINGLETON @ PLUTO - W - MB2,SINGLETON @ PLUTO -Westbound -Mid Block 2 (not near the intersection),32.778984,-96.887955,,,0
+14977,14977,SINGLETON @ PLUTO - W - NS,SINGLETON @ PLUTO -Westbound -Near Side (before the intersection),32.778877,-96.891701,,,0
+16357,16357,SINGLETON @ BATAAN - W - NS,SINGLETON @ BATAAN -Westbound -Near Side (before the intersection),32.778606,-96.831864,,,1
+16359,16359,SINGLETON @ SYLVAN - W - NS,SINGLETON @ SYLVAN -Westbound -Near Side (before the intersection),32.77864,-96.835511,,,1
+16404,16404,SINGLETON @ CONROE - W - NS,SINGLETON @ CONROE -Westbound -Near Side (before the intersection),32.77857,-96.837634,,,1
+16405,16405,SINGLETON @ WINNETKA - W - NS,SINGLETON @ WINNETKA -Westbound -Near Side (before the intersection),32.778569,-96.839588,,,1
+16406,16406,SINGLETON @ EL BENITO - W - NS,SINGLETON @ EL BENITO -Westbound -Near Side (before the intersection),32.778549,-96.843697,,,1
+16407,16407,SINGLETON @ HARSTON - W - FS,SINGLETON @ HARSTON -Westbound -Far Side (after the intersection),32.778587,-96.850083,,,1
+16408,16408,SINGLETON @ PUGET - W - NS,SINGLETON @ PUGET -Westbound -Near Side (before the intersection),32.778652,-96.853295,,,1
+16409,16409,SINGLETON @ HAMPTON - W - FS,SINGLETON @ HAMPTON -Westbound -Far Side (after the intersection),32.778809,-96.857222,,,1
+16410,16410,SINGLETON @ FISHTRAP - W - NS,SINGLETON @ FISHTRAP -Westbound -Near Side (before the intersection),32.778794,-96.860132,,,1
+16686,16686,LAMAR @ COMMERCE - N - NS,LAMAR @ COMMERCE -Northbound -Near Side (before the intersection),32.778644,-96.803971,,,1
+16808,16808,BERNAL @ WALTON WALKER - S - NS,BERNAL @ WALTON WALKER -Southbound -Near Side (before the intersection),32.771053,-96.91446,,,1
+16809,16809,WALTON WALKER @ JIM - N - FS,WALTON WALKER @ JIM -Northbound -Far Side (after the intersection),32.772937,-96.9152,,,0
+16810,16810,WALTON WALKER @ SINGLETON - N - NS,WALTON WALKER @ SINGLETON -Northbound -Near Side (before the intersection),32.778167,-96.916336,,,0
+16811,16811,SINGLETON @ LAPSLEY - E - NS,SINGLETON @ LAPSLEY -Eastbound -Near Side (before the intersection),32.778465,-96.912224,,,1
+16826,16826,SINGLETON @ HERBERT - W - NS,SINGLETON @ HERBERT -Westbound -Near Side (before the intersection),32.778625,-96.830063,,,1
+16827,16827,SINGLETON @ TOPEKA - W - NS,SINGLETON @ TOPEKA -Westbound -Near Side (before the intersection),32.778608,-96.834305,,,1
+16828,16828,SINGLETON @ BORGER - W - NS,SINGLETON @ BORGER -Westbound -Near Side (before the intersection),32.778556,-96.841927,,,1
+16829,16829,SINGLETON @ CHIHUAHUA - W - NS,SINGLETON @ CHIHUAHUA -Westbound -Near Side (before the intersection),32.778553,-96.845505,,,1
+16830,16830,SINGLETON @ VILBIG - W - NS,SINGLETON @ VILBIG -Westbound -Near Side (before the intersection),32.778549,-96.847825,,,1
+16831,16831,SINGLETON @ PEORIA - W - NS,SINGLETON @ PEORIA -Westbound -Near Side (before the intersection),32.778541,-96.895157,,,1
+16832,16832,SINGLETON @ WEISENBERGER - W - NS,SINGLETON @ WEISENBERGER -Westbound -Near Side (before the intersection),32.778564,-96.896988,,,1
+20530,20530,WOOD @ LAMAR - W - NS,WOOD @ LAMAR -Westbound -Near Side (before the intersection),32.777252,-96.803399,,,1
+20685,20685,MARILLA @ AKARD - W - FS,MARILLA @ AKARD -Westbound -Far Side (after the intersection),32.776386,-96.798912,,,1
+21612,21612,BERNAL @ TALLYHO - S - FS,BERNAL @ TALLYHO -Southbound -Far Side (after the intersection),32.774715,-96.911972,,,0
+22345,22345,SINGLETON @ JIM - E - FS,SINGLETON @ JIM -Eastbound -Far Side (after the intersection),32.778434,-96.915223,,,1
+22349,22349,SINGLETON @ PALACIOS - W - NS,SINGLETON @ PALACIOS -Westbound -Near Side (before the intersection),32.778621,-96.900979,,,0
+22350,22350,SINGLETON @ HAMMERLY - W - NS,SINGLETON @ HAMMERLY -Westbound -Near Side (before the intersection),32.778583,-96.898743,,,0
+22612,22612,SINGLETON @ KINGBRIDGE- W - NS,SINGLETON @ KINGBRIDGE-Westbound -Near Side (before the intersection),32.778844,-96.865622,,,1
+23193,23193,LAMAR @ MAIN - N - NS,LAMAR @ MAIN -Northbound -Near Side (before the intersection),32.77949,-96.804208,,,1
+23460,23460,SINGLETON @ KINGBRIDGE - W - FS,SINGLETON @ KINGBRIDGE -Westbound -Far Side (after the intersection),32.778865,-96.868043,,,1
+23796,23796,SINGLETON @ HAMPTON - W - NS,SINGLETON @ HAMPTON -Westbound -Near Side (before the intersection),32.778724,-96.856286,,,1
+24314,24314,SINGLETON @ MCBROOM - W - NS,SINGLETON @ MCBROOM -Westbound -Near Side (before the intersection),32.778667,-96.903374,,,0
+25678,25678,CONTINENTAL @ DRAGON - W - MB,CONTINENTAL @ DRAGON -Westbound -Mid Block (not near the intersection),32.783985,-96.813828,,,1
+26022,26022,SINGLETON @ ESMALDA - W - NS,SINGLETON @ ESMALDA -Westbound -Near Side (before the intersection),32.778961,-96.88057,,,0
+26636,26636,SINGLETON @ MANILA - W - MB,SINGLETON @ MANILA -Westbound -Mid Block (not near the intersection),32.778843,-96.863857,,,1
+27104,27104,SINGLETON @ POINTER - W - FS,SINGLETON @ POINTER -Westbound -Far Side (after the intersection),32.778873,-96.87015,,,1
+28076,28076,ROSA PARKS PLAZA,ROSA PARKS PLAZA,32.780703,-96.804454,,,1
+28093,28093,SINGLETON @ OBENCHAIN - W - NS,SINGLETON @ OBENCHAIN -Westbound -Near Side (before the intersection),32.778642,-96.836828,,,0
+28295,28295,LAMAR @ BROOM - N - NS,LAMAR @ BROOM -Northbound -Near Side (before the intersection),32.784514,-96.807943,,,1
+28301,28301,LAMAR @ VICTORY - W - NS,LAMAR @ VICTORY -Westbound -Near Side (before the intersection),32.785386,-96.809687,,,1
+28550,28550,RIVERFRONT @ CONTINENTAL - S - FS,RIVERFRONT @ CONTINENTAL -Southbound -Far Side (after the intersection),32.78326,-96.815548,,,0
+29894,29894,SINGLETON @ WESTMORELAND - W - NS,SINGLETON @ WESTMORELAND -Westbound -Near Side (before the intersection),32.77882,-96.873284,,,1
+30525,30525,SINGLETON @ NORWICH - W - FS,SINGLETON @ NORWICH -Westbound -Far Side (after the intersection),32.779032,-96.883073,,,0
+31546,31546,LAMAR @ HORD - N - NS,LAMAR @ HORD -Northbound -Near Side (before the intersection),32.78234,-96.805648,,,1
+31803,31803,SINGLETON @ GULDEN - W - FS,SINGLETON @ GULDEN -Westbound -Far Side (after the intersection),32.778587,-96.828415,,,1
+33262,33262,BERNAL/SINGLETON TL,BERNAL/SINGLETON TL,32.779147,-96.905254,,,1

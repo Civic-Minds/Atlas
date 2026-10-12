@@ -1,0 +1,4 @@
+service_id,date,exception_type,holiday_name
+BUS20264-hbl46wk1-Weekday-02,20261012,2,Indigenous Peoples' Day
+BUS20264-hbl46wk1-Weekday-02,20261111,2,Veterans Day
+BUS20264-hbl46wk1-Weekday-02,20261126,2,Thanksgiving Day
