@@ -3,9 +3,11 @@
  * Used by process-gtfs.ts (local zip) and refresh.ts (downloaded feeds).
  */
 import { parseGtfsZip } from './parseGtfs.js';
+import { computeRunningTimes, runningTimesJson } from './runningTime.js';
+import { pickRepresentativeWeekday } from './representativeWeekday.js';
 import type { GtfsData, AnalysisResult, RawRouteDepartures } from '../types/gtfs.js';
 import { computeRawDepartures } from './transit-phase1.js';
-import { applyAnalysisCriteria, representativeIndexByCount, previousNightTailDays, representativeWeekdayIndex } from './transit-phase2.js';
+import { applyAnalysisCriteria, previousNightTailDays } from './transit-phase2.js';
 import { calculateCorridors } from './transit-logic.js';
 import { detectReferenceDate, getActiveServiceIds } from './transit-calendar.js';
 import { DEFAULT_CRITERIA } from './defaults.js';
@@ -674,20 +676,8 @@ export async function processGtfsBuffer(
   const representativeWeekday = { group: new Map<string, DayName>(), headsign: new Map<string, DayName>(), shape: new Map<string, DayName>() };
   for (const kind of ['group', 'headsign', 'shape'] as const) {
     for (const [key, counts] of weekdayCounts[kind]) {
-      // Phase 1 drops a day with fewer than two departures, so the route level never sees
-      // it; count such days as unserved too unless no day has more (single-trip routes).
-      // Same rule as the route-level rollup: the median of all five weekdays decides, so a
-      // route on fewer than 3 of 5 weekdays gets no Weekday stop data.
-      const served = counts.map(count => (count >= 2 ? count : 0));
-      const usable = served.some(count => count > 0) ? served : counts;
-      let index = representativeWeekdayIndex(usable);
-      // A pattern that runs on fewer weekdays than its route (one shape per weekday, LANTA and
-      // Lancaster) still describes a route that runs every weekday: use its typical served day.
-      // Only a route direction that itself runs on fewer than 3 weekdays has no Weekday data.
-      if (index === null && servesFullWeek[kind].has(key) && usable.some(count => count > 0)) {
-        const days = WEEKDAYS.map((_, i) => i).filter(i => usable[i] > 0);
-        index = days[representativeIndexByCount(days.map(i => usable[i]))];
-      }
+      // Shared with the running time (CIV-84); see pickRepresentativeWeekday for the rule.
+      const index = pickRepresentativeWeekday(counts, servesFullWeek[kind].has(key));
       if (index === null) continue;
       representativeWeekday[kind].set(key, WEEKDAYS[index]);
     }
@@ -1917,6 +1907,10 @@ export async function processGtfsBuffer(
 
   const feedInfo = gtfs.feedInfo?.[0];
   const timezone = gtfs.agencies?.[0]?.agency_timezone?.trim() || null;
+  // Scheduled running time (CIV-84): card data in its own top-level block of the agency JSON,
+  // beside the features, so route features and map tiles are untouched.
+  const runningTimes = computeRunningTimes(gtfs, routeById, activeServiceIdsByCalendarDay, shapeFilterForPhase1);
+
   const mainFeatures = [...features, ...stopFeatures];
   const routeFeatures = features.filter(feature =>
     feature.properties.routeShortName != null,
@@ -1977,7 +1971,7 @@ export async function processGtfsBuffer(
   }
 
   return {
-    geojson: JSON.stringify({ type: 'FeatureCollection', atlasSchemaVersion: ROUTE_ARTIFACT_SCHEMA_VERSION, features: mainFeatures }),
+    geojson: JSON.stringify({ type: 'FeatureCollection', atlasSchemaVersion: ROUTE_ARTIFACT_SCHEMA_VERSION, features: mainFeatures, runningTimes: runningTimesJson(runningTimes) }),
     corridorsGeojson: JSON.stringify({ type: 'FeatureCollection', features: corridorFeatures }),
     stopsJson: JSON.stringify(stopsIndex),
     tripsJson: JSON.stringify(tripsLookup),
