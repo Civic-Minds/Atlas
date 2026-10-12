@@ -1,0 +1,2 @@
+route_id,company_id,agency_id,route_short_name,route_long_name,route_desc,route_type,route_url,route_color,route_text_color
+27290,DART,60056,128,SINGLETON,,3,https://www.dart.org/guide/transit-and-use/bus-routes/bus-route-detail/128,794489,FFFFFF

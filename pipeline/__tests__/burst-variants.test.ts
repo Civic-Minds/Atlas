@@ -58,16 +58,52 @@ describe('short-turn and burst variants (#732)', () => {
     for (const p of routes) expect(p.worstDirectionHeadway).toBe(29);
   });
 
-  it('ttc 340: the 3-trip night burst before the regular night pattern starts stays visible', async () => {
-    // Hand count: westbound night trips every 27-30 from 26:26 to 28:23 (shape 1122569), and a
-    // 3-trip pattern at 25:31, 25:48, 26:04 (shape 1122570) before them. No regular trip runs in
-    // the hour before the burst, so it is the only westbound service then and is not demoted.
+  it('ttc 340 (Blue Night): the 3-trip start of the night reads at the night cadence, tier 30', async () => {
+    // Hand count: westbound shape 1122570 runs 25:31, 25:48, 26:04 from stop 14663; the regular
+    // shape 1122569 then runs 26:26, 26:53, 27:23, 27:53, 28:23 from stop 9855 on the same road.
+    // Alone the three trips read as every 17 (tier 20). With the hand-over to the regular pattern
+    // the gaps between departures are 17, 16, 22: tier 30, headline 22. The trips stay drawn.
     const captured: AnalysisResult[] = [];
     await processGtfsBuffer(await fixtureZip('ttc-340-night'), undefined, {
       slug: 'ttc',
       onAnalysisResults: results => { captured.push(...results); },
     });
     expect(captured.find(r => r.day === 'Weekday' && r.shapeId === '1122570')?.serviceClass).toBe('time-limited');
+    const west = (await weekdayRoutes('ttc-340-night', 'ttc')).filter(p => p.directionId === 1);
+    expect(west.length).toBeGreaterThan(0);
+    for (const p of west) {
+      expect(p.tier).toBe('30');
+      expect(p.headway).toBe(22);
+    }
+  });
+
+  it('translink 4 Powell: a start-of-day cluster keeps tier 15 (its 23-minute opening gap is a service edge)', async () => {
+    // Hand count, translink route 6614 direction 0, Wed 2026-10-14: shape 321166 runs 05:41, 06:04,
+    // 06:19, 06:34, 06:49, 07:01, then the regular shape 321163 from 07:09 every 13-15. The gaps
+    // between departures are 23, 15, 15, 15, 12, 8; the 23 is the day's opening gap, which the
+    // tier rule allows at any route edge, so the cluster stays every 15 (it read as 30 when the
+    // opening gap counted).
+    const captured: AnalysisResult[] = [];
+    await processGtfsBuffer(await fixtureZip('translink-4-powell'), undefined, {
+      slug: 'translink',
+      onAnalysisResults: results => { captured.push(...results); },
+    });
+    const cluster = captured.find(r => r.day === 'Weekday' && r.shapeId === '321166');
+    expect(cluster).toMatchObject({ tier: '15', serviceClass: 'time-limited' });
+    expect(cluster?.medianHeadway).toBe(15);
+  });
+
+  it('edge clusters that already run the route cadence keep their values (dart 128 early, fax 4260 late)', async () => {
+    // dart 128 to Downtown Dallas: 03:54, 04:24, 04:54 before the regular shape starts at 04:45
+    // (then 05:15, 05:45): combined gaps 30, 21, 9, 21, 30. fax 4260 to B Shelter: 22:00-23:30
+    // every 30 after the regular shape ends at 21:30 (every 30). Both stay every 30, tier 30, and
+    // keep their early (overnight) and late (evening) periods.
+    const dart = (await weekdayRoutes('dart-128-early', 'dart')).find(p => p.headsign === 'DOWNTOWN DALLAS');
+    expect(dart).toMatchObject({ tier: '30', serviceClass: 'time-limited', headway: 30 });
+    expect(dart.headwayByPeriod.overnight).toBe(30);
+    const fax = (await weekdayRoutes('fax-4260-late', 'fax')).find(p => p.headsign === 'B Shelter Temp Location');
+    expect(fax).toMatchObject({ tier: '30', serviceClass: 'time-limited', headway: 30 });
+    expect(fax.headwayByPeriod.evening).toBe(30);
   });
 
   it('stl AOUT2626E: a synthesized 2-trip direction (06:09, 10:07) is irregular and leaves the route median alone', async () => {
@@ -150,6 +186,44 @@ describe('short-turn and burst variants (#732)', () => {
       ...raw('22', [1160, 1170, 1180], { headsign: 'late', shapeId: 'late' }),
     ], undefined, undefined, undefined, ALL_COVERED);
     expect(results.find(r => r.headsign === 'late')).toMatchObject({ serviceClass: 'time-limited' });
+  });
+
+  it('an end-of-service cluster an hour after the regular trips stop keeps its own cadence', () => {
+    // kingcountymetro 102581-style: regular every 15 until 19:50, then nothing until a cluster at
+    // 20:50-21:50 every 15. The 60-minute break means they are not one timetable.
+    const results = applyAnalysisCriteria([
+      ...raw('102581', every(420, 1190, 15), { headsign: 'main', shapeId: 'main' }),
+      ...raw('102581', [1250, 1265, 1280, 1295, 1310], { headsign: 'late', shapeId: 'late' }),
+    ], undefined, undefined, undefined, ALL_COVERED);
+    expect(results.find(r => r.headsign === 'late' && r.day === 'Weekday')).toMatchObject({ serviceClass: 'time-limited', tier: '15' });
+  });
+
+  it('edge merge: a 30-minute hand-over merges, 31 minutes does not', () => {
+    const run = (start: number) => applyAnalysisCriteria([
+      ...raw('9', every(420, 1140, 15), { headsign: 'main', shapeId: 'main' }),
+      ...raw('9', [start, start + 10, start + 20], { headsign: 'late', shapeId: 'late' }),
+    ], undefined, undefined, undefined, ALL_COVERED).find(r => r.headsign === 'late' && r.day === 'Weekday');
+    expect(run(1170)).toMatchObject({ serviceClass: 'time-limited', tier: '30', medianHeadway: 30 });
+    expect(run(1171)).toMatchObject({ serviceClass: 'time-limited', tier: '10', medianHeadway: 10 });
+  });
+
+  it('edge merge: a cluster on a road the regular shape does not draw keeps its own values', () => {
+    const results = applyAnalysisCriteria([
+      ...raw('9', every(420, 1140, 15), { headsign: 'main', shapeId: 'main' }),
+      ...raw('9', [1160, 1170, 1180], { headsign: 'late', shapeId: 'other-road' }),
+    ], undefined, undefined, undefined, (shapeId: string | undefined) => shapeId !== 'other-road');
+    expect(results.find(r => r.headsign === 'late' && r.day === 'Weekday')).toMatchObject({ tier: '10', medianHeadway: 10 });
+  });
+
+  it('edge merge: the closing gap the edge allowance accepts is left out of the headline', () => {
+    // Regular every 15 until 19:00, then 19:10, 19:20, 19:30, 19:40 and a last trip at 20:03. Gaps
+    // 10, 10, 10, 10, 23: the 23 is the cluster's closing gap (no regular trip in the hour after),
+    // accepted at tier 15 by the edge allowance, so the headline is 10, not 23.
+    const r = applyAnalysisCriteria([
+      ...raw('9', every(420, 1140, 15), { headsign: 'main', shapeId: 'main' }),
+      ...raw('9', [1150, 1160, 1170, 1180, 1203], { headsign: 'late', shapeId: 'late' }),
+    ], undefined, undefined, undefined, ALL_COVERED).find(x => x.headsign === 'late' && x.day === 'Weekday');
+    expect(r).toMatchObject({ tier: '15', medianHeadway: 10 });
   });
 
   it('a burst beside a regular pattern of the same direction becomes irregular', () => {

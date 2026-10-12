@@ -51,6 +51,8 @@ export const EDGE_GAP_ALLOWANCE_MINUTES = 10;
 export const BURST_MAX_SPAN_MINUTES = 90;
 /** A burst is a variant only of a regular pattern running within this many minutes of it (#732). */
 export const BURST_SIBLING_WINDOW_MINUTES = 60;
+/** An edge cluster and the regular pattern are one timetable when they hand over within this many minutes (#732). */
+export const EDGE_HANDOFF_MAX_MINUTES = 30;
 export type EdgeGapAllowanceSide = 'opening' | 'closing' | 'both';
 
 type EdgeGapAllowanceResult = {
@@ -416,7 +418,10 @@ export function applyAnalysisCriteria(
     // Route directions (per day) that run a regular all-day pattern, and the time-limited bursts
     // that may be variants of them (#732).
     const regularTimesByRouteDirDay = new Map<string, { times: number[]; shapeId?: string }[]>();
-    const burstResults: { key: string; span: [number, number]; result: AnalysisResult }[] = [];
+    const burstResults: { key: string; span: [number, number]; times: number[]; tiers: number[]; result: AnalysisResult }[] = [];
+    // Edge-of-service clusters: the worst gap of the cluster merged with the adjacent regular
+    // trips, used as the cluster's headline (#732).
+    const edgeClusterHeadway = new Map<AnalysisResult, number>();
     const demotedBursts = new Set<AnalysisResult>();
     const routeDaysWithRegularService = new Map<string, string[]>();
     const fallbackStrays: { key: string; result: AnalysisResult }[] = [];
@@ -560,9 +565,6 @@ export function applyAnalysisCriteria(
         // pattern of TTC Line 1 has a short midday tail but is not a burst.
         const routeDirDayKey = `${raw.route}::${raw.dir}::${raw.day}`;
         const isBurst = windowedTimes[windowedTimes.length - 1] - windowedTimes[0] <= BURST_MAX_SPAN_MINUTES;
-        // The whole day's departures, so a burst before 07:00 or after midnight is compared with
-        // the hours the regular pattern really runs.
-        const rawSpan: [number, number] = [Math.min(...raw.departureTimes), Math.max(...raw.departureTimes)];
         if (serviceClass === 'regular' && windowedTimes.length >= 3) {
             // A regular pattern without shape data is kept as '' so the coverage checks below fail.
             const routeShapes = routeDaysWithRegularService.get(`${raw.route}::${raw.day}`) ?? [];
@@ -620,7 +622,13 @@ export function applyAnalysisCriteria(
             ...resourceStats
         };
         perDayResults.set(`${raw.route}::${raw.dir}::${raw.headsign ?? ''}::${raw.shapeId ?? ''}::${raw.routeVariant ?? ''}::${raw.day}`, { dayType, day: raw.day, result, rawTimes: raw.departureTimes });
-        if (isBurst && serviceClass === 'time-limited') burstResults.push({ key: routeDirDayKey, span: rawSpan, result });
+        // The cluster itself is the burst window's departures (all of them when the overnight
+        // fallback applies), not stray trips of the same pattern outside the daytime window:
+        // lacmta 4 Sunday's 19:45-20:53 cluster also carries a morning trip, which made a 918-minute
+        // "gap" when merged with its neighbours.
+        if (isBurst && serviceClass === 'time-limited') {
+            burstResults.push({ key: routeDirDayKey, span: [windowedTimes[0], windowedTimes[windowedTimes.length - 1]], times: windowedTimes, tiers, result });
+        }
         if (tooFewFallbackTrips && serviceClass !== 'irregular') fallbackStrays.push({ key: `${raw.route}::${raw.day}`, result });
     }
 
@@ -675,6 +683,74 @@ export function applyAnalysisCriteria(
         result.serviceClass = 'irregular';
         result.tier = 'span';
         demotedBursts.add(result);
+    }
+
+    // Edge-of-service clusters (#732). A cluster at the start or end of a route direction's service
+    // day, on the regular pattern's road, keeps its class and stays drawn, but its tier and headline
+    // come from its trips together with the adjacent regular trips. TTC 340 (Blue Night) westbound
+    // opens with 25:31, 25:48 and 26:04 from another first stop on the same road, then runs 26:26,
+    // 26:53, 27:23 ...: alone the three trips read as every 17 (tier 20); with their neighbours the
+    // gaps are 17, 16, 22, 27, so the night's honest cadence (tier 30) stands. Only one side may
+    // have regular trips within the hour: a cluster with regular service on both sides is a
+    // variant, handled above.
+    const tierValue = (tier: string): number =>
+        tier === 'span' ? Infinity : tier === 'infrequent' ? 1e6 : Number(tier);
+    for (const { key, span, times, tiers, result } of burstResults) {
+        if (demotedBursts.has(result) || result.serviceClass !== 'time-limited') continue;
+        const from = span[0] - BURST_SIBLING_WINDOW_MINUTES;
+        const to = span[1] + BURST_SIBLING_WINDOW_MINUTES;
+        const siblings = regularTimesByRouteDirDay.get(key) ?? [];
+        const before = siblings.filter(({ times: t }) => t.some(x => x >= from && x < span[0]));
+        const after = siblings.filter(({ times: t }) => t.some(x => x > span[1] && x <= to));
+        if ((before.length > 0) === (after.length > 0)) continue;
+        // Only service that hands over to (or from) the cluster within 30 minutes is one timetable
+        // with it (ttc 340: 26:04 -> 26:26). A cluster an hour after the regular trips stop
+        // (kingcountymetro 102581: every 15 from 20:50) is service of its own and keeps its values.
+        const handoffOk = ({ times: t }: { times: number[] }) => before.length > 0
+            ? t.some(x => x >= span[0] - EDGE_HANDOFF_MAX_MINUTES && x < span[0])
+            : t.some(x => x > span[1] && x <= span[1] + EDGE_HANDOFF_MAX_MINUTES);
+        const adjacent = (before.length > 0 ? before : after)
+            .filter(sibling => handoffOk(sibling))
+            .filter(({ shapeId }) => shapeId && isShapeCovered(result.shapeId, [shapeId]));
+        if (adjacent.length === 0) continue;
+        // Only the gaps between the cluster's own trips, the hand-over to the regular pattern and
+        // regular trips that run during the cluster count. Regular gaps beyond the hand-over are the
+        // regular pattern's own business. The cluster's open side is the one with no regular trip
+        // of the direction within 60 minutes; the cluster's first gap (open side before it) or last
+        // gap (open side after it) gets the same edge allowance as a route's first or last gap
+        // (translink 4 Powell opens 05:41, 06:04, then every 15).
+        const atStart = before.length === 0;
+        const adjacentTimes = adjacent.flatMap(({ times: t }) => t);
+        const handoff = atStart
+            ? Math.min(...adjacentTimes.filter(x => x > span[1] && x <= span[1] + EDGE_HANDOFF_MAX_MINUTES))
+            : Math.max(...adjacentTimes.filter(x => x >= span[0] - EDGE_HANDOFF_MAX_MINUTES && x < span[0]));
+        const merged = [...new Set([
+            ...times,
+            handoff,
+            ...adjacentTimes.filter(x => x >= span[0] && x <= span[1]),
+        ])].sort((a, b) => a - b);
+        const gaps = merged.slice(1).map((t, i) => t - merged[i]);
+        if (gaps.length === 0) continue;
+        // The open side is the cluster's first trip (no regular trip in the hour before) or its last
+        // trip (none in the hour after): give the determiner a raw list that marks only that side as
+        // an edge.
+        const rawForEdges = atStart ? [...merged, merged[merged.length - 1] + 1] : [merged[0] - 1, ...merged];
+        const detail = determineTierWithEdgeGapAllowanceDetail(
+            gaps, merged.length, merged[merged.length - 1] - merged[0], tiers,
+            criteria.graceMinutes, criteria.maxGraceViolations, criteria.gracePercent,
+            criteria.violationPercent,
+            { rawDepartureTimes: rawForEdges, analysisTimes: merged, day: result.daysIncluded?.[0] ?? 'Monday', routeType: result.routeType, railLike: result.railLike },
+            criteria.violationPercentByTier,
+        );
+        // Never better than the cluster's own tier; 'span' from the merged check reads as infrequent.
+        const mergedClass = detail.tier === 'span' ? 'infrequent' : detail.tier;
+        if (tierValue(mergedClass) > tierValue(result.tier)) result.tier = mergedClass;
+        // Headline (median headway only; the average is left alone): the worst gap between
+        // departures, leaving out an open-side gap the tier check allowed.
+        const headlineGaps = detail.edgeGapAllowance
+            ? (atStart ? gaps.slice(1) : gaps.slice(0, -1))
+            : gaps;
+        edgeClusterHeadway.set(result, Math.max(...(headlineGaps.length > 0 ? headlineGaps : gaps)));
     }
 
     // Roll up per-day results into day-type summaries
@@ -794,7 +870,7 @@ export function applyAnalysisCriteria(
             day: dayType,
             dir: rep.dir,
             avgHeadway: stats.avg,
-            medianHeadway: stats.median,
+            medianHeadway: edgeClusterHeadway.has(rep) ? Math.max(stats.median, edgeClusterHeadway.get(rep)!) : stats.median,
             peakHeadway: stats.peakHeadway,
             baseHeadway: Math.round(stats.baseHeadway * 10) / 10,
             peakWindow: stats.peakWindow,
