@@ -63,12 +63,27 @@ export function buildSharedStopIndex(features: readonly FeatureLike[]): SharedSt
   return index;
 }
 
-/** Whether the stop lies on one of the feature's own shared stretches. */
-function onSharedStretch(p: Props, stopId: string): boolean {
+/**
+ * Stop ids on the feature's own shared stretches, built once per feature (O(1) lookups after).
+ * Rebuilt when the feature's stretches or stop order are replaced.
+ */
+const stretchStopCache = new WeakMap<object, { stretches: unknown; stopOrder: unknown; stops: Set<string> }>();
+export function sharedStretchStopIds(p: Props): ReadonlySet<string> {
   const stretches = p.sharedStretches as SharedStretch[] | undefined;
   const stopOrder = p.stopOrder as string[] | undefined;
-  if (!stretches || !stopOrder) return false;
-  return stopOrder.some((id, i) => id === stopId && stretches.some(st => i >= st.from && i <= st.to));
+  const cached = stretchStopCache.get(p);
+  if (cached && cached.stretches === stretches && cached.stopOrder === stopOrder) return cached.stops;
+  const stops = new Set<string>();
+  if (stretches && stopOrder) {
+    for (const st of stretches) for (let i = st.from; i <= st.to; i++) if (stopOrder[i] != null) stops.add(stopOrder[i]);
+  }
+  stretchStopCache.set(p, { stretches, stopOrder, stops });
+  return stops;
+}
+
+/** Whether the stop lies on one of the feature's own shared stretches. */
+function onSharedStretch(p: Props, stopId: string): boolean {
+  return sharedStretchStopIds(p).has(stopId);
 }
 
 export type PooledStopMetric =
@@ -117,6 +132,31 @@ export function getPooledStop(
   return lower(coverage, p.stopPeriodCoverageHeadways?.[stopId]?.[period]) ? coverage : undefined;
 }
 
+/**
+ * getPooledStop's median, coverage and sustained for one period in a single lookup (the overlay
+ * calls this for every stop on every pass). Same rules as getPooledStop.
+ */
+export function getPooledPeriod(
+  index: SharedStopIndex,
+  feature: FeatureLike,
+  stopId: string,
+  period: PeriodKey,
+): { median?: number; coverage?: number; sustained?: boolean } {
+  const p = propsOf(feature);
+  if (!onSharedStretch(p, stopId)) return {};
+  const stop = index.get(sharedStopGroupKey(p))?.[stopId];
+  const i = PERIOD_KEYS.indexOf(period);
+  const median = stop?.periods?.[i];
+  if (!stop || i < 0 || !lower(median, p.stopPeriodHeadways?.[stopId]?.[period])) return {};
+  const pooledSustained = !(stop.unsustained ?? []).includes(period);
+  const coverage = stop.coverage?.[i];
+  return {
+    median,
+    coverage: lower(coverage, p.stopPeriodCoverageHeadways?.[stopId]?.[period]) ? coverage : undefined,
+    sustained: pooledSustained || p.headwayByPeriodSustained?.[period] !== true ? pooledSustained : undefined,
+  };
+}
+
 /** Whether any pooled metric applies to this feature at this stop. */
 export function hasPooledStop(index: SharedStopIndex, feature: FeatureLike, stopId: string): boolean {
   if (getPooledStop(index, feature, stopId, 'headway') !== undefined) return true;
@@ -155,9 +195,12 @@ export function pairOppositeStop(
   if (!here) return null;
   let best: string | null = null;
   let bestM = OPPOSITE_STOP_MAX_M;
+  // Cheap box test first: 1 degree of latitude is about 111 km.
+  const maxDLat = OPPOSITE_STOP_MAX_M / 111000;
+  const maxDLon = maxDLat / Math.max(0.1, Math.cos(here.lat * Math.PI / 180));
   for (const c of candidates) {
     const there = coords.get(c);
-    if (!there) continue;
+    if (!there || Math.abs(there.lat - here.lat) > maxDLat || Math.abs(there.lon - here.lon) > maxDLon) continue;
     const m = haversineM(here, there);
     if (m <= bestM) { bestM = m; best = c; }
   }

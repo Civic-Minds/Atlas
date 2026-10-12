@@ -2,7 +2,7 @@ import type { ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
 import { periodKeyForHour } from '../../shared/config';
 import { buildRouteServiceSummary, metricValueForPeriod } from './routeFacts';
 import { MIN_SHARED_STOPS_FOR_TRUNK, sharedStopIds, sharesOrderedTrunk } from './routeBranchGeometry';
-import { buildSharedStopIndex, getPooledStop } from '../../shared/sharedStops';
+import { sharedStretchStopPass } from './frequencySegments';
 
 /** Headsign-scoped trunk minimum for route-card range display (not route-wide combined deps). */
 export function headsignTrunkHeadway(d: ShapeProperties, period: string): number | null {
@@ -144,30 +144,39 @@ export function trunkSparklineByHour(
 }
 
 /**
- * Shared-stretch cadence for a direction's branches (CIV-82): the worst pooled value at the stops
- * of their shared stretches, from the pipeline's merged real departures (shared/sharedStops.ts).
- * Null when the data has no pooled values (then the card keeps its older Combined estimate).
- * `allDirections` are the route's features, so the carrier of the pooled block is found.
+ * Shared-stretch cadence for a direction's branches (CIV-82), from the SAME per-stop pass the map
+ * overlay draws with (sharedStretchStopPass): this direction's worst filter value over the
+ * stops that qualify (both directions passing) under the active filter (every stop with a value on both sides when no
+ * filter is set). So the card never shows a stretch the map does not draw, or a better N than its
+ * worst drawn stop. Null when no stop qualifies (the card then keeps its Combined estimate).
+ * `agencyFeatures` is the agency's whole feature list (stops, the pooled carrier, the opposite
+ * direction).
  */
 export function sharedStretchHeadway(
-  allDirections: ShapeProperties[],
+  agencyFeatures: readonly GeoJSON.Feature[] | undefined,
   branches: ShapeProperties[],
   period: TimePeriod,
+  maxHeadway: number,
 ): { headway: number; stopIds: string[] } | null {
-  const index = buildSharedStopIndex(allDirections);
-  if (index.size === 0) return null;
+  if (!agencyFeatures || branches.length === 0) return null;
+  // The card holds shallow copies of the agency features' properties; their stopOrder arrays
+  // are the originals, so they identify the features.
+  const wanted = new Set<unknown>(branches.map(b => b.stopOrder).filter(Boolean));
+  const routeFeatures = agencyFeatures.filter(f => wanted.has((f.properties as any)?.stopOrder));
+  if (routeFeatures.length === 0) return null;
   let worst: number | null = null;
   const stopIds = new Set<string>();
-  for (const d of branches) {
-    const stretches = (d as ShapeProperties & { sharedStretches?: Array<{ from: number; to: number }> }).sharedStretches;
-    if (!stretches || !d.stopOrder) continue;
-    for (const st of stretches) {
-      for (let i = st.from; i <= st.to; i++) {
-        const stopId = d.stopOrder[i];
-        const v = getPooledStop(index, d, stopId, period === 'all' ? 'headway' : `median:${period}`);
-        if (typeof v !== 'number') continue;
+  for (const { feature, ranges, ownValues } of sharedStretchStopPass(routeFeatures, agencyFeatures, period, maxHeadway, { includePassing: true })) {
+    // A direction run as one pattern has no branches to combine: no "Shared stretch" row there.
+    if (!(feature.properties as any)?.sharedStretches?.length) continue;
+    const stopOrder = (feature.properties as unknown as ShapeProperties).stopOrder ?? [];
+    for (const [from, to] of ranges) {
+      for (let i = from; i <= to; i++) {
+        // This direction's own value: the card row sits under the direction's heading.
+        const v = ownValues.get(i);
+        if (v == null) continue;
         worst = worst == null ? v : Math.max(worst, v);
-        stopIds.add(stopId);
+        stopIds.add(stopOrder[i]);
       }
     }
   }

@@ -7,6 +7,7 @@ import { featurePassesHeadwayFilter, routeFilterHeadway } from '../../shared/rou
 import { PERIOD_KEYS } from '../../shared/config';
 import {
   buildSharedStopIndex,
+  getPooledPeriod,
   getPooledStop,
   oppositeSharedStops,
   pairOppositeStop,
@@ -150,12 +151,33 @@ function routePassesFrequencyFilter(p: ShapeProperties, period: TimePeriod, maxH
  * pipeline publishes no per-stop own flag). Judged with featurePassesHeadwayFilter, the same
  * function the map uses for whole routes, never a pooled-only test.
  */
-export function sharedStopFilterView(index: SharedStopIndex, p: ShapeProperties, stopId: string): Record<string, unknown> {
+export function sharedStopFilterView(
+  index: SharedStopIndex,
+  p: ShapeProperties,
+  stopId: string,
+  /** Fill only what this period's filter reads ('all': the stop headway alone). */
+  onlyPeriod?: TimePeriod,
+): Record<string, unknown> {
   const pooled = (metric: Parameters<typeof getPooledStop>[3]) => getPooledStop(index, p, stopId, metric);
   const headwayByPeriod: Record<string, number | null> = {};
   const periodCoverageHeadway: Record<string, number | null> = {};
   const headwayByPeriodSustained: Record<string, boolean> = {};
-  for (const pk of PERIOD_KEYS) {
+  const periods = onlyPeriod == null ? PERIOD_KEYS : onlyPeriod === 'all' ? [] : [onlyPeriod as PeriodKey];
+  if (onlyPeriod === 'all') {
+    return { tier: p.tier, headway: (pooled('headway') as number | undefined) ?? p.stopHeadways?.[stopId] ?? null };
+  }
+  if (onlyPeriod != null) {
+    const pk = onlyPeriod as PeriodKey;
+    const pooledPeriod = getPooledPeriod(index, p, stopId, pk);
+    const sustained = pooledPeriod.sustained ?? p.headwayByPeriodSustained?.[pk];
+    return {
+      tier: p.tier,
+      headwayByPeriod: { [pk]: pooledPeriod.median ?? p.stopPeriodHeadways?.[stopId]?.[pk] ?? null },
+      periodCoverageHeadway: { [pk]: pooledPeriod.coverage ?? p.stopPeriodCoverageHeadways?.[stopId]?.[pk] ?? null },
+      headwayByPeriodSustained: sustained != null ? { [pk]: sustained } : {},
+    };
+  }
+  for (const pk of periods) {
     const median = pooled(`median:${pk}`);
     headwayByPeriod[pk] = (median as number | undefined) ?? p.stopPeriodHeadways?.[stopId]?.[pk] ?? null;
     periodCoverageHeadway[pk] = (pooled(`coverage:${pk}`) as number | undefined)
@@ -174,88 +196,214 @@ export function sharedStopFilterView(index: SharedStopIndex, p: ShapeProperties,
 
 interface StopPoint { lat: number; lon: number }
 
+type StretchProps = ShapeProperties & { sharedStretches?: Array<{ from: number; to: number }> };
+
+/** A missing or non-numeric direction_id counts as 0 (oppositeSharedStops uses the same rule). */
+function directionOf(q: ShapeProperties): number {
+  const n = Number(q.directionId);
+  return q.directionId == null || !Number.isFinite(n) ? 0 : n;
+}
+
 /**
- * Shared stretches of a route that FAILS the active filter (CIV-82): a route may show the
- * stretches that themselves pass; it never makes the whole route pass. A stop qualifies when its
- * pooled-or-own values pass the shared filter AND the matching stop of the opposite direction
- * (pairOppositeStop over that direction's shared-stretch stops) passes too, judged the same way
- * on the best opposite feature. Features without pooled data (sharedStretches) give nothing.
- * Returns, per failing feature, its qualifying stopOrder ranges (2+ stops) and the worst filter
- * value per qualifying stop (for the tier colour).
+ * Everything about one agency's features that does not depend on the filter, built once per
+ * features array and reused on every filter change: the pooled index, stop coordinates, features
+ * grouped by route + day + direction, opposite-direction candidates and pairings, and each
+ * (feature, period, stop)'s filter value.
  */
-export function failingRouteSharedRanges(
-  routeFeatures: readonly GeoJSON.Feature[],
-  allFeatures: readonly GeoJSON.Feature[],
-  period: TimePeriod,
-  maxHeadway: number,
-): Array<{ feature: GeoJSON.Feature; ranges: Array<[number, number]>; values: Map<number, number> }> {
-  const out: Array<{ feature: GeoJSON.Feature; ranges: Array<[number, number]>; values: Map<number, number> }> = [];
-  if (maxHeadway === Infinity || !routeFeatures.some(f => (f.properties as any)?.sharedStretches)) return out;
-  const index = buildSharedStopIndex(allFeatures);
+interface SharedPassContext {
+  index: SharedStopIndex;
+  coords: Map<string, StopPoint>;
+  groups: Map<string, Map<number, StretchProps[]>>;
+  pairCache: Map<string, string | null>;
+  candidateCache: Map<string, string[]>;
+  byStopCache: Map<string, Map<string, StretchProps[]>>;
+  values: WeakMap<object, Map<string, number | null>>;
+  viewValues: Map<string, number | null>;
+}
+const passContexts = new WeakMap<readonly GeoJSON.Feature[], SharedPassContext>();
+
+function sharedPassContext(allFeatures: readonly GeoJSON.Feature[]): SharedPassContext {
+  const cached = passContexts.get(allFeatures);
+  if (cached) return cached;
   const coords = new Map<string, StopPoint>();
+  const groups = new Map<string, Map<number, StretchProps[]>>();
   for (const f of allFeatures) {
     const p = f.properties as any;
     if (f.geometry?.type === 'Point' && p?.stopId != null) {
       const [lon, lat] = (f.geometry as GeoJSON.Point).coordinates;
       coords.set(String(p.stopId), { lat, lon });
+    } else if (f.geometry?.type === 'LineString' && p?.stopOrder?.length) {
+      const key = `${p.routeId}|${p.day ?? ''}`;
+      const byDir = groups.get(key) ?? new Map<number, StretchProps[]>();
+      const dir = directionOf(p);
+      byDir.set(dir, [...(byDir.get(dir) ?? []), p]);
+      groups.set(key, byDir);
     }
   }
-  const lines = allFeatures
-    .filter(f => f.geometry?.type === 'LineString')
-    .map(f => f.properties as unknown as ShapeProperties);
-  const stopPasses = (p: ShapeProperties, stopId: string) => {
-    const view = sharedStopFilterView(index, p, stopId);
-    return { passes: featurePassesHeadwayFilter(view, period, maxHeadway), value: routeFilterHeadway(view, period) };
+  const ctx: SharedPassContext = {
+    index: buildSharedStopIndex(allFeatures),
+    coords,
+    groups,
+    pairCache: new Map(),
+    candidateCache: new Map(),
+    byStopCache: new Map(),
+    values: new WeakMap(),
+    viewValues: new Map(),
   };
+  passContexts.set(allFeatures, ctx);
+  return ctx;
+}
 
-  // Same direction convention as oppositeSharedStops: a missing direction_id counts as 0.
-  const direction = (q: ShapeProperties) => {
-    const n = Number(q.directionId);
-    return q.directionId == null || !Number.isFinite(n) ? 0 : n;
-  };
-  const sameService = (a: ShapeProperties, b: ShapeProperties) => a.routeId === b.routeId && (a.day ?? null) === (b.day ?? null);
-  const hasStretches = (q: ShapeProperties) => !!(q as { sharedStretches?: unknown[] }).sharedStretches?.length;
+/**
+ * The shared filter's value at one stop of one feature: routeFilterHeadway (the map's rule:
+ * median, coverage and sustained) on the pooled-or-own view. A stop passes a threshold exactly
+ * when this is non-null and at most the threshold (featurePassesHeadwayFilter's clause), so the
+ * value is memoized per (feature, period, stop) and reused across thresholds.
+ */
+function stopFilterValue(ctx: SharedPassContext, p: ShapeProperties, stopId: string, period: TimePeriod): number | null {
+  let byKey = ctx.values.get(p);
+  if (!byKey) { byKey = new Map(); ctx.values.set(p, byKey); }
+  const key = `${period}|${stopId}`;
+  if (byKey.has(key)) return byKey.get(key)!;
+  // The filter's inputs at this stop for this period (pooled where better, else the stop's own);
+  // the value is a pure function of them, so each distinct input set is evaluated once, and the
+  // view object is only built on a miss.
+  let viewKey: string;
+  if (period === 'all') {
+    const pooled = getPooledStop(ctx.index, p, stopId, 'headway') as number | undefined;
+    viewKey = `all|${p.tier}|${pooled ?? p.stopHeadways?.[stopId] ?? null}`;
+  } else {
+    const pk = period as PeriodKey;
+    const pooled = getPooledPeriod(ctx.index, p, stopId, pk);
+    viewKey = `${pk}|${p.tier}|${pooled.median ?? p.stopPeriodHeadways?.[stopId]?.[pk] ?? null}`
+      + `|${pooled.coverage ?? p.stopPeriodCoverageHeadways?.[stopId]?.[pk] ?? null}`
+      + `|${pooled.sustained ?? p.headwayByPeriodSustained?.[pk]}`;
+  }
+  let value = ctx.viewValues.get(viewKey);
+  if (value === undefined) {
+    value = routeFilterHeadway(sharedStopFilterView(ctx.index, p, stopId, period), period);
+    ctx.viewValues.set(viewKey, value);
+  }
+  byKey.set(key, value);
+  return value;
+}
+
+export interface SharedStretchPassResult {
+  feature: GeoJSON.Feature;
+  ranges: Array<[number, number]>;
+  /** Worst filter value of both directions at each qualifying stop index (tier colour). */
+  values: Map<number, number>;
+  /** This direction's own filter value at each qualifying stop index (the route card's N). */
+  ownValues: Map<number, number>;
+}
+
+/**
+ * The one per-stop pass behind the shared-stretch overlay AND the route card's "Shared stretch
+ * every N" (CIV-82): a route may show the stretches that themselves pass; it never makes the whole
+ * route pass. A stop qualifies when its pooled-or-own value passes the shared filter AND the
+ * matching stop of the opposite direction passes too, judged the same way on the best opposite
+ * feature there. With maxHeadway Infinity every stop with a value on both sides qualifies (the
+ * card's no-filter view). Features without pooled data give nothing.
+ *
+ * A direction run as ONE pattern (its own stop values already count every trip, e.g. NYCT B
+ * "Beach", CTA Green "Harlem-Green") draws along the stops that pair with the branched
+ * direction's shared stretches. On that path a stop pairs only with a stop strictly inside a
+ * branched stretch (never its end stop), so the 300 m nearest pairing cannot reach one stop past
+ * the branch point.
+ */
+export function sharedStretchStopPass(
+  routeFeatures: readonly GeoJSON.Feature[],
+  allFeatures: readonly GeoJSON.Feature[],
+  period: TimePeriod,
+  maxHeadway: number,
+  options: { includePassing?: boolean } = {},
+): SharedStretchPassResult[] {
+  const out: SharedStretchPassResult[] = [];
+  const ctx = sharedPassContext(allFeatures);
+  if (ctx.index.size === 0) return out;
+  const passes = (v: number | null): v is number => v != null && v <= maxHeadway;
+  const hasStretches = (q: StretchProps) => !!q.sharedStretches?.length;
 
   for (const f of routeFeatures) {
     if (f.geometry?.type !== 'LineString') continue;
-    const p = f.properties as unknown as ShapeProperties & { sharedStretches?: Array<{ from: number; to: number }> };
-    if (!p.stopOrder || !p.stopPositions) continue;
-    if (p.stopPositions.length !== p.stopOrder.length) continue;
-    if (featurePassesHeadwayFilter(p, period, maxHeadway)) continue; // passing routes: handled above
-    const opposite = lines.filter(q => sameService(q, p) && direction(q) !== direction(p) && (q.stopOrder?.length ?? 0) > 0);
-    let onStretch: (i: number) => boolean;
-    if (p.sharedStretches?.length) {
-      onStretch = i => p.sharedStretches!.some(st => i >= st.from && i <= st.to);
-    } else {
-      // Symmetric map: a direction run as ONE pattern (its own stop values already count every
-      // trip, e.g. NYCT B "Beach", CTA Green "Harlem-Green") draws along the stops that pair with
-      // the branched direction's shared stretches, where both directions pass.
-      const sameDirection = lines.filter(q => sameService(q, p) && direction(q) === direction(p) && (q.stopOrder?.length ?? 0) > 0);
-      if (sameDirection.length !== 1 || !opposite.some(hasStretches)) continue;
-      onStretch = () => true;
+    const p = f.properties as unknown as StretchProps;
+    if (!p.stopOrder || !p.stopPositions || p.stopPositions.length !== p.stopOrder.length) continue;
+    if (!options.includePassing && featurePassesHeadwayFilter(p, period, maxHeadway)) continue; // passing routes: handled above
+    const groupKey = `${p.routeId}|${p.day ?? ''}`;
+    const byDir = ctx.groups.get(groupKey);
+    if (!byDir) continue;
+    const dir = directionOf(p);
+    const opposite = [...byDir.entries()].filter(([d]) => d !== dir).flatMap(([, list]) => list);
+    if (opposite.length === 0) continue;
+    const single = !hasStretches(p);
+    if (single && ((byDir.get(dir)?.length ?? 0) !== 1 || !opposite.some(hasStretches))) continue;
+
+    // Candidate opposite stops (cached per group, direction and path).
+    const candKey = `${groupKey}|${dir}|${single ? 'single' : 'branch'}`;
+    let candidates = ctx.candidateCache.get(candKey);
+    if (!candidates) {
+      if (single) {
+        // Only stops strictly inside a branched stretch: never a stretch's end stop.
+        const inner = new Set<string>();
+        for (const q of opposite) {
+          for (const st of q.sharedStretches ?? []) {
+            for (let i = st.from + 1; i < st.to; i++) if (q.stopOrder![i] != null) inner.add(q.stopOrder![i]);
+          }
+        }
+        candidates = [...inner];
+      } else {
+        candidates = oppositeSharedStops(opposite, p);
+      }
+      ctx.candidateCache.set(candKey, candidates);
     }
-    const oppositeStops = oppositeSharedStops(lines, p);
+    let byStop = ctx.byStopCache.get(candKey);
+    if (!byStop) {
+      byStop = new Map();
+      for (const q of opposite) for (const s of q.stopOrder ?? []) byStop.set(s, [...(byStop.get(s) ?? []), q]);
+      ctx.byStopCache.set(candKey, byStop);
+    }
+
+    const stretchIndices = single ? null : new Set<number>();
+    if (stretchIndices) for (const st of p.sharedStretches!) for (let i = st.from; i <= st.to; i++) stretchIndices.add(i);
     const values = new Map<number, number>();
-    const qualifies = (i: number): boolean => {
-      if (!onStretch(i)) return false;
-      const stopId = p.stopOrder![i];
-      const own = stopPasses(p, stopId);
-      if (!own.passes) return false;
+    const ownValues = new Map<number, number>();
+    const qualifying: boolean[] = p.stopOrder.map((stopId, i) => {
+      if (stretchIndices && !stretchIndices.has(i)) return false;
+      const own = stopFilterValue(ctx, p, stopId, period);
+      if (!passes(own)) return false;
       // Every direction must pass at the matching stop.
-      const o = pairOppositeStop(stopId, oppositeStops, coords);
+      const pairKey = `${candKey}|${stopId}`;
+      let o = ctx.pairCache.get(pairKey);
+      if (o === undefined) {
+        o = pairOppositeStop(stopId, candidates!, ctx.coords);
+        ctx.pairCache.set(pairKey, o);
+      }
       if (o == null) return false;
-      const other = opposite
-        .filter(q => q.stopOrder?.includes(o))
-        .map(q => stopPasses(q, o))
-        .filter(r => r.passes);
-      if (other.length === 0) return false;
-      values.set(i, Math.max(own.value ?? 0, Math.min(...other.map(r => r.value ?? 0))));
+      let best: number | null = null;
+      for (const q of byStop!.get(o) ?? []) {
+        const v = stopFilterValue(ctx, q, o, period);
+        if (passes(v) && (best == null || v < best)) best = v;
+      }
+      if (best == null) return false;
+      values.set(i, Math.max(own, best));
+      ownValues.set(i, own);
       return true;
-    };
-    const ranges = findQualifyingStopRanges(p.stopOrder.map((_, i) => String(i)), i => (qualifies(Number(i)) ? 0 : null), 0);
-    if (ranges.length > 0) out.push({ feature: f, ranges, values });
+    });
+    const ranges = findQualifyingStopRanges(p.stopOrder.map((_, i) => String(i)), i => (qualifying[Number(i)] ? 0 : null), 0);
+    if (ranges.length > 0) out.push({ feature: f, ranges, values, ownValues });
   }
   return out;
+}
+
+/** The overlay's per-stop pass for routes that FAIL the active filter (see sharedStretchStopPass). */
+export function failingRouteSharedRanges(
+  routeFeatures: readonly GeoJSON.Feature[],
+  allFeatures: readonly GeoJSON.Feature[],
+  period: TimePeriod,
+  maxHeadway: number,
+): SharedStretchPassResult[] {
+  if (maxHeadway === Infinity || !routeFeatures.some(f => (f.properties as any)?.sharedStretches)) return [];
+  return sharedStretchStopPass(routeFeatures, allFeatures, period, maxHeadway);
 }
 
 function addFailingRouteSharedStretches(

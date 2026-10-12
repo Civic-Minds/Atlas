@@ -140,6 +140,8 @@ export interface CurrentRouteData {
 
 export interface RouteCardHeadwayProps {
   currentRoute: CurrentRouteData;
+  /** The route's agency features (stops, pooled shared-stretch block, both directions), CIV-82. */
+  agencyFeatures?: readonly GeoJSON.Feature[];
   /** Lettered variants sharing this route's base number (GRTC 1/1A/1B/1C style). */
   variantFamily?: VariantFamily | null;
   liveRouteInfo: object | null;
@@ -165,6 +167,7 @@ export interface RouteCardHeadwayProps {
 
 export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   currentRoute,
+  agencyFeatures,
   variantFamily,
   liveRouteInfo,
   liveStatus,
@@ -293,7 +296,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           .map(label => `- ${label}: limited service`)
       : [];
     // CIV-82: pooled shared-stretch cadence from real departures, when the data has it.
-    const shared = sharedStretchHeadway(currentRoute.directions, group.realTier, period);
+    const shared = sharedStretchHeadway(agencyFeatures, group.realTier, period, maxHeadway);
     const branchHeadways = [...new Set(group.realTier
       .map(direction => routeCardDisplayHeadway(direction, period))
       .filter((v): v is number => v != null))].sort((a, b) => a - b);
@@ -516,7 +519,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           return displayGroups.map((group, gi) => {
             // CIV-82: real pooled departures replace the reciprocal-of-medians estimate when the
             // data has them ("Shared stretch every N"; branch rows keep each branch's own M).
-            const groupShared = sharedStretchHeadway(currentRoute.directions, group.realTier, period);
+            const groupShared = sharedStretchHeadway(agencyFeatures, group.realTier, period, maxHeadway);
             const groupHasCoreSummary = groupShared != null || shouldShowTrunkSummary(group.realTier, period);
             const groupCoreHeadway = groupShared?.headway ?? (groupHasCoreSummary
               ? groupTrunkHeadway(group.realTier, period === 'all' ? 'midday' : period)

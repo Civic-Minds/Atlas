@@ -122,8 +122,13 @@ describe('failing routes draw only their passing shared stretches', () => {
     expect(stopMetric.provenance).toBe('shared-stretch');
     expect(buildRouteStopMetric(a, stopId).value).toBe(16);
     const south = routes.filter(p => p.directionId === 0);
-    expect(sharedStretchHeadway(routes, south, 'all')?.headway).toBe(8);
-    expect(sharedStretchHeadway(lineProps(strip(fc)), south, 'all')).toBeNull();
+    // The card reads the overlay's own per-stop pass (shallow copies of the props, as the card holds).
+    const copies = south.map(p => ({ ...p }));
+    expect(sharedStretchHeadway(fc.features, copies, 'all', 15)?.headway).toBe(8);
+    expect(sharedStretchHeadway(fc.features, copies, 'all', Infinity)?.headway).toBe(8);
+    expect(sharedStretchHeadway(fc.features, copies, 'all', 5)).toBeNull(); // nothing draws at <=5
+    const bare = strip(fc);
+    expect(sharedStretchHeadway(bare.features, lineProps(bare).filter(p => p.directionId === 0), 'all', 15)).toBeNull();
   });
 
   // Rail: one direction splits into two branches (pooled), the other runs as ONE headsign that
@@ -157,4 +162,111 @@ describe('failing routes draw only their passing shared stretches', () => {
       expect(failingRouteSharedRanges(bare.features, bare.features, 'all', max)).toEqual([]);
     });
   }
+});
+
+/**
+ * Hand-built route: southbound (dir 0) branches A and B share s0..s5 and pool to every 8 there
+ * (each every 16); northbound (dir 1) runs ONE pattern every 8 with a stop across from each of
+ * s0..s5, plus pPast, 150 m past s5 beyond the branch point.
+ */
+function splitRoute(opts: {
+  amPeak?: { median: number; coverage: number; unsustained?: boolean };
+  /** The branches' own AM coverage and sustained flag (pooled values apply only where better). */
+  ownAm?: { coverage: number; sustained: boolean };
+} = {}): GeoJSON.FeatureCollection {
+  const lat = (i: number) => 43.6 + i * 0.003;
+  const trunk = [0, 1, 2, 3, 4, 5].map(i => `s${i}`);
+  const point = (id: string, la: number, lo: number): GeoJSON.Feature => ({ type: 'Feature', geometry: { type: 'Point', coordinates: [lo, la] }, properties: { stopId: id } });
+  const points = [
+    ...trunk.map((id, i) => point(id, lat(i), -79.4)),
+    point('a1', lat(6), -79.39), point('b1', lat(6), -79.41),
+    ...trunk.map((_, i) => point(`p${i}`, lat(i), -79.4003)),
+    point('pPast', lat(5) + 0.00135, -79.4003),
+  ];
+  const periods = (v: number) => Object.fromEntries(['amPeak', 'midday', 'pmPeak', 'evening'].map(k => [k, v]));
+  const line = (headsign: string, dir: number, stops: string[], hw: number, extra: Record<string, unknown> = {}): GeoJSON.Feature => {
+    const coords = stops.map(id => (points.find(pt => (pt.properties as any).stopId === id)!.geometry as GeoJSON.Point).coordinates);
+    return {
+      type: 'Feature',
+      geometry: { type: 'LineString', coordinates: coords },
+      properties: {
+        routeId: 'r', routeShortName: '7', agencySlug: 'x', day: 'Weekday', directionId: dir, headsign,
+        tier: hw <= 10 ? '10' : '30', serviceClass: 'regular', headway: hw,
+        headwayByPeriod: periods(hw), periodCoverageHeadway: periods(hw + 4), headwayByPeriodSustained: Object.fromEntries(['amPeak', 'midday', 'pmPeak', 'evening'].map(k => [k, true])),
+        stopOrder: stops, stopPositions: stops.map((_, i) => i / (stops.length - 1)),
+        stopHeadways: Object.fromEntries(stops.map(s => [s, hw])),
+        stopPeriodHeadways: Object.fromEntries(stops.map(s => [s, periods(hw)])),
+        stopPeriodCoverageHeadways: Object.fromEntries(stops.map(s => [s, periods(hw + 4)])),
+        ...extra,
+      },
+    };
+  };
+  const am = opts.amPeak ?? { median: 8, coverage: 12 };
+  const ownAm = (p: Record<string, any>) => {
+    if (!opts.ownAm || p.directionId !== 0) return;
+    p.headwayByPeriodSustained.amPeak = opts.ownAm.sustained;
+    for (const s of Object.keys(p.stopPeriodCoverageHeadways)) p.stopPeriodCoverageHeadways[s].amPeak = opts.ownAm.coverage;
+  };
+  const block = Object.fromEntries(trunk.map(s => [s, {
+    headway: 8,
+    periods: [am.median, 8, 8, 8],
+    coverage: [am.coverage, 12, 12, 12],
+    ...(am.unsustained ? { unsustained: ['amPeak'] } : {}),
+  }]));
+  const stretch = [{ from: 0, to: 5, with: ['other'] }];
+  const features = [
+    ...points,
+    line('A', 0, [...trunk, 'a1'], 16, { sharedStretches: stretch, sharedStops: block }),
+    line('B', 0, [...trunk, 'b1'], 16, { sharedStretches: stretch }),
+    line('North', 1, ['pPast', 'p5', 'p4', 'p3', 'p2', 'p1', 'p0'], 8),
+  ];
+  for (const f of features) if (f.geometry.type === 'LineString') ownAm(f.properties as any);
+  normalizeRouteFilterFeatures(features as any);
+  return { type: 'FeatureCollection', features };
+}
+
+describe('shared stretch edges', () => {
+  it('the single-pattern direction never draws past the branch point', () => {
+    const fc = splitRoute();
+    expect(routePassesHeadwayFilter(lineProps(fc), 'all', 'Weekday', 15)).toBe(false);
+    const result = failingRouteSharedRanges(fc.features, fc.features, 'all', 15);
+    const north = result.find(r => (r.feature.properties as any).headsign === 'North');
+    expect(north).toBeTruthy();
+    const northStops = (north!.feature.properties as any).stopOrder as string[];
+    const drawn = north!.ranges.flatMap(([a, b]) => northStops.slice(a, b + 1));
+    // pPast is 150 m from s5, the stretch's end: it must not pair there and draw.
+    expect(drawn).not.toContain('pPast');
+    expect(drawn).toContain('p2');
+    // The branched direction draws its whole stretch.
+    const a = result.find(r => (r.feature.properties as any).headsign === 'A');
+    expect(a!.ranges).toEqual([[0, 5]]);
+  });
+
+  it('draws nothing in a period whose pooled median passes but coverage or sustained fails', () => {
+    for (const [amPeak, ownAm] of [
+      // Unsustained (own also unsustained): the filter reads the pooled coverage, 40.
+      [{ median: 8, coverage: 40, unsustained: true }, { coverage: 80, sustained: false }],
+      // Coverage over 60: the filter reads the pooled coverage, 70.
+      [{ median: 8, coverage: 70 }, { coverage: 90, sustained: true }],
+    ] as const) {
+      const fc = splitRoute({ amPeak, ownAm });
+      expect(failingRouteSharedRanges(fc.features, fc.features, 'amPeak', 15)
+        .filter(r => (r.feature.properties as any).directionId === 0)).toEqual([]);
+      // The same data still draws all day.
+      expect(failingRouteSharedRanges(fc.features, fc.features, 'all', 15).length).toBeGreaterThan(0);
+    }
+  });
+});
+
+describe('route card shared stretch matches the map', () => {
+  it('uses the same per-stop pass: no N where the map draws nothing, and the worst drawn stop', () => {
+    const fc = splitRoute({ amPeak: { median: 8, coverage: 40, unsustained: true }, ownAm: { coverage: 80, sustained: false } });
+    const south = lineProps(fc).filter(p => p.directionId === 0).map(p => ({ ...p }));
+    // AM: the pooled median (8) passes but the filter fails on coverage, so no card N either.
+    expect(sharedStretchHeadway(fc.features, south, 'amPeak', 15)).toBeNull();
+    expect(sharedStretchHeadway(fc.features, south, 'all', 15)?.headway).toBe(8);
+    // The single-pattern direction draws on the map but gets no "Shared stretch" card row.
+    const north = lineProps(fc).filter(p => p.directionId === 1).map(p => ({ ...p }));
+    expect(sharedStretchHeadway(fc.features, north, 'all', 15)).toBeNull();
+  });
 });

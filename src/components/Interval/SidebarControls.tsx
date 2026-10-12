@@ -1149,6 +1149,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
               <>
                 <RouteCardHeadway
                   currentRoute={currentRoute}
+                  agencyFeatures={routeSlug ? nonCorridorLayers[routeSlug]?.features : undefined}
                   variantFamily={variantFamily}
                   liveRouteInfo={liveRouteInfo}
                   liveStatus={liveStatus}
