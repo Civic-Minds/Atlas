@@ -32,6 +32,7 @@ import { routeDataQualityWarningForShape } from './routeDataQuality.js';
 import { deriveRouteBranch } from '../shared/routeBranch.js';
 import { isRailLikeRoute } from '../shared/modes.js';
 import { computePeriodCoverageHeadways } from './headway-utils.js';
+import { annotateSharedStretches, isPoolablePattern } from './sharedStretch.js';
 
 export type { GtfsPreprocess };
 export type { HeadwayByPeriod };
@@ -748,6 +749,32 @@ export async function processGtfsBuffer(
   // regardless, so this still covers every route that reaches the night-service check.
   const stopDepsByGroupNight = new Map<string, Map<string, number[]>>();
   const stopDepsByHeadsignGroupNight = new Map<string, Map<string, number[]>>();
+  // Shared-stretch pooling (CIV-82): each pattern's departures inside its route group,
+  // direction and day, all on the GROUP's representative weekday (inGroup), so patterns
+  // pooled at a shared stop never mix two different weekdays. Keyed by shape for buses and
+  // by headsign for rail, the same scope as each feature's own stop metrics. Read only by
+  // annotateSharedStretches; no existing value uses it.
+  const stopDepsBySharedMember = new Map<string, Map<string, number[]>>();
+  const railRouteIds = new Set((gtfs.routes ?? []).filter(route => isRailLikeRoute({
+    routeType: route.route_type,
+    routeLongName: route.route_long_name,
+    routeShortName: route.route_short_name,
+  })).map(route => route.route_id));
+  // A pattern: route_id + shape for buses (every trip on the feature's own shape, as in its
+  // shape-scoped stop metrics), route_id + headsign for rail (headsign-scoped metrics).
+  const sharedPatternKey = (routeId: string, headsign: string | null, shapeId: string | null | undefined): string | null => {
+    if (railRouteIds.has(routeId)) return `${routeId}|hs|${headsign ?? ''}`;
+    return shapeId ? `${routeId}|sh|${shapeId}` : null;
+  };
+  // Trips pool only under a headsign that an eligible feature draws (regular or time-limited,
+  // not span, partial-weekday or drop-off-only): `${shortName}::${dir}::${day}::${routeId}::${headsign}`.
+  // Filled from the built features before the stop_times pass reads it.
+  const sharedEligibleHeadsigns = new Set<string>();
+  const sharedMemberKey = (grp: { routeId: string; shortName: string; dirId: string; dayType: string; headsign: string | null; shapeId: string | null }): string | null => {
+    if (!sharedEligibleHeadsigns.has(`${grp.shortName}::${grp.dirId}::${grp.dayType}::${grp.routeId}::${grp.headsign ?? ''}`)) return null;
+    const member = sharedPatternKey(grp.routeId, grp.headsign, grp.shapeId);
+    return member ? `${grp.shortName}::${grp.dirId}::${grp.dayType}::${member}` : null;
+  };
 
   // A frequency-based trip has one representative stop-time sequence, while
   // frequencies.txt describes the repeated departures. Add those generated
@@ -951,6 +978,11 @@ export async function processGtfsBuffer(
     }
   }
 
+  for (const [feature, slot] of featureStopHeadwaySlots) {
+    if (partialWeekdayFeatures.has(feature) || !isPoolablePattern(feature)) continue;
+    sharedEligibleHeadsigns.add(`${slot.shortName}::${slot.dirId}::${slot.day}::${feature.properties.routeId}::${(feature.properties.headsign as string | null) ?? ''}`);
+  }
+
   // Extract stops for clickable stations
   onStatus?.('Deriving per-stop metadata (routes, direction)...');
   const stopsMeta = buildStopsMeta(gtfs);
@@ -1014,6 +1046,7 @@ export async function processGtfsBuffer(
           const gKey = `${grp.shortName}::${grp.dirId}::${grp.dayType}`;
           const hsKey = grp.headsign ? `${grp.shortName}::${grp.dirId}::${grp.dayType}::${grp.headsign}` : null;
           const shKey = grp.shapeId ? `${grp.shapeId}::${grp.dayType}` : null;
+          const smKey = sharedMemberKey(grp);
           const pushDep = (maps: Map<string, Map<string, number[]>>, key: string, stopId: string, mins: number) => {
             let map = maps.get(key);
             if (!map) { map = new Map(); maps.set(key, map); }
@@ -1026,6 +1059,8 @@ export async function processGtfsBuffer(
             if (grp.inGroup) pushDep(stopDepsByGroup, gKey, stopId, mins);
             if (hsKey && grp.inHeadsign) pushDep(stopDepsByHeadsignGroup, hsKey, stopId, mins);
             if (shKey && grp.inShape) pushDep(stopDepsByShapeGroup, shKey, stopId, mins);
+            // Drop-off-only stop times (pickup_type 1) are not departures a rider can take.
+            if (smKey && grp.inGroup && st.pickup_type?.trim() !== '1') pushDep(stopDepsBySharedMember, smKey, stopId, mins);
             // Night-service-only shift (#297) -- see stopDepsByGroupNight declaration above.
             if (night) {
               if (grp.inGroup) pushDep(stopDepsByGroupNight, gKey, stopId, mins + 1440);
@@ -1060,11 +1095,13 @@ export async function processGtfsBuffer(
     if (!arr.includes(mins)) arr.push(mins);
     stopMap.set(stopId, arr);
   };
-  const addFrequencyDeparture = (grp: StopTripGroup, stopId: string, mins: number) => {
+  const addFrequencyDeparture = (grp: StopTripGroup, stopId: string, mins: number, pickupAllowed = true) => {
     const groupKey = `${grp.shortName}::${grp.dirId}::${grp.dayType}`;
     if (grp.inGroup) pushUnique(stopDepsByGroup, groupKey, stopId, mins);
     if (grp.headsign && grp.inHeadsign) pushUnique(stopDepsByHeadsignGroup, `${grp.shortName}::${grp.dirId}::${grp.dayType}::${grp.headsign}`, stopId, mins);
     if (grp.shapeId && grp.inShape) pushUnique(stopDepsByShapeGroup, `${grp.shapeId}::${grp.dayType}`, stopId, mins);
+    const smKey = sharedMemberKey(grp);
+    if (smKey && grp.inGroup && pickupAllowed) pushUnique(stopDepsBySharedMember, smKey, stopId, mins);
     if (mins < NIGHT_SHIFT_EARLY_CUTOFF && (serviceIdMaxMinute.get(grp.serviceId) ?? Infinity) < NIGHT_SHIFT_EARLY_CUTOFF) {
       const shifted = mins + 1440;
       if (grp.inGroup) pushUnique(stopDepsByGroupNight, groupKey, stopId, shifted);
@@ -1161,8 +1198,9 @@ export async function processGtfsBuffer(
           const countParent = parentId !== undefined && !seenParents.has(parentId);
           if (parentId) seenParents.add(parentId);
           for (const grp of groups) {
-            addFrequencyDeparture(grp, st.stop_id, mins);
-            if (countParent) addFrequencyDeparture(grp, parentId!, mins);
+            const pickupAllowed = st.pickup_type?.trim() !== '1';
+            addFrequencyDeparture(grp, st.stop_id, mins, pickupAllowed);
+            if (countParent) addFrequencyDeparture(grp, parentId!, mins, pickupAllowed);
           }
         }
       }
@@ -1618,6 +1656,57 @@ export async function processGtfsBuffer(
   annotateShortTurnVariants(features, shapes);
   stampWorstDirectionHeadways(features);
   stampRouteIrregularDirection(features);
+
+  // CIV-82: pooled values at stops a route direction's patterns really share. Adds new keys
+  // only; every value above is unchanged. Each pattern's stop sequence comes from its
+  // longest trip that runs on the group's day (first visit per stop).
+  const sharedPatternTrip = new Map<string, { poolKey: string; routeId: string; headsigns: Set<string>; tripId: string; stops: number }>();
+  for (const trip of gtfs.trips ?? []) {
+    const stops = stopTimesByTripId.get(trip.trip_id)?.length ?? 0;
+    if (stops < 2) continue;
+    for (const grp of tripGroupByTripId.get(trip.trip_id) ?? []) {
+      // Same trips as the pooled departures: eligible headsigns on the group's day.
+      if (!grp.inGroup || !sharedMemberKey(grp)) continue;
+      const member = sharedPatternKey(grp.routeId, grp.headsign, grp.shapeId);
+      if (!member) continue;
+      const poolKey = `${grp.shortName}::${grp.dirId}::${grp.dayType}`;
+      const key = `${poolKey}::${member}`;
+      const prev = sharedPatternTrip.get(key);
+      if (!prev) sharedPatternTrip.set(key, { poolKey, routeId: grp.routeId, headsigns: new Set([grp.headsign ?? '']), tripId: trip.trip_id, stops });
+      else {
+        prev.headsigns.add(grp.headsign ?? '');
+        if (stops > prev.stops) { prev.tripId = trip.trip_id; prev.stops = stops; }
+      }
+    }
+  }
+  const sharedPatternsByPool = new Map<string, Array<{ memberKey: string; routeId: string; headsigns: string[]; tripId: string }>>();
+  for (const [key, entry] of sharedPatternTrip) {
+    const list = sharedPatternsByPool.get(entry.poolKey) ?? [];
+    list.push({ memberKey: key.slice(entry.poolKey.length + 2), routeId: entry.routeId, headsigns: [...entry.headsigns].sort(), tripId: entry.tripId });
+    sharedPatternsByPool.set(entry.poolKey, list);
+  }
+  annotateSharedStretches(features, {
+    memberOf: feature => {
+      const slot = featureStopHeadwaySlots.get(feature);
+      if (!slot) return null;
+      const member = sharedPatternKey(
+        feature.properties.routeId as string,
+        feature.properties.headsign as string | null,
+        featureShapeId.get(feature),
+      );
+      return member ? { poolKey: `${slot.shortName}::${slot.dirId}::${slot.day}`, memberKey: member } : null;
+    },
+    patterns: poolKey => (sharedPatternsByPool.get(poolKey) ?? []).map(pattern => ({
+      memberKey: pattern.memberKey,
+      routeId: pattern.routeId,
+      headsigns: pattern.headsigns,
+      stopOrder: firstVisitStopTimes(stopTimesByTripId.get(pattern.tripId) ?? []).map(st => st.stop_id),
+    })),
+    departures: stopDepsBySharedMember,
+    stopsById,
+    parentOf: childToParent,
+    excluded: partialWeekdayFeatures,
+  });
 
   // Combined frequency corridors (AI-17): overlapping routes (2+ sharing consecutive stop links)
   // get aggregate headway from the *union* of their departures. Reuse a matching route shape

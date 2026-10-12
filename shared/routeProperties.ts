@@ -6,6 +6,7 @@ import type {
   HeadwayByPeriodSustained,
 } from './config.js';
 import type { RouteDataQualityWarning } from './routeDataQuality.js';
+import type { SharedStop, SharedStretch } from './sharedStops.js';
 
 export type HeadwayByHour = Partial<Record<number, number | null>>;
 
@@ -50,5 +51,12 @@ export interface RouteProperties {
   stopPeriodHeadways?: Record<string, HeadwayByPeriod>;
   stopOrder?: string[];
   stopPositions?: number[];
+  /**
+   * Shared stretches (CIV-82): stopOrder index ranges where this pattern shares stops with other
+   * patterns of the same route, direction and day and a pooled value applies. Agency JSON only.
+   */
+  sharedStretches?: SharedStretch[];
+  /** Pooled values per stop for the whole route/direction/day, on one carrier feature. Read via getPooledStop. */
+  sharedStops?: Record<string, SharedStop>;
   researchFrequentService?: { daytime15: boolean; daytime30: boolean; extended15: boolean; extended30: boolean };
 }
