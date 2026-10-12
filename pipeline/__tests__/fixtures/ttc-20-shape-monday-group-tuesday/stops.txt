@@ -1,0 +1,76 @@
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,location_type,parent_station,stop_timezone,wheelchair_boarding
+3539,3539,Eglinton Ave East at Kennedy Station,,43.732292,-79.267117,,,,,,1
+1036,1036,Eglinton Ave East at Midland Ave West Side,,43.734493,-79.258911,,,,,,1
+1842,1842,3450 Danforth Ave,,43.694178,-79.275031,,,,,,1
+1210,1210,Kennedy Rd at Park St,,43.70938,-79.258513,,,,,,1
+2913,2913,Midland Ave at Danforth Rd,,43.724981,-79.254164,,,,,,1
+2914,2914,Midland Ave at Park St,,43.712145,-79.248704,,,,,,1
+1837,1837,Danforth Ave at Sibley Ave,,43.690361,-79.292442,,,,,,1
+1739,1739,Birchmount Rd at Danforth Ave,,43.697222,-79.26419,,,,,,1
+1443,1443,Park St at Atlee Ave,,43.711332,-79.250949,,,,,,1
+2697,2697,Highview Ave at Lillington Ave,,43.70047,-79.263074,,,,,,2
+2694,2694,Highview Ave at Baudina Cres,,43.701539,-79.258418,,,,,,1
+1449,1449,Park St at Natal Ave,,43.710853,-79.253393,,,,,,1
+1833,1833,Danforth Ave at Leyton Ave West Side,,43.693513,-79.278367,,,,,,1
+1323,1323,Midland Ave at Aylesworth Ave North Side,,43.714067,-79.249318,,,,,,1
+440,440,Birchmount Rd at Pinegrove Ave,,43.698101,-79.264342,,,,,,1
+3010,3010,Park St at Claremore Ave,,43.710245,-79.256332,,,,,,1
+1836,1836,Danforth Ave at Pharmacy Ave,,43.692436,-79.283201,,,,,,1
+1147,1147,Highview Ave at South Edgely Ave,,43.700554,-79.262195,,,,,,1
+1326,1326,Midland Ave at Hagley Rd,,43.715707,-79.249999,,,,,,1
+897,897,Danforth Ave at Leyton Ave,,43.693398,-79.278057,,,,,,1
+2758,2758,Kennedy Rd at Malta St,,43.704327,-79.256564,,,,,,1
+2696,2696,Highview Ave at Kennedy Rd West Side,,43.702459,-79.256133,,,,,,1
+1325,1325,Midland Ave at Danforth Rd,,43.724738,-79.253779,,,,,,1
+1839,1839,Danforth Ave at Victoria Park Ave,,43.691385,-79.28801,,,,,,1
+1330,1330,Midland Ave at St Clair Ave East North Side,,43.719303,-79.251364,,,,,,1
+1864,1864,Danforth Ave at Warden Ave,,43.6945,-79.273428,,,,,,1
+1329,1329,Midland Ave at St Clair Ave East,,43.718432,-79.251018,,,,,,1
+921,921,Danforth Ave at Eastwood Ave East Side,,43.695211,-79.268979,,,,,,1
+10434,10434,Park St at Midland Ave,,43.711833,-79.248658,,,,,,2
+2912,2912,Midland Ave at Town Haven Pl South Side,,43.733036,-79.257608,,,,,,1
+1448,1448,Park St at Claremore Ave,,43.710071,-79.256611,,,,,,1
+2698,2698,Highview Ave at South Woodrow Blvd,,43.700994,-79.26081,,,,,,1
+2917,2917,Midland Ave at St Clair Ave East,,43.71904,-79.251614,,,,,,1
+1331,1331,Midland Ave at Verdun Ave,,43.728826,-79.255599,,,,,,1
+1144,1144,Highview Ave at Anneke Rd,,43.701075,-79.260018,,,,,,1
+919,919,3555 Danforth Ave,,43.69403,-79.274904,,,,,,1
+872,872,Danforth Ave at Byng Ave,,43.692932,-79.280266,,,,,,1
+3011,3011,Park St at Kennedy Rd,,43.709759,-79.258569,,,,,,2
+1207,1207,Kennedy Rd at Craiglee Dr,,43.705502,-79.256904,,,,,,1
+1450,1450,Parkette Pl at Birchmount Rd,,43.696348,-79.263987,,,,,,2
+2915,2915,Midland Ave at Safari St,,43.731156,-79.256788,,,,,,1
+11388,11388,Danforth Ave at Medford Ave,,43.694945,-79.271312,,,,,,1
+1847,1847,Danforth Ave at Eastwood Ave,,43.69542,-79.269176,,,,,,1
+1327,1327,Midland Ave at Lorraine Ave,,43.730662,-79.256386,,,,,,1
+1324,1324,Midland Ave at Brussels Rd,,43.732556,-79.257169,,,,,,1
+3009,3009,Park St at Atlee Ave,,43.711491,-79.250708,,,,,,2
+2916,2916,Midland Ave at St Clair Ave East South Side,,43.718401,-79.251308,,,,,,1
+13464,13464,2666 Danforth Ave,,43.6888,-79.299321,,,,,,1
+7547,7547,Birchmount Rd at Danforth Ave,,43.696844,-79.263822,,,,,,1
+2919,2919,Midland Ave at Wilkie Ave,,43.71552,-79.250145,,,,,,1
+1332,1332,Midland Ave at Wolfe Ave,,43.727054,-79.254847,,,,,,1
+2911,2911,Midland Ave at Aylesworth Ave South Side,,43.713481,-79.249277,,,,,,1
+1209,1209,Kennedy Rd at Mewburn Ave,,43.707574,-79.257757,,,,,,1
+910,910,Danforth Ave at Sibley Ave,,43.690091,-79.292815,,,,,,1
+1037,1037,Eglinton Ave East at Midland Ave,,43.73431,-79.258468,,,,,,1
+2761,2761,Kennedy Rd at Mewburn Ave,,43.707785,-79.258005,,,,,,1
+2749,2749,Kennedy Rd at Craiglee Dr,,43.705838,-79.257183,,,,,,1
+1208,1208,Kennedy Rd at Malta St North Side,,43.704334,-79.256392,,,,,,1
+2920,2920,Midland Ave at Wolfe Ave,,43.727211,-79.255132,,,,,,1
+2918,2918,Midland Ave at Verdun Ave,,43.728502,-79.255665,,,,,,1
+1328,1328,419 Midland Ave North Side,,43.712292,-79.248584,,,,,,1
+923,923,Danforth Ave at Warden Ave,,43.694206,-79.273978,,,,,,1
+911,911,Danforth Ave at Victoria Park Ave,,43.691046,-79.288739,,,,,,1
+1038,1038,North Service Rd at Eglinton Ave East,,43.733029,-79.265477,,,,,,1
+3012,3012,Park St at Sharpe St,,43.710768,-79.254089,,,,,,1
+14737,14737,Main Street Station,,43.689096,-79.301708,,,,,,1
+15924,15924,2615 Danforth Ave,,43.688554,-79.299681,,,,,,1
+15925,15925,Danforth Ave at Dawes Rd,,43.689287,-79.296466,,,,,,1
+15926,15926,Danforth Ave at Dawes Rd,,43.689305,-79.297164,,,,,,1
+16391,16391,Kennedy Station - Platform B,,43.732014,-79.263424,,,,,,1
+16453,16453,Kennedy Station Drop-off Platform,,43.732229,-79.263511,,,,,,2
+16691,16691,Highview Ave at Pinegrove Ave,,43.701822,-79.25722,,,,,,1
+16740,16740,Danforth Ave at Pharmacy Ave East Side,,43.692352,-79.282897,,,,,,1
+16741,16741,Danforth Ave at Byng Ave,,43.693174,-79.279907,,,,,,1
+16867,16867,Aylesworth Ave at Highview Ave,,43.700054,-79.264025,,,,,,1

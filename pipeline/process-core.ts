@@ -1259,7 +1259,38 @@ export async function processGtfsBuffer(
     // own departure history, since headsign text can be reused across genuinely different
     // physical patterns (NRT 301/401 reuse one generic headsign for unrelated shapes).
     const featureShape = featureShapeId.get(feature);
-    const shapeMap = featureShape ? stopDepsByShapeGroup.get(`${featureShape}::${day}`) : undefined;
+    // Weekday: a shape map describes its own served weekday (#710). When the shape does not
+    // run on the route direction's representative weekday, the feature's stop and terminal
+    // values come from a different day than the rest of the route (capmetro 550: a
+    // Friday-only shape won the Weekday headline and its 3-5 Friday trips set it to 240/336
+    // instead of the Mon-Thu timetable). Such a feature reads the headsign map instead (on
+    // the headsign's own typical weekday), then the group map, as before the weekday union
+    // (#595). The skip needs all of:
+    // - the shape has fewer than two departures on the group's representative weekday, so a
+    //   shape that runs every weekday keeps its own map even when its tie-break picked
+    //   another day (TTC: shape Monday, group Tuesday);
+    // - it runs on at most two weekdays, or on none of the route's typical weekdays (those
+    //   with the representative day's count), so a Mon/Wed/Fri branch keeps its own data
+    //   and is never replaced by a shared trunk headsign pool;
+    // - it is a fragment of its own day's service (under half the direction's departures
+    //   that day). A shape that carries its day, such as cata-state-college VE's Friday
+    //   pattern (31 of 32 trips) or LANTA's one shape per weekday, still describes the
+    //   route and keeps its own data (#710).
+    const groupKey = `${shortName}::${dirId}`;
+    const groupWeekday = day === 'Weekday' ? representativeWeekday.group.get(groupKey) : undefined;
+    const shapeCountsByWeekday = groupWeekday != null && featureShape ? weekdayCounts.shape.get(featureShape) : undefined;
+    const shapeOwnWeekday = featureShape ? representativeWeekday.shape.get(featureShape) : undefined;
+    const groupCountsByWeekday = weekdayCounts.group.get(groupKey);
+    const typicalWeekdayCount = groupWeekday != null && groupCountsByWeekday != null ? groupCountsByWeekday[WEEKDAYS.indexOf(groupWeekday)] : 0;
+    const shapeServedWeekdays = shapeCountsByWeekday ? shapeCountsByWeekday.filter(count => count >= 2).length : 0;
+    const shapeOnTypicalWeekday = shapeCountsByWeekday != null && groupCountsByWeekday != null
+      && WEEKDAYS.some((_, index) => groupCountsByWeekday[index] === typicalWeekdayCount && shapeCountsByWeekday[index] >= 2);
+    const shapeOffRepresentativeDay = groupWeekday != null && shapeCountsByWeekday != null
+      && shapeCountsByWeekday[WEEKDAYS.indexOf(groupWeekday)] < 2
+      && (shapeServedWeekdays <= 2 || !shapeOnTypicalWeekday)
+      && shapeOwnWeekday != null && groupCountsByWeekday != null
+      && shapeCountsByWeekday[WEEKDAYS.indexOf(shapeOwnWeekday)] * 2 < groupCountsByWeekday[WEEKDAYS.indexOf(shapeOwnWeekday)];
+    const shapeMap = featureShape && !shapeOffRepresentativeDay ? stopDepsByShapeGroup.get(`${featureShape}::${day}`) : undefined;
     // Rail feeds commonly publish several physical shapes for one displayed line and
     // destination (short turns, service patterns, or timetable variants). For buses, a
     // shape-scoped map prevents unrelated branches from being combined; for rail, the
