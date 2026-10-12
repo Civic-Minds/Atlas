@@ -22,6 +22,8 @@ export interface GtfsTransformOptions {
   excludeTripHeadsigns?: string[];
   skipLetterSuffixMerge?: boolean;
   mergeEquivalentShapeVariants?: boolean;
+  /** Read the feed as of the run date instead of the detected reference date (#774). */
+  referenceDateFromRunDate?: boolean;
 }
 
 /** Parse → filter → merge branches → agency preprocess → synthesize trip metadata. */

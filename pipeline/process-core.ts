@@ -543,6 +543,12 @@ export function weekdayServiceDaysByRouteDir(
   return days;
 }
 
+/** Local run date as YYYYMMDD. */
+function runDateYmd(): string {
+  const d = new Date();
+  return `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
+}
+
 export async function processGtfsBuffer(
   buf: Buffer,
   onStatus?: (msg: string) => void,
@@ -579,7 +585,13 @@ export async function processGtfsBuffer(
     }
   }
 
-  const refDate = detectReferenceDate(gtfs.calendar ?? [], gtfs.calendarDates, gtfs.trips);
+  // Agency opt-in: read the feed as of the run date. NCSU Wolfline (Passio) gives every
+  // service a 2025-2027 calendar.txt period and switches semester and summer timetables only
+  // with calendar_dates removals, so the period midpoint (Jul 2, 2026) always read the summer
+  // timetable and dropped the semester-only routes 40 and 51 (#774).
+  const refDate = options?.referenceDateFromRunDate
+    ? runDateYmd()
+    : detectReferenceDate(gtfs.calendar ?? [], gtfs.calendarDates, gtfs.trips);
   // Union all 7 days, not just Monday/Saturday/Sunday — an agency whose weekday
   // service runs e.g. Tuesday-Friday only (no Monday service at all) had every
   // one of its route::dir keys silently excluded from shape selection, dropping

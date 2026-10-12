@@ -256,6 +256,7 @@ interface AgencyEntry {
   excludeTripHeadsigns?: string[];
   skipLetterSuffixMerge?: boolean;
   mergeEquivalentShapeVariants?: boolean;
+  referenceDateFromRunDate?: boolean;
   staged?: boolean;
   fare?: number;
   issueUrl?: string;
@@ -432,6 +433,7 @@ async function refreshAgency(
     peekedVersion,
     lastFeedExpiry: agency.lastFeedExpiry,
     lastFeedVersion: agency.lastFeedVersion,
+    referenceDateFromRunDate: agency.referenceDateFromRunDate,
   });
   if (skipDecision.skip) {
     // A current feed can still have a legacy processed artifact. Do not let
