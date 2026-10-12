@@ -57,10 +57,13 @@ export const UNEVEN_BANNER_ENABLED = envFlag('VITE_UNEVEN_BANNER_ENABLED');
 export type AtlasMode = 'public' | 'preview' | 'beta' | 'dev';
 
 function getAtlasMode(): AtlasMode {
-  const configured = typeof import.meta !== 'undefined' ? import.meta?.env?.VITE_ATLAS_MODE : undefined;
+  // Plain import.meta.env (not import.meta?.env) so Vite and Vitest both resolve it; the
+  // guard covers tsx scripts, where import.meta.env is undefined.
+  const env = typeof import.meta !== 'undefined' && import.meta.env ? import.meta.env : undefined;
+  const configured = env?.VITE_ATLAS_MODE;
   if (configured === 'public' || configured === 'preview' || configured === 'beta' || configured === 'dev') return configured;
   // Preserve the existing defaults when the explicit mode is not configured yet.
-  if (typeof import.meta !== 'undefined' && import.meta?.env?.DEV) return 'dev';
+  if (env?.DEV) return 'dev';
   if (envFlag('VITE_PREVIEW_BUILD')) return 'preview';
   return envFlag('VITE_BETA_BUILD') ? 'beta' : 'public';
 }

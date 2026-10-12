@@ -80,13 +80,25 @@ export function ringSelfIntersects(ring: Ring): boolean {
     seen.add(key);
   }
   const orient = (a: number[], b: number[], c: number[]) => Math.sign((b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0]));
+  // Sweep along x: only edges whose x-ranges overlap can cross, so sorting by left edge
+  // avoids testing every pair (real zone outlines run to tens of thousands of points).
+  const minX = new Float64Array(n), maxX = new Float64Array(n);
   for (let i = 0; i < n; i++) {
+    minX[i] = Math.min(ring[i][0], ring[i + 1][0]);
+    maxX[i] = Math.max(ring[i][0], ring[i + 1][0]);
+  }
+  const order = Array.from({ length: n }, (_, i) => i).sort((p, q) => minX[p] - minX[q]);
+  for (let s = 0; s < n; s++) {
+    const i = order[s];
     const a = ring[i], b = ring[i + 1];
-    const minX = Math.min(a[0], b[0]), maxX = Math.max(a[0], b[0]), minY = Math.min(a[1], b[1]), maxY = Math.max(a[1], b[1]);
-    for (let j = i + 2; j < n; j++) {
-      if (i === 0 && j === n - 1) continue; // first and last edges share the closing point
+    const minY = Math.min(a[1], b[1]), maxY = Math.max(a[1], b[1]);
+    for (let t = s + 1; t < n && minX[order[t]] <= maxX[i]; t++) {
+      const j = order[t];
+      const lo = Math.min(i, j), hi = Math.max(i, j);
+      if (hi - lo < 2) continue; // adjacent edges share a point
+      if (lo === 0 && hi === n - 1) continue; // first and last edges share the closing point
       const c = ring[j], d = ring[j + 1];
-      if (Math.max(c[0], d[0]) < minX || Math.min(c[0], d[0]) > maxX || Math.max(c[1], d[1]) < minY || Math.min(c[1], d[1]) > maxY) continue;
+      if (Math.max(c[1], d[1]) < minY || Math.min(c[1], d[1]) > maxY) continue;
       const o1 = orient(a, b, c), o2 = orient(a, b, d), o3 = orient(c, d, a), o4 = orient(c, d, b);
       if (o1 !== o2 && o3 !== o4 && o1 !== 0 && o2 !== 0 && o3 !== 0 && o4 !== 0) return true;
     }
