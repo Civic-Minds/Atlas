@@ -37,7 +37,7 @@ import type { LiveRouteInfoData } from './panels/LiveAdherenceCard';
 import type { OpenInfoFn } from '../InfoPanel';
 import { SearchSuggestionsPanel } from './SearchSuggestionsPanel';
 import { SearchResultsList } from './SearchResultsList';
-import { buildRouteFacts, buildRouteServiceSummary, buildRouteStopMetric, metricValueForPeriod } from '../../utils/routeFacts';
+import { branchDisplayPeriodHeadway, buildRouteFacts, buildRouteServiceSummary, buildRouteStopMetric, metricValueForPeriod } from '../../utils/routeFacts';
 import { buildSharedStopIndex } from '../../../shared/sharedStops';
 import { collectStopHubSiblings, getDistanceMeters } from '../../utils/stopHub';
 import { splitRouteKey } from '../../utils/routeKey';
@@ -426,8 +426,8 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       const directions = features
       .map(f => f.properties as unknown as ShapeProperties)
       .sort((a, b) => {
-        const aH = metricValueForPeriod(buildRouteServiceSummary(a).branch, period) ?? Infinity;
-        const bH = metricValueForPeriod(buildRouteServiceSummary(b).branch, period) ?? Infinity;
+        const aH = branchDisplayPeriodHeadway(a, period) ?? Infinity;
+        const bH = branchDisplayPeriodHeadway(b, period) ?? Infinity;
         if (aH !== bH) return aH - bH;
         return (a.directionId ?? 0) - (b.directionId ?? 0);
       });
@@ -510,8 +510,8 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         const variantKey = d.routeVariant?.trim().toLowerCase();
         const key = variantKey ? `${headsignKey}::${variantKey}` : headsignKey;
         const existing = seen.get(key);
-        const branchValue = metricValueForPeriod(buildRouteServiceSummary(d).branch, period) ?? Infinity;
-        const existingValue = existing ? metricValueForPeriod(buildRouteServiceSummary(existing).branch, period) ?? Infinity : Infinity;
+        const branchValue = branchDisplayPeriodHeadway(d, period) ?? Infinity;
+        const existingValue = existing ? branchDisplayPeriodHeadway(existing, period) ?? Infinity : Infinity;
         if (!existing || branchValue < existingValue) seen.set(key, d);
       }
       g.realTier = Array.from(seen.values());
