@@ -96,6 +96,9 @@ function typicalStops(runs: readonly TripRun[]): number {
  * Running time keyed `${routeId}::${directionId}::${dayType}`. `analysisShapes` is the shape
  * filter phase 1 uses (`route::dir` keys); routes without an entry (rail) use their dominant shape.
  */
+/** Share of a direction's trips that must reach a stop count for it to count as the longest regular trip. */
+const MIN_LONG_SHARE = 0.1;
+
 export function computeRunningTimes(
   gtfs: GtfsData,
   routeById: ReadonlyMap<string, GtfsRoute>,
@@ -185,13 +188,18 @@ export function computeRunningTimes(
       shapes = top ? new Set([top]) : undefined;
     }
     const onShapes = shapes ? list.filter(run => run.shapeId && shapes!.has(run.shapeId)) : list;
-    // Very short trips never set the pattern: shuttles under a quarter of the direction's longest
-    // trip (TTC 52's 2-stop trips beside 60-stop runs) are set aside first. A route whose every trip
-    // is short (a two-terminal ferry) keeps them. Then trips under half the main
-    // pattern's typical (median) stop count drop out, so one interlined or extended outlier can't
-    // move the bar. If the analysis shapes hold no full-length trips, the direction's are used.
-    const longest = Math.max(...list.map(r => r.stops));
-    const notShuttle = (run: TripRun) => run.stops >= longest / 4;
+    // Very short trips never set the pattern. Two-stop trips are set aside whenever the direction has
+    // longer trips (a route whose every trip has two stops, like a ferry, keeps them), and so are
+    // shuttles under a quarter of the direction's longest regular trip (TTC 52's short trips beside
+    // 60-stop runs). The longest regular trip is the longest stop count that at least
+    // MIN_LONG_SHARE of the direction's trips (and at least 2) reach, so one long interlined trip
+    // can't set it. Then trips under half the main pattern's typical (median) stop count drop out.
+    // If the analysis shapes hold no full-length trips, the direction's are used.
+    const hasLonger = list.some(run => run.stops >= 3);
+    const reach = Math.max(2, Math.ceil(list.length * MIN_LONG_SHARE));
+    const byLength = list.map(r => r.stops).sort((a, b) => b - a);
+    const longest = byLength[Math.min(reach, byLength.length) - 1];
+    const notShuttle = (run: TripRun) => (!hasLonger || run.stops >= 3) && run.stops >= longest / 4;
     const pick = (pool: TripRun[]) => {
       const real = pool.filter(notShuttle);
       return real.length > 0 ? real.filter(run => run.stops >= typicalStops(real) / 2) : [];

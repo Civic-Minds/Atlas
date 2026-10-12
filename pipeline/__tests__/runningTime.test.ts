@@ -134,5 +134,26 @@ describe('scheduled running time (CIV-84)', () => {
     const rt = run(feed([600, 630].map((s, i) => ({ id: `f${i}`, start: s, stops: ['dock1', 'dock2'], minutes: 25 }))));
     expect(rt.get('r1::0::Weekday')!.byHour['10']).toBe(25);
   });
+
+  it('ignores a lone outlier 4x+ the normal length when cutting shuttles', () => {
+    const long = Array.from({ length: 25 }, (_, i) => `x${i}`);
+    const trips: Trip[] = [
+      ...[480, 490, 500, 510].map((s, i) => ({ id: `t${i}`, start: s, stops: line, minutes: 40 })),
+      { id: 'interlined', start: 470, stops: long, minutes: 150 },
+    ];
+    expect(run(feed(trips)).get('r1::0::Weekday')!.byHour['8']).toBe(40);
+  });
+
+  it('never lets several 2-stop trips win beside a 7-stop line', () => {
+    const seven = [...line, 'g'];
+    const trips: Trip[] = [
+      ...Array.from({ length: 8 }, (_, i) => ({ id: `s${i}`, start: 480 + i * 5, stops: ['a', 'b'], minutes: 4 })),
+      ...[480, 500].map((s, i) => ({ id: `l${i}`, start: s, stops: seven, minutes: 30 })),
+    ];
+    expect(run(feed(trips)).get('r1::0::Weekday')!.byHour['8']).toBe(30);
+    // Even when the analysis shape is the shuttle's, the full line is measured.
+    const shuttleShape = trips.map(t => (t.id.startsWith('s') ? { ...t, shape: 'shuttle' } : t));
+    expect(run(feed(shuttleShape), ['wk'], new Map([['r1::0', new Set(['shuttle'])]])).get('r1::0::Weekday')!.byHour['8']).toBe(30);
+  });
 });
 
