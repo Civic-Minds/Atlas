@@ -81,8 +81,10 @@ export const ON_DEMAND_PUBLIC = false;
 export const ON_DEMAND_ENABLED = ON_DEMAND_PUBLIC || BETA_BUILD;
 // Local testing only: read on-demand files from a dev path instead of R2 (CIV-50). Ignored in
 // every built site, so a deployed build can't be pointed at other files.
+const devOnDemandUrl: unknown =
+  typeof import.meta !== 'undefined' && import.meta?.env?.DEV ? import.meta?.env?.VITE_ON_DEMAND_URL : undefined;
 export const ON_DEMAND_URL_OVERRIDE: string | undefined =
-  (typeof import.meta !== 'undefined' && import.meta?.env?.DEV ? import.meta?.env?.VITE_ON_DEMAND_URL : undefined) || undefined;
+  typeof devOnDemandUrl === 'string' && devOnDemandUrl ? devOnDemandUrl : undefined;
 // "What's new" link in the map's bottom bar, listing recent changes in plain words (CIV-83).
 // Beta-only while the wording and placement are tried out.
 export function whatsNewEnabledFor(mode: AtlasMode): boolean {

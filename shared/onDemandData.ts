@@ -8,6 +8,8 @@
  * Beta-only services are written only to the staging bucket; the public bucket gets promoted ones.
  */
 
+import type { GeoJSON } from 'geojson';
+
 export const ON_DEMAND_SCHEMA_VERSION = 1;
 export const ON_DEMAND_PREFIX = 'atlas/on-demand';
 
