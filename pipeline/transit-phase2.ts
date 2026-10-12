@@ -46,6 +46,9 @@ export type TierDeterminer = (
  * the service and cannot use this allowance.
  */
 export const EDGE_GAP_ALLOWANCE_MINUTES = 10;
+
+/** Departures packed into this many minutes or fewer are a burst, not a schedule. */
+export const BURST_MAX_SPAN_MINUTES = 90;
 export type EdgeGapAllowanceSide = 'opening' | 'closing' | 'both';
 
 type EdgeGapAllowanceResult = {
@@ -402,6 +405,11 @@ export function applyAnalysisCriteria(
     const routeDirWeekdays = (route: string, dir: string): number =>
         weekdayServiceDays?.get(`${route}::${dir}`) ?? rawWeekdays.get(`${route}::${dir}`)?.size ?? 0;
     const perDayResults = new Map<string, { dayType: DayType; day: DayName; result: AnalysisResult; rawTimes: number[] }>();
+    // Route directions (per day) that run a regular all-day pattern, and the time-limited bursts
+    // that may be variants of them (#732).
+    const routeDirDaysWithRegularService = new Set<string>();
+    const burstResults: { key: string; result: AnalysisResult }[] = [];
+    const demotedBursts = new Set<AnalysisResult>();
 
     for (const raw of rawData) {
         const dayType = DAY_TO_TYPE[raw.day];
@@ -475,7 +483,7 @@ export function applyAnalysisCriteria(
         const hasRepeatedPeakService = periodTripCounts.amPeak >= 3 || periodTripCounts.pmPeak >= 3;
         const hasRepeatedOffPeakService = periodTripCounts.midday >= 3 || periodTripCounts.evening >= 3;
         const isSplitPeakService = !isOvernightFallback && hasRepeatedPeakService && !hasRepeatedOffPeakService;
-        const isLimitedService = isSplitPeakService || spanMins <= 90 || (!isOvernightFallback && coverage < 0.4);
+        const isLimitedService = isSplitPeakService || spanMins <= BURST_MAX_SPAN_MINUTES || (!isOvernightFallback && coverage < 0.4);
         const tierDetail = tierDeterminer === determineTierWithEdgeGapAllowance
             ? determineTierWithEdgeGapAllowanceDetail(
                 analysisGaps,
@@ -522,7 +530,11 @@ export function applyAnalysisCriteria(
         // Three repeated departures are the minimum evidence for a schedule; one or two trips
         // remain irregular even when their single gap happens to match a published tier.
         const hasSustainedCadence = analysisWindow.length >= 3 && determinedTier !== 'span';
-        const serviceClass = isSplitPeakService
+        // The overnight fallback exists for genuinely overnight-only service. One or two trips
+        // that merely fall outside the daytime window (stl AOUT2626E: 06:09 and 10:07) are
+        // irregular, as they would be inside it (#732).
+        const tooFewFallbackTrips = isOvernightFallback && analysisWindow.length < 3;
+        const serviceClass = isSplitPeakService || tooFewFallbackTrips
             ? 'irregular'
             : isLimitedService
             ? (hasSustainedCadence ? 'time-limited' : 'irregular')
@@ -532,6 +544,15 @@ export function applyAnalysisCriteria(
         const tier = serviceClass === 'irregular'
             ? 'span'
             : determinedTier === 'span' ? 'infrequent' : determinedTier;
+        // A burst (≤90 minutes, the limited-service rule above) and the route direction's regular
+        // all-day patterns. Used below to demote short-turn and burst variants (#732). The burst
+        // is measured over the whole day's window, not the rail midday sample: a 64-train AM
+        // pattern of TTC Line 1 has a short midday tail but is not a burst.
+        const routeDirDayKey = `${raw.route}::${raw.dir}::${raw.day}`;
+        const isBurst = windowedTimes[windowedTimes.length - 1] - windowedTimes[0] <= BURST_MAX_SPAN_MINUTES;
+        if (serviceClass === 'regular' && windowedTimes.length >= 3) {
+            routeDirDaysWithRegularService.add(routeDirDayKey);
+        }
 
         const stats = computeHeadwayStats(analysisWindow);
         
@@ -580,6 +601,24 @@ export function applyAnalysisCriteria(
             ...resourceStats
         };
         perDayResults.set(`${raw.route}::${raw.dir}::${raw.headsign ?? ''}::${raw.shapeId ?? ''}::${raw.routeVariant ?? ''}::${raw.day}`, { dayType, day: raw.day, result, rawTimes: raw.departureTimes });
+        if (isBurst && serviceClass === 'time-limited') burstResults.push({ key: routeDirDayKey, result });
+    }
+
+    // Short-turn and burst variants (#732). Three to seven trips packed into ≤90 minutes pass the
+    // three-departure check, so a short turn of a frequent route reads as its own time-limited
+    // tier-10 service (mta-maryland 22 COLD SPRING METRO: 3 trips 14:30-14:37; mbta 455
+    // Wonderland: 4 trips 04:45-05:35; ttc 340 shape 1122570: 3 trips 25:31-26:04). When the
+    // same route direction runs a regular all-day pattern that day, the burst is a variant of
+    // it, not a schedule of its own: irregular, like other one-off trips, so it sets no tier
+    // and the worst-direction rule skips it (the same regular-sibling test as that rule's
+    // infrequent-sibling drop). Without a regular sibling a burst keeps its class: capmetro
+    // splits all-day routes like 310 into one time-limited shape per 60-120 minutes, and each
+    // slice stands for the route in its hours.
+    for (const { key, result } of burstResults) {
+        if (!routeDirDaysWithRegularService.has(key)) continue;
+        result.serviceClass = 'irregular';
+        result.tier = 'span';
+        demotedBursts.add(result);
     }
 
     // Roll up per-day results into day-type summaries
@@ -599,7 +638,12 @@ export function applyAnalysisCriteria(
         // A day whose only service is the previous night's after-midnight tail (#718) does not
         // set the tier or service class while another day in the group has its own service.
         const ownServiceEntries = entries.filter(e => !e.result.previousNightTail);
-        const tierEntries = ownServiceEntries.length > 0 ? ownServiceEntries : entries;
+        const ownOrAllEntries = ownServiceEntries.length > 0 ? ownServiceEntries : entries;
+        // A day on which this pattern is only a demoted burst (#732) does not set the tier or
+        // class while another day runs it as a schedule: translink 4 Downtown runs 13 trips
+        // 19:38-23:49 Monday to Thursday, but only its first 3 on Friday.
+        const scheduledEntries = ownOrAllEntries.filter(e => !demotedBursts.has(e.result));
+        const tierEntries = scheduledEntries.length > 0 ? scheduledEntries : ownOrAllEntries;
         const INFREQUENT_VAL = 1e6; // sentinel: worse than any real tier, better than span (Infinity)
         const tierValues = tierEntries.map(e =>
             e.result.tier === 'span' ? Infinity

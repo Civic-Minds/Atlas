@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- Short-turn trips and early-morning or late-night bunches that run a few buses minutes apart, like MTA Maryland 22's Cold Spring Metro trips or MBTA 455's first trips to Wonderland, no longer show as their own every-10 or every-20 service beside the route's real frequency, and a stray two-trip pattern no longer drags a route's frequency down, as it did on STL 26 ([#732](https://github.com/Civic-Minds/Atlas/issues/732)).
 - A bus that leaves exactly when a time period ends, like a 6:00 AM first trip, no longer makes the route look like it runs in the period before, so overnight, late and peak filters stop showing routes that only start or finish on the boundary.
 - Routes in feeds that time a whole vehicle shift as one trip, like Waco's South Terrace, show their daytime service again instead of only evening and overnight service ([#722](https://github.com/Civic-Minds/Atlas/issues/722)).
 - Routes in feeds that write each frequency-based trip as a template at midnight, like UGA's campus buses, no longer show fake late-night service, because a template's own listed times are no longer counted as a bus ([#721](https://github.com/Civic-Minds/Atlas/issues/721)).
