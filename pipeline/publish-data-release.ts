@@ -40,6 +40,8 @@ import {
 import {
   currentCodeVersion,
   manifestShapeError,
+  publicAgenciesMissingFromRelease,
+  publicCatalogSlugs,
   RELEASE_STAMP_FIELD,
   releasePrefixOf,
   releasePublishError,
@@ -104,6 +106,28 @@ const error = releasePublishError({
   codeVersion: currentCodeVersion(),
 });
 if (error) throw new Error(`Refusing to publish data release: ${error}`);
+
+// Every agency in the public catalog must have a route file in this release,
+// or production shows "Couldn't load" for it (#757, #759). Existence only: an
+// agency that wasn't refreshed still has its older file copied into the release.
+async function releaseFileExists(slug: string): Promise<boolean> {
+  const key = `${manifest.agencyPrefix.replace(/\/$/, '')}/${slug}.json`;
+  const response = await fetch(`${base}/${key}?${bust}`, { method: 'HEAD', cache: 'no-store' });
+  if (response.status === 404) return false;
+  if (!response.ok) throw new Error(`Could not check ${key}: HTTP ${response.status}`);
+  return true;
+}
+const publicSlugs = publicCatalogSlugs(indexAgencies);
+const presentSlugs = new Set((await runWithConcurrency(
+  publicSlugs.map(slug => async () => (await releaseFileExists(slug)) ? slug : null),
+  6,
+)).filter((slug): slug is string => slug !== null));
+const missingPublic = publicAgenciesMissingFromRelease(indexAgencies, slug => presentSlugs.has(slug));
+if (missingPublic.length) {
+  throw new Error(`Refusing to publish data release ${manifest.releaseId}: ${missingPublic.length} public agencies have no route file in it: ${missingPublic.join(', ')}. `
+    + 'Hide each one (hiddenInProduction + issueUrl) or refresh it into a release first.');
+}
+console.log(`All ${publicSlugs.length} public agencies have a route file in ${manifest.releaseId}.`);
 
 // Release diff gate: every agency in the new release against the public one.
 const currentRelease = await fetchJson('atlas/release.json') as Partial<ReleaseManifest> | null;

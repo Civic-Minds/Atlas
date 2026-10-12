@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { ROUTE_ARTIFACT_SCHEMA_VERSION, TILE_RULES_VERSION } from '../../shared/artifactSchema';
 import {
   ALLOW_UNPAIRED_UPLOAD_FLAG,
+  publicAgenciesExcludedFromRelease,
+  publicAgenciesMissingFromRelease,
   releasePublishError,
   tileRulesFingerprint,
   unpairedUploadError,
@@ -104,5 +106,36 @@ describe('tile rules fingerprint', () => {
       version: 2,
       fingerprint: '8dc28aa6ec105ed3b3a71fbbef99de3257041fa56508319fd9c74e0466f3cd0b',
     });
+  });
+});
+
+describe('public agencies without a release file (#759)', () => {
+  const refreshed = { lastFeedExpiry: '20271231', lastRefreshedAt: '2026-10-12' };
+  const agencies: Array<Record<string, unknown>> = [
+    { slug: 'ttc', ...refreshed },
+    { slug: 'yrt', ...refreshed },
+    { slug: 'fort-bend', ...refreshed, pmtilesPending: true },
+    { slug: 'mexico-city-metro' },
+    { slug: 'siskiyou', ...refreshed, pmtilesPending: true, hiddenInProduction: true, issueUrl: 'https://github.com/Civic-Minds/Atlas/issues/492' },
+    { slug: 'new-feed', ...refreshed, staged: true },
+  ];
+
+  it('fails a public agency with no file in the release', () => {
+    const releaseFiles = new Set(['ttc']);
+    expect(publicAgenciesMissingFromRelease(agencies, slug => releaseFiles.has(slug))).toEqual(['yrt', 'fort-bend', 'mexico-city-metro']);
+  });
+
+  it('passes hidden and staged agencies that have no file', () => {
+    const releaseFiles = new Set(['ttc', 'yrt', 'fort-bend', 'mexico-city-metro']);
+    expect(publicAgenciesMissingFromRelease(agencies, slug => releaseFiles.has(slug))).toEqual([]);
+  });
+
+  it('passes an agency that was not refreshed but still has its older file in the release', () => {
+    const stale = [{ slug: 'ttc', lastFeedExpiry: '20250101', lastRefreshedAt: '2025-06-01' }];
+    expect(publicAgenciesMissingFromRelease(stale, slug => slug === 'ttc')).toEqual([]);
+  });
+
+  it('flags public agencies build-pmtiles never copies into a release', () => {
+    expect(publicAgenciesExcludedFromRelease(agencies)).toEqual(['fort-bend', 'mexico-city-metro']);
   });
 });

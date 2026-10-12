@@ -10,6 +10,8 @@ import { createHash } from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { ROUTE_ARTIFACT_SCHEMA_VERSION, TILE_RULES_VERSION } from '../shared/artifactSchema.js';
+import { buildAgencyCatalog } from '../shared/agencyCatalog.js';
+import { isBuiltIntoTiles, type TileInclusionAgency } from './pmtilesCoverage.js';
 
 export interface ReleaseManifest {
   releaseId: string;
@@ -123,6 +125,35 @@ export function releasePublishError(evidence: PublishEvidence): string | null {
     return `Agency snapshots not stamped with ${manifest.releaseId}: ${mismatched.map(([slug, stamp]) => `${slug}=${String(stamp)}`).join(', ')}.`;
   }
   return null;
+}
+
+/** Slugs in the public browser catalog, the agencies production users can open. */
+export function publicCatalogSlugs(agencies: Array<Record<string, unknown>>): string[] {
+  return buildAgencyCatalog(agencies, 'public').agencies.map(agency => agency.slug);
+}
+
+/**
+ * Public agencies build-pmtiles never copies into a release (pmtilesPending, or
+ * no refresh marker), so production shows "Couldn't load" for them (#757, #759).
+ * Checked offline by check:agency-index; hide them until they are refreshed.
+ */
+export function publicAgenciesExcludedFromRelease(agencies: Array<Record<string, unknown>>): string[] {
+  const publicSlugs = new Set(publicCatalogSlugs(agencies));
+  return agencies
+    .filter(agency => publicSlugs.has(String(agency.slug)) && !isBuiltIntoTiles(agency as TileInclusionAgency))
+    .map(agency => String(agency.slug));
+}
+
+/**
+ * Public agencies with no route file at all in a release. Only existence
+ * counts: an agency that wasn't refreshed this time still has its older file
+ * copied into the release and passes.
+ */
+export function publicAgenciesMissingFromRelease(
+  agencies: Array<Record<string, unknown>>,
+  hasReleaseFile: (slug: string) => boolean,
+): string[] {
+  return publicCatalogSlugs(agencies).filter(slug => !hasReleaseFile(slug));
 }
 
 function sortKeys(value: object): Record<string, unknown> {
