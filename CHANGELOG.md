@@ -4,155 +4,87 @@ All notable changes to this project will be documented in this file.
 
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
-## [Unreleased]
-- A data build that runs on a holiday now gives the same results as one the next day: CDTA no longer loses its Sunday and 16 Saturday routes, and MBTA keeps the Orange Line and boats on weekends, when built on a one-day holiday timetable ([#742](https://github.com/Civic-Minds/Atlas/issues/742)).
-- Feeds that list every trip by date, like Metro-North, no longer pick a holiday week such as Thanksgiving as their typical week, which had dropped half its lines; Blacksburg now shows its regular Friday service ([#742](https://github.com/Civic-Minds/Atlas/issues/742)).
-- More branches drawn from a few early-morning trips now show their real all-day frequency, like TTC 35A to Mount Dennis (every 15 instead of 12), and CapMetro 2 is now graded every 30 instead of infrequent to match its every-16 service. Where two branches meet at a shared last stop, like TTC 94 at Castle Frank, the headline counts only the branch's own trips (every 19-20, not the combined 10).
-- Branches drawn from a handful of early-morning trips, like TTC 35B via Hullmar and CapMetro 2, now show the branch's own all-day frequency (every 15 and 16) instead of the early trips' 10 and 32.
-- Routes whose feed gives almost every trip its own route shape, like CapMetro's MetroRail, no longer take their weekday frequency from a handful of those trips: MetroRail southbound shows about every 54 minutes instead of 222, and several CapMetro routes and TriMet 96 gain their missing period frequencies ([#737](https://github.com/Civic-Minds/Atlas/issues/737)).
-- CapMetro bus routes and MetroRail whose feed gives Friday its own route shapes no longer show weekday frequencies taken from a few Friday trips (routes 201 and 322 every 10 hours instead of every 30 and 35 minutes, MetroRail northbound every 336 minutes instead of about 34) ([#735](https://github.com/Civic-Minds/Atlas/issues/735)).
-- Redwood Coast Transit Routes 3 and 4 show their real hourly weekday service again instead of every 30 and 4 minutes, because ended seasonal timetables are no longer counted alongside the regular one (also Redding RABA, Clallam Transit and other feeds with an ended summer period) ([#734](https://github.com/Civic-Minds/Atlas/issues/734)).
-- That change no longer drops all weekend service for Clallam Transit and RABA right after their summer timetable ends, and no longer shrinks out-of-date feeds like CARTA and Miami-Dade Transit to the few routes that still have a running timetable ([#734](https://github.com/Civic-Minds/Atlas/issues/734)).
-- Combined corridor frequencies now use the same schedule date as the routes, so CARTA and Miami-Dade Transit keep their corridors and Dutchess County's corridors appear again instead of being read from a placeholder date years ahead ([#734](https://github.com/Civic-Minds/Atlas/issues/734)).
-- Routes with one stray midday train, like Metrolink's Riverside Line toward L.A. Union Station, show their hourly frequency again instead of every 210 minutes ([#733](https://github.com/Civic-Minds/Atlas/issues/733)).
-- Short-turn trips and early-morning or late-night bunches that run a few buses minutes apart, like MTA Maryland 22's Cold Spring Metro trips or MBTA 455's first trips to Wonderland, no longer show as their own every-10 or every-20 service beside the route's real frequency, and a stray two-trip pattern no longer drags a route's frequency down, as it did on STL 26. A bunch at the very start or end of a route's day, when it is the only service then, still shows its own frequency ([#732](https://github.com/Civic-Minds/Atlas/issues/732)).
-- With a frequency filter on, a route whose branches each miss it now shows the stretch they share when that stretch itself passes in both directions, like TTC 29 Dufferin's every-8 trunk. Stops on that stretch show the combined every 8, the route card adds a "Shared stretch every 8" row, and the route still counts as missing the filter in lists and counts. A direction that runs as one pattern opposite a branched one, like NYCT B toward Brighton Beach, draws along the same stretch ([#736](https://github.com/Civic-Minds/Atlas/issues/736)).
-- Route data now records how often buses come along stretches that a route's branches share, like TTC 29 Dufferin, where each branch runs every 16 minutes but the shared 45 stops get a bus every 8. The map can then show those stretches without making the whole route pass ([#736](https://github.com/Civic-Minds/Atlas/issues/736)).
-- Each agency's route data now carries scheduled end-to-end running time per route, direction and day, by departure hour and by time period, from the main pattern's full trips only, so the coming running-time chart has real timetable numbers to show; nothing on the map changes yet.
-- A bus that leaves exactly when a time period ends, like a 6:00 AM first trip, no longer makes the route look like it runs in the period before, so overnight, late and peak filters stop showing routes that only start or finish on the boundary.
-- Routes in feeds that time a whole vehicle shift as one trip, like Waco's South Terrace, show their daytime service again instead of only evening and overnight service ([#722](https://github.com/Civic-Minds/Atlas/issues/722)).
-- Routes in feeds that write each frequency-based trip as a template at midnight, like UGA's campus buses, no longer show fake late-night service, because a template's own listed times are no longer counted as a bus ([#721](https://github.com/Civic-Minds/Atlas/issues/721)).
-- Shuttles whose feed lists a second bus restarting on top of the first, like Clemson's Gold route, no longer show a bus every 1 to 5 minutes; they now show about every 15 to 20, the two buses' real combined service ([#711](https://github.com/Civic-Minds/Atlas/issues/711)).
-- Routes in feeds that leave the route number blank, like Coast RTA, Clemson CAT, MBTA Commuter Rail and TriMet MAX, are no longer merged with other routes that end at the same stop, so every route shows on the map with its own frequencies instead of hiding or borrowing another route's, and stops served by 3 or more of these routes now get hub markers ([#717](https://github.com/Civic-Minds/Atlas/issues/717)).
-- Route-wide frequencies for feeds that list each trip as its own frequency window now count only the trips that run, so Winter Park's Granby-Grand Lake Connector Gold Line shows its three daily trips instead of a bus every 56 minutes ([#706](https://github.com/Civic-Minds/Atlas/issues/706)).
-- Routes whose feeds describe the same buses twice, as a timetable plus a frequency template or as a loop that passes a stop twice, no longer show buses several times more often than they run ([#711](https://github.com/Civic-Minds/Atlas/issues/711), [#712](https://github.com/Civic-Minds/Atlas/issues/712)).
-- Routes in feeds that list each scheduled trip as its own frequency window no longer show about twice as many buses as really run ([#702](https://github.com/Civic-Minds/Atlas/issues/702)).
-- Weekday stop and time-of-day frequencies now come from one typical weekday, so a route with a different Friday timetable no longer looks about twice as frequent as it runs, as CATA's White Loop did ([#710](https://github.com/Civic-Minds/Atlas/issues/710)).
-- Routes that run on only some weekdays, like a Thursday and Friday night bus, now show as limited on weekdays, still drawn in the periods they run when no frequency is picked, instead of a frequency they only reach on those nights ([#710](https://github.com/Civic-Minds/Atlas/issues/710)).
-- Routes that run every weekday but give each day's trips its own pattern, or add some weekdays through holiday-style exceptions, now keep their weekday frequency instead of showing as limited, because part-week service is judged per route direction across all its trips ([#710](https://github.com/Civic-Minds/Atlas/issues/710)).
-- A day whose only trips are the after-midnight end of the previous night's service now shows as limited instead of getting its own late-night frequency, so a Saturday-night bus no longer passes Sunday's frequency filters ([#718](https://github.com/Civic-Minds/Atlas/issues/718)).
-- The archive reprocess can leave named agencies out with `--skip-slug`, so agencies with known wrong new numbers keep their current live data during a release.
-- Releases now stop for review when an agency loses all its service on a day type, such as every weekend route disappearing, and flag a day whose routes fall to well under live for a closer look ([#741](https://github.com/Civic-Minds/Atlas/issues/741)).
-- Releases now stop for review when an agency's weekday frequencies disappear, such as a whole system suddenly showing every route as limited service, and list any single route direction that loses its weekday frequency ([#710](https://github.com/Civic-Minds/Atlas/issues/710)).
-- Routes with only a few trips a day now say "limited" on the route card, agency card, nearby routes and search lists, for All day and each time of day, instead of showing a frequency they don't really run ([#708](https://github.com/Civic-Minds/Atlas/issues/708)).
-- On phones, search results use the full screen width, the Settings and About panels fit on small screens, the docs and legal pages start with their contents list collapsed, the search box widens to the full top bar while you type, and Escape closes the export dialog ([#694](https://github.com/Civic-Minds/Atlas/issues/694), [#695](https://github.com/Civic-Minds/Atlas/issues/695), [#696](https://github.com/Civic-Minds/Atlas/issues/696), [#697](https://github.com/Civic-Minds/Atlas/issues/697), [#698](https://github.com/Civic-Minds/Atlas/issues/698)).
-- Frequent routes like TTC 506, 63, 84 and 100 show again under weekday "every 20 min" — one rare trip pattern no longer makes a whole route look like it leaves hours without service ([#658](https://github.com/Civic-Minds/Atlas/issues/658)).
-- Picking a route on the map fades the rest of the network again, matching History, stops and search, so the chosen route is easy to see ([#700](https://github.com/Civic-Minds/Atlas/issues/700)).
-- Agencies whose schedule runs past the end date in their feed's summary file no longer show as outdated after a refresh, because the recorded end date now follows the schedule itself, capped at two years out so a placeholder end date can't hide an outdated feed.
-- Agencies whose schedules list a far-future end date no longer lose the routes of their newest service period when holiday exceptions pull the measured week before it starts, so SCT shows 24 routes instead of 10 ([#658](https://github.com/Civic-Minds/Atlas/issues/658)).
-- Weekday frequencies are no longer shown about twice as often as buses really run when a holiday like Thanksgiving falls in the week a feed is measured from, because holiday service is no longer counted on top of the regular weekday service ([#658](https://github.com/Civic-Minds/Atlas/issues/658)).
-- On the beta site, compare mode puts two maps side by side with the same frequency filter, each for its own day and time, so you can see which routes change or disappear.
-- Test sessions and locally run builds no longer count as visitors in Atlas analytics, so visitor numbers reflect real traffic only.
-- **On-demand zone cards now list hours from the agency's schedule data, bold today's line, and say plainly whether the zone is running at the selected time — or that its hours aren't confirmed — with booking details and trip rules shown separately.**
-- **On-demand cards describe how pickup works for the zone you clicked — door to door, set stops, or trips to and from a transfer point — using only what the agency publishes, instead of one generic line about virtual stops.**
-- **On-demand zones and their pickup points now disappear from the map when they aren't running, matching fixed routes, and services without confirmed hours are drawn faded instead of looking like confirmed service.**
-- **Selecting an on-demand zone or service now fades the rest of the map, so you can see exactly which area and stops it covers.**
-- **Agencies running more than one on-demand service now show each zone under its own service name, instead of one combined name that implied a single service.**
-- **Links that open an on-demand service now take the map to that service's area, instead of leaving it wherever you last looked.**
-- The weekly refresh now keeps an agency's live data instead of publishing a sharply smaller feed, and can reach the map release again because it no longer discards its own refreshed files or treats agencies that kept their data as failures ([#655](https://github.com/Civic-Minds/Atlas/issues/655)).
-- Every data refresh, reprocess and release now checks each agency's new data against what's live and holds back anything that looks wrong, such as one agency's routes published under another's name, missing rail lines, sharp drops, holiday-skewed frequencies or expired schedules, until someone reviews it ([#671](https://github.com/Civic-Minds/Atlas/issues/671)).
-- Rebuilding agency data can no longer publish an agency in a country Atlas hasn't launched yet, matching the rule regular refreshes already follow ([#668](https://github.com/Civic-Minds/Atlas/issues/668)).
-- A hidden agency's data can now be corrected while it stays hidden, and the map build no longer fails because a hidden agency is missing from the map tiles ([#615](https://github.com/Civic-Minds/Atlas/issues/615)).
-- The map's top bar no longer links to Research or shows a "More" menu on larger screens; Research is reached from the About page ([#651](https://github.com/Civic-Minds/Atlas/issues/651)).
-- On the beta site, tapping a route or stop on a phone now opens its card as a panel at the bottom of the screen that you drag up for detail, so the map stays visible ([#647](https://github.com/Civic-Minds/Atlas/issues/647)).
-- On phones, route cards no longer break stop names mid-word, the search bar stays on one line, and headings across the app no longer appear in all capitals ([#644](https://github.com/Civic-Minds/Atlas/issues/644), [#645](https://github.com/Civic-Minds/Atlas/issues/645), [#646](https://github.com/Civic-Minds/Atlas/issues/646)).
-- An agency whose separate rail feed has run out now shows as outdated even when its bus feed is still current, and refresh archives those rail feeds so reprocessing rebuilds from the exact same inputs ([#630](https://github.com/Civic-Minds/Atlas/issues/630)).
-- The button to save the map as an image is now on for everyone, not just the beta site.
-- Exported map images now name the place when one city clearly fills the view, describe the active filter and selected route in plain words, include a colour key matching the map, and save with a descriptive file name, so anyone receiving the image can tell what it shows.
-- Exported map images now use a clean poster layout with the selected route drawn bold so it stands out, and a link back to the map.
-- Reprocessing now rebuilds each agency from its newest archived feed and refuses expired, older, or sharply smaller results instead of replacing good live data with a worse feed ([#613](https://github.com/Civic-Minds/Atlas/issues/613)).
-- **Processing an agency once again keeps its stop frequencies, stop lists, and frequent/night service flags — a weekday-service change on Oct 8 had silently dropped them for every agency processed since ([#614](https://github.com/Civic-Minds/Atlas/issues/614)).**
-- Agencies sourced from MobilityDatabase now follow its always-current feed link instead of a dated copy or the retired Google mirror, so new schedules show up on the next refresh instead of after the old one expires ([#627](https://github.com/Civic-Minds/Atlas/issues/627), [#629](https://github.com/Civic-Minds/Atlas/issues/629)).
-- Agencies with a separate rail feed (NFTA, LA Metro, WMATA, SEPTA) keep their rail lines on every processing path again, because process, refresh, and reprocess now share one loader that merges every feed and stamps the data version the map build requires ([#106](https://github.com/Civic-Minds/Atlas/issues/106), [#121](https://github.com/Civic-Minds/Atlas/issues/121), [#204](https://github.com/Civic-Minds/Atlas/issues/204)).
-- Map image exports now wait until every route has loaded (or explain why they cannot) and keep phone screens whole and sharp, so a saved image is never missing routes or stretched.
-- **The map and the route cards can no longer come from different builds — a data release now only goes live when its map tiles and agency data were built together under the app's current rules, and the site shows no route data rather than an unmatched map.**
-- **Frequency filters now require every direction of a route to meet the threshold, so routes no longer slip through on a single busy stretch, routes with a few occasional extra trips (like TTC 100) no longer drop out, and the route list, counts, and map always agree.**
-- **Route lines are drawing on the map again — the map looked for its route files in the wrong folder, and the map library's background helper was missing from the site after the MapLibre 6 upgrade.**
-- **Routes whose feed has schedules but no map shape now stay searchable and zoom to their stops, without ever replacing a route line that already draws.**
-- **PMTiles releases now verify full coverage locally and use a bounded live smoke check, preventing R2 read failures from blocking otherwise valid releases.**
-- **Large R2 fallback uploads now use a stable IPv4 connection, reducing failed PMTiles releases on networks with broken IPv6 paths.**
-- **Refresh now reprocesses current feeds whose stored route artifact uses an old or missing schema, preventing PMTiles rebuild failures after pipeline upgrades.**
-- **Emery Go-Round is no longer excluded from PMTiles after its current feed passed route-quality checks.**
-- **A coordinated production refresh published current data for 14 agencies and advanced the shared cache version, keeping the live map and registry aligned.**
-- **Coordinated data releases now stop before PMTiles when any requested agency fails or remains stale, preventing partial refreshes from becoming map releases.**
-- **PMTiles rebuilds now require a successful data refresh first, preventing stale agency artifacts from becoming a new map release.**
-- **MapLibre GL is now on a patched release**, addressing a critical security vulnerability without changing Atlas’s map behaviour.
-- **Research landing-page copy now describes schedule patterns precisely instead of implying a broader view of transit operations.**
-- **Research view links now describe the insight users will get instead of repeating generic “Open” actions.**
-- **The Research landing page now opens with a clearer invitation and puts the research tools first.**
-- **The Research landing page now starts with its actual title instead of repeating “Research” as a label.**
-- **The Research page now introduces Frequent Service through its explanatory story before sending users to the interactive map.**
-- **History now fades unselected routes when a route is selected, making the active historical line easier to follow on the map.**
-- **History now exposes current route-mode filters, and its header no longer offers unrelated Research navigation.**
-- **History route details now give the route title priority and use a compact agency back link.**
-- **History route names now match the normal route list, and agency summaries use shorter labels.**
-- History adherence now limits concurrent R2 snapshot reads, preventing large requests from exhausting connections.
-- GTFS processing now preserves weekday/weekend service buckets, frequency-based stop headways, and full-day rail schedule metrics.
-- Rail-like shapes are no longer treated as street geometry, and refresh registry writes are atomic.
-- Map rendering, standalone page navigation, and tile proxy caching are now faster and more resilient.
-- Standalone pages now use a simpler Atlas wordmark that better matches the rest of the product.
-- Documentation and legal pages now share the site header for consistent navigation.
-- Documentation and legal pages now use one shared Atlas navigation path instead of duplicate back links.
-- Atlas branding now comes from one shared component across the map and standalone pages.
-- Public About pages no longer show research links that are unavailable in the public build.
-- Public navigation no longer exposes disabled research routes.
-- The public About page now uses a quieter map link instead of a lone oversized button.
-- The public About map link now uses clearer action language.
-- The public About map link now invites visitors to try Atlas directly.
-- The About hero now focuses on Atlas’s purpose and actions without a redundant marketing callout.
-- The About page now uses a simpler editorial layout focused on the questions Atlas helps answer.
-- The About page now gives Atlas a clearer editorial landing page with shared navigation, a schedule-to-insight diagram, and direct research paths.
-- Overnight frequency filters no longer show routes whose full selected-period coverage is too sparse ([#524](https://github.com/Civic-Minds/Atlas/issues/524)).
+## [3.3.0] - 2026-10-12
 
-- **Route schedule data now uses one shared contract across the app and processing tools, reducing mismatches between map filters and route cards.**
-- **Route directories now read one shared feature contract, keeping research and Night Service indexes aligned with processed route data.**
-- **Build-time environment settings now use one typed contract across browser, API, and worker checks, reducing configuration drift.**
-- **Selected routes now explain when service only covers part of the selected time window, so frequency filters are easier to understand.**
-- **Schedule charts now mark individual hours with unusually long gaps, so a route’s typical frequency does not hide a slower hour.**
-- **Routes without service in the selected period are now hidden from the map, so route cards no longer contradict the map.**
-- **Frequency filters now ignore shared-stop and all-day frequencies when the selected period has no full-window service, so false overnight lines stay off the map ([#524](https://github.com/Civic-Minds/Atlas/issues/524)).**
-- **Period filtering now shares one full-window service rule across map data and route cards, so older artifacts cannot reintroduce false frequent service.**
-- **Shared route-data changes now fail closed until every agency artifact is reprocessed, preventing stale JSON from being repackaged into new PMTiles.**
-- **Local archive recovery now validates missing GTFS inputs before they can be used in a full derived-data rebuild.**
-- **PMTiles builds now stream large merged GeoJSON layers instead of failing while serializing them in memory.**
-- **Agencies without route-line data are now explicitly excluded from the PMTiles coverage failure gate until their feed is usable.**
-- **Five approved agencies now use their validated replacement GTFS sources for the production refresh.**
-- **Hudson Link, Loudoun Transit, and Whatcom Transit now serve refreshed production data; SETD and Trinity Metro were already current.**
-- **Expanded route schedule direction controls now match Atlas’s standard filter buttons.**
-- **Large R2 archive jobs now reuse connections instead of creating a new client for every file, preventing History verification from exhausting sockets.**
-- **Export and Share now support Social (1200×630), Standard (1600×900), and High resolution (2400×1350) PNGs, with equal-weight actions and click-outside dismissal.**
-- **Night Service now uses the shared header for its 30-minute and 60-minute filters and search, keeping the panel from duplicating controls.**
-- **Night Service route cards now clear the bottom map controls instead of overlapping attribution and feedback controls.**
-- **Night Service route rows now open the standard route card and highlight the selected route on the map.**
-- **On-demand service areas now respect the selected day and time period, so zones disappear after their published service hours end.**
-- **Frequent Service navigation now returns to the main frequency map when the Atlas logo is clicked.**
-- **Explore Atlas now provides one landing page for About Atlas, Night Service, and Frequent Service.**
-- **Map controls now put About Atlas before Feedback and map attribution.**
-- **History’s agency chooser now matches Atlas’s shared panel spacing and list treatment.**
-- **History agency selection now fits and highlights the complete network instead of zooming to one centre point.**
-- **About Atlas now leads with clear ways to use the map and research views.**
-- **Search fields now clear immediately when the X is pressed.**
-- **Settings now use a cleaner text-first layout, with appearance, map, performance, and filter controls presented consistently.**
-- **The info panel now links directly to Documentation alongside Terms and Privacy.**
-- **Route selection, map dimming, zoom guidance, and overlapping-line treatment now keep selected services easier to follow.**
-- **Search, hidden-route filters, and limited-service filters now keep their state and results clearer while exploring the map.**
-- **Accessibility improvements now strengthen contrast, keyboard focus, reduced motion, settings semantics, colour-vision support, hidden-route counts, and compact privacy controls.**
-- **Security updates now patch vulnerable transitive dependencies and prevent untrusted transit-feed text from being rendered as markup.**
-- **Frequency and period filters now distinguish limited, irregular, one-direction, and span-only service instead of treating every route pattern as equivalent.**
-- **Search and route disambiguation now collapse duplicate rider-facing variants and keep route and stop selection easier to follow.**
-- **Agency browsing now supports combined status and region filters with clearer active states, route counts, and refresh information.**
-- **Route cards and schedule charts now explain uneven, limited, and no-service periods more accurately, with stable sparklines, clearer time-window labels, and responsive map guidance.**
-- **Map loading and wide-area navigation now defer unnecessary data while keeping guidance readable and the interface responsive.**
-- **Mode filters now include aerial tram and gondola services instead of treating them as unclassified routes.**
-- **Rail, ferry, destination, and route labels now use clearer rider-facing names instead of internal identifiers or inconsistent casing.**
-- **Named rail lines no longer expose internal numeric IDs in agency route cards.**
-- **History now limits its agency directory to meaningful archives, distinguishes historical route coverage from the current network, and keeps year comparisons separate from map interaction.**
-- **On-demand service now has dedicated cards, pickup interactions, operating-hour filtering, and map selection behaviour instead of appearing as fixed-route service.**
-- **GTFS-Flex pickup locations now remain individually identifiable while explaining that they belong to booked service rather than fixed routes.**
-- **Frequent Service now separates its interactive map from its research story and explains each filtering step in rider-facing language.**
-- **Beta now offers an optional Data Saver mode that defers background agency details while keeping map exploration available.**
-- **Public, beta, and local builds now keep feature access, agency visibility, data sources, and research navigation aligned with the selected deployment mode.**
-- The map keeps showing routes while data built under the updated frequency rules rolls out, instead of going blank whenever the app and the published data are on different rule versions ([#703](https://github.com/Civic-Minds/Atlas/issues/703)).
+### Added
+
+- With a frequency filter on, a route whose branches each miss it now shows the stretch they share when that stretch passes in both directions, like TTC 29 Dufferin's every-8 trunk; stops there show the combined frequency and the route card adds a "Shared stretch" row, while the route still counts as missing the filter ([#736](https://github.com/Civic-Minds/Atlas/issues/736)).
+- Route data now carries scheduled end-to-end running time per route, direction and day, so the coming running-time chart has real timetable numbers; nothing on the map changes yet.
+- The button to save the map as an image is now on for everyone, in three sizes (social, standard and high resolution).
+- Exported map images now use a clean poster layout that names the place, describes the filter and selected route in plain words, includes a colour key, and carries a source line with whose schedules are shown and when Atlas last updated its data, so planners can cite them.
+- Shared links now keep the agencies, transit modes and filters you picked, without replacing your own saved agency choices.
+- New About and Research pages explain what Atlas shows and lead to its research views, including a Frequent Service story that walks through each filtering step before opening its map.
+- Night Service now has its own 30- and 60-minute filters and search, and its route rows open the standard route card with the route highlighted.
+- On-demand services now have their own cards: hours from the agency's schedule with today in bold, whether the zone is running at the selected time (or that its hours aren't confirmed), how pickup works, and booking details shown separately.
+- Agencies running more than one on-demand service now show each zone under its own service name, and links to a service take the map to its area.
+- Schedule charts now mark individual hours with unusually long gaps, and selected routes explain when service covers only part of the selected time window.
+- Mode filters now include aerial trams and gondolas.
+- On the beta site, compare mode puts two maps side by side with the same frequency filter, each for its own day and time, opened from the Compare button beside History in the top bar.
+- On the beta site, tapping a route or stop on a phone opens its card as a panel at the bottom of the screen, so the map stays visible ([#647](https://github.com/Civic-Minds/Atlas/issues/647)).
+- On the beta site, a "What's new" link in the map's bottom bar shows the app version and a plain-language list of recent changes, with the date the map data was last updated.
+- On the beta site, an optional Data Saver mode defers background agency details while keeping the map usable.
+- Releases now stop for review when an agency's new data looks wrong against what's live, such as another agency's routes under its name, missing rail lines, sharp drops, holiday-skewed frequencies, expired schedules, a lost day type, lost weekday frequencies or big single-route changes; agencies with known bad numbers can be held at their live data ([#671](https://github.com/Civic-Minds/Atlas/issues/671), [#710](https://github.com/Civic-Minds/Atlas/issues/710), [#741](https://github.com/Civic-Minds/Atlas/issues/741)).
+
+### Changed
+
+- Frequency filters now require every direction of a route to meet the threshold, so routes no longer slip through on one busy stretch, and the route list, counts and map always agree.
+- Routes with only a few trips a day now say "limited" on route cards, agency cards, nearby routes and search lists, for All day and each time of day, instead of a frequency they don't really run ([#708](https://github.com/Civic-Minds/Atlas/issues/708)).
+- Frequency and period filters now tell apart limited, irregular, one-direction and span-only service instead of treating every route pattern the same.
+- Routes without service in the selected period are hidden from the map, so route cards no longer contradict it.
+- Weekday stop and time-of-day frequencies now come from one typical weekday, so a route with a different Friday timetable no longer looks about twice as frequent, as CATA's White Loop did ([#710](https://github.com/Civic-Minds/Atlas/issues/710)).
+- Routes that run on only some weekdays now show as limited on weekdays instead of a frequency they reach only on those days, while routes that run every weekday through day-specific patterns or holiday-style exceptions keep their weekday frequency ([#710](https://github.com/Civic-Minds/Atlas/issues/710)).
+- Selecting an on-demand zone fades the rest of the map; zones and pickup points disappear outside their service hours, and services without confirmed hours are drawn faded.
+- Picking a route on the map fades the rest of the network again, matching History, stops and search ([#700](https://github.com/Civic-Minds/Atlas/issues/700)).
+- The map's top bar no longer links to Research or shows a "More" menu; public builds hide research links that aren't available ([#651](https://github.com/Civic-Minds/Atlas/issues/651)).
+- Documentation, legal and other standalone pages share the site header and one Atlas wordmark.
+- Settings use a cleaner text-first layout, and the info panel links to Documentation beside Terms and Privacy.
+- History now shows only agencies with meaningful archives, fits the whole network when you pick an agency, fades unselected routes, offers route-mode filters, and uses the same route names as the main list.
+- Search and route lists now collapse duplicate rider-facing variants, and rail, ferry, destination and route labels use rider-facing names instead of internal IDs.
+- Agency browsing now supports combined status and region filters with route counts and refresh information.
+- Faster return visits: the site's code is cached by browsers until the next update.
+- Map loading and wide-area views defer data that isn't needed yet, keeping the map responsive.
+- Test sessions and local builds no longer count as visitors in Atlas analytics.
+- Accessibility improvements to contrast, keyboard focus, reduced motion, colour-vision support and settings controls.
+
+### Fixed
+
+- Short-turn trips and early-morning or late-night bunches a few minutes apart, like MTA Maryland 22's Cold Spring Metro trips or MBTA 455's first trips to Wonderland, no longer show as their own every-10 or every-20 service beside the route's real frequency, and a stray two-trip pattern no longer drags a route down, as on STL 26; a bunch that is a route's only service at the start or end of its day still shows its own frequency ([#732](https://github.com/Civic-Minds/Atlas/issues/732)).
+- Branches drawn from a few early-morning trips now show their own all-day frequency, like TTC 35A and 35B (every 15) and CapMetro 2 (every 16); where two branches meet at a shared last stop, like TTC 94 at Castle Frank, the headline counts only the branch's own trips.
+- Routes whose feed gives almost every trip, or Friday, its own route shape, like CapMetro's MetroRail and routes 201 and 322, no longer take their weekday frequency from a handful of those trips ([#735](https://github.com/Civic-Minds/Atlas/issues/735), [#737](https://github.com/Civic-Minds/Atlas/issues/737)).
+- Routes with one stray midday train, like Metrolink's Riverside Line, show their hourly frequency again instead of every 210 minutes ([#733](https://github.com/Civic-Minds/Atlas/issues/733)).
+- Feeds with an ended seasonal timetable, like Redwood Coast Transit, RABA and Clallam Transit, no longer count it alongside the regular one, while keeping their weekend service and keeping out-of-date feeds like CARTA and Miami-Dade Transit whole; corridors now use the same schedule date as routes ([#734](https://github.com/Civic-Minds/Atlas/issues/734)).
+- A data build run on a holiday now gives the same results as one the next day, and feeds that list every trip by date, like Metro-North, no longer pick a holiday week as their typical week, which had dropped half its lines ([#742](https://github.com/Civic-Minds/Atlas/issues/742)).
+- Weekday frequencies no longer look about twice as frequent when a holiday like Thanksgiving falls in the measured week, and agencies with a far-future end date no longer lose their newest service period's routes, so SCT shows 24 routes instead of 10 ([#658](https://github.com/Civic-Minds/Atlas/issues/658)).
+- Frequent routes like TTC 506, 63, 84 and 100 show again under weekday "every 20 min"; one rare trip pattern no longer makes a whole route look like it has hours without service ([#658](https://github.com/Civic-Minds/Atlas/issues/658)).
+- Routes in feeds that list each trip as its own frequency window no longer show about twice as many buses as run, and single-trip windows count as one trip, so Winter Park's Gold Line shows three daily trips instead of a bus every 56 minutes ([#702](https://github.com/Civic-Minds/Atlas/issues/702), [#706](https://github.com/Civic-Minds/Atlas/issues/706)).
+- Routes whose feeds describe the same buses twice, as a timetable plus a frequency template, a loop passing a stop twice, or a second bus restarting on top of the first like Clemson's Gold route, no longer show buses several times more often than they run ([#711](https://github.com/Civic-Minds/Atlas/issues/711), [#712](https://github.com/Civic-Minds/Atlas/issues/712)).
+- Routes in feeds that write frequency-based trips as midnight templates, like UGA's campus buses, no longer show fake late-night service ([#721](https://github.com/Civic-Minds/Atlas/issues/721)).
+- Routes in feeds that time a whole vehicle shift as one trip, like Waco's South Terrace, show their daytime service again ([#722](https://github.com/Civic-Minds/Atlas/issues/722)).
+- Routes in feeds that leave the route number blank, like Coast RTA, Clemson CAT, MBTA Commuter Rail and TriMet MAX, are no longer merged with other routes ending at the same stop, so each shows with its own frequencies and busy stops get hub markers ([#717](https://github.com/Civic-Minds/Atlas/issues/717)).
+- A bus leaving exactly when a time period ends, like a 6:00 AM first trip, no longer makes a route look like it runs in the period before.
+- A day whose only trips are the after-midnight end of the previous night now shows as limited, so a Saturday-night bus no longer passes Sunday's filters ([#718](https://github.com/Civic-Minds/Atlas/issues/718)).
+- Overnight filters no longer show routes whose service covers too little of the selected period, on the map or in route cards ([#524](https://github.com/Civic-Minds/Atlas/issues/524)).
+- Stop frequencies, stop lists and frequent/night service flags are kept again; a weekday-service change on Oct 8 had dropped them for every agency processed since ([#614](https://github.com/Civic-Minds/Atlas/issues/614)).
+- Agencies with a separate rail feed, like NFTA, LA Metro, WMATA and SEPTA, keep their rail lines on every processing path ([#106](https://github.com/Civic-Minds/Atlas/issues/106), [#121](https://github.com/Civic-Minds/Atlas/issues/121), [#204](https://github.com/Civic-Minds/Atlas/issues/204)).
+- Processing keeps weekday and weekend service, frequency-based stop headways and full-day rail schedules, and rail-like shapes are no longer treated as streets.
+- Agencies whose schedule runs past their feed's stated end date no longer show as outdated, and an agency whose separate rail feed has run out now shows as outdated even when its bus feed is current ([#630](https://github.com/Civic-Minds/Atlas/issues/630)).
+- Agencies sourced from MobilityDatabase follow its always-current feed link, so new schedules show up on the next refresh instead of after the old one expires ([#627](https://github.com/Civic-Minds/Atlas/issues/627), [#629](https://github.com/Civic-Minds/Atlas/issues/629)).
+- The weekly refresh keeps an agency's live data instead of publishing a sharply smaller feed, and reaches the map release again ([#655](https://github.com/Civic-Minds/Atlas/issues/655)).
+- Reprocessing rebuilds each agency from its newest archived feed and refuses expired, older or sharply smaller results instead of replacing good live data ([#613](https://github.com/Civic-Minds/Atlas/issues/613)).
+- Rebuilding agency data can no longer publish an agency in a country Atlas hasn't launched yet ([#668](https://github.com/Civic-Minds/Atlas/issues/668)).
+- A hidden agency's data can be corrected while it stays hidden, and the map build no longer fails because a hidden agency is missing from the tiles ([#615](https://github.com/Civic-Minds/Atlas/issues/615)).
+- The map and route cards can no longer come from different builds: a data release goes live only when its map and agency data were built together, and map releases stop when any requested agency fails, is stale or hasn't been reprocessed.
+- The map keeps showing routes while data built under updated frequency rules rolls out, instead of going blank ([#703](https://github.com/Civic-Minds/Atlas/issues/703)).
+- Map releases fail less often on large uploads, flaky networks and storage read errors.
+- Route lines draw on the map again after the MapLibre 6 upgrade, and routes with schedules but no map shape stay searchable and zoom to their stops.
+- Map image exports wait until every route has loaded and keep phone screens whole and sharp.
+- On phones, search results use the full width, the search box stays on one line and widens while you type, Settings and About fit small screens, route cards no longer break stop names mid-word, docs pages start with their contents collapsed, and Escape closes the export dialog ([#644](https://github.com/Civic-Minds/Atlas/issues/644), [#645](https://github.com/Civic-Minds/Atlas/issues/645), [#646](https://github.com/Civic-Minds/Atlas/issues/646), [#694](https://github.com/Civic-Minds/Atlas/issues/694), [#695](https://github.com/Civic-Minds/Atlas/issues/695), [#696](https://github.com/Civic-Minds/Atlas/issues/696), [#697](https://github.com/Civic-Minds/Atlas/issues/697), [#698](https://github.com/Civic-Minds/Atlas/issues/698)).
+- Headings across the app no longer appear in all capitals.
+- Search fields clear immediately when the X is pressed.
+- Night Service route cards no longer overlap the bottom map controls.
+- History no longer runs out of connections on large requests.
+- On the beta site, the frequent-service story no longer counts 20 agencies twice, so its totals match the system-map audit.
+- Security: MapLibre GL and vulnerable dependencies are patched, and feed text can no longer be rendered as markup.
 
 ## [3.2.23] - 2026-09-22
 

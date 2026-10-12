@@ -3,6 +3,7 @@ import type { Agency } from '../../App';
 import { COLOR_VISION_HEADWAY_TIERS, HEADWAY_TIERS, getNightServiceColor } from '../colors';
 import {
   buildExportKey,
+  buildExportSourceLine,
   describeDayAndPeriod,
   describeHeadwayFilter,
   describeMapExport,
@@ -138,5 +139,38 @@ describe('describeMapExport', () => {
     expect(slugifyForFilename('Montréal ≤20m · Saturday')).toBe('montreal-20m-saturday');
     const details = describeMapExport(BASE, samples({ stm: 5 }), AGENCIES);
     expect(details.filename).toMatch(/^[a-z0-9-]+\.png$/);
+  });
+});
+
+describe('buildExportSourceLine', () => {
+  const dated: Agency[] = [
+    agency('ttc', 'Toronto Transit Commission', { lastRefreshedAt: '2026-08-07' }),
+    agency('miway', 'MiWay (Mississauga)', { lastRefreshedAt: '2026-09-30' }),
+    agency('brampton', 'Brampton Transit', { lastRefreshedAt: null }),
+  ];
+  const RELEASE = '2026-10-10T04:12:00.000Z';
+
+  it('names one agency and uses the release date, not the agency publish date', () => {
+    expect(buildExportSourceLine(samples({ ttc: 5 }), dated, RELEASE)).toBe('Schedules from Toronto Transit Commission · updated Oct 10, 2026 · transitatlas.fyi');
+  });
+
+  it('counts several agencies', () => {
+    expect(buildExportSourceLine(samples({ ttc: 5, miway: 2, brampton: 1 }), dated, RELEASE)).toBe('Schedules from 3 agencies · updated Oct 10, 2026 · transitatlas.fyi');
+  });
+
+  it('leaves the date out only when there is no release date', () => {
+    expect(buildExportSourceLine(samples({ ttc: 3 }), dated, null)).toBe('Schedules from Toronto Transit Commission · transitatlas.fyi');
+    expect(buildExportSourceLine(samples({ ttc: 3 }), dated, 'not a date')).toBe('Schedules from Toronto Transit Commission · transitatlas.fyi');
+  });
+
+  it('gives no agency count when some drawn routes have no known agency', () => {
+    const mixed = [...samples({ ttc: 2 }), { agencySlug: null, routeKey: 'x', color: '#22863a' }];
+    expect(buildExportSourceLine(mixed, dated, RELEASE)).toBe('Transit schedules · updated Oct 10, 2026 · transitatlas.fyi');
+    expect(buildExportSourceLine(samples({ unlisted: 2 }), dated, RELEASE)).toBe('Transit schedules · updated Oct 10, 2026 · transitatlas.fyi');
+  });
+
+  it('is part of the export description', () => {
+    const details = describeMapExport({ ...BASE, releaseGeneratedAt: RELEASE }, samples({ ttc: 5 }), dated);
+    expect(details.citation).toBe('Schedules from Toronto Transit Commission · updated Oct 10, 2026 · transitatlas.fyi');
   });
 });

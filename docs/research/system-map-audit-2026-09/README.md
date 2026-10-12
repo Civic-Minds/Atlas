@@ -1,9 +1,10 @@
 # System-map audit
 
-Snapshot date: 2026-09. The canonical JSON and Markdown reports remain at the parent research level because application code and audit scripts import those paths directly:
+Snapshot date: 2026-09, duplicates merged 2026-10-11. Start with [INDEX.md](INDEX.md).
 
-- `../system-map-audit-2026-09.json` — structured audit data.
-- `../system-map-audit-2026-09.md` — human-readable report.
-- This folder — downloaded map images and PDFs used as evidence.
+- `data.json`: structured audit data, imported by `src/data/frequentServiceStory.ts`.
+- `REPORT.md`: evidence standard and status definitions.
+- Map PDFs and images: downloaded evidence.
 
-Keep supporting visual evidence in this folder and preserve the existing import paths unless the consuming code is updated in the same change.
+The old copies `system-map-audit-2026-09.json` and `.md` were removed on
+2026-10-11. They duplicated `data.json` and `REPORT.md`.

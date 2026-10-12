@@ -14,15 +14,10 @@ import dotenv from 'dotenv';
 import { S3Client } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 import { unpairedUploadError } from './releaseGuard.js';
+import { requireEnv } from './r2.js';
 
 dotenv.config({ path: '.env.local' });
 dotenv.config();
-
-function requireEnv(key: string): string {
-  const v = process.env[key];
-  if (!v) throw new Error(`Missing env var: ${key}`);
-  return v;
-}
 
 async function main() {
   const unpairedError = unpairedUploadError(process.argv.slice(2), 'upload-pmtiles');

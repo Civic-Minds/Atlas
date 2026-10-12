@@ -14,8 +14,9 @@ outputs remain supporting artifacts rather than competing summaries.
 ## Research programs
 
 - [Frequent-service research](frequent-service-research-2026-09/INDEX.md):
-  agency definitions, the structured catalog, comparisons, and the proposed
-  Atlas criteria.
+  agency definitions, the structured catalog, the proposed Atlas criteria, and
+  `frequent-definitions-by-agency.json`, one row per Atlas agency with
+  machine-checked definition quotes (2026-10-11).
 - [North America Flex and on-demand audit](north-america-flex-and-on-demand-2026-09/INDEX.md):
   public on-demand services and GTFS-Flex publication status.
 - [System-map audit](system-map-audit-2026-09/INDEX.md): verified system-map
@@ -27,6 +28,8 @@ outputs remain supporting artifacts rather than competing summaries.
 - [Fare discounts](fare-discounts-2026-10/README.md): reduced-fare programs,
   focused on low-income fares, for 549 agencies. Verified with exceptions:
   every row checked; 12 rows on bot-protected sites not re-verified (CIV-48).
+- [Free child fares](free-child-fares-2026-10-11/README.md): the age up to
+  which each Atlas agency lets children ride free, classified by policy type.
 
 Product problem research remains in [Product Research](../product/RESEARCH.md),
 while implementation experiments remain in [Experiments](../experiments/).

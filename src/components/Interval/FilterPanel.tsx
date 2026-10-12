@@ -3,7 +3,7 @@ import { Settings, X, ArrowLeft, Search } from 'lucide-react';
 import { CompareSidePicker, SideBadge, type CompareSide } from './CompareControl';
 import { ICON_BTN, DROPDOWN_PANEL, SEARCH_FIELD, SEARCH_PILL, FILTER_OPTION, CONTROL_ACTIVE, CONTROL_INACTIVE, dropdownAnim, TRANSITION_BASE, Z_MODAL_TOP } from '../../styles';
 import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
-import { FILTER_MODES, ON_DEMAND_MODE } from '../../../shared/modes';
+import { AVAILABLE_FILTER_MODES } from '../../utils/shareUrlState';
 import { DAY_TYPES } from '../../../shared/dayTypes';
 import { PERIOD_LABELS } from '../../hooks/useIntervalStats';
 import { ATLAS_MODE, FEATURES, R2_PUBLIC_URL } from '../../../shared/config';
@@ -12,9 +12,6 @@ import { agencyDisplayParts, formatStoredDate } from '../../utils/format';
 import { presentFeedQualityReason, qualityStatusLabel } from '../../../shared/feedQuality';
 import { useColorVision } from '../../context/ColorVisionContext';
 
-const AVAILABLE_FILTER_MODES = ATLAS_MODE === 'public'
-  ? FILTER_MODES
-  : [...FILTER_MODES, { id: ON_DEMAND_MODE, label: 'On-demand' }];
 
 interface FilterPanelProps {
   lightMode: boolean;

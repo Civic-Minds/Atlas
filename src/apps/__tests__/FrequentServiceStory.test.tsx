@@ -49,24 +49,24 @@ describe('FrequentServiceStory', () => {
   });
 
   it('does not mistake unavailable or unnamed maps for numeric definitions', () => {
-    expect(audit.records).toHaveLength(337);
+    expect(audit.records).toHaveLength(317);
     expect(audit.records.filter(record => record.status === 'pending_map_review')).toHaveLength(0);
-    expect(frequentServiceStoryStats.agenciesReviewed).toBe(202);
-    expect(frequentServiceStoryStats.fullAuditAgencies).toBe(337);
+    expect(frequentServiceStoryStats.agenciesReviewed).toBe(184);
+    expect(frequentServiceStoryStats.fullAuditAgencies).toBe(317);
     expect(frequentServiceStoryStats.countryCounts).toEqual([
-      { country: 'Canada', agencies: 82 },
-      { country: 'United States', agencies: 120 },
+      { country: 'Canada', agencies: 74 },
+      { country: 'United States', agencies: 110 },
     ]);
     expect(frequentServiceStoryStats.categoryCounts).toMatchObject({
-      numericDefinition: 50,
+      numericDefinition: 47,
       qualitativeDefinition: 12,
-      noDefinitionFound: 132,
-      mapUnavailable: 8,
+      noDefinitionFound: 120,
+      mapUnavailable: 5,
     });
     expect(frequentServiceStoryStats.headwayBars).toEqual([
       { minutes: 10, agencies: 1 },
       { minutes: 12, agencies: 1 },
-      { minutes: 15, agencies: 30 },
+      { minutes: 15, agencies: 27 },
       { minutes: 20, agencies: 5 },
       { minutes: 30, agencies: 12 },
       { minutes: 60, agencies: 1 },
@@ -81,7 +81,12 @@ describe('FrequentServiceStory', () => {
     const verified = audit.records.filter(record =>
       record.status === 'numeric_definition_on_map' || record.status === 'qualitative_definition_on_map',
     );
-    expect(verified).toHaveLength(100);
-    expect(new Set(verified.map(record => record.canonicalAgencyId)).size).toBe(100);
+    expect(verified).toHaveLength(97);
+    expect(new Set(verified.map(record => record.canonicalAgencyId)).size).toBe(97);
+  });
+
+  it('keeps one audit record per Atlas agency', () => {
+    const atlasSlugs = audit.records.flatMap(record => record.atlasSlugs);
+    expect(new Set(atlasSlugs).size).toBe(atlasSlugs.length);
   });
 });

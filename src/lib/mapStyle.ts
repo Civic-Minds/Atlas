@@ -14,6 +14,11 @@ maplibregl.setWorkerUrl(maplibreWorkerUrl);
 
 let activeRelease: DataRelease | null = null;
 
+/** The verified data release the map is drawing, or null when none loaded (e.g. local dev). */
+export function getActiveDataRelease(): DataRelease | null {
+  return activeRelease;
+}
+
 export function getAtlasPmtilesUrl(): string {
   if (activeRelease) {
     if (typeof window !== 'undefined' && import.meta.env.PROD) {

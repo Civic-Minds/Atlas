@@ -39,6 +39,8 @@ export interface MapExportText {
   key?: MapExportKeyEntry[];
   /** Small heading before the key, e.g. "Base fare". */
   keyTitle?: string;
+  /** Citation line: data source, feed date and site. Wraps between parts, never cut short. */
+  citation?: string | null;
 }
 
 interface MapExportOptions extends MapExportText {
@@ -68,6 +70,7 @@ interface PosterMetrics {
   footerGap: number;
   key: { size: number; row: number; swatch: [number, number]; gap: number; columnGap: number };
   brand: { size: number; row: number };
+  source: { size: number; row: number };
   credit: { size: number; row: number };
   footerPad: number;
   radius: number;
@@ -85,6 +88,7 @@ const LANDSCAPE: PosterMetrics = {
   footerGap: 20,
   key: { size: 15, row: 26, swatch: [26, 6], gap: 8, columnGap: 28 },
   brand: { size: 16, row: 0 },
+  source: { size: 12, row: 20 },
   credit: { size: 11, row: 20 },
   footerPad: 22,
   radius: 12,
@@ -102,6 +106,7 @@ const PORTRAIT: PosterMetrics = {
   footerGap: 18,
   key: { size: 13, row: 22, swatch: [26, 6], gap: 8, columnGap: 24 },
   brand: { size: 13, row: 20 },
+  source: { size: 11.5, row: 19 },
   credit: { size: 10.5, row: 19 },
   footerPad: 26,
   radius: 12,
@@ -114,6 +119,7 @@ const LINE_WEIGHT = 500;
 const ROUTE_WEIGHT = 700;
 const KEY_WEIGHT = 600;
 const BRAND_WEIGHT = 700;
+const SOURCE_WEIGHT = 600;
 const CREDIT_WEIGHT = 500;
 
 type Measure = (text: string, weight: number, px: number) => number;
@@ -196,6 +202,7 @@ interface MapExportPlan {
   headerHeight: number;
   keyRows: { cells: KeyCell[]; y: number }[];
   brand: { text: string; y: number };
+  source: { text: string; y: number }[];
   credit: { text: string; y: number };
   footerHeight: number;
 }
@@ -278,11 +285,20 @@ function planMapExport(text: MapExportText, portrait: boolean, measure: Measure)
     if (keyRows.length === 0) fy += m.key.row;
     brand = { text: brandText, y: m.footerGap + m.key.row / 2 };
   }
+  // Citation sits just above the tile credit, in the same corner.
+  const sourceText = text.citation?.trim();
+  const source = sourceText
+    ? wrapExportLine(value => measure(value, SOURCE_WEIGHT, m.source.size), sourceText, textWidth).map(line => {
+      const placed = { text: line, y: fy + m.source.row / 2 };
+      fy += m.source.row;
+      return placed;
+    })
+    : [];
   const credit = { text: MAP_EXPORT_CREDIT, y: fy + m.credit.row / 2 };
   fy += m.credit.row;
   const footerHeight = fy + m.footerPad;
 
-  return { metrics: m, portrait, eyebrow, title, lines, route, headerHeight, keyRows, brand, credit, footerHeight };
+  return { metrics: m, portrait, eyebrow, title, lines, route, headerHeight, keyRows, brand, source, credit, footerHeight };
 }
 
 export interface MapExportLayout {
@@ -474,6 +490,10 @@ export async function createMapExport({ source, lightMode, size = DEFAULT_MAP_EX
   context.font = font(BRAND_WEIGHT, m.brand.size * s);
   context.textAlign = plan.portrait ? 'left' : 'right';
   context.fillText(plan.brand.text, plan.portrait ? left : right, footerTop + plan.brand.y * s);
+
+  context.fillStyle = colors.muted;
+  context.font = font(SOURCE_WEIGHT, m.source.size * s);
+  for (const line of plan.source) context.fillText(line.text, plan.portrait ? left : right, footerTop + line.y * s);
 
   context.fillStyle = colors.faint;
   context.font = font(CREDIT_WEIGHT, m.credit.size * s);
