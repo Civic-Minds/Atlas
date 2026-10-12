@@ -1,6 +1,8 @@
 {
   "slug": "mexico-city-metro",
   "name": "Sistema de Transporte Colectivo Metro (Mexico City)",
+  "hiddenInProduction": true,
+  "issueUrl": "https://github.com/Civic-Minds/Atlas/issues/757",
   "region": "Ciudad de México",
   "country": "Mexico",
   "center": [19.4271, -99.1419],
