@@ -181,7 +181,8 @@ export function detectReferenceDate(
         const clearReferenceWeek = (ref: string): string => {
             for (let k = 0; k <= 56; k++) {
                 const date = addDaysYmd(ref, k);
-                if (date > bestEndDate) break;
+                // The whole reference week stays inside the period.
+                if (addDaysYmd(date, 3) > bestEndDate) break;
                 if (weekClear(date)) return date;
             }
             return ref;

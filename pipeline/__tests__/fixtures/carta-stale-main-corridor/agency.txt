@@ -1,0 +1,3 @@
+agency_id,agency_url,agency_lang,agency_name,agency_phone,agency_timezone,agency_fare_url,tts_agency_name
+656,http://ridetricountylink.com/,en,TriCounty Link,843-899-4096,America/New_York,http://ridetricountylink.com/tickets.php,
+213,https://www.ridecarta.com/,en,Charleston Area Regional Transportation Authority,843-724-7420,America/New_York,https://www.ridecarta.com/fares-passes/,

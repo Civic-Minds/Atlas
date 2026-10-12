@@ -1947,7 +1947,7 @@ export async function processGtfsBuffer(
   for (const d of dayTypes) {
     const dayCfg = DEFAULT_CRITERIA.dayTypes[d];
     if (!dayCfg) continue;
-    const corrs = calculateCorridors(gtfs, d, dayCfg.timeWindow.start, dayCfg.timeWindow.end);
+    const corrs = calculateCorridors(gtfs, d, dayCfg.timeWindow.start, dayCfg.timeWindow.end, refDate);
     for (const c of corrs) {
       const from = stopsById.get(c.stopA);
       const to = stopsById.get(c.stopB);

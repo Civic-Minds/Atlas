@@ -268,6 +268,19 @@ describe('running-period reference guards (#734 follow-up)', () => {
     expect(calendarReference('carta-stale-main-period')).toBe('20260703');
   });
 
+  it('carta corridors use the same reference as the routes', async () => {
+    // Routes 10 and 11 (1235/1236, main period, weekday trips) and TriCounty Link CS8
+    // (6289), shapes dropped. Corridors re-detected the reference without trips, so the
+    // route-share guard was skipped and they used Sep 15, when neither 10 nor 11 runs:
+    // their shared trunk (764916 -> 764333) lost its corridor.
+    const result = await processGtfsBuffer(await fixtureZip('carta-stale-main-corridor'), undefined, { slug: 'carta' });
+    const trunk = JSON.parse(result.corridorsGeojson).features
+      .map((feature: any) => feature.properties)
+      .filter((p: any) => p.day === 'Weekday' && p.corridorId === '764916->764333');
+    expect(trunk).toHaveLength(1);
+    expect([...trunk[0].routeIds].sort()).toEqual(['1235', '1236']);
+  });
+
   it('miami-dade does not switch to the long period whose midpoint is in 2025', () => {
     // Bus periods (Mar 30 / Apr 27-Jul 19 2026) ended. The newest running period, Nov 13
     // 2023-Dec 31 2026, has its midpoint on Jun 7 2025, before the bus periods start:
