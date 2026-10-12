@@ -116,7 +116,11 @@ describe('Weekday shape maps on a non-representative weekday', () => {
     const weekday = await weekdayFeatures('ttc-35-branches', 'ttc', '35');
     const byKey = Object.fromEntries(weekday.map((p: any) => [`${p.directionId} ${p.headsign}`, [p.headway, p.tier]]));
     expect(byKey['0 Mount Dennis']).toEqual([10, '15']);
-    expect(byKey['0 Mount Dennis via Hullmar']).toEqual([12, '15']);
+    // Via Hullmar is drawn on shape 1122586 (5 trips 05:03-05:44). Hand count, 35B at Mount
+    // Dennis (16598), 77 weekday trips: median gap 15 over 6-22h (16 all day, 17 midday, 12-13
+    // in the 5-7 AM burst). The burst's own 10 and its three-departure terminal mean (12) both
+    // over-claim the branch.
+    expect(byKey['0 Mount Dennis via Hullmar']).toEqual([15, '15']);
     expect(byKey['1 Pioneer Village']).toEqual([17, '20']);
     expect(byKey['1 Pioneer Village via Hullmar']).toEqual([17, '20']);
   });

@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- Branches drawn from a handful of early-morning trips, like TTC 35B via Hullmar and CapMetro 2, now show the branch's own all-day frequency (every 15 and 16) instead of the early trips' 10 and 32.
 - Routes whose feed gives almost every trip its own route shape, like CapMetro's MetroRail, no longer take their weekday frequency from a handful of those trips: MetroRail southbound shows about every 54 minutes instead of 222, and several CapMetro routes and TriMet 96 gain their missing period frequencies ([#737](https://github.com/Civic-Minds/Atlas/issues/737)).
 - CapMetro bus routes and MetroRail whose feed gives Friday its own route shapes no longer show weekday frequencies taken from a few Friday trips (routes 201 and 322 every 10 hours instead of every 30 and 35 minutes, MetroRail northbound every 336 minutes instead of about 34) ([#735](https://github.com/Civic-Minds/Atlas/issues/735)).
 - Redwood Coast Transit Routes 3 and 4 show their real hourly weekday service again instead of every 30 and 4 minutes, because ended seasonal timetables are no longer counted alongside the regular one (also Redding RABA, Clallam Transit and other feeds with an ended summer period) ([#734](https://github.com/Civic-Minds/Atlas/issues/734)).

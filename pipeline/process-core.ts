@@ -1547,8 +1547,24 @@ export async function processGtfsBuffer(
         && terminalMiddayHw == null
         && terminalHw != null
         && isThinAllDayTerminalSample(metricStopMap.get(terminalId!) ?? [], branchTripCount);
+      // That branch value can itself rest on a thin shape that won feature dedupe: ttc 35B
+      // (Mount Dennis via Hullmar) is drawn on shape 1122586, 5 trips 05:03-05:44 whose own
+      // median (10) over-claims a branch that runs about every 15 (6-22h at Mount Dennis, 77
+      // trips). When the branch-scoped terminal sample Step 5 reads (the headsign's departures
+      // at this terminal) has daytime service of its own (midday or PM peak), read the same
+      // all-day window on it instead. Without daytime service the branch value stands, so a
+      // night route's early-morning trips never become its headline (ttc 329 and 334 Sunday
+      // would go from 30 to 20 and 23).
+      const scopedTerminalTimes = thinTerminalSample
+        ? [...(selectTerminalDepartureTimes(shapeMap?.get(terminalId!), headsignMap?.get(terminalId!)) ?? [])].sort((a, b) => a - b)
+        : [];
+      const scopedHasDaytime = (medianHeadwayInWindow(scopedTerminalTimes, 540, 900, 3)
+        ?? medianHeadwayInWindow(scopedTerminalTimes, 900, 1140, 3)) != null;
+      const scopedAllDayHw = scopedHasDaytime
+        ? sustainedMedianHeadwayInWindow(scopedTerminalTimes, 360, 1320, 3)
+        : null;
       const headway = thinTerminalSample
-        ? branchHw
+        ? (scopedAllDayHw ?? branchHw)
         : hasGenuineBranchPattern(terminalComputedHw, nonTerminalStopHws)
         ? resolveTerminalHeadway(terminalComputedHw, branchHw, branchTripCount)
         : terminalComputedHw;
