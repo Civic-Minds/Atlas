@@ -25,6 +25,9 @@ outputs remain supporting artifacts rather than competing summaries.
   population-density and transit-context research.
 - [International expansion](international-expansion-2026-09/INDEX.md):
   source-backed country and feed research for future coverage.
+- [Fare discounts](fare-discounts-2026-10/README.md): reduced-fare programs,
+  focused on low-income fares, for 549 agencies. Verified with exceptions:
+  every row checked; 12 rows on bot-protected sites not re-verified (CIV-48).
 - [Free child fares](free-child-fares-2026-10-11/README.md): the age up to
   which each Atlas agency lets children ride free, classified by policy type.
 

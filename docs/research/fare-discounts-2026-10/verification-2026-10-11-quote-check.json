@@ -1,0 +1,2277 @@
+{
+ "checkedAt": "2026-10-11",
+ "method": "200 unique sourceUrls sampled (seed 20261011, all audit-fix URLs included), fetched with curl (pdftotext for PDFs), evidence compared after whitespace/quote normalization",
+ "rows": [
+  {
+   "batch": "B01",
+   "slug": "gold-coast",
+   "programId": "gold-coast-reduced",
+   "sourceUrl": "https://www.gctd.org/getting-around/tap2ride-is-here/",
+   "http": "200",
+   "verdict": "near-match",
+   "shifted": true,
+   "wordHit": 1.0
+  },
+  {
+   "batch": "B01",
+   "slug": "metrolink",
+   "programId": "metrolink-mobility-4-all",
+   "sourceUrl": "https://metrolinktrains.com/ticketsOverview/new-fares/",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B01",
+   "slug": "metrolink",
+   "programId": "metrolink-senior-disabled",
+   "sourceUrl": "https://metrolinktrains.com/ticketsOverview/discounts/everyday-discounts/",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": true
+  },
+  {
+   "batch": "B01",
+   "slug": "metrolink",
+   "programId": "metrolink-student-youth",
+   "sourceUrl": "https://metrolinktrains.com/ticketsOverview/discounts/everyday-discounts/",
+   "http": "200",
+   "verdict": "near-match",
+   "shifted": true,
+   "wordHit": 1.0
+  },
+  {
+   "batch": "B01",
+   "slug": "metrolink",
+   "programId": "metrolink-veteran",
+   "sourceUrl": "https://metrolinktrains.com/ticketsOverview/discounts/everyday-discounts/",
+   "http": "200",
+   "verdict": "near-match",
+   "shifted": true,
+   "wordHit": 0.89
+  },
+  {
+   "batch": "B01",
+   "slug": "moorpark",
+   "programId": "moorpark-senior",
+   "sourceUrl": "https://www.moorparkca.gov/1254/Fares",
+   "http": "200",
+   "verdict": "near-match",
+   "shifted": true,
+   "wordHit": 1.0
+  },
+  {
+   "batch": "B01",
+   "slug": "pvpta",
+   "programId": "pvpta-senior",
+   "sourceUrl": "https://palosverdes.com/pvtransit/passes.cfm?nomenu=1",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": true
+  },
+  {
+   "batch": "B01",
+   "slug": "glendalebeeline",
+   "programId": "glendale-senior",
+   "sourceUrl": "https://www.glendaleca.gov/home/showpublisheddocument/75290/638544982487570000",
+   "http": "403",
+   "verdict": "fetch-failed",
+   "shifted": false
+  },
+  {
+   "batch": "B01",
+   "slug": "gtrans",
+   "programId": "gtrans-senior",
+   "sourceUrl": "https://ridegtrans.com/fares/",
+   "http": "200",
+   "verdict": "near-match",
+   "shifted": false,
+   "wordHit": 1.0
+  },
+  {
+   "batch": "B01",
+   "slug": "ladot",
+   "programId": "ladot-senior",
+   "sourceUrl": "https://www.ladottransit.com/dash/",
+   "http": "403",
+   "verdict": "fetch-failed",
+   "shifted": false
+  },
+  {
+   "batch": "B01",
+   "slug": "longbeach",
+   "programId": "longbeach-senior",
+   "sourceUrl": "https://ridelbt.com/fares/",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B01",
+   "slug": "norwalktransit",
+   "programId": "norwalk-senior",
+   "sourceUrl": "https://www.norwalk.org/departments_services/norwalk_transit_system_nts/fares_and_schedules.php",
+   "http": "200",
+   "verdict": "near-match",
+   "shifted": false,
+   "wordHit": 1.0
+  },
+  {
+   "batch": "B01",
+   "slug": "pasadenatransit",
+   "programId": "pasadena-senior",
+   "sourceUrl": "https://www.cityofpasadena.net/pasadena-transit/fares/",
+   "http": "200",
+   "verdict": "near-match",
+   "shifted": false,
+   "wordHit": 1.0
+  },
+  {
+   "batch": "B01",
+   "slug": "torrance-transit",
+   "programId": "torrance-senior",
+   "sourceUrl": "https://transit.torranceca.gov/fares?agency_id=1&intent=info",
+   "http": "403",
+   "verdict": "fetch-failed",
+   "shifted": false
+  },
+  {
+   "batch": "B02",
+   "slug": "basin-transit",
+   "programId": "basin-senior-disabled",
+   "sourceUrl": "https://basintransit.ca.gov/fares/",
+   "http": "200",
+   "verdict": "description-not-quote",
+   "shifted": false
+  },
+  {
+   "batch": "B02",
+   "slug": "corona",
+   "programId": "corona-half-fare",
+   "sourceUrl": "https://www.coronaca.gov/government/departments-divisions/public-works/public-transit/corona-cruiser",
+   "http": "200",
+   "verdict": "description-not-quote",
+   "shifted": false
+  },
+  {
+   "batch": "B02",
+   "slug": "mountain-transit-ca",
+   "programId": "mountain-senior-disabled-veteran",
+   "sourceUrl": "https://www.mountaintransit.org/accessibility/",
+   "http": "200",
+   "verdict": "description-not-quote",
+   "shifted": false
+  },
+  {
+   "batch": "B02",
+   "slug": "vvta",
+   "programId": "vvta-reduced-fares",
+   "sourceUrl": "https://vvta.org/fares/",
+   "http": "200",
+   "verdict": "description-not-quote",
+   "shifted": false
+  },
+  {
+   "batch": "B03",
+   "slug": "emerygoround",
+   "programId": "emerygoround-standard",
+   "sourceUrl": "https://emerygoround.com/",
+   "http": "200",
+   "verdict": "description-not-quote",
+   "shifted": false
+  },
+  {
+   "batch": "B03",
+   "slug": "fast-ca",
+   "programId": "fast-ca-standard",
+   "sourceUrl": "https://fasttransit.org/fares-passes/",
+   "http": "200",
+   "verdict": "description-not-quote",
+   "shifted": false
+  },
+  {
+   "batch": "B03",
+   "slug": "lavta",
+   "programId": "lavta-standard",
+   "sourceUrl": "https://www.wheelsbus.com/wp-content/uploads/2026/04/Fares-Policies-Brochure-2026-CIRCA-Production-EN-WEB.pdf",
+   "http": "200",
+   "verdict": "description-not-quote",
+   "shifted": false
+  },
+  {
+   "batch": "B03",
+   "slug": "petaluma",
+   "programId": "petaluma-standard",
+   "sourceUrl": "https://transit.cityofpetaluma.net/fares/",
+   "http": "200",
+   "verdict": "description-not-quote",
+   "shifted": false
+  },
+  {
+   "batch": "B03",
+   "slug": "santa-cruz-metro",
+   "programId": "santa-cruz-metro-standard",
+   "sourceUrl": "https://scmetro.org/rider-info/fares-passes/",
+   "http": "200",
+   "verdict": "description-not-quote",
+   "shifted": false
+  },
+  {
+   "batch": "B03",
+   "slug": "sfmta",
+   "programId": "sfmta-standard",
+   "sourceUrl": "https://www.sfmta.com/getting-around/muni/fares/free-muni",
+   "http": "200",
+   "verdict": "description-not-quote",
+   "shifted": false
+  },
+  {
+   "batch": "B03",
+   "slug": "smart-ca",
+   "programId": "smart-ca-standard",
+   "sourceUrl": "https://main.sonomamarintrain.org/fares",
+   "http": "000",
+   "verdict": "description-not-quote",
+   "shifted": false
+  },
+  {
+   "batch": "B03",
+   "slug": "soltrans",
+   "programId": "soltrans-standard",
+   "sourceUrl": "https://www.soltrans.org/fares/fare-table",
+   "http": "200",
+   "verdict": "description-not-quote",
+   "shifted": false
+  },
+  {
+   "batch": "B03",
+   "slug": "stanford",
+   "programId": "stanford-standard",
+   "sourceUrl": "https://transportation.stanford.edu/getting-stanford/marguerite",
+   "http": "200",
+   "verdict": "description-not-quote",
+   "shifted": false
+  },
+  {
+   "batch": "B03",
+   "slug": "vine",
+   "programId": "vine-standard",
+   "sourceUrl": "https://vinetransit.com/fares/",
+   "http": "200",
+   "verdict": "description-not-quote",
+   "shifted": false
+  },
+  {
+   "batch": "B03",
+   "slug": "lavta",
+   "programId": "lavta-clipper-start",
+   "sourceUrl": "https://www.wheelsbus.com/wp-content/uploads/2026/04/Fares-Policies-Brochure-2026-CIRCA-Production-EN-WEB.pdf",
+   "http": "200",
+   "verdict": "description-not-quote",
+   "shifted": false
+  },
+  {
+   "batch": "B03",
+   "slug": "marintransit",
+   "programId": "marintransit-clipper-start",
+   "sourceUrl": "https://marintransit.gov/clipperstart",
+   "http": "200",
+   "verdict": "description-not-quote",
+   "shifted": false
+  },
+  {
+   "batch": "B03",
+   "slug": "sfmta",
+   "programId": "sfmta-clipper-start",
+   "sourceUrl": "https://www.sfmta.com/getting-around/muni/fares/free-muni",
+   "http": "200",
+   "verdict": "description-not-quote",
+   "shifted": false
+  },
+  {
+   "batch": "B03",
+   "slug": "smart-ca",
+   "programId": "smart-ca-clipper-start",
+   "sourceUrl": "https://main.sonomamarintrain.org/fares",
+   "http": "000",
+   "verdict": "description-not-quote",
+   "shifted": false
+  },
+  {
+   "batch": "B03",
+   "slug": "vine",
+   "programId": "vine-clipper-start",
+   "sourceUrl": "https://vinetransit.com/fares/",
+   "http": "200",
+   "verdict": "description-not-quote",
+   "shifted": false
+  },
+  {
+   "batch": "B04",
+   "slug": "get",
+   "programId": "get-reduced-fare",
+   "sourceUrl": "https://www.getbus.org/fares-and-passes/",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B04",
+   "slug": "kern-transit",
+   "programId": "kern-transit-reduced-fare",
+   "sourceUrl": "https://kerntransit.org/fares/",
+   "http": "403",
+   "verdict": "fetch-failed",
+   "shifted": false
+  },
+  {
+   "batch": "B04",
+   "slug": "modesto",
+   "programId": "stanrta-senior-disabled-fare",
+   "sourceUrl": "https://www.stanrta.org/DocumentCenter/View/2848/Half-Fare-Discount-Applicationpdf",
+   "http": "200",
+   "verdict": "not-on-page",
+   "shifted": false,
+   "wordHit": 0.25
+  },
+  {
+   "batch": "B04",
+   "slug": "mst",
+   "programId": "mst-discount-fare",
+   "sourceUrl": "https://mst.org/fares/",
+   "http": "200",
+   "verdict": "near-match",
+   "shifted": false,
+   "wordHit": 1.0
+  },
+  {
+   "batch": "B04",
+   "slug": "rct",
+   "programId": "rcta-free-rides",
+   "sourceUrl": "https://redwoodcoasttransit.org/fares/",
+   "http": "200",
+   "verdict": "near-match",
+   "shifted": false,
+   "wordHit": 1.0
+  },
+  {
+   "batch": "B04",
+   "slug": "sjrtd",
+   "programId": "san-joaquin-rtd-discount-fare",
+   "sourceUrl": "https://sanjoaquinrtd.com/fares/",
+   "http": "200",
+   "verdict": "near-match",
+   "shifted": false,
+   "wordHit": 1.0
+  },
+  {
+   "batch": "B04",
+   "slug": "unitrans",
+   "programId": "unitrans-access-pass",
+   "sourceUrl": "https://unitrans.ucdavis.edu/passes",
+   "http": "403",
+   "verdict": "fetch-failed",
+   "shifted": false
+  },
+  {
+   "batch": "B04",
+   "slug": "yolobus",
+   "programId": "yolobus-reduced-fare",
+   "sourceUrl": "https://yolobus.com/fares/",
+   "http": "200",
+   "verdict": "not-on-page",
+   "shifted": false,
+   "wordHit": 0.75
+  },
+  {
+   "batch": "B05",
+   "slug": "ben-franklin",
+   "programId": "bft-reduced-fare",
+   "sourceUrl": "https://www.bft.org/bus-service/fares/",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B05",
+   "slug": "clallamtransit",
+   "programId": "rrfp",
+   "sourceUrl": "https://www.clallamtransit.com/fares",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B05",
+   "slug": "intercitytransit",
+   "programId": "intercity-zero-fare",
+   "sourceUrl": "https://www.intercitytransit.com/plan-your-trip/zero-fare",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B05",
+   "slug": "islandtransit",
+   "programId": "island-transit-zero-fare",
+   "sourceUrl": "https://www.islandtransit.org/Specialized-Paratransit-Services-Policy",
+   "http": "200",
+   "verdict": "not-on-page",
+   "shifted": false,
+   "wordHit": 0.56
+  },
+  {
+   "batch": "B05",
+   "slug": "kingcountymetro",
+   "programId": "orca-lift",
+   "sourceUrl": "https://kingcounty.gov/en/dept/metro/fares-and-payment/discounted-fares/orca-lift",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B05",
+   "slug": "pierce-county-ferries",
+   "programId": "pierce-county-ferries-regional-reduced-fare",
+   "sourceUrl": "https://wsdot.wa.gov/travel/washington-state-ferries/tickets/ticket-information",
+   "http": "200",
+   "verdict": "not-on-page",
+   "shifted": false,
+   "wordHit": 0.5
+  },
+  {
+   "batch": "B05",
+   "slug": "rivercities",
+   "programId": "rivercities-reduced-fare",
+   "sourceUrl": "https://rctransit.org/passes/fixed-route-fares-and-passes/",
+   "http": "200",
+   "verdict": "near-match",
+   "shifted": false,
+   "wordHit": 1.0
+  },
+  {
+   "batch": "B05",
+   "slug": "seattle-streetcar",
+   "programId": "orca-lift",
+   "sourceUrl": "https://www.adc.seattle.gov/transportation/getting-around/transit/streetcar/fares-and-orca-card",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B05",
+   "slug": "skagittransit",
+   "programId": "skagit-reduced-fare-permit",
+   "sourceUrl": "https://www.skagittransit.org/rider-info/fares/reduced-fares/",
+   "http": "200",
+   "verdict": "near-match",
+   "shifted": false,
+   "wordHit": 0.81
+  },
+  {
+   "batch": "B05",
+   "slug": "wsf",
+   "programId": "wsf-senior-disability-youth-fares",
+   "sourceUrl": "https://wsdot.wa.gov/travel/washington-state-ferries/tickets/ticket-information",
+   "http": "200",
+   "verdict": "not-on-page",
+   "shifted": false,
+   "wordHit": 0.75
+  },
+  {
+   "batch": "B05",
+   "slug": "everetttransit",
+   "programId": "rrfp",
+   "sourceUrl": "https://www.everetttransit.org/166/Regional-Reduced-Fare-Permit",
+   "http": "200",
+   "verdict": "near-match",
+   "shifted": false,
+   "wordHit": 0.89
+  },
+  {
+   "batch": "B05",
+   "slug": "seattle-streetcar",
+   "programId": "rrfp",
+   "sourceUrl": "https://www.adc.seattle.gov/transportation/getting-around/transit/streetcar/fares-and-orca-card",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B06",
+   "slug": "kaua-i-county",
+   "programId": "kauai-bus-discounted-fares",
+   "sourceUrl": "https://www.kauai.gov/Government/Departments-Agencies/Transportation/Bus-Fares",
+   "http": "403",
+   "verdict": "fetch-failed",
+   "shifted": false
+  },
+  {
+   "batch": "B06",
+   "slug": "thebus",
+   "programId": "thebus-low-income-card",
+   "sourceUrl": "https://thebus.org/Fare/FareAndPasses.asp",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B06",
+   "slug": "rtcsnv",
+   "programId": "rtcsnv-reduced",
+   "sourceUrl": "https://www.rtcsnv.com/ways-to-travel/fares-passes/reduced-fare/",
+   "http": "403",
+   "verdict": "fetch-failed",
+   "shifted": false
+  },
+  {
+   "batch": "B06",
+   "slug": "rtcwashoe",
+   "programId": "rtc-washoe-reduced-fare",
+   "sourceUrl": "https://rtcwashoe.com/fares-passes/",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B06",
+   "slug": "cat-or",
+   "programId": "canby-cat-fare-assistance",
+   "sourceUrl": "https://www.canbyoregon.gov/area-transit/page/fares-and-passes",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B06",
+   "slug": "cherriots",
+   "programId": "cherriots-reduced-fare",
+   "sourceUrl": "https://www.cherriots.org/fares/",
+   "http": "200",
+   "verdict": "near-match",
+   "shifted": false,
+   "wordHit": 1.0
+  },
+  {
+   "batch": "B06",
+   "slug": "corvallis",
+   "programId": "corvallis-fare-free",
+   "sourceUrl": "https://www.corvallisoregon.gov/cts/page/cts-fundingfares",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B06",
+   "slug": "eugene-ltd",
+   "programId": "ltd-half-fare",
+   "sourceUrl": "https://www.ltd.org/fares-passes/",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B06",
+   "slug": "setd",
+   "programId": "setd-reduced-fare",
+   "sourceUrl": "https://nwconnector.org/passes-setd/",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B06",
+   "slug": "trimet",
+   "programId": "trimet-honored-citizen",
+   "sourceUrl": "https://trimet.org/income/",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B06",
+   "slug": "yamhill",
+   "programId": "yamhill-fareless-current",
+   "sourceUrl": "https://ycbus.org/",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B07",
+   "slug": "all-points-transit",
+   "programId": "all-points-discounted-fares",
+   "sourceUrl": "https://www.allpointstransit.com/montrose-public-bus/",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B07",
+   "slug": "durango-transit",
+   "programId": "durango-low-income-pass",
+   "sourceUrl": "https://www.durangoco.gov/347/Rates",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B07",
+   "slug": "greeley",
+   "programId": "greeley-senior-disability",
+   "sourceUrl": "https://greeleyco.gov/transit/service-offerings/fares-and-passes/",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B07",
+   "slug": "mountain-village",
+   "programId": "mountain-village-fare-free",
+   "sourceUrl": "https://townofmountainvillage.com/explore/getting-around/bus-dial-a-ride/",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B07",
+   "slug": "pueblo-transit",
+   "programId": "pueblo-senior-disabled",
+   "sourceUrl": "https://www.pueblo.us/490/Bus-Fares",
+   "http": "200",
+   "verdict": "not-on-page",
+   "shifted": false,
+   "wordHit": 0.71
+  },
+  {
+   "batch": "B07",
+   "slug": "rfta",
+   "programId": "rfta-senior-free",
+   "sourceUrl": "https://www.rfta.com/fares/fares-passes/seniors/",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B07",
+   "slug": "smart-telluride",
+   "programId": "smart-fare-free-seasonal",
+   "sourceUrl": "https://smarttelluride.colorado.gov/sites/smarttelluride/files/documents/SMART%20Board%20meeting%20packet_November%2014th%202024.pdf",
+   "http": "404",
+   "verdict": "fetch-failed",
+   "shifted": false
+  },
+  {
+   "batch": "B07",
+   "slug": "snowmass-village",
+   "programId": "snowmass-fare-free",
+   "sourceUrl": "https://snowmasstransit.com/134/Rider-Guide",
+   "http": "200",
+   "verdict": "near-match",
+   "shifted": false,
+   "wordHit": 0.86
+  },
+  {
+   "batch": "B07",
+   "slug": "telluride",
+   "programId": "telluride-galloping-goose-free",
+   "sourceUrl": "https://www.telluride.gov/255/Public-Transit",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B07",
+   "slug": "transfort",
+   "programId": "transfort-fare-free",
+   "sourceUrl": "https://ridetransfort.com/",
+   "http": "200",
+   "verdict": "not-on-page",
+   "shifted": false,
+   "wordHit": 0.45
+  },
+  {
+   "batch": "B07",
+   "slug": "vail-transit",
+   "programId": "vail-fare-free",
+   "sourceUrl": "https://www.vail.gov/government/departments/transportation-services/bus-information",
+   "http": "403",
+   "verdict": "fetch-failed",
+   "shifted": false
+  },
+  {
+   "batch": "B07",
+   "slug": "billings",
+   "programId": "billings-senior",
+   "sourceUrl": "http://www.mettransit.com",
+   "http": "200",
+   "verdict": "not-on-page",
+   "shifted": false,
+   "wordHit": 0.17
+  },
+  {
+   "batch": "B07",
+   "slug": "streamline",
+   "programId": "streamline-zero-fare",
+   "sourceUrl": "https://streamlinebus.com/",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B07",
+   "slug": "st-george",
+   "programId": "suntran-reduced",
+   "sourceUrl": "https://www.sgcity.org/suntran",
+   "http": "200",
+   "verdict": "not-on-page",
+   "shifted": false,
+   "wordHit": 0.57
+  },
+  {
+   "batch": "B07",
+   "slug": "casper",
+   "programId": "casper-reduced",
+   "sourceUrl": "https://www.cityofcasperwy.com/residents/roads_and_parking/metropolitan_planning_organization/casper_area_transit_/",
+   "http": "404",
+   "verdict": "fetch-failed",
+   "shifted": false
+  },
+  {
+   "batch": "B07",
+   "slug": "cheyenne",
+   "programId": "cheyenne-fare-free",
+   "sourceUrl": "https://cheyennecity.org/Transit",
+   "http": "403",
+   "verdict": "fetch-failed",
+   "shifted": false
+  },
+  {
+   "batch": "B07",
+   "slug": "durango-transit",
+   "programId": "durango-senior-disabled",
+   "sourceUrl": "https://www.durangoco.gov/347/Rates",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B07",
+   "slug": "durango-transit",
+   "programId": "durango-student-fares",
+   "sourceUrl": "https://www.durangoco.gov/347/Rates",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B07",
+   "slug": "durango-transit",
+   "programId": "durango-veteran-pass",
+   "sourceUrl": "https://www.durangoco.gov/347/Rates",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B07",
+   "slug": "pueblo-transit",
+   "programId": "pueblo-student-fare",
+   "sourceUrl": "https://www.pueblo.us/490/Bus-Fares",
+   "http": "200",
+   "verdict": "not-on-page",
+   "shifted": false,
+   "wordHit": 0.71
+  },
+  {
+   "batch": "B07",
+   "slug": "all-points-transit",
+   "programId": "all-points-children-free",
+   "sourceUrl": "https://www.allpointstransit.com/montrose-public-bus/",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B07",
+   "slug": "greeley",
+   "programId": "greeley-youth-free",
+   "sourceUrl": "https://greeleyco.gov/transit/service-offerings/fares-and-passes/",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B08",
+   "slug": "mountainline",
+   "programId": "flagstaff-mountain-line-reduced-fare",
+   "sourceUrl": "https://mountainline.az.gov/fares-passes-online/",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B08",
+   "slug": "amarillo",
+   "programId": "amarillo-reduced-fare",
+   "sourceUrl": "https://www.amarillo.gov/amarillo-city-transit/reduced-fare/",
+   "http": "403",
+   "verdict": "fetch-failed",
+   "shifted": false
+  },
+  {
+   "batch": "B08",
+   "slug": "b-line",
+   "programId": "b-line-fixed-route-reduced-fare",
+   "sourceUrl": "https://www.ccrta.org/special/fare-changes",
+   "http": "429",
+   "verdict": "fetch-failed",
+   "shifted": false
+  },
+  {
+   "batch": "B08",
+   "slug": "brownsville",
+   "programId": "brownsville-metro-reduced-fares",
+   "sourceUrl": "https://www.brownsvilletx.gov/610/Paying-Your-Fare",
+   "http": "403",
+   "verdict": "fetch-failed",
+   "shifted": false
+  },
+  {
+   "batch": "B08",
+   "slug": "ez-rider",
+   "programId": "ez-rider-reduced-fares",
+   "sourceUrl": "https://www.ez-rider.org/fares",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B08",
+   "slug": "laredo",
+   "programId": "el-metro-reduced-fares",
+   "sourceUrl": "https://elmetrotransit.com/wp-content/uploads/2016/04/3_Laredo-Map-Guide_170125-proof-3.pdf",
+   "http": "200",
+   "verdict": "near-match",
+   "shifted": false,
+   "wordHit": 1.0
+  },
+  {
+   "batch": "B08",
+   "slug": "mcallen",
+   "programId": "metro-mcallen-reduced-fare",
+   "sourceUrl": "https://www.mcallen.net/metro/",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B08",
+   "slug": "metrohouston",
+   "programId": "metrohouston-discount-fare",
+   "sourceUrl": "https://www.ridemetro.org/fares/all-about-fares",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B08",
+   "slug": "san-angelo",
+   "programId": "concho-valley-reduced-fares",
+   "sourceUrl": "https://cvtd.org/wp-content/uploads/2024/05/Service-Guidebook.pdf",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B08",
+   "slug": "sun-metro",
+   "programId": "sun-metro-reduced-fares",
+   "sourceUrl": "https://sunmetro.net/fares/fares-and-passes",
+   "http": "200",
+   "verdict": "near-match",
+   "shifted": false,
+   "wordHit": 1.0
+  },
+  {
+   "batch": "B08",
+   "slug": "via",
+   "programId": "via-reduced-fares",
+   "sourceUrl": "https://www.viainfo.net/rates/",
+   "http": "200",
+   "verdict": "near-match",
+   "shifted": false,
+   "wordHit": 0.86
+  },
+  {
+   "batch": "B08",
+   "slug": "mountainline",
+   "programId": "flagstaff-mountain-line-student",
+   "sourceUrl": "https://mountainline.az.gov/fares-passes-online/",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B08",
+   "slug": "roswell",
+   "programId": "roswell-veterans-ride-free",
+   "sourceUrl": "https://www.roswell-nm.gov/301/Fare-Information",
+   "http": "200",
+   "verdict": "not-on-page",
+   "shifted": false,
+   "wordHit": 0.67
+  },
+  {
+   "batch": "B08",
+   "slug": "via",
+   "programId": "via-fare-assistance-program",
+   "sourceUrl": "https://www.viainfo.net/rates/",
+   "http": "200",
+   "verdict": "near-match",
+   "shifted": false,
+   "wordHit": 0.86
+  },
+  {
+   "batch": "B09",
+   "slug": "cambus",
+   "programId": "cambus-fare-free",
+   "sourceUrl": "https://transportation.uiowa.edu/cambus/cambus-rider-guidefaq",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B09",
+   "slug": "des-moines",
+   "programId": "dart-half-fare",
+   "sourceUrl": "https://www.ridedart.com/sites/default/files/commission/DART%20Commission%20Packet%20-%20March%203%2C%202026.pdf",
+   "http": "404",
+   "verdict": "fetch-failed",
+   "shifted": false
+  },
+  {
+   "batch": "B09",
+   "slug": "sioux-city",
+   "programId": "sioux-city-senior-disability-fare",
+   "sourceUrl": "https://www.sioux-city.org/m/faq?cat=25",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B09",
+   "slug": "wichita",
+   "programId": "wichita-half-fare",
+   "sourceUrl": "https://www.wichita.gov/1504/Fares-Passes/",
+   "http": "403",
+   "verdict": "fetch-failed",
+   "shifted": false
+  },
+  {
+   "batch": "B09",
+   "slug": "jefftran",
+   "programId": "jefftran-reduced-fare",
+   "sourceUrl": "https://cms4files.revize.com/jeffersoncitymo/8.5x11Guide_Black%2010.2023.pdf",
+   "http": "200",
+   "verdict": "near-match",
+   "shifted": false,
+   "wordHit": 1.0
+  },
+  {
+   "batch": "B09",
+   "slug": "bis-man",
+   "programId": "bis-man-reduced-fare",
+   "sourceUrl": "https://bismantransit.com/files/2024/11/2024.11.21_Board_Packet_v2_web.pdf",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B09",
+   "slug": "tulsa-transit",
+   "programId": "tulsa-transit-reduced-fare",
+   "sourceUrl": "https://www.metrolinkok.org/fares/",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B09",
+   "slug": "sioux-falls",
+   "programId": "sam-elderly-disabled-reduced-fare",
+   "sourceUrl": "https://siouxareametro.info/fares",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B10",
+   "slug": "cta",
+   "programId": "rta-reduced-fare-permit",
+   "sourceUrl": "https://www.transitchicago.com/reduced-fare-programs/",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B10",
+   "slug": "decatur",
+   "programId": "decatur-disability-senior-fare",
+   "sourceUrl": "https://www.decaturil.gov/253/Information",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B10",
+   "slug": "dekalb",
+   "programId": "dekalb-senior-disabled",
+   "sourceUrl": "https://www.cityofdekalb.com/1288/Fares",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B10",
+   "slug": "metra",
+   "programId": "nita-access",
+   "sourceUrl": "https://assets.metra.com/s3fs-public/inline-files/Metra_Fares_and_Policies_02-01-2024_0.pdf",
+   "http": "200",
+   "verdict": "near-match",
+   "shifted": false,
+   "wordHit": 1.0
+  },
+  {
+   "batch": "B10",
+   "slug": "pace-bus",
+   "programId": "nita-access",
+   "sourceUrl": "https://www.pacebus.com/reduced-and-ride-free-fares",
+   "http": "200",
+   "verdict": "not-on-page",
+   "shifted": false,
+   "wordHit": 0.65
+  },
+  {
+   "batch": "B10",
+   "slug": "springfield-il",
+   "programId": "smtd-reduced-fare",
+   "sourceUrl": "https://www.smtd.org/rider-guide/passes-and-fares/",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B10",
+   "slug": "bloomington",
+   "programId": "bloomington-transit-reduced-fare",
+   "sourceUrl": "https://bloomingtontransit.com/how-to-ride/",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B10",
+   "slug": "green-bay",
+   "programId": "green-bay-metro-reduced-fare",
+   "sourceUrl": "https://www.greenbaywi.gov/275/Fares",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B10",
+   "slug": "mcts",
+   "programId": "mcts-reduced-fare",
+   "sourceUrl": "https://www.ridemcts.com/fares/reduced-fare",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B10",
+   "slug": "racine",
+   "programId": "belle-urban-reduced-fare",
+   "sourceUrl": "https://www.racinetransit.com/faq.html",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B10",
+   "slug": "rock-county",
+   "programId": "beloit-transit-reduced-fare",
+   "sourceUrl": "https://www.beloitwi.gov/index.asp?DE=CEAC7932-B648-4FCA-8D61-5F7C7CB78702&SEC=725CA980-D88D-45BC-AC9C-3A73AF0BF563",
+   "http": "200",
+   "verdict": "near-match",
+   "shifted": false,
+   "wordHit": 0.88
+  },
+  {
+   "batch": "B10",
+   "slug": "waukesha-metro",
+   "programId": "waukesha-metro-reduced-fare",
+   "sourceUrl": "https://webfile.waukesha-wi.gov/waukeshawi25/Document_Center/Government/Transit/Routes/2026/011226/Route_6_print.pdf?t=202512021227170",
+   "http": "404",
+   "verdict": "fetch-failed",
+   "shifted": false
+  },
+  {
+   "batch": "B11",
+   "slug": "tarc",
+   "programId": "tarc-reduced",
+   "sourceUrl": "https://www.ridetarc.org/fare/fare-structure/",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B11",
+   "slug": "detroit-people-mover",
+   "programId": "detroit-people-mover-fare-free",
+   "sourceUrl": "https://www.thepeoplemover.com/",
+   "http": "200",
+   "verdict": "near-match",
+   "shifted": false,
+   "wordHit": 1.0
+  },
+  {
+   "batch": "B11",
+   "slug": "qline",
+   "programId": "qline-fare-free",
+   "sourceUrl": "https://www.qlinedetroit.com/faq/",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B11",
+   "slug": "dayton",
+   "programId": "dayton-reduced",
+   "sourceUrl": "https://www.iriderta.org/pay/reduced-fare-program",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B11",
+   "slug": "laketran",
+   "programId": "laketran-reduced",
+   "sourceUrl": "https://laketran.com/fare-information/reduced-fare-programs/",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B11",
+   "slug": "richland-county-oh",
+   "programId": "rct-reduced",
+   "sourceUrl": "https://rctbuses.com/bus-schedules-fares/",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B11",
+   "slug": "tarta",
+   "programId": "tarta-reduced",
+   "sourceUrl": "https://tarta.com/ride-tarta/how-to-ride/fares-passes/reduced-fare-application-process/",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B11",
+   "slug": "youngstown-wrta",
+   "programId": "wrta-fare-free",
+   "sourceUrl": "https://www.wrtaonline.com/fares-and-passes/",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B12",
+   "slug": "huntsville",
+   "programId": "orbit-reduced",
+   "sourceUrl": "https://www.huntsvilleal.gov/residents/streets/public-transportation/orbit/",
+   "http": "200",
+   "verdict": "near-match",
+   "shifted": false,
+   "wordHit": 1.0
+  },
+  {
+   "batch": "B12",
+   "slug": "wave-mobile",
+   "programId": "wave-reduced",
+   "sourceUrl": "https://thewavetransit.com/183/Fares-Passes",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B12",
+   "slug": "lake-charles",
+   "programId": "lake-charles-reduced",
+   "sourceUrl": "https://www.cityoflakecharles.com/236/Transit",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B12",
+   "slug": "sportran",
+   "programId": "sportran-zero-fare",
+   "sourceUrl": "https://sportran.org/8/Fares-Passes",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B12",
+   "slug": "tangipahoa-parish",
+   "programId": "tangipahoa-senior",
+   "sourceUrl": "https://www.tangicoa.com/transportations",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B12",
+   "slug": "hub-city-transit",
+   "programId": "hub-city-senior",
+   "sourceUrl": "https://www.hattiesburgms.com/hct/",
+   "http": "200",
+   "verdict": "near-match",
+   "shifted": false,
+   "wordHit": 1.0
+  },
+  {
+   "batch": "B12",
+   "slug": "carta-chattanooga",
+   "programId": "carta-senior",
+   "sourceUrl": "https://www.gocarta.org/fares/",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B12",
+   "slug": "washington-county",
+   "programId": "jct-half-fare",
+   "sourceUrl": "https://www.johnsoncitytransit.org/fares.html",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B13",
+   "slug": "broward-transit",
+   "programId": "broward-reduced",
+   "sourceUrl": "https://www.broward.org/BCT/Fares",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B13",
+   "slug": "collier",
+   "programId": "collier-reduced",
+   "sourceUrl": "https://www.ridecat.com/fares-passes/fare-information/",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B13",
+   "slug": "ecat",
+   "programId": "ecat-reduced",
+   "sourceUrl": "https://goecat.com/fares-ids/",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B13",
+   "slug": "jta",
+   "programId": "jta-reduced",
+   "sourceUrl": "https://www.jtafla.com/rider-guide/fares-passes/",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B13",
+   "slug": "starmetro",
+   "programId": "starmetro-reduced-fare",
+   "sourceUrl": "https://identity.talgov.com/starmetro/starmetro-fares",
+   "http": "200",
+   "verdict": "near-match",
+   "shifted": false,
+   "wordHit": 1.0
+  },
+  {
+   "batch": "B13",
+   "slug": "sunrail",
+   "programId": "sunrail-discount",
+   "sourceUrl": "https://sunrail.com/help-center/support/fares-passes/what-discounts-are-available-and-how-do-i-qualify/",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B13",
+   "slug": "tampa-international-airport",
+   "programId": "tpa-skyconnect-free",
+   "sourceUrl": "https://www.tampaairport.com/about-us/airport-faq",
+   "http": "403",
+   "verdict": "fetch-failed",
+   "shifted": false
+  },
+  {
+   "batch": "B13",
+   "slug": "albany-ga",
+   "programId": "albany-reduced",
+   "sourceUrl": "https://www.albanyga.gov/City-Departments/Albany-Transit",
+   "http": "403",
+   "verdict": "fetch-failed",
+   "shifted": false
+  },
+  {
+   "batch": "B13",
+   "slug": "athens-acc",
+   "programId": "acc-transit-fare-free",
+   "sourceUrl": "https://athensclarkecounty.org/1770/Fare-free-Transit",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B13",
+   "slug": "marta",
+   "programId": "marta-transportation-assistance",
+   "sourceUrl": "https://dev.itsmarta.com/tsp_home.aspx",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B13",
+   "slug": "leetran",
+   "programId": "leetran-reduced-fare",
+   "sourceUrl": "https://www.leegov.com/leetran/fares-passes",
+   "http": "200",
+   "verdict": "not-on-page",
+   "shifted": false,
+   "wordHit": 0.75
+  },
+  {
+   "batch": "B13",
+   "slug": "starmetro",
+   "programId": "starmetro-human-service-agency-passes",
+   "sourceUrl": "https://identity.talgov.com/starmetro/starmetro-fares",
+   "http": "200",
+   "verdict": "near-match",
+   "shifted": false,
+   "wordHit": 1.0
+  },
+  {
+   "batch": "B13",
+   "slug": "marta",
+   "programId": "marta-reduced-fare",
+   "sourceUrl": "https://itsmarta.com/reduced-fare-program.aspx",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B14",
+   "slug": "chapel-hill-transit",
+   "programId": "chapel-hill-fare-free",
+   "sourceUrl": "https://www.chapelhillnc.gov/Transportation-and-Parking/Bus-Routes-and-Schedules",
+   "http": "403",
+   "verdict": "fetch-failed",
+   "shifted": false
+  },
+  {
+   "batch": "B14",
+   "slug": "gotriangle",
+   "programId": "gotriangle-tap",
+   "sourceUrl": "https://gotriangle.org/transit-assistance-pass/",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B14",
+   "slug": "greenway",
+   "programId": "greenway-reduced-fare",
+   "sourceUrl": "https://www.mygreenway.org/bus-fares",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B14",
+   "slug": "jacksonville-nc",
+   "programId": "jacksonville-transit-reduced-fare",
+   "sourceUrl": "https://www.jacksonvillenc.gov/903/Rider-Info",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B14",
+   "slug": "ncsu-wolfline",
+   "programId": "wolfline-fare-free",
+   "sourceUrl": "https://transportation.ncsu.edu/wolfline/",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B14",
+   "slug": "coast-rta",
+   "programId": "coast-rta-reduced-fare",
+   "sourceUrl": "https://coastrta.com/how-to-ride/",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B15",
+   "slug": "pgc-the-bus",
+   "programId": "thebus-fare-free",
+   "sourceUrl": "https://www.princegeorgescountymd.gov/departments-offices/public-works-transportation/metro-and-transportation/gopgc/fares-rules",
+   "http": "403",
+   "verdict": "fetch-failed",
+   "shifted": false
+  },
+  {
+   "batch": "B15",
+   "slug": "albemarle-county",
+   "programId": "cat-fare-free",
+   "sourceUrl": "https://charlottesville.gov/470/Transit",
+   "http": "200",
+   "verdict": "not-on-page",
+   "shifted": false,
+   "wordHit": 0.29
+  },
+  {
+   "batch": "B15",
+   "slug": "cue-bus",
+   "programId": "cue-fare-free",
+   "sourceUrl": "https://www.fairfaxva.gov/Services/CUE-Bus",
+   "http": "403",
+   "verdict": "fetch-failed",
+   "shifted": false
+  },
+  {
+   "batch": "B15",
+   "slug": "dash",
+   "programId": "dash-fare-free",
+   "sourceUrl": "https://www.dashbus.com/free/",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B16",
+   "slug": "camtran",
+   "programId": "camtran-reduced",
+   "sourceUrl": "https://www.camtranbus.com/fares/camtran-fares/",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B16",
+   "slug": "cata-state-college",
+   "programId": "cata-reduced",
+   "sourceUrl": "https://catabus.com/services-schedules/catabus/fares/",
+   "http": "200",
+   "verdict": "near-match",
+   "shifted": false,
+   "wordHit": 1.0
+  },
+  {
+   "batch": "B16",
+   "slug": "port-authority-pa",
+   "programId": "alleghenygo",
+   "sourceUrl": "https://www.rideprt.org/fares-and-payment/reduced-fare-programs/alleghenygo/",
+   "http": "200",
+   "verdict": "near-match",
+   "shifted": false,
+   "wordHit": 1.0
+  },
+  {
+   "batch": "B16",
+   "slug": "septa",
+   "programId": "septa-reduced",
+   "sourceUrl": "https://wwww.septa.org/fares/reduced-fare-program/",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B16",
+   "slug": "ata",
+   "programId": "ata-matp",
+   "sourceUrl": "https://www.rideata.com/programs-policies-guidelines",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B16",
+   "slug": "cat-harrisburg",
+   "programId": "rabbit-reduced",
+   "sourceUrl": "https://www.rabbittransit.org/services/special-fares-discounts/",
+   "http": "200",
+   "verdict": "near-match",
+   "shifted": false,
+   "wordHit": 1.0
+  },
+  {
+   "batch": "B16",
+   "slug": "emta",
+   "programId": "emta-disability",
+   "sourceUrl": "https://ride-the-e.com/fixed-route/",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B16",
+   "slug": "indigo",
+   "programId": "indigo-reduced",
+   "sourceUrl": "https://www.indigobus.com/fares",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B16",
+   "slug": "new-castle",
+   "programId": "ncta-senior",
+   "sourceUrl": "https://newcastletransit.org/fares/",
+   "http": "200",
+   "verdict": "near-match",
+   "shifted": false,
+   "wordHit": 1.0
+  },
+  {
+   "batch": "B16",
+   "slug": "westmoreland",
+   "programId": "westmoreland-disability",
+   "sourceUrl": "https://www.westmorelandtransit.com/fares/",
+   "http": "200",
+   "verdict": "near-match",
+   "shifted": false,
+   "wordHit": 1.0
+  },
+  {
+   "batch": "B17",
+   "slug": "bridgeport-gbt",
+   "programId": "gbt-reduced",
+   "sourceUrl": "https://gogbt.com/how-to-ride/fares-passes/",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B17",
+   "slug": "cttransit",
+   "programId": "cttransit-reduced",
+   "sourceUrl": "https://www.cttransit.com/news/new-reduced-fare-faq",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B17",
+   "slug": "patco",
+   "programId": "patco-rfp",
+   "sourceUrl": "https://ridepatco.org/schedules/freedom_reduced_fare.html",
+   "http": "200",
+   "verdict": "near-match",
+   "shifted": false,
+   "wordHit": 1.0
+  },
+  {
+   "batch": "B17",
+   "slug": "cdta",
+   "programId": "cdta-half-fare",
+   "sourceUrl": "https://www.cdta.org/half-fare",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B17",
+   "slug": "centro",
+   "programId": "centro-reduced",
+   "sourceUrl": "https://www.centro.org/fares-passes/fares-and-passes",
+   "http": "200",
+   "verdict": "near-match",
+   "shifted": false,
+   "wordHit": 0.82
+  },
+  {
+   "batch": "B17",
+   "slug": "dutchess",
+   "programId": "dutchess-reduced",
+   "sourceUrl": "https://www.co.dutchess.ny.us/Departments/Public-Transit/Routes-Schedules.htm",
+   "http": "200",
+   "verdict": "near-match",
+   "shifted": false,
+   "wordHit": 1.0
+  },
+  {
+   "batch": "B17",
+   "slug": "glensfallstransit",
+   "programId": "ggft-cdta-half-fare",
+   "sourceUrl": "https://www.cdta.org/news/glens-falls-fares",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B17",
+   "slug": "lirr",
+   "programId": "lirr-reduced",
+   "sourceUrl": "https://www.mta.info/document/85041",
+   "http": "403",
+   "verdict": "fetch-failed",
+   "shifted": false
+  },
+  {
+   "batch": "B17",
+   "slug": "mnr",
+   "programId": "mnr-reduced",
+   "sourceUrl": "https://www.mta.info/document/85041",
+   "http": "403",
+   "verdict": "fetch-failed",
+   "shifted": false
+  },
+  {
+   "batch": "B17",
+   "slug": "nice",
+   "programId": "nice-reduced",
+   "sourceUrl": "https://nicebus.com/Fares-Passes/Learn-more-about-fares-and-passes",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B17",
+   "slug": "nyct-bus-bronx",
+   "programId": "fair-fares-nyc",
+   "sourceUrl": "https://www.nyc.gov/site/fairfares/",
+   "http": "200",
+   "verdict": "near-match",
+   "shifted": false,
+   "wordHit": 1.0
+  },
+  {
+   "batch": "B17",
+   "slug": "nyct-bus-brooklyn",
+   "programId": "fair-fares-nyc",
+   "sourceUrl": "https://www.nyc.gov/site/fairfares/",
+   "http": "200",
+   "verdict": "near-match",
+   "shifted": false,
+   "wordHit": 1.0
+  },
+  {
+   "batch": "B17",
+   "slug": "nyct-bus-manhattan",
+   "programId": "fair-fares-nyc",
+   "sourceUrl": "https://www.nyc.gov/site/fairfares/",
+   "http": "200",
+   "verdict": "near-match",
+   "shifted": false,
+   "wordHit": 1.0
+  },
+  {
+   "batch": "B17",
+   "slug": "nyct-bus-queens",
+   "programId": "fair-fares-nyc",
+   "sourceUrl": "https://www.nyc.gov/site/fairfares/",
+   "http": "200",
+   "verdict": "near-match",
+   "shifted": false,
+   "wordHit": 1.0
+  },
+  {
+   "batch": "B17",
+   "slug": "nyct-bus-si",
+   "programId": "fair-fares-nyc",
+   "sourceUrl": "https://www.nyc.gov/site/fairfares/",
+   "http": "200",
+   "verdict": "near-match",
+   "shifted": false,
+   "wordHit": 1.0
+  },
+  {
+   "batch": "B17",
+   "slug": "nyct-subway",
+   "programId": "fair-fares-nyc",
+   "sourceUrl": "https://www.nyc.gov/site/fairfares/",
+   "http": "200",
+   "verdict": "near-match",
+   "shifted": false,
+   "wordHit": 1.0
+  },
+  {
+   "batch": "B17",
+   "slug": "rgrta",
+   "programId": "rts-reduced",
+   "sourceUrl": "https://www.myrts.com/Genesee/Enjoy-The-Ride-Guide/Fares-Passes",
+   "http": "200",
+   "verdict": "near-match",
+   "shifted": false,
+   "wordHit": 1.0
+  },
+  {
+   "batch": "B17",
+   "slug": "rioc-tram",
+   "programId": "fair-fares-nyc",
+   "sourceUrl": "https://www.nyc.gov/site/fairfares/",
+   "http": "200",
+   "verdict": "near-match",
+   "shifted": false,
+   "wordHit": 1.0
+  },
+  {
+   "batch": "B17",
+   "slug": "staten-island-ferry",
+   "programId": "staten-island-ferry-free",
+   "sourceUrl": "https://www.nyc.gov/html/dot/html/ferrybus/staten-island-ferry.shtml",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B18",
+   "slug": "bangor",
+   "programId": "bangor-half-fare",
+   "sourceUrl": "https://www.bangormaine.gov/288/Half-Cash-Fare-Program",
+   "http": "200",
+   "verdict": "near-match",
+   "shifted": false,
+   "wordHit": 1.0
+  },
+  {
+   "batch": "B18",
+   "slug": "mbta",
+   "programId": "mbta-income-eligible",
+   "sourceUrl": "https://mycharlie.mbta.com/reduced",
+   "http": "200",
+   "verdict": "not-on-page",
+   "shifted": false,
+   "wordHit": 0.76
+  },
+  {
+   "batch": "B18",
+   "slug": "pvta",
+   "programId": "pvta-fare-free",
+   "sourceUrl": "https://www.pvtransit.org/fares",
+   "http": "200",
+   "verdict": "fetch-failed",
+   "shifted": false
+  },
+  {
+   "batch": "B18",
+   "slug": "advance-transit",
+   "programId": "advance-fare-free",
+   "sourceUrl": "https://advancetransit.com/",
+   "http": "200",
+   "verdict": "not-on-page",
+   "shifted": false,
+   "wordHit": 0.78
+  },
+  {
+   "batch": "B18",
+   "slug": "coast-nh",
+   "programId": "coast-senior-disabled",
+   "sourceUrl": "https://coastbus.org/fare-information/fares",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B18",
+   "slug": "ccta",
+   "programId": "gmt-reduced",
+   "sourceUrl": "https://ridegmt.com/fares/",
+   "http": "404",
+   "verdict": "fetch-failed",
+   "shifted": false
+  },
+  {
+   "batch": "B18",
+   "slug": "marble-valley",
+   "programId": "marble-valley-reduced",
+   "sourceUrl": "https://www.thebus.com/fares/",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B19",
+   "slug": "belleville",
+   "programId": "belleville-concession",
+   "sourceUrl": "https://www.belleville.ca/residents/page/transit",
+   "http": "404",
+   "verdict": "fetch-failed",
+   "shifted": false
+  },
+  {
+   "batch": "B19",
+   "slug": "brampton",
+   "programId": "brampton-affordable-transit",
+   "sourceUrl": "http://www.bramptontransit.com",
+   "http": "200",
+   "verdict": "not-on-page",
+   "shifted": false,
+   "wordHit": 0.62
+  },
+  {
+   "batch": "B19",
+   "slug": "cobourg",
+   "programId": "cobourg-senior",
+   "sourceUrl": "https://www.cobourg.ca/home-property/public-transit/",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B19",
+   "slug": "cornwall",
+   "programId": "cornwall-senior",
+   "sourceUrl": "https://www.cornwall.ca/en/live-here/cornwall-transit.aspx",
+   "http": "404",
+   "verdict": "fetch-failed",
+   "shifted": false
+  },
+  {
+   "batch": "B19",
+   "slug": "drt",
+   "programId": "durham-tap",
+   "sourceUrl": "https://www.durhamregiontransit.com",
+   "http": "200",
+   "verdict": "not-on-page",
+   "shifted": false,
+   "wordHit": 0.43
+  },
+  {
+   "batch": "B19",
+   "slug": "grt",
+   "programId": "grt-atp",
+   "sourceUrl": "http://www.grt.ca",
+   "http": "200",
+   "verdict": "not-on-page",
+   "shifted": false,
+   "wordHit": 0.64
+  },
+  {
+   "batch": "B19",
+   "slug": "hamilton",
+   "programId": "hamilton-low-income",
+   "sourceUrl": "http://www.hamilton.ca/hsr",
+   "http": "200",
+   "verdict": "near-match",
+   "shifted": false,
+   "wordHit": 0.88
+  },
+  {
+   "batch": "B19",
+   "slug": "milton",
+   "programId": "milton-split",
+   "sourceUrl": "http://www.miltontransit.ca/",
+   "http": "200",
+   "verdict": "not-on-page",
+   "shifted": false,
+   "wordHit": 0.45
+  },
+  {
+   "batch": "B19",
+   "slug": "niagara",
+   "programId": "niagara-transit-benefit-pass",
+   "sourceUrl": "https://nrtransit.ca/",
+   "http": "200",
+   "verdict": "not-on-page",
+   "shifted": false,
+   "wordHit": 0.67
+  },
+  {
+   "batch": "B19",
+   "slug": "north-bay",
+   "programId": "north-bay-senior",
+   "sourceUrl": "https://northbay.ca/services-payments/north-bay-transit/",
+   "http": "200",
+   "verdict": "not-on-page",
+   "shifted": false,
+   "wordHit": 0.0
+  },
+  {
+   "batch": "B19",
+   "slug": "orangeville",
+   "programId": "orangeville-fare-free",
+   "sourceUrl": "https://www.orangeville.ca/en/living-here/schedules-and-map.aspx",
+   "http": "200",
+   "verdict": "near-match",
+   "shifted": false,
+   "wordHit": 1.0
+  },
+  {
+   "batch": "B19",
+   "slug": "sudbury",
+   "programId": "sudbury-affordable-transit",
+   "sourceUrl": "https://www.greatersudbury.ca/living/transit/",
+   "http": "200",
+   "verdict": "not-on-page",
+   "shifted": false,
+   "wordHit": 0.57
+  },
+  {
+   "batch": "B19",
+   "slug": "ttc",
+   "programId": "ttc-fair-pass",
+   "sourceUrl": "https://www.ttc.ca/Fares-and-passes/Fares-types-and-discounts",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B19",
+   "slug": "windsor",
+   "programId": "windsor-app",
+   "sourceUrl": "https://www.citywindsor.ca/residents/transit-windsor/fares/",
+   "http": "200",
+   "verdict": "near-match",
+   "shifted": false,
+   "wordHit": 0.83
+  },
+  {
+   "batch": "B20",
+   "slug": "codiac",
+   "programId": "codiac-senior",
+   "sourceUrl": "https://www.codiactranspo.ca/moncton-transport/fares",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B20",
+   "slug": "halifax",
+   "programId": "halifax-affordable-access",
+   "sourceUrl": "https://www.halifax.ca/transportation/halifax-transit/fares-passes",
+   "http": "404",
+   "verdict": "fetch-failed",
+   "shifted": false
+  },
+  {
+   "batch": "B20",
+   "slug": "t3-transit",
+   "programId": "t3-senior",
+   "sourceUrl": "https://t3transit.ca/fares/",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B20",
+   "slug": "exo",
+   "programId": "exo-reduced",
+   "sourceUrl": "https://exo.quebec/fr/titres-tarifs/refonte-tarifaire",
+   "http": "200",
+   "verdict": "not-on-page",
+   "shifted": false,
+   "wordHit": 0.33
+  },
+  {
+   "batch": "B20",
+   "slug": "exo-laurentides",
+   "programId": "exo-reduced",
+   "sourceUrl": "https://exo.quebec/fr/titres-tarifs/refonte-tarifaire",
+   "http": "200",
+   "verdict": "not-on-page",
+   "shifted": false,
+   "wordHit": 0.33
+  },
+  {
+   "batch": "B20",
+   "slug": "exo-lrrs",
+   "programId": "exo-reduced",
+   "sourceUrl": "https://exo.quebec/fr/titres-tarifs/refonte-tarifaire",
+   "http": "200",
+   "verdict": "not-on-page",
+   "shifted": false,
+   "wordHit": 0.33
+  },
+  {
+   "batch": "B20",
+   "slug": "exo-presquile",
+   "programId": "exo-reduced",
+   "sourceUrl": "https://exo.quebec/fr/titres-tarifs/refonte-tarifaire",
+   "http": "200",
+   "verdict": "not-on-page",
+   "shifted": false,
+   "wordHit": 0.33
+  },
+  {
+   "batch": "B20",
+   "slug": "exo-sudouest",
+   "programId": "exo-reduced",
+   "sourceUrl": "https://exo.quebec/fr/titres-tarifs/refonte-tarifaire",
+   "http": "200",
+   "verdict": "not-on-page",
+   "shifted": false,
+   "wordHit": 0.33
+  },
+  {
+   "batch": "B20",
+   "slug": "exo-terrebonne",
+   "programId": "exo-reduced",
+   "sourceUrl": "https://exo.quebec/fr/titres-tarifs/refonte-tarifaire",
+   "http": "200",
+   "verdict": "not-on-page",
+   "shifted": false,
+   "wordHit": 0.33
+  },
+  {
+   "batch": "B20",
+   "slug": "exo-vallee-richelieu",
+   "programId": "exo-reduced",
+   "sourceUrl": "https://exo.quebec/fr/titres-tarifs/refonte-tarifaire",
+   "http": "200",
+   "verdict": "not-on-page",
+   "shifted": false,
+   "wordHit": 0.33
+  },
+  {
+   "batch": "B20",
+   "slug": "linter",
+   "programId": "linter-child",
+   "sourceUrl": "https://www.transportlaurentides.ca/",
+   "http": "200",
+   "verdict": "not-on-page",
+   "shifted": false,
+   "wordHit": 0.0
+  },
+  {
+   "batch": "B20",
+   "slug": "rtl",
+   "programId": "rtl-reduced",
+   "sourceUrl": "https://www.rtl-longueuil.qc.ca/titres-et-tarifs/",
+   "http": "200",
+   "verdict": "fetch-failed",
+   "shifted": false
+  },
+  {
+   "batch": "B20",
+   "slug": "sherbrooke",
+   "programId": "sherbrooke-solidarite",
+   "sourceUrl": "https://www.sts.qc.ca/actualites/page/2/",
+   "http": "200",
+   "verdict": "not-on-page",
+   "shifted": false,
+   "wordHit": 0.25
+  },
+  {
+   "batch": "B20",
+   "slug": "sjsr",
+   "programId": "sjsr-reduced",
+   "sourceUrl": "https://sjsr.ca/transport-collectif/billetterie-cartes-tarifs/",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B21",
+   "slug": "lethbridge",
+   "programId": "lethbridge-fee-assistance",
+   "sourceUrl": "https://www.lethbridge.ca/community-services-supports/community-social-development-csd/fee-assistance-program/",
+   "http": "200",
+   "verdict": "near-match",
+   "shifted": false,
+   "wordHit": 1.0
+  },
+  {
+   "batch": "B21",
+   "slug": "medicine-hat",
+   "programId": "medicine-hat-fair-entry",
+   "sourceUrl": "https://www.medicinehat.ca/media/5a5cl52e/0161-fair-entry-policy.pdf",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B21",
+   "slug": "bc-fraser-valley",
+   "programId": "bc-bus-pass",
+   "sourceUrl": "https://www2.gov.bc.ca/gov/content/transportation/passenger-travel/buses-taxis-limos/bus-pass",
+   "http": "200",
+   "verdict": "near-match",
+   "shifted": false,
+   "wordHit": 1.0
+  },
+  {
+   "batch": "B21",
+   "slug": "campbell-river",
+   "programId": "bc-bus-pass",
+   "sourceUrl": "https://www2.gov.bc.ca/gov/content/transportation/passenger-travel/buses-taxis-limos/bus-pass",
+   "http": "200",
+   "verdict": "near-match",
+   "shifted": false,
+   "wordHit": 1.0
+  },
+  {
+   "batch": "B21",
+   "slug": "comox-valley",
+   "programId": "bc-bus-pass",
+   "sourceUrl": "https://www2.gov.bc.ca/gov/content/transportation/passenger-travel/buses-taxis-limos/bus-pass",
+   "http": "200",
+   "verdict": "near-match",
+   "shifted": false,
+   "wordHit": 1.0
+  },
+  {
+   "batch": "B21",
+   "slug": "cowichan",
+   "programId": "bc-bus-pass",
+   "sourceUrl": "https://www2.gov.bc.ca/gov/content/transportation/passenger-travel/buses-taxis-limos/bus-pass",
+   "http": "200",
+   "verdict": "near-match",
+   "shifted": false,
+   "wordHit": 1.0
+  },
+  {
+   "batch": "B21",
+   "slug": "kamloops",
+   "programId": "bc-bus-pass",
+   "sourceUrl": "https://www2.gov.bc.ca/gov/content/transportation/passenger-travel/buses-taxis-limos/bus-pass",
+   "http": "200",
+   "verdict": "near-match",
+   "shifted": false,
+   "wordHit": 1.0
+  },
+  {
+   "batch": "B21",
+   "slug": "kelowna",
+   "programId": "bc-bus-pass",
+   "sourceUrl": "https://www2.gov.bc.ca/gov/content/transportation/passenger-travel/buses-taxis-limos/bus-pass",
+   "http": "200",
+   "verdict": "near-match",
+   "shifted": false,
+   "wordHit": 1.0
+  },
+  {
+   "batch": "B21",
+   "slug": "nanaimo",
+   "programId": "bc-bus-pass",
+   "sourceUrl": "https://www2.gov.bc.ca/gov/content/transportation/passenger-travel/buses-taxis-limos/bus-pass",
+   "http": "200",
+   "verdict": "near-match",
+   "shifted": false,
+   "wordHit": 1.0
+  },
+  {
+   "batch": "B21",
+   "slug": "pemberton",
+   "programId": "bc-bus-pass",
+   "sourceUrl": "https://www2.gov.bc.ca/gov/content/transportation/passenger-travel/buses-taxis-limos/bus-pass",
+   "http": "200",
+   "verdict": "near-match",
+   "shifted": false,
+   "wordHit": 1.0
+  },
+  {
+   "batch": "B21",
+   "slug": "south-okanagan",
+   "programId": "bc-bus-pass",
+   "sourceUrl": "https://www2.gov.bc.ca/gov/content/transportation/passenger-travel/buses-taxis-limos/bus-pass",
+   "http": "200",
+   "verdict": "near-match",
+   "shifted": false,
+   "wordHit": 1.0
+  },
+  {
+   "batch": "B21",
+   "slug": "squamish",
+   "programId": "bc-bus-pass",
+   "sourceUrl": "https://www2.gov.bc.ca/gov/content/transportation/passenger-travel/buses-taxis-limos/bus-pass",
+   "http": "200",
+   "verdict": "near-match",
+   "shifted": false,
+   "wordHit": 1.0
+  },
+  {
+   "batch": "B21",
+   "slug": "translink",
+   "programId": "bc-bus-pass",
+   "sourceUrl": "https://www2.gov.bc.ca/gov/content/transportation/passenger-travel/buses-taxis-limos/bus-pass",
+   "http": "200",
+   "verdict": "near-match",
+   "shifted": false,
+   "wordHit": 1.0
+  },
+  {
+   "batch": "B21",
+   "slug": "victoria",
+   "programId": "bc-bus-pass",
+   "sourceUrl": "https://www2.gov.bc.ca/gov/content/transportation/passenger-travel/buses-taxis-limos/bus-pass",
+   "http": "200",
+   "verdict": "near-match",
+   "shifted": false,
+   "wordHit": 1.0
+  },
+  {
+   "batch": "B21",
+   "slug": "whistler",
+   "programId": "bc-bus-pass",
+   "sourceUrl": "https://www2.gov.bc.ca/gov/content/transportation/passenger-travel/buses-taxis-limos/bus-pass",
+   "http": "200",
+   "verdict": "near-match",
+   "shifted": false,
+   "wordHit": 1.0
+  },
+  {
+   "batch": "B21",
+   "slug": "brandon",
+   "programId": "brandon-reduced-fare",
+   "sourceUrl": "https://www.brandon.ca/roads-parking-transportation/brandon-transit/fares/",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B21",
+   "slug": "yellowknife",
+   "programId": "yellowknife-access-for-all",
+   "sourceUrl": "https://www.yellowknife.ca/admission-and-passes",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B21",
+   "slug": "saskatoon",
+   "programId": "saskatoon-low-income",
+   "sourceUrl": "https://saskatoontransit.ca/lowincome",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  },
+  {
+   "batch": "B21",
+   "slug": "whitehorse",
+   "programId": "whitehorse-senior",
+   "sourceUrl": "https://www.whitehorse.ca/living-in-whitehorse/transit/fares/",
+   "http": "200",
+   "verdict": "verbatim",
+   "shifted": false
+  }
+ ]
+}

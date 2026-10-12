@@ -7,6 +7,7 @@ Use [`PROJECT-TEMPLATE.md`](PROJECT-TEMPLATE.md) when starting a new research pr
 ## Active projects
 
 - `fare-inventory-2026-09-30/` — agency fare inventory and official-source review.
+- `fare-discounts-2026-10/` — reduced-fare programs by agency (verified with exceptions; CIV-48).
 - `free-child-fares-2026-10-11/` — free child-fare ages and policy types for every agency.
 - `transfer-inventory-2026-10-01/` — agency transfer-policy inventory.
 - `transfer-verification-2026-10-01/` — confirmation pass over transfer policies.
