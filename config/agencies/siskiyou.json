@@ -1,6 +1,8 @@
 {
   "slug": "siskiyou",
   "name": "Siskiyou County",
+  "hiddenInProduction": true,
+  "issueUrl": "https://github.com/Civic-Minds/Atlas/issues/492",
   "websiteUrl": "https://www.co.siskiyou.ca.us/generalservices/page/stage-siskiyou-transit-and-general-express",
   "center": [
     41.5121,

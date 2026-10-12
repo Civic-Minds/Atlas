@@ -1,6 +1,8 @@
 {
   "slug": "tangipahoa-parish",
   "name": "Tangipahoa Transit (Hammond)",
+  "hiddenInProduction": true,
+  "issueUrl": "https://github.com/Civic-Minds/Atlas/issues/759",
   "websiteUrl": "https://www.tangicoa.com/",
   "region": "Louisiana",
   "center": [
