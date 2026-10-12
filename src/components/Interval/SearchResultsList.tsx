@@ -5,6 +5,7 @@ import type { RouteSearchResult, StopSearchResult } from '../../utils/searchResu
 import RouteListRow from '../RouteListRow';
 import { routeRowLabels, routeRowRight } from './SearchSuggestionsPanel';
 import { agencyDisplayParts, shortenAgencyName, titleCase } from '../../utils/format';
+import type { RouteListDisplay } from '../../utils/effectiveHeadway';
 
 interface SearchSplitListProps<T> {
   headLabel: string;
@@ -52,7 +53,7 @@ interface SearchResultsListProps {
   setQuery: (q: string) => void;
   setSearchFocused?: (focused: boolean) => void;
   saveRecentSearch: (q: string) => void;
-  headwayForRouteKey: (key: string) => number | null;
+  displayForRouteKey: (key: string) => RouteListDisplay;
   /** Highlight the hovered result's route on the map (null on leave). */
   onRouteHover?: (key: string | null) => void;
   hasMoreResults?: boolean;
@@ -80,7 +81,7 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
   setQuery,
   setSearchFocused,
   saveRecentSearch,
-  headwayForRouteKey,
+  displayForRouteKey,
   onRouteHover,
   hasMoreResults = false,
   onShowMoreResults,
@@ -139,7 +140,10 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
               setSearchFocused?.(false);
               setSelectedRoute(selectedRoute === r.key ? null : r.key);
             }}
-            right={routeRowRight(r.agencyName || '', headwayForRouteKey(r.key), true)}
+            right={(() => {
+              const display = displayForRouteKey(r.key);
+              return routeRowRight(r.agencyName || '', display.headway, true, display.limited);
+            })()}
           />
         );
       }}
