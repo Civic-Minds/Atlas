@@ -2,7 +2,7 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import JSZip from 'jszip';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
-import { processGtfsBuffer } from '../process-core';
+import { processGtfsBuffer, scopedTerminalHeadline } from '../process-core';
 
 // CapMetro 550 MetroRail (real feed, archive 20270109; route 550 only, shapes thinned to
 // every 25th point). The feed gives every service its own shapes: Mon-Thu runs on service
@@ -115,7 +115,11 @@ describe('Weekday shape maps on a non-representative weekday', () => {
     // went 10 -> 17 and tier 15 -> 20.
     const weekday = await weekdayFeatures('ttc-35-branches', 'ttc', '35');
     const byKey = Object.fromEntries(weekday.map((p: any) => [`${p.directionId} ${p.headsign}`, [p.headway, p.tier]]));
-    expect(byKey['0 Mount Dennis']).toEqual([10, '15']);
+    // 35A Mount Dennis is drawn on shape 1122587 (4 trips 05:12-05:41), whose own sample gives
+    // no stop headway. Hand count, 35A at Mount Dennis (16598), 79 weekday trips: median gap 15
+    // over 6-22h (16 all day, 17 midday). The shape's own early value (10 here, 12 on the full
+    // feed) over-claims the branch.
+    expect(byKey['0 Mount Dennis']).toEqual([15, '15']);
     // Via Hullmar is drawn on shape 1122586 (5 trips 05:03-05:44). Hand count, 35B at Mount
     // Dennis (16598), 77 weekday trips: median gap 15 over 6-22h (16 all day, 17 midday, 12-13
     // in the 5-7 AM burst). The burst's own 10 and its three-departure terminal mean (12) both
@@ -126,3 +130,21 @@ describe('Weekday shape maps on a non-representative weekday', () => {
   });
 });
 
+describe('scopedTerminalHeadline', () => {
+  it('grades capmetro 2 from its headsign terminal sample, not one per-trip shape', () => {
+    // Real CapMetro fresh feed (archive 20270109), route 2 KB, Wed 2026-10-14 (2-172): arrivals of
+    // all 60 trips at Eastside Bus Plaza Bay H (6448). CapMetro gives every few trips their own
+    // shape; the drawn one (4 trips, gaps 32/80/32) graded "infrequent" under a 16 headline.
+    // Hand count: median gap 16 all day and midday, 17 PM, 30-minute gaps at the first trips and
+    // late evening. Phase 2 on the whole headsign (one shape) grades it 30.
+    const times = [352, 382, 412, 443, 459, 475, 491, 507, 523, 539, 555, 571, 587, 600, 616, 632,
+      650, 666, 682, 698, 714, 730, 746, 762, 778, 794, 810, 826, 842, 858, 874, 890, 906, 922, 938,
+      962, 979, 996, 1013, 1032, 1049, 1066, 1083, 1100, 1117, 1134, 1139, 1159, 1179, 1199, 1219,
+      1239, 1269, 1299, 1329, 1359, 1389, 1419, 1449, 1479];
+    expect(scopedTerminalHeadline(times, 'Weekday', '3', false)).toEqual({ headway: 16, tier: '30' });
+    // Rail keeps phase 2's midday-window grade.
+    expect(scopedTerminalHeadline(times, 'Weekday', '2', true)).toEqual({ headway: 16, tier: null });
+    // No midday or PM-peak service: no scoped value (night routes' early trips).
+    expect(scopedTerminalHeadline([300, 310, 320, 330], 'Weekday', '3', false)).toBeNull();
+  });
+});

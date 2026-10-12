@@ -7,10 +7,10 @@ import { computeRunningTimes, runningTimesJson } from './runningTime.js';
 import { pickRepresentativeWeekday } from './representativeWeekday.js';
 import type { GtfsData, AnalysisResult, RawRouteDepartures } from '../types/gtfs.js';
 import { computeRawDepartures } from './transit-phase1.js';
-import { applyAnalysisCriteria, previousNightTailDays } from './transit-phase2.js';
+import { applyAnalysisCriteria, determineTierWithEdgeGapAllowance, previousNightTailDays } from './transit-phase2.js';
 import { calculateCorridors } from './transit-logic.js';
 import { detectReferenceDate, getActiveServiceIds } from './transit-calendar.js';
-import { DEFAULT_CRITERIA } from './defaults.js';
+import { DEFAULT_CRITERIA, getTiersForCriteria } from './defaults.js';
 import { normalizeGtfs, type GtfsPreprocess, type GtfsTransformOptions } from './preprocess/run.js';
 import { validateGtfs, type ValidationReport } from './validation.js';
 import { resolveDisplayHeadsign } from '../shared/headsignDisplay.js';
@@ -258,6 +258,54 @@ export function selectTerminalDepartureTimes(
   headsignTimes: number[] | undefined,
 ): number[] | undefined {
   return headsignTimes ?? shapeTimes;
+}
+
+/**
+ * Headline and tier read from a branch-scoped terminal sample (the headsign's departures at the
+ * terminal) for a feature drawn on a thin shape that won feature dedupe. Null unless the sample
+ * has daytime service of its own (midday or PM peak), so a night route's early-morning trips never
+ * become its headline (ttc 329 and 334 Sunday). The headline is the sustained 6-22h median; the
+ * tier runs phase 2's own tier rule on the sample's day window. Phase 2 graded only the thin
+ * shape's trips (capmetro 2: four trips per shape, an 80-minute hole, "infrequent" under a
+ * 16-minute headline). The tier is null for rail, which phase 2 grades on a midday window.
+ */
+export function scopedTerminalHeadline(
+  times: readonly number[] | undefined,
+  day: DayType,
+  routeType: string,
+  railLike: boolean,
+): { headway: number; tier: string | null } | null {
+  const sorted = [...(times ?? [])].sort((a, b) => a - b);
+  const hasDaytime = (medianHeadwayInWindow(sorted, 540, 900, 3)
+    ?? medianHeadwayInWindow(sorted, 900, 1140, 3)) != null;
+  if (!hasDaytime) return null;
+  const headway = sustainedMedianHeadwayInWindow(sorted, 360, 1320, 3);
+  if (headway == null) return null;
+  const dayConfig = DEFAULT_CRITERIA.dayTypes[day];
+  if (railLike || !dayConfig) return { headway, tier: null };
+  const { start, end } = dayConfig.timeWindow;
+  const windowed = sorted.filter(t => t >= start && t <= end);
+  if (windowed.length < 3) return { headway, tier: null };
+  const gaps = windowed.slice(1).map((t, i) => t - windowed[i]);
+  const determined = determineTierWithEdgeGapAllowance(
+    gaps,
+    windowed.length,
+    windowed[windowed.length - 1] - windowed[0],
+    getTiersForCriteria(routeType, dayConfig.tiers, DEFAULT_CRITERIA.modeTierOverrides),
+    DEFAULT_CRITERIA.graceMinutes,
+    DEFAULT_CRITERIA.maxGraceViolations,
+    DEFAULT_CRITERIA.gracePercent,
+    DEFAULT_CRITERIA.violationPercent,
+    {
+      rawDepartureTimes: sorted,
+      analysisTimes: windowed,
+      day: (day === 'Weekday' ? 'Wednesday' : day) as DayName,
+      routeType,
+      railLike,
+    },
+    DEFAULT_CRITERIA.violationPercentByTier,
+  );
+  return { headway, tier: determined === 'span' ? 'infrequent' : determined };
 }
 
 /** Follow the existing display-source choice without borrowing service into an empty branch. */
@@ -1475,7 +1523,34 @@ export async function processGtfsBuffer(
     feature.properties.stopPeriodCoverageHeadways = Object.fromEntries(
       coverageStops.map(({ stopId }) => [stopId, allStopPeriodCoverageHw[stopId]]),
     );
-    if (Object.keys(allStopHw).length === 0) continue;
+    if (Object.keys(allStopHw).length === 0) {
+      // No stop gets a headway from this feature's own sample, so Step 4 below never runs and
+      // the phase 2 value of the shape that won dedupe would stand. ttc 35A (Mount Dennis) is
+      // drawn on shape 1122587, 4 trips 05:12-05:41: headline 12 and no period values for a
+      // branch that runs about every 15 (79 trips at Mount Dennis, 6-22h median 15). Apply Step
+      // 4's thin-terminal rule here: same guard, same scoped headline, tier only degrades.
+      const terminalId = coverageStops.at(-1)?.stopId;
+      if (feature.properties.serviceClass !== 'irregular' && feature.properties.tier !== 'span'
+        && feature.properties.headway != null && terminalId != null
+        && isThinAllDayTerminalSample(metricStopMap.get(terminalId) ?? [], featureBranchTripCount.get(feature) ?? 0)) {
+        const scoped = terminalId
+          ? scopedTerminalHeadline(
+            selectTerminalDepartureTimes(shapeMap?.get(terminalId), headsignMap?.get(terminalId)),
+            day,
+            featureRoute?.route_type ?? '',
+            railFeature,
+          )
+          : null;
+        if (scoped) {
+          feature.properties.headway = scoped.headway;
+          const newTier = headwayToTier(scoped.headway);
+          if ((TIER_RANK[newTier] ?? -1) > (TIER_RANK[feature.properties.tier as string] ?? -1)) {
+            feature.properties.tier = newTier;
+          }
+        }
+      }
+      continue;
+    }
 
     // Step 2: project all stops onto this feature's specific shape, then filter to stops
     // within MAX_STOP_DEV_DEG of the shape (excludes stops from other headsign branches).
@@ -1552,19 +1627,19 @@ export async function processGtfsBuffer(
       // median (10) over-claims a branch that runs about every 15 (6-22h at Mount Dennis, 77
       // trips). When the branch-scoped terminal sample Step 5 reads (the headsign's departures
       // at this terminal) has daytime service of its own (midday or PM peak), read the same
-      // all-day window on it instead. Without daytime service the branch value stands, so a
-      // night route's early-morning trips never become its headline (ttc 329 and 334 Sunday
-      // would go from 30 to 20 and 23).
-      const scopedTerminalTimes = thinTerminalSample
-        ? [...(selectTerminalDepartureTimes(shapeMap?.get(terminalId!), headsignMap?.get(terminalId!)) ?? [])].sort((a, b) => a - b)
-        : [];
-      const scopedHasDaytime = (medianHeadwayInWindow(scopedTerminalTimes, 540, 900, 3)
-        ?? medianHeadwayInWindow(scopedTerminalTimes, 900, 1140, 3)) != null;
-      const scopedAllDayHw = scopedHasDaytime
-        ? sustainedMedianHeadwayInWindow(scopedTerminalTimes, 360, 1320, 3)
+      // all-day window on it instead, and its tier (see scopedTerminalHeadline). Without
+      // daytime service the branch value stands, so a night route's early-morning trips never
+      // become its headline (ttc 329 and 334 Sunday would go from 30 to 20 and 23).
+      const scoped = thinTerminalSample
+        ? scopedTerminalHeadline(
+          selectTerminalDepartureTimes(shapeMap?.get(terminalId!), headsignMap?.get(terminalId!)),
+          day,
+          featureRoute?.route_type ?? '',
+          railFeature,
+        )
         : null;
       const headway = thinTerminalSample
-        ? (scopedAllDayHw ?? branchHw)
+        ? (scoped?.headway ?? branchHw)
         : hasGenuineBranchPattern(terminalComputedHw, nonTerminalStopHws)
         ? resolveTerminalHeadway(terminalComputedHw, branchHw, branchTripCount)
         : terminalComputedHw;
@@ -1577,6 +1652,11 @@ export async function processGtfsBuffer(
       const currentRank = TIER_RANK[feature.properties.tier as string] ?? -1;
       if ((TIER_RANK[newTier] ?? -1) > currentRank) {
         feature.properties.tier = newTier;
+      }
+      // A thin shape that phase 2 put in no finite tier (capmetro 2: gaps 32, 80, 32) contradicts
+      // the finite scoped headline: take the scoped sample's tier. A finite phase 2 tier stands.
+      if (scoped?.tier && scoped.tier !== 'infrequent' && feature.properties.tier === 'infrequent') {
+        feature.properties.tier = scoped.tier;
       }
 
       // Minimum stop headway — the best frequency available anywhere on this route.
