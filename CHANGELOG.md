@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- More branches drawn from a few early-morning trips now show their real all-day frequency, like TTC 35A to Mount Dennis (every 15 instead of 12), and CapMetro 2 is now graded every 30 instead of infrequent to match its every-16 service. Where two branches meet at a shared last stop, like TTC 94 at Castle Frank, the headline counts only the branch's own trips (every 19-20, not the combined 10).
 - Branches drawn from a handful of early-morning trips, like TTC 35B via Hullmar and CapMetro 2, now show the branch's own all-day frequency (every 15 and 16) instead of the early trips' 10 and 32.
 - Routes whose feed gives almost every trip its own route shape, like CapMetro's MetroRail, no longer take their weekday frequency from a handful of those trips: MetroRail southbound shows about every 54 minutes instead of 222, and several CapMetro routes and TriMet 96 gain their missing period frequencies ([#737](https://github.com/Civic-Minds/Atlas/issues/737)).
 - CapMetro bus routes and MetroRail whose feed gives Friday its own route shapes no longer show weekday frequencies taken from a few Friday trips (routes 201 and 322 every 10 hours instead of every 30 and 35 minutes, MetroRail northbound every 336 minutes instead of about 34) ([#735](https://github.com/Civic-Minds/Atlas/issues/735)).
