@@ -75,6 +75,12 @@ export const MOBILE_ROUTE_SHEET_ENABLED = ATLAS_MODE === 'beta' || ATLAS_MODE ==
 // Compare mode: two maps side by side, same filter, each with its own day and time (CIV-19).
 // Beta-only while it is tried out.
 export const COMPARE_MODE_ENABLED = ATLAS_MODE === 'beta' || ATLAS_MODE === 'dev';
+// "What's new" link in the map's bottom bar, listing recent changes in plain words (CIV-83).
+// Beta-only while the wording and placement are tried out.
+export function whatsNewEnabledFor(mode: AtlasMode): boolean {
+  return mode === 'beta' || mode === 'dev';
+}
+export const WHATS_NEW_ENABLED = whatsNewEnabledFor(ATLAS_MODE);
 
 export function getAgencyCatalogUrl(mode: AtlasMode = ATLAS_MODE): string {
   return `/data/catalog-${mode}.json`;
@@ -98,6 +104,7 @@ export const FEATURES = {
   compareMode: COMPARE_MODE_ENABLED,
   cardClickToFlag: CARD_CLICK_TO_FLAG_ENABLED,
   unevenBanner: UNEVEN_BANNER_ENABLED,
+  whatsNew: WHATS_NEW_ENABLED,
 } as const;
 
 export const FEATURE_ROUTES = {
