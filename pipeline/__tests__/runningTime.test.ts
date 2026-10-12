@@ -11,7 +11,7 @@ function feed(trips: Trip[], frequencies: GtfsData['frequencies'] = []): GtfsDat
   const route: GtfsRoute = { route_id: 'r1', route_short_name: '29', route_type: '3' };
   return {
     agencies: [], routes: [route], stops: [], calendar: [], calendarDates: [], shapes: [], frequencies,
-    trips: trips.map(t => ({ route_id: 'r1', service_id: t.service ?? 'wk', trip_id: t.id, direction_id: t.dir ?? '0', shape_id: t.shape ?? 'main' })),
+    trips: trips.map(t => ({ route_id: 'r1', service_id: t.service ?? 'wk', trip_id: t.id, direction_id: t.dir === undefined ? '0' : t.dir, shape_id: t.shape ?? 'main' })),
     stopTimes: trips.flatMap(t => t.stops.map((stop, i) => {
       const time = hm(t.start + Math.round((t.minutes * i) / (t.stops.length - 1)));
       return { trip_id: t.id, stop_id: stop, stop_sequence: String(i + 1), arrival_time: time, departure_time: time };
@@ -19,9 +19,9 @@ function feed(trips: Trip[], frequencies: GtfsData['frequencies'] = []): GtfsDat
   } as unknown as GtfsData;
 }
 
-function run(gtfs: GtfsData, services = ['wk']) {
+function run(gtfs: GtfsData, services = ['wk'], analysisShapes = new Map<string, Set<string>>()) {
   const active = new Map(ALL.map(d => [d, new Set(services)]));
-  return computeRunningTimes(gtfs, new Map(gtfs.routes.map(r => [r.route_id, r])), active, new Map());
+  return computeRunningTimes(gtfs, new Map(gtfs.routes.map(r => [r.route_id, r])), active, analysisShapes);
 }
 
 const line = ['a', 'b', 'c', 'd', 'e', 'f'];
@@ -50,7 +50,7 @@ describe('scheduled running time (CIV-84)', () => {
   it('never lets a direction of 2-stop shuttles become the pattern (TTC 52)', () => {
     const trips: Trip[] = [
       ...Array.from({ length: 6 }, (_, i) => ({ id: `shuttle${i}`, start: 480 + i * 5, stops: ['a', 'b'], minutes: 3 })),
-      ...[480, 495].map((s, i) => ({ id: `long${i}`, start: s, stops: line, minutes: 70 })),
+      ...[480, 495].map((s, i) => ({ id: `long${i}`, start: s, stops: [...line, 'g', 'h', 'i', 'j'], minutes: 70 })),
     ];
     expect(run(feed(trips)).get('r1::0::Weekday')!.byHour['8']).toBe(70);
   });
@@ -94,4 +94,45 @@ describe('scheduled running time (CIV-84)', () => {
     const rt = run(feed([480, 490].map((s, i) => ({ id: `t${i}`, start: s, stops: line, minutes: 50 }))));
     expect(runningTimesJson(rt)).toEqual({ 'r1::0::Weekday': { h: { '8': 50 }, p: { amPeak: [50, 50, 50] } }, 'r1::0::Saturday': { h: { '8': 50 }, p: { amPeak: [50, 50, 50] } }, 'r1::0::Sunday': { h: { '8': 50 }, p: { amPeak: [50, 50, 50] } } });
   });
+
+  it('keys a blank direction like shape selection for the lookup, and like route features for output', () => {
+    const trips: Trip[] = [
+      ...[480, 495].map((s, i) => ({ id: `main${i}`, dir: '', start: s, stops: line, minutes: 55 })),
+      ...[485, 500, 510].map((s, i) => ({ id: `other${i}`, dir: '', shape: 'other', start: s, stops: line, minutes: 20 })),
+    ];
+    // Shape selection keys a blank direction as 'r1::' and picked 'main'; output uses direction '0'.
+    const rt = run(feed(trips), ['wk'], new Map([['r1::', new Set(['main'])]]));
+    expect(rt.get('r1::0::Weekday')!.byHour['8']).toBe(55);
+  });
+
+  it('measures length against the typical trip, so one long interlined trip can\'t move the bar', () => {
+    const long = [...line, ...['g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't']];
+    const trips: Trip[] = [
+      ...[480, 490, 500].map((s, i) => ({ id: `t${i}`, start: s, stops: line, minutes: 40 })),
+      { id: 'interlined', start: 470, stops: long, minutes: 120 },
+    ];
+    expect(run(feed(trips)).get('r1::0::Weekday')!.byHour['8']).toBe(40);
+  });
+
+  it('takes one stop pattern between the terminals, so express runs don\'t blend with locals', () => {
+    const express = ['a', 'c', 'f'];
+    const trips: Trip[] = [
+      ...[480, 490, 500, 510].map((s, i) => ({ id: `local${i}`, start: s, stops: line, minutes: 50 })),
+      ...[485, 495, 505].map((s, i) => ({ id: `express${i}`, start: s, stops: express, minutes: 30 })),
+    ];
+    expect(run(feed(trips)).get('r1::0::Weekday')!.byHour['8']).toBe(50);
+  });
+
+  it('counts a one-trip frequency window (TransLoc style) as one trip, not several (#702)', () => {
+    // A 42-minute window for a 42-minute trip with a meaningless 900-s headway: one trip, not three.
+    const gtfs = feed([{ id: 'tl', start: 480, stops: line, minutes: 42 }],
+      [{ trip_id: 'tl', start_time: '08:00:00', end_time: '08:42:00', headway_secs: '900' }]);
+    expect(run(gtfs).get('r1::0::Weekday')).toBeUndefined();
+  });
+
+  it('keeps a two-terminal route (a ferry) whose every trip has two stops', () => {
+    const rt = run(feed([600, 630].map((s, i) => ({ id: `f${i}`, start: s, stops: ['dock1', 'dock2'], minutes: 25 }))));
+    expect(rt.get('r1::0::Weekday')!.byHour['10']).toBe(25);
+  });
 });
+
