@@ -1,0 +1,2 @@
+agency_id,agency_name,agency_url,agency_timezone,agency_phone,agency_fare_url,agency_lang,agency_email
+19,Redwood Coast Transit,http://www.redwoodcoasttransit.org/,America/Los_Angeles,707-464-6400,http://redwoodcoasttransit.org/fares/,en,executivedirector@redwoodcoastransit.org

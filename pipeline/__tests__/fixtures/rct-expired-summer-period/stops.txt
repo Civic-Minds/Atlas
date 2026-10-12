@@ -1,0 +1,37 @@
+stop_id,stop_code,stop_name,stop_lat,stop_lon,stop_desc,wheelchair_boarding,platform_code,location_type,parent_station,stop_timezone,stop_url,tts_stop_name,zone_id
+2750,2750,Senior Center (Northcrest & East Madison Ave),41.7773198,-124.1993043,,1,,0,,America/Los_Angeles,,Senior Center (Northcrest & East Madison Ave),1628
+2772,2772,Humboldt & Hodge,41.7527333,-124.1564,,0,,0,,America/Los_Angeles,,Humboldt & Hodge,1628
+2757,2757,Seventh-day Adventist Church (Northcrest & East Madison Ave),41.7774,-124.1994833,,0,,0,,America/Los_Angeles,,Seventh-day Adventist Church (Northcrest & East Madison Ave),1628
+2765,2765,US 101 at Anchor Way,41.7469078,-124.1778237,,1,,0,,America/Los_Angeles,,Anchor Beach Inn (101 & Anchor Way),1628
+2382749,2382749,Elk Valley Road at US 101 WB,41.7527037,-124.1841313,,0,,0,,America/Los_Angeles,,Elk Valley Road at US 101 WB,1628
+2769,2769,Endert & Nickel Street,41.7481333,-124.1516,,0,,0,,America/Los_Angeles,,Endert & Nickel Street,1628
+2766,2766,1455 US 101 South (Crescent Beach Motel),41.7414027,-124.1653135,,0,,0,,America/Los_Angeles,,1455 US 101 South (Crescent Beach Motel),1628
+2747,2747,Northcrest at Old Town Square,41.7699333,-124.1994167,,0,,0,,America/Los_Angeles,,Northcrest at Old Town Square,1628
+2759,2759,Spectrum Communications (Northcrest & East Coolidge),41.7687333,-124.1992833,,0,,0,,America/Los_Angeles,,Spectrum Communications (Northcrest & East Coolidge),1628
+2749,2749,United Indian Healthcare (Northcrest & East Adams Ave),41.7754187,-124.1997891,,0,,0,,America/Los_Angeles,,United Indian Healthcare (Northcrest & East Adams Ave),1628
+775592,775592,US 101 (L Street) at 7th Street (Coast Central Credit Union),41.7564985,-124.1966666,,0,,0,,America/Los_Angeles,,US 101 at 7th Street - Coast Central Credit Union,1628
+4248619,,Elk Valley Road at Michigan (Recology),41.753897,-124.1748034,,0,,0,,America/Los_Angeles,,Elk Valley Road at Michigan (Recology),1628
+2753,2753,Northcrest & Blackwell,41.7884328,-124.1919024,,0,,0,,America/Los_Angeles,,Northcrest & Blackwell,1628
+2768,2768,Oliver Avenue at Darby Street (Community Church),41.7469833,-124.155,,0,,0,,America/Los_Angeles,,Oliver Avenue at Darby Street (Community Church),1628
+3478095,3478095,Elk Valley Casino (new),41.739381,-124.148459,,0,,0,,America/Los_Angeles,,Elk Valley Casino (new),1628
+2758,2758,Northcrest at Washington SB - Uncharted Shores,41.7720667,-124.2004,,0,,0,,America/Los_Angeles,,Northcrest at Washington SB - Uncharted Shores,1628
+2748,2748,Northcrest & Washington,41.7732107,-124.2003004,,0,,0,,America/Los_Angeles,,Northcrest & Washington,1628
+2773,2773,Humboldt & Boyet,41.75655,-124.1563833,,0,,0,,America/Los_Angeles,,Humboldt & Boyet,1628
+2683,2683,Highway 101 & Citizens Dock Road Southbound,41.7486114,-124.1802371,,0,,0,,America/Los_Angeles,,Highway 101 & Citizens Dock Road Southbound,1628
+772534,772534,5th and N Safeway,41.7564175,-124.1935399,,1,,0,,America/Los_Angeles,,5th and N Safeway,1628
+2775,2775,Howland Hill & Mathews Street Elk Valley Rancheria,41.7583167,-124.1586167,,1,,0,,America/Los_Angeles,,Howland Hill & Mathews Street Elk Valley Rancheria,1628
+2698,2698,Lake Earl at Standard Veneer Road,41.7935743,-124.186443,,0,,0,,America/Los_Angeles,,Lake Earl at Standard Veneer Road,1628
+2778,2778,Elk Valley Road at Iowa Street,41.7536667,-124.17975,,0,,0,,America/Los_Angeles,,Elk Valley Road at Iowa Street,1628
+2709,2709,Harding & Northcrest,41.7674167,-124.19945,,0,,0,,America/Los_Angeles,,Harding & Northcrest,1628
+775598,775598,Social Services - The Mail Room Southbound,41.7651539,-124.1980752,,0,,0,,America/Los_Angeles,,Social Services - The Mail Room Southbound,1628
+775595,775595,Senior Apartments,41.766137,-124.2014079,,0,,0,,America/Los_Angeles,,Senior Apartments,1628
+2770,2770,Le Clair and Darby,41.7493833,-124.1541333,,0,,0,,America/Los_Angeles,,Le Clair and Darby,1628
+2745,2745,Harbor Freight (Northcrest & Wilson),41.7647667,-124.1976333,,0,,0,,America/Los_Angeles,,Harbor Freight (Northcrest & Wilson),1628
+2767,2767,Humboldt Road & Roy,41.7450833,-124.1564167,,0,,0,,America/Los_Angeles,,Humboldt Road & Roy,1628
+2761,2761,Grocery Outlet (3rd between K & L),41.7538333,-124.1949667,,1,,0,,America/Los_Angeles,,Grocery Outlet (3rd between K & L),1628
+2771,2771,Humboldt & Kelly,41.7498,-124.1564,,0,,0,,America/Los_Angeles,,Humboldt & Kelly,1628
+2777,2777,Park City Superette (Howland Hill & Elk Valley Road),41.7583,-124.1668833,,0,,0,,America/Los_Angeles,,Park City Superette (Howland Hill & Elk Valley Road),1628
+2746,2746,Northcrest & Harding,41.7677167,-124.1986667,,0,,0,,America/Los_Angeles,,Northcrest & Harding,1628
+2755,2755,Northcrest & Pine Grove (Best Storage) SB,41.7844,-124.19755,,0,,0,,America/Los_Angeles,,Best Storage (Northcrest & Pine Grove),1628
+775596,775596,Northcrest & Pine Grove,41.784557,-124.197193,,0,,0,,America/Los_Angeles,,Northcrest & Pine Grove,1628
+775597,775597,Roxco Furniture (Northcrest & Harding),41.7670309,-124.1987175,,0,,0,,America/Los_Angeles,,Roxco Furniture (Northcrest & Harding),1628

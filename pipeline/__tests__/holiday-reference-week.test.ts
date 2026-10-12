@@ -121,3 +121,87 @@ describe('reference date inside the service period (SCT, #658)', () => {
     expect(getActiveServiceIds(calendar, calendarDates, 'Monday', ref).has('272-1')).toBe(true);
   });
 });
+
+describe('reference date clamp skips an expired newest period (RCT)', () => {
+  // Real RCT (Redwood Coast Transit) feed, routes 3 and 4 (route_id 117/118), unchanged
+  // calendar.txt and calendar_dates.txt. Regular service runs Dec 2025-Dec 2026 and a
+  // summer period ran Jun 12-Aug 23 2026. The SCT clamp above moved the reference date to
+  // the summer start (Jun 12), where Regular and Summer Tue-Fri both run: two hourly loops
+  // 1-3 minutes apart were pooled into a 4-minute (118) and 30-minute (117) headway.
+  // Hand count, Wed Oct 14 2026 (Regular Tue-Fri only): 117 runs 08:01-17:01, every gap
+  // 60; 118 runs 07:27-17:27, gaps 59-61, so its median is 60 but its 61-minute gaps keep
+  // it out of the 60 tier (as before the clamp).
+  beforeAll(() => {
+    vi.useFakeTimers({ toFake: ['Date'], now: new Date('2026-10-11T12:00:00') });
+  });
+  afterAll(() => {
+    vi.useRealTimers();
+  });
+
+  it('keeps the reference date in the running regular period', async () => {
+    const gtfs = await parseGtfsZip(new Uint8Array(await fixtureZip('rct-expired-summer-period')).buffer as ArrayBuffer);
+    expect(detectReferenceDate(gtfs.calendar!, gtfs.calendarDates, gtfs.trips)).toBe('20260202');
+  });
+
+  it('shows the hourly loops every 60 minutes on weekdays', async () => {
+    const result = await processGtfsBuffer(await fixtureZip('rct-expired-summer-period'), undefined, { slug: 'rct' });
+    const weekday = JSON.parse(result.geojson).features
+      .map((feature: any) => feature.properties)
+      .filter((p: any) => p.day === 'Weekday' && p.stopId == null);
+    for (const [route, tier] of [['117', '60'], ['118', 'infrequent']]) {
+      const features = weekday.filter((p: any) => p.routeId === route);
+      expect(features.length).toBeGreaterThan(0);
+      for (const p of features) {
+        expect(p.headway).toBe(60);
+        expect(p.tier).toBe(tier);
+        expect(p.headwayByPeriod.midday).toBe(60);
+      }
+    }
+  });
+
+  const cal = (id: string, start: string, end: string, days = '1111100') => ({
+    service_id: id, start_date: start, end_date: end,
+    monday: days[0], tuesday: days[1], wednesday: days[2], thursday: days[3], friday: days[4], saturday: days[5], sunday: days[6],
+  }) as any;
+
+  it('moves a reference inside an ended nested period to after it (main path)', () => {
+    // RCT's shape without calendar_dates: the regular period's midpoint (Jun 16) lies in
+    // the ended summer period, where both timetables run. The day after summer is used.
+    const calendar = [
+      cal('R-wk', '20251201', '20261231'), cal('R-sa', '20251201', '20261231', '0000010'),
+      cal('S-wk', '20260612', '20260823'), cal('S-sa', '20260612', '20260823', '0000010'),
+    ];
+    expect(detectReferenceDate(calendar, [], undefined)).toBe('20260824');
+  });
+
+  it('leaves future-only feeds on the newest period midpoint', () => {
+    // Nothing has started yet (today Oct 11): unchanged fallback to the latest period.
+    const calendar = [
+      cal('A-wk', '20261101', '20261231'), cal('A-sa', '20261101', '20261231', '0000010'),
+      cal('B-wk', '20270101', '20270301'), cal('B-sa', '20270101', '20270301', '0000010'),
+    ];
+    expect(detectReferenceDate(calendar, [], undefined)).toBe('20270130');
+  });
+
+  it('keeps a short holiday period that is the newest started and still running', () => {
+    // A 2-week block running today is still the newest started period, as before #734;
+    // only an ended newest period is replaced. Recorded so a change here is deliberate.
+    const calendar = [
+      cal('R-wk', '20250901', '20270630'), cal('R-sa', '20250901', '20270630', '0000010'),
+      cal('H-wk', '20261005', '20261018'), cal('H-sa', '20261005', '20261018', '0000010'),
+    ];
+    expect(detectReferenceDate(calendar, [], undefined)).toBe('20261011');
+  });
+
+  it('prefers a long running period over a short one when the newest started has ended', () => {
+    const calendar = [
+      cal('R-wk', '20250901', '20270630'), cal('R-sa', '20250901', '20270630', '0000010'),
+      cal('H-wk', '20261001', '20261020'), cal('H-sa', '20261001', '20261020', '0000010'),
+      cal('E-wk', '20261002', '20261009'), cal('E-sa', '20261002', '20261009', '0000010'),
+    ];
+    // Newest started (Oct 2-9) ended; the short Oct 1-20 block runs today but the long
+    // regular period wins, and its midpoint (Jul 31 2026) is outside the ended block.
+    expect(detectReferenceDate(calendar, [], undefined)).toBe('20260731');
+  });
+});
+

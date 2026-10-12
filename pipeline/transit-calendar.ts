@@ -97,7 +97,33 @@ export function detectReferenceDate(
         return `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
     })();
     const pastOrPresentMultiStarts = multiStarts.filter(s => s <= todayStr);
-    const bestStartDate = pastOrPresentMultiStarts.length > 0
+    const groupEnd = (start: string): string => {
+        const grp = groups.get(start)!;
+        return grp.reduce((max, c) => c.end_date > max ? c.end_date : max, grp[0].end_date);
+    };
+    const daysBetween = (a: string, b: string): number =>
+        (new Date(+b.slice(0, 4), +b.slice(4, 6) - 1, +b.slice(6, 8)).getTime()
+            - new Date(+a.slice(0, 4), +a.slice(4, 6) - 1, +a.slice(6, 8)).getTime()) / 86400000;
+    // Prefer the newest period that is still running today (start <= today <= end). The
+    // newest started period can already be over: RCT's 2026 summer period (Jun 12-Aug 23)
+    // started after the regular period (Dec 2025-Dec 2026), which is the one running in
+    // October. Taking the ended period put the reference inside it, where both timetables
+    // are active, and hourly loops 1-3 minutes apart pooled into a 4-minute headway (#734).
+    // Only an ended newest period is replaced; a newest period still running today is kept
+    // as before. The replacement skips short running periods (under 28 days, e.g. a
+    // one-week holiday block) when a longer one is also running.
+    const MIN_RUNNING_PERIOD_DAYS = 28;
+    const newestStarted = pastOrPresentMultiStarts.length > 0 ? pastOrPresentMultiStarts[pastOrPresentMultiStarts.length - 1] : undefined;
+    const runningStarts = pastOrPresentMultiStarts.filter(s => groupEnd(s) >= todayStr);
+    const longRunningStarts = runningStarts.filter(s => daysBetween(s, groupEnd(s)) >= MIN_RUNNING_PERIOD_DAYS);
+    const runningStart = newestStarted != null && groupEnd(newestStarted) >= todayStr
+        ? newestStarted
+        : longRunningStarts.length > 0
+        ? longRunningStarts[longRunningStarts.length - 1]
+        : runningStarts.length > 0 ? runningStarts[runningStarts.length - 1] : undefined;
+    const bestStartDate = runningStart != null
+        ? runningStart
+        : pastOrPresentMultiStarts.length > 0
         ? pastOrPresentMultiStarts[pastOrPresentMultiStarts.length - 1]
         : multiStarts.length > 0
             ? multiStarts[multiStarts.length - 1]
@@ -105,6 +131,22 @@ export function detectReferenceDate(
 
     const bestGroup = groups.get(bestStartDate)!;
     const bestEndDate = bestGroup.reduce((max, c) => c.end_date > max ? c.end_date : max, bestGroup[0].end_date);
+    // A reference date inside an ended period nested in the running one (RCT: a July
+    // midpoint of the Dec-Dec regular period lands in the ended Jun-Aug summer period)
+    // still activates both timetables. Move it to the day after that period ends, kept
+    // inside the running period. Only applies when the chosen period is running today.
+    const outsideEndedOverlay = (ref: string): string => {
+        if (runningStart == null) return ref;
+        let result = ref;
+        for (const s of multiStarts) {
+            const end = groupEnd(s);
+            if (s > bestStartDate && end < todayStr && s <= result && result <= end) {
+                const next = addDaysYmd(end, 1);
+                result = next > bestEndDate ? bestEndDate : next;
+            }
+        }
+        return result;
+    };
 
     const sy = parseInt(bestStartDate.substring(0, 4));
     const sm = parseInt(bestStartDate.substring(4, 6)) - 1;
@@ -159,12 +201,22 @@ export function detectReferenceDate(
                 // decades out and holiday exceptions (May-Dec) win, but their midpoint
                 // (Sep 9) is before the newest period starts (Oct 1), which dropped all
                 // 15 routes that only run in that period (#658).
-                return datesRef < bestStartDate ? bestStartDate : datesRef;
+                //
+                // The clamp target is the newest period still running today, not simply the
+                // newest period that has started: RCT's 2026 summer period (Jun 12-Aug 23,
+                // over by October) is the newest, but the regular period (Dec 2025-Dec 2026)
+                // is still running. Clamping to the summer start put the reference inside
+                // summer, where both timetables are active, and hourly loops 2-3 minutes apart
+                // were pooled into a 4-minute headway. When no period is running (a stale
+                // feed), the newest started period is still the target.
+                // The date is clamped into that period's whole start-end window.
+                const clamped = datesRef < bestStartDate ? bestStartDate : datesRef > bestEndDate ? bestEndDate : datesRef;
+                return outsideEndedOverlay(clamped);
             }
         }
     }
 
-    return calendarRef;
+    return outsideEndedOverlay(calendarRef);
 }
 
 /**
