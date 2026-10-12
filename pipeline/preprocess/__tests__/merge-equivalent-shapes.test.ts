@@ -58,4 +58,29 @@ describe('mergeEquivalentShapeVariants', () => {
       'platform-1', 'platform-2', 'platform-1', 'platform-2',
     ]);
   });
+
+  it('merges one-shape-per-trip bus variants when the agency opts into all modes (SamTrans 120, #775)', () => {
+    const far = { id: 'far', points: [[37.7, -122.47], [37.6, -122.42]] as [number, number][] };
+    const gtfs = {
+      agencies: [],
+      routes: [{ route_id: '120-229', route_type: '3', route_short_name: '120' }],
+      trips: [
+        { route_id: '120-229', direction_id: '0', trip_id: 't1', trip_headsign: 'Daly City', shape_id: 'platform-1', service_id: 'weekday' },
+        { route_id: '120-229', direction_id: '0', trip_id: 't2', trip_headsign: 'Daly City', shape_id: 'platform-2', service_id: 'weekday' },
+        { route_id: '120-229', direction_id: '0', trip_id: 't3', trip_headsign: 'Daly City', shape_id: 'far', service_id: 'weekday' },
+      ],
+      stops: [], stopTimes: [], calendar: [], calendarDates: [],
+      shapes: [
+        baseShape,
+        { ...baseShape, id: 'platform-2' },
+        far,
+      ],
+    } as unknown as GtfsData;
+
+    expect(mergeEquivalentShapeVariants(gtfs).mergedTrips).toBe(0);
+    const result = mergeEquivalentShapeVariants(gtfs, { allModes: true });
+    expect(result.mergedTrips).toBe(1);
+    // A different path under the same headsign stays its own shape.
+    expect(result.gtfs.trips.map(trip => trip.shape_id)).toEqual(['platform-1', 'platform-1', 'far']);
+  });
 });

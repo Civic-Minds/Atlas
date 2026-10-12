@@ -17,6 +17,7 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2708/latest.zip",
   "lastFeedExpiry": "20261114",
   "lastFeedVersion": "Revision2",
+  "mergeEquivalentShapeVariantsAllModes": true,
   "lastRefreshedAt": "2026-10-03",
   "cities": [
     "South San Francisco, California",

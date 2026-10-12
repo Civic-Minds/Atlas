@@ -256,6 +256,7 @@ interface AgencyEntry {
   excludeTripHeadsigns?: string[];
   skipLetterSuffixMerge?: boolean;
   mergeEquivalentShapeVariants?: boolean;
+  mergeEquivalentShapeVariantsAllModes?: boolean;
   staged?: boolean;
   fare?: number;
   issueUrl?: string;
