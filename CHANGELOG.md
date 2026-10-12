@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- Feeds that give every sailing day its own service, like Washington State Ferries, now show one day's timetable instead of up to eight days pooled together, so Port Townsend's weekend ferry reads every 90 minutes instead of a false 45 and the Fauntleroy triangle's weekend values match a single day's sailings ([#744](https://github.com/Civic-Minds/Atlas/issues/744)).
 - A data build that runs on a holiday now gives the same results as one the next day: CDTA no longer loses its Sunday and 16 Saturday routes, and MBTA keeps the Orange Line and boats on weekends, when built on a one-day holiday timetable ([#742](https://github.com/Civic-Minds/Atlas/issues/742)).
 - Feeds that list every trip by date, like Metro-North, no longer pick a holiday week such as Thanksgiving as their typical week, which had dropped half its lines; Blacksburg now shows its regular Friday service ([#742](https://github.com/Civic-Minds/Atlas/issues/742)).
 - More branches drawn from a few early-morning trips now show their real all-day frequency, like TTC 35A to Mount Dennis (every 15 instead of 12), and CapMetro 2 is now graded every 30 instead of infrequent to match its every-16 service. Where two branches meet at a shared last stop, like TTC 94 at Castle Frank, the headline counts only the branch's own trips (every 19-20, not the combined 10).

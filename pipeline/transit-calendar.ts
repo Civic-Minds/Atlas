@@ -564,9 +564,14 @@ export function getActiveServiceIds(
     //   nothing — otherwise the holiday trips get merged with the regular weekday
     //   pool, halving the apparent headway (Burlington Route 1: 30m→10m).
     const singleDayCalEntries: GtfsCalendar[] = [];
+    const DOW_NAMES_B: DayName[] = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     for (const cal of calendar) {
         if (cal[field] !== '1') continue;
         if (cal.start_date === cal.end_date) {
+            // A one-day service only counts for the weekday its date falls on: a holiday row
+            // flagged for every day of the week (Burlington's Victoria Day Monday) must not
+            // answer a Saturday query (#744).
+            if (DOW_NAMES_B[ymdToDate(cal.start_date).getDay()] !== day) continue;
             if (referenceDate) {
                 const sy = parseInt(cal.start_date.substring(0, 4)), sm = parseInt(cal.start_date.substring(4, 6)) - 1, sd = parseInt(cal.start_date.substring(6, 8));
                 const ry = parseInt(referenceDate.substring(0, 4)), rm = parseInt(referenceDate.substring(4, 6)) - 1, rd = parseInt(referenceDate.substring(6, 8));
@@ -580,9 +585,37 @@ export function getActiveServiceIds(
             active.add(cal.service_id);
         }
     }
-    // Pass B: only include single-day calendar entries when no multi-day service was found
-    if (active.size === 0) {
-        for (const cal of singleDayCalEntries) active.add(cal.service_id);
+    // Pass B: only include single-day calendar entries when no multi-day service was found.
+    // With a reference date, only the services of the ONE matching date closest to it are
+    // used (later on a tie), as Step 2 does for date-only feeds. WSF gives every operating
+    // day its own one-day service, so taking every match within 90 days pooled 8
+    // Saturdays; one weekend's extra sailings then halved Port Townsend's 90-minute
+    // weekend headway to 45 (#744).
+    if (active.size === 0 && singleDayCalEntries.length > 0) {
+        let chosen = singleDayCalEntries;
+        if (referenceDate) {
+            // A date whose one-day services are all cancelled in calendar_dates.txt is not a
+            // candidate; the cancellation would otherwise empty the whole day type.
+            const removedOn = new Map<string, Set<string>>();
+            for (const cd of (calendarDates ?? [])) {
+                if (cd.exception_type !== '2') continue;
+                if (!removedOn.has(cd.date)) removedOn.set(cd.date, new Set());
+                removedOn.get(cd.date)!.add(cd.service_id);
+            }
+            const candidates = [...new Set(singleDayCalEntries.map(c => c.start_date))]
+                .filter(date => singleDayCalEntries.some(c => c.start_date === date && !removedOn.get(date)?.has(c.service_id)));
+            if (candidates.length > 0) {
+                const distance = (date: string) => Math.abs(ymdToDate(date).getTime() - ymdToDate(referenceDate).getTime());
+                const closest = candidates.reduce((best, date) => {
+                    const d = distance(date), b = distance(best);
+                    return d < b || (d === b && date > best) ? date : best;
+                });
+                chosen = singleDayCalEntries.filter(c => c.start_date === closest);
+            } else {
+                chosen = [];
+            }
+        }
+        for (const cal of chosen) active.add(cal.service_id);
     }
 
     // calendar_dates.txt can override a calendar.txt service_id for a specific date
