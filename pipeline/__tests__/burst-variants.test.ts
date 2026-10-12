@@ -4,7 +4,8 @@ import JSZip from 'jszip';
 import { describe, expect, it } from 'vitest';
 import { processGtfsBuffer } from '../process-core';
 import { applyAnalysisCriteria } from '../transit-phase2';
-import type { RawRouteDepartures } from '../../types/gtfs';
+import { MAX_UNCOVERED_METERS, uncoveredMeters } from '../shapeCoverage';
+import type { AnalysisResult, RawRouteDepartures } from '../../types/gtfs';
 
 // #732: short-turn and burst variants with a handful of trips packed into a few minutes were
 // time-limited with a frequency tier from their in-burst gaps, and the route's best tier and the
@@ -36,6 +37,8 @@ function raw(route: string, departureTimes: number[], extra: Partial<RawRouteDep
   }));
 }
 
+const ALL_COVERED = () => true;
+
 const every = (from: number, to: number, step: number) => {
   const out: number[] = [];
   for (let t = from; t <= to; t += step) out.push(t);
@@ -55,15 +58,16 @@ describe('short-turn and burst variants (#732)', () => {
     for (const p of routes) expect(p.worstDirectionHeadway).toBe(29);
   });
 
-  it('ttc 340: the 3-trip night burst (25:31-26:04) no longer sets tier 20 for the westbound', async () => {
-    // Hand count: westbound night trips every 27-30 from 26:26 to 28:23 (shape 1122569), plus a
-    // 3-trip pattern at 25:31, 25:48, 26:04 (shape 1122570) that read as tier 20, headway 17.
-    const west = (await weekdayRoutes('ttc-340-night', 'ttc')).filter(p => p.directionId === 1);
-    expect(west.length).toBeGreaterThan(0);
-    for (const p of west) {
-      expect(p.tier).not.toBe('20');
-      expect(p.headway === null || p.headway >= 27).toBe(true);
-    }
+  it('ttc 340: the 3-trip night burst before the regular night pattern starts stays visible', async () => {
+    // Hand count: westbound night trips every 27-30 from 26:26 to 28:23 (shape 1122569), and a
+    // 3-trip pattern at 25:31, 25:48, 26:04 (shape 1122570) before them. No regular trip runs in
+    // the hour before the burst, so it is the only westbound service then and is not demoted.
+    const captured: AnalysisResult[] = [];
+    await processGtfsBuffer(await fixtureZip('ttc-340-night'), undefined, {
+      slug: 'ttc',
+      onAnalysisResults: results => { captured.push(...results); },
+    });
+    expect(captured.find(r => r.day === 'Weekday' && r.shapeId === '1122570')?.serviceClass).toBe('time-limited');
   });
 
   it('stl AOUT2626E: a synthesized 2-trip direction (06:09, 10:07) is irregular and leaves the route median alone', async () => {
@@ -88,11 +92,71 @@ describe('short-turn and burst variants (#732)', () => {
     for (const r of results.filter(x => x.day === 'Weekday')) expect(r).toMatchObject({ tier: '30', serviceClass: 'time-limited' });
   });
 
+  it('capmetro 20 SB: evening slices after the regular shapes end stay time-limited', async () => {
+    // Hand count, GTFS service 2-172 (Wed 2026-10-14), route 20 direction 1, one shape per vehicle
+    // slice: 721 runs 05:04-07:44 plus one 21:37 trip (regular), 728 09:00-11:15 plus 17:45
+    // (regular); 753 runs 20:02 20:47 21:07 22:22 22:37 and 757 22:07 22:52 23:07. No regular shape
+    // has two departures within an hour of either evening slice, so they are the route's evening
+    // service and must not be demoted.
+    const captured: AnalysisResult[] = [];
+    await processGtfsBuffer(await fixtureZip('capmetro-20-evening'), undefined, {
+      slug: 'capmetro',
+      onAnalysisResults: results => { captured.push(...results); },
+    });
+    const weekday = (shape: string) => captured.find(r => r.day === 'Weekday' && r.shapeId === shape);
+    expect(weekday('721')?.serviceClass).toBe('regular');
+    expect(weekday('753')).toMatchObject({ serviceClass: 'time-limited', tier: '60' });
+    expect(weekday('757')).toMatchObject({ serviceClass: 'time-limited', tier: '60' });
+  });
+
+  it('pace 533: a morning burst on its own road is not demoted, because its regular sibling does not draw that road', async () => {
+    // Hand count, GTFS service 2026-08-FX-Weekday-01, direction 1: shape 5330165 runs 06:05,
+    // 06:35, 07:07 along Molitor Rd (18 stops no other 533 trip serves); the regular shape 5330167
+    // runs 26 trips 07:35-22:32 on another road. The regular pattern runs within the hour, but it
+    // does not draw the burst's road, so the burst is not a duplicate.
+    let raw: RawRouteDepartures[] = [];
+    await processGtfsBuffer(await fixtureZip('pace-533-molitor'), undefined, {
+      slug: 'pace-bus',
+      analysisCriteriaFn: (input: RawRouteDepartures[]) => { raw = input; return applyAnalysisCriteria(input); },
+    });
+    const text = readFileSync(resolve(FIXTURES, 'pace-533-molitor', 'shapes.txt'), 'utf8').trim().split('\n');
+    const header = text[0].split(',');
+    const col = (name: string) => header.indexOf(name);
+    const rows = text.slice(1).map(line => line.split(','));
+    const points = (id: string): [number, number][] => rows.filter(c => c[col('shape_id')] === id)
+      .sort((x, y) => Number(x[col('shape_pt_sequence')]) - Number(y[col('shape_pt_sequence')]))
+      .map(c => [Number(c[col('shape_pt_lat')]), Number(c[col('shape_pt_lon')])]);
+    expect(uncoveredMeters(points('5330165'), [points('5330167')])).toBeGreaterThan(MAX_UNCOVERED_METERS);
+    const covered = (shapeId: string | undefined, by: string[]) =>
+      !!shapeId && uncoveredMeters(points(shapeId), by.map(points)) <= MAX_UNCOVERED_METERS;
+    const burst = (results: AnalysisResult[]) => results.find(r => r.day === 'Weekday' && r.shapeId === '5330165');
+    expect(burst(applyAnalysisCriteria(raw, undefined, undefined, undefined, covered))?.serviceClass).toBe('time-limited');
+  });
+
+  it('pace 533 through processGtfsBuffer (real geometry, no override): 5330165 stays time-limited', async () => {
+    const captured: AnalysisResult[] = [];
+    await processGtfsBuffer(await fixtureZip('pace-533-molitor'), undefined, {
+      slug: 'pace-bus',
+      onAnalysisResults: results => { captured.push(...results); },
+    });
+    expect(captured.find(r => r.day === 'Weekday' && r.shapeId === '5330165')?.serviceClass).toBe('time-limited');
+  });
+
+  it('a burst just after the regular pattern ends is the only service then and stays', () => {
+    // Regular pattern every 14 until 19:00; a 3-trip burst at 19:20-19:40 has no regular
+    // departure after it, so it is the route's only service in that hour and stays visible.
+    const results = applyAnalysisCriteria([
+      ...raw('22', every(420, 1140, 14), { headsign: 'main', shapeId: 'main' }),
+      ...raw('22', [1160, 1170, 1180], { headsign: 'late', shapeId: 'late' }),
+    ], undefined, undefined, undefined, ALL_COVERED);
+    expect(results.find(r => r.headsign === 'late')).toMatchObject({ serviceClass: 'time-limited' });
+  });
+
   it('a burst beside a regular pattern of the same direction becomes irregular', () => {
     const results = applyAnalysisCriteria([
       ...raw('22', every(420, 1320, 14), { headsign: 'MONDAWMIN METRO', shapeId: 'main' }),
       ...raw('22', [870, 875, 877], { headsign: 'COLD SPRING METRO', shapeId: 'short' }),
-    ]);
+    ], undefined, undefined, undefined, ALL_COVERED);
     expect(results.find(r => r.headsign === 'COLD SPRING METRO')).toMatchObject({ tier: 'span', serviceClass: 'irregular' });
     expect(results.find(r => r.headsign === 'MONDAWMIN METRO')).toMatchObject({ tier: '15', serviceClass: 'regular' });
   });
@@ -101,7 +165,7 @@ describe('short-turn and burst variants (#732)', () => {
     const results = applyAnalysisCriteria([
       ...raw('22', every(420, 1320, 14), { headsign: 'main', shapeId: 'main' }),
       ...raw('22', [1140, 1170, 1201, 1231], { headsign: 'evening', shapeId: 'evening' }),
-    ]);
+    ], undefined, undefined, undefined, ALL_COVERED);
     // Gaps 30, 31, 30: the 31 is a grace violation at tier 30, so the tier is 60.
     expect(results.find(r => r.headsign === 'evening')).toMatchObject({ tier: '60', serviceClass: 'time-limited' });
   });
@@ -114,17 +178,36 @@ describe('short-turn and burst variants (#732)', () => {
     const results = applyAnalysisCriteria([
       ...raw('6614', every(420, 1320, 10), { headsign: 'main', shapeId: 'main' }),
       ...days.map(day => ({ ...raw('6614', day === 'Friday' ? evening.slice(0, 3) : evening, { headsign: '4 Downtown', shapeId: '321165' })[0], day })),
-    ]);
+    ], undefined, undefined, undefined, ALL_COVERED);
     const r = results.find(x => x.headsign === '4 Downtown' && x.day === 'Weekday');
     expect(r?.serviceClass).toBe('time-limited');
     expect(r?.tier).not.toBe('span');
+  });
+
+  it('one or two trips outside the daytime window are irregular only when the route has regular service', () => {
+    // capmetro 322 NB shape 2561: 06:00 and 15:30, and every other 322 trip pair has its own shape,
+    // so this pair is the route's only drawn feature. stl 26 d1 (06:09, 10:07) sits beside a
+    // 68-trip direction.
+    const alone = applyAnalysisCriteria(raw('322', [360, 930], { dir: '1', shapeId: '2561' }), undefined, undefined, undefined, ALL_COVERED);
+    expect(alone.find(r => r.day === 'Weekday')).toMatchObject({ serviceClass: 'regular' });
+    const beside = applyAnalysisCriteria([
+      ...raw('26', every(420, 1320, 17), { dir: '0', shapeId: 'AOUT2626E1' }),
+      ...raw('26', [369, 607], { dir: '1', shapeId: 'AOUT2626E5' }),
+    ], undefined, undefined, undefined, ALL_COVERED);
+    expect(beside.find(r => r.day === 'Weekday' && r.dir === '1')).toMatchObject({ serviceClass: 'irregular', tier: 'span' });
+    // A regular pattern with no shape data cannot show the stray's road is drawn: kept.
+    const noShape = applyAnalysisCriteria([
+      ...raw('26', every(420, 1320, 17), { dir: '0' }),
+      ...raw('26', [369, 607], { dir: '1', shapeId: 'AOUT2626E5' }),
+    ], undefined, undefined, undefined, ALL_COVERED);
+    expect(noShape.find(r => r.day === 'Weekday' && r.dir === '1')).toMatchObject({ serviceClass: 'regular' });
   });
 
   it('a burst in the other direction does not count as a sibling', () => {
     const results = applyAnalysisCriteria([
       ...raw('22', every(420, 1320, 14), { dir: '1' }),
       ...raw('22', [870, 875, 877], { dir: '0' }),
-    ]);
+    ], undefined, undefined, undefined, ALL_COVERED);
     expect(results.find(r => r.dir === '0')).toMatchObject({ serviceClass: 'time-limited' });
   });
 });

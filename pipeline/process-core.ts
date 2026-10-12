@@ -32,6 +32,7 @@ import { routeDataQualityWarningForShape } from './routeDataQuality.js';
 import { deriveRouteBranch } from '../shared/routeBranch.js';
 import { isRailLikeRoute } from '../shared/modes.js';
 import { computePeriodCoverageHeadways } from './headway-utils.js';
+import { makeShapeCoverChecker } from './shapeCoverage.js';
 
 export type { GtfsPreprocess };
 export type { HeadwayByPeriod };
@@ -305,6 +306,8 @@ export interface ProcessOptions extends GtfsTransformOptions {
    * omit this and continue to use the default analysis criteria.
    */
   analysisCriteriaFn?: (raw: RawRouteDepartures[]) => AnalysisResult[];
+  /** Read-only view of the phase 2 results, for tests and audits. Does not change the output. */
+  onAnalysisResults?: (results: readonly AnalysisResult[]) => void;
 }
 
 /** Thrown when validateGtfs reports errors and options.force is not set. */
@@ -560,9 +563,14 @@ export async function processGtfsBuffer(
   // Same tail days phase 2 uses (#718), so the part-week decision (phase 2) and the stop-level
   // full-week check below both skip a weekday that only carries the previous night's tail.
   const weekdayServiceDays = weekdayServiceDaysByRouteDir(gtfs, refDate, activeServiceIdsByCalendarDay, undefined, previousNightTailDays(raw));
+  // A burst or stray-trip pattern is demoted to irregular only when other regular shapes already
+  // draw its road (#732). Unknown geometry counts as not covered, so nothing is hidden blindly.
+  const isShapeCovered = makeShapeCoverChecker(shapeById);
   const analyze = options?.analysisCriteriaFn
-    ?? ((input: RawRouteDepartures[]) => applyAnalysisCriteria(input, undefined, undefined, weekdayServiceDays));
-  const results = analyze(raw).map(result =>
+    ?? ((input: RawRouteDepartures[]) => applyAnalysisCriteria(input, undefined, undefined, weekdayServiceDays, isShapeCovered));
+  const analyzed = analyze(raw);
+  options?.onAnalysisResults?.(analyzed);
+  const results = analyzed.map(result =>
     options?.slug === 'niagara' ? normalizeNrtAnalysisResult(result) : result,
   );
 
