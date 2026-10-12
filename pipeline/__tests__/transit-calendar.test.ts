@@ -330,6 +330,30 @@ describe('detectReferenceDate all-singleton calendar with an ended nested servic
     expect(detectReferenceDate(calendar, [], trips)).toBe('20261230');
   });
 
+  it('keeps the old reference when the running service carries too few routes (route-share guard)', () => {
+    today('2026-10-12');
+    const calendar = [
+      cal('year-round', all, '20260331', '20261125'),
+      cal('summer', all, '20260523', '20260913'),
+    ];
+    const trips = [
+      ...['y1', 'y2'].flatMap(r => tripsFor({ 'year-round': [r, 10] })),
+      ...['s1', 's2', 's3', 's4', 's5', 's6', 's7', 's8'].flatMap(r => tripsFor({ summer: [r, 10] })),
+    ];
+    // 10 routes in range on the summer midpoint, 2 after summer ends: no switch.
+    expect(detectReferenceDate(calendar, [], trips)).toBe('20260718');
+  });
+
+  it('keeps the median for a stale feed where nothing is running', () => {
+    today('2026-10-12');
+    const calendar = [
+      cal('main', all, '20250101', '20251231'),
+      cal('summer', all, '20250601', '20250831'),
+    ];
+    const trips = tripsFor({ main: ['a', 20], summer: ['b', 20] });
+    expect(detectReferenceDate(calendar, [], trips)).toBe('20250716');
+  });
+
   it('leaves multi-entry calendars to the #734 running-period choice', () => {
     today('2026-10-14');
     const calendar = [

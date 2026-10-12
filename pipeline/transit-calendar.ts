@@ -134,7 +134,9 @@ export function detectReferenceDate(
     // the summer start, so the reference landed in July and the ended BC Express showed
     // every day in October (#767). Only when that median service spans several days and
     // has ended, take the newest multi-day service of 28+ days still running instead.
-    // A one-day median (WSF-style feeds, holiday entries) keeps the fallback.
+    // A one-day median (WSF-style feeds, holiday entries) keeps the fallback. The
+    // route-share guard below still applies: a running service carrying under half the
+    // routes in range on the old reference keeps the old reference.
     const singletonMultiDayStarts = rawMultiStarts.length === 0
         ? sortedStarts.filter(s => groupEnd(s) > s)
         : [];
@@ -156,7 +158,7 @@ export function detectReferenceDate(
         ? newestStarted
         : multiStarts.length > 0
             ? multiStarts[multiStarts.length - 1]
-            : sortedStarts[Math.floor(sortedStarts.length / 2)];
+            : medianStart;
     const removalsByDate = new Map<string, Set<string>>();
     for (const cd of (calendarDates ?? [])) {
         if (cd.exception_type !== '2') continue;
