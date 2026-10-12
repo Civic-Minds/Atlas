@@ -27,14 +27,11 @@ export const WHATS_NEW: WhatsNewRelease[] = [
     month: 'October 2026',
     items: [
       { text: 'Pick a route to fade the rest of the map, so your route stands out.' },
-      { text: 'Search results, settings and the About page now fit better on phones.' },
+      { text: 'On phones, search results, settings and the About page fit better, stop names no longer break mid-word and the search bar stays on one line.' },
       { text: 'Compare two maps side by side, each with its own day and time.', beta: true },
       { text: 'On-demand zones show their hours and whether they are running right now.', beta: true },
       { text: 'On phones, tapping a route opens its details at the bottom of the screen.', beta: true },
-      { text: 'Anyone can now save the map as an image.' },
-      { text: 'Saved map images name the place, explain what is shown and include a colour key.' },
-      { text: 'Saved map images draw your chosen route in bold and link back to the map.' },
-      { text: 'On phones, stop names no longer break mid-word and the search bar stays on one line.' },
+      { text: 'Anyone can now save the map as an image that names the place, explains what is shown, includes a colour key, draws your chosen route in bold and links back to the map.' },
     ],
   },
 ];

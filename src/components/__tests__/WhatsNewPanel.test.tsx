@@ -30,6 +30,8 @@ describe('What\'s new link', () => {
     const [major, minor] = version.split('.');
     const button = screen.getByRole('button', { name: `v${major}.${minor} · What's new` });
     expect(button.className).toContain('text-[10px]');
+    const pills = [...button.parentElement!.children].map(el => el.textContent);
+    expect(pills.indexOf(button.textContent)).toBeLessThan(pills.indexOf('Feedback'));
     fireEvent.click(button);
     expect(await screen.findByRole('dialog', { name: "What's new" })).toBeInTheDocument();
     fireEvent.keyDown(window, { key: 'Escape' });
@@ -55,19 +57,19 @@ describe('WhatsNewPanel', () => {
     const items = screen.getAllByRole('listitem').map(li => li.textContent);
     expect(items).toEqual(['Public change one.', 'Beta change.Beta', 'Public change two.', 'Only beta here.Beta']);
     expect(screen.getAllByRole('heading', { level: 3 }).map(h => h.textContent)).toEqual([
-      'Version 3.3 · October 2026',
-      'Version 3.2 · September 2026',
+      'App version 3.3 · October 2026',
+      'App version 3.2 · September 2026',
     ]);
     unmount();
 
     render(<WhatsNewPanel onClose={() => {}} includeBeta={false} releases={RELEASES} loadRelease={async () => null} />);
     expect(screen.getAllByRole('listitem').map(li => li.textContent)).toEqual(['Public change one.', 'Public change two.']);
-    expect(screen.queryByText('Version 3.2')).toBeNull();
+    expect(screen.queryByText(/version 3\.2/)).toBeNull();
   });
 
   it('shows the data date from the release manifest', async () => {
     render(<WhatsNewPanel onClose={() => {}} includeBeta releases={RELEASES} loadRelease={async () => ({ generatedAt: '2026-10-09T05:21:01.950Z' })} />);
-    expect(await screen.findByText('Data updated Oct 9, 2026')).toBeInTheDocument();
+    expect(await screen.findByText('Map data updated Oct 9, 2026')).toBeInTheDocument();
   });
 
   it.each([
@@ -79,7 +81,7 @@ describe('WhatsNewPanel', () => {
     render(<WhatsNewPanel onClose={() => {}} includeBeta releases={RELEASES} loadRelease={loadRelease} />);
     await screen.findByRole('dialog');
     await new Promise(resolve => setTimeout(resolve, 0));
-    expect(screen.queryByText(/Data updated/)).toBeNull();
+    expect(screen.queryByText(/data updated/i)).toBeNull();
   });
 
   it('dataUpdatedLabel never invents a date', () => {

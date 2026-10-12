@@ -29,12 +29,6 @@ export function MapAttribution({ whatsNewEnabled = FEATURES.whatsNew }: { whatsN
       >
         About Atlas
       </a>
-      <a
-        href={feedbackHref}
-        className={`${MAP_BADGE} h-8 ${MAP_BADGE_LABEL} no-underline hover:text-[var(--text-primary)]`}
-      >
-        Feedback
-      </a>
       {whatsNewEnabled && (
         <button
           type="button"
@@ -46,6 +40,12 @@ export function MapAttribution({ whatsNewEnabled = FEATURES.whatsNew }: { whatsN
           v{shortVersion(appVersion)} · What's new
         </button>
       )}
+      <a
+        href={feedbackHref}
+        className={`${MAP_BADGE} h-8 ${MAP_BADGE_LABEL} no-underline hover:text-[var(--text-primary)]`}
+      >
+        Feedback
+      </a>
       <div className={`${MAP_BADGE} h-8`}>
         <p className={`${MAP_BADGE_LABEL} whitespace-nowrap`}>
           <a
