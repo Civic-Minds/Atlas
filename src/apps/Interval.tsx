@@ -26,6 +26,7 @@ import { findVariantFamily } from '../utils/routeVariants';
 import { splitRouteKey } from '../utils/routeKey';
 import { resolveRouteSelectionForDay } from '../utils/routeSelection';
 import { syncUrlParams } from '../utils/syncUrlParams';
+import { encodeAgencySelection, encodeModesParam, isAgencyOff, parseAgencyUrlRule, parseModesParam, settleAgencyUrlRule, shouldPersistAgencySelection, type AgencyUrlRule } from '../utils/shareUrlState';
 import { searchOverlayHidesPanel } from '../utils/format';
 import { trackEvent } from '../lib/analytics';
 import type { FrequentServiceFrequency, FrequentServiceWindow } from '../../shared/frequentService';
@@ -284,21 +285,40 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   // saved off-list once into a ref instead of baking it into a lazy initializer, and use the
   // same ref to fold in any agencies that arrive after mount.
   const savedAgenciesOffRef = useRef<Set<string>>(readSavedAgenciesOff());
-  const [selectedAgencies, setSelectedAgencies] = useState<Set<string>>(
-    () => new Set(agencies.filter(a => !savedAgenciesOffRef.current.has(a.slug)).map(a => a.slug)),
-  );
+  // Shared-link selection (?agencies= / ?hide=, CIV-72). Overrides the stored off-list for
+  // this visit only; the stored prefs are left alone until the viewer changes the selection.
+  const agencyUrlRuleRef = useRef<AgencyUrlRule | null>(parseAgencyUrlRule(searchParams));
+  const agencyUrlRuleSettledRef = useRef(false);
+  const agencySelectionUserChangedRef = useRef(false);
+  const agencyStartsOff = (slug: string, catalogSlugs: string[]) => {
+    if (!agencyUrlRuleSettledRef.current && catalogSlugs.length > 0) {
+      agencyUrlRuleSettledRef.current = true;
+      agencyUrlRuleRef.current = settleAgencyUrlRule(agencyUrlRuleRef.current, catalogSlugs);
+    }
+    return isAgencyOff(slug, agencyUrlRuleRef.current, savedAgenciesOffRef.current);
+  };
+  const [selectedAgencies, setSelectedAgencies] = useState<Set<string>>(() => {
+    const slugs = agencies.map(a => a.slug);
+    return new Set(slugs.filter(slug => !agencyStartsOff(slug, slugs)));
+  });
+  const setSelectedAgenciesByUser = useCallback<React.Dispatch<React.SetStateAction<Set<string>>>>((value) => {
+    agencySelectionUserChangedRef.current = true;
+    setSelectedAgencies(value);
+  }, []);
   const knownAgencySlugsRef = useRef<Set<string>>(new Set(agencies.map(a => a.slug)));
   useEffect(() => {
     const newlyLoaded = agencies.filter(a => !knownAgencySlugsRef.current.has(a.slug));
     if (newlyLoaded.length === 0) return;
     for (const a of newlyLoaded) knownAgencySlugsRef.current.add(a.slug);
+    const slugs = agencies.map(a => a.slug);
+    const turnOn = newlyLoaded.filter(a => !agencyStartsOff(a.slug, slugs)).map(a => a.slug);
     setSelectedAgencies(prev => {
       const next = new Set(prev);
-      for (const a of newlyLoaded) if (!savedAgenciesOffRef.current.has(a.slug)) next.add(a.slug);
+      for (const slug of turnOn) next.add(slug);
       return next;
     });
   }, [agencies]);
-  const [selectedModes, setSelectedModes] = useState<Set<number>>(new Set());
+  const [selectedModes, setSelectedModes] = useState<Set<number>>(() => parseModesParam(searchParams));
   const [period, setPeriod] = useState<TimePeriod>(() => {
     try {
       const p = searchParams.get('p') || searchParams.get('period');
@@ -631,11 +651,23 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     syncUrlParams({ limited: hideLimitedService ? null : '0' });
   }, [hideLimitedService]);
   useEffect(() => {
+    if (!shouldPersistAgencySelection(agencyUrlRuleRef.current, agencySelectionUserChangedRef.current)) return;
     try {
       const off = agencies.filter(a => !selectedAgencies.has(a.slug)).map(a => a.slug);
       localStorage.setItem(AGENCY_PREF_STORAGE_KEY, JSON.stringify(off));
     } catch {}
   }, [selectedAgencies, agencies]);
+  // Agency selection in the share URL. Wait for the catalog (an include list built from a
+  // partial catalog would be wrong); keep an incoming shared link untouched until the viewer
+  // changes the selection.
+  useEffect(() => {
+    if (agencies.length === 0) return;
+    if (agencyUrlRuleRef.current && !agencySelectionUserChangedRef.current) return;
+    syncUrlParams(encodeAgencySelection(selectedAgencies, agencies.map(a => a.slug)));
+  }, [selectedAgencies, agencies]);
+  useEffect(() => {
+    syncUrlParams({ m: encodeModesParam(selectedModes) });
+  }, [selectedModes]);
 
   useEffect(() => {
     onStatsChange?.(stats);
@@ -1050,7 +1082,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
               setPeriod={setPeriod}
               agencies={allAgencies ?? agencies}
               selectedAgencies={selectedAgencies}
-              setSelectedAgencies={setSelectedAgencies}
+              setSelectedAgencies={setSelectedAgenciesByUser}
               bounds={bounds}
               researchMode={frequentServiceView}
               researchDays={frequentServiceDays}
@@ -1091,7 +1123,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
               agencies={agencies}
               allAgencies={allAgencies}
               selectedAgencies={selectedAgencies}
-              setSelectedAgencies={setSelectedAgencies}
+              setSelectedAgencies={setSelectedAgenciesByUser}
               bounds={bounds}
               hideLowQuality={hideLowQuality}
               setHideLowQuality={setHideLowQuality}
@@ -1121,7 +1153,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
         setMaxHeadway={setMaxHeadway}
         agencies={agencies}
         selectedAgencies={selectedAgencies}
-        setSelectedAgencies={setSelectedAgencies}
+        setSelectedAgencies={setSelectedAgenciesByUser}
         selectedModes={selectedModes}
         setSelectedModes={setSelectedModes}
         day={day}
