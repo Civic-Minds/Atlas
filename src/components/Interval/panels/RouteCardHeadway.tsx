@@ -21,7 +21,7 @@ import {
 } from '../cardUi';
 import { CARD_NOTICE, CARD_NOTICE_FOOTER } from '../../../styles';
 import { FEATURES, SPARKLINE_HOURS, TIME_PERIODS, formatPeriodHourLong, formatPeriodRangeLong, periodKeyForHour } from '../../../../shared/config';
-import { hasDirectionPeriodService, routeCardCoverageText, routeCardDisplayHeadway, routeCardDisplayHeadwayRange, routeCardDisplayLimited } from '../../../utils/effectiveHeadway';
+import { hasDirectionPeriodService, pairedTripSafeHeadway, routeCardCoverageText, routeCardDisplayHeadway, routeCardDisplayHeadwayRange, routeCardDisplayLimited } from '../../../utils/effectiveHeadway';
 import { buildRouteServiceSummary, metricValueForPeriod } from '../../../utils/routeFacts';
 import { unevenPeriodMaxGap } from '../../../utils/routeCardUneven';
 import {
@@ -90,7 +90,7 @@ function sparklineHeadwayByHour(
     const pk = periodKeyForHour(h);
     if (!pk) { out[h] = hw; continue; }
     const periodVals = directions
-      .map(d => metricValueForPeriod(buildRouteServiceSummary(d).branch, pk as keyof HeadwayByPeriod))
+      .map(d => pairedTripSafeHeadway(d, pk as keyof HeadwayByPeriod, metricValueForPeriod(buildRouteServiceSummary(d).branch, pk as keyof HeadwayByPeriod)))
       .filter((v): v is number => v != null);
     if (periodVals.length === 0) { out[h] = hw; continue; }
     const periodRep = periodVals.length === 1 ? periodVals[0] : medianHeadway(periodVals);
@@ -434,7 +434,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           ? Object.fromEntries(HOURS.map(h => [h, primaryMultiBranch!.realTier
               .map((branch, i) => ({
                 label: branch.headsign ?? `Branch ${i + 1}`,
-                headway: buildRouteServiceSummary(branch).branch.byHour?.[h] ?? null,
+                headway: pairedTripSafeHeadway(branch, periodKeyForHour(h) as TimePeriod | null, buildRouteServiceSummary(branch).branch.byHour?.[h] ?? null),
                 color: ['#2563eb', '#db2777', '#059669', '#d97706'][i % 4],
               }))
               .filter((segment): segment is { label: string; headway: number; color: string } => segment.headway != null)]))
@@ -588,7 +588,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                     const dimmed = maxHeadway !== Infinity && !featurePassesHeadwayFilter(d, period, maxHeadway);
                     return (() => {
                       const displayH = hoveredHour != null
-                        ? buildRouteServiceSummary(d).branch.byHour?.[hoveredHour] ?? routeCardDisplayHeadway(d, period)
+                        ? pairedTripSafeHeadway(d, periodKeyForHour(hoveredHour) as TimePeriod | null, buildRouteServiceSummary(d).branch.byHour?.[hoveredHour] ?? null) ?? routeCardDisplayHeadway(d, period)
                         : routeCardDisplayHeadway(d, period);
                       const label = branchLabel(group, d, gi);
                       if (!label && !collapseGroups && displayH == null) return null;
