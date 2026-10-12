@@ -24,7 +24,7 @@
   ],
   "timezone": "America/Los_Angeles",
   "lastRawArchiveKey": "20260131-84ccd5ec5befb0c2",
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270130",
@@ -48,5 +48,7 @@
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://feed.ltd.org/TMGTFSRealTimeWebService/GTFS/google_transit.zip"
 }

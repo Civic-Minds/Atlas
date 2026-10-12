@@ -15,9 +15,9 @@
     -72.9218
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-524/latest.zip",
-  "lastFeedExpiry": "20261226",
+  "lastFeedExpiry": "20270523",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "2026-10-12",
   "cities": [
     "Greenburgh, New York",
     "Danbury, Connecticut",
@@ -30,9 +30,30 @@
     "East Norwalk, Connecticut",
     "Kings Bridge, New York"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261226",
-  "timezone": "America/New_York"
+  "expiredFeedCheckExpiry": "20270523",
+  "timezone": "America/New_York",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-524/latest.zip",
+  "feedQuality": {
+    "status": "review",
+    "score": 70,
+    "reasons": [
+      "6 route have stops whose frequency differs from the overall route schedule."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 6,
+      "featureCount": 69
+    },
+    "checkedAt": "2026-10-12"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

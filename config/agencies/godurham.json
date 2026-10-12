@@ -35,13 +35,15 @@
   "lastFeedExpiry": "20261231",
   "lastFeedVersion": "20260930",
   "lastRefreshedAt": "2026-10-03",
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261014",
+  "expiredFeedCheckExpiry": "20261025",
   "timezone": "America/New_York",
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://godurham.rideralerts.com/InfoPoint/GTFS-Zip.ashx"
 }

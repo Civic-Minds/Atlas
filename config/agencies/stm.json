@@ -36,7 +36,7 @@
     "Rosemont–La Petite-Patrie, Quebec",
     "Ville-Marie, Quebec"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261025",
@@ -55,5 +55,7 @@
     },
     "checkedAt": "2026-08-24"
   },
-  "timezone": "America/Montreal"
+  "timezone": "America/Montreal",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://www.stm.info/sites/default/files/gtfs/gtfs_stm.zip"
 }

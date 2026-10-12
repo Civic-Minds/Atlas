@@ -19,12 +19,14 @@
   "lastRefreshedAt": "20260811",
   "timezone": "America/Los_Angeles",
   "lastRawArchiveKey": "20220101-b96535fe37ea9e54",
-  "lastFeedCheckAt": "20261007",
-  "expiredFeedCheckCount": 4,
+  "lastFeedCheckAt": "20261012",
+  "expiredFeedCheckCount": 5,
   "expiredFeedCheckSince": "20260622",
   "expiredFeedCheckExpiry": "20220101",
   "feedRefreshStatus": "stale",
   "feedRefreshError": "all available feeds expired (latest 20220101)",
-  "feedRefreshErrorAt": "20261007",
-  "feedRefreshRetryCount": 2
+  "feedRefreshErrorAt": "20261012",
+  "feedRefreshRetryCount": 3,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/taft-ca-us/taft-ca-us.zip"
 }

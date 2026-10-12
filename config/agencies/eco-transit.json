@@ -11,9 +11,11 @@
   "lastFeedExpiry": "20261121",
   "lastFeedVersion": "S1000093",
   "lastRefreshedAt": "2026-08-07",
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261121",
-  "timezone": "America/Denver"
+  "timezone": "America/Denver",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://evta.org/gtfs.zip"
 }

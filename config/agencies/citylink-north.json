@@ -31,12 +31,12 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 6
     },
-    "checkedAt": "2026-10-07"
+    "checkedAt": "2026-10-12"
   },
-  "lastFeedExpiry": "20261105",
+  "lastFeedExpiry": "20271231",
   "lastFeedVersion": "20250228",
-  "lastRefreshedAt": "2026-10-07",
-  "lastFeedCheckAt": "20261007",
+  "lastRefreshedAt": "2026-10-12",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
@@ -44,5 +44,7 @@
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://passio3.com/kootenai/passioTransit/gtfs/google_transit.zip"
 }

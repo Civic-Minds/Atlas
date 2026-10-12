@@ -17,7 +17,7 @@
   "lastFeedExpiry": "20270201",
   "lastFeedVersion": "UTC: 28-Aug-2026 14:56",
   "lastRefreshedAt": "2026-09-07",
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270201",
@@ -37,5 +37,7 @@
       "featureCount": 8
     },
     "checkedAt": "2026-09-07"
-  }
+  },
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2330/latest.zip"
 }

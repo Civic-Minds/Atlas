@@ -15,11 +15,11 @@
     -73.4
   ],
   "feedUrl": "https://exo.quebec/uploads/ressources-telechargeables/a-propos/donnees-ouvertes/citla/google_transit.zip",
-  "lastFeedExpiry": null,
+  "lastFeedExpiry": "20270103",
   "lastFeedVersion": null,
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-744/latest.zip",
   "gtfsFares": true,
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-10-12",
   "cities": [
     "Saint-Louis-de-Terrebonne, Quebec",
     "Saint-Jérôme, Quebec",
@@ -29,13 +29,30 @@
     "Terrebonne, Quebec",
     "Laval, Quebec"
   ],
-  "lastFeedCheckAt": "20261007",
-  "expiredFeedCheckCount": 1,
-  "expiredFeedCheckSince": "20260622",
-  "expiredFeedCheckExpiry": "20260823",
+  "lastFeedCheckAt": "20261012",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270103",
   "timezone": "America/Montreal",
-  "feedRefreshStatus": "stale",
-  "feedRefreshError": "all available feeds expired (latest 20260823)",
-  "feedRefreshErrorAt": "20261007",
-  "feedRefreshRetryCount": 1
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://exo.quebec/uploads/ressources-telechargeables/a-propos/donnees-ouvertes/citla/google_transit.zip",
+  "feedQuality": {
+    "status": "review",
+    "score": 80,
+    "reasons": [
+      "2 route have stops whose frequency differs from the overall route schedule."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 2,
+      "featureCount": 180
+    },
+    "checkedAt": "2026-10-12"
+  }
 }

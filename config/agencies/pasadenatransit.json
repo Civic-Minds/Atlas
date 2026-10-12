@@ -8,16 +8,37 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-41/latest.zip",
   "lastFeedExpiry": "20271231",
-  "lastFeedVersion": "20260626",
+  "lastFeedVersion": "20261011",
   "region": "California",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-10-12",
   "cities": [
     "Pasadena, California",
     "Arcadia, California"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
-  "timezone": "America/Los_Angeles"
+  "timezone": "America/Los_Angeles",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-41/latest.zip",
+  "feedQuality": {
+    "status": "review",
+    "score": 90,
+    "reasons": [
+      "1 route shape needed adjustment before display."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 1,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 52
+    },
+    "checkedAt": "2026-10-12"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

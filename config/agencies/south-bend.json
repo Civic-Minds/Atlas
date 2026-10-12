@@ -16,9 +16,11 @@
     "South Bend, Indiana",
     "Elkhart, Indiana"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
-  "timezone": "America/Indiana/Indianapolis"
+  "timezone": "America/Indiana/Indianapolis",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://passio3.com/transpo/passioTransit/gtfs/google_transit.zip"
 }

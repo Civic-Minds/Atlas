@@ -16,7 +16,6 @@
   "feedUrl": "https://rrgtfsfeeds.s3.amazonaws.com/gtfs_busco.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-510/latest.zip",
   "region": "New York",
-  "staged": true,
   "cities": [
     "Jamaica, New York",
     "Flushing, New York",
@@ -24,5 +23,33 @@
     "The Bronx, New York",
     "Manhattan, New York"
   ],
-  "timezone": "America/New_York"
+  "timezone": "America/New_York",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://rrgtfsfeeds.s3.amazonaws.com/gtfs_busco.zip",
+  "lastFeedCheckAt": "20261012",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270102",
+  "feedQuality": {
+    "status": "review",
+    "score": 70,
+    "reasons": [
+      "7 route have stops whose frequency differs from the overall route schedule."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 7,
+      "featureCount": 489
+    },
+    "checkedAt": "2026-10-12"
+  },
+  "lastFeedExpiry": "20270102",
+  "lastFeedVersion": "20260813",
+  "lastRefreshedAt": "2026-10-12",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

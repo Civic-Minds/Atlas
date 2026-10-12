@@ -17,7 +17,7 @@
     "West Des Moines, Iowa",
     "Ankeny, Iowa"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261121",
@@ -34,5 +34,7 @@
     },
     "checkedAt": "2026-08-24"
   },
-  "timezone": "America/Chicago"
+  "timezone": "America/Chicago",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-193/latest.zip"
 }

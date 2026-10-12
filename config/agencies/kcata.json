@@ -8,10 +8,10 @@
   ],
   "feedUrl": "http://www.kc-metro.com/gtf/google_transit.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3519/latest.zip",
-  "lastFeedExpiry": "20261003",
-  "lastFeedVersion": "July 2026_20260723",
+  "lastFeedExpiry": "20270102",
+  "lastFeedVersion": "October 2026_20261001",
   "region": "Missouri",
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "2026-10-12",
   "cities": [
     "Kansas City, Missouri",
     "Overland Park, Kansas",
@@ -20,13 +20,30 @@
     "Lee's Summit, Missouri",
     "Shawnee, Kansas"
   ],
-  "lastFeedCheckAt": "20261007",
-  "expiredFeedCheckCount": 1,
-  "expiredFeedCheckSince": "20260622",
-  "expiredFeedCheckExpiry": "20261003",
+  "lastFeedCheckAt": "20261012",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270102",
   "timezone": "America/Chicago",
-  "feedRefreshStatus": "stale",
-  "feedRefreshError": "all available feeds expired (latest 20261003)",
-  "feedRefreshErrorAt": "20261007",
-  "feedRefreshRetryCount": 1
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-3519/latest.zip",
+  "feedQuality": {
+    "status": "review",
+    "score": 80,
+    "reasons": [
+      "2 route have stops whose frequency differs from the overall route schedule."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 2,
+      "featureCount": 199
+    },
+    "checkedAt": "2026-10-12"
+  }
 }

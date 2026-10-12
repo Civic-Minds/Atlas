@@ -15,7 +15,7 @@
   "cities": [
     "Racine, Wisconsin"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
@@ -34,5 +34,7 @@
       "featureCount": 33
     },
     "checkedAt": "2026-09-07"
-  }
+  },
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://racine.connexionz.net/rtt/public/utility/gtfs.aspx"
 }

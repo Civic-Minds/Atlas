@@ -8,9 +8,9 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/tld-1256/latest.zip",
   "lastFeedExpiry": "20271231",
-  "lastFeedVersion": "20260624",
+  "lastFeedVersion": "20261011",
   "region": "California",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-10-12",
   "cities": [
     "Santa Clarita, California",
     "Canyon Country, California",
@@ -23,9 +23,31 @@
     "Northridge, California",
     "North Hollywood, California"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
-  "timezone": "America/Los_Angeles"
+  "timezone": "America/Los_Angeles",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/tld-1256/latest.zip",
+  "feedQuality": {
+    "status": "degraded",
+    "score": 50,
+    "reasons": [
+      "2 route shapes needed adjustment before display.",
+      "3 route have stops whose frequency differs from the overall route schedule."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 2,
+      "routeHeadwayMismatches": 3,
+      "featureCount": 76
+    },
+    "checkedAt": "2026-10-12"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

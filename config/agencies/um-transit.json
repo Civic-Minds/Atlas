@@ -21,7 +21,7 @@
   "cities": [
     "Ann Arbor, Michigan"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270102",
@@ -38,5 +38,7 @@
       "featureCount": 40
     },
     "checkedAt": "2026-09-07"
-  }
+  },
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://webapps.fo.umich.edu/transit_uploads/google_transit.zip"
 }

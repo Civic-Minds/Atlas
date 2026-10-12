@@ -17,8 +17,8 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-260/latest.zip",
   "timezone": "America/Los_Angeles",
   "lastFeedExpiry": "20270101",
-  "lastFeedVersion": "UTC: 06-May-2026 19:51",
-  "lastRefreshedAt": "2026-08-18",
+  "lastFeedVersion": "UTC: 08-Oct-2026 00:58",
+  "lastRefreshedAt": "2026-10-12",
   "cities": [
     "Hood River, Oregon",
     "Cascade Locks, Oregon",
@@ -33,12 +33,18 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 6
+      "featureCount": 10
     },
-    "checkedAt": "2026-08-18"
+    "checkedAt": "2026-10-12"
   },
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20270101"
+  "expiredFeedCheckExpiry": "20270101",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-260/latest.zip",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

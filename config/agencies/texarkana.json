@@ -18,9 +18,11 @@
   "lastFeedExpiry": "20281231",
   "lastFeedVersion": "02-2025",
   "lastRefreshedAt": "2026-08-10",
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20281231",
-  "timezone": "America/Chicago"
+  "timezone": "America/Chicago",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/ntd-60093/latest.zip"
 }

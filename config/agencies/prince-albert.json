@@ -11,9 +11,11 @@
   "lastFeedExpiry": "20281229",
   "lastFeedVersion": null,
   "lastRefreshedAt": "2026-08-10",
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20281229",
-  "timezone": "America/Regina"
+  "timezone": "America/Regina",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://www.citypa.ca/media/gnsfaref/2025-01-20-google-transit-gtfs.zip"
 }

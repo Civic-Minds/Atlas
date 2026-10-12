@@ -9,19 +9,36 @@
   ],
   "feedUrl": "https://bus.wichitatransit.org/InfoPoint/gtfs-zip.ashx",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-395/latest.zip",
-  "lastFeedExpiry": "20260814",
-  "lastFeedVersion": "20260611",
-  "lastRefreshedAt": "2026-08-10",
+  "lastFeedExpiry": "20261218",
+  "lastFeedVersion": "20261008",
+  "lastRefreshedAt": "2026-10-12",
   "cities": [
     "Wichita, Kansas"
   ],
-  "lastFeedCheckAt": "20261007",
-  "expiredFeedCheckCount": 2,
-  "expiredFeedCheckSince": "20260622",
-  "expiredFeedCheckExpiry": "20260522",
+  "lastFeedCheckAt": "20261012",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261218",
   "timezone": "America/Chicago",
-  "feedRefreshStatus": "stale",
-  "feedRefreshError": "all available feeds expired (latest 20260522)",
-  "feedRefreshErrorAt": "20261007",
-  "feedRefreshRetryCount": 2
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://bus.wichitatransit.org/InfoPoint/gtfs-zip.ashx",
+  "feedQuality": {
+    "status": "review",
+    "score": 70,
+    "reasons": [
+      "32 route shapes needed adjustment before display."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 32,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 90
+    },
+    "checkedAt": "2026-10-12"
+  }
 }

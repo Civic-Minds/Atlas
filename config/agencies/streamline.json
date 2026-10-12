@@ -18,9 +18,11 @@
     45.8027,
     -110.5413
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20281231",
-  "timezone": "America/Denver"
+  "timezone": "America/Denver",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/streamlinetransit-mt-us/streamlinetransit-mt-us.zip"
 }

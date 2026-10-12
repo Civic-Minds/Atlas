@@ -14,9 +14,11 @@
   "cities": [
     "Pueblo, Colorado"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270301",
-  "timezone": "America/Denver"
+  "timezone": "America/Denver",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2232/latest.zip"
 }

@@ -10,10 +10,9 @@
   "feedUrl": "http://gatlinburg.connexionz.net/rtt/public/utility/gtfs.aspx",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-6775/latest.zip",
   "region": "Tennessee",
-  "staged": true,
   "lastFeedExpiry": "20271231",
   "lastFeedVersion": "20260515",
-  "lastRefreshedAt": "2026-09-10",
+  "lastRefreshedAt": "2026-10-12",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -25,6 +24,16 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 12
     },
-    "checkedAt": "2026-09-10"
-  }
+    "checkedAt": "2026-10-12"
+  },
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "http://gatlinburg.connexionz.net/rtt/public/utility/gtfs.aspx",
+  "lastFeedCheckAt": "20261012",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20271231",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

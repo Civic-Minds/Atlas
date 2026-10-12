@@ -21,9 +21,11 @@
   "cities": [
     "Sherbrooke, Quebec"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261220",
-  "timezone": "America/Toronto"
+  "timezone": "America/Toronto",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://gtfs.sts.qc.ca:8443/gtfs/client/GTFS_clients.zip"
 }

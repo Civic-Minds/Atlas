@@ -18,9 +18,11 @@
   "lastRefreshedAt": "2026-08-10",
   "websiteUrl": "http://passiotech.com/",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2881/latest.zip",
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
-  "timezone": "America/New_York"
+  "timezone": "America/New_York",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://passio3.com/watertown/passioTransit/gtfs/google_transit.zip"
 }

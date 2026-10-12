@@ -20,9 +20,11 @@
     "Oxnard, California",
     "Thousand Oaks, California"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20301231",
-  "timezone": "America/Los_Angeles"
+  "timezone": "America/Los_Angeles",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://www.goventura.org/wp-content/uploads/2026/02/20260213-GMV_Schedule.zip"
 }

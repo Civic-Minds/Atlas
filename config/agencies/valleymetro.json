@@ -8,11 +8,11 @@
     -112.07
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-147/latest.zip",
-  "lastFeedExpiry": "20261025",
-  "lastFeedVersion": "GTFS_v4.5_20260616",
+  "lastFeedExpiry": "20270124",
+  "lastFeedVersion": "GTFS_v4.5_20260914",
   "mergeEquivalentShapeVariants": true,
   "region": "Arizona",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-10-12",
   "cities": [
     "Deer Valley, Arizona",
     "Encanto, Arizona",
@@ -25,9 +25,31 @@
     "Mesa, Arizona",
     "Ahwatukee Foothills, Arizona"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261025",
-  "timezone": "America/Phoenix"
+  "expiredFeedCheckExpiry": "20270124",
+  "timezone": "America/Phoenix",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-147/latest.zip",
+  "feedQuality": {
+    "status": "degraded",
+    "score": 50,
+    "reasons": [
+      "2 route shapes needed adjustment before display.",
+      "4 route have stops whose frequency differs from the overall route schedule."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 2,
+      "routeHeadwayMismatches": 4,
+      "featureCount": 660
+    },
+    "checkedAt": "2026-10-12"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

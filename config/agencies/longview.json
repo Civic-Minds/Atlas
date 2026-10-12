@@ -21,13 +21,15 @@
   "cities": [
     "Longview, Texas"
   ],
-  "lastFeedCheckAt": "20261007",
-  "expiredFeedCheckCount": 2,
+  "lastFeedCheckAt": "20261012",
+  "expiredFeedCheckCount": 3,
   "expiredFeedCheckSince": "20260622",
   "expiredFeedCheckExpiry": "20260930",
   "timezone": "America/Chicago",
   "feedRefreshStatus": "stale",
   "feedRefreshError": "all available feeds expired (latest 20260930)",
-  "feedRefreshErrorAt": "20261007",
-  "feedRefreshRetryCount": 2
+  "feedRefreshErrorAt": "20261012",
+  "feedRefreshRetryCount": 3,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://cloud.longviewtexas.gov/maps/LongviewTransitGTFS/LongviewTransitGTFS.zip"
 }

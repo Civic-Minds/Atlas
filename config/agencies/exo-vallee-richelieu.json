@@ -28,7 +28,7 @@
     "Saint-Basile-le-Grand, Quebec"
   ],
   "timezone": "America/Montreal",
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270103",
@@ -49,5 +49,7 @@
   "feedRefreshStatus": "stale",
   "feedRefreshError": "HTTP 404",
   "feedRefreshErrorAt": "20261007",
-  "feedRefreshRetryCount": 1
+  "feedRefreshRetryCount": 1,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://exo.quebec/uploads/ressources-telechargeables/a-propos/donnees-ouvertes/citvr/google_transit.zip"
 }

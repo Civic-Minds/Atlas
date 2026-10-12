@@ -14,7 +14,7 @@
   "lastFeedExpiry": "20270206",
   "lastFeedVersion": "20260821",
   "region": "Maryland",
-  "lastRefreshedAt": "2026-08-24",
+  "lastRefreshedAt": "2026-10-12",
   "cities": [
     "Baltimore, Maryland",
     "Towson, Maryland",
@@ -24,25 +24,42 @@
     "Bowie, Maryland",
     "Columbia, Maryland"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270206",
   "feedQuality": {
     "status": "review",
-    "score": 60,
+    "score": 70,
     "reasons": [
-      "4 shape corrections needed.",
-      "1 route frequency metric need review."
+      "4 route shapes needed adjustment before display."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 4,
-      "routeHeadwayMismatches": 1,
-      "featureCount": 420
+      "routeHeadwayMismatches": 0,
+      "featureCount": 439
     },
-    "checkedAt": "2026-08-24"
+    "checkedAt": "2026-10-12"
   },
-  "timezone": "America/New_York"
+  "timezone": "America/New_York",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-466/latest.zip",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastSupplementalFeeds": [
+    {
+      "feedExpiry": "20261231",
+      "feedVersion": null,
+      "rawArchiveKey": "20261231-1b3e8fd047f7e1e3"
+    },
+    {
+      "feedExpiry": "20261231",
+      "feedVersion": null,
+      "rawArchiveKey": "20261231-7d536b02798b35bc"
+    }
+  ]
 }

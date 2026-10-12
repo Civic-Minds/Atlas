@@ -25,7 +25,7 @@
     "Concord, California",
     "Chinatown, California"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270611",
@@ -45,5 +45,7 @@
     },
     "checkedAt": "2026-09-07"
   },
-  "timezone": "America/Los_Angeles"
+  "timezone": "America/Los_Angeles",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/westcat-ca-us/westcat-ca-us.zip"
 }

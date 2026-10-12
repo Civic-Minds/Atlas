@@ -16,9 +16,9 @@
   "feedUrl": "https://gtfs.remix.com/trinity_county_ca.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2709/latest.zip",
   "lastFeedExpiry": "20261231",
-  "lastFeedVersion": "Updated: Aug 20, 2026, 5:19 PM",
-  "lastRefreshedAt": "2026-08-27",
-  "lastFeedCheckAt": "20261007",
+  "lastFeedVersion": "Updated: Oct 7, 2026, 6:28 PM",
+  "lastRefreshedAt": "2026-10-12",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
@@ -33,7 +33,13 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 6
     },
-    "checkedAt": "2026-08-27"
+    "checkedAt": "2026-10-12"
   },
-  "timezone": "America/Los_Angeles"
+  "timezone": "America/Los_Angeles",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://gtfs.remix.com/trinity_county_ca.zip",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

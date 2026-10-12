@@ -21,7 +21,7 @@
   "cities": [
     "St. John's, Newfoundland and Labrador"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261111",
@@ -40,5 +40,7 @@
       "featureCount": 105
     },
     "checkedAt": "2026-09-07"
-  }
+  },
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "http://www.metrobustransit.ca/google/google_transit.zip"
 }

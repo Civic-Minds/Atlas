@@ -38,8 +38,10 @@
     },
     "checkedAt": "2026-09-08"
   },
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20270101"
+  "expiredFeedCheckExpiry": "20270101",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/wausau-wi-us/wausau-wi-us.zip"
 }

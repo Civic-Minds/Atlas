@@ -14,10 +14,10 @@
     -79.14
   ],
   "feedUrl": "https://www.miapp.ca/GTFS/google_transit.zip",
-  "lastFeedExpiry": "20261025",
-  "lastFeedVersion": "1",
+  "lastFeedExpiry": "20261220",
+  "lastFeedVersion": "2",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-730/latest.zip",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-10-12",
   "cities": [
     "Mississauga, Ontario",
     "Etobicoke, Ontario",
@@ -25,9 +25,30 @@
     "Oakville, Ontario",
     "Milton, Ontario"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261025",
-  "timezone": "America/Toronto"
+  "expiredFeedCheckExpiry": "20261220",
+  "timezone": "America/Toronto",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://www.miapp.ca/GTFS/google_transit.zip",
+  "feedQuality": {
+    "status": "review",
+    "score": 80,
+    "reasons": [
+      "2 route have stops whose frequency differs from the overall route schedule."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 2,
+      "featureCount": 272
+    },
+    "checkedAt": "2026-10-12"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

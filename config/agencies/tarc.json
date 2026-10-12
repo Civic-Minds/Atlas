@@ -15,9 +15,11 @@
     "Louisville, Kentucky"
   ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2662/latest.zip",
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270109",
-  "timezone": "America/Kentucky/Louisville"
+  "timezone": "America/Kentucky/Louisville",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://tarc.rideralerts.com/InfoPoint/gtfs-zip.ashx"
 }

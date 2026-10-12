@@ -22,7 +22,7 @@
     "Winnipeg, Manitoba",
     "Fort Garry South, Manitoba"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261212",
@@ -39,5 +39,7 @@
     },
     "checkedAt": "2026-08-27"
   },
-  "timezone": "America/Winnipeg"
+  "timezone": "America/Winnipeg",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://gtfs.winnipegtransit.com/google_transit.zip"
 }
