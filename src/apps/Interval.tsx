@@ -19,7 +19,7 @@ import type { OpenInfoFn } from '../components/InfoPanel';
 import type { StopEntry } from './corridor-search';
 import { ATLAS_MODE, FEATURES, R2_PUBLIC_URL, VIEWPORT_BBOX_PAD } from '../../shared/config';
 import type * as maplibregl from 'maplibre-gl';
-import { CompareControl, CompareSidePicker, SideBadge, compareSideLabel, defaultCompareSide, type CompareSide } from '../components/Interval/CompareControl';
+import { CompareSideControl, CompareTab, CompareSidePicker, SideBadge, compareSideLabel, defaultCompareSide, type CompareSide } from '../components/Interval/CompareControl';
 import { buildCompareRow } from '../utils/compareRows';
 import { DAY_TYPES, type DayType as DayTypeName } from '../../shared/dayTypes';
 import { findVariantFamily } from '../utils/routeVariants';
@@ -71,6 +71,8 @@ interface Props {
   onSelectedMapAgencyChange?: (slug: string | null) => void;
   onSelectionActiveChange?: (active: boolean) => void;
   headerPortalContainer?: Element | null;
+  /** Top-bar slot beside History and Live where the Compare view tab renders. */
+  viewTabsPortalContainer?: Element | null;
   fareView?: boolean;
   nightServiceView?: boolean;
   nightServiceFrequency?: NightServiceFrequency;
@@ -141,7 +143,7 @@ function CompareSideLabel({ side, title, counts, otherPhrase }: {
   );
 }
 
-export default function Interval({ agencies, allAgencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, filterToAgencies = false, onHistoryRouteClick, onDirectFromStop, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, pendingNightRoute, onPendingNightRouteHandled, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, onSelectedMapAgencyChange, onSelectionActiveChange, headerPortalContainer, fareView = false, nightServiceView = false, nightServiceFrequency = 60, setNightServiceFrequency, frequentServiceView = false, frequentServiceDays = ['Weekday'], frequentServiceFrequency = 15, frequentServiceWindow = 'daytime', setFrequentServiceDays, setFrequentServiceFrequency, setFrequentServiceWindow, showMapContext = false, showMatchPercentage = false, sidebarLeft, searchBarWidth, searchEnterRef, analyticsApp = 'frequency', hideLowQuality, setHideLowQuality, feedQualityEnabled = false, showMapLegend, setShowMapLegend, dataSaver, setDataSaver, exportEnabled = false, exportTitle = 'Transit map' }: Props) {
+export default function Interval({ agencies, allAgencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, filterToAgencies = false, onHistoryRouteClick, onDirectFromStop, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, pendingNightRoute, onPendingNightRouteHandled, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, onSelectedMapAgencyChange, onSelectionActiveChange, headerPortalContainer, viewTabsPortalContainer, fareView = false, nightServiceView = false, nightServiceFrequency = 60, setNightServiceFrequency, frequentServiceView = false, frequentServiceDays = ['Weekday'], frequentServiceFrequency = 15, frequentServiceWindow = 'daytime', setFrequentServiceDays, setFrequentServiceFrequency, setFrequentServiceWindow, showMapContext = false, showMatchPercentage = false, sidebarLeft, searchBarWidth, searchEnterRef, analyticsApp = 'frequency', hideLowQuality, setHideLowQuality, feedQualityEnabled = false, showMapLegend, setShowMapLegend, dataSaver, setDataSaver, exportEnabled = false, exportTitle = 'Transit map' }: Props) {
   const [searchParams] = useSearchParams();
   const [mapContextOpen, setMapContextOpen] = useState(false);
   const [mapContextView, setMapContextView] = useState<'agencies' | 'routes'>('routes');
@@ -1036,6 +1038,11 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
         />
       )}
 
+      {viewTabsPortalContainer && compareAvailable && createPortal(
+        <CompareTab active={compareActive} onStart={startCompare} onExit={exitCompare} />,
+        viewTabsPortalContainer,
+      )}
+
       {headerPortalContainer && createPortal(
         <div className={`flex items-center gap-2 ${!showUi && hideFilterPanel && !nightServiceView ? 'pointer-events-none' : ''}`}>
           <div className={`hidden sm:flex items-center gap-2 transition-opacity ${TRANSITION_BASE} ${showUi || nightServiceView ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
@@ -1063,8 +1070,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
               nightServiceFrequency={nightServiceFrequency}
               setNightServiceFrequency={setNightServiceFrequency}
             />
-            {compareAvailable && (
-              <CompareControl compareSide={compareActive ? compareSide : null} onStart={startCompare} onExit={exitCompare} onChange={setCompareSide} />
+            {compareActive && compareSide && (
+              <CompareSideControl compareSide={compareSide} onChange={setCompareSide} />
             )}
           </div>
           {!hideFilterPanel && (
