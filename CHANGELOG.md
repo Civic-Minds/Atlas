@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- A route's line on the map is no longer drawn from a handful of pre-dawn trips when the same destination has daytime service, so TTC 100 via Linkwood shows its daytime pattern and values instead of only an early-morning one ([#740](https://github.com/Civic-Minds/Atlas/issues/740)).
 - A data build that runs on a holiday now gives the same results as one the next day: CDTA no longer loses its Sunday and 16 Saturday routes, and MBTA keeps the Orange Line and boats on weekends, when built on a one-day holiday timetable ([#742](https://github.com/Civic-Minds/Atlas/issues/742)).
 - Feeds that list every trip by date, like Metro-North, no longer pick a holiday week such as Thanksgiving as their typical week, which had dropped half its lines; Blacksburg now shows its regular Friday service ([#742](https://github.com/Civic-Minds/Atlas/issues/742)).
 - More branches drawn from a few early-morning trips now show their real all-day frequency, like TTC 35A to Mount Dennis (every 15 instead of 12), and CapMetro 2 is now graded every 30 instead of infrequent to match its every-16 service. Where two branches meet at a shared last stop, like TTC 94 at Castle Frank, the headline counts only the branch's own trips (every 19-20, not the combined 10).
