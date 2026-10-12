@@ -93,6 +93,7 @@ interface Agency {
   excludeTripHeadsigns?: string[];
   skipLetterSuffixMerge?: boolean;
   mergeEquivalentShapeVariants?: boolean;
+  keepLongShapeJumps?: boolean;
   fare?: number;
   lastFeedExpiry?: string | null;
   lastRawArchiveKey?: string | null;
