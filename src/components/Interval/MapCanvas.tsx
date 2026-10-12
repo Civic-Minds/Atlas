@@ -562,6 +562,10 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   }, [liveOverlay]);
 
   const [mapContextAgencies, setMapContextAgencies] = useState<MapContextAgency[]>([]);
+  const mapContextRegionBySlug = useMemo(
+    () => new Map(agencies.map(agency => [agency.slug, agency.region ?? 'Other'])),
+    [agencies],
+  );
 
   // Each zone and stop is filtered on its own hours (zones/stops that aren't
   // running are hidden, like fixed routes); ones with no hours on file stay
@@ -2429,6 +2433,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         <div ref={mapContextPanelRef}>
           <MapContextPanel
             agencies={mapContextAgencies}
+            regionBySlug={mapContextRegionBySlug}
             mode={mapContextView}
             sidebarLeft={sidebarLeft}
             searchBarWidth={searchBarWidth}
