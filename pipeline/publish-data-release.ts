@@ -41,6 +41,7 @@ import {
   currentCodeVersion,
   manifestShapeError,
   publicAgenciesMissingFromRelease,
+  releaseFileExists,
   publicCatalogSlugs,
   RELEASE_STAMP_FIELD,
   releasePrefixOf,
@@ -110,16 +111,9 @@ if (error) throw new Error(`Refusing to publish data release: ${error}`);
 // Every agency in the public catalog must have a route file in this release,
 // or production shows "Couldn't load" for it (#757, #759). Existence only: an
 // agency that wasn't refreshed still has its older file copied into the release.
-async function releaseFileExists(slug: string): Promise<boolean> {
-  const key = `${manifest.agencyPrefix.replace(/\/$/, '')}/${slug}.json`;
-  const response = await fetch(`${base}/${key}?${bust}`, { method: 'HEAD', cache: 'no-store' });
-  if (response.status === 404) return false;
-  if (!response.ok) throw new Error(`Could not check ${key}: HTTP ${response.status}`);
-  return true;
-}
 const publicSlugs = publicCatalogSlugs(indexAgencies);
 const presentSlugs = new Set((await runWithConcurrency(
-  publicSlugs.map(slug => async () => (await releaseFileExists(slug)) ? slug : null),
+  publicSlugs.map(slug => async () => (await releaseFileExists(`${base}/${manifest.agencyPrefix.replace(/\/$/, '')}/${slug}.json?${bust}`)) ? slug : null),
   6,
 )).filter((slug): slug is string => slug !== null));
 const missingPublic = publicAgenciesMissingFromRelease(indexAgencies, slug => presentSlugs.has(slug));

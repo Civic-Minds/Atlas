@@ -4,6 +4,7 @@ import {
   ALLOW_UNPAIRED_UPLOAD_FLAG,
   publicAgenciesExcludedFromRelease,
   publicAgenciesMissingFromRelease,
+  releaseFileExists,
   releasePublishError,
   tileRulesFingerprint,
   unpairedUploadError,
@@ -137,5 +138,52 @@ describe('public agencies without a release file (#759)', () => {
 
   it('flags public agencies build-pmtiles never copies into a release', () => {
     expect(publicAgenciesExcludedFromRelease(agencies)).toEqual(['fort-bend', 'mexico-city-metro']);
+  });
+});
+
+describe('releaseFileExists', () => {
+  const url = 'https://data.example/atlas/releases/release-b/agencies/ttc.json';
+  const respond = (...statuses: Array<number | Error>) => {
+    const calls: number[] = [];
+    const fetchImpl = (async () => {
+      const next = statuses[Math.min(calls.length, statuses.length - 1)];
+      calls.push(calls.length);
+      if (next instanceof Error) throw next;
+      return new Response(null, { status: next, headers: next === 429 ? { 'retry-after': '2' } : {} });
+    }) as unknown as typeof fetch;
+    return { fetchImpl, calls };
+  };
+  const waits: number[] = [];
+  const sleep = async (ms: number) => { waits.push(ms); };
+
+  it('returns false on 404 and true on 200', async () => {
+    expect(await releaseFileExists(url, { ...respond(404), sleep })).toBe(false);
+    expect(await releaseFileExists(url, { ...respond(200), sleep })).toBe(true);
+  });
+
+  it('retries a 429, honouring Retry-After, then succeeds', async () => {
+    waits.length = 0;
+    const stub = respond(429, 200);
+    expect(await releaseFileExists(url, { ...stub, sleep })).toBe(true);
+    expect(stub.calls.length).toBe(2);
+    expect(waits).toEqual([2000]);
+  });
+
+  it('retries a network error, then succeeds', async () => {
+    expect(await releaseFileExists(url, { ...respond(new TypeError('fetch failed'), 200), sleep })).toBe(true);
+  });
+
+  it('throws after persistent 5xx', async () => {
+    waits.length = 0;
+    const stub = respond(503);
+    await expect(releaseFileExists(url, { ...stub, sleep, retries: 4 })).rejects.toThrow(/after 5 attempts: HTTP 503/);
+    expect(stub.calls.length).toBe(5);
+    expect(waits).toEqual([1000, 2000, 4000, 8000]);
+  });
+
+  it('throws at once on a non-retryable status', async () => {
+    const stub = respond(403);
+    await expect(releaseFileExists(url, { ...stub, sleep })).rejects.toThrow(/HTTP 403/);
+    expect(stub.calls.length).toBe(1);
   });
 });

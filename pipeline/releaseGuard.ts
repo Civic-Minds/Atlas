@@ -156,6 +156,40 @@ export function publicAgenciesMissingFromRelease(
   return publicCatalogSlugs(agencies).filter(slug => !hasReleaseFile(slug));
 }
 
+export interface ReleaseFileCheckOptions {
+  retries?: number;
+  fetchImpl?: typeof fetch;
+  sleep?: (ms: number) => Promise<void>;
+}
+
+/**
+ * Whether `url` exists in the public bucket: false on 404, true on 2xx. A 429,
+ * 5xx or network error is retried with backoff (honouring Retry-After) before
+ * it throws, so one throttled request out of hundreds can't abort a publish
+ * after the release has already uploaded.
+ */
+export async function releaseFileExists(url: string, options: ReleaseFileCheckOptions = {}): Promise<boolean> {
+  const { retries = 4, fetchImpl = fetch, sleep = ms => new Promise(r => setTimeout(r, ms)) } = options;
+  for (let attempt = 0; ; attempt++) {
+    let failure: string;
+    let retryAfterMs: number | null = null;
+    try {
+      const response = await fetchImpl(url, { method: 'HEAD', cache: 'no-store' });
+      if (response.status === 404) return false;
+      if (response.ok) return true;
+      if (response.status !== 429 && response.status < 500) throw new Error(`Could not check ${url}: HTTP ${response.status}`);
+      failure = `HTTP ${response.status}`;
+      const retryAfter = Number(response.headers.get('retry-after'));
+      if (Number.isFinite(retryAfter) && retryAfter > 0) retryAfterMs = retryAfter * 1000;
+    } catch (error) {
+      if (error instanceof Error && error.message.startsWith('Could not check')) throw error;
+      failure = error instanceof Error ? error.message : String(error);
+    }
+    if (attempt >= retries) throw new Error(`Could not check ${url} after ${retries + 1} attempts: ${failure}`);
+    await sleep(retryAfterMs ?? 1000 * 2 ** attempt);
+  }
+}
+
 function sortKeys(value: object): Record<string, unknown> {
   return Object.fromEntries(Object.entries(value).sort(([a], [b]) => a.localeCompare(b)));
 }
