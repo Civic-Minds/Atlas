@@ -47,14 +47,15 @@ interface SearchSuggestionsPanelProps {
   displayForRouteKey: (key: string) => RouteListDisplay;
 }
 
-export function routeRowLabels(shortName: string, longName: string | null) {
-  const hiddenShortName = shouldHideNumericRouteShortName(shortName, longName);
+export function routeRowLabels(shortName: string | null | undefined, longName: string | null) {
+  const blankShortName = !shortName || !shortName.trim();
+  const hiddenShortName = blankShortName || shouldHideNumericRouteShortName(shortName, longName);
   if (hiddenShortName && longName) {
     return { shortName: titleCase(longName), name: undefined };
   }
   const displayShortName = hiddenShortName ? '' : shortName;
   const short = cleanRouteShortName(displayShortName);
-  const companion = routeListCompanionName(longName ? titleCase(longName) : null, displayShortName);
+  const companion = routeListCompanionName(longName ? titleCase(longName) : null, displayShortName ?? '');
   return {
     shortName: titleCase(short),
     name: companion ? titleCase(companion) : undefined,

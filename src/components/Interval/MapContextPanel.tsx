@@ -60,7 +60,7 @@ export const MapContextPanel: React.FC<MapContextPanelProps> = ({ agencies, mode
         ) : (
           filteredRouteGroups.length > 0 ? filteredRouteGroups.map(group => (
             <section key={group.agencyName}>
-              <div className={`${PANEL_SECTION_HEAD} pt-2 pb-1`}>{group.agencyName}</div>
+              <div className={`${PANEL_SECTION_HEAD.replace('tracking-wide', '')} pt-2 pb-1`}>{group.agencyName}</div>
               {group.routes.map((route: MapContextRoute) => {
                 const labels = routeRowLabels(route.shortName, route.longName);
                 return (

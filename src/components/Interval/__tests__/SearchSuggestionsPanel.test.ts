@@ -15,4 +15,11 @@ describe('routeRowLabels', () => {
       name: '41st Avenue',
     });
   });
+
+  it('puts the long name in the primary slot when the short name is blank', () => {
+    const expected = { shortName: 'Free Annapolis Downtown Shuttle', name: undefined };
+    expect(routeRowLabels('', 'Free Annapolis Downtown Shuttle')).toEqual(expected);
+    expect(routeRowLabels('   ', 'Free Annapolis Downtown Shuttle')).toEqual(expected);
+    expect(routeRowLabels(null, 'Free Annapolis Downtown Shuttle')).toEqual(expected);
+  });
 });
