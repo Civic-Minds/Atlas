@@ -116,3 +116,13 @@ describe('oppositeSharedStops', () => {
     expect(oppositeSharedStops(features, features[0])).toEqual([]);
   });
 });
+
+describe('oppositeSharedStops direction handling', () => {
+  it('treats a missing or non-numeric direction as 0, so same-direction siblings never count as opposite', () => {
+    const f = (directionId: unknown, stopOrder: string[], extra: Record<string, unknown> = {}) =>
+      ({ properties: { routeId: 'r', day: 'Weekday', directionId, stopOrder, ...extra } });
+    const features = [f(null, ['a', 'b']), f(undefined, ['c', 'd']), f('x', ['e', 'f']), f(1, ['g', 'h'])];
+    expect(oppositeSharedStops(features, features[0])).toEqual(['g', 'h']);
+    expect(oppositeSharedStops(features, features[3])).toEqual([]); // three unpooled patterns
+  });
+});

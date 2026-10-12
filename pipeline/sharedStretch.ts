@@ -234,8 +234,9 @@ export interface SharedStretchContext {
 
 /**
  * A feature whose trips may pool: a regular or time-limited LineString, not span and not
- * drop-off-only. process-core also leaves out partial-weekday and previous-night-tail features,
- * and only these features' headsigns feed the pooled departures.
+ * drop-off-only. process-core also leaves out every feature in partialWeekdayFeatures (partial
+ * weekday and previous-night-tail results both land there) when it builds the set of eligible
+ * headsigns, and only those headsigns' trips feed the pooled departures.
  */
 export function isPoolablePattern(feature: GeoJsonFeature): boolean {
   const p = feature.properties;

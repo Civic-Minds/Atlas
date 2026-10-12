@@ -4,7 +4,7 @@ import JSZip from 'jszip';
 import { describe, expect, it } from 'vitest';
 import { processGtfsBuffer } from '../process-core';
 import { PERIOD_KEYS } from '../../shared/config';
-import { buildSharedStopIndex, getPooledStop, pairOppositeStop } from '../../shared/sharedStops';
+import { buildSharedStopIndex, getPooledStop, oppositeSharedStops, pairOppositeStop } from '../../shared/sharedStops';
 import { alignedSharedRuns, pooledStopMetrics, qualifyingSharedRuns, SHARED_STRETCH_KEYS } from '../sharedStretch';
 import { prepareAgencyRouteFeaturesForTiles } from '../prepareAgencyRoutesForTiles';
 
@@ -268,7 +268,7 @@ describe('shared stretch pooling (patterns)', () => {
     for (const p of routes) {
       const pooled = pooledAt(routes, p).filter(v => v != null);
       expect(pooled.length).toBeGreaterThan(0);
-      expect(pooled.every(v => v! >= 16)).toBe(true);
+      expect(new Set(pooled)).toEqual(new Set([16]));
     }
     expectRawBlockSound(routes);
   });
@@ -387,14 +387,18 @@ describe('shared stretch pooling (real feeds)', () => {
     const coords = new Map<string, { lat: number; lon: number }>(JSON.parse(result.geojson).features
       .filter((f: any) => f.properties.stopId != null)
       .map((f: any) => [f.properties.stopId, { lat: f.geometry.coordinates[1], lon: f.geometry.coordinates[0] }]));
-    const southStops = [...new Set(south.flatMap(p => p.stopOrder))] as string[];
-    const northStops = north[0].stopOrder as string[];
+    // Candidates are the southbound shared-stretch stops only (oppositeSharedStops), so the
+    // 29C-only southern tail can never pair: no pairing across the branch point.
+    const southStops = oppositeSharedStops(routes, north[0]);
+    for (const s of tail) expect(southStops).not.toContain(s);
+    const sharedSouth = new Set(south.flatMap(p => (p.sharedStretches ?? []).flatMap((st: any) => p.stopOrder.slice(st.from, st.to + 1))));
+    expect(new Set(southStops)).toEqual(sharedSouth);
     let paired = 0;
-    for (const stopId of northStops) {
+    for (const stopId of north[0].stopOrder as string[]) {
       const o = pairOppositeStop(stopId, southStops, coords);
       if (o == null) continue;
       paired++;
-      expect(southStops).toContain(o);
+      expect(sharedSouth.has(o)).toBe(true);
     }
     expect(paired).toBeGreaterThan(0);
   });

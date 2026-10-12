@@ -136,8 +136,10 @@ function haversineM(a: { lat: number; lon: number }, b: { lat: number; lon: numb
 /**
  * The opposite direction's matching stop, for the every-direction rule at a shared stop:
  * the same stop, else a stop of the same parent station, else the nearest candidate within
- * OPPOSITE_STOP_MAX_M. `candidates` are the opposite-direction features' stopOrder ids
- * (same route and day). Null when nothing is close enough: treat that stop as failing.
+ * OPPOSITE_STOP_MAX_M. Pass `oppositeSharedStops(features, feature)` as `candidates` (the
+ * opposite direction's shared-stretch stops, same route and day), never every opposite stop,
+ * so a stop cannot pair across a branch point. Null when nothing is close enough: treat that
+ * stop as failing.
  */
 export function pairOppositeStop(
   stopId: string,
@@ -171,10 +173,15 @@ export function pairOppositeStop(
  */
 export function oppositeSharedStops(features: readonly object[], feature: object): string[] {
   const p = propsOf(feature);
+  // A missing or non-numeric direction_id counts as 0, as processing files it.
+  const direction = (props: Props) => {
+    const n = Number(props.directionId);
+    return props.directionId == null || !Number.isFinite(n) ? 0 : n;
+  };
   const opposite = features
     .map(propsOf)
     .filter(q => q.routeId === p.routeId && (q.day ?? null) === (p.day ?? null)
-      && Number(q.directionId) !== Number(p.directionId)
+      && direction(q) !== direction(p)
       && Array.isArray(q.stopOrder) && q.stopOrder.length > 0);
   const pooled = opposite.filter(q => (q.sharedStretches as SharedStretch[] | undefined)?.length);
   if (pooled.length > 0) {
