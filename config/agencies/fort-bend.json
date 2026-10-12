@@ -1,6 +1,8 @@
 {
   "slug": "fort-bend",
   "name": "Fort Bend County Transit",
+  "hiddenInProduction": true,
+  "issueUrl": "https://github.com/Civic-Minds/Atlas/issues/759",
   "websiteUrl": "http://fbctransit.org",
   "region": "Texas",
   "center": [

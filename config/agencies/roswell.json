@@ -1,6 +1,8 @@
 {
   "slug": "roswell",
   "name": "Roswell Transit",
+  "hiddenInProduction": true,
+  "issueUrl": "https://github.com/Civic-Minds/Atlas/issues/759",
   "websiteUrl": "AMERICA/DENVER",
   "region": "New Mexico",
   "center": [
