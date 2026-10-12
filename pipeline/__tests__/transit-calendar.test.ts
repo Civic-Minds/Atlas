@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import { detectReferenceDate, getActiveServiceIds } from '../transit-calendar.js';
 import type { GtfsCalendar, GtfsCalendarDate } from '../../types/gtfs.js';
 
@@ -284,5 +284,63 @@ describe('getActiveServiceIds holiday in the reference week (#658)', () => {
       added('hol', '20261012'),
     ];
     expect([...getActiveServiceIds([], dates, 'Monday', '20261015')]).toEqual(['wk']);
+  });
+});
+
+describe('detectReferenceDate all-singleton calendar with an ended nested service (#767)', () => {
+  afterEach(() => { vi.useRealTimers(); });
+  const today = (d: string) => vi.useFakeTimers({ toFake: ['Date'], now: new Date(`${d}T12:00:00`) });
+  const all = 'motuwethfrsasu';
+  const tripsFor = (counts: Record<string, [string, number]>) =>
+    Object.entries(counts).flatMap(([service_id, [route_id, n]]) => Array.from({ length: n }, () => ({ service_id, route_id })));
+
+  it('moves the reference out of an ended summer service nested in the running main calendar (Avon)', () => {
+    today('2026-10-12');
+    const calendar = [
+      cal('mon-tues-wed-thurs-fri-sat-sun', all, '20260331', '20261125'),
+      cal('beaver-express-summer', all, '20260523', '20260913'),
+    ];
+    const trips = tripsFor({ 'mon-tues-wed-thurs-fri-sat-sun': ['rt_red', 62], 'beaver-express-summer': ['rt_beaver', 93] });
+    const ref = detectReferenceDate(calendar, [], trips);
+    expect(ref).toBe('20260914');
+    for (const day of ['Monday', 'Saturday', 'Sunday'] as const) {
+      expect([...getActiveServiceIds(calendar, [], day, ref)]).toEqual(['mon-tues-wed-thurs-fri-sat-sun']);
+    }
+  });
+
+  it('keeps the median when the median service is a one-day entry (WSF-style)', () => {
+    today('2026-10-12');
+    const calendar = ['20261001', '20261002', '20261003', '20261004', '20261005']
+      .map((d, i) => cal(`day-${i}`, all, d, d))
+      .concat(cal('regular', all, '20260101', '20261231'));
+    const trips = tripsFor({ 'day-0': ['r', 5], 'day-1': ['r', 5], 'day-2': ['r', 5], 'day-3': ['r', 5], 'day-4': ['r', 5], regular: ['r', 5] });
+    // Median start is 20261003, a one-day service that ended while 'regular' runs: the
+    // fallback is unchanged.
+    expect(detectReferenceDate(calendar, [], trips)).toBe('20261003');
+  });
+
+  it('keeps the median when nothing has ended', () => {
+    today('2026-10-12');
+    const calendar = [
+      cal('main', all, '20260101', '20261231'),
+      cal('winter', all, '20261001', '20270331'),
+    ];
+    const trips = tripsFor({ main: ['a', 20], winter: ['b', 20] });
+    // Median start is the winter service (Oct 1-Mar 31); its midpoint is unchanged.
+    expect(detectReferenceDate(calendar, [], trips)).toBe('20261230');
+  });
+
+  it('leaves multi-entry calendars to the #734 running-period choice', () => {
+    today('2026-10-14');
+    const calendar = [
+      cal('Regular_Wk', 'motuwethfr', '20251201', '20261231'),
+      cal('Regular_Sa', 'sa', '20251201', '20261231'),
+      cal('Summer_Wk', 'motuwethfr', '20260612', '20260823'),
+      cal('Summer_Sa', 'sa', '20260612', '20260823'),
+    ];
+    const trips = tripsFor({ Regular_Wk: ['117', 10], Regular_Sa: ['117', 5], Summer_Wk: ['117', 10], Summer_Sa: ['117', 5] });
+    const ref = detectReferenceDate(calendar, [], trips);
+    expect(ref > '20260823').toBe(true);
+    expect([...getActiveServiceIds(calendar, [], 'Monday', ref)]).toEqual(['Regular_Wk']);
   });
 });

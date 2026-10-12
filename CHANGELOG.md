@@ -8,6 +8,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Fixed
 
+- Avon Transit's Beaver Creek Express no longer shows in October, and Seattle Monorail and Sierra Vista now read their current timetable, since feeds where each schedule starts on its own date were still being read from an ended summer or short block ([#767](https://github.com/Civic-Minds/Atlas/issues/767)).
 - Routes with paired trips, like Niagara 105 and 401, no longer show as running every 2 or 3 minutes in search, route lists, route and stop cards, live vehicle cards and the hourly chart, since two buses minutes apart and then a long wait is not frequent service ([#761](https://github.com/Civic-Minds/Atlas/issues/761)).
 - A public agency with no data in the current release can no longer reach the public site and show "Couldn't load": the agency checks and the release publish step now fail and list the agency until it is hidden or refreshed into a release ([#759](https://github.com/Civic-Minds/Atlas/issues/759)).
 

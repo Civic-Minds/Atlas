@@ -127,11 +127,30 @@ export function detectReferenceDate(
     const newestStarted = pastOrPresentMultiStarts.length > 0 ? pastOrPresentMultiStarts[pastOrPresentMultiStarts.length - 1] : undefined;
     const runningStarts = pastOrPresentMultiStarts.filter(s => groupEnd(s) >= todayStr);
     const longRunningStarts = runningStarts.filter(s => daysBetween(s, groupEnd(s)) >= MIN_RUNNING_PERIOD_DAYS);
+    // All-singleton calendars (every service starts on its own date, so there are no
+    // multi-entry periods) fall back to the median start below, which the running-period
+    // choice above never sees. Avon's two services are a year-long main calendar
+    // (Mar 31-Nov 25) and a summer-only one nested in it (May 23-Sep 13); the median is
+    // the summer start, so the reference landed in July and the ended BC Express showed
+    // every day in October (#767). Only when that median service spans several days and
+    // has ended, take the newest multi-day service of 28+ days still running instead.
+    // A one-day median (WSF-style feeds, holiday entries) keeps the fallback.
+    const singletonMultiDayStarts = rawMultiStarts.length === 0
+        ? sortedStarts.filter(s => groupEnd(s) > s)
+        : [];
+    const medianStart = sortedStarts[Math.floor(sortedStarts.length / 2)];
+    const singletonRunningStart = rawMultiStarts.length === 0 && medianStart != null
+        && groupEnd(medianStart) > medianStart && groupEnd(medianStart) < todayStr
+        ? singletonMultiDayStarts
+            .filter(s => s <= todayStr && groupEnd(s) >= todayStr && daysBetween(s, groupEnd(s)) >= MIN_RUNNING_PERIOD_DAYS)
+            .pop()
+        : undefined;
     const runningStart = newestStarted != null && groupEnd(newestStarted) >= todayStr
         ? newestStarted
         : longRunningStarts.length > 0
         ? longRunningStarts[longRunningStarts.length - 1]
-        : runningStarts.length > 0 ? runningStarts[runningStarts.length - 1] : undefined;
+        : runningStarts.length > 0 ? runningStarts[runningStarts.length - 1]
+        : singletonRunningStart;
     // The period chosen before #734: the newest started, else the newest, else the median.
     const previousStart = newestStarted != null
         ? newestStarted
@@ -155,7 +174,7 @@ export function detectReferenceDate(
         // inside the running period.
         const outsideEndedOverlay = (ref: string): string => {
             let result = ref;
-            for (const s of multiStarts) {
+            for (const s of singletonRunningStart != null ? singletonMultiDayStarts : multiStarts) {
                 const end = groupEnd(s);
                 if (s > bestStartDate && end < todayStr && s <= result && result <= end) {
                     const next = addDaysYmd(end, 1);
