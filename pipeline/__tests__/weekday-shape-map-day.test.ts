@@ -106,5 +106,19 @@ describe('Weekday shape maps on a non-representative weekday', () => {
       '395 1 York Mills Station': 30,
     });
   });
+
+  it('keeps TTC 35 branch headways when 35A and 35B share a displayed headsign', async () => {
+    // Real TTC fresh feed (20261031), route 35, weekday service only. 35A and 35B (via
+    // Hullmar) both run to Mount Dennis every 15 and show as one headsign, plus short
+    // turns. A thin Mount Dennis shape must not read the headsign pool: the pool covers
+    // the via-Hullmar stops the shape lacks. Without the same-stops check its headline
+    // went 10 -> 17 and tier 15 -> 20.
+    const weekday = await weekdayFeatures('ttc-35-branches', 'ttc', '35');
+    const byKey = Object.fromEntries(weekday.map((p: any) => [`${p.directionId} ${p.headsign}`, [p.headway, p.tier]]));
+    expect(byKey['0 Mount Dennis']).toEqual([10, '15']);
+    expect(byKey['0 Mount Dennis via Hullmar']).toEqual([12, '15']);
+    expect(byKey['1 Pioneer Village']).toEqual([17, '20']);
+    expect(byKey['1 Pioneer Village via Hullmar']).toEqual([17, '20']);
+  });
 });
 

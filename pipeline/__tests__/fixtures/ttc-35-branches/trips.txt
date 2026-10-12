@@ -1,0 +1,314 @@
+route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,block_id,shape_id,wheelchair_accessible,bikes_allowed
+35,1,50804249,South - 35B Jane towards Mount Dennis Station via Hullmar,A,0,2233799,1122586,1,1
+35,1,50804224,South - 35A Jane towards Mount Dennis Station,A,0,2233787,1122587,1,1
+35,1,50804358,South - 35B Jane towards Mount Dennis Station via Hullmar,A,0,2233803,1122586,1,1
+35,1,50804354,South - 35A Jane towards Mount Dennis Station,A,0,2233806,1122587,1,1
+35,1,50804357,South - 35B Jane towards Mount Dennis Station via Hullmar,A,0,2233797,1122586,1,1
+35,1,50804352,South - 35A Jane towards Mount Dennis Station,A,0,2233793,1122587,1,1
+35,1,50804356,South - 35B Jane towards Mount Dennis Station via Hullmar,A,0,2235064,1122586,1,1
+35,1,50804377,South - 35A Jane towards Mount Dennis Station,A,0,2233786,1122587,1,1
+35,1,50804355,South - 35B Jane towards Mount Dennis Station via Hullmar,A,0,2233802,1122586,1,1
+35,1,50804376,South - 35A Jane towards Mount Dennis Station,A,0,2233785,1122585,1,1
+35,1,50804353,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233796,1122584,1,1
+35,1,50804375,South - 35A Jane towards Mount Dennis Station,A,0,2233788,1122585,1,1
+35,1,50804351,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233801,1122584,1,1
+35,1,50804256,South - 35A Jane towards Mount Dennis Station,A,0,2233804,1122585,1,1
+35,1,50804257,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233800,1122584,1,1
+35,1,50804362,South - 35A Jane towards Mount Dennis Station,A,0,2233798,1122585,1,1
+35,1,50804350,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233780,1122584,1,1
+35,1,50804361,South - 35A Jane towards Mount Dennis Station,A,0,2233799,1122585,1,1
+35,1,50804349,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233787,1122584,1,1
+35,1,50804360,South - 35A Jane towards Mount Dennis Station,A,0,2233803,1122585,1,1
+35,1,50804348,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233806,1122584,1,1
+35,1,50804359,South - 35A Jane towards Mount Dennis Station,A,0,2233797,1122585,1,1
+35,1,50804292,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233793,1122584,1,1
+35,1,50804227,South - 35A Jane towards Mount Dennis Station,A,0,2233786,1122585,1,1
+35,1,50804291,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233802,1122584,1,1
+35,1,50804226,South - 35A Jane towards Mount Dennis Station,A,0,2233785,1122585,1,1
+35,1,50804290,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233796,1122584,1,1
+35,1,50804223,South - 35A Jane towards Mount Dennis Station,A,0,2233788,1122585,1,1
+35,1,50804289,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233801,1122584,1,1
+35,1,50804379,South - 35A Jane towards Mount Dennis Station,A,0,2233800,1122585,1,1
+35,1,50804288,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233804,1122584,1,1
+35,1,50804378,South - 35A Jane towards Mount Dennis Station,A,0,2233798,1122585,1,1
+35,1,50804228,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233780,1122584,1,1
+35,1,50804293,South - 35A Jane towards Mount Dennis Station,A,0,2233799,1122585,1,1
+35,1,50804294,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233787,1122584,1,1
+35,1,50804322,South - 35A Jane towards Mount Dennis Station,A,0,2233803,1122585,1,1
+35,1,50804316,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233806,1122584,1,1
+35,1,50804321,South - 35A Jane towards Mount Dennis Station,A,0,2233797,1122585,1,1
+35,1,50804315,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233793,1122584,1,1
+35,1,50804320,South - 35A Jane towards Mount Dennis Station,A,0,2233786,1122585,1,1
+35,1,50804314,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233802,1122584,1,1
+35,1,50804319,South - 35A Jane towards Mount Dennis Station,A,0,2233785,1122585,1,1
+35,1,50804313,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233796,1122584,1,1
+35,1,50804318,South - 35A Jane towards Mount Dennis Station,A,0,2233788,1122585,1,1
+35,1,50804287,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233801,1122584,1,1
+35,1,50804317,South - 35A Jane towards Mount Dennis Station,A,0,2233800,1122585,1,1
+35,1,50804286,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233798,1122584,1,1
+35,1,50804280,South - 35A Jane towards Mount Dennis Station,A,0,2233799,1122585,1,1
+35,1,50804285,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233787,1122584,1,1
+35,1,50804279,South - 35A Jane towards Mount Dennis Station,A,0,2233803,1122585,1,1
+35,1,50804284,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233797,1122584,1,1
+35,1,50804278,South - 35A Jane towards Mount Dennis Station,A,0,2233793,1122585,1,1
+35,1,50804283,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233786,1122584,1,1
+35,1,50804277,South - 35A Jane towards Mount Dennis Station,A,0,2233802,1122585,1,1
+35,1,50804282,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233785,1122584,1,1
+35,1,50804276,South - 35A Jane towards Mount Dennis Station,A,0,2233796,1122585,1,1
+35,1,50804281,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233788,1122584,1,1
+35,1,50804275,South - 35A Jane towards Mount Dennis Station,A,0,2233801,1122585,1,1
+35,1,50804247,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233800,1122584,1,1
+35,1,50804236,South - 35A Jane towards Mount Dennis Station,A,0,2233798,1122585,1,1
+35,1,50804246,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233799,1122584,1,1
+35,1,50804235,South - 35A Jane towards Mount Dennis Station,A,0,2233787,1122585,1,1
+35,1,50804245,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233803,1122584,1,1
+35,1,50804234,South - 35A Jane towards Mount Dennis Station,A,0,2233797,1122585,1,1
+35,1,50804244,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233793,1122584,1,1
+35,1,50804233,South - 35A Jane towards Mount Dennis Station,A,0,2233786,1122585,1,1
+35,1,50804243,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233802,1122584,1,1
+35,1,50804232,South - 35A Jane towards Mount Dennis Station,A,0,2233759,1122585,1,1
+35,1,50804242,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233785,1122584,1,1
+35,1,50804231,South - 35A Jane towards Mount Dennis Station,A,0,2233796,1122585,1,1
+35,1,50804241,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233788,1122584,1,1
+35,1,50804230,South - 35A Jane towards Mount Dennis Station,A,0,2233795,1122585,1,1
+35,1,50804240,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233801,1122584,1,1
+35,1,50804229,South - 35A Jane towards Mount Dennis Station,A,0,2233794,1122585,1,1
+35,1,50804239,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233800,1122584,1,1
+35,1,50804333,South - 35A Jane towards Mount Dennis Station,A,0,2233798,1122585,1,1
+35,1,50804238,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233799,1122584,1,1
+35,1,50804237,South - 35A Jane towards Mount Dennis Station,A,0,2233842,1122585,1,1
+35,1,50804304,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233760,1122584,1,1
+35,1,50804311,South - 35A Jane towards Mount Dennis Station,A,0,2233803,1122585,1,1
+35,1,50804303,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233797,1122584,1,1
+35,1,50804310,South - 35A Jane towards Mount Dennis Station,A,0,2233793,1122585,1,1
+35,1,50804302,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233786,1122584,1,1
+35,1,50804309,South - 35A Jane towards Mount Dennis Station,A,0,2233758,1122585,1,1
+35,1,50804301,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233802,1122584,1,1
+35,1,50804308,South - 35A Jane towards Mount Dennis Station,A,0,2233759,1122585,1,1
+35,1,50804300,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233785,1122584,1,1
+35,1,50804307,South - 35A Jane towards Mount Dennis Station,A,0,2233796,1122585,1,1
+35,1,50804299,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233788,1122584,1,1
+35,1,50804312,South - 35A Jane towards Mount Dennis Station,A,0,2233795,1122585,1,1
+35,1,50804298,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233805,1122584,1,1
+35,1,50804306,South - 35A Jane towards Mount Dennis Station,A,0,2233801,1122585,1,1
+35,1,50804297,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233794,1122584,1,1
+35,1,50804305,South - 35A Jane towards Mount Dennis Station,A,0,2233768,1122585,1,1
+35,1,50804296,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233800,1122584,1,1
+35,1,50804346,South - 35A Jane towards Mount Dennis Station,A,0,2233798,1122585,1,1
+35,1,50804262,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233799,1122584,1,1
+35,1,50804345,South - 35A Jane towards Mount Dennis Station,A,0,2233842,1122585,1,1
+35,1,50804339,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233760,1122584,1,1
+35,1,50804344,South - 35A Jane towards Mount Dennis Station,A,0,2233803,1122585,1,1
+35,1,50804338,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233797,1122584,1,1
+35,1,50804225,South - 35A Jane towards Mount Dennis Station,A,0,2233793,1122585,1,1
+35,1,50804337,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233786,1122584,1,1
+35,1,50804343,South - 35A Jane towards Mount Dennis Station,A,0,2233758,1122585,1,1
+35,1,50804336,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233802,1122584,1,1
+35,1,50804342,South - 35A Jane towards Mount Dennis Station,A,0,2233759,1122585,1,1
+35,1,50804335,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233815,1122584,1,1
+35,1,50804341,South - 35A Jane towards Mount Dennis Station,A,0,2233814,1122585,1,1
+35,1,50804334,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233788,1122584,1,1
+35,1,50804340,South - 35A Jane towards Mount Dennis Station,A,0,2233805,1122585,1,1
+35,1,50804347,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233801,1122584,1,1
+35,1,50804364,South - 35A Jane towards Mount Dennis Station,A,0,2233794,1122585,1,1
+35,1,50804374,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233800,1122584,1,1
+35,1,50804332,South - 35A Jane towards Mount Dennis Station,A,0,2233757,1122585,1,1
+35,1,50804373,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233842,1122584,1,1
+35,1,50804331,South - 35A Jane towards Mount Dennis Station,A,0,2233760,1122585,1,1
+35,1,50804372,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233797,1122584,1,1
+35,1,50804330,South - 35A Jane towards Mount Dennis Station,A,0,2233793,1122585,1,1
+35,1,50804371,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233756,1122584,1,1
+35,1,50804329,South - 35A Jane towards Mount Dennis Station,A,0,2233758,1122585,1,1
+35,1,50804370,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233759,1122584,1,1
+35,1,50804328,South - 35A Jane towards Mount Dennis Station,A,0,2233815,1122585,1,1
+35,1,50804369,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233814,1122584,1,1
+35,1,50804327,South - 35A Jane towards Mount Dennis Station,A,0,2233805,1122585,1,1
+35,1,50804368,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233794,1122584,1,1
+35,1,50804326,South - 35A Jane towards Mount Dennis Station,A,0,2233757,1122585,1,1
+35,1,50804367,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233842,1122584,1,1
+35,1,50804325,South - 35A Jane towards Mount Dennis Station,A,0,2233760,1122585,1,1
+35,1,50804366,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233813,1122584,1,1
+35,1,50804324,South - 35A Jane towards Mount Dennis Station,A,0,2233812,1122585,1,1
+35,1,50804365,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233756,1122584,1,1
+35,1,50804323,South - 35A Jane towards Mount Dennis Station,A,0,2233758,1122585,1,1
+35,1,50804265,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233759,1122584,1,1
+35,1,50804259,South - 35A Jane towards Mount Dennis Station,A,0,2233815,1122585,1,1
+35,1,50804260,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233814,1122584,1,1
+35,1,50804273,South - 35A Jane towards Mount Dennis Station,A,0,2233811,1122585,1,1
+35,1,50804264,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233757,1122584,1,1
+35,1,50804272,South - 35A Jane towards Mount Dennis Station,A,0,2233760,1122585,1,1
+35,1,50804263,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233726,1122584,1,1
+35,1,50804271,South - 35A Jane towards Mount Dennis Station,A,0,2233813,1122585,1,1
+35,1,50804295,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233756,1122584,1,1
+35,1,50804270,South - 35A Jane towards Mount Dennis Station,A,0,2233759,1122585,1,1
+35,1,50804255,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233812,1122584,1,1
+35,1,50804269,South - 35A Jane towards Mount Dennis Station,A,0,2233725,1122585,1,1
+35,1,50804254,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233758,1122584,1,1
+35,1,50804274,South - 35A Jane towards Mount Dennis Station,A,0,2233815,1122585,1,1
+35,1,50804253,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233814,1122584,1,1
+35,1,50804268,South - 35A Jane towards Mount Dennis Station,A,0,2233811,1122585,1,1
+35,1,50804252,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233757,1122584,1,1
+35,1,50804267,South - 35A Jane towards Mount Dennis Station,A,0,2233760,1122585,1,1
+35,1,50804251,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233726,1122584,1,1
+35,1,50804266,South - 35A Jane towards Mount Dennis Station,A,0,2233813,1122585,1,1
+35,1,50804250,South - 35B Jane towards Mount Dennis Station via Hullmar,B,0,2233756,1122584,1,1
+35,1,50804258,South - 35A Jane towards Mount Dennis Station,A,0,2233759,1122585,1,1
+35,1,50804222,South - 35A Jane towards Mount Dennis Station,A,0,2233812,1122585,1,1
+35,1,50804363,South - 35A Jane towards Mount Dennis Station,A,0,2233725,1122585,1,1
+35,1,50804248,South - 35S Jane Short Turn towards Eglinton,S,0,2233814,1122583,1,1
+35,1,50804380,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233796,1122589,1,1
+35,1,50804425,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233801,1122589,1,1
+35,1,50804473,North - 35A Jane towards Pioneer Village Station,A,1,2233804,1122590,1,1
+35,1,50804525,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233800,1122589,1,1
+35,1,50804526,North - 35A Jane towards Pioneer Village Station,A,1,2233798,1122590,1,1
+35,1,50804524,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233780,1122589,1,1
+35,1,50804527,North - 35A Jane towards Pioneer Village Station,A,1,2233799,1122590,1,1
+35,1,50804523,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233787,1122589,1,1
+35,1,50804532,North - 35A Jane towards Pioneer Village Station,A,1,2233803,1122590,1,1
+35,1,50804522,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233806,1122589,1,1
+35,1,50804531,North - 35A Jane towards Pioneer Village Station,A,1,2233797,1122590,1,1
+35,1,50804521,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233793,1122589,1,1
+35,1,50804530,North - 35A Jane towards Pioneer Village Station,A,1,2235064,1122590,1,1
+35,1,50804520,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233786,1122589,1,1
+35,1,50804529,North - 35A Jane towards Pioneer Village Station,A,1,2233802,1122590,1,1
+35,1,50804519,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233785,1122589,1,1
+35,1,50804528,North - 35A Jane towards Pioneer Village Station,A,1,2233796,1122590,1,1
+35,1,50804518,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233788,1122589,1,1
+35,1,50804453,North - 35A Jane towards Pioneer Village Station,A,1,2233801,1122590,1,1
+35,1,50804395,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233804,1122589,1,1
+35,1,50804452,North - 35A Jane towards Pioneer Village Station,A,1,2233800,1122590,1,1
+35,1,50804394,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233798,1122589,1,1
+35,1,50804451,North - 35A Jane towards Pioneer Village Station,A,1,2233780,1122590,1,1
+35,1,50804393,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233799,1122589,1,1
+35,1,50804450,North - 35A Jane towards Pioneer Village Station,A,1,2233787,1122590,1,1
+35,1,50804392,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233803,1122589,1,1
+35,1,50804449,North - 35A Jane towards Pioneer Village Station,A,1,2233806,1122590,1,1
+35,1,50804472,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233797,1122589,1,1
+35,1,50804448,North - 35A Jane towards Pioneer Village Station,A,1,2233793,1122590,1,1
+35,1,50804456,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233786,1122589,1,1
+35,1,50804447,North - 35A Jane towards Pioneer Village Station,A,1,2233802,1122590,1,1
+35,1,50804455,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233785,1122589,1,1
+35,1,50804454,North - 35A Jane towards Pioneer Village Station,A,1,2233796,1122590,1,1
+35,1,50804511,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233788,1122589,1,1
+35,1,50804436,North - 35A Jane towards Pioneer Village Station,A,1,2233801,1122590,1,1
+35,1,50804446,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233800,1122589,1,1
+35,1,50804435,North - 35A Jane towards Pioneer Village Station,A,1,2233804,1122590,1,1
+35,1,50804445,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233798,1122589,1,1
+35,1,50804434,North - 35A Jane towards Pioneer Village Station,A,1,2233799,1122590,1,1
+35,1,50804444,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233787,1122589,1,1
+35,1,50804433,North - 35A Jane towards Pioneer Village Station,A,1,2233803,1122590,1,1
+35,1,50804443,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233797,1122589,1,1
+35,1,50804432,North - 35A Jane towards Pioneer Village Station,A,1,2233793,1122590,1,1
+35,1,50804442,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233786,1122589,1,1
+35,1,50804431,North - 35A Jane towards Pioneer Village Station,A,1,2233802,1122590,1,1
+35,1,50804441,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233785,1122589,1,1
+35,1,50804430,North - 35A Jane towards Pioneer Village Station,A,1,2233796,1122590,1,1
+35,1,50804440,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233788,1122589,1,1
+35,1,50804429,North - 35A Jane towards Pioneer Village Station,A,1,2233801,1122590,1,1
+35,1,50804439,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233800,1122589,1,1
+35,1,50804428,North - 35A Jane towards Pioneer Village Station,A,1,2233798,1122590,1,1
+35,1,50804438,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233799,1122589,1,1
+35,1,50804427,North - 35A Jane towards Pioneer Village Station,A,1,2233787,1122590,1,1
+35,1,50804437,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233803,1122589,1,1
+35,1,50804426,North - 35A Jane towards Pioneer Village Station,A,1,2233797,1122590,1,1
+35,1,50804504,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233793,1122589,1,1
+35,1,50804533,North - 35A Jane towards Pioneer Village Station,A,1,2233786,1122590,1,1
+35,1,50804403,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233802,1122589,1,1
+35,1,50804411,North - 35A Jane towards Pioneer Village Station,A,1,2233759,1122590,1,1
+35,1,50804418,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233785,1122589,1,1
+35,1,50804410,North - 35A Jane towards Pioneer Village Station,A,1,2233796,1122590,1,1
+35,1,50804417,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233788,1122589,1,1
+35,1,50804409,North - 35A Jane towards Pioneer Village Station,A,1,2233801,1122590,1,1
+35,1,50804416,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233800,1122589,1,1
+35,1,50804408,North - 35A Jane towards Pioneer Village Station,A,1,2233798,1122590,1,1
+35,1,50804415,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233799,1122589,1,1
+35,1,50804407,North - 35A Jane towards Pioneer Village Station,A,1,2233842,1122590,1,1
+35,1,50804414,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233803,1122589,1,1
+35,1,50804406,North - 35A Jane towards Pioneer Village Station,A,1,2233797,1122590,1,1
+35,1,50804412,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233793,1122589,1,1
+35,1,50804405,North - 35A Jane towards Pioneer Village Station,A,1,2233786,1122590,1,1
+35,1,50804413,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233758,1122589,1,1
+35,1,50804404,North - 35A Jane towards Pioneer Village Station,A,1,2233802,1122590,1,1
+35,1,50804500,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233759,1122589,1,1
+35,1,50804424,North - 35A Jane towards Pioneer Village Station,A,1,2233785,1122590,1,1
+35,1,50804499,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233796,1122589,1,1
+35,1,50804423,North - 35A Jane towards Pioneer Village Station,A,1,2233788,1122590,1,1
+35,1,50804498,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233805,1122589,1,1
+35,1,50804422,North - 35A Jane towards Pioneer Village Station,A,1,2233795,1122590,1,1
+35,1,50804497,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233801,1122589,1,1
+35,1,50804421,North - 35A Jane towards Pioneer Village Station,A,1,2233794,1122590,1,1
+35,1,50804496,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233800,1122589,1,1
+35,1,50804420,North - 35A Jane towards Pioneer Village Station,A,1,2233768,1122590,1,1
+35,1,50804495,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233798,1122589,1,1
+35,1,50804419,North - 35A Jane towards Pioneer Village Station,A,1,2233799,1122590,1,1
+35,1,50804494,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233842,1122589,1,1
+35,1,50804503,North - 35A Jane towards Pioneer Village Station,A,1,2233760,1122590,1,1
+35,1,50804493,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233803,1122589,1,1
+35,1,50804502,North - 35A Jane towards Pioneer Village Station,A,1,2233797,1122590,1,1
+35,1,50804492,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233793,1122589,1,1
+35,1,50804501,North - 35A Jane towards Pioneer Village Station,A,1,2233786,1122590,1,1
+35,1,50804491,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233758,1122589,1,1
+35,1,50804471,North - 35A Jane towards Pioneer Village Station,A,1,2233802,1122590,1,1
+35,1,50804490,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233759,1122589,1,1
+35,1,50804470,North - 35A Jane towards Pioneer Village Station,A,1,2233785,1122590,1,1
+35,1,50804464,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233796,1122589,1,1
+35,1,50804469,North - 35A Jane towards Pioneer Village Station,A,1,2233788,1122590,1,1
+35,1,50804463,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233805,1122589,1,1
+35,1,50804468,North - 35A Jane towards Pioneer Village Station,A,1,2233801,1122590,1,1
+35,1,50804462,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233794,1122589,1,1
+35,1,50804467,North - 35A Jane towards Pioneer Village Station,A,1,2233800,1122590,1,1
+35,1,50804461,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233798,1122589,1,1
+35,1,50804477,North - 35A Jane towards Pioneer Village Station,A,1,2233799,1122590,1,1
+35,1,50804460,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233842,1122589,1,1
+35,1,50804466,North - 35A Jane towards Pioneer Village Station,A,1,2233760,1122590,1,1
+35,1,50804459,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233803,1122589,1,1
+35,1,50804465,North - 35A Jane towards Pioneer Village Station,A,1,2233797,1122590,1,1
+35,1,50804458,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233793,1122589,1,1
+35,1,50804479,North - 35A Jane towards Pioneer Village Station,A,1,2233756,1122590,1,1
+35,1,50804457,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233758,1122589,1,1
+35,1,50804489,North - 35A Jane towards Pioneer Village Station,A,1,2233802,1122590,1,1
+35,1,50804478,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233759,1122589,1,1
+35,1,50804488,North - 35A Jane towards Pioneer Village Station,A,1,2233815,1122590,1,1
+35,1,50804476,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233814,1122589,1,1
+35,1,50804487,North - 35A Jane towards Pioneer Village Station,A,1,2233805,1122590,1,1
+35,1,50804475,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233794,1122589,1,1
+35,1,50804486,North - 35A Jane towards Pioneer Village Station,A,1,2233757,1122590,1,1
+35,1,50804474,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233842,1122589,1,1
+35,1,50804485,North - 35A Jane towards Pioneer Village Station,A,1,2233760,1122590,1,1
+35,1,50804402,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233813,1122589,1,1
+35,1,50804484,North - 35A Jane towards Pioneer Village Station,A,1,2233812,1122590,1,1
+35,1,50804401,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233756,1122589,1,1
+35,1,50804483,North - 35A Jane towards Pioneer Village Station,A,1,2233758,1122590,1,1
+35,1,50804400,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233759,1122589,1,1
+35,1,50804482,North - 35A Jane towards Pioneer Village Station,A,1,2233815,1122590,1,1
+35,1,50804399,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233814,1122589,1,1
+35,1,50804481,North - 35A Jane towards Pioneer Village Station,A,1,2233805,1122590,1,1
+35,1,50804398,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233811,1122589,1,1
+35,1,50804480,North - 35A Jane towards Pioneer Village Station,A,1,2233757,1122590,1,1
+35,1,50804397,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233842,1122589,1,1
+35,1,50804505,North - 35A Jane towards Pioneer Village Station,A,1,2233760,1122590,1,1
+35,1,50804506,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233726,1122589,1,1
+35,1,50804391,North - 35A Jane towards Pioneer Village Station,A,1,2233813,1122590,1,1
+35,1,50804508,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233756,1122589,1,1
+35,1,50804390,North - 35A Jane towards Pioneer Village Station,A,1,2233759,1122590,1,1
+35,1,50804507,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233812,1122589,1,1
+35,1,50804389,North - 35A Jane towards Pioneer Village Station,A,1,2233725,1122590,1,1
+35,1,50804539,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233758,1122589,1,1
+35,1,50804388,North - 35A Jane towards Pioneer Village Station,A,1,2233815,1122590,1,1
+35,1,50804538,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233814,1122589,1,1
+35,1,50804387,North - 35A Jane towards Pioneer Village Station,A,1,2233811,1122590,1,1
+35,1,50804537,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233757,1122589,1,1
+35,1,50804386,North - 35A Jane towards Pioneer Village Station,A,1,2233760,1122590,1,1
+35,1,50804536,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233726,1122589,1,1
+35,1,50804385,North - 35A Jane towards Pioneer Village Station,A,1,2233813,1122590,1,1
+35,1,50804535,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233756,1122589,1,1
+35,1,50804510,North - 35A Jane towards Pioneer Village Station,A,1,2233759,1122590,1,1
+35,1,50804534,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233812,1122589,1,1
+35,1,50804509,North - 35A Jane towards Pioneer Village Station,A,1,2233725,1122590,1,1
+35,1,50804515,North - 35B Jane towards Pioneer Village Station via Hullmar,B,1,2233758,1122589,1,1
+35,1,50804516,North - 35A Jane towards Pioneer Village Station,A,1,2233815,1122590,1,1
+35,1,50804517,North - 35A Jane towards Pioneer Village Station,A,1,2233814,1122590,1,1
+35,1,50804396,North - 35A Jane towards Pioneer Village Station,A,1,2233811,1122590,1,1
+35,1,50804512,North - 35A Jane towards Pioneer Village Station,A,1,2233757,1122590,1,1
+35,1,50804513,North - 35A Jane towards Steeles,A,1,2233726,1122592,1,1
+35,1,50804514,North - 35A Jane towards Steeles,A,1,2233813,1122592,1,1
