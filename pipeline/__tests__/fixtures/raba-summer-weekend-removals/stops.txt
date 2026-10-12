@@ -1,0 +1,45 @@
+stop_id,stop_code,stop_name,stop_lat,stop_lon,stop_desc,wheelchair_boarding,platform_code,location_type,parent_station,stop_timezone,stop_url,tts_stop_name,zone_id
+1052,1052,Lake Blvd at Northpoint Dr (FS),40.6117101,-122.3820855,,1,,0,,,,,
+1042,1042,Oasis Rd at Randolph Rd,40.640514,-122.375167,,1,,0,,America/Los_Angeles,,,
+1048,1048,Lake Blvd at St. Marks St,40.616306,-122.3924273,,1,,0,,America/Los_Angeles,,,
+7017,7017,Lake Blvd at Northpoint Dr (FS),40.6108796,-122.3811764,,1,,0,,,,,
+1063,1063,Shasta Dam Blvd and Grand River Ave (NS),40.6804929,-122.3616665,,1,,0,,,,,
+1014,1014,Lake Blvd at Clay St,40.6138213,-122.3854146,,1,,0,,America/Los_Angeles,,,
+1043,1043,Oasis Rd at Beltline Rd,40.6331142,-122.3916205,,1,,0,,America/Los_Angeles,,,
+1051,1051,Lake Blvd at St. Nicholas Ave,40.6195087,-122.3979037,,1,,0,,America/Los_Angeles,,,
+29929,29929,Shasta Dam Blvd at Locust Ave,40.6805287,-122.3684,,1,,0,,,,,
+7018,7018,Lake Blvd at Masonic Dr (FS),40.609644,-122.379049,,1,,0,,,,,
+1034,1034,Shasta Dam Blvd at Grand Coulee Blvd,40.6801699,-122.3580413,,1,,0,,America/Los_Angeles,,,
+5503,5503,Sacramento Airport Terminal A,38.6925813,-121.5887243,,1,,0,,,,,Sac Airport Zone
+1035,1035,Cascade Blvd at Shasta Dam Blvd,40.6797642,-122.3511854,@ Rite Aide,1,,0,,America/Los_Angeles,,,
+1045,1045,Lake Blvd at Keswick Dam Rd,40.6258703,-122.4052696,,1,,0,,America/Los_Angeles,,,
+1040,1040,Cascade Blvd at Riddle Rd,40.652647,-122.362079,@ Oasis Fun Center,1,,0,,America/Los_Angeles,,,
+1033,1033,Shasta Dam Blvd at Median Ave,40.6803775,-122.3636348,@ car wash,1,,0,,America/Los_Angeles,,,
+1037,1037,Cascade Blvd at Cottage Ave,40.6649286,-122.3574168,,1,,0,,America/Los_Angeles,,,
+1036,1036,Cascade Blvd at Morningstar Way,40.6760446,-122.3537854,Across from Project City Post Office,1,,0,,America/Los_Angeles,,,
+1055,1055,Oasis Rd at Beltline Rd (NS),40.6329056,-122.3915891,,1,,0,,,,,
+5501,5501,Orland,39.7487651,-122.2026874,,1,,0,,,,,Orland Zone
+1056,1056,Oasis Rd at Randolph Rd (FS),40.6407788,-122.374544,,1,,0,,,,,
+1053,1053,Oasis Rd at Lake Blvd (FS),40.6275502,-122.4041939,,1,,0,,,,,
+1044,1044,3711 Oasis Rd,40.6305858,-122.3994185,@ school,1,,0,,America/Los_Angeles,,,
+1061,1061,Shasta Dam Blvd at Kennett St (NS),40.6803234,-122.3515811,,1,,0,,,,,
+1038,1038,Cascade Blvd at Mulberry St,40.6593162,-122.3579205,@ Elegant Home Furnishing,1,,0,,America/Los_Angeles,,,
+29908,,Downtown Passenger Terminal Gate 1,40.5831749,-122.3923624,,1,,0,29907,,,,
+5505,5505,Sacramento Valley Station,38.5846714,-121.5014953,,1,,0,,,,,Sacramento Zone
+5502,5502,Williams,39.156858,-122.146894,,1,,0,,,,,Williams Zone
+1062,1062,Shasta Dam Blvd at 5001 Oregon,40.6803568,-122.3575369,,1,,0,,,,,
+1064,1064,Shasta Dam Blvd at Farmers Marketplace (MB),40.680596,-122.3645184,,1,,0,,,,,
+29924,,Lake Blvd at Keswick Dam Rd,40.6259936,-122.4049123,,1,,0,,,,,
+1039,1039,Cascade Blvd at Autumn Harvest Way,40.6549526,-122.3599418,,1,,0,,America/Los_Angeles,,,
+29923,,Lake Blvd at St. Marks St,40.6168884,-122.3930226,,1,,0,,,,,
+1041,1041,Cascade Blvd at Oasis Rd,40.642481,-122.3671323,@ AM/PM Mini Mkt,1,,0,,America/Los_Angeles,,,
+1067,1067,Oasis Rd at Cascade Blvd (NS),40.642035,-122.367678,,1,,0,,,,,
+9902,9902,Red Bluff Bus & Ride @ Rio St and Walnut St.,40.178541,-122.234455,,1,,0,,,,,Red Bluff Zone
+1054,1054,Oasis Rd at Redding STEM (FS),40.6305398,-122.3990636,,1,,0,,,,,
+1046,1046,Lake Blvd at Tamarack Dr,40.620575,-122.400736,,1,,0,,America/Los_Angeles,,,
+1049,1049,Lake Blvd at Clay St,40.6135409,-122.3853959,,1,,0,,America/Los_Angeles,,,
+9903,9903,Yuba Street at Railroad Tracks,40.582755,-122.3931789,,1,,0,29907,,,,Redding Zone
+1032,1032,Shasta Dam Blvd at Hardenbrook Ave,40.6805035,-122.366825,,1,,0,,America/Los_Angeles,,,
+5504,5504,Sacramento Airport Terminal B,38.6912405,-121.5906226,,1,,0,,,,,Sac Airport Zone
+1047,1047,Lake Blvd at Panorama Dr,40.61893,-122.397178,,1,,0,,America/Los_Angeles,,,
+1050,1050,Lake Blvd at Santa Rosa Way,40.6217822,-122.4022462,,1,,0,,America/Los_Angeles,,,

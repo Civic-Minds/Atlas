@@ -205,3 +205,73 @@ describe('reference date clamp skips an expired newest period (RCT)', () => {
   });
 });
 
+describe('running-period reference guards (#734 follow-up)', () => {
+  // Real feeds, today Oct 12 2026. calendar.txt and calendar_dates.txt are unchanged.
+  // clallamtransit/raba keep two whole routes; carta/miami keep up to 5 trips per
+  // (route, service) with only route_id/service_id/trip_id, so every service's route set
+  // is kept.
+  beforeAll(() => {
+    vi.useFakeTimers({ toFake: ['Date'], now: new Date('2026-10-12T12:00:00') });
+  });
+  afterAll(() => {
+    vi.useRealTimers();
+  });
+
+  const reference = async (name: string) => {
+    const gtfs = await parseGtfsZip(new Uint8Array(await fixtureZip(name)).buffer as ArrayBuffer);
+    return detectReferenceDate(gtfs.calendar!, gtfs.calendarDates, gtfs.trips);
+  };
+  // Calendar-only fixtures (no stops or routes): read the three files directly.
+  const csv = (name: string, file: string): any[] => {
+    const [header, ...rows] = readFileSync(resolve(FIXTURES, name, file), 'utf8').trim().split('\n').map(l => l.split(','));
+    return rows.map(row => Object.fromEntries(header.map((h, i) => [h, row[i]])));
+  };
+  const calendarReference = (name: string) =>
+    detectReferenceDate(csv(name, 'calendar.txt'), csv(name, 'calendar_dates.txt'), csv(name, 'trips.txt'));
+  const featuresByDay = async (name: string, slug: string) => {
+    const result = await processGtfsBuffer(await fixtureZip(name), undefined, { slug });
+    const counts: Record<string, number> = {};
+    for (const feature of JSON.parse(result.geojson).features) {
+      if (feature.properties.stopId != null) continue;
+      counts[feature.properties.day] = (counts[feature.properties.day] ?? 0) + 1;
+    }
+    return counts;
+  };
+
+  // The summer period (Seasonal / Summer-*) ended Sep 6-7 and the regular period runs on.
+  // The regular weekend services are removed every summer weekend through Sep 5/6, and
+  // weekdays through Labor Day (Sep 7). Moving the reference to the day after summer
+  // (Sep 7/8) read the last summer weekend: the regular weekend service was removed and
+  // the summer one out of range, so Saturday and Sunday lost every route. The reference
+  // now moves to the first week with no fully removed day.
+  it('clallamtransit keeps its weekend routes after the summer period ends', async () => {
+    expect(await reference('clallamtransit-summer-weekend-removals')).toBe('20260911');
+    const counts = await featuresByDay('clallamtransit-summer-weekend-removals', 'clallamtransit');
+    expect(counts.Saturday).toBeGreaterThan(0);
+    expect(counts.Sunday).toBeGreaterThan(0);
+    expect(counts.Weekday).toBeGreaterThan(0);
+  });
+
+  it('raba keeps its weekend routes after the summer period ends', async () => {
+    expect(await reference('raba-summer-weekend-removals')).toBe('20260911');
+    const counts = await featuresByDay('raba-summer-weekend-removals', 'raba');
+    expect(counts.Saturday).toBeGreaterThan(0);
+    expect(counts.Sunday).toBeGreaterThan(0);
+    expect(counts.Weekday).toBeGreaterThan(0);
+  });
+
+  // Stale feeds: the main period has ended and only a small side period still runs. The
+  // reference stays where it was before #734.
+  it('carta does not switch to the small TriCounty Link period', () => {
+    // Main period May 22-Aug 15 2026 (32 routes) ended; TriCounty Link (Jan 2026-May
+    // 2027, 8 routes) runs on. Switching put the reference at Sep 15.
+    expect(calendarReference('carta-stale-main-period')).toBe('20260703');
+  });
+
+  it('miami-dade does not switch to the long period whose midpoint is in 2025', () => {
+    // Bus periods (Mar 30 / Apr 27-Jul 19 2026) ended. The newest running period, Nov 13
+    // 2023-Dec 31 2026, has its midpoint on Jun 7 2025, before the bus periods start:
+    // 47 of 122 routes and no commuter rail.
+    expect(calendarReference('miami-dade-stale-bus-periods')).toBe('20260607');
+  });
+});

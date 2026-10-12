@@ -1,0 +1,5 @@
+service_id,date,holiday_name,exception_type
+c_71858_b_86690_d_64,20260704,Independence Day,1
+c_71858_b_86690_d_48,20260704,Independence Day,2
+c_71858_b_86690_d_32,20260704,Independence Day,2
+c_70976_b_84051_d_32,20260704,Independence Day,2
