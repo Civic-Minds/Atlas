@@ -1,0 +1,2 @@
+route_id,agency_id,route_short_name,route_long_name,route_type,route_url,route_color,route_text_color
+550,CM,550,550-Metro Rail Red Line,0,http://www.capmetro.org/current_schedules/pdf/550.pdf,E2231A,FFFFFF
