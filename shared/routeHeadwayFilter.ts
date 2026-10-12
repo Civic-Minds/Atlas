@@ -13,6 +13,9 @@
  * it" the same decision by construction.
  *
  * Busiest-stretch values (min-stop, headsign trunk, shared-core cadence) remain display-only.
+ * A route may show the stretches that themselves pass; it never makes the whole route pass
+ * (CIV-82): the shared-stretch overlay judges each stop with featurePassesHeadwayFilter below,
+ * and the route's own pass/fail never changes.
  */
 import type { PeriodKey } from './config.js';
 import { flattenPeriodHeadwayProps, NO_PERIOD_SERVICE_TILE_VALUE } from './pmtilesProps.js';

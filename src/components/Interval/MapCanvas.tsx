@@ -1011,8 +1011,8 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     if (!showRouteLayers || fareView || nightServiceView || frequentServiceView || !filteredLayers) {
       return { segments: [], partialMatches: [] };
     }
-    return computeFrequencySegmentOverlay(filteredLayers, period, maxHeadway);
-  }, [filteredLayers, period, maxHeadway, showRouteLayers, fareView, nightServiceView, frequentServiceView, colorMode]);
+    return computeFrequencySegmentOverlay(filteredLayers, period, maxHeadway, undefined, layers ?? filteredLayers);
+  }, [filteredLayers, layers, period, maxHeadway, showRouteLayers, fareView, nightServiceView, frequentServiceView, colorMode]);
 
   const sharedHoverSegments = useMemo(
     () => buildSharedHoverSegments(layers, selectedRoute, hoveredBranch, day, colorMode),

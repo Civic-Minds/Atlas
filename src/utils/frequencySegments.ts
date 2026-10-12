@@ -3,7 +3,15 @@ import type { AgencyLayers } from '../hooks/useAgencyData';
 import type { PeriodKey } from '../../shared/config';
 import { clipBetweenStopIndices, clipLinestring } from '../apps/corridor-geometry';
 import { headwayToTierColor, type ColorVisionMode } from './colors';
-import { featurePassesHeadwayFilter } from '../../shared/routeHeadwayFilter';
+import { featurePassesHeadwayFilter, routeFilterHeadway } from '../../shared/routeHeadwayFilter';
+import { PERIOD_KEYS } from '../../shared/config';
+import {
+  buildSharedStopIndex,
+  getPooledStop,
+  oppositeSharedStops,
+  pairOppositeStop,
+  type SharedStopIndex,
+} from '../../shared/sharedStops';
 
 /** Identifies one route feature (a single direction/headsign/day shape) for MapLibre filter matching. */
 export interface FrequencySegmentRouteKey {
@@ -136,6 +144,138 @@ function routePassesFrequencyFilter(p: ShapeProperties, period: TimePeriod, maxH
 }
 
 /**
+ * One stop of a route feature as the shared frequency rule sees it (CIV-82): the pooled value
+ * from shared/sharedStops where it applies to this feature, otherwise the feature's own value,
+ * metric by metric. The feature-level sustained flag stands in where no pooled flag applies (the
+ * pipeline publishes no per-stop own flag). Judged with featurePassesHeadwayFilter, the same
+ * function the map uses for whole routes, never a pooled-only test.
+ */
+export function sharedStopFilterView(index: SharedStopIndex, p: ShapeProperties, stopId: string): Record<string, unknown> {
+  const pooled = (metric: Parameters<typeof getPooledStop>[3]) => getPooledStop(index, p, stopId, metric);
+  const headwayByPeriod: Record<string, number | null> = {};
+  const periodCoverageHeadway: Record<string, number | null> = {};
+  const headwayByPeriodSustained: Record<string, boolean> = {};
+  for (const pk of PERIOD_KEYS) {
+    const median = pooled(`median:${pk}`);
+    headwayByPeriod[pk] = (median as number | undefined) ?? p.stopPeriodHeadways?.[stopId]?.[pk] ?? null;
+    periodCoverageHeadway[pk] = (pooled(`coverage:${pk}`) as number | undefined)
+      ?? p.stopPeriodCoverageHeadways?.[stopId]?.[pk] ?? null;
+    const sustained = (pooled(`sustained:${pk}`) as boolean | undefined) ?? p.headwayByPeriodSustained?.[pk];
+    if (sustained != null) headwayByPeriodSustained[pk] = sustained;
+  }
+  return {
+    tier: p.tier,
+    headway: (pooled('headway') as number | undefined) ?? p.stopHeadways?.[stopId] ?? null,
+    headwayByPeriod,
+    periodCoverageHeadway,
+    headwayByPeriodSustained,
+  };
+}
+
+interface StopPoint { lat: number; lon: number }
+
+/**
+ * Shared stretches of a route that FAILS the active filter (CIV-82): a route may show the
+ * stretches that themselves pass; it never makes the whole route pass. A stop qualifies when its
+ * pooled-or-own values pass the shared filter AND the matching stop of the opposite direction
+ * (pairOppositeStop over that direction's shared-stretch stops) passes too, judged the same way
+ * on the best opposite feature. Features without pooled data (sharedStretches) give nothing.
+ * Returns, per failing feature, its qualifying stopOrder ranges (2+ stops) and the worst filter
+ * value per qualifying stop (for the tier colour).
+ */
+export function failingRouteSharedRanges(
+  routeFeatures: readonly GeoJSON.Feature[],
+  allFeatures: readonly GeoJSON.Feature[],
+  period: TimePeriod,
+  maxHeadway: number,
+): Array<{ feature: GeoJSON.Feature; ranges: Array<[number, number]>; values: Map<number, number> }> {
+  const out: Array<{ feature: GeoJSON.Feature; ranges: Array<[number, number]>; values: Map<number, number> }> = [];
+  if (maxHeadway === Infinity || !routeFeatures.some(f => (f.properties as any)?.sharedStretches)) return out;
+  const index = buildSharedStopIndex(allFeatures);
+  const coords = new Map<string, StopPoint>();
+  for (const f of allFeatures) {
+    const p = f.properties as any;
+    if (f.geometry?.type === 'Point' && p?.stopId != null) {
+      const [lon, lat] = (f.geometry as GeoJSON.Point).coordinates;
+      coords.set(String(p.stopId), { lat, lon });
+    }
+  }
+  const lines = allFeatures
+    .filter(f => f.geometry?.type === 'LineString')
+    .map(f => f.properties as unknown as ShapeProperties);
+  const stopPasses = (p: ShapeProperties, stopId: string) => {
+    const view = sharedStopFilterView(index, p, stopId);
+    return { passes: featurePassesHeadwayFilter(view, period, maxHeadway), value: routeFilterHeadway(view, period) };
+  };
+
+  for (const f of routeFeatures) {
+    if (f.geometry?.type !== 'LineString') continue;
+    const p = f.properties as unknown as ShapeProperties & { sharedStretches?: Array<{ from: number; to: number }> };
+    if (!p.sharedStretches?.length || !p.stopOrder || !p.stopPositions) continue;
+    if (p.stopPositions.length !== p.stopOrder.length) continue;
+    if (featurePassesHeadwayFilter(p, period, maxHeadway)) continue; // passing routes: handled above
+    const opposite = lines.filter(q => q.routeId === p.routeId && (q.day ?? null) === (p.day ?? null)
+      && Number(q.directionId) !== Number(p.directionId) && (q.stopOrder?.length ?? 0) > 0);
+    const oppositeStops = oppositeSharedStops(lines, p);
+    const values = new Map<number, number>();
+    const onStretch = (i: number) => p.sharedStretches!.some(st => i >= st.from && i <= st.to);
+    const qualifies = (i: number): boolean => {
+      if (!onStretch(i)) return false;
+      const stopId = p.stopOrder![i];
+      const own = stopPasses(p, stopId);
+      if (!own.passes) return false;
+      // Every direction must pass at the matching stop.
+      const o = pairOppositeStop(stopId, oppositeStops, coords);
+      if (o == null) return false;
+      const other = opposite
+        .filter(q => q.stopOrder?.includes(o))
+        .map(q => stopPasses(q, o))
+        .filter(r => r.passes);
+      if (other.length === 0) return false;
+      values.set(i, Math.max(own.value ?? 0, Math.min(...other.map(r => r.value ?? 0))));
+      return true;
+    };
+    const ranges = findQualifyingStopRanges(p.stopOrder.map((_, i) => String(i)), i => (qualifies(Number(i)) ? 0 : null), 0);
+    if (ranges.length > 0) out.push({ feature: f, ranges, values });
+  }
+  return out;
+}
+
+function addFailingRouteSharedStretches(
+  slug: string,
+  routeFeatures: GeoJSON.Feature[],
+  allFeatures: GeoJSON.Feature[],
+  period: TimePeriod,
+  maxHeadway: number,
+  colorMode: ColorVisionMode,
+  segments: GeoJSON.Feature<GeoJSON.LineString, FrequencySegmentProperties>[],
+): void {
+  for (const { feature, ranges, values } of failingRouteSharedRanges(routeFeatures, allFeatures, period, maxHeadway)) {
+    const p = feature.properties as unknown as ShapeProperties;
+    for (const [from, to] of ranges) {
+      const clipped = clipBetweenStopIndices((feature.geometry as GeoJSON.LineString).coordinates, p.stopPositions!, from, to);
+      if (!clipped) continue;
+      let repHw = 0;
+      for (let i = from; i <= to; i++) repHw = Math.max(repHw, values.get(i) ?? maxHeadway);
+      segments.push({
+        type: 'Feature',
+        geometry: { type: 'LineString', coordinates: clipped },
+        properties: {
+          // Same tier palette as every route line: the worst filter value on the stretch.
+          color: headwayToTierColor(repHw || maxHeadway, colorMode),
+          agencySlug: p.agencySlug ?? slug,
+          routeId: p.routeId,
+          routeBranch: (p as any).routeBranch ?? null,
+          directionId: p.directionId,
+          headsign: p.headsign ?? null,
+          day: p.day ?? null,
+        },
+      });
+    }
+  }
+}
+
+/**
  * Client-side stand-in for per-segment PMTiles rendering (not possible -- #317: tippecanoe
  * JSON-stringifies stopOrder/stopPositions/stopHeadways into scalar tile properties, unusable in
  * MapLibre filter/paint expressions, and line-gradient needs a GeoJSON source with lineMetrics,
@@ -152,6 +292,9 @@ export function computeFrequencySegmentOverlay(
   period: TimePeriod,
   maxHeadway: number,
   colorMode: ColorVisionMode = 'default',
+  /** Unfiltered agency layers: stop coordinates, the carrier's sharedStops and the opposite
+   *  direction for the CIV-82 shared-stretch pass. Defaults to `layers`. */
+  allLayers: AgencyLayers = layers,
 ): FrequencySegmentOverlay {
   const segments: GeoJSON.Feature<GeoJSON.LineString, FrequencySegmentProperties>[] = [];
   const partialMatches: FrequencySegmentRouteKey[] = [];
@@ -278,6 +421,13 @@ export function computeFrequencySegmentOverlay(
         }
       }
     }
+  }
+
+  // CIV-82: failing routes may draw only their passing shared stretches. They are deliberately
+  // not partial matches: the route's own line stays filtered out and it still counts as failing.
+  for (const [slug, fc] of Object.entries(layers)) {
+    if (slug.endsWith('-corridors')) continue;
+    addFailingRouteSharedStretches(slug, fc.features, (allLayers[slug] ?? fc).features, period, maxHeadway, colorMode, segments);
   }
 
   partialMatches.push(...partialKeys.values());

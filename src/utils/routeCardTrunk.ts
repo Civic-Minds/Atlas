@@ -2,6 +2,7 @@ import type { ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
 import { periodKeyForHour } from '../../shared/config';
 import { buildRouteServiceSummary, metricValueForPeriod } from './routeFacts';
 import { MIN_SHARED_STOPS_FOR_TRUNK, sharedStopIds, sharesOrderedTrunk } from './routeBranchGeometry';
+import { buildSharedStopIndex, getPooledStop } from '../../shared/sharedStops';
 
 /** Headsign-scoped trunk minimum for route-card range display (not route-wide combined deps). */
 export function headsignTrunkHeadway(d: ShapeProperties, period: string): number | null {
@@ -140,4 +141,35 @@ export function trunkSparklineByHour(
     out[h] = pk ? groupTrunkHeadway(branches, pk) : null;
   }
   return out;
+}
+
+/**
+ * Shared-stretch cadence for a direction's branches (CIV-82): the worst pooled value at the stops
+ * of their shared stretches, from the pipeline's merged real departures (shared/sharedStops.ts).
+ * Null when the data has no pooled values (then the card keeps its older Combined estimate).
+ * `allDirections` are the route's features, so the carrier of the pooled block is found.
+ */
+export function sharedStretchHeadway(
+  allDirections: ShapeProperties[],
+  branches: ShapeProperties[],
+  period: TimePeriod,
+): { headway: number; stopIds: string[] } | null {
+  const index = buildSharedStopIndex(allDirections);
+  if (index.size === 0) return null;
+  let worst: number | null = null;
+  const stopIds = new Set<string>();
+  for (const d of branches) {
+    const stretches = (d as ShapeProperties & { sharedStretches?: Array<{ from: number; to: number }> }).sharedStretches;
+    if (!stretches || !d.stopOrder) continue;
+    for (const st of stretches) {
+      for (let i = st.from; i <= st.to; i++) {
+        const stopId = d.stopOrder[i];
+        const v = getPooledStop(index, d, stopId, period === 'all' ? 'headway' : `median:${period}`);
+        if (typeof v !== 'number') continue;
+        worst = worst == null ? v : Math.max(worst, v);
+        stopIds.add(stopId);
+      }
+    }
+  }
+  return worst == null ? null : { headway: worst, stopIds: [...stopIds] };
 }

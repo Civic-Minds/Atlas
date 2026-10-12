@@ -96,11 +96,12 @@ describe('tile rules fingerprint', () => {
   // No version bump: older tiles lack pws and evaluate exactly as before, and older apps
   // ignore the new keys.
   // CIV-82 strips the new shared-stretch keys from tiles (JSON only). Tile properties are
-  // unchanged, so the version stays and only the hash is recomputed.
+  // unchanged, so the version stays and only the hash is recomputed. The CIV-82 phase 2 rule
+  // text in worstDirection.ts / routeHeadwayFilter.ts is comment-only: hash only.
   it('changes only together with a deliberate TILE_RULES_VERSION decision', () => {
     expect({ version: TILE_RULES_VERSION, fingerprint: tileRulesFingerprint() }).toEqual({
       version: 2,
-      fingerprint: '4de30cf2f95e13e95355abd8aae6789d459267439297da7c2ada0b27ee84aa12',
+      fingerprint: 'f4c90ce5a49fa1fa92f381e45b4e6b0451fb8a52f876edacadbcde55f4441259',
     });
   });
 });
