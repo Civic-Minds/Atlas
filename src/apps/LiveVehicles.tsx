@@ -13,7 +13,7 @@ import RouteCardTitle from '../components/RouteCardTitle';
 import { getVehicleColors } from '../utils/colors';
 import { useColorVision } from '../context/ColorVisionContext';
 import { agencyDisplayParts, cleanRouteShortName, cleanRouteDisplayName, shortenAgencyName, agencyDisplayName, routeListCompanionName, liveVehicleRowLabel, vehicleModeWord } from '../utils/format';
-import { buildRouteServiceSummary, metricValueForPeriod } from '../utils/routeFacts';
+import { branchDisplayPeriodHeadway } from '../utils/routeFacts';
 import { periodKeyForHour } from '../../shared/config';
 import { inferLiveDirection } from '../utils/liveDirection';
 import { CardDirectionRow, SidebarCardListRows, CARD_LIST_ROUTE } from '../components/Interval/cardUi';
@@ -580,8 +580,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
         if (!p || p.routeShortName !== selectedGroup.routeShortName) continue;
         if (p.day && p.day !== day) continue;
         if (vehicleHeadsigns.size > 0 && p.headsign && !vehicleHeadsigns.has(p.headsign)) continue;
-        const service = buildRouteServiceSummary(p);
-        const hw = metricValueForPeriod(service.branch, periodKeyForHour(hour) ?? 'all');
+        const hw = branchDisplayPeriodHeadway(p, periodKeyForHour(hour) ?? 'all');
         if (hw != null && (scheduled === null || Number(hw) < scheduled)) scheduled = Number(hw);
       }
     }

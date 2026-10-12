@@ -1,6 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { pairedTripPeriodFloor, pairedTripSafeHeadway, routeCardDisplayHeadway, routeListDisplayHeadway } from '../effectiveHeadway';
-import { groupTrunkHeadway } from '../routeCardTrunk';
+import { groupTrunkHeadway, medianTerminalHeadway } from '../routeCardTrunk';
+import { branchDisplayHourHeadway, branchDisplayPeriodHeadway, buildRouteStopMetric, metricValueForPeriod } from '../routeFacts';
+import { sparklineHeadwayByHour } from '../../components/Interval/panels/RouteCardHeadway';
 import type { ShapeProperties } from '../../hooks/useIntervalStats';
 
 // Niagara 105 Saturday, release-mv5ilv73 (#761). Direction 0 runs paired trips 12 min apart,
@@ -82,5 +84,92 @@ describe('paired-trip period floor (#761)', () => {
     // cadence (TTC 22 Sunday AM, GRT 301 AM), so it is left for the pipeline fix.
     const noRange = { ...niagara105Dir0, headwayRangeByPeriod: undefined } as unknown as ShapeProperties;
     expect(routeCardDisplayHeadway(noRange, 'midday')).toBe(2);
+  });
+});
+
+describe('paired-trip floor: fallback order and boundary (#761)', () => {
+  const unsustained = (extra: Record<string, unknown>) => ({
+    ...niagara105Dir0,
+    headwayByPeriod: { midday: 2 },
+    headwayByPeriodSustained: { midday: false },
+    headwayRangeByPeriod: { midday: { min: 30, max: 60 } },
+    periodCoverageHeadway: undefined,
+    maxGapByPeriod: undefined,
+    worstDirectionPeriodCoverageHeadway: undefined,
+    ...extra,
+  }) as unknown as ShapeProperties;
+
+  it('uses own coverage, then longest gap, then worst direction, then the range minimum', () => {
+    expect(pairedTripPeriodFloor(unsustained({
+      periodCoverageHeadway: { midday: 58 }, maxGapByPeriod: { midday: 59 }, worstDirectionPeriodCoverageHeadway: { midday: 61 },
+    }), 'midday')).toBe(58);
+    expect(pairedTripPeriodFloor(unsustained({
+      maxGapByPeriod: { midday: 59 }, worstDirectionPeriodCoverageHeadway: { midday: 61 },
+    }), 'midday')).toBe(59);
+    expect(pairedTripPeriodFloor(unsustained({ worstDirectionPeriodCoverageHeadway: { midday: 61 } }), 'midday')).toBe(61);
+    expect(pairedTripPeriodFloor(unsustained({}), 'midday')).toBe(30);
+  });
+
+  it('fires when the median is exactly a third of the range minimum, not above it', () => {
+    const at = unsustained({ headwayByPeriod: { midday: 10 }, periodCoverageHeadway: { midday: 40 } });
+    expect(pairedTripPeriodFloor(at, 'midday')).toBe(40);
+    const above = unsustained({ headwayByPeriod: { midday: 11 }, periodCoverageHeadway: { midday: 40 } });
+    expect(pairedTripPeriodFloor(above, 'midday')).toBeNull();
+  });
+});
+
+describe('paired-trip floor on hourly, trunk, stop and ranking surfaces (#761)', () => {
+  it('sparkline caps Niagara 105 hours at the floored period value, not 2', () => {
+    const byHour = sparklineHeadwayByHour([niagara105Dir0], [7, 9, 12, 15]);
+    expect(byHour[7]).toBe(55);
+    expect(byHour[9]).toBe(58);
+    expect(byHour[15]).toBe(63);
+    expect(byHour[12]).toBeNull();
+  });
+
+  it('hovered-hour row shows the floored value', () => {
+    expect(branchDisplayHourHeadway(niagara105Dir0, 9)).toBe(58);
+    expect(branchDisplayHourHeadway(niagara105Dir0, 15)).toBe(63);
+    expect(branchDisplayHourHeadway(niagara105Dir1, 15)).toBe(30);
+  });
+
+  it('terminal median and combined trunk agree on the floored value', () => {
+    expect(medianTerminalHeadway([niagara105Dir0], 'midday')).toBe(58);
+    expect(groupTrunkHeadway([niagara105Dir0], 'midday')).toBe(58);
+  });
+
+  it('ranking by displayed value keeps a sustained every-30 variant ahead of a floored one', () => {
+    expect(branchDisplayPeriodHeadway(niagara105Dir0, 'amPeak')).toBe(55);
+    expect(branchDisplayPeriodHeadway(niagara105Dir1, 'amPeak')).toBe(30);
+  });
+
+  it('stop card at a Niagara 105 stop shows the floored value, not every 2 min', () => {
+    const withStop = {
+      ...niagara105Dir0,
+      stopPeriodHeadways: { '6643': { amPeak: 2, midday: 2, pmPeak: 2 } },
+      stopHeadways: { '6643': 2 },
+    } as unknown as ShapeProperties;
+    const service = buildRouteStopMetric(withStop, '6643');
+    expect(metricValueForPeriod(service, 'midday')).toBe(58);
+    expect(metricValueForPeriod(service, 'pmPeak')).toBe(63);
+  });
+
+  it('a stop already showing the real spacing keeps its own value', () => {
+    // Niagara 105's own stops read 30/60/30 even though the feature median is 2.
+    const withStop = {
+      ...niagara105Dir0,
+      stopPeriodHeadways: { '3011': { amPeak: 30, midday: 60, pmPeak: 30 } },
+    } as unknown as ShapeProperties;
+    const service = buildRouteStopMetric(withStop, '3011');
+    expect(metricValueForPeriod(service, 'midday')).toBe(60);
+    expect(metricValueForPeriod(service, 'amPeak')).toBe(30);
+  });
+
+  it('stop values on a direction with regular service are untouched', () => {
+    const withStop = {
+      ...niagara105Dir1,
+      stopPeriodHeadways: { '1': { midday: 60, pmPeak: 30 } },
+    } as unknown as ShapeProperties;
+    expect(metricValueForPeriod(buildRouteStopMetric(withStop, '1'), 'pmPeak')).toBe(30);
   });
 });

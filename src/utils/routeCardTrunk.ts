@@ -1,7 +1,6 @@
 import type { ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
 import { periodKeyForHour } from '../../shared/config';
-import { buildRouteServiceSummary, metricValueForPeriod } from './routeFacts';
-import { pairedTripSafeHeadway } from './effectiveHeadway';
+import { branchDisplayPeriodHeadway, buildRouteServiceSummary, metricValueForPeriod } from './routeFacts';
 import { MIN_SHARED_STOPS_FOR_TRUNK, sharedStopIds, sharesOrderedTrunk } from './routeBranchGeometry';
 import { sharedStretchStopPass } from './frequencySegments';
 
@@ -78,7 +77,7 @@ function isLimitedBranch(d: ShapeProperties): boolean {
 export function groupTrunkHeadway(branches: ShapeProperties[], period: string): number | null {
   const values = branches
     .filter(d => !isLimitedBranch(d))
-    .map(d => pairedTripSafeHeadway(d, period as TimePeriod, metricValueForPeriod(buildRouteServiceSummary(d).branch, period as TimePeriod)))
+    .map(d => branchDisplayPeriodHeadway(d, period as TimePeriod))
     .filter((v): v is number => v != null && v > 0);
   if (values.length === 0) return null;
   const combined = 1 / values.reduce((sum, value) => sum + 1 / value, 0);
@@ -101,7 +100,7 @@ export function medianTerminalHeadway(branches: ShapeProperties[], period: TimeP
   const vals = branches
     .map(d => {
       if (period !== 'all') {
-        return metricValueForPeriod(buildRouteServiceSummary(d).branch, period as TimePeriod);
+        return branchDisplayPeriodHeadway(d, period as TimePeriod);
       }
       return buildRouteServiceSummary(d).branch.value;
     })
