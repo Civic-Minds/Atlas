@@ -932,7 +932,7 @@ function modeFamily(slug: string, name: string): StudyRecord['modeFamily'] {
 
 function main() {
   const index = JSON.parse(readFileSync(resolve(ROOT, 'public/data/index.json'), 'utf8')) as { agencies: Agency[] };
-  const catalog = JSON.parse(readFileSync(resolve(ROOT, 'docs/research/frequent-service-research-2026-09/frequent-service-catalog.json'), 'utf8')) as { agencies: CatalogRecord[] };
+  const catalog = JSON.parse(readFileSync(resolve(ROOT, 'docs/research/frequent-service-research-2026-09/catalog.json'), 'utf8')) as { agencies: CatalogRecord[] };
   const catalogBySlug = new Map(catalog.agencies.map(record => [record.agencyId, record]));
   const eligible = index.agencies.filter(agency => ['Canada', 'United States', 'France'].includes(countryFor(agency.slug, catalogBySlug)));
   const quotas = new Map([['Canada', 20], ['United States', 40], ['France', 20]]);
