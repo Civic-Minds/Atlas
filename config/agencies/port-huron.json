@@ -16,9 +16,11 @@
   "cities": [
     "Sarnia, Ontario"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
-  "timezone": "America/Detroit"
+  "timezone": "America/Detroit",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://gtfs.remix.com/bwat_porthuron_mi_us.zip"
 }

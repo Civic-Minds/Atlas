@@ -22,7 +22,7 @@
   ],
   "timezone": "America/Vancouver",
   "lastRawArchiveKey": "20260808-26a2b10b0d954217",
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270102",
@@ -44,5 +44,7 @@
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://www.gctd.org/wp-content/uploads/2021/06/GCTD_GTFS.zip"
 }

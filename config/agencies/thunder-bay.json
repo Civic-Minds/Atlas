@@ -15,7 +15,7 @@
   "cities": [
     "Thunder Bay, Ontario"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261114",
@@ -32,5 +32,7 @@
     },
     "checkedAt": "2026-08-24"
   },
-  "timezone": "America/Thunder_Bay"
+  "timezone": "America/Thunder_Bay",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "http://api.nextlift.ca/gtfs.zip"
 }

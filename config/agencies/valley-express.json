@@ -23,8 +23,10 @@
   ],
   "timezone": "America/Los_Angeles",
   "lastRawArchiveKey": "20250815-66df0279f8010e64",
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20991231"
+  "expiredFeedCheckExpiry": "20991231",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://www.valleyexpressbus.org/wp-content/uploads/2026/04/Spring-2026-Valley-Express-GTFS.zip"
 }

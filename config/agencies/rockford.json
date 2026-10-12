@@ -15,9 +15,15 @@
   "cities": [
     "Rockford, Illinois"
   ],
-  "lastFeedCheckAt": "20261007",
-  "expiredFeedCheckCount": 0,
-  "expiredFeedCheckSince": null,
+  "lastFeedCheckAt": "20261012",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
   "expiredFeedCheckExpiry": "20261010",
-  "timezone": "America/Chicago"
+  "timezone": "America/Chicago",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://rmtd.org/rmtdgtfs/GTFS_FILES.zip",
+  "feedRefreshStatus": "stale",
+  "feedRefreshError": "all available feeds expired (latest 20261010)",
+  "feedRefreshErrorAt": "20261012",
+  "feedRefreshRetryCount": 1
 }

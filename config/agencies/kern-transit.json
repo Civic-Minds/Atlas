@@ -17,15 +17,37 @@
   "feedUrl": "https://files.mobilitydatabase.org/mdb-47/latest.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-47/latest.zip",
   "lastFeedExpiry": "20270130",
-  "lastFeedVersion": "UTC: 15-Jul-2026 14:20",
-  "lastRefreshedAt": "2026-08-07",
+  "lastFeedVersion": "UTC: 03-Sep-2026 23:07",
+  "lastRefreshedAt": "2026-10-12",
   "cities": [
     "Lancaster, California",
     "Bakersfield, California"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270130",
-  "timezone": "America/Los_Angeles"
+  "timezone": "America/Los_Angeles",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-47/latest.zip",
+  "feedQuality": {
+    "status": "review",
+    "score": 60,
+    "reasons": [
+      "1 minor schedule issue found while reading the feed.",
+      "39 route shapes needed adjustment before display."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 1,
+      "shapeAnomalies": 39,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 43
+    },
+    "checkedAt": "2026-10-12"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

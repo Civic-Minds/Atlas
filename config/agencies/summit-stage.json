@@ -37,8 +37,10 @@
     },
     "checkedAt": "2026-08-18"
   },
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261114"
+  "expiredFeedCheckExpiry": "20261114",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/summitstage-co-us/summitstage-co-us.zip"
 }

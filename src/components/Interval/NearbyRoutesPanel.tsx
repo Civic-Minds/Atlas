@@ -73,6 +73,11 @@ export const NearbyRoutesPanel = forwardRef<HTMLDivElement, NearbyRoutesPanelPro
                       {fmtHeadway(r.headway)}
                     </span>
                   )}
+                  {r.headway == null && r.limited && (
+                    <span className="text-[10px] font-bold text-[var(--text-muted)] whitespace-nowrap shrink-0 ml-auto">
+                      limited
+                    </span>
+                  )}
                 </div>
                 <p className="text-[9px] text-[var(--text-dim)] font-bold pl-3.5 truncate leading-tight">
                   {titleCase(r.nearestStopName)} · {fmtDist(r.distanceMeters)}

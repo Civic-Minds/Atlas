@@ -12,6 +12,12 @@
  *   npm run reprocess-derived-artifacts
  *   npm run reprocess-derived-artifacts -- --only-slug nfta --only-slug wmata
  *   npm run reprocess-derived-artifacts -- --only-slug sun-tran --include-hidden
+ *   npm run reprocess-derived-artifacts -- --skip-slug uga --skip-slug winter-park
+ *
+ * --skip-slug <slug> (repeatable) leaves a named agency out of the run: it is
+ * not processed, writes nothing, and keeps its live artifacts. Like a refused
+ * agency it has no local output and is not a release diff gate candidate, so
+ * the gate and a preview PMTiles build read its live data unchanged.
  *
  * Hidden (hiddenInProduction) agencies are skipped unless --include-hidden is
  * passed, which only applies to slugs named with --only-slug. The agency stays
@@ -47,6 +53,9 @@ import {
   feedDateRefusal,
   includeHiddenArgError,
   isReprocessTarget,
+  parseSkipSlugs,
+  partitionSkippedSlugs,
+  skipSlugArgErrors,
   peekFeedDates,
   reprocessCountryLaunchSkip,
   selectArchiveForAgency,
@@ -124,6 +133,7 @@ const todayYmd = new Date().toISOString().slice(0, 10).replace(/-/g, '');
 const onlySlugs = process.argv.flatMap((arg, i, all) => (arg === '--only-slug' && all[i + 1] ? [all[i + 1]] : []));
 const concurrency = Math.max(1, Number(process.env.REPROCESS_CONCURRENCY ?? 2));
 const includeHidden = process.argv.includes('--include-hidden');
+const skipArgs = parseSkipSlugs(process.argv.slice(2));
 const forceCountryLaunch = process.argv.includes(COUNTRY_LAUNCH_FLAG);
 
 function shouldProcess(agency: Agency): boolean {
@@ -258,13 +268,23 @@ async function main(): Promise<void> {
   if (argError) throw new Error(argError);
 
   const index = JSON.parse(readFileSync(indexPath, 'utf8')) as { agencies: Agency[] };
-  const overrideErrors = [...overrides.errors, ...unknownOverrideSlugs(overrides, index.agencies.map(agency => agency.slug))];
+  const knownSlugs = index.agencies.map(agency => agency.slug);
+  const overrideErrors = [
+    ...overrides.errors,
+    ...unknownOverrideSlugs(overrides, knownSlugs),
+    ...skipArgs.errors,
+    ...skipSlugArgErrors(skipArgs.slugs, onlySlugs, knownSlugs),
+  ];
   if (overrideErrors.length) throw new Error(overrideErrors.join('\n'));
   rmSync(outputDir, { recursive: true, force: true });
   mkdirSync(outputDir, { recursive: true });
 
   const rows: ReportRow[] = [];
-  const selected = onlySlugs.length ? index.agencies.filter(agency => onlySlugs.includes(agency.slug)) : index.agencies;
+  const named = onlySlugs.length ? index.agencies.filter(agency => onlySlugs.includes(agency.slug)) : index.agencies;
+  const { kept: selected, skipped: skipRows } = partitionSkippedSlugs(named, skipArgs.slugs);
+  if (skipRows.length) {
+    console.log(`Skipping ${skipRows.length} agencies named by --skip-slug (not reprocessed, live artifacts kept): ${skipRows.map(row => row.slug).join(', ')}`);
+  }
   const countrySkips = new Map(selected.filter(shouldProcess).flatMap(agency => {
     const reason = reprocessCountryLaunchSkip(agency as AgencyCountrySource, index.agencies as AgencyCountrySource[], { write: writeToR2, forceLaunch: forceCountryLaunch });
     return reason ? [[agency.slug, reason] as const] : [];
@@ -275,6 +295,7 @@ async function main(): Promise<void> {
   rows.push(...selected
     .filter(agency => !shouldProcess(agency))
     .map(agency => ({ slug: agency.slug, status: 'skipped' as const, reason: 'not production-visible or no refresh marker' })));
+  rows.push(...skipRows);
   rows.push(...[...countrySkips].map(([slug, reason]) => ({ slug, status: 'skipped' as const, reason })));
   const tasks = targets.map(agency => () => processAgency(agency));
   rows.push(...await runWithConcurrency(tasks, concurrency));
@@ -298,12 +319,14 @@ async function main(): Promise<void> {
       refused: rows.filter(row => row.status === 'refused').length,
       failed: rows.filter(row => row.status === 'failed').length,
     },
+    skipSlugs: skipRows.map(row => row.slug),
     agencies: rows,
   };
   writeFileSync(resolve(outputDir, 'report.json'), JSON.stringify(report, null, 2));
   console.log(`\nWrote ${report.totals.processed} reprocessed agencies to ${outputDir}`);
   console.log(`Report: ${resolve(outputDir, 'report.json')}`);
   if (writeToR2) await bumpPublicDataVersion(`derived artifact reprocess (${report.totals.processed})`);
+  for (const row of skipRows) console.log(`  skipped ${row.slug}: ${row.reason}`);
   for (const row of rows.filter(r => r.status === 'refused')) console.log(`  refused ${row.slug}: ${row.reason}`);
   if (report.totals.failed > 0 || report.totals.refused > 0) process.exitCode = 1;
 }

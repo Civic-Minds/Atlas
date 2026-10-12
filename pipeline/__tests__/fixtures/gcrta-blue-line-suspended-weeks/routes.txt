@@ -1,0 +1,3 @@
+agency_id,route_id,route_short_name,route_long_name,route_desc,route_type,route_url,route_color,route_text_color,network_id
+GCRTA,67,BL,Blue Line,,0,https://www.riderta.com/routes/blueline,15BEF0,000000,
+GCRTA,stub,STUB,Blue Line,,3,https://www.riderta.com/routes/blueline,15BEF0,000000,

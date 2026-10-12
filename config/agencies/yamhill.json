@@ -24,7 +24,7 @@
     "Tigard, Oregon",
     "Hillsboro, Oregon"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
@@ -41,5 +41,7 @@
     },
     "checkedAt": "2026-08-27"
   },
-  "timezone": "America/Los_Angeles"
+  "timezone": "America/Los_Angeles",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "http://ycta.connexionz.net/rtt/public/resource/gtfs.zip"
 }

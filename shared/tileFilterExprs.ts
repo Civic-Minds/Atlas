@@ -108,11 +108,16 @@ export function tilePeriodServiceExpr(period: PeriodFilter): unknown[] {
   if (period === 'all') return ['literal', true];
   const [, wdph, hph] = periodHeadwayFlatKeys(period);
   const keys = [`msph_${period}`, wdph, hph, `wdpch_${period}`, `pch_${period}`];
-  return ['any', ...keys.map(key => [
-    'all',
-    ['has', key],
-    ['<', ['get', key], NO_PERIOD_SERVICE_TILE_VALUE],
-  ])];
+  return ['any',
+    ...keys.map(key => [
+      'all',
+      ['has', key],
+      ['<', ['get', key], NO_PERIOD_SERVICE_TILE_VALUE],
+    ]),
+    // A route that runs on only some weekdays (#710) has no headway values for the Weekday
+    // tier ("limited"), but it still has service in this period on those weekdays.
+    ['==', ['get', `pws_${period}`], true],
+  ];
 }
 
 /** MapLibre filter clause for the selected period and frequency ceiling. */

@@ -5,7 +5,7 @@ import { PERIOD_LABELS } from '../hooks/useIntervalStats';
 import { FILTER_MODES } from '../../shared/modes';
 import type { FrequentServiceFrequency, FrequentServiceWindow } from '../../shared/frequentService';
 import type { NightServiceFrequency } from '../../shared/nightService';
-import { agencyDisplayParts } from './format';
+import { agencyDisplayParts, formatStoredDate } from './format';
 import { getFareTiers, getHeadwayTiers, getNightServiceColor, getTierColor, headwayThresholdForZoom, type ColorVisionMode } from './colors';
 
 /** One entry in the exported image's colour key. */
@@ -29,6 +29,8 @@ export interface MapExportDetails {
   key: MapExportKeyItem[];
   /** Small heading before the key, only where the colours need naming (fares). */
   keyTitle?: string;
+  /** Citation line, e.g. "Schedules from TTC · updated Oct 9, 2026 · transitatlas.fyi". */
+  citation: string;
   /** Lowercase file name without special characters, e.g. "atlas-toronto-20min-saturday-midday.png". */
   filename: string;
 }
@@ -58,6 +60,8 @@ export interface MapExportState {
   frequentServiceDays?: DayType[];
   frequentServiceFrequency?: FrequentServiceFrequency;
   frequentServiceWindow?: FrequentServiceWindow;
+  /** generatedAt of the verified data release the map is drawing, when one loaded. */
+  releaseGeneratedAt?: string | null;
 }
 
 export interface RenderedRouteSample {
@@ -260,6 +264,49 @@ export function buildExportFilename(state: MapExportState, place: string | null)
   return `${slug || 'atlas-map'}.png`;
 }
 
+export const MAP_EXPORT_SOURCE_SITE = 'transitatlas.fyi';
+
+/** "2026-10-09" or "2026-10-09T12:00:00Z" -> "2026-10-09"; null when it is not a real date. */
+function isoDay(value: string | null | undefined): string | null {
+  const day = value?.trim().slice(0, 10);
+  if (!day || !/^\d{4}-\d{2}-\d{2}$/.test(day) || !formatStoredDate(day)) return null;
+  return day;
+}
+
+/**
+ * Citation line for the exported image: whose schedules are drawn and how current it is.
+ * Never guesses: a part is left out when the map cannot say it for certain.
+ *
+ * - Source: the agency's name when one agency draws every route, otherwise "N agencies".
+ *   If any drawn route has no known agency, the count is left out.
+ * - Date: when the data release the map is drawing was generated. An agency's own publish
+ *   date is not used: an old date can read as an outdated schedule when it is still current.
+ *   Left out when no release date is known.
+ */
+export function buildExportSourceLine(samples: RenderedRouteSample[], agencies: Agency[], releaseGeneratedAt?: string | null): string {
+  const slugs = new Set<string>();
+  let unknownAgency = false;
+  for (const sample of samples) {
+    if (sample.agencySlug) slugs.add(sample.agencySlug);
+    else unknownAgency = true;
+  }
+  const bySlug = new Map(agencies.map(agency => [agency.slug, agency]));
+  const inView = [...slugs].map(slug => bySlug.get(slug));
+  if (inView.some(agency => !agency)) unknownAgency = true;
+  const known = inView.filter((agency): agency is Agency => !!agency);
+
+  let source = 'Transit schedules';
+  if (!unknownAgency && known.length === 1) source = `Schedules from ${known[0].name}`;
+  else if (!unknownAgency && known.length > 1) source = `Schedules from ${known.length} agencies`;
+
+  const day = isoDay(releaseGeneratedAt);
+
+  const parts = [source];
+  if (day) parts.push(`updated ${formatStoredDate(day)}`);
+  parts.push(MAP_EXPORT_SOURCE_SITE);
+  return parts.join(' · ');
+}
+
 /** Describe the exported view: place, filter in plain words, colour key and file name. */
 export function describeMapExport(state: MapExportState, samples: RenderedRouteSample[], agencies: Agency[]): MapExportDetails {
   const place = pickExportPlace(samples, agencies);
@@ -289,6 +336,7 @@ export function describeMapExport(state: MapExportState, samples: RenderedRouteS
     route,
     key,
     keyTitle,
+    citation: buildExportSourceLine(samples, agencies, state.releaseGeneratedAt),
     filename: buildExportFilename(state, place),
   };
 }

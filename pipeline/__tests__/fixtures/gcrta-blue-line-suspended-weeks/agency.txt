@@ -1,0 +1,2 @@
+agency_id,agency_name,agency_url,agency_timezone,agency_lang,agency_phone,agency_fare_url
+GCRTA,Greater Cleveland Regional Transit Authority,https://www.riderta.com,America/New_York,en,1-216-621-9500,https://www.riderta.com/fares

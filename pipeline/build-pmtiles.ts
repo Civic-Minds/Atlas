@@ -78,7 +78,7 @@ function buildOverviewRoutes(routes: Feature[]): Feature[] {
           'routeHasIrregularDirection', 'headway', 'minStopHeadway', 'worstDirectionHeadway',
           'tippecanoe:minzoom',
         ].includes(key)
-        || /^(pch|wdpch|hps|msph|wdph|hph)_/.test(key)
+        || /^(pch|wdpch|hps|msph|wdph|hph|pws)_/.test(key)
       )),
     ),
     geometry: feature.geometry?.type === 'LineString'

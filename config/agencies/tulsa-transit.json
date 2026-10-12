@@ -22,9 +22,11 @@
     "Broken Arrow, Oklahoma"
   ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-235/latest.zip",
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261205",
-  "timezone": "America/Chicago"
+  "timezone": "America/Chicago",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://tulsa.rideralerts.com/InfoPoint/GTFS-Zip.ashx"
 }

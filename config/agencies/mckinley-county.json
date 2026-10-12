@@ -10,15 +10,14 @@
   "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/7763/AshiwiGTFS.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-66242/latest.zip",
   "region": "New Mexico",
-  "staged": true,
   "lastFeedExpiry": "20280131",
   "lastFeedVersion": "20260321",
-  "lastRefreshedAt": "2026-09-10",
+  "lastRefreshedAt": "2026-10-12",
   "feedQuality": {
     "status": "review",
     "score": 90,
     "reasons": [
-      "1 schedule-data warning — Atlas found a minor issue while reading the schedule."
+      "1 minor schedule issue found while reading the feed."
     ],
     "metrics": {
       "validationErrors": 0,
@@ -27,6 +26,16 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 8
     },
-    "checkedAt": "2026-09-10"
-  }
+    "checkedAt": "2026-10-12"
+  },
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/7763/AshiwiGTFS.zip",
+  "lastFeedCheckAt": "20261012",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20280131",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

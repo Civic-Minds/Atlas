@@ -14,7 +14,7 @@ import { useHistoryLayer } from './map/useHistoryLayer';
 import type { Agency } from '../../App';
 import type { ShapeProperties, ViewportBounds, TimePeriod, HoveredBranch } from '../../hooks/useIntervalStats';
 import type { DayType } from '../../../shared/dayTypes';
-import { registerProtocol, getAtlasPmtilesUrl, getAtlasOverviewPmtilesUrl, getMapStyle } from '../../lib/mapStyle';
+import { registerProtocol, getAtlasPmtilesUrl, getAtlasOverviewPmtilesUrl, getMapStyle, getActiveDataRelease } from '../../lib/mapStyle';
 import { Z_PANEL, MAP_BADGE } from '../../styles';
 import { LIVE_POLLING_ROUTES } from '../../../shared/livePollingConfig';
 import { useColorVision } from '../../context/ColorVisionContext';
@@ -492,7 +492,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     let routeShortName: string | null = null;
     let routeColor: string | null = null;
     if (map) {
-      const drawnLayers = ['overview-routes-layer', 'routes-layer', 'local-routes-layer', 'selected-route-layer', 'selected-local-route-layer', 'night-service-routes-layer', 'frequent-service-routes-layer']
+      const drawnLayers = ['overview-routes-layer', 'routes-layer', 'local-routes-layer', 'selected-route-layer', 'selected-local-route-layer', 'night-service-routes-layer', 'frequent-service-routes-layer', 'frequency-qualifying-segments-layer']
         .filter(layer => map.getLayer(layer) && map.getLayoutProperty(layer, 'visibility') !== 'none');
       // Only the part of the map that ends up in the image (exports crop to their own shape).
       const features = drawnLayers.length > 0 ? map.queryRenderedFeatures(box, { layers: drawnLayers }) : [];
@@ -538,6 +538,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       frequentServiceDays: state.frequentServiceDays,
       frequentServiceFrequency: state.frequentServiceFrequency,
       frequentServiceWindow: state.frequentServiceWindow,
+      releaseGeneratedAt: getActiveDataRelease()?.generatedAt ?? null,
     }, samples, state.agencies);
   }, []);
   const [mapContextMenu, setMapContextMenu] = useState<{ x: number; y: number; lat: number; lon: number } | null>(null);
@@ -1030,8 +1031,8 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     if (!showRouteLayers || fareView || nightServiceView || frequentServiceView || !filteredLayers) {
       return { segments: [], partialMatches: [] };
     }
-    return computeFrequencySegmentOverlay(filteredLayers, period, maxHeadway);
-  }, [filteredLayers, period, maxHeadway, showRouteLayers, fareView, nightServiceView, frequentServiceView, colorMode]);
+    return computeFrequencySegmentOverlay(filteredLayers, period, maxHeadway, colorMode, layers ?? filteredLayers);
+  }, [filteredLayers, layers, period, maxHeadway, showRouteLayers, fareView, nightServiceView, frequentServiceView, colorMode]);
 
   const sharedHoverSegments = useMemo(
     () => buildSharedHoverSegments(layers, selectedRoute, hoveredBranch, day, colorMode),

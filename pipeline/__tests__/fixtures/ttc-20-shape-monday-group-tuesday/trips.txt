@@ -1,0 +1,438 @@
+route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,block_id,shape_id,wheelchair_accessible,bikes_allowed
+20,1,50800043,East - 20 Cliffside towards Kennedy Station,,0,2233615,1122210,1,1
+20,1,50800092,East - 20 Cliffside towards Kennedy Station,,0,2233619,1122210,1,1
+20,1,50800091,East - 20 Cliffside towards Kennedy Station,,0,2233617,1122210,1,1
+20,1,50800090,East - 20 Cliffside towards Kennedy Station,,0,2233618,1122210,1,1
+20,1,50800089,East - 20 Cliffside towards Kennedy Station,,0,2233615,1122210,1,1
+20,1,50800076,East - 20 Cliffside towards Kennedy Station,,0,2233619,1122210,1,1
+20,1,50800075,East - 20 Cliffside towards Kennedy Station,,0,2233617,1122210,1,1
+20,1,50800093,East - 20 Cliffside towards Kennedy Station,,0,2233618,1122210,1,1
+20,1,50800073,East - 20 Cliffside towards Kennedy Station,,0,2233615,1122210,1,1
+20,1,50800072,East - 20 Cliffside towards Kennedy Station,,0,2233619,1122210,1,1
+20,1,50800070,East - 20 Cliffside towards Kennedy Station,,0,2233617,1122210,1,1
+20,1,50800069,East - 20 Cliffside towards Kennedy Station,,0,2233618,1122210,1,1
+20,1,50800068,East - 20 Cliffside towards Kennedy Station,,0,2233615,1122210,1,1
+20,1,50800067,East - 20 Cliffside towards Kennedy Station,,0,2233619,1122210,1,1
+20,1,50800074,East - 20 Cliffside towards Kennedy Station,,0,2233617,1122210,1,1
+20,1,50800066,East - 20 Cliffside towards Kennedy Station,,0,2233618,1122210,1,1
+20,1,50800065,East - 20 Cliffside towards Kennedy Station,,0,2233615,1122210,1,1
+20,1,50800064,East - 20 Cliffside towards Kennedy Station,,0,2233619,1122210,1,1
+20,1,50800063,East - 20 Cliffside towards Kennedy Station,,0,2233617,1122210,1,1
+20,1,50800062,East - 20 Cliffside towards Kennedy Station,,0,2233618,1122210,1,1
+20,1,50800061,East - 20 Cliffside towards Kennedy Station,,0,2233615,1122210,1,1
+20,1,50800060,East - 20 Cliffside towards Kennedy Station,,0,2233619,1122210,1,1
+20,1,50800059,East - 20 Cliffside towards Kennedy Station,,0,2233617,1122210,1,1
+20,1,50800058,East - 20 Cliffside towards Kennedy Station,,0,2233618,1122210,1,1
+20,1,50800057,East - 20 Cliffside towards Kennedy Station,,0,2233615,1122210,1,1
+20,1,50800056,East - 20 Cliffside towards Kennedy Station,,0,2233619,1122210,1,1
+20,1,50800055,East - 20 Cliffside towards Kennedy Station,,0,2233617,1122210,1,1
+20,1,50800054,East - 20 Cliffside towards Kennedy Station,,0,2233618,1122210,1,1
+20,1,50800053,East - 20 Cliffside towards Kennedy Station,,0,2233615,1122210,1,1
+20,1,50800094,East - 20 Cliffside towards Kennedy Station,,0,2233619,1122210,1,1
+20,1,50800052,East - 20 Cliffside towards Kennedy Station,,0,2233616,1122210,1,1
+20,1,50800051,East - 20 Cliffside towards Kennedy Station,,0,2233617,1122210,1,1
+20,1,50800050,East - 20 Cliffside towards Kennedy Station,,0,2233618,1122210,1,1
+20,1,50800103,East - 20 Cliffside towards Kennedy Station,,0,2233615,1122210,1,1
+20,401,50800042,East - 20 Cliffside towards Kennedy Station,,0,2233630,1122209,1,1
+20,1,50800102,East - 20 Cliffside towards Kennedy Station,,0,2233619,1122210,1,1
+20,1,50800101,East - 20 Cliffside towards Kennedy Station,,0,2233620,1122210,1,1
+20,1,50800100,East - 20 Cliffside towards Kennedy Station,,0,2233616,1122210,1,1
+20,1,50800099,East - 20 Cliffside towards Kennedy Station,,0,2233630,1122210,1,1
+20,1,50800098,East - 20 Cliffside towards Kennedy Station,,0,2233618,1122210,1,1
+20,1,50800097,East - 20 Cliffside towards Kennedy Station,,0,2233615,1122210,1,1
+20,1,50800096,East - 20 Cliffside towards Kennedy Station,,0,2233619,1122210,1,1
+20,1,50800088,East - 20 Cliffside towards Kennedy Station,,0,2233620,1122210,1,1
+20,1,50800087,East - 20 Cliffside towards Kennedy Station,,0,2233616,1122210,1,1
+20,1,50800086,East - 20 Cliffside towards Kennedy Station,,0,2233630,1122210,1,1
+20,1,50800085,East - 20 Cliffside towards Kennedy Station,,0,2233618,1122210,1,1
+20,1,50800083,East - 20 Cliffside towards Kennedy Station,,0,2233615,1122210,1,1
+20,1,50800082,East - 20 Cliffside towards Kennedy Station,,0,2233619,1122210,1,1
+20,1,50800081,East - 20 Cliffside towards Kennedy Station,,0,2233616,1122210,1,1
+20,1,50800049,East - 20 Cliffside towards Kennedy Station,,0,2233630,1122210,1,1
+20,1,50800048,East - 20 Cliffside towards Kennedy Station,,0,2233615,1122210,1,1
+20,1,50800047,East - 20 Cliffside towards Kennedy Station,,0,2233616,1122210,1,1
+20,1,50800046,East - 20 Cliffside towards Kennedy Station,,0,2233630,1122210,1,1
+20,1,50800045,East - 20 Cliffside towards Kennedy Station,,0,2233615,1122210,1,1
+20,1,50800044,East - 20 Cliffside towards Kennedy Station,,0,2233616,1122210,1,1
+20,1,50800084,East - 20 Cliffside towards Kennedy Station,,0,2233630,1122210,1,1
+20,1,50800080,East - 20 Cliffside towards Kennedy Station,,0,2233615,1122210,1,1
+20,1,50800079,East - 20 Cliffside towards Kennedy Station,,0,2233616,1122210,1,1
+20,1,50800078,East - 20 Cliffside towards Kennedy Station,,0,2233615,1122210,1,1
+20,1,50800077,East - 20 Cliffside towards Kennedy Station,,0,2233616,1122210,1,1
+20,1,50800071,East - 20 Cliffside towards Kennedy Station,,0,2233615,1122210,1,1
+20,1,50800095,East - 20 Cliffside towards Kennedy Station,,0,2233616,1122210,1,1
+20,1,50800104,East - 20 Cliffside towards Kennedy Station,,0,2233615,1122210,1,1
+20,1,50800129,West - 20 Cliffside towards Main Street Station,,1,2233615,1122213,1,1
+20,1,50800139,West - 20 Cliffside towards Main Street Station,,1,2233619,1122213,1,1
+20,1,50800124,West - 20 Cliffside towards Main Street Station,,1,2233617,1122213,1,1
+20,1,50800107,West - 20 Cliffside towards Main Street Station,,1,2233618,1122213,1,1
+20,1,50800106,West - 20 Cliffside towards Main Street Station,,1,2233615,1122213,1,1
+20,1,50800108,West - 20 Cliffside towards Main Street Station,,1,2233619,1122213,1,1
+20,1,50800127,West - 20 Cliffside towards Main Street Station,,1,2233617,1122213,1,1
+20,1,50800126,West - 20 Cliffside towards Main Street Station,,1,2233618,1122213,1,1
+20,1,50800113,West - 20 Cliffside towards Main Street Station,,1,2233615,1122213,1,1
+20,1,50800115,West - 20 Cliffside towards Main Street Station,,1,2233619,1122213,1,1
+20,1,50800112,West - 20 Cliffside towards Main Street Station,,1,2233617,1122213,1,1
+20,1,50800111,West - 20 Cliffside towards Main Street Station,,1,2233618,1122213,1,1
+20,1,50800116,West - 20 Cliffside towards Main Street Station,,1,2233615,1122213,1,1
+20,1,50800138,West - 20 Cliffside towards Main Street Station,,1,2233619,1122213,1,1
+20,1,50800137,West - 20 Cliffside towards Main Street Station,,1,2233617,1122213,1,1
+20,1,50800136,West - 20 Cliffside towards Main Street Station,,1,2233618,1122213,1,1
+20,1,50800135,West - 20 Cliffside towards Main Street Station,,1,2233615,1122213,1,1
+20,1,50800134,West - 20 Cliffside towards Main Street Station,,1,2233619,1122213,1,1
+20,1,50800133,West - 20 Cliffside towards Main Street Station,,1,2233617,1122213,1,1
+20,1,50800132,West - 20 Cliffside towards Main Street Station,,1,2233618,1122213,1,1
+20,1,50800131,West - 20 Cliffside towards Main Street Station,,1,2233615,1122213,1,1
+20,1,50800128,West - 20 Cliffside towards Main Street Station,,1,2233619,1122213,1,1
+20,1,50800130,West - 20 Cliffside towards Main Street Station,,1,2233617,1122213,1,1
+20,1,50800121,West - 20 Cliffside towards Main Street Station,,1,2233618,1122213,1,1
+20,1,50800120,West - 20 Cliffside towards Main Street Station,,1,2233615,1122213,1,1
+20,1,50800119,West - 20 Cliffside towards Main Street Station,,1,2233619,1122213,1,1
+20,1,50800118,West - 20 Cliffside towards Main Street Station,,1,2233616,1122213,1,1
+20,1,50800125,West - 20 Cliffside towards Main Street Station,,1,2233617,1122213,1,1
+20,1,50800110,West - 20 Cliffside towards Main Street Station,,1,2233618,1122213,1,1
+20,1,50800109,West - 20 Cliffside towards Main Street Station,,1,2233615,1122213,1,1
+20,1,50800114,West - 20 Cliffside towards Main Street Station,,1,2233619,1122213,1,1
+20,1,50800117,West - 20 Cliffside towards Main Street Station,,1,2233620,1122213,1,1
+20,1,50800105,West - 20 Cliffside towards Main Street Station,,1,2233616,1122213,1,1
+20,1,50800143,West - 20 Cliffside towards Main Street Station,,1,2233630,1122213,1,1
+20,1,50800142,West - 20 Cliffside towards Main Street Station,,1,2233618,1122213,1,1
+20,1,50800141,West - 20 Cliffside towards Main Street Station,,1,2233615,1122213,1,1
+20,1,50800140,West - 20 Cliffside towards Main Street Station,,1,2233619,1122213,1,1
+20,1,50800123,West - 20 Cliffside towards Main Street Station,,1,2233620,1122213,1,1
+20,1,50800122,West - 20 Cliffside towards Main Street Station,,1,2233616,1122213,1,1
+20,1,50800160,West - 20 Cliffside towards Main Street Station,,1,2233630,1122213,1,1
+20,1,50800144,West - 20 Cliffside towards Main Street Station,,1,2233618,1122213,1,1
+20,1,50800157,West - 20 Cliffside towards Main Street Station,,1,2233615,1122213,1,1
+20,1,50800156,West - 20 Cliffside towards Main Street Station,,1,2233619,1122213,1,1
+20,1,50800155,West - 20 Cliffside towards Main Street Station,,1,2233616,1122213,1,1
+20,1,50800154,West - 20 Cliffside towards Main Street Station,,1,2233630,1122213,1,1
+20,1,50800153,West - 20 Cliffside towards Main Street Station,,1,2233615,1122213,1,1
+20,1,50800149,West - 20 Cliffside towards Main Street Station,,1,2233616,1122213,1,1
+20,1,50800148,West - 20 Cliffside towards Main Street Station,,1,2233630,1122213,1,1
+20,1,50800147,West - 20 Cliffside towards Main Street Station,,1,2233615,1122213,1,1
+20,1,50800146,West - 20 Cliffside towards Main Street Station,,1,2233616,1122213,1,1
+20,1,50800145,West - 20 Cliffside towards Main Street Station,,1,2233630,1122213,1,1
+20,1,50800163,West - 20 Cliffside towards Main Street Station,,1,2233615,1122213,1,1
+20,1,50800162,West - 20 Cliffside towards Main Street Station,,1,2233616,1122213,1,1
+20,1,50800161,West - 20 Cliffside towards Main Street Station,,1,2233615,1122213,1,1
+20,1,50800158,West - 20 Cliffside towards Main Street Station,,1,2233616,1122213,1,1
+20,1,50800152,West - 20 Cliffside towards Main Street Station,,1,2233615,1122213,1,1
+20,1,50800151,West - 20 Cliffside towards Main Street Station,,1,2233616,1122213,1,1
+20,1,50800150,West - 20 Cliffside towards Main Street Station,,1,2233615,1122213,1,1
+20,1,50800159,West - 20 Cliffside towards Main Street Station,,1,2233616,1122213,1,1
+20,2,50836607,East - 20 Cliffside towards Kennedy Station,,0,2235766,1122211,1,1
+20,2,50836605,East - 20 Cliffside towards Kennedy Station,,0,2235768,1122210,1,1
+20,2,50836604,East - 20 Cliffside towards Kennedy Station,,0,2235767,1122210,1,1
+20,2,50836603,East - 20 Cliffside towards Kennedy Station,,0,2235766,1122210,1,1
+20,2,50836602,East - 20 Cliffside towards Kennedy Station,,0,2235768,1122210,1,1
+20,2,50836601,East - 20 Cliffside towards Kennedy Station,,0,2235767,1122210,1,1
+20,2,50836606,East - 20 Cliffside towards Kennedy Station,,0,2235766,1122210,1,1
+20,2,50836600,East - 20 Cliffside towards Kennedy Station,,0,2235768,1122210,1,1
+20,2,50836599,East - 20 Cliffside towards Kennedy Station,,0,2235767,1122210,1,1
+20,2,50836597,East - 20 Cliffside towards Kennedy Station,,0,2235766,1122210,1,1
+20,2,50836596,East - 20 Cliffside towards Kennedy Station,,0,2235768,1122210,1,1
+20,2,50836595,East - 20 Cliffside towards Kennedy Station,,0,2235767,1122210,1,1
+20,2,50836594,East - 20 Cliffside towards Kennedy Station,,0,2235766,1122210,1,1
+20,2,50836593,East - 20 Cliffside towards Kennedy Station,,0,2235794,1122210,1,1
+20,2,50836592,East - 20 Cliffside towards Kennedy Station,,0,2235768,1122210,1,1
+20,2,50836591,East - 20 Cliffside towards Kennedy Station,,0,2235767,1122210,1,1
+20,2,50836590,East - 20 Cliffside towards Kennedy Station,,0,2235766,1122210,1,1
+20,2,50836589,East - 20 Cliffside towards Kennedy Station,,0,2235794,1122210,1,1
+20,2,50836608,East - 20 Cliffside towards Kennedy Station,,0,2235768,1122210,1,1
+20,2,50836580,East - 20 Cliffside towards Kennedy Station,,0,2235795,1122210,1,1
+20,2,50836579,East - 20 Cliffside towards Kennedy Station,,0,2235767,1122210,1,1
+20,2,50836578,East - 20 Cliffside towards Kennedy Station,,0,2235766,1122210,1,1
+20,2,50836577,East - 20 Cliffside towards Kennedy Station,,0,2235794,1122210,1,1
+20,2,50836588,East - 20 Cliffside towards Kennedy Station,,0,2235768,1122210,1,1
+20,2,50836598,East - 20 Cliffside towards Kennedy Station,,0,2235795,1122210,1,1
+20,2,50836576,East - 20 Cliffside towards Kennedy Station,,0,2235767,1122210,1,1
+20,2,50836575,East - 20 Cliffside towards Kennedy Station,,0,2235766,1122210,1,1
+20,2,50836633,East - 20 Cliffside towards Kennedy Station,,0,2235794,1122210,1,1
+20,2,50836632,East - 20 Cliffside towards Kennedy Station,,0,2235768,1122210,1,1
+20,2,50836631,East - 20 Cliffside towards Kennedy Station,,0,2235795,1122210,1,1
+20,2,50836630,East - 20 Cliffside towards Kennedy Station,,0,2235767,1122210,1,1
+20,2,50836629,East - 20 Cliffside towards Kennedy Station,,0,2235766,1122210,1,1
+20,2,50836628,East - 20 Cliffside towards Kennedy Station,,0,2235794,1122210,1,1
+20,2,50836627,East - 20 Cliffside towards Kennedy Station,,0,2235768,1122210,1,1
+20,2,50836626,East - 20 Cliffside towards Kennedy Station,,0,2235795,1122210,1,1
+20,2,50836625,East - 20 Cliffside towards Kennedy Station,,0,2235767,1122210,1,1
+20,2,50836621,East - 20 Cliffside towards Kennedy Station,,0,2235766,1122210,1,1
+20,2,50836620,East - 20 Cliffside towards Kennedy Station,,0,2235794,1122210,1,1
+20,2,50836619,East - 20 Cliffside towards Kennedy Station,,0,2235768,1122210,1,1
+20,2,50836617,East - 20 Cliffside towards Kennedy Station,,0,2235795,1122210,1,1
+20,2,50836616,East - 20 Cliffside towards Kennedy Station,,0,2235767,1122210,1,1
+20,2,50836615,East - 20 Cliffside towards Kennedy Station,,0,2235766,1122210,1,1
+20,2,50836623,East - 20 Cliffside towards Kennedy Station,,0,2235794,1122210,1,1
+20,2,50836622,East - 20 Cliffside towards Kennedy Station,,0,2235768,1122210,1,1
+20,2,50836624,East - 20 Cliffside towards Kennedy Station,,0,2235795,1122210,1,1
+20,2,50836587,East - 20 Cliffside towards Kennedy Station,,0,2235766,1122210,1,1
+20,2,50836586,East - 20 Cliffside towards Kennedy Station,,0,2235768,1122210,1,1
+20,2,50836585,East - 20 Cliffside towards Kennedy Station,,0,2235795,1122210,1,1
+20,2,50836584,East - 20 Cliffside towards Kennedy Station,,0,2235766,1122210,1,1
+20,2,50836583,East - 20 Cliffside towards Kennedy Station,,0,2235768,1122210,1,1
+20,2,50836582,East - 20 Cliffside towards Kennedy Station,,0,2235795,1122210,1,1
+20,2,50836581,East - 20 Cliffside towards Kennedy Station,,0,2235766,1122210,1,1
+20,2,50836609,East - 20 Cliffside towards Kennedy Station,,0,2235768,1122210,1,1
+20,2,50836614,East - 20 Cliffside towards Kennedy Station,,0,2235795,1122210,1,1
+20,2,50836613,East - 20 Cliffside towards Kennedy Station,,0,2235768,1122210,1,1
+20,2,50836612,East - 20 Cliffside towards Kennedy Station,,0,2235795,1122210,1,1
+20,2,50836618,East - 20 Cliffside towards Kennedy Station,,0,2235768,1122210,1,1
+20,2,50836611,East - 20 Cliffside towards Kennedy Station,,0,2235795,1122210,1,1
+20,2,50836610,East - 20 Cliffside towards Kennedy Station,,0,2235768,1122210,1,1
+20,2,50836640,West - 20 Cliffside towards Main Street Station,,1,2235766,1122212,1,1
+20,2,50836643,West - 20 Cliffside towards Main Street Station,,1,2235768,1122214,1,1
+20,2,50836690,West - 20 Cliffside towards Main Street Station,,1,2235767,1122213,1,1
+20,2,50836689,West - 20 Cliffside towards Main Street Station,,1,2235766,1122213,1,1
+20,2,50836688,West - 20 Cliffside towards Main Street Station,,1,2235768,1122213,1,1
+20,2,50836687,West - 20 Cliffside towards Main Street Station,,1,2235767,1122213,1,1
+20,2,50836686,West - 20 Cliffside towards Main Street Station,,1,2235766,1122213,1,1
+20,2,50836685,West - 20 Cliffside towards Main Street Station,,1,2235768,1122213,1,1
+20,2,50836644,West - 20 Cliffside towards Main Street Station,,1,2235767,1122213,1,1
+20,2,50836645,West - 20 Cliffside towards Main Street Station,,1,2235766,1122213,1,1
+20,2,50836646,West - 20 Cliffside towards Main Street Station,,1,2235794,1122213,1,1
+20,2,50836647,West - 20 Cliffside towards Main Street Station,,1,2235768,1122213,1,1
+20,2,50836648,West - 20 Cliffside towards Main Street Station,,1,2235767,1122213,1,1
+20,2,50836649,West - 20 Cliffside towards Main Street Station,,1,2235766,1122213,1,1
+20,2,50836650,West - 20 Cliffside towards Main Street Station,,1,2235794,1122213,1,1
+20,2,50836691,West - 20 Cliffside towards Main Street Station,,1,2235768,1122213,1,1
+20,2,50836652,West - 20 Cliffside towards Main Street Station,,1,2235795,1122213,1,1
+20,2,50836653,West - 20 Cliffside towards Main Street Station,,1,2235767,1122213,1,1
+20,2,50836684,West - 20 Cliffside towards Main Street Station,,1,2235766,1122213,1,1
+20,2,50836683,West - 20 Cliffside towards Main Street Station,,1,2235794,1122213,1,1
+20,2,50836682,West - 20 Cliffside towards Main Street Station,,1,2235768,1122213,1,1
+20,2,50836681,West - 20 Cliffside towards Main Street Station,,1,2235795,1122213,1,1
+20,2,50836680,West - 20 Cliffside towards Main Street Station,,1,2235767,1122213,1,1
+20,2,50836679,West - 20 Cliffside towards Main Street Station,,1,2235766,1122213,1,1
+20,2,50836678,West - 20 Cliffside towards Main Street Station,,1,2235794,1122213,1,1
+20,2,50836677,West - 20 Cliffside towards Main Street Station,,1,2235768,1122213,1,1
+20,2,50836676,West - 20 Cliffside towards Main Street Station,,1,2235795,1122213,1,1
+20,2,50836675,West - 20 Cliffside towards Main Street Station,,1,2235767,1122213,1,1
+20,2,50836674,West - 20 Cliffside towards Main Street Station,,1,2235766,1122213,1,1
+20,2,50836673,West - 20 Cliffside towards Main Street Station,,1,2235794,1122213,1,1
+20,2,50836672,West - 20 Cliffside towards Main Street Station,,1,2235768,1122213,1,1
+20,2,50836671,West - 20 Cliffside towards Main Street Station,,1,2235795,1122213,1,1
+20,2,50836670,West - 20 Cliffside towards Main Street Station,,1,2235767,1122213,1,1
+20,2,50836669,West - 20 Cliffside towards Main Street Station,,1,2235766,1122213,1,1
+20,2,50836668,West - 20 Cliffside towards Main Street Station,,1,2235794,1122213,1,1
+20,2,50836667,West - 20 Cliffside towards Main Street Station,,1,2235768,1122213,1,1
+20,2,50836666,West - 20 Cliffside towards Main Street Station,,1,2235795,1122213,1,1
+20,2,50836665,West - 20 Cliffside towards Main Street Station,,1,2235767,1122213,1,1
+20,2,50836664,West - 20 Cliffside towards Main Street Station,,1,2235766,1122213,1,1
+20,2,50836663,West - 20 Cliffside towards Main Street Station,,1,2235794,1122213,1,1
+20,2,50836662,West - 20 Cliffside towards Main Street Station,,1,2235768,1122213,1,1
+20,2,50836651,West - 20 Cliffside towards Main Street Station,,1,2235795,1122213,1,1
+20,2,50836661,West - 20 Cliffside towards Main Street Station,,1,2235767,1122213,1,1
+20,2,50836660,West - 20 Cliffside towards Main Street Station,,1,2235766,1122213,1,1
+20,2,50836654,West - 20 Cliffside towards Main Street Station,,1,2235768,1122213,1,1
+20,2,50836655,West - 20 Cliffside towards Main Street Station,,1,2235795,1122213,1,1
+20,2,50836656,West - 20 Cliffside towards Main Street Station,,1,2235766,1122213,1,1
+20,2,50836657,West - 20 Cliffside towards Main Street Station,,1,2235768,1122213,1,1
+20,2,50836658,West - 20 Cliffside towards Main Street Station,,1,2235795,1122213,1,1
+20,2,50836636,West - 20 Cliffside towards Main Street Station,,1,2235766,1122213,1,1
+20,2,50836641,West - 20 Cliffside towards Main Street Station,,1,2235768,1122213,1,1
+20,2,50836659,West - 20 Cliffside towards Main Street Station,,1,2235795,1122213,1,1
+20,2,50836642,West - 20 Cliffside towards Main Street Station,,1,2235768,1122213,1,1
+20,2,50836637,West - 20 Cliffside towards Main Street Station,,1,2235795,1122213,1,1
+20,2,50836638,West - 20 Cliffside towards Main Street Station,,1,2235768,1122213,1,1
+20,2,50836639,West - 20 Cliffside towards Main Street Station,,1,2235795,1122213,1,1
+20,2,50836634,West - 20 Cliffside towards Main Street Station,,1,2235768,1122213,1,1
+20,2,50836635,West - 20 Cliffside towards Main Street Station,,1,2235795,1122213,1,1
+20,3,50868011,East - 20 Cliffside towards Kennedy Station,,0,2237270,1122210,1,1
+20,3,50868010,East - 20 Cliffside towards Kennedy Station,,0,2237272,1122210,1,1
+20,3,50868009,East - 20 Cliffside towards Kennedy Station,,0,2237260,1122210,1,1
+20,3,50868008,East - 20 Cliffside towards Kennedy Station,,0,2237270,1122210,1,1
+20,3,50868007,East - 20 Cliffside towards Kennedy Station,,0,2237272,1122210,1,1
+20,3,50868006,East - 20 Cliffside towards Kennedy Station,,0,2237260,1122210,1,1
+20,3,50868005,East - 20 Cliffside towards Kennedy Station,,0,2237270,1122210,1,1
+20,3,50868004,East - 20 Cliffside towards Kennedy Station,,0,2237272,1122210,1,1
+20,3,50868003,East - 20 Cliffside towards Kennedy Station,,0,2237260,1122210,1,1
+20,3,50868002,East - 20 Cliffside towards Kennedy Station,,0,2237270,1122210,1,1
+20,3,50868001,East - 20 Cliffside towards Kennedy Station,,0,2237272,1122210,1,1
+20,3,50867999,East - 20 Cliffside towards Kennedy Station,,0,2237260,1122210,1,1
+20,3,50867998,East - 20 Cliffside towards Kennedy Station,,0,2237271,1122210,1,1
+20,3,50867997,East - 20 Cliffside towards Kennedy Station,,0,2237270,1122210,1,1
+20,3,50868000,East - 20 Cliffside towards Kennedy Station,,0,2237272,1122210,1,1
+20,3,50867995,East - 20 Cliffside towards Kennedy Station,,0,2237260,1122210,1,1
+20,3,50867994,East - 20 Cliffside towards Kennedy Station,,0,2237271,1122210,1,1
+20,3,50867993,East - 20 Cliffside towards Kennedy Station,,0,2237270,1122210,1,1
+20,3,50867992,East - 20 Cliffside towards Kennedy Station,,0,2237272,1122210,1,1
+20,3,50867991,East - 20 Cliffside towards Kennedy Station,,0,2237260,1122210,1,1
+20,3,50867990,East - 20 Cliffside towards Kennedy Station,,0,2237271,1122210,1,1
+20,3,50867989,East - 20 Cliffside towards Kennedy Station,,0,2237270,1122210,1,1
+20,3,50867988,East - 20 Cliffside towards Kennedy Station,,0,2237272,1122210,1,1
+20,3,50867987,East - 20 Cliffside towards Kennedy Station,,0,2237260,1122210,1,1
+20,3,50867986,East - 20 Cliffside towards Kennedy Station,,0,2237271,1122210,1,1
+20,3,50867985,East - 20 Cliffside towards Kennedy Station,,0,2237270,1122210,1,1
+20,3,50868031,East - 20 Cliffside towards Kennedy Station,,0,2237272,1122210,1,1
+20,3,50868030,East - 20 Cliffside towards Kennedy Station,,0,2237260,1122210,1,1
+20,3,50868029,East - 20 Cliffside towards Kennedy Station,,0,2237271,1122210,1,1
+20,3,50868028,East - 20 Cliffside towards Kennedy Station,,0,2237270,1122210,1,1
+20,3,50868027,East - 20 Cliffside towards Kennedy Station,,0,2237272,1122210,1,1
+20,3,50868026,East - 20 Cliffside towards Kennedy Station,,0,2237260,1122210,1,1
+20,3,50868025,East - 20 Cliffside towards Kennedy Station,,0,2237271,1122210,1,1
+20,3,50868023,East - 20 Cliffside towards Kennedy Station,,0,2237272,1122210,1,1
+20,3,50868022,East - 20 Cliffside towards Kennedy Station,,0,2237260,1122210,1,1
+20,3,50868021,East - 20 Cliffside towards Kennedy Station,,0,2237271,1122210,1,1
+20,3,50868020,East - 20 Cliffside towards Kennedy Station,,0,2237272,1122210,1,1
+20,3,50868019,East - 20 Cliffside towards Kennedy Station,,0,2237260,1122210,1,1
+20,3,50868018,East - 20 Cliffside towards Kennedy Station,,0,2237271,1122210,1,1
+20,3,50868017,East - 20 Cliffside towards Kennedy Station,,0,2237272,1122210,1,1
+20,3,50868024,East - 20 Cliffside towards Kennedy Station,,0,2237260,1122210,1,1
+20,3,50867996,East - 20 Cliffside towards Kennedy Station,,0,2237271,1122210,1,1
+20,3,50868012,East - 20 Cliffside towards Kennedy Station,,0,2237272,1122210,1,1
+20,3,50868015,East - 20 Cliffside towards Kennedy Station,,0,2237271,1122210,1,1
+20,3,50868013,East - 20 Cliffside towards Kennedy Station,,0,2237272,1122210,1,1
+20,3,50868016,East - 20 Cliffside towards Kennedy Station,,0,2237271,1122210,1,1
+20,3,50868014,East - 20 Cliffside towards Kennedy Station,,0,2237272,1122210,1,1
+20,3,50868034,West - 20 Cliffside towards Main Street Station,,1,2237260,1122212,1,1
+20,3,50868039,West - 20 Cliffside towards Main Street Station,,1,2237270,1122214,1,1
+20,3,50868049,West - 20 Cliffside towards Main Street Station,,1,2237272,1122213,1,1
+20,3,50868047,West - 20 Cliffside towards Main Street Station,,1,2237260,1122213,1,1
+20,3,50868050,West - 20 Cliffside towards Main Street Station,,1,2237270,1122213,1,1
+20,3,50868036,West - 20 Cliffside towards Main Street Station,,1,2237272,1122213,1,1
+20,3,50868052,West - 20 Cliffside towards Main Street Station,,1,2237260,1122213,1,1
+20,3,50868053,West - 20 Cliffside towards Main Street Station,,1,2237270,1122213,1,1
+20,3,50868032,West - 20 Cliffside towards Main Street Station,,1,2237272,1122213,1,1
+20,3,50868041,West - 20 Cliffside towards Main Street Station,,1,2237260,1122213,1,1
+20,3,50868033,West - 20 Cliffside towards Main Street Station,,1,2237271,1122213,1,1
+20,3,50868038,West - 20 Cliffside towards Main Street Station,,1,2237270,1122213,1,1
+20,3,50868043,West - 20 Cliffside towards Main Street Station,,1,2237272,1122213,1,1
+20,3,50868045,West - 20 Cliffside towards Main Street Station,,1,2237260,1122213,1,1
+20,3,50868037,West - 20 Cliffside towards Main Street Station,,1,2237271,1122213,1,1
+20,3,50868046,West - 20 Cliffside towards Main Street Station,,1,2237270,1122213,1,1
+20,3,50868044,West - 20 Cliffside towards Main Street Station,,1,2237272,1122213,1,1
+20,3,50868040,West - 20 Cliffside towards Main Street Station,,1,2237260,1122213,1,1
+20,3,50868051,West - 20 Cliffside towards Main Street Station,,1,2237271,1122213,1,1
+20,3,50868048,West - 20 Cliffside towards Main Street Station,,1,2237270,1122213,1,1
+20,3,50868035,West - 20 Cliffside towards Main Street Station,,1,2237272,1122213,1,1
+20,3,50868042,West - 20 Cliffside towards Main Street Station,,1,2237260,1122213,1,1
+20,3,50868066,West - 20 Cliffside towards Main Street Station,,1,2237271,1122213,1,1
+20,3,50868067,West - 20 Cliffside towards Main Street Station,,1,2237270,1122213,1,1
+20,3,50868062,West - 20 Cliffside towards Main Street Station,,1,2237272,1122213,1,1
+20,3,50868060,West - 20 Cliffside towards Main Street Station,,1,2237260,1122213,1,1
+20,3,50868061,West - 20 Cliffside towards Main Street Station,,1,2237271,1122213,1,1
+20,3,50868055,West - 20 Cliffside towards Main Street Station,,1,2237270,1122213,1,1
+20,3,50868075,West - 20 Cliffside towards Main Street Station,,1,2237272,1122213,1,1
+20,3,50868068,West - 20 Cliffside towards Main Street Station,,1,2237260,1122213,1,1
+20,3,50868069,West - 20 Cliffside towards Main Street Station,,1,2237271,1122213,1,1
+20,3,50868070,West - 20 Cliffside towards Main Street Station,,1,2237270,1122213,1,1
+20,3,50868071,West - 20 Cliffside towards Main Street Station,,1,2237272,1122213,1,1
+20,3,50868065,West - 20 Cliffside towards Main Street Station,,1,2237260,1122213,1,1
+20,3,50868064,West - 20 Cliffside towards Main Street Station,,1,2237271,1122213,1,1
+20,3,50868063,West - 20 Cliffside towards Main Street Station,,1,2237272,1122213,1,1
+20,3,50868073,West - 20 Cliffside towards Main Street Station,,1,2237260,1122213,1,1
+20,3,50868078,West - 20 Cliffside towards Main Street Station,,1,2237271,1122213,1,1
+20,3,50868077,West - 20 Cliffside towards Main Street Station,,1,2237272,1122213,1,1
+20,3,50868076,West - 20 Cliffside towards Main Street Station,,1,2237260,1122213,1,1
+20,3,50868057,West - 20 Cliffside towards Main Street Station,,1,2237271,1122213,1,1
+20,3,50868058,West - 20 Cliffside towards Main Street Station,,1,2237272,1122213,1,1
+20,3,50868059,West - 20 Cliffside towards Main Street Station,,1,2237271,1122213,1,1
+20,3,50868072,West - 20 Cliffside towards Main Street Station,,1,2237272,1122213,1,1
+20,3,50868054,West - 20 Cliffside towards Main Street Station,,1,2237271,1122213,1,1
+20,3,50868074,West - 20 Cliffside towards Main Street Station,,1,2237272,1122213,1,1
+20,3,50868056,West - 20 Cliffside towards Main Street Station,,1,2237271,1122213,1,1
+20,4,50897785,East - 20 Cliffside towards Kennedy Station,,0,2238583,1122211,1,1
+20,4,50897751,East - 20 Cliffside towards Kennedy Station,,0,2238584,1122210,1,1
+20,4,50897750,East - 20 Cliffside towards Kennedy Station,,0,2238583,1122210,1,1
+20,4,50897763,East - 20 Cliffside towards Kennedy Station,,0,2238586,1122210,1,1
+20,4,50897787,East - 20 Cliffside towards Kennedy Station,,0,2238584,1122210,1,1
+20,4,50897786,East - 20 Cliffside towards Kennedy Station,,0,2238583,1122210,1,1
+20,4,50897749,East - 20 Cliffside towards Kennedy Station,,0,2238586,1122210,1,1
+20,4,50897762,East - 20 Cliffside towards Kennedy Station,,0,2238584,1122210,1,1
+20,4,50897761,East - 20 Cliffside towards Kennedy Station,,0,2238583,1122210,1,1
+20,4,50897760,East - 20 Cliffside towards Kennedy Station,,0,2238586,1122210,1,1
+20,4,50897759,East - 20 Cliffside towards Kennedy Station,,0,2238584,1122210,1,1
+20,4,50897774,East - 20 Cliffside towards Kennedy Station,,0,2238583,1122210,1,1
+20,4,50897772,East - 20 Cliffside towards Kennedy Station,,0,2238586,1122210,1,1
+20,4,50897771,East - 20 Cliffside towards Kennedy Station,,0,2238584,1122210,1,1
+20,4,50897770,East - 20 Cliffside towards Kennedy Station,,0,2238583,1122210,1,1
+20,4,50897769,East - 20 Cliffside towards Kennedy Station,,0,2238586,1122210,1,1
+20,4,50897758,East - 20 Cliffside towards Kennedy Station,,0,2238584,1122210,1,1
+20,4,50897754,East - 20 Cliffside towards Kennedy Station,,0,2238585,1122210,1,1
+20,4,50897753,East - 20 Cliffside towards Kennedy Station,,0,2238583,1122210,1,1
+20,4,50897752,East - 20 Cliffside towards Kennedy Station,,0,2238586,1122210,1,1
+20,4,50897779,East - 20 Cliffside towards Kennedy Station,,0,2238584,1122210,1,1
+20,4,50897778,East - 20 Cliffside towards Kennedy Station,,0,2238585,1122210,1,1
+20,4,50897777,East - 20 Cliffside towards Kennedy Station,,0,2238583,1122210,1,1
+20,4,50897776,East - 20 Cliffside towards Kennedy Station,,0,2238586,1122210,1,1
+20,4,50897775,East - 20 Cliffside towards Kennedy Station,,0,2238584,1122210,1,1
+20,4,50897773,East - 20 Cliffside towards Kennedy Station,,0,2238585,1122210,1,1
+20,4,50897768,East - 20 Cliffside towards Kennedy Station,,0,2238583,1122210,1,1
+20,4,50897764,East - 20 Cliffside towards Kennedy Station,,0,2238586,1122210,1,1
+20,4,50897781,East - 20 Cliffside towards Kennedy Station,,0,2238584,1122210,1,1
+20,4,50897780,East - 20 Cliffside towards Kennedy Station,,0,2238585,1122210,1,1
+20,4,50897741,East - 20 Cliffside towards Kennedy Station,,0,2238583,1122210,1,1
+20,4,50897767,East - 20 Cliffside towards Kennedy Station,,0,2238586,1122210,1,1
+20,4,50897742,East - 20 Cliffside towards Kennedy Station,,0,2238584,1122210,1,1
+20,4,50897765,East - 20 Cliffside towards Kennedy Station,,0,2238585,1122210,1,1
+20,4,50897782,East - 20 Cliffside towards Kennedy Station,,0,2238583,1122210,1,1
+20,4,50897748,East - 20 Cliffside towards Kennedy Station,,0,2238586,1122210,1,1
+20,4,50897747,East - 20 Cliffside towards Kennedy Station,,0,2238584,1122210,1,1
+20,4,50897746,East - 20 Cliffside towards Kennedy Station,,0,2238585,1122210,1,1
+20,4,50897745,East - 20 Cliffside towards Kennedy Station,,0,2238586,1122210,1,1
+20,4,50897744,East - 20 Cliffside towards Kennedy Station,,0,2238584,1122210,1,1
+20,4,50897743,East - 20 Cliffside towards Kennedy Station,,0,2238585,1122210,1,1
+20,4,50897791,East - 20 Cliffside towards Kennedy Station,,0,2238586,1122210,1,1
+20,4,50897790,East - 20 Cliffside towards Kennedy Station,,0,2238584,1122210,1,1
+20,4,50897789,East - 20 Cliffside towards Kennedy Station,,0,2238585,1122210,1,1
+20,4,50897788,East - 20 Cliffside towards Kennedy Station,,0,2238586,1122210,1,1
+20,4,50897792,East - 20 Cliffside towards Kennedy Station,,0,2238584,1122210,1,1
+20,4,50897784,East - 20 Cliffside towards Kennedy Station,,0,2238585,1122210,1,1
+20,4,50897783,East - 20 Cliffside towards Kennedy Station,,0,2238586,1122210,1,1
+20,4,50897756,East - 20 Cliffside towards Kennedy Station,,0,2238585,1122210,1,1
+20,4,50897766,East - 20 Cliffside towards Kennedy Station,,0,2238586,1122210,1,1
+20,4,50897755,East - 20 Cliffside towards Kennedy Station,,0,2238585,1122210,1,1
+20,4,50897757,East - 20 Cliffside towards Kennedy Station,,0,2238586,1122210,1,1
+20,4,50897796,West - 20 Cliffside towards Main Street Station,,1,2238583,1122212,1,1
+20,4,50897800,West - 20 Cliffside towards Main Street Station,,1,2238586,1122214,1,1
+20,4,50897802,West - 20 Cliffside towards Main Street Station,,1,2238584,1122213,1,1
+20,4,50897807,West - 20 Cliffside towards Main Street Station,,1,2238583,1122213,1,1
+20,4,50897799,West - 20 Cliffside towards Main Street Station,,1,2238586,1122213,1,1
+20,4,50897798,West - 20 Cliffside towards Main Street Station,,1,2238584,1122213,1,1
+20,4,50897797,West - 20 Cliffside towards Main Street Station,,1,2238583,1122213,1,1
+20,4,50897824,West - 20 Cliffside towards Main Street Station,,1,2238586,1122213,1,1
+20,4,50897823,West - 20 Cliffside towards Main Street Station,,1,2238584,1122213,1,1
+20,4,50897808,West - 20 Cliffside towards Main Street Station,,1,2238583,1122213,1,1
+20,4,50897821,West - 20 Cliffside towards Main Street Station,,1,2238586,1122213,1,1
+20,4,50897811,West - 20 Cliffside towards Main Street Station,,1,2238584,1122213,1,1
+20,4,50897810,West - 20 Cliffside towards Main Street Station,,1,2238583,1122213,1,1
+20,4,50897809,West - 20 Cliffside towards Main Street Station,,1,2238586,1122213,1,1
+20,4,50897801,West - 20 Cliffside towards Main Street Station,,1,2238584,1122213,1,1
+20,4,50897825,West - 20 Cliffside towards Main Street Station,,1,2238585,1122213,1,1
+20,4,50897814,West - 20 Cliffside towards Main Street Station,,1,2238583,1122213,1,1
+20,4,50897805,West - 20 Cliffside towards Main Street Station,,1,2238586,1122213,1,1
+20,4,50897804,West - 20 Cliffside towards Main Street Station,,1,2238584,1122213,1,1
+20,4,50897815,West - 20 Cliffside towards Main Street Station,,1,2238585,1122213,1,1
+20,4,50897795,West - 20 Cliffside towards Main Street Station,,1,2238583,1122213,1,1
+20,4,50897794,West - 20 Cliffside towards Main Street Station,,1,2238586,1122213,1,1
+20,4,50897813,West - 20 Cliffside towards Main Street Station,,1,2238584,1122213,1,1
+20,4,50897812,West - 20 Cliffside towards Main Street Station,,1,2238585,1122213,1,1
+20,4,50897820,West - 20 Cliffside towards Main Street Station,,1,2238583,1122213,1,1
+20,4,50897826,West - 20 Cliffside towards Main Street Station,,1,2238586,1122213,1,1
+20,4,50897793,West - 20 Cliffside towards Main Street Station,,1,2238584,1122213,1,1
+20,4,50897806,West - 20 Cliffside towards Main Street Station,,1,2238585,1122213,1,1
+20,4,50897819,West - 20 Cliffside towards Main Street Station,,1,2238583,1122213,1,1
+20,4,50897818,West - 20 Cliffside towards Main Street Station,,1,2238586,1122213,1,1
+20,4,50897817,West - 20 Cliffside towards Main Street Station,,1,2238584,1122213,1,1
+20,4,50897816,West - 20 Cliffside towards Main Street Station,,1,2238585,1122213,1,1
+20,4,50897822,West - 20 Cliffside towards Main Street Station,,1,2238583,1122213,1,1
+20,4,50897803,West - 20 Cliffside towards Main Street Station,,1,2238586,1122213,1,1
+20,4,50897842,West - 20 Cliffside towards Main Street Station,,1,2238584,1122213,1,1
+20,4,50897838,West - 20 Cliffside towards Main Street Station,,1,2238585,1122213,1,1
+20,4,50897837,West - 20 Cliffside towards Main Street Station,,1,2238583,1122213,1,1
+20,4,50897836,West - 20 Cliffside towards Main Street Station,,1,2238586,1122213,1,1
+20,4,50897835,West - 20 Cliffside towards Main Street Station,,1,2238584,1122213,1,1
+20,4,50897834,West - 20 Cliffside towards Main Street Station,,1,2238585,1122213,1,1
+20,4,50897833,West - 20 Cliffside towards Main Street Station,,1,2238586,1122213,1,1
+20,4,50897832,West - 20 Cliffside towards Main Street Station,,1,2238584,1122213,1,1
+20,4,50897831,West - 20 Cliffside towards Main Street Station,,1,2238585,1122213,1,1
+20,4,50897830,West - 20 Cliffside towards Main Street Station,,1,2238586,1122213,1,1
+20,4,50897829,West - 20 Cliffside towards Main Street Station,,1,2238584,1122213,1,1
+20,4,50897841,West - 20 Cliffside towards Main Street Station,,1,2238585,1122213,1,1
+20,4,50897840,West - 20 Cliffside towards Main Street Station,,1,2238586,1122213,1,1
+20,4,50897839,West - 20 Cliffside towards Main Street Station,,1,2238585,1122213,1,1
+20,4,50897828,West - 20 Cliffside towards Main Street Station,,1,2238586,1122213,1,1
+20,4,50897827,West - 20 Cliffside towards Main Street Station,,1,2238585,1122213,1,1
+20,4,50897844,West - 20 Cliffside towards Main Street Station,,1,2238586,1122213,1,1
+20,4,50897843,West - 20 Cliffside towards Main Street Station,,1,2238585,1122213,1,1

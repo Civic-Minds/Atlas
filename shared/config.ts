@@ -83,6 +83,12 @@ export const ON_DEMAND_ENABLED = ON_DEMAND_PUBLIC || BETA_BUILD;
 // every built site, so a deployed build can't be pointed at other files.
 export const ON_DEMAND_URL_OVERRIDE: string | undefined =
   (typeof import.meta !== 'undefined' && import.meta?.env?.DEV ? import.meta?.env?.VITE_ON_DEMAND_URL : undefined) || undefined;
+// "What's new" link in the map's bottom bar, listing recent changes in plain words (CIV-83).
+// Beta-only while the wording and placement are tried out.
+export function whatsNewEnabledFor(mode: AtlasMode): boolean {
+  return mode === 'beta' || mode === 'dev';
+}
+export const WHATS_NEW_ENABLED = whatsNewEnabledFor(ATLAS_MODE);
 
 export function getAgencyCatalogUrl(mode: AtlasMode = ATLAS_MODE): string {
   return `/data/catalog-${mode}.json`;
@@ -107,6 +113,7 @@ export const FEATURES = {
   onDemand: ON_DEMAND_ENABLED,
   cardClickToFlag: CARD_CLICK_TO_FLAG_ENABLED,
   unevenBanner: UNEVEN_BANNER_ENABLED,
+  whatsNew: WHATS_NEW_ENABLED,
 } as const;
 
 export const FEATURE_ROUTES = {

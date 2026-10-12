@@ -1,0 +1,45 @@
+route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,block_id,shape_id,wheelchair_accessible,trip_route_type,route_pattern_id,bikes_allowed
+455,BUS20264-hbl46wk1-Weekday-02,78517098,West Lynn Garage via Central Square,,1,L455-166,4550344,1,,455-3-1,1
+455,BUS20264-hbl46wk1-Weekday-02,78516804,Wonderland,,1,L120-68,4550342,1,,455-5-1,1
+455,BUS20264-hbl46wk1-Weekday-02,78516839,Wonderland,,1,L442-150,4550342,1,,455-5-1,1
+455,BUS20264-hbl46wk1-Weekday-02,78516949,Wonderland,,1,L426-82,4550342,1,,455-5-1,1
+455,BUS20264-hbl46wk1-Weekday-02,78517367,Wonderland,,1,L116-8,4550342,1,,455-5-1,1
+455,BUS20264-hbl46wk1-Weekday-02,78516789,Wonderland via Central Square,,1,L455-174,4550340,1,,455-7-1,1
+455,BUS20264-hbl46wk1-Weekday-02,78516796,Wonderland via Central Square,,1,L455-163,4550340,1,,455-7-1,1
+455,BUS20264-hbl46wk1-Weekday-02,78516797,Wonderland via Central Square,,1,L455-176,4550340,1,,455-7-1,1
+455,BUS20264-hbl46wk1-Weekday-02,78516799,Wonderland via Central Square,,1,L455-178,4550340,1,,455-7-1,1
+455,BUS20264-hbl46wk1-Weekday-02,78516808,Wonderland via Central Square,,1,L455-168,4550340,1,,455-7-1,1
+455,BUS20264-hbl46wk1-Weekday-02,78516814,Wonderland via Central Square,,1,L450-157,4550340,1,,455-7-1,1
+455,BUS20264-hbl46wk1-Weekday-02,78516824,Wonderland via Central Square,,1,L442-146,4550340,1,,455-7-1,1
+455,BUS20264-hbl46wk1-Weekday-02,78516828,Wonderland via Central Square,,1,L455-164,4550340,1,,455-7-1,1
+455,BUS20264-hbl46wk1-Weekday-02,78516829,Wonderland via Central Square,,1,L455-175,4550340,1,,455-7-1,1
+455,BUS20264-hbl46wk1-Weekday-02,78516840,Wonderland via Central Square,,1,L455-175,4550340,1,,455-7-1,1
+455,BUS20264-hbl46wk1-Weekday-02,78516841,Wonderland via Central Square,,1,L455-167,4550340,1,,455-7-1,1
+455,BUS20264-hbl46wk1-Weekday-02,78516843,Wonderland via Central Square,,1,L455-168,4550340,1,,455-7-1,1
+455,BUS20264-hbl46wk1-Weekday-02,78516851,Wonderland via Central Square,,1,L455-174,4550340,1,,455-7-1,1
+455,BUS20264-hbl46wk1-Weekday-02,78516855,Wonderland via Central Square,,1,L455-173,4550340,1,,455-7-1,1
+455,BUS20264-hbl46wk1-Weekday-02,78516856,Wonderland via Central Square,,1,L455-167,4550340,1,,455-7-1,1
+455,BUS20264-hbl46wk1-Weekday-02,78516859,Wonderland via Central Square,,1,L455-173,4550340,1,,455-7-1,1
+455,BUS20264-hbl46wk1-Weekday-02,78516866,Wonderland via Central Square,,1,L455-167,4550340,1,,455-7-1,1
+455,BUS20264-hbl46wk1-Weekday-02,78516876,Wonderland via Central Square,,1,L455-172,4550340,1,,455-7-1,1
+455,BUS20264-hbl46wk1-Weekday-02,78516880,Wonderland via Central Square,,1,L455-173,4550340,1,,455-7-1,1
+455,BUS20264-hbl46wk1-Weekday-02,78516885,Wonderland via Central Square,,1,L455-176,4550340,1,,455-7-1,1
+455,BUS20264-hbl46wk1-Weekday-02,78516891,Wonderland via Central Square,,1,L442-148,4550340,1,,455-7-1,1
+455,BUS20264-hbl46wk1-Weekday-02,78516895,Wonderland via Central Square,,1,L455-175,4550340,1,,455-7-1,1
+455,BUS20264-hbl46wk1-Weekday-02,78516916,Wonderland via Central Square,,1,L455-175,4550340,1,,455-7-1,1
+455,BUS20264-hbl46wk1-Weekday-02,78516920,Wonderland via Central Square,,1,L455-164,4550340,1,,455-7-1,1
+455,BUS20264-hbl46wk1-Weekday-02,78516921,Wonderland via Central Square,,1,L455-170,4550340,1,,455-7-1,1
+455,BUS20264-hbl46wk1-Weekday-02,78516931,Wonderland via Central Square,,1,L455-171,4550340,1,,455-7-1,1
+455,BUS20264-hbl46wk1-Weekday-02,78516932,Wonderland via Central Square,,1,L455-169,4550340,1,,455-7-1,1
+455,BUS20264-hbl46wk1-Weekday-02,78516933,Wonderland via Central Square,,1,L442-142,4550340,1,,455-7-1,1
+455,BUS20264-hbl46wk1-Weekday-02,78516942,Wonderland via Central Square,,1,L441-137,4550340,1,,455-7-1,1
+455,BUS20264-hbl46wk1-Weekday-02,78516943,Wonderland via Central Square,,1,L119-59,4550340,1,,455-7-1,1
+455,BUS20264-hbl46wk1-Weekday-02,78516950,Wonderland via Central Square,,1,L465-180,4550340,1,,455-7-1,1
+455,BUS20264-hbl46wk1-Weekday-02,78516952,Wonderland via Central Square,,1,L455-165,4550340,1,,455-7-1,1
+455,BUS20264-hbl46wk1-Weekday-02,78516959,Wonderland via Central Square,,1,L455-177,4550340,1,,455-7-1,1
+455,BUS20264-hbl46wk1-Weekday-02,78516960,Wonderland via Central Square,,1,L455-163,4550340,1,,455-7-1,1
+455,BUS20264-hbl46wk1-Weekday-02,78516966,Wonderland via Central Square,,1,L455-166,4550340,1,,455-7-1,1
+455,BUS20264-hbl46wk1-Weekday-02,78516978,Wonderland via Central Square,,1,L455-168,4550340,1,,455-7-1,1
+455,BUS20264-hbl46wk1-Weekday-02,78516979,Wonderland via Central Square,,1,L455-169,4550340,1,,455-7-1,1
+455,BUS20264-hbl46wk1-Weekday-02,78517015,Wonderland via Central Square,,1,L442-148,4550340,1,,455-7-1,1
+455,BUS20264-hbl46wk1-Weekday-02,78517016,Wonderland via Central Square,,1,L455-173,4550340,1,,455-7-1,1

@@ -16,9 +16,9 @@
   "feedUrl": "https://files.mobilitydatabase.org/mdb-246/latest.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-246/latest.zip",
   "timezone": "America/Los_Angeles",
-  "lastFeedExpiry": "20261101",
+  "lastFeedExpiry": "20270531",
   "lastFeedVersion": "UTC: 30-Sep-2026 20:12",
-  "lastRefreshedAt": "2026-10-07",
+  "lastRefreshedAt": "2026-10-12",
   "cities": [
     "Tillamook, Oregon",
     "Lincoln City, Oregon",
@@ -38,14 +38,16 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 48
     },
-    "checkedAt": "2026-10-07"
+    "checkedAt": "2026-10-12"
   },
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270531",
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-246/latest.zip"
 }

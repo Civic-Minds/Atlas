@@ -1,15 +1,17 @@
 {
   "slug": "elmonte",
   "name": "El Monte Transit",
+  "hiddenInProduction": true,
+  "issueUrl": "https://github.com/Civic-Minds/Atlas/issues/634",
   "center": [
     34.0689,
     -118.0362
   ],
   "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11664/Google_Transit.zip",
-  "lastFeedExpiry": "20271125",
+  "lastFeedExpiry": "20271126",
   "lastFeedVersion": "",
   "region": "California",
-  "lastRefreshedAt": "2026-10-07",
+  "lastRefreshedAt": "2026-10-12",
   "websiteUrl": "http://www.ci.el-monte.ca.us/Government/PublicWorks/Transportation.aspx",
   "cities": [
     "El Monte, California"
@@ -17,27 +19,29 @@
   "timezone": "America/Los_Angeles",
   "lastRawArchiveKey": "20251031-7b5bc958bf995eaa",
   "pmtilesPending": true,
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271126",
   "feedQuality": {
-    "status": "unusable",
-    "score": 0,
+    "status": "review",
+    "score": 80,
     "reasons": [
-      "Atlas could not find any usable routes in this feed."
+      "2 minor schedule issues found while reading the feed."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 2,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 0
+      "featureCount": 20
     },
-    "checkedAt": "2026-10-07"
+    "checkedAt": "2026-10-12"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11664/Google_Transit.zip"
 }

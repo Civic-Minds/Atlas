@@ -2,12 +2,20 @@ import type { ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
 import { isHourInPeriod } from '../../shared/config';
 import { hasNoPeriodService } from '../../shared/periodEligibility';
 import { buildRouteServiceSummary, metricValueForPeriod } from './routeFacts';
+import { pairedTripSafeHeadway } from './pairedTripFloor';
+
+export { pairedTripPeriodFloor, pairedTripSafeHeadway } from './pairedTripFloor';
 
 /** Headway shown on route cards and lists (display only — filter decisions use shared/routeHeadwayFilter). */
 export function routeCardDisplayHeadway(p: ShapeProperties, period: TimePeriod): number | null {
   // A numeric gap inside a short-turn/peak-only cluster is not sustained route
   // service. Keep limited branches out of normal route-card/list cadence rows.
   if (p.tier === 'span') return null;
+
+  // All day has no single longest-gap measure to test the median against. An
+  // infrequent-tier branch has no sustained all-day cadence, so a numeric all-day
+  // value (Winter Park TL-42's 56 min across 3 trips a day) would mislead (#708).
+  if (period === 'all' && p.tier === 'infrequent') return null;
 
   // An infrequent branch can still have a numeric median, but that median is
   // misleading when the longest scheduled gap is materially larger.
@@ -21,7 +29,7 @@ export function routeCardDisplayHeadway(p: ShapeProperties, period: TimePeriod):
   // period's cadence, never the all-day headline. Coverage data remains available to the
   // filter and the limited-service treatment elsewhere on the card.
   if (period !== 'all' && p.headwayByPeriodSustained?.[period] === false) {
-    return p.headwayByPeriod?.[period] ?? null;
+    return pairedTripSafeHeadway(p, period, p.headwayByPeriod?.[period] ?? null);
   }
   const summary = buildRouteServiceSummary(p);
   // Cards show the destination/branch cadence. Keep the route-wide metric in
@@ -99,10 +107,44 @@ export function routeCardDisplayHeadwayRange(p: ShapeProperties, period: TimePer
     : rangeText;
 }
 
+/**
+ * Whether a route card row shows "limited" instead of a cadence. Shares
+ * routeCardDisplayHeadway's rule: in a specific period the row has service but
+ * no trustworthy cadence; on All day the branch is infrequent-tier (#708).
+ */
+export function routeCardDisplayLimited(p: ShapeProperties, period: TimePeriod): boolean {
+  if (routeCardDisplayHeadway(p, period) != null) return false;
+  if (period === 'all') return p.tier === 'infrequent';
+  return hasDirectionPeriodService(p, period);
+}
+
 /** Display the best active-period cadence across a route's direction/branch rows. */
 export function routeListDisplayHeadway(features: readonly ShapeProperties[], period: TimePeriod): number | null {
   const values = features
     .map(feature => routeCardDisplayHeadway(feature, period))
     .filter((value): value is number => value != null);
   return values.length > 0 ? Math.min(...values) : null;
+}
+
+/**
+ * Whether a route list row (sidebar lists, agency card, nearby routes) shows
+ * "limited", in any period, using the route card's rule. Any branch with a real
+ * cadence wins, so an infrequent short-turn never hides the main pattern's number (#708).
+ */
+export function routeListDisplayLimited(features: readonly ShapeProperties[], period: TimePeriod): boolean {
+  return routeListDisplayHeadway(features, period) == null
+    && features.some(feature => routeCardDisplayLimited(feature, period));
+}
+
+export interface RouteListDisplay {
+  headway: number | null;
+  limited: boolean;
+}
+
+/** Headway and limited flag for one route list row, from the same shared rule. */
+export function routeListDisplay(features: readonly ShapeProperties[], period: TimePeriod): RouteListDisplay {
+  return {
+    headway: routeListDisplayHeadway(features, period),
+    limited: routeListDisplayLimited(features, period),
+  };
 }

@@ -1,0 +1,77 @@
+route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,block_id,shape_id,wheelchair_accessible,bikes_allowed
+29,1,50802424,South - 29C Dufferin towards Exhibition (Princes' Gates),C,0,2233738,1122270,1,1
+29,1,50802425,South - 29A Dufferin towards Exhibition (Dufferin Gate),A,0,2233728,1122271,1,1
+29,1,50802431,South - 29C Dufferin towards Exhibition (Princes' Gates),C,0,2233729,1122270,1,1
+29,1,50802426,South - 29A Dufferin towards Exhibition (Dufferin Gate),A,0,2233733,1122271,1,1
+29,1,50802427,South - 29C Dufferin towards Exhibition (Princes' Gates),C,0,2233749,1122270,1,1
+29,1,50802428,South - 29A Dufferin towards Exhibition (Dufferin Gate),A,0,2233753,1122271,1,1
+29,1,50802429,South - 29C Dufferin towards Exhibition (Princes' Gates),C,0,2233727,1122270,1,1
+29,1,50802430,South - 29A Dufferin towards Exhibition (Dufferin Gate),A,0,2233754,1122271,1,1
+29,1,50802403,South - 29C Dufferin towards Exhibition (Princes' Gates),C,0,2233751,1122270,1,1
+29,1,50802404,South - 29A Dufferin towards Exhibition (Dufferin Gate),A,0,2233731,1122271,1,1
+29,1,50802405,South - 29C Dufferin towards Exhibition (Princes' Gates),C,0,2233735,1122270,1,1
+29,1,50802406,South - 29A Dufferin towards Exhibition (Dufferin Gate),A,0,2233747,1122271,1,1
+29,1,50802407,South - 29C Dufferin towards Exhibition (Princes' Gates),C,0,2233734,1122270,1,1
+29,1,50802408,South - 29A Dufferin towards Exhibition (Dufferin Gate),A,0,2233748,1122271,1,1
+29,1,50802409,South - 29C Dufferin towards Exhibition (Princes' Gates),C,0,2233738,1122270,1,1
+29,1,50802410,South - 29A Dufferin towards Exhibition (Dufferin Gate),A,0,2233728,1122271,1,1
+29,1,50802416,South - 29C Dufferin towards Exhibition (Princes' Gates),C,0,2233732,1122270,1,1
+29,1,50802417,South - 29A Dufferin towards Exhibition (Dufferin Gate),A,0,2233733,1122271,1,1
+29,1,50802418,South - 29C Dufferin towards Exhibition (Princes' Gates),C,0,2233729,1122270,1,1
+29,1,50802419,South - 29A Dufferin towards Exhibition (Dufferin Gate),A,0,2233753,1122271,1,1
+29,1,50802420,South - 29C Dufferin towards Exhibition (Princes' Gates),C,0,2233749,1122270,1,1
+29,1,50802421,South - 29A Dufferin towards Exhibition (Dufferin Gate),A,0,2233754,1122271,1,1
+29,1,50802422,South - 29C Dufferin towards Exhibition (Princes' Gates),C,0,2233727,1122270,1,1
+29,1,50802423,South - 29A Dufferin towards Exhibition (Dufferin Gate),A,0,2233750,1122271,1,1
+29,1,50802432,South - 29C Dufferin towards Exhibition (Princes' Gates),C,0,2233731,1122270,1,1
+29,1,50802413,South - 29A Dufferin towards Exhibition (Dufferin Gate),A,0,2233751,1122271,1,1
+29,1,50802433,South - 29C Dufferin towards Exhibition (Princes' Gates),C,0,2233747,1122270,1,1
+29,1,50802414,South - 29A Dufferin towards Exhibition (Dufferin Gate),A,0,2233735,1122271,1,1
+29,1,50802415,South - 29C Dufferin towards Exhibition (Princes' Gates),C,0,2233748,1122270,1,1
+29,1,50802473,South - 29A Dufferin towards Exhibition (Dufferin Gate),A,0,2233734,1122271,1,1
+29,1,50802507,South - 29C Dufferin towards Exhibition (Princes' Gates),C,0,2233728,1122270,1,1
+29,1,50802508,South - 29A Dufferin towards Exhibition (Dufferin Gate),A,0,2233738,1122271,1,1
+29,1,50802509,South - 29C Dufferin towards Exhibition (Princes' Gates),C,0,2233733,1122270,1,1
+29,1,50802510,South - 29A Dufferin towards Exhibition (Dufferin Gate),A,0,2233732,1122271,1,1
+29,1,50802511,South - 29C Dufferin towards Exhibition (Princes' Gates),C,0,2233753,1122270,1,1
+29,1,50802512,South - 29A Dufferin towards Exhibition (Dufferin Gate),A,0,2233729,1122271,1,1
+29,1,50802513,South - 29C Dufferin towards Exhibition (Princes' Gates),C,0,2233754,1122270,1,1
+29,1,50802514,South - 29A Dufferin towards Exhibition (Dufferin Gate),A,0,2233749,1122271,1,1
+29,1,50802566,North - 29 Dufferin towards Wilson Station,,1,2233749,1122277,1,1
+29,1,50802569,North - 29 Dufferin towards Wilson Station,,1,2233727,1122276,1,1
+29,1,50802582,North - 29 Dufferin towards Wilson Station,,1,2233751,1122277,1,1
+29,1,50802583,North - 29 Dufferin towards Wilson Station,,1,2233731,1122276,1,1
+29,1,50802584,North - 29 Dufferin towards Wilson Station,,1,2233735,1122277,1,1
+29,1,50802586,North - 29 Dufferin towards Wilson Station,,1,2233734,1122276,1,1
+29,1,50802557,North - 29 Dufferin towards Wilson Station,,1,2233748,1122277,1,1
+29,1,50802558,North - 29 Dufferin towards Wilson Station,,1,2233738,1122276,1,1
+29,1,50802559,North - 29 Dufferin towards Wilson Station,,1,2233728,1122277,1,1
+29,1,50802560,North - 29 Dufferin towards Wilson Station,,1,2233732,1122276,1,1
+29,1,50802561,North - 29 Dufferin towards Wilson Station,,1,2233733,1122277,1,1
+29,1,50802562,North - 29 Dufferin towards Wilson Station,,1,2233729,1122276,1,1
+29,1,50802594,North - 29 Dufferin towards Wilson Station,,1,2233753,1122277,1,1
+29,1,50802595,North - 29 Dufferin towards Wilson Station,,1,2233749,1122276,1,1
+29,1,50802596,North - 29 Dufferin towards Wilson Station,,1,2233754,1122277,1,1
+29,1,50802597,North - 29 Dufferin towards Wilson Station,,1,2233727,1122276,1,1
+29,1,50802580,North - 29 Dufferin towards Wilson Station,,1,2233731,1122277,1,1
+29,1,50802576,North - 29 Dufferin towards Wilson Station,,1,2233751,1122276,1,1
+29,1,50802577,North - 29 Dufferin towards Wilson Station,,1,2233747,1122277,1,1
+29,1,50802578,North - 29 Dufferin towards Wilson Station,,1,2233735,1122276,1,1
+29,1,50802599,North - 29 Dufferin towards Wilson Station,,1,2233748,1122277,1,1
+29,1,50802548,North - 29 Dufferin towards Wilson Station,,1,2233734,1122276,1,1
+29,1,50802549,North - 29 Dufferin towards Wilson Station,,1,2233728,1122277,1,1
+29,1,50802550,North - 29 Dufferin towards Wilson Station,,1,2233738,1122276,1,1
+29,1,50802551,North - 29 Dufferin towards Wilson Station,,1,2233733,1122277,1,1
+29,1,50802552,North - 29 Dufferin towards Wilson Station,,1,2233732,1122276,1,1
+29,1,50802553,North - 29 Dufferin towards Wilson Station,,1,2233753,1122277,1,1
+29,1,50802554,North - 29 Dufferin towards Wilson Station,,1,2233729,1122276,1,1
+29,1,50802555,North - 29 Dufferin towards Wilson Station,,1,2233754,1122277,1,1
+29,1,50802556,North - 29 Dufferin towards Wilson Station,,1,2233749,1122276,1,1
+29,1,50802571,North - 29 Dufferin towards Wilson Station,,1,2233750,1122277,1,1
+29,1,50802572,North - 29 Dufferin towards Wilson Station,,1,2233727,1122276,1,1
+29,1,50802573,North - 29 Dufferin towards Wilson Station,,1,2233751,1122277,1,1
+29,1,50802574,North - 29 Dufferin towards Wilson Station,,1,2233731,1122276,1,1
+29,1,50802570,North - 29 Dufferin towards Wilson Station,,1,2233735,1122277,1,1
+29,1,50802581,North - 29 Dufferin towards Wilson Station,,1,2233747,1122276,1,1
+29,1,50802598,North - 29 Dufferin towards Wilson Station,,1,2233734,1122277,1,1
+29,1,50802585,North - 29 Dufferin towards Wilson Station,,1,2233748,1122276,1,1

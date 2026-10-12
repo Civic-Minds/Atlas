@@ -1,0 +1,71 @@
+stop_id,stop_code,stop_name,stop_desc,platform_code,platform_name,stop_lat,stop_lon,zone_id,stop_address,stop_url,level_id,location_type,parent_station,wheelchair_boarding,municipality,on_street,at_street,vehicle_type
+16118,16118,Loring Ave @ Station Rd,,,,42.497378,-70.895073,LocalBus,,https://www.mbta.com/stops/16118,,0,,1,Salem,Loring Avenue,Station Road,3
+16126,16126,1000 Loring Ave,,,,42.485088,-70.904229,LocalBus,,https://www.mbta.com/stops/16126,,0,,1,Salem,Loring Avenue,Carol Way,3
+16131,16131,Essex St @ Jackson Pk,,,,42.478039,-70.918443,LocalBus,,https://www.mbta.com/stops/16131,,0,,1,Swampscott,Essex Street,,3
+16132,16132,Essex St opp Burrill St,,,,42.475691,-70.922283,LocalBus,,https://www.mbta.com/stops/16132,,0,,1,Swampscott,Essex Street,Burrill Street,3
+16653,16653,Market St @ Commuter Rail,,,,42.462057,-70.947263,LocalBus,,https://www.mbta.com/stops/16653,,0,,1,Lynn,Market Street,,3
+17231,17231,Union St @ Lincoln St,,,,42.468589,-70.937928,LocalBus,,https://www.mbta.com/stops/17231,,0,,1,Lynn,Union Street,Lincoln Street,3
+26137,26137,Brookline St @ Marshall School,,,,42.471029,-70.930014,LocalBus,,https://www.mbta.com/stops/26137,,0,,1,Lynn,Brookline Street,Brook Street,3
+35772,35772,Revere St @ Hawes St,,,,42.418438,-70.997656,LocalBus,,https://www.mbta.com/stops/35772,,0,,1,Revere,Revere Street,Thorndike Street,3
+35773,35773,Revere St @ Michael Della Russo Way,,,,42.418535,-70.994626,LocalBus,,https://www.mbta.com/stops/35773,,0,,1,Revere,Revere Street,Friend Street,3
+4451,4451,Market Square @ Western Ave,,,,42.462708,-70.964894,LocalBus,,https://www.mbta.com/stops/4451,,0,,1,Lynn,Market Square,Western Avenue,3
+4453,4453,North St @ Essex St,,,,42.521664,-70.898769,LocalBus,,https://www.mbta.com/stops/4453,,0,,1,Salem,North Street,Eaton Place,3
+4487,4487,743 Western Ave,,,,42.461928,-70.966695,LocalBus,,https://www.mbta.com/stops/4487,,0,,1,Lynn,Western Avenue,,3
+4488,4488,Western Ave @ Breed Square,,,,42.459784,-70.968935,LocalBus,,https://www.mbta.com/stops/4488,,0,,1,Lynn,Western Avenue,Breed Square,3
+4489,4489,Western Ave @ Summer St,,,,42.45844,-70.970423,LocalBus,,https://www.mbta.com/stops/4489,,0,,1,Lynn,Western Avenue,Summer Street,3
+4490,4490,Western Ave @ Albion St,,,,42.457611,-70.971438,LocalBus,,https://www.mbta.com/stops/4490,,0,,1,Lynn,Western Avenue,Minot Street,3
+4491,4491,Western Ave @ Ida St,,,,42.456024,-70.973197,LocalBus,,https://www.mbta.com/stops/4491,,0,,1,Lynn,Western Avenue,,3
+4492,4492,Western Ave @ MBTA Lynn Garage,,,,42.45538,-70.974007,LocalBus,,https://www.mbta.com/stops/4492,,0,,1,Lynn,Western Avenue,Ida Street,3
+4494,4494,Western Ave @ Cooper St,,,,42.453742,-70.975908,LocalBus,,https://www.mbta.com/stops/4494,,0,,1,Lynn,Western Avenue,,3
+4495,4495,Salem Tnpk @ Ballard St,,,,42.449412,-70.980847,LocalBus,,https://www.mbta.com/stops/4495,,0,,1,Saugus,Salem Turnpike,Ballard Street,3
+4497,4497,Broadway @ Ward St,,,,42.422285,-71.003972,LocalBus,,https://www.mbta.com/stops/4497,,0,,1,Revere,Broadway,Ward Street,3
+4498,4498,462 American Legion Hwy,,,,42.420606,-71.003376,LocalBus,,https://www.mbta.com/stops/4498,,0,,1,Revere,American Legion Highway,Albert J Brown Circle,3
+5770,5770,Revere St @ Stowers St,,,,42.416453,-71.001753,LocalBus,,https://www.mbta.com/stops/5770,,0,,1,Revere,Revere Street,Floyd Street,3
+5771,5771,235 Revere St opp Breed St,,,,42.417466,-71.00059,LocalBus,,https://www.mbta.com/stops/5771,,0,,1,Revere,Revere Street,Breed Street,3
+5774,5774,Revere St @ Sagamore St,,,,42.418574,-70.99272,LocalBus,,https://www.mbta.com/stops/5774,,0,,1,Revere,Revere Street,Bellevue Avenue,3
+6103,6103,New Derby St opp Klop Alley,,,,42.519482,-70.894455,LocalBus,,https://www.mbta.com/stops/6103,,0,,1,Salem,New Derby Street,,3
+6104,6104,Lafayette St @ Harbor St,,,,42.516983,-70.893016,LocalBus,,https://www.mbta.com/stops/6104,,0,,1,Salem,Lafayette Street,Washington Street,3
+6106,6106,Lafayette St @ Cedar St,,,,42.515261,-70.8927,LocalBus,,https://www.mbta.com/stops/6106,,0,,1,Salem,Lafayette Street,Cedar Street,3
+6108,6108,Lafayette St @ Hancock St,,,,42.512918,-70.892293,LocalBus,,https://www.mbta.com/stops/6108,,0,,1,Salem,Lafayette Street,Saltonstall Parkway,3
+6109,6109,Lafayette St @ Holly St,,,,42.511221,-70.891934,LocalBus,,https://www.mbta.com/stops/6109,,0,,1,Salem,Lafayette Street,Leach Street,3
+6110,6110,Lafayette St @ Laurel St,,,,42.50974,-70.891651,LocalBus,,https://www.mbta.com/stops/6110,,0,,1,Salem,Lafayette Street,Willow Avenue,3
+6111,6111,Lafayette St @ Ocean Ave,,,,42.508133,-70.891351,LocalBus,,https://www.mbta.com/stops/6111,,0,,1,Salem,Lafayette Street,Ocean Avenue,3
+6112,6112,Lafayette St @ Forest Ave,,,,42.507079,-70.891214,LocalBus,,https://www.mbta.com/stops/6112,,0,,1,Salem,Lafayette Street,Forest Avenue,3
+6113,6113,Lafayette St @ Loring Ave,,,,42.505653,-70.890897,LocalBus,,https://www.mbta.com/stops/6113,,0,,1,Salem,Lafayette Street,,3
+6114,6114,Loring Ave @ Linden St,,,,42.504919,-70.891175,LocalBus,,https://www.mbta.com/stops/6114,,0,,0,Salem,Loring Avenue,Linden Street,3
+6115,6115,Loring Ave opp Rainbow Terr,,,,42.502824,-70.893446,LocalBus,,https://www.mbta.com/stops/6115,,0,,1,Salem,Loring Avenue,Rainbow Terrace,3
+6116,6116,Loring Ave opp Raymond Rd,,,,42.501793,-70.895041,LocalBus,,https://www.mbta.com/stops/6116,,0,,1,Salem,Loring Avenue,,3
+6118,6118,Loring Ave @ Sumner Rd,,,,42.498352,-70.895192,LocalBus,,https://www.mbta.com/stops/6118,,0,,1,Salem,Loring Avenue,,3
+6119,6119,Loring Ave @ Pickman Rd,,,,42.495628,-70.895175,LocalBus,,https://www.mbta.com/stops/6119,,0,,1,Salem,Loring Avenue,Pickman Road,3
+6120,6120,Loring Ave opp Lincoln Rd,,,,42.493937,-70.893194,LocalBus,,https://www.mbta.com/stops/6120,,0,,1,Salem,Loring Avenue,Lincoln Road,3
+6121,6121,Loring Ave opp Leggs Hill Rd,,,,42.492143,-70.893378,LocalBus,,https://www.mbta.com/stops/6121,,0,,0,Salem,Loring Avenue,,3
+6122,6122,Loring Ave @ Riverview St,,,,42.491408,-70.894974,LocalBus,,https://www.mbta.com/stops/6122,,0,,1,Salem,Loring Avenue,Riverview Avenue,3
+6123,6123,446 Loring Ave,,,,42.49039,-70.896219,LocalBus,,https://www.mbta.com/stops/6123,,0,,1,Salem,Loring Avenue,Riverview Avenue,3
+6124,6124,Loring Ave @ Intervale Rd,,,,42.488758,-70.898141,LocalBus,,https://www.mbta.com/stops/6124,,0,,1,Salem,Loring Avenue,Intervale Road,3
+6125,6125,Loring Ave @ Cedar Ave,,,,42.487479,-70.899799,LocalBus,,https://www.mbta.com/stops/6125,,0,,1,Salem,Loring Avenue,Maple Avenue,3
+6126,6126,Loring Ave @ Vinnin St,,,,42.485764,-70.901798,LocalBus,,https://www.mbta.com/stops/6126,,0,,1,Salem,Loring Avenue,Vinnin Street,3
+6127,6127,Essex St @ Swampscott Mall,,,,42.483795,-70.908387,LocalBus,,https://www.mbta.com/stops/6127,,0,,1,Swampscott,Essex Street,,3
+6128,6128,Essex St opp Ryan Pl,,,,42.483039,-70.911405,LocalBus,,https://www.mbta.com/stops/6128,,0,,1,Swampscott,Essex Street,Ryan Place,3
+6129,6129,Opp 375 Essex St,,,,42.482558,-70.91361,LocalBus,,https://www.mbta.com/stops/6129,,0,,1,Swampscott,Essex Street,,3
+6130,6130,Essex St @ Stetson Ave,,,,42.480674,-70.915242,LocalBus,,https://www.mbta.com/stops/6130,,0,,1,Swampscott,Essex Street,Stetson Avenue,3
+6131,6131,262 Essex St,,,,42.479565,-70.91647,LocalBus,,https://www.mbta.com/stops/6131,,0,,1,Swampscott,Essex Street,Boulder Way,3
+6132,6132,Essex St @ Burpee Rd,,,,42.476946,-70.919921,LocalBus,,https://www.mbta.com/stops/6132,,0,,1,Swampscott,Essex Street,Burpee Road,3
+6133,6133,Essex St @ Cherry St,,,,42.475653,-70.923803,LocalBus,,https://www.mbta.com/stops/6133,,0,,1,Swampscott,Essex Street,Essex Avenue,3
+6134,6134,13 Essex St,,,,42.475568,-70.927162,LocalBus,,https://www.mbta.com/stops/6134,,0,,1,Lynn,Essex Street,,3
+6135,6135,Essex St @ Eastern Ave,,,,42.4749,-70.92823,LocalBus,,https://www.mbta.com/stops/6135,,0,,1,Lynn,Essex Street,Normandy Road,3
+6136,6136,Essex St @ Empire St,,,,42.473679,-70.930258,LocalBus,,https://www.mbta.com/stops/6136,,0,,1,Lynn,Essex Street,Empire Street,3
+6137,6137,141 Essex St,,,,42.472774,-70.932306,LocalBus,,https://www.mbta.com/stops/6137,,0,,1,Lynn,Essex Street,Dana Street,3
+6138,6138,Essex St @ Porter St,,,,42.472468,-70.933213,LocalBus,,https://www.mbta.com/stops/6138,,0,,1,Lynn,Essex Street,Porter Street,3
+6139,6139,Essex St @ Chatham St,,,,42.471805,-70.934528,LocalBus,,https://www.mbta.com/stops/6139,,0,,1,Lynn,Essex Street,Chatham Street,3
+6140,6140,Essex St @ Fayette St,,,,42.470634,-70.936877,LocalBus,,https://www.mbta.com/stops/6140,,0,,1,Lynn,Essex Street,Fayette Street,3
+6674,6674,Market St @ Liberty St,,,,42.463479,-70.949829,LocalBus,,https://www.mbta.com/stops/6674,,0,,1,Lynn,Market Street,Liberty Street,3
+6675,6675,N Common St @ Franklin St,,,,42.464262,-70.95301,LocalBus,,https://www.mbta.com/stops/6675,,0,,1,Lynn,North Common Street,Franklin Street,3
+6772,6772,Washington St @ Munroe St,,,,42.463749,-70.946134,LocalBus,,https://www.mbta.com/stops/6772,,0,,1,Lynn,Washington Street,Munroe Street,3
+6780,6780,N Common St @ Baker St,,,,42.463738,-70.957435,LocalBus,,https://www.mbta.com/stops/6780,,0,,1,Lynn,North Common Street,Baker Street,3
+6783,6783,N Common St @ Park St,,,,42.463611,-70.96058,LocalBus,,https://www.mbta.com/stops/6783,,0,,0,Lynn,North Common Street,Park Street,3
+7233,7233,Union St @ Union Ct,,,,42.467951,-70.93921,LocalBus,,https://www.mbta.com/stops/7233,,0,,1,Lynn,Union Street,Union Court,3
+7234,7234,Union St @ Joyce St,,,,42.467024,-70.941538,LocalBus,,https://www.mbta.com/stops/7234,,0,,1,Lynn,Union Street,Smith Street,3
+7237,7237,Buffum St @ Union St,,,,42.465441,-70.943385,LocalBus,,https://www.mbta.com/stops/7237,,0,,1,Lynn,Buffum Street,Baldwin Street,3
+14748,14748,Lynn,Lynn - Busway,,Busway,42.461856,-70.945945,LocalBus,,https://www.mbta.com/stops/place-ER-0115,level_ground,0,,1,Lynn,Harrison Court,,3
+37150,37150,Salem,Salem - Busway,,Busway,42.524714,-70.896477,LocalBus,,https://www.mbta.com/stops/place-ER-0168,level_ground,0,,1,Salem,,,3
+15799,15799,Wonderland,Wonderland - Busway Berth D,D,Busway Berth D,42.412939,-70.992187,LocalBus,,https://www.mbta.com/stops/place-wondl,level_ground,0,,1,Revere,,,3

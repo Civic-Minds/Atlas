@@ -17,9 +17,11 @@
     "Nampa, Idaho",
     "Caldwell, Idaho"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270609",
-  "timezone": "America/Boise"
+  "timezone": "America/Boise",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-142/latest.zip"
 }

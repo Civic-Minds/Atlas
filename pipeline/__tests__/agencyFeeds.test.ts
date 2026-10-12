@@ -63,6 +63,9 @@ describe('processAgencyFeeds (main feed + supplementals)', () => {
     // The main feed's own features are exactly what processing it alone produces.
     const busOnly = JSON.parse((await processGtfsBuffer(bus, undefined, { slug: 'fixture-metro', force: false })).geojson);
     expect(artifact.features.slice(0, busOnly.features.length)).toEqual(busOnly.features);
+    // Running time (CIV-84) from every feed survives the merge, beside the features.
+    expect(Object.keys(artifact.runningTimes)).toEqual(expect.arrayContaining(Object.keys(busOnly.runningTimes)));
+    expect(Object.keys(artifact.runningTimes).length).toBeGreaterThan(Object.keys(busOnly.runningTimes).length);
   });
 
   it('stamps the schema version when an agency has no supplementals', async () => {

@@ -1,0 +1,9 @@
+service_id,start_date,end_date,monday,tuesday,wednesday,thursday,friday,saturday,sunday
+Fall_Winter_Spring-Sa,20260101,20261231,0,0,0,0,0,1,0
+Fall_Winter_Spring-Weekday,20260101,20261231,1,1,1,1,1,0,0
+Fall_Winter_Spring-Su,20260101,20261231,0,0,0,0,0,0,1
+Summer_Holidays,20260525,20260907,0,0,0,0,0,1,0
+Summer-Th-Fr,20260521,20260906,0,0,0,1,1,0,0
+Summer-Sa,20260521,20260906,0,0,0,0,0,1,0
+Summer-Mo-We,20260521,20260906,1,1,1,0,0,0,0
+Summer-Su,20260521,20260906,0,0,0,0,0,0,1

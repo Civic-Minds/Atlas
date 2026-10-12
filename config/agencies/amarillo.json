@@ -13,21 +13,38 @@
   ],
   "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/12076/ACT_GTFS_24.zip",
   "region": "Texas",
-  "lastFeedExpiry": "20211231",
-  "lastFeedVersion": "1.0",
-  "lastRefreshedAt": "20260811",
+  "lastFeedExpiry": "20261230",
+  "lastFeedVersion": "20260701",
+  "lastRefreshedAt": "2026-10-12",
   "websiteUrl": "https://amarillo.gov/departments/community-services/transit",
   "cities": [
     "Amarillo, Texas"
   ],
   "timezone": "America/Chicago",
   "lastRawArchiveKey": "20211231-c26aa6cd3c0c0489",
-  "lastFeedCheckAt": "20261007",
-  "expiredFeedCheckCount": 4,
-  "expiredFeedCheckSince": "20260622",
-  "expiredFeedCheckExpiry": "20211231",
-  "feedRefreshStatus": "stale",
-  "feedRefreshError": "all available feeds expired (latest 20211231)",
-  "feedRefreshErrorAt": "20261007",
-  "feedRefreshRetryCount": 2
+  "lastFeedCheckAt": "20261012",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261230",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/12076/ACT_GTFS_24.zip",
+  "feedQuality": {
+    "status": "review",
+    "score": 90,
+    "reasons": [
+      "1 minor schedule issue found while reading the feed."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 1,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 36
+    },
+    "checkedAt": "2026-10-12"
+  }
 }

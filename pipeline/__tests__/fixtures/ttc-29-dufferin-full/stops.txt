@@ -1,0 +1,96 @@
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,location_type,parent_station,stop_timezone,wheelchair_boarding
+979,979,Dufferin St at Yorkdale Rd,,43.726531,-79.457356,,,,,,1
+9991,9991,Dufferin St at Springhurst Ave,,43.634831,-79.425646,,,,,,1
+985,985,Dufferin St at Jane Osler Blvd - Yorkdale Shopping Centre,,43.725083,-79.456993,,,,,,1
+9341,9341,Dufferin St at Dufferin Park Ave,,43.657218,-79.43441,,,,,,1
+2054,2054,Dufferin St at Glencairn Ave,,43.707138,-79.453371,,,,,,1
+2079,2079,Dufferin St at Preston Rd South Side,,43.690529,-79.448215,,,,,,1
+2069,2069,Dufferin St at Lawrence Ave West North Side,,43.714493,-79.454638,,,,,,1
+2089,2089,Dufferin St at Shanly St,,43.663251,-79.436864,,,,,,1
+2043,2043,Dufferin St at Dundas St West,,43.649459,-79.431252,,,,,,1
+2026,2026,Dufferin St at Castlefield Ave,,43.700952,-79.451951,,,,,,1
+2066,2066,Dufferin St at King St West,,43.638781,-79.427202,,,,,,1
+2061,2061,Dufferin St at Hope St,,43.682439,-79.444935,,,,,,1
+2104,2104,Dufferin St at Billy Bishop Way North Side,,43.730328,-79.458326,,,,,,1
+2038,2038,Dufferin St at Davenport Rd North Side,,43.673384,-79.441066,,,,,,1
+2056,2056,Dufferin St at Glengrove Ave,,43.709102,-79.453783,,,,,,2
+2020,2020,Dufferin St at Bloor St West - Dufferin Station,,43.660199,-79.435337,,,,,,1
+2094,2094,Dufferin St at St Clair Ave West,,43.678395,-79.443316,,,,,,1
+2095,2095,Dufferin St at Stayner Ave,,43.703481,-79.452235,,,,,,2
+2040,2040,Dufferin St at Dufferin Park Ave,,43.656933,-79.434122,,,,,,1
+2045,2045,Dufferin St at Dupont St,,43.668259,-79.438833,,,,,,1
+14308,14308,Manitoba Dr at Nova Scotia Ave West Side - Exhibition GO Station,,43.635338,-79.419168,,,,,,1
+2016,2016,Dufferin St at Apex Rd South Side,,43.716313,-79.455342,,,,,,1
+2081,2081,Dufferin St at Queen St West,,43.642008,-79.428427,,,,,,1
+2083,2083,Dufferin St at Rogers Rd,,43.685674,-79.446257,,,,,,1
+2013,2013,Dufferin St at Bloor St West - Dufferin Station,,43.659958,-79.435506,,,,,,1
+2033,2033,Dufferin St at College St North Side,,43.652873,-79.43258,,,,,,1
+2039,2039,Dufferin St at Davenport Rd,,43.673079,-79.441106,,,,,,2
+2092,2092,Dufferin St at Springhurst Ave,,43.635014,-79.425934,,,,,,1
+982,982,Dufferin St at Ranee Ave North Side,,43.722329,-79.456448,,,,,,1
+2099,2099,Dufferin St at Sylvan Ave,,43.654788,-79.433476,,,,,,1
+9739,9739,Dufferin St at Melbourne Ave,,43.640185,-79.427735,,,,,,1
+2091,2091,Dufferin St at Orfus Rd,,43.720389,-79.455958,,,,,,1
+2055,2055,Dufferin St at Glengrove Ave,,43.70891,-79.453442,,,,,,2
+2041,2041,Dufferin St at Dundas St West,,43.649807,-79.431591,,,,,,1
+2019,2019,Dufferin St at Bentworth Ave,,43.721949,-79.456556,,,,,,1
+2048,2048,Dufferin St at Eversfield Rd,,43.686836,-79.44654,,,,,,1
+2027,2027,Dufferin St at Celt Ave North Side,,43.718016,-79.455386,,,,,,1
+2021,2021,Dufferin St at Bowie Ave,,43.698016,-79.451269,,,,,,2
+2049,2049,Dufferin St at Eversfield Rd South Side,,43.687023,-79.446808,,,,,,1
+10092,10092,Dufferin St at Hope St,,43.68227,-79.444698,,,,,,1
+2105,2105,Dufferin St at Whitley Ave,,43.729347,-79.458372,,,,,,1
+2074,2074,Dufferin St at Melbourne Ave,,43.640638,-79.428104,,,,,,1
+2018,2018,Dufferin St at Auburn Ave,,43.675422,-79.441934,,,,,,1
+2058,2058,Dufferin St at Gordon St,,43.646893,-79.43048,,,,,,1
+2023,2023,Dufferin St at Briar Hill Ave,,43.702508,-79.452277,,,,,,1
+2017,2017,Dufferin St at Ascot Ave,,43.680238,-79.444056,,,,,,1
+2032,2032,Dufferin Gate Loop,,43.634401,-79.425872,,,,,,1
+2072,2072,Dufferin St at Liberty St,,43.637414,-79.426893,,,,,,1
+2098,2098,Dufferin St at Sylvan Ave North Side,,43.655107,-79.433431,,,,,,1
+2060,2060,Dufferin St at Holmesdale Rd,,43.688777,-79.44751,,,,,,1
+2068,2068,Dufferin St at Lappin Ave South Side,,43.666082,-79.438076,,,,,,1
+2087,2087,Dufferin St at Samor Rd South Side,,43.71788,-79.455672,,,,,,1
+2014,2014,Dufferin St at Alma Ave,,43.644509,-79.429381,,,,,,1
+2064,2064,Dufferin St at Jane Osler Blvd - Yorkdale Shopping Centre,,43.724737,-79.457304,,,,,,1
+2108,2108,Dufferin St at Wilson Ave,,43.731811,-79.458665,,,,,,1
+2052,2052,Dufferin St at Gibson St North Side,,43.690767,-79.448119,,,,,,1
+2057,2057,Dufferin St at Gordon St,,43.646696,-79.430224,,,,,,1
+2085,2085,Dufferin St at Auburn Ave,,43.675622,-79.442182,,,,,,1
+2024,2024,Dufferin St at Bridgeland Ave South Side,,43.726345,-79.457682,,,,,,1
+2015,2015,Dufferin St at Alma Ave,,43.644682,-79.429661,,,,,,1
+2053,2053,Dufferin St at Glencairn Ave,,43.706896,-79.453031,,,,,,1
+2046,2046,Dufferin St at Eglinton Ave West,,43.695717,-79.450479,,,,,,1
+2065,2065,Dufferin St at Rowan Ave,,43.692029,-79.448632,,,,,,1
+2022,2022,Dufferin St at Brandon Ave,,43.670324,-79.439719,,,,,,1
+2071,2071,Dufferin St at Liberty St,,43.636946,-79.426505,,,,,,1
+2107,2107,Dufferin St at Wilson Ave South Side,,43.731126,-79.458778,,,,,,1
+2070,2070,Dufferin St at Lawrence Ave West,,43.714241,-79.454916,,,,,,1
+2076,2076,Dufferin St at Orfus Rd,,43.720555,-79.456276,,,,,,1
+2093,2093,Dufferin St at St Clair Ave West,,43.677768,-79.442907,,,,,,1
+2034,2034,Dufferin St at College St,,43.652658,-79.432662,,,,,,1
+2078,2078,Dufferin St at Playfair Ave,,43.710983,-79.454179,,,,,,1
+10262,10262,Dufferin St at Briar Hill Ave,,43.702243,-79.451968,,,,,,1
+2044,2044,Dufferin St at Dupont St South Side,,43.668082,-79.43895,,,,,,1
+2086,2086,Dufferin St at Rowan Ave,,43.692263,-79.448915,,,,,,2
+2067,2067,Dufferin St at King St West,,43.63907,-79.427505,,,,,,1
+2025,2025,Dufferin St at Castlefield Ave,,43.700622,-79.45155,,,,,,1
+2037,2037,Dufferin St at Dane Ave,,43.716083,-79.454991,,,,,,1
+2088,2088,Dufferin St at Shanly St,,43.662856,-79.436555,,,,,,1
+2082,2082,Dufferin St at Rogers Rd,,43.685461,-79.445973,,,,,,1
+14363,14363,Princes' Gates Loop at Canada Blvd - CNE East Entrance,,43.635575,-79.409889,,,,,,2
+14361,14361,Manitoba Dr at Nova Scotia Ave - Exhibition GO Station,,43.635201,-79.418839,,,,,,1
+14362,14362,Manitoba Dr at Quebec St,,43.63344,-79.421804,,,,,,2
+14469,14469,Saskatchewan Rd at Dufferin St East Side,,43.632643,-79.424278,,,,,,1
+14470,14470,Saskatchewan Rd at Dufferin St,,43.632771,-79.424659,,,,,,1
+14799,14799,Wilson Station,,43.734475,-79.45092,,,,,,2
+15030,15030,Dufferin St at Queen St West,,43.64236,-79.428744,,,,,,2
+15058,15058,Dufferin St at Martin St,,43.688509,-79.447222,,,,,,2
+15199,15199,Dufferin St at Ascot Ave,,43.680038,-79.443781,,,,,,1
+15237,15237,Manitoba Dr at Saskatchewan Rd,,43.632907,-79.422304,,,,,,1
+15470,15470,Dufferin St at Whitmore Ave,,43.697772,-79.450959,,,,,,1
+15469,15469,Dufferin St at Wenderly Dr,,43.710483,-79.453838,,,,,,1
+15471,15471,Dufferin St at Wingold Ave,,43.703932,-79.452566,,,,,,2
+16367,16367,Dufferin St at Eglinton Ave West,,43.695556,-79.450105,,,,,,1
+16470,16470,Dufferin St at Brandon Ave,,43.67053,-79.440005,,,,,,1
+16730,16730,Dufferin St and Millicent St,,43.665387,-79.437622,,,,,,1

@@ -1,0 +1,68 @@
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,location_type,parent_station,stop_timezone,wheelchair_boarding
+9942,9942,Dundas St West at Jane St East Side,,43.665583,-79.490433,,,,,,2
+4455,4455,Dundas St West at Runnymede Rd West Side,,43.66565,-79.482921,,,,,,1
+9855,9855,Edna Ave at Dundas St West,,43.657134,-79.453027,,,,,,1
+7898,7898,St Clair Ave West at Keele St/ Weston Rd,,43.672376,-79.467746,,,,,,1
+8179,8179,St Clair Ave West at Old Weston Rd,,43.673441,-79.463154,,,,,,1
+11715,11715,St Clair Ave West at Caledonia Rd,,43.675536,-79.454364,,,,,,1
+13340,13340,St Clair Ave West at Gunns Rd,,43.671925,-79.470925,,,,,,1
+11620,11620,St Clair Ave West at Lansdowne Ave,,43.676091,-79.450893,,,,,,1
+13341,13341,St Clair Ave West at Old Stock Yards Rd,,43.671612,-79.471239,,,,,,1
+13343,13343,St Clair Ave West at Runnymede Rd,,43.668843,-79.483773,,,,,,1
+7361,7361,St Clair Ave West at Cobalt Ave,,43.670097,-79.478134,,,,,,1
+13307,13307,St Clair Ave West at Mariposa Ave,,43.667688,-79.489614,,,,,,1
+3527,3527,Dundas St West at Willard Ave West Side,,43.665718,-79.488659,,,,,,1
+13711,13711,St Clair Ave West at Mondovi Gate West Side,,43.670832,-79.475535,,,,,,1
+8175,8175,St Clair Ave West at Northcliffe Blvd,,43.678272,-79.440957,,,,,,1
+8165,8165,St Clair Ave West at Glenholme Ave,,43.678747,-79.438835,,,,,,1
+3502,3502,Dundas St West at Indian Grove,,43.665429,-79.462163,,,,,,1
+8176,8176,St Clair Ave West at Northcliffe Blvd,,43.67855,-79.440752,,,,,,1
+8168,8168,St Clair Ave West at Hounslow Heath Rd,,43.674054,-79.460091,,,,,,1
+3521,3521,Dundas St West at Runnymede Rd,,43.665646,-79.481997,,,,,,1
+8161,8161,St Clair Ave West at Dufferin St,,43.677782,-79.443177,,,,,,1
+3486,3486,Dundas St West at Annette St,,43.664503,-79.459097,,,,,,1
+13320,13320,St Clair Ave West at Mould Ave,,43.668068,-79.487241,,,,,,1
+9979,9979,St Clair Ave West at Earlscourt Ave,,43.676826,-79.4475,,,,,,1
+7360,7360,St Clair Ave West at Britannia Ave,,43.669697,-79.480616,,,,,,1
+3503,3503,Dundas St West at Indian Road Cres,,43.665156,-79.461274,,,,,,1
+3493,3493,Dundas St West at Dupont St,,43.664363,-79.458505,,,,,,1
+8155,8155,St Clair Ave West at Caledonia Park Rd,,43.675211,-79.454887,,,,,,1
+3508,3508,Dundas St West at Keele St,,43.665343,-79.464755,,,,,,1
+3507,3507,Dundas St West at Jerome St,,43.661579,-79.455147,,,,,,1
+3509,3509,Dundas St West at Keele St,,43.665465,-79.464324,,,,,,1
+8166,8166,St Clair Ave West at Glenholme Ave,,43.67905,-79.438527,,,,,,1
+3496,3496,Dundas St West at Gilmour Ave,,43.665624,-79.478748,,,,,,1
+3500,3500,Dundas St West at Humberside Ave,,43.662951,-79.456295,,,,,,2
+3513,3513,Dundas St West at Pacific Ave,,43.66539,-79.468708,,,,,,1
+7364,7364,St Clair Ave West at Symes Rd,,43.670456,-79.47726,,,,,,1
+3528,3528,Dundas St West at Windermere Ave,,43.665676,-79.48568,,,,,,1
+8171,8171,St Clair Ave West at Lansdowne Ave,,43.676419,-79.450412,,,,,,1
+9980,9980,St Clair Ave West at Earlscourt Ave,,43.677094,-79.447319,,,,,,1
+3497,3497,Dundas St West at Glenlake Ave North Side,,43.660077,-79.453638,,,,,,1
+8172,8172,St Clair Ave West at Laughton Ave,,43.67485,-79.457543,,,,,,1
+3501,3501,Dundas St West at Humberside Ave,,43.663295,-79.456935,,,,,,1
+3490,3490,Dundas St West at Chelsea Ave North Side,,43.658209,-79.452836,,,,,,1
+3491,3491,Dundas St West at Chelsea Ave,,43.658218,-79.453041,,,,,,1
+3505,3505,Dundas St West at Jane St,,43.665764,-79.490945,,,,,,1
+13305,13305,St Clair Ave West at Runnymede Rd West Side,,43.66887,-79.484326,,,,,,1
+8180,8180,St Clair Ave West at Old Weston Rd,,43.673686,-79.46275,,,,,,1
+7359,7359,St Clair Ave West at Britannia Ave,,43.669394,-79.481314,,,,,,1
+5031,5031,Dundas St West at Windermere Ave,,43.665544,-79.48605,,,,,,1
+13306,13306,St Clair Ave West at Mould Ave,,43.66831,-79.486848,,,,,,1
+5030,5030,Dundas St West at Willard Ave East Side,,43.66554,-79.488063,,,,,,1
+8173,8173,St Clair Ave West at Laughton Ave,,43.674577,-79.45772,,,,,,1
+5916,5916,Oakwood Ave at St Clair Ave West,,43.679864,-79.435844,,,,,,1
+3514,3514,Dundas St West at Pacific Ave,,43.665505,-79.46845,,,,,,1
+3495,3495,Dundas St West at Gilmour Ave,,43.665481,-79.479365,,,,,,1
+14050,14050,Dundas St West at Glenlake Ave,,43.660032,-79.453794,,,,,,1
+8162,8162,St Clair Ave West at Dufferin St,,43.678072,-79.442941,,,,,,1
+8183,8183,St Clair Ave West at Silverthorn Ave,,43.67433,-79.459897,,,,,,1
+8169,8169,St Clair Ave West at Weston Rd/ Keele St West Side,,43.672509,-79.46824,,,,,,1
+14663,14663,Dundas West Station,,43.656975,-79.453099,,,,,,1
+14879,14879,St Clair Ave West at Oakwood Ave East Side,,43.679661,-79.43507,,,,,,1
+14895,14895,St Clair Ave West at Mariposa Ave East Side,,43.667591,-79.489328,,,,,,1
+15061,15061,St Clair Ave West at Mondovi Gate,,43.670715,-79.475324,,,,,,1
+15421,15421,St Clair Ave West at Jane St East Side,,43.667174,-79.491124,,,,,,2
+15827,15827,Dundas St West at Runnymede Rd,,43.665493,-79.481638,,,,,,1
+15983,15983,Dundas St West at Clendenan Ave,,43.665447,-79.473744,,,,,,1
+15984,15984,Dundas St West at Clendenan Ave,,43.665608,-79.473831,,,,,,1

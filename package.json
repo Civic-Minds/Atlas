@@ -2,7 +2,7 @@
   "name": "atlas",
   "private": true,
   "description": "A hosted frequency map for transit routes.",
-  "version": "3.2.23",
+  "version": "3.3.0",
   "type": "module",
   "scripts": {
     "prepare": "git config core.hooksPath .githooks 2>/dev/null || true",
@@ -61,6 +61,8 @@
     "research:fares:validate": "node scripts/validate-fare-inventory.mjs",
     "research:fares:official": "node scripts/research-official-fares.mjs",
     "research:fares:ledger": "node scripts/build-fare-ledger.mjs",
+    "research:child-fares": "node scripts/research-free-child-fares.mjs",
+    "research:child-fares:ledger": "node scripts/build-child-fare-ledger.mjs",
     "research:transfers": "node scripts/research-transfers.mjs",
     "research:transfers:official": "node scripts/research-official-transfers.mjs",
     "research:transfers:ledger": "node scripts/build-transfer-ledger.mjs",

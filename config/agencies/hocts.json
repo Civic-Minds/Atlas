@@ -1,6 +1,8 @@
 {
   "slug": "hocts",
   "name": "HOCTS (Utica-Rome)",
+  "hiddenInProduction": true,
+  "issueUrl": "https://github.com/Civic-Minds/Atlas/issues/759",
   "websiteUrl": "https://www.ocgov.net/oneida/planning/hocts",
   "center": [
     43.1,
@@ -21,12 +23,14 @@
   "pmtilesPending": true,
   "timezone": "America/New_York",
   "lastRawArchiveKey": "20211231-9dc8f1ca4ed5df71",
-  "lastFeedCheckAt": "20261007",
-  "expiredFeedCheckCount": 4,
+  "lastFeedCheckAt": "20261012",
+  "expiredFeedCheckCount": 5,
   "expiredFeedCheckSince": "20260622",
   "expiredFeedCheckExpiry": "20211231",
   "feedRefreshStatus": "stale",
   "feedRefreshError": "all available feeds expired (latest 20211231)",
-  "feedRefreshErrorAt": "20261007",
-  "feedRefreshRetryCount": 2
+  "feedRefreshErrorAt": "20261012",
+  "feedRefreshRetryCount": 3,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-herkimer-oneida-counties-transportation-study-hocts-gtfs-588.zip?alt=media"
 }

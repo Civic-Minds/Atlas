@@ -15,6 +15,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { CATALOG_MODES, generateAgencyCatalog, generateAgencyIndex } from './agencyIndexGeneration.js';
+import { publicAgenciesExcludedFromRelease } from '../pipeline/releaseGuard.js';
 
 const root = resolve(import.meta.dirname, '..');
 const dataDir = resolve(root, 'public/data');
@@ -55,10 +56,20 @@ for (const [name, contents] of expected) {
   }
 }
 
+// A public agency that build-pmtiles never copies into a release shows
+// "Couldn't load" in production (#757, #759). publish-data-release also checks
+// every public slug against the release itself.
+const excluded = publicAgenciesExcludedFromRelease(index.agencies);
+if (excluded.length > 0) {
+  console.error(`\nPublic agencies that never get a release file (pmtilesPending, or never refreshed): ${excluded.join(', ')}`);
+  console.error('Set hiddenInProduction + issueUrl in config/agencies/<slug>.json until each one is refreshed into a release.');
+}
+
 if (drifted.length > 0) {
   console.error(`\nOut of date with config/agencies: ${drifted.map(name => `public/data/${name}`).join(', ')}`);
   console.error('index.json is out of date with config/agencies — run npm run build:agency-index && npm run build:agency-catalog');
   console.error('(Edit config/agencies/<slug>.json, not index.json; index.json is regenerated from config.)');
   process.exit(1);
 }
+if (excluded.length > 0) process.exit(1);
 console.log(`index.json and ${CATALOG_MODES.length} catalogs match config/agencies (${index.agencies.length} agencies)`);

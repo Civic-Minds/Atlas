@@ -1,0 +1,303 @@
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,location_type,parent_station,stop_timezone,wheelchair_boarding
+14258,14258,Don Mills Rd at Eglinton Ave East,,43.720674,-79.339121,,,,,,1
+14255,14255,Don Mills Rd at Lawrence Ave East South Side,,43.736625,-79.343442,,,,,,1
+1977,1977,Don Mills Rd at Wynford Dr,,43.722851,-79.339326,,,,,,1
+13898,13898,Duplex Ave at Eglinton Ave West,,43.70623,-79.400108,,,,,,2
+9898,9898,Eglinton Ave West at Yonge St West Side,,43.706695,-79.398957,,,,,,1
+9622,9622,Ellesmere Rd at East Service Rd,,43.767379,-79.273102,,,,,,2
+9619,9619,Ellesmere Rd at East Service Rd,,43.767743,-79.272603,,,,,,1
+9604,9604,Ellesmere Rd at McCowan Rd East Side,,43.77225,-79.25047,,,,,,1
+6368,6368,Ellesmere Rd at Pharmacy Ave,,43.758847,-79.310443,,,,,,1
+6372,6372,Ellesmere Rd at Victoria Park Ave,,43.758123,-79.31474,,,,,,1
+9621,9621,Ellesmere Rd at West Service Rd East Side,,43.766111,-79.278977,,,,,,2
+9620,9620,Ellesmere Rd at West Service Rd,,43.766455,-79.278682,,,,,,2
+13068,13068,Lawrence Ave East at East Ave - Rouge Hill GO Station,,43.780829,-79.131368,,,,,,1
+5299,5299,Lawrence Ave East at Orton Park Rd,,43.763877,-79.205766,,,,,,1
+6530,6530,Rouge Hill GO Station Loop,,43.780905,-79.129822,,,,,,1
+9885,9885,Port Union Rd at Adenmore Rd North Side,,43.781768,-79.13747,,,,,,1
+7691,7691,Ellesmere Rd at Helicon Gate West Side,,43.778605,-79.222594,,,,,,1
+9078,9078,York Mills Rd at Lesmill Rd West Side,,43.754734,-79.352534,,,,,,1
+9083,9083,York Mills Rd at Sandover Dr (1222 York Mills),,43.759813,-79.331751,,,,,,1
+9077,9077,York Mills Rd at Leslie St West Side,,43.753001,-79.360766,,,,,,1
+5264,5264,Lawrence Ave East at Fortune Gate East Side,,43.760842,-79.219824,,,,,,1
+7198,7198,Sheppard Ave East at Kingston Rd North Side,,43.799459,-79.146775,,,,,,1
+5301,5301,Lawrence Ave East at Overture Rd West Side,,43.765491,-79.199864,,,,,,1
+3262,3262,York Mills Rd at Highland Cres,,43.745354,-79.396532,,,,,,1
+1049,1049,Ellesmere Rd at Markham Rd,,43.776669,-79.231287,,,,,,2
+5260,5260,Lawrence Ave East at The Donway East,,43.737804,-79.340749,,,,,,1
+13704,13704,Lawrence Ave East at Fern Meadow Rd,,43.771784,-79.171597,,,,,,1
+7678,7678,Ellesmere Rd at Birchmount Rd,,43.763213,-79.29162,,,,,,1
+5276,5276,Lawrence Ave East at Howden Rd,,43.746988,-79.287822,,,,,,1
+9069,9069,York Mills Rd at Bayview Ave West Side,,43.748013,-79.38482,,,,,,1
+2313,2313,Eglinton Ave East at Sutherland Dr,,43.713201,-79.36698,,,,,,1
+7722,7722,Ellesmere Rd at Dundalk Dr West Side,,43.765185,-79.284336,,,,,,1
+7466,7466,York Mills Rd at Banbury Rd (East),,43.752639,-79.365268,,,,,,1
+9188,9188,York Mills Rd at Bayview Ave,,43.74787,-79.384519,,,,,,1
+9969,9969,Lawrence Ave East at Opposite Walkway to Ridgewood Rd,,43.786215,-79.12498,,,,,,2
+7701,7701,Ellesmere Rd at Mornelle Crt,,43.785001,-79.195193,,,,,,1
+10527,10527,Ellesmere Rd at Calverley Trail,,43.78949,-79.176571,,,,,,1
+7474,7474,York Mills Rd at Upper Highland Cres,,43.745541,-79.396356,,,,,,1
+3260,3260,York Mills Rd at Hedgewood Rd East Side,,43.744875,-79.398732,,,,,,1
+9074,9074,York Mills Rd at Old Yonge St,,43.744926,-79.399283,,,,,,1
+7692,7692,Ellesmere Rd at Kennedy Rd,,43.766017,-79.28076,,,,,,1
+11333,11333,York Mills Rd at Old York Mills Rd,,43.744177,-79.404398,,,,,,2
+5307,5307,Lawrence Ave East at Cedarbrae Mall,,43.758704,-79.229975,,,,,,1
+7706,7706,Ellesmere Rd at Oakley Blvd East Side,,43.768395,-79.268369,,,,,,1
+2269,2269,Eglinton Ave East at Falcon St West Side,,43.709168,-79.386703,,,,,,1
+7683,7683,Ellesmere Rd at Borough Approach East,,43.771125,-79.255707,,,,,,1
+3255,3255,York Mills Rd at Cedarwood Ave West Side,,43.745953,-79.394494,,,,,,1
+4422,4422,Lawrence Ave East at Megan Ave,,43.771806,-79.170693,,,,,,1
+7694,7694,Ellesmere Rd at McCowan Rd,,43.771961,-79.251774,,,,,,1
+8036,8036,Port Union Rd at Conference Blvd,,43.786201,-79.139586,,,,,,1
+5240,5240,Lawrence Ave East at Brockley Dr,,43.752209,-79.262362,,,,,,1
+5305,5305,Lawrence Ave East at Pharmacy Ave,,43.743031,-79.304863,,,,,,1
+1044,1044,Ellesmere Rd at Dolly Varden Blvd,,43.775626,-79.235048,,,,,,1
+5229,5229,Lawrence Ave East at Barrymore Rd,,43.754129,-79.251669,,,,,,1
+1962,1962,Don Mills Rd at Clock Tower Rd,,43.734675,-79.342942,,,,,,1
+7697,7697,Ellesmere Rd at Midland Ave,,43.768149,-79.270795,,,,,,1
+8026,8026,Parkwoods Village Dr at Combermere Dr North Side,,43.758376,-79.319508,,,,,,1
+7704,7704,Ellesmere Rd at Neilson Rd - Scarborough Health Network Centenary Hospital,,43.782441,-79.205092,,,,,,1
+5255,5255,Lawrence Ave East at Crockford Blvd,,43.745931,-79.291536,,,,,,1
+1923,1923,Don Mills Rd at The Donway West (South),,43.732335,-79.342295,,,,,,1
+9971,9971,Lawrence Ave East at Walkway to Ridgewood Rd,,43.786249,-79.125134,,,,,,1
+7467,7467,York Mills Rd at Chipstead Rd,,43.751336,-79.370548,,,,,,1
+5263,5263,Lawrence Ave East at Ellington Dr,,43.74633,-79.290738,,,,,,1
+10516,10516,Ellesmere Rd at Morrish Rd,,43.789964,-79.173574,,,,,,1
+10518,10518,Ellesmere Rd at Zaph Ave,,43.791626,-79.16673,,,,,,1
+8025,8025,Parkwoods Village Dr at Brookbanks Dr,,43.76093,-79.323736,,,,,,1
+1046,1046,Ellesmere Rd at Gander Dr East Side,,43.777555,-79.226206,,,,,,1
+9970,9970,Starspray Loop at Lawrence Ave East,,43.788634,-79.123111,,,,,,1
+7689,7689,Ellesmere Rd at Crocus Dr,,43.760452,-79.30435,,,,,,1
+9085,9085,York Mills Rd at Silverdale Cres,,43.756849,-79.341547,,,,,,1
+2270,2270,Eglinton Ave East at Forman Ave,,43.709106,-79.38633,,,,,,1
+5252,5252,Lawrence Ave East at Collinsgrove Rd,,43.769269,-79.182716,,,,,,1
+7684,7684,Ellesmere Rd at Brimley Rd,,43.769843,-79.261788,,,,,,1
+5272,5272,Lawrence Ave East at Greenholm Circt,,43.760464,-79.222841,,,,,,1
+5251,5251,Lawrence Ave East at Cherryhill Ave,,43.776343,-79.150675,,,,,,1
+5306,5306,Lawrence Ave East at Pharmacy Ave,,43.743397,-79.30447,,,,,,1
+9972,9972,Lawrence Ave East at Stotts Ter West Side,,43.78315,-79.128039,,,,,,1
+7676,7676,Ellesmere Rd at Bellamy Rd North,,43.774149,-79.241959,,,,,,1
+4414,4414,Lawrence Ave East at Bennett Rd,,43.772716,-79.16665,,,,,,1
+5291,5291,Lawrence Ave East at Meadowvale Rd East Side,,43.775069,-79.156041,,,,,,2
+7707,7707,Ellesmere Rd at Oakley Blvd,,43.768604,-79.268713,,,,,,1
+2251,2251,Eglinton Ave East at Brentcliffe Rd West Side,,43.714625,-79.360121,,,,,,1
+4413,4413,Lawrence Ave East at Beechgrove Dr,,43.7737,-79.161987,,,,,,1
+4418,4418,Lawrence Ave East at Homestead Rd,,43.769641,-79.180335,,,,,,1
+10522,10522,Ellesmere Rd at Muirbank Blvd,,43.793969,-79.157635,,,,,,1
+5298,5298,Opposite 4125 Lawrence Ave East,,43.7671,-79.192779,,,,,,1
+7696,7696,Ellesmere Rd at Midland Ave,,43.76772,-79.271469,,,,,,1
+7699,7699,Ellesmere Rd at Military Trail (East) West Side,,43.786502,-79.189027,,,,,,2
+10515,10515,Ellesmere Rd at Watson St,,43.789459,-79.17583,,,,,,1
+5297,5297,Lawrence Ave East at Mossbank Dr,,43.762725,-79.211184,,,,,,1
+1946,1946,Don Mills Rd at Lawrence Ave East,,43.736801,-79.34314,,,,,,1
+7472,7472,York Mills Rd at Sandfield Rd,,43.750392,-79.375099,,,,,,1
+9084,9084,York Mills Rd at Scarsdale Rd,,43.753294,-79.357657,,,,,,1
+9086,9086,York Mills Rd at Upjohn Rd,,43.754749,-79.351135,,,,,,1
+4412,4412,Lawrence Ave East at Beechgrove Dr West Side,,43.77395,-79.162168,,,,,,1
+1052,1052,Ellesmere Rd at Scarborough Golf Club Rd,,43.778371,-79.222373,,,,,,1
+4424,4424,Lawrence Ave East at Morningside Ave,,43.768579,-79.185862,,,,,,1
+3259,3259,York Mills Rd at Glenridge Ave,,43.747477,-79.386471,,,,,,2
+7710,7710,Ellesmere Rd at Borough Approach West,,43.771077,-79.257524,,,,,,1
+5316,5316,Lawrence Ave East at Scarborough Golf Club Rd,,43.761645,-79.216118,,,,,,1
+5313,5313,Lawrence Ave East at Railside Rd (West) East Side,,43.740739,-79.323821,,,,,,1
+7680,7680,Ellesmere Rd at Birkdale Rd,,43.768788,-79.266622,,,,,,1
+9930,9930,Lawrence Ave East at Brockley Dr East Side,,43.752153,-79.261408,,,,,,1
+9468,9468,Ellesmere Rd at Conlins Rd,,43.787692,-79.183514,,,,,,1
+10523,10523,Ellesmere Rd at Meadowvale Rd,,43.792623,-79.163292,,,,,,1
+1051,1051,Ellesmere Rd at Orton Park Rd,,43.7796,-79.217311,,,,,,1
+7681,7681,Ellesmere Rd at Birkdale Rd,,43.769104,-79.26641,,,,,,1
+7693,7693,Ellesmere Rd at Kennedy Rd,,43.765591,-79.281448,,,,,,1
+7719,7719,Ellesmere Rd at Warden Ave,,43.760959,-79.301062,,,,,,1
+5328,5328,Lawrence Ave East at Victoria Park Ave,,43.741897,-79.310081,,,,,,1
+7679,7679,Ellesmere Rd at Birchmount Rd West Side,,43.763409,-79.291907,,,,,,1
+5256,5256,Lawrence Ave East at Curlew Dr West Side,,43.741297,-79.3196,,,,,,1
+4417,4417,Lawrence Ave East at Flerimac Rd,,43.772426,-79.168774,,,,,,1
+2305,2305,Eglinton Ave East at Redpath Ave,,43.707987,-79.392646,,,,,,1
+10525,10525,Ellesmere Rd at Scarboro Ave,,43.79106,-79.169811,,,,,,1
+9072,9072,York Mills Rd at Fenside Dr,,43.760561,-79.327819,,,,,,1
+10517,10517,Ellesmere Rd at Deep Dene Dr,,43.790749,-79.170421,,,,,,1
+8029,8029,Parkwoods Village Dr at Gisburn Rd,,43.760085,-79.321793,,,,,,1
+3254,3254,York Mills Rd at Cedarwood Ave East Side,,43.74593,-79.393792,,,,,,1
+7702,7702,Ellesmere Rd at Morningside Ave,,43.785158,-79.193623,,,,,,1
+1961,1961,Don Mills Rd at Clock Tower Rd,,43.73428,-79.342483,,,,,,1
+5271,5271,Lawrence Ave East at Greenbrae Circt,,43.758343,-79.23285,,,,,,1
+10514,10514,3507 Ellesmere Rd,,43.788712,-79.179141,,,,,,1
+7712,7712,Ellesmere Rd at Parkington Cres,,43.773539,-79.245841,,,,,,1
+5329,5329,Lawrence Ave East at Warden Ave,,43.745551,-79.294565,,,,,,1
+5326,5326,Lawrence Ave East at Victoria Park Ave,,43.742302,-79.309589,,,,,,1
+7685,7685,Ellesmere Rd at Brimley Rd,,43.770303,-79.261001,,,,,,1
+2285,2285,Eglinton Ave East at Laird Dr West Side,,43.713582,-79.365203,,,,,,1
+11397,11397,1200-1202 York Mills Rd,,43.759132,-79.333893,,,,,,1
+4425,4425,Lawrence Ave East at Valia Rd,,43.771392,-79.172549,,,,,,1
+7705,7705,Ellesmere Rd at Neilson Rd - Scarborough Health Network Centenary Hospital,,43.782805,-79.204762,,,,,,1
+2287,2287,Eglinton Ave East at Leslie St West Side,,43.717134,-79.3502,,,,,,1
+5281,5281,Lawrence Ave East at Kingston Rd,,43.767433,-79.190127,,,,,,1
+7721,7721,Ellesmere Rd at Wye Valley Rd,,43.764958,-79.284138,,,,,,1
+5317,5317,Lawrence Ave East at Scarborough Golf Club Rd,,43.762057,-79.215531,,,,,,1
+5274,5274,Lawrence Ave East at Greencrest Circt East Side,,43.760144,-79.223083,,,,,,1
+5282,5282,Lawrence Ave East at Kingston Rd,,43.767941,-79.188877,,,,,,1
+5228,5228,4121 Lawrence Ave East,,43.766708,-79.193248,,,,,,1
+7714,7714,Ellesmere Rd at Pharmacy Ave,,43.75918,-79.310072,,,,,,1
+14317,14317,740 Ellesmere Rd at Mondeo Dr,,43.764086,-79.287886,,,,,,1
+9070,9070,York Mills Rd at Don Mills Rd,,43.755569,-79.347425,,,,,,1
+9087,9087,York Mills Rd at Valentine Dr,,43.757207,-79.341181,,,,,,1
+7672,7672,1300 Ellesmere Rd,,43.769539,-79.26445,,,,,,1
+5293,5293,Lawrence Ave East at Midland Ave West Side,,43.751534,-79.265714,,,,,,1
+5309,5309,Lawrence Ave East at Port Union Rd West Side,,43.779534,-79.137369,,,,,,1
+9504,9504,Lawrence Ave East at Markham Rd,,43.759995,-79.225042,,,,,,1
+7687,7687,Ellesmere Rd at Claudius Gate,,43.759437,-79.308022,,,,,,1
+5238,5238,Lawrence Ave East at Brimley Rd West Side,,43.753545,-79.255814,,,,,,1
+5296,5296,Lawrence Ave East at Mossbank Dr West Side,,43.763024,-79.210926,,,,,,1
+7700,7700,Ellesmere Rd at Military Trail (West),,43.779894,-79.217004,,,,,,1
+5304,5304,Lawrence Ave East at Goldberry Sq,,43.776098,-79.152547,,,,,,1
+9073,9073,York Mills Rd at Fenside Dr,,43.760782,-79.327546,,,,,,1
+11334,11334,York Mills Rd at Old York Mills Rd,,43.744461,-79.404964,,,,,,1
+5267,5267,Lawrence Ave East at Galloway Rd,,43.766302,-79.196317,,,,,,1
+5303,5303,Lawrence Ave East at Paulander Ave,,43.775814,-79.15299,,,,,,1
+5275,5275,Lawrence Ave East at Greenland Rd East Side,,43.738331,-79.337526,,,,,,1
+5285,5285,Lawrence Ave East at Manse Rd West Side,,43.770564,-79.176953,,,,,,1
+5300,5300,Lawrence Ave East at Orton Park Rd,,43.764262,-79.205256,,,,,,1
+10605,10605,900 York Mills Rd,,43.755228,-79.350256,,,,,,1
+5302,5302,Lawrence Ave East at Overture Rd,,43.765307,-79.199552,,,,,,1
+5242,5242,Lawrence Ave East at Burnview Cres East Side,,43.756645,-79.239711,,,,,,1
+11859,11859,Ellesmere Rd at Principal Rd,,43.76279,-79.294575,,,,,,1
+9076,9076,York Mills Rd at Leslie St,,43.752788,-79.360219,,,,,,1
+10141,10141,Port Union Rd at Lawrence Ave East North Side,,43.780021,-79.136654,,,,,,1
+2304,2304,Eglinton Ave East at Redpath Ave,,43.707755,-79.392936,,,,,,1
+7682,7682,Ellesmere Rd at Borough Approach East,,43.771587,-79.255056,,,,,,1
+2309,2309,Eglinton Ave East at Rumsey Rd,,43.712675,-79.369465,,,,,,1
+5250,5250,Lawrence Ave East at Bridgeport Dr,,43.778477,-79.140996,,,,,,1
+1978,1978,Don Mills Rd at Wynford Dr,,43.723169,-79.339832,,,,,,1
+5232,5232,Lawrence Ave East at Bellamy Rd North West Side,,43.757749,-79.235742,,,,,,1
+5239,5239,Lawrence Ave East at Brimley Rd,,43.753319,-79.255596,,,,,,1
+4427,4427,Lawrence Ave East at West Hill Dr,,43.769932,-79.179771,,,,,,1
+7677,7677,Ellesmere Rd at Bellamy Rd North,,43.774537,-79.241437,,,,,,1
+7473,7473,York Mills Rd at Sandfield Rd,,43.750689,-79.374746,,,,,,1
+5333,5333,Lawrence Ave East at Woodcliff Pl West Side,,43.738509,-79.337564,,,,,,1
+2239,2239,Eglinton Ave East at Bayview Ave,,43.711241,-79.376822,,,,,,1
+9079,9079,York Mills Rd at Lochinvar Cres,,43.757624,-79.339319,,,,,,2
+4419,4419,Lawrence Ave East at Ling Rd,,43.769003,-79.18293,,,,,,1
+9967,9967,Lawrence Ave East at Stotts Ter,,43.782983,-79.128003,,,,,,2
+1045,1045,Ellesmere Rd at Dormington Dr West Side,,43.777547,-79.227204,,,,,,1
+7720,7720,Ellesmere Rd at Warden Ave,,43.761429,-79.300415,,,,,,1
+7711,7711,Ellesmere Rd at Parkington Cres,,43.773188,-79.246369,,,,,,1
+2284,2284,Eglinton Ave East at Laird Dr East Side,,43.713677,-79.363762,,,,,,1
+7468,7468,York Mills Rd at Harrison Rd,,43.749601,-79.378889,,,,,,1
+11676,11676,Lawrence Ave East at Birchmount Rd,,43.747291,-79.285133,,,,,,1
+11185,11185,Lawrence Ave East at Morning Dew Rd,,43.772188,-79.169034,,,,,,1
+9473,9473,Ellesmere Rd at Military Trail (East),,43.78669,-79.188167,,,,,,1
+4423,4423,Lawrence Ave East at Morningside Ave,,43.76821,-79.186546,,,,,,1
+9503,9503,Lawrence Ave East at Markham Rd,,43.759631,-79.225553,,,,,,1
+5330,5330,Lawrence Ave East at Warden Ave,,43.745187,-79.295013,,,,,,1
+10524,10524,Ellesmere Rd at Zaph Ave,,43.79184,-79.166565,,,,,,2
+10526,10526,Ellesmere Rd at Morrish Rd,,43.790274,-79.173121,,,,,,1
+1043,1043,Ellesmere Rd at Dolly Varden Blvd West Side,,43.775797,-79.235291,,,,,,1
+7709,7709,Ellesmere Rd at Packard Blvd,,43.770694,-79.257782,,,,,,1
+7698,7698,Ellesmere Rd at Military Trail (East),,43.786439,-79.188422,,,,,,1
+5292,5292,Lawrence Ave East at Meadowvale Rd,,43.775359,-79.156006,,,,,,1
+4415,4415,Lawrence Ave East at Bennett Rd,,43.773036,-79.166039,,,,,,1
+8035,8035,Port Union Rd at Clappison Blvd,,43.7815,-79.137591,,,,,,1
+2295,2295,Eglinton Ave East at Mt Pleasant Rd,,43.708536,-79.389991,,,,,,1
+5235,5235,Lawrence Ave East at Ben Stanton Blvd East Side,,43.756956,-79.238185,,,,,,1
+5308,5308,Lawrence Ave East at Opposite Cedarbrae Mall,,43.758785,-79.230855,,,,,,1
+5284,5284,Lawrence Ave East at Manse Rd East Side,,43.770643,-79.175848,,,,,,1
+5324,5324,Lawrence Ave East at Underhill Dr,,43.740918,-79.324491,,,,,,1
+9471,9471,Ellesmere Rd at Calthorpe Ave,,43.788586,-79.180524,,,,,,1
+5248,5248,Lawrence Ave East at Centennial Rd,,43.777575,-79.145968,,,,,,1
+1942,1942,Don Mills Rd at Green Belt Dr North Side,,43.727486,-79.340618,,,,,,1
+1922,1922,Don Mills Rd at The Donway East (South) North Side,,43.732636,-79.342026,,,,,,1
+2235,2235,Eglinton Ave East at Banff Rd,,43.710122,-79.38211,,,,,,1
+5246,5246,Lawrence Ave East at Carnforth Rd,,43.741633,-79.314011,,,,,,1
+5241,5241,Lawrence Ave East at Burnview Cres West Side,,43.756528,-79.241423,,,,,,1
+7708,7708,426 Ellesmere Rd,,43.762102,-79.297487,,,,,,1
+5311,5311,Lawrence Ave East at Prudential Dr East Side,,43.751064,-79.266658,,,,,,1
+7695,7695,Ellesmere Rd at McCowan Rd,,43.77237,-79.251163,,,,,,1
+5310,5310,Lawrence Ave East at Port Union Rd,,43.779434,-79.136915,,,,,,1
+7673,7673,441 Ellesmere Rd,,43.761781,-79.297639,,,,,,1
+10528,10528,Ellesmere Rd at Highland Creek Park,,43.788976,-79.178809,,,,,,1
+5230,5230,Lawrence Ave East at Barrymore Rd,,43.754448,-79.251333,,,,,,1
+3258,3258,York Mills Rd at Fenn Ave,,43.747131,-79.388881,,,,,,1
+5294,5294,Lawrence Ave East at Midland Ave East Side,,43.751579,-79.264207,,,,,,1
+5253,5253,2216 Lawrence Ave East,,43.748715,-79.279522,,,,,,1
+8027,8027,Parkwoods Village Dr at Combermere Dr,,43.758032,-79.319424,,,,,,1
+14329,14329,741 Ellesmere Rd at Mondeo Dr,,43.764459,-79.287449,,,,,,1
+9075,9075,York Mills Rd at Laurentide Dr,,43.757636,-79.338064,,,,,,1
+7688,7688,1299 Ellesmere Rd,,43.769344,-79.26411,,,,,,1
+8028,8028,Parkwoods Village Dr at Gailong Crt,,43.759388,-79.321096,,,,,,1
+5325,5325,Lawrence Ave East at Underwriters Rd,,43.746625,-79.288269,,,,,,1
+5279,5279,Lawrence Ave East at Kennedy Rd East Side,,43.74948,-79.274276,,,,,,1
+7690,7690,Ellesmere Rd at Dewey Dr,,43.76023,-79.304551,,,,,,1
+1048,1048,Ellesmere Rd at Markham Rd,,43.776245,-79.232002,,,,,,1
+5265,5265,Lawrence Ave East at Fortune Gate,,43.76116,-79.219676,,,,,,1
+5322,5322,Lawrence Ave East at Townley Ave,,43.742834,-79.30707,,,,,,1
+9469,9469,Ellesmere Rd at Calthorpe Ave,,43.788307,-79.180898,,,,,,1
+5273,5273,Lawrence Ave East at Greencedar Circt East Side,,43.758141,-79.232683,,,,,,1
+2238,2238,Eglinton Ave East at Bayview Ave,,43.710886,-79.377428,,,,,,1
+6371,6371,Ellesmere Rd at Victoria Park Ave East Side,,43.757877,-79.314607,,,,,,1
+9472,9472,Ellesmere Rd at Conlins Rd,,43.788024,-79.182973,,,,,,1
+3252,3252,York Mills Rd at Birchwood Ave,,43.746313,-79.392079,,,,,,1
+5289,5289,Lawrence Ave East at Valparaiso Ave Scarborough General Hospital,,43.755437,-79.246651,,,,,,1
+10520,10520,Ellesmere Rd at Muirbank Blvd,,43.793732,-79.157941,,,,,,1
+5319,5319,Lawrence Ave East at Susan St,,43.763163,-79.209074,,,,,,1
+7715,7715,Ellesmere Rd at Principal Rd East Side,,43.762583,-79.294268,,,,,,1
+5259,5259,Lawrence Ave East at The Donway East,,43.737567,-79.341124,,,,,,1
+3265,3265,York Mills Rd at York Ridge Rd,,43.74447,-79.401416,,,,,,2
+7703,7703,Ellesmere Rd at Morningside Ave,,43.785523,-79.193129,,,,,,1
+2268,2268,Eglinton Ave East at Dunfield Ave,,43.707504,-79.394948,,,,,,1
+2308,2308,Eglinton Ave East at Rumsey Rd,,43.712456,-79.369755,,,,,,1
+5286,5286,Lawrence Ave East at Marcos Blvd,,43.752704,-79.258639,,,,,,1
+2312,2312,Eglinton Ave East at Sutherland Dr,,43.712965,-79.367323,,,,,,1
+5249,5249,Lawrence Ave East at Charlottetown Blvd West Side,,43.778635,-79.141305,,,,,,1
+5233,5233,Lawrence Ave East at Bellamy Rd North,,43.757514,-79.23561,,,,,,1
+9071,9071,York Mills Rd at Don Mills Rd,,43.756053,-79.3466,,,,,,1
+5280,5280,Lawrence Ave East at Kennedy Rd West Side,,43.749508,-79.275633,,,,,,1
+3257,3257,York Mills Rd at Fenn Ave,,43.746927,-79.389067,,,,,,2
+5234,5234,Lawrence Ave East at Ben Stanton Blvd,,43.757245,-79.238096,,,,,,1
+7464,7464,York Mills Rd at Banbury Rd (West),,43.751639,-79.370302,,,,,,1
+7469,7469,York Mills Rd at Harrison Rd,,43.749891,-79.378669,,,,,,1
+5266,5266,Lawrence Ave East at Galloway Rd,,43.765979,-79.196566,,,,,,1
+7465,7465,York Mills Rd at Banbury Rd (East),,43.752361,-79.365634,,,,,,1
+2252,2252,Eglinton Ave East at Brentcliffe Rd,,43.714457,-79.359905,,,,,,1
+5312,5312,Lawrence Ave East at Railside Rd (East),,43.741041,-79.319697,,,,,,1
+5245,5245,Lawrence Ave East at Carnforth Rd East Side,,43.741391,-79.313816,,,,,,1
+9891,9891,Port Union Rd at Lawrence Ave East,,43.780253,-79.137057,,,,,,1
+2234,2234,Eglinton Ave East at Banff Rd,,43.709914,-79.382341,,,,,,1
+7717,7717,Ellesmere Rd at Saratoga Dr East Side,,43.771657,-79.253176,,,,,,1
+10519,10519,Ellesmere Rd at Meadowvale Rd,,43.792312,-79.163843,,,,,,1
+14673,14673,Eglinton Station,,43.705532,-79.399237,,,,,,1
+7686,7686,Ellesmere Rd at Claudius Gate,,43.759681,-79.307806,,,,,,1
+15526,15526,Don Mills Rd at Barber Greene Rd South Side,,43.727242,-79.340888,,,,,,1
+15702,15702,Eglinton Ave East at Dunfield Ave,,43.707208,-79.395605,,,,,,1
+15243,15243,Lawrence Ave East at Birchmount Rd,,43.74768,-79.284634,,,,,,1
+16023,16023,Kingston Rd at Rylander Blvd,,43.796887,-79.149251,,,,,,1
+16037,16037,Rouge Hill GO Station Loop,,43.780709,-79.130359,,,,,,1
+12748,12748,Rylander Blvd at Kingston Rd,,43.797731,-79.149996,,,,,,2
+16040,16040,Eglinton Ave East at Hanna Rd West Side,,43.712067,-79.372621,,,,,,1
+16127,16127,Durnford Rd at Durness Ave,,43.800394,-79.150948,,,,,,2
+16128,16128,Durnford Rd at Tallpines Park South Side,,43.798663,-79.150156,,,,,,2
+16250,16250,Lawrence Ave East at Centennial Rd East Side,,43.777376,-79.146048,,,,,,1
+12544,12544,Kingston Rd at Ellesmere Rd,,43.793856,-79.153976,,,,,,1
+12545,12545,Kingston Rd at Ellesmere Rd,,43.793758,-79.154476,,,,,,1
+16332,16332,Eglinton Ave East at Mount Pleasant Rd,,43.708284,-79.390426,,,,,,1
+16331,16331,Eglinton Ave West at Yonge St,,43.706643,-79.398574,,,,,,1
+16526,16526,Lawrence Ave East at Elinor Ave,,43.743935,-79.300902,,,,,,1
+16527,16527,Lawrence Ave East at Townley Ave,,43.742522,-79.30756,,,,,,1
+16528,16528,Lawrence Ave East at Elinor Ave,,43.744212,-79.300378,,,,,,1
+15965,15965,Eglinton Ave East at Leslie St,,43.716868,-79.350353,,,,,,1
+16123,16123,Eglinton Ave East at Donlea Dr,,43.711708,-79.373605,,,,,,2
+16603,16603,Don Valley Station,,43.721601,-79.337678,,,,,,1
+16653,16653,Lawrence Ave East at Bathgate Dr West Side,,43.776434,-79.150915,,,,,,1
+16654,16654,York Mills Rd at Scarsdale Rd West Side,,43.753447,-79.358043,,,,,,1
+16688,16688,York Mills Rd at Valley Woods Rd,,43.759402,-79.332792,,,,,,1
+16689,16689,Parkwoods Village Dr at York Mills Rd,,43.761128,-79.323838,,,,,,1
+16701,16701,York Mills Rd at Birchwood Ave West Side,,43.746412,-79.392178,,,,,,1
+16737,16737,Lawrence Ave East at Danielle Moore Cir West Side,,43.752733,-79.259749,,,,,,1
+16766,16766,255 Morningside Ave,,43.769947,-79.186503,,,,,,1
+16804,16804,Kingston Rd at Port Union Rd,,43.798675,-79.146425,,,,,,1
+16805,16805,Kingston Rd at Sheppard Ave East West Side,,43.79855,-79.146975,,,,,,1
+16806,16806,Kingston Rd at Rylander Blvd,,43.797281,-79.148975,,,,,,1
+16807,16807,Port Union Rd at Tilley Dr,,43.788615,-79.140347,,,,,,1
+16808,16808,Port Union Rd at Conference Blvd,,43.786023,-79.139246,,,,,,1
+16611,16611,2231 Lawrence Ave East,,43.748429,-79.279828,,,,,,1
+16117,16117,Don Mills Rd at Eglinton Ave East,,43.721149,-79.338886,,,,,,2
+16865,16865,Lawrence Ave E at Valparaiso Ave - Scarborough General Hospital,,43.755141,-79.24689,,,,,,1

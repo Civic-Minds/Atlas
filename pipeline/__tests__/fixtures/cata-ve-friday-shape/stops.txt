@@ -1,0 +1,12 @@
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,location_type,parent_station,wheelchair_boarding
+4,4,Pattee Transit Center Eastbound,,40.797836,-77.866722,,,0,,0
+504,504,Vairo Blvd opposite Vairo Village(Upper),,40.81627,-77.88796,,,0,,0
+506,506,Vairo Blvd opposite Vairo Village(lower),,40.81588,-77.88646,,,0,,0
+508,508,Vairo Blvd at Tremont Inbound lower,,40.815521,-77.884628,,,0,,0
+509,509,Vairo Blvd at Tremont Inbound upper,,40.81246,-77.88627,,,0,,0
+511,511,Vairo Blvd at The Pointe Inbound,,40.810268,-77.890236,,,0,,0
+513,513,Vairo Blvd at The Bryn Inbound,,40.80993,-77.89189,,,0,,0
+517,517,Oakwood Ave at Texas Roadhouse,,40.816196,-77.896767,,,0,,0
+6,6,West Park Ave at North Burrowes St,,40.79845,-77.8711,,,0,,0
+777,777,Waddle Rd at the Bryn,,40.8106895168,-77.8941471146,,,0,,0
+778,778,Oakwood Ave at Clearview Ave,,40.8163303897,-77.8910775517,,,0,,0

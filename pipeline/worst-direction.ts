@@ -1,9 +1,15 @@
 import type { GeoJsonFeature } from './geojson-types.js';
 import { isIrregularService, isLimitedService } from '../shared/irregularRoutes.js';
+import { routeGroupKey } from '../shared/routeGroupKey.js';
 export { stampWorstDirectionHeadways } from '../shared/worstDirection.js';
 
 function routeDayKey(routeShortName: string, routeBranch: string | null | undefined, day: unknown): string {
   return `${routeShortName}::${routeBranch ?? ''}::${day ?? ''}`;
+}
+
+/** Short name, or `id:<routeId>` when it's empty (#717), so no-short-name feeds aren't one big route. */
+function routeGroupName(properties: GeoJsonFeature['properties']): string {
+  return routeGroupKey(properties.routeShortName, properties.routeId);
 }
 
 /**
@@ -20,7 +26,7 @@ export function stampRouteIrregularDirection(features: GeoJsonFeature[]): void {
   const limitedKeys = new Set<string>();
 
   for (const f of features) {
-    const sn = f.properties.routeShortName as string;
+    const sn = routeGroupName(f.properties);
     const branch = f.properties.routeBranch as string | null | undefined;
     const dirId = f.properties.directionId as number | null;
     if (dirId == null) continue;
@@ -48,7 +54,7 @@ export function stampRouteIrregularDirection(features: GeoJsonFeature[]): void {
   }
 
   for (const f of features) {
-    const sn = f.properties.routeShortName as string;
+    const sn = routeGroupName(f.properties);
     const key = routeDayKey(sn, f.properties.routeBranch as string | null | undefined, f.properties.day);
     if (irregularKeys.has(key)) f.properties.routeHasIrregularDirection = true;
     if (limitedKeys.has(key)) f.properties.routeHasLimitedDirection = true;

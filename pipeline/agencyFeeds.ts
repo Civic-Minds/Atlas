@@ -118,7 +118,7 @@ export async function loadSupplementalFeeds(
   return feeds;
 }
 
-type FeatureCollection = { type: string; features: unknown[] };
+type FeatureCollection = { type: string; features: unknown[]; runningTimes?: Record<string, unknown> };
 type StopsMeta = { generatedAt: string; stopCount: number; stops: unknown[] };
 
 /**
@@ -142,7 +142,10 @@ export async function processAgencyFeeds(
 
   const options = agencyProcessOptions(agency, overrides);
   const primary = await processGtfsBuffer(primaryBuf, onProgress, options);
-  const features = (JSON.parse(primary.geojson) as FeatureCollection).features;
+  const primaryCollection = JSON.parse(primary.geojson) as FeatureCollection;
+  const features = primaryCollection.features;
+  // Running time (CIV-84) per feed; the main feed wins any key a supplemental feed repeats.
+  const runningTimes: Record<string, unknown> = {};
   const corridorFeatures = (JSON.parse(primary.corridorsGeojson) as FeatureCollection).features;
   const stopsIndex = JSON.parse(primary.stopsJson) as Record<string, unknown>;
   const tripsIndex = JSON.parse(primary.tripsJson) as Record<string, unknown>;
@@ -153,7 +156,9 @@ export async function processAgencyFeeds(
 
   for (const { url, buf } of supplementalFeeds) {
     const supp = await processGtfsBuffer(buf, onProgress, options);
-    features.push(...(JSON.parse(supp.geojson) as FeatureCollection).features);
+    const suppCollection = JSON.parse(supp.geojson) as FeatureCollection;
+    features.push(...suppCollection.features);
+    Object.assign(runningTimes, suppCollection.runningTimes ?? {});
     corridorFeatures.push(...(JSON.parse(supp.corridorsGeojson) as FeatureCollection).features);
     Object.assign(stopsIndex, JSON.parse(supp.stopsJson));
     Object.assign(tripsIndex, JSON.parse(supp.tripsJson));
@@ -163,10 +168,11 @@ export async function processAgencyFeeds(
     supplementalFeatureCounts.push({ url, featureCount: supp.featureCount });
   }
   stopsMeta.stopCount = stopsMeta.stops.length;
+  Object.assign(runningTimes, primaryCollection.runningTimes ?? {});
 
   return {
     ...primary,
-    geojson: JSON.stringify({ type: 'FeatureCollection', atlasSchemaVersion: ROUTE_ARTIFACT_SCHEMA_VERSION, features }),
+    geojson: JSON.stringify({ type: 'FeatureCollection', atlasSchemaVersion: ROUTE_ARTIFACT_SCHEMA_VERSION, features, runningTimes }),
     corridorsGeojson: JSON.stringify({ type: 'FeatureCollection', features: corridorFeatures }),
     stopsJson: JSON.stringify(stopsIndex),
     tripsJson: JSON.stringify(tripsIndex),

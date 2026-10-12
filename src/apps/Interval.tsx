@@ -19,13 +19,14 @@ import type { OpenInfoFn } from '../components/InfoPanel';
 import type { StopEntry } from './corridor-search';
 import { ATLAS_MODE, FEATURES, R2_PUBLIC_URL, VIEWPORT_BBOX_PAD } from '../../shared/config';
 import type * as maplibregl from 'maplibre-gl';
-import { CompareControl, CompareSidePicker, SideBadge, compareSideLabel, defaultCompareSide, type CompareSide } from '../components/Interval/CompareControl';
+import { CompareSideControl, CompareTab, CompareSidePicker, SideBadge, compareSideLabel, defaultCompareSide, type CompareSide } from '../components/Interval/CompareControl';
 import { buildCompareRow } from '../utils/compareRows';
 import { DAY_TYPES, type DayType as DayTypeName } from '../../shared/dayTypes';
 import { findVariantFamily } from '../utils/routeVariants';
 import { splitRouteKey } from '../utils/routeKey';
 import { resolveRouteSelectionForDay } from '../utils/routeSelection';
 import { syncUrlParams } from '../utils/syncUrlParams';
+import { encodeAgencySelection, encodeModesParam, isAgencyOff, parseAgencyUrlRule, parseModesParam, settleAgencyUrlRule, shouldPersistAgencySelection, type AgencyUrlRule } from '../utils/shareUrlState';
 import { searchOverlayHidesPanel } from '../utils/format';
 import { trackEvent } from '../lib/analytics';
 import type { FrequentServiceFrequency, FrequentServiceWindow } from '../../shared/frequentService';
@@ -71,6 +72,8 @@ interface Props {
   onSelectedMapAgencyChange?: (slug: string | null) => void;
   onSelectionActiveChange?: (active: boolean) => void;
   headerPortalContainer?: Element | null;
+  /** Top-bar slot beside History and Live where the Compare view tab renders. */
+  viewTabsPortalContainer?: Element | null;
   fareView?: boolean;
   nightServiceView?: boolean;
   nightServiceFrequency?: NightServiceFrequency;
@@ -141,7 +144,7 @@ function CompareSideLabel({ side, title, counts, otherPhrase }: {
   );
 }
 
-export default function Interval({ agencies, allAgencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, filterToAgencies = false, onHistoryRouteClick, onDirectFromStop, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, pendingNightRoute, onPendingNightRouteHandled, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, onSelectedMapAgencyChange, onSelectionActiveChange, headerPortalContainer, fareView = false, nightServiceView = false, nightServiceFrequency = 60, setNightServiceFrequency, frequentServiceView = false, frequentServiceDays = ['Weekday'], frequentServiceFrequency = 15, frequentServiceWindow = 'daytime', setFrequentServiceDays, setFrequentServiceFrequency, setFrequentServiceWindow, showMapContext = false, showMatchPercentage = false, sidebarLeft, searchBarWidth, searchEnterRef, analyticsApp = 'frequency', hideLowQuality, setHideLowQuality, feedQualityEnabled = false, showMapLegend, setShowMapLegend, dataSaver, setDataSaver, exportEnabled = false, exportTitle = 'Transit map' }: Props) {
+export default function Interval({ agencies, allAgencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, filterToAgencies = false, onHistoryRouteClick, onDirectFromStop, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, pendingLiveRoute, onPendingLiveRouteHandled, pendingNightRoute, onPendingNightRouteHandled, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, onSelectedMapAgencyChange, onSelectionActiveChange, headerPortalContainer, viewTabsPortalContainer, fareView = false, nightServiceView = false, nightServiceFrequency = 60, setNightServiceFrequency, frequentServiceView = false, frequentServiceDays = ['Weekday'], frequentServiceFrequency = 15, frequentServiceWindow = 'daytime', setFrequentServiceDays, setFrequentServiceFrequency, setFrequentServiceWindow, showMapContext = false, showMatchPercentage = false, sidebarLeft, searchBarWidth, searchEnterRef, analyticsApp = 'frequency', hideLowQuality, setHideLowQuality, feedQualityEnabled = false, showMapLegend, setShowMapLegend, dataSaver, setDataSaver, exportEnabled = false, exportTitle = 'Transit map' }: Props) {
   const [searchParams] = useSearchParams();
   const [mapContextOpen, setMapContextOpen] = useState(false);
   const [mapContextView, setMapContextView] = useState<'agencies' | 'routes'>('routes');
@@ -284,21 +287,40 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   // saved off-list once into a ref instead of baking it into a lazy initializer, and use the
   // same ref to fold in any agencies that arrive after mount.
   const savedAgenciesOffRef = useRef<Set<string>>(readSavedAgenciesOff());
-  const [selectedAgencies, setSelectedAgencies] = useState<Set<string>>(
-    () => new Set(agencies.filter(a => !savedAgenciesOffRef.current.has(a.slug)).map(a => a.slug)),
-  );
+  // Shared-link selection (?agencies= / ?hide=, CIV-72). Overrides the stored off-list for
+  // this visit only; the stored prefs are left alone until the viewer changes the selection.
+  const agencyUrlRuleRef = useRef<AgencyUrlRule | null>(parseAgencyUrlRule(searchParams));
+  const agencyUrlRuleSettledRef = useRef(false);
+  const agencySelectionUserChangedRef = useRef(false);
+  const agencyStartsOff = (slug: string, catalogSlugs: string[]) => {
+    if (!agencyUrlRuleSettledRef.current && catalogSlugs.length > 0) {
+      agencyUrlRuleSettledRef.current = true;
+      agencyUrlRuleRef.current = settleAgencyUrlRule(agencyUrlRuleRef.current, catalogSlugs);
+    }
+    return isAgencyOff(slug, agencyUrlRuleRef.current, savedAgenciesOffRef.current);
+  };
+  const [selectedAgencies, setSelectedAgencies] = useState<Set<string>>(() => {
+    const slugs = agencies.map(a => a.slug);
+    return new Set(slugs.filter(slug => !agencyStartsOff(slug, slugs)));
+  });
+  const setSelectedAgenciesByUser = useCallback<React.Dispatch<React.SetStateAction<Set<string>>>>((value) => {
+    agencySelectionUserChangedRef.current = true;
+    setSelectedAgencies(value);
+  }, []);
   const knownAgencySlugsRef = useRef<Set<string>>(new Set(agencies.map(a => a.slug)));
   useEffect(() => {
     const newlyLoaded = agencies.filter(a => !knownAgencySlugsRef.current.has(a.slug));
     if (newlyLoaded.length === 0) return;
     for (const a of newlyLoaded) knownAgencySlugsRef.current.add(a.slug);
+    const slugs = agencies.map(a => a.slug);
+    const turnOn = newlyLoaded.filter(a => !agencyStartsOff(a.slug, slugs)).map(a => a.slug);
     setSelectedAgencies(prev => {
       const next = new Set(prev);
-      for (const a of newlyLoaded) if (!savedAgenciesOffRef.current.has(a.slug)) next.add(a.slug);
+      for (const slug of turnOn) next.add(slug);
       return next;
     });
   }, [agencies]);
-  const [selectedModes, setSelectedModes] = useState<Set<number>>(new Set());
+  const [selectedModes, setSelectedModes] = useState<Set<number>>(() => parseModesParam(searchParams));
   const [period, setPeriod] = useState<TimePeriod>(() => {
     try {
       const p = searchParams.get('p') || searchParams.get('period');
@@ -631,11 +653,23 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     syncUrlParams({ limited: hideLimitedService ? null : '0' });
   }, [hideLimitedService]);
   useEffect(() => {
+    if (!shouldPersistAgencySelection(agencyUrlRuleRef.current, agencySelectionUserChangedRef.current)) return;
     try {
       const off = agencies.filter(a => !selectedAgencies.has(a.slug)).map(a => a.slug);
       localStorage.setItem(AGENCY_PREF_STORAGE_KEY, JSON.stringify(off));
     } catch {}
   }, [selectedAgencies, agencies]);
+  // Agency selection in the share URL. Wait for the catalog (an include list built from a
+  // partial catalog would be wrong); keep an incoming shared link untouched until the viewer
+  // changes the selection.
+  useEffect(() => {
+    if (agencies.length === 0) return;
+    if (agencyUrlRuleRef.current && !agencySelectionUserChangedRef.current) return;
+    syncUrlParams(encodeAgencySelection(selectedAgencies, agencies.map(a => a.slug)));
+  }, [selectedAgencies, agencies]);
+  useEffect(() => {
+    syncUrlParams({ m: encodeModesParam(selectedModes) });
+  }, [selectedModes]);
 
   useEffect(() => {
     onStatsChange?.(stats);
@@ -1036,6 +1070,11 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
         />
       )}
 
+      {viewTabsPortalContainer && compareAvailable && createPortal(
+        <CompareTab active={compareActive} onStart={startCompare} onExit={exitCompare} />,
+        viewTabsPortalContainer,
+      )}
+
       {headerPortalContainer && createPortal(
         <div className={`flex items-center gap-2 ${!showUi && hideFilterPanel && !nightServiceView ? 'pointer-events-none' : ''}`}>
           <div className={`hidden sm:flex items-center gap-2 transition-opacity ${TRANSITION_BASE} ${showUi || nightServiceView ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
@@ -1050,7 +1089,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
               setPeriod={setPeriod}
               agencies={allAgencies ?? agencies}
               selectedAgencies={selectedAgencies}
-              setSelectedAgencies={setSelectedAgencies}
+              setSelectedAgencies={setSelectedAgenciesByUser}
               bounds={bounds}
               researchMode={frequentServiceView}
               researchDays={frequentServiceDays}
@@ -1063,8 +1102,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
               nightServiceFrequency={nightServiceFrequency}
               setNightServiceFrequency={setNightServiceFrequency}
             />
-            {compareAvailable && (
-              <CompareControl compareSide={compareActive ? compareSide : null} onStart={startCompare} onExit={exitCompare} onChange={setCompareSide} />
+            {compareActive && compareSide && (
+              <CompareSideControl compareSide={compareSide} onChange={setCompareSide} />
             )}
           </div>
           {!hideFilterPanel && (
@@ -1091,7 +1130,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
               agencies={agencies}
               allAgencies={allAgencies}
               selectedAgencies={selectedAgencies}
-              setSelectedAgencies={setSelectedAgencies}
+              setSelectedAgencies={setSelectedAgenciesByUser}
               bounds={bounds}
               hideLowQuality={hideLowQuality}
               setHideLowQuality={setHideLowQuality}
@@ -1121,7 +1160,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
         setMaxHeadway={setMaxHeadway}
         agencies={agencies}
         selectedAgencies={selectedAgencies}
-        setSelectedAgencies={setSelectedAgencies}
+        setSelectedAgencies={setSelectedAgenciesByUser}
         selectedModes={selectedModes}
         setSelectedModes={setSelectedModes}
         day={day}

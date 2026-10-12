@@ -17,9 +17,11 @@
   "lastFeedExpiry": "20270101",
   "lastFeedVersion": "UTC: 01-May-2026 16:41",
   "lastRefreshedAt": "2026-08-10",
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270101",
-  "timezone": "America/New_York"
+  "timezone": "America/New_York",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-381/latest.zip"
 }

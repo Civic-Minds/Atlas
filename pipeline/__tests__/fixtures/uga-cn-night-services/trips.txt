@@ -1,0 +1,3 @@
+route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,block_id,shape_id,wheelchair_accessible,bikes_allowed
+5742,73973.218867,1140537,,,,50561,73973,0,0
+5742,73973.220856,1152800,,,,50562,73973,0,0

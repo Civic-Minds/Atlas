@@ -8,9 +8,9 @@
   "feedUrl": "https://trackmygta.com/gtfs",
   "region": "North Carolina",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-615/latest.zip",
-  "lastFeedExpiry": "",
+  "lastFeedExpiry": "20281012",
   "lastFeedVersion": "7/4/2024",
-  "lastRefreshedAt": "2026-10-07",
+  "lastRefreshedAt": "2026-10-12",
   "websiteUrl": "http://www.greensboro-nc.gov/index.aspx?page=2180",
   "cities": [
     "Greensboro, North Carolina",
@@ -18,7 +18,7 @@
   ],
   "timezone": "America/New_York",
   "lastRawArchiveKey": "20250228-1828d0c249445f06",
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",
@@ -33,10 +33,12 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 101
     },
-    "checkedAt": "2026-10-07"
+    "checkedAt": "2026-10-12"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://trackmygta.com/gtfs"
 }

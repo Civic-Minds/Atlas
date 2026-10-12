@@ -10,6 +10,8 @@ import { createHash } from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { ROUTE_ARTIFACT_SCHEMA_VERSION, TILE_RULES_VERSION } from '../shared/artifactSchema.js';
+import { buildAgencyCatalog } from '../shared/agencyCatalog.js';
+import { isBuiltIntoTiles, type TileInclusionAgency } from './pmtilesCoverage.js';
 
 export interface ReleaseManifest {
   releaseId: string;
@@ -123,6 +125,69 @@ export function releasePublishError(evidence: PublishEvidence): string | null {
     return `Agency snapshots not stamped with ${manifest.releaseId}: ${mismatched.map(([slug, stamp]) => `${slug}=${String(stamp)}`).join(', ')}.`;
   }
   return null;
+}
+
+/** Slugs in the public browser catalog, the agencies production users can open. */
+export function publicCatalogSlugs(agencies: Array<Record<string, unknown>>): string[] {
+  return buildAgencyCatalog(agencies, 'public').agencies.map(agency => agency.slug);
+}
+
+/**
+ * Public agencies build-pmtiles never copies into a release (pmtilesPending, or
+ * no refresh marker), so production shows "Couldn't load" for them (#757, #759).
+ * Checked offline by check:agency-index; hide them until they are refreshed.
+ */
+export function publicAgenciesExcludedFromRelease(agencies: Array<Record<string, unknown>>): string[] {
+  const publicSlugs = new Set(publicCatalogSlugs(agencies));
+  return agencies
+    .filter(agency => publicSlugs.has(String(agency.slug)) && !isBuiltIntoTiles(agency as TileInclusionAgency))
+    .map(agency => String(agency.slug));
+}
+
+/**
+ * Public agencies with no route file at all in a release. Only existence
+ * counts: an agency that wasn't refreshed this time still has its older file
+ * copied into the release and passes.
+ */
+export function publicAgenciesMissingFromRelease(
+  agencies: Array<Record<string, unknown>>,
+  hasReleaseFile: (slug: string) => boolean,
+): string[] {
+  return publicCatalogSlugs(agencies).filter(slug => !hasReleaseFile(slug));
+}
+
+export interface ReleaseFileCheckOptions {
+  retries?: number;
+  fetchImpl?: typeof fetch;
+  sleep?: (ms: number) => Promise<void>;
+}
+
+/**
+ * Whether `url` exists in the public bucket: false on 404, true on 2xx. A 429,
+ * 5xx or network error is retried with backoff (honouring Retry-After) before
+ * it throws, so one throttled request out of hundreds can't abort a publish
+ * after the release has already uploaded.
+ */
+export async function releaseFileExists(url: string, options: ReleaseFileCheckOptions = {}): Promise<boolean> {
+  const { retries = 4, fetchImpl = fetch, sleep = ms => new Promise(r => setTimeout(r, ms)) } = options;
+  for (let attempt = 0; ; attempt++) {
+    let failure: string;
+    let retryAfterMs: number | null = null;
+    try {
+      const response = await fetchImpl(url, { method: 'HEAD', cache: 'no-store' });
+      if (response.status === 404) return false;
+      if (response.ok) return true;
+      if (response.status !== 429 && response.status < 500) throw new Error(`Could not check ${url}: HTTP ${response.status}`);
+      failure = `HTTP ${response.status}`;
+      const retryAfter = Number(response.headers.get('retry-after'));
+      if (Number.isFinite(retryAfter) && retryAfter > 0) retryAfterMs = retryAfter * 1000;
+    } catch (error) {
+      if (error instanceof Error && error.message.startsWith('Could not check')) throw error;
+      failure = error instanceof Error ? error.message : String(error);
+    }
+    if (attempt >= retries) throw new Error(`Could not check ${url} after ${retries + 1} attempts: ${failure}`);
+    await sleep(retryAfterMs ?? 1000 * 2 ** attempt);
+  }
 }
 
 function sortKeys(value: object): Record<string, unknown> {

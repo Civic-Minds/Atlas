@@ -18,9 +18,11 @@
   "lastFeedExpiry": "20271231",
   "lastFeedVersion": "20250228",
   "lastRefreshedAt": "2026-08-10",
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
-  "timezone": "America/Denver"
+  "timezone": "America/Denver",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://passio3.com/roadrunner/passioTransit/gtfs/google_transit.zip"
 }

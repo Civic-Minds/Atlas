@@ -15,12 +15,12 @@
   ],
   "feedUrl": "https://s3.amazonaws.com/datatools-511ny/public/AirTrain_JFK.zip",
   "mdbFeedUrl": "https://s3.amazonaws.com/datatools-511ny/public/AirTrain_JFK.zip",
-  "lastFeedExpiry": "20261231",
+  "lastFeedExpiry": "20270228",
   "lastFeedVersion": "jfk_20112026",
-  "lastRefreshedAt": "2026-10-07",
+  "lastRefreshedAt": "2026-10-12",
   "timezone": "America/New_York",
   "lastRawArchiveKey": "20211231-d3fb77447fdc2f06",
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270228",
@@ -35,10 +35,12 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 9
     },
-    "checkedAt": "2026-10-07"
+    "checkedAt": "2026-10-12"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://s3.amazonaws.com/datatools-511ny/public/AirTrain_JFK.zip"
 }

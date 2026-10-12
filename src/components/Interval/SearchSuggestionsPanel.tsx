@@ -15,6 +15,7 @@ import {
   shouldHideNumericRouteShortName,
 } from '../../utils/format';
 import RouteListRow from '../RouteListRow';
+import type { RouteListDisplay } from '../../utils/effectiveHeadway';
 
 // Reusable/helper interfaces for route snippets
 export interface RecentRoute {
@@ -31,6 +32,7 @@ export interface SuggestedRoute {
   longName: string | null;
   agencyName: string;
   headway?: number | null;
+  limited?: boolean;
 }
 
 interface SearchSuggestionsPanelProps {
@@ -42,7 +44,7 @@ interface SearchSuggestionsPanelProps {
   suggestedRoutes: SuggestedRoute[];
   pickRoute: (key: string) => void;
   fareView: boolean;
-  headwayForRouteKey: (key: string) => number | null;
+  displayForRouteKey: (key: string) => RouteListDisplay;
 }
 
 export function routeRowLabels(shortName: string, longName: string | null) {
@@ -59,7 +61,7 @@ export function routeRowLabels(shortName: string, longName: string | null) {
   };
 }
 
-export function routeRowRight(agencyName: string, headway?: number | null, stacked = false) {
+export function routeRowRight(agencyName: string, headway?: number | null, stacked = false, limited = false) {
   const agency = shortenAgencyName(agencyName);
   const layout = stacked
     ? 'block max-w-full truncate mt-1 ml-0 text-left'
@@ -70,6 +72,15 @@ export function routeRowRight(agencyName: string, headway?: number | null, stack
         {agency}
         <span className="text-[var(--text-dim)] font-normal"> · </span>
         every {headway}m
+      </span>
+    );
+  }
+  if (limited) {
+    return (
+      <span className={`${LIST_ROW_DIM} ${layout} whitespace-nowrap`}>
+        {agency}
+        <span className="text-[var(--text-dim)] font-normal"> · </span>
+        limited
       </span>
     );
   }
@@ -87,7 +98,7 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
   suggestedRoutes,
   pickRoute,
   fareView,
-  headwayForRouteKey,
+  displayForRouteKey,
 }) => {
   return (
     <div className={`${FLOATING_CARD} shrink-0 flex flex-col overflow-hidden`}>
@@ -158,7 +169,10 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
                       key={r.key}
                       shortName={labels.shortName}
                       name={labels.name}
-                      right={routeRowRight(r.agencyName, headwayForRouteKey(r.key), true)}
+                      right={(() => {
+                        const display = displayForRouteKey(r.key);
+                        return routeRowRight(r.agencyName, display.headway, true, display.limited);
+                      })()}
                       stacked
                       onClick={() => pickRoute(r.key)}
                       className="border-b-0"
@@ -182,7 +196,7 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
                       key={r.key}
                       shortName={labels.shortName}
                       name={labels.name}
-                      right={routeRowRight(r.agencyName, r.headway, true)}
+                      right={routeRowRight(r.agencyName, r.headway, true, r.limited)}
                       stacked
                       onClick={() => pickRoute(r.key)}
                       className="border-b-0"

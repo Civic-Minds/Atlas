@@ -1,0 +1,3 @@
+route_id,agency_id,route_short_name,route_long_name,route_type,route_color,route_text_color,route_desc,route_url,continuous_pickup,continuous_drop_off,route_sort_order
+151,25,1,Route 1,3,2eab8a,FFFFFF,,https://rabaride.com/Document%20Center/Services/Bus/Route1%204-25.pdf,1,1,
+6447,25,5x,5x Sacramento / Amtrak Thruway,3,A72051,FFFFFF,,,,,
