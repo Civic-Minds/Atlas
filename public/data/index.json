@@ -15939,6 +15939,11 @@
       ],
       "feedUrl": "https://knoxville.syncromatics.com/gtfs",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3512/latest.zip",
+      "excludeRouteShortNames": [
+        "51-A",
+        "51-E",
+        "51D"
+      ],
       "region": "Tennessee",
       "lastFeedExpiry": "20991231",
       "lastFeedVersion": "MARCH 3/14",
