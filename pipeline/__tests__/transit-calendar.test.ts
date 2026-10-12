@@ -316,6 +316,20 @@ describe('detectReferenceDate all-singleton calendar with an ended nested servic
     expect(detectReferenceDate(calendar, [], trips)).toBe('20261003');
   });
 
+  it('takes the running service, not a future one, in place of a one-day median', () => {
+    today('2026-10-12');
+    const calendar = [
+      cal('regular', all, '20260101', '20261231'),
+      ...['20261012', '20261013', '20261014'].map((d, i) => cal(`day-${i}`, all, d, d)),
+      cal('winter', all, '20261101', '20270331'),
+    ];
+    const trips = tripsFor({ regular: ['r', 20], 'day-0': ['r', 5], 'day-1': ['r', 5], 'day-2': ['r', 5], winter: ['w', 20] });
+    // Starts: 0101, 1012, 1013, 1014, 1101 -> median 1013, a one-day entry. The running
+    // regular service stands in for it, not the winter calendar that starts Nov 1.
+    const ref = detectReferenceDate(calendar, [], trips);
+    expect([...getActiveServiceIds(calendar, [], 'Monday', ref)]).toEqual(['regular']);
+  });
+
   it('keeps the median of a stale feed: one ended multi-day service and later one-day entries', () => {
     today('2026-10-12');
     const calendar = [
@@ -352,14 +366,8 @@ describe('detectReferenceDate all-singleton calendar with an ended nested servic
     ];
     const trips = calendar.flatMap(c => tripsFor({ [c.service_id]: ['1', 20] }));
     const ref = detectReferenceDate(calendar, calendarDates, trips);
-    const friday = [...getActiveServiceIds(calendar, calendarDates, 'Friday', ref)];
-    const saturday = [...getActiveServiceIds(calendar, calendarDates, 'Saturday', ref)];
-    // Never the one-day holiday or December services; before Oct 10 the pre-holiday regular
-    // Friday/Saturday timetables are the ones running.
-    expect(friday).toHaveLength(1);
-    expect(['cal2-fri', 'cal10-fri-1']).toContain(friday[0]);
-    expect(saturday).toHaveLength(1);
-    expect(['cal5-sat', 'cal11-sat-1']).toContain(saturday[0]);
+    expect([...getActiveServiceIds(calendar, calendarDates, 'Friday', ref)]).toEqual(['cal10-fri-1']);
+    expect([...getActiveServiceIds(calendar, calendarDates, 'Saturday', ref)]).toEqual(['cal11-sat-1']);
     expect([...getActiveServiceIds(calendar, calendarDates, 'Monday', ref)]).toEqual(['cal1-mon-tue-wed-thu-1']);
     expect([...getActiveServiceIds(calendar, calendarDates, 'Sunday', ref)]).toEqual(['cal4-sun-3']);
   });
