@@ -52,6 +52,8 @@ function isInfrequentTier(tier: string | null | undefined): boolean {
 
 /**
  * The one rule for which patterns speak for a direction in a period (FREQUENCY_RULES rules 2-3).
+ * Rule 5 (CIV-82): a route may show the stretches that themselves pass; it never makes the
+ * whole route pass. Pooled shared-stretch values never feed these stamps.
  * Candidates are the direction's non-span patterns that run in the period. Patterns that are not
  * steady there drop out, and occasional `infrequent` siblings drop out when the direction also has
  * a steady regular pattern. Both the period headway and the period coverage use this same pool, so

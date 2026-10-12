@@ -95,10 +95,14 @@ describe('tile rules fingerprint', () => {
   // #710 added pws_<period> (partial-weekday service) keys and the overview allowlist entry.
   // No version bump: older tiles lack pws and evaluate exactly as before, and older apps
   // ignore the new keys.
+  // CIV-82 strips the new shared-stretch keys from tiles (JSON only). Tile properties are
+  // unchanged, so the version stays and only the hash is recomputed. The CIV-82 phase 2 rule
+  // text in worstDirection.ts / routeHeadwayFilter.ts is comment-only, and routeFilterHeadway
+  // caching its per-period expression changes no value: hash only.
   it('changes only together with a deliberate TILE_RULES_VERSION decision', () => {
     expect({ version: TILE_RULES_VERSION, fingerprint: tileRulesFingerprint() }).toEqual({
       version: 2,
-      fingerprint: '3fe5c029490e8e1013d2f8e17d90abd4bf3bde1f17beeee5cc49f9841787994f',
+      fingerprint: '8dc28aa6ec105ed3b3a71fbbef99de3257041fa56508319fd9c74e0466f3cd0b',
     });
   });
 });

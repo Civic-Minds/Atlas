@@ -1,0 +1,26 @@
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,location_type,parent_station,stop_timezone,wheelchair_boarding
+979,979,Dufferin St at Yorkdale Rd,,43.726531,-79.457356,,,,,,1
+9991,9991,Dufferin St at Springhurst Ave,,43.634831,-79.425646,,,,,,1
+985,985,Dufferin St at Jane Osler Blvd - Yorkdale Shopping Centre,,43.725083,-79.456993,,,,,,1
+9899,9899,Wilson Ave at Billy Bishop Way,,43.733156,-79.452938,,,,,,1
+1666,1666,Wilson Ave at Transit Rd West Side,,43.733336,-79.453577,,,,,,1
+2069,2069,Dufferin St at Lawrence Ave West North Side,,43.714493,-79.454638,,,,,,1
+2026,2026,Dufferin St at Castlefield Ave,,43.700952,-79.451951,,,,,,1
+2094,2094,Dufferin St at St Clair Ave West,,43.678395,-79.443316,,,,,,1
+2095,2095,Dufferin St at Stayner Ave,,43.703481,-79.452235,,,,,,2
+2040,2040,Dufferin St at Dufferin Park Ave,,43.656933,-79.434122,,,,,,1
+2019,2019,Dufferin St at Bentworth Ave,,43.721949,-79.456556,,,,,,1
+10092,10092,Dufferin St at Hope St,,43.68227,-79.444698,,,,,,1
+2074,2074,Dufferin St at Melbourne Ave,,43.640638,-79.428104,,,,,,1
+2032,2032,Dufferin Gate Loop,,43.634401,-79.425872,,,,,,1
+2060,2060,Dufferin St at Holmesdale Rd,,43.688777,-79.44751,,,,,,1
+2068,2068,Dufferin St at Lappin Ave South Side,,43.666082,-79.438076,,,,,,1
+2014,2014,Dufferin St at Alma Ave,,43.644509,-79.429381,,,,,,1
+2065,2065,Dufferin St at Rowan Ave,,43.692029,-79.448632,,,,,,1
+2022,2022,Dufferin St at Brandon Ave,,43.670324,-79.439719,,,,,,1
+2034,2034,Dufferin St at College St,,43.652658,-79.432662,,,,,,1
+2078,2078,Dufferin St at Playfair Ave,,43.710983,-79.454179,,,,,,1
+2037,2037,Dufferin St at Dane Ave,,43.716083,-79.454991,,,,,,1
+14363,14363,Princes' Gates Loop at Canada Blvd - CNE East Entrance,,43.635575,-79.409889,,,,,,2
+14469,14469,Saskatchewan Rd at Dufferin St East Side,,43.632643,-79.424278,,,,,,1
+14799,14799,Wilson Station,,43.734475,-79.45092,,,,,,2

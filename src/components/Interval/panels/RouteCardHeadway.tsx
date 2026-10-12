@@ -30,6 +30,7 @@ import {
   headsignTrunkHeadway,
   sparklineSourceDirections,
   sharedStopIdsForBranches,
+  sharedStretchHeadway,
   shouldShowTrunkSummary,
   trunkSparklineByHour,
 } from '../../../utils/routeCardTrunk';
@@ -139,6 +140,8 @@ export interface CurrentRouteData {
 
 export interface RouteCardHeadwayProps {
   currentRoute: CurrentRouteData;
+  /** The route's agency features (stops, pooled shared-stretch block, both directions), CIV-82. */
+  agencyFeatures?: readonly GeoJSON.Feature[];
   /** Lettered variants sharing this route's base number (GRTC 1/1A/1B/1C style). */
   variantFamily?: VariantFamily | null;
   liveRouteInfo: object | null;
@@ -164,6 +167,7 @@ export interface RouteCardHeadwayProps {
 
 export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   currentRoute,
+  agencyFeatures,
   variantFamily,
   liveRouteInfo,
   liveStatus,
@@ -291,7 +295,15 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           .filter(Boolean)
           .map(label => `- ${label}: limited service`)
       : [];
-    return [...section, ...branchLines, ...limitedLines];
+    // CIV-82: pooled shared-stretch cadence from real departures, when the data has it.
+    const shared = sharedStretchHeadway(agencyFeatures, group.realTier, period, maxHeadway);
+    const branchHeadways = [...new Set(group.realTier
+      .map(direction => routeCardDisplayHeadway(direction, period))
+      .filter((v): v is number => v != null))].sort((a, b) => a - b);
+    const sharedLines = shared && branchHeadways.length > 0
+      ? [`- Shared stretch every ${shared.headway} min; each branch every ${branchHeadways.length === 1 ? branchHeadways[0] : `${branchHeadways[0]}-${branchHeadways[branchHeadways.length - 1]}`} min`]
+      : [];
+    return [...section, ...sharedLines, ...branchLines, ...limitedLines];
   });
   const reportRawMetrics = currentRoute.directions.map((direction, index) => {
     const selectedPeriodHourlyHeadways = selectedPeriod
@@ -505,11 +517,14 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
             };
           };
           return displayGroups.map((group, gi) => {
-            const groupHasCoreSummary = shouldShowTrunkSummary(group.realTier, period);
-            const groupCoreHeadway = groupHasCoreSummary
+            // CIV-82: real pooled departures replace the reciprocal-of-medians estimate when the
+            // data has them ("Shared stretch every N"; branch rows keep each branch's own M).
+            const groupShared = sharedStretchHeadway(agencyFeatures, group.realTier, period, maxHeadway);
+            const groupHasCoreSummary = groupShared != null || shouldShowTrunkSummary(group.realTier, period);
+            const groupCoreHeadway = groupShared?.headway ?? (groupHasCoreSummary
               ? groupTrunkHeadway(group.realTier, period === 'all' ? 'midday' : period)
-              : null;
-            const groupSharedStopIds = groupHasCoreSummary ? sharedStopIdsForBranches(group.realTier) : [];
+              : null);
+            const groupSharedStopIds = groupShared?.stopIds ?? (groupHasCoreSummary ? sharedStopIdsForBranches(group.realTier) : []);
             const coreHeadsigns = group.realTier
               .filter(d => d.tier !== 'infrequent' && d.tier !== 'span' && !/drop[- ]?offs?\s+only/i.test(d.headsign ?? ''))
               .map(d => d.headsign)
@@ -550,7 +565,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                 {groupHasCoreSummary && groupCoreHeadway != null && (
                   <>
                     <CardDirectionRow
-                      label="Combined"
+                      label={groupShared ? 'Shared stretch' : 'Combined'}
                       headway={groupCoreHeadway}
                       branchHovered={coreHovered}
                       branchDimmed={!!hoveredBranch && !coreHovered}

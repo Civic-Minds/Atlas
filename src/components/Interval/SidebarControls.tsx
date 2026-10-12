@@ -38,6 +38,7 @@ import type { OpenInfoFn } from '../InfoPanel';
 import { SearchSuggestionsPanel } from './SearchSuggestionsPanel';
 import { SearchResultsList } from './SearchResultsList';
 import { buildRouteFacts, buildRouteServiceSummary, buildRouteStopMetric, metricValueForPeriod } from '../../utils/routeFacts';
+import { buildSharedStopIndex } from '../../../shared/sharedStops';
 import { collectStopHubSiblings, getDistanceMeters } from '../../utils/stopHub';
 import { splitRouteKey } from '../../utils/routeKey';
 import { isFeedExpired } from '../../utils/feedFreshness';
@@ -638,6 +639,8 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
 
     const routeMap = new Map<string, { shortName: string; longName: string; agencyName: string; branches: Map<string, Branch> }>();
     type Branch = { rKey: string; headsign: string | null; service: ReturnType<typeof buildRouteStopMetric>; directionId: number };
+    // Pooled values at shared stops (CIV-82), so the stop card agrees with the map and route card.
+    const sharedIndexBySlug = new Map(Object.entries(nonCorridorLayers).map(([slug, fc]) => [slug, buildSharedStopIndex(fc.features)]));
 
     const routesByAgency = currentStop.routesByAgency || {};
 
@@ -657,7 +660,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         let stopHw: number | undefined = undefined;
         let matchingStopId: string | undefined = undefined;
         for (const sId of siblingIds) {
-          const service = buildRouteStopMetric(p, sId);
+          const service = buildRouteStopMetric(p, sId, sharedIndexBySlug.get(slug));
           const hw = metricValueForPeriod(service, period);
           if (hw != null) {
             stopHw = hw;
@@ -681,7 +684,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         const entry = routeMap.get(routeShortName)!;
         const branchKey = `${dirId}::${p.headsign ?? ''}`;
         // Prefer stop-specific headway over feature headway; keep the best (lowest) when deduping.
-        const service = buildRouteStopMetric(p, matchingStopId);
+        const service = buildRouteStopMetric(p, matchingStopId, sharedIndexBySlug.get(slug));
         const newHeadway = service.value ?? p.headway ?? null;
         const existing = entry.branches.get(branchKey);
         if (!existing || (newHeadway != null && (existing.service.value == null || newHeadway < existing.service.value))) {
@@ -1146,6 +1149,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
               <>
                 <RouteCardHeadway
                   currentRoute={currentRoute}
+                  agencyFeatures={routeSlug ? nonCorridorLayers[routeSlug]?.features : undefined}
                   variantFamily={variantFamily}
                   liveRouteInfo={liveRouteInfo}
                   liveStatus={liveStatus}

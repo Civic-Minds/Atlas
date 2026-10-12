@@ -478,7 +478,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     let routeShortName: string | null = null;
     let routeColor: string | null = null;
     if (map) {
-      const drawnLayers = ['overview-routes-layer', 'routes-layer', 'local-routes-layer', 'selected-route-layer', 'selected-local-route-layer', 'night-service-routes-layer', 'frequent-service-routes-layer']
+      const drawnLayers = ['overview-routes-layer', 'routes-layer', 'local-routes-layer', 'selected-route-layer', 'selected-local-route-layer', 'night-service-routes-layer', 'frequent-service-routes-layer', 'frequency-qualifying-segments-layer']
         .filter(layer => map.getLayer(layer) && map.getLayoutProperty(layer, 'visibility') !== 'none');
       // Only the part of the map that ends up in the image (exports crop to their own shape).
       const features = drawnLayers.length > 0 ? map.queryRenderedFeatures(box, { layers: drawnLayers }) : [];
@@ -1011,8 +1011,8 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     if (!showRouteLayers || fareView || nightServiceView || frequentServiceView || !filteredLayers) {
       return { segments: [], partialMatches: [] };
     }
-    return computeFrequencySegmentOverlay(filteredLayers, period, maxHeadway);
-  }, [filteredLayers, period, maxHeadway, showRouteLayers, fareView, nightServiceView, frequentServiceView, colorMode]);
+    return computeFrequencySegmentOverlay(filteredLayers, period, maxHeadway, colorMode, layers ?? filteredLayers);
+  }, [filteredLayers, layers, period, maxHeadway, showRouteLayers, fareView, nightServiceView, frequentServiceView, colorMode]);
 
   const sharedHoverSegments = useMemo(
     () => buildSharedHoverSegments(layers, selectedRoute, hoveredBranch, day, colorMode),
