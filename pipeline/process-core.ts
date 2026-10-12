@@ -3,6 +3,7 @@
  * Used by process-gtfs.ts (local zip) and refresh.ts (downloaded feeds).
  */
 import { parseGtfsZip } from './parseGtfs.js';
+import { computeRunningTimes, runningTimesJson } from './runningTime.js';
 import type { GtfsData, AnalysisResult, RawRouteDepartures } from '../types/gtfs.js';
 import { computeRawDepartures } from './transit-phase1.js';
 import { applyAnalysisCriteria, representativeIndexByCount, previousNightTailDays, representativeWeekdayIndex } from './transit-phase2.js';
@@ -1745,6 +1746,10 @@ export async function processGtfsBuffer(
 
   const feedInfo = gtfs.feedInfo?.[0];
   const timezone = gtfs.agencies?.[0]?.agency_timezone?.trim() || null;
+  // Scheduled running time (CIV-84): card data in its own top-level block of the agency JSON,
+  // beside the features, so route features and map tiles are untouched.
+  const runningTimes = computeRunningTimes(gtfs, routeById, activeServiceIdsByCalendarDay, shapeFilterForPhase1);
+
   const mainFeatures = [...features, ...stopFeatures];
   const routeFeatures = features.filter(feature =>
     feature.properties.routeShortName != null,
@@ -1805,7 +1810,7 @@ export async function processGtfsBuffer(
   }
 
   return {
-    geojson: JSON.stringify({ type: 'FeatureCollection', atlasSchemaVersion: ROUTE_ARTIFACT_SCHEMA_VERSION, features: mainFeatures }),
+    geojson: JSON.stringify({ type: 'FeatureCollection', atlasSchemaVersion: ROUTE_ARTIFACT_SCHEMA_VERSION, features: mainFeatures, runningTimes: runningTimesJson(runningTimes) }),
     corridorsGeojson: JSON.stringify({ type: 'FeatureCollection', features: corridorFeatures }),
     stopsJson: JSON.stringify(stopsIndex),
     tripsJson: JSON.stringify(tripsLookup),

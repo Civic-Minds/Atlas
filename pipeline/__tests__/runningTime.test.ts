@@ -1,0 +1,97 @@
+import { describe, expect, it } from 'vitest';
+import type { DayName, GtfsData, GtfsRoute } from '../../types/gtfs.js';
+import { computeRunningTimes, runningTimesJson } from '../runningTime.js';
+
+const ALL: DayName[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+const hm = (m: number) => `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}:00`;
+
+type Trip = { id: string; shape?: string; dir?: string; start: number; stops: string[]; minutes: number; service?: string };
+
+function feed(trips: Trip[], frequencies: GtfsData['frequencies'] = []): GtfsData {
+  const route: GtfsRoute = { route_id: 'r1', route_short_name: '29', route_type: '3' };
+  return {
+    agencies: [], routes: [route], stops: [], calendar: [], calendarDates: [], shapes: [], frequencies,
+    trips: trips.map(t => ({ route_id: 'r1', service_id: t.service ?? 'wk', trip_id: t.id, direction_id: t.dir ?? '0', shape_id: t.shape ?? 'main' })),
+    stopTimes: trips.flatMap(t => t.stops.map((stop, i) => {
+      const time = hm(t.start + Math.round((t.minutes * i) / (t.stops.length - 1)));
+      return { trip_id: t.id, stop_id: stop, stop_sequence: String(i + 1), arrival_time: time, departure_time: time };
+    })),
+  } as unknown as GtfsData;
+}
+
+function run(gtfs: GtfsData, services = ['wk']) {
+  const active = new Map(ALL.map(d => [d, new Set(services)]));
+  return computeRunningTimes(gtfs, new Map(gtfs.routes.map(r => [r.route_id, r])), active, new Map());
+}
+
+const line = ['a', 'b', 'c', 'd', 'e', 'f'];
+
+describe('scheduled running time (CIV-84)', () => {
+  it('takes the median end-to-end minutes by departure hour and by period', () => {
+    const trips: Trip[] = [
+      ...[480, 490, 500].map((s, i) => ({ id: `am${i}`, start: s, stops: line, minutes: [50, 52, 54][i] })),
+      ...[720, 735].map((s, i) => ({ id: `mid${i}`, start: s, stops: line, minutes: 44 })),
+    ];
+    const rt = run(feed(trips)).get('r1::0::Weekday')!;
+    expect(rt.byHour['8']).toBe(52);
+    expect(rt.byHour['12']).toBe(44);
+    expect(rt.byPeriod.amPeak).toEqual({ median: 52, min: 50, max: 54 });
+    expect(rt.loop).toBeUndefined();
+  });
+
+  it('leaves out short turns and partial trips instead of letting them pull the median down', () => {
+    const trips: Trip[] = [
+      ...[480, 490, 500, 510].map((s, i) => ({ id: `full${i}`, start: s, stops: line, minutes: 60 })),
+      ...[485, 495, 505].map((s, i) => ({ id: `short${i}`, start: s, stops: line.slice(0, 4), minutes: 30 })),
+    ];
+    expect(run(feed(trips)).get('r1::0::Weekday')!.byHour['8']).toBe(60);
+  });
+
+  it('never lets a direction of 2-stop shuttles become the pattern (TTC 52)', () => {
+    const trips: Trip[] = [
+      ...Array.from({ length: 6 }, (_, i) => ({ id: `shuttle${i}`, start: 480 + i * 5, stops: ['a', 'b'], minutes: 3 })),
+      ...[480, 495].map((s, i) => ({ id: `long${i}`, start: s, stops: line, minutes: 70 })),
+    ];
+    expect(run(feed(trips)).get('r1::0::Weekday')!.byHour['8']).toBe(70);
+  });
+
+  it('measures a loop as a full loop and flags it, never halving it', () => {
+    const loop = ['hub', 'b', 'c', 'd', 'hub'];
+    const rt = run(feed([0, 1, 2].map(i => ({ id: `l${i}`, start: 600 + i * 20, stops: loop, minutes: 40 })))).get('r1::0::Weekday')!;
+    expect(rt.loop).toBe(true);
+    expect(rt.byHour['10']).toBe(40);
+  });
+
+  it('handles trips past midnight in extended GTFS times', () => {
+    const rt = run(feed([1500, 1520].map((s, i) => ({ id: `n${i}`, start: s, stops: line, minutes: 35 })))).get('r1::0::Weekday')!;
+    expect(rt.byHour['25']).toBe(35);
+    expect(rt.byPeriod.late?.median).toBe(35);
+  });
+
+  it('applies a frequency template\'s duration to every departure it expands to', () => {
+    const gtfs = feed([{ id: 'tmpl', start: 0, stops: line, minutes: 42 }],
+      [{ trip_id: 'tmpl', start_time: '07:00:00', end_time: '08:00:00', headway_secs: '600' }]);
+    expect(run(gtfs).get('r1::0::Weekday')!.byHour['7']).toBe(42);
+  });
+
+  it('shows nothing rather than a guess: one trip an hour, or bad times, give no value', () => {
+    const gtfs = feed([{ id: 'only', start: 480, stops: line, minutes: 50 }]);
+    expect(run(gtfs).get('r1::0::Weekday')).toBeUndefined();
+    // A trip whose end precedes its start is dropped outright.
+    const backwards = feed([0, 1].map(i => ({ id: `x${i}`, start: 600 + i * 10, stops: line, minutes: -20 })));
+    expect(run(backwards).get('r1::0::Weekday')).toBeUndefined();
+  });
+
+  it('counts identical trips under overlapping service_ids once', () => {
+    const trips: Trip[] = [
+      ...[480, 500].map((s, i) => ({ id: `a${i}`, start: s, stops: line, minutes: 50 })),
+      ...[480].map(s => ({ id: 'dup', start: s, stops: line, minutes: 90, service: 'wk2' })),
+    ];
+    expect(run(feed(trips), ['wk', 'wk2']).get('r1::0::Weekday')!.byHour['8']).toBe(50);
+  });
+
+  it('serializes compactly as h (by hour) and p ([median, min, max] by period)', () => {
+    const rt = run(feed([480, 490].map((s, i) => ({ id: `t${i}`, start: s, stops: line, minutes: 50 }))));
+    expect(runningTimesJson(rt)).toEqual({ 'r1::0::Weekday': { h: { '8': 50 }, p: { amPeak: [50, 50, 50] } }, 'r1::0::Saturday': { h: { '8': 50 }, p: { amPeak: [50, 50, 50] } }, 'r1::0::Sunday': { h: { '8': 50 }, p: { amPeak: [50, 50, 50] } } });
+  });
+});
