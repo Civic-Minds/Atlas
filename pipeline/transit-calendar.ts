@@ -140,15 +140,16 @@ export function detectReferenceDate(
     const singletonMultiDayStarts = rawMultiStarts.length === 0
         ? sortedStarts.filter(s => groupEnd(s) > s)
         : [];
-    // A one-day median that has already passed (Mont-Tremblant's Thanksgiving Saturday, Oct 10,
-    // between periods that end Oct 3-9 and start Oct 16-17) is a holiday, not a timetable: with
-    // multi-day services in the feed, the median of those stands in for it, so the rule above
-    // can move it to a running period (#764). WSF-style feeds, where every service is one day,
-    // and a one-day median today or later keep the plain median.
+    // A one-day median (Mont-Tremblant's Thanksgiving Saturday, Oct 10, between periods that end
+    // Oct 3-9 and start Oct 16-17) is a holiday, not a timetable: when a multi-day service is
+    // running today, the median of the multi-day services stands in for it, so the rule above
+    // can move it to a running period (#764). This holds before, on and after the holiday, so
+    // the result does not depend on the build date. WSF-style feeds (every service one day) and
+    // stale feeds with no multi-day service running keep the plain median.
     const overallMedianStart = sortedStarts[Math.floor(sortedStarts.length / 2)];
+    const multiDayRunning = singletonMultiDayStarts.some(s => s <= todayStr && groupEnd(s) >= todayStr);
     const medianStart = rawMultiStarts.length === 0 && overallMedianStart != null
-        && groupEnd(overallMedianStart) === overallMedianStart && overallMedianStart < todayStr
-        && singletonMultiDayStarts.length > 0
+        && groupEnd(overallMedianStart) === overallMedianStart && multiDayRunning
         ? singletonMultiDayStarts[Math.floor(singletonMultiDayStarts.length / 2)]
         : overallMedianStart;
     const singletonRunningStart = rawMultiStarts.length === 0 && medianStart != null
