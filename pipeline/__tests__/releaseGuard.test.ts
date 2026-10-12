@@ -2,6 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { ROUTE_ARTIFACT_SCHEMA_VERSION, TILE_RULES_VERSION } from '../../shared/artifactSchema';
 import {
   ALLOW_UNPAIRED_UPLOAD_FLAG,
+  publicAgenciesExcludedFromRelease,
+  publicAgenciesMissingFromRelease,
+  releaseFileExists,
   releasePublishError,
   tileRulesFingerprint,
   unpairedUploadError,
@@ -92,10 +95,95 @@ describe('tile rules fingerprint', () => {
   //    until a release built with the new rules is published
   //    (npm run refresh-release, or the Refresh GTFS feeds workflow);
   //  - if it cannot (comments, types, refactors), just update the hash here.
+  // #710 added pws_<period> (partial-weekday service) keys and the overview allowlist entry.
+  // No version bump: older tiles lack pws and evaluate exactly as before, and older apps
+  // ignore the new keys.
+  // CIV-82 strips the new shared-stretch keys from tiles (JSON only). Tile properties are
+  // unchanged, so the version stays and only the hash is recomputed. The CIV-82 phase 2 rule
+  // text in worstDirection.ts / routeHeadwayFilter.ts is comment-only, and routeFilterHeadway
+  // caching its per-period expression changes no value: hash only.
   it('changes only together with a deliberate TILE_RULES_VERSION decision', () => {
     expect({ version: TILE_RULES_VERSION, fingerprint: tileRulesFingerprint() }).toEqual({
-      version: 1,
-      fingerprint: '4548b3f18dea5898657205d6d3c42fc0e0c45f83b5feb44a472c74d9ac24a7c0',
+      version: 2,
+      fingerprint: '8dc28aa6ec105ed3b3a71fbbef99de3257041fa56508319fd9c74e0466f3cd0b',
     });
+  });
+});
+
+describe('public agencies without a release file (#759)', () => {
+  const refreshed = { lastFeedExpiry: '20271231', lastRefreshedAt: '2026-10-12' };
+  const agencies: Array<Record<string, unknown>> = [
+    { slug: 'ttc', ...refreshed },
+    { slug: 'yrt', ...refreshed },
+    { slug: 'fort-bend', ...refreshed, pmtilesPending: true },
+    { slug: 'mexico-city-metro' },
+    { slug: 'siskiyou', ...refreshed, pmtilesPending: true, hiddenInProduction: true, issueUrl: 'https://github.com/Civic-Minds/Atlas/issues/492' },
+    { slug: 'new-feed', ...refreshed, staged: true },
+  ];
+
+  it('fails a public agency with no file in the release', () => {
+    const releaseFiles = new Set(['ttc']);
+    expect(publicAgenciesMissingFromRelease(agencies, slug => releaseFiles.has(slug))).toEqual(['yrt', 'fort-bend', 'mexico-city-metro']);
+  });
+
+  it('passes hidden and staged agencies that have no file', () => {
+    const releaseFiles = new Set(['ttc', 'yrt', 'fort-bend', 'mexico-city-metro']);
+    expect(publicAgenciesMissingFromRelease(agencies, slug => releaseFiles.has(slug))).toEqual([]);
+  });
+
+  it('passes an agency that was not refreshed but still has its older file in the release', () => {
+    const stale = [{ slug: 'ttc', lastFeedExpiry: '20250101', lastRefreshedAt: '2025-06-01' }];
+    expect(publicAgenciesMissingFromRelease(stale, slug => slug === 'ttc')).toEqual([]);
+  });
+
+  it('flags public agencies build-pmtiles never copies into a release', () => {
+    expect(publicAgenciesExcludedFromRelease(agencies)).toEqual(['fort-bend', 'mexico-city-metro']);
+  });
+});
+
+describe('releaseFileExists', () => {
+  const url = 'https://data.example/atlas/releases/release-b/agencies/ttc.json';
+  const respond = (...statuses: Array<number | Error>) => {
+    const calls: number[] = [];
+    const fetchImpl = (async () => {
+      const next = statuses[Math.min(calls.length, statuses.length - 1)];
+      calls.push(calls.length);
+      if (next instanceof Error) throw next;
+      return new Response(null, { status: next, headers: next === 429 ? { 'retry-after': '2' } : {} });
+    }) as unknown as typeof fetch;
+    return { fetchImpl, calls };
+  };
+  const waits: number[] = [];
+  const sleep = async (ms: number) => { waits.push(ms); };
+
+  it('returns false on 404 and true on 200', async () => {
+    expect(await releaseFileExists(url, { ...respond(404), sleep })).toBe(false);
+    expect(await releaseFileExists(url, { ...respond(200), sleep })).toBe(true);
+  });
+
+  it('retries a 429, honouring Retry-After, then succeeds', async () => {
+    waits.length = 0;
+    const stub = respond(429, 200);
+    expect(await releaseFileExists(url, { ...stub, sleep })).toBe(true);
+    expect(stub.calls.length).toBe(2);
+    expect(waits).toEqual([2000]);
+  });
+
+  it('retries a network error, then succeeds', async () => {
+    expect(await releaseFileExists(url, { ...respond(new TypeError('fetch failed'), 200), sleep })).toBe(true);
+  });
+
+  it('throws after persistent 5xx', async () => {
+    waits.length = 0;
+    const stub = respond(503);
+    await expect(releaseFileExists(url, { ...stub, sleep, retries: 4 })).rejects.toThrow(/after 5 attempts: HTTP 503/);
+    expect(stub.calls.length).toBe(5);
+    expect(waits).toEqual([1000, 2000, 4000, 8000]);
+  });
+
+  it('throws at once on a non-retryable status', async () => {
+    const stub = respond(403);
+    await expect(releaseFileExists(url, { ...stub, sleep })).rejects.toThrow(/HTTP 403/);
+    expect(stub.calls.length).toBe(1);
   });
 });

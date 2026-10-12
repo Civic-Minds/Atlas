@@ -7,19 +7,19 @@
     -83.057
   ],
   "feedUrl": "https://s3.amazonaws.com/etatransit.gtfs/qline.etaspot.net/gtfs.zip",
-  "lastFeedExpiry": "20270122",
-  "lastFeedVersion": "8",
-  "lastRefreshedAt": "2026-10-08",
+  "lastFeedExpiry": "20270523",
+  "lastFeedVersion": "29",
+  "lastRefreshedAt": "2026-10-12",
   "websiteUrl": "https://qlinedetroit.com/",
   "cities": [
     "Detroit, Michigan"
   ],
   "timezone": "America/New_York",
   "lastRawArchiveKey": "20251231-8926b6d5769c203c",
-  "lastFeedCheckAt": "20261008",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20270122",
+  "expiredFeedCheckExpiry": "20270523",
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
@@ -37,6 +37,6 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 6
     },
-    "checkedAt": "2026-10-08"
+    "checkedAt": "2026-10-12"
   }
 }

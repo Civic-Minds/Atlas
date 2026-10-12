@@ -6,6 +6,7 @@ import {
     DayType,
     DayName,
     WEEKDAYS,
+    ALL_DAYS,
     DAY_TO_TYPE,
 } from '../types/gtfs';
 import { computeMedian } from './transit-utils';
@@ -13,6 +14,7 @@ import { DEFAULT_CRITERIA, getTiersForCriteria } from './defaults';
 import { SURFACE_TIER_MAXES, TIME_PERIODS } from '../shared/config.js';
 import { isRailLikeRoute } from '../shared/modes.js';
 import { computeRawDepartures } from './transit-phase1';
+import { forCrossMidnightWindow } from './headway-utils';
 
 export type TierDeterminerContext = {
     rawDepartureTimes: readonly number[];
@@ -44,6 +46,11 @@ export type TierDeterminer = (
  * the service and cannot use this allowance.
  */
 export const EDGE_GAP_ALLOWANCE_MINUTES = 10;
+
+/** Departures packed into this many minutes or fewer are a burst, not a schedule. */
+export const BURST_MAX_SPAN_MINUTES = 90;
+/** A burst is a variant only of a regular pattern running within this many minutes of it (#732). */
+export const BURST_SIBLING_WINDOW_MINUTES = 60;
 export type EdgeGapAllowanceSide = 'opening' | 'closing' | 'both';
 
 type EdgeGapAllowanceResult = {
@@ -296,15 +303,79 @@ export function computeResourceStats(
  */
 const representativeRollupEntry = <T extends { result: AnalysisResult }>(
     entries: T[],
-): T => {
-    const counts = entries.map(entry => entry.result.times.length).sort((a, b) => a - b);
-    const medianCount = counts[Math.floor(counts.length / 2)];
-    return entries.reduce((best, entry) => {
-        const distance = Math.abs(entry.result.times.length - medianCount);
-        const bestDistance = Math.abs(best.result.times.length - medianCount);
-        return distance < bestDistance ? entry : best;
-    }, entries[0]);
-};
+): T => entries[representativeIndexByCount(entries.map(entry => entry.result.times.length))];
+
+/**
+ * Mon-Fri index of the representative weekday, or null when the median weekday has no
+ * service. Shared with the stop-level Weekday grouping in process-core so stop and route
+ * metrics describe the same weekday (#710).
+ */
+export function representativeWeekdayIndex(countsByWeekday: number[]): number | null {
+    // Mon-Fri departure counts, 0 for a day without service. The median weekday decides:
+    // a route that runs on fewer than 3 of 5 weekdays has no representative weekday (#710).
+    const sorted = [...countsByWeekday].sort((a, b) => a - b);
+    if (!(sorted[Math.floor((sorted.length - 1) / 2)] > 0)) return null;
+    return representativeIndexByCount(countsByWeekday);
+}
+
+/**
+ * Index of the day whose departure count is closest to the median count; the
+ * earliest such day wins a tie.
+ */
+export function representativeIndexByCount(counts: number[]): number {
+    const sorted = [...counts].sort((a, b) => a - b);
+    // Lower middle for an even count: the worse of the two middle days decides.
+    const medianCount = sorted[Math.floor((sorted.length - 1) / 2)];
+    return counts.reduce((bestIndex, count, index) =>
+        Math.abs(count - medianCount) < Math.abs(counts[bestIndex] - medianCount) ? index : bestIndex, 0);
+}
+
+/** A day counts as the previous night's tail only if all of its departures are before 06:00
+ * (the same early-morning cutoff #297 uses for overnight-only service ids)... */
+export const PREVIOUS_NIGHT_TAIL_LAST_DEPARTURE_BEFORE_MIN = 6 * 60;
+/** ...and its first departure follows the previous day's last one within 90 minutes. */
+export const PREVIOUS_NIGHT_TAIL_MAX_GAP_MIN = 90;
+
+/**
+ * Route/direction/days (`route::dir::DayName`) whose only service is the after-midnight tail of
+ * the previous night (#718). GTFS can write a night's after-midnight trips as 24:00+ times on
+ * that night's own service, or as 00:00+ times on a separate service active the next calendar
+ * day. In the second form the next day shows trips it does not really have: clemson-cat TL-24
+ * runs Saturday 17:00-23:59 and Sunday 00:00-02:30 only, and Sunday got tier 30 from the tail.
+ * Owl routes and real early starts are not tails: the previous day's last departure is hours
+ * earlier (an owl route ends near 05:00; a 04:30 start is ~5 h after a 23:30 finish).
+ * All groups of a route and direction are pooled, so a day with any later service never counts.
+ */
+export function previousNightTailDays(rawData: readonly RawRouteDepartures[]): Set<string> {
+    const span = new Map<string, { route: string; dir: string; day: DayName; first: number; last: number }>();
+    for (const raw of rawData) {
+        if (raw.departureTimes.length === 0) continue;
+        const key = `${raw.route}::${raw.dir}::${raw.day}`;
+        let first = Infinity;
+        let last = -Infinity;
+        for (const time of raw.departureTimes) {
+            if (time < first) first = time;
+            if (time > last) last = time;
+        }
+        const existing = span.get(key);
+        span.set(key, existing
+            ? { ...existing, first: Math.min(existing.first, first), last: Math.max(existing.last, last) }
+            : { route: raw.route, dir: raw.dir, day: raw.day, first, last });
+    }
+    const tails = new Set<string>();
+    for (const [key, { route, dir, day, first, last }] of span) {
+        if (last >= PREVIOUS_NIGHT_TAIL_LAST_DEPARTURE_BEFORE_MIN) continue;
+        const dayIndex = ALL_DAYS.indexOf(day);
+        const previousDay = ALL_DAYS[(dayIndex + ALL_DAYS.length - 1) % ALL_DAYS.length];
+        const previous = span.get(`${route}::${dir}::${previousDay}`);
+        if (!previous) continue;
+        // A negative gap means the previous day already runs past this day's first departure in
+        // 24:00+ times; these trips are then not its continuation.
+        const gap = first + 1440 - previous.last;
+        if (gap >= 0 && gap <= PREVIOUS_NIGHT_TAIL_MAX_GAP_MIN) tails.add(key);
+    }
+    return tails;
+}
 
 /**
  * Phase 2: Apply analysis criteria to raw departure data.
@@ -317,8 +388,38 @@ export function applyAnalysisCriteria(
     rawData: RawRouteDepartures[],
     criteria: AnalysisCriteria = DEFAULT_CRITERIA,
     tierDeterminer: TierDeterminer = determineTierWithEdgeGapAllowance,
+    /**
+     * Weekdays with service per route_id::dir across all of its patterns (#710). When omitted,
+     * counted from rawData: the distinct weekdays any of the route direction's patterns appear on.
+     * Either way, a weekday whose only service is the previous night's tail must not count (#718).
+     */
+    weekdayServiceDays?: ReadonlyMap<string, number>,
+    /**
+     * Whether other drawn shapes already cover a shape's road (#732). A burst or stray-trip pattern
+     * is demoted to irregular only when this holds for its regular siblings' shapes. When omitted
+     * (scripts and tests without geometry), nothing counts as covered and nothing is demoted.
+     */
+    isShapeCovered: (shapeId: string | undefined, coveringShapeIds: string[]) => boolean = () => false,
 ): AnalysisResult[] {
-    const perDayResults = new Map<string, { dayType: DayType; day: DayName; result: AnalysisResult }>();
+    const tailDays = previousNightTailDays(rawData);
+    const rawWeekdays = new Map<string, Set<DayName>>();
+    for (const raw of rawData) {
+        if (!(WEEKDAYS as readonly DayName[]).includes(raw.day)) continue;
+        // A weekday that only carries the previous night's tail is not a service day (#718).
+        if (tailDays.has(`${raw.route}::${raw.dir}::${raw.day}`)) continue;
+        const key = `${raw.route}::${raw.dir}`;
+        rawWeekdays.set(key, (rawWeekdays.get(key) ?? new Set<DayName>()).add(raw.day));
+    }
+    const routeDirWeekdays = (route: string, dir: string): number =>
+        weekdayServiceDays?.get(`${route}::${dir}`) ?? rawWeekdays.get(`${route}::${dir}`)?.size ?? 0;
+    const perDayResults = new Map<string, { dayType: DayType; day: DayName; result: AnalysisResult; rawTimes: number[] }>();
+    // Route directions (per day) that run a regular all-day pattern, and the time-limited bursts
+    // that may be variants of them (#732).
+    const regularTimesByRouteDirDay = new Map<string, { times: number[]; shapeId?: string }[]>();
+    const burstResults: { key: string; span: [number, number]; result: AnalysisResult }[] = [];
+    const demotedBursts = new Set<AnalysisResult>();
+    const routeDaysWithRegularService = new Map<string, string[]>();
+    const fallbackStrays: { key: string; result: AnalysisResult }[] = [];
 
     for (const raw of rawData) {
         const dayType = DAY_TO_TYPE[raw.day];
@@ -392,7 +493,7 @@ export function applyAnalysisCriteria(
         const hasRepeatedPeakService = periodTripCounts.amPeak >= 3 || periodTripCounts.pmPeak >= 3;
         const hasRepeatedOffPeakService = periodTripCounts.midday >= 3 || periodTripCounts.evening >= 3;
         const isSplitPeakService = !isOvernightFallback && hasRepeatedPeakService && !hasRepeatedOffPeakService;
-        const isLimitedService = isSplitPeakService || spanMins <= 90 || (!isOvernightFallback && coverage < 0.4);
+        const isLimitedService = isSplitPeakService || spanMins <= BURST_MAX_SPAN_MINUTES || (!isOvernightFallback && coverage < 0.4);
         const tierDetail = tierDeterminer === determineTierWithEdgeGapAllowance
             ? determineTierWithEdgeGapAllowanceDetail(
                 analysisGaps,
@@ -439,6 +540,10 @@ export function applyAnalysisCriteria(
         // Three repeated departures are the minimum evidence for a schedule; one or two trips
         // remain irregular even when their single gap happens to match a published tier.
         const hasSustainedCadence = analysisWindow.length >= 3 && determinedTier !== 'span';
+        // The overnight fallback exists for genuinely overnight-only service. One or two trips
+        // that merely fall outside the daytime window (stl AOUT2626E: 06:09 and 10:07) are made
+        // irregular below, as they would be inside it, when the route has regular service (#732).
+        const tooFewFallbackTrips = isOvernightFallback && analysisWindow.length < 3;
         const serviceClass = isSplitPeakService
             ? 'irregular'
             : isLimitedService
@@ -449,6 +554,24 @@ export function applyAnalysisCriteria(
         const tier = serviceClass === 'irregular'
             ? 'span'
             : determinedTier === 'span' ? 'infrequent' : determinedTier;
+        // A burst (≤90 minutes, the limited-service rule above) and the route direction's regular
+        // all-day patterns. Used below to demote short-turn and burst variants (#732). The burst
+        // is measured over the whole day's window, not the rail midday sample: a 64-train AM
+        // pattern of TTC Line 1 has a short midday tail but is not a burst.
+        const routeDirDayKey = `${raw.route}::${raw.dir}::${raw.day}`;
+        const isBurst = windowedTimes[windowedTimes.length - 1] - windowedTimes[0] <= BURST_MAX_SPAN_MINUTES;
+        // The whole day's departures, so a burst before 07:00 or after midnight is compared with
+        // the hours the regular pattern really runs.
+        const rawSpan: [number, number] = [Math.min(...raw.departureTimes), Math.max(...raw.departureTimes)];
+        if (serviceClass === 'regular' && windowedTimes.length >= 3) {
+            // A regular pattern without shape data is kept as '' so the coverage checks below fail.
+            const routeShapes = routeDaysWithRegularService.get(`${raw.route}::${raw.day}`) ?? [];
+            routeShapes.push(raw.shapeId ?? '');
+            routeDaysWithRegularService.set(`${raw.route}::${raw.day}`, routeShapes);
+            const lists = regularTimesByRouteDirDay.get(routeDirDayKey) ?? [];
+            lists.push({ times: raw.departureTimes, shapeId: raw.shapeId ?? undefined });
+            regularTimesByRouteDirDay.set(routeDirDayKey, lists);
+        }
 
         const stats = computeHeadwayStats(analysisWindow);
         
@@ -489,21 +612,77 @@ export function applyAnalysisCriteria(
                 ? [...(raw.warnings ?? []), 'Overnight-only service (outside daytime analysis window)']
                 : raw.warnings,
             daysIncluded: [raw.day],
+            previousNightTail: tailDays.has(`${raw.route}::${raw.dir}::${raw.day}`) || undefined,
             headsign: raw.headsign,
             routeVariant: raw.routeVariant,
             shapeId: raw.shapeId,
             routeVariant: raw.routeVariant,
             ...resourceStats
         };
-        perDayResults.set(`${raw.route}::${raw.dir}::${raw.headsign ?? ''}::${raw.shapeId ?? ''}::${raw.routeVariant ?? ''}::${raw.day}`, { dayType, day: raw.day, result });
+        perDayResults.set(`${raw.route}::${raw.dir}::${raw.headsign ?? ''}::${raw.shapeId ?? ''}::${raw.routeVariant ?? ''}::${raw.day}`, { dayType, day: raw.day, result, rawTimes: raw.departureTimes });
+        if (isBurst && serviceClass === 'time-limited') burstResults.push({ key: routeDirDayKey, span: rawSpan, result });
+        if (tooFewFallbackTrips && serviceClass !== 'irregular') fallbackStrays.push({ key: `${raw.route}::${raw.day}`, result });
+    }
+
+    // Short-turn and burst variants (#732). Three to seven trips packed into ≤90 minutes pass the
+    // three-departure check, so a short turn of a frequent route reads as its own time-limited
+    // tier-10 service (mta-maryland 22 COLD SPRING METRO: 3 trips 14:30-14:37; mbta 455
+    // Wonderland: 4 trips 04:45-05:35; ttc 340 shape 1122570: 3 trips 25:31-26:04). When the
+    // same route direction runs a regular pattern that day, and that pattern runs while the
+    // burst does (departures within the hour on both sides of the burst, or two during it), the burst is a
+    // variant of it,
+    // not a schedule of its own: irregular, like other one-off trips, so it sets no tier and the
+    // worst-direction rule skips it (the same regular-sibling test as that rule's infrequent-
+    // sibling drop). Otherwise the burst keeps its class:
+    // - capmetro splits all-day routes like 310 into one time-limited shape per 60-120 minutes
+    //   with no regular shape, and each slice stands for the route in its hours;
+    // - capmetro 20 SB's evening shapes 753 (20:02-22:37) and 757 (22:07-23:07) run after its
+    //   regular shapes end (721 runs 05:04-07:44 plus one 21:37 trip), so they are the route's
+    //   evening service.
+    for (const { key, span, result } of burstResults) {
+        const from = span[0] - BURST_SIBLING_WINDOW_MINUTES;
+        const to = span[1] + BURST_SIBLING_WINDOW_MINUTES;
+        // The regular pattern must run on both sides of the burst (a departure within the hour
+        // before it starts and within the hour after it ends) or at least twice during it. A
+        // burst just before the regular pattern starts or just after it ends is the only
+        // service in that hour and stays visible.
+        const siblingTimes = (regularTimesByRouteDirDay.get(key) ?? []).flatMap(({ times }) => times);
+        const before = siblingTimes.some(t => t >= from && t <= span[0]);
+        const after = siblingTimes.some(t => t >= span[1] && t <= to);
+        const during = siblingTimes.filter(t => t >= span[0] && t <= span[1]).length >= 2;
+        if (!(before && after) && !during) continue;
+        // Only when the direction's regular patterns draw the burst's road: a burst on its own
+        // street (pace 533's 3 morning trips along Molitor Rd, a school run to one campus) stays
+        // visible. Every regular shape of the direction must cover it on its own, because the map
+        // draws one shape per headsign and which one wins is decided later (ttc 39S Tapscott is
+        // covered by shape 1122696 but not by 1122695, the one drawn for Finch Station).
+        const siblingShapes = (regularTimesByRouteDirDay.get(key) ?? []).map(({ shapeId }) => shapeId);
+        if (siblingShapes.length === 0
+            || !siblingShapes.every(shapeId => shapeId && isShapeCovered(result.shapeId, [shapeId]))) continue;
+        result.serviceClass = 'irregular';
+        result.tier = 'span';
+        demotedBursts.add(result);
+    }
+
+    // One or two trips outside the daytime window are irregular when the route runs regular
+    // service that day (stl 26: the synthesized direction's 06:09 and 10:07 beside a 68-trip
+    // direction). Without it they keep their class: capmetro gives every 322 trip pair its own
+    // shape, and the one pair that falls outside the window is the route's only drawn feature.
+    for (const { key, result } of fallbackStrays) {
+        const routeShapes = routeDaysWithRegularService.get(key);
+        if (!routeShapes || routeShapes.length === 0
+            || !routeShapes.every(shapeId => shapeId !== '' && isShapeCovered(result.shapeId, [shapeId]))) continue;
+        result.serviceClass = 'irregular';
+        result.tier = 'span';
+        demotedBursts.add(result);
     }
 
     // Roll up per-day results into day-type summaries
-    const rollupGroups = new Map<string, { dayType: DayType; entries: { day: DayName; result: AnalysisResult }[] }>();
+    const rollupGroups = new Map<string, { dayType: DayType; entries: { day: DayName; result: AnalysisResult; rawTimes: number[] }[] }>();
     for (const [, entry] of perDayResults) {
         const key = `${entry.result.route}::${entry.result.dir}::${entry.result.headsign ?? ''}::${entry.result.shapeId ?? ''}::${entry.result.routeVariant ?? ''}::${entry.dayType}`;
         if (!rollupGroups.has(key)) rollupGroups.set(key, { dayType: entry.dayType, entries: [] });
-        rollupGroups.get(key)!.entries.push({ day: entry.day, result: entry.result });
+        rollupGroups.get(key)!.entries.push({ day: entry.day, result: entry.result, rawTimes: entry.rawTimes });
     }
 
     const results: AnalysisResult[] = [];
@@ -512,8 +691,17 @@ export function applyAnalysisCriteria(
         const { dayType, entries } = group;
         if (entries.length === 0) continue;
 
+        // A day whose only service is the previous night's after-midnight tail (#718) does not
+        // set the tier or service class while another day in the group has its own service.
+        const ownServiceEntries = entries.filter(e => !e.result.previousNightTail);
+        const ownOrAllEntries = ownServiceEntries.length > 0 ? ownServiceEntries : entries;
+        // A day on which this pattern is only a demoted burst (#732) does not set the tier or
+        // class while another day runs it as a schedule: translink 4 Downtown runs 13 trips
+        // 19:38-23:49 Monday to Thursday, but only its first 3 on Friday.
+        const scheduledEntries = ownOrAllEntries.filter(e => !demotedBursts.has(e.result));
+        const tierEntries = scheduledEntries.length > 0 ? scheduledEntries : ownOrAllEntries;
         const INFREQUENT_VAL = 1e6; // sentinel: worse than any real tier, better than span (Infinity)
-        const tierValues = entries.map(e =>
+        const tierValues = tierEntries.map(e =>
             e.result.tier === 'span' ? Infinity
             : e.result.tier === 'infrequent' ? INFREQUENT_VAL
             : parseInt(e.result.tier)
@@ -523,15 +711,41 @@ export function applyAnalysisCriteria(
             : worstTierValue >= INFREQUENT_VAL ? 'infrequent'
             : String(worstTierValue);
         const weekdayTierVariation = dayType === 'Weekday'
-            && new Set(entries.map(entry => entry.result.tier)).size > 1;
-        const serviceClass = entries.some(e => e.result.serviceClass === 'irregular')
+            && new Set(tierEntries.map(entry => entry.result.tier)).size > 1;
+        const ownServiceClass = tierEntries.some(e => e.result.serviceClass === 'irregular')
             ? 'irregular'
-            : entries.some(e => e.result.serviceClass === 'time-limited')
+            : tierEntries.some(e => e.result.serviceClass === 'time-limited')
             ? 'time-limited'
             : 'regular';
 
-        const repEntry = representativeRollupEntry(entries);
+        // Weekday: the representative weekday is chosen over all five weekdays, so a route
+        // that runs on only some of them (clemson-cat TL-24, Thu+Fri nights) has no service on
+        // it. Such a route is shown as infrequent ("limited") with no headway or timetable,
+        // not as a frequency tier taken from the days it does run (#710).
+        const weekdayIndex = dayType === 'Weekday'
+            // A weekday whose only service is the previous night's tail counts as unserved (#718).
+            ? representativeWeekdayIndex(WEEKDAYS.map(day => {
+                const entry = entries.find(e => e.day === day);
+                return entry && !entry.result.previousNightTail ? entry.result.times.length : 0;
+            }))
+            : undefined;
+        // Whether a route runs on only some weekdays is decided per route direction, across all
+        // of its shapes and patterns, never per pattern: LANTA and Lancaster give each weekday's
+        // service its own shape, so every single pattern runs on one weekday although the route
+        // runs on all five. A pattern of a full-week route keeps the typical served-day rollup.
+        const partialWeekday = dayType === 'Weekday'
+            && routeDirWeekdays(entries[0].result.route, entries[0].result.dir) < 3;
+        const repEntry = weekdayIndex != null && !partialWeekday
+            ? entries.find(e => e.day === WEEKDAYS[weekdayIndex])!
+            : representativeRollupEntry(entries);
         const rep = repEntry.result;
+        // The representative day's only service is the previous night's tail (clemson-cat TL-24
+        // Sunday: 00:00-02:30 only, continuing Saturday 17:00-23:59). Same presentation as a
+        // partial weekday: limited, with no headway or timetable, instead of a frequency tier
+        // taken from another night's trips (#718).
+        const previousNightTailOnly = !partialWeekday && rep.previousNightTail === true;
+        const noTimetable = partialWeekday || previousNightTailOnly;
+        const serviceClass = previousNightTailOnly ? 'time-limited' : ownServiceClass;
         // Rail rollup: apply the existing midday representative-day logic on top of
         // the day-type representative selection used by all modes.
         // For dir=0 (outbound): avoids Friday extra-train distortion.
@@ -559,7 +773,7 @@ export function applyAnalysisCriteria(
         // Keep the complete representative-day schedule in the result. Rail uses a
         // midday sample for tier stability, but downstream period/hour metrics and
         // sparklines need the morning, evening, and overnight departures too.
-        const rollupTimes = isRailRollup ? rep.times : rollupStatsBase;
+        const rollupTimes = noTimetable ? [] : isRailRollup ? rep.times : rollupStatsBase;
         const avgTrips = Math.round(entries.reduce((sum, e) => sum + e.result.tripCount, 0) / entries.length);
         const allStarts = entries.map(e => e.result.serviceSpan?.start ?? 0);
         const allEnds = entries.map(e => e.result.serviceSpan?.end ?? 0);
@@ -585,13 +799,26 @@ export function applyAnalysisCriteria(
             baseHeadway: Math.round(stats.baseHeadway * 10) / 10,
             peakWindow: stats.peakWindow,
             serviceSpan: span,
-            tier: worstTier,
-            weekdayTierVariation: weekdayTierVariation || undefined,
+            tier: noTimetable ? 'infrequent' : worstTier,
+            partialWeekday: partialWeekday || undefined,
+            // Periods it runs in on the weekdays it does serve, so "any frequency" in that
+            // period still draws it as limited while a frequency threshold hides it. A day that
+            // only carries the previous night's tail marks no period (#718).
+            partialWeekdayPeriods: partialWeekday
+                // 00:00-form times get the same +24 h copy the period headways use, so a
+                // 00:30 departure counts toward the late period.
+                ? TIME_PERIODS.filter(p => ownServiceEntries.some(e =>
+                    forCrossMidnightWindow(e.rawTimes, p.endHour * 60).some(t => t >= p.startHour * 60 && t < p.endHour * 60))).map(p => p.key)
+                : undefined,
+            previousNightTailOnly: previousNightTailOnly || undefined,
+            weekdayTierVariation: (weekdayTierVariation && !noTimetable) || undefined,
             edgeGapAllowance: (() => {
                 const sides = new Set(entries.map(e => e.result.edgeGapAllowance).filter(Boolean));
                 return sides.size > 1 ? 'both' : [...sides][0];
             })(),
-            serviceClass,
+            // Partial-weekday routes are limited service: the "hide limited" toggle hides them
+            // on every surface (map, lists, counts), like any other time-limited route (#710).
+            serviceClass: partialWeekday ? 'time-limited' : serviceClass,
             tripCount: avgTrips,
             gaps: stats.gaps,
             times: rollupTimes,

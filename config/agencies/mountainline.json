@@ -7,16 +7,35 @@
     -111.65
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-1979/latest.zip",
-  "lastFeedExpiry": "20261230",
-  "lastFeedVersion": "No deviations",
+  "lastFeedExpiry": "20281012",
+  "lastFeedVersion": "10/9/2026",
   "region": "Arizona",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-10-12",
   "cities": [
     "Flagstaff, Arizona"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261230",
-  "timezone": "America/Phoenix"
+  "expiredFeedCheckExpiry": "20991231",
+  "timezone": "America/Phoenix",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-1979/latest.zip",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 39
+    },
+    "checkedAt": "2026-10-12"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

@@ -10,8 +10,8 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-646/latest.zip",
   "region": "California",
   "lastFeedExpiry": "20270501",
-  "lastFeedVersion": "UTC: 30-Sep-2026 20:20",
-  "lastRefreshedAt": "2026-10-03",
+  "lastFeedVersion": "UTC: 07-Oct-2026 18:19",
+  "lastRefreshedAt": "2026-10-12",
   "cities": [
     "Tulare, California",
     "Visalia, California",
@@ -19,7 +19,7 @@
     "Delano, California",
     "Fresno, California"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270501",
@@ -37,10 +37,12 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 68
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-10-12"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-646/latest.zip"
 }

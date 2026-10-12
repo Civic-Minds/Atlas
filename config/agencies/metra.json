@@ -24,9 +24,11 @@
     "Chicago Lawn, Illinois",
     "Skokie, Illinois"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
-  "timezone": "America/Chicago"
+  "timezone": "America/Chicago",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2854/latest.zip"
 }

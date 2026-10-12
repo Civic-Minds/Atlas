@@ -15,9 +15,11 @@
   "cities": [
     "Anchorage, Alaska"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270425",
-  "timezone": "America/Anchorage"
+  "timezone": "America/Anchorage",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "http://gtfs.muni.org/People_Mover.gtfs.zip"
 }

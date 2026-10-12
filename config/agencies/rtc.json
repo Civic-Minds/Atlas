@@ -27,7 +27,7 @@
     "La Cité-Limoilou, Quebec",
     "Québec, Quebec"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261218",
@@ -50,5 +50,7 @@
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://cdn.rtcquebec.ca/Site_Internet/DonneesOuvertes/googletransit.zip"
 }

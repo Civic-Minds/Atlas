@@ -37,9 +37,11 @@
   "lastFeedExpiry": "20270110",
   "lastFeedVersion": "Updated: Jul 10, 2026, 7:27 PM",
   "lastRefreshedAt": "2026-08-21",
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270110",
-  "timezone": "America/Chicago"
+  "timezone": "America/Chicago",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://gtfs.remix.com/dcta_denton_tx_us.zip"
 }

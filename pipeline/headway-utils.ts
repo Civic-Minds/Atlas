@@ -117,6 +117,30 @@ export function sustainedMedianHeadwayInWindow(
   return Math.round(median);
 }
 
+// Step 4's terminal override can fall back to the raw all-day (6-22h) window when the terminal
+// has no midday or PM-peak headway. With three departures that window holds two gaps, and the
+// "median" of two gaps is their mean: one hourly gap plus a six-hour gap reads as 210, and the
+// DOMINANT_GAP_RATIO guard above cannot fire, because max/mean of two gaps is always below 2
+// (metrolink Riverside Line to L.A. Union Station: the last on-shape stop sees 04:09, 05:09,
+// 06:09, 07:09 and 13:09; the window keeps 06:09, 07:09 and 13:09, gaps 60 and 360, and gave 210
+// where the timetable is hourly).
+// Four departures (three gaps) is the smallest sample with a real median that the guard can test.
+export const MIN_ALL_DAY_TERMINAL_DEPARTURES = 4;
+
+/**
+ * True when a terminal stop's headway can only come from the all-day fallback window (no midday
+ * or PM-peak headway), that window holds too few departures for a trustworthy median, and the
+ * phase 2 branch value rests on more trips than the terminal sample. Step 4 then keeps the
+ * branch headway. A branch on even fewer trips (mbta 439 Nahant: 2) keeps the old behaviour.
+ */
+export function isThinAllDayTerminalSample(departureTimes: readonly number[], branchTripCount = Infinity): boolean {
+  const times = [...departureTimes];
+  if (medianHeadwayInWindow(times, 540, 900, 3) != null) return false;
+  if (medianHeadwayInWindow(times, 900, 1140, 3) != null) return false;
+  const inWindow = new Set(times.filter(t => t >= 360 && t <= 1320)).size;
+  return inWindow < MIN_ALL_DAY_TERMINAL_DEPARTURES && branchTripCount > inWindow;
+}
+
 // A branch's own dispatch-frequency median (computeHeadwayStats over the whole route+dir+day)
 // has no minimum-sample floor, unlike the per-stop windowed values it gets compared against
 // (medianHeadwayInWindow above requires minDeps=3). On sparse branches this produces a noisy
@@ -408,12 +432,15 @@ export function computePeriodHeadways(departureTimes: number[]): HeadwayByPeriod
 /** Worst wait across the entire period, including both window edges, rounded up to minutes.
  * Unlike the historical median and max gap, this also measures late starts and early finishes.
  * One departure is enough to measure coverage; no departure inside the window means no service.
+ * A period is [start, end): a departure exactly at the end belongs to the next period. That
+ * includes overnight, whose 30:00 end is the next morning's 06:00 AM-peak start, so a route's
+ * 06:00 first trip no longer reads as overnight service with a 240-min wait (coast-rta TL-147).
  */
 export function computePeriodCoverageHeadways(departureTimes: number[]): HeadwayByPeriod {
   const result: HeadwayByPeriod = {};
   for (const [key, { start, end }] of Object.entries(PERIODS) as [PeriodKey, { start: number; end: number }][]) {
     const times = [...new Set(forCrossMidnightWindow(departureTimes, end))]
-      .filter(t => t >= start && t <= end)
+      .filter(t => t >= start && t < end)
       .sort((a, b) => a - b);
     if (times.length === 0) {
       result[key] = null;

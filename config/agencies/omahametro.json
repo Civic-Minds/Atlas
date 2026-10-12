@@ -15,7 +15,7 @@
     "Omaha, Nebraska",
     "Council Bluffs, Iowa"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261121",
@@ -36,5 +36,7 @@
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://www.ometro.com/wp-content/uploads/GTFSRT/google_transit.zip"
 }

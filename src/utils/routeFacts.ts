@@ -1,7 +1,9 @@
 import type { GeoJSON } from 'geojson';
 import type { ShapeProperties } from '../hooks/useAgencyData';
-import { PERIOD_KEYS, TIME_PERIODS, type PeriodKey } from '../../shared/config';
+import { PERIOD_KEYS, TIME_PERIODS, periodKeyForHour, type PeriodKey } from '../../shared/config';
 import { hasAnyPeriodCoverage, periodCoverageValue, PERIOD_COVERAGE_MAX_HEADWAY } from '../../shared/periodEligibility';
+import { getPooledStop, type SharedStopIndex } from '../../shared/sharedStops';
+import { pairedTripPeriodFloor, pairedTripSafeHeadway } from './pairedTripFloor';
 
 export type ServicePeriod = PeriodKey | 'all';
 
@@ -12,6 +14,8 @@ export type HeadwayProvenance =
   | 'worst-direction'
   | 'minimum-stop'
   | 'stop-specific'
+  /** Pooled at a stop the route's patterns share (CIV-82, shared/sharedStops.ts). */
+  | 'shared-stretch'
   | 'none';
 
 export interface HeadwayMetric {
@@ -167,11 +171,84 @@ export function buildRouteServiceSummary(p: ShapeProperties): RouteServiceSummar
   };
 }
 
-/** Stop-specific projection of the canonical route service record. */
-export function buildRouteStopMetric(p: ShapeProperties, stopId: string): HeadwayMetric {
-  const byPeriod = p.stopPeriodHeadways?.[stopId];
-  const value = p.stopHeadways?.[stopId] ?? null;
-  return metric(value, byPeriod, undefined, value != null || byPeriod ? 'stop-specific' : 'none');
+/**
+ * Stop-specific projection of the canonical route service record. With a shared-stop index
+ * (CIV-82), a stop on the route's shared stretch shows the pooled value of every pattern serving
+ * it, metric by metric, wherever that is lower than the stop's own; so stop card, route card and
+ * map agree. Never worse than the stop's own value (getPooledStop).
+ */
+export function buildRouteStopMetric(p: ShapeProperties, stopId: string, sharedIndex?: SharedStopIndex): HeadwayMetric {
+  const own = pairedTripSafeStopPeriods(p, p.stopPeriodHeadways?.[stopId]);
+  const ownValue = pairedTripSafeStopAllDay(p, p.stopHeadways?.[stopId] ?? null);
+  if (sharedIndex) {
+    const pooledValue = getPooledStop(sharedIndex, p, stopId, 'headway') as number | undefined;
+    const pooledByPeriod: Partial<Record<PeriodKey, number>> = {};
+    for (const pk of PERIOD_KEYS) {
+      const v = getPooledStop(sharedIndex, p, stopId, `median:${pk}`) as number | undefined;
+      if (v !== undefined) pooledByPeriod[pk] = v;
+    }
+    if (pooledValue !== undefined || Object.keys(pooledByPeriod).length > 0) {
+      // Pooled values describe the combined departures of every pattern at the stop, so this
+      // pattern's paired-trip floor does not apply to them (CIV-82): they stay as published.
+      return metric(pooledValue ?? ownValue, { ...(own ?? {}), ...pooledByPeriod }, undefined, 'shared-stretch');
+    }
+  }
+  return metric(ownValue, own, undefined, ownValue != null || own ? 'stop-specific' : 'none');
+}
+
+/**
+ * Stop data has no sustained flag or range of its own, so a stop on a paired-trip route
+ * (Niagara 105 Saturday) inherits the same 2-minute median. Raise it to the route direction's
+ * paired-trip floor for that period (#761), but only when the stop value itself fails the same
+ * test (a third or less of the range minimum). Only the feature's own floor is used, so a stop
+ * value is never raised in a period where the route's own direction runs regular service.
+ */
+function pairedTripSafeStopPeriods<T extends Partial<Record<string, number | null>>>(p: ShapeProperties, byPeriod: T | undefined): T | undefined {
+  if (!byPeriod) return byPeriod;
+  let out: T | undefined;
+  for (const pk of PERIOD_KEYS) {
+    const value = byPeriod[pk];
+    if (value == null) continue;
+    const floor = pairedTripPeriodFloor(p, pk);
+    const rangeMin = p.headwayRangeByPeriod?.[pk]?.min;
+    // Only a stop value that is itself a paired-trip median; a stop already showing the real
+    // spacing (Brampton 31 at 65) keeps its own value.
+    if (floor == null || floor <= value || rangeMin == null || value * 3 > rangeMin) continue;
+    out ??= { ...byPeriod };
+    (out as Record<string, number | null>)[pk] = floor;
+  }
+  return out ?? byPeriod;
+}
+
+/**
+ * The all-day stop value (stopHeadways) is the stop's midday-window median, so a paired-trip
+ * stop carries the same 1-2 minute value. Apply the midday floor under the same test as the
+ * period values: only when the stop value is a third or less of the midday range minimum.
+ * (When a stop has too few midday departures the pipeline falls back to the PM peak window;
+ * the midday floor then only applies if that value also fails the midday test.)
+ */
+function pairedTripSafeStopAllDay(p: ShapeProperties, value: number | null): number | null {
+  if (value == null) return value;
+  const floor = pairedTripPeriodFloor(p, 'midday');
+  const rangeMin = p.headwayRangeByPeriod?.midday?.min;
+  if (floor == null || floor <= value || rangeMin == null || value * 3 > rangeMin) return value;
+  return floor;
+}
+
+/** One hour's branch cadence as the route card shows it, raised to the hour's period floor (#761). */
+export function branchDisplayHourHeadway(p: ShapeProperties, hour: number): number | null {
+  const value = buildRouteServiceSummary(p).branch.byHour?.[hour] ?? null;
+  return pairedTripSafeHeadway(p, periodKeyForHour(hour) as PeriodKey | null, value);
+}
+
+/**
+ * The branch's cadence for a period as route cards display it: the canonical branch metric,
+ * raised to the paired-trip floor (#761). Use this wherever a branch is chosen or ranked by
+ * its period value, so selection and display agree.
+ */
+export function branchDisplayPeriodHeadway(p: ShapeProperties, period: ServicePeriod): number | null {
+  const value = metricValueForPeriod(buildRouteServiceSummary(p).branch, period);
+  return period === 'all' ? value : pairedTripSafeHeadway(p, period, value);
 }
 
 /**

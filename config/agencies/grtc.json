@@ -13,16 +13,35 @@
   ],
   "feedUrl": "https://www.ridegrtc.com/wp-content/uploads/2025/02/gtfs.zip",
   "region": "Virginia",
-  "lastFeedExpiry": "20261017",
-  "lastFeedVersion": "S1000181",
-  "lastRefreshedAt": "2026-08-09",
+  "lastFeedExpiry": "20270123",
+  "lastFeedVersion": "S1000183",
+  "lastRefreshedAt": "2026-10-12",
   "websiteUrl": "http://www.ridegrtc.com",
   "cities": [
     "Richmond, Virginia"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261017",
-  "timezone": "America/New_York"
+  "expiredFeedCheckExpiry": "20270123",
+  "timezone": "America/New_York",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://www.ridegrtc.com/wp-content/uploads/2025/02/gtfs.zip",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 169
+    },
+    "checkedAt": "2026-10-12"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

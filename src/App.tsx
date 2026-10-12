@@ -249,6 +249,9 @@ export default function App() {
   const [pendingHistoryRoute, setPendingHistoryRoute] = useState<{ slug: string; routeShortName: string } | null>(null);
   const [headerPortalEl, setHeaderPortalEl] = useState<Element | null>(null);
   const headerPortalRef = useCallback((el: HTMLDivElement | null) => { setHeaderPortalEl(el); }, []);
+  // Interval renders its Compare view tab here, beside History and Live.
+  const [viewTabsPortalEl, setViewTabsPortalEl] = useState<Element | null>(null);
+  const viewTabsPortalRef = useCallback((el: HTMLDivElement | null) => { setViewTabsPortalEl(el); }, []);
 
   const headerLeftRef = useRef<HTMLDivElement>(null);
   const appLinksRef = useRef<HTMLDivElement>(null);
@@ -652,6 +655,9 @@ export default function App() {
           </a>
         )}
 
+        {/* Compare (beta) portals in here from Interval. Phones reach it from the filter panel. */}
+        <div ref={viewTabsPortalRef} className="hidden sm:contents" />
+
         {/* Phones fold Live and History into one menu. Research is reached from the About page,
             not the map's top bar (#651). */}
         {(showLiveControl || showHistoryControl) && !phoneSearchExpanded && (
@@ -779,6 +785,7 @@ export default function App() {
               onSelectedMapAgencyChange={setSelectedMapAgencySlug}
               onSelectionActiveChange={setIntervalSelectionActive}
               headerPortalContainer={headerPortalEl}
+              viewTabsPortalContainer={viewTabsPortalEl}
               sidebarLeft={sidebarLeft}
               searchBarWidth={searchBarWidth}
               searchEnterRef={searchEnterRef}

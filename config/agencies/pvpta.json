@@ -12,7 +12,7 @@
   "lastFeedVersion": "UTC: 09-Sep-2026 18:25",
   "region": "California",
   "lastRefreshedAt": "2026-10-03",
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270122",
@@ -35,5 +35,7 @@
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/pvpta-ca-us/pvpta-ca-us.zip"
 }

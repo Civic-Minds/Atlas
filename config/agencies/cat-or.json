@@ -18,7 +18,7 @@
   "lastFeedExpiry": "20270401",
   "lastFeedVersion": "UTC: 24-Sep-2026 21:40",
   "lastRefreshedAt": "2026-10-03",
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270401",
@@ -39,5 +39,7 @@
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://oregon-gtfs.trilliumtransit.com/gtfs_data/canbytransit-or-us/canbytransit-or-us.zip"
 }

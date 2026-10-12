@@ -28,12 +28,12 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 1
     },
-    "checkedAt": "2026-10-07"
+    "checkedAt": "2026-10-12"
   },
   "lastFeedExpiry": "20301001",
   "lastFeedVersion": "1",
-  "lastRefreshedAt": "2026-10-07",
-  "lastFeedCheckAt": "20261007",
+  "lastRefreshedAt": "2026-10-12",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20301031",
@@ -41,5 +41,7 @@
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://gtfs.transitportal.org/CurrentGTFS/Gaston%20County_71/Gaston.zip"
 }

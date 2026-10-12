@@ -35,8 +35,10 @@
     },
     "checkedAt": "2026-09-08"
   },
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261231"
+  "expiredFeedCheckExpiry": "20261231",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://gtfs.remix.com/act_los_alamos_nm_us.zip"
 }

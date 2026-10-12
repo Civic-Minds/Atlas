@@ -28,12 +28,14 @@
   ],
   "timezone": "America/New_York",
   "lastRawArchiveKey": "20260601-572eaf8ff298767c",
-  "lastFeedCheckAt": "20261007",
-  "expiredFeedCheckCount": 4,
+  "lastFeedCheckAt": "20261012",
+  "expiredFeedCheckCount": 5,
   "expiredFeedCheckSince": "20260622",
   "expiredFeedCheckExpiry": "20260601",
   "feedRefreshStatus": "stale",
   "feedRefreshError": "all available feeds expired (latest 20260601)",
-  "feedRefreshErrorAt": "20261007",
-  "feedRefreshRetryCount": 2
+  "feedRefreshErrorAt": "20261012",
+  "feedRefreshRetryCount": 3,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/path-nj-us/path-nj-us.zip"
 }

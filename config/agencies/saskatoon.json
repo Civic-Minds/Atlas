@@ -26,8 +26,10 @@
   ],
   "timezone": "America/Regina",
   "lastRawArchiveKey": "20250830-3e8e316896a70dd6",
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20270102"
+  "expiredFeedCheckExpiry": "20270102",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://apps5.saskatoon.ca/data/gtfs/google_transit.zip"
 }

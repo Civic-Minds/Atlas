@@ -10,13 +10,13 @@
   ],
   "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=43",
   "lastFeedExpiry": "20270614",
-  "lastFeedVersion": "202610060/20261005 21:00:00/20261006 04:00:00",
+  "lastFeedVersion": "202610120/20261011 21:00:00/20261012 04:00:00",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2563/latest.zip",
-  "lastRefreshedAt": "2026-10-07",
+  "lastRefreshedAt": "2026-10-12",
   "cities": [
     "North Vancouver, British Columbia"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270614",
@@ -31,11 +31,13 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 20
     },
-    "checkedAt": "2026-10-07"
+    "checkedAt": "2026-10-12"
   },
   "timezone": "America/Vancouver",
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=43"
 }

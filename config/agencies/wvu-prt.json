@@ -29,9 +29,11 @@
     },
     "checkedAt": "2026-08-18"
   },
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261218",
-  "timezone": "America/New_York"
+  "timezone": "America/New_York",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/tld-7068_1/latest.zip"
 }

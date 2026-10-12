@@ -9,15 +9,34 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-43/latest.zip",
   "lastFeedExpiry": "20271231",
-  "lastFeedVersion": "20260611",
+  "lastFeedVersion": "20260917",
   "region": "California",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-10-12",
   "cities": [
     "Santa Maria, California"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
-  "timezone": "America/Los_Angeles"
+  "timezone": "America/Los_Angeles",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-43/latest.zip",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 47
+    },
+    "checkedAt": "2026-10-12"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

@@ -1,0 +1,15 @@
+stop_id,at_street,corner_placement,heading,location_type,on_street,parent_station,stop_code,stop_desc,stop_lat,stop_lon,stop_name,stop_position,stop_timezone,stop_url,wheelchair_boarding,zone_id
+5534,Red River,NE,106,0,4th,,5534,000400 4th & Red River,30.264843,-97.738448,Downtown Station,M,,https://www.capmetro.org/stopdetail/index.php?stop=5534,0,
+5535,Comal,SW,109,0,5Th,,5535,000000 5Th & Comal,30.262242,-97.727578,Plaza Saltillo Station,M,,https://www.capmetro.org/stopdetail/index.php?stop=5535,0,
+5536,Clifford,SW,20,0,Martin Luther King,6430,5536,000000 Martin Luther King & Clifford,30.279818,-97.709031,M L King Jr Station,M,,https://www.capmetro.org/stopdetail/index.php?stop=5536,0,
+5537,Denson,NW,187,0,Airport,,5537,000000 Airport & Denson,30.328601,-97.716203,Highland Station,M,,https://www.capmetro.org/stopdetail/index.php?stop=5537,0,
+5538,Justin,NW,289,0,Airport,,5538,000000 Airport & Justin,30.338559,-97.719691,Crestview Station,M,,https://www.capmetro.org/stopdetail/index.php?stop=5538,0,
+5539,Kramer,NE,16,0,Burnet,,5539,000000 Burnet & Kramer,30.392786,-97.7164,Kramer Station,M,,https://www.capmetro.org/stopdetail/index.php?stop=5539,0,
+5540,Mopac,NW,114,0,Howard,6402,5540,000000 Howard & Mopac,30.43999,-97.701734,Howard Station,M,,https://www.capmetro.org/stopdetail/index.php?stop=5540,0,
+5541,Lakeline,SE,312,0,Lyndhurst,6401,5541,000000 Lyndhurst & Lakeline,30.48103,-97.786543,Lakeline Station,M,,https://www.capmetro.org/stopdetail/index.php?stop=5541,0,
+5542,Metro,SE,330,0,US 183,6399,5542,000000 US 183 & Metro,30.586401,-97.855735,Leander Station,M,,https://www.capmetro.org/stopdetail/index.php?stop=5542,0,
+6399,Metro,NE,330,1,US 183,,6399,US 183 & Metro,30.58789727,-97.85572079,Leander Park & Ride,M,,https://www.capmetro.org/stopdetail/index.php?stop=6399,0,
+6401,Turnbull,NE,311,1,Lyndhurst,,6401,Lyndhurst & Turnbull,30.48012737,-97.78778358,Lakeline Park & Ride,M,,https://www.capmetro.org/stopdetail/index.php?stop=6401,0,
+6402,Mopac Expy,SE,57,1,Howard,,6402,Howard & Mopac Expy,30.44056206,-97.70036036,Howard Station Park & Ride,M,,https://www.capmetro.org/stopdetail/index.php?stop=6402,0,
+6430,17Th,SW,334,1,Alexander,,6430,Alexander & 17Th,30.27944194,-97.70964304,MLK Jr Station,N,,https://www.capmetro.org/stopdetail/index.php?stop=6430,0,
+6519,Mc Kalla,SW,12,0,Delta,,6519,010608 Delta & Mc Kalla,30.387973,-97.717549,McKalla Station,M,,https://www.capmetro.org/stopdetail/index.php?stop=6519,0,0

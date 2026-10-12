@@ -13,6 +13,9 @@
  * it" the same decision by construction.
  *
  * Busiest-stretch values (min-stop, headsign trunk, shared-core cadence) remain display-only.
+ * A route may show the stretches that themselves pass; it never makes the whole route pass
+ * (CIV-82): the shared-stretch overlay judges each stop with featurePassesHeadwayFilter below,
+ * and the route's own pass/fail never changes.
  */
 import type { PeriodKey } from './config.js';
 import { flattenPeriodHeadwayProps, NO_PERIOD_SERVICE_TILE_VALUE } from './pmtilesProps.js';
@@ -121,9 +124,15 @@ export function headwayFilterApplies(period: HeadwayFilterPeriod | undefined, ma
  * The route's filter headway for a period: the worst-direction sustained value the map filter
  * compares against the threshold. Null when the route has no qualifying service in the period.
  */
+const effectiveHeadwayExprCache = new Map<HeadwayFilterPeriod, unknown[]>();
+
 export function routeFilterHeadway(props: object, period: HeadwayFilterPeriod): number | null {
   try {
-    const value = evaluate(tileEffectiveHeadwayExpr(period), routeFilterTileProps(props));
+    // The expression is fixed per period; build it once (the shared-stretch overlay evaluates
+    // it for every stop).
+    let expr = effectiveHeadwayExprCache.get(period);
+    if (!expr) { expr = tileEffectiveHeadwayExpr(period); effectiveHeadwayExprCache.set(period, expr); }
+    const value = evaluate(expr, routeFilterTileProps(props));
     return typeof value === 'number' && value < NO_PERIOD_SERVICE_TILE_VALUE ? value : null;
   } catch (err) {
     if (err instanceof ExpressionTypeError) return null;

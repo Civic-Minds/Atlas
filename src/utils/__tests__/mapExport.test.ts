@@ -98,6 +98,17 @@ describe('createMapExport', () => {
     expect(texts).toEqual(expect.arrayContaining(['Toronto', 'Transit frequency', 'Every 20 min or better · Saturday midday', 'Route 505 Dundas', '≤10m', '≤20m']));
     expect(texts.some(text => /[A-Z]{4,}/.test(String(text).replace(/CARTO|ODbL/g, '')))).toBe(false);
   });
+  it('draws the data source line in full, above the tile credit', async () => {
+    const context = mockCanvasContext();
+    const source = sourceCanvas(1600, 1000);
+    const line = 'Schedules from Toronto Transit Commission · updated Oct 8, 2026 · transitatlas.fyi';
+    await createMapExport({ source, title: 'Toronto', citation: line, lightMode: true });
+    const calls = vi.mocked(context.fillText).mock.calls;
+    const sourceCall = calls.find(call => call[0] === line);
+    const creditCall = calls.find(call => String(call[0]).startsWith('Map tiles by CARTO'));
+    expect(sourceCall).toBeDefined();
+    expect(Number(sourceCall![2])).toBeLessThan(Number(creditCall![2]));
+  });
 });
 
 describe('wrapExportLine', () => {
@@ -138,6 +149,13 @@ describe('getMapExportLayout', () => {
     const layout = getMapExportLayout(390, 844, MAP_EXPORT_SIZES[2], { title: 'Toronto', lines: ['One', 'Two'] });
     expect(layout.scale).toBeLessThan(1);
     expect(layout.height).toBe(layout.headerHeight + layout.mapRect.height + layout.footerHeight);
+  });
+
+  it('adds a footer row for the data source only when there is one', () => {
+    const text = { title: 'Toronto', citation: 'Schedules from 2 agencies · updated Sep 30, 2026 · transitatlas.fyi' };
+    expect(getMapExportLayout(2880, 1800, MAP_EXPORT_SIZES[1], text).footerHeight).toBeGreaterThan(getMapExportLayout(2880, 1800, MAP_EXPORT_SIZES[1], { title: 'Toronto' }).footerHeight);
+    const phone = getMapExportLayout(390, 844, MAP_EXPORT_SIZES[1], text);
+    expect(phone.height).toBe(phone.headerHeight + phone.mapRect.height + phone.footerHeight);
   });
 
   it('keeps the preset size for landscape screens', () => {

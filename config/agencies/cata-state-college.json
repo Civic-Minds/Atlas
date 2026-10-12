@@ -18,7 +18,7 @@
     40.8581,
     -77.7763
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261213",
@@ -35,5 +35,7 @@
     },
     "checkedAt": "2026-08-24"
   },
-  "timezone": "America/New_York"
+  "timezone": "America/New_York",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/ntd-30054/latest.zip"
 }

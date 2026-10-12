@@ -1,0 +1,75 @@
+route_id,trip_id,service_id,trip_headsign,direction_id,shape_id
+B,BSP26GEN-B088-Weekday-00_042500_B..S65R,Weekday,Brighton Beach,1,B..S65R
+B,BSP26GEN-B088-Weekday-00_042550_B..N65R,Weekday,Bedford Park Blvd,0,B..N65R
+B,BSP26GEN-B088-Weekday-00_043400_B..S65R,Weekday,Brighton Beach,1,B..S65R
+B,BSP26GEN-B088-Weekday-00_043450_B..N65R,Weekday,Bedford Park Blvd,0,B..N65R
+B,BSP26GEN-B088-Weekday-00_044050_B..N65R,Weekday,Bedford Park Blvd,0,B..N65R
+B,BSP26GEN-B088-Weekday-00_044400_B..S65R,Weekday,Brighton Beach,1,B..S65R
+B,BSP26GEN-B088-Weekday-00_044700_B..N65R,Weekday,Bedford Park Blvd,0,B..N65R
+B,BSP26GEN-B088-Weekday-00_045350_B..N65R,Weekday,Bedford Park Blvd,0,B..N65R
+B,BSP26GEN-B088-Weekday-00_045350_B..S65R,Weekday,Brighton Beach,1,B..S65R
+B,BSP26GEN-B088-Weekday-00_045800_B..N65R,Weekday,Bedford Park Blvd,0,B..N65R
+B,BSP26GEN-B088-Weekday-00_046250_B..S65R,Weekday,Brighton Beach,1,B..S65R
+B,BSP26GEN-B088-Weekday-00_046600_B..N65R,Weekday,Bedford Park Blvd,0,B..N65R
+B,BSP26GEN-B088-Weekday-00_047200_B..N60R,Weekday,Kingsbridge Rd,0,B..N60R
+B,BSP26GEN-B088-Weekday-00_047200_B..S65R,Weekday,Brighton Beach,1,B..S65R
+B,BSP26GEN-B088-Weekday-00_047750_B..N60R,Weekday,Kingsbridge Rd,0,B..N60R
+B,BSP26GEN-B088-Weekday-00_048050_B..S65R,Weekday,Brighton Beach,1,B..S65R
+B,BSP26GEN-B088-Weekday-00_048400_B..N65R,Weekday,Bedford Park Blvd,0,B..N65R
+B,BSP26GEN-B088-Weekday-00_048950_B..N60R,Weekday,Kingsbridge Rd,0,B..N60R
+B,BSP26GEN-B088-Weekday-00_049000_B..S65R,Weekday,Brighton Beach,1,B..S65R
+B,BSP26GEN-B088-Weekday-00_049700_B..N66R,Weekday,145 St,0,B..N66R
+B,BSP26GEN-B088-Weekday-00_049850_B..S65R,Weekday,Brighton Beach,1,B..S65R
+B,BSP26GEN-B088-Weekday-00_050500_B..N65R,Weekday,Bedford Park Blvd,0,B..N65R
+B,BSP26GEN-B088-Weekday-00_050750_B..S65R,Weekday,Brighton Beach,1,B..S65R
+B,BSP26GEN-B088-Weekday-00_051050_B..N66R,Weekday,145 St,0,B..N66R
+B,BSP26GEN-B088-Weekday-00_051450_B..S65R,Weekday,Brighton Beach,1,B..S65R
+B,BSP26GEN-B088-Weekday-00_052000_B..N65R,Weekday,Bedford Park Blvd,0,B..N65R
+B,BSP26GEN-B088-Weekday-00_052350_B..S65R,Weekday,Brighton Beach,1,B..S65R
+B,BSP26GEN-B088-Weekday-00_052850_B..N66R,Weekday,145 St,0,B..N66R
+B,BSP26GEN-B088-Weekday-00_052950_B..S65R,Weekday,Brighton Beach,1,B..S65R
+B,BSP26GEN-B088-Weekday-00_053550_B..N65R,Weekday,Bedford Park Blvd,0,B..N65R
+B,BSP26GEN-B088-Weekday-00_053650_B..S65R,Weekday,Brighton Beach,1,B..S65R
+B,BSP26GEN-B088-Weekday-00_054450_B..S65R,Weekday,Brighton Beach,1,B..S65R
+B,BSP26GEN-B088-Weekday-00_054500_B..N66R,Weekday,145 St,0,B..N66R
+B,BSP26GEN-B088-Weekday-00_055400_B..N65R,Weekday,Bedford Park Blvd,0,B..N65R
+B,BSP26GEN-B088-Weekday-00_056050_B..N66R,Weekday,145 St,0,B..N66R
+B,BSP26GEN-B088-Weekday-00_056350_B..S65R,Weekday,Brighton Beach,1,B..S65R
+B,BSP26GEN-B088-Weekday-00_056950_B..N65R,Weekday,Bedford Park Blvd,0,B..N65R
+B,BSP26GEN-B088-Weekday-00_057300_B..S66R,Weekday,Brighton Beach,1,B..S66R
+B,BSP26GEN-B088-Weekday-00_057650_B..N66R,Weekday,145 St,0,B..N66R
+B,BSP26GEN-B088-Weekday-00_057950_B..S65R,Weekday,Brighton Beach,1,B..S65R
+B,BSP26GEN-B088-Weekday-00_058450_B..N65R,Weekday,Bedford Park Blvd,0,B..N65R
+B,BSP26GEN-B088-Weekday-00_058900_B..S66R,Weekday,Brighton Beach,1,B..S66R
+B,BSP26GEN-B088-Weekday-00_059250_B..N66R,Weekday,145 St,0,B..N66R
+B,BSP26GEN-B088-Weekday-00_059550_B..S65R,Weekday,Brighton Beach,1,B..S65R
+B,BSP26GEN-B088-Weekday-00_060050_B..N65R,Weekday,Bedford Park Blvd,0,B..N65R
+B,BSP26GEN-B088-Weekday-00_060500_B..S66R,Weekday,Brighton Beach,1,B..S66R
+B,BSP26GEN-B088-Weekday-00_061100_B..N66R,Weekday,145 St,0,B..N66R
+B,BSP26GEN-B088-Weekday-00_061150_B..S65R,Weekday,Brighton Beach,1,B..S65R
+B,BSP26GEN-B088-Weekday-00_061900_B..N65R,Weekday,Bedford Park Blvd,0,B..N65R
+B,BSP26GEN-B088-Weekday-00_062100_B..S66R,Weekday,Brighton Beach,1,B..S66R
+B,BSP26GEN-B088-Weekday-00_062450_B..N66R,Weekday,145 St,0,B..N66R
+B,BSP26GEN-B088-Weekday-00_062750_B..S65R,Weekday,Brighton Beach,1,B..S65R
+B,BSP26GEN-B088-Weekday-00_063250_B..N65R,Weekday,Bedford Park Blvd,0,B..N65R
+B,BSP26GEN-B088-Weekday-00_063700_B..S66R,Weekday,Brighton Beach,1,B..S66R
+B,BSP26GEN-B088-Weekday-00_064050_B..N66R,Weekday,145 St,0,B..N66R
+B,BSP26GEN-B088-Weekday-00_064350_B..S65R,Weekday,Brighton Beach,1,B..S65R
+B,BSP26GEN-B088-Weekday-00_064850_B..N65R,Weekday,Bedford Park Blvd,0,B..N65R
+B,BSP26GEN-B088-Weekday-00_065300_B..S66R,Weekday,Brighton Beach,1,B..S66R
+B,BSP26GEN-B088-Weekday-00_065400_B..N66R,Weekday,145 St,0,B..N66R
+B,BSP26GEN-B088-Weekday-00_065950_B..S65R,Weekday,Brighton Beach,1,B..S65R
+B,BSP26GEN-B088-Weekday-00_066450_B..N65R,Weekday,Bedford Park Blvd,0,B..N65R
+B,BSP26GEN-B088-Weekday-00_066900_B..S66R,Weekday,Brighton Beach,1,B..S66R
+B,BSP26GEN-B088-Weekday-00_067250_B..N66R,Weekday,145 St,0,B..N66R
+B,BSP26GEN-B088-Weekday-00_067550_B..S65R,Weekday,Brighton Beach,1,B..S65R
+B,BSP26GEN-B088-Weekday-00_068100_B..N65R,Weekday,Bedford Park Blvd,0,B..N65R
+B,BSP26GEN-B088-Weekday-00_068500_B..S66R,Weekday,Brighton Beach,1,B..S66R
+B,BSP26GEN-B088-Weekday-00_068900_B..N66R,Weekday,145 St,0,B..N66R
+B,BSP26GEN-B088-Weekday-00_069150_B..S65R,Weekday,Brighton Beach,1,B..S65R
+B,BSP26GEN-B088-Weekday-00_069650_B..N65R,Weekday,Bedford Park Blvd,0,B..N65R
+B,BSP26GEN-B088-Weekday-00_070100_B..S66R,Weekday,Brighton Beach,1,B..S66R
+B,BSP26GEN-B088-Weekday-00_070500_B..N66R,Weekday,145 St,0,B..N66R
+B,BSP26GEN-B088-Weekday-00_070800_B..S65R,Weekday,Brighton Beach,1,B..S65R
+B,BSP26GEN-B088-Weekday-00_071350_B..N65R,Weekday,Bedford Park Blvd,0,B..N65R
+B,BSP26GEN-B088-Weekday-00_071700_B..S66R,Weekday,Brighton Beach,1,B..S66R

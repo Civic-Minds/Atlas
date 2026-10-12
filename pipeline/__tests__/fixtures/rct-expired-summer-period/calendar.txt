@@ -1,0 +1,7 @@
+service_id,start_date,end_date,monday,tuesday,wednesday,thursday,friday,saturday,sunday
+Summer_Service_2026-Tu-Fr,20260612,20260823,0,1,1,1,1,0,0
+Regular_Service-Sa,20251201,20261231,0,0,0,0,0,1,0
+Regular_Service-Mo,20251201,20261231,1,0,0,0,0,0,0
+Regular_Service-Tu-Fr,20251201,20261231,0,1,1,1,1,0,0
+Summer_Service_2026-Sa,20260612,20260823,0,0,0,0,0,1,0
+Summer_Service_2026-Mo,20260612,20260823,1,0,0,0,0,0,0

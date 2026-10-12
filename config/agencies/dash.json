@@ -22,9 +22,11 @@
     "Arlington, Virginia",
     "Washington, District of Columbia"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270731",
-  "timezone": "America/New_York"
+  "timezone": "America/New_York",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://www.dashbus.com/wp-content/gtfs/google_transit.zip"
 }

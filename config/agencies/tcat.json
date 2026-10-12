@@ -11,7 +11,7 @@
   "lastFeedExpiry": "20261219",
   "lastFeedVersion": "20260922",
   "lastRefreshedAt": "2026-10-03",
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261219",
@@ -32,5 +32,7 @@
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://s3.amazonaws.com/tcat-gtfs/tcat-ny-us.zip"
 }

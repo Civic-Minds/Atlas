@@ -254,3 +254,52 @@ export function includeHiddenArgError(includeHidden: boolean, onlySlugs: string[
     ? '--include-hidden requires --only-slug <slug> (it only applies to agencies named explicitly)'
     : null;
 }
+
+export const SKIP_SLUG_FLAG = '--skip-slug';
+export const SKIP_SLUG_REASON = `skipped by ${SKIP_SLUG_FLAG}; live data left as is`;
+
+/** Every `--skip-slug <slug>` / `--skip-slug=<slug>` value (repeatable), with errors for a missing value. */
+export function parseSkipSlugs(argv: string[]): { slugs: string[]; errors: string[] } {
+  const slugs: string[] = [];
+  const errors: string[] = [];
+  for (let i = 0; i < argv.length; i++) {
+    const arg = argv[i];
+    let value: string | undefined;
+    if (arg === SKIP_SLUG_FLAG) value = argv[++i];
+    else if (arg.startsWith(`${SKIP_SLUG_FLAG}=`)) value = arg.slice(SKIP_SLUG_FLAG.length + 1);
+    else continue;
+    if (!value || value.startsWith('-')) {
+      errors.push(`${SKIP_SLUG_FLAG} expects an agency slug, got "${value ?? ''}"`);
+      if (value?.startsWith('-')) i--;
+      continue;
+    }
+    if (!slugs.includes(value)) slugs.push(value);
+  }
+  return { slugs, errors };
+}
+
+/** A skipped slug must exist and must not also be named with --only-slug. */
+export function skipSlugArgErrors(skipSlugs: string[], onlySlugs: string[], knownSlugs: Iterable<string>): string[] {
+  const known = new Set(knownSlugs);
+  return skipSlugs.flatMap(slug => [
+    ...(known.has(slug) ? [] : [`${SKIP_SLUG_FLAG} ${slug}: unknown agency`]),
+    ...(onlySlugs.includes(slug) ? [`${slug} is named by both --only-slug and ${SKIP_SLUG_FLAG}`] : []),
+  ]);
+}
+
+/**
+ * Split the selected agencies into reprocess targets and --skip-slug rows. A
+ * skipped agency is never processed, so it has no local output and is not a
+ * gate candidate: like a refused agency, it keeps its live artifacts, the
+ * gate and the PMTiles build read its live data, and it cannot raise a flag.
+ */
+export function partitionSkippedSlugs<T extends { slug: string }>(
+  selected: T[],
+  skipSlugs: string[],
+): { kept: T[]; skipped: Array<{ slug: string; status: 'skipped'; reason: string }> } {
+  const skip = new Set(skipSlugs);
+  return {
+    kept: selected.filter(agency => !skip.has(agency.slug)),
+    skipped: selected.filter(agency => skip.has(agency.slug)).map(agency => ({ slug: agency.slug, status: 'skipped' as const, reason: SKIP_SLUG_REASON })),
+  };
+}

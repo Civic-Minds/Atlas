@@ -8,13 +8,32 @@
   ],
   "feedUrl": "https://www.durangoco.gov/DocumentCenter/View/17688/Durango-Transit-GTFS-Data",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-456/latest.zip",
-  "lastFeedExpiry": "20261201",
+  "lastFeedExpiry": "20300131",
   "region": "Colorado",
-  "lastFeedVersion": "UTC: 21-May-2026 20:09",
-  "lastRefreshedAt": "2026-07-06",
-  "lastFeedCheckAt": "20261007",
+  "lastFeedVersion": "2026.07 Route3-5 Split",
+  "lastRefreshedAt": "2026-10-12",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261201",
-  "timezone": "America/Denver"
+  "expiredFeedCheckExpiry": "20300131",
+  "timezone": "America/Denver",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://www.durangoco.gov/DocumentCenter/View/17688/Durango-Transit-GTFS-Data",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 18
+    },
+    "checkedAt": "2026-10-12"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

@@ -337,6 +337,9 @@ export default function Corridors({
           coordinates = clipBetweenStopIndices(coords, stopPositions, fromIdx, toIdx) ?? undefined;
         }
 
+        // Per-branch values on purpose (CIV-82): Corridors lists each branch of an A-to-B trip as
+        // its own row, so pooled shared-stretch values (shared/sharedStops.ts) would count the
+        // same buses once per branch row.
         const stopHeadways = (p as any).stopHeadways as Record<string, number> | undefined;
         const stopHwByPeriod = (p as any).stopPeriodHeadways as Record<string, Partial<Record<string, number>>> | undefined;
 

@@ -18,8 +18,10 @@
   ],
   "timezone": "America/Chicago",
   "lastRawArchiveKey": "20250601-9d45b36319c36615",
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20991231"
+  "expiredFeedCheckExpiry": "20991231",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://mywaukeshametro.com/gtfs"
 }

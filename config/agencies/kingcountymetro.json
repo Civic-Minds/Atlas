@@ -14,9 +14,9 @@
     -121.8
   ],
   "feedUrl": "https://metro.kingcounty.gov/gtfs/google_transit.zip",
-  "lastFeedExpiry": "20270326",
+  "lastFeedExpiry": "20271231",
   "lastFeedVersion": "FAL26-161.2",
-  "lastRefreshedAt": "2026-10-07",
+  "lastRefreshedAt": "2026-10-12",
   "cities": [
     "Seattle, Washington",
     "Shoreline, Washington",
@@ -29,7 +29,7 @@
     "Sammamish, Washington",
     "Redmond, Washington"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
@@ -48,10 +48,12 @@
       "routeHeadwayMismatches": 3,
       "featureCount": 791
     },
-    "checkedAt": "2026-10-07"
+    "checkedAt": "2026-10-12"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://metro.kingcounty.gov/gtfs/google_transit.zip"
 }

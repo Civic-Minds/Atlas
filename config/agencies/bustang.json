@@ -15,8 +15,8 @@
     -104.8
   ],
   "lastFeedExpiry": "20270102",
-  "lastFeedVersion": "Sep26-37209-10-11-20261003-082236",
-  "lastRefreshedAt": "2026-10-07",
+  "lastFeedVersion": "Sep26-37243-12-13-20261009-142048",
+  "lastRefreshedAt": "2026-10-12",
   "cities": [
     "Denver, Colorado",
     "Colorado Springs, Colorado",
@@ -27,7 +27,7 @@
     "Boulder, Colorado",
     "Centennial, Colorado"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270102",
@@ -45,11 +45,13 @@
       "routeHeadwayMismatches": 5,
       "featureCount": 31
     },
-    "checkedAt": "2026-10-07"
+    "checkedAt": "2026-10-12"
   },
   "timezone": "America/Denver",
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2280/latest.zip"
 }

@@ -1,0 +1,103 @@
+trip_id,route_id,service_id,direction_id,shape_id,trip_headsign,trip_headsign_code,trip_short_name,wheelchair_accessible,bikes_allowed,block_id
+Summer_Service_2026-Mo-117-A-IB-1100-019099f,117,Summer_Service_2026-Mo,0,117-A-IB,(Loop),,,1,0,local lunch
+Summer_Service_2026-Tu-Fr-117-A-IB-1100-019099f,117,Summer_Service_2026-Tu-Fr,0,117-A-IB,(Loop),,,1,0,local lunch
+Summer_Service_2026-Mo-118-A-IB-1630-04f9e33,118,Summer_Service_2026-Mo,0,118-A-IB,(Loop),,,1,0,PM 2-4
+Summer_Service_2026-Tu-Fr-118-A-IB-1630-04f9e33,118,Summer_Service_2026-Tu-Fr,0,118-A-IB,(Loop),,,1,0,PM 2-4
+Regular_Service-Mo-118-A-IB-1228-05b59e9,118,Regular_Service-Mo,0,118-A-IB,(Loop),,,1,1,local lunch
+Regular_Service-Tu-Fr-118-A-IB-1228-05b59e9,118,Regular_Service-Tu-Fr,0,118-A-IB,(Loop),,,1,1,local lunch
+Regular_Service-Sa-118-A-IB-1628-0683c09,118,Regular_Service-Sa,0,118-A-IB,(Loop),,,1,0,1
+Regular_Service-Mo-118-A-IB-1028-080134a,118,Regular_Service-Mo,0,118-A-IB,(Loop),,,1,1,AM 2-4
+Regular_Service-Tu-Fr-118-A-IB-1028-080134a,118,Regular_Service-Tu-Fr,0,118-A-IB,(Loop),,,1,1,AM 2-4
+Regular_Service-Mo-117-A-IB-1401-0c8f7c3,117,Regular_Service-Mo,0,117-A-IB,(Loop),,,1,0,PM 1-3
+Regular_Service-Tu-Fr-117-A-IB-1401-0c8f7c3,117,Regular_Service-Tu-Fr,0,117-A-IB,(Loop),,,1,0,1-3 midday
+Regular_Service-Mo-117-A-IB-0901-125cb12,117,Regular_Service-Mo,0,117-A-IB,(Loop),,,1,0,AM 1-3
+Regular_Service-Tu-Fr-117-A-IB-0901-125cb12,117,Regular_Service-Tu-Fr,0,117-A-IB,(Loop),,,1,0,AM 1-3
+Regular_Service-Mo-117-A-IB-1001-12657c9,117,Regular_Service-Mo,0,117-A-IB,(Loop),,,1,0,AM 1-3
+Regular_Service-Tu-Fr-117-A-IB-1001-12657c9,117,Regular_Service-Tu-Fr,0,117-A-IB,(Loop),,,1,0,AM 1-3
+Regular_Service-Mo-117-A-IB-1601-17c6dbe,117,Regular_Service-Mo,0,117-A-IB,(Loop),,,1,0,1
+Regular_Service-Tu-Fr-117-A-IB-1601-17c6dbe,117,Regular_Service-Tu-Fr,0,117-A-IB,(Loop),,,1,0,1-3 late PM
+Regular_Service-Mo-118-A-IB-1527-2928c67,118,Regular_Service-Mo,0,118-A-IB,(Loop),,,1,1,PM 2-4
+Regular_Service-Tu-Fr-118-A-IB-1527-2928c67,118,Regular_Service-Tu-Fr,0,118-A-IB,(Loop),,,1,1,PM 2-4
+Summer_Service_2026-Mo-118-A-IB-1130-347dcac,118,Summer_Service_2026-Mo,0,118-A-IB,(Loop),,,1,0,AM 2-4
+Summer_Service_2026-Tu-Fr-118-A-IB-1130-347dcac,118,Summer_Service_2026-Tu-Fr,0,118-A-IB,(Loop),,,1,0,AM 2-4
+Regular_Service-Sa-118-A-IB-0828-3536af0,118,Regular_Service-Sa,0,118-A-IB,(Loop),,,1,0,2-4 AM
+Regular_Service-Mo-118-A-IB-0928-3ac3c97,118,Regular_Service-Mo,0,118-A-IB,(Loop),,,1,1,AM 2-4
+Regular_Service-Tu-Fr-118-A-IB-0928-3ac3c97,118,Regular_Service-Tu-Fr,0,118-A-IB,(Loop),,,1,1,AM 2-4
+Summer_Service_2026-Sa-118-A-IB-0928-4307580,118,Summer_Service_2026-Sa,0,118-A-IB,(Loop),,,1,0,2-4 AM
+Regular_Service-Mo-117-A-IB-1501-4512190,117,Regular_Service-Mo,0,117-A-IB,(Loop),,,1,0,1
+Regular_Service-Tu-Fr-117-A-IB-1501-4512190,117,Regular_Service-Tu-Fr,0,117-A-IB,(Loop),,,1,0,1-3 late PM
+Summer_Service_2026-Sa-118-A-IB-1328-49835a8,118,Summer_Service_2026-Sa,0,118-A-IB,(Loop),,,1,0,2-4 midday
+Summer_Service_2026-Sa-118-A-IB-0828-53c3e39,118,Summer_Service_2026-Sa,0,118-A-IB,(Loop),,,1,0,2-4 AM
+Regular_Service-Sa-118-A-IB-0928-579a50d,118,Regular_Service-Sa,0,118-A-IB,(Loop),,,1,0,2-4 AM
+Summer_Service_2026-Mo-118-A-IB-1530-5e819ee,118,Summer_Service_2026-Mo,0,118-A-IB,(Loop),,,1,0,PM 2-4
+Summer_Service_2026-Tu-Fr-118-A-IB-1530-5e819ee,118,Summer_Service_2026-Tu-Fr,0,118-A-IB,(Loop),,,1,0,PM 2-4
+Summer_Service_2026-Sa-118-A-IB-1028-693aae6,118,Summer_Service_2026-Sa,0,118-A-IB,(Loop),,,1,0,2-4 AM
+Summer_Service_2026-Mo-118-A-IB-1330-696666a,118,Summer_Service_2026-Mo,0,118-A-IB,(Loop),,,1,0,PM 2-4
+Summer_Service_2026-Tu-Fr-118-A-IB-1330-696666a,118,Summer_Service_2026-Tu-Fr,0,118-A-IB,(Loop),,,1,0,PM 2-4
+Summer_Service_2026-Sa-118-A-IB-1628-6c474d1,118,Summer_Service_2026-Sa,0,118-A-IB,(Loop),,,1,0,1
+Summer_Service_2026-Mo-117-A-IB-1700-773b2ee,117,Summer_Service_2026-Mo,0,117-A-IB,(Loop),,,1,0,1
+Summer_Service_2026-Tu-Fr-117-A-IB-1700-773b2ee,117,Summer_Service_2026-Tu-Fr,0,117-A-IB,(Loop),,,1,0,1-3 late PM
+Summer_Service_2026-Sa-118-A-IB-1228-802de13,118,Summer_Service_2026-Sa,0,118-A-IB,(Loop),,,1,0,2-4 midday
+Summer_Service_2026-Mo-117-A-IB-1000-8272a9c,117,Summer_Service_2026-Mo,0,117-A-IB,(Loop),,,1,0,AM 1-3
+Summer_Service_2026-Tu-Fr-117-A-IB-1000-8272a9c,117,Summer_Service_2026-Tu-Fr,0,117-A-IB,(Loop),,,1,0,AM 1-3
+Regular_Service-Mo-118-A-IB-1328-91bc29b,118,Regular_Service-Mo,0,118-A-IB,(Loop),,,1,1,PM 2-4
+Regular_Service-Tu-Fr-118-A-IB-1328-91bc29b,118,Regular_Service-Tu-Fr,0,118-A-IB,(Loop),,,1,1,PM 2-4
+Summer_Service_2026-Mo-117-A-IB-1300-931e5c6,117,Summer_Service_2026-Mo,0,117-A-IB,(Loop),,,1,0,PM 1-3
+Summer_Service_2026-Tu-Fr-117-A-IB-1300-931e5c6,117,Summer_Service_2026-Tu-Fr,0,117-A-IB,(Loop),,,1,0,1-3 midday
+Summer_Service_2026-Mo-118-A-IB-0830-985f952,118,Summer_Service_2026-Mo,0,118-A-IB,(Loop),,,1,0,early am 2-4
+Summer_Service_2026-Tu-Fr-118-A-IB-0830-985f952,118,Summer_Service_2026-Tu-Fr,0,118-A-IB,(Loop),,,1,0,early am 2-4
+Regular_Service-Mo-118-A-IB-1628-9f24f2b,118,Regular_Service-Mo,0,118-A-IB,(Loop),,,1,1,PM 2-4
+Regular_Service-Tu-Fr-118-A-IB-1628-9f24f2b,118,Regular_Service-Tu-Fr,0,118-A-IB,(Loop),,,1,1,PM 2-4
+Regular_Service-Mo-117-A-IB-1301-a0cf78d,117,Regular_Service-Mo,0,117-A-IB,(Loop),,,1,0,PM 1-3
+Regular_Service-Tu-Fr-117-A-IB-1301-a0cf78d,117,Regular_Service-Tu-Fr,0,117-A-IB,(Loop),,,1,0,1-3 midday
+Regular_Service-Sa-118-A-IB-1527-a5901fa,118,Regular_Service-Sa,0,118-A-IB,(Loop),,,1,0,1
+Regular_Service-Mo-117-A-IB-1201-ac8c8dd,117,Regular_Service-Mo,0,117-A-IB,(Loop),,,1,0,local lunch
+Regular_Service-Tu-Fr-117-A-IB-1201-ac8c8dd,117,Regular_Service-Tu-Fr,0,117-A-IB,(Loop),,,1,0,local lunch
+Regular_Service-Mo-118-A-IB-1727-aea5de2,118,Regular_Service-Mo,0,118-A-IB,(Loop),,,1,1,PM 2-4
+Regular_Service-Tu-Fr-118-A-IB-1727-aea5de2,118,Regular_Service-Tu-Fr,0,118-A-IB,(Loop),,,1,1,PM 2-4
+Regular_Service-Mo-117-A-IB-0801-aef3a59,117,Regular_Service-Mo,0,117-A-IB,(Loop),,,1,0,AM 1-3
+Regular_Service-Tu-Fr-117-A-IB-0801-aef3a59,117,Regular_Service-Tu-Fr,0,117-A-IB,(Loop),,,1,0,AM 1-3
+Regular_Service-Sa-118-A-IB-1228-b073d45,118,Regular_Service-Sa,0,118-A-IB,(Loop),,,1,0,2-4 midday
+Regular_Service-Mo-117-A-IB-1701-b23f284,117,Regular_Service-Mo,0,117-A-IB,(Loop),,,1,0,1
+Regular_Service-Tu-Fr-117-A-IB-1701-b23f284,117,Regular_Service-Tu-Fr,0,117-A-IB,(Loop),,,1,0,1-3 late PM
+Summer_Service_2026-Sa-118-A-IB-1527-b2dcc78,118,Summer_Service_2026-Sa,0,118-A-IB,(Loop),,,1,0,1
+Summer_Service_2026-Sa-118-A-IB-1428-b580997,118,Summer_Service_2026-Sa,0,118-A-IB,(Loop),,,1,0,1
+Summer_Service_2026-Mo-117-A-IB-1600-b826176,117,Summer_Service_2026-Mo,0,117-A-IB,(Loop),,,1,0,1
+Summer_Service_2026-Tu-Fr-117-A-IB-1600-b826176,117,Summer_Service_2026-Tu-Fr,0,117-A-IB,(Loop),,,1,0,1-3 late PM
+Regular_Service-Sa-118-A-IB-1428-bc175e1,118,Regular_Service-Sa,0,118-A-IB,(Loop),,,1,0,1
+Regular_Service-Mo-118-A-IB-1428-be02392,118,Regular_Service-Mo,0,118-A-IB,(Loop),,,1,1,PM 2-4
+Regular_Service-Tu-Fr-118-A-IB-1428-be02392,118,Regular_Service-Tu-Fr,0,118-A-IB,(Loop),,,1,1,PM 2-4
+Summer_Service_2026-Mo-118-A-IB-1430-be1f172,118,Summer_Service_2026-Mo,0,118-A-IB,(Loop),,,1,0,PM 2-4
+Summer_Service_2026-Tu-Fr-118-A-IB-1430-be1f172,118,Summer_Service_2026-Tu-Fr,0,118-A-IB,(Loop),,,1,0,PM 2-4
+Regular_Service-Mo-118-A-IB-0727-c6cf594,118,Regular_Service-Mo,0,118-A-IB,(Loop),,,1,1,early am 2-4
+Regular_Service-Tu-Fr-118-A-IB-0727-c6cf594,118,Regular_Service-Tu-Fr,0,118-A-IB,(Loop),,,1,1,early am 2-4
+Summer_Service_2026-Mo-117-A-IB-1200-cb0e909,117,Summer_Service_2026-Mo,0,117-A-IB,(Loop),,,1,0,local lunch
+Summer_Service_2026-Tu-Fr-117-A-IB-1200-cb0e909,117,Summer_Service_2026-Tu-Fr,0,117-A-IB,(Loop),,,1,0,local lunch
+Summer_Service_2026-Mo-118-A-IB-1230-cb4e95d,118,Summer_Service_2026-Mo,0,118-A-IB,(Loop),,,1,0,local lunch
+Summer_Service_2026-Tu-Fr-118-A-IB-1230-cb4e95d,118,Summer_Service_2026-Tu-Fr,0,118-A-IB,(Loop),,,1,0,local lunch
+Summer_Service_2026-Mo-117-A-IB-1500-d0c87d3,117,Summer_Service_2026-Mo,0,117-A-IB,(Loop),,,1,0,1
+Summer_Service_2026-Tu-Fr-117-A-IB-1500-d0c87d3,117,Summer_Service_2026-Tu-Fr,0,117-A-IB,(Loop),,,1,0,1-3 late PM
+Summer_Service_2026-Sa-118-A-IB-1128-d61d24c,118,Summer_Service_2026-Sa,0,118-A-IB,(Loop),,,1,0,2-4 midday
+Regular_Service-Sa-118-A-IB-1028-d635ef8,118,Regular_Service-Sa,0,118-A-IB,(Loop),,,1,0,2-4 AM
+Summer_Service_2026-Mo-118-A-IB-1030-d77bd6d,118,Summer_Service_2026-Mo,0,118-A-IB,(Loop),,,1,0,AM 2-4
+Summer_Service_2026-Tu-Fr-118-A-IB-1030-d77bd6d,118,Summer_Service_2026-Tu-Fr,0,118-A-IB,(Loop),,,1,0,AM 2-4
+Summer_Service_2026-Mo-117-A-IB-0900-da41e21,117,Summer_Service_2026-Mo,0,117-A-IB,(Loop),,,1,0,AM 1-3
+Summer_Service_2026-Tu-Fr-117-A-IB-0900-da41e21,117,Summer_Service_2026-Tu-Fr,0,117-A-IB,(Loop),,,1,0,AM 1-3
+Summer_Service_2026-Mo-118-A-IB-1730-ddf7868,118,Summer_Service_2026-Mo,0,118-A-IB,(Loop),,,1,0,PM 2-4
+Summer_Service_2026-Tu-Fr-118-A-IB-1730-ddf7868,118,Summer_Service_2026-Tu-Fr,0,118-A-IB,(Loop),,,1,0,PM 2-4
+Regular_Service-Mo-117-A-IB-1101-e39dfa3,117,Regular_Service-Mo,0,117-A-IB,(Loop),,,1,0,local lunch
+Regular_Service-Tu-Fr-117-A-IB-1101-e39dfa3,117,Regular_Service-Tu-Fr,0,117-A-IB,(Loop),,,1,0,local lunch
+Regular_Service-Mo-118-A-IB-1128-e82936f,118,Regular_Service-Mo,0,118-A-IB,(Loop),,,1,1,AM 2-4
+Regular_Service-Tu-Fr-118-A-IB-1128-e82936f,118,Regular_Service-Tu-Fr,0,118-A-IB,(Loop),,,1,1,AM 2-4
+Summer_Service_2026-Mo-118-A-IB-0930-e85b2e4,118,Summer_Service_2026-Mo,0,118-A-IB,(Loop),,,1,0,AM 2-4
+Summer_Service_2026-Tu-Fr-118-A-IB-0930-e85b2e4,118,Summer_Service_2026-Tu-Fr,0,118-A-IB,(Loop),,,1,0,AM 2-4
+Summer_Service_2026-Mo-117-A-IB-1400-e8949c0,117,Summer_Service_2026-Mo,0,117-A-IB,(Loop),,,1,0,PM 1-3
+Summer_Service_2026-Tu-Fr-117-A-IB-1400-e8949c0,117,Summer_Service_2026-Tu-Fr,0,117-A-IB,(Loop),,,1,0,1-3 midday
+Regular_Service-Sa-118-A-IB-1128-ea00272,118,Regular_Service-Sa,0,118-A-IB,(Loop),,,1,0,2-4 midday
+Regular_Service-Sa-118-A-IB-1328-ec77c4e,118,Regular_Service-Sa,0,118-A-IB,(Loop),,,1,0,2-4 midday
+Regular_Service-Mo-118-A-IB-0828-f5bb391,118,Regular_Service-Mo,0,118-A-IB,(Loop),,,1,1,early am 2-4
+Regular_Service-Tu-Fr-118-A-IB-0828-f5bb391,118,Regular_Service-Tu-Fr,0,118-A-IB,(Loop),,,1,1,early am 2-4
+Summer_Service_2026-Mo-117-A-IB-0800-f980fbb,117,Summer_Service_2026-Mo,0,117-A-IB,(Loop),,,1,0,AM 1-3
+Summer_Service_2026-Tu-Fr-117-A-IB-0800-f980fbb,117,Summer_Service_2026-Tu-Fr,0,117-A-IB,(Loop),,,1,0,AM 1-3
+Summer_Service_2026-Mo-118-A-IB-0730-fb4c0a5,118,Summer_Service_2026-Mo,0,118-A-IB,(Loop),,,1,0,early am 2-4
+Summer_Service_2026-Tu-Fr-118-A-IB-0730-fb4c0a5,118,Summer_Service_2026-Tu-Fr,0,118-A-IB,(Loop),,,1,0,early am 2-4

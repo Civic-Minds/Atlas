@@ -16,8 +16,8 @@
   "feedUrl": "http://developer.trimet.org/schedule/gtfs.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-247/latest.zip",
   "lastFeedExpiry": "20270227",
-  "lastFeedVersion": "20260913-20260924-0900",
-  "lastRefreshedAt": "2026-10-03",
+  "lastFeedVersion": "20260927-20261007-0900",
+  "lastRefreshedAt": "2026-10-12",
   "cities": [
     "Portland, Oregon",
     "Gresham, Oregon",
@@ -26,7 +26,7 @@
     "Hillsboro, Oregon",
     "Vancouver, Washington"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270227",
@@ -39,13 +39,15 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 474
+      "featureCount": 498
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-10-12"
   },
   "timezone": "America/Los_Angeles",
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "http://developer.trimet.org/schedule/gtfs.zip"
 }

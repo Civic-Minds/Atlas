@@ -22,7 +22,7 @@
   "cities": [
     "Davenport, Iowa"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270301",
@@ -39,5 +39,7 @@
     },
     "checkedAt": "2026-09-07"
   },
-  "timezone": "America/Chicago"
+  "timezone": "America/Chicago",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/bettendorf-ia-us/bettendorf-ia-us.zip"
 }

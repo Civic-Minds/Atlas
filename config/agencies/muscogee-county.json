@@ -20,9 +20,9 @@
     "Muscogee County, Georgia"
   ],
   "timezone": "America/New_York",
-  "lastFeedExpiry": "",
+  "lastFeedExpiry": "20281012",
   "lastFeedVersion": "6/17/2026 Saturday Reduced",
-  "lastRefreshedAt": "2026-10-07",
+  "lastRefreshedAt": "2026-10-12",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -34,14 +34,16 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 42
     },
-    "checkedAt": "2026-10-07"
+    "checkedAt": "2026-10-12"
   },
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://metracolumbus.com/gtfs"
 }

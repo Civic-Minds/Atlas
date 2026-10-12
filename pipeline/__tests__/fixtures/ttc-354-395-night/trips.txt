@@ -1,0 +1,215 @@
+route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,block_id,shape_id,wheelchair_accessible,bikes_allowed
+354,1,50804613,East - 354 Lawrence East towards Starspray,,0,2234335,1122616,1,1
+354,1,50804611,East - 354 Lawrence East towards Starspray,,0,2234334,1122616,1,1
+354,1,50804601,East - 354 Lawrence East towards Starspray,,0,2234333,1122617,1,1
+354,1,50804605,East - 354 Lawrence East towards Starspray,,0,2234335,1122615,1,1
+354,1,50804609,East - 354 Lawrence East towards Starspray,,0,2234339,1122613,1,1
+354,1,50804608,East - 354 Lawrence East towards Starspray,,0,2234338,1122617,1,1
+354,1,50804604,East - 354 Lawrence East towards Starspray,,0,2234334,1122615,1,1
+354,1,50804607,East - 354 Lawrence East towards Starspray,,0,2234337,1122614,1,1
+354,1,50804606,East - 354 Lawrence East towards Starspray,,0,2234336,1122613,1,1
+354,1,50804612,East - 354 Lawrence East towards Starspray,,0,2233219,1122614,1,1
+354,1,50804599,East - 354 Lawrence East towards Starspray,,0,2234332,1122617,1,1
+354,1,50804598,East - 354 Lawrence East towards Starspray,,0,2234406,1122617,1,1
+354,1,50804600,East - 354 Lawrence East towards Starspray,,0,2234407,1122616,1,1
+354,1,50804610,East - 354 Lawrence East towards Starspray,,0,2234407,1122615,1,1
+354,1,50804624,West - 354 Lawrence East towards Yonge,,1,2234338,1122620,1,1
+354,1,50804628,West - 354 Lawrence East towards Eglinton Station,,1,2233790,1122621,1,1
+354,1,50804627,West - 354 Lawrence East towards Eglinton Station,,1,2233225,1122622,1,1
+354,1,50804626,West - 354 Lawrence East towards Eglinton Station,,1,2233218,1122621,1,1
+354,1,50804629,West - 354 Lawrence East towards Yonge,,1,2234332,1122624,1,1
+354,1,50804630,West - 354 Lawrence East towards Yonge,,1,2234332,1122623,1,1
+354,1,50804615,West - 354 Lawrence East towards Yonge,,1,2234406,1122624,1,1
+354,1,50804614,West - 354 Lawrence East towards Yonge,,1,2234406,1122623,1,1
+354,1,50804622,West - 354 Lawrence East towards Yonge,,1,2234407,1122624,1,1
+354,1,50804616,West - 354 Lawrence East towards Yonge,,1,2234407,1122623,1,1
+354,1,50804621,West - 354 Lawrence East towards Yonge,,1,2233219,1122624,1,1
+354,1,50804619,West - 354 Lawrence East towards Yonge,,1,2233219,1122623,1,1
+354,1,50804620,West - 354 Lawrence East towards Yonge,,1,2234332,1122624,1,1
+354,1,50804618,West - 354 Lawrence East towards Yonge,,1,2234332,1122623,1,1
+354,1,50804623,West - 354 Lawrence East towards Yonge,,1,2234406,1122624,1,1
+354,1,50804617,West - 354 Lawrence East towards Yonge,,1,2234406,1122623,1,1
+354,1,50804625,West - 354 Lawrence East towards Yonge,,1,2234407,1122625,1,1
+395,1,50805968,East - 395S York Mills Short Turn towards Port Union,S,0,2235070,1122701,1,1
+395,1,50805967,East - 395S York Mills Short Turn towards Port Union,S,0,2235069,1122701,1,1
+395,1,50805966,East - 395S York Mills Short Turn towards Port Union,S,0,2235068,1122701,1,1
+395,1,50805965,East - 395S York Mills Short Turn towards Port Union,S,0,2235067,1122700,1,1
+395,1,50805964,East - 395S York Mills Short Turn towards Port Union,S,0,2235066,1122700,1,1
+395,1,50805971,East - 395 York Mills towards Rouge Hill GO Station,,0,2235399,1122703,1,1
+395,1,50805970,East - 395 York Mills towards Rouge Hill GO Station,,0,2235138,1122703,1,1
+395,1,50805962,East - 395 York Mills towards Rouge Hill GO Station,,0,2235065,1122702,1,1
+395,1,50805969,East - 395 York Mills towards Rouge Hill GO Station,,0,2235139,1122703,1,1
+395,1,50805963,East - 395 York Mills towards Rouge Hill GO Station,,0,2235399,1122702,1,1
+395,1,50805960,East - 395 York Mills towards Rouge Hill GO Station,,0,2235138,1122702,1,1
+395,1,50805961,East - 395S York Mills Short Turn towards Port Union,S,0,2235139,1122701,1,1
+395,1,50805978,West - 395 York Mills towards York Mills Station,,1,2235070,1122705,1,1
+395,1,50805977,West - 395 York Mills towards York Mills Station,,1,2235069,1122705,1,1
+395,1,50805976,West - 395 York Mills towards York Mills Station,,1,2235068,1122705,1,1
+395,1,50805975,West - 395 York Mills towards York Mills Station,,1,2235065,1122704,1,1
+395,1,50805972,West - 395 York Mills towards York Mills Station,,1,2235399,1122705,1,1
+395,1,50805974,West - 395 York Mills towards York Mills Station,,1,2235138,1122705,1,1
+395,1,50805973,West - 395 York Mills towards York Mills Station,,1,2235139,1122705,1,1
+354,2,50840847,East - 354 Lawrence East towards Starspray,,0,2235701,1122616,1,1
+354,2,50840846,East - 354 Lawrence East towards Starspray,,0,2236371,1122616,1,1
+354,2,50840857,East - 354 Lawrence East towards Starspray,,0,2235701,1122615,1,1
+354,2,50840852,East - 354 Lawrence East towards Starspray,,0,2236376,1122617,1,1
+354,2,50840854,East - 354 Lawrence East towards Starspray,,0,2236377,1122613,1,1
+354,2,50840851,East - 354 Lawrence East towards Starspray,,0,2236375,1122617,1,1
+354,2,50840856,East - 354 Lawrence East towards Starspray,,0,2236371,1122615,1,1
+354,2,50840844,East - 354 Lawrence East towards Starspray,,0,2236370,1122617,1,1
+354,2,50840855,East - 354S Lawrence East Short Turn towards Morningside,S,0,2236378,1122618,1,1
+354,2,50840845,East - 354 Lawrence East towards Starspray,,0,2235449,1122614,1,1
+354,2,50840850,East - 354 Lawrence East towards Starspray,,0,2236374,1122617,1,1
+354,2,50840849,East - 354 Lawrence East towards Starspray,,0,2236373,1122617,1,1
+354,2,50840848,East - 354 Lawrence East towards Starspray,,0,2236372,1122616,1,1
+354,2,50840858,East - 354 Lawrence East towards Starspray,,0,2236372,1122615,1,1
+354,2,50840869,West - 354 Lawrence East towards Eglinton Station,,1,2235701,1122622,1,1
+354,2,50840871,West - 354 Lawrence East towards Yonge,,1,2236374,1122624,1,1
+354,2,50840872,West - 354 Lawrence East towards Yonge,,1,2236374,1122623,1,1
+354,2,50840863,West - 354 Lawrence East towards Yonge,,1,2236373,1122624,1,1
+354,2,50840866,West - 354 Lawrence East towards Yonge,,1,2236373,1122623,1,1
+354,2,50840862,West - 354 Lawrence East towards Yonge,,1,2236372,1122624,1,1
+354,2,50840865,West - 354 Lawrence East towards Yonge,,1,2236372,1122623,1,1
+354,2,50840859,West - 354 Lawrence East towards Yonge,,1,2235449,1122624,1,1
+354,2,50840864,West - 354 Lawrence East towards Yonge,,1,2235449,1122623,1,1
+354,2,50840861,West - 354 Lawrence East towards Yonge,,1,2236374,1122624,1,1
+354,2,50840868,West - 354 Lawrence East towards Yonge,,1,2236374,1122623,1,1
+354,2,50840867,West - 354 Lawrence East towards Yonge,,1,2236373,1122624,1,1
+354,2,50840860,West - 354 Lawrence East towards Yonge,,1,2236373,1122623,1,1
+354,2,50840870,West - 354 Lawrence East towards Yonge,,1,2236372,1122625,1,1
+395,2,50842036,East - 395S York Mills Short Turn towards Port Union,S,0,2236856,1122701,1,1
+395,2,50842035,East - 395S York Mills Short Turn towards Port Union,S,0,2236855,1122701,1,1
+395,2,50842034,East - 395S York Mills Short Turn towards Port Union,S,0,2236854,1122701,1,1
+395,2,50842033,East - 395S York Mills Short Turn towards Port Union,S,0,2236853,1122700,1,1
+395,2,50842032,East - 395 York Mills towards Rouge Hill GO Station,,0,2236852,1122703,1,1
+395,2,50842031,East - 395 York Mills towards Rouge Hill GO Station,,0,2236851,1122703,1,1
+395,2,50842038,East - 395 York Mills towards Rouge Hill GO Station,,0,2236857,1122702,1,1
+395,2,50842030,East - 395 York Mills towards Rouge Hill GO Station,,0,2236850,1122703,1,1
+395,2,50842037,East - 395 York Mills towards Rouge Hill GO Station,,0,2236852,1122702,1,1
+395,2,50842040,East - 395 York Mills towards Rouge Hill GO Station,,0,2236851,1122702,1,1
+395,2,50842039,East - 395 York Mills towards Rouge Hill GO Station,,0,2236850,1122702,1,1
+395,2,50842041,West - 395 York Mills towards York Mills Station,,1,2236856,1122705,1,1
+395,2,50842047,West - 395 York Mills towards York Mills Station,,1,2236855,1122705,1,1
+395,2,50842046,West - 395 York Mills towards York Mills Station,,1,2236854,1122705,1,1
+395,2,50842042,West - 395 York Mills towards York Mills Station,,1,2236857,1122704,1,1
+395,2,50842045,West - 395 York Mills towards York Mills Station,,1,2236852,1122705,1,1
+395,2,50842043,West - 395 York Mills towards York Mills Station,,1,2236851,1122705,1,1
+395,2,50842044,West - 395 York Mills towards York Mills Station,,1,2236850,1122705,1,1
+354,3,50872623,East - 354 Lawrence East towards Starspray,,0,2237802,1122616,1,1
+354,3,50872630,East - 354 Lawrence East towards Starspray,,0,2237800,1122616,1,1
+354,3,50872619,East - 354 Lawrence East towards Starspray,,0,2237802,1122615,1,1
+354,3,50872624,East - 354 Lawrence East towards Starspray,,0,2237795,1122617,1,1
+354,3,50872625,East - 354 Lawrence East towards Starspray,,0,2237983,1122617,1,1
+354,3,50872618,East - 354 Lawrence East towards Starspray,,0,2237800,1122615,1,1
+354,3,50872613,East - 354S Lawrence East Short Turn towards Morningside,S,0,2237798,1122618,1,1
+354,3,50872621,East - 354 Lawrence East towards Starspray,,0,2237802,1122617,1,1
+354,3,50872612,East - 354S Lawrence East Short Turn towards Morningside,S,0,2237797,1122618,1,1
+354,3,50872614,East - 354 Lawrence East towards Starspray,,0,2237799,1122617,1,1
+354,3,50872611,East - 354S Lawrence East Short Turn towards Morningside,S,0,2237796,1122618,1,1
+354,3,50872615,East - 354 Lawrence East towards Starspray,,0,2237800,1122617,1,1
+354,3,50872629,East - 354S Lawrence East Short Turn towards Morningside,S,0,2237804,1122618,1,1
+354,3,50872616,East - 354 Lawrence East towards Starspray,,0,2237801,1122617,1,1
+354,3,50872610,East - 354S Lawrence East Short Turn towards Morningside,S,0,2237795,1122612,1,1
+354,3,50872617,East - 354 Lawrence East towards Starspray,,0,2237798,1122619,1,1
+354,3,50872622,East - 354 Lawrence East towards Starspray,,0,2237028,1122614,1,1
+354,3,50872626,East - 354 Lawrence East towards Starspray,,0,2237803,1122617,1,1
+354,3,50872627,East - 354 Lawrence East towards Starspray,,0,2237850,1122617,1,1
+354,3,50872628,East - 354 Lawrence East towards Starspray,,0,2237849,1122616,1,1
+354,3,50872620,East - 354 Lawrence East towards Starspray,,0,2237849,1122615,1,1
+354,3,50872639,West - 354 Lawrence East towards Yonge,,1,2237802,1122625,1,1
+354,3,50872650,West - 354 Lawrence East towards Yonge,,1,2237799,1122625,1,1
+354,3,50872635,West - 354 Lawrence East towards Yonge,,1,2237800,1122625,1,1
+354,3,50872632,West - 354 Lawrence East towards Yonge,,1,2237801,1122620,1,1
+354,3,50872634,West - 354 Lawrence East towards Yonge,,1,2237795,1122625,1,1
+354,3,50872631,West - 354 Lawrence East towards Yonge,,1,2237798,1122620,1,1
+354,3,50872633,West - 354 Lawrence East towards Yonge,,1,2237983,1122625,1,1
+354,3,50872636,West - 354 Lawrence East towards Yonge,,1,2237803,1122624,1,1
+354,3,50872637,West - 354 Lawrence East towards Yonge,,1,2237803,1122623,1,1
+354,3,50872645,West - 354 Lawrence East towards Yonge,,1,2237850,1122624,1,1
+354,3,50872642,West - 354 Lawrence East towards Yonge,,1,2237850,1122623,1,1
+354,3,50872646,West - 354 Lawrence East towards Yonge,,1,2237849,1122624,1,1
+354,3,50872643,West - 354 Lawrence East towards Yonge,,1,2237849,1122623,1,1
+354,3,50872649,West - 354 Lawrence East towards Yonge,,1,2237028,1122624,1,1
+354,3,50872644,West - 354 Lawrence East towards Yonge,,1,2237028,1122623,1,1
+354,3,50872647,West - 354 Lawrence East towards Yonge,,1,2237803,1122624,1,1
+354,3,50872640,West - 354 Lawrence East towards Yonge,,1,2237803,1122623,1,1
+354,3,50872641,West - 354 Lawrence East towards Yonge,,1,2237850,1122624,1,1
+354,3,50872648,West - 354 Lawrence East towards Yonge,,1,2237850,1122623,1,1
+354,3,50872638,West - 354 Lawrence East towards Yonge,,1,2237849,1122625,1,1
+395,3,50873770,East - 395 York Mills towards Rouge Hill GO Station,,0,2238213,1122702,1,1
+395,3,50873782,East - 395 York Mills towards Rouge Hill GO Station,,0,2238221,1122702,1,1
+395,3,50873771,East - 395 York Mills towards Rouge Hill GO Station,,0,2238214,1122702,1,1
+395,3,50873777,East - 395S York Mills Short Turn towards Port Union,S,0,2238219,1122701,1,1
+395,3,50873778,East - 395S York Mills Short Turn towards Port Union,S,0,2238220,1122701,1,1
+395,3,50873779,East - 395S York Mills Short Turn towards Port Union,S,0,2238213,1122701,1,1
+395,3,50873772,East - 395S York Mills Short Turn towards Port Union,S,0,2238215,1122700,1,1
+395,3,50873780,East - 395S York Mills Short Turn towards Port Union,S,0,2238221,1122701,1,1
+395,3,50873781,East - 395S York Mills Short Turn towards Port Union,S,0,2238222,1122701,1,1
+395,3,50873783,East - 395S York Mills Short Turn towards Port Union,S,0,2238214,1122701,1,1
+395,3,50873776,East - 395S York Mills Short Turn towards Port Union,S,0,2238218,1122700,1,1
+395,3,50873773,East - 395 York Mills towards Rouge Hill GO Station,,0,2238212,1122703,1,1
+395,3,50873774,East - 395 York Mills towards Rouge Hill GO Station,,0,2238216,1122703,1,1
+395,3,50873786,East - 395 York Mills towards Rouge Hill GO Station,,0,2238223,1122702,1,1
+395,3,50873775,East - 395 York Mills towards Rouge Hill GO Station,,0,2238217,1122703,1,1
+395,3,50873769,East - 395 York Mills towards Rouge Hill GO Station,,0,2238212,1122702,1,1
+395,3,50873784,East - 395 York Mills towards Rouge Hill GO Station,,0,2238216,1122702,1,1
+395,3,50873785,East - 395S York Mills Short Turn towards Port Union,S,0,2238217,1122701,1,1
+395,3,50873787,West - 395 York Mills towards York Mills Station,,1,2238213,1122705,1,1
+395,3,50873789,West - 395 York Mills towards York Mills Station,,1,2238221,1122705,1,1
+395,3,50873791,West - 395 York Mills towards York Mills Station,,1,2238214,1122705,1,1
+395,3,50873792,West - 395 York Mills towards York Mills Station,,1,2238219,1122705,1,1
+395,3,50873793,West - 395 York Mills towards York Mills Station,,1,2238220,1122705,1,1
+395,3,50873794,West - 395 York Mills towards York Mills Station,,1,2238213,1122705,1,1
+395,3,50873795,West - 395 York Mills towards York Mills Station,,1,2238221,1122705,1,1
+395,3,50873796,West - 395 York Mills towards York Mills Station,,1,2238222,1122705,1,1
+395,3,50873790,West - 395 York Mills towards York Mills Station,,1,2238214,1122705,1,1
+395,3,50873788,West - 395 York Mills towards York Mills Station,,1,2238223,1122704,1,1
+395,3,50873797,West - 395 York Mills towards York Mills Station,,1,2238212,1122705,1,1
+395,3,50873799,West - 395 York Mills towards York Mills Station,,1,2238216,1122705,1,1
+395,3,50873798,West - 395 York Mills towards York Mills Station,,1,2238217,1122705,1,1
+354,4,50901931,East - 354 Lawrence East towards Starspray,,0,2238526,1122616,1,1
+354,4,50901930,East - 354 Lawrence East towards Starspray,,0,2239096,1122616,1,1
+354,4,50901929,East - 354 Lawrence East towards Starspray,,0,2238526,1122615,1,1
+354,4,50901932,East - 354 Lawrence East towards Starspray,,0,2239099,1122617,1,1
+354,4,50901927,East - 354 Lawrence East towards Starspray,,0,2238512,1122613,1,1
+354,4,50901938,East - 354 Lawrence East towards Starspray,,0,2239100,1122617,1,1
+354,4,50901928,East - 354 Lawrence East towards Starspray,,0,2239096,1122615,1,1
+354,4,50901936,East - 354 Lawrence East towards Starspray,,0,2239098,1122617,1,1
+354,4,50901934,East - 354S Lawrence East Short Turn towards Morningside,S,0,2239095,1122618,1,1
+354,4,50901937,East - 354 Lawrence East towards Starspray,,0,2238372,1122614,1,1
+354,4,50901939,East - 354 Lawrence East towards Starspray,,0,2239101,1122617,1,1
+354,4,50901940,East - 354 Lawrence East towards Starspray,,0,2239102,1122617,1,1
+354,4,50901941,East - 354 Lawrence East towards Starspray,,0,2239097,1122616,1,1
+354,4,50901935,East - 354 Lawrence East towards Starspray,,0,2239097,1122615,1,1
+354,4,50901952,West - 354 Lawrence East towards Eglinton Station,,1,2238526,1122622,1,1
+354,4,50901949,West - 354 Lawrence East towards Yonge,,1,2239101,1122624,1,1
+354,4,50901950,West - 354 Lawrence East towards Yonge,,1,2239101,1122623,1,1
+354,4,50901943,West - 354 Lawrence East towards Yonge,,1,2239102,1122624,1,1
+354,4,50901955,West - 354 Lawrence East towards Yonge,,1,2239102,1122623,1,1
+354,4,50901944,West - 354 Lawrence East towards Yonge,,1,2239097,1122624,1,1
+354,4,50901956,West - 354 Lawrence East towards Yonge,,1,2239097,1122623,1,1
+354,4,50901947,West - 354 Lawrence East towards Yonge,,1,2238372,1122624,1,1
+354,4,50901942,West - 354 Lawrence East towards Yonge,,1,2238372,1122623,1,1
+354,4,50901945,West - 354 Lawrence East towards Yonge,,1,2239101,1122624,1,1
+354,4,50901953,West - 354 Lawrence East towards Yonge,,1,2239101,1122623,1,1
+354,4,50901954,West - 354 Lawrence East towards Yonge,,1,2239102,1122624,1,1
+354,4,50901946,West - 354 Lawrence East towards Yonge,,1,2239102,1122623,1,1
+354,4,50901951,West - 354 Lawrence East towards Yonge,,1,2239097,1122625,1,1
+395,4,50903048,East - 395S York Mills Short Turn towards Port Union,S,0,2239490,1122701,1,1
+395,4,50903047,East - 395S York Mills Short Turn towards Port Union,S,0,2239489,1122701,1,1
+395,4,50903045,East - 395S York Mills Short Turn towards Port Union,S,0,2239487,1122700,1,1
+395,4,50903046,East - 395S York Mills Short Turn towards Port Union,S,0,2239488,1122701,1,1
+395,4,50903044,East - 395 York Mills towards Rouge Hill GO Station,,0,2239486,1122703,1,1
+395,4,50903043,East - 395 York Mills towards Rouge Hill GO Station,,0,2239485,1122703,1,1
+395,4,50903050,East - 395 York Mills towards Rouge Hill GO Station,,0,2239491,1122702,1,1
+395,4,50903042,East - 395 York Mills towards Rouge Hill GO Station,,0,2239484,1122703,1,1
+395,4,50903049,East - 395 York Mills towards Rouge Hill GO Station,,0,2239486,1122702,1,1
+395,4,50903052,East - 395 York Mills towards Rouge Hill GO Station,,0,2239485,1122702,1,1
+395,4,50903051,East - 395 York Mills towards Rouge Hill GO Station,,0,2239484,1122702,1,1
+395,4,50903056,West - 395 York Mills towards York Mills Station,,1,2239490,1122705,1,1
+395,4,50903055,West - 395 York Mills towards York Mills Station,,1,2239489,1122705,1,1
+395,4,50903054,West - 395 York Mills towards York Mills Station,,1,2239488,1122705,1,1
+395,4,50903057,West - 395 York Mills towards York Mills Station,,1,2239491,1122704,1,1
+395,4,50903053,West - 395 York Mills towards York Mills Station,,1,2239486,1122705,1,1
+395,4,50903058,West - 395 York Mills towards York Mills Station,,1,2239485,1122705,1,1
+395,4,50903059,West - 395 York Mills towards York Mills Station,,1,2239484,1122705,1,1

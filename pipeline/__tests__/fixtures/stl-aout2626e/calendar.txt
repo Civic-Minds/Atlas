@@ -1,0 +1,2 @@
+service_id,monday,tuesday,wednesday,thursday,friday,saturday,sunday,start_date,end_date
+AOUT26SEM,1,1,1,1,1,0,0,20260822,20261030

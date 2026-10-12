@@ -17,8 +17,8 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-259/latest.zip",
   "timezone": "America/Los_Angeles",
   "lastFeedExpiry": "20261130",
-  "lastFeedVersion": "UTC: 13-May-2026 14:03",
-  "lastRefreshedAt": "2026-08-18",
+  "lastFeedVersion": "UTC: 01-Oct-2026 04:57",
+  "lastRefreshedAt": "2026-10-12",
   "cities": [
     "Longview, Washington",
     "Kelso, Washington",
@@ -26,21 +26,27 @@
   ],
   "feedQuality": {
     "status": "review",
-    "score": 90,
+    "score": 80,
     "reasons": [
-      "1 shape correction needed."
+      "2 route shapes needed adjustment before display."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 1,
+      "shapeAnomalies": 2,
       "routeHeadwayMismatches": 0,
-      "featureCount": 18
+      "featureCount": 17
     },
-    "checkedAt": "2026-08-18"
+    "checkedAt": "2026-10-12"
   },
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261130"
+  "expiredFeedCheckExpiry": "20261130",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-259/latest.zip",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

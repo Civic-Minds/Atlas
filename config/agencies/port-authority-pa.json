@@ -8,15 +8,36 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-409/latest.zip",
   "lastFeedExpiry": "20261024",
-  "lastFeedVersion": "2606-Merged_Clever_2606",
+  "lastFeedVersion": "Merged_Clever_2606_2",
   "region": "Pennsylvania",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-10-12",
   "cities": [
     "Pittsburgh, Pennsylvania"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261024",
-  "timezone": "America/New_York"
+  "timezone": "America/New_York",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-409/latest.zip",
+  "feedQuality": {
+    "status": "review",
+    "score": 90,
+    "reasons": [
+      "1 route has stops whose frequency differs from the overall route schedule."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 1,
+      "featureCount": 496
+    },
+    "checkedAt": "2026-10-12"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

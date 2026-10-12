@@ -15,10 +15,23 @@ import { Upload } from '@aws-sdk/lib-storage';
 import { createHash } from 'node:crypto';
 import { promisify } from 'node:util';
 
-function requireEnv(key: string): string {
+const R2_WRITE_KEYS = new Set(['R2_ACCOUNT_ID', 'R2_ACCESS_KEY_ID', 'R2_SECRET_ACCESS_KEY']);
+
+/**
+ * Worktrees link .env.local to the main checkout's .env.dev-public, which has no
+ * R2 keys on purpose, so pipeline writes there stop here instead of touching R2.
+ */
+export function requireEnv(key: string): string {
   const v = process.env[key];
-  if (!v) throw new Error(`Missing env var: ${key}`);
-  return v;
+  if (v) return v;
+  if (R2_WRITE_KEYS.has(key)) {
+    throw new Error(
+      `Missing env var: ${key}. Refusing to talk to R2 without write keys. ` +
+      'This is expected in a worktree (its .env.local is the key-free .env.dev-public): ' +
+      'use --dry-run there, or run real uploads from the main checkout.',
+    );
+  }
+  throw new Error(`Missing env var: ${key}`);
 }
 
 let cachedR2Client: S3Client | undefined;

@@ -1,0 +1,8 @@
+stop_id,stop_name,stop_lat,stop_lon,zone_id,stop_url,to_from,schedules,stop_alias
+127,Industry,34.007927,-117.845581,127,https://www.metrolinktrains.com/rider-info/general-info/stations/industry/,BOTH,1,Industry
+119,Jurupa Valley / Pedley,33.978119,-117.476273,119,https://www.metrolinktrains.com/rider-info/general-info/stations/jurupa-valleypedley/,BOTH,1,Jurupa Valley / Pedley
+107,L.A. Union Station,34.055729,-118.233513,107,https://www.metrolinktrains.com/rider-info/general-info/stations/l.a.-union-station/,BOTH,1,L.A. Union Station
+126,Montebello / Commerce,34.006962,-118.125610,126,https://www.metrolinktrains.com/rider-info/general-info/stations/montebellocommerce/,BOTH,1,Montebello / Commerce
+117,Ontario - East,34.039909,-117.579521,117,https://www.metrolinktrains.com/rider-info/general-info/stations/ontario---east/,BOTH,1,Ontario - East
+120,Pomona - Downtown,34.058765,-117.750549,120,https://www.metrolinktrains.com/rider-info/general-info/stations/pomona---downtown/,BOTH,1,Pomona - Downtown
+123,Riverside - Downtown,33.975552,-117.369888,123,https://www.metrolinktrains.com/rider-info/general-info/stations/riverside---downtown/,BOTH,1,Riverside - Downtown

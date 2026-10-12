@@ -1,6 +1,8 @@
 {
   "slug": "fort-bend",
   "name": "Fort Bend County Transit",
+  "hiddenInProduction": true,
+  "issueUrl": "https://github.com/Civic-Minds/Atlas/issues/759",
   "websiteUrl": "http://fbctransit.org",
   "region": "Texas",
   "center": [
@@ -17,11 +19,32 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-60103/latest.zip",
   "lastFeedExpiry": "20281230",
   "lastFeedVersion": "1",
-  "lastRefreshedAt": "2026-08-07",
-  "lastFeedCheckAt": "20261007",
+  "lastRefreshedAt": "2026-10-12",
+  "lastFeedCheckAt": "20261012",
   "pmtilesPending": true,
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20281230",
-  "timezone": "America/Chicago"
+  "timezone": "US/Central",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/ntd-60103/latest.zip",
+  "feedQuality": {
+    "status": "unusable",
+    "score": 0,
+    "reasons": [
+      "Atlas could not find any usable routes in this feed."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 46,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 0
+    },
+    "checkedAt": "2026-10-12"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

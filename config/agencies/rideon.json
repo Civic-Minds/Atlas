@@ -27,7 +27,7 @@
     "Reston, Virginia"
   ],
   "timezone": "America/New_York",
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270109",
@@ -45,5 +45,7 @@
       "featureCount": 392
     },
     "checkedAt": "2026-09-07"
-  }
+  },
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://mcg.montgomerycountymd.gov/DOT-Transit/Resources/Files/GTFS/RideOnGTFS.zip"
 }

@@ -13,18 +13,40 @@
     -116.1
   ],
   "feedUrl": "https://sunlinebus.com/gtfs",
-  "lastFeedExpiry": "20991231",
-  "lastFeedVersion": "6/5/2026",
+  "lastFeedExpiry": "20281012",
+  "lastFeedVersion": "Add training route",
   "region": "California",
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "2026-10-12",
   "cities": [
     "Cathedral City, California",
     "Indio, California",
     "Palm Desert, California"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",
-  "timezone": "America/Los_Angeles"
+  "timezone": "America/Los_Angeles",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://sunlinebus.com/gtfs",
+  "feedQuality": {
+    "status": "review",
+    "score": 70,
+    "reasons": [
+      "1 route shape needed adjustment before display.",
+      "2 route have stops whose frequency differs from the overall route schedule."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 1,
+      "routeHeadwayMismatches": 2,
+      "featureCount": 66
+    },
+    "checkedAt": "2026-10-12"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

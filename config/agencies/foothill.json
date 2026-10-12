@@ -8,9 +8,9 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-101/latest.zip",
   "lastFeedExpiry": "20261031",
-  "lastFeedVersion": "20260701",
+  "lastFeedVersion": "20260717",
   "region": "California",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-10-12",
   "cities": [
     "West Covina, California",
     "Pomona, California",
@@ -23,9 +23,31 @@
     "Los Angeles, California",
     "Upland, California"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261031",
-  "timezone": "America/Los_Angeles"
+  "timezone": "America/Los_Angeles",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-101/latest.zip",
+  "feedQuality": {
+    "status": "degraded",
+    "score": 50,
+    "reasons": [
+      "11 route shapes needed adjustment before display.",
+      "2 route have stops whose frequency differs from the overall route schedule."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 11,
+      "routeHeadwayMismatches": 2,
+      "featureCount": 185
+    },
+    "checkedAt": "2026-10-12"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

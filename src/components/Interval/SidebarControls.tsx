@@ -10,7 +10,7 @@ import { findVariantFamily } from '../../utils/routeVariants';
 import { getRouteLabel, shortenAgencyName, searchOverlayHidesPanel, titleCase } from '../../utils/format';
 import { normalizeStopName, type StopEntry } from '../../apps/corridor-search';
 import { labelDirectionGroups, sortDirectionGroupIds } from '../../utils/directionLabel';
-import { hasDirectionPeriodService, routeCardDisplayHeadway, routeListDisplayHeadway } from '../../utils/effectiveHeadway';
+import { hasDirectionPeriodService, routeCardDisplayHeadway, routeListDisplay, type RouteListDisplay } from '../../utils/effectiveHeadway';
 import { combineSuggestedRouteNames, suggestedRouteGroupKey } from '../../utils/routeSuggestion';
 import { dedupeCrossDirectionHeadsigns } from '../../utils/crossDirectionDedup';
 import { searchAgencyGroups, prepareAgencyGroupsForDisplay, SEARCH_AGENCY_DISPLAY_LIMIT, type AgencySearchGroup } from '../../utils/agencySearch';
@@ -37,7 +37,8 @@ import type { LiveRouteInfoData } from './panels/LiveAdherenceCard';
 import type { OpenInfoFn } from '../InfoPanel';
 import { SearchSuggestionsPanel } from './SearchSuggestionsPanel';
 import { SearchResultsList } from './SearchResultsList';
-import { buildRouteFacts, buildRouteServiceSummary, buildRouteStopMetric, metricValueForPeriod } from '../../utils/routeFacts';
+import { branchDisplayPeriodHeadway, buildRouteFacts, buildRouteServiceSummary, buildRouteStopMetric, metricValueForPeriod } from '../../utils/routeFacts';
+import { buildSharedStopIndex } from '../../../shared/sharedStops';
 import { collectStopHubSiblings, getDistanceMeters } from '../../utils/stopHub';
 import { splitRouteKey } from '../../utils/routeKey';
 import { isFeedExpired } from '../../utils/feedFreshness';
@@ -290,7 +291,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
 
   // Compute notable routes fallback
   const notableRoutes = useMemo(() => {
-    const routes = new Map<string, { key: string; shortName: string; longNames: string[]; agencyName: string; headway: number }>();
+    const routes = new Map<string, { key: string; shortName: string; longNames: string[]; agencyName: string; headway: number; limited: boolean }>();
     for (const [slug, fc] of Object.entries(nonCorridorLayers)) {
       if (!fc?.features) continue;
       for (const f of fc.features) {
@@ -306,16 +307,19 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
               buildRouteFacts(candidateProps, slug).key === facts.key;
           })
           .map(candidate => candidate.properties as ShapeProperties);
-        const headway = routeListDisplayHeadway(routeFeatures, period) ?? 999;
+        const display = routeListDisplay(routeFeatures, period);
+        const headway = display.headway ?? 999;
+        const limited = display.limited;
         const shortName = facts.shortName;
         const longName = facts.longName || '';
         const agencyName = shortenAgencyName(facts.agencyName);
         const existing = routes.get(groupKey);
         if (!existing) {
-          routes.set(groupKey, { key: facts.key, shortName: slug === 'bart' ? suggestedRouteGroupKey(slug, shortName) : shortName, longNames: longName ? [longName] : [], agencyName, headway });
+          routes.set(groupKey, { key: facts.key, shortName: slug === 'bart' ? suggestedRouteGroupKey(slug, shortName) : shortName, longNames: longName ? [longName] : [], agencyName, headway, limited });
         } else {
           if (longName && !existing.longNames.includes(longName)) existing.longNames.push(longName);
           if (headway < existing.headway) existing.headway = headway;
+          existing.limited = existing.headway >= 999 && (existing.limited || limited);
         }
       }
     }
@@ -330,21 +334,21 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     return notableRoutes.filter(r => !viewedKeys.has(r.key));
   }, [notableRoutes, recentlyViewed]);
 
-  const headwayForRouteKey = useCallback((key: string): number | null => {
+  const displayForRouteKey = useCallback((key: string): RouteListDisplay => {
     const [slug, routeId] = key.split('::');
     const fc = nonCorridorLayers[slug];
     const feat = fc?.features.find(f => {
       const p = f.properties as ShapeProperties;
       return p.routeId === routeId && !(p as { stopId?: string }).stopId;
     });
-    if (!feat) return null;
+    if (!feat) return { headway: null, limited: false };
     const routeFeatures = fc?.features
       .filter(candidate => {
         const p = candidate.properties as ShapeProperties;
         return !p.stopId && p.routeId === routeId && (p.day === undefined || p.day === currentDay);
       })
       .map(candidate => candidate.properties as ShapeProperties) ?? [];
-    return routeListDisplayHeadway(routeFeatures, period);
+    return routeListDisplay(routeFeatures, period);
   }, [nonCorridorLayers, period, currentDay]);
 
   const suggestedFareAgencies = useMemo(() => {
@@ -422,8 +426,8 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       const directions = features
       .map(f => f.properties as unknown as ShapeProperties)
       .sort((a, b) => {
-        const aH = metricValueForPeriod(buildRouteServiceSummary(a).branch, period) ?? Infinity;
-        const bH = metricValueForPeriod(buildRouteServiceSummary(b).branch, period) ?? Infinity;
+        const aH = branchDisplayPeriodHeadway(a, period) ?? Infinity;
+        const bH = branchDisplayPeriodHeadway(b, period) ?? Infinity;
         if (aH !== bH) return aH - bH;
         return (a.directionId ?? 0) - (b.directionId ?? 0);
       });
@@ -506,8 +510,8 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         const variantKey = d.routeVariant?.trim().toLowerCase();
         const key = variantKey ? `${headsignKey}::${variantKey}` : headsignKey;
         const existing = seen.get(key);
-        const branchValue = metricValueForPeriod(buildRouteServiceSummary(d).branch, period) ?? Infinity;
-        const existingValue = existing ? metricValueForPeriod(buildRouteServiceSummary(existing).branch, period) ?? Infinity : Infinity;
+        const branchValue = branchDisplayPeriodHeadway(d, period) ?? Infinity;
+        const existingValue = existing ? branchDisplayPeriodHeadway(existing, period) ?? Infinity : Infinity;
         if (!existing || branchValue < existingValue) seen.set(key, d);
       }
       g.realTier = Array.from(seen.values());
@@ -638,6 +642,8 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
 
     const routeMap = new Map<string, { shortName: string; longName: string; agencyName: string; branches: Map<string, Branch> }>();
     type Branch = { rKey: string; headsign: string | null; service: ReturnType<typeof buildRouteStopMetric>; directionId: number };
+    // Pooled values at shared stops (CIV-82), so the stop card agrees with the map and route card.
+    const sharedIndexBySlug = new Map(Object.entries(nonCorridorLayers).map(([slug, fc]) => [slug, buildSharedStopIndex(fc.features)]));
 
     const routesByAgency = currentStop.routesByAgency || {};
 
@@ -657,7 +663,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         let stopHw: number | undefined = undefined;
         let matchingStopId: string | undefined = undefined;
         for (const sId of siblingIds) {
-          const service = buildRouteStopMetric(p, sId);
+          const service = buildRouteStopMetric(p, sId, sharedIndexBySlug.get(slug));
           const hw = metricValueForPeriod(service, period);
           if (hw != null) {
             stopHw = hw;
@@ -681,7 +687,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         const entry = routeMap.get(routeShortName)!;
         const branchKey = `${dirId}::${p.headsign ?? ''}`;
         // Prefer stop-specific headway over feature headway; keep the best (lowest) when deduping.
-        const service = buildRouteStopMetric(p, matchingStopId);
+        const service = buildRouteStopMetric(p, matchingStopId, sharedIndexBySlug.get(slug));
         const newHeadway = service.value ?? p.headway ?? null;
         const existing = entry.branches.get(branchKey);
         if (!existing || (newHeadway != null && (existing.service.value == null || newHeadway < existing.service.value))) {
@@ -1044,7 +1050,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
           suggestedRoutes={suggestedRoutes}
           pickRoute={pickRoute}
           fareView={fareView}
-          headwayForRouteKey={headwayForRouteKey}
+          displayForRouteKey={displayForRouteKey}
         />
       )}
       {disambigDetails && disambigDetails.length > 1 && !selectedRoute && (
@@ -1146,6 +1152,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
               <>
                 <RouteCardHeadway
                   currentRoute={currentRoute}
+                  agencyFeatures={routeSlug ? nonCorridorLayers[routeSlug]?.features : undefined}
                   variantFamily={variantFamily}
                   liveRouteInfo={liveRouteInfo}
                   liveStatus={liveStatus}
@@ -1216,7 +1223,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
             setQuery={setQuery}
             setSearchFocused={setSearchFocused}
             saveRecentSearch={saveRecentSearch}
-            headwayForRouteKey={headwayForRouteKey}
+            displayForRouteKey={displayForRouteKey}
             onRouteHover={onSearchRouteHover}
             hasMoreResults={hasMoreSearchResults}
             onShowMoreResults={() => setShowAllSearchResults(true)}

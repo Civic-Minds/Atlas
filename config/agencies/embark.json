@@ -7,10 +7,10 @@
     -97.52
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-2062/latest.zip",
-  "lastFeedExpiry": "20270702",
-  "lastFeedVersion": "01/07/2026-22:30",
+  "lastFeedExpiry": "20281012",
+  "lastFeedVersion": "10/10/2026-22:30",
   "region": "Oklahoma",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-10-12",
   "cities": [
     "Oklahoma City, Oklahoma",
     "Edmond, Oklahoma",
@@ -18,9 +18,30 @@
     "Midwest City, Oklahoma",
     "Moore, Oklahoma"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20270702",
-  "timezone": "America/Chicago"
+  "expiredFeedCheckExpiry": "20301231",
+  "timezone": "America/Chicago",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2062/latest.zip",
+  "feedQuality": {
+    "status": "review",
+    "score": 70,
+    "reasons": [
+      "4 route have stops whose frequency differs from the overall route schedule."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 4,
+      "featureCount": 170
+    },
+    "checkedAt": "2026-10-12"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

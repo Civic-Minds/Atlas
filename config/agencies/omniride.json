@@ -20,9 +20,11 @@
     "Alexandria, Virginia"
   ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1156/latest.zip",
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270130",
-  "timezone": "America/New_York"
+  "timezone": "America/New_York",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "http://omniride.com/omniride/assets/File/google_transit.zip"
 }

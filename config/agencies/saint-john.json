@@ -20,9 +20,11 @@
   "cities": [
     "Saint John, New Brunswick"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
-  "timezone": "America/Halifax"
+  "timezone": "America/Halifax",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2131/latest.zip"
 }

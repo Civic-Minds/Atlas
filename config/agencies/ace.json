@@ -15,8 +15,8 @@
   "feedUrl": "http://api.511.org/transit/datafeeds?operator_id=CE",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2684/latest.zip",
   "lastFeedExpiry": "20261231",
-  "lastFeedVersion": "20260722",
-  "lastRefreshedAt": "2026-08-10",
+  "lastFeedVersion": "20261009",
+  "lastRefreshedAt": "2026-10-12",
   "websiteUrl": "https://acerail.com/",
   "cities": [
     "Livermore, California",
@@ -26,9 +26,28 @@
     "San Jose, California",
     "Pleasanton, California"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
-  "timezone": "America/Los_Angeles"
+  "timezone": "America/Los_Angeles",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2684/latest.zip",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 2
+    },
+    "checkedAt": "2026-10-12"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

@@ -20,10 +20,10 @@
   ],
   "timezone": "America/Denver",
   "lastRawArchiveKey": "20251105-a5ee28f94a564f8e",
-  "lastFeedCheckAt": "20261007",
-  "expiredFeedCheckCount": 0,
-  "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20270201",
+  "lastFeedCheckAt": "20261012",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
+  "expiredFeedCheckExpiry": "20251105",
   "feedQuality": {
     "status": "unusable",
     "score": 0,
@@ -40,7 +40,9 @@
     "checkedAt": "2026-10-07"
   },
   "feedRefreshStatus": "stale",
-  "feedRefreshError": "pipeline produced 0 features",
-  "feedRefreshErrorAt": "20261007",
-  "feedRefreshRetryCount": 2
+  "feedRefreshError": "all available feeds expired (latest 20251105)",
+  "feedRefreshErrorAt": "20261012",
+  "feedRefreshRetryCount": 3,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-161/latest.zip"
 }

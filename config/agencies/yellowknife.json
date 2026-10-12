@@ -18,9 +18,11 @@
     62.4952,
     -114.3161
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
-  "timezone": "America/Edmonton"
+  "timezone": "America/Edmonton",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/tld-4708/latest.zip"
 }

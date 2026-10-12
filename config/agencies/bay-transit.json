@@ -14,12 +14,31 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-224/latest.zip",
   "region": "Virginia",
-  "lastFeedExpiry": "20261101",
-  "lastFeedVersion": "UTC: 12-Jun-2026 22:21",
-  "lastRefreshedAt": "2026-08-07",
-  "lastFeedCheckAt": "20261007",
+  "lastFeedExpiry": "20270501",
+  "lastFeedVersion": "UTC: 08-Oct-2026 16:59",
+  "lastRefreshedAt": "2026-10-12",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261101",
-  "timezone": "America/New_York"
+  "expiredFeedCheckExpiry": "20270501",
+  "timezone": "America/New_York",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-224/latest.zip",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 2
+    },
+    "checkedAt": "2026-10-12"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }
