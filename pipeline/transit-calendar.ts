@@ -19,7 +19,7 @@ import { DAY_FIELD_MAP } from './transit-utils';
 export function detectReferenceDate(
     calendar: GtfsCalendar[],
     calendarDates?: GtfsCalendarDate[],
-    trips?: Array<{ service_id: string }>
+    trips?: Array<{ service_id: string; route_id?: string }>
 ): string {
     if (!calendar || calendar.length === 0) {
         if (calendarDates && calendarDates.length > 0) {
@@ -113,6 +113,8 @@ export function detectReferenceDate(
     // as before. The replacement skips short running periods (under 28 days, e.g. a
     // one-week holiday block) when a longer one is also running.
     const MIN_RUNNING_PERIOD_DAYS = 28;
+    /** The running period must keep at least this share of the routes (see below). */
+    const MIN_RUNNING_ROUTE_SHARE = 0.5;
     const newestStarted = pastOrPresentMultiStarts.length > 0 ? pastOrPresentMultiStarts[pastOrPresentMultiStarts.length - 1] : undefined;
     const runningStarts = pastOrPresentMultiStarts.filter(s => groupEnd(s) >= todayStr);
     const longRunningStarts = runningStarts.filter(s => daysBetween(s, groupEnd(s)) >= MIN_RUNNING_PERIOD_DAYS);
@@ -121,102 +123,173 @@ export function detectReferenceDate(
         : longRunningStarts.length > 0
         ? longRunningStarts[longRunningStarts.length - 1]
         : runningStarts.length > 0 ? runningStarts[runningStarts.length - 1] : undefined;
-    const bestStartDate = runningStart != null
-        ? runningStart
-        : pastOrPresentMultiStarts.length > 0
-        ? pastOrPresentMultiStarts[pastOrPresentMultiStarts.length - 1]
+    // The period chosen before #734: the newest started, else the newest, else the median.
+    const previousStart = newestStarted != null
+        ? newestStarted
         : multiStarts.length > 0
             ? multiStarts[multiStarts.length - 1]
             : sortedStarts[Math.floor(sortedStarts.length / 2)];
-
-    const bestGroup = groups.get(bestStartDate)!;
-    const bestEndDate = bestGroup.reduce((max, c) => c.end_date > max ? c.end_date : max, bestGroup[0].end_date);
-    // A reference date inside an ended period nested in the running one (RCT: a July
-    // midpoint of the Dec-Dec regular period lands in the ended Jun-Aug summer period)
-    // still activates both timetables. Move it to the day after that period ends, kept
-    // inside the running period. Only applies when the chosen period is running today.
-    const outsideEndedOverlay = (ref: string): string => {
-        if (runningStart == null) return ref;
-        let result = ref;
-        for (const s of multiStarts) {
-            const end = groupEnd(s);
-            if (s > bestStartDate && end < todayStr && s <= result && result <= end) {
-                const next = addDaysYmd(end, 1);
-                result = next > bestEndDate ? bestEndDate : next;
-            }
-        }
-        return result;
-    };
-
-    const sy = parseInt(bestStartDate.substring(0, 4));
-    const sm = parseInt(bestStartDate.substring(4, 6)) - 1;
-    const sd = parseInt(bestStartDate.substring(6, 8));
-    const ey = parseInt(bestEndDate.substring(0, 4));
-    const em = parseInt(bestEndDate.substring(4, 6)) - 1;
-    const ed = parseInt(bestEndDate.substring(6, 8));
-
-    const mid = new Date((new Date(sy, sm, sd).getTime() + new Date(ey, em, ed).getTime()) / 2);
-    const calendarRef = `${mid.getFullYear()}${String(mid.getMonth() + 1).padStart(2, '0')}${String(mid.getDate()).padStart(2, '0')}`;
-
-    // Sanity-check: if calendarDates type-1 entries exist and their midpoint is
-    // more than 90 days from the calendar-derived reference, the calendar may have
-    // placeholder entries that don't reflect the actual service window. Override
-    // with the calendarDates midpoint — but ONLY when the calendarDates midpoint
-    // is EARLIER than the calendar reference. This handles the Foothill Transit
-    // pattern: a year-long calendar.txt pulls the reference late (e.g. September)
-    // while the actual calendarDates entries are all in April → use April.
-    //
-    // When the calendarDates midpoint is LATER than the calendar reference (e.g.
-    // Kingston Transit: a phantom year-long calendar_dates service skews the
-    // calendarDates midpoint to September while the real services run March–May),
-    // the calendar-derived reference is already anchored in the correct early
-    // window — do not override it.
-    //
-    // Require the added dates themselves to span less than a year: the Foothill
-    // pattern is a tight cluster of dates (e.g. all in April) whose midpoint is
-    // meaningful. A feed with recurring annual holiday exceptions (e.g. Dec 24/31
-    // recorded across 2023, 2024, and 2026) has no such cluster — its "midpoint"
-    // is an arbitrary date roughly halfway between the earliest and latest year,
-    // not a real service window, and trusting it pulled Emery Go-Round's
-    // reference date back a full year, excluding every currently-active trip.
-    if (calendarDates && calendarDates.length > 0) {
-        const added = calendarDates
-            .filter(cd => cd.exception_type === '1')
-            .map(cd => cd.date)
-            .sort();
-        if (added.length > 0) {
-            const first = added[0];
-            const last = added[added.length - 1];
-            const fsy = parseInt(first.substring(0, 4)), fsm = parseInt(first.substring(4, 6)) - 1, fsd = parseInt(first.substring(6, 8));
-            const fey = parseInt(last.substring(0, 4)), fem = parseInt(last.substring(4, 6)) - 1, fed = parseInt(last.substring(6, 8));
-            const addedSpanDays = (new Date(fey, fem, fed).getTime() - new Date(fsy, fsm, fsd).getTime()) / 86400000;
-            const datesMid = new Date((new Date(fsy, fsm, fsd).getTime() + new Date(fey, fem, fed).getTime()) / 2);
-            const calendarRefMs = mid.getTime();
-            const datesMidMs = datesMid.getTime();
-            const diffDays = Math.abs(calendarRefMs - datesMidMs) / 86400000;
-            if (diffDays > 90 && datesMidMs < calendarRefMs && addedSpanDays < 365) {
-                const datesRef = `${datesMid.getFullYear()}${String(datesMid.getMonth() + 1).padStart(2, '0')}${String(datesMid.getDate()).padStart(2, '0')}`;
-                // Never land before the period this reference date stands for. SCT's
-                // calendar runs to the open-ended 20991231, so the calendar midpoint is
-                // decades out and holiday exceptions (May-Dec) win, but their midpoint
-                // (Sep 9) is before the newest period starts (Oct 1), which dropped all
-                // 15 routes that only run in that period (#658).
-                //
-                // The clamp target is the newest period still running today, not simply the
-                // newest period that has started: RCT's 2026 summer period (Jun 12-Aug 23,
-                // over by October) is the newest, but the regular period (Dec 2025-Dec 2026)
-                // is still running. Clamping to the summer start put the reference inside
-                // summer, where both timetables are active, and hourly loops 2-3 minutes apart
-                // were pooled into a 4-minute headway. When no period is running (a stale
-                // feed), the newest started period is still the target.
-                // The date is clamped into that period's whole start-end window.
-                const clamped = datesRef < bestStartDate ? bestStartDate : datesRef > bestEndDate ? bestEndDate : datesRef;
-                return outsideEndedOverlay(clamped);
-            }
-        }
+    const removalsByDate = new Map<string, Set<string>>();
+    for (const cd of (calendarDates ?? [])) {
+        if (cd.exception_type !== '2') continue;
+        const set = removalsByDate.get(cd.date) ?? new Set<string>();
+        set.add(cd.service_id);
+        removalsByDate.set(cd.date, set);
     }
 
-    return outsideEndedOverlay(calendarRef);
+    const referenceFor = (bestStartDate: string, switched: boolean): string => {
+        const bestGroup = groups.get(bestStartDate)!;
+        const bestEndDate = groupEnd(bestStartDate);
+        // A reference date inside an ended period nested in the running one (RCT: a July
+        // midpoint of the Dec-Dec regular period lands in the ended Jun-Aug summer period)
+        // still activates both timetables. Move it to the day after that period ends, kept
+        // inside the running period.
+        const outsideEndedOverlay = (ref: string): string => {
+            let result = ref;
+            for (const s of multiStarts) {
+                const end = groupEnd(s);
+                if (s > bestStartDate && end < todayStr && s <= result && result <= end) {
+                    const next = addDaysYmd(end, 1);
+                    result = next > bestEndDate ? bestEndDate : next;
+                }
+            }
+            return result;
+        };
+        // The reference week (the 3 days on each side, see nearestDateForDayName) must not
+        // hold a day whose running-period services are all removed in calendar_dates. A
+        // partial removal (GCRTA's weekly rotating service ids) is left to the holiday
+        // check in getActiveServiceIds (#678). The day after an
+        // ended summer period is often still inside the regular period's summer removals:
+        // Clallam Transit's and RABA's regular Sat/Sun services are removed through Sep 5/6
+        // (and weekdays through Labor Day, Sep 7), so a reference of Sep 7/8 read the last
+        // summer weekend, where the regular weekend service is removed and the summer one is
+        // out of range. The ±4-week holiday check (#678) then saw more removed weekends
+        // than running ones, took the empty set as typical, and dropped every weekend
+        // route. The reference moves forward to the first such clear week, inside the
+        // period; if none is found within 8 weeks it stays.
+        const weekClear = (ref: string): boolean => {
+            for (let k = -3; k <= 3; k++) {
+                const date = addDaysYmd(ref, k);
+                const removed = removalsByDate.get(date);
+                if (!removed) continue;
+                const field = DOW_FIELDS[ymdToDate(date).getDay()];
+                const running = bestGroup.filter(c => c[field] === '1');
+                if (running.length > 0 && running.every(c => removed.has(c.service_id))) return false;
+            }
+            return true;
+        };
+        const clearReferenceWeek = (ref: string): string => {
+            for (let k = 0; k <= 56; k++) {
+                const date = addDaysYmd(ref, k);
+                if (date > bestEndDate) break;
+                if (weekClear(date)) return date;
+            }
+            return ref;
+        };
+        const finish = (ref: string): string => switched ? clearReferenceWeek(outsideEndedOverlay(ref)) : ref;
+
+        const sy = parseInt(bestStartDate.substring(0, 4));
+        const sm = parseInt(bestStartDate.substring(4, 6)) - 1;
+        const sd = parseInt(bestStartDate.substring(6, 8));
+        const ey = parseInt(bestEndDate.substring(0, 4));
+        const em = parseInt(bestEndDate.substring(4, 6)) - 1;
+        const ed = parseInt(bestEndDate.substring(6, 8));
+
+        const mid = new Date((new Date(sy, sm, sd).getTime() + new Date(ey, em, ed).getTime()) / 2);
+        const calendarRef = `${mid.getFullYear()}${String(mid.getMonth() + 1).padStart(2, '0')}${String(mid.getDate()).padStart(2, '0')}`;
+
+        // Sanity-check: if calendarDates type-1 entries exist and their midpoint is
+        // more than 90 days from the calendar-derived reference, the calendar may have
+        // placeholder entries that don't reflect the actual service window. Override
+        // with the calendarDates midpoint — but ONLY when the calendarDates midpoint
+        // is EARLIER than the calendar reference. This handles the Foothill Transit
+        // pattern: a year-long calendar.txt pulls the reference late (e.g. September)
+        // while the actual calendarDates entries are all in April → use April.
+        //
+        // When the calendarDates midpoint is LATER than the calendar reference (e.g.
+        // Kingston Transit: a phantom year-long calendar_dates service skews the
+        // calendarDates midpoint to September while the real services run March–May),
+        // the calendar-derived reference is already anchored in the correct early
+        // window — do not override it.
+        //
+        // Require the added dates themselves to span less than a year: the Foothill
+        // pattern is a tight cluster of dates (e.g. all in April) whose midpoint is
+        // meaningful. A feed with recurring annual holiday exceptions (e.g. Dec 24/31
+        // recorded across 2023, 2024, and 2026) has no such cluster — its "midpoint"
+        // is an arbitrary date roughly halfway between the earliest and latest year,
+        // not a real service window, and trusting it pulled Emery Go-Round's
+        // reference date back a full year, excluding every currently-active trip.
+        if (calendarDates && calendarDates.length > 0) {
+            const added = calendarDates
+                .filter(cd => cd.exception_type === '1')
+                .map(cd => cd.date)
+                .sort();
+            if (added.length > 0) {
+                const first = added[0];
+                const last = added[added.length - 1];
+                const fsy = parseInt(first.substring(0, 4)), fsm = parseInt(first.substring(4, 6)) - 1, fsd = parseInt(first.substring(6, 8));
+                const fey = parseInt(last.substring(0, 4)), fem = parseInt(last.substring(4, 6)) - 1, fed = parseInt(last.substring(6, 8));
+                const addedSpanDays = (new Date(fey, fem, fed).getTime() - new Date(fsy, fsm, fsd).getTime()) / 86400000;
+                const datesMid = new Date((new Date(fsy, fsm, fsd).getTime() + new Date(fey, fem, fed).getTime()) / 2);
+                const calendarRefMs = mid.getTime();
+                const datesMidMs = datesMid.getTime();
+                const diffDays = Math.abs(calendarRefMs - datesMidMs) / 86400000;
+                if (diffDays > 90 && datesMidMs < calendarRefMs && addedSpanDays < 365) {
+                    const datesRef = `${datesMid.getFullYear()}${String(datesMid.getMonth() + 1).padStart(2, '0')}${String(datesMid.getDate()).padStart(2, '0')}`;
+                    // Never land before the period this reference date stands for. SCT's
+                    // calendar runs to the open-ended 20991231, so the calendar midpoint is
+                    // decades out and holiday exceptions (May-Dec) win, but their midpoint
+                    // (Sep 9) is before the newest period starts (Oct 1), which dropped all
+                    // 15 routes that only run in that period (#658).
+                    //
+                    // The clamp target is the newest period still running today, not simply the
+                    // newest period that has started: RCT's 2026 summer period (Jun 12-Aug 23,
+                    // over by October) is the newest, but the regular period (Dec 2025-Dec 2026)
+                    // is still running. Clamping to the summer start put the reference inside
+                    // summer, where both timetables are active, and hourly loops 2-3 minutes apart
+                    // were pooled into a 4-minute headway. When no period is running (a stale
+                    // feed), the newest started period is still the target.
+                    // The date is clamped into that period's whole start-end window.
+                    // The end clamp only applies to the running period chosen for #734.
+                    const clamped = datesRef < bestStartDate ? bestStartDate : switched && datesRef > bestEndDate ? bestEndDate : datesRef;
+                    return finish(clamped);
+                }
+            }
+        }
+        return finish(calendarRef);
+    };
+
+    const previousRef = referenceFor(previousStart, false);
+    if (runningStart == null || runningStart === previousStart) return previousRef;
+    const runningRef = referenceFor(runningStart, true);
+    // Never switch to a running period that carries far fewer routes than the ended one:
+    // in a stale feed the ended period is usually the main timetable and the one still
+    // running is a small side service. CARTA's main period ended Aug 15 and only the
+    // TriCounty Link period still runs (8 of 32 routes). Miami-Dade's bus periods ended
+    // Jul 19; the running periods (Nov 2023-Dec 2026 and 2021-2027) put the reference at
+    // their midpoint, Jun 7 2025, before the bus periods start (47 of 122 routes, and
+    // commuter rail lost). Routes are counted from the calendar.txt services in range on
+    // each reference date. Without route ids the switch is kept.
+    if (trips && trips.length > 0 && trips[0].route_id != null) {
+        const routesByService = new Map<string, Set<string>>();
+        for (const t of trips) {
+            if (t.route_id == null) continue;
+            const set = routesByService.get(t.service_id) ?? new Set<string>();
+            set.add(t.route_id);
+            routesByService.set(t.service_id, set);
+        }
+        const routesOn = (date: string): number => {
+            const routes = new Set<string>();
+            for (const c of effectiveCalendar) {
+                if (date < c.start_date || date > c.end_date) continue;
+                for (const r of routesByService.get(c.service_id) ?? []) routes.add(r);
+            }
+            return routes.size;
+        };
+        const before = routesOn(previousRef);
+        if (before > 0 && routesOn(runningRef) < before * MIN_RUNNING_ROUTE_SHARE) return previousRef;
+    }
+    return runningRef;
 }
 
 /**
@@ -252,6 +325,8 @@ function nearestDateForDayName(referenceDate: string, day: DayName): string {
     const result = new Date(ry, rm, rd + diff);
     return `${result.getFullYear()}${String(result.getMonth() + 1).padStart(2, '0')}${String(result.getDate()).padStart(2, '0')}`;
 }
+
+const DOW_FIELDS: Array<keyof GtfsCalendar> = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
 
 function ymdToDate(ymd: string): Date {
     return new Date(parseInt(ymd.substring(0, 4)), parseInt(ymd.substring(4, 6)) - 1, parseInt(ymd.substring(6, 8)));
