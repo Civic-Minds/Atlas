@@ -348,6 +348,67 @@ describe('release diff gate: weekday headway lost (#710)', () => {
   });
 });
 
+describe('release diff gate: day type lost or shrunk (#741)', () => {
+  // Shapes of the 2026-10-12 bundle dry run: clallamtransit Saturday 26 -> 0
+  // and Sunday 4 -> 0, while its weekday lines stay.
+  const line = (routeId: string, directionId: number, day: string) => ({
+    type: 'Feature',
+    geometry: { type: 'LineString', coordinates: [[Number(routeId), directionId], [1, 1]] },
+    properties: { routeId, directionId, day, tier: '30', headway: 30 },
+  });
+  const network = (routes: Record<string, number>) => JSON.stringify({
+    type: 'FeatureCollection',
+    features: Object.entries(routes).flatMap(([day, n]) =>
+      Array.from({ length: n }, (_, i) => line(String(Math.floor(i / 2) + 1), i % 2, day))),
+  });
+  const live = summarizeArtifact(network({ Weekday: 20, Saturday: 12, Sunday: 4 }), null);
+
+  it('counts route lines per day type', () => {
+    expect(live.dayFeatures).toEqual({ Weekday: 20, Saturday: 12, Sunday: 4 });
+  });
+
+  it('is red when an agency loses Saturday, and lists every lost day', () => {
+    const next = summarizeArtifact(network({ Weekday: 20, Sunday: 4 }), null);
+    const flags = evaluateAgency({ slug: 'clallamtransit', live, next, allowMissingLive: true }, [], TODAY);
+    expect(names(flags)).toEqual(['clallamtransit:day-lost:red']);
+    expect(flags[0].message).toBe('no route lines on Saturday now (Saturday 12 -> 0)');
+    expect(applyOverrides(flags, { allowDrop: false, allow: [] }).blocked).toEqual(['clallamtransit']);
+    const both = evaluateAgency({ slug: 'raba', live, next: summarizeArtifact(network({ Weekday: 20 }), null), allowMissingLive: true }, [], TODAY);
+    expect(both.map(f => f.message)).toEqual(['no route lines on Saturday, Sunday now (Saturday 12 -> 0, Sunday 4 -> 0)']);
+  });
+
+  it('passes with --allow <slug>:day-lost, which forwards like the other flags', () => {
+    const next = summarizeArtifact(network({ Weekday: 20, Sunday: 4 }), null);
+    const flags = evaluateAgency({ slug: 'clallamtransit', live, next, allowMissingLive: true }, [], TODAY);
+    const overrides = parseGateOverrides(['--allow', 'clallamtransit:day-lost', '--allow=raba:day-shrunk']);
+    expect(overrides.errors).toEqual([]);
+    expect(overrideArgs(overrides)).toEqual(['--allow', 'clallamtransit:day-lost', '--allow', 'raba:day-shrunk']);
+    const result = applyOverrides(flags, overrides);
+    expect(result.blocked).toEqual([]);
+    expect(result.flags[0].allowed).toBe(true);
+  });
+
+  it('is yellow when a day type falls below 65% of live (cdta Saturday 92 -> 56)', () => {
+    const next = summarizeArtifact(network({ Weekday: 20, Saturday: 7, Sunday: 4 }), null);
+    const flags = evaluateAgency({ slug: 'cdta', live, next, allowMissingLive: true }, [], TODAY);
+    expect(names(flags)).toEqual(['cdta:day-shrunk:yellow']);
+    expect(flags[0].message).toBe('route lines on Saturday fall below 65% of live (Saturday 12 -> 7)');
+    expect(applyOverrides(flags, { allowDrop: false, allow: [] }).blocked).toEqual([]);
+  });
+
+  it('stays quiet for normal small changes, small live counts, empty output and summaries without day counts', () => {
+    // 12 -> 8 (67%) and 4 -> 2 (live under 5) are ordinary schedule changes.
+    const small = summarizeArtifact(network({ Weekday: 18, Saturday: 8, Sunday: 2 }), null);
+    expect(evaluateAgency({ slug: 'x', live, next: small, allowMissingLive: true }, [], TODAY).filter(f => f.flag.startsWith('day-'))).toEqual([]);
+    expect(evaluateAgency({ slug: 'x', live, next: live, allowMissingLive: true }, [], TODAY)).toEqual([]);
+    const empty = summarizeArtifact(JSON.stringify({ type: 'FeatureCollection', features: [] }), null);
+    expect(names(evaluateAgency({ slug: 'x', live, next: empty, allowMissingLive: true }, [], TODAY)).filter(n => n.includes(':day-'))).toEqual([]);
+    const { dayFeatures: _omit, ...noDays } = live;
+    const noWeekend = summarizeArtifact(network({ Weekday: 20 }), null);
+    expect(evaluateAgency({ slug: 'x', live: noDays, next: noWeekend, allowMissingLive: true }, [], TODAY).filter(f => f.flag.startsWith('day-'))).toEqual([]);
+  });
+});
+
 describe('release diff gate: overrides', () => {
   const sct = evaluateAgency({ slug: 'sct', live: countsOnly(2283, 2283, 25), next: countsOnly(1010, 1010, 10), allowMissingLive: true }, [], TODAY);
   const amarillo = evaluateAgency({ slug: 'amarillo', live: countsOnly(344, 344, 12), next: countsOnly(41, 41, 12), allowMissingLive: true }, [], TODAY);
