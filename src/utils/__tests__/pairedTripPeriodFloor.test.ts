@@ -4,6 +4,7 @@ import { groupTrunkHeadway, medianTerminalHeadway } from '../routeCardTrunk';
 import { branchDisplayHourHeadway, branchDisplayPeriodHeadway, buildRouteStopMetric, metricValueForPeriod } from '../routeFacts';
 import { sparklineHeadwayByHour } from '../../components/Interval/panels/RouteCardHeadway';
 import type { ShapeProperties } from '../../hooks/useIntervalStats';
+import { buildSharedStopIndex } from '../../../shared/sharedStops';
 
 // Niagara 105 Saturday, release-mv5ilv73 (#761). Direction 0 runs paired trips 12 min apart,
 // two an hour at midday, so every period median is 2 while the range and coverage read 30-60.
@@ -171,5 +172,55 @@ describe('paired-trip floor on hourly, trunk, stop and ranking surfaces (#761)',
       stopPeriodHeadways: { '1': { midday: 60, pmPeak: 30 } },
     } as unknown as ShapeProperties;
     expect(metricValueForPeriod(buildRouteStopMetric(withStop, '1'), 'pmPeak')).toBe(30);
+  });
+});
+
+describe('paired-trip floor on shared stretches and the all-day stop value (#761)', () => {
+  // Niagara-105-shaped pattern sharing a stretch (stops S1-S2) with a sibling pattern. The
+  // pipeline pooled both patterns' departures there: midday every 8, all-day every 8.
+  const pattern = {
+    ...niagara105Dir0,
+    stopOrder: ['S0', 'S1', 'S2'],
+    sharedStretches: [{ from: 1, to: 2, with: ['SIBLING'] }],
+    stopPeriodHeadways: { S0: { midday: 2 }, S1: { midday: 30 }, S2: { midday: 2 } },
+    stopHeadways: { S0: 2, S1: 30, S2: 2 },
+  } as unknown as ShapeProperties;
+  const carrier = {
+    ...pattern,
+    headsign: 'SIBLING',
+    sharedStops: {
+      S1: { headway: 8, periods: [null, 8] },
+      S2: { headway: 1, periods: [null, 1] },
+    },
+  } as unknown as ShapeProperties;
+  const index = buildSharedStopIndex([{ properties: carrier }, { properties: pattern }]);
+
+  it('a pooled value below the own value stays as published (combined service)', () => {
+    const service = buildRouteStopMetric(pattern, 'S1', index);
+    expect(service.provenance).toBe('shared-stretch');
+    expect(metricValueForPeriod(service, 'midday')).toBe(8);
+    expect(service.value).toBe(8);
+  });
+
+  it('a pooled value is not floored by this pattern alone', () => {
+    const service = buildRouteStopMetric(pattern, 'S2', index);
+    expect(metricValueForPeriod(service, 'midday')).toBe(1);
+  });
+
+  it('an own stop value off the shared stretch is floored, period and all-day', () => {
+    const service = buildRouteStopMetric(pattern, 'S0', index);
+    expect(service.provenance).toBe('stop-specific');
+    expect(metricValueForPeriod(service, 'midday')).toBe(58);
+    expect(metricValueForPeriod(service, 'all')).toBe(58);
+  });
+
+  it('all-day stop value already showing real spacing keeps its own value', () => {
+    const regular = { ...niagara105Dir0, stopHeadways: { X: 60 }, stopPeriodHeadways: { X: { midday: 60 } } } as unknown as ShapeProperties;
+    expect(metricValueForPeriod(buildRouteStopMetric(regular, 'X'), 'all')).toBe(60);
+  });
+
+  it('all-day stop value on a regular direction is untouched', () => {
+    const regular = { ...niagara105Dir1, stopHeadways: { X: 20 } } as unknown as ShapeProperties;
+    expect(metricValueForPeriod(buildRouteStopMetric(regular, 'X'), 'all')).toBe(20);
   });
 });

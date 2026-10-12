@@ -179,7 +179,7 @@ export function buildRouteServiceSummary(p: ShapeProperties): RouteServiceSummar
  */
 export function buildRouteStopMetric(p: ShapeProperties, stopId: string, sharedIndex?: SharedStopIndex): HeadwayMetric {
   const own = pairedTripSafeStopPeriods(p, p.stopPeriodHeadways?.[stopId]);
-  const ownValue = p.stopHeadways?.[stopId] ?? null;
+  const ownValue = pairedTripSafeStopAllDay(p, p.stopHeadways?.[stopId] ?? null);
   if (sharedIndex) {
     const pooledValue = getPooledStop(sharedIndex, p, stopId, 'headway') as number | undefined;
     const pooledByPeriod: Partial<Record<PeriodKey, number>> = {};
@@ -188,7 +188,9 @@ export function buildRouteStopMetric(p: ShapeProperties, stopId: string, sharedI
       if (v !== undefined) pooledByPeriod[pk] = v;
     }
     if (pooledValue !== undefined || Object.keys(pooledByPeriod).length > 0) {
-      return metric(pooledValue ?? ownValue, pairedTripSafeStopPeriods(p, { ...(own ?? {}), ...pooledByPeriod }), undefined, 'shared-stretch');
+      // Pooled values describe the combined departures of every pattern at the stop, so this
+      // pattern's paired-trip floor does not apply to them (CIV-82): they stay as published.
+      return metric(pooledValue ?? ownValue, { ...(own ?? {}), ...pooledByPeriod }, undefined, 'shared-stretch');
     }
   }
   return metric(ownValue, own, undefined, ownValue != null || own ? 'stop-specific' : 'none');
@@ -216,6 +218,21 @@ function pairedTripSafeStopPeriods<T extends Partial<Record<string, number | nul
     (out as Record<string, number | null>)[pk] = floor;
   }
   return out ?? byPeriod;
+}
+
+/**
+ * The all-day stop value (stopHeadways) is the stop's midday-window median, so a paired-trip
+ * stop carries the same 1-2 minute value. Apply the midday floor under the same test as the
+ * period values: only when the stop value is a third or less of the midday range minimum.
+ * (When a stop has too few midday departures the pipeline falls back to the PM peak window;
+ * the midday floor then only applies if that value also fails the midday test.)
+ */
+function pairedTripSafeStopAllDay(p: ShapeProperties, value: number | null): number | null {
+  if (value == null) return value;
+  const floor = pairedTripPeriodFloor(p, 'midday');
+  const rangeMin = p.headwayRangeByPeriod?.midday?.min;
+  if (floor == null || floor <= value || rangeMin == null || value * 3 > rangeMin) return value;
+  return floor;
 }
 
 /** One hour's branch cadence as the route card shows it, raised to the hour's period floor (#761). */
