@@ -7,7 +7,7 @@ import { computeRunningTimes, runningTimesJson } from './runningTime.js';
 import { pickRepresentativeWeekday } from './representativeWeekday.js';
 import type { GtfsData, AnalysisResult, RawRouteDepartures } from '../types/gtfs.js';
 import { computeRawDepartures } from './transit-phase1.js';
-import { applyAnalysisCriteria, determineTierWithEdgeGapAllowance, previousNightTailDays } from './transit-phase2.js';
+import { applyAnalysisCriteria, BURST_MAX_SPAN_MINUTES, determineTierWithEdgeGapAllowance, previousNightTailDays } from './transit-phase2.js';
 import { calculateCorridors } from './transit-logic.js';
 import { detectReferenceDate, getActiveServiceIds } from './transit-calendar.js';
 import { DEFAULT_CRITERIA, getTiersForCriteria } from './defaults.js';
@@ -21,7 +21,7 @@ import { ROUTE_ARTIFACT_SCHEMA_VERSION } from '../shared/artifactSchema.js';
 import { DAY_TYPES, WEEKDAYS, type DayName, type DayType } from '../types/gtfs.js';
 import { ALL_DAYS } from '../shared/dayTypes.js';
 import { expandFrequencyWindow, expandTripFrequencyWindows, isSingleTripFrequencyWindow, parseFrequencyWindow, SINGLE_TRIP_WINDOW_MAX_DEPARTURES, SINGLE_TRIP_WINDOW_SPAN_TOLERANCE_MIN, t2m, type FrequencyWindow } from './transit-utils.js';
-import { adaptiveMedianHeadwayInWindow, computeHourMaxGaps, computePeriodHeadways, computePeriodHeadwayRanges, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, hasGenuineBranchPattern, hasSustainedFrequentService, hasSustainedNightService, headsignOverlapMinHeadway, headwayToTier, isThinAllDayTerminalSample, medianHeadwayInWindow, nightServiceDepartureTimes, NIGHT_SERVICE_WINDOW_END_MIN, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
+import { adaptiveMedianHeadwayInWindow, computeHourMaxGaps, computePeriodHeadways, computePeriodHeadwayRanges, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, hasGenuineBranchPattern, hasSustainedFrequentService, hasSustainedNightService, headsignOverlapMinHeadway, headwayToTier, isThinAllDayTerminalSample, medianHeadwayInWindow, MIN_ALL_DAY_TERMINAL_DEPARTURES, nightServiceDepartureTimes, NIGHT_SERVICE_WINDOW_END_MIN, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
 import { computeRouteBaseFares, detectBusSubType } from './route-metadata.js';
 import { buildStopsMeta } from './stopsMeta.js';
 import { clipLineBetweenPositions, clipLineBetweenStops, projectStopsOntoShape, simplifyLine } from './geometry.js';
@@ -279,6 +279,12 @@ export function scopedTerminalHeadline(
   const hasDaytime = (medianHeadwayInWindow(sorted, 540, 900, 3)
     ?? medianHeadwayInWindow(sorted, 900, 1140, 3)) != null;
   if (!hasDaytime) return null;
+  // The sample must be all-day service, not a burst of its own (cta 82 Homan & Congress: three
+  // PM short turns minutes apart would read 8): at least four departures over 6-22h, spread
+  // over more than phase 2's burst span.
+  const daytime = sorted.filter(t => t >= 360 && t <= 1320);
+  if (new Set(daytime).size < MIN_ALL_DAY_TERMINAL_DEPARTURES
+    || daytime[daytime.length - 1] - daytime[0] <= BURST_MAX_SPAN_MINUTES) return null;
   const headway = sustainedMedianHeadwayInWindow(sorted, 360, 1320, 3);
   if (headway == null) return null;
   const dayConfig = DEFAULT_CRITERIA.dayTypes[day];
@@ -1134,6 +1140,48 @@ export async function processGtfsBuffer(
     }
   }
 
+  // A thin-shape feature's scoped headline (scopedTerminalHeadline) reads only its own branch:
+  // the headsign's trips that serve at least two thirds of the drawn shape's stops, at the
+  // shape's last stop. Every trip of a headsign at a shared last stop over-claims a branch that
+  // converges there: ttc 94 to Castle Frank runs from Ossington (26 stops) and from Wellesley
+  // Station (11 of them), every 19-20 each and every 10 together. A share rather than the first
+  // stop, so an early shape that starts at a carhouse still reads its main trips. Built lazily:
+  // it fires on few features.
+  const branchTerminalCache = new Map<string, number[]>();
+  const branchTerminalTimes = (hsKey: string, shapeStopIds: readonly string[], terminalId: string): number[] => {
+    const cacheKey = `${hsKey}|${terminalId}|${shapeStopIds.join(',')}`;
+    const hit = branchTerminalCache.get(cacheKey);
+    if (hit) return hit;
+    const shapeStops = new Set(shapeStopIds);
+    const servedShapeStops = new Map<string, Set<string>>();
+    const atTerminal = new Map<string, { seq: number; mins: number }>();
+    for (const st of gtfs.stopTimes ?? []) {
+      if (frequencyTemplateTripIds.has(st.trip_id)) continue;
+      const grps = tripGroupByTripId.get(st.trip_id);
+      if (!grps?.some(g => g.inHeadsign && g.headsign
+        && `${g.shortName}::${g.dirId}::${g.dayType}::${g.headsign}` === hsKey)) continue;
+      const parentId = childToParent.get(st.stop_id);
+      for (const id of [st.stop_id, parentId]) {
+        if (id == null || !shapeStops.has(id)) continue;
+        let served = servedShapeStops.get(st.trip_id);
+        if (!served) { served = new Set(); servedShapeStops.set(st.trip_id, served); }
+        served.add(id);
+      }
+      if (st.stop_id === terminalId || parentId === terminalId) {
+        const timeStr = st.departure_time || st.arrival_time;
+        const mins = timeStr ? t2m(timeStr) : null;
+        const seq = Number(st.stop_sequence);
+        const prev = atTerminal.get(st.trip_id);
+        if (mins != null && (!prev || seq < prev.seq)) atTerminal.set(st.trip_id, { seq, mins });
+      }
+    }
+    const times = [...atTerminal]
+      .filter(([tripId]) => (servedShapeStops.get(tripId)?.size ?? 0) * 3 >= shapeStops.size * 2)
+      .map(([, v]) => v.mins);
+    branchTerminalCache.set(cacheKey, times);
+    return times;
+  };
+
   const pushUnique = (map: Map<string, Map<string, number[]>>, key: string, stopId: string, mins: number) => {
     let stopMap = map.get(key);
     if (!stopMap) { stopMap = new Map(); map.set(key, stopMap); }
@@ -1535,7 +1583,9 @@ export async function processGtfsBuffer(
         && isThinAllDayTerminalSample(metricStopMap.get(terminalId) ?? [], featureBranchTripCount.get(feature) ?? 0)) {
         const scoped = terminalId
           ? scopedTerminalHeadline(
-            selectTerminalDepartureTimes(shapeMap?.get(terminalId), headsignMap?.get(terminalId)),
+            featureHeadsign && coverageStops.length > 1
+              ? branchTerminalTimes(`${shortName}::${dirId}::${day}::${featureHeadsign}`, coverageStops.map(p => p.stopId), terminalId)
+              : selectTerminalDepartureTimes(shapeMap?.get(terminalId), headsignMap?.get(terminalId)),
             day,
             featureRoute?.route_type ?? '',
             railFeature,
@@ -1632,7 +1682,9 @@ export async function processGtfsBuffer(
       // become its headline (ttc 329 and 334 Sunday would go from 30 to 20 and 23).
       const scoped = thinTerminalSample
         ? scopedTerminalHeadline(
-          selectTerminalDepartureTimes(shapeMap?.get(terminalId!), headsignMap?.get(terminalId!)),
+          featureHeadsign && coverageStops.length > 1
+            ? branchTerminalTimes(`${shortName}::${dirId}::${day}::${featureHeadsign}`, coverageStops.map(p => p.stopId), terminalId!)
+            : selectTerminalDepartureTimes(shapeMap?.get(terminalId!), headsignMap?.get(terminalId!)),
           day,
           featureRoute?.route_type ?? '',
           railFeature,

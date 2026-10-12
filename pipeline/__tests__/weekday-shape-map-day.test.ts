@@ -128,6 +128,20 @@ describe('Weekday shape maps on a non-representative weekday', () => {
     expect(byKey['1 Pioneer Village']).toEqual([17, '20']);
     expect(byKey['1 Pioneer Village via Hullmar']).toEqual([17, '20']);
   });
+
+  it('reads only the branch at a last stop where two branches converge (TTC 94 Castle Frank)', async () => {
+    // Real TTC fresh feed (20261031), route 94, Saturday and Sunday. Eastbound runs from
+    // Ossington (26 stops) and from Wellesley Station (the last 11), one headsign to Castle
+    // Frank. The feature is drawn on the late-night Ossington shape 1123435 (7 trips). Hand count,
+    // Sat Oct 17 / Sun Oct 18: Ossington trips every 19-20 at Castle Frank, both patterns
+    // together every 10. The headline is the branch, not the pooled terminal.
+    const result = await processGtfsBuffer(await fixtureZip('ttc-94-converging'), undefined, { slug: 'ttc' });
+    const castleFrank = JSON.parse(result.geojson).features
+      .map((feature: any) => feature.properties)
+      .filter((p: any) => p.routeId === '94' && p.directionId === 0 && p.stopId == null)
+      .map((p: any) => [p.day, p.headway, p.tier]);
+    expect(castleFrank).toEqual([['Saturday', 19, '20'], ['Sunday', 20, '30']]);
+  });
 });
 
 describe('scopedTerminalHeadline', () => {
@@ -146,5 +160,8 @@ describe('scopedTerminalHeadline', () => {
     expect(scopedTerminalHeadline(times, 'Weekday', '2', true)).toEqual({ headway: 16, tier: null });
     // No midday or PM-peak service: no scoped value (night routes' early trips).
     expect(scopedTerminalHeadline([300, 310, 320, 330], 'Weekday', '3', false)).toBeNull();
+    // A burst of its own is not all-day service either (cta 82 Homan & Congress PM short turns).
+    expect(scopedTerminalHeadline([960, 968, 976], 'Weekday', '3', false)).toBeNull();
+    expect(scopedTerminalHeadline([960, 968, 976, 984, 992], 'Weekday', '3', false)).toBeNull();
   });
 });
