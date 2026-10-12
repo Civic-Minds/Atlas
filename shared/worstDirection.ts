@@ -85,6 +85,44 @@ function preferRegular<T extends { tier: string | null | undefined }>(candidates
   return regular.length > 0 ? regular : [...candidates];
 }
 
+type AllDayCandidate = { hw: number; tier: string | null | undefined; steady: boolean; periodsRun: number };
+
+/** True when the pattern has a steady (sustained) headway in at least one period. */
+function isSteadyInAnyPeriod(props: WorstDirectionFeature['properties']): boolean {
+  const byPeriod = props.headwayByPeriod;
+  if (!byPeriod) return false;
+  return PERIOD_KEYS.some(pk => byPeriod[pk] != null && props.headwayByPeriodSustained?.[pk] !== false);
+}
+
+/** Daytime periods: a route that stops before late night is still an all-day route. */
+const DAYTIME_PERIODS: readonly PeriodKey[] = ['amPeak', 'midday', 'pmPeak', 'evening'];
+
+/** How many daytime periods the pattern runs in at all (any departure, so a full-window wait exists). */
+function periodsRunIn(props: WorstDirectionFeature['properties']): number {
+  const coverage = props.periodCoverageHeadway;
+  return coverage ? DAYTIME_PERIODS.filter(pk => coverage[pk] != null).length : 0;
+}
+
+/**
+ * The all-day pool for one direction (FREQUENCY_RULES rule 6). Occasional `infrequent` siblings
+ * drop out as before. Then a pattern steady in no period drops out only when it also runs in
+ * fewer daytime periods (AM peak to evening) than the steady patterns kept with it: that is an
+ * occasional variant (TTC 102's 3-trip Markham short turn runs in 2, Warden in all 4). A slow
+ * destination that runs all day is steady nowhere too, since every 90 minutes or slower leaves
+ * under three departures in a peak window, but it runs in every daytime period, so it keeps the
+ * bar (Dayton 17's West Loop, every 114). The pool only shrinks, so a headline can only come
+ * down. A direction whose patterns are all unsteady keeps every pattern (rule 3).
+ */
+export function selectDirectionAllDayPool<T extends { tier: string | null | undefined; steady: boolean; periodsRun: number }>(
+  candidates: readonly T[],
+): T[] {
+  const pool = preferRegular(candidates);
+  const steady = pool.filter(c => c.steady);
+  if (steady.length === 0) return pool;
+  const keptPeriods = Math.max(...steady.map(c => c.periodsRun));
+  return pool.filter(c => c.steady || c.periodsRun >= keptPeriods);
+}
+
 /**
  * Stamp worst-direction headway on every feature for client-side filter gating (AI-182).
  *
@@ -115,7 +153,7 @@ export function stampWorstDirectionHeadways(features: WorstDirectionFeature[]): 
     coverageGroups.set(key, group);
   }
   // route+day → directionId → candidate all-day headways with tier
-  const dirAllDay = new Map<string, Map<number, Array<{ hw: number; tier: string | null | undefined }>>>();
+  const dirAllDay = new Map<string, Map<number, AllDayCandidate[]>>();
   // route+day → directionId → period → candidate period headways with tier
   const dirPeriodCandidates = new Map<string, Map<number, Map<PeriodKey, PeriodCandidate[]>>>();
 
@@ -141,7 +179,12 @@ export function stampWorstDirectionHeadways(features: WorstDirectionFeature[]): 
         list = [];
         dirs.set(dirId, list);
       }
-      list.push({ hw, tier: f.properties.tier });
+      list.push({
+        hw,
+        tier: f.properties.tier,
+        steady: isSteadyInAnyPeriod(f.properties),
+        periodsRun: periodsRunIn(f.properties),
+      });
     }
 
     const byPeriod = f.properties.headwayByPeriod;
@@ -173,14 +216,16 @@ export function stampWorstDirectionHeadways(features: WorstDirectionFeature[]): 
     }
   }
 
-  // All-day: per direction, max among regular-tier candidates when mixed with infrequent.
+  // All-day: per direction, max among regular-tier candidates when mixed with infrequent. An
+  // occasional pattern, steady in no period and running in fewer daytime periods than the steady ones,
+  // does not set the all-day value (#749: TTC 102's 3-trip Markham short turn read 657, TriMet
+  // 12's two 1-trip patterns read 1141). See selectDirectionAllDayPool.
   const routeWorstHw = new Map<string, number>();
   for (const [key, dirs] of dirAllDay) {
     let routeWorst: number | undefined;
     for (const candidates of dirs.values()) {
       if (candidates.length === 0) continue;
-      const regular = candidates.filter(c => !isInfrequentTier(c.tier));
-      const pool = regular.length > 0 ? regular : candidates;
+      const pool = selectDirectionAllDayPool(candidates);
       const dirWorst = Math.max(...pool.map(c => c.hw));
       routeWorst = maxNum(routeWorst, dirWorst);
     }
