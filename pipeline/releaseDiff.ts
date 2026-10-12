@@ -21,6 +21,8 @@
  *                        halves or doubles, whatever the agency's size (#707); not
  *                        reported when headway-shift already fires for the agency
  *   yellow headway-lost  a smaller share of route/directions lose their weekday headway
+ *   red    day-lost      a day type (Weekday, Saturday, Sunday) with route lines live has none now
+ *   yellow day-shrunk    a day type's route lines fall below DAY_SHRUNK_RATIO of live (live >= DAY_SHRUNK_MIN_LIVE)
  *   yellow future-start  service does not start until a future date
  *   yellow placeholder-expiry the calendar end is more than 2 years past today,
  *                        likely a placeholder; the recorded expiry is capped
@@ -39,7 +41,7 @@ import { countArtifacts, dropGuardRefusal, type ArtifactCounts } from './archive
 import { TIER_RANK } from './headway-utils.js';
 import { addYearsYmd, PLACEHOLDER_EXPIRY_YEARS } from './refreshMeta.js';
 
-export const GATE_FLAGS = ['drop', 'empty', 'mode-lost', 'duplicate', 'headway-shift', 'route-shift', 'headway-lost', 'expired', 'future-start', 'placeholder-expiry', 'added'] as const;
+export const GATE_FLAGS = ['drop', 'empty', 'mode-lost', 'duplicate', 'headway-shift', 'route-shift', 'headway-lost', 'day-lost', 'day-shrunk', 'expired', 'future-start', 'placeholder-expiry', 'added'] as const;
 export type GateFlagName = typeof GATE_FLAGS[number];
 export type GateLevel = 'red' | 'yellow';
 
@@ -75,6 +77,19 @@ const ROUTE_SHIFT_MAX_LISTED = 10;
  */
 export const HEADWAY_LOST_RED_SHARE = 0.75;
 export const HEADWAY_LOST_RED_MIN = 3;
+/** Day types compared by day-lost / day-shrunk, as route lines label them. */
+export const GATE_DAYS = ['Weekday', 'Saturday', 'Sunday'] as const;
+/**
+ * day-shrunk is yellow when a day type's route lines fall below this share of
+ * live, with at least DAY_SHRUNK_MIN_LIVE live. On the 2026-10-12 bundle dry
+ * run every whole-day loss sat at 0 (clallamtransit, raba; gcrta on the
+ * earlier runs), cdta Saturday fell 92 -> 56 (0.61, Albany routes missing
+ * though they run that Saturday in the GTFS) and nyc-ferry Saturday/Sunday
+ * 21 -> 13 (0.62, summer routes ending); the next lowest was a weekday at
+ * 0.72 and everything else at 0.83 or more. 0.65 catches both (#741).
+ */
+export const DAY_SHRUNK_RATIO = 0.65;
+export const DAY_SHRUNK_MIN_LIVE = 5;
 /** Route-signature overlap (Jaccard) at or above which two agencies count as near-identical. */
 export const DUPLICATE_SIMILARITY = 0.9;
 /** Both agencies need at least this many routes before near-identity is judged. */
@@ -104,6 +119,11 @@ export interface ArtifactSummary {
    * lose its headway while the other keeps it (kalamazoo 1, #710).
    */
   weekdayDirectionHeadway: Record<string, boolean>;
+  /**
+   * Route line features per day type (GATE_DAYS). Optional: summaries built
+   * without it skip the day-lost / day-shrunk checks instead of reading as 0.
+   */
+  dayFeatures?: Record<string, number>;
   /** Mean of the route line endpoints, [lon, lat], or null with no lines. */
   centroid: [number, number] | null;
 }
@@ -148,6 +168,7 @@ export function summarizeArtifact(geojson: string, stopsJson: string | null): Ar
   const headways: Record<string, number[]> = {};
   const tiers: Record<string, string> = {};
   const directionHeadway: Record<string, boolean> = {};
+  const dayFeatures: Record<string, number> = Object.fromEntries(GATE_DAYS.map(day => [day, 0]));
   let lonSum = 0;
   let latSum = 0;
   let points = 0;
@@ -155,6 +176,7 @@ export function summarizeArtifact(geojson: string, stopsJson: string | null): Ar
     const p = feature.properties ?? {};
     if (p.routeId == null) continue;
     const routeId = String(p.routeId);
+    if (typeof p.day === 'string' && p.day in dayFeatures) dayFeatures[p.day]++;
     modes.add(getGtfsModeName(p.routeType == null || p.routeType === '' ? 3 : p.routeType as number));
     const ends = lineEndpoints(feature.geometry);
     if (ends) {
@@ -184,6 +206,7 @@ export function summarizeArtifact(geojson: string, stopsJson: string | null): Ar
     weekdayHeadways: Object.fromEntries(Object.entries(headways).map(([id, values]) => [id, median(values)])),
     weekdayTiers: tiers,
     weekdayDirectionHeadway: directionHeadway,
+    dayFeatures,
     centroid: points ? [lonSum / points, latSum / points] : null,
   };
 }
@@ -252,6 +275,27 @@ export function routeShifts(live: ArtifactSummary, next: ArtifactSummary): { shi
     });
   return { shifted, lost, liveDirections: liveWithHeadway.length };
 }
+
+/**
+ * Day types whose route lines are gone (live had at least one, now none) and
+ * day types that fell below DAY_SHRUNK_RATIO of live (live at least
+ * DAY_SHRUNK_MIN_LIVE). A day is never in both lists. Empty when either
+ * summary lacks day counts.
+ */
+export function dayChanges(live: ArtifactSummary, next: ArtifactSummary): { lost: string[]; shrunk: string[] } {
+  const lost: string[] = [];
+  const shrunk: string[] = [];
+  if (!live.dayFeatures || !next.dayFeatures) return { lost, shrunk };
+  for (const day of GATE_DAYS) {
+    const [before, after] = [live.dayFeatures[day] ?? 0, next.dayFeatures[day] ?? 0];
+    if (before > 0 && after === 0) lost.push(day);
+    else if (before >= DAY_SHRUNK_MIN_LIVE && after < before * DAY_SHRUNK_RATIO) shrunk.push(day);
+  }
+  return { lost, shrunk };
+}
+
+const dayCounts = (live: ArtifactSummary, next: ArtifactSummary, days: string[]) =>
+  days.map(day => `${day} ${live.dayFeatures?.[day] ?? 0} -> ${next.dayFeatures?.[day] ?? 0}`).join(', ');
 
 export interface AgencyGateInput {
   slug: string;
@@ -338,6 +382,17 @@ export function evaluateAgency(input: AgencyGateInput, peers: GatePeer[], todayY
       const level: GateLevel = share >= HEADWAY_LOST_RED_SHARE && lostDirections.length >= HEADWAY_LOST_RED_MIN ? 'red' : 'yellow';
       flags.push(flag(slug, 'headway-lost', level,
         `${lostDirections.length} of ${liveDirections} weekday route/directions with a headway live have none now (${Math.round(share * 100)}%; ${lostDirections.slice(0, ROUTE_SHIFT_MAX_LISTED).join(', ')}${lostDirections.length > ROUTE_SHIFT_MAX_LISTED ? ', ...' : ''})`));
+    }
+
+    // A whole day type gone (all weekend service, #741) is red; a day type
+    // falling well below live is yellow. An empty output is left to `empty`.
+    if (live.dayFeatures && next.dayFeatures && next.counts.routes > 0) {
+      const { lost, shrunk } = dayChanges(live, next);
+      if (lost.length) flags.push(flag(slug, 'day-lost', 'red', `no route lines on ${lost.join(', ')} now (${dayCounts(live, next, lost)})`));
+      if (shrunk.length) {
+        flags.push(flag(slug, 'day-shrunk', 'yellow',
+          `route lines on ${shrunk.join(', ')} fall below ${Math.round(DAY_SHRUNK_RATIO * 100)}% of live (${dayCounts(live, next, shrunk)})`));
+      }
     }
   }
 
