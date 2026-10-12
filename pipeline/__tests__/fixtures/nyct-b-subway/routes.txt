@@ -1,0 +1,2 @@
+route_id,agency_id,route_short_name,route_long_name,route_desc,route_type,route_url,route_color,route_text_color,route_sort_order
+B,MTA NYCT,B,6 Avenue Express,"Trains operate, weekdays only, between 145 St, Manhattan, and Brighton Beach, Brooklyn at all times except late nights. During rush hours and middays, some trips are extended to Bedford Park Blvd, Bronx.",1,https://www.mta.info/schedules/subway/b-train,EB6800,FFFFFF,4

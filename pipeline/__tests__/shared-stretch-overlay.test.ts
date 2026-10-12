@@ -15,14 +15,18 @@ import { buildSharedStopIndex } from '../../shared/sharedStops';
 // TTC 29 at real stop spacing (every stop, trips starting 6-11 AM): the opposite-direction stop
 // across the street must exist for the both-directions check.
 async function ttc29(): Promise<GeoJSON.FeatureCollection> {
+  return processed('ttc-29-dufferin-full', 'ttc');
+}
+
+async function processed(fixture: string, slug: string): Promise<GeoJSON.FeatureCollection> {
   const zip = new JSZip();
-  const dir = resolve(__dirname, 'fixtures', 'ttc-29-dufferin-full');
+  const dir = resolve(__dirname, 'fixtures', fixture);
   for (const file of readdirSync(dir)) zip.file(file, readFileSync(resolve(dir, file)));
-  const result = await processGtfsBuffer(await zip.generateAsync({ type: 'nodebuffer' }), undefined, { slug: 'ttc' });
+  const result = await processGtfsBuffer(await zip.generateAsync({ type: 'nodebuffer' }), undefined, { slug });
   const fc = JSON.parse(result.geojson) as GeoJSON.FeatureCollection;
   // The app normalizes loaded agency JSON the same way (worst-direction stamps).
   normalizeRouteFilterFeatures(fc.features as any);
-  for (const f of fc.features) (f.properties as any).agencySlug = 'ttc';
+  for (const f of fc.features) (f.properties as any).agencySlug = slug;
   return fc;
 }
 
@@ -121,4 +125,36 @@ describe('failing routes draw only their passing shared stretches', () => {
     expect(sharedStretchHeadway(routes, south, 'all')?.headway).toBe(8);
     expect(sharedStretchHeadway(lineProps(strip(fc)), south, 'all')).toBeNull();
   });
+
+  // Rail: one direction splits into two branches (pooled), the other runs as ONE headsign that
+  // already counts every trip. The single-pattern direction draws along the paired stops too.
+  // Cut from the 2026-10 feeds: one weekday, trips starting 7 AM to noon, every stop, so the
+  // all-day value (the midday median) is the one these fixtures can judge.
+  for (const [fixture, slug, single, branches, max] of [
+    ['nyct-b-subway', 'nyct-subway', 'Beach', ['Park Blvd', '145 St'], 15],
+    ['cta-green-line', 'cta', 'Harlem-Green', ['East 63rd-Cottage Grove', 'Ashland/63rd'], 15],
+  ] as const) {
+    it(`${slug} ${single}: the single-pattern direction draws where both directions pass`, async () => {
+      const fc = weekday(await processed(fixture, slug));
+      const routes = lineProps(fc);
+      const one = routes.filter(p => p.headsign === single);
+      expect(one).toHaveLength(1);
+      expect(one[0].sharedStretches).toBeUndefined();
+      expect(routePassesHeadwayFilter(routes, 'all', 'Weekday', max)).toBe(false);
+      const result = failingRouteSharedRanges(fc.features, fc.features, 'all', max);
+      const drawn = new Map(result.map(r => [(r.feature.properties as any).headsign, r]));
+      expect(drawn.has(single)).toBe(true);
+      expect(branches.some(h => drawn.has(h))).toBe(true);
+      // Symmetric: the single direction's drawn stops lie across from drawn branch stops.
+      const singleStops = drawn.get(single)!.ranges.reduce((n, [a, b]) => n + b - a + 1, 0);
+      const branchStops = Math.max(...branches.map(h => drawn.get(h)?.ranges.reduce((n, [a, b]) => n + b - a + 1, 0) ?? 0));
+      expect(singleStops).toBeGreaterThan(branchStops / 3);
+      // Never a partial match, and the route still fails.
+      const overlay = computeFrequencySegmentOverlay({ [slug]: fc } as any, 'all', max);
+      expect(overlay.partialMatches.some(k => k.headsign === single)).toBe(false);
+      // Without pooled data neither direction draws anything new.
+      const bare = strip(fc);
+      expect(failingRouteSharedRanges(bare.features, bare.features, 'all', max)).toEqual([]);
+    });
+  }
 });

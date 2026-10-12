@@ -208,17 +208,34 @@ export function failingRouteSharedRanges(
     return { passes: featurePassesHeadwayFilter(view, period, maxHeadway), value: routeFilterHeadway(view, period) };
   };
 
+  // Same direction convention as oppositeSharedStops: a missing direction_id counts as 0.
+  const direction = (q: ShapeProperties) => {
+    const n = Number(q.directionId);
+    return q.directionId == null || !Number.isFinite(n) ? 0 : n;
+  };
+  const sameService = (a: ShapeProperties, b: ShapeProperties) => a.routeId === b.routeId && (a.day ?? null) === (b.day ?? null);
+  const hasStretches = (q: ShapeProperties) => !!(q as { sharedStretches?: unknown[] }).sharedStretches?.length;
+
   for (const f of routeFeatures) {
     if (f.geometry?.type !== 'LineString') continue;
     const p = f.properties as unknown as ShapeProperties & { sharedStretches?: Array<{ from: number; to: number }> };
-    if (!p.sharedStretches?.length || !p.stopOrder || !p.stopPositions) continue;
+    if (!p.stopOrder || !p.stopPositions) continue;
     if (p.stopPositions.length !== p.stopOrder.length) continue;
     if (featurePassesHeadwayFilter(p, period, maxHeadway)) continue; // passing routes: handled above
-    const opposite = lines.filter(q => q.routeId === p.routeId && (q.day ?? null) === (p.day ?? null)
-      && Number(q.directionId) !== Number(p.directionId) && (q.stopOrder?.length ?? 0) > 0);
+    const opposite = lines.filter(q => sameService(q, p) && direction(q) !== direction(p) && (q.stopOrder?.length ?? 0) > 0);
+    let onStretch: (i: number) => boolean;
+    if (p.sharedStretches?.length) {
+      onStretch = i => p.sharedStretches!.some(st => i >= st.from && i <= st.to);
+    } else {
+      // Symmetric map: a direction run as ONE pattern (its own stop values already count every
+      // trip, e.g. NYCT B "Beach", CTA Green "Harlem-Green") draws along the stops that pair with
+      // the branched direction's shared stretches, where both directions pass.
+      const sameDirection = lines.filter(q => sameService(q, p) && direction(q) === direction(p) && (q.stopOrder?.length ?? 0) > 0);
+      if (sameDirection.length !== 1 || !opposite.some(hasStretches)) continue;
+      onStretch = () => true;
+    }
     const oppositeStops = oppositeSharedStops(lines, p);
     const values = new Map<number, number>();
-    const onStretch = (i: number) => p.sharedStretches!.some(st => i >= st.from && i <= st.to);
     const qualifies = (i: number): boolean => {
       if (!onStretch(i)) return false;
       const stopId = p.stopOrder![i];
