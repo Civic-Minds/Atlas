@@ -43,8 +43,14 @@ export interface OnDemandZoneDetails {
   /** Text-only qualifiers that structured hours can't express, e.g. holidays. */
   hoursNote?: string;
   bookingInfo?: string;
+  /** Who may ride, when the agency limits it, e.g. "Riders 13 and older." Never eligibility-only service. */
+  eligibility?: string;
   availability?: OnDemandAvailability;
   pickup?: OnDemandPickup;
+  /** Where these hours come from, when it isn't the zone's own source. */
+  hoursSource?: { url: string; retrievedAt: string };
+  /** Last day a temporary zone is expected to run (YYYY-MM-DD); the publish gate blocks it after. */
+  validUntil?: string;
 }
 
 /** Structural subset of an agency's on-demand service used for hours and pickup lookups. */
@@ -80,6 +86,7 @@ export function resolveOnDemandZone(service: OnDemandServiceDetails, areaName: s
       serviceHours: service.serviceHours,
       hoursNote: service.hoursNote,
       bookingInfo: service.bookingInfo,
+      eligibility: service.eligibility,
       availability: service.availability,
       pickup: service.pickup,
       tripRules: service.tripRules,
@@ -93,17 +100,25 @@ export function resolveOnDemandZone(service: OnDemandServiceDetails, areaName: s
     serviceHours: zone.availability ? zone.serviceHours : zone.serviceHours ?? service.serviceHours,
     hoursNote: zone.hoursNote ?? service.hoursNote,
     bookingInfo: zone.bookingInfo ?? service.bookingInfo,
+    eligibility: zone.eligibility ?? service.eligibility,
     availability: zone.availability ?? service.availability,
     pickup: zone.pickup ?? service.pickup,
     tripRules: service.tripRules,
   };
 }
 
-/** Zone names a stop belongs to: an exact polygon name, or a ", "-joined list of polygon names. */
+/**
+ * Zone names a stop belongs to: an exact polygon name, or a ", "-joined list of polygon names. A
+ * stop-only service with no polygon (Grande Prairie's Late Night, which runs between any two transit
+ * stops) is named by its zoneMetadata entry, so its stops follow their own hours.
+ */
 export function onDemandStopZoneNames(service: OnDemandServiceDetails, stopProperties: unknown): string[] {
   const areaName = areaNameOf(stopProperties);
   if (!areaName) return [];
-  const zoneNames = new Set(service.features.map(feature => areaNameOf(feature.properties)).filter((name): name is string => !!name));
+  const zoneNames = new Set([
+    ...service.features.map(feature => areaNameOf(feature.properties)).filter((name): name is string => !!name),
+    ...Object.keys(service.zoneMetadata ?? {}),
+  ]);
   if (zoneNames.has(areaName)) return [areaName];
   return areaName.split(', ').filter(name => zoneNames.has(name));
 }
@@ -121,8 +136,56 @@ export function onDemandRunningState(
   return isOnDemandActive(availability, day, period) ? 'running' : 'not-running';
 }
 
-/** Whether a polygon should be drawn for the selected day and period. Unknown hours stay visible. */
-export function isOnDemandZoneShown(service: OnDemandServiceDetails, areaName: string | undefined, day: DayType, period: OnDemandPeriod): boolean {
+/**
+ * Today's date (YYYY-MM-DD) where the agency is. With no time zone on file, use the last place on
+ * Earth to reach midnight, so a zone is never dropped before its last day has ended anywhere.
+ */
+export function localDateIn(timeZone: string | null | undefined, now: Date = new Date()): string {
+  try {
+    return new Intl.DateTimeFormat('en-CA', { timeZone: timeZone || 'Etc/GMT+12', year: 'numeric', month: '2-digit', day: '2-digit' }).format(now);
+  } catch {
+    return new Intl.DateTimeFormat('en-CA', { timeZone: 'Etc/GMT+12', year: 'numeric', month: '2-digit', day: '2-digit' }).format(now);
+  }
+}
+
+/**
+ * The service with every zone past its last day removed, along with its hours and any stops tied
+ * only to it. One rule for every surface: the release build, the map, cards and search all use it.
+ */
+export function withoutExpiredOnDemandZones<T extends {
+  features: readonly { properties?: unknown }[];
+  stopFeatures?: readonly { properties?: unknown }[];
+  zoneMetadata?: Record<string, OnDemandZoneDetails>;
+}>(service: T, today: string): T {
+  const expired = new Set(Object.entries(service.zoneMetadata ?? {})
+    .filter(([, zone]) => zone.validUntil && zone.validUntil < today)
+    .map(([name]) => name));
+  if (expired.size === 0) return service;
+  const keepStop = (stop: { properties?: unknown }) => {
+    const names = (areaNameOf(stop.properties) ?? '').split(', ').filter(Boolean);
+    return names.length === 0 || names.some(name => !expired.has(name));
+  };
+  return {
+    ...service,
+    features: service.features.filter(f => !expired.has(areaNameOf(f.properties) ?? '')),
+    ...(service.stopFeatures ? { stopFeatures: service.stopFeatures.filter(keepStop) } : {}),
+    zoneMetadata: Object.fromEntries(Object.entries(service.zoneMetadata ?? {}).filter(([name]) => !expired.has(name))),
+  };
+}
+
+/** A temporary zone (or service) whose last day, validUntil, is before `today`. */
+export function isOnDemandZoneExpired(service: OnDemandServiceDetails, areaName: string | undefined, today: string): boolean {
+  const zone = areaName ? service.zoneMetadata?.[areaName] : undefined;
+  const until = zone?.validUntil ?? service.validUntil;
+  return !!until && until < today;
+}
+
+/**
+ * Whether a polygon should be drawn for the selected day and period. Unknown hours stay visible; a
+ * temporary zone past its last day (in the agency's local date, `today`) never is.
+ */
+export function isOnDemandZoneShown(service: OnDemandServiceDetails, areaName: string | undefined, day: DayType, period: OnDemandPeriod, today?: string): boolean {
+  if (today && isOnDemandZoneExpired(service, areaName, today)) return false;
   return onDemandRunningState(resolveOnDemandZone(service, areaName).availability, day, period) !== 'not-running';
 }
 
@@ -130,10 +193,10 @@ export function isOnDemandZoneShown(service: OnDemandServiceDetails, areaName: s
  * Whether a stop or transfer point should be drawn. A stop tied to zones follows
  * those zones' hours; a stop with no zone follows the service's own hours.
  */
-export function isOnDemandStopShown(service: OnDemandServiceDetails, stopProperties: unknown, day: DayType, period: OnDemandPeriod): boolean {
+export function isOnDemandStopShown(service: OnDemandServiceDetails, stopProperties: unknown, day: DayType, period: OnDemandPeriod, today?: string): boolean {
   const zones = onDemandStopZoneNames(service, stopProperties);
-  if (zones.length === 0) return isOnDemandZoneShown(service, undefined, day, period);
-  return zones.some(zone => isOnDemandZoneShown(service, zone, day, period));
+  if (zones.length === 0) return isOnDemandZoneShown(service, undefined, day, period, today);
+  return zones.some(zone => isOnDemandZoneShown(service, zone, day, period, today));
 }
 
 /** True when hours for the selected day are on file for this stop or zone. */

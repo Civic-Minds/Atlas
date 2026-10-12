@@ -10,8 +10,15 @@ import { GTFS_FLEX_METADATA } from './metroMicroFlexMetadata';
 import { C_TRAN_CURRENT_FLEX_FEATURES } from './ctranCurrentFlexData';
 import { C_TRAN_CURRENT_FLEX_STOPS } from './ctranCurrentFlexStops';
 import { ALL_POINTS_DIAL_A_RIDE_FEATURES, ASPEN_DOWNTOWNER_FEATURES, BAY_TRANSIT_EXPRESS_FEATURES, CAT_DIAL_A_RIDE_FEATURES, DURANGO_MICROTRANSIT_FEATURES, GLTC_FLEX_FEATURES, ISLAND_TRANSIT_GO_STOPS, SAM_RIDES_FEATURES, SNOQUALMIE_DOOR_TO_DOOR_FEATURES, TCTD_DIAL_A_RIDE_FEATURES, VALLEY_METRO_METROFLX_FEATURES } from './flexBatchData';
-import type { OnDemandAvailability, OnDemandPickup } from '../../shared/onDemandAvailability';
+import type { OnDemandAvailability, OnDemandPickup, OnDemandZoneDetails } from '../../shared/onDemandAvailability';
 import { BETA_ROLLOUT_NOTICE } from '../../shared/rolloutNotice';
+import { CYRIDE_MOONLIGHT_EXPRESS_FEATURE, RFTA_CARBONDALE_DOWNTOWNER_FEATURE, UTA_NORTH_UTAH_COUNTY_FEATURE } from './onDemandOfficialLayers';
+import { ON_DEMAND_PUBLIC } from '../../shared/config';
+
+/** Standalone on-demand agencies stay out of the public catalog until the launch flag flips (CIV-23). */
+const ON_DEMAND_ROLLOUT: { hiddenInProduction?: true; betaOnly?: true; rolloutNotice?: string } = ON_DEMAND_PUBLIC
+  ? {}
+  : { hiddenInProduction: true, betaOnly: true, rolloutNotice: BETA_ROLLOUT_NOTICE };
 
 /**
  * Agency-owned service-area geometry for services that do not publish route
@@ -126,7 +133,7 @@ const CYRIDE_EASE_STOP_FEATURES: GeoJSON.Feature<GeoJSON.Point>[] = [
 ];
 
 export const CYRIDE_EASE_SERVICE_AREA = {
-  features: CYRIDE_EASE_SERVICE_AREAS,
+  features: [...CYRIDE_EASE_SERVICE_AREAS, CYRIDE_MOONLIGHT_EXPRESS_FEATURE],
   stopFeatures: CYRIDE_EASE_STOP_FEATURES,
   sourceUrl: CYRIDE_EASE_SOURCE_URL,
   sourceLabel: CYRIDE_EASE_SOURCE_LABEL,
@@ -140,6 +147,23 @@ export const CYRIDE_EASE_SERVICE_AREA = {
     Saturday: [],
     Sunday: [],
   } satisfies OnDemandAvailability,
+  zoneMetadata: {
+    // Atlas counts a night after midnight as the day it started, and Weekday covers Monday-Friday,
+    // so Friday nights can't be told apart from Monday-Thursday: weekday hours stay unset (faded)
+    // rather than claiming service every night. Saturday night is exact.
+    'Ames city limits': {
+      serviceName: 'Moonlight Express',
+      serviceHours: 'Friday and Saturday nights 10:30 p.m.\u20132 a.m. during the Iowa State school year',
+      hoursNote: "Doesn't run on ISU break weekends, Thanksgiving, Easter or finals week.",
+      availability: { Saturday: [{ startHour: 22.5, endHour: 26 }], Sunday: [] },
+      hoursSource: { url: 'https://www.cyride.com/schedules/school-year-schedule/moonlight-express', retrievedAt: '2026-10-11' },
+      // Season end: CyRide GTFS 20260827 calendar `MLX,0,0,0,0,1,1,0,20260817,20270514`
+      // (https://www.cyride.net/gtf/gtfs.zip), narrowed by the page's "Friday/Saturday of Finals
+      // Week in May" (ISU finals May 10-13, 2027): last night is Saturday May 8 into May 9.
+      // Re-check in May 2027 for the next school year.
+      validUntil: '2027-05-09',
+    },
+  },
 };
 
 /**
@@ -211,7 +235,7 @@ const UTA_ON_DEMAND_SOURCE_LABEL = 'UTA On Demand zone map (maps.rideuta.com)';
 /**
  * Zone polygons from UTA's public On Demand map layers, which UTA pointed to by
  * email (2026-10-09). Hours per zone from the zone map PDFs linked on rideuta.com.
- * North Utah County is left out until UTA confirms its layer matches the running zone.
+ * North Utah County comes from its own UTA layer (onDemandOfficialLayers.ts).
  */
 export const UTA_ON_DEMAND_SERVICE_AREAS: GeoJSON.Feature<GeoJSON.Polygon>[] = [
   polygonFeature('uta', UTA_ON_DEMAND_SOURCE_URL, UTA_ON_DEMAND_SOURCE_LABEL, [[-111.9559155, 40.8099434], [-111.9558943, 40.7922286], [-111.9556583, 40.7714883], [-111.9582292, 40.7715182], [-111.9582815, 40.7678646], [-111.9532664, 40.770134], [-111.9513182, 40.7709603], [-111.9499878, 40.7713503], [-111.9493441, 40.7714478], [-111.9493441, 40.7702778], [-111.9495586, 40.7691077], [-111.9502453, 40.7665725], [-111.9507173, 40.7645573], [-111.9509319, 40.7628346], [-111.9509319, 40.7609167], [-111.9505028, 40.7587063], [-111.949859, 40.7569184], [-111.948872, 40.7546428], [-111.9485716, 40.7536025], [-111.9484428, 40.7524972], [-111.9486145, 40.7503515], [-111.9489149, 40.7448894], [-111.9490007, 40.7408251], [-111.9492582, 40.7353297], [-111.9496015, 40.7327607], [-111.9505886, 40.7274273], [-111.9511465, 40.7251182], [-111.9468979, 40.7245978], [-111.9431642, 40.7241425], [-111.9411901, 40.7240449], [-111.9393019, 40.7240449], [-111.9219212, 40.7242401], [-111.919947, 40.7241425], [-111.9157413, 40.7239473], [-111.9123081, 40.72411], [-111.907287, 40.7244677], [-111.9044546, 40.724793], [-111.9045404, 40.7318177], [-111.9045404, 40.7352972], [-111.9043259, 40.739622], [-111.9040684, 40.7426134], [-111.9040684, 40.7434588], [-111.9044546, 40.7446618], [-111.9050983, 40.7458974], [-111.9068579, 40.7473604], [-111.9078449, 40.7482383], [-111.9095186, 40.7497988], [-111.9105486, 40.7512943], [-111.9109777, 40.7528548], [-111.9112781, 40.7540252], [-111.911879, 40.755423], [-111.9126514, 40.7571135], [-111.9130806, 40.7580562], [-111.9136814, 40.7590639], [-111.9141106, 40.7598766], [-111.9141964, 40.7606242], [-111.8996481, 40.7605592], [-111.899691, 40.7874037], [-111.899691, 40.7880861], [-111.900206, 40.7890283], [-111.9026522, 40.7929273], [-111.9038538, 40.7947142], [-111.9172005, 40.8053049], [-111.9178442, 40.8063768], [-111.9183592, 40.8084882], [-111.9187883, 40.8116714], [-111.91896, 40.8130681], [-111.9190887, 40.8144972], [-111.9191746, 40.8167383], [-111.938229, 40.8168357], [-111.9388727, 40.8095601], [-111.9431816, 40.8095853], [-111.9446983, 40.8098542], [-111.9458415, 40.8103847], [-111.9477991, 40.8110868], [-111.9471983, 40.8118339], [-111.9471125, 40.812451], [-111.9478849, 40.8130356], [-111.949637, 40.8130356], [-111.9497187, 40.8172697], [-111.9559884, 40.8172756], [-111.9559155, 40.8099434]], "Salt Lake City Westside"),
@@ -225,11 +249,13 @@ export const UTA_ON_DEMAND_SERVICE_AREAS: GeoJSON.Feature<GeoJSON.Polygon>[] = [
 ];
 
 export const UTA_ON_DEMAND_SERVICE_AREA = {
-  features: UTA_ON_DEMAND_SERVICE_AREAS,
+  features: [...UTA_ON_DEMAND_SERVICE_AREAS, UTA_NORTH_UTAH_COUNTY_FEATURE],
   sourceUrl: UTA_ON_DEMAND_SOURCE_URL,
   sourceLabel: UTA_ON_DEMAND_SOURCE_LABEL,
   sourceRetrievedAt: '2026-10-10',
   serviceName: 'UTA On Demand',
+  // Service-wide rule from UTA's On Demand page (checked 2026-10-11).
+  eligibility: 'Riders 13 and older; under 13 with a parent or guardian',
   bookingUrl: UTA_ON_DEMAND_SOURCE_URL,
   zoneMetadata: {
     "Salt Lake City Westside": { serviceName: 'UTA On Demand', serviceHours: "Monday\u2013Saturday 4 a.m.\u201312:15 a.m.; Sunday 6 a.m.\u20139 p.m.", availability: { Weekday: [{ startHour: 4, endHour: 24.25 }], Saturday: [{ startHour: 4, endHour: 24.25 }], Sunday: [{ startHour: 6, endHour: 21 }] } satisfies OnDemandAvailability },
@@ -240,6 +266,7 @@ export const UTA_ON_DEMAND_SERVICE_AREA = {
     "West Provo/Orem \u2014 Provo Rec Center": { serviceName: 'UTA On Demand', serviceHours: "Monday\u2013Saturday 6 a.m.\u20139 p.m.", availability: { Weekday: [{ startHour: 6, endHour: 21 }], Saturday: [{ startHour: 6, endHour: 21 }], Sunday: [] } satisfies OnDemandAvailability },
     "West Provo/Orem \u2014 Utah Valley Hospital": { serviceName: 'UTA On Demand', serviceHours: "Monday\u2013Saturday 6 a.m.\u20139 p.m.", availability: { Weekday: [{ startHour: 6, endHour: 21 }], Saturday: [{ startHour: 6, endHour: 21 }], Sunday: [] } satisfies OnDemandAvailability },
     "West Provo/Orem \u2014 Orem Station": { serviceName: 'UTA On Demand', serviceHours: "Monday\u2013Saturday 6 a.m.\u20139 p.m.", availability: { Weekday: [{ startHour: 6, endHour: 21 }], Saturday: [{ startHour: 6, endHour: 21 }], Sunday: [] } satisfies OnDemandAvailability },
+    "North Utah County": { serviceName: 'UTA On Demand', serviceHours: "Monday\u2013Saturday 6 a.m.\u20139 p.m.", availability: { Weekday: [{ startHour: 6, endHour: 21 }], Saturday: [{ startHour: 6, endHour: 21 }], Sunday: [] } satisfies OnDemandAvailability },
   },
 };
 
@@ -389,15 +416,36 @@ export const METRO_MICRO_SERVICE_AREA = {
   zoneMetadata: GTFS_FLEX_METADATA.zoneMetadata,
 };
 
+// Hours from The Current page and the Rider's Digest effective 2026-09-13 (checked 2026-10-11).
+const C_TRAN_HOURS_SOURCE = { url: 'https://www.c-tran.com/thecurrent', retrievedAt: '2026-10-11' };
+const C_TRAN_ZONE_HOURS: OnDemandZoneDetails = {
+  serviceName: 'The Current',
+  serviceHours: 'Monday\u2013Friday 5:30 a.m.\u20137 p.m.; Saturday and Sunday 8 a.m.\u20136 p.m.',
+  hoursNote: "Holiday hours aren't confirmed.",
+  availability: { Weekday: [{ startHour: 5.5, endHour: 19 }], Saturday: [{ startHour: 8, endHour: 18 }], Sunday: [{ startHour: 8, endHour: 18 }] },
+  hoursSource: C_TRAN_HOURS_SOURCE,
+};
+const C_TRAN_PORT_HOURS: OnDemandZoneDetails = {
+  serviceName: 'The Current',
+  serviceHours: 'Monday\u2013Friday 5:30 a.m.\u20137 p.m.',
+  hoursNote: "Holiday hours aren't confirmed.",
+  availability: { Weekday: [{ startHour: 5.5, endHour: 19 }], Saturday: [], Sunday: [] },
+  hoursSource: C_TRAN_HOURS_SOURCE,
+};
+
 export const C_TRAN_CURRENT_SERVICE_AREA = {
   features: C_TRAN_CURRENT_FLEX_FEATURES,
   stopFeatures: C_TRAN_CURRENT_FLEX_STOPS,
-  sourceUrl: 'https://www.c-tran.com/images/Google/TheCurrent_GTFSFlex.zip',
-  sourceLabel: 'C-TRAN GTFS-Flex feed and official service-area layers',
-  sourceRetrievedAt: '2026-09-24',
-  serviceHours: 'Service hours vary by zone.',
+  // C-TRAN's own service-area layer. The GTFS-Flex zip cited before holds only C-VAN paratransit.
+  sourceUrl: 'https://services5.arcgis.com/T6Y1WlK8fKvVXSi3/arcgis/rest/services/The_Current_Service_Areas/FeatureServer/0',
+  sourceLabel: 'C-TRAN The Current service-area and virtual-stop layers',
+  sourceRetrievedAt: '2026-10-11',
   bookingUrl: 'https://www.c-tran.com/thecurrent',
   serviceName: 'The Current',
+  zoneMetadata: Object.fromEntries(
+    ['La Center', 'Ridgefield', 'Camas/Washougal', 'WSU-Vancouver/Salmon Creek', 'Rose Village', 'Battle Ground', 'Port of Vancouver']
+      .map(zone => [zone, zone === 'Port of Vancouver' ? C_TRAN_PORT_HOURS : C_TRAN_ZONE_HOURS]),
+  ) as Record<string, OnDemandZoneDetails>,
 };
 
 const MUSKOKA_DRT_SOURCE_URL = 'https://services1.arcgis.com/5Av2OaC0epjp7wD3/arcgis/rest/services/District_DRT_Phase_1_2_Service_Area/FeatureServer/0';
@@ -418,9 +466,7 @@ export const MUSKOKA_DRT_ON_DEMAND_AGENCY = {
   cities: ['Gravenhurst, Ontario', 'Bracebridge, Ontario'],
   displayArea: 'Gravenhurst–Bracebridge',
   onDemandOnly: true,
-  hiddenInProduction: true,
-  betaOnly: true,
-  rolloutNotice: BETA_ROLLOUT_NOTICE,
+  ...ON_DEMAND_ROLLOUT,
   websiteUrl: 'https://www.muskoka.on.ca/DRT',
   onDemandServiceArea: {
     features: MUSKOKA_DRT_SERVICE_AREAS,
@@ -460,9 +506,7 @@ export const WINKLER_ON_DEMAND_AGENCY = {
   cities: ['Winkler, Manitoba'],
   displayArea: 'Winkler',
   onDemandOnly: true,
-  hiddenInProduction: true,
-  betaOnly: true,
-  rolloutNotice: BETA_ROLLOUT_NOTICE,
+  ...ON_DEMAND_ROLLOUT,
   websiteUrl: WINKLER_SOURCE_URL,
   onDemandServiceArea: {
     features: WINKLER_ON_DEMAND_SERVICE_AREAS,
@@ -500,9 +544,7 @@ export const ST_ALBERT_ON_DEMAND_AGENCY = {
   cities: ['St. Albert, Alberta'],
   displayArea: 'St. Albert',
   onDemandOnly: true,
-  hiddenInProduction: true,
-  betaOnly: true,
-  rolloutNotice: BETA_ROLLOUT_NOTICE,
+  ...ON_DEMAND_ROLLOUT,
   websiteUrl: ST_ALBERT_SOURCE_URL,
   onDemandServiceArea: {
     features: ST_ALBERT_ON_DEMAND_SERVICE_AREAS,
@@ -531,9 +573,7 @@ export const LEAMINGTON_LT_GO_ON_DEMAND_AGENCY = {
   cities: ['Leamington, Ontario'],
   displayArea: 'Leamington',
   onDemandOnly: true,
-  hiddenInProduction: true,
-  betaOnly: true,
-  rolloutNotice: BETA_ROLLOUT_NOTICE,
+  ...ON_DEMAND_ROLLOUT,
   websiteUrl: 'https://www.leamington.ca/our-community/transit/ltgo-on-demand-transit/',
   onDemandServiceArea: {
     features: [] as GeoJSON.Feature<GeoJSON.Polygon>[],
@@ -564,9 +604,7 @@ export const BWG_ON_DEMAND_AGENCY = {
   cities: ['Bradford, Ontario'],
   displayArea: 'Bradford West Gwillimbury',
   onDemandOnly: true,
-  hiddenInProduction: true,
-  betaOnly: true,
-  rolloutNotice: BETA_ROLLOUT_NOTICE,
+  ...ON_DEMAND_ROLLOUT,
   websiteUrl: 'https://www.townofbwg.com/living-in-bwg/roads-and-transit/transit/',
   onDemandServiceArea: {
     features: [BWG_ON_DEMAND_SERVICE_AREA],
@@ -593,9 +631,7 @@ export const CALEDON_ON_DEMAND_AGENCY = {
   cities: ['Caledon, Ontario'],
   displayArea: 'Caledon',
   onDemandOnly: true,
-  hiddenInProduction: true,
-  betaOnly: true,
-  rolloutNotice: BETA_ROLLOUT_NOTICE,
+  ...ON_DEMAND_ROLLOUT,
   websiteUrl: 'https://www.caledon.ca/en/town-services/transit.aspx',
   onDemandServiceArea: {
     features: CALEDON_ON_DEMAND_SERVICE_AREAS,
@@ -628,9 +664,7 @@ export const BRAMPTON_ON_DEMAND_AGENCY = {
   cities: ['Brampton, Ontario'],
   displayArea: 'Brampton Downtown',
   onDemandOnly: true,
-  hiddenInProduction: true,
-  betaOnly: true,
-  rolloutNotice: BETA_ROLLOUT_NOTICE,
+  ...ON_DEMAND_ROLLOUT,
   websiteUrl: 'https://www.brampton.ca/EN/residents/transit/Pages/Welcome.aspx',
   onDemandServiceArea: {
     features: BRAMPTON_ON_DEMAND_SERVICE_AREAS,
@@ -711,7 +745,7 @@ const ASPEN_DOWNTOWNER_DAILY = {
 } satisfies OnDemandAvailability;
 
 export const ASPEN_DOWNTOWNER_SERVICE_AREA = {
-  features: ASPEN_DOWNTOWNER_FEATURES,
+  features: [...ASPEN_DOWNTOWNER_FEATURES, RFTA_CARBONDALE_DOWNTOWNER_FEATURE],
   sourceUrl: 'https://www.aspen.gov/270/Downtowner',
   sourceLabel: 'RFTA GTFS-Flex feed and City of Aspen Downtowner page',
   sourceRetrievedAt: FLEX_RETRIEVED_AT,
@@ -721,6 +755,10 @@ export const ASPEN_DOWNTOWNER_SERVICE_AREA = {
   pickup: { method: 'door-to-door' } satisfies OnDemandPickup,
   bookingUrl: 'https://www.aspen.gov/270/Downtowner',
   availability: ASPEN_DOWNTOWNER_DAILY,
+  // Carbondale's Downtowner is its own service; hours aren't confirmed, so it's drawn faded.
+  zoneMetadata: {
+    Carbondale: { serviceName: 'Carbondale Downtowner' },
+  },
 };
 
 const DURANGO_MICROTRANSIT_DAILY = {

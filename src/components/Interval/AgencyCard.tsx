@@ -16,6 +16,7 @@ import { CARD_TITLE, CardDirectionRow, CardHelpNotice, CardReportButton } from '
 import { buildRouteFacts } from '../../utils/routeFacts';
 import { currentAtlasUrl } from '../../utils/reportIssue';
 import { getRolloutNotice } from '../../../shared/rolloutNotice';
+import { onDemandCoverageNote } from '../../data/onDemandCoverage';
 import {
   formatOnDemandHoursLines,
   onDemandPickupSentence,
@@ -403,6 +404,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
     [agency.name, agency.cities, agency.displayArea],
   );
   const rolloutNotice = getRolloutNotice(agency);
+  const coverageNote = FEATURES.onDemand ? onDemandCoverageNote(agency) : null;
 
   if (onDemandFocus && agency.onDemandServiceArea) {
     const service = agency.onDemandServiceArea;
@@ -446,7 +448,16 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
             {pickupSentence && (
               <p className="text-[11px] leading-relaxed text-[var(--text-muted)] mt-1">{pickupSentence}</p>
             )}
+            {coverageNote?.kind === 'partly-mapped' && (
+              <p className="text-[11px] leading-relaxed text-[var(--text-muted)] mt-1">Not on the map yet: {coverageNote.missing}.</p>
+            )}
           </div>
+          {zone.eligibility && (
+            <div className="px-1">
+              <p className="text-[10px] font-black text-[var(--text-dim)]">Who can ride</p>
+              <p className="text-[11px] leading-relaxed text-[var(--text-muted)] mt-1">{zone.eligibility}</p>
+            </div>
+          )}
           {zone.tripRules && (
             <div className="px-1">
               <p className="text-[10px] font-black text-[var(--text-dim)]">Trip rules</p>
@@ -577,6 +588,27 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
                   />
                 </div>
               ))}
+              {coverageNote?.kind === 'partly-mapped' && (
+                <p className="text-[10px] leading-snug text-[var(--text-muted)] mt-1">
+                  Not on the map yet: {coverageNote.missing}.
+                </p>
+              )}
+            </div>
+          )}
+          {!agency.onDemandOnly && coverageNote?.kind === 'not-mapped' && (
+            <div className="mt-2 border-t border-[var(--border-primary)] pt-2">
+              <div className="flex items-baseline justify-between gap-2">
+                <p className="text-[10px] font-black text-[var(--accent)]">On-demand service</p>
+                {coverageNote.url && (
+                  <a href={coverageNote.url} target="_blank" rel="noopener noreferrer" className="shrink-0 text-[10px] text-[var(--accent)] hover:underline">
+                    Details →
+                  </a>
+                )}
+              </div>
+              <p className="text-[10px] font-bold text-[var(--text-primary)] mt-0.5">{coverageNote.serviceName}</p>
+              <p className="text-[10px] leading-snug text-[var(--text-muted)] mt-0.5">
+                Its service area isn't on the map yet.
+              </p>
             </div>
           )}
           {routeFilters.length > 0 && (

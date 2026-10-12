@@ -57,10 +57,13 @@ export const UNEVEN_BANNER_ENABLED = envFlag('VITE_UNEVEN_BANNER_ENABLED');
 export type AtlasMode = 'public' | 'preview' | 'beta' | 'dev';
 
 function getAtlasMode(): AtlasMode {
-  const configured = typeof import.meta !== 'undefined' ? import.meta?.env?.VITE_ATLAS_MODE : undefined;
+  // Plain import.meta.env (not import.meta?.env) so Vite and Vitest both resolve it; the
+  // guard covers tsx scripts, where import.meta.env is undefined.
+  const env = typeof import.meta !== 'undefined' && import.meta.env ? import.meta.env : undefined;
+  const configured = env?.VITE_ATLAS_MODE;
   if (configured === 'public' || configured === 'preview' || configured === 'beta' || configured === 'dev') return configured;
   // Preserve the existing defaults when the explicit mode is not configured yet.
-  if (typeof import.meta !== 'undefined' && import.meta?.env?.DEV) return 'dev';
+  if (env?.DEV) return 'dev';
   if (envFlag('VITE_PREVIEW_BUILD')) return 'preview';
   return envFlag('VITE_BETA_BUILD') ? 'beta' : 'public';
 }
@@ -75,6 +78,16 @@ export const MOBILE_ROUTE_SHEET_ENABLED = ATLAS_MODE === 'beta' || ATLAS_MODE ==
 // Compare mode: two maps side by side, same filter, each with its own day and time (CIV-19).
 // Beta-only while it is tried out.
 export const COMPARE_MODE_ENABLED = ATLAS_MODE === 'beta' || ATLAS_MODE === 'dev';
+// On-demand zones, the On-demand filter chip and the standalone on-demand agencies. Beta and
+// preview only until Ryan signs off on the public launch (CIV-23); launch flips this one value.
+export const ON_DEMAND_PUBLIC = false;
+export const ON_DEMAND_ENABLED = ON_DEMAND_PUBLIC || BETA_BUILD;
+// Local testing only: read on-demand files from a dev path instead of R2 (CIV-50). Ignored in
+// every built site, so a deployed build can't be pointed at other files.
+const devOnDemandUrl: unknown =
+  typeof import.meta !== 'undefined' && import.meta?.env?.DEV ? import.meta?.env?.VITE_ON_DEMAND_URL : undefined;
+export const ON_DEMAND_URL_OVERRIDE: string | undefined =
+  typeof devOnDemandUrl === 'string' && devOnDemandUrl ? devOnDemandUrl : undefined;
 // "What's new" link in the map's bottom bar, listing recent changes in plain words (CIV-83).
 // Beta-only while the wording and placement are tried out.
 export function whatsNewEnabledFor(mode: AtlasMode): boolean {
@@ -102,6 +115,7 @@ export const FEATURES = {
   mapExport: true,
   mobileRouteSheet: MOBILE_ROUTE_SHEET_ENABLED,
   compareMode: COMPARE_MODE_ENABLED,
+  onDemand: ON_DEMAND_ENABLED,
   cardClickToFlag: CARD_CLICK_TO_FLAG_ENABLED,
   unevenBanner: UNEVEN_BANNER_ENABLED,
   whatsNew: WHATS_NEW_ENABLED,

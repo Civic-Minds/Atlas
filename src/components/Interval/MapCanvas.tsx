@@ -34,10 +34,12 @@ import { describeMapExport, type MapExportBox, type MapExportDetails, type MapEx
 import { getRouteLabel, titleCase } from '../../utils/format';
 import { frequentServiceBand, frequentServiceFeatureKey, frequentServiceQueryKey, type FrequentServiceFrequency, type FrequentServiceWindow } from '../../../shared/frequentService';
 import { effectiveMode, ON_DEMAND_MODE } from '../../../shared/modes';
+import { useOnDemandStatus, useReportOnDemandVisible } from '../../hooks/useOnDemandData';
+import { FEATURES } from '../../../shared/config';
 import type { NightServiceFrequency } from '../../../shared/nightService';
 import { nightServiceKey } from '../../../shared/nightService';
 import { markAtlasLatest } from '../../lib/performance';
-import { isOnDemandStopShown, isOnDemandZoneShown, onDemandHoursConfirmed, onDemandStopZoneNames } from '../../../shared/onDemandAvailability';
+import { isOnDemandStopShown, isOnDemandZoneShown, localDateIn, onDemandHoursConfirmed, onDemandStopZoneNames } from '../../../shared/onDemandAvailability';
 import { buildRouteSortKeyExpression } from '../../utils/routeSort';
 import { fitTargetForPoints, routeFitTarget } from '../../utils/routeFitTarget';
 import { lineCoordinates } from '../../../shared/routeGeometry';
@@ -48,6 +50,18 @@ const ON_DEMAND_AREA_COLOR = '#64748b';
 const ON_DEMAND_FOCUS_MATCH = ['!=', ['get', ON_DEMAND_FOCUSED_PROP], false];
 // Zone fills are already faint (0.12), so fade them proportionally instead of to the shared 0.18.
 const ON_DEMAND_FADED_FILL_OPACITY = 0.03;
+// Zone outlines and fills are drawn thin and light at regional zoom, where they would otherwise
+// outweigh the routes (CIV-89), and reach full strength by street zoom.
+const ON_DEMAND_REGIONAL_ZOOM = 8;
+const ON_DEMAND_STREET_ZOOM = 13;
+/** Paint that eases from `regional` at regional zoom to `street` at street zoom. */
+function onDemandByZoom(regional: unknown, street: unknown): unknown[] {
+  return ['interpolate', ['linear'], ['zoom'], ON_DEMAND_REGIONAL_ZOOM, regional, ON_DEMAND_STREET_ZOOM, street];
+}
+/** One on-demand opacity: focused, by whether the zone's hours are confirmed, else faded. */
+function onDemandOpacity(confirmed: number, unconfirmed: number, faded: number): unknown[] {
+  return buildFocusCase(ON_DEMAND_FOCUS_MATCH, ['case', ['==', ['get', 'hoursConfirmed'], false], unconfirmed, confirmed], faded);
+}
 const FREQUENT_15_COLOR = HEADWAY_TIERS.find(tier => tier.max === 15)?.color ?? '#3da44d';
 const FREQUENT_30_COLOR = HEADWAY_TIERS.find(tier => tier.max === 30)?.color ?? '#e07b2a';
 // Keep the Live/Deck.gl graph out of public builds entirely when Live is disabled.
@@ -113,9 +127,9 @@ function restoreSelectedRouteAfterExport(map: maplibregl.Map) {
   exportSavedWidths.delete(map);
 }
 
-function MapNoticePill({ children, className = '' }: { children: React.ReactNode; className?: string }) {
+function MapNoticePill({ children, className = '', raised = false }: { children: React.ReactNode; className?: string; raised?: boolean }) {
   return (
-    <div className={`absolute bottom-6 left-6 right-24 sm:right-56 flex justify-center ${Z_PANEL} pointer-events-none`}>
+    <div className={`absolute ${raised ? 'bottom-16' : 'bottom-6'} left-6 right-24 sm:right-56 flex justify-center ${Z_PANEL} pointer-events-none`}>
       <div className={`${MAP_BADGE} h-8 max-w-full ${className}`}>
         {children}
       </div>
@@ -538,6 +552,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   };
 
   const { setBoundsAndZoom } = useViewport();
+  const onDemandStatus = useOnDemandStatus();
   const { overlay: historyOverlay } = useHistoryMapOverlay();
   const { overlay: liveOverlay } = useLiveVehiclesMapOverlay();
   const [liveLayerRequested, setLiveLayerRequested] = useState(false);
@@ -551,11 +566,13 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   // Each zone and stop is filtered on its own hours (zones/stops that aren't
   // running are hidden, like fixed routes); ones with no hours on file stay
   // visible but are drawn muted so they never read as confirmed service.
+  const onDemandShown = FEATURES.onDemand && (selectedModes.size === 0 || selectedModes.has(ON_DEMAND_MODE));
+  useReportOnDemandVisible(onDemandShown);
   const onDemandAgencies = useMemo(() => (
-    selectedModes.size === 0 || selectedModes.has(ON_DEMAND_MODE)
+    onDemandShown
       ? agencies.filter(agency => agency.onDemandServiceArea && (selectedAgencies?.has(agency.slug) ?? true))
       : []
-  ), [agencies, selectedAgencies, selectedModes]);
+  ), [agencies, selectedAgencies, onDemandShown]);
   const onDemandFocus = useMemo<OnDemandFocusTarget | null>(() => (
     selectedOnDemandSlug ? { slug: selectedOnDemandSlug, zoneId: selectedOnDemandZoneId ?? null } : null
   ), [selectedOnDemandSlug, selectedOnDemandZoneId]);
@@ -563,8 +580,9 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     type: 'FeatureCollection',
     features: onDemandAgencies.flatMap(agency => {
       const service = agency.onDemandServiceArea!;
+      const today = localDateIn(agency.timezone);
       return service.features
-        .filter(feature => isOnDemandZoneShown(service, featureAreaName(feature), day, period))
+        .filter(feature => isOnDemandZoneShown(service, featureAreaName(feature), day, period, today))
         .map(feature => {
           const areaName = featureAreaName(feature);
           return {
@@ -585,8 +603,9 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     type: 'FeatureCollection',
     features: onDemandAgencies.flatMap(agency => {
       const service = agency.onDemandServiceArea!;
+      const today = localDateIn(agency.timezone);
       return (service.stopFeatures ?? [])
-        .filter(feature => isOnDemandStopShown(service, feature.properties, day, period))
+        .filter(feature => isOnDemandStopShown(service, feature.properties, day, period, today))
         .map(feature => {
           const zones = onDemandStopZoneNames(service, feature.properties);
           return {
@@ -1187,7 +1206,13 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         id: 'on-demand-service-area-fill',
         type: 'fill',
         source: 'on-demand-service-areas',
-        paint: { 'fill-color': ON_DEMAND_AREA_COLOR, 'fill-opacity': buildFocusCase(ON_DEMAND_FOCUS_MATCH, ['case', ['==', ['get', 'hoursConfirmed'], false], 0.05, 0.12], ON_DEMAND_FADED_FILL_OPACITY) as any },
+        paint: {
+          'fill-color': ON_DEMAND_AREA_COLOR,
+          'fill-opacity': onDemandByZoom(
+            onDemandOpacity(0.05, 0.02, ON_DEMAND_FADED_FILL_OPACITY / 2),
+            onDemandOpacity(0.12, 0.05, ON_DEMAND_FADED_FILL_OPACITY),
+          ) as any,
+        },
         layout: { visibility: 'none' },
       });
       map.addLayer({
@@ -1196,8 +1221,11 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         source: 'on-demand-service-areas',
         paint: {
           'line-color': ON_DEMAND_AREA_COLOR,
-          'line-width': 2,
-          'line-opacity': buildFocusCase(ON_DEMAND_FOCUS_MATCH, ['case', ['==', ['get', 'hoursConfirmed'], false], 0.4, 0.95], FOCUS_DIM_OPACITY) as any,
+          'line-width': onDemandByZoom(0.75, 2) as any,
+          'line-opacity': onDemandByZoom(
+            onDemandOpacity(0.35, 0.15, FOCUS_DIM_OPACITY / 2),
+            onDemandOpacity(0.95, 0.4, FOCUS_DIM_OPACITY),
+          ) as any,
           'line-dasharray': [2, 1.5],
         },
         layout: { visibility: 'none' },
@@ -1213,11 +1241,12 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         minzoom: 9,
         paint: {
           'circle-color': ON_DEMAND_AREA_COLOR,
-          'circle-radius': ['interpolate', ['linear'], ['zoom'], 9, 2, 12, 3.5, 15, 5],
+          'circle-radius': ['interpolate', ['linear'], ['zoom'], 9, 1.25, 12, 3.5, 15, 5],
           'circle-stroke-color': '#ffffff',
-          'circle-stroke-width': ['interpolate', ['linear'], ['zoom'], 9, 0.75, 12, 1.25, 15, 1.5],
-          'circle-opacity': buildFocusCase(ON_DEMAND_FOCUS_MATCH, ['case', ['==', ['get', 'hoursConfirmed'], false], 0.4, 1], FOCUS_DIM_OPACITY) as any,
-          'circle-stroke-opacity': buildFocusCase(ON_DEMAND_FOCUS_MATCH, ['case', ['==', ['get', 'hoursConfirmed'], false], 0.4, 1], FOCUS_DIM_OPACITY) as any,
+          'circle-stroke-width': ['interpolate', ['linear'], ['zoom'], 9, 0.5, 12, 1.25, 15, 1.5],
+          // Light at regional zoom like the zone outlines (CIV-89), full strength by street zoom.
+          'circle-opacity': onDemandByZoom(onDemandOpacity(0.35, 0.15, FOCUS_DIM_OPACITY / 2), onDemandOpacity(1, 0.4, FOCUS_DIM_OPACITY)) as any,
+          'circle-stroke-opacity': onDemandByZoom(onDemandOpacity(0.35, 0.15, FOCUS_DIM_OPACITY / 2), onDemandOpacity(1, 0.4, FOCUS_DIM_OPACITY)) as any,
         },
         layout: { visibility: 'none' },
       });
@@ -2356,9 +2385,21 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       )}
 
       {/* Geolocate Button Control Overlay */}
-      {mapHint && (
+      {onDemandStatus === 'error' && onDemandShown && (
+        // Zones that failed to load must not read as "no on-demand service here" (CIV-50), so no
+        // other hint hides this; a transient hint sits above it instead.
         <MapNoticePill className="px-3 py-1.5 text-xs text-[var(--text-muted)]">
+          On-demand areas couldn't load.
+        </MapNoticePill>
+      )}
+      {mapHint ? (
+        <MapNoticePill raised={onDemandStatus === 'error' && onDemandShown} className="px-3 py-1.5 text-xs text-[var(--text-muted)]">
           {mapHint}
+        </MapNoticePill>
+      ) : onDemandStatus !== 'error' && selectedModes.has(ON_DEMAND_MODE) && (
+        // A missing zone must never read as "no on-demand service here" (CIV-23).
+        <MapNoticePill className="px-3 py-1.5 text-xs text-[var(--text-muted)]">
+          On-demand coverage is still growing. Not every service is mapped yet.
         </MapNoticePill>
       )}
 

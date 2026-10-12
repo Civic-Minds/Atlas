@@ -14,7 +14,7 @@
  * the agency catalog loads after the map mounts. Unknown or removed slugs simply never
  * match, so they are ignored.
  */
-import { ATLAS_MODE } from '../../shared/config';
+import { FEATURES } from '../../shared/config';
 import { FILTER_MODES, ON_DEMAND_MODE } from '../../shared/modes';
 
 export const AGENCY_URL_MAX_SLUGS = 60;
@@ -24,9 +24,9 @@ export const MODES_PARAM = 'm';
 const SEP = '.';
 
 /** Modes offered in the filter UI. On-demand is internal-only. */
-export const AVAILABLE_FILTER_MODES: ReadonlyArray<{ id: number; label: string }> = ATLAS_MODE === 'public'
-  ? FILTER_MODES
-  : [...FILTER_MODES, { id: ON_DEMAND_MODE, label: 'On-demand' }];
+export const AVAILABLE_FILTER_MODES: ReadonlyArray<{ id: number; label: string }> = FEATURES.onDemand
+  ? [...FILTER_MODES, { id: ON_DEMAND_MODE, label: 'On-demand' }]
+  : FILTER_MODES;
 
 export type AgencyUrlRule =
   | { kind: 'include'; slugs: ReadonlySet<string> }

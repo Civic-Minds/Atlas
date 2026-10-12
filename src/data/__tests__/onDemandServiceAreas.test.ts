@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import { ON_DEMAND_PUBLIC } from '../../../shared/config';
+import { isAgencyVisibleInBrowser } from '../../../shared/agencyVisibility';
 import {
   BWG_ON_DEMAND_AGENCY,
   BWG_ON_DEMAND_SERVICE_AREA,
@@ -21,7 +23,7 @@ import {
 import * as Services from '../onDemandServiceAreas';
 import { HSR_MY_RIDE_STOP_FEATURES } from '../hsrMyRideStops';
 import { HAMILTON_TRANS_CAB_SERVICE_AREAS, HAMILTON_TRANS_CAB_TRANSFER_POINTS } from '../transCabServiceArea';
-import { isOnDemandActive, isOnDemandStopShown, isOnDemandZoneShown, onDemandPickupSentence } from '../../../shared/onDemandAvailability';
+import { isOnDemandActive, isOnDemandStopShown, isOnDemandZoneShown, onDemandPickupSentence, resolveOnDemandZone } from '../../../shared/onDemandAvailability';
 
 describe('BWG on-demand service area', () => {
   it('keeps the captured Argo polygon closed and non-trivial', () => {
@@ -102,7 +104,17 @@ describe('BWG on-demand service area', () => {
   it('keeps The Current service areas and virtual stops source-backed', () => {
     expect(C_TRAN_CURRENT_SERVICE_AREA.features).toHaveLength(7);
     expect(C_TRAN_CURRENT_SERVICE_AREA.stopFeatures).toHaveLength(27);
-    expect(C_TRAN_CURRENT_SERVICE_AREA.sourceUrl).toBe('https://www.c-tran.com/images/Google/TheCurrent_GTFSFlex.zip');
+    // Cites C-TRAN's service-area layer, never the Flex zip, which holds only C-VAN paratransit.
+    expect(C_TRAN_CURRENT_SERVICE_AREA.sourceUrl).toContain('The_Current_Service_Areas/FeatureServer');
+  });
+
+  it('runs every zone on its published hours, and Port of Vancouver on weekdays only', () => {
+    for (const feature of C_TRAN_CURRENT_SERVICE_AREA.features) {
+      const areaName = (feature.properties as { areaName: string }).areaName;
+      const zone = resolveOnDemandZone(C_TRAN_CURRENT_SERVICE_AREA, areaName);
+      expect(isOnDemandActive(zone.availability, 'Weekday', 'midday'), areaName).toBe(true);
+      expect(isOnDemandActive(zone.availability, 'Saturday', 'midday'), areaName).toBe(areaName !== 'Port of Vancouver');
+    }
   });
 
 
@@ -110,11 +122,27 @@ describe('BWG on-demand service area', () => {
 
 describe('CyRide EASE on-demand service area', () => {
   it('keeps the agency-supplied EASE polygon closed and tied to City Hall', () => {
-    expect(CYRIDE_EASE_SERVICE_AREA.features).toHaveLength(1);
+    expect(CYRIDE_EASE_SERVICE_AREA.features).toHaveLength(2);
     const ring = CYRIDE_EASE_SERVICE_AREA.features[0].geometry.coordinates[0];
     expect(ring).toHaveLength(13);
     expect(ring[0]).toEqual(ring.at(-1));
     expect(CYRIDE_EASE_SERVICE_AREA.stopFeatures.map(stop => stop.properties?.stopId)).toEqual(['5102284']);
+  });
+
+  it('draws Moonlight Express across the Ames city limits as its own service on its published nights', () => {
+    const moonlight = CYRIDE_EASE_SERVICE_AREA.features[1];
+    expect(moonlight.properties?.areaName).toBe('Ames city limits');
+    for (const ring of moonlight.geometry.coordinates) expect(ring[0]).toEqual(ring.at(-1));
+    const zone = resolveOnDemandZone(CYRIDE_EASE_SERVICE_AREA, 'Ames city limits');
+    expect(zone).toMatchObject({ serviceName: 'Moonlight Express', sameServiceAsParent: false });
+    expect(isOnDemandActive(zone.availability, 'Saturday', 'late')).toBe(true);
+    expect(isOnDemandActive(zone.availability, 'Saturday', 'midday')).toBe(false);
+    expect(isOnDemandActive(zone.availability, 'Sunday', 'late')).toBe(false);
+    // Weekday can't separate Friday from Monday-Thursday, so it stays unknown rather than claimed.
+    expect(zone.availability?.Weekday).toBeUndefined();
+    // School-year service: gone after the last night of the 2026-27 year.
+    expect(isOnDemandZoneShown(CYRIDE_EASE_SERVICE_AREA, 'Ames city limits', 'Saturday', 'late', '2027-05-09')).toBe(true);
+    expect(isOnDemandZoneShown(CYRIDE_EASE_SERVICE_AREA, 'Ames city limits', 'Saturday', 'late', '2027-05-10')).toBe(false);
   });
 
   it('only shows EASE during its weekday operating window', () => {
@@ -125,8 +153,7 @@ describe('CyRide EASE on-demand service area', () => {
 });
 
 describe('Muskoka District DRT on-demand service area', () => {
-  it('keeps the District Phase 1.2 polygon closed and beta-only', () => {
-    expect(MUSKOKA_DRT_ON_DEMAND_AGENCY.betaOnly).toBe(true);
+  it('keeps the District Phase 1.2 polygon closed', () => {
     expect(MUSKOKA_DRT_ON_DEMAND_AGENCY.onDemandOnly).toBe(true);
     const ring = MUSKOKA_DRT_ON_DEMAND_AGENCY.onDemandServiceArea.features[0].geometry.coordinates[0];
     expect(ring).toHaveLength(72);
@@ -142,8 +169,7 @@ describe('Muskoka District DRT on-demand service area', () => {
 });
 
 describe('St. Albert on-demand service area', () => {
-  it('keeps the agency Flex zone closed and beta-only', () => {
-    expect(ST_ALBERT_ON_DEMAND_AGENCY.betaOnly).toBe(true);
+  it('keeps the agency Flex zone closed', () => {
     const ring = ST_ALBERT_ON_DEMAND_AGENCY.onDemandServiceArea.features[0].geometry.coordinates[0];
     expect(ring[0]).toEqual(ring.at(-1));
   });
@@ -177,7 +203,12 @@ describe('Hamilton on-demand services stay separate', () => {
 
 describe('UTA On Demand zones', () => {
   it('gives every zone polygon its own hours', () => {
-    expect(UTA_ON_DEMAND_SERVICE_AREA.features).toHaveLength(8);
+    expect(UTA_ON_DEMAND_SERVICE_AREA.features).toHaveLength(9);
+    expect(UTA_ON_DEMAND_SERVICE_AREA.zoneMetadata['North Utah County'].availability.Sunday).toEqual([]);
+    for (const zone of UTA_ON_DEMAND_SERVICE_AREA.features) {
+      const areaName = (zone.properties as { areaName: string }).areaName;
+      expect(resolveOnDemandZone(UTA_ON_DEMAND_SERVICE_AREA, areaName).eligibility).toBe('Riders 13 and older; under 13 with a parent or guardian');
+    }
     for (const zone of UTA_ON_DEMAND_SERVICE_AREA.features) {
       const areaName = (zone.properties as { areaName: string }).areaName;
       expect(UTA_ON_DEMAND_SERVICE_AREA.zoneMetadata[areaName as keyof typeof UTA_ON_DEMAND_SERVICE_AREA.zoneMetadata].availability).toBeDefined();
@@ -198,7 +229,13 @@ describe('Edmonton On Demand areas', () => {
       expect(ring[0]).toEqual(ring.at(-1));
     }
     expect(EDMONTON_ON_DEMAND_SERVICE_AREA.zoneMetadata['Keswick'].availability?.Weekday).toEqual([]);
-    expect(EDMONTON_ON_DEMAND_SERVICE_AREA.zoneMetadata['Glenora East'].availability).toBeUndefined();
+    for (const zone of ['Glenora East', 'Glenora West', '124 Street & 102 Avenue', '142 Street & Stony Plain Road']) {
+      expect(EDMONTON_ON_DEMAND_SERVICE_AREA.zoneMetadata[zone].availability?.Weekday, zone).toEqual([{ startHour: 7, endHour: 19 }]);
+      expect(EDMONTON_ON_DEMAND_SERVICE_AREA.zoneMetadata[zone].validUntil, zone).toBe('2026-12-31');
+    }
+    for (const hub of ['137 Ave & 156 ST', 'Lessard Rd & 57 Ave', '65 St and 106 Ave', 'Meadows Recreation Centre']) {
+      expect(EDMONTON_ON_DEMAND_SERVICE_AREA.zoneMetadata[hub].availability, hub).toBeUndefined();
+    }
   });
 });
 
@@ -294,10 +331,13 @@ describe('GTFS-Flex batch from agency feeds', () => {
 
   it('keeps only the public zone from each feed, never paratransit or deviation buffers', () => {
     for (const [slug, [service, ids]] of Object.entries(batch)) {
-      const props = service.features.map(feature => feature.properties as { agencySlug: string; flexLocationId: string });
+      // Zones from official map layers sit beside the feed's (RFTA Carbondale); the feed check is on feed zones.
+      const feedFeatures = service.features.filter(feature => (feature.properties as { flexLocationId?: string }).flexLocationId);
+      const props = feedFeatures.map(feature => feature.properties as { agencySlug: string; flexLocationId: string });
       expect(props.map(p => p.flexLocationId)).toEqual(ids);
       expect(props.every(p => p.agencySlug === slug)).toBe(true);
-      for (const feature of service.features) {
+      expect(service.features.length - feedFeatures.length).toBe(slug === 'rfta' ? 1 : 0);
+      for (const feature of feedFeatures) {
         const ring = feature.geometry.coordinates[0];
         expect(ring.length).toBeGreaterThan(20);
         expect(ring[0]).toEqual(ring.at(-1));
@@ -323,5 +363,30 @@ describe('GTFS-Flex batch from agency feeds', () => {
     expect(Services.ISLAND_TRANSIT_GO_SERVICE_AREA.features).toHaveLength(0);
     expect(Services.ISLAND_TRANSIT_GO_SERVICE_AREA.stopFeatures).toHaveLength(47);
     expect(onDemandPickupSentence(Services.ISLAND_TRANSIT_GO_SERVICE_AREA, undefined)).toContain('47 set stops');
+  });
+});
+
+describe('on-demand public launch gate (CIV-23)', () => {
+  const standalones = [
+    Services.BWG_ON_DEMAND_AGENCY,
+    Services.CALEDON_ON_DEMAND_AGENCY,
+    Services.BRAMPTON_ON_DEMAND_AGENCY,
+    Services.MUSKOKA_DRT_ON_DEMAND_AGENCY,
+    Services.ST_ALBERT_ON_DEMAND_AGENCY,
+    Services.LEAMINGTON_LT_GO_ON_DEMAND_AGENCY,
+    Services.WINKLER_ON_DEMAND_AGENCY,
+  ];
+
+  it('keeps every standalone on-demand agency off the public site until launch', () => {
+    for (const agency of standalones) {
+      expect(isAgencyVisibleInBrowser(agency, { mode: 'public' }), agency.slug).toBe(ON_DEMAND_PUBLIC);
+    }
+  });
+
+  it('shows every standalone on-demand agency on beta and preview', () => {
+    for (const agency of standalones) {
+      expect(isAgencyVisibleInBrowser(agency, { mode: 'beta' }), agency.slug).toBe(true);
+      expect(isAgencyVisibleInBrowser(agency, { mode: 'preview' }), agency.slug).toBe(true);
+    }
   });
 });

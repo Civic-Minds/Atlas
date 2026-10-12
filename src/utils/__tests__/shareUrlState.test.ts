@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   AGENCY_URL_MAX_SLUGS,
   encodeAgencySelection,
@@ -159,5 +159,23 @@ describe('mode filter param', () => {
   it('drops unknown or malformed modes', () => {
     expect(parseModesParam('m=3,7,bus,1.5', allowed)).toEqual(new Set([3, 1]));
     expect(parseModesParam('m=-1.3', [{ id: 3 }])).toEqual(new Set([3]));
+  });
+});
+
+describe('on-demand stays out of public builds (CIV-50)', () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.resetModules();
+  });
+
+  it('turns the feature off and drops the on-demand mode from a shared URL', async () => {
+    vi.resetModules();
+    vi.stubEnv('VITE_ATLAS_MODE', 'public');
+    const { ATLAS_MODE, FEATURES } = await import('../../../shared/config');
+    const shareUrl = await import('../shareUrlState');
+    expect(ATLAS_MODE).toBe('public');
+    expect(FEATURES.onDemand).toBe(false);
+    expect(shareUrl.AVAILABLE_FILTER_MODES.some(m => m.id === -1)).toBe(false);
+    expect(shareUrl.parseModesParam('m=-1')).toEqual(new Set());
   });
 });

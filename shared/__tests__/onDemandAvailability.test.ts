@@ -5,6 +5,7 @@ import {
   formatOnDemandHoursLines,
   isOnDemandStopShown,
   isOnDemandZoneShown,
+  localDateIn,
   onDemandHoursConfirmed,
   onDemandPickupSentence,
   onDemandRunningNote,
@@ -149,3 +150,40 @@ describe('on-demand zone and stop resolution', () => {
     expect(onDemandPickupSentence({ ...transfer, zoneMetadata: {} }, 'Zone B')).toBeNull();
   });
 });
+
+describe('zones past their last day', () => {
+  const service = {
+    features: [{ properties: { areaName: 'Detour' } }, { properties: { areaName: 'Regular' } }],
+    zoneMetadata: { Detour: { validUntil: '2026-12-31' } },
+  };
+
+  it('hides an ended zone from its first local day after, and keeps the rest', () => {
+    expect(isOnDemandZoneShown(service, 'Detour', 'Weekday', 'all', '2026-12-31')).toBe(true);
+    expect(isOnDemandZoneShown(service, 'Detour', 'Weekday', 'all', '2027-01-01')).toBe(false);
+    expect(isOnDemandZoneShown(service, 'Regular', 'Weekday', 'all', '2027-01-01')).toBe(true);
+  });
+
+  it('reads today in the agency\'s time zone, and from the last zone on Earth when none is on file', () => {
+    const now = new Date('2027-01-01T03:00:00Z');
+    expect(localDateIn('America/Edmonton', now)).toBe('2026-12-31');
+    expect(localDateIn('Europe/Paris', now)).toBe('2027-01-01');
+    expect(localDateIn(undefined, now)).toBe('2026-12-31');
+  });
+});
+
+describe('stop-only services', () => {
+  it('lets stops follow their own service hours when that service has no polygon', () => {
+    const service = {
+      features: [{ properties: { areaName: 'Zone 1' } }],
+      availability: undefined,
+      zoneMetadata: {
+        'Zone 1': { availability: { Weekday: [{ startHour: 6, endHour: 21 }] } },
+        'Late Night On-Demand': { serviceName: 'Late Night On-Demand', availability: { Weekday: [{ startHour: 21, endHour: 23 }] } },
+      },
+    };
+    const stop = { areaName: 'Late Night On-Demand' };
+    expect(isOnDemandStopShown(service, stop, 'Weekday', 'evening')).toBe(true);
+    expect(isOnDemandStopShown(service, stop, 'Weekday', 'midday')).toBe(false);
+  });
+});
+
