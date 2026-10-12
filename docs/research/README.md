@@ -10,7 +10,7 @@ Use [`PROJECT-TEMPLATE.md`](PROJECT-TEMPLATE.md) when starting a new research pr
 - `transfer-inventory-2026-10-01/` — agency transfer-policy inventory.
 - `transfer-verification-2026-10-01/` — confirmation pass over transfer policies.
 - `system-map-audit-2026-09/` — system-map audit with linked visual assets.
-- `frequent-service-*` — frequent-service analysis and catalog inputs.
+- `frequent-service-research-2026-09/` — frequent-service catalog, analysis, Atlas agency mapping and per-agency definitions.
 - `north-america-*` — standalone regional audit reports.
 
 ## Historical snapshots

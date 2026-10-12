@@ -14,8 +14,9 @@ outputs remain supporting artifacts rather than competing summaries.
 ## Research programs
 
 - [Frequent-service research](frequent-service-research-2026-09/INDEX.md):
-  agency definitions, the structured catalog, comparisons, and the proposed
-  Atlas criteria.
+  agency definitions, the structured catalog, the proposed Atlas criteria, and
+  `frequent-definitions-by-agency.json`, one row per Atlas agency with
+  machine-checked definition quotes (2026-10-11).
 - [North America Flex and on-demand audit](north-america-flex-and-on-demand-2026-09/INDEX.md):
   public on-demand services and GTFS-Flex publication status.
 - [System-map audit](system-map-audit-2026-09/INDEX.md): verified system-map
