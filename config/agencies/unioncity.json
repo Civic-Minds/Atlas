@@ -14,16 +14,16 @@
   ],
   "feedUrl": "https://unioncity.tripshot.com/v1/gtfs.zip?regionId=CA558DDC-D7F2-4B48-9CAC-DEEA1134F8206",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-628/latest.zip",
-  "lastFeedExpiry": "",
+  "lastFeedExpiry": "20270816",
   "lastFeedVersion": "",
-  "lastRefreshedAt": "2026-10-08",
+  "lastRefreshedAt": "2026-10-12",
   "websiteUrl": "http://www.uctransit.org",
   "cities": [
     "Union City, California"
   ],
   "timezone": "America/Los_Angeles",
   "lastRawArchiveKey": "20230927-651281e25dba5ea3",
-  "lastFeedCheckAt": "20261008",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270816",
@@ -44,6 +44,6 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 34
     },
-    "checkedAt": "2026-10-08"
+    "checkedAt": "2026-10-12"
   }
 }

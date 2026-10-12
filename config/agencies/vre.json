@@ -15,9 +15,9 @@
   ],
   "feedUrl": "https://gtfs.vre.org/containercdngtfsupload/google_transit.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-61/latest.zip",
-  "lastFeedExpiry": "20270104",
+  "lastFeedExpiry": "20270109",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-10-07",
+  "lastRefreshedAt": "2026-10-12",
   "cities": [
     "Dale City, Virginia",
     "Centreville, Virginia",
@@ -26,10 +26,10 @@
     "Washington, District of Columbia",
     "Arlington, Virginia"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20270104",
+  "expiredFeedCheckExpiry": "20270109",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -39,13 +39,15 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 4
+      "featureCount": 6
     },
-    "checkedAt": "2026-10-07"
+    "checkedAt": "2026-10-12"
   },
   "timezone": "America/New_York",
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://gtfs.vre.org/containercdngtfsupload/google_transit.zip"
 }

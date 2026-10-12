@@ -17,12 +17,33 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-60196/latest.zip",
   "lastFeedExpiry": "20270201",
   "lastFeedVersion": "20251212",
-  "lastRefreshedAt": "2026-08-07",
+  "lastRefreshedAt": "2026-10-12",
   "overrideNote": "Real fixed-route bus service (route_type 3, ordered stop sequences) but shapes.txt is present with header only — every trip's shape_id is blank. Needs a stop-sequence fallback capability Atlas doesn't have yet. Tracked in #216.",
   "pmtilesPending": true,
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270201",
-  "timezone": "America/Chicago"
+  "timezone": "America/Chicago",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/ntd-60196/latest.zip",
+  "feedQuality": {
+    "status": "unusable",
+    "score": 0,
+    "reasons": [
+      "Atlas could not find any usable routes in this feed."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 1,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 0
+    },
+    "checkedAt": "2026-10-12"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

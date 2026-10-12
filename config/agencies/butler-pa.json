@@ -27,9 +27,11 @@
   "lastFeedExpiry": "20271231",
   "lastFeedVersion": "20260519",
   "lastRefreshedAt": "2026-08-21",
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
-  "timezone": "America/New_York"
+  "timezone": "America/New_York",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://butlerivl.availtec.com/InfoPoint/gtfs-zip.ashx"
 }

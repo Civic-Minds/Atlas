@@ -10,15 +10,14 @@
   "feedUrl": "http://data.trilliumtransit.com/gtfs/10-15transit-ia-us/10-15transit-ia-us.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-195/latest.zip",
   "region": "Iowa",
-  "staged": true,
   "lastFeedExpiry": "20270301",
   "lastFeedVersion": "UTC: 20-Aug-2026 23:12",
-  "lastRefreshedAt": "2026-09-10",
+  "lastRefreshedAt": "2026-10-12",
   "feedQuality": {
     "status": "review",
     "score": 90,
     "reasons": [
-      "1 schedule-data warning — Atlas found a minor issue while reading the schedule."
+      "1 minor schedule issue found while reading the feed."
     ],
     "metrics": {
       "validationErrors": 0,
@@ -27,6 +26,16 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 6
     },
-    "checkedAt": "2026-09-10"
-  }
+    "checkedAt": "2026-10-12"
+  },
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/10-15transit-ia-us/10-15transit-ia-us.zip",
+  "lastFeedCheckAt": "20261012",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270301",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

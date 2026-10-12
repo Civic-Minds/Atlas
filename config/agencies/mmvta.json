@@ -25,12 +25,12 @@
       "routeHeadwayMismatches": 1,
       "featureCount": 27
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-10-12"
   },
   "lastFeedExpiry": "20270731",
-  "lastFeedVersion": "20260921",
-  "lastRefreshedAt": "2026-10-03",
-  "lastFeedCheckAt": "20261007",
+  "lastFeedVersion": "20261007",
+  "lastRefreshedAt": "2026-10-12",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270731",
@@ -38,5 +38,7 @@
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://mmvta.rideralerts.com/InfoPoint/gtfs-zip.ashx"
 }

@@ -20,30 +20,30 @@
     "Whitman County, Washington"
   ],
   "timezone": "America/Los_Angeles",
-  "lastFeedExpiry": "",
-  "lastFeedVersion": "added new football schedules",
-  "lastRefreshedAt": "2026-10-07",
+  "lastFeedExpiry": "20281012",
+  "lastFeedVersion": "removed football routes",
+  "lastRefreshedAt": "2026-10-12",
   "feedQuality": {
-    "status": "review",
-    "score": 90,
-    "reasons": [
-      "1 route has stops whose frequency differs from the overall route schedule."
-    ],
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 0,
-      "routeHeadwayMismatches": 1,
-      "featureCount": 12
+      "routeHeadwayMismatches": 0,
+      "featureCount": 8
     },
-    "checkedAt": "2026-10-07"
+    "checkedAt": "2026-10-12"
   },
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://pullmanbusbeacon.com/gtfs"
 }

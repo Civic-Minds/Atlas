@@ -9,15 +9,14 @@
   "feedUrl": "https://gis.ci.galesburg.il.us/cityofgalesburg-il-us.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-50502/latest.zip",
   "region": "Illinois",
-  "staged": true,
   "lastFeedExpiry": "20270131",
   "lastFeedVersion": "26.32",
-  "lastRefreshedAt": "2026-09-10",
+  "lastRefreshedAt": "2026-10-12",
   "feedQuality": {
     "status": "review",
     "score": 90,
     "reasons": [
-      "1 schedule-data warning — Atlas found a minor issue while reading the schedule."
+      "1 minor schedule issue found while reading the feed."
     ],
     "metrics": {
       "validationErrors": 0,
@@ -26,6 +25,16 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 12
     },
-    "checkedAt": "2026-09-10"
-  }
+    "checkedAt": "2026-10-12"
+  },
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://gis.ci.galesburg.il.us/cityofgalesburg-il-us.zip",
+  "lastFeedCheckAt": "20261012",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270131",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

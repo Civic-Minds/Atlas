@@ -19,7 +19,7 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1846/latest.zip",
   "lastFeedExpiry": "20270327",
   "lastFeedVersion": "S1000251",
-  "lastRefreshedAt": "2026-10-07",
+  "lastRefreshedAt": "2026-10-12",
   "websiteUrl": "https://www.wmata.com",
   "cities": [
     "Downtown DC, District of Columbia",
@@ -33,7 +33,7 @@
     "Centreville, Virginia",
     "Reston, Virginia"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270327",
@@ -46,13 +46,22 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 759
+      "featureCount": 755
     },
-    "checkedAt": "2026-10-07"
+    "checkedAt": "2026-10-12"
   },
   "timezone": "America/New_York",
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-1846/latest.zip",
+  "lastSupplementalFeeds": [
+    {
+      "feedExpiry": "20270102",
+      "feedVersion": null,
+      "rawArchiveKey": "20270102-4338d22d24cd6cb7"
+    }
+  ]
 }

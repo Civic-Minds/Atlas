@@ -19,9 +19,11 @@
     "Alafaya, Florida",
     "Poinciana, Florida"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261212",
-  "timezone": "America/New_York"
+  "timezone": "America/New_York",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "http://gtfsrt.golynx.com/gtfsrt/google_transit.zip"
 }

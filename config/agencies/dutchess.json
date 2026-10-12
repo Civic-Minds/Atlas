@@ -21,9 +21,11 @@
   "cities": [
     "Danbury, Connecticut"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20350730",
-  "timezone": "America/New_York"
+  "expiredFeedCheckExpiry": "20510930",
+  "timezone": "America/New_York",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://s3.amazonaws.com/datatools-511ny/public/Dutchess_County_Transit.zip"
 }

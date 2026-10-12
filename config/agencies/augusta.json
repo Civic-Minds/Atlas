@@ -14,12 +14,14 @@
   "lastRefreshedAt": "20260811",
   "timezone": "America/New_York",
   "lastRawArchiveKey": "20240224-4a743b70003a6451",
-  "lastFeedCheckAt": "20261007",
-  "expiredFeedCheckCount": 4,
+  "lastFeedCheckAt": "20261012",
+  "expiredFeedCheckCount": 5,
   "expiredFeedCheckSince": "20260622",
   "expiredFeedCheckExpiry": "20240224",
   "feedRefreshStatus": "stale",
   "feedRefreshError": "all available feeds expired (latest 20240224)",
-  "feedRefreshErrorAt": "20261007",
-  "feedRefreshRetryCount": 2
+  "feedRefreshErrorAt": "20261012",
+  "feedRefreshRetryCount": 3,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/tld-5780/latest.zip"
 }

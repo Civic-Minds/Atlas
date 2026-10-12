@@ -24,7 +24,7 @@
     "Kennewick, Washington",
     "Pasco, Washington"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270313",
@@ -41,5 +41,7 @@
       "featureCount": 104
     },
     "checkedAt": "2026-09-07"
-  }
+  },
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2122/latest.zip"
 }

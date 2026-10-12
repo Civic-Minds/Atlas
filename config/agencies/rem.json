@@ -32,9 +32,11 @@
     "Verdun, Quebec",
     "Montréal, Quebec"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
-  "timezone": "America/Montreal"
+  "timezone": "America/Montreal",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://gtfs.gpmmom.ca/gtfs/gtfs.zip"
 }

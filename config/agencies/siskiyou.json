@@ -16,12 +16,33 @@
   "pmtilesPending": true,
   "feedUrl": "http://data.trilliumtransit.com/gtfs/siskiyou-ca-us/siskiyou-ca-us.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-117/latest.zip",
-  "lastFeedExpiry": "20300925",
+  "lastFeedExpiry": "20300725",
   "lastFeedVersion": "UTC: 02-Jul-2026 18:56",
-  "lastRefreshedAt": "2026-08-10",
-  "lastFeedCheckAt": "20261007",
+  "lastRefreshedAt": "2026-10-12",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20300925",
-  "timezone": "America/Los_Angeles"
+  "timezone": "America/Los_Angeles",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/siskiyou-ca-us/siskiyou-ca-us.zip",
+  "feedQuality": {
+    "status": "unusable",
+    "score": 0,
+    "reasons": [
+      "Atlas could not find any usable routes in this feed."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 1,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 0
+    },
+    "checkedAt": "2026-10-12"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

@@ -29,12 +29,12 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 48
     },
-    "checkedAt": "2026-10-07"
+    "checkedAt": "2026-10-12"
   },
-  "lastFeedExpiry": "",
+  "lastFeedExpiry": "20281012",
   "lastFeedVersion": "Yellow Route Fixed",
-  "lastRefreshedAt": "2026-10-07",
-  "lastFeedCheckAt": "20261007",
+  "lastRefreshedAt": "2026-10-12",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",
@@ -42,5 +42,7 @@
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://gtfs.transitportal.org/CurrentGTFS/Concord%20Kannapolis_209/CKRider.zip"
 }

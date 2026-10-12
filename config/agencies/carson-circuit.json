@@ -7,9 +7,9 @@
     -118.2573
   ],
   "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11488/CarsonGTFS.zip",
-  "lastFeedExpiry": "20261126",
+  "lastFeedExpiry": "20281012",
   "lastFeedVersion": "20231127",
-  "lastRefreshedAt": "2026-10-07",
+  "lastRefreshedAt": "2026-10-12",
   "cities": [
     "Carson, California",
     "Compton, California",
@@ -17,7 +17,7 @@
   ],
   "timezone": "America/Los_Angeles",
   "lastRawArchiveKey": "20211111-1c359ccdcc3657b6",
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20320103",
@@ -35,10 +35,12 @@
       "routeHeadwayMismatches": 2,
       "featureCount": 2
     },
-    "checkedAt": "2026-10-07"
+    "checkedAt": "2026-10-12"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11488/CarsonGTFS.zip"
 }

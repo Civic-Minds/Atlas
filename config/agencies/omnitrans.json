@@ -24,9 +24,11 @@
     "Chino, California"
   ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-97/latest.zip",
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270103",
-  "timezone": "America/Los_Angeles"
+  "timezone": "America/Los_Angeles",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "http://www.omnitrans.org/google/google_transit.zip"
 }

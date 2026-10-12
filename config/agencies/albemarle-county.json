@@ -36,8 +36,10 @@
     },
     "checkedAt": "2026-09-08"
   },
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20270113"
+  "expiredFeedCheckExpiry": "20270113",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://apps.charlottesville.gov/publicfiles/GTFS.zip"
 }

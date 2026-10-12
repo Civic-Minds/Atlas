@@ -15,11 +15,30 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-2132/latest.zip",
   "lastFeedExpiry": "20261231",
-  "lastFeedVersion": "UTC: 14-May-2026 15:14",
-  "lastRefreshedAt": "2026-08-07",
-  "lastFeedCheckAt": "20261007",
+  "lastFeedVersion": "UTC: 02-Oct-2026 20:41",
+  "lastRefreshedAt": "2026-10-12",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
-  "timezone": "America/Moncton"
+  "timezone": "America/Moncton",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2132/latest.zip",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 52
+    },
+    "checkedAt": "2026-10-12"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

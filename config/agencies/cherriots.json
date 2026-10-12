@@ -24,7 +24,7 @@
   ],
   "timezone": "America/Los_Angeles",
   "lastRawArchiveKey": "20260102-024bddedbb9eacbd",
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270102",
@@ -42,5 +42,7 @@
       "featureCount": 136
     },
     "checkedAt": "2026-08-24"
-  }
+  },
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://cherriots.rideralerts.com/InfoPoint/gtfs-zip.ashx"
 }

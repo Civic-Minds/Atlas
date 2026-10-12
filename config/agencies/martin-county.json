@@ -24,7 +24,7 @@
     "Jupiter, Florida",
     "Palm Beach Gardens, Florida"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
@@ -43,5 +43,7 @@
     },
     "checkedAt": "2026-08-27"
   },
-  "timezone": "America/New_York"
+  "timezone": "America/New_York",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/tld-4506/latest.zip"
 }

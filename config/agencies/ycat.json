@@ -21,9 +21,11 @@
   "cities": [
     "Yuma, Arizona"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270101",
-  "timezone": "America/Phoenix"
+  "timezone": "America/Phoenix",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-17/latest.zip"
 }

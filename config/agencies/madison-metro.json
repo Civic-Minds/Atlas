@@ -15,7 +15,7 @@
   "cities": [
     "Madison, Wisconsin"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261205",
@@ -34,5 +34,7 @@
     },
     "checkedAt": "2026-08-24"
   },
-  "timezone": "US/Central"
+  "timezone": "US/Central",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "http://transitdata.cityofmadison.com/GTFS/mmt_gtfs.zip"
 }

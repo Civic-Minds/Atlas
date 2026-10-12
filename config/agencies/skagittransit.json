@@ -25,8 +25,10 @@
   ],
   "timezone": "America/Los_Angeles",
   "lastRawArchiveKey": "20251024-da59ce8fbb6ab9c7",
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20270103"
+  "expiredFeedCheckExpiry": "20270103",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://strweb.skagittransit.org/GTFS/google_transit.zip"
 }

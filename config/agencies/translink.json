@@ -16,9 +16,9 @@
   "feedUrl": "https://gtfs-static.translink.ca/gtfs/google_transit.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-696/latest.zip",
   "lastFeedExpiry": "20270103",
-  "lastFeedVersion": "26SEP_20261002",
+  "lastFeedVersion": "26SEP_20261009",
   "gtfsFares": true,
-  "lastRefreshedAt": "2026-10-07",
+  "lastRefreshedAt": "2026-10-12",
   "cities": [
     "Vancouver, British Columbia",
     "North Vancouver, British Columbia",
@@ -31,30 +31,32 @@
     "Brighouse-City Centre, British Columbia",
     "Langley, British Columbia"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270103",
   "feedQuality": {
     "status": "degraded",
-    "score": 30,
+    "score": 40,
     "reasons": [
       "1 minor schedule issue found while reading the feed.",
-      "19 route shapes needed adjustment before display.",
-      "5 route have stops whose frequency differs from the overall route schedule."
+      "15 route shapes needed adjustment before display.",
+      "2 route have stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 1,
-      "shapeAnomalies": 19,
-      "routeHeadwayMismatches": 5,
-      "featureCount": 1471
+      "shapeAnomalies": 15,
+      "routeHeadwayMismatches": 2,
+      "featureCount": 1474
     },
-    "checkedAt": "2026-10-07"
+    "checkedAt": "2026-10-12"
   },
   "timezone": "America/Vancouver",
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://gtfs-static.translink.ca/gtfs/google_transit.zip"
 }
