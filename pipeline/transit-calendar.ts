@@ -92,9 +92,18 @@ export function detectReferenceDate(
     // group starts October 2026, but current service is in March 2026).
     // Falls back to the overall latest if all multi-entry periods are in the future
     // (handles feeds that only contain upcoming schedule data).
+    // A run on a holiday must give the same reference as the next day (#742). Agencies
+    // publish a holiday as a one-day period: several services that all start and end on
+    // that date (CDTA and MBTA on Oct 12, 2026). On that day it is the newest period
+    // running, so it became the reference and the regular weekend timetables, which are
+    // not in range on that date, dropped. When today is the date of such a one-day
+    // period, the reference is chosen as of the next day that isn't one.
+    const oneDayPeriodStarts = new Set(multiStarts.filter(s => groups.get(s)!.every(c => c.start_date === c.end_date)));
     const todayStr = (() => {
         const d = new Date();
-        return `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
+        let today = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
+        for (let k = 0; k < 7 && oneDayPeriodStarts.has(today); k++) today = addDaysYmd(today, 1);
+        return today;
     })();
     const pastOrPresentMultiStarts = multiStarts.filter(s => s <= todayStr);
     const groupEnd = (start: string): string => {
@@ -261,7 +270,7 @@ export function detectReferenceDate(
     };
 
     const previousRef = referenceFor(previousStart, false);
-    if (runningStart == null || runningStart === previousStart) return previousRef;
+    if (runningStart == null || runningStart === previousStart) return outsideHolidayWeek(previousRef, calendar, calendarDates, trips);
     const runningRef = referenceFor(runningStart, true);
     // Never switch to a running period that carries far fewer routes than the ended one:
     // in a stale feed the ended period is usually the main timetable and the one still
@@ -288,9 +297,71 @@ export function detectReferenceDate(
             return routes.size;
         };
         const before = routesOn(previousRef);
-        if (before > 0 && routesOn(runningRef) < before * MIN_RUNNING_ROUTE_SHARE) return previousRef;
+        if (before > 0 && routesOn(runningRef) < before * MIN_RUNNING_ROUTE_SHARE) return outsideHolidayWeek(previousRef, calendar, calendarDates, trips);
     }
-    return runningRef;
+    return outsideHolidayWeek(runningRef, calendar, calendarDates, trips);
+}
+
+/** A day is thin when it has under this share of its busiest same-weekday trips nearby. */
+const HOLIDAY_WEEK_TRIP_SHARE = 0.5;
+/** Weeks looked at on each side of the reference week. */
+const HOLIDAY_WEEK_WINDOW = 4;
+
+/**
+ * True when the calendar is the one synthesizeCalendarFromDates built from a
+ * calendar_dates-only feed: every entry spans exactly its service's first to last added date.
+ */
+function isSynthesizedCalendar(calendar: GtfsCalendar[], calendarDates: GtfsCalendarDate[] | undefined): boolean {
+    if (calendar.length === 0 || !calendarDates || calendarDates.length === 0) return false;
+    const range = new Map<string, [string, string]>();
+    for (const cd of calendarDates) {
+        if (cd.exception_type !== '1') continue;
+        const r = range.get(cd.service_id);
+        if (!r) range.set(cd.service_id, [cd.date, cd.date]);
+        else { if (cd.date < r[0]) r[0] = cd.date; if (cd.date > r[1]) r[1] = cd.date; }
+    }
+    return calendar.every(c => {
+        const r = range.get(c.service_id);
+        return r != null && r[0] === c.start_date && r[1] === c.end_date;
+    });
+}
+
+/**
+ * Moves the reference out of a holiday week in a calendar_dates-only feed (#742). Such a
+ * feed lists every service by date, so its synthesized periods start almost daily and
+ * the reference follows the run date. Metro-North's run on Oct 12, 2026 put it on Nov 26,
+ * Thanksgiving week, where the weekday timetables are out of range: 15 weekday trips
+ * instead of about 729, and 3 of 6 lines lost.
+ *
+ * A week is thin when any day has under half the trips of that weekday's busiest week
+ * within 4 weeks of the reference, as getActiveServiceIds selects them. A thin reference
+ * week moves to the nearest week, later first on ties, with no thin day against the
+ * same busiest weeks; if there is none it stays. Feeds with a calendar.txt never move:
+ * their holidays are calendar_dates removals, which the #678 check already handles.
+ */
+function outsideHolidayWeek(
+    ref: string,
+    calendar: GtfsCalendar[],
+    calendarDates: GtfsCalendarDate[] | undefined,
+    trips?: Array<{ service_id: string }>,
+): string {
+    if (!trips || trips.length === 0 || !isSynthesizedCalendar(calendar, calendarDates)) return ref;
+    const tripsByService = new Map<string, number>();
+    for (const t of trips) tripsByService.set(t.service_id, (tripsByService.get(t.service_id) ?? 0) + 1);
+    const tripsByDay = (date: string): number[] => ALL_DAY_NAMES.map(day => {
+        let n = 0;
+        for (const id of getActiveServiceIds(calendar, calendarDates ?? [], day, date)) n += tripsByService.get(id) ?? 0;
+        return n;
+    });
+    const weeks = new Map<number, number[]>();
+    for (let k = -HOLIDAY_WEEK_WINDOW; k <= HOLIDAY_WEEK_WINDOW; k++) weeks.set(k, tripsByDay(addDaysYmd(ref, 7 * k)));
+    const busiest = ALL_DAY_NAMES.map((_, i) => Math.max(...[...weeks.values()].map(w => w[i])));
+    const thin = (k: number) => weeks.get(k)!.some((n, i) => busiest[i] > 0 && n < busiest[i] * HOLIDAY_WEEK_TRIP_SHARE);
+    if (!thin(0)) return ref;
+    for (let k = 1; k <= HOLIDAY_WEEK_WINDOW; k++) {
+        for (const shift of [k, -k]) if (!thin(shift)) return addDaysYmd(ref, 7 * shift);
+    }
+    return ref;
 }
 
 /**
