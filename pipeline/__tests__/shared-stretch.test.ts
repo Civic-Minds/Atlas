@@ -444,7 +444,7 @@ describe('shared stretch pooling (real feeds)', () => {
       expect(pooled.slice(0, 4)).toEqual([12, 12, 12, 12]);
       // Further on the gaps drift to 9/15, 8/16 and 7/17: the average stays 12, so no pooled
       // value ever reads better than every 12 (the median alone would say 7 to 9).
-      expect(pooled.filter(v => v != null).every(v => v! >= 12)).toBe(true);
+      expect(pooled.filter((v): v is number => typeof v === 'number').every(v => v >= 12)).toBe(true);
     }
     expectNeverWorse(routes);
     expectRawBlockSound(routes);
