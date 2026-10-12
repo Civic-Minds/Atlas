@@ -50,6 +50,18 @@ const ON_DEMAND_AREA_COLOR = '#64748b';
 const ON_DEMAND_FOCUS_MATCH = ['!=', ['get', ON_DEMAND_FOCUSED_PROP], false];
 // Zone fills are already faint (0.12), so fade them proportionally instead of to the shared 0.18.
 const ON_DEMAND_FADED_FILL_OPACITY = 0.03;
+// Zone outlines and fills are drawn thin and light at regional zoom, where they would otherwise
+// outweigh the routes (CIV-89), and reach full strength by street zoom.
+const ON_DEMAND_REGIONAL_ZOOM = 8;
+const ON_DEMAND_STREET_ZOOM = 13;
+/** Paint that eases from `regional` at regional zoom to `street` at street zoom. */
+function onDemandByZoom(regional: unknown, street: unknown): unknown[] {
+  return ['interpolate', ['linear'], ['zoom'], ON_DEMAND_REGIONAL_ZOOM, regional, ON_DEMAND_STREET_ZOOM, street];
+}
+/** One on-demand opacity: focused, by whether the zone's hours are confirmed, else faded. */
+function onDemandOpacity(confirmed: number, unconfirmed: number, faded: number): unknown[] {
+  return buildFocusCase(ON_DEMAND_FOCUS_MATCH, ['case', ['==', ['get', 'hoursConfirmed'], false], unconfirmed, confirmed], faded);
+}
 const FREQUENT_15_COLOR = HEADWAY_TIERS.find(tier => tier.max === 15)?.color ?? '#3da44d';
 const FREQUENT_30_COLOR = HEADWAY_TIERS.find(tier => tier.max === 30)?.color ?? '#e07b2a';
 // Keep the Live/Deck.gl graph out of public builds entirely when Live is disabled.
@@ -1193,7 +1205,13 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         id: 'on-demand-service-area-fill',
         type: 'fill',
         source: 'on-demand-service-areas',
-        paint: { 'fill-color': ON_DEMAND_AREA_COLOR, 'fill-opacity': buildFocusCase(ON_DEMAND_FOCUS_MATCH, ['case', ['==', ['get', 'hoursConfirmed'], false], 0.05, 0.12], ON_DEMAND_FADED_FILL_OPACITY) as any },
+        paint: {
+          'fill-color': ON_DEMAND_AREA_COLOR,
+          'fill-opacity': onDemandByZoom(
+            onDemandOpacity(0.05, 0.02, ON_DEMAND_FADED_FILL_OPACITY / 2),
+            onDemandOpacity(0.12, 0.05, ON_DEMAND_FADED_FILL_OPACITY),
+          ) as any,
+        },
         layout: { visibility: 'none' },
       });
       map.addLayer({
@@ -1202,8 +1220,11 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         source: 'on-demand-service-areas',
         paint: {
           'line-color': ON_DEMAND_AREA_COLOR,
-          'line-width': 2,
-          'line-opacity': buildFocusCase(ON_DEMAND_FOCUS_MATCH, ['case', ['==', ['get', 'hoursConfirmed'], false], 0.4, 0.95], FOCUS_DIM_OPACITY) as any,
+          'line-width': onDemandByZoom(0.75, 2) as any,
+          'line-opacity': onDemandByZoom(
+            onDemandOpacity(0.35, 0.15, FOCUS_DIM_OPACITY / 2),
+            onDemandOpacity(0.95, 0.4, FOCUS_DIM_OPACITY),
+          ) as any,
           'line-dasharray': [2, 1.5],
         },
         layout: { visibility: 'none' },
