@@ -1240,11 +1240,12 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         minzoom: 9,
         paint: {
           'circle-color': ON_DEMAND_AREA_COLOR,
-          'circle-radius': ['interpolate', ['linear'], ['zoom'], 9, 2, 12, 3.5, 15, 5],
+          'circle-radius': ['interpolate', ['linear'], ['zoom'], 9, 1.25, 12, 3.5, 15, 5],
           'circle-stroke-color': '#ffffff',
-          'circle-stroke-width': ['interpolate', ['linear'], ['zoom'], 9, 0.75, 12, 1.25, 15, 1.5],
-          'circle-opacity': buildFocusCase(ON_DEMAND_FOCUS_MATCH, ['case', ['==', ['get', 'hoursConfirmed'], false], 0.4, 1], FOCUS_DIM_OPACITY) as any,
-          'circle-stroke-opacity': buildFocusCase(ON_DEMAND_FOCUS_MATCH, ['case', ['==', ['get', 'hoursConfirmed'], false], 0.4, 1], FOCUS_DIM_OPACITY) as any,
+          'circle-stroke-width': ['interpolate', ['linear'], ['zoom'], 9, 0.5, 12, 1.25, 15, 1.5],
+          // Light at regional zoom like the zone outlines (CIV-89), full strength by street zoom.
+          'circle-opacity': onDemandByZoom(onDemandOpacity(0.35, 0.15, FOCUS_DIM_OPACITY / 2), onDemandOpacity(1, 0.4, FOCUS_DIM_OPACITY)) as any,
+          'circle-stroke-opacity': onDemandByZoom(onDemandOpacity(0.35, 0.15, FOCUS_DIM_OPACITY / 2), onDemandOpacity(1, 0.4, FOCUS_DIM_OPACITY)) as any,
         },
         layout: { visibility: 'none' },
       });

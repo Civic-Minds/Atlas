@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
-- On-demand zone outlines and fills are thin and light when zoomed out to a region, so they no longer outweigh the routes, and reach full strength by street zoom (beta only).
+- On-demand zone outlines, fills and stop dots are thin and light when zoomed out to a region, so they no longer outweigh the routes, and reach full strength by street zoom (beta only).
 - On-demand zones now load from Atlas's data storage only when on-demand is shown, instead of shipping about 1.5 MB of zone data to every visitor, and the map says when they couldn't load instead of showing an empty area. New zones can be added without a site update, after passing checks for broken shapes, eligibility-only service, dropped zones, lost hours and old sources (CIV-50).
 - On the beta site, agencies that run on-demand service Atlas hasn't mapped yet now say so on their card, partly mapped services name the part that's missing, and the On-demand filter shows a note that coverage is still growing, so a missing zone no longer looks like no service (CIV-23).
 - On phones, search results use the full screen width, the Settings and About panels fit on small screens, the docs and legal pages start with their contents list collapsed, the search box widens to the full top bar while you type, and Escape closes the export dialog ([#694](https://github.com/Civic-Minds/Atlas/issues/694), [#695](https://github.com/Civic-Minds/Atlas/issues/695), [#696](https://github.com/Civic-Minds/Atlas/issues/696), [#697](https://github.com/Civic-Minds/Atlas/issues/697), [#698](https://github.com/Civic-Minds/Atlas/issues/698)).
