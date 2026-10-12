@@ -26,7 +26,7 @@ export function routeCardDisplayHeadway(p: ShapeProperties, period: TimePeriod):
   // period's cadence, never the all-day headline. Coverage data remains available to the
   // filter and the limited-service treatment elsewhere on the card.
   if (period !== 'all' && p.headwayByPeriodSustained?.[period] === false) {
-    return p.headwayByPeriod?.[period] ?? null;
+    return pairedTripSafeHeadway(p, period, p.headwayByPeriod?.[period] ?? null);
   }
   const summary = buildRouteServiceSummary(p);
   // Cards show the destination/branch cadence. Keep the route-wide metric in
@@ -41,6 +41,32 @@ export function routeCardDisplayHeadway(p: ShapeProperties, period: TimePeriod):
     return summary.shared.byHeadsignPeriod?.[period] ?? null;
   }
   return branchHeadway;
+}
+
+/**
+ * Paired trips (two buses minutes apart, then a long wait) give an unsustained period a median
+ * of a few minutes while the period's typical-gap range shows the real cadence: Niagara 105
+ * Saturday has a midday median of 2 and a range of 30-60 (#761). That median is not a cadence
+ * riders get. Use the period's full-window coverage instead, the value the map filter already
+ * uses for an unsustained period (shared/tileFilterExprs.ts). Own direction first, as card rows
+ * are per branch. Null when the period does not show this pattern.
+ */
+export function pairedTripPeriodFloor(p: ShapeProperties, period: TimePeriod): number | null {
+  if (period === 'all' || p.headwayByPeriodSustained?.[period] !== false) return null;
+  const median = p.headwayByPeriod?.[period];
+  const range = p.headwayRangeByPeriod?.[period];
+  if (median == null || !range || median * 3 > range.min) return null;
+  return p.periodCoverageHeadway?.[period]
+    ?? p.maxGapByPeriod?.[period]
+    ?? p.worstDirectionPeriodCoverageHeadway?.[period]
+    ?? range.min;
+}
+
+/** A period or hourly value, raised to the paired-trip floor when the period has one (#761). */
+export function pairedTripSafeHeadway(p: ShapeProperties, period: TimePeriod | null | undefined, value: number | null): number | null {
+  if (value == null || !period) return value;
+  const floor = pairedTripPeriodFloor(p, period);
+  return floor != null && floor > value ? floor : value;
 }
 
 export function hasPeriodCoverage(p: ShapeProperties, period: TimePeriod): boolean {
