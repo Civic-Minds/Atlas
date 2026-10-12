@@ -73,5 +73,38 @@ describe('Weekday shape maps on a non-representative weekday', () => {
     expect(kennedy.headwayByPeriod.midday).toBe(20);
     expect(kennedy.periodCoverageHeadway.midday).toBe(23);
   });
+
+  it('reads capmetro 550 SB on the fresh feed from the Downtown pool, not a 5-trip shape', async () => {
+    // Real CapMetro fresh feed (20270109), route 550 only, shapes thinned. Mon-Thu SB has
+    // 16 Downtown trips on 8 shapes; the headline shape 4610 has 5 (05:41-14:30) and no stop
+    // headway, so its phase-2 value 222 stayed. Hand count, Wed Oct 14 2026 (21-172): 16
+    // trips, median gap 47; first-stop midday (9-15) median 56.5. The terminal midday is 54.
+    const weekday = await weekdayFeatures('capmetro-550-fresh-per-trip-shapes', 'capmetro', '550');
+    const sb = weekday.find((p: any) => p.headsign === 'Downtown Station SB');
+    const nb = weekday.find((p: any) => p.headsign === 'Leander Station NB');
+    expect(sb.headway).toBe(54);
+    expect(sb.headwayByPeriod.midday).toBe(54);
+    expect(sb.tier).toBe('infrequent');
+    expect(nb.headway).toBe(34);
+    expect(sb.worstDirectionHeadway).toBe(54);
+  });
+
+  it('leaves TTC night routes 354 and 395 on their own shape data', async () => {
+    // Real TTC fresh feed (20261031), routes 354 and 395. Their trips are pieces of one
+    // night pattern on several shapes, but the headsign pool has no daytime service, so the
+    // night headline stays every 30 (a pooled pre-dawn cluster read 10).
+    const result = await processGtfsBuffer(await fixtureZip('ttc-354-395-night'), undefined, { slug: 'ttc' });
+    const weekday = JSON.parse(result.geojson).features
+      .map((feature: any) => feature.properties)
+      .filter((p: any) => p.day === 'Weekday' && p.stopId == null && p.headway != null);
+    const byKey = Object.fromEntries(weekday.map((p: any) => [`${p.routeShortName} ${p.directionId} ${p.headsign}`, p.headway]));
+    expect(byKey).toEqual({
+      '354 0 Starspray': 30,
+      '354 1 Yonge': 30,
+      '395 0 Port Union': 30,
+      '395 0 Rouge Hill GO': 30,
+      '395 1 York Mills Station': 30,
+    });
+  });
 });
 

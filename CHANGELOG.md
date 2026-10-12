@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
+- Routes whose feed gives almost every trip its own route shape, like CapMetro's MetroRail, no longer take their weekday frequency from a handful of those trips: MetroRail southbound shows about every 54 minutes instead of 222, and several CapMetro routes and TriMet 96 gain their missing period frequencies ([#737](https://github.com/Civic-Minds/Atlas/issues/737)).
 - CapMetro bus routes and MetroRail whose feed gives Friday its own route shapes no longer show weekday frequencies taken from a few Friday trips (routes 201 and 322 every 10 hours instead of every 30 and 35 minutes, MetroRail northbound every 336 minutes instead of about 34) ([#735](https://github.com/Civic-Minds/Atlas/issues/735)).
 - Redwood Coast Transit Routes 3 and 4 show their real hourly weekday service again instead of every 30 and 4 minutes, because ended seasonal timetables are no longer counted alongside the regular one (also Redding RABA, Clallam Transit and other feeds with an ended summer period) ([#734](https://github.com/Civic-Minds/Atlas/issues/734)).
 - A bus that leaves exactly when a time period ends, like a 6:00 AM first trip, no longer makes the route look like it runs in the period before, so overnight, late and peak filters stop showing routes that only start or finish on the boundary.
