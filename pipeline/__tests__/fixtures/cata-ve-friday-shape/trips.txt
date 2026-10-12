@@ -1,0 +1,135 @@
+route_id,service_id,trip_id,trip_headsign,direction_id,block_id,shape_id,wheelchair_accessible,bikes_allowed
+44,54,t2D3-b7-sl36,Vairo Blvd,0,7,17528_shp,0,0
+44,54,t2D4-bC-sl36,Campus,1,12,17786_shp,0,0
+44,54,t2DF-b7-sl36,Campus,1,7,17786_shp,0,0
+44,54,t2E8-b9-sl36,Vairo Blvd,0,9,17528_shp,0,0
+44,54,t2F3-b6-sl36,Vairo Blvd,0,6,17528_shp,0,0
+44,54,t2F4-b9-sl36,Campus,1,9,17786_shp,0,0
+44,54,t327-b6-sl36,Campus,1,6,17786_shp,0,0
+44,54,t330-bC-sl36,Vairo Blvd,0,12,17528_shp,0,0
+44,54,t33B-b7-sl36,Vairo Blvd,0,7,17528_shp,0,0
+44,54,t33C-bC-sl36,Campus,1,12,17786_shp,0,0
+44,54,t347-b7-sl36,Campus,1,7,17786_shp,0,0
+44,54,t350-b9-sl36,Vairo Blvd,0,9,17528_shp,0,0
+44,54,t35B-b6-sl36,Vairo Blvd,0,6,17528_shp,0,0
+44,54,t384-b9-sl36,Campus,1,9,17786_shp,0,0
+44,54,t38F-b6-sl36,Campus,1,6,17786_shp,0,0
+44,54,t398-bC-sl36,Vairo Blvd,0,12,17528_shp,0,0
+44,54,t3A3-b7-sl36,Vairo Blvd,0,7,17528_shp,0,0
+44,54,t3A4-bC-sl36,Campus,1,12,17786_shp,0,0
+44,54,t3AF-b7-sl36,Campus,1,7,17786_shp,0,0
+44,54,t3B8-b9-sl36,Vairo Blvd,0,9,17528_shp,0,0
+44,54,t3EB-b6-sl36,Vairo Blvd,0,6,17528_shp,0,0
+44,54,t3EC-b9-sl36,Campus,1,9,17786_shp,0,0
+44,54,t3F7-b6-sl36,Campus,1,6,17786_shp,0,0
+44,54,t400-bC-sl36,Vairo Blvd,0,12,17528_shp,0,0
+44,54,t40B-b7-sl36,Vairo Blvd,0,7,17528_shp,0,0
+44,54,t40C-bC-sl36,Campus,1,12,17786_shp,0,0
+44,54,t417-b7-sl36,Campus,1,7,17786_shp,0,0
+44,54,t420-b9-sl36,Vairo Blvd,0,9,17528_shp,0,0
+44,54,t453-b6-sl36,Vairo Blvd,0,6,17528_shp,0,0
+44,54,t454-b9-sl36,Campus,1,9,17786_shp,0,0
+44,54,t45F-b6-sl36,Campus,1,6,17786_shp,0,0
+44,54,t468-bC-sl36,Vairo Blvd,0,12,17528_shp,0,0
+44,54,t473-b7-sl36,Vairo Blvd,0,7,17528_shp,0,0
+44,54,t474-bC-sl36,Campus,1,12,17786_shp,0,0
+44,54,t47F-b7-sl36,Campus,1,7,17786_shp,0,0
+44,54,t4B0-b9-sl36,Vairo Blvd,0,9,17528_shp,0,0
+44,54,t4C1-b9-sl36,Campus,1,9,17786_shp,0,0
+44,54,t4D0-bC-sl36,Vairo Blvd,0,12,17528_shp,0,0
+44,54,t4E1-bC-sl36,Campus,1,12,17786_shp,0,0
+44,54,t51C-b9-sl36,Vairo Blvd,0,9,17528_shp,0,0
+44,54,t529-b9-sl36,Campus,1,9,17786_shp,0,0
+44,54,t53C-bC-sl36,Vairo Blvd,0,12,17528_shp,0,0
+44,54,t549-bC-sl36,Campus,1,12,17786_shp,0,0
+44,54,t584-b9-sl36,Vairo Blvd,0,9,17528_shp,0,0
+44,54,t591-b9-sl36,Campus,1,9,17786_shp,0,0
+44,54,t5A4-bC-sl36,Vairo Blvd,0,12,17528_shp,0,0
+44,54,t5B1-bC-sl36,Campus,1,12,17786_shp,0,0
+44,54,t5E6-b9-sl36,Vairo Blvd,0,9,17528_shp,0,0
+44,54,t5F1-b9-sl36,Campus,1,9,17786_shp,0,0
+44,54,t60F-bC-sl36,Vairo Blvd,0,12,17528_shp,0,0
+44,54,t643-bC-sl36,Campus,1,12,17786_shp,0,0
+44,54,t64C-b9-sl36,Vairo Blvd,0,9,17528_shp,0,0
+44,54,t658-b9-sl36,Campus,1,9,17786_shp,0,0
+44,54,t676-bC-sl36,Vairo Blvd,0,12,17528_shp,0,0
+44,54,t6AA-bC-sl36,Campus,1,12,17786_shp,0,0
+44,54,t6B3-b9-sl36,Vairo Blvd,0,9,17528_shp,0,0
+44,54,t6BF-b9-sl36,Campus,1,9,17786_shp,0,0
+44,54,t6DD-bC-sl36,Vairo Blvd,0,12,17528_shp,0,0
+44,54,t711-bC-sl36,Campus,1,12,17786_shp,0,0
+44,54,t71A-b9-sl36,Vairo Blvd,0,9,17528_shp,0,0
+44,54,t726-b9-sl36,Campus,1,9,17786_shp,0,0
+44,54,t76C-bC-sl36,Vairo Blvd,0,12,17528_shp,0,0
+44,54,t777-bC-sl36,Vairo Blvd,1,12,17828_shp,0,0
+44,90,t2D3-b6-sl5A,Vairo Blvd,0,6,17776_shp,0,0
+44,90,t2D4-bC-sl5A,Campus,1,12,17779_shp,0,0
+44,90,t2DF-b6-sl5A,Vairo Boulevard/Pattee Express,1,6,17854_shp,0,0
+44,90,t2E8-b9-sl5A,Vairo Blvd,0,9,17526_shp,0,0
+44,90,t2F3-b7-sl5A,Vairo Blvd,0,7,17776_shp,0,0
+44,90,t2F4-b9-sl5A,Campus,1,9,17779_shp,0,0
+44,90,t327-b7-sl5A,Vairo Boulevard/Pattee Express,1,7,17854_shp,0,0
+44,90,t330-bC-sl5A,Vairo Blvd,0,12,17526_shp,0,0
+44,90,t33B-b6-sl5A,Vairo Blvd,0,6,17776_shp,0,0
+44,90,t33C-bC-sl5A,Campus,1,12,17779_shp,0,0
+44,90,t347-b6-sl5A,Vairo Boulevard/Pattee Express,1,6,17854_shp,0,0
+44,90,t350-b9-sl5A,Vairo Blvd,0,9,17526_shp,0,0
+44,90,t35B-b7-sl5A,Vairo Blvd,0,7,17776_shp,0,0
+44,90,t384-b9-sl5A,Campus,1,9,17779_shp,0,0
+44,90,t38F-b7-sl5A,Vairo Boulevard/Pattee Express,1,7,17854_shp,0,0
+44,90,t398-bC-sl5A,Vairo Blvd,0,12,17526_shp,0,0
+44,90,t3A3-b6-sl5A,Vairo Blvd,0,6,17776_shp,0,0
+44,90,t3A4-bC-sl5A,Campus,1,12,17779_shp,0,0
+44,90,t3AF-b6-sl5A,Vairo Boulevard/Pattee Express,1,6,17854_shp,0,0
+44,90,t3B8-b9-sl5A,Vairo Blvd,0,9,17526_shp,0,0
+44,90,t3EB-b7-sl5A,Vairo Blvd,0,7,17776_shp,0,0
+44,90,t3EC-b9-sl5A,Campus,1,9,17779_shp,0,0
+44,90,t3F7-b7-sl5A,Campus,1,7,17779_shp,0,0
+44,90,t400-bC-sl5A,Vairo Blvd,0,12,17526_shp,0,0
+44,90,t40B-b6-sl5A,Vairo Blvd,0,6,17776_shp,0,0
+44,90,t40C-bC-sl5A,Campus,1,12,17779_shp,0,0
+44,90,t417-b6-sl5A,Campus,1,6,17779_shp,0,0
+44,90,t420-b9-sl5A,Vairo Blvd,0,9,17526_shp,0,0
+44,90,t453-b7-sl5A,Vairo Blvd,0,7,17776_shp,0,0
+44,90,t454-b9-sl5A,Campus,1,9,17779_shp,0,0
+44,90,t45F-b7-sl5A,Campus,1,7,17779_shp,0,0
+44,90,t468-bC-sl5A,Vairo Blvd,0,12,17526_shp,0,0
+44,90,t473-b6-sl5A,Vairo Blvd,0,6,17776_shp,0,0
+44,90,t474-bC-sl5A,Campus,1,12,17779_shp,0,0
+44,90,t47F-b6-sl5A,Campus,1,6,17779_shp,0,0
+44,90,t4B0-b9-sl5A,Vairo Blvd,0,9,17526_shp,0,0
+44,90,t4C1-b9-sl5A,Campus,1,9,17779_shp,0,0
+44,90,t4D0-bC-sl5A,Vairo Blvd,0,12,17526_shp,0,0
+44,90,t4E1-bC-sl5A,Campus,1,12,17779_shp,0,0
+44,90,t51C-b9-sl5A,Vairo Blvd,0,9,17526_shp,0,0
+44,90,t529-b9-sl5A,Campus,1,9,17779_shp,0,0
+44,90,t53C-bC-sl5A,Vairo Blvd,0,12,17526_shp,0,0
+44,90,t549-bC-sl5A,Campus,1,12,17779_shp,0,0
+44,90,t584-b9-sl5A,Vairo Blvd,0,9,17526_shp,0,0
+44,90,t591-b9-sl5A,Campus,1,9,17779_shp,0,0
+44,90,t5A4-bC-sl5A,Vairo Blvd,0,12,17526_shp,0,0
+44,90,t5B1-bC-sl5A,Campus,1,12,17779_shp,0,0
+44,90,t5E6-b9-sl5A,Vairo Blvd,0,9,17526_shp,0,0
+44,90,t5F1-b9-sl5A,Campus,1,9,17779_shp,0,0
+44,90,t5FA-b25-sl5A,Vairo Blvd,0,37,17526_shp,0,0
+44,90,t606-b25-sl5A,Campus,1,37,17779_shp,0,0
+44,90,t60F-bC-sl5A,Vairo Blvd,0,12,17526_shp,0,0
+44,90,t643-bC-sl5A,Campus,1,12,17779_shp,0,0
+44,90,t64C-b9-sl5A,Vairo Blvd,0,9,17526_shp,0,0
+44,90,t658-b9-sl5A,Campus,1,9,17779_shp,0,0
+44,90,t661-b25-sl5A,Vairo Blvd,0,37,17526_shp,0,0
+44,90,t66D-b25-sl5A,Campus,1,37,17779_shp,0,0
+44,90,t676-bC-sl5A,Vairo Blvd,0,12,17526_shp,0,0
+44,90,t6AA-bC-sl5A,Campus,1,12,17779_shp,0,0
+44,90,t6B3-b9-sl5A,Vairo Blvd,0,9,17526_shp,0,0
+44,90,t6BF-b9-sl5A,Campus,1,9,17779_shp,0,0
+44,90,t6C8-b25-sl5A,Vairo Blvd,0,37,17526_shp,0,0
+44,90,t6D4-b25-sl5A,Campus,1,37,17779_shp,0,0
+44,90,t6DD-bC-sl5A,Vairo Blvd,0,12,17526_shp,0,0
+44,90,t711-bC-sl5A,Campus,1,12,17779_shp,0,0
+44,90,t71A-b9-sl5A,Vairo Blvd,0,9,17526_shp,0,0
+44,90,t726-b9-sl5A,Campus,1,9,17779_shp,0,0
+44,90,t72F-b25-sl5A,Vairo Blvd,0,37,17526_shp,0,0
+44,90,t73B-b25-sl5A,Campus,1,37,17779_shp,0,0
+44,90,t76C-bC-sl5A,Vairo Blvd,0,12,17526_shp,0,0
+44,90,t777-bC-sl5A,Vairo Blvd,1,12,17827_shp,0,0

@@ -21,7 +21,7 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-502/latest.zip",
   "lastFeedExpiry": "20270220",
   "lastFeedVersion": "v202609271",
-  "lastRefreshedAt": "2026-10-07",
+  "lastRefreshedAt": "2026-10-12",
   "cities": [
     "Havertown, Pennsylvania",
     "Philadelphia, Pennsylvania",
@@ -34,7 +34,7 @@
     "Camden, New Jersey",
     "Reading, Pennsylvania"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270220",
@@ -42,20 +42,29 @@
     "status": "review",
     "score": 70,
     "reasons": [
-      "7 route have stops whose frequency differs from the overall route schedule."
+      "6 route have stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 0,
-      "routeHeadwayMismatches": 7,
+      "routeHeadwayMismatches": 6,
       "featureCount": 1028
     },
-    "checkedAt": "2026-10-07"
+    "checkedAt": "2026-10-12"
   },
   "timezone": "America/New_York",
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://www3.septa.org/developer/google_bus.zip",
+  "lastSupplementalFeeds": [
+    {
+      "feedExpiry": "20261121",
+      "feedVersion": "v202609271",
+      "rawArchiveKey": "20261121-c908d0f0e8098bc6"
+    }
+  ]
 }

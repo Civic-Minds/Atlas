@@ -1,7 +1,16 @@
 import { describe, expect, it } from 'vitest';
-import { applyAnalysisCriteria, determineTier } from '../transit-phase2';
+import { applyAnalysisCriteria as applyAnalysisCriteriaToDays, determineTier } from '../transit-phase2';
 import { DEFAULT_CRITERIA } from '../defaults';
-import type { RawRouteDepartures } from '../../types/gtfs';
+import { WEEKDAYS, type RawRouteDepartures } from '../../types/gtfs';
+
+// Most cases here describe one weekday timetable as a Monday row. The Weekday rollup needs
+// service on its representative weekday (#710), so a Monday-only input stands for the same
+// timetable running Mon-Fri. Inputs that list their own days are passed through unchanged.
+const applyAnalysisCriteria: typeof applyAnalysisCriteriaToDays = (rows, ...rest) =>
+  applyAnalysisCriteriaToDays(
+    rows.every(row => row.day === 'Monday') ? rows.flatMap(row => WEEKDAYS.map(day => ({ ...row, day }))) : rows,
+    ...rest,
+  );
 
 function raw(overrides: Partial<RawRouteDepartures> & { departureTimes: number[] }): RawRouteDepartures {
   const departureTimes = [...overrides.departureTimes].sort((a, b) => a - b);
@@ -190,7 +199,7 @@ describe('applyAnalysisCriteria', () => {
   });
 
   it('keeps full-day departure times in a rail weekday rollup', () => {
-    const days = ['Monday', 'Tuesday'] as const;
+    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'] as const;
     const results = applyAnalysisCriteria(days.map(day => raw({
       route: 'rail-full-day',
       day,
@@ -246,3 +255,48 @@ describe('tier-specific internal near-miss allowances', () => {
     })).toBe('span');
   });
 });
+
+describe('partial-weekday routes (#710)', () => {
+  it('gives a route that runs on only 2 of 5 weekdays the tier infrequent with no timetable', () => {
+    const results = applyAnalysisCriteriaToDays((['Thursday', 'Friday'] as const).map(day => raw({
+      route: 'thu-fri', day, departureTimes: Array.from({ length: 14 }, (_, i) => 1065 + i * 27),
+    })));
+    const weekday = results.find(item => item.route === 'thu-fri' && item.day === 'Weekday');
+    expect(weekday).toMatchObject({ tier: 'infrequent', partialWeekday: true, times: [] });
+  });
+
+  it('keeps a frequency tier for a route on 3 of 5 weekdays (Wed-Fri) and 4 of 5 (no Monday)', () => {
+    for (const days of [['Wednesday', 'Thursday', 'Friday'], ['Tuesday', 'Wednesday', 'Thursday', 'Friday']] as const) {
+      const results = applyAnalysisCriteriaToDays(days.map(day => raw({
+        route: 'part-week', day, departureTimes: Array.from({ length: 30 }, (_, i) => 420 + i * 15),
+      })));
+      const weekday = results.find(item => item.route === 'part-week' && item.day === 'Weekday');
+      expect(weekday?.tier, days.join()).toBe('15');
+      expect(weekday?.partialWeekday, days.join()).toBeUndefined();
+    }
+  });
+});
+
+describe('partial-weekday decision is per route direction (#710)', () => {
+  it('does not mark a route partial when each weekday runs on its own shape', () => {
+    const results = applyAnalysisCriteriaToDays(WEEKDAYS.map((day, index) => raw({
+      route: 'shape-per-day', day, shapeId: `shape-${index}`, departureTimes: Array.from({ length: 30 }, (_, i) => 420 + i * 30),
+    })));
+    const weekday = results.filter(item => item.route === 'shape-per-day' && item.day === 'Weekday');
+    expect(weekday.length).toBe(5);
+    for (const item of weekday) {
+      expect(item.partialWeekday).toBeUndefined();
+      expect(item.tier).toBe('30');
+    }
+  });
+
+  it('uses the route-direction weekday count when it is supplied', () => {
+    const rows = (['Tuesday', 'Wednesday'] as const).map(day => raw({ route: 'cd-added', day, departureTimes: Array.from({ length: 30 }, (_, i) => 420 + i * 12) }));
+    const partial = applyAnalysisCriteriaToDays(rows).find(item => item.day === 'Weekday');
+    const full = applyAnalysisCriteriaToDays(rows, undefined, undefined, new Map([['cd-added::0', 5]])).find(item => item.day === 'Weekday');
+    expect(partial?.partialWeekday).toBe(true);
+    expect(full?.partialWeekday).toBeUndefined();
+    expect(full?.tier).toBe('15');
+  });
+});
+

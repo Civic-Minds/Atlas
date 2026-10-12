@@ -1,0 +1,7 @@
+service_id,monday,tuesday,wednesday,thursday,friday,saturday,sunday,start_date,end_date
+Major_Service_Changes_031526-Su,0,0,0,0,0,0,1,20260315,20270522
+Major_Service_Changes_031526-Weekday,1,1,1,1,1,0,0,20260315,20270522
+Seasonal-Sa,0,0,0,0,0,1,0,20260522,20260907
+Seasonal-Su,0,0,0,0,0,0,1,20260522,20260907
+Major_Service_Changes_031526-Sa,0,0,0,0,0,1,0,20260315,20270522
+Seasonal-Weekday,1,1,1,1,1,0,0,20260522,20260907

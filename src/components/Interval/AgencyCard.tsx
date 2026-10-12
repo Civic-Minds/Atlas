@@ -11,7 +11,7 @@ import { effectiveMode, GTFS_RAIL_MODE_LABELS, isRailReplacementBus, VIRTUAL_LRT
 import { agencyDisplayParts, getRouteLabel, shouldHideNumericRouteShortName, titleCase } from '../../utils/format';
 import type { DayType, TimePeriod, ShapeProperties } from '../../hooks/useIntervalStats';
 import { passesRouteFilter } from '../../hooks/useIntervalStats';
-import { routeListDisplayHeadway } from '../../utils/effectiveHeadway';
+import { routeListDisplay } from '../../utils/effectiveHeadway';
 import { CARD_TITLE, CardDirectionRow, CardHelpNotice, CardReportButton } from './cardUi';
 import { buildRouteFacts } from '../../utils/routeFacts';
 import { currentAtlasUrl } from '../../utils/reportIssue';
@@ -30,6 +30,7 @@ interface RouteRow {
   shortName: string;
   longName: string | null;
   headway: number | null;
+  limited: boolean;
   tier: string | null;
   routeType: number;
   busSubType: string | undefined;
@@ -43,7 +44,7 @@ interface AgencyListFilters {
   hideLimitedService: boolean;
 }
 
-function getRoutes(
+export function getRoutes(
   layers: AgencyLayers,
   slug: string,
   day: string,
@@ -117,7 +118,7 @@ function getRoutes(
       agencySlug: row.agencySlug,
       shortName: row.shortName,
       longName: row.longName,
-      headway: routeListDisplayHeadway(row.props, period),
+      ...routeListDisplay(row.props, period),
       tier: row.tier,
       routeType: row.routeType,
       busSubType: row.busSubType,
@@ -313,6 +314,7 @@ function RouteListSection({
           <CardDirectionRow
             label={titleCase(label)}
             headway={r.headway ?? undefined}
+            limited={r.limited}
             subLabel={isRailReplacementBus({ routeType: r.routeType, routeLongName: r.longName })
                 ? 'Rail replacement bus'
                 : undefined}

@@ -1,0 +1,108 @@
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,location_type,parent_station,stop_timezone,wheelchair_boarding
+2366,2366,Eglinton Ave West at Jane St East Side,,43.68452,-79.498076,,,,,,1
+9383,9383,Eglinton Ave West at Weston Rd,,43.68671,-79.489925,,,,,,1
+2419,2419,Eglinton Ave West at Weston Rd,,43.687153,-79.489369,,,,,,1
+1453,1453,Peter Kaiser Gate at Steeles Ave West,,43.774009,-79.526633,,,,,,1
+3891,3891,Jane St at Finch Ave West South Side,,43.756377,-79.517646,,,,,,1
+3903,3903,Jane St at Heathrow Dr,,43.724803,-79.509439,,,,,,1
+10411,10411,Jane St at Hullmar Dr,,43.772801,-79.521145,,,,,,1
+3904,3904,Jane St at Hullmar Dr,,43.773357,-79.521585,,,,,,1
+2740,2740,Jane St at Wright Ave,,43.701092,-79.503411,,,,,,1
+10412,10412,Jane St at Steeles Ave West,,43.775288,-79.521497,,,,,,1
+3729,3729,Hullmar Dr at Bamford Cres,,43.768505,-79.528912,,,,,,1
+3872,3872,Jane St at Church St,,43.709495,-79.505694,,,,,,1
+12088,12088,Steeles Ave West at Jane St,,43.775231,-79.52209,,,,,,1
+1158,1158,Hullmar Dr at Peter Kaiser Gate,,43.773259,-79.525938,,,,,,1
+3889,3889,Jane St at Falstaff Ave,,43.715125,-79.506944,,,,,,1
+3935,3935,Jane St at Weston Rd,,43.69169,-79.501113,,,,,,1
+3944,3944,Jane St at Yewtree Blvd North Side,,43.755135,-79.516962,,,,,,1
+3886,3886,Jane St at Eglinton Ave West North Side,,43.684858,-79.498753,,,,,,1
+3932,3932,Jane St at Trethewey Dr,,43.697301,-79.502161,,,,,,1
+3876,3876,Jane St at Courage Ave South Side,,43.744734,-79.514671,,,,,,1
+3936,3936,Jane St at Weston Rd,,43.690987,-79.500683,,,,,,1
+3921,3921,Jane St at Sheppard Ave West,,43.739514,-79.513403,,,,,,1
+3858,3858,Opposite 4355-4363 Jane St,,43.763886,-79.519352,,,,,,1
+3896,3896,Jane St at Giltspur Dr North Side,,43.734857,-79.511818,,,,,,1
+3866,3866,Jane St at Beverly Hills Dr,,43.719192,-79.508348,,,,,,1
+4737,4737,York Gate Blvd at Jane St West Side,,43.761915,-79.519393,,,,,,1
+3906,3906,Jane St at Lawrence Ave West,,43.702597,-79.503544,,,,,,1
+3873,3873,Jane St at Clair Rd,,43.741335,-79.513842,,,,,,1
+3919,3919,Jane St at Rita Dr North Side,,43.743418,-79.51405,,,,,,1
+9143,9143,Hullmar Dr at Hisey Cres (North),,43.772347,-79.528748,,,,,,1
+3731,3731,Hullmar Dr at Bimini Cres (South),,43.765083,-79.527514,,,,,,1
+3743,3743,Hullmar Dr at Ruthmar Cres (South),,43.762157,-79.526239,,,,,,1
+3739,3739,Hullmar Dr at Hisey Cres (South),,43.769975,-79.530139,,,,,,1
+2736,2736,Jane St at Harding Ave,,43.699462,-79.50268,,,,,,1
+3742,3742,Hullmar Dr at Ruthmar Cres (North),,43.764259,-79.526647,,,,,,1
+3924,3924,Jane St at Spenvalley Dr,,43.741154,-79.513477,,,,,,1
+3893,3893,Jane St at Firgrove Cres (South) South Side,,43.750435,-79.516103,,,,,,1
+3871,3871,Jane St at Chalkfarm Dr (South) South Side,,43.72463,-79.509687,,,,,,1
+3730,3730,Hullmar Dr at Bamford Cres,,43.768561,-79.529198,,,,,,1
+3899,3899,Jane St at Grandravine Dr,,43.747006,-79.514928,,,,,,1
+3746,3746,Hullmar Dr at Shoreham Dr,,43.766797,-79.528379,,,,,,1
+3897,3897,Jane St at Giltspur Dr,,43.734721,-79.512059,,,,,,1
+3940,3940,Jane St at Wilson Ave North Side,,43.721327,-79.50851,,,,,,1
+9481,9481,Jane St at Raven Rd North Side,,43.713764,-79.506522,,,,,,1
+3744,3744,Hullmar Dr at Ruthmar Cres (South),,43.762079,-79.526056,,,,,,1
+3910,3910,2265 Jane St,,43.727526,-79.510107,,,,,,1
+14257,14257,Jane St at Troutbrooke Dr,,43.732087,-79.511437,,,,,,1
+1592,1592,Steeles Ave West at Murray Ross Pkwy East Side,,43.776344,-79.516416,,,,,,1
+3859,3859,Opposite 2265 Jane St,,43.727438,-79.510353,,,,,,1
+3879,3879,Jane St at Downsview Ave North Side,,43.718634,-79.507863,,,,,,2
+3939,3939,Jane St at William Cragg Dr,,43.72265,-79.509187,,,,,,1
+1159,1159,Hullmar Dr at Wheelwright Cres (East),,43.773332,-79.524072,,,,,,1
+3741,3741,Hullmar Dr at Ruthmar Cres (North),,43.763868,-79.526664,,,,,,1
+3946,3946,Jane St at Yorkwoods Gate,,43.750665,-79.515843,,,,,,1
+3880,3880,Jane St at Driftwood Ave North Side,,43.766138,-79.519595,,,,,,1
+3860,3860,4717 Jane St,,43.771191,-79.520801,,,,,,1
+3745,3745,Hullmar Dr at Shoreham Dr,,43.767097,-79.528588,,,,,,1
+3938,3938,Jane St at William Cragg Dr North Side,,43.722732,-79.50889,,,,,,1
+9146,9146,4148 Jane St,,43.75959,-79.518409,,,,,,1
+2737,2737,Jane St at Harding Ave,,43.699747,-79.503069,,,,,,1
+3861,3861,4800 Jane St,,43.77108,-79.521004,,,,,,1
+3870,3870,Jane St at Chalkfarm Dr (North) South Side,,43.728927,-79.510792,,,,,,1
+3736,3736,Hullmar Dr at Hisey Cres (North),,43.772535,-79.528627,,,,,,1
+9142,9142,Hullmar Dr at Bloomington Cres (East),,43.761622,-79.523111,,,,,,1
+3738,3738,Hullmar Dr at Hisey Cres (South) North Side,,43.770083,-79.529961,,,,,,1
+3740,3740,Hullmar Dr at Monaco Crt,,43.76526,-79.527908,,,,,,1
+1593,1593,Steeles Ave West at Murray Ross Pkwy,,43.776613,-79.516784,,,,,,1
+3930,3930,Jane St at Stanley Rd,,43.743153,-79.514309,,,,,,1
+3934,3934,Jane St at Troutbrooke Dr North Side,,43.732115,-79.51113,,,,,,1
+10616,10616,Jane St at Sheppard Ave West South Side,,43.738911,-79.513248,,,,,,1
+3892,3892,Jane St at Firgrove Cres (North) South Side,,43.754548,-79.517122,,,,,,1
+3888,3888,Jane St at Exbury Rd North Side,,43.729647,-79.510597,,,,,,1
+3735,3735,Hullmar Dr at Gosford Blvd,,43.761854,-79.52131,,,,,,1
+3914,3914,Jane St at Patika Ave,,43.705192,-79.504228,,,,,,2
+1602,1602,Steeles Ave West at Northwest Gate,,43.777918,-79.510766,,,,,,1
+1173,1173,Jane St at Steeles Ave West South Side,,43.774891,-79.521862,,,,,,1
+3885,3885,Jane St at Eddystone Ave,,43.749223,-79.515798,,,,,,1
+3941,3941,Jane St at Wilson Ave South Side,,43.720429,-79.508641,,,,,,1
+2739,2739,4359 Jane St,,43.764049,-79.519111,,,,,,1
+3908,3908,Jane St at Maple Leaf Dr,,43.709123,-79.505308,,,,,,1
+3864,3864,Jane St at San Romanoway North Side,,43.759352,-79.518034,,,,,,2
+3907,3907,Jane St at Lawrence Ave West,,43.703114,-79.503968,,,,,,1
+3884,3884,Jane St at Eddystone Ave,,43.749031,-79.515444,,,,,,1
+3733,3733,Hullmar Dr at Bloomington Cres (East),,43.761282,-79.523517,,,,,,1
+1601,1601,Steeles Ave West at Northwest Gate East Side,,43.777721,-79.510466,,,,,,1
+3890,3890,Jane St at Finch Ave West North Side,,43.757727,-79.517629,,,,,,1
+3875,3875,Jane St at Courage Ave,,43.744784,-79.514402,,,,,,1
+15045,15045,Jane St at Wright Ave,,43.700676,-79.503047,,,,,,1
+15152,15152,Jane St at John St,,43.706567,-79.504667,,,,,,1
+15153,15153,Jane St at John St,,43.706726,-79.504932,,,,,,1
+15577,15577,Pioneer Village Station,,43.777064,-79.50966,,,,,,1
+16194,16194,Opposite 3574 Eglinton Ave West,,43.686259,-79.49217,,,,,,1
+16195,16195,3574 Eglinton Ave West,,43.68642,-79.49232,,,,,,1
+16598,16598,Mount Dennis Station,,43.688793,-79.486942,,,,,,1
+16329,16329,Eglinton Ave West at Photography Dr,,43.687716,-79.486044,,,,,,1
+16746,16746,Keelesdale Rd at Eglinton Ave West,,43.687574,-79.484512,,,,,,1
+16759,16759,Jane St at York Gate Blvd,,43.761601,-79.518819,,,,,,1
+16877,16877,Jane St at Gordon Mackay Rd,,43.71583,-79.50741,,,,,,1
+16878,16878,Jane St at Denison Rd East South Side,,43.697076,-79.502366,,,,,,1
+16879,16879,Jane St at Bala Ave,,43.689971,-79.500435,,,,,,1
+16880,16880,Jane St at Emmett Ave,,43.690302,-79.500747,,,,,,1
+16881,16881,Jane St at Milo Park Gt South Side,,43.76566,-79.519738,,,,,,1
+16882,16882,Jane St at Stong Crt North Side,,43.762318,-79.518783,,,,,,1
+16883,16883,Jane St at Shoreham Dr,,43.769317,-79.520356,,,,,,1
+16884,16884,Jane St at Shoreham Dr,,43.768447,-79.520392,,,,,,1
+16885,16885,Jane St at Grandravine Dr,,43.747219,-79.515249,,,,,,1
+16886,16886,Jane St at Sheppard Ave West,,43.739943,-79.51319,,,,,,1

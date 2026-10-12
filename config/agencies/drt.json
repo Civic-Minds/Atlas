@@ -14,10 +14,10 @@
     -78.35
   ],
   "feedUrl": "https://maps.durham.ca/OpenDataGTFS/GTFS_Durham_TXT.zip",
-  "lastFeedExpiry": "20261018",
+  "lastFeedExpiry": "20261129",
   "lastFeedVersion": null,
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-726/latest.zip",
-  "lastRefreshedAt": "2026-08-27",
+  "lastRefreshedAt": "2026-10-12",
   "cities": [
     "Oshawa, Ontario",
     "Ajax, Ontario",
@@ -27,25 +27,31 @@
     "Newmarket, Ontario",
     "Barrie, Ontario"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261018",
+  "expiredFeedCheckExpiry": "20261129",
   "feedQuality": {
-    "status": "review",
-    "score": 60,
+    "status": "degraded",
+    "score": 50,
     "reasons": [
-      "2 map lines were repaired — Atlas fixed unusual route geometry before displaying it.",
-      "2 route frequencies need checking — some stops appear to have more frequent service than the route's overall schedule suggests."
+      "2 route shapes needed adjustment before display.",
+      "3 route have stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 2,
-      "routeHeadwayMismatches": 2,
-      "featureCount": 215
+      "routeHeadwayMismatches": 3,
+      "featureCount": 204
     },
-    "checkedAt": "2026-08-27"
+    "checkedAt": "2026-10-12"
   },
-  "timezone": "America/Toronto"
+  "timezone": "America/Toronto",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://maps.durham.ca/OpenDataGTFS/GTFS_Durham_TXT.zip",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

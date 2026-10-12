@@ -2,6 +2,7 @@ import type { GeoJSON } from 'geojson';
 import type { ShapeProperties } from '../hooks/useAgencyData';
 import { PERIOD_KEYS, TIME_PERIODS, type PeriodKey } from '../../shared/config';
 import { hasAnyPeriodCoverage, periodCoverageValue, PERIOD_COVERAGE_MAX_HEADWAY } from '../../shared/periodEligibility';
+import { getPooledStop, type SharedStopIndex } from '../../shared/sharedStops';
 
 export type ServicePeriod = PeriodKey | 'all';
 
@@ -12,6 +13,8 @@ export type HeadwayProvenance =
   | 'worst-direction'
   | 'minimum-stop'
   | 'stop-specific'
+  /** Pooled at a stop the route's patterns share (CIV-82, shared/sharedStops.ts). */
+  | 'shared-stretch'
   | 'none';
 
 export interface HeadwayMetric {
@@ -167,11 +170,27 @@ export function buildRouteServiceSummary(p: ShapeProperties): RouteServiceSummar
   };
 }
 
-/** Stop-specific projection of the canonical route service record. */
-export function buildRouteStopMetric(p: ShapeProperties, stopId: string): HeadwayMetric {
-  const byPeriod = p.stopPeriodHeadways?.[stopId];
-  const value = p.stopHeadways?.[stopId] ?? null;
-  return metric(value, byPeriod, undefined, value != null || byPeriod ? 'stop-specific' : 'none');
+/**
+ * Stop-specific projection of the canonical route service record. With a shared-stop index
+ * (CIV-82), a stop on the route's shared stretch shows the pooled value of every pattern serving
+ * it, metric by metric, wherever that is lower than the stop's own; so stop card, route card and
+ * map agree. Never worse than the stop's own value (getPooledStop).
+ */
+export function buildRouteStopMetric(p: ShapeProperties, stopId: string, sharedIndex?: SharedStopIndex): HeadwayMetric {
+  const own = p.stopPeriodHeadways?.[stopId];
+  const ownValue = p.stopHeadways?.[stopId] ?? null;
+  if (sharedIndex) {
+    const pooledValue = getPooledStop(sharedIndex, p, stopId, 'headway') as number | undefined;
+    const pooledByPeriod: Partial<Record<PeriodKey, number>> = {};
+    for (const pk of PERIOD_KEYS) {
+      const v = getPooledStop(sharedIndex, p, stopId, `median:${pk}`) as number | undefined;
+      if (v !== undefined) pooledByPeriod[pk] = v;
+    }
+    if (pooledValue !== undefined || Object.keys(pooledByPeriod).length > 0) {
+      return metric(pooledValue ?? ownValue, { ...(own ?? {}), ...pooledByPeriod }, undefined, 'shared-stretch');
+    }
+  }
+  return metric(ownValue, own, undefined, ownValue != null || own ? 'stop-specific' : 'none');
 }
 
 /**

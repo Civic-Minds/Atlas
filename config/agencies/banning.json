@@ -16,16 +16,35 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-220/latest.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-220/latest.zip",
-  "lastFeedExpiry": "20270201",
-  "lastFeedVersion": "UTC: 10-Jul-2026 16:23",
-  "lastRefreshedAt": "2026-08-07",
+  "lastFeedExpiry": "20270502",
+  "lastFeedVersion": "Updated: Sep 23, 2026, 3:18 PM",
+  "lastRefreshedAt": "2026-10-12",
   "cities": [
     "Yucaipa, California",
     "Hemet, California"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20270201",
-  "timezone": "America/Los_Angeles"
+  "expiredFeedCheckExpiry": "20270502",
+  "timezone": "America/Los_Angeles",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-220/latest.zip",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 15
+    },
+    "checkedAt": "2026-10-12"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

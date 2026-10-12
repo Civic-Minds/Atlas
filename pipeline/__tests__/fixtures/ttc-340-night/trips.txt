@@ -1,0 +1,22 @@
+route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,block_id,shape_id,wheelchair_accessible,bikes_allowed
+340,1,50804164,East - 340 Junction towards Dundas West Stn,,0,2233888,1122564,1,1
+340,1,50804163,East - 340 Junction towards Dundas West Stn,,0,2233862,1122564,1,1
+340,1,50804180,East - 340 Junction towards Dundas West Stn,,0,2233888,1122565,1,1
+340,1,50804178,East - 340 Junction towards Dundas West Stn,,0,2233902,1122564,1,1
+340,1,50804169,East - 340 Junction towards Dundas West Stn,,0,2233903,1122564,1,1
+340,1,50804168,East - 340 Junction towards Dundas West Stn,,0,2233902,1122564,1,1
+340,1,50804167,East - 340 Junction towards Dundas West Stn,,0,2233903,1122564,1,1
+340,1,50804166,East - 340 Junction towards Dundas West Stn,,0,2233902,1122564,1,1
+340,1,50804165,East - 340 Junction towards Dundas West Stn,,0,2233903,1122564,1,1
+340,1,50804183,East - 340 Junction towards Dundas West Stn,,0,2233902,1122564,1,1
+340,1,50804172,West - 340 Junction towards St Clair and Oakwood,,1,2233862,1122569,1,1
+340,1,50804171,West - 340 Junction towards St Clair and Oakwood,,1,2233888,1122569,1,1
+340,1,50804170,West - 340 Junction Short Turn,S,1,2233862,1122567,1,1
+340,1,50804181,West - 340 Junction towards St Clair and Oakwood,,1,2233902,1122570,1,1
+340,1,50804175,West - 340 Junction towards St Clair and Oakwood,,1,2233903,1122570,1,1
+340,1,50804174,West - 340 Junction towards St Clair and Oakwood,,1,2233854,1122570,1,1
+340,1,50804182,West - 340 Junction towards St Clair and Oakwood,,1,2233902,1122569,1,1
+340,1,50804179,West - 340 Junction towards St Clair and Oakwood,,1,2233903,1122569,1,1
+340,1,50804177,West - 340 Junction towards St Clair and Oakwood,,1,2233902,1122569,1,1
+340,1,50804176,West - 340 Junction towards St Clair and Oakwood,,1,2233903,1122569,1,1
+340,1,50804173,West - 340 Junction towards St Clair and Oakwood,,1,2233902,1122569,1,1

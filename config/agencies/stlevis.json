@@ -24,7 +24,7 @@
     "Lévis, Quebec",
     "Québec, Quebec"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261220",
@@ -43,5 +43,7 @@
     },
     "checkedAt": "2026-09-07"
   },
-  "timezone": "America/Montreal"
+  "timezone": "America/Montreal",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://www.stlevis.ca/sites/default/files/public/assets/gtfs/transit/gtfs_stlevis.zip"
 }

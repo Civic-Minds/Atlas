@@ -1,0 +1,168 @@
+trip_headsign,trip_id,direction_name,route_id,wheelchair_accessible,block_id,service_id,direction_id,shape_id
+Centennial Circle,1429__201092_Timetable_-_2026-09,Westbound,900,1,b_201092_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650221_Timetable_-_2026-09
+B - Pickering Parkway Terminal,1430__402007_Timetable_-_2026-09,Westbound,900,1,b_402007_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650223_Timetable_-_2026-09
+Centennial Circle,1431__402005_Timetable_-_2026-09,Westbound,900,1,b_402005_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650221_Timetable_-_2026-09
+Centennial Circle,1432__402005_Timetable_-_2026-09,Westbound,900,1,b_402005_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650221_Timetable_-_2026-09
+Centennial Circle,1433__201090_Timetable_-_2026-09,Westbound,900,1,b_201090_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650221_Timetable_-_2026-09
+Centennial Circle,1434__201103_Timetable_-_2026-09,Westbound,900,1,b_201103_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650221_Timetable_-_2026-09
+Centennial Circle,1435__402006_Timetable_-_2026-09,Westbound,900,1,b_402006_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650221_Timetable_-_2026-09
+Centennial Circle,1436__402005_Timetable_-_2026-09,Westbound,900,1,b_402005_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650221_Timetable_-_2026-09
+Centennial Circle,1437__401003_Timetable_-_2026-09,Westbound,900,1,b_401003_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650221_Timetable_-_2026-09
+B - Pickering Parkway Terminal,1438__201001_Timetable_-_2026-09,Westbound,900,1,b_201001_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650223_Timetable_-_2026-09
+Ritson,1439__201080_Timetable_-_2026-09,Eastbound,900,1,b_201080_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650222_Timetable_-_2026-09
+Ritson,1440__201001_Timetable_-_2026-09,Eastbound,900,1,b_201001_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650222_Timetable_-_2026-09
+Ritson,1441__402006_Timetable_-_2026-09,Eastbound,900,1,b_402006_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650222_Timetable_-_2026-09
+Ritson,1442__402003_Timetable_-_2026-09,Eastbound,900,1,b_402003_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650222_Timetable_-_2026-09
+Ritson,1443__201090_Timetable_-_2026-09,Eastbound,900,1,b_201090_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650222_Timetable_-_2026-09
+Ritson,1444__402001_Timetable_-_2026-09,Eastbound,900,1,b_402001_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650222_Timetable_-_2026-09
+Ritson,1445__401076_Timetable_-_2026-09,Eastbound,900,1,b_401076_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650222_Timetable_-_2026-09
+Ritson,1446__401003_Timetable_-_2026-09,Eastbound,900,1,b_401003_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650222_Timetable_-_2026-09
+Ritson,1447__201109_Timetable_-_2026-09,Eastbound,900,1,b_201109_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650224_Timetable_-_2026-09
+Ritson,1448__201103_Timetable_-_2026-09,Eastbound,900,1,b_201103_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650224_Timetable_-_2026-09
+Centennial Circle,1449__201108_Timetable_-_2026-09,Westbound,900,1,b_201108_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650221_Timetable_-_2026-09
+Ritson,1450__291001_Timetable_-_2026-09,Eastbound,900,1,b_291001_Timetable_-_2026-09,Overnight_merged_94447,0,100.0.1952650222_Timetable_-_2026-09
+Ritson,1451__402007_Timetable_-_2026-09,Eastbound,900,1,b_402007_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650222_Timetable_-_2026-09
+Centennial Circle,266__201108_Timetable_-_2026-09,Westbound,900,1,b_201108_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650221_Timetable_-_2026-09
+Centennial Circle,267__491005_Timetable_-_2026-09,Westbound,900,1,b_491005_Timetable_-_2026-09,Overnight_merged_94447,1,100.0.1952650221_Timetable_-_2026-09
+Centennial Circle,344__402007_Timetable_-_2026-09,Westbound,900,1,b_402007_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650221_Timetable_-_2026-09
+Centennial Circle,345__402003_Timetable_-_2026-09,Westbound,900,1,b_402003_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650221_Timetable_-_2026-09
+Centennial Circle,346__201093_Timetable_-_2026-09,Westbound,900,1,b_201093_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650221_Timetable_-_2026-09
+Centennial Circle,347__402005_Timetable_-_2026-09,Westbound,900,1,b_402005_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650221_Timetable_-_2026-09
+Centennial Circle,348__402007_Timetable_-_2026-09,Westbound,900,1,b_402007_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650221_Timetable_-_2026-09
+Centennial Circle,349__201109_Timetable_-_2026-09,Westbound,900,1,b_201109_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650221_Timetable_-_2026-09
+Ritson,350__201093_Timetable_-_2026-09,Eastbound,900,1,b_201093_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650222_Timetable_-_2026-09
+Ritson,351__201109_Timetable_-_2026-09,Eastbound,900,1,b_201109_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650222_Timetable_-_2026-09
+Ritson,352__201108_Timetable_-_2026-09,Eastbound,900,1,b_201108_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650222_Timetable_-_2026-09
+Ritson,353__402003_Timetable_-_2026-09,Eastbound,900,1,b_402003_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650222_Timetable_-_2026-09
+Ritson,354__402001_Timetable_-_2026-09,Eastbound,900,1,b_402001_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650222_Timetable_-_2026-09
+Ritson,355__402005_Timetable_-_2026-09,Eastbound,900,1,b_402005_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650222_Timetable_-_2026-09
+Ritson,356__402001_Timetable_-_2026-09,Eastbound,900,1,b_402001_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650222_Timetable_-_2026-09
+Centennial Circle,438__201001_Timetable_-_2026-09,Westbound,900,1,b_201001_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650221_Timetable_-_2026-09
+Centennial Circle,439__201103_Timetable_-_2026-09,Westbound,900,1,b_201103_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650221_Timetable_-_2026-09
+Centennial Circle,440__201094_Timetable_-_2026-09,Westbound,900,1,b_201094_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650221_Timetable_-_2026-09
+Centennial Circle,441__402006_Timetable_-_2026-09,Westbound,900,1,b_402006_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650221_Timetable_-_2026-09
+Centennial Circle,442__402001_Timetable_-_2026-09,Westbound,900,1,b_402001_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650221_Timetable_-_2026-09
+Centennial Circle,443__201080_Timetable_-_2026-09,Westbound,900,1,b_201080_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650221_Timetable_-_2026-09
+Centennial Circle,444__402007_Timetable_-_2026-09,Westbound,900,1,b_402007_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650221_Timetable_-_2026-09
+Centennial Circle,445__402003_Timetable_-_2026-09,Westbound,900,1,b_402003_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650221_Timetable_-_2026-09
+Centennial Circle,446__201094_Timetable_-_2026-09,Westbound,900,1,b_201094_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650221_Timetable_-_2026-09
+Centennial Circle,447__402006_Timetable_-_2026-09,Westbound,900,1,b_402006_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650221_Timetable_-_2026-09
+Centennial Circle,448__402001_Timetable_-_2026-09,Westbound,900,1,b_402001_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650221_Timetable_-_2026-09
+Centennial Circle,449__201108_Timetable_-_2026-09,Westbound,900,1,b_201108_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650221_Timetable_-_2026-09
+Centennial Circle,450__402007_Timetable_-_2026-09,Westbound,900,1,b_402007_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650221_Timetable_-_2026-09
+Centennial Circle,451__201026_Timetable_-_2026-09,Westbound,900,1,b_201026_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650221_Timetable_-_2026-09
+Centennial Circle,452__201001_Timetable_-_2026-09,Westbound,900,1,b_201001_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650221_Timetable_-_2026-09
+Centennial Circle,453__402001_Timetable_-_2026-09,Westbound,900,1,b_402001_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650221_Timetable_-_2026-09
+Centennial Circle,454__201108_Timetable_-_2026-09,Westbound,900,1,b_201108_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650221_Timetable_-_2026-09
+Centennial Circle,455__201090_Timetable_-_2026-09,Westbound,900,1,b_201090_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650221_Timetable_-_2026-09
+Centennial Circle,456__402007_Timetable_-_2026-09,Westbound,900,1,b_402007_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650221_Timetable_-_2026-09
+Centennial Circle,457__401076_Timetable_-_2026-09,Westbound,900,1,b_401076_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650221_Timetable_-_2026-09
+Centennial Circle,458__201012_Timetable_-_2026-09,Westbound,900,1,b_201012_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650221_Timetable_-_2026-09
+Centennial Circle,459__402003_Timetable_-_2026-09,Westbound,900,1,b_402003_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650221_Timetable_-_2026-09
+Centennial Circle,460__402001_Timetable_-_2026-09,Westbound,900,1,b_402001_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650221_Timetable_-_2026-09
+Centennial Circle,461__402007_Timetable_-_2026-09,Westbound,900,1,b_402007_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650221_Timetable_-_2026-09
+Centennial Circle,462__401076_Timetable_-_2026-09,Westbound,900,1,b_401076_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650221_Timetable_-_2026-09
+Centennial Circle,463__201109_Timetable_-_2026-09,Westbound,900,1,b_201109_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650221_Timetable_-_2026-09
+Centennial Circle,464__402003_Timetable_-_2026-09,Westbound,900,1,b_402003_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650221_Timetable_-_2026-09
+Centennial Circle,465__402001_Timetable_-_2026-09,Westbound,900,1,b_402001_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650221_Timetable_-_2026-09
+B - Pickering Parkway Terminal,466__402005_Timetable_-_2026-09,Westbound,900,1,b_402005_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650223_Timetable_-_2026-09
+B - Pickering Parkway Terminal,467__402006_Timetable_-_2026-09,Westbound,900,1,b_402006_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650223_Timetable_-_2026-09
+B - Pickering Parkway Terminal,468__402001_Timetable_-_2026-09,Westbound,900,1,b_402001_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650223_Timetable_-_2026-09
+B - Pickering Parkway Terminal,469__201080_Timetable_-_2026-09,Westbound,900,1,b_201080_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650223_Timetable_-_2026-09
+B - Pickering Parkway Terminal,470__402003_Timetable_-_2026-09,Westbound,900,1,b_402003_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650223_Timetable_-_2026-09
+B - Pickering Parkway Terminal,471__201092_Timetable_-_2026-09,Westbound,900,1,b_201092_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650223_Timetable_-_2026-09
+B - Pickering Parkway Terminal,472__201093_Timetable_-_2026-09,Westbound,900,1,b_201093_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650223_Timetable_-_2026-09
+B - Pickering Parkway Terminal,473__201001_Timetable_-_2026-09,Westbound,900,1,b_201001_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650223_Timetable_-_2026-09
+B - Pickering Parkway Terminal,474__201103_Timetable_-_2026-09,Westbound,900,1,b_201103_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650223_Timetable_-_2026-09
+B - Pickering Parkway Terminal,475__201090_Timetable_-_2026-09,Westbound,900,1,b_201090_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650223_Timetable_-_2026-09
+B - Pickering Parkway Terminal,476__201106_Timetable_-_2026-09,Westbound,900,1,b_201106_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650223_Timetable_-_2026-09
+B - Pickering Parkway Terminal,477__201093_Timetable_-_2026-09,Westbound,900,1,b_201093_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650223_Timetable_-_2026-09
+B - Pickering Parkway Terminal,478__201001_Timetable_-_2026-09,Westbound,900,1,b_201001_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650223_Timetable_-_2026-09
+B - Pickering Parkway Terminal,479__201103_Timetable_-_2026-09,Westbound,900,1,b_201103_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650223_Timetable_-_2026-09
+B - Pickering Parkway Terminal,480__201080_Timetable_-_2026-09,Westbound,900,1,b_201080_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650223_Timetable_-_2026-09
+B - Pickering Parkway Terminal,481__201106_Timetable_-_2026-09,Westbound,900,1,b_201106_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650223_Timetable_-_2026-09
+B - Pickering Parkway Terminal,482__402003_Timetable_-_2026-09,Westbound,900,1,b_402003_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650223_Timetable_-_2026-09
+B - Pickering Parkway Terminal,483__201109_Timetable_-_2026-09,Westbound,900,1,b_201109_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650223_Timetable_-_2026-09
+B - Pickering Parkway Terminal,484__402005_Timetable_-_2026-09,Westbound,900,1,b_402005_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650223_Timetable_-_2026-09
+B - Pickering Parkway Terminal,485__402006_Timetable_-_2026-09,Westbound,900,1,b_402006_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650223_Timetable_-_2026-09
+B - Pickering Parkway Terminal,486__201106_Timetable_-_2026-09,Westbound,900,1,b_201106_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650223_Timetable_-_2026-09
+B - Pickering Parkway Terminal,487__402003_Timetable_-_2026-09,Westbound,900,1,b_402003_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650223_Timetable_-_2026-09
+B - Pickering Parkway Terminal,488__201109_Timetable_-_2026-09,Westbound,900,1,b_201109_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650223_Timetable_-_2026-09
+B - Pickering Parkway Terminal,489__402005_Timetable_-_2026-09,Westbound,900,1,b_402005_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650223_Timetable_-_2026-09
+B - Pickering Parkway Terminal,490__201091_Timetable_-_2026-09,Westbound,900,1,b_201091_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650223_Timetable_-_2026-09
+B - Pickering Parkway Terminal,491__201001_Timetable_-_2026-09,Westbound,900,1,b_201001_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650223_Timetable_-_2026-09
+B - Pickering Parkway Terminal,492__201103_Timetable_-_2026-09,Westbound,900,1,b_201103_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650223_Timetable_-_2026-09
+B - Pickering Parkway Terminal,493__201109_Timetable_-_2026-09,Westbound,900,1,b_201109_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650223_Timetable_-_2026-09
+B - Pickering Parkway Terminal,494__201108_Timetable_-_2026-09,Westbound,900,1,b_201108_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650223_Timetable_-_2026-09
+B - Pickering Parkway Terminal,495__201001_Timetable_-_2026-09,Westbound,900,1,b_201001_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650223_Timetable_-_2026-09
+B - Pickering Parkway Terminal,496__201103_Timetable_-_2026-09,Westbound,900,1,b_201103_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650223_Timetable_-_2026-09
+B - Pickering Parkway Terminal,497__402006_Timetable_-_2026-09,Westbound,900,1,b_402006_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650223_Timetable_-_2026-09
+B - Pickering Parkway Terminal,498__201012_Timetable_-_2026-09,Westbound,900,1,b_201012_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650223_Timetable_-_2026-09
+B - Pickering Parkway Terminal,499__201089_Timetable_-_2026-09,Westbound,900,1,b_201089_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650223_Timetable_-_2026-09
+B - Pickering Parkway Terminal,500__201103_Timetable_-_2026-09,Westbound,900,1,b_201103_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650223_Timetable_-_2026-09
+Ritson,501__402007_Timetable_-_2026-09,Eastbound,900,1,b_402007_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650222_Timetable_-_2026-09
+Ritson,502__402003_Timetable_-_2026-09,Eastbound,900,1,b_402003_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650222_Timetable_-_2026-09
+Ritson,503__201092_Timetable_-_2026-09,Eastbound,900,1,b_201092_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650222_Timetable_-_2026-09
+Ritson,504__201093_Timetable_-_2026-09,Eastbound,900,1,b_201093_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650222_Timetable_-_2026-09
+Ritson,505__201103_Timetable_-_2026-09,Eastbound,900,1,b_201103_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650222_Timetable_-_2026-09
+Ritson,506__201094_Timetable_-_2026-09,Eastbound,900,1,b_201094_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650222_Timetable_-_2026-09
+Ritson,507__402005_Timetable_-_2026-09,Eastbound,900,1,b_402005_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650222_Timetable_-_2026-09
+Ritson,508__402001_Timetable_-_2026-09,Eastbound,900,1,b_402001_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650222_Timetable_-_2026-09
+Ritson,509__201080_Timetable_-_2026-09,Eastbound,900,1,b_201080_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650222_Timetable_-_2026-09
+Ritson,510__402007_Timetable_-_2026-09,Eastbound,900,1,b_402007_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650222_Timetable_-_2026-09
+Ritson,511__201094_Timetable_-_2026-09,Eastbound,900,1,b_201094_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650222_Timetable_-_2026-09
+Ritson,512__402005_Timetable_-_2026-09,Eastbound,900,1,b_402005_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650222_Timetable_-_2026-09
+Ritson,513__402006_Timetable_-_2026-09,Eastbound,900,1,b_402006_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650222_Timetable_-_2026-09
+Ritson,514__402001_Timetable_-_2026-09,Eastbound,900,1,b_402001_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650222_Timetable_-_2026-09
+Ritson,515__201108_Timetable_-_2026-09,Eastbound,900,1,b_201108_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650222_Timetable_-_2026-09
+Ritson,516__402007_Timetable_-_2026-09,Eastbound,900,1,b_402007_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650222_Timetable_-_2026-09
+Ritson,517__201026_Timetable_-_2026-09,Eastbound,900,1,b_201026_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650222_Timetable_-_2026-09
+Ritson,518__201001_Timetable_-_2026-09,Eastbound,900,1,b_201001_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650222_Timetable_-_2026-09
+Ritson,519__201103_Timetable_-_2026-09,Eastbound,900,1,b_201103_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650222_Timetable_-_2026-09
+Ritson,520__201108_Timetable_-_2026-09,Eastbound,900,1,b_201108_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650222_Timetable_-_2026-09
+Ritson,521__201089_Timetable_-_2026-09,Eastbound,900,1,b_201089_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650222_Timetable_-_2026-09
+Ritson,522__402007_Timetable_-_2026-09,Eastbound,900,1,b_402007_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650222_Timetable_-_2026-09
+Ritson,523__402006_Timetable_-_2026-09,Eastbound,900,1,b_402006_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650222_Timetable_-_2026-09
+Ritson,524__201012_Timetable_-_2026-09,Eastbound,900,1,b_201012_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650222_Timetable_-_2026-09
+Ritson,525__402003_Timetable_-_2026-09,Eastbound,900,1,b_402003_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650222_Timetable_-_2026-09
+Ritson,526__402001_Timetable_-_2026-09,Eastbound,900,1,b_402001_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650222_Timetable_-_2026-09
+Ritson,527__402005_Timetable_-_2026-09,Eastbound,900,1,b_402005_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650222_Timetable_-_2026-09
+Ritson,528__402007_Timetable_-_2026-09,Eastbound,900,1,b_402007_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650222_Timetable_-_2026-09
+Ritson,529__201001_Timetable_-_2026-09,Eastbound,900,1,b_201001_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650224_Timetable_-_2026-09
+Ritson,530__201094_Timetable_-_2026-09,Eastbound,900,1,b_201094_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650224_Timetable_-_2026-09
+Ritson,531__402005_Timetable_-_2026-09,Eastbound,900,1,b_402005_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650224_Timetable_-_2026-09
+Ritson,532__402006_Timetable_-_2026-09,Eastbound,900,1,b_402006_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650224_Timetable_-_2026-09
+Ritson,533__402001_Timetable_-_2026-09,Eastbound,900,1,b_402001_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650224_Timetable_-_2026-09
+Ritson,534__201080_Timetable_-_2026-09,Eastbound,900,1,b_201080_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650224_Timetable_-_2026-09
+Ritson,535__402007_Timetable_-_2026-09,Eastbound,900,1,b_402007_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650224_Timetable_-_2026-09
+Ritson,536__402003_Timetable_-_2026-09,Eastbound,900,1,b_402003_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650224_Timetable_-_2026-09
+Ritson,537__201106_Timetable_-_2026-09,Eastbound,900,1,b_201106_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650224_Timetable_-_2026-09
+Ritson,538__201093_Timetable_-_2026-09,Eastbound,900,1,b_201093_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650224_Timetable_-_2026-09
+Ritson,539__201001_Timetable_-_2026-09,Eastbound,900,1,b_201001_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650224_Timetable_-_2026-09
+Ritson,540__201103_Timetable_-_2026-09,Eastbound,900,1,b_201103_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650224_Timetable_-_2026-09
+Ritson,541__201090_Timetable_-_2026-09,Eastbound,900,1,b_201090_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650224_Timetable_-_2026-09
+Ritson,542__201106_Timetable_-_2026-09,Eastbound,900,1,b_201106_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650224_Timetable_-_2026-09
+Ritson,543__201026_Timetable_-_2026-09,Eastbound,900,1,b_201026_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650224_Timetable_-_2026-09
+Ritson,544__201001_Timetable_-_2026-09,Eastbound,900,1,b_201001_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650224_Timetable_-_2026-09
+Ritson,545__201103_Timetable_-_2026-09,Eastbound,900,1,b_201103_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650224_Timetable_-_2026-09
+Ritson,546__201070_Timetable_-_2026-09,Eastbound,900,1,b_201070_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650224_Timetable_-_2026-09
+Ritson,547__201106_Timetable_-_2026-09,Eastbound,900,1,b_201106_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650224_Timetable_-_2026-09
+Ritson,548__402003_Timetable_-_2026-09,Eastbound,900,1,b_402003_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650224_Timetable_-_2026-09
+Ritson,549__201109_Timetable_-_2026-09,Eastbound,900,1,b_201109_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650224_Timetable_-_2026-09
+Ritson,550__402005_Timetable_-_2026-09,Eastbound,900,1,b_402005_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650224_Timetable_-_2026-09
+Ritson,551__402006_Timetable_-_2026-09,Eastbound,900,1,b_402006_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650224_Timetable_-_2026-09
+Ritson,552__201012_Timetable_-_2026-09,Eastbound,900,1,b_201012_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650224_Timetable_-_2026-09
+Ritson,553__402003_Timetable_-_2026-09,Eastbound,900,1,b_402003_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650224_Timetable_-_2026-09
+Ritson,554__201109_Timetable_-_2026-09,Eastbound,900,1,b_201109_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650224_Timetable_-_2026-09
+Ritson,555__402005_Timetable_-_2026-09,Eastbound,900,1,b_402005_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650224_Timetable_-_2026-09
+Ritson,556__201091_Timetable_-_2026-09,Eastbound,900,1,b_201091_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650224_Timetable_-_2026-09
+Ritson,557__201001_Timetable_-_2026-09,Eastbound,900,1,b_201001_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650224_Timetable_-_2026-09
+Ritson,558__201103_Timetable_-_2026-09,Eastbound,900,1,b_201103_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650224_Timetable_-_2026-09
+Ritson,559__201108_Timetable_-_2026-09,Eastbound,900,1,b_201108_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650224_Timetable_-_2026-09
+Ritson,560__201089_Timetable_-_2026-09,Eastbound,900,1,b_201089_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650224_Timetable_-_2026-09
+Ritson,561__201001_Timetable_-_2026-09,Eastbound,900,1,b_201001_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650224_Timetable_-_2026-09
+Ritson,562__402006_Timetable_-_2026-09,Eastbound,900,1,b_402006_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650224_Timetable_-_2026-09
+Ritson,563__201012_Timetable_-_2026-09,Eastbound,900,1,b_201012_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650224_Timetable_-_2026-09
+Centennial Circle,745__402001_Timetable_-_2026-09,Westbound,900,1,b_402001_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650221_Timetable_-_2026-09
+B - Pickering Parkway Terminal,746__201089_Timetable_-_2026-09,Westbound,900,1,b_201089_Timetable_-_2026-09,Weekday_merged_94446,1,100.0.1952650223_Timetable_-_2026-09
+Ritson,776__201103_Timetable_-_2026-09,Eastbound,900,1,b_201103_Timetable_-_2026-09,Weekday_merged_94446,0,100.0.1952650224_Timetable_-_2026-09

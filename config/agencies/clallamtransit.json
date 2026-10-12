@@ -15,17 +15,38 @@
     -122.9
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-279/latest.zip",
-  "lastFeedExpiry": "20270522",
-  "lastFeedVersion": "Updated: Mar 16, 2026, 12:30 PM",
-  "lastRefreshedAt": "2026-08-07",
+  "lastFeedExpiry": "20271231",
+  "lastFeedVersion": "Updated: Sep 4, 2026, 10:08 AM",
+  "lastRefreshedAt": "2026-10-12",
   "cities": [
     "Victoria, British Columbia",
     "Shoreline, Washington",
     "Seattle, Washington"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20270522",
-  "timezone": "America/Los_Angeles"
+  "expiredFeedCheckExpiry": "20271231",
+  "timezone": "America/Los_Angeles",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-279/latest.zip",
+  "feedQuality": {
+    "status": "review",
+    "score": 80,
+    "reasons": [
+      "2 route shapes needed adjustment before display."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 2,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 56
+    },
+    "checkedAt": "2026-10-12"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

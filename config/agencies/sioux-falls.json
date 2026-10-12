@@ -7,9 +7,9 @@
     -96.7354
   ],
   "feedUrl": "https://s3.amazonaws.com/etatransit.gtfs/siouxareametro.etaspot.net/gtfs.zip",
-  "lastFeedExpiry": "20270928",
-  "lastFeedVersion": "97",
-  "lastRefreshedAt": "2026-10-03",
+  "lastFeedExpiry": "20271007",
+  "lastFeedVersion": "98",
+  "lastRefreshedAt": "2026-10-12",
   "region": "South Dakota",
   "mdbFeedUrl": "https://s3.amazonaws.com/etatransit.gtfs/siouxareametro.etaspot.net/gtfs.zip",
   "bbox": [
@@ -23,10 +23,10 @@
   ],
   "timezone": "America/Chicago",
   "lastRawArchiveKey": "20240403-d45b07265ba69af5",
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20270928",
+  "expiredFeedCheckExpiry": "20271007",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -38,10 +38,12 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 24
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-10-12"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://s3.amazonaws.com/etatransit.gtfs/siouxareametro.etaspot.net/gtfs.zip"
 }

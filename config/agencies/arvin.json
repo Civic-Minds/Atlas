@@ -23,8 +23,10 @@
   ],
   "timezone": "America/Los_Angeles",
   "lastRawArchiveKey": "20211231-986a2da2e4435109",
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20270228"
+  "expiredFeedCheckExpiry": "20270228",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://gtfs.remix.com/arvin.zip"
 }

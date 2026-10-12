@@ -22,12 +22,12 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 48
     },
-    "checkedAt": "2026-10-07"
+    "checkedAt": "2026-10-12"
   },
-  "lastFeedExpiry": "",
-  "lastFeedVersion": "Fall 2026 BLINK,Fall 2026 Version 1.01,Fall 2026 Version 10122026",
-  "lastRefreshedAt": "2026-10-07",
-  "lastFeedCheckAt": "20261007",
+  "lastFeedExpiry": "20281012",
+  "lastFeedVersion": "Fall 2026 Version 10122026",
+  "lastRefreshedAt": "2026-10-12",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",
@@ -35,5 +35,7 @@
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://www.buztrakr.com/gtfs"
 }

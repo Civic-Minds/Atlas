@@ -30,12 +30,14 @@
     "Kings Bridge, New York"
   ],
   "timezone": "America/New_York",
-  "lastFeedCheckAt": "20261007",
-  "expiredFeedCheckCount": 2,
+  "lastFeedCheckAt": "20261012",
+  "expiredFeedCheckCount": 3,
   "expiredFeedCheckSince": "20260622",
   "expiredFeedCheckExpiry": "20260927",
   "feedRefreshStatus": "stale",
   "feedRefreshError": "all available feeds expired (latest 20260927)",
-  "feedRefreshErrorAt": "20261007",
-  "feedRefreshRetryCount": 2
+  "feedRefreshErrorAt": "20261012",
+  "feedRefreshRetryCount": 3,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://s3.amazonaws.com/datatools-511ny/public/Westchester_County_Bee-Line_System.zip"
 }

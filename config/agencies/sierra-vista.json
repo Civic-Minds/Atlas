@@ -10,15 +10,14 @@
   "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/12009/VistaTransit_AZ_GTFS.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-679/latest.zip",
   "region": "Arizona",
-  "staged": true,
-  "lastFeedExpiry": "20270331",
+  "lastFeedExpiry": "20270622",
   "lastFeedVersion": "20250522",
-  "lastRefreshedAt": "2026-09-10",
+  "lastRefreshedAt": "2026-10-12",
   "feedQuality": {
     "status": "review",
     "score": 90,
     "reasons": [
-      "1 schedule-data warning — Atlas found a minor issue while reading the schedule."
+      "1 minor schedule issue found while reading the feed."
     ],
     "metrics": {
       "validationErrors": 0,
@@ -27,6 +26,16 @@
       "routeHeadwayMismatches": 0,
       "featureCount": 3
     },
-    "checkedAt": "2026-09-10"
-  }
+    "checkedAt": "2026-10-12"
+  },
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/12009/VistaTransit_AZ_GTFS.zip",
+  "lastFeedCheckAt": "20261012",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270622",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

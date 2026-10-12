@@ -8,10 +8,10 @@
   ],
   "feedUrl": "https://www.metrostlouis.org/Transit/google_transit.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-190/latest.zip",
-  "lastFeedExpiry": "20261025",
+  "lastFeedExpiry": "20261129",
   "lastFeedVersion": null,
   "region": "Missouri",
-  "lastRefreshedAt": "20260811",
+  "lastRefreshedAt": "2026-10-12",
   "cities": [
     "St. Louis, Missouri",
     "Florissant, Missouri",
@@ -20,12 +20,27 @@
   ],
   "timezone": "America/Chicago",
   "lastRawArchiveKey": "20261025-4c0fd0987c705d50",
-  "lastFeedCheckAt": "20261007",
-  "expiredFeedCheckCount": 4,
-  "expiredFeedCheckSince": "20260622",
-  "expiredFeedCheckExpiry": "20260614",
-  "feedRefreshStatus": "stale",
-  "feedRefreshError": "all available feeds expired (latest 20260614)",
-  "feedRefreshErrorAt": "20261007",
-  "feedRefreshRetryCount": 2
+  "lastFeedCheckAt": "20261012",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261129",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://www.metrostlouis.org/Transit/google_transit.zip",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 425
+    },
+    "checkedAt": "2026-10-12"
+  }
 }

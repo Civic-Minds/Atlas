@@ -25,7 +25,7 @@
     "Flagami, Florida",
     "Coral Gables, Florida"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
@@ -44,5 +44,7 @@
       "featureCount": 579
     },
     "checkedAt": "2026-09-17"
-  }
+  },
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-331/latest.zip"
 }

@@ -14,17 +14,17 @@
     -75.99
   ],
   "feedUrl": "https://api.cityofkingston.ca/gtfs/gtfs.zip",
-  "lastFeedExpiry": "20271004",
-  "lastFeedVersion": "1/20261004 16:24:38/20261005 04:00:00",
+  "lastFeedExpiry": "20271008",
+  "lastFeedVersion": "1/20261008 21:12:00/20261009 04:00:00",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-733/latest.zip",
-  "lastRefreshedAt": "2026-10-07",
+  "lastRefreshedAt": "2026-10-12",
   "cities": [
     "Kingston, Ontario"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20271004",
+  "expiredFeedCheckExpiry": "20271008",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -34,13 +34,15 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 159
+      "featureCount": 156
     },
-    "checkedAt": "2026-10-07"
+    "checkedAt": "2026-10-12"
   },
   "timezone": "America/Toronto",
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://api.cityofkingston.ca/gtfs/gtfs.zip"
 }

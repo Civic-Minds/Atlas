@@ -24,12 +24,14 @@ import {
 // by script, the Oct 12 double-counted holiday service) and the 14 commuter
 // rail lines in njt-rail-live.json (real line names, approximate endpoints;
 // the pre-Oct 8 artifact is no longer published).
+// Real, weekday lines only (release-mv0iozy4 vs the 2026-10-11 final reprocess
+// dry run): waco, clemson-cat, uga (#707).
 const fixture = (name: string) => readFileSync(resolve('pipeline/__tests__/fixtures/release-diff', name), 'utf8');
 const TODAY = '20261010';
 
 /** A summary carrying only counts, for the drop cases where only counts matter. */
 function countsOnly(stops: number, stopPoints: number, routes: number): ArtifactSummary {
-  return { counts: { stops, stopPoints, routes }, modes: ['Bus'], contentHash: `counts-${stops}-${stopPoints}-${routes}`, routeSignatures: [], weekdayHeadways: {}, centroid: null };
+  return { counts: { stops, stopPoints, routes }, modes: ['Bus'], contentHash: `counts-${stops}-${stopPoints}-${routes}`, routeSignatures: [], weekdayHeadways: {}, weekdayTiers: {}, weekdayDirectionHeadway: {}, centroid: null };
 }
 
 const names = (flags: GateFlag[]) => flags.map(f => `${f.slug}:${f.flag}:${f.level}`).sort();
@@ -118,6 +120,48 @@ describe('release diff gate: red flags', () => {
     });
     const flags = evaluateAgency({ slug: 'ttc', live, next: summarizeArtifact(JSON.stringify(holiday), null), allowMissingLive: true }, [], TODAY);
     expect(names(flags)).toEqual(['ttc:headway-shift:yellow']);
+  });
+
+  it('flags one shifted route at an agency too small for headway-shift: waco TL-32 60 -> 25 (#707)', () => {
+    const live = summarizeArtifact(fixture('waco-live.json'), null);
+    const next = summarizeArtifact(fixture('waco-new.json'), null);
+    const flags = evaluateAgency({ slug: 'waco', live, next, allowMissingLive: true }, [], TODAY);
+    expect(names(flags)).toEqual(['waco:route-shift:yellow']);
+    expect(flags[0].message).toMatch(/^1 route .*\(TL-32 60->25 min\)$/);
+  });
+
+  it('flags tier jumps of 2+ steps: clemson-cat TL-24 and TL-69 from infrequent (#707)', () => {
+    const live = summarizeArtifact(fixture('clemson-cat-live.json'), null);
+    const next = summarizeArtifact(fixture('clemson-cat-new.json'), null);
+    expect(live.weekdayTiers).toMatchObject({ 'TL-24': 'infrequent', 'TL-69': 'infrequent' });
+    const flags = evaluateAgency({ slug: 'clemson-cat', live, next, allowMissingLive: true }, [], TODAY);
+    expect(names(flags)).toEqual(['clemson-cat:route-shift:yellow']);
+    expect(flags[0].message).toContain('TL-24 tier infrequent->30, 131->27 min');
+    expect(flags[0].message).toContain('TL-69 tier infrequent->20, 203->5 min');
+  });
+
+  it('flags uga M Milledge 15 -> 4 with its tier unchanged (#707)', () => {
+    const live = summarizeArtifact(fixture('uga-live.json'), null);
+    const next = summarizeArtifact(fixture('uga-new.json'), null);
+    expect([live.weekdayTiers['5738'], next.weekdayTiers['5738']]).toEqual(['20', '20']);
+    const flags = evaluateAgency({ slug: 'uga', live, next, allowMissingLive: true }, [], TODAY);
+    expect(names(flags)).toEqual(['uga:route-shift:yellow']);
+    expect(flags[0].message).toContain('5738 15->4 min');
+  });
+
+  it('takes the most frequent tier across a route\'s directions and ignores tiers off the scale', () => {
+    const line = (routeId: string, tier: string, headway: number | null) => ({
+      type: 'Feature',
+      geometry: { type: 'LineString', coordinates: [[0, 0], [1, 1]] },
+      properties: { routeId, day: 'Weekday', tier, headway },
+    });
+    const artifact = (features: unknown[]) => JSON.stringify({ type: 'FeatureCollection', features });
+    const live = summarizeArtifact(artifact([line('A', '60', 30), line('A', '15', 12), line('A', 'span', null), line('SKYT', '5', 5)]), null);
+    expect(live.weekdayTiers).toEqual({ A: '15' });
+    // A one-step tier move and a headway change under 2x stay quiet; the legacy
+    // rail tier '5' -> '10' (valleymetro SKYT, a correct change) is not a tier change.
+    const next = summarizeArtifact(artifact([line('A', '30', 20), line('A', '20', 18), line('SKYT', '10', 5)]), null);
+    expect(evaluateAgency({ slug: 'x', live, next, allowMissingLive: true }, [], TODAY)).toEqual([]);
   });
 
   it('flags already-expired service as red when the output changes, yellow when unchanged', () => {
@@ -260,6 +304,108 @@ describe('release diff gate: hidden agencies', () => {
       allowMissingLive: true,
     });
     expect(names(hidden)).toEqual(['sun-tran:added:yellow', 'sun-tran:duplicate:red']);
+  });
+});
+
+describe('release diff gate: weekday headway lost (#710)', () => {
+  // Shapes of the 2026-10-11 dry run on 65ab63cb: limited lines keep tier
+  // 'infrequent' and drop their headway.
+  const line = (routeId: string, directionId: number, headway: number | null) => ({
+    type: 'Feature',
+    geometry: { type: 'LineString', coordinates: [[routeId.length, directionId], [1, 1]] },
+    properties: { routeId, directionId, day: 'Weekday', tier: headway == null ? 'infrequent' : headway <= 30 ? '30' : '60', headway },
+  });
+  const artifact = (features: unknown[]) => JSON.stringify({ type: 'FeatureCollection', features });
+  const network = (headwayFor: (routeId: string, directionId: number) => number | null) =>
+    artifact(['1', '2', '3', '4', '5'].flatMap(id => [0, 1].map(dir => line(id, dir, headwayFor(id, dir)))));
+  const live = summarizeArtifact(network(() => 30), null);
+
+  it('is red when most of an agency loses its weekday headways (lanta: every route shown as limited)', () => {
+    const next = summarizeArtifact(network(id => (id === '5' ? 30 : null)), null);
+    const flags = evaluateAgency({ slug: 'lanta', live, next, allowMissingLive: true }, [], TODAY);
+    // 30 -> infrequent is also a 2-step tier move, which route-shift lists.
+    expect(names(flags)).toEqual(['lanta:headway-lost:red', 'lanta:route-shift:yellow']);
+    expect(flags.find(f => f.flag === 'headway-lost')!.message).toMatch(/^8 of 10 weekday route\/directions .* \(80%; 1 d0, 1 d1, 2 d0/);
+    expect(applyOverrides(flags, { allowDrop: false, allow: [] }).blocked).toEqual(['lanta']);
+    expect(applyOverrides(flags, parseGateOverrides(['--allow', 'lanta:headway-lost'])).blocked).toEqual([]);
+  });
+
+  it('is yellow when one direction loses its headway while the other keeps it (kalamazoo 1 d1)', () => {
+    const next = summarizeArtifact(network((id, dir) => (id === '1' && dir === 1 ? null : 30)), null);
+    // The route-level median is still 30, so route-shift alone never sees it.
+    expect(next.weekdayHeadways['1']).toBe(30);
+    const flags = evaluateAgency({ slug: 'kalamazoo', live, next, allowMissingLive: true }, [], TODAY);
+    expect(names(flags)).toEqual(['kalamazoo:headway-lost:yellow']);
+    expect(flags[0].message).toBe('1 of 10 weekday route/directions with a headway live have none now (10%; 1 d1)');
+  });
+
+  it('stays quiet for unchanged routes and for route/directions dropped outright', () => {
+    expect(evaluateAgency({ slug: 'x', live, next: live, allowMissingLive: true }, [], TODAY)).toEqual([]);
+    const dropped = JSON.parse(network(() => 30)) as { features: Array<{ properties: { routeId: string; directionId: number } }> };
+    dropped.features = dropped.features.filter(f => !(f.properties.routeId === '1' && f.properties.directionId === 1));
+    const flags = evaluateAgency({ slug: 'x', live, next: summarizeArtifact(JSON.stringify(dropped), null), allowMissingLive: true }, [], TODAY);
+    expect(flags.filter(f => f.flag === 'headway-lost')).toEqual([]);
+  });
+});
+
+describe('release diff gate: day type lost or shrunk (#741)', () => {
+  // Shapes of the 2026-10-12 bundle dry run: clallamtransit Saturday 26 -> 0
+  // and Sunday 4 -> 0, while its weekday lines stay.
+  const line = (routeId: string, directionId: number, day: string) => ({
+    type: 'Feature',
+    geometry: { type: 'LineString', coordinates: [[Number(routeId), directionId], [1, 1]] },
+    properties: { routeId, directionId, day, tier: '30', headway: 30 },
+  });
+  const network = (routes: Record<string, number>) => JSON.stringify({
+    type: 'FeatureCollection',
+    features: Object.entries(routes).flatMap(([day, n]) =>
+      Array.from({ length: n }, (_, i) => line(String(Math.floor(i / 2) + 1), i % 2, day))),
+  });
+  const live = summarizeArtifact(network({ Weekday: 20, Saturday: 12, Sunday: 4 }), null);
+
+  it('counts route lines per day type', () => {
+    expect(live.dayFeatures).toEqual({ Weekday: 20, Saturday: 12, Sunday: 4 });
+  });
+
+  it('is red when an agency loses Saturday, and lists every lost day', () => {
+    const next = summarizeArtifact(network({ Weekday: 20, Sunday: 4 }), null);
+    const flags = evaluateAgency({ slug: 'clallamtransit', live, next, allowMissingLive: true }, [], TODAY);
+    expect(names(flags)).toEqual(['clallamtransit:day-lost:red']);
+    expect(flags[0].message).toBe('no route lines on Saturday now (Saturday 12 -> 0)');
+    expect(applyOverrides(flags, { allowDrop: false, allow: [] }).blocked).toEqual(['clallamtransit']);
+    const both = evaluateAgency({ slug: 'raba', live, next: summarizeArtifact(network({ Weekday: 20 }), null), allowMissingLive: true }, [], TODAY);
+    expect(both.map(f => f.message)).toEqual(['no route lines on Saturday, Sunday now (Saturday 12 -> 0, Sunday 4 -> 0)']);
+  });
+
+  it('passes with --allow <slug>:day-lost, which forwards like the other flags', () => {
+    const next = summarizeArtifact(network({ Weekday: 20, Sunday: 4 }), null);
+    const flags = evaluateAgency({ slug: 'clallamtransit', live, next, allowMissingLive: true }, [], TODAY);
+    const overrides = parseGateOverrides(['--allow', 'clallamtransit:day-lost', '--allow=raba:day-shrunk']);
+    expect(overrides.errors).toEqual([]);
+    expect(overrideArgs(overrides)).toEqual(['--allow', 'clallamtransit:day-lost', '--allow', 'raba:day-shrunk']);
+    const result = applyOverrides(flags, overrides);
+    expect(result.blocked).toEqual([]);
+    expect(result.flags[0].allowed).toBe(true);
+  });
+
+  it('is yellow when a day type falls below 65% of live (cdta Saturday 92 -> 56)', () => {
+    const next = summarizeArtifact(network({ Weekday: 20, Saturday: 7, Sunday: 4 }), null);
+    const flags = evaluateAgency({ slug: 'cdta', live, next, allowMissingLive: true }, [], TODAY);
+    expect(names(flags)).toEqual(['cdta:day-shrunk:yellow']);
+    expect(flags[0].message).toBe('route lines on Saturday fall below 65% of live (Saturday 12 -> 7)');
+    expect(applyOverrides(flags, { allowDrop: false, allow: [] }).blocked).toEqual([]);
+  });
+
+  it('stays quiet for normal small changes, small live counts, empty output and summaries without day counts', () => {
+    // 12 -> 8 (67%) and 4 -> 2 (live under 5) are ordinary schedule changes.
+    const small = summarizeArtifact(network({ Weekday: 18, Saturday: 8, Sunday: 2 }), null);
+    expect(evaluateAgency({ slug: 'x', live, next: small, allowMissingLive: true }, [], TODAY).filter(f => f.flag.startsWith('day-'))).toEqual([]);
+    expect(evaluateAgency({ slug: 'x', live, next: live, allowMissingLive: true }, [], TODAY)).toEqual([]);
+    const empty = summarizeArtifact(JSON.stringify({ type: 'FeatureCollection', features: [] }), null);
+    expect(names(evaluateAgency({ slug: 'x', live, next: empty, allowMissingLive: true }, [], TODAY)).filter(n => n.includes(':day-'))).toEqual([]);
+    const { dayFeatures: _omit, ...noDays } = live;
+    const noWeekend = summarizeArtifact(network({ Weekday: 20 }), null);
+    expect(evaluateAgency({ slug: 'x', live: noDays, next: noWeekend, allowMissingLive: true }, [], TODAY).filter(f => f.flag.startsWith('day-'))).toEqual([]);
   });
 });
 

@@ -1,0 +1,11 @@
+route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id
+Riverside Line,1149,200090402,Riverside - Downtown,400,0
+Riverside Line,1149,295700441,L.A. Union Station,401,1
+Riverside Line,1149,295700442,L.A. Union Station,403,1
+Riverside Line,1149,200090405,L.A. Union Station,405,1
+Riverside Line,1149,295700445,L.A. Union Station,419,1
+Riverside Line,1149,295800465,Riverside - Downtown,410,0
+Riverside Line,1149,200090404,Riverside - Downtown,412,0
+Riverside Line,1149,295800463,Riverside - Downtown,414,0
+Riverside Line,1149,295800464,Riverside - Downtown,416,0
+Riverside Line,1149,295700444,L.A. Union Station,407,1

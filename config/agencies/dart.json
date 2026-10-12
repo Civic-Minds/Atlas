@@ -9,9 +9,9 @@
   "feedUrl": "http://www.dart.org/transitdata/latest/google_transit.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-152/latest.zip",
   "lastFeedExpiry": "20261018",
-  "lastFeedVersion": "V741-218-217-20261004",
+  "lastFeedVersion": "V747-218-217-20261009",
   "region": "Texas",
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-10-12",
   "cities": [
     "Dallas, Texas",
     "Richardson, Texas",
@@ -25,7 +25,7 @@
     "Frisco, Texas"
   ],
   "timezone": "America/Chicago",
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261018",
@@ -40,12 +40,14 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 3,
-      "featureCount": 519
+      "featureCount": 522
     },
-    "checkedAt": "2026-10-03"
+    "checkedAt": "2026-10-12"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "http://www.dart.org/transitdata/latest/google_transit.zip"
 }

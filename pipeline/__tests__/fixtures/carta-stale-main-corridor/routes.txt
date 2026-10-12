@@ -1,0 +1,4 @@
+agency_id,route_id,route_short_name,route_long_name,route_desc,route_type,route_url,route_color,route_text_color,route_sort_order,min_headway_minutes,eligibility_restricted,continuous_pickup,continuous_drop_off,tts_route_short_name,tts_route_long_name
+213,1235,10,Rivers Avenue,Service from the downtown Charleston Visitor's Center through North Charleston along Rivers Avenue to Trident Medical Center.,3,https://www.ridecarta.com/route/10-rivers-avenue/,027a3e,000000,1,,0,1,1,,
+213,1236,11,Dorchester Rd / Airport,"Mary St. Transfer Center in downtown Charleston to Tanger Outlets, and the Charleston International Airport.",3,https://www.ridecarta.com/route/11-dorchester-road-airport/,878800,000000,2,,0,1,1,,
+656,6289,CS8,Link to Lunch,The Link 2 Lunch is a quick and convenient way to get around Moncks Corner during your lunch break. The service runs between 10:45 AM and 1:20 PM.,3,https://ridetricountylink.com/schedules-routes/,00befd,000000,44,,0,1,1,,

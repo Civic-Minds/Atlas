@@ -30,9 +30,11 @@
     "Castro Valley, California",
     "Milpitas, California"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270403",
-  "timezone": "US/Pacific"
+  "timezone": "US/Pacific",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2455/latest.zip"
 }

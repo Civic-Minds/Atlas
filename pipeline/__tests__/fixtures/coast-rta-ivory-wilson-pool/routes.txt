@@ -1,0 +1,11 @@
+route_id,route_short_name,route_long_name,route_desc,route_type,route_color,route_sort_order
+TL-129,,Rt 11 River Oaks / Intl Dr / Broadway at the Beach,,3,e48c5a,65
+TL-136,,Rt 7X Conway/Myrtle Beach,,3,ff0033,55
+TL-140,,Rt 7H Conway/via Oak Tree Farms,,3,0091f2,52
+TL-141,,Rt 7A 6:40 AM Conway/Myrtle Beach,,3,0091f2,51
+TL-144,,Rt 11H Startek Dr / Myrtle Beach,,3,e48c5a,66
+TL-146,,Rt 15SH Tidelands/Myrtle Beach,,3,ffbc03,91
+TL-148,,Rt 17X Conway/Myrtle Beach,,3,eecb70,164
+TL-150,,Rt 17H Coastal North Town Center / Myrtle Beach,,3,138741,161
+TL-171,,Rt 16H Georgetown / Myrtle Beach,Route16X,3,7412a8,102
+TL-175,,Rt 16 Limited Gtwn/MB,Route16X,3,b07f66,109

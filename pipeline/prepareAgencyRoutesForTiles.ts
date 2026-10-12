@@ -11,6 +11,7 @@
  */
 import { normalizeRouteFilterFeatures } from '../shared/routeHeadwayFilter.js';
 import { flattenPeriodHeadwayProps } from '../shared/pmtilesProps.js';
+import { SHARED_STRETCH_KEYS } from './sharedStretch.js';
 
 export type RouteFeatureForTiles = {
   type: string;
@@ -35,6 +36,9 @@ export function prepareAgencyRouteFeaturesForTiles(
     if (f.geometry?.type !== 'LineString') continue;
     f.properties = f.properties || {};
     f.properties.agencySlug = agencySlug;
+    // Shared-stretch values (CIV-82) are read from agency JSON only (frequency overlay,
+    // stop popups). Tiles would only stringify them, so they stay out and tiles are unchanged.
+    for (const key of SHARED_STRETCH_KEYS) delete f.properties[key];
     flattenPeriodHeadwayProps(f.properties);
     out.push(f);
   }

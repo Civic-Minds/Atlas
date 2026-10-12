@@ -39,9 +39,11 @@
   "lastFeedExpiry": "20261231",
   "lastFeedVersion": "Updated: Mar 25, 2026, 2:20 PM",
   "lastRefreshedAt": "2026-08-21",
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
-  "timezone": "America/Chicago"
+  "timezone": "America/Chicago",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://www.btd.org/2025btdgtfs/"
 }

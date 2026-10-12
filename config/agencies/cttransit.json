@@ -19,9 +19,11 @@
     "Hamden, Connecticut",
     "Hartford, Connecticut"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270109",
-  "timezone": "America/New_York"
+  "timezone": "America/New_York",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://www.cttransit.com/sites/default/files/gtfs/googlect_transit.zip"
 }

@@ -2,6 +2,7 @@ import type { ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
 import { periodKeyForHour } from '../../shared/config';
 import { buildRouteServiceSummary, metricValueForPeriod } from './routeFacts';
 import { MIN_SHARED_STOPS_FOR_TRUNK, sharedStopIds, sharesOrderedTrunk } from './routeBranchGeometry';
+import { sharedStretchStopPass } from './frequencySegments';
 
 /** Headsign-scoped trunk minimum for route-card range display (not route-wide combined deps). */
 export function headsignTrunkHeadway(d: ShapeProperties, period: string): number | null {
@@ -140,4 +141,44 @@ export function trunkSparklineByHour(
     out[h] = pk ? groupTrunkHeadway(branches, pk) : null;
   }
   return out;
+}
+
+/**
+ * Shared-stretch cadence for a direction's branches (CIV-82), from the SAME per-stop pass the map
+ * overlay draws with (sharedStretchStopPass): this direction's worst filter value over the
+ * stops that qualify (both directions passing) under the active filter (every stop with a value on both sides when no
+ * filter is set). So the card never shows a stretch the map does not draw, or a better N than its
+ * worst drawn stop. Null when no stop qualifies (the card then keeps its Combined estimate).
+ * `agencyFeatures` is the agency's whole feature list (stops, the pooled carrier, the opposite
+ * direction).
+ */
+export function sharedStretchHeadway(
+  agencyFeatures: readonly GeoJSON.Feature[] | undefined,
+  branches: ShapeProperties[],
+  period: TimePeriod,
+  maxHeadway: number,
+): { headway: number; stopIds: string[] } | null {
+  if (!agencyFeatures || branches.length === 0) return null;
+  // The card holds shallow copies of the agency features' properties; their stopOrder arrays
+  // are the originals, so they identify the features.
+  const wanted = new Set<unknown>(branches.map(b => b.stopOrder).filter(Boolean));
+  const routeFeatures = agencyFeatures.filter(f => wanted.has((f.properties as any)?.stopOrder));
+  if (routeFeatures.length === 0) return null;
+  let worst: number | null = null;
+  const stopIds = new Set<string>();
+  for (const { feature, ranges, ownValues } of sharedStretchStopPass(routeFeatures, agencyFeatures, period, maxHeadway, { includePassing: true })) {
+    // A direction run as one pattern has no branches to combine: no "Shared stretch" row there.
+    if (!(feature.properties as any)?.sharedStretches?.length) continue;
+    const stopOrder = (feature.properties as unknown as ShapeProperties).stopOrder ?? [];
+    for (const [from, to] of ranges) {
+      for (let i = from; i <= to; i++) {
+        // This direction's own value: the card row sits under the direction's heading.
+        const v = ownValues.get(i);
+        if (v == null) continue;
+        worst = worst == null ? v : Math.max(worst, v);
+        stopIds.add(stopOrder[i]);
+      }
+    }
+  }
+  return worst == null ? null : { headway: worst, stopIds: [...stopIds] };
 }

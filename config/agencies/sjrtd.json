@@ -19,9 +19,11 @@
     "Modesto, California"
   ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-886/latest.zip",
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270123",
-  "timezone": "America/Juneau"
+  "timezone": "America/Juneau",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "http://sjrtd.com/RTD-GTFS/RTD-GTFS.zip"
 }

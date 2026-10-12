@@ -1,0 +1,81 @@
+route_id,service_id,trip_id,trip_headsign,direction_id,block_id,shape_id,wheelchair_accessible,bikes_allowed,trip_short_name
+RT10,Major_Service_Changes_031526-Weekday,Major_Service_Changes_031526-Weekday-RT10-A-OB-1510-05d6141,Joyce,0,10,RT10-A-OB,1,1,10
+RT123,Major_Service_Changes_031526-Weekday,Major_Service_Changes_031526-Weekday-RT123-A-IB-1020-0a154bc,,1,5,RT123-A-IB,1,1,
+RT10,Major_Service_Changes_031526-Weekday,Major_Service_Changes_031526-Weekday-RT10-A-OB-0755-0d083c0,Joyce,0,10,RT10-A-OB,1,1,10
+RT123,Seasonal-Weekday,Seasonal-Weekday-RT123-A-IB-1020-0da6532,,1,,RT123-A-IB,1,1,
+RT123,Major_Service_Changes_031526-Sa,Major_Service_Changes_031526-Sa-RT123-A-OB-0725-103237f,,0,2,RT123-A-OB,1,1,
+RT123,Major_Service_Changes_031526-Su,Major_Service_Changes_031526-Su-RT123-A-IB-1100-1248d32,,1,1,RT123-A-IB,1,1,
+RT10,Seasonal-Sa,Seasonal-Sa-RT10-A-OB-1930-14523c8,Joyce,0,,RT10-A-OB,1,1,10
+RT10,Seasonal-Sa,Seasonal-Sa-RT10-A-IB-2012-1576035,Port Angeles,1,,RT10-A-IB,1,1,10
+RT10,Seasonal-Weekday,Seasonal-Weekday-RT10-A-IB-1552-17bbfa8,Port Angeles,1,,RT10-A-IB,1,1,10
+RT10,Major_Service_Changes_031526-Weekday,Major_Service_Changes_031526-Weekday-RT10-A-IB-0837-18cd32d,Port Angeles,1,10,RT10-A-IB,1,1,10
+RT10,Major_Service_Changes_031526-Sa,Major_Service_Changes_031526-Sa-RT10-A-IB-1442-19a1f9a,Port Angeles,1,5,RT10-A-IB,1,1,10
+RT10,Seasonal-Sa,Seasonal-Sa-RT10-A-IB-1727-19b0fd2,Port Angeles,1,,RT10-A-IB,1,1,10
+RT10,Major_Service_Changes_031526-Weekday,Major_Service_Changes_031526-Weekday-RT10-A-IB-1327-1ce63d1,Port Angeles,1,10,RT10-A-IB,1,1,10
+RT10,Major_Service_Changes_031526-Sa,Major_Service_Changes_031526-Sa-RT10-A-OB-0830-1d5fedd,Joyce,0,5,RT10-A-OB,1,1,10
+RT123,Major_Service_Changes_031526-Weekday,Major_Service_Changes_031526-Weekday-RT123-A-IB-1500-1f3f2e9,,1,4,RT123-A-IB,1,1,
+RT123,Seasonal-Sa,Seasonal-Sa-RT123-A-IB-1500-1f61177,,1,,RT123-A-IB,1,1,
+RT10,Seasonal-Weekday,Seasonal-Weekday-RT10-A-IB-2042-2106cd4,Port Angeles,1,,RT10-A-IB,1,1,10
+RT123,Seasonal-Sa,Seasonal-Sa-RT123-A-IB-1020-2650ba1,,1,,RT123-A-IB,1,1,
+RT10,Seasonal-Sa,Seasonal-Sa-RT10-A-IB-0912-270ac52,Port Angeles,1,,RT10-A-IB,1,1,10
+RT123,Seasonal-Su,Seasonal-Su-RT123-A-IB-1100-27a9412,,1,,RT123-A-IB,1,1,
+RT123,Major_Service_Changes_031526-Weekday,Major_Service_Changes_031526-Weekday-RT123-A-OB-0735-2a45044,,0,5,RT123-A-OB,1,1,
+RT123,Major_Service_Changes_031526-Weekday,Major_Service_Changes_031526-Weekday-RT123-A-IB-2020-2d8e300,,1,4,RT123-A-IB,1,1,
+RT10,Major_Service_Changes_031526-Sa,Major_Service_Changes_031526-Sa-RT10-A-IB-2012-30aab17,Port Angeles,1,5,RT10-A-IB,1,1,10
+RT10,Major_Service_Changes_031526-Weekday,Major_Service_Changes_031526-Weekday-RT10-A-IB-1817-3162240,Port Angeles,1,10,RT10-A-IB,1,1,10
+RT123,Seasonal-Sa,Seasonal-Sa-RT123-A-OB-1615-31cc06d,,0,,RT123-A-OB,1,1,
+RT10,Seasonal-Weekday,Seasonal-Weekday-RT10-A-OB-1735-329efd5,Joyce,0,,RT10-A-OB,1,1,10
+RT10,Major_Service_Changes_031526-Weekday,Major_Service_Changes_031526-Weekday-RT10-A-IB-1102-3492805,Port Angeles,1,10,RT10-A-IB,1,1,10
+RT10,Major_Service_Changes_031526-Sa,Major_Service_Changes_031526-Sa-RT10-A-IB-1727-34d2dec,Port Angeles,1,5,RT10-A-IB,1,1,10
+RT123,Seasonal-Weekday,Seasonal-Weekday-RT123-A-OB-0735-35b525a,,0,,RT123-A-OB,1,1,
+RT10,Seasonal-Sa,Seasonal-Sa-RT10-A-OB-0830-4221497,Joyce,0,,RT10-A-OB,1,1,10
+RT10,Major_Service_Changes_031526-Sa,Major_Service_Changes_031526-Sa-RT10-A-OB-1645-45ed18f,Joyce,0,5,RT10-A-OB,1,1,10
+RT10,Seasonal-Weekday,Seasonal-Weekday-RT10-A-OB-2000-46fa550,Joyce,0,,RT10-A-OB,1,1,10
+RT123,Seasonal-Sa,Seasonal-Sa-RT123-A-IB-1910-484e842,,1,,RT123-A-IB,1,1,
+RT10,Seasonal-Sa,Seasonal-Sa-RT10-A-IB-1442-4a2931a,Port Angeles,1,,RT10-A-IB,1,1,10
+RT123,Major_Service_Changes_031526-Su,Major_Service_Changes_031526-Su-RT123-A-OB-0805-511b543,,0,1,RT123-A-OB,1,1,
+RT10,Seasonal-Weekday,Seasonal-Weekday-RT10-A-IB-0837-54e57c1,Port Angeles,1,,RT10-A-IB,1,1,10
+RT10,Major_Service_Changes_031526-Sa,Major_Service_Changes_031526-Sa-RT10-A-IB-1157-553db52,Port Angeles,1,5,RT10-A-IB,1,1,10
+RT123,Seasonal-Su,Seasonal-Su-RT123-A-OB-1505-56c4f48,,0,,RT123-A-OB,1,1,
+RT123,Major_Service_Changes_031526-Weekday,Major_Service_Changes_031526-Weekday-RT123-A-OB-1800-5ae593e,,0,4,RT123-A-OB,1,1,
+RT10,Major_Service_Changes_031526-Sa,Major_Service_Changes_031526-Sa-RT10-A-OB-1400-5cf8945,Joyce,0,5,RT10-A-OB,1,1,10
+RT10,Major_Service_Changes_031526-Weekday,Major_Service_Changes_031526-Weekday-RT10-A-OB-0525-5d4650c,Joyce,0,10,RT10-A-OB,1,1,10
+RT10,Seasonal-Weekday,Seasonal-Weekday-RT10-A-OB-1245-6755621,Joyce,0,,RT10-A-OB,1,1,10
+RT123,Major_Service_Changes_031526-Sa,Major_Service_Changes_031526-Sa-RT123-A-OB-1230-6bba0fb,,0,1,RT123-A-OB,1,1,
+RT10,Seasonal-Sa,Seasonal-Sa-RT10-A-OB-1400-6bd18dd,Joyce,0,,RT10-A-OB,1,1,10
+RT10,Seasonal-Weekday,Seasonal-Weekday-RT10-A-OB-0755-712212a,Joyce,0,,RT10-A-OB,1,1,10
+RT123,Major_Service_Changes_031526-Weekday,Major_Service_Changes_031526-Weekday-RT123-A-OB-1230-72f2f39,,0,4,RT123-A-OB,1,1,
+RT123,Seasonal-Weekday,Seasonal-Weekday-RT123-A-IB-1500-74cbbeb,,1,,RT123-A-IB,1,1,
+RT10,Seasonal-Weekday,Seasonal-Weekday-RT10-A-IB-1102-7d5a1d3,Port Angeles,1,,RT10-A-IB,1,1,10
+RT10,Seasonal-Weekday,Seasonal-Weekday-RT10-A-OB-1020-7e8ebea,Joyce,0,,RT10-A-OB,1,1,10
+RT10,Major_Service_Changes_031526-Weekday,Major_Service_Changes_031526-Weekday-RT10-A-IB-0607-7facc60,Port Angeles,1,10,RT10-A-IB,1,1,10
+RT10,Seasonal-Sa,Seasonal-Sa-RT10-A-IB-1157-8516b21,Port Angeles,1,,RT10-A-IB,1,1,10
+RT123,Major_Service_Changes_031526-Sa,Major_Service_Changes_031526-Sa-RT123-A-OB-1615-8548882,,0,2,RT123-A-OB,1,1,
+RT10,Major_Service_Changes_031526-Sa,Major_Service_Changes_031526-Sa-RT10-A-OB-1930-8e2604a,Joyce,0,5,RT10-A-OB,1,1,10
+RT123,Major_Service_Changes_031526-Su,Major_Service_Changes_031526-Su-RT123-A-IB-1820-91df862,,1,1,RT123-A-IB,1,1,
+RT10,Seasonal-Weekday,Seasonal-Weekday-RT10-A-OB-0525-96882ab,Joyce,0,,RT10-A-OB,1,1,10
+RT10,Seasonal-Weekday,Seasonal-Weekday-RT10-A-OB-1510-9ce4556,Joyce,0,,RT10-A-OB,1,1,10
+RT10,Major_Service_Changes_031526-Weekday,Major_Service_Changes_031526-Weekday-RT10-A-OB-2000-9e532a2,Joyce,0,10,RT10-A-OB,1,1,10
+RT10,Seasonal-Sa,Seasonal-Sa-RT10-A-OB-1645-a3ebd62,Joyce,0,,RT10-A-OB,1,1,10
+RT123,Seasonal-Su,Seasonal-Su-RT123-A-OB-0805-a9a1556,,0,,RT123-A-OB,1,1,
+RT10,Major_Service_Changes_031526-Weekday,Major_Service_Changes_031526-Weekday-RT10-A-IB-1552-b17b9d5,Port Angeles,1,10,RT10-A-IB,1,1,10
+RT123,Major_Service_Changes_031526-Sa,Major_Service_Changes_031526-Sa-RT123-A-IB-1020-b4699f0,,1,2,RT123-A-IB,1,1,
+RT10,Major_Service_Changes_031526-Weekday,Major_Service_Changes_031526-Weekday-RT10-A-IB-2042-b5fe237,Port Angeles,1,10,RT10-A-IB,1,1,10
+RT10,Seasonal-Weekday,Seasonal-Weekday-RT10-A-IB-1327-c503257,Port Angeles,1,,RT10-A-IB,1,1,10
+RT10,Major_Service_Changes_031526-Sa,Major_Service_Changes_031526-Sa-RT10-A-OB-1115-c5367d7,Joyce,0,5,RT10-A-OB,1,1,10
+RT10,Major_Service_Changes_031526-Sa,Major_Service_Changes_031526-Sa-RT10-A-IB-0912-c5d5efd,Port Angeles,1,5,RT10-A-IB,1,1,10
+RT123,Major_Service_Changes_031526-Sa,Major_Service_Changes_031526-Sa-RT123-A-IB-1910-c7fbb8b,,1,2,RT123-A-IB,1,1,
+RT10,Seasonal-Sa,Seasonal-Sa-RT10-A-OB-1115-c9d49d1,Joyce,0,,RT10-A-OB,1,1,10
+RT123,Major_Service_Changes_031526-Sa,Major_Service_Changes_031526-Sa-RT123-A-IB-1500-cc14553,,1,1,RT123-A-IB,1,1,
+RT10,Seasonal-Weekday,Seasonal-Weekday-RT10-A-IB-1817-cfec98d,Port Angeles,1,,RT10-A-IB,1,1,10
+RT10,Seasonal-Weekday,Seasonal-Weekday-RT10-A-IB-0607-d11c8ca,Port Angeles,1,,RT10-A-IB,1,1,10
+RT123,Seasonal-Sa,Seasonal-Sa-RT123-A-OB-1230-d17f5c8,,0,,RT123-A-OB,1,1,
+RT10,Major_Service_Changes_031526-Weekday,Major_Service_Changes_031526-Weekday-RT10-A-OB-1735-d3c026e,Joyce,0,10,RT10-A-OB,1,1,10
+RT123,Seasonal-Weekday,Seasonal-Weekday-RT123-A-OB-1230-d530a0a,,0,,RT123-A-OB,1,1,
+RT123,Seasonal-Su,Seasonal-Su-RT123-A-IB-1820-d995d5a,,1,,RT123-A-IB,1,1,
+RT123,Major_Service_Changes_031526-Su,Major_Service_Changes_031526-Su-RT123-A-OB-1505-dd5882a,,0,1,RT123-A-OB,1,1,
+RT123,Seasonal-Sa,Seasonal-Sa-RT123-A-OB-0725-e24c682,,0,,RT123-A-OB,1,1,
+RT123,Seasonal-Weekday,Seasonal-Weekday-RT123-A-IB-2020-e623aa4,,1,,RT123-A-IB,1,1,
+RT10,Major_Service_Changes_031526-Weekday,Major_Service_Changes_031526-Weekday-RT10-A-OB-1020-e93f7f4,Joyce,0,10,RT10-A-OB,1,1,10
+RT10,Major_Service_Changes_031526-Weekday,Major_Service_Changes_031526-Weekday-RT10-A-OB-1245-f42cb1f,Joyce,0,10,RT10-A-OB,1,1,10
+RT123,Seasonal-Weekday,Seasonal-Weekday-RT123-A-OB-1800-ffadf72,,0,,RT123-A-OB,1,1,

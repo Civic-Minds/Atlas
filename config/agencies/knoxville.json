@@ -8,16 +8,40 @@
   ],
   "feedUrl": "https://knoxville.syncromatics.com/gtfs",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3512/latest.zip",
+  "excludeRouteShortNames": [
+    "51-A",
+    "51-E",
+    "51D"
+  ],
   "region": "Tennessee",
-  "lastFeedExpiry": "20991231",
-  "lastFeedVersion": "MARCH 3/14",
-  "lastRefreshedAt": "2026-08-10",
+  "lastFeedExpiry": "20281012",
+  "lastFeedVersion": "August 2026 Shake-Up",
+  "lastRefreshedAt": "2026-10-12",
   "cities": [
     "Knoxville, Tennessee"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",
-  "timezone": "America/New_York"
+  "timezone": "America/New_York",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://knoxville.syncromatics.com/gtfs",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 110
+    },
+    "checkedAt": "2026-10-12"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

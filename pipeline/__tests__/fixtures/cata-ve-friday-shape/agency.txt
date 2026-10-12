@@ -1,0 +1,2 @@
+agency_id,agency_name,agency_url,agency_timezone,agency_lang,agency_phone,agency_fare_url,agency_email
+0,CATA,http://www.catabus.com,America/New_York,en,8142382282,https://catabus.com/catabus/fare-options-information/,cata@catabus.com

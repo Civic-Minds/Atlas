@@ -23,9 +23,11 @@
     "North Port, Florida",
     "Bradenton, Florida"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": null,
-  "timezone": "America/New_York"
+  "expiredFeedCheckExpiry": "20261204",
+  "timezone": "America/New_York",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://breezerider.tripsparkhost.com/gtfs/Static/google_transit.zip"
 }

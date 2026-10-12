@@ -7,16 +7,35 @@
     -79.05
   ],
   "feedUrl": "https://files.mobilitydatabase.org/tld-89/latest.zip",
-  "lastFeedExpiry": "20991231",
-  "lastFeedVersion": "Summer 2026",
+  "lastFeedExpiry": "20281012",
+  "lastFeedVersion": "Fall 2026 Update (No Special Services)",
   "region": "North Carolina",
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "2026-10-12",
   "cities": [
     "Chapel Hill, North Carolina"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",
-  "timezone": "America/New_York"
+  "timezone": "America/New_York",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/tld-89/latest.zip",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 74
+    },
+    "checkedAt": "2026-10-12"
+  },
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0
 }

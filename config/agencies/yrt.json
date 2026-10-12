@@ -30,7 +30,7 @@
     "Etobicoke, Ontario",
     "Pickering, Ontario"
   ],
-  "lastFeedCheckAt": "20261007",
+  "lastFeedCheckAt": "20261012",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261031",
@@ -49,5 +49,7 @@
       "featureCount": 338
     },
     "checkedAt": "2026-09-07"
-  }
+  },
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://www.yrt.ca/google/google_transit.zip"
 }

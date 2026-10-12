@@ -58,6 +58,7 @@ export function synthesizeMissingDirections(gtfs: GtfsData): GtfsData {
 
     const sortedGroups = [...groups.entries()].sort((a, b) => b[1].length - a[1].length);
     if (sortedGroups.length > 0) {
+      (gtfs.synthesizedDirectionRouteIds ??= new Set()).add(rTrips[0].route_id);
       const [key0, trips0] = sortedGroups[0];
       for (const t of trips0) {
         t.direction_id = '0';

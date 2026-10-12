@@ -121,3 +121,170 @@ describe('reference date inside the service period (SCT, #658)', () => {
     expect(getActiveServiceIds(calendar, calendarDates, 'Monday', ref).has('272-1')).toBe(true);
   });
 });
+
+describe('reference date clamp skips an expired newest period (RCT)', () => {
+  // Real RCT (Redwood Coast Transit) feed, routes 3 and 4 (route_id 117/118), unchanged
+  // calendar.txt and calendar_dates.txt. Regular service runs Dec 2025-Dec 2026 and a
+  // summer period ran Jun 12-Aug 23 2026. The SCT clamp above moved the reference date to
+  // the summer start (Jun 12), where Regular and Summer Tue-Fri both run: two hourly loops
+  // 1-3 minutes apart were pooled into a 4-minute (118) and 30-minute (117) headway.
+  // Hand count, Wed Oct 14 2026 (Regular Tue-Fri only): 117 runs 08:01-17:01, every gap
+  // 60; 118 runs 07:27-17:27, gaps 59-61, so its median is 60 but its 61-minute gaps keep
+  // it out of the 60 tier (as before the clamp).
+  beforeAll(() => {
+    vi.useFakeTimers({ toFake: ['Date'], now: new Date('2026-10-11T12:00:00') });
+  });
+  afterAll(() => {
+    vi.useRealTimers();
+  });
+
+  it('keeps the reference date in the running regular period', async () => {
+    const gtfs = await parseGtfsZip(new Uint8Array(await fixtureZip('rct-expired-summer-period')).buffer as ArrayBuffer);
+    expect(detectReferenceDate(gtfs.calendar!, gtfs.calendarDates, gtfs.trips)).toBe('20260202');
+  });
+
+  it('shows the hourly loops every 60 minutes on weekdays', async () => {
+    const result = await processGtfsBuffer(await fixtureZip('rct-expired-summer-period'), undefined, { slug: 'rct' });
+    const weekday = JSON.parse(result.geojson).features
+      .map((feature: any) => feature.properties)
+      .filter((p: any) => p.day === 'Weekday' && p.stopId == null);
+    for (const [route, tier] of [['117', '60'], ['118', 'infrequent']]) {
+      const features = weekday.filter((p: any) => p.routeId === route);
+      expect(features.length).toBeGreaterThan(0);
+      for (const p of features) {
+        expect(p.headway).toBe(60);
+        expect(p.tier).toBe(tier);
+        expect(p.headwayByPeriod.midday).toBe(60);
+      }
+    }
+  });
+
+  const cal = (id: string, start: string, end: string, days = '1111100') => ({
+    service_id: id, start_date: start, end_date: end,
+    monday: days[0], tuesday: days[1], wednesday: days[2], thursday: days[3], friday: days[4], saturday: days[5], sunday: days[6],
+  }) as any;
+
+  it('moves a reference inside an ended nested period to after it (main path)', () => {
+    // RCT's shape without calendar_dates: the regular period's midpoint (Jun 16) lies in
+    // the ended summer period, where both timetables run. The day after summer is used.
+    const calendar = [
+      cal('R-wk', '20251201', '20261231'), cal('R-sa', '20251201', '20261231', '0000010'),
+      cal('S-wk', '20260612', '20260823'), cal('S-sa', '20260612', '20260823', '0000010'),
+    ];
+    expect(detectReferenceDate(calendar, [], undefined)).toBe('20260824');
+  });
+
+  it('leaves future-only feeds on the newest period midpoint', () => {
+    // Nothing has started yet (today Oct 11): unchanged fallback to the latest period.
+    const calendar = [
+      cal('A-wk', '20261101', '20261231'), cal('A-sa', '20261101', '20261231', '0000010'),
+      cal('B-wk', '20270101', '20270301'), cal('B-sa', '20270101', '20270301', '0000010'),
+    ];
+    expect(detectReferenceDate(calendar, [], undefined)).toBe('20270130');
+  });
+
+  it('keeps a short holiday period that is the newest started and still running', () => {
+    // A 2-week block running today is still the newest started period, as before #734;
+    // only an ended newest period is replaced. Recorded so a change here is deliberate.
+    const calendar = [
+      cal('R-wk', '20250901', '20270630'), cal('R-sa', '20250901', '20270630', '0000010'),
+      cal('H-wk', '20261005', '20261018'), cal('H-sa', '20261005', '20261018', '0000010'),
+    ];
+    expect(detectReferenceDate(calendar, [], undefined)).toBe('20261011');
+  });
+
+  it('prefers a long running period over a short one when the newest started has ended', () => {
+    const calendar = [
+      cal('R-wk', '20250901', '20270630'), cal('R-sa', '20250901', '20270630', '0000010'),
+      cal('H-wk', '20261001', '20261020'), cal('H-sa', '20261001', '20261020', '0000010'),
+      cal('E-wk', '20261002', '20261009'), cal('E-sa', '20261002', '20261009', '0000010'),
+    ];
+    // Newest started (Oct 2-9) ended; the short Oct 1-20 block runs today but the long
+    // regular period wins, and its midpoint (Jul 31 2026) is outside the ended block.
+    expect(detectReferenceDate(calendar, [], undefined)).toBe('20260731');
+  });
+});
+
+describe('running-period reference guards (#734 follow-up)', () => {
+  // Real feeds, today Oct 12 2026. calendar.txt and calendar_dates.txt are unchanged.
+  // clallamtransit/raba keep two whole routes; carta/miami keep up to 5 trips per
+  // (route, service) with only route_id/service_id/trip_id, so every service's route set
+  // is kept.
+  beforeAll(() => {
+    vi.useFakeTimers({ toFake: ['Date'], now: new Date('2026-10-12T12:00:00') });
+  });
+  afterAll(() => {
+    vi.useRealTimers();
+  });
+
+  const reference = async (name: string) => {
+    const gtfs = await parseGtfsZip(new Uint8Array(await fixtureZip(name)).buffer as ArrayBuffer);
+    return detectReferenceDate(gtfs.calendar!, gtfs.calendarDates, gtfs.trips);
+  };
+  // Calendar-only fixtures (no stops or routes): read the three files directly.
+  const csv = (name: string, file: string): any[] => {
+    const [header, ...rows] = readFileSync(resolve(FIXTURES, name, file), 'utf8').trim().split('\n').map(l => l.split(','));
+    return rows.map(row => Object.fromEntries(header.map((h, i) => [h, row[i]])));
+  };
+  const calendarReference = (name: string) =>
+    detectReferenceDate(csv(name, 'calendar.txt'), csv(name, 'calendar_dates.txt'), csv(name, 'trips.txt'));
+  const featuresByDay = async (name: string, slug: string) => {
+    const result = await processGtfsBuffer(await fixtureZip(name), undefined, { slug });
+    const counts: Record<string, number> = {};
+    for (const feature of JSON.parse(result.geojson).features) {
+      if (feature.properties.stopId != null) continue;
+      counts[feature.properties.day] = (counts[feature.properties.day] ?? 0) + 1;
+    }
+    return counts;
+  };
+
+  // The summer period (Seasonal / Summer-*) ended Sep 6-7 and the regular period runs on.
+  // The regular weekend services are removed every summer weekend through Sep 5/6, and
+  // weekdays through Labor Day (Sep 7). Moving the reference to the day after summer
+  // (Sep 7/8) read the last summer weekend: the regular weekend service was removed and
+  // the summer one out of range, so Saturday and Sunday lost every route. The reference
+  // now moves to the first week with no fully removed day.
+  it('clallamtransit keeps its weekend routes after the summer period ends', async () => {
+    expect(await reference('clallamtransit-summer-weekend-removals')).toBe('20260911');
+    const counts = await featuresByDay('clallamtransit-summer-weekend-removals', 'clallamtransit');
+    expect(counts.Saturday).toBeGreaterThan(0);
+    expect(counts.Sunday).toBeGreaterThan(0);
+    expect(counts.Weekday).toBeGreaterThan(0);
+  });
+
+  it('raba keeps its weekend routes after the summer period ends', async () => {
+    expect(await reference('raba-summer-weekend-removals')).toBe('20260911');
+    const counts = await featuresByDay('raba-summer-weekend-removals', 'raba');
+    expect(counts.Saturday).toBeGreaterThan(0);
+    expect(counts.Sunday).toBeGreaterThan(0);
+    expect(counts.Weekday).toBeGreaterThan(0);
+  });
+
+  // Stale feeds: the main period has ended and only a small side period still runs. The
+  // reference stays where it was before #734.
+  it('carta does not switch to the small TriCounty Link period', () => {
+    // Main period May 22-Aug 15 2026 (32 routes) ended; TriCounty Link (Jan 2026-May
+    // 2027, 8 routes) runs on. Switching put the reference at Sep 15.
+    expect(calendarReference('carta-stale-main-period')).toBe('20260703');
+  });
+
+  it('carta corridors use the same reference as the routes', async () => {
+    // Routes 10 and 11 (1235/1236, main period, weekday trips) and TriCounty Link CS8
+    // (6289), shapes dropped. Corridors re-detected the reference without trips, so the
+    // route-share guard was skipped and they used Sep 15, when neither 10 nor 11 runs:
+    // their shared trunk (764916 -> 764333) lost its corridor.
+    const result = await processGtfsBuffer(await fixtureZip('carta-stale-main-corridor'), undefined, { slug: 'carta' });
+    const trunk = JSON.parse(result.corridorsGeojson).features
+      .map((feature: any) => feature.properties)
+      .filter((p: any) => p.day === 'Weekday' && p.corridorId === '764916->764333');
+    expect(trunk).toHaveLength(1);
+    expect([...trunk[0].routeIds].sort()).toEqual(['1235', '1236']);
+  });
+
+  it('miami-dade does not switch to the long period whose midpoint is in 2025', () => {
+    // Bus periods (Mar 30 / Apr 27-Jul 19 2026) ended. The newest running period, Nov 13
+    // 2023-Dec 31 2026, has its midpoint on Jun 7 2025, before the bus periods start:
+    // 47 of 122 routes and no commuter rail.
+    expect(calendarReference('miami-dade-stale-bus-periods')).toBe('20260607');
+  });
+});

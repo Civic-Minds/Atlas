@@ -24,12 +24,14 @@
   ],
   "timezone": "America/Los_Angeles",
   "lastRawArchiveKey": "20250131-ef82facebacb419b",
-  "lastFeedCheckAt": "20261007",
-  "expiredFeedCheckCount": 4,
+  "lastFeedCheckAt": "20261012",
+  "expiredFeedCheckCount": 5,
   "expiredFeedCheckSince": "20260622",
   "expiredFeedCheckExpiry": "20250131",
   "feedRefreshStatus": "stale",
   "feedRefreshError": "all available feeds expired (latest 20250131)",
-  "feedRefreshErrorAt": "20261007",
-  "feedRefreshRetryCount": 2
+  "feedRefreshErrorAt": "20261012",
+  "feedRefreshRetryCount": 3,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/riovista-ca-us/riovista-ca-us.zip"
 }
