@@ -10,6 +10,10 @@ on:
         description: 'Space-separated agency slugs to refresh (e.g. "ttc yrt"). PMTiles and history are rebuilt afterward so the map stays in sync.'
         required: false
         type: string
+      allow:
+        description: 'Space-separated reviewed release-gate overrides, each <slug>:<flag> (e.g. "xpress-ga:expired path:drop"). Passed to both the refresh and publish steps. Leave empty for the weekly run.'
+        required: false
+        type: string
 
 permissions:
   contents: write
@@ -46,12 +50,18 @@ jobs:
 
       - name: Refresh agency feeds
         run: |
+          allow_args=()
+          for pair in $ALLOW_INPUT; do
+            [[ "$pair" =~ ^[a-z0-9-]+:[a-z-]+$ ]] || { echo "Bad allow value: $pair (expected <slug>:<flag>)"; exit 1; }
+            allow_args+=(--allow "$pair")
+          done
           if [ -n "${{ inputs.agencies }}" ]; then
-            npm run refresh -- ${{ inputs.agencies }}
+            npm run refresh -- ${{ inputs.agencies }} "${allow_args[@]}"
           else
-            npm run refresh
+            npm run refresh -- "${allow_args[@]}"
           fi
         env:
+          ALLOW_INPUT: ${{ inputs.allow }}
           R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
           R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
           R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
@@ -152,8 +162,15 @@ jobs:
       # Only make the new PMTiles release public after every derived data
       # artifact, including History, has rebuilt successfully.
       - name: Publish verified data release
-        run: npm run publish-data-release
+        run: |
+          allow_args=()
+          for pair in $ALLOW_INPUT; do
+            [[ "$pair" =~ ^[a-z0-9-]+:[a-z-]+$ ]] || { echo "Bad allow value: $pair (expected <slug>:<flag>)"; exit 1; }
+            allow_args+=(--allow "$pair")
+          done
+          npm run publish-data-release -- "${allow_args[@]}"
         env:
+          ALLOW_INPUT: ${{ inputs.allow }}
           R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
           R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
           R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}

@@ -44,4 +44,16 @@ describe('weekly refresh workflow contract', () => {
     expect(workflow).toMatch(/^concurrency:\n  group: atlas-data-release\n  cancel-in-progress: false$/m);
     expect(workflow).toMatch(/^    timeout-minutes: \d+$/m);
   });
+
+  it('passes reviewed release-gate overrides to both the refresh and publish steps', () => {
+    const workflow = readFileSync(resolve('.github/workflows/refresh-feeds.yml'), 'utf8');
+    expect(workflow).toMatch(/workflow_dispatch:[\s\S]*\n      allow:\n/);
+    const refresh = workflow.slice(workflow.indexOf('      - name: Refresh agency feeds'), workflow.indexOf('      - name: Open or update refresh pull request'));
+    const publish = workflow.slice(workflow.indexOf('      - name: Publish verified data release'));
+    for (const step of [refresh, publish]) {
+      expect(step).toContain('ALLOW_INPUT: ${{ inputs.allow }}');
+      expect(step).toContain('--allow "$pair"');
+    }
+    expect(publish).toContain('npm run publish-data-release -- "${allow_args[@]}"');
+  });
 });
