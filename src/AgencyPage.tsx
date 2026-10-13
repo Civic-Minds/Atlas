@@ -4,6 +4,7 @@ import { ArrowRight } from 'lucide-react';
 import {
   bandCounts,
   agencyDatesText,
+  introName,
   agencyMapHref,
   agencyPageH1,
   agencyPagePath,
@@ -43,22 +44,37 @@ function readEmbeddedData(slug: string | undefined): AgencyPageData | null {
  * so no other agency's data ships with the page. The dev server has no prerendered HTML and
  * loads from the full summary file instead (dead code in production builds).
  */
-/** The intro sentence, once, under the title: connecting agencies named in it are links when they have a page. */
-function Intro({ intro, connections }: { intro: string; connections: AgencyPageData['connections'] }) {
-  const at = intro.indexOf(CONNECTS_WITH);
-  const { named, others } = connectionNames(connections);
+/**
+ * The intro sentence, once, under the title. The place links to its area page when the agency has one, and connecting
+ * agencies named in it are links when they have a page.
+ */
+function Intro({ data }: { data: AgencyPageData }) {
+  const { intro, introLead, place, connections, area } = data;
   const sentence = 'mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]';
-  if (at < 0 || named.length === 0) return <p className={sentence}>{intro}</p>;
+  const link = `${LINK} underline underline-offset-2`;
+  const placeAt = introLead.length;
+  if (!intro.startsWith(introLead) || !intro.startsWith(place, placeAt)) return <p className={sentence}>{intro}</p>;
+  const at = intro.indexOf(CONNECTS_WITH, placeAt);
+  const { named, others } = connectionNames(connections);
+  const between = intro.slice(placeAt + place.length, at < 0 ? intro.length - 1 : at);
   return (
     <p className={sentence}>
-      {intro.slice(0, at)} and connects with{' '}
-      {named.map((c, i) => (
-        <span key={c.slug}>
-          {i > 0 ? (i === named.length - 1 && others === 0 ? ' and ' : ', ') : ''}
-          {c.page ? <a className={`${LINK} underline underline-offset-2`} href={agencyPagePath(c.slug)}>{c.name}</a> : c.name}
-        </span>
-      ))}
-      {others > 0 ? ` and ${others} ${others === 1 ? 'other' : 'others'}` : ''}.
+      {introLead}
+      {area ? <a className={link} href={`/area/${area.slug}`}>{place}</a> : place}
+      {between}
+      {at >= 0 && named.length > 0 && (
+        <>
+          {' and connects with '}
+          {named.map((c, i) => (
+            <span key={c.slug}>
+              {i > 0 ? (i === named.length - 1 && others === 0 ? ' and ' : ', ') : ''}
+              {c.page ? <a className={link} href={agencyPagePath(c.slug)}>{c.name}</a> : c.name}
+            </span>
+          ))}
+          {others > 0 ? ` and ${others} ${others === 1 ? 'other' : 'others'}` : ''}
+        </>
+      )}
+      .
     </p>
   );
 }
@@ -122,18 +138,19 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
               Open in the map <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </a>
           </div>
-          <Intro intro={data!.intro} connections={data!.connections} />
+          <Intro data={data!} />
 
           <section className="mt-14" aria-labelledby="routes-heading">
             <h2 id="routes-heading" className="text-xl font-black tracking-tight">Routes and weekday frequency</h2>
             <p className="mt-3 text-base font-bold">Weekday midday frequency, by route</p>
             <FrequencyBar counts={bandCounts(agency.routes)} />
-            <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">Each route is judged by its slower direction. A dash means no sustained service in that period.</p>
+            <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">The bar splits this agency's routes by how often they run on a weekday midday. Each route is judged by its slower direction.</p>
+            <p className="mt-8 text-sm leading-6 text-[var(--text-muted)]">A dash means no regular service in that period.</p>
             {stats.byMode.map(group => (
-              <div key={group.mode} className="mt-8 overflow-x-auto">
+              <div key={group.mode} className="mt-4 overflow-x-auto">
                 <table className="w-full min-w-[44rem] table-fixed border-collapse text-left text-sm">
                   <colgroup><col className="w-64" /><col className="w-28" /><col className="w-28" /><col className="w-28" /><col className="w-28" /><col className="w-28" /></colgroup>
-                  <caption className="pb-2 text-left text-base font-black">{group.label} routes ({group.routes.length})</caption>
+                  <caption className="pb-2 text-left text-base font-black">{group.label} routes <span className="ml-1 font-normal text-[var(--text-muted)]">{group.routes.length}</span></caption>
                   <thead>
                     <tr className="text-[var(--text-dim)]">
                       <th scope="col" className="py-1.5 pr-4 font-bold">Route</th>
@@ -174,9 +191,13 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
             </section>
           )}
 
+          <a href="/agencies" className={`${PAGE_ACTION} mt-6`}>
+            See all agencies <ArrowRight className="h-4 w-4" aria-hidden="true" />
+          </a>
+
           <p className="mt-12 text-sm leading-6 text-[var(--text-dim)]">
-            Scheduled service, not live arrivals. {agencyDatesText(agency, data!.releaseDate)}
-            {agency.websiteUrl && <> Official site: <a className={LINK} href={agency.websiteUrl} rel="noopener noreferrer">{agency.name}</a>.</>}
+            {agencyDatesText(agency, data!.releaseDate)}
+            {agency.websiteUrl && <> Agency website: <a className={LINK} href={agency.websiteUrl} rel="noopener noreferrer">{introName(agency.name, agency.city)}</a>.</>}
           </p>
         </article>
 

@@ -90,6 +90,9 @@ export interface AgencyPageData {
   area?: { slug: string; name: string };
   /** The one-sentence introduction, also the opening of the meta description. */
   intro: string;
+  /** The place the intro names, and the text before it, so the page can link the place to its area page. */
+  place: string;
+  introLead: string;
   /** Connecting agencies (stops within 150 m), with whether each has a page to link to. */
   connections: Array<AgencyConnection & { page: boolean }>;
 }
@@ -131,10 +134,29 @@ export function agencyIntroSentence(
 ): string {
   const n = a.routes.length;
   if (n === 0) return `${a.name} has no weekday routes in the data.`;
-  let s = `${a.name} operates ${n.toLocaleString('en-US')} ${n === 1 ? 'route' : 'routes'}${modes.length > 1 ? ` (${modesText(modes, ', ')})` : ''} in ${place}`;
+  let s = `${introLead(a, place, modes)}${place}`;
   if (a.stops) s += ` with ${a.stops.toLocaleString('en-US')} ${a.stops === 1 ? 'stop' : 'stops'}`;
   if (connections.length) s += `${CONNECTS_WITH}${namesList(connections.map(c => c.name))}`;
   return `${s}.`;
+}
+
+/** The agency name without a trailing "(Place)" when the sentence names that same place: "UM Transit Services (Ann Arbor)" in Ann Arbor. */
+export function introName(name: string, place: string): string {
+  const m = /^(.*\S)\s+\(([^)]+)\)$/.exec(name);
+  if (!m) return name;
+  const paren = m[2].toLowerCase();
+  const where = place.toLowerCase();
+  return where.includes(paren) || paren.includes(where.replace(/^the /, '')) ? m[1] : name;
+}
+
+/** Everything in the intro before the place: "Hamilton Street Railway operates 31 routes in ". */
+export function introLead(
+  a: Pick<AgencyPageSummary, 'name' | 'routes'>,
+  place: string,
+  modes: ReadonlyArray<{ label: string; routes: number }> = [],
+): string {
+  const n = a.routes.length;
+  return `${introName(a.name, place)} operates ${n.toLocaleString('en-US')} ${n === 1 ? 'route' : 'routes'}${modes.length > 1 ? ` (${modesText(modes, ', ')})` : ''} in `;
 }
 
 /** The prerendered HTML carries its data in <script type="application/json" id=...>. */
@@ -158,7 +180,8 @@ export function agencyPageData(
   const place = area && agencySpansArea(a.bbox, area.bbox) ? areaRegionName(area) : a.city;
   const areaRef = area ? { slug: area.slug, name: area.name } : undefined;
   const { connections: _drop, ...agency } = a;
-  return { agency, releaseDate, ...(areaRef ? { area: areaRef } : {}), nearby: others.map(o => ({ slug: o.slug, name: o.name })), intro: agencyIntroSentence(a, place, connections, agencyStats(a).byMode.map(m => ({ label: m.label, routes: m.routes.length }))), connections };
+  const modes = agencyStats(a).byMode.map(m => ({ label: m.label, routes: m.routes.length }));
+  return { agency, releaseDate, ...(areaRef ? { area: areaRef } : {}), nearby: others.map(o => ({ slug: o.slug, name: o.name })), intro: agencyIntroSentence(a, place, connections, modes), place, introLead: introLead(a, place, modes), connections };
 }
 
 const MAX_AREA_LIST = 12;
@@ -339,15 +362,28 @@ export function agencyMapHref(a: AgencyPageIdentity): string {
 }
 
 /** The dates, each named for what it is: the agency's schedule, and the Atlas data release it came from. */
+/** True when a yyyymmdd or ISO date is before the release's date (the day the data was last updated). */
+function endedBefore(through: string | null | undefined, releaseDate: string | null): boolean {
+  const t = through ? /^(\d{4})-?(\d{2})-?(\d{2})/.exec(through) : null;
+  const r = releaseDate ? /^(\d{4})-?(\d{2})-?(\d{2})/.exec(releaseDate) : null;
+  return !!t && !!r && `${t[1]}${t[2]}${t[3]}` < `${r[1]}${r[2]}${r[3]}`;
+}
+
+/**
+ * The page footer in plain words: what the numbers are based on, when the timetable was published and how long it runs,
+ * and when Atlas last updated the page. A clause whose date is missing is left out; an ended timetable says so.
+ */
 export function agencyDatesText(a: Pick<AgencyPageSummary, 'lastRefreshedAt' | 'validThrough'>, releaseDate: string | null): string {
-  const parts: string[] = [];
-  const refreshed = formatDataDate(a.lastRefreshedAt);
+  const published = formatDataDate(a.lastRefreshedAt);
   const through = formatDataDate(a.validThrough);
   const release = formatDataDate(releaseDate);
-  if (refreshed) parts.push(`Schedule refreshed ${refreshed}`);
-  if (through) parts.push(`valid through ${through}`);
-  const schedule = parts.join(', ');
-  return [schedule, release ? `Atlas data release ${release}` : ''].filter(Boolean).join('. ') + '.';
+  const timetable = through && endedBefore(a.validThrough, releaseDate)
+    ? `This timetable ended on ${through}; the agency hasn't published a newer one yet.`
+    : published && through ? `This timetable was published ${published} and covers service until ${through}.`
+    : published ? `This timetable was published ${published}.`
+    : through ? `This timetable covers service until ${through}.`
+    : '';
+  return ["Based on the agency's published timetable, not live arrivals.", timetable, release ? `Atlas last updated this page ${release}.` : ''].filter(Boolean).join(' ');
 }
 
 /** "Oct 12, 2026" from an ISO or yyyymmdd date; null when unusable. */
