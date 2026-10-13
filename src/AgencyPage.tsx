@@ -129,8 +129,8 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
                   <thead>
                     <tr className="text-[var(--text-dim)]">
                       <th scope="col" className="py-1.5 pr-4 font-bold">Route</th>
-                      <th scope="col" className="py-1.5 pr-4 font-bold">Midday</th>
                       <th scope="col" className="py-1.5 pr-4 font-bold">AM peak</th>
+                      <th scope="col" className="py-1.5 pr-4 font-bold">Midday</th>
                       <th scope="col" className="py-1.5 font-bold">PM peak</th>
                     </tr>
                   </thead>
@@ -141,8 +141,8 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
                         {r.night
                           ? <td colSpan={3} className="py-1.5 text-[var(--text-muted)]">Night only</td>
                           : <>
-                              <td className="py-1.5 pr-4">{cell(r.midday, r)}</td>
                               <td className="py-1.5 pr-4">{cell(r.am, r)}</td>
+                              <td className="py-1.5 pr-4">{cell(r.midday, r)}</td>
                               <td className="py-1.5">{cell(r.pm, r)}</td>
                             </>}
                       </tr>
