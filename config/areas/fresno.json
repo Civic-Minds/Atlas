@@ -17,9 +17,9 @@
     36.842449999955846,
     -119.63965849998974
   ],
-  "largeMetro": false,
+  "largeMetro": true,
   "agencies": [
     "fax"
   ],
-  "page": false
+  "page": true
 }

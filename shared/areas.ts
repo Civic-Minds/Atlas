@@ -1,5 +1,8 @@
 /** Metro area config (config/areas/*.json) and its naming rules. Pure, shared by the build scripts and the pages. */
 
+import largeMetros from './data/large-metros.json';
+import { metroKey, type LargeMetro } from './largeMetros';
+
 export type AreaType = 'MSA' | 'MicroSA' | 'CMA' | 'CA';
 
 export interface AreaConfig {
@@ -14,29 +17,13 @@ export interface AreaConfig {
   cities: string[];
   bbox: [number, number, number, number];
   center: [number, number];
-  /** Among the largest metro areas (LARGE_METROS), so a single large agency still earns a page. */
+  /** Among the largest metro areas (shared/data/large-metros.json), so a single large agency still earns a page. */
   largeMetro: boolean;
   agencies: string[];
   /** Whether this area gets a page. */
   page: boolean;
   note?: string;
 }
-
-/**
- * About the 50 largest US metropolitan statistical areas (2020 Census) and the 10 largest Canadian
- * CMAs (2021 Census), by the name an area carries here. A committed list, so it is reviewable; a
- * one-agency area gets a page only when it is on it.
- */
-/** An entry may carry a state ("Columbus, OH") where other metros share the name. */
-export const LARGE_METROS: readonly string[] = [
-  'New York', 'Los Angeles', 'Chicago', 'Dallas', 'Houston', 'Washington', 'Philadelphia', 'Miami', 'Atlanta', 'Boston',
-  'Phoenix', 'San Francisco', 'Riverside', 'Detroit', 'Seattle', 'Minneapolis', 'San Diego', 'Tampa', 'Denver', 'Baltimore',
-  'St. Louis', 'Orlando', 'Charlotte', 'San Antonio', 'Portland, OR', 'Sacramento', 'Pittsburgh', 'Austin', 'Las Vegas', 'Cincinnati',
-  'Kansas City', 'Columbus, OH', 'Indianapolis', 'Cleveland', 'San Jose', 'Nashville', 'Virginia Beach', 'Providence', 'Jacksonville, FL', 'Milwaukee',
-  'Oklahoma City', 'Raleigh', 'Memphis', 'Richmond, VA', 'Louisville', 'New Orleans', 'Salt Lake City', 'Hartford', 'Buffalo', 'Birmingham, AL',
-  // Canada
-  'Toronto', 'Montréal', 'Vancouver', 'Ottawa', 'Calgary', 'Edmonton', 'Winnipeg', 'Québec', 'Hamilton', 'Kitchener',
-];
 
 /** Official areas folded into the region people mean. The first member names the merged area's anchor. */
 export const MERGED_AREAS: ReadonlyArray<{ name: string; country: 'United States' | 'Canada'; members: string[]; note: string }> = [
@@ -68,11 +55,12 @@ export function areaPagePath(slug: string): string {
   return `${AREA_PATH_PREFIX}${slug}`;
 }
 
-/** Whether an area is one of LARGE_METROS: by name, and by state where the entry names one. */
-export function isLargeMetro(name: string, officialName: string): boolean {
-  const states = (officialName.split(',')[1] ?? '').trim().split('-');
-  return LARGE_METROS.some(entry => {
-    const [n, st] = entry.split(',').map(x => x.trim());
-    return n === name && (!st || states.includes(st));
-  });
+/**
+ * Whether an area is one of the large metros (shared/data/large-metros.json: the 50 largest US
+ * MSAs by Census Bureau estimates and the 10 largest Canadian CMAs by the 2021 Census, generated
+ * by scripts/build-large-metros.ts). A merged area counts when any official part does.
+ */
+export function isLargeMetro(area: Pick<AreaConfig, 'country' | 'officialName'>): boolean {
+  const keys = new Set(area.officialName.split(' + ').map(metroKey));
+  return (largeMetros as LargeMetro[]).some(m => m.country === area.country && keys.has(metroKey(m.name)));
 }

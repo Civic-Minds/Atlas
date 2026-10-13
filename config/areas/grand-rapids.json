@@ -19,9 +19,9 @@
     42.94401500007321,
     -85.97148700017482
   ],
-  "largeMetro": false,
+  "largeMetro": true,
   "agencies": [
     "the-rapid"
   ],
-  "page": false
+  "page": true
 }

@@ -5,6 +5,7 @@ import {
   areaAboutParagraph, areaDatesText, areaMapHref, areaPageDescription, areaPageH1, areaPageJsonLd, areaPageTitle,
   areaSpanShort, areaSubtitle, buildAreaPageData, resolveAreaSeo, type AreaPageData,
 } from './areaPages';
+import { rankLargeMetros, parseCsv } from './largeMetros';
 import { MERGED_AREAS, isLargeMetro, areaSlug, mainCities, type AreaConfig } from './areas';
 
 const r = (name: string, mode: number, midday: number | null, am = midday, pm = midday): AgencyPageRoute => ({ name, longName: null, mode, midday, am, pm });
@@ -78,11 +79,22 @@ describe('areaAboutParagraph', () => {
 });
 
 describe('naming', () => {
-  it('tells a large metro from a same-named small one', () => {
-    expect(isLargeMetro('Columbus', 'Columbus, OH')).toBe(true);
-    expect(isLargeMetro('Columbus', 'Columbus, GA-AL')).toBe(false);
-    expect(isLargeMetro('Portland', 'Portland-South Portland, ME')).toBe(false);
-    expect(isLargeMetro('Portland', 'Portland-Vancouver-Hillsboro, OR-WA')).toBe(true);
+  it('tells a large metro from a same-named small one, by official name', () => {
+    expect(isLargeMetro({ country: 'United States', officialName: 'Columbus, OH' })).toBe(true);
+    expect(isLargeMetro({ country: 'United States', officialName: 'Columbus, GA-AL' })).toBe(false);
+    expect(isLargeMetro({ country: 'United States', officialName: 'Portland-South Portland, ME' })).toBe(false);
+    expect(isLargeMetro({ country: 'United States', officialName: 'Portland-Vancouver-Hillsboro, OR-WA' })).toBe(true);
+    expect(isLargeMetro({ country: 'Canada', officialName: "Ottawa - Gatineau (Ontario part / partie de l'Ontario)" })).toBe(true);
+    expect(isLargeMetro({ country: 'Canada', officialName: 'Toronto + Hamilton + Oshawa' })).toBe(true);
+    expect(isLargeMetro({ country: 'Canada', officialName: 'London' })).toBe(false);
+  });
+
+  it('ranks the committed population files: 50 US MSAs and 10 CMAs, largest first', () => {
+    const list = rankLargeMetros(readFileSync('shared/data/metro-population/us-cbsa-population-2024.csv', 'utf8'), readFileSync('shared/data/metro-population/ca-cma-population-2021.csv', 'utf8'));
+    expect(list.filter(m => m.country === 'United States')).toHaveLength(50);
+    expect(list.filter(m => m.country === 'Canada').map(m => m.name).slice(0, 3)).toEqual(['Toronto', 'Montréal', 'Vancouver']);
+    expect(JSON.parse(readFileSync('shared/data/large-metros.json', 'utf8'))).toEqual(list);
+    expect(parseCsv('a,b\n"x,y",2\n')).toEqual([{ a: 'x,y', b: '2' }]);
   });
 
   it('reads main cities from official names and makes slugs', () => {
@@ -122,7 +134,7 @@ describe('committed areas (config/areas)', () => {
   it('pages only for metros with 2+ agencies, or one agency in a large metro', () => {
     for (const a of areas) {
       if (a.type === 'MicroSA' || a.type === 'CA') expect(a.page, a.slug).toBe(false);
-      if (a.page && a.agencies.length < 2) expect(isLargeMetro(a.name, a.officialName), a.slug).toBe(true);
+      if (a.page && a.agencies.length < 2) expect(isLargeMetro(a), a.slug).toBe(true);
     }
   });
 
