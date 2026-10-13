@@ -38,6 +38,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Fixed
 
+- **The expired-timetable notice on route cards is smaller and reads properly**: it was bold and oversized after the type-scale change and said "Atlas's latest the Grand River Transit schedule for Waterloo Region ended"; it now says "Grand River Transit's timetable ended on Apr 26, 2026." in regular weight, with no divider line above it, and the expanded version puts the check history in its own paragraph instead of running it on.
 - **The hidden-routes list now looks like the other route lists**: agency names are a lighter group header, routes use the standard row, and the divider lines are gone, so agencies and routes are easy to tell apart.
 - **Buffalo Metro Rail is counted when the LRT filter is on**: the map drew the line but the route counter showed 0 ([#811](https://github.com/Civic-Minds/Atlas/issues/811))
 - **The In view route count matches the lines you can see**: one line published under several route IDs was counted once per ID ([#399](https://github.com/Civic-Minds/Atlas/issues/399)).

@@ -564,18 +564,22 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
             </div>
           )}
 
-          {view === 'outdated-schedule' && (
+          {view === 'outdated-schedule' && (() => {
+            const checkHistory = expiredFeedCheckHistory({
+              count: helpContext?.expiredFeedCheckCount,
+              since: helpContext?.expiredFeedCheckSince,
+              lastChecked: helpContext?.lastFeedCheckAt,
+              lastRefreshed: helpContext?.lastRefreshedAt,
+            });
+            return (
             <div className="h-full overflow-y-auto px-5 py-4 space-y-4">
               {helpContext?.agencyName && (
                 <p className="text-xs text-[var(--text-primary)] leading-relaxed">
                   {expiredFeedNotice(helpContext.agencyName, helpContext.expDateStr, helpContext.manualFeedSource)}
-                  {expiredFeedCheckHistory({
-                    count: helpContext.expiredFeedCheckCount,
-                    since: helpContext.expiredFeedCheckSince,
-                    lastChecked: helpContext.lastFeedCheckAt,
-                    lastRefreshed: helpContext.lastRefreshedAt,
-                  })}
                 </p>
+              )}
+              {helpContext?.agencyName && checkHistory && (
+                <p className="text-xs text-[var(--text-primary)] leading-relaxed">{checkHistory}</p>
               )}
               <p className="text-xs text-[var(--text-dim)] leading-relaxed">
                 {EXPIRED_FEED_EXPLANATION}
@@ -602,7 +606,8 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                 <Mail className="w-3 h-3 text-[var(--text-dim)]" />
               </a>
             </div>
-          )}
+            );
+          })()}
 
           {view === 'edge-gap-allowance' && (
             <div className="h-full overflow-y-auto px-5 py-4 space-y-4">

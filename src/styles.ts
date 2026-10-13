@@ -111,11 +111,11 @@ export const PANEL_EMPTY = 'px-4 py-3 text-xs text-[var(--text-muted)] font-bold
  * Inline notice / warning (outdated schedule, corrected data, outside filters).
  * Use via CardHelpNotice — these tokens keep one visual language.
  */
-export const CARD_NOTICE = 'text-xs font-bold text-[var(--text-dim)]';
+export const CARD_NOTICE = 'text-xs font-normal text-[var(--text-dim)]';
 export const CARD_NOTICE_ACTION =
-  'text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors font-bold cursor-pointer';
-/** Footer block under card content (border-t + dim) */
-export const CARD_NOTICE_FOOTER = 'mt-2 border-t border-[var(--border-primary)] pt-2 opacity-80';
+  'text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors font-normal cursor-pointer';
+/** Footer block under card content (spacing only, no divider) */
+export const CARD_NOTICE_FOOTER = 'mt-2 pt-1';
 /** In-list notice padding (e.g. outside-filters control) */
 export const CARD_NOTICE_INLINE = 'px-4 pt-2 pb-1 opacity-80';
 
