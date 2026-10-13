@@ -5,6 +5,7 @@ import App from './App';
 import LegalPage from './LegalPage';
 import AboutDocsPage from './AboutDocsPage';
 import AboutPage from './AboutPage';
+import ChangelogPage from './ChangelogPage';
 import './styles/index.css';
 import { FEATURES } from '../shared/config';
 import { inject } from '@vercel/analytics';
@@ -49,6 +50,8 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <Route path="/privacy" element={<LegalPage document="privacy" />} />
           <Route path="/about/docs" element={<AboutDocsPage />} />
           <Route path="/about" element={<AboutPage />} />
+          {/* Beta-only; on the public site /changelog falls through to the map. */}
+          {FEATURES.whatsNew && <Route path="/changelog" element={<ChangelogPage />} />}
           <Route path="/*" element={<App />} />
           </Routes>
         </React.Suspense>

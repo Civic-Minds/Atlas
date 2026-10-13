@@ -5,6 +5,8 @@
  * technical terms or issue numbers. Newest release first, newest item first within a release.
  * Only list things that are live on the public site; mark beta-only changes with `beta: true`
  * so they show on the beta site only. When a beta change graduates, drop its `beta` flag.
+ * Keep past releases in the list: the panel shows only the latest, /changelog shows them all.
+ * Add each new release at the top instead of replacing the previous one.
  */
 
 export interface WhatsNewItem {
@@ -18,6 +20,8 @@ export interface WhatsNewRelease {
   version: string;
   /** Month the changes went out, e.g. "October 2026". */
   month: string;
+  /** Day the release went out (YYYY-MM-DD), from the CHANGELOG release header. Orders the public changelog. */
+  date: string;
   items: WhatsNewItem[];
 }
 
@@ -25,6 +29,7 @@ export const WHATS_NEW: WhatsNewRelease[] = [
   {
     version: '3.3.0',
     month: 'October 2026',
+    date: '2026-10-12',
     items: [
       { text: 'Pick a route to fade the rest of the map, so your route stands out.' },
       { text: 'On phones, search results, settings and the About page fit better, stop names no longer break mid-word and the search bar stays on one line.' },
