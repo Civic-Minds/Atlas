@@ -2050,7 +2050,7 @@ export async function processGtfsBuffer(
           const gradePool = (weekday?: { name: DayName; tripIds: Set<string> }): string | null => {
             let worst: string | null = null;
             for (const stopId of drawnIds) {
-              const graded = scopedTerminalHeadline(branchPoolTimesAt(hsKey, drawnIds, stopId, true, weekday), day, featureRoute?.route_type ?? '', railFeature);
+              const graded = scopedTerminalHeadline(branchPoolTimesAt(hsKey, drawnIds, stopId, true, weekday), day as DayType, featureRoute?.route_type ?? '', railFeature);
               if (!graded?.tier) return null;
               worst = worse(worst, graded.tier);
             }
