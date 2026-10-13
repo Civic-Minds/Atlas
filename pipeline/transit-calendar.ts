@@ -99,11 +99,19 @@ export function detectReferenceDate(
     // not in range on that date, dropped. When today is the date of such a one-day
     // period, the reference is chosen as of the next day that isn't one.
     const oneDayPeriodStarts = new Set(multiStarts.filter(s => groups.get(s)!.every(c => c.start_date === c.end_date)));
+    // Published data is in use from the next morning, so the reference is chosen as of the
+    // day after the run: a period that ends on the run date is already over (PART's summer
+    // period ended Oct 12; a run that day published a timetable that was wrong from Oct 13),
+    // and one that starts the next day is already in force (#743).
     const todayStr = (() => {
         const d = new Date();
-        let today = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
+        const runDate = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
+        const nextDay = addDaysYmd(runDate, 1);
+        let today = nextDay;
         for (let k = 0; k < 7 && oneDayPeriodStarts.has(today); k++) today = addDaysYmd(today, 1);
-        return today;
+        // Every date a one-day period (a whole week of them): nothing to step over, so keep
+        // the next day rather than land a week out (#743 review).
+        return oneDayPeriodStarts.has(today) ? nextDay : today;
     })();
     const pastOrPresentMultiStarts = multiStarts.filter(s => s <= todayStr);
     const groupEnd = (start: string): string => {

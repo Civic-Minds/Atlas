@@ -455,3 +455,51 @@ describe('detectReferenceDate all-singleton calendar with an ended nested servic
     expect([...getActiveServiceIds(calendar, [], 'Monday', ref)]).toEqual(['Regular_Wk']);
   });
 });
+
+describe('detectReferenceDate chooses as of the day after the run (#743)', () => {
+  afterEach(() => { vi.useRealTimers(); });
+  const runOn = (d: string) => vi.useFakeTimers({ toFake: ['Date'], now: new Date(`${d}T12:00:00`) });
+  // Real PART calendar.txt: the regular period and a Cold Spring summer period ending Oct 12.
+  const calendar = [
+    cal('Sat', 'sa', '20250901', '20261231'),
+    cal('Sun', 'su', '20250901', '20261231'),
+    cal('WD', 'motuwethfr', '20250901', '20261231'),
+    cal('ColdSpringSat', 'sa', '20260523', '20261012'),
+    cal('ColdSpringSun', 'su', '20260523', '20261012'),
+  ];
+  const trips = [
+    ...Array.from({ length: 20 }, () => ({ service_id: 'WD', route_id: '1' })),
+    ...Array.from({ length: 10 }, () => ({ service_id: 'Sat', route_id: '1' })),
+    ...Array.from({ length: 10 }, () => ({ service_id: 'Sun', route_id: '1' })),
+    ...Array.from({ length: 8 }, () => ({ service_id: 'ColdSpringSat', route_id: '9' })),
+    ...Array.from({ length: 8 }, () => ({ service_id: 'ColdSpringSun', route_id: '9' })),
+  ];
+
+  it('does not publish a period that ends on the run date (PART, Oct 12)', () => {
+    for (const run of ['2026-10-12', '2026-10-13']) {
+      runOn(run);
+      const ref = detectReferenceDate(calendar, [], trips);
+      expect([...getActiveServiceIds(calendar, [], 'Saturday', ref)]).toEqual(['Sat']);
+      vi.useRealTimers();
+    }
+  });
+
+  it('a run on the last day of a holiday period still steps past it', () => {
+    // One-day holiday periods Oct 12 and 13 (back to back) next to a regular period.
+    const holiday = [
+      cal('reg-wk', 'motuwethfr', '20260101', '20261231'),
+      cal('reg-sa', 'sa', '20260101', '20261231'),
+      cal('hol-1', 'motuwethfrsasu', '20261012', '20261012'),
+      cal('hol-1b', 'motuwethfrsasu', '20261012', '20261012'),
+      cal('hol-2', 'motuwethfrsasu', '20261013', '20261013'),
+      cal('hol-2b', 'motuwethfrsasu', '20261013', '20261013'),
+    ];
+    const t = holiday.flatMap(c => Array.from({ length: 5 }, () => ({ service_id: c.service_id, route_id: 'r' })));
+    for (const run of ['2026-10-11', '2026-10-12']) {
+      runOn(run);
+      const ref = detectReferenceDate(holiday, [], t);
+      expect([...getActiveServiceIds(holiday, [], 'Tuesday', ref)]).toEqual(['reg-wk']);
+      vi.useRealTimers();
+    }
+  });
+});
