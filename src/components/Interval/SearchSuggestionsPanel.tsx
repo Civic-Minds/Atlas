@@ -1,11 +1,10 @@
 import React from 'react';
 import type { Agency } from '../../App';
 import {
-  FLOATING_CARD,
   PANEL_SECTION_HEAD,
-  LIST_ROW,
   LIST_ROW_DIM,
 } from '../../styles';
+import Panel from '../ui/Panel';
 import {
   titleCase,
   shortenAgencyName,
@@ -16,6 +15,7 @@ import {
 import RouteListRow from '../RouteListRow';
 import type { RouteListDisplay } from '../../utils/effectiveHeadway';
 import { headwayEvery } from '../../utils/headwayText';
+import ListRow from '../ui/ListRow';
 
 // Reusable/helper interfaces for route snippets
 export interface RecentRoute {
@@ -98,7 +98,7 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
   displayForRouteKey,
 }) => {
   return (
-    <div className={`${FLOATING_CARD} shrink-0 flex flex-col overflow-hidden`}>
+    <Panel className="shrink-0">
       {recentSearches.length > 0 && (
         <>
           <div className={`flex items-center justify-between ${PANEL_SECTION_HEAD}`}>
@@ -112,14 +112,14 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
           </div>
           <div>
             {recentSearches.map((s, i) => (
-              <button
+              <ListRow
                 key={i}
                 onClick={() => setQuery(s)}
-                className={`${LIST_ROW} border-b-0`}
+                className="border-b-0"
               >
                 <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors leading-tight">{s}</span>
                 <span className="text-xs text-[var(--text-dim)] font-mono">↵</span>
-              </button>
+              </ListRow>
             ))}
           </div>
         </>
@@ -181,6 +181,6 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
             <p className="text-xs text-[var(--text-dim)] italic px-4 py-3">No route suggestions in this area.</p>
           )}
       </>
-    </div>
+    </Panel>
   );
 };

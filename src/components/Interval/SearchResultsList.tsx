@@ -6,6 +6,7 @@ import RouteListRow from '../RouteListRow';
 import { routeRowLabels, routeRowRight } from './SearchSuggestionsPanel';
 import { agencyDisplayParts, shortenAgencyName, titleCase } from '../../utils/format';
 import type { RouteListDisplay } from '../../utils/effectiveHeadway';
+import ListRow from '../ui/ListRow';
 
 interface SearchSplitListProps<T> {
   headLabel: string;
@@ -159,10 +160,10 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
       renderItem={(s: StopSearchResult) => {
         const name = `${titleCase(s.stopName)}${s.direction ? ` — ${s.direction}` : ''}`;
         return (
-          <button
-            type="button"
-            aria-current={selectedStop === s.key ? 'true' : undefined}
-            className={`${LIST_ROW_SPACED} items-start gap-3 ${selectedStop === s.key ? SELECTION_ACTIVE : ''}`}
+          <ListRow
+            variant="spaced"
+            selected={selectedStop === s.key}
+            className="items-start gap-3"
             onClick={() => {
               saveRecentSearch(query);
               setQuery('');
@@ -184,7 +185,7 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
                 {shortenAgencyName(s.agencyName || '')}
               </span>
             </div>
-          </button>
+          </ListRow>
         );
       }}
     />

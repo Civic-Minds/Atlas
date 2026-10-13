@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import PageContents from './components/PageContents';
 import SiteContact from './components/SiteContact';
 import SiteFooter from './components/SiteFooter';
-import SiteHeader from './components/SiteHeader';
+import PageShell from './components/ui/PageShell';
 
 type LegalDocument = 'terms' | 'privacy';
 
@@ -44,9 +44,7 @@ const CONTENTS = {
 export default function LegalPage({ document }: { document: LegalDocument }) {
   const privacy = document === 'privacy';
   return (
-    <main className="min-h-screen bg-[var(--bg-app)] text-[var(--text-primary)] px-5 py-8 sm:px-8">
-      <div className="max-w-5xl mx-auto">
-        <SiteHeader />
+    <PageShell>
         <div className="mt-10 lg:grid lg:grid-cols-[12rem_minmax(0,42rem)] lg:gap-12 lg:items-start">
           <PageContents items={CONTENTS[privacy ? 'privacy' : 'terms'].map(([id, label]) => ({ id, label }))} />
           <article className="space-y-8 text-sm leading-relaxed text-[var(--text-dim)]">
@@ -117,7 +115,6 @@ export default function LegalPage({ document }: { document: LegalDocument }) {
           <SiteFooter />
           </article>
         </div>
-      </div>
-    </main>
+    </PageShell>
   );
 }

@@ -1,5 +1,6 @@
 import React from 'react';
-import { LIST_ROW, LIST_ROW_SPACED, LIST_ROW_PRIMARY, LIST_ROW_DIM, SELECTION_ACTIVE, SELECTION_ACTIVE_TEXT } from '../styles';
+import { LIST_ROW_PRIMARY, LIST_ROW_DIM, SELECTION_ACTIVE_TEXT } from '../styles';
+import ListRow from './ui/ListRow';
 
 interface RouteListRowProps {
   shortName: string;
@@ -29,12 +30,13 @@ export default function RouteListRow({
 }: RouteListRowProps) {
   const fullName = name && name !== shortName ? `${shortName} ${name}` : shortName;
   return (
-    <button
+    <ListRow
+      variant={variant === 'spaced' ? 'spaced' : 'divided'}
+      selected={selected}
       onClick={onClick}
       onMouseEnter={onHoverChange ? () => onHoverChange(true) : undefined}
       onMouseLeave={onHoverChange ? () => onHoverChange(false) : undefined}
-      aria-current={selected ? 'true' : undefined}
-      className={`${variant === 'spaced' ? LIST_ROW_SPACED : LIST_ROW} ${stacked || subtitle ? 'items-start' : ''} ${selected ? SELECTION_ACTIVE : ''} ${className ?? ''}`}
+      className={`${stacked || subtitle ? 'items-start' : ''} ${className ?? ''}`.trim()}
     >
       {stacked ? (
         <div className="min-w-0 flex-1">
@@ -60,6 +62,6 @@ export default function RouteListRow({
           {right}
         </>
       )}
-    </button>
+    </ListRow>
   );
 }

@@ -1,13 +1,11 @@
 import { ArrowRight } from 'lucide-react';
 import { FEATURES, FEATURE_ROUTES } from '../shared/config';
-import SiteHeader from './components/SiteHeader';
+import PageShell from './components/ui/PageShell';
 import SiteFooter from './components/SiteFooter';
 
 export default function AboutPage() {
   return (
-    <main className="min-h-screen bg-[var(--bg-app)] px-6 py-8 text-[var(--text-primary)] sm:px-10 lg:px-16">
-      <div className="mx-auto max-w-5xl">
-        <SiteHeader />
+    <PageShell variant="wide">
 
         <section className="border-b border-[var(--border-primary)] pb-20 pt-24 sm:pt-32">
           <div>
@@ -65,7 +63,6 @@ export default function AboutPage() {
         </section>}
 
         <SiteFooter />
-      </div>
-    </main>
+    </PageShell>
   );
 }

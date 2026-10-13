@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { X, ExternalLink, Search, Radio, ArrowLeft, ChevronRight, Mail } from 'lucide-react';
-import { DROPDOWN_PANEL, dropdownAnim, SEARCH_PILL, SEARCH_FIELD, Z_MODAL_BG, APP_TAB_ACTIVE, APP_TAB_INACTIVE, AGENCY_LIST_ROW, AGENCY_LIST_PRIMARY } from '../styles';
+import { DROPDOWN_PANEL, dropdownAnim, SEARCH_PILL, SEARCH_FIELD, Z_MODAL_BG, AGENCY_LIST_ROW, AGENCY_LIST_PRIMARY } from '../styles';
+import Pill from './ui/Pill';
 import { LIVE_POLLING_ROUTES, liveCoverageForRouteNames, type LiveCoverage } from '../../shared/livePollingConfig';
 import { R2_PUBLIC_URL, FEATURES } from '../../shared/config';
 import { agencyDisplayParts, formatStoredDate } from '../utils/format';
@@ -14,6 +15,7 @@ import { trackEvent } from '../lib/analytics';
 import { OutboundLink } from './OutboundLink';
 import { EXPIRED_FEED_CADENCE, EXPIRED_FEED_CONTEXT, EXPIRED_FEED_EXPLANATION, MANUAL_FEED_CONTEXT, NO_ROUTE_SHAPE_DETAIL, NO_ROUTE_SHAPE_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice } from '../content/noticeCopy';
 import RegionFilterPills from './RegionFilterPills';
+import ListRow from './ui/ListRow';
 
 interface HistoryAgencySummary { slug: string; name: string; region: string; routes: unknown[] }
 
@@ -436,8 +438,9 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                   {agencyFilterOptions.map(([id, label]) => {
                     const on = id === 'all' ? agencyFeatureFilters.size === 0 : agencyFeatureFilters.has(id);
                     return (
-                      <button
+                      <Pill
                         key={id}
+                        tone="glass"
                         onClick={() => setAgencyFeatureFilters(current => {
                           if (id === 'all') return new Set();
                           const next = new Set(current);
@@ -445,14 +448,12 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                           else next.add(id);
                           return next;
                         })}
-                        aria-pressed={on}
+                        selected={on}
                         title={id === 'all' ? 'Clear status filters' : 'Combine with other filters'}
-                        className={`px-2.5 py-0.5 rounded-full text-xs font-bold border transition-colors whitespace-nowrap shrink-0 ${
-                          on ? APP_TAB_ACTIVE : APP_TAB_INACTIVE
-                        }`}
+                        className="shrink-0"
                       >
                         {label}
-                      </button>
+                      </Pill>
                     );
                   })}
                   {regionsInScope.length > 0 && (
@@ -484,10 +485,10 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                           const { primary, secondary } = agencyDisplayParts(a.name, a.cities, a.displayArea);
                           const listLabel = secondary ? `${primary} · ${secondary}` : primary;
                           return (
-                            <button
+                            <ListRow
                               key={a.slug}
+                              variant="agency"
                               onClick={() => { onAgencySelect?.(a.slug); onClose(); }}
-                              className={AGENCY_LIST_ROW}
                             >
                               <span className={AGENCY_LIST_PRIMARY} title={listLabel}>
                                 {primary}
@@ -512,7 +513,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                                   )}
                                 </div>
                               )}
-                            </button>
+                            </ListRow>
                           );
                         })}
                       </div>

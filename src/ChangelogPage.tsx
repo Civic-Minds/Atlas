@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { WhatsNewItemText } from './components/WhatsNewItemText';
 import PageContents from './components/PageContents';
-import SiteHeader from './components/SiteHeader';
+import PageShell from './components/ui/PageShell';
 import SiteFooter from './components/SiteFooter';
 import { loadDataReleases } from './lib/dataRelease';
 import { buildChangelog } from './lib/changelog';
@@ -24,9 +24,7 @@ export default function ChangelogPage({ loadReleases = loadDataReleases }: { loa
   const entries = buildChangelog(visibleWhatsNew(FEATURES.beta, WHATS_NEW), dataReleases);
 
   return (
-    <main className="min-h-screen bg-[var(--bg-app)] text-[var(--text-primary)] px-5 py-8 sm:px-8">
-      <div className="max-w-5xl mx-auto">
-        <SiteHeader />
+    <PageShell>
         <div className="mt-10 lg:grid lg:grid-cols-[12rem_minmax(0,42rem)] lg:gap-12 lg:items-start">
           <PageContents items={entries.map(entry => ({ id: entry.key, label: entry.label }))} />
           <article className="space-y-8 text-sm leading-relaxed text-[var(--text-dim)]">
@@ -54,7 +52,6 @@ export default function ChangelogPage({ loadReleases = loadDataReleases }: { loa
             <SiteFooter />
           </article>
         </div>
-      </div>
-    </main>
+    </PageShell>
   );
 }

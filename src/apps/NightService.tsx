@@ -4,11 +4,7 @@ import { getNightServiceColor } from '../utils/colors';
 import { useColorVision } from '../context/ColorVisionContext';
 import { useViewport } from '../context/ViewportContext';
 import {
-  FLOATING_CARD,
-  PANEL_ENTER,
-  PANEL_TITLE_BAR,
   PANEL_TITLE,
-  PANEL_BODY,
   PANEL_EMPTY,
   Z_PANEL,
   SIDEBAR_LEFT_FALLBACK,
@@ -17,6 +13,7 @@ import {
 import { R2_PUBLIC_URL } from '../../shared/config';
 import type { NightServiceFrequency } from '../../shared/nightService';
 import { nightServiceKey } from '../../shared/nightService';
+import Panel, { PanelBody, PanelTitleBar } from '../components/ui/Panel';
 
 interface NightServiceRoute {
   agencySlug: string;
@@ -173,14 +170,15 @@ export default function NightService({ active, sidebarLeft, layers, query = '', 
   if (!active) return null;
 
   return (
-      <div
-        className={`absolute top-[4.5rem] left-6 sm:left-[var(--sidebar-left)] ${Z_PANEL} ${SIDEBAR_PANEL_WIDTH} max-h-[calc(100vh-104px)] flex flex-col pointer-events-auto ${FLOATING_CARD} ${PANEL_ENTER} overflow-hidden`}
+      <Panel
+        enter
+        className={`absolute top-[4.5rem] left-6 sm:left-[var(--sidebar-left)] ${Z_PANEL} ${SIDEBAR_PANEL_WIDTH} max-h-[calc(100vh-104px)] pointer-events-auto`}
         style={{ '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px` } as React.CSSProperties}
       >
-        <div className={PANEL_TITLE_BAR}>
+        <PanelTitleBar>
           <Moon className="w-3 h-3 text-[var(--text-dim)] shrink-0" />
           <span className={PANEL_TITLE}>Night Service</span>
-        </div>
+        </PanelTitleBar>
 
         {data && !introDismissed && (
           <div className="relative px-4 pt-2.5 pb-3 border-b border-[var(--border-primary)]">
@@ -209,7 +207,7 @@ export default function NightService({ active, sidebarLeft, layers, query = '', 
           </p>
         )}
 
-        <div className={PANEL_BODY}>
+        <PanelBody>
           {loadState === 'loading' && <p className={PANEL_EMPTY}>Loading…</p>}
           {loadState === 'error' && <p className={PANEL_EMPTY}>Couldn't load night service data.</p>}
           {loadState === 'ready' && agencies.length === 0 && (
@@ -243,7 +241,7 @@ export default function NightService({ active, sidebarLeft, layers, query = '', 
               ))}
             </div>
           ))}
-        </div>
-      </div>
+        </PanelBody>
+      </Panel>
   );
 }

@@ -6,6 +6,8 @@ import { areaLinkFor } from '../../../shared/agencyArea';
 import RouteListRow from '../RouteListRow';
 import { routeRowLabels } from './SearchSuggestionsPanel';
 import RegionFilterPills from '../RegionFilterPills';
+import Panel, { PanelTitleBar } from '../ui/Panel';
+import ListRow from '../ui/ListRow';
 
 interface MapContextPanelProps {
   agencies: MapContextAgency[];
@@ -48,21 +50,22 @@ export const MapContextPanel: React.FC<MapContextPanelProps> = ({ agencies, mode
   }, [routes]);
 
   return (
-    <div
-      className={`${PANEL_SIDEBAR} ${SIDEBAR_PANEL_WIDTH} max-h-[calc(100vh-132px)] ${FLOATING_CARD} flex flex-col overflow-hidden pointer-events-auto`}
+    <Panel
+      sidebar
+      className="max-h-[calc(100vh-132px)] pointer-events-auto"
       style={{
         '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px`,
         ...(searchBarWidth ? { width: `${searchBarWidth}px`, maxWidth: 'none' } : {}),
       } as React.CSSProperties}
     >
-      <div className={PANEL_TITLE_BAR}>
+      <PanelTitleBar>
         <div className="min-w-0 flex-1">
           <div className={PANEL_TITLE}>In view</div>
           <div className="text-xs font-bold text-[var(--text-primary)]">
             {count} {count === 1 ? (mode === 'agencies' ? 'agency' : 'route') : (mode === 'agencies' ? 'agencies' : 'routes')}
           </div>
         </div>
-      </div>
+      </PanelTitleBar>
 
       {showRegionPills && (
         <div className="shrink-0 flex gap-1.5 overflow-x-auto items-center px-4 py-2 border-b border-[var(--border-primary)] [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none' }}>
@@ -80,13 +83,13 @@ export const MapContextPanel: React.FC<MapContextPanelProps> = ({ agencies, mode
             const area = areaLinkFor(agency.slug, FEATURES.agencyPages);
             return (
               <div key={agency.slug} className="flex items-center">
-                <button
-                  type="button"
+                <ListRow
+                  variant="spaced"
                   onClick={() => onSelectAgency?.(agency.slug)}
-                  className={`${LIST_ROW_SPACED} min-w-0 flex-1 ${onSelectAgency ? 'cursor-pointer' : 'cursor-default'}`}
+                  className={`min-w-0 flex-1 ${onSelectAgency ? 'cursor-pointer' : 'cursor-default'}`}
                 >
                   <span className={`${LIST_ROW_PRIMARY} min-w-0 break-words text-left`} title={agency.name}>{agency.name}</span>
-                </button>
+                </ListRow>
                 {area && <a href={area.href} className="mr-4 shrink-0 text-xs text-[var(--accent)] hover:underline">{area.label}</a>}
               </div>
             );
@@ -116,6 +119,6 @@ export const MapContextPanel: React.FC<MapContextPanelProps> = ({ agencies, mode
           )
         )}
       </div>
-    </div>
+    </Panel>
   );
 };

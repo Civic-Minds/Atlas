@@ -3,7 +3,8 @@ import { FEATURES } from '../shared/config';
 import PageContents from './components/PageContents';
 import SiteContact from './components/SiteContact';
 import SiteFooter from './components/SiteFooter';
-import SiteHeader from './components/SiteHeader';
+import PageShell from './components/ui/PageShell';
+import DataTable, { type DataTableColumn } from './components/ui/DataTable';
 
 const DOCS_CONTENTS = [
   ['overview', 'Overview'],
@@ -39,6 +40,19 @@ function Subsection({ title, children }: { title: string; children: ReactNode })
   );
 }
 
+const NEAR_MISS_ROWS: [string, string, string][] = [
+  ['10 minutes', '15 minutes', '10% of gaps'],
+  ['15 minutes', '20 minutes', '10% of gaps'],
+  ['20 minutes', '25 minutes', '5% of gaps'],
+  ['30 minutes', '35 minutes', '5% of gaps'],
+  ['60 minutes', '69 minutes', '5% of gaps'],
+];
+const NEAR_MISS_COLUMNS: DataTableColumn<[string, string, string]>[] = [
+  { key: 'band', header: 'Target band', cell: row => row[0] },
+  { key: 'limit', header: 'Near-miss limit', cell: row => row[1] },
+  { key: 'allowance', header: 'Allowance', cell: row => row[2] },
+];
+
 export default function AboutDocsPage() {
   const showBetaFeatures = FEATURES.beta;
   const showLive = FEATURES.live;
@@ -46,9 +60,7 @@ export default function AboutDocsPage() {
   const showResearch = FEATURES.researchApps;
 
   return (
-    <main className="min-h-screen bg-[var(--bg-app)] text-[var(--text-primary)] px-5 py-8 sm:px-8">
-      <div className="max-w-5xl mx-auto">
-        <SiteHeader />
+    <PageShell>
 
         <div className="mt-10 lg:grid lg:grid-cols-[12rem_minmax(0,42rem)] lg:gap-12 lg:items-start">
           <PageContents items={DOCS_CONTENTS.map(([id, label]) => ({ id, label }))} />
@@ -172,22 +184,12 @@ export default function AboutDocsPage() {
             <p>This band test decides whether a pattern counts as steady service, as opposed to infrequent or irregular service. Atlas tests the tightest band first and requires enough departures to cover the analyzed span at that band. For a target of <code className="text-xs text-[var(--text-primary)]">T</code> minutes, the minimum trip count is based on <code className="text-xs text-[var(--text-primary)]">ceil(span ÷ T)</code>.</p>
             <p>A gap at or below <code className="text-xs text-[var(--text-primary)]">T</code> passes directly. A slightly longer internal gap can count as a near miss when it is no more than <code className="text-xs text-[var(--text-primary)]">T + max(5 minutes, 15% of T)</code>. The number of allowed near misses is tier-specific and capped at three:</p>
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead className="text-[var(--text-primary)]">
-                  <tr>
-                    <th className="py-1 pr-4 font-bold">Target band</th>
-                    <th className="py-1 pr-4 font-bold">Near-miss limit</th>
-                    <th className="py-1 font-bold">Allowance</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr><td className="py-1 pr-4">10 minutes</td><td className="py-1 pr-4">15 minutes</td><td className="py-1">10% of gaps</td></tr>
-                  <tr><td className="py-1 pr-4">15 minutes</td><td className="py-1 pr-4">20 minutes</td><td className="py-1">10% of gaps</td></tr>
-                  <tr><td className="py-1 pr-4">20 minutes</td><td className="py-1 pr-4">25 minutes</td><td className="py-1">5% of gaps</td></tr>
-                  <tr><td className="py-1 pr-4">30 minutes</td><td className="py-1 pr-4">35 minutes</td><td className="py-1">5% of gaps</td></tr>
-                  <tr><td className="py-1 pr-4">60 minutes</td><td className="py-1 pr-4">69 minutes</td><td className="py-1">5% of gaps</td></tr>
-                </tbody>
-              </table>
+              <DataTable
+                variant="compact"
+                columns={NEAR_MISS_COLUMNS}
+                rows={NEAR_MISS_ROWS}
+                rowKey={row => row[0]}
+              />
             </div>
             <p>Atlas rounds the percentage down, does not guarantee a minimum exception, and never allows more than three near misses. A first or last gap that is genuinely at the edge of service may receive a separate allowance up to <code className="text-xs text-[var(--text-primary)]">T + 10 minutes</code>. That edge allowance also uses one of the same near-miss slots, and at least four departures must remain after the edge treatment is applied. A gap beyond the relevant limit, or too many near misses, disqualifies the band and Atlas tests the next slower one.</p>
             <p>These allowances handle ordinary schedule rounding and small deviations without turning a genuinely uneven route into a frequent one. A large gap is still a failure even if the median looks good, and the final tier is the fastest band that survives the full check. Rail uses the same tolerance logic with 5, 8, 10, 15, 30, and 60-minute bands, and is tested on midday service from 9:30 a.m. to 2:30 p.m.; the 5- and 8-minute bands are not separate options in the main map filter.</p>
@@ -362,7 +364,6 @@ export default function AboutDocsPage() {
           <SiteFooter />
           </article>
         </div>
-      </div>
-    </main>
+    </PageShell>
   );
 }

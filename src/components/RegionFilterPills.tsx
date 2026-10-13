@@ -1,5 +1,5 @@
 import React from 'react';
-import { APP_TAB_ACTIVE, APP_TAB_INACTIVE } from '../styles';
+import Pill from './ui/Pill';
 
 interface RegionFilterPillsProps {
   regions: string[];
@@ -18,31 +18,31 @@ export default function RegionFilterPills({
   return (
     <>
       {includeAll && (
-        <button
-          type="button"
+        <Pill
+          tone="glass"
           onClick={() => setSelectedRegions(new Set())}
-          aria-pressed={selectedRegions.size === 0}
+          selected={selectedRegions.size === 0}
           title="Clear region filters"
-          className={`px-2.5 py-0.5 rounded-full text-xs font-bold border transition-colors whitespace-nowrap shrink-0 ${selectedRegions.size === 0 ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
+          className="shrink-0"
         >
           All
-        </button>
+        </Pill>
       )}
       {regions.map(region => (
-        <button
+        <Pill
           key={region}
-          type="button"
+          tone="glass"
           onClick={() => setSelectedRegions(previous => {
             const next = new Set(previous);
             if (next.has(region)) next.delete(region);
             else next.add(region);
             return next;
           })}
-          aria-pressed={selectedRegions.has(region)}
-          className={`px-2.5 py-0.5 rounded-full text-xs font-bold border transition-colors whitespace-nowrap shrink-0 ${selectedRegions.has(region) ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
+          selected={selectedRegions.has(region)}
+          className="shrink-0"
         >
           {region}
-        </button>
+        </Pill>
       ))}
     </>
   );

@@ -1,17 +1,12 @@
 import { useEffect, useState } from 'react';
 import { ArrowLeft, X } from 'lucide-react';
 import { getAnalyticsConsent, initAnalytics, setAnalyticsConsent, type AnalyticsConsent } from '../lib/analytics';
-import { DROPDOWN_PANEL, dropdownAnim, MAP_BADGE, TRANSITION_BASE, Z_HEADER, Z_MODAL_TOP } from '../styles';
+import { DROPDOWN_PANEL, dropdownAnim, MAP_BADGE, Z_HEADER, Z_MODAL_TOP } from '../styles';
+import Toggle from './ui/Toggle';
 
 declare global { interface Navigator { globalPrivacyControl?: boolean } }
 
 const STRICT_COUNTRIES = new Set(['AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IE','IT','LV','LT','LU','MT','NL','PL','PT','RO','SK','SI','ES','SE','IS','LI','NO','GB','CH']);
-
-function Toggle({ on }: { on: boolean }) {
-  return <span className={`relative inline-flex h-5 w-9 shrink-0 rounded-full transition-colors ${TRANSITION_BASE} ${on ? 'bg-[var(--toggle-on-bg)]' : 'bg-[var(--toggle-off-bg)]'}`}>
-    <span className={`absolute top-1 h-3 w-3 rounded-full shadow-sm transition-transform ${TRANSITION_BASE} ${on ? 'translate-x-5 bg-[var(--toggle-knob-on)]' : 'translate-x-1 bg-[var(--toggle-knob-off)]'}`} />
-  </span>;
-}
 
 function Controls({ onClose }: { onClose: () => void }) {
   const [consent, setConsent] = useState<AnalyticsConsent | null>(getAnalyticsConsent());
@@ -37,9 +32,7 @@ function Controls({ onClose }: { onClose: () => void }) {
               <p className="text-xs font-bold text-[var(--text-primary)] leading-tight">Google Analytics</p>
               <p className="text-xs text-[var(--text-muted)] mt-1 leading-relaxed">Optional analytics helps us understand which parts of Atlas people use.</p>
             </div>
-            <button type="button" onClick={() => choose(consent === 'granted' ? 'denied' : 'granted')} aria-label="Toggle Google Analytics" role="switch" aria-checked={consent === 'granted'} className="shrink-0">
-              <Toggle on={consent === 'granted'} />
-            </button>
+            <Toggle on={consent === 'granted'} onToggle={() => choose(consent === 'granted' ? 'denied' : 'granted')} label="Toggle Google Analytics" />
           </div>
         </div>
         <a href="/privacy" className="inline-block text-[var(--accent)] hover:underline">Read the Privacy Policy →</a>

@@ -19,6 +19,7 @@ import { inferLiveDirection } from '../utils/liveDirection';
 import { CardDirectionRow, SidebarCardListRows, CARD_LIST_ROUTE } from '../components/Interval/cardUi';
 import { liveVehiclesEqual, liveVehiclesFingerprint } from '../utils/liveVehiclesFingerprint';
 import { capitalizeFirst, delayAmount, headwayAbout, headwayEvery } from '../utils/headwayText';
+import Panel, { PanelBody, PanelTitleBar } from '../components/ui/Panel';
 
 interface Props {
   agencies: Agency[];
@@ -603,7 +604,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
         className={`${PANEL_SIDEBAR} ${SIDEBAR_PANEL_WIDTH} max-h-[calc(100vh-92px)] flex flex-col gap-3 transition-opacity ${TRANSITION_SLOW} ${selectionActive ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto'}`}
         style={{ '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px` } as React.CSSProperties}
       >
-        <div className={`${PANEL_SHELL} ${PANEL_ENTER}`}>
+        <Panel enter>
 
           {/* Header */}
           {selectedGroup ? (
@@ -624,7 +625,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
               />
             </div>
           ) : (
-            <div className={PANEL_TITLE_BAR}>
+            <PanelTitleBar>
               {!isZoomedIn ? (
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--text-dim)] shrink-0" />
               ) : vehiclesInViewport > 0 ? (
@@ -645,11 +646,11 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--text-dim)] shrink-0" />
               )}
               <span className={PANEL_TITLE}>Live Vehicles</span>
-            </div>
+            </PanelTitleBar>
           )}
 
           {/* Content */}
-          <div className={PANEL_BODY}>
+          <PanelBody>
             {selectedGroup ? (
               <>
               <div className="px-4 py-4">
@@ -818,8 +819,8 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                 )}
               </>
             )}
-          </div>
-        </div>
+          </PanelBody>
+        </Panel>
       </div>
 
       {/* Toolbar */}
