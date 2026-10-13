@@ -16,6 +16,7 @@
     -122.13
   ],
   "pmtilesPending": true,
+  "poolSingleTripShapes": true,
   "feedUrl": "http://data.trilliumtransit.com/gtfs/siskiyou-ca-us/siskiyou-ca-us.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-117/latest.zip",
   "lastFeedExpiry": "20300725",
