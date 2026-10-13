@@ -49,6 +49,7 @@ interface Agency extends FeedAvailabilityEntry {
   mergeEquivalentShapeVariants?: boolean;
   mergeEquivalentShapeVariantsAllModes?: boolean;
   keepLongShapeJumps?: boolean;
+  referenceDateFromRunDate?: boolean;
   fare?: number;
   lastFeedVersion?: string | null;
   lastRawArchiveKey?: string | null;

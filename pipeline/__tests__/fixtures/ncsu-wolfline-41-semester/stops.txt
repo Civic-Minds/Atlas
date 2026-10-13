@@ -1,0 +1,3 @@
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,stop_url,location_type,stop_timezone,wheelchair_boarding,platform_code,parent_station
+154267,113,DH Hill Library Platform B,,35.788244176,-78.671402945,,,,0,,
+154393,135,Oval Dr at Koch Hall,,35.772128,-78.673453,,,,0,,

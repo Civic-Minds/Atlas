@@ -156,8 +156,10 @@ export function decideRefreshSkipUnchanged(opts: {
   peekedVersion: string | null;
   lastFeedExpiry?: string | null;
   lastFeedVersion?: string | null;
+  /** The agency reads its feed as of the run date (#774), so an unchanged feed still has new output. */
+  referenceDateFromRunDate?: boolean;
 }): RefreshSkipReason {
-  if (opts.forceRefresh || opts.hasSupplementals || opts.feedExpired) return { skip: false };
+  if (opts.forceRefresh || opts.hasSupplementals || opts.feedExpired || opts.referenceDateFromRunDate) return { skip: false };
   const { peekedExpiry, peekedVersion, lastFeedExpiry, lastFeedVersion } = opts;
   const versionKnown = !!peekedVersion && !!lastFeedVersion;
   if (versionKnown && peekedVersion !== lastFeedVersion) return { skip: false };

@@ -20,3 +20,7 @@ The commit hook blocks changes to core pipeline files unless the commit changes 
 ## Do not generalize prematurely
 
 If the evidence does not separate the real problem from legitimate cases that merely look similar, keep the fix narrow: use an agency override, exclusion, or group-specific transform rather than a global rule.
+
+## Run-date agencies
+
+Agencies with `referenceDateFromRunDate` (NCSU Wolfline, #774) are read as of the day they are processed, so a reprocess or restore on another date can legitimately produce a different timetable (semester, summer, break). Their diffs are not regressions on their own.

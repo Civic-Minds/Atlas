@@ -26,6 +26,7 @@ export interface AgencyFeedConfig {
   mergeEquivalentShapeVariants?: boolean;
   mergeEquivalentShapeVariantsAllModes?: boolean;
   keepLongShapeJumps?: boolean;
+  referenceDateFromRunDate?: boolean;
   fare?: number;
   supplementalFeedUrls?: string[];
 }
@@ -60,6 +61,7 @@ export function agencyProcessOptions(agency: AgencyFeedConfig, overrides: Agency
     mergeEquivalentShapeVariants: agency.mergeEquivalentShapeVariants,
     mergeEquivalentShapeVariantsAllModes: agency.mergeEquivalentShapeVariantsAllModes,
     keepLongShapeJumps: agency.keepLongShapeJumps,
+    referenceDateFromRunDate: agency.referenceDateFromRunDate,
     manualBaseFare: overrides.manualBaseFare ?? agency.fare,
     force: overrides.force ?? false,
   };

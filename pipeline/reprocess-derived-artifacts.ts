@@ -95,6 +95,7 @@ interface Agency {
   mergeEquivalentShapeVariants?: boolean;
   mergeEquivalentShapeVariantsAllModes?: boolean;
   keepLongShapeJumps?: boolean;
+  referenceDateFromRunDate?: boolean;
   fare?: number;
   lastFeedExpiry?: string | null;
   lastRawArchiveKey?: string | null;
