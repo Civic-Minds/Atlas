@@ -1,0 +1,34 @@
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,location_type,parent_station,stop_timezone,wheelchair_boarding
+10265,10265,Linkwood Lane at Windy Golfway (South),,43.716356,-79.325258,,,,,,2
+4728,4728,St Dennis Dr at Linkwood Lane,,43.719618,-79.327989,,,,,,1
+8012,8012,Overlea Blvd at Thorncliffe Park Dr (West),,43.705197,-79.349856,,,,,,1
+2994,2994,Pape Ave at Floyd Ave,,43.687582,-79.348221,,,,,,1
+3634,3634,Gateway Blvd South Side at Sunny Glenway East Side,,43.71162,-79.330353,,,,,,1
+2990,2990,Pape Ave at Canning Ave,,43.682431,-79.346265,,,,,,1
+10267,10267,Spanbridge Rd at Grenoble Dr,,43.713004,-79.326584,,,,,,2
+4731,4731,Wynford Dr at Wynford Heights Cres South Side,,43.726234,-79.327495,,,,,,1
+2978,2978,Overlea Blvd at Don Mills Rd West Side,,43.709806,-79.335392,,,,,,1
+2989,2989,Pape Ave at Fulton Ave South Side,,43.683787,-79.346784,,,,,,1
+4724,4724,Wynford Dr at Sakura Way,,43.725059,-79.333722,,,,,,1
+4729,4729,Opposite 100 Wynford Dr,,43.726456,-79.331376,,,,,,2
+12127,12127,Overlea Blvd at Leaside Park Dr,,43.703546,-79.351559,,,,,,1
+11260,11260,Concorde Pl at McDonald's Pl,,43.727944,-79.328295,,,,,,1
+9508,9508,Gateway Blvd at Sunny Glenway (West) West Side,,43.710687,-79.331693,,,,,,1
+11259,11259,1 and 3 Concorde Pl North Side,,43.728143,-79.328163,,,,,,1
+3689,3689,Gateway Blvd at Don Mills Rd,,43.710173,-79.334116,,,,,,1
+11338,11338,195-205-215 Wynford Dr,,43.723798,-79.324911,,,,,,1
+2986,2986,Overlea Blvd at William Morgan Dr West Side,,43.708042,-79.341737,,,,,,1
+11230,11230,Concorde Pl at Concorde Gate South Side,,43.729085,-79.328506,,,,,,1
+4726,4726,123 Wynford Dr,,43.726923,-79.329142,,,,,,1
+3000,3000,Pape Ave at Mortimer Ave,,43.685846,-79.347563,,,,,,1
+10264,10264,Linkwood Lane at 5 Shady Golfway,,43.717632,-79.326523,,,,,,2
+4518,4518,Overlea Blvd at Thorncliffe Park Dr (East) West Side,,43.707457,-79.344198,,,,,,1
+2977,2977,46 Overlea Blvd,,43.706973,-79.34627,,,,,,1
+10266,10266,Linkwood Lane at Spanbridge Rd,,43.712492,-79.324477,,,,,,2
+5988,5988,Pape Ave at O'Connor Dr,,43.693358,-79.350465,,,,,,1
+11229,11229,Concorde Pl at Concorde Pl Cul De Sac,,43.730036,-79.328253,,,,,,1
+15149,15149,Pape Ave at Gamble Ave,,43.690502,-79.349323,,,,,,1
+16602,16602,Don Valley Station,,43.72166,-79.33738,,,,,,1
+16664,16664,Wynford Dr at Eglinton Ave East Access Ramp,,43.725277,-79.326222,,,,,,1
+16696,16696,Pape Ave at Hopedale Ave,,43.696837,-79.349451,,,,,,1
+16925,16925,Pape Station,,43.679808,-79.344875,,,,,,1

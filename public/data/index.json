@@ -16561,6 +16561,7 @@
       "lastFeedVersion": "20260701",
       "lastRefreshedAt": "2026-10-12",
       "websiteUrl": "https://amarillo.gov/departments/community-services/transit",
+      "preprocess": "interpolate-untimed-stops",
       "cities": [
         "Amarillo, Texas"
       ],
@@ -21190,6 +21191,7 @@
       "expiredFeedCheckSince": null,
       "expiredFeedCheckExpiry": "20281231",
       "timezone": "America/Denver",
+      "skipClusteredJumpRepair": true,
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/streamlinetransit-mt-us/streamlinetransit-mt-us.zip"
     },

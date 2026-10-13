@@ -26,6 +26,7 @@ export interface AgencyFeedConfig {
   mergeEquivalentShapeVariants?: boolean;
   mergeEquivalentShapeVariantsAllModes?: boolean;
   keepLongShapeJumps?: boolean;
+  skipClusteredJumpRepair?: boolean;
   poolSingleTripShapes?: boolean;
   referenceDateFromRunDate?: boolean;
   fare?: number;
@@ -62,6 +63,7 @@ export function agencyProcessOptions(agency: AgencyFeedConfig, overrides: Agency
     mergeEquivalentShapeVariants: agency.mergeEquivalentShapeVariants,
     mergeEquivalentShapeVariantsAllModes: agency.mergeEquivalentShapeVariantsAllModes,
     keepLongShapeJumps: agency.keepLongShapeJumps,
+    skipClusteredJumpRepair: agency.skipClusteredJumpRepair,
     poolSingleTripShapes: agency.poolSingleTripShapes,
     referenceDateFromRunDate: agency.referenceDateFromRunDate,
     manualBaseFare: overrides.manualBaseFare ?? agency.fare,
