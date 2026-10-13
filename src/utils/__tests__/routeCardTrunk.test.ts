@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import {
+  worstDirectionByHour,
   groupTrunkHeadway,
   shouldShowTrunkSummary,
   trunkSparklineByHour,
@@ -174,5 +175,32 @@ describe('routeCardTrunk', () => {
       ] as unknown as ShapeProperties[];
       expect(sparklineSourceDirections(dirs).map(d => d.directionId)).toEqual([1]);
     });
+  });
+});
+
+describe('worstDirectionByHour', () => {
+  const hours = [6, 7, 8, 9, 23];
+  const eastbound = { 6: 27, 7: 17, 8: 16, 9: 13, 23: null };
+  const westbound = { 6: 27, 7: 15, 8: 14, 9: 14, 23: 28 };
+
+  it('uses the longest headway (fewest trips) of any direction each hour', () => {
+    const all = worstDirectionByHour([eastbound, westbound], hours);
+    expect(all[7]).toBe(17);
+    expect(all[9]).toBe(14);
+  });
+
+  it('is not just the first direction', () => {
+    const all = worstDirectionByHour([eastbound, westbound], hours);
+    expect(all).not.toEqual(eastbound);
+    expect(worstDirectionByHour([westbound, eastbound], hours)).toEqual(all);
+  });
+
+  it('uses the only running direction when the other has no service that hour', () => {
+    expect(worstDirectionByHour([eastbound, westbound], hours)[23]).toBe(28);
+  });
+
+  it('returns null for hours with no service in any direction', () => {
+    expect(worstDirectionByHour([{ 6: null }, {}], [6])[6]).toBeNull();
+    expect(worstDirectionByHour([], [6])[6]).toBeNull();
   });
 });
