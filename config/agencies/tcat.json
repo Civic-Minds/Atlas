@@ -1,6 +1,7 @@
 {
   "slug": "tcat",
   "name": "Tompkins Consolidated Area Transit",
+  "labelPlace": "Ithaca",
   "websiteUrl": "http://www.tcatbus.com/",
   "region": "New York",
   "center": [

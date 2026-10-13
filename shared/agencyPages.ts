@@ -9,8 +9,8 @@ import { SITE_URL } from './seo';
 
 export { headwayEvery, headwayOrBetter };
 
-/** Frequency threshold behind the lead sentence and the frequent share. */
-export const FREQUENT_MINUTES = 15;
+/** The default standard, used in meta text and the paragraph: every 15 min or better. */
+export const FREQUENT_MINUTES = 15; // the default standard (DEFAULT_THRESHOLD) used in meta text
 export const MAX_NEARBY = 8;
 
 export interface AgencyPageRoute {
@@ -22,6 +22,8 @@ export interface AgencyPageRoute {
   midday: number | null;
   am: number | null;
   pm: number | null;
+  /** No sustained daytime service, but published overnight service (a night route). */
+  night?: boolean;
 }
 
 export interface AgencyPageIdentity {
@@ -48,6 +50,9 @@ export interface AgencyPageSummary extends AgencyPageIdentity {
   lastRefreshedAt: string | null;
   /** Last day the published feed covers (the catalog's lastFeedExpiry), yyyymmdd. */
   validThrough?: string | null;
+  /** Whether the release has Saturday / Sunday service for this agency (published day types). */
+  sat?: boolean;
+  sun?: boolean;
 }
 
 export interface AgencyPageSummaries {
@@ -108,40 +113,72 @@ export function modeLabel(mode: number): string {
   return MODE_LABELS[mode]?.[0] ?? 'Other';
 }
 
+/** The standards a visitor can pick: routes running every N min or better on a weekday midday. */
+export const THRESHOLDS = [10, 15, 30] as const;
+export type Threshold = (typeof THRESHOLDS)[number];
+export const DEFAULT_THRESHOLD: Threshold = 15;
+
 export interface AgencyPageStats {
   /** Distinct weekday routes in the release. */
   totalRoutes: number;
-  frequentMidday: number;
-  frequentAm: number;
-  frequentPm: number;
-  /** Whole percent of all routes that run every 15 min or better at midday. */
-  frequentShare: number;
+  /** Routes whose weekday midday headway is within the chosen threshold. */
+  within: number;
   byMode: Array<{ mode: number; label: string; routes: AgencyPageRoute[] }>;
 }
 
-export function agencyStats(a: Pick<AgencyPageSummary, 'routes'>): AgencyPageStats {
-  const within = (v: number | null) => v != null && v <= FREQUENT_MINUTES;
-  const totalRoutes = a.routes.length;
-  const frequentMidday = a.routes.filter(r => within(r.midday)).length;
-  const modes = [...new Set(a.routes.map(r => r.mode))].sort((x, y) => {
+export function routesWithin(routes: ReadonlyArray<Pick<AgencyPageRoute, 'midday'>>, threshold: number): number {
+  return routes.filter(r => r.midday != null && r.midday <= threshold).length;
+}
+
+function modeOrder(modes: Iterable<number>): number[] {
+  return [...new Set(modes)].sort((x, y) => {
     const ix = MODE_ORDER.indexOf(x);
     const iy = MODE_ORDER.indexOf(y);
     return (ix < 0 ? 99 : ix) - (iy < 0 ? 99 : iy) || x - y;
   });
+}
+
+export function agencyStats(a: Pick<AgencyPageSummary, 'routes'>, threshold: number = DEFAULT_THRESHOLD): AgencyPageStats {
   return {
-    totalRoutes,
-    frequentMidday,
-    frequentAm: a.routes.filter(r => within(r.am)).length,
-    frequentPm: a.routes.filter(r => within(r.pm)).length,
-    frequentShare: totalRoutes ? Math.round((frequentMidday / totalRoutes) * 100) : 0,
-    byMode: modes.map(mode => ({ mode, label: modeLabel(mode), routes: a.routes.filter(r => r.mode === mode) })),
+    totalRoutes: a.routes.length,
+    within: routesWithin(a.routes, threshold),
+    byMode: modeOrder(a.routes.map(r => r.mode)).map(mode => ({ mode, label: modeLabel(mode), routes: a.routes.filter(r => r.mode === mode) })),
   };
+}
+
+/** Median weekday-midday headway across routes that have one, in whole minutes; null with none. */
+export function typicalWait(routes: ReadonlyArray<Pick<AgencyPageRoute, 'midday'>>): number | null {
+  const v = routes.map(r => r.midday).filter((h): h is number => h != null).sort((x, y) => x - y);
+  if (v.length === 0) return null;
+  const mid = v.length >> 1;
+  return Math.round(v.length % 2 ? v[mid] : (v[mid - 1] + v[mid]) / 2);
+}
+
+/** The route with the shortest weekday-midday headway (ties: first listed); null with none. */
+export function bestRoute<R extends Pick<AgencyPageRoute, 'midday' | 'name'>>(routes: readonly R[]): { route: R; headway: number } | null {
+  let best: { route: R; headway: number } | null = null;
+  for (const r of routes) if (r.midday != null && (!best || r.midday < best.headway)) best = { route: r, headway: r.midday };
+  return best;
+}
+
+/** "3 subway · 2 light rail · 209 bus" */
+export function modesText(byMode: ReadonlyArray<{ label: string; routes: number }>): string {
+  return byMode.map(m => `${m.routes} ${m.label.toLowerCase()}`).join(' · ');
+}
+
+/** What the release has for Saturday and Sunday: a short sub-label, or null when unknown. */
+export function weekendLabel(sat: boolean | undefined, sun: boolean | undefined): string | null {
+  if (sat === undefined && sun === undefined) return null;
+  if (sat && sun) return 'Runs Sat & Sun';
+  if (sat) return 'Runs Saturdays';
+  if (sun) return 'Runs Sundays';
+  return 'Weekdays only';
 }
 
 /** One sentence that stands alone: "38 of 210 routes run every 15 min or better on a weekday midday." */
 export function agencyLeadSentence(a: Pick<AgencyPageSummary, 'routes'>): string {
   const s = agencyStats(a);
-  return `${s.frequentMidday} of ${s.totalRoutes} routes run ${headwayOrBetter(FREQUENT_MINUTES)} on a weekday midday.`;
+  return `${s.within} of ${s.totalRoutes} routes run ${headwayOrBetter(FREQUENT_MINUTES)} on a weekday midday.`;
 }
 
 export function agencyPageDescription(a: AgencyPageSummary): string {
@@ -181,8 +218,8 @@ export function agencyShortLabel(a: Pick<AgencyPageSummary, 'displayName'>): str
 export function agencyAboutParagraph(a: Pick<AgencyPageSummary, 'displayName' | 'city' | 'routes' | 'span'>): string {
   const total = a.routes.length;
   const label = agencyShortLabel(a);
-  const frequent = a.routes.filter(r => r.midday != null && r.midday <= FREQUENT_MINUTES);
-  const k = frequent.length;
+  const meeting = a.routes.filter(r => r.midday != null && r.midday <= FREQUENT_MINUTES);
+  const k = meeting.length;
   const standard = headwayOrBetter(FREQUENT_MINUTES);
   const sentences: string[] = [];
 
@@ -198,7 +235,7 @@ export function agencyAboutParagraph(a: Pick<AgencyPageSummary, 'displayName' | 
 
     if (k >= 2) {
       const counts = new Map<number, number>();
-      for (const r of frequent) counts.set(r.mode, (counts.get(r.mode) ?? 0) + 1);
+      for (const r of meeting) counts.set(r.mode, (counts.get(r.mode) ?? 0) + 1);
       const [mode, n] = [...counts.entries()].sort((x, y) => y[1] - x[1] || x[0] - y[0])[0];
       if (n * 2 > k && k < total) sentences.push(`Most of those are ${modeLabel(mode).toLowerCase()} routes.`);
     }
@@ -348,5 +385,7 @@ export function agencyPageJsonLd(a: AgencyPageSummary, canonicalUrl: string, ori
 /** Drops a bracketed city the name already holds: "Halifax Transit (Halifax)" becomes "Halifax Transit". */
 export function trimRedundantCity(displayName: string): string {
   const m = /^(.*\S)\s+\(([^)]+)\)$/.exec(displayName);
-  return m && m[1].toLowerCase().includes(m[2].toLowerCase()) ? m[1] : displayName;
+  if (!m) return displayName;
+  const [outer, inner] = [m[1].toLowerCase(), m[2].toLowerCase()];
+  return outer.includes(inner) || inner.includes(outer) ? m[1] : displayName;
 }

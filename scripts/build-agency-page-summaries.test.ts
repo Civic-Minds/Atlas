@@ -33,12 +33,57 @@ describe('summarize', () => {
   });
 });
 
+describe('night routes and weekend service', () => {
+  const night = (name: string, day = 'Weekday') => ({
+    geometry: { type: 'LineString' },
+    properties: {
+      routeId: name, routeShortName: name, routeLongName: `${name} Blue Night`, routeType: 3, directionId: 0, day, tier: 'infrequent',
+      headway: null,
+      headwayByPeriod: { amPeak: null, midday: null, pmPeak: null, evening: null, late: null, overnight: 30 },
+      headwayByPeriodSustained: { overnight: true },
+      periodCoverageHeadway: { overnight: 30 },
+      headwayByHour: { '25': 30, '26': 30 },
+    },
+  });
+
+  it('marks a route night-only when it has overnight service and nothing sustained by day', () => {
+    const s = summarize([night('301'), line('A', 0, 10), line('A', 1, 10)], 'x', null);
+    expect(s.routes.find(r => r.name === '301')).toMatchObject({ midday: null, am: null, pm: null, night: true });
+    expect(s.routes.find(r => r.name === 'A')?.night).toBeUndefined();
+  });
+
+  it('does not mark a route with no service at all as night-only', () => {
+    const s = summarize([line('N', 0, null)], 'x', null);
+    expect(s.routes[0].night).toBeUndefined();
+  });
+
+  it('records whether the release has Saturday and Sunday service', () => {
+    const s = summarize([line('A', 0, 10), line('A', 1, 10), line('A', 0, 12, { day: 'Saturday' })], 'x', null);
+    expect([s.sat, s.sun]).toEqual([true, false]);
+    expect([summarize([line('A', 0, 10)], 'x', null).sat, summarize([line('A', 0, 10)], 'x', null).sun]).toEqual([false, false]);
+  });
+});
+
 describe('names', () => {
   const base = { slug: 'x', name: 'Toronto Transit Commission', cities: ['Etobicoke, Ontario'], region: 'Ontario' };
 
   it('uses the config displayArea as the primary city, else the first listed city', () => {
     expect(primaryCity({ ...base, displayArea: 'Toronto' })).toBe('Toronto');
     expect(primaryCity(base)).toBe('Etobicoke');
+  });
+
+  it('uses labelPlace, and an empty one drops the bracket', () => {
+    const york = { slug: 'yrt', name: 'York Region Transit', cities: ['Vaughan, Ontario'], region: 'Ontario' };
+    expect(displayNameFor({ ...york, shortName: 'YRT', labelPlace: 'York Region' })).toBe('YRT (York Region)');
+    expect(displayNameFor({ ...york, labelPlace: '' })).toBe('York Region Transit');
+  });
+
+  it('drops the first-city bracket when the name already names a region, county or district', () => {
+    expect(displayNameFor({ slug: 'd', name: 'Durham Region Transit', cities: ['Oshawa, Ontario'], region: 'Ontario' })).toBe('Durham Region Transit');
+    expect(displayNameFor({ slug: 'b', name: 'Broward County Transit', cities: ['Pompano Beach, Florida'], region: 'Florida' })).toBe('Broward County Transit');
+    expect(displayNameFor({ slug: 'm', name: 'Marin Transit', cities: ['San Rafael, California'], region: 'California' })).toBe('Marin Transit (San Rafael)');
+    // a curated displayArea is kept even on a regional name
+    expect(displayNameFor({ slug: 'g', name: 'GO Transit', displayArea: 'Greater Toronto & Hamilton Area', cities: ['Mississauga, Ontario'], region: 'Ontario' })).toBe('GO Transit (Greater Toronto & Hamilton Area)');
   });
 
   it('puts the short name first with the city in brackets, falling back to the full name', () => {

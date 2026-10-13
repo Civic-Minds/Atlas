@@ -47,7 +47,7 @@ export interface AgencyCatalogFile {
 
 /**
  * Build the browser catalog from the full pipeline registry without leaking source fields.
- * `shortName` is read only by the agency page build, so it stays out of the catalog.
+ * `shortName` and `labelPlace` are read only by the agency page build, so it stays out of the catalog.
  */
 export function buildAgencyCatalog(
   source: Array<Record<string, unknown>>,
@@ -55,7 +55,7 @@ export function buildAgencyCatalog(
 ): AgencyCatalogFile {
   const agencies = source
     .filter(agency => isAgencyVisibleInBrowser(agency, { mode }))
-    .map(({ feedUrl: _feedUrl, mdbFeedUrl: _mdbFeedUrl, supplementalFeedUrls: _supplementalFeedUrls, shortName: _shortName, ...agency }) => agency as unknown as AgencyCatalogEntry);
+    .map(({ feedUrl: _feedUrl, mdbFeedUrl: _mdbFeedUrl, supplementalFeedUrls: _supplementalFeedUrls, shortName: _shortName, labelPlace: _labelPlace, ...agency }) => agency as unknown as AgencyCatalogEntry);
 
   return { mode, agencyCount: agencies.length, agencies };
 }

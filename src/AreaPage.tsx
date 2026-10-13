@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { ArrowRight } from 'lucide-react';
-import { agencyPagePath, headwayOrBetter, FREQUENT_MINUTES } from '../shared/agencyPages';
+import { DEFAULT_THRESHOLD, agencyPagePath, headwayEvery, headwayOrBetter, modesText, type Threshold } from '../shared/agencyPages';
 import {
   AREA_DATA_SCRIPT_ID,
   areaAboutParagraph,
   areaDatesText,
+  areaHoursLabel,
   areaMapHref,
   areaPageH1,
   areaSpanShort,
@@ -15,7 +16,8 @@ import {
 } from '../shared/areaPages';
 import { ATLAS_MODE } from '../shared/config';
 import { applySeoToDocument } from './lib/seoDom';
-import { CHIP, LINK, PILL_BUTTON, TILE } from './pageStyles';
+import { LINK, PILL_BUTTON } from './pageStyles';
+import { StatRow, ThresholdToggle, type StatItem } from './pageParts';
 import SiteFooter from './components/SiteFooter';
 import SiteHeader from './components/SiteHeader';
 
@@ -35,6 +37,7 @@ function readEmbeddedData(slug: string | undefined): AreaPageData | null {
 export default function AreaPage({ data: dataProp }: { data?: AreaPageData }) {
   const params = useParams();
   const [data, setData] = useState<AreaPageData | null>(() => dataProp ?? readEmbeddedData(params.slug));
+  const [threshold, setThreshold] = useState<Threshold>(DEFAULT_THRESHOLD);
   useEffect(() => {
     if (data || !import.meta.env.DEV) return;
     void import('./areaPageDevData').then(m => setData(m.devAreaPageData(params.slug)));
@@ -62,7 +65,13 @@ export default function AreaPage({ data: dataProp }: { data?: AreaPageData }) {
   }
 
   const span = areaSpanShort(data);
-  const standard = headwayOrBetter(FREQUENT_MINUTES);
+  const within = data.within[String(threshold)] ?? 0;
+  const items: StatItem[] = [
+    ...(data.typicalWait != null ? [{ value: headwayEvery(data.typicalWait), label: 'typical wait, weekday midday' }] : []),
+    ...(data.best ? [{ value: headwayEvery(data.best.headway), label: `quickest route: ${data.best.name}, ${data.best.agency}` }] : []),
+    ...(span ? [{ value: span, label: areaHoursLabel(data) }] : []),
+    ...(data.totalRoutes > 0 ? [{ value: String(data.totalRoutes), label: modesText(data.byMode) }] : []),
+  ];
 
   return (
     <main className="min-h-screen bg-[var(--bg-app)] px-6 py-8 text-[var(--text-primary)] sm:px-10 lg:px-16">
@@ -75,41 +84,47 @@ export default function AreaPage({ data: dataProp }: { data?: AreaPageData }) {
               <h1 className="text-2xl font-black tracking-tight sm:text-3xl">{areaPageH1(data)}</h1>
               <p className="mt-1 text-sm text-[var(--text-muted)]">{areaSubtitle(data)}</p>
             </div>
-            <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-              <a href={areaMapHref(data)} className={PILL_BUTTON}>
-                Open in the map <ArrowRight className="h-4 w-4" aria-hidden="true" />
-              </a>
-              <a className={`text-sm font-bold ${LINK}`} href="/about/docs#frequency">Methodology</a>
-            </div>
+            <a href={areaMapHref(data)} className={PILL_BUTTON}>
+              Open in the map <ArrowRight className="h-4 w-4" aria-hidden="true" />
+            </a>
           </div>
           {data.area.note && <p className="mt-3 max-w-2xl text-sm text-[var(--text-muted)]">{data.area.note}</p>}
 
-          <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            <Tile value={`${data.frequentMidday} / ${data.totalRoutes}`} label={`routes ${standard}, weekday midday`} />
-            <Tile value={`${data.frequentAm} · ${data.frequentPm}`} label="AM / PM peak, same standard" />
-            <Tile value={span ?? 'Not recorded'} label="weekday service" />
-            <div className={TILE}>
-              <div className="flex flex-wrap gap-1.5">
-                {data.byMode.map(m => <span key={m.label} className={CHIP}>{m.routes} {m.label.toLowerCase()}</span>)}
-              </div>
-              <p className="mt-2 text-sm text-[var(--text-muted)]">{data.agencies.length} {data.agencies.length === 1 ? 'agency' : 'agencies'}, routes by mode</p>
-            </div>
-          </div>
+          <StatRow items={items} />
 
           <section className="mt-14" aria-labelledby="agencies-heading">
-            <h2 id="agencies-heading" className="text-xl font-black tracking-tight">Agencies</h2>
-            <ul className="mt-4 grid gap-3 sm:grid-cols-2">
-              {data.agencies.map(a => (
-                <li key={a.slug}>
-                  <a href={agencyPagePath(a.slug)} className={`block ${TILE} hover:bg-[var(--bg-btn-hover)]`}>
-                    <span className="block text-base font-black">{a.displayName}</span>
-                    <span className="mt-1 block text-sm text-[var(--text-muted)]">
-                      {a.frequentMidday} of {a.totalRoutes} {a.totalRoutes === 1 ? 'route' : 'routes'} {standard}
-                    </span>
-                  </a>
-                </li>
-              ))}
-            </ul>
+            <h2 id="agencies-heading" className="text-xl font-black tracking-tight">Agencies and weekday frequency</h2>
+            <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">
+              Agencies define frequent differently; pick a standard. <a className={LINK} href="/about/docs#frequency">Methodology</a>
+            </p>
+            <div className="mt-3"><ThresholdToggle value={threshold} onChange={setThreshold} /></div>
+            <p className="mt-3 text-base font-bold">{within} of {data.totalRoutes} routes {headwayOrBetter(threshold)} on a weekday midday</p>
+            <div className="mt-6 overflow-x-auto">
+              <table className="w-full table-fixed border-collapse text-left text-sm" style={{ minWidth: `${20 + data.modeColumns.length * 5 + 9}rem` }}>
+                <colgroup>
+                  <col />
+                  {data.modeColumns.map(m => <col key={m} className="w-20" />)}
+                  <col className="w-36" />
+                </colgroup>
+                <thead>
+                  <tr className="text-[var(--text-dim)]">
+                    <th scope="col" className="py-1.5 pr-4 font-bold">Agency</th>
+                    {data.modeColumns.map(m => <th key={m} scope="col" className="py-1.5 pr-4 font-bold">{m}</th>)}
+                    <th scope="col" className="py-1.5 font-bold">{headwayOrBetter(threshold).replace(/^e/, 'E')}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.agencies.map(a => (
+                    <tr key={a.slug}>
+                      <th scope="row" className="py-1.5 pr-4 font-normal"><a className={`font-black ${LINK}`} href={agencyPagePath(a.slug)}>{a.displayName}</a></th>
+                      {data.modeColumns.map(m => <td key={m} className="py-1.5 pr-4">{a.modes[m] ?? '–'}</td>)}
+                      <td className="py-1.5">{a.within[String(threshold)] ?? 0} of {a.totalRoutes}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p className="mt-2 text-sm text-[var(--text-muted)]">Mode columns count routes. Each route is judged by its slower direction.</p>
           </section>
 
           <p className="mt-10 max-w-2xl text-sm leading-6 text-[var(--text-dim)]">{areaAboutParagraph(data)}</p>
@@ -122,14 +137,5 @@ export default function AreaPage({ data: dataProp }: { data?: AreaPageData }) {
         <SiteFooter />
       </div>
     </main>
-  );
-}
-
-function Tile({ value, label }: { value: string; label: string }) {
-  return (
-    <div className={TILE}>
-      <p className="whitespace-nowrap text-2xl font-black tracking-tight">{value}</p>
-      <p className="mt-1 text-sm text-[var(--text-muted)]">{label}</p>
-    </div>
   );
 }

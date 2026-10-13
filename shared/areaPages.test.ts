@@ -2,10 +2,11 @@ import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import type { AgencyPageRoute, AgencyPageSummary } from './agencyPages';
 import {
-  areaAboutParagraph, areaDatesText, areaMapHref, areaPageDescription, areaPageH1, areaPageJsonLd, areaPageTitle,
+  areaAboutParagraph, areaDatesText, areaHoursLabel, areaMapHref, areaPageDescription, areaPageH1, areaPageJsonLd, areaPageTitle,
   areaSpanShort, areaSubtitle, buildAreaPageData, resolveAreaSeo, type AreaPageData,
 } from './areaPages';
 import { rankLargeMetros, parseCsv } from './largeMetros';
+import { areaLinkFor } from './agencyArea';
 import { MERGED_AREAS, isLargeMetro, areaSlug, mainCities, type AreaConfig } from './areas';
 
 const r = (name: string, mode: number, midday: number | null, am = midday, pm = midday): AgencyPageRoute => ({ name, longName: null, mode, midday, am, pm });
@@ -26,10 +27,39 @@ describe('buildAreaPageData', () => {
 
   it('adds up the per-agency numbers and skips agencies with no page', () => {
     expect(d.agencies.map(a => a.slug)).toEqual(['ttc', 'hsr']);
-    expect([d.totalRoutes, d.frequentMidday, d.frequentAm, d.frequentPm]).toEqual([6, 3, 3, 3]);
+    expect(d.totalRoutes).toBe(6);
+    expect(d.within).toEqual({ '10': 2, '15': 3, '30': 5 });
+    expect(d.agencies[0]).toMatchObject({ slug: 'ttc', totalRoutes: 4, within: { '10': 2, '15': 2, '30': 3 }, modes: { Subway: 2, Bus: 2 } });
     expect(d.byMode).toEqual([{ label: 'Subway', routes: 2 }, { label: 'Bus', routes: 4 }]);
+    expect(d.modeColumns).toEqual(['Subway', 'Bus']);
     expect(d.span).toEqual({ first: 5, last: 28 });
     expect(d.newestRefresh).toBe('2026-09-01');
+  });
+
+  it('takes the typical wait and the quickest route across the whole area', () => {
+    expect(d.typicalWait).toBe(12); // 4, 10, 12, 20, 30: the middle one
+    expect(d.best).toEqual({ name: '1', headway: 4, agency: 'TTC (Toronto)' });
+    const none = buildAreaPageData({ ...AREA, agencies: ['hsr'] }, new Map([['hsr', ag('hsr', 'HSR', [r('A', 3, null), r('B', 3, 20)])]]), null);
+    expect(none.best?.headway).toBe(20);
+  });
+
+  it('flags a wide span and mixed weekend service', () => {
+    expect(d.spanVaries).toBe(true); // ends at 24 and 28: four hours apart
+    const tight = new Map(ALL); tight.set('hsr', ag('hsr', 'HSR', [r('A', 3, 12)], { first: 5, last: 25 }));
+    const t = buildAreaPageData(AREA, tight, null);
+    expect(t.spanVaries).toBe(false); // starts 6 and 5, ends 24 and 25
+    expect(areaHoursLabel(t)).toBe('weekday service');
+    const wide = new Map(ALL); wide.set('hsr', ag('hsr', 'HSR', [r('A', 3, 12)], { first: 9, last: 20 }));
+    const w = buildAreaPageData(AREA, wide, null);
+    expect(w.spanVaries).toBe(true);
+    expect(areaHoursLabel(w)).toContain('varies by agency');
+    const mixed = new Map(ALL); mixed.set('ttc', { ...ALL.get('ttc')!, sat: true, sun: true }); mixed.set('hsr', { ...ALL.get('hsr')!, sat: true, sun: false });
+    expect(buildAreaPageData(AREA, mixed, null).weekend).toBe('varies');
+    const both = new Map(ALL); both.set('ttc', { ...ALL.get('ttc')!, sat: true, sun: true }); both.set('hsr', { ...ALL.get('hsr')!, sat: true, sun: true });
+    const b2 = buildAreaPageData(AREA, both, null);
+    expect(b2.weekend).toBe('both');
+    expect(areaHoursLabel(b2)).toBe('weekday service · varies by agency · Runs Sat & Sun');
+    expect(d.weekend).toBeNull();
   });
 
   it('writes the title, heading, subtitle and lead from the numbers', () => {
@@ -37,6 +67,7 @@ describe('buildAreaPageData', () => {
     expect(areaPageH1(d)).toBe('Toronto area');
     expect(areaSubtitle(d)).toBe('Toronto, Hamilton');
     expect(areaPageDescription(d)).toContain('3 of 6 routes across 2 transit agencies in the Toronto area run every 15 min or better');
+    expect(areaPageDescription(d)).not.toMatch(/frequent\b/i);
     expect(areaSpanShort(d)).toBe('24 h');
   });
 
@@ -71,10 +102,10 @@ describe('areaAboutParagraph', () => {
   });
 
   it('handles singular, none and all', () => {
-    const one = base({ agencies: [{ slug: 'a', displayName: 'A', totalRoutes: 1, frequentMidday: 1 }], totalRoutes: 1, frequentMidday: 1 });
+    const one = base({ agencies: [{ slug: 'a', displayName: 'A', totalRoutes: 1, within: { '10': 1, '15': 1, '30': 1 }, modes: { Bus: 1 } }], totalRoutes: 1, within: { '10': 1, '15': 1, '30': 1 } });
     expect(areaAboutParagraph(one)).toBe('The Toronto area has 1 transit agency running 1 route. At weekday midday, 1 runs every 15 min or better.');
-    expect(areaAboutParagraph(base({ frequentMidday: 0 }))).toContain('none run every 15 min or better.');
-    expect(areaAboutParagraph(base({ frequentMidday: 6 }))).toContain('all run every 15 min or better.');
+    expect(areaAboutParagraph(base({ within: { '10': 0, '15': 0, '30': 0 } }))).toContain('none run every 15 min or better.');
+    expect(areaAboutParagraph(base({ within: { '10': 6, '15': 6, '30': 6 } }))).toContain('all run every 15 min or better.');
   });
 });
 
@@ -146,3 +177,24 @@ describe('committed areas (config/areas)', () => {
     expect(areas.find(a => a.slug === 'hamilton')).toBeUndefined();
   });
 });
+
+describe('areaLinkFor', () => {
+  const map: Record<string, [string, string]> = { ttc: ['toronto', 'Toronto'] };
+  it('links only agencies in a paged area, and only with the flag on', () => {
+    expect(areaLinkFor('ttc', true, map)).toEqual({ href: '/area/toronto', label: 'Toronto area →' });
+    expect(areaLinkFor('ttc', false, map)).toBeNull();
+    expect(areaLinkFor('nowhere', true, map)).toBeNull();
+  });
+
+  it('is built from paged areas only', () => {
+    const committed = JSON.parse(readFileSync('shared/data/agency-area-slugs.json', 'utf8')) as Record<string, [string, string]>;
+    const paged = new Map(areasOnDisk().filter(a => a.page).flatMap(a => a.agencies.map(s => [s, a.slug] as const)));
+    for (const [agency, [slug]] of Object.entries(committed)) expect(paged.get(agency), agency).toBe(slug);
+    expect(Object.keys(committed).length).toBe(paged.size);
+  });
+});
+
+function areasOnDisk(): AreaConfig[] {
+  return readdirSync('config/areas').filter(f => f.endsWith('.json') && !f.startsWith('_'))
+    .map(f => JSON.parse(readFileSync(`config/areas/${f}`, 'utf8')) as AreaConfig);
+}
