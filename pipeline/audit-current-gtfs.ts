@@ -1,11 +1,15 @@
 #!/usr/bin/env npx tsx
-/** Read-only structural and identity audit of every production-visible current GTFS ZIP. */
+/**
+ * Read-only structural and identity audit of every production-visible agency's
+ * newest archived GTFS ZIP (private archive bucket; the public gtfs/<slug>.zip
+ * copies stopped updating in August 2026).
+ */
 import { readFileSync } from 'node:fs';
 import './loadEnv.js';
 import { parseGtfsZip } from './parseGtfs.js';
 import { validateGtfs } from './validation.js';
-import { r2List } from './r2.js';
-import { R2_PUBLIC_URL } from '../shared/config.js';
+import { r2GetArchiveBuffer, r2ListArchiveObjects } from './r2.js';
+import { selectArchiveForAgency } from './archiveSelection.js';
 import { isActiveProductionFeed } from '../shared/feedAvailability.js';
 import {
   aggregateValidationIssues,
@@ -40,13 +44,15 @@ async function mapWithConcurrency<T, R>(items: T[], concurrency: number, fn: (it
 }
 
 async function auditAgency(agency: RegistryAgency): Promise<AuditResult> {
-  const key = `gtfs/${agency.slug}.zip`;
-  const response = await fetch(`${R2_PUBLIC_URL}/${key}`, {
-    signal: AbortSignal.timeout(180_000),
-  });
-  if (response.status === 404) return { missing: key };
-  if (!response.ok) return { parseError: `${agency.slug}: HTTP ${response.status} while reading current ZIP` };
-  const buffer = Buffer.from(await response.arrayBuffer());
+  const prefix = `gtfs/archive/${agency.slug}/`;
+  const selection = selectArchiveForAgency(await r2ListArchiveObjects(prefix), agency);
+  if (!selection.ok) {
+    return selection.noArchive
+      ? { missing: `${prefix}*.zip` }
+      : { parseError: `${agency.slug}: ${selection.reason}` };
+  }
+  const buffer = await r2GetArchiveBuffer(selection.key);
+  if (!buffer) return { missing: selection.key };
   try {
     const arrayBuffer = buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength) as ArrayBuffer;
     // Shape repair is intentionally audited separately: grouping every shape in
@@ -73,8 +79,6 @@ async function main(): Promise<void> {
   const active = index.agencies.filter(agency =>
     isActiveProductionFeed(agency) && (requestedSlugs.size === 0 || requestedSlugs.has(agency.slug))
   );
-  const keys = await r2List('');
-  const currentRawKeys = keys.filter(key => /^gtfs\/[^/]+\.zip$/.test(key));
   const results = await mapWithConcurrency(active, 2, auditAgency);
   const findings = results.flatMap(result => result.finding ? [result.finding] : []);
   const missing = results.flatMap(result => result.missing ? [result.missing] : []);
@@ -95,7 +99,6 @@ async function main(): Promise<void> {
   const shapeAnomalyFeeds = findings.filter(finding => finding.shapeAnomalies.total > 0);
 
   const report = {
-    currentRawZips: currentRawKeys.length,
     expectedActiveAgencies: active.length,
     parsed: findings.length,
     invalidOrMissing: missing.length + parseErrors.length,
@@ -105,7 +108,7 @@ async function main(): Promise<void> {
     totalWarnings: findings.reduce((sum, finding) => sum + finding.validation.warnings, 0),
     totalInfos: findings.reduce((sum, finding) => sum + finding.validation.infos, 0),
     validationIssues,
-    missingCurrentZips: missing,
+    missingArchiveZips: missing,
     parseErrors,
     expiryMismatches: expiryMismatches.map(finding => ({ slug: finding.slug, registry: finding.registryExpiry, actual: finding.feedExpiry })),
     geographyMismatches: geographyMismatches.map(finding => ({ slug: finding.slug, agencyNames: finding.agencyNames })),
@@ -128,8 +131,8 @@ async function main(): Promise<void> {
 
   if (missing.length || parseErrors.length || validationErrors.length || geographyMismatches.length) {
     const failures = [
-      missing.length ? `${missing.length} current ZIP(s) missing` : null,
-      parseErrors.length ? `${parseErrors.length} current ZIP(s) failed to parse` : null,
+      missing.length ? `${missing.length} archived ZIP(s) missing` : null,
+      parseErrors.length ? `${parseErrors.length} archived ZIP(s) failed to parse` : null,
       validationErrors.length ? `${validationErrors.length} feed(s) have validation errors` : null,
       geographyMismatches.length ? `${geographyMismatches.length} feed(s) fall outside their configured geography` : null,
     ].filter((failure): failure is string => failure !== null);

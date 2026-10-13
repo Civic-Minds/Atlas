@@ -48,7 +48,7 @@ import {
 } from './overrideAudit.js';
 import { readFeedReviewHistory, shouldReviewNextFeed } from './feedReview.js';
 import { compareStopSnapshots, formatStopAuditLog, type AuditedStop } from './stopAudit.js';
-import { candidateIsOlderThanActive, decideRefreshSkipUnchanged, isFeedExpired, markFeedStale, shouldReplaceExpiredFeed, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta, stampSupplementalFeedMeta } from './refreshMeta.js';
+import { candidateIsOlderThanActive, shouldClearStaged, decideRefreshSkipUnchanged, isFeedExpired, markFeedStale, shouldReplaceExpiredFeed, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta, stampSupplementalFeedMeta } from './refreshMeta.js';
 import {
   COUNTRY_LAUNCH_FLAG,
   isCountryLaunchBlocked,
@@ -726,7 +726,7 @@ async function main() {
       }
       console.log(`  ${agency.slug.padEnd(12)} ... ${summary}${logBuffer}`);
       // Clear staged flag once data is live so the next deploy shows the agency.
-      if (agency.staged && !result.refused) delete agency.staged;
+      if (agency.staged && shouldClearStaged(result)) delete agency.staged;
       // Write after each agency so a mid-run crash doesn't lose lastFeedExpiry for completed ones.
       writeJsonAtomically(indexPath, index);
       writeAgencySource(agency);

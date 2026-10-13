@@ -9,6 +9,7 @@ import { execFileSync } from 'child_process';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
 import JSZip from 'jszip';
+import '../pipeline/loadEnv.js';
 import { parseCsv } from '../pipeline/parseGtfs.js';
 import { effectiveFeedExpiry } from '../pipeline/feedFreshness.js';
 import { resolveFeedUrl } from '../pipeline/feedUrl.js';
@@ -77,12 +78,17 @@ async function readMetadata(buffer: Buffer): Promise<{ expiry: string | null; ve
 
 async function auditAgency(agency: Agency, today: string): Promise<FeedAudit> {
   const sources: Array<{ kind: 'primary' | 'mdb-fallback'; url: string }> = [];
-  const resolvedFeedUrl = resolveFeedUrl(agency.feedUrl, agency.feedApiKeyEnvVar, agency.feedApiKeyParam);
-  if (resolvedFeedUrl) sources.push({ kind: 'primary', url: resolvedFeedUrl });
+  let lastError = 'no configured feed URL';
+  try {
+    const resolvedFeedUrl = resolveFeedUrl(agency.feedUrl, agency.feedApiKeyEnvVar, agency.feedApiKeyParam);
+    if (resolvedFeedUrl) sources.push({ kind: 'primary', url: resolvedFeedUrl });
+  } catch (error) {
+    // A missing API key must not kill the whole audit; report this agency as unavailable.
+    lastError = error instanceof Error ? error.message : String(error);
+  }
   if (agency.mdbFeedUrl && agency.mdbFeedUrl !== agency.feedUrl) {
     sources.push({ kind: 'mdb-fallback', url: agency.mdbFeedUrl });
   }
-  let lastError = 'no configured feed URL';
   for (const source of sources) {
     try {
       const metadata = await readMetadata(await download(source.url));
