@@ -24,6 +24,8 @@ export interface GtfsTransformOptions {
   mergeEquivalentShapeVariants?: boolean;
   /** Also merge equivalent shape variants on non-light-rail routes (SamTrans 120, #775). */
   mergeEquivalentShapeVariantsAllModes?: boolean;
+  /** Keep shapes whole across long point-to-point steps (rural highways, #776). Read at parse time. */
+  keepLongShapeJumps?: boolean;
 }
 
 /** Parse → filter → merge branches → agency preprocess → synthesize trip metadata. */

@@ -257,6 +257,7 @@ interface AgencyEntry {
   skipLetterSuffixMerge?: boolean;
   mergeEquivalentShapeVariants?: boolean;
   mergeEquivalentShapeVariantsAllModes?: boolean;
+  keepLongShapeJumps?: boolean;
   staged?: boolean;
   fare?: number;
   issueUrl?: string;

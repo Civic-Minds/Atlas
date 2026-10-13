@@ -16,6 +16,7 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-20/latest.zip",
   "lastFeedExpiry": "20261231",
   "lastFeedVersion": "Updated: Aug 19, 2026, 11:14 PM",
+  "keepLongShapeJumps": true,
   "lastRefreshedAt": "2026-10-03",
   "websiteUrl": "http://www.redwoodcoasttransit.org/",
   "timezone": "America/Los_Angeles",

@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { truncateAtImplausibleJump, groupShapes, deinterleaveDuplicateSequences, detectClusteredJumps, repairClusteredJumps, excludeKnownIsolatedPoints, synthesizeCalendarFromDates } from '../parseGtfs.js';
+import JSZip from 'jszip';
+import { parseGtfsZip, truncateAtImplausibleJump, groupShapes, deinterleaveDuplicateSequences, detectClusteredJumps, repairClusteredJumps, excludeKnownIsolatedPoints, synthesizeCalendarFromDates } from '../parseGtfs.js';
 import type { GtfsCalendarDate } from '../../types/gtfs.js';
 
 /** YYYYMMDD for a date offset by `days` from 2025-01-05 (a Sunday), for building fixture date lists. */
@@ -428,5 +429,34 @@ describe('synthesizeCalendarFromDates', () => {
     expect(entry).toMatchObject({
       monday: '1', tuesday: '1', wednesday: '1', thursday: '1', friday: '1', saturday: '0', sunday: '0',
     });
+  });
+});
+
+describe('parseGtfsZip keepLongShapeJumps (#776)', () => {
+  // RCT 20 shape: ~40 m town spacing, then a 2.7 km step on the highway, then more town points.
+  async function feed(): Promise<ArrayBuffer> {
+    const zip = new JSZip();
+    zip.file('agency.txt', 'agency_id,agency_name,agency_url,agency_timezone\na,RCT,https://x,America/Los_Angeles\n');
+    zip.file('routes.txt', 'route_id,agency_id,route_short_name,route_type\n120,a,20,3\n');
+    zip.file('trips.txt', 'route_id,service_id,trip_id,shape_id,direction_id\n120,s,t1,trunk,1\n');
+    zip.file('stops.txt', 'stop_id,stop_name,stop_lat,stop_lon\np,P,40.78,-124.16\n');
+    zip.file('stop_times.txt', 'trip_id,arrival_time,departure_time,stop_id,stop_sequence\nt1,08:00:00,08:00:00,p,1\n');
+    zip.file('calendar.txt', 'service_id,monday,tuesday,wednesday,thursday,friday,saturday,sunday,start_date,end_date\ns,1,1,1,1,1,0,0,20260101,20261231\n');
+    const rows = ['shape_id,shape_pt_lat,shape_pt_lon,shape_pt_sequence'];
+    let seq = 0;
+    for (let i = 0; i < 10; i++) rows.push(`trunk,${(40.78 + i * 0.00036).toFixed(6)},-124.16,${seq++}`);
+    for (let i = 0; i < 10; i++) rows.push(`trunk,${(40.81 + i * 0.00036).toFixed(6)},-124.16,${seq++}`);
+    zip.file('shapes.txt', rows.join('\n') + '\n');
+    return zip.generateAsync({ type: 'arraybuffer' });
+  }
+
+  it('truncates a bus shape at a long step by default', async () => {
+    const gtfs = await parseGtfsZip(await feed());
+    expect(gtfs.shapes.find(s => s.id === 'trunk')!.points).toHaveLength(10);
+  });
+
+  it('keeps the whole shape when the agency opts in', async () => {
+    const gtfs = await parseGtfsZip(await feed(), undefined, { keepLongShapeJumps: true });
+    expect(gtfs.shapes.find(s => s.id === 'trunk')!.points).toHaveLength(20);
   });
 });

@@ -94,6 +94,7 @@ interface Agency {
   skipLetterSuffixMerge?: boolean;
   mergeEquivalentShapeVariants?: boolean;
   mergeEquivalentShapeVariantsAllModes?: boolean;
+  keepLongShapeJumps?: boolean;
   fare?: number;
   lastFeedExpiry?: string | null;
   lastRawArchiveKey?: string | null;
