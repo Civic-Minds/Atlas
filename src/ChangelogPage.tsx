@@ -1,27 +1,13 @@
-import { useEffect, useState } from 'react';
 import { WhatsNewItemText } from './components/WhatsNewItemText';
 import PageContents from './components/PageContents';
 import PageShell from './components/ui/PageShell';
 import SiteFooter from './components/SiteFooter';
-import { loadDataReleases } from './lib/dataRelease';
 import { buildChangelog } from './lib/changelog';
 import { WHATS_NEW, visibleWhatsNew } from './data/whatsNew';
 import { FEATURES } from '../shared/config';
 
-type DataRelease = { releaseId?: string; generatedAt?: string };
-
-export default function ChangelogPage({ loadReleases = loadDataReleases }: { loadReleases?: () => Promise<DataRelease[]> } = {}) {
-  const [dataReleases, setDataReleases] = useState<DataRelease[]>([]);
-
-  useEffect(() => {
-    let cancelled = false;
-    loadReleases()
-      .then(releases => { if (!cancelled) setDataReleases(releases); })
-      .catch(() => { if (!cancelled) setDataReleases([]); });
-    return () => { cancelled = true; };
-  }, [loadReleases]);
-
-  const entries = buildChangelog(visibleWhatsNew(FEATURES.beta, WHATS_NEW), dataReleases);
+export default function ChangelogPage() {
+  const entries = buildChangelog(visibleWhatsNew(FEATURES.beta, WHATS_NEW));
 
   return (
     <PageShell>
@@ -30,15 +16,13 @@ export default function ChangelogPage({ loadReleases = loadDataReleases }: { loa
           <article className="space-y-8 text-sm leading-relaxed text-[var(--text-dim)]">
             <header>
               <h1 className="text-3xl font-black tracking-tight text-[var(--text-primary)]">Changelog</h1>
-              <p className="mt-3">What changed in Atlas and when the map data was refreshed, newest first.</p>
+              <p className="mt-3">What changed in Atlas.</p>
             </header>
-            {entries.map(entry => entry.kind === 'data' ? (
-              <p key={entry.key} id={entry.key} className="scroll-mt-8 text-xs text-[var(--text-muted)] -my-4">{entry.label}</p>
-            ) : (
+            {entries.map(entry => (
               <section key={entry.key} id={entry.key} className="scroll-mt-8">
                 <h2 className="text-base font-black text-[var(--text-primary)] mb-2">
                   {entry.label}
-                  <span className="font-normal text-[var(--text-dim)]"> · {entry.dataUpdated ? `map data updated ${entry.dataUpdated}` : entry.month}</span>
+                  <span className="font-normal text-[var(--text-dim)]"> · {entry.month}</span>
                 </h2>
                 <ul className="list-disc pl-5 space-y-1">
                   {entry.items.map(item => (
