@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { effectiveFeedExpiry, isActiveProductionFeed, isStalePrimaryProductionFeed, isCurrentFeedExpiry, isCurrentProductionFeed, isStaleProductionFeed } from '../feedAvailability.js';
+import { effectiveFeedExpiry, isActiveProductionFeed, isStalePrimaryProductionFeed, isCurrentFeedExpiry, isExpiredFeedExpiry, isCurrentProductionFeed, isStaleProductionFeed } from '../feedAvailability.js';
 
 describe('isCurrentFeedExpiry', () => {
   it('accepts service through today or later', () => {
@@ -11,6 +11,15 @@ describe('isCurrentFeedExpiry', () => {
     expect(isCurrentFeedExpiry('20260809', '20260810')).toBe(false);
     expect(isCurrentFeedExpiry(null, '20260810')).toBe(false);
     expect(isCurrentFeedExpiry('unknown', '20260810')).toBe(false);
+  });
+});
+
+describe('isExpiredFeedExpiry', () => {
+  it('is true only for a dated expiry before today', () => {
+    expect(isExpiredFeedExpiry('20260809', '20260810')).toBe(true);
+    expect(isExpiredFeedExpiry('20260810', '20260810')).toBe(false);
+    expect(isExpiredFeedExpiry(null, '20260810')).toBe(false);
+    expect(isExpiredFeedExpiry('', '20260810')).toBe(false);
   });
 });
 
@@ -30,10 +39,13 @@ describe('active and stale production feeds', () => {
     expect(isStaleProductionFeed(agency, '20260810')).toBe(true);
   });
 
-  it('treats a published feed with unknown expiry as stale', () => {
-    const agency = { lastFeedExpiry: null, lastRefreshedAt: '20260801' };
-    expect(isActiveProductionFeed(agency, '20260810')).toBe(true);
-    expect(isStaleProductionFeed(agency, '20260810')).toBe(true);
+  it('does not call a published feed with an open-ended or undated calendar stale', () => {
+    for (const lastFeedExpiry of [null, '']) {
+      const agency = { lastFeedExpiry, lastRefreshedAt: '20260801' };
+      expect(isActiveProductionFeed(agency, '20260810')).toBe(true);
+      expect(isStaleProductionFeed(agency, '20260810')).toBe(false);
+      expect(isCurrentProductionFeed(agency, '20260810')).toBe(true);
+    }
   });
 });
 
