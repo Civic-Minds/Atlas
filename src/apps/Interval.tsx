@@ -25,12 +25,13 @@ import { DAY_TYPES, type DayType as DayTypeName } from '../../shared/dayTypes';
 import { splitRouteKey } from '../utils/routeKey';
 import { resolveRouteSelectionForDay } from '../utils/routeSelection';
 import { syncUrlParams } from '../utils/syncUrlParams';
-import { encodeAgencySelection, encodeCompareSideParams, encodeModesParam, isAgencyOff, parseAgencyUrlRule, parseCompareSideParams, parseModesParam, settleAgencyUrlRule, shouldPersistAgencySelection, type AgencyUrlRule } from '../utils/shareUrlState';
+import { encodeCompareSideParams, encodeSelectionParams, encodeModesParam, isAgencyOff, parseAgencyUrlRule, parseAreaBounds, parseCompareSideParams, parseModesParam, settleAgencyUrlRule, shouldPersistAgencySelection, type AgencyUrlRule } from '../utils/shareUrlState';
 import { searchOverlayHidesPanel } from '../utils/format';
 import { trackEvent } from '../lib/analytics';
 import type { FrequentServiceFrequency, FrequentServiceWindow } from '../../shared/frequentService';
 import type { NightServiceFrequency } from '../../shared/nightService';
 import { getRegionalView } from '../utils/regionView';
+import { areaFitZoom } from '../../shared/areaIndex';
 
 // Versioned because the original preference could accidentally persist only
 // agencies in the current viewport when the bulk "All" action was used.
@@ -144,6 +145,12 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     if (isFinite(lat) && isFinite(lon) && isFinite(zoom)) return { lat, lon, zoom };
     return undefined;
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ?area=<slug>: fit the map to that area. Explicit lat/lon/z win.
+  const initialMapBounds = useMemo(
+    () => (initialMapCenter ? null : parseAreaBounds(searchParams)),
+    [], // eslint-disable-line react-hooks/exhaustive-deps
+  );
 
   const [maxHeadway, setMaxHeadway] = useState<number>(() => {
     try {
@@ -425,6 +432,10 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   // MapLibre to report its first move. A stalled route tile must not leave the
   // data loader using the Toronto default while the map is elsewhere.
   const initialAgencyBounds = useMemo<ViewportBounds | null>(() => {
+    if (!initialMapCenter && initialMapBounds) {
+      const [s, w, n, e] = initialMapBounds;
+      return { s, w, n, e };
+    }
     if (!initialMapCenter) return null;
     return {
       s: initialMapCenter.lat - VIEWPORT_BBOX_PAD.lat,
@@ -432,9 +443,9 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
       n: initialMapCenter.lat + VIEWPORT_BBOX_PAD.lat,
       e: initialMapCenter.lon + VIEWPORT_BBOX_PAD.lon,
     };
-  }, [initialMapCenter]);
+  }, [initialMapCenter, initialMapBounds]);
   const [bounds, setBounds] = useState<ViewportBounds | null>(initialAgencyBounds);
-  const [mapZoom, setMapZoom] = useState(initialMapCenter?.zoom ?? getRegionalView(agencies).zoom);
+  const [mapZoom, setMapZoom] = useState(initialMapCenter?.zoom ?? (initialMapBounds ? areaFitZoom(initialMapBounds) : undefined) ?? getRegionalView(agencies).zoom);
   const onBoundsChange = useCallback((b: ViewportBounds, z?: number) => {
     setBounds(b);
     if (z !== undefined) setMapZoom(z);
@@ -628,7 +639,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   useEffect(() => {
     if (agencies.length === 0) return;
     if (agencyUrlRuleRef.current && !agencySelectionUserChangedRef.current) return;
-    syncUrlParams(encodeAgencySelection(selectedAgencies, agencies.map(a => a.slug)));
+    syncUrlParams(encodeSelectionParams(selectedAgencies, agencies.map(a => a.slug)));
   }, [selectedAgencies, agencies]);
   useEffect(() => {
     syncUrlParams({ m: encodeModesParam(selectedModes) });
@@ -817,6 +828,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
             selectedModes={selectedModes}
             selectedAgencies={selectedAgencies}
             initialMapCenter={initialMapCenter}
+            initialMapBounds={initialMapBounds}
             initialOnDemandSlug={initialMapCenter ? null : searchParams.get('ondemand')?.split('::', 1)[0] ?? null}
             onTileLoadingChange={setIsTilesLoading}
             onBasemapLoadingChange={setIsBasemapLoading}
@@ -893,6 +905,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
                 selectedModes={selectedModes}
                 selectedAgencies={selectedAgencies}
                 initialMapCenter={initialMapCenter}
+            initialMapBounds={initialMapBounds}
                 initialOnDemandSlug={null}
                 setQuery={setQuery}
                 onClearSelection={clearMapSelection}
