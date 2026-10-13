@@ -45,7 +45,7 @@ function readEmbeddedData(slug: string | undefined): AgencyPageData | null {
 /** A period cell: the card's cadence, "Limited" when the route runs but has no trustworthy cadence, else a dash. */
 function cell(col: 'am' | 'midday' | 'pm' | 'evening' | 'overnight', r: AgencyPageRoute): string {
   const v = r[col];
-  return v != null ? headwayEvery(v) : r.limited?.includes(col) ? 'Limited' : headwayEvery(null);
+  return v != null ? headwayEvery(v) : Array.isArray(r.limited) && r.limited.includes(col) ? 'Limited' : headwayEvery(null);
 }
 
 export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }) {
