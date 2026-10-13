@@ -18,6 +18,7 @@
       "properties": {
         "slug": { "type": "string", "pattern": "^[a-z0-9-]+$" },
         "name": { "type": "string" },
+        "shortName": { "type": "string" },
         "region": { "type": "string" },
         "center": {
           "type": "array",

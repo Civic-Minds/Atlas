@@ -581,6 +581,7 @@
     {
       "slug": "hamilton",
       "name": "Hamilton Street Railway",
+      "shortName": "HSR",
       "websiteUrl": "http://www.hamilton.ca/hsr",
       "searchAliases": [
         "Hamilton"
@@ -1359,6 +1360,7 @@
     {
       "slug": "ttc",
       "name": "Toronto Transit Commission",
+      "shortName": "TTC",
       "websiteUrl": "https://www.ttc.ca",
       "searchAliases": [
         "Toronto"
@@ -1519,6 +1521,7 @@
     {
       "slug": "yrt",
       "name": "York Region Transit",
+      "shortName": "YRT",
       "websiteUrl": "http://www.yrt.ca",
       "region": "Ontario",
       "center": [
@@ -1911,6 +1914,7 @@
     {
       "slug": "stm",
       "name": "STM (Montréal)",
+      "shortName": "STM",
       "displayArea": "Montréal",
       "websiteUrl": "https://www.stm.info",
       "searchAliases": [
@@ -2742,6 +2746,7 @@
     {
       "slug": "edmonton",
       "name": "Edmonton Transit Service (ETS)",
+      "shortName": "ETS",
       "websiteUrl": "http://www.takeets.com",
       "region": "Alberta",
       "center": [
@@ -4129,6 +4134,7 @@
     {
       "slug": "mbta",
       "name": "Massachusetts Bay Transportation Authority",
+      "shortName": "MBTA",
       "displayArea": "Boston",
       "websiteUrl": "http://www.capecodrta.org/",
       "region": "Massachusetts",
@@ -5837,6 +5843,7 @@
     {
       "slug": "trimet",
       "name": "TriMet (Portland, OR)",
+      "shortName": "TriMet",
       "websiteUrl": "https://portlandstreetcar.org/",
       "center": [
         45.494,
@@ -6442,6 +6449,7 @@
     {
       "slug": "sfmta",
       "name": "San Francisco Municipal Transportation Agency (SFMTA - Muni)",
+      "shortName": "SFMTA",
       "websiteUrl": "http://www.sfmta.com",
       "center": [
         37.7584,
@@ -6479,6 +6487,7 @@
     {
       "slug": "bart",
       "name": "Bay Area Rapid Transit (BART)",
+      "shortName": "BART",
       "websiteUrl": "https://www.bart.gov/",
       "center": [
         37.768,
@@ -6560,6 +6569,7 @@
     {
       "slug": "actransit",
       "name": "Alameda-Contra Costa Transit District (AC Transit)",
+      "shortName": "AC Transit",
       "center": [
         37.7688,
         -122.1937
@@ -6600,6 +6610,7 @@
     {
       "slug": "vta",
       "name": "Santa Clara Valley Transportation Authority (VTA)",
+      "shortName": "VTA",
       "websiteUrl": "https://www.vta.org",
       "center": [
         37.3241,
@@ -9722,6 +9733,7 @@
     {
       "slug": "rtd-denver",
       "name": "Regional Transportation District (RTD Denver)",
+      "shortName": "RTD",
       "websiteUrl": "https://www.rtd-denver.com",
       "center": [
         39.74,
@@ -9964,6 +9976,7 @@
     {
       "slug": "dart",
       "name": "Dallas Area Rapid Transit (DART)",
+      "shortName": "DART",
       "websiteUrl": "https://www.dart.org",
       "center": [
         32.78,
@@ -11156,6 +11169,7 @@
     {
       "slug": "cta",
       "name": "Chicago Transit Authority (CTA)",
+      "shortName": "CTA",
       "displayArea": "Chicago",
       "websiteUrl": "http://transitchicago.com",
       "center": [
@@ -11298,6 +11312,7 @@
     {
       "slug": "marta",
       "name": "MARTA (Atlanta)",
+      "shortName": "MARTA",
       "websiteUrl": "https://www.itsmarta.com",
       "center": [
         33.749,
@@ -11560,6 +11575,7 @@
     {
       "slug": "septa",
       "name": "SEPTA (Philadelphia)",
+      "shortName": "SEPTA",
       "displayArea": "Philadelphia",
       "websiteUrl": "https://septa.org/",
       "region": "Pennsylvania",
@@ -11630,6 +11646,7 @@
     {
       "slug": "wmata",
       "name": "WMATA (Washington, DC)",
+      "shortName": "WMATA",
       "region": "Washington DC",
       "center": [
         38.9072,

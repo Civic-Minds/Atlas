@@ -54,6 +54,19 @@ export interface AgencyPageSummaries {
   agencies: AgencyPageSummary[];
 }
 
+/** A page's own numbers plus links to nearby agencies: all one page needs, embedded in its HTML. */
+export interface AgencyPageData {
+  agency: AgencyPageSummary;
+  nearby: Array<{ slug: string; displayName: string }>;
+}
+
+/** The prerendered HTML carries its data in <script type="application/json" id=...>. */
+export const AGENCY_DATA_SCRIPT_ID = 'agency-page-data';
+
+export function agencyPageData(a: AgencyPageSummary, all: readonly AgencyPageSummary[]): AgencyPageData {
+  return { agency: a, nearby: nearbyAgencies(a, all).map(o => ({ slug: o.slug, displayName: o.displayName })) };
+}
+
 export const AGENCY_PATH_PREFIX = '/agency/';
 
 export function agencyPagePath(slug: string): string {
@@ -175,11 +188,12 @@ export interface Crumb {
   href?: string;
 }
 
-/** Transit Atlas > Country > State or province > Agency. The city is left out: the first city an agency lists is not always its main one. */
+/** Transit Atlas > Country > State or province > primary city > Agency. The city is the config's displayArea, else its first listed city. */
 export function agencyBreadcrumbs(a: AgencyPageSummary): Crumb[] {
   const crumbs: Crumb[] = [{ name: 'Transit Atlas', href: '/' }];
   if (a.country) crumbs.push({ name: a.country });
   if (a.region) crumbs.push({ name: a.region });
+  if (a.city && a.city !== a.region && a.city !== a.displayName) crumbs.push({ name: a.city });
   crumbs.push({ name: a.displayName });
   return crumbs;
 }
@@ -223,7 +237,7 @@ export function resolveAgencySeo(
 export function agencyPageJsonLd(a: AgencyPageSummary, canonicalUrl: string, origin: string): object {
   const crumbs = agencyBreadcrumbs(a);
   const modified = formatIso(a.lastRefreshedAt);
-  const area = [a.region, a.country].filter(Boolean).join(', ');
+  const area = [a.city, a.region, a.country].filter(Boolean).join(', ');
   return {
     '@context': 'https://schema.org',
     '@graph': [

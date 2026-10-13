@@ -7,6 +7,7 @@ import type { ReactElement } from 'react';
 import { renderToString } from 'react-dom/server';
 import { StaticRouter } from 'react-router';
 import { ATLAS_MODE, FEATURES } from '../shared/config';
+import type { AgencyPageData } from '../shared/agencyPages';
 import type { SeoFlags } from '../shared/seo';
 import AboutDocsPage from './AboutDocsPage';
 import AboutPage from './AboutPage';
@@ -41,6 +42,6 @@ export function renderPage(path: string): string {
 
 export const PRERENDER_PATHS = Object.keys(PAGES);
 
-export function renderAgencyPage(slug: string): string {
-  return renderToString(<StaticRouter location={`/agency/${slug}`}><AgencyPage slug={slug} /></StaticRouter>);
+export function renderAgencyPage(data: AgencyPageData): string {
+  return renderToString(<StaticRouter location={`/agency/${data.agency.slug}`}><AgencyPage data={data} /></StaticRouter>);
 }

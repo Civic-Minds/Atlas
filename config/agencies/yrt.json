@@ -1,6 +1,7 @@
 {
   "slug": "yrt",
   "name": "York Region Transit",
+  "shortName": "YRT",
   "websiteUrl": "http://www.yrt.ca",
   "region": "Ontario",
   "center": [

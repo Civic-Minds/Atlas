@@ -1,4 +1,4 @@
-import { Fragment, useEffect } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { ArrowRight } from 'lucide-react';
 import {
@@ -13,10 +13,10 @@ import {
   formatDataDate,
   headwayEvery,
   headwayOrBetter,
-  nearbyAgencies,
   resolveAgencySeo,
+  AGENCY_DATA_SCRIPT_ID,
+  type AgencyPageData,
 } from '../shared/agencyPages';
-import { agencyPageSummaries, getAgencyPageSummary } from '../shared/agencyPagesData';
 import { ATLAS_MODE } from '../shared/config';
 import { applySeoToDocument } from './lib/seoDom';
 import SiteFooter from './components/SiteFooter';
@@ -24,11 +24,32 @@ import SiteHeader from './components/SiteHeader';
 
 const LINK = 'text-[var(--accent)] hover:underline';
 
-/** One agency's frequency summary, written to be read and crawled as plain text. */
-export default function AgencyPage({ slug: slugProp }: { slug?: string }) {
+/** Read this page's numbers from the JSON the prerender embedded next to the app root. */
+function readEmbeddedData(slug: string | undefined): AgencyPageData | null {
+  if (typeof document === 'undefined') return null;
+  try {
+    const raw = document.getElementById(AGENCY_DATA_SCRIPT_ID)?.textContent;
+    const data = raw ? (JSON.parse(raw) as AgencyPageData) : null;
+    return data && data.agency.slug === slug ? data : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * One agency's frequency summary, written to be read and crawled as plain text. The prerender
+ * passes `data`; in the browser the page reads only its own agency's numbers from its own HTML,
+ * so no other agency's data ships with the page. The dev server has no prerendered HTML and
+ * loads from the full summary file instead (dead code in production builds).
+ */
+export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }) {
   const params = useParams();
-  const slug = slugProp ?? params.slug;
-  const agency = getAgencyPageSummary(slug);
+  const [data, setData] = useState<AgencyPageData | null>(() => dataProp ?? readEmbeddedData(params.slug));
+  useEffect(() => {
+    if (data || !import.meta.env.DEV) return;
+    void import('./agencyPageDevData').then(m => setData(m.devAgencyPageData(params.slug)));
+  }, [data, params.slug]);
+  const agency = data?.agency;
 
   useEffect(() => {
     if (!agency) return;
@@ -55,7 +76,7 @@ export default function AgencyPage({ slug: slugProp }: { slug?: string }) {
   const updated = formatDataDate(agency.lastRefreshedAt);
   const span = agencySpanText(agency);
   const crumbs = agencyBreadcrumbs(agency);
-  const nearby = nearbyAgencies(agency, agencyPageSummaries());
+  const nearby = data!.nearby;
   const statItems: Array<[string, string]> = [
     ['Routes by mode', stats.byMode.map(m => `${m.routes.length} ${m.label.toLowerCase()}`).join(', ')],
     ['Frequent share', `${stats.frequentShare}% of routes run ${headwayOrBetter(FREQUENT_MINUTES)} at midday`],
