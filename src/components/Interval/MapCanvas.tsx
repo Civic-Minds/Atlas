@@ -26,7 +26,7 @@ import { dedupeRouteKeysByDisplay, splitRouteKey } from '../../utils/routeKey';
 import { computeFrequencySegmentOverlay, buildPartialMatchFilterExpression, broadenFilterForPartialMatches } from '../../utils/frequencySegments';
 import { buildSharedHoverSegments } from '../../utils/sharedHoverSegments';
 import { buildRouteSegmentFeatures, selectedRouteMatches } from '../../utils/routeSegments';
-import { getMapContextAgenciesFromFeatures, isMapContextOutsideClick, type MapContextAgency } from '../../utils/mapContext';
+import { dedupeMapContextByDisplay, getMapContextAgenciesFromFeatures, isMapContextOutsideClick, type MapContextAgency } from '../../utils/mapContext';
 import { MapContextPanel } from './MapContextPanel';
 import MapExportDialog from '../MapExportDialog';
 import { waitForMapExportReady } from '../../utils/mapExport';
@@ -638,7 +638,8 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     const layers = ['overview-routes-layer', 'routes-layer', 'local-routes-layer'].filter(layer => map.getLayer(layer));
     const features = layers.length > 0 ? map.queryRenderedFeatures(undefined, { layers }) : [];
     const contextAgencies = getMapContextAgenciesFromFeatures(agencies, features);
-    if (showMapContext) setMapContextAgencies(contextAgencies);
+    // The panel and its counts show distinct rider-visible lines; compare mode below keeps raw keys.
+    if (showMapContext) setMapContextAgencies(dedupeMapContextByDisplay(contextAgencies));
     renderedRouteKeysRef.current?.(new Set(contextAgencies.flatMap(agency => agency.routes.map(route => route.key))));
   }, [agencies, mapLoaded, showMapContext, reportsRenderedRoutes]);
 

@@ -54,6 +54,7 @@ describe('effectiveMode', () => {
     expect(effectiveMode({ routeType: 0, agencySlug: 'valleymetro', routeLongName: 'Valley Metro Rail A Line' })).toBe(VIRTUAL_LRT_MODE);
     expect(effectiveMode({ routeType: 0, agencySlug: 'sdmts', routeShortName: 'Blue', routeLongName: 'San Ysidro - UTC' })).toBe(VIRTUAL_LRT_MODE);
     expect(effectiveMode({ routeType: 0, agencySlug: 'metro-transit', routeLongName: 'METRO Blue Line' })).toBe(VIRTUAL_LRT_MODE);
+    expect(effectiveMode({ routeType: 0, agencySlug: 'nfta', routeLongName: 'Metro Rail' })).toBe(VIRTUAL_LRT_MODE);
     expect(effectiveMode({ routeType: 0, agencySlug: 'gcrta', routeShortName: 'WL', routeLongName: 'Waterfront Line' })).toBe(VIRTUAL_LRT_MODE);
     expect(effectiveMode({ routeType: 0, agencySlug: 'sacrt', routeShortName: 'Gold', routeLongName: 'Downtown - Folsom' })).toBe(VIRTUAL_LRT_MODE);
   });
