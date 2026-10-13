@@ -6,10 +6,6 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
-### Changed
-
-- **Beta: route lines are drawn in segments coloured by the service at each stop**: every trip that serves a stop counts, so the trunk TTC 29A and 29C share reads every 8 while each branch's tail keeps its own 16; the route-level frequency and tier still decide the filter ([#690](https://github.com/Civic-Minds/Atlas/issues/690)).
-
 ### Added
 
 - **Every agency gets its own frequency page, with real numbers and a link into the map (beta)**: each page shows a bar of how many routes fall in each weekday-midday frequency band (no fixed cutoff, so small agencies still get a useful picture), a route table by mode with AM peak, Midday, PM peak, Evening and Overnight waits, a Connects with list of other agencies whose stops are within 150 m, and nearby agencies, so the agency can be found in search once these go public.
@@ -28,6 +24,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Changed
 
+- **Beta: route lines are drawn in segments coloured by the service at each stop**: every trip that serves a stop counts, so the trunk TTC 29A and 29C share reads every 8 while each branch's tail keeps its own 16; the route-level frequency and tier still decide the filter ([#690](https://github.com/Civic-Minds/Atlas/issues/690)).
 - **Text is bigger and easier to read**: nothing a person has to read is below 12px any more, and the faint greys, status colours (green, red, amber) and white-on-pastel fare and timeline pills now meet WCAG AA contrast in light, dark and high-contrast modes.
 - **Frequency reads the same way everywhere, and Compare now says "or better"**: Compare headings read like a claim about the service rather than the filter, and the same frequency was worded eight different ways ("≤10m", "every 12m", "about every 10 min").
 - **Night Service moved to `/research/night`**: it now lives with the other research pages, and old `/apps/night` links redirect there with their filters kept.
