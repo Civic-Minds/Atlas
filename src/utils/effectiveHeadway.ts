@@ -1,11 +1,36 @@
 import type { ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
-import { isHourInPeriod } from '../../shared/config';
+import { isHourInPeriod, TIME_PERIODS } from '../../shared/config';
 import { hasNoPeriodService } from '../../shared/periodEligibility';
 import { buildRouteServiceSummary, metricValueForPeriod } from './routeFacts';
-import { pairedTripSafeHeadway } from './pairedTripFloor';
+import { pairedTripPeriodFloor, pairedTripSafeHeadway } from './pairedTripFloor';
 import { delayAmount, headwayAbout, headwayAboutRange } from './headwayText';
 
 export { pairedTripPeriodFloor, pairedTripSafeHeadway } from './pairedTripFloor';
+
+/**
+ * A handful of trips bunched into a small part of the period (school trips, a short-turn
+ * burst): the full-window wait is at least 8x the median, and departures fall in fewer than
+ * half of the period's hours. The median is then the gap inside the burst, not a cadence
+ * (#826: LANTA 410 Dieruff High School, CityLink ORANGE Fayette Plaza). The hours check keeps
+ * dense service that runs the whole period but has a long edge gap (Metromover evening, STM 51
+ * AM). Service that starts late in the period and keeps running after it (Sunday AM on the
+ * subway) is a real cadence, not a bunch. Rows with no hourly data cannot be judged and keep
+ * their median.
+ */
+function isBunchedPeriod(p: ShapeProperties, period: Exclude<TimePeriod, 'all'>): boolean {
+  const median = p.headwayByPeriod?.[period];
+  const coverage = p.periodCoverageHeadway?.[period];
+  const byHour = p.headwayByHour;
+  if (median == null || coverage == null || coverage < 8 * median || !byHour) return false;
+  const window = TIME_PERIODS.find(t => t.key === period);
+  if (!window) return false;
+  const activeHours = Object.entries(byHour)
+    .filter(([hour, value]) => value != null && isHourInPeriod(Number(hour), period))
+    .map(([hour]) => Number(hour));
+  if (activeHours.length * 2 >= window.endHour - window.startHour) return false;
+  const runsOn = activeHours.includes(window.endHour - 1) && byHour[window.endHour] != null;
+  return !runsOn;
+}
 
 /** Headway shown on route cards and lists (display only — filter decisions use shared/routeHeadwayFilter). */
 export function routeCardDisplayHeadway(p: ShapeProperties, period: TimePeriod): number | null {
@@ -30,6 +55,8 @@ export function routeCardDisplayHeadway(p: ShapeProperties, period: TimePeriod):
   // period's cadence, never the all-day headline. Coverage data remains available to the
   // filter and the limited-service treatment elsewhere on the card.
   if (period !== 'all' && p.headwayByPeriodSustained?.[period] === false) {
+    // Spread-out paired trips keep their coverage floor (#761); only a true bunch has no cadence.
+    if (pairedTripPeriodFloor(p, period) == null && isBunchedPeriod(p, period)) return null;
     return pairedTripSafeHeadway(p, period, p.headwayByPeriod?.[period] ?? null);
   }
   const summary = buildRouteServiceSummary(p);
