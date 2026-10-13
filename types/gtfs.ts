@@ -291,6 +291,8 @@ export interface AnalysisResult {
     dir: string;
     avgHeadway: number;
     medianHeadway: number;
+    /** Plain median of the gaps, before the alternating-gap reading (#772). Feature dedupe compares this. */
+    plainMedianHeadway?: number;
     tier: string;
     /** Weekday service produced different tiers on different actual weekdays. */
     weekdayTierVariation?: boolean;

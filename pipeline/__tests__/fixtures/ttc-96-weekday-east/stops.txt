@@ -1,0 +1,89 @@
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,location_type,parent_station,stop_timezone,wheelchair_boarding
+12196,12196,Humber College Blvd at Humberline Dr South Side,,43.731793,-79.608899,,,,,,1
+9899,9899,Wilson Ave at Billy Bishop Way,,43.733156,-79.452938,,,,,,1
+1662,1662,Wilson Ave at Lady York Ave,,43.731006,-79.464577,,,,,,1
+9907,9907,York Mills Rd at Yonge St East Side,,43.744162,-79.405826,,,,,,1
+8865,8865,Wilson Ave at Julian Rd East Side - Humber River Hospital,,43.724582,-79.490689,,,,,,1
+8886,8886,Wilson Ave at Wendell Ave,,43.716636,-79.527232,,,,,,2
+8892,8892,Wilson Ave at Yonge St,,43.743804,-79.407263,,,,,,1
+8837,8837,Wilson Ave at Avenue Rd,,43.7397,-79.421902,,,,,,1
+8882,8882,Wilson Ave at Ridley Blvd,,43.73928,-79.423844,,,,,,1
+8525,8525,Walsh Ave at Weston Rd East Side,,43.716734,-79.536796,,,,,,1
+8845,8845,Wilson Ave at Clayson Rd,,43.717475,-79.523537,,,,,,1
+8657,8657,Westhumber Blvd at Martin Grove Rd East Side,,43.726064,-79.58615,,,,,,1
+2702,2702,Humberline Dr at Claireville Dr (North),,43.746109,-79.622079,,,,,,1
+5629,5629,Martin Grove Rd at Milkwood Ave,,43.73022,-79.588737,,,,,,1
+8889,8889,Wilson Ave at Yonge Blvd East Side,,43.741284,-79.414806,,,,,,1
+7878,7878,John Garland Blvd at Mosque Cres (North),,43.732458,-79.592402,,,,,,1
+7724,7724,Elmhurst Dr at Albion Rd,,43.724914,-79.550866,,,,,,1
+8656,8656,Westhumber Blvd at Kipling Ave,,43.727987,-79.574783,,,,,,1
+11535,11535,John Garland Blvd at Jamestown Cres (West),,43.732415,-79.58675,,,,,,1
+8847,8847,Wilson Ave at Clyde Ave,,43.738595,-79.426958,,,,,,1
+11273,11273,Humber College Blvd at Highway 27,,43.730243,-79.601847,,,,,,1
+11077,11077,Carrier Dr at Albion Rd,,43.745809,-79.614347,,,,,,1
+8873,8873,949 Wilson Ave,,43.728771,-79.474465,,,,,,1
+8880,8880,Wilson Ave at Ridge Rd East Side,,43.723886,-79.493795,,,,,,1
+7863,7863,Humber College Blvd at John Garland Blvd,,43.733547,-79.593827,,,,,,1
+12063,12063,Humberline Dr at Finch Ave West,,43.735484,-79.617875,,,,,,1
+11081,11081,Humber College Blvd at Carrier Dr South Side,,43.7371,-79.610515,,,,,,1
+7728,7728,Elmhurst Dr at Harefield Dr,,43.727851,-79.569447,,,,,,2
+8877,8877,Wilson Ave at Northgate Dr,,43.730184,-79.468213,,,,,,1
+11074,11074,263 Carrier Dr,,43.750876,-79.614251,,,,,,1
+8868,8868,Wilson Ave at Keele St,,43.726427,-79.48238,,,,,,1
+7864,7864,Humber College Blvd at Lynmont Rd,,43.731799,-79.596075,,,,,,1
+8655,8655,Westhumber Blvd at Ixworth Rd,,43.727191,-79.577426,,,,,,1
+6230,6230,Albion Rd at Shendale Dr East Side,,43.722314,-79.547425,,,,,,1
+8653,8653,Westhumber Blvd at Delsing Dr East Side,,43.726859,-79.582844,,,,,,1
+2845,2845,Humberline Loop at Albion Rd,,43.74738,-79.62259,,,,,,1
+7481,7481,Albion Rd at Weston Rd,,43.717248,-79.53827,,,,,,2
+8861,8861,Wilson Ave at Jane St,,43.720752,-79.508813,,,,,,1
+7726,7726,Elmhurst Dr at Fordwich Cres,,43.726312,-79.565479,,,,,,2
+7568,7568,Brookmere Rd at Elmhurst Dr,,43.728733,-79.572478,,,,,,2
+11075,11075,225 Carrier Dr,,43.74897,-79.615884,,,,,,1
+7821,7821,Harefield Dr at Hinton Rd,,43.72686,-79.569503,,,,,,2
+11046,11046,Humberline Dr at Finch Ave West South Side,,43.734366,-79.618132,,,,,,1
+6216,6216,Albion Rd at Armel Crt,,43.72131,-79.545974,,,,,,1
+11048,11048,Humberline Dr at Holyoake Cres (East),,43.731737,-79.612174,,,,,,1
+11576,11576,John Garland Blvd at Martin Grove Rd East Side,,43.73217,-79.588505,,,,,,1
+1657,1657,Wilson Ave at Dufferin St,,43.731854,-79.459521,,,,,,1
+7725,7725,Elmhurst Dr at Drumheller Rd South Side,,43.723664,-79.563472,,,,,,2
+8839,8839,Wilson Ave at Bathurst St East Side,,43.737304,-79.433226,,,,,,2
+7731,7731,Elmhurst Dr at Islington Ave,,43.722989,-79.559057,,,,,,1
+13472,13472,Humberline Dr at Viewcrest Cir East Side,,43.7322,-79.617339,,,,,,1
+8855,8855,Wilson Ave at Epic Lane Rd East Side,,43.721239,-79.505763,,,,,,1
+11538,11538,John Garland Blvd at Kipling Ave,,43.735359,-79.578514,,,,,,1
+7822,7822,Hinton Rd at Elmhurst Dr,,43.72739,-79.566418,,,,,,1
+7734,7734,Elmhurst Dr at Muncey Ave,,43.724247,-79.55368,,,,,,1
+2707,2707,Humberline Dr at Huddersfield Rd,,43.743504,-79.62084,,,,,,1
+11078,11078,Carrier Dr at Dansk Crt South Side,,43.743515,-79.61474,,,,,,2
+8875,8875,Wilson Ave at Murray Rd,,43.729408,-79.471719,,,,,,2
+11080,11080,Opposite 100 Carrier Dr,,43.739311,-79.612839,,,,,,1
+11076,11076,209 Carrier Dr,,43.747234,-79.615107,,,,,,1
+11079,11079,145 Carrier Dr,,43.741627,-79.613925,,,,,,1
+1658,1658,Wilson Ave at Faywood Blvd East Side,,43.734763,-79.445833,,,,,,1
+1660,1660,Wilson Ave at King High Ave,,43.735406,-79.442947,,,,,,1
+4321,4321,Kipling Ave at Henley Cres,,43.730588,-79.575998,,,,,,1
+8526,8526,Walsh Ave at Wilson Ave,,43.715641,-79.532544,,,,,,1
+8887,8887,Wilson Ave at William Cragg Dr,,43.722389,-79.500473,,,,,,2
+8860,8860,Wilson Ave at Highview Ave East Side,,43.723322,-79.496337,,,,,,2
+11047,11047,Humberline Dr at Woodlot Cres (West) East Side,,43.731957,-79.61503,,,,,,2
+8842,8842,Wilson Ave at Belgrave Ave,,43.740481,-79.418302,,,,,,1
+8878,8878,Opposite 1700 Wilson Ave - Sheridan Mall,,43.720358,-79.510855,,,,,,1
+7876,7876,John Garland Blvd at Martin Grove Rd,,43.731901,-79.589609,,,,,,1
+8848,8848,Wilson Ave at Dubray Ave,,43.728042,-79.477861,,,,,,1
+6224,6224,Albion Rd at Golfdown Dr East Side,,43.723468,-79.548799,,,,,,1
+14807,14807,York Mills Station,,43.745136,-79.406134,,,,,,1
+14918,14918,Claireville Dr (South) at Humberline Dr,,43.737944,-79.618703,,,,,,1
+14919,14919,35 Claireville Dr,,43.737294,-79.621555,,,,,,1
+14922,14922,Opposite 90 Claireville Dr,,43.738367,-79.623938,,,,,,1
+14924,14924,61 Claireville Dr - BAPS Temple,,43.739799,-79.625047,,,,,,1
+14928,14928,18 Huddersfield Rd,,43.74285,-79.623045,,,,,,2
+15055,15055,Wilson Station,,43.734777,-79.451045,,,,,,2
+15136,15136,Wilson Ave at Agate Rd,,43.725744,-79.485637,,,,,,1
+15234,15234,379 Wilson Ave,,43.736466,-79.437971,,,,,,1
+15405,15405,Humber College Bus Terminal,,43.728683,-79.605058,,,,,,1
+15756,15756,Wilson Ave at Beverly Hills Dr,,43.719009,-79.51698,,,,,,1
+15821,15821,Humber College Blvd at Westmore Dr - Etobicoke General Hospital,,43.730806,-79.599536,,,,,,1
+15849,15849,Humber College Blvd at Finch Ave W,,43.733516,-79.610123,,,,,,1
+16625,16625,John Garland Blvd at Jamestown Cres East,,43.733749,-79.582677,,,,,,1
+16649,16649,Huddersfield Rd at Claireville Dr,,43.742344,-79.625224,,,,,,1

@@ -36,6 +36,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Routes with no short name show their name in bold in route lists**: Annapolis's Free Downtown Shuttle used to appear dimmed and indented, and agency headings no longer use extra letter spacing ([#777](https://github.com/Civic-Minds/Atlas/issues/777))
 - **Routes with paired trips no longer look like they run every 2 or 3 minutes**: Niagara 105 and 401 showed this in search, lists, cards and the hourly chart, but two buses minutes apart and then a long wait is not frequent service ([#761](https://github.com/Civic-Minds/Atlas/issues/761))
 - **A public agency with no data in the current release can no longer show "Couldn't load"**: the agency checks and the release publish step now fail and list it until it is hidden or refreshed into a release ([#759](https://github.com/Civic-Minds/Atlas/issues/759))
+- **Routes whose buses alternate short and long gaps show their real wait**: Basin Transit 1 (every 1 hour, then 2) had shown the short gap, halving the wait ([#772](https://github.com/Civic-Minds/Atlas/issues/772))
 
 ## [3.3.0] - 2026-10-12
 
