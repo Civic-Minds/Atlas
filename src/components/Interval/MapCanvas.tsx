@@ -417,6 +417,9 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   const [pmtilesRouteAgencies, setPmtilesRouteAgencies] = useState<Set<string> | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
   const [zoom, setZoom] = useState(11);
+  // Stop visibility only changes at zoom 12/14/17, so the style/filter effect depends on this tier
+  // rather than raw zoom and doesn't rebuild on every zoom tick (CIV-104).
+  const stopZoomTier = zoom >= 17 ? 3 : zoom >= 14 ? 2 : zoom >= 12 ? 1 : 0;
   const [mapHint, setMapHint] = useState<string | null>(null);
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
   const agencyDataLoadingRef = useRef(agencyDataLoading);
@@ -2271,9 +2274,9 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       if (!showRouteLayers) {
         map.setFilter('stops-layer', ['==', ['get', 'agencySlug'], ''] as any);
       } else {
-        const showAllDetailed = zoom >= 17;
-        const showConsolidated = zoom >= 14 && zoom < 17;
-        const showRail = zoom >= 12 && zoom < 14;
+        const showAllDetailed = stopZoomTier === 3;
+        const showConsolidated = stopZoomTier === 2;
+        const showRail = stopZoomTier === 1;
 
         const allSiblingStopIds = routesForStop?.siblingIdsByAgency
           ? Object.values(routesForStop.siblingIdsByAgency).flatMap(set => Array.from(set))
@@ -2303,7 +2306,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       }
     }
 
-  }, [mapLoaded, q, selectedRoute, hoveredSearchRoute, hoveredBranch, selectedStop, routesForStop, maxHeadway, zoom, showRouteLayers, liveRoutesOnly, filterToAgencies, agencies, tileFilter, nightServiceView, frequentServiceView, historyOverlay, layers, frequencySegmentOverlay, colorMode, onDemandFocus]);
+  }, [mapLoaded, q, selectedRoute, hoveredSearchRoute, hoveredBranch, selectedStop, routesForStop, maxHeadway, stopZoomTier, showRouteLayers, liveRoutesOnly, filterToAgencies, agencies, tileFilter, nightServiceView, frequentServiceView, historyOverlay, layers, frequencySegmentOverlay, colorMode, onDemandFocus]);
 
   // Force-reset route paint when selection clears (guards against stuck highlight state).
   useEffect(() => {
