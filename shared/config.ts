@@ -85,6 +85,10 @@ export const COMPARE_MODE_ENABLED = ATLAS_MODE === 'beta' || ATLAS_MODE === 'dev
 export const SHARE_UTM_ENABLED = ATLAS_MODE === 'beta' || ATLAS_MODE === 'dev';
 // While a mode (Live, History, Compare) is active, the other mode tabs shrink to icons. Beta-only.
 export const COLLAPSE_MODE_TABS_ENABLED = ATLAS_MODE === 'beta' || ATLAS_MODE === 'dev';
+// #690: route lines drawn in segments coloured by the pooled per-stop tier (every trip at each
+// stop), with the route-level tier still deciding the filter. Beta and dev only until the
+// segment colours have been looked at on real routes.
+export const SEGMENT_COLOURS_ENABLED = ATLAS_MODE === 'beta' || ATLAS_MODE === 'dev';
 // On-demand zones, the On-demand filter chip and the standalone on-demand agencies. Beta and
 // preview only until Ryan signs off on the public launch (CIV-23); launch flips this one value.
 export const ON_DEMAND_PUBLIC = false;
@@ -126,6 +130,7 @@ export const FEATURES = {
   onDemand: ON_DEMAND_ENABLED,
   cardClickToFlag: CARD_CLICK_TO_FLAG_ENABLED,
   unevenBanner: UNEVEN_BANNER_ENABLED,
+  segmentColours: SEGMENT_COLOURS_ENABLED,
   whatsNew: WHATS_NEW_ENABLED,
   agencyPages: AGENCY_PAGES_ENABLED,
 } as const;

@@ -25,6 +25,7 @@ import { isOnDemandStopFocused, isOnDemandZoneFocused, ON_DEMAND_FOCUSED_PROP, t
 import { dedupeRouteKeysByDisplay, splitRouteKey } from '../../utils/routeKey';
 import { computeFrequencySegmentOverlay, buildPartialMatchFilterExpression, broadenFilterForPartialMatches } from '../../utils/frequencySegments';
 import { buildSharedHoverSegments } from '../../utils/sharedHoverSegments';
+import { buildRouteSegmentFeatures } from '../../utils/routeSegments';
 import { getMapContextAgenciesFromFeatures, isMapContextOutsideClick, type MapContextAgency } from '../../utils/mapContext';
 import { MapContextPanel } from './MapContextPanel';
 import MapExportDialog from '../MapExportDialog';
@@ -489,7 +490,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     let routeShortName: string | null = null;
     let routeColor: string | null = null;
     if (map) {
-      const drawnLayers = ['overview-routes-layer', 'routes-layer', 'local-routes-layer', 'selected-route-layer', 'selected-local-route-layer', 'night-service-routes-layer', 'frequent-service-routes-layer', 'frequency-qualifying-segments-layer']
+      const drawnLayers = ['overview-routes-layer', 'routes-layer', 'local-routes-layer', 'route-segments-layer', 'selected-route-layer', 'selected-local-route-layer', 'selected-route-segments-layer', 'night-service-routes-layer', 'frequent-service-routes-layer', 'frequency-qualifying-segments-layer']
         .filter(layer => map.getLayer(layer) && map.getLayoutProperty(layer, 'visibility') !== 'none');
       // Only the part of the map that ends up in the image (exports crop to their own shape).
       const features = drawnLayers.length > 0 ? map.queryRenderedFeatures(box, { layers: drawnLayers }) : [];
@@ -1030,6 +1031,13 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     return computeFrequencySegmentOverlay(filteredLayers, period, maxHeadway, colorMode, layers ?? filteredLayers);
   }, [filteredLayers, layers, period, maxHeadway, showRouteLayers, nightServiceView, frequentServiceView, colorMode]);
 
+  // #690 (beta): every visible route line drawn in pieces coloured by its pooled per-stop
+  // tier, over the base line. The filter still reads the route-level values.
+  const routeSegmentFeatures = useMemo(() => {
+    if (!FEATURES.segmentColours || !showRouteLayers || nightServiceView || frequentServiceView) return [];
+    return buildRouteSegmentFeatures(mapFilteredLayers ?? filteredLayers, period, colorMode);
+  }, [mapFilteredLayers, filteredLayers, period, colorMode, showRouteLayers, nightServiceView, frequentServiceView]);
+
   const sharedHoverSegments = useMemo(
     () => buildSharedHoverSegments(layers, selectedRoute, hoveredBranch, day, colorMode),
     [layers, selectedRoute, hoveredBranch, day, colorMode],
@@ -1089,6 +1097,14 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     if (!source) return;
     source.setData({ type: 'FeatureCollection', features: frequencySegmentOverlay.segments });
   }, [frequencySegmentOverlay, mapLoaded]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapLoaded) return;
+    const source = map.getSource('route-segments') as maplibregl.GeoJSONSource | undefined;
+    if (!source) return;
+    source.setData({ type: 'FeatureCollection', features: routeSegmentFeatures });
+  }, [routeSegmentFeatures, mapLoaded]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -1328,6 +1344,26 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         layout: { 'line-cap': 'round', 'line-join': 'round', visibility: 'visible' },
       });
 
+      // #690 (beta): per-segment tier colours over the base route lines. Empty unless
+      // FEATURES.segmentColours is on; the selected route's pieces are drawn again above the
+      // selected-route layers so they stay visible there.
+      map.addSource('route-segments', {
+        type: 'geojson',
+        data: { type: 'FeatureCollection', features: [] },
+      });
+      map.addLayer({
+        id: 'route-segments-layer',
+        type: 'line',
+        source: 'route-segments',
+        minzoom: 8,
+        paint: {
+          'line-color': ['get', 'color'],
+          'line-width': ['interpolate', ['linear'], ['zoom'], 8, 1.5, 11, 2.0, 14, 2.5, 17, 3.5],
+          'line-opacity': ['interpolate', ['linear'], ['zoom'], 8, 0.7, 11, 0.8, 14, 0.9],
+        },
+        layout: { 'line-cap': 'round', 'line-join': 'round' },
+      });
+
       // Night Service uses loaded agency GeoJSON as a local overlay. This keeps the map
       // scoped to the current area and avoids relying on a tile-property filter when the
       // deployed PMTiles are from a different refresh generation.
@@ -1405,6 +1441,19 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         source: 'local-routes',
         paint: {
           'line-color': ['get', 'localHeadwayColor'],
+          'line-width': ['interpolate', ['linear'], ['zoom'], 8, 3.5, 11, 3.5, 14, 3.5, 17, 3.5],
+          'line-opacity': 1,
+        },
+        layout: { 'line-cap': 'round', 'line-join': 'round' },
+        filter: ['==', ['get', 'routeId'], ''] as any,
+      });
+      map.addLayer({
+        id: 'selected-route-segments-layer',
+        type: 'line',
+        source: 'route-segments',
+        minzoom: 8,
+        paint: {
+          'line-color': ['get', 'color'],
           'line-width': ['interpolate', ['linear'], ['zoom'], 8, 3.5, 11, 3.5, 14, 3.5, 17, 3.5],
           'line-opacity': 1,
         },
@@ -2058,6 +2107,15 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       : ['==', ['get', 'routeId'], ''];
     if (map.getLayer('selected-route-layer')) map.setFilter('selected-route-layer', selectedRouteFilter as any);
     if (map.getLayer('selected-local-route-layer')) map.setFilter('selected-local-route-layer', selectedRouteFilter as any);
+    if (map.getLayer('selected-route-segments-layer')) {
+      map.setFilter('selected-route-segments-layer', (selectedRoute ? routeKeyMatchExpression(selectedRoute) : ['==', ['get', 'routeId'], '']) as any);
+    }
+    if (map.getLayer('route-segments-layer')) {
+      // With a route selected the other lines' pieces step back like their base lines do.
+      map.setPaintProperty('route-segments-layer', 'line-opacity', (selectedRoute
+        ? ['case', routeKeyMatchExpression(selectedRoute), 1, 0.2]
+        : ['interpolate', ['linear'], ['zoom'], 8, 0.7, 11, 0.8, 14, 0.9]) as any);
+    }
 
     if (hasOverviewRoutes) map.setFilter('overview-routes-layer', routeFilter as any);
     if (hasRoutes) map.setFilter('routes-layer', routeFilter as any);

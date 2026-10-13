@@ -6,6 +6,10 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+### Changed
+
+- **Beta: route lines are drawn in segments coloured by the service at each stop**: every trip that serves a stop counts, so the trunk TTC 29A and 29C share reads every 8 while each branch's tail keeps its own 16; the route-level frequency and tier still decide the filter ([#690](https://github.com/Civic-Minds/Atlas/issues/690)).
+
 ### Added
 
 - **Every agency gets its own frequency page, with real numbers and a link into the map (beta)**: each page shows a bar of how many routes fall in each weekday-midday frequency band (no fixed cutoff, so small agencies still get a useful picture), a route table by mode with AM peak, Midday, PM peak, Evening and Overnight waits, a Connects with list of other agencies whose stops are within 150 m, and nearby agencies, so the agency can be found in search once these go public.
