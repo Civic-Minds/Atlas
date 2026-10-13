@@ -23,6 +23,7 @@
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20281231",
   "timezone": "America/Denver",
+  "skipClusteredJumpRepair": true,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/streamlinetransit-mt-us/streamlinetransit-mt-us.zip"
 }

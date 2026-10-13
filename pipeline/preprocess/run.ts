@@ -28,6 +28,8 @@ export interface GtfsTransformOptions {
   mergeEquivalentShapeVariantsAllModes?: boolean;
   /** Keep shapes whole across long point-to-point steps (rural highways, #776). Read at parse time. */
   keepLongShapeJumps?: boolean;
+  /** Leave shapes flagged for clustered jumps unrepaired (Streamline Goldline, #433). Read at parse time. */
+  skipClusteredJumpRepair?: boolean;
   /** Draw a headsign whose trips each have their own shape on one shape (RCT 20 southbound, #776). */
   poolSingleTripShapes?: boolean;
   /** Read the feed as of the run date instead of the detected reference date (#774). */

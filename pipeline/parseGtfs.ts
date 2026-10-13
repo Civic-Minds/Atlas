@@ -270,7 +270,11 @@ export function repairClusteredJumps(points: [number, number][]): { points: [num
  * Also reports which shapes needed correction (duplicate-sequence de-interleaving
  * and/or implausible-jump truncation) so QA tooling can flag them (#219/#244 pattern).
  */
-export const groupShapes = (parsed: any[], railShapeIds: ReadonlySet<string> = new Set()): { shapes: GtfsShape[]; anomalies: ShapeAnomaly[] } => {
+export const groupShapes = (
+    parsed: any[],
+    railShapeIds: ReadonlySet<string> = new Set(),
+    options: { skipClusteredJumpRepair?: boolean } = {},
+): { shapes: GtfsShape[]; anomalies: ShapeAnomaly[] } => {
     const grouped = new Map<string, { seq: number; lat: number; lon: number }[]>();
     for (const p of parsed) {
         if (!p.shape_id) continue;
@@ -299,7 +303,11 @@ export const groupShapes = (parsed: any[], railShapeIds: ReadonlySet<string> = n
         const hasClusteredJumps = detectClusteredJumps(knownFix.points);
         let finalPoints = knownFix.points;
         let repairedClusteredJumps = false;
-        if (hasClusteredJumps) {
+        // Agency opt-in: the repair reads a real out-and-back on long grid segments as an
+        // interleaved detour. Streamline Goldline (#433) runs out and back on Durston, Hunters
+        // Way and Babcock with 300-611 m segments; the repair cut points 80-103 and left six
+        // stops 95-512 m off the line. Such shapes stay raw and are still flagged.
+        if (hasClusteredJumps && !options.skipClusteredJumpRepair) {
             const repair = repairClusteredJumps(knownFix.points);
             if (repair.repaired) {
                 finalPoints = repair.points;
@@ -447,7 +455,7 @@ export function synthesizeCalendarFromDates(calendarDates: GtfsCalendarDate[]): 
 export const parseGtfsZip = async (
     file: File | ArrayBuffer,
     onStatus?: (message: string) => void,
-    options: { keepLongShapeJumps?: boolean } = {},
+    options: { keepLongShapeJumps?: boolean; skipClusteredJumpRepair?: boolean } = {},
 ): Promise<GtfsData> => {
     onStatus?.('Loading ZIP archive...');
     const zip = await JSZip.loadAsync(file);
@@ -517,7 +525,7 @@ export const parseGtfsZip = async (
                 .filter(trip => (options.keepLongShapeJumps || railRouteIds.has(trip.route_id)) && trip.shape_id)
                 .map(trip => trip.shape_id as string),
         );
-        const { shapes, anomalies } = groupShapes(rawShapes, railShapeIds);
+        const { shapes, anomalies } = groupShapes(rawShapes, railShapeIds, { skipClusteredJumpRepair: options.skipClusteredJumpRepair });
         gtfsData.shapes = shapes;
         if (anomalies.length > 0) gtfsData.shapeAnomalies = anomalies;
     }

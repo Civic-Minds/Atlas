@@ -21,6 +21,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Fixed
 
+- **Streamline Goldline in Bozeman follows its streets again**: a shape-repair step cut its out-and-back stretch on Durston and Babcock, leaving six stops off the line ([#433](https://github.com/Civic-Minds/Atlas/issues/433)).
 - **Amarillo shows all its stops**: its feed leaves times blank between timed stops, so only 41 of 293 appeared ([#753](https://github.com/Civic-Minds/Atlas/issues/753))
 - **Routes with a few pre-dawn trips on their own shape show their daytime service**: those trips had taken the direction's slot, so York Region Viva Blue to Newmarket read "limited" at midday instead of every 16 ([#746](https://github.com/Civic-Minds/Atlas/issues/746)).
 - **Re-processing an agency without a name keeps its display name**: it was being overwritten with the slug (#785).
