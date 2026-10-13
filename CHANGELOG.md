@@ -38,6 +38,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ### Fixed
 
 - **Route lists show the slower direction's frequency, as the agency page says**: they showed the busier direction, so GO 47 read "every 3 min" in the AM peak from a one-way rush cluster ([#821](https://github.com/Civic-Minds/Atlas/issues/821))
+- **Route lists show a range where alternating branches share a stretch**: GO Lakeshore West reads "about every 30–60 min" midday, every 30 on the shared part and every 60 on each branch; sorting and filters still use the per-branch number
 - **A few bunched trips no longer show as "every 2 to 4 min"**: school trips or a short burst packed into part of a period had their in-burst gap shown as the route's frequency ([#826](https://github.com/Civic-Minds/Atlas/issues/826))
 - **Routes that run steadily all period no longer show "limited" because of one hand-off gap**: TTC 927 evenings show every 10 again ([#826](https://github.com/Civic-Minds/Atlas/issues/826))
 - **Buffalo Metro Rail is counted when the LRT filter is on**: the map drew the line but the route counter showed 0 ([#811](https://github.com/Civic-Minds/Atlas/issues/811))

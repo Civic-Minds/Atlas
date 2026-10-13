@@ -1,7 +1,7 @@
 import React, { forwardRef } from 'react';
 import { headwayToTierColor } from '../../utils/colors';
 import { useColorVision } from '../../context/ColorVisionContext';
-import { fmtHeadway, titleCase } from '../../utils/format';
+import { fmtHeadway, fmtHeadwayRange, titleCase } from '../../utils/format';
 import type { NearbyRoute } from '../../hooks/useNearbyRoutes';
 import { FLOATING_CARD, PANEL_ENTER, PANEL_Z_INDEX, LIST_ROW, PANEL_TITLE_BAR, PANEL_TITLE, PANEL_BODY, PANEL_EMPTY } from '../../styles';
 import { PanelBody, PanelTitleBar } from '../ui/Panel';
@@ -72,7 +72,7 @@ export const NearbyRoutesPanel = forwardRef<HTMLDivElement, NearbyRoutesPanelPro
                   </span>
                   {r.headway != null && (
                     <span className="text-xs font-bold text-[var(--text-muted)] whitespace-nowrap shrink-0 ml-auto">
-                      {fmtHeadway(r.headway)}
+                      {r.sharedHeadway != null ? fmtHeadwayRange(r.sharedHeadway, r.headway) : fmtHeadway(r.headway)}
                     </span>
                   )}
                   {r.headway == null && r.limited && (

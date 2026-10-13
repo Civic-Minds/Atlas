@@ -1,9 +1,9 @@
 import type { ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
-import { isHourInPeriod, TIME_PERIODS } from '../../shared/config';
+import { isHourInPeriod, PERIOD_KEYS, TIME_PERIODS } from '../../shared/config';
 import { hasNoPeriodService } from '../../shared/periodEligibility';
 import { buildRouteServiceSummary, metricValueForPeriod } from './routeFacts';
 import { pairedTripPeriodFloor, pairedTripSafeHeadway } from './pairedTripFloor';
-import { delayAmount, headwayAbout, headwayAboutRange } from './headwayText';
+import { delayAmount, headwayAbout, headwayAboutRange, headwayEvery } from './headwayText';
 
 export { pairedTripPeriodFloor, pairedTripSafeHeadway } from './pairedTripFloor';
 
@@ -199,6 +199,67 @@ function routeListRowHeadway(p: ShapeProperties, period: TimePeriod): number | n
   return pairedTripSafeHeadway(p, period, median);
 }
 
+/** A shared stretch must cover at least this share of the direction's longest pattern to speak for it. */
+const SHARED_STRETCH_MIN_SHARE = 0.5;
+
+/**
+ * The combined cadence on a direction's shared stretch, where its branches alternate (GO Lakeshore
+ * West westbound: every 30 to Aldershot, every 60 on each branch). The pipeline pools every
+ * pattern's departures at the stops they share (sharedStops, CIV-82); this takes the median of
+ * those pooled period values. Null when the stretch covers under half of the longest pattern
+ * (a few shared stops near a terminal never speak for the route), when fewer than half its stops
+ * have a steady pooled value, or for All day.
+ */
+function directionSharedHeadway(rows: readonly ShapeProperties[], period: TimePeriod): number | null {
+  if (period === 'all') return null;
+  const index = PERIOD_KEYS.indexOf(period);
+  const longest = Math.max(0, ...rows.map(row => row.stopOrder?.length ?? 0));
+  if (index < 0 || longest === 0) return null;
+  for (const row of rows) {
+    const stops = Object.values(row.sharedStops ?? {});
+    if (stops.length === 0 || stops.length < longest * SHARED_STRETCH_MIN_SHARE) continue;
+    const values = stops
+      .filter(stop => stop.periods?.[index] != null && !stop.unsustained?.includes(period))
+      .map(stop => stop.periods![index] as number)
+      .sort((a, b) => a - b);
+    if (values.length === 0 || values.length * 2 < stops.length) continue;
+    return values[Math.floor((values.length - 1) / 2)];
+  }
+  return null;
+}
+
+interface RouteListCadence {
+  /** The slower direction's per-branch cadence: what lists sort, filter and colour by. */
+  headway: number | null;
+  /** The slower direction's cadence with shared stretches combined, only when lower than headway. */
+  shared: number | null;
+}
+
+function routeListCadence(features: readonly ShapeProperties[], period: TimePeriod): RouteListCadence {
+  const byDirection = new Map<number | null, ShapeProperties[]>();
+  for (const feature of features) {
+    const direction = feature.directionId ?? null;
+    (byDirection.get(direction) ?? byDirection.set(direction, []).get(direction)!).push(feature);
+  }
+  let slowest: number | null = null;
+  let slowestShared: number | null = null;
+  for (const rows of byDirection.values()) {
+    const values = rows
+      .map(feature => routeListRowHeadway(feature, period))
+      .filter((value): value is number => value != null);
+    if (values.length === 0) {
+      if (rows.some(feature => rowRunsInPeriod(feature, period))) return { headway: null, shared: null };
+      continue;
+    }
+    const best = Math.min(...values);
+    const pooled = directionSharedHeadway(rows, period);
+    const combined = pooled != null && pooled < best ? pooled : best;
+    slowest = slowest == null ? best : Math.max(slowest, best);
+    slowestShared = slowestShared == null ? combined : Math.max(slowestShared, combined);
+  }
+  return { headway: slowest, shared: slowest != null && slowestShared != null && slowestShared < slowest ? slowestShared : null };
+}
+
 /**
  * The route list cadence, judged by the slower direction (#821). Within a direction the best
  * branch's cadence speaks for it, so an infrequent short-turn never hides the main pattern (#708).
@@ -208,24 +269,16 @@ function routeListRowHeadway(p: ShapeProperties, period: TimePeriod): number | n
  * trips, is skipped, so a one-way peak service still shows its own cadence.
  */
 export function routeListDisplayHeadway(features: readonly ShapeProperties[], period: TimePeriod): number | null {
-  const byDirection = new Map<number | null, ShapeProperties[]>();
-  for (const feature of features) {
-    const direction = feature.directionId ?? null;
-    (byDirection.get(direction) ?? byDirection.set(direction, []).get(direction)!).push(feature);
-  }
-  let slowest: number | null = null;
-  for (const rows of byDirection.values()) {
-    const values = rows
-      .map(feature => routeListRowHeadway(feature, period))
-      .filter((value): value is number => value != null);
-    if (values.length === 0) {
-      if (rows.some(feature => rowRunsInPeriod(feature, period))) return null;
-      continue;
-    }
-    const best = Math.min(...values);
-    slowest = slowest == null ? best : Math.max(slowest, best);
-  }
-  return slowest;
+  return routeListCadence(features, period).headway;
+}
+
+/**
+ * The lower end of a route list range: the slower direction's cadence with alternating branches
+ * combined on their shared stretch. Display text only ("about every 30–60 min"); sorting,
+ * filtering and colour use routeListDisplayHeadway. Null when it is not lower, or the route is limited.
+ */
+export function routeListSharedHeadway(features: readonly ShapeProperties[], period: TimePeriod): number | null {
+  return routeListCadence(features, period).shared;
 }
 
 /**
@@ -242,12 +295,19 @@ export function routeListDisplayLimited(features: readonly ShapeProperties[], pe
 export interface RouteListDisplay {
   headway: number | null;
   limited: boolean;
+  /** Lower end of a display-only range on the shared stretch; absent when there is none. */
+  sharedHeadway?: number;
 }
 
-/** Headway and limited flag for one route list row, from the same shared rule. */
+/** Headway, shared-stretch range and limited flag for one route list row, from the same shared rule. */
 export function routeListDisplay(features: readonly ShapeProperties[], period: TimePeriod): RouteListDisplay {
-  return {
-    headway: routeListDisplayHeadway(features, period),
-    limited: routeListDisplayLimited(features, period),
-  };
+  const { headway, shared } = routeListCadence(features, period);
+  const display: RouteListDisplay = { headway, limited: routeListDisplayLimited(features, period) };
+  if (shared != null) display.sharedHeadway = shared;
+  return display;
+}
+
+/** List text for a route's cadence: "about every 30–60 min" with a shared-stretch range, else "every N min". */
+export function routeListHeadwayText(headway: number, sharedHeadway?: number | null): string {
+  return sharedHeadway != null && sharedHeadway < headway ? headwayAboutRange(sharedHeadway, headway) : headwayEvery(headway);
 }

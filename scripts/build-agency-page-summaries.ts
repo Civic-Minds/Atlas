@@ -91,12 +91,15 @@ export function summarize(
     const ps = rows.get(key)!;
     const cols = [['midday', 'midday'], ['am', 'amPeak'], ['pm', 'pmPeak'], ['evening', 'evening'], ['overnight', 'overnight']] as const;
     const limited: NonNullable<AgencyPageRoute['limited']> = [];
+    const shared: NonNullable<AgencyPageRoute['shared']> = {};
     for (const [col, period] of cols) {
       const d = routeListDisplay(ps, period);
       r[col] = d.headway;
       if (d.limited) limited.push(col);
+      if (d.sharedHeadway != null) shared[col] = d.sharedHeadway;
     }
     if (limited.length) r.limited = limited;
+    if (Object.keys(shared).length) r.shared = shared;
   }
   const hasDay = (day: string) => features.some(f => f.geometry?.type === 'LineString' && f.properties.day === day
     && Object.values((f.properties.headwayByHour as Record<string, number | null> | undefined) ?? {}).some(v => v != null));
