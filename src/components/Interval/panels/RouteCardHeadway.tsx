@@ -6,6 +6,8 @@ import type { OpenInfoFn } from '../../InfoPanel';
 import type { HeadwayByPeriod } from '../../../hooks/useAgencyData';
 import { titleCase, getRouteLabel, shortenAgencyName, resolveBranchLabel } from '../../../utils/format';
 import { HeadwaySparkline } from '../HeadwaySparkline';
+import { getCachedAgencyGeo } from '../../../lib/agencyGeo';
+import { slowerOfSeries, tripTimeSeriesFor, type PublishedRunningTimes } from '../../../utils/tripTime';
 import RouteCardTitle from '../../RouteCardTitle';
 import {
   CardDirectionRow,
@@ -439,12 +441,29 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
               }))
               .filter((segment): segment is { label: string; headway: number; color: string } => segment.headway != null)]))
           : undefined;
+        // Beta only, and only from data already in the agency file: the full-day view's trip time.
+        const runningTimes = FEATURES.beta && routeSlug
+          ? (getCachedAgencyGeo(routeSlug) as { runningTimes?: PublishedRunningTimes } | undefined)?.runningTimes
+          : undefined;
+        const tripTimeFor = (group: DirectionGroup) => {
+          const dir = group.realTier[0] ?? group.span[0];
+          if (!runningTimes || !dir) return null;
+          const routeIds = [...new Set([...group.realTier, ...group.span].map(d => d.routeId))];
+          return tripTimeSeriesFor(runningTimes, routeIds, dir.directionId, dir.day as string);
+        };
+        const groupTripTimes = displayGroups.map(tripTimeFor);
         const directionOptions = [
-          { key: 'all', label: 'All directions', byHour: merged },
+          {
+            key: 'all',
+            label: 'All directions',
+            byHour: merged,
+            tripTime: slowerOfSeries(groupTripTimes.filter((t): t is NonNullable<typeof t> => t != null)),
+          },
           ...displayGroups.map((group, index) => ({
             key: `direction-${group.dirId}`,
             label: group.boundLabel ?? `Direction ${index + 1}`,
             byHour: sparklineHeadwayByHour(group.realTier, HOURS),
+            tripTime: groupTripTimes[index],
           })),
         ];
         const hasAny = HOURS.some(h => merged[h] != null);

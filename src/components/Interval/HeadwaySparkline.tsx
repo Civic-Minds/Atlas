@@ -9,6 +9,8 @@ import { PERIOD_LABELS } from '../../hooks/useIntervalStats';
 import type { TimePeriod } from '../../hooks/useIntervalStats';
 import type { HeadwayByPeriod, HeadwayByHour } from '../../hooks/useAgencyData';
 import type { HeadwayByHourMaxGap } from '../../../shared/config';
+import { TripTimeStrip } from './TripTimeStrip';
+import type { TripTimeSeries } from '../../utils/tripTime';
 import { CONTROL_ACTIVE, CONTROL_INACTIVE } from '../../styles';
 
 const HOURS = SPARKLINE_HOURS;
@@ -59,7 +61,7 @@ interface HourlySparklineProps {
   byHour: HeadwayByHour;
   maxGapByHour?: HeadwayByHourMaxGap;
   stackedByHour?: Record<number, { label: string; headway: number; color: string }[]>;
-  directionOptions?: { key: string; label: string; byHour: HeadwayByHour }[];
+  directionOptions?: { key: string; label: string; byHour: HeadwayByHour; tripTime?: TripTimeSeries | null }[];
   period?: string;
   onPeriodChange?: (period: string) => void;
   onPeriodHover?: (period: string | null) => void;
@@ -332,6 +334,10 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
               onHourHover={onHourHover}
               title={title}
               expanded
+            />
+            <TripTimeStrip
+              series={directionOptions?.find(option => option.key === expandedDirection)?.tripTime}
+              label={expandedDirection === 'all' ? 'Trip time, slower direction' : 'Trip time'}
             />
           </div>
         </div>,
