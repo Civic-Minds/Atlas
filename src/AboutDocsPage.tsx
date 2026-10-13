@@ -3,7 +3,7 @@ import { FEATURES } from '../shared/config';
 import PageContents from './components/PageContents';
 import SiteContact from './components/SiteContact';
 import SiteFooter from './components/SiteFooter';
-import SiteHeader from './components/SiteHeader';
+import PageShell from './components/ui/PageShell';
 
 const DOCS_CONTENTS = [
   ['overview', 'Overview'],
@@ -46,9 +46,7 @@ export default function AboutDocsPage() {
   const showResearch = FEATURES.researchApps;
 
   return (
-    <main className="min-h-screen bg-[var(--bg-app)] text-[var(--text-primary)] px-5 py-8 sm:px-8">
-      <div className="max-w-5xl mx-auto">
-        <SiteHeader />
+    <PageShell>
 
         <div className="mt-10 lg:grid lg:grid-cols-[12rem_minmax(0,42rem)] lg:gap-12 lg:items-start">
           <PageContents items={DOCS_CONTENTS.map(([id, label]) => ({ id, label }))} />
@@ -362,7 +360,6 @@ export default function AboutDocsPage() {
           <SiteFooter />
           </article>
         </div>
-      </div>
-    </main>
+    </PageShell>
   );
 }

@@ -1,6 +1,6 @@
 import { Moon, Zap } from 'lucide-react';
 import { FEATURE_ROUTES } from '../../shared/config';
-import SiteHeader from '../components/SiteHeader';
+import PageShell from '../components/ui/PageShell';
 import SiteFooter from '../components/SiteFooter';
 import { SURFACE } from '../styles';
 
@@ -21,9 +21,7 @@ const CARDS = [
 
 export default function ResearchPage() {
   return (
-    <main className="min-h-screen bg-[var(--bg-app)] text-[var(--text-primary)] px-5 py-8 sm:px-8">
-      <div className="max-w-5xl mx-auto">
-        <SiteHeader />
+    <PageShell>
         <div className="mt-10 lg:max-w-[42rem] lg:ml-[15rem]">
           <article className="space-y-8 text-sm leading-relaxed text-[var(--text-dim)]">
             <header>
@@ -43,7 +41,6 @@ export default function ResearchPage() {
             <SiteFooter />
           </article>
         </div>
-      </div>
-    </main>
+    </PageShell>
   );
 }
