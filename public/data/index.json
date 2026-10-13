@@ -15253,21 +15253,22 @@
     {
       "slug": "fred-transit",
       "name": "FXBGO! (Fredericksburg)",
-      "hiddenInProduction": true,
+      "hiddenInProduction": false,
       "issueUrl": "https://github.com/Civic-Minds/Atlas/issues/684",
+      "overrideNote": "This schedule is from January 2026. The earlier 6:30 a.m. starts FXBGO! added in April 2026 aren't shown yet.",
       "websiteUrl": "http://ridefxbgo.com/",
       "center": [
-        38.3204,
-        -77.4867
+        38.3134,
+        -77.4846
       ],
       "feedUrl": null,
       "manualFeedSource": true,
-      "lastFeedExpiry": "20250331",
+      "lastFeedExpiry": "20261231",
       "lastFeedVersion": null,
       "region": "Virginia",
-      "lastRefreshedAt": "20260811",
+      "lastRefreshedAt": "2026-10-13",
       "timezone": "America/New_York",
-      "lastRawArchiveKey": "20250331-57559b8d2e92112e",
+      "lastRawArchiveKey": "unknown-035788d5cfa449e9",
       "lastFeedCheckAt": "20261012",
       "expiredFeedCheckCount": 5,
       "expiredFeedCheckSince": "20260622",
@@ -15277,7 +15278,20 @@
       "feedRefreshErrorAt": "20261012",
       "feedRefreshRetryCount": 3,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2430/mdb-2430-202504011831/mdb-2430-202504011831.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2430/mdb-2430-202504011831/mdb-2430-202504011831.zip",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 31
+        },
+        "checkedAt": "2026-10-13"
+      }
     },
     {
       "slug": "hrt",
