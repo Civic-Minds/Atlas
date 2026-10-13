@@ -37,7 +37,7 @@ import { computePeriodCoverageHeadways } from './headway-utils.js';
 import { makeShapeCoverChecker } from './shapeCoverage.js';
 import { annotateSharedStretches, isPoolablePattern } from './sharedStretch.js';
 import { decideDedupe, type DedupePattern } from './featureDedupe.js';
-import { decideHeadline, decidePeriod, liftTierOnDestinationPool, ownStepOneHeadway, pooledStepOneHeadway, settleTier, terminalReading } from './routeGrading.js';
+import { decideHeadline, decidePeriod, liftTierOnDestinationPool, ownStepOneHeadway, pooledStepOneHeadway, settleTier, terminalReading, type PeriodValue } from './routeGrading.js';
 import type { SharedStretchPattern } from './sharedStretch.js';
 import { buildPooledStopMap, computeStopSharers, pooledHeadwayInWindow, segmentsByTier, type StopSharers } from './stopPools.js';
 
@@ -1737,14 +1737,18 @@ export async function processGtfsBuffer(
       const own = isPooled ? [...(metricStopMap.get(stopId) ?? [])].sort((a, b) => a - b) : times;
       let usedOwnFallback = false;
       const windowHw = (start: number, end: number, allDay = false): number | null => {
+        usedOwnFallback = false;
         if (isPooled) {
           const v = pooledHeadwayInWindow(times, start, end, 3, allDay);
           if (v != null) return v;
-          usedOwnFallback = true;
         }
-        return allDay
+        const v = allDay
           ? sustainedMedianHeadwayInWindow(own, start, end, 3, undefined, true)
           : medianHeadwayInWindow(own, start, end, 3, true);
+        // The flag describes the window that produced the value: a later window read from the
+        // pool clears it, and a window with no value from either list leaves no fallback.
+        if (isPooled && v != null) usedOwnFallback = true;
+        return v;
       };
       const hw = windowHw(540, 900)             // midday 9–15h
               ?? windowHw(900, 1140)            // PM peak 15–19h
@@ -1760,14 +1764,14 @@ export async function processGtfsBuffer(
       const byPeriod: Partial<Record<PeriodKey, number>> = {};
       for (const [pk, { start, end }] of Object.entries(PERIODS) as [PeriodKey, { start: number; end: number }][]) {
         const pooledPh = isPooled ? pooledHeadwayInWindow(times, start, end) : null;
-        if (isPooled && pooledPh == null) {
+        const ph = isPooled
+          ? (pooledPh ?? medianHeadwayInWindow(forCrossMidnightWindow(own, end), start, end, 3, true))
+          : medianHeadwayInWindow(forCrossMidnightWindow(times, end), start, end, 3, true);
+        if (isPooled && pooledPh == null && ph != null) {
           const set = ownFallbackPeriodHw.get(stopId) ?? new Set<PeriodKey>();
           set.add(pk);
           ownFallbackPeriodHw.set(stopId, set);
         }
-        const ph = isPooled
-          ? (pooledPh ?? medianHeadwayInWindow(forCrossMidnightWindow(own, end), start, end, 3, true))
-          : medianHeadwayInWindow(forCrossMidnightWindow(times, end), start, end, 3, true);
         if (ph != null) byPeriod[pk] = ph;
       }
       allStopPeriodMaxGaps[stopId] = computePeriodMaxGaps(times);
@@ -1838,11 +1842,16 @@ export async function processGtfsBuffer(
     // pool: stops some variants skip (MTA Silver's Morgan State stops, a branch's own tail). A
     // stop every pooled trip serves reads the same trips in a shifted clock window (basin 1
     // Saturday: 60/120 alternation reads 120 at the first stops and 80 further on), so it adds
-    // nothing and is left out.
-    const servedByFewerTrips = (pool: readonly number[] | null, drawn: ReadonlyArray<{ stopId: string }>): string[] => {
+    // nothing and is left out. Every stop of the drawn pattern counts, with or without an all-day
+    // value (Step 2 keeps only valued stops): a peak-only outer tail is the worst of the line.
+    let drawnPatternStops: Array<{ stopId: string }> | null = null;
+    const servedByFewerTrips = (pool: readonly number[] | null): string[] => {
       if (!pool) return [];
+      drawnPatternStops ??= isMapless
+        ? maplessStopProjection
+        : projectStopsOntoShape([...stopMetricMap.keys()], stopsById, shapePts).filter(p => p.dev2 <= MAX_STOP_DEV2);
       const poolCount = new Set(pool).size;
-      return drawn.slice(0, -1).map(p => p.stopId).filter(stopId => new Set(stopMetricMap.get(stopId) ?? []).size < poolCount);
+      return drawnPatternStops.slice(0, -1).map(p => p.stopId).filter(stopId => new Set(stopMetricMap.get(stopId) ?? []).size < poolCount);
     };
     // Steps 2-3 and the line's segments (#690), shared by the thin-own-sample path below and
     // the full path: stop data is published from the pooled values whenever any stop has one.
@@ -1995,10 +2004,11 @@ export async function processGtfsBuffer(
       // State stops before the Hopkins short trips join run every 40 in the evening against 20
       // combined), read where #690 pools them; the terminal itself is read from the pool already
       // (freedom M to Pittsburgh: the drawn variant's own terminal is a stop 3 of 10 trips end at).
-      const worstDrawnStopHw = (): number | undefined => {
-        const vals = servedByFewerTrips(headlinePool, onShape).filter(stopId => !ownFallbackHw.has(stopId))
-          .map(stopId => allStopHw[stopId]).filter((v): v is number => v != null);
-        return vals.length ? Math.max(...vals) : undefined;
+      const worstDrawnStopHw = (): number | null | undefined => {
+        const vals = servedByFewerTrips(headlinePool).filter(stopId => !ownFallbackHw.has(stopId))
+          .map(stopId => allStopHw[stopId] ?? null);
+        if (vals.some(v => v == null)) return null;
+        return vals.length ? Math.max(...(vals as number[])) : undefined;
       };
       // Step 4.2 and 4.3 (routeGrading.ts): the headline, then the tier it supports.
       const headway = decideHeadline({
@@ -2128,17 +2138,32 @@ export async function processGtfsBuffer(
     for (const pk of Object.keys(PERIODS) as PeriodKey[]) {
       const termH = headsignTerminalPeriodHw?.[pk] ?? terminalPeriodHw?.[pk] ?? null;
       // #771: the drawn stops some pooled variants skip, read where #690 pools them (see
-      // worstDrawnStopHw in Step 4); -Infinity when the periods do not come from the pool.
-      const worstStopH = periodsFromPool
-        ? Math.max(...servedByFewerTrips(periodPoolTimes, onShape).filter(stopId => !ownFallbackPeriodHw.get(stopId)?.has(pk))
-          .map(stopId => allStopPeriodHw[stopId]?.[pk] ?? -Infinity))
-        : -Infinity;
+      // worstDrawnStopHw in Step 4): the one with the worst value this period, or one with no
+      // value this period, with its own companions. Null when the periods do not come from the pool.
+      let worstDrawnStop: PeriodValue | null = null;
+      if (periodsFromPool) {
+        let worstStopId: string | null = null;
+        for (const stopId of servedByFewerTrips(periodPoolTimes)) {
+          if (ownFallbackPeriodHw.get(stopId)?.has(pk)) continue;
+          const h = allStopPeriodHw[stopId]?.[pk] ?? null;
+          if (h == null) { worstStopId = stopId; break; }
+          if (worstStopId == null || h > (allStopPeriodHw[worstStopId]?.[pk] ?? -Infinity)) worstStopId = stopId;
+        }
+        if (worstStopId != null) {
+          worstDrawnStop = {
+            headway: allStopPeriodHw[worstStopId]?.[pk] ?? null,
+            coverage: allStopPeriodCoverageHw[worstStopId]?.[pk] ?? null,
+            maxGap: allStopPeriodMaxGaps[worstStopId]?.[pk] ?? null,
+            sustained: allStopPeriodSustained[worstStopId]?.[pk],
+          };
+        }
+      }
       // Step 5 (routeGrading.ts): the period's value and its companions.
       const period = decidePeriod({
         termH,
         branchH: branchPeriodHw?.[pk] ?? null,
         terminalIsBranchScoped: terminalPeriodIsBranchScoped,
-        worstDrawnStopH: worstStopH,
+        worstDrawnStop,
         terminalCoverage: terminalCoverage[pk] ?? null,
         branchCoverage: branchCoverage[pk] ?? null,
         hasScopedTimes: terminalScopedTimes != null,

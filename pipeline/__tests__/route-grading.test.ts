@@ -35,6 +35,8 @@ describe('decideHeadline', () => {
     expect(decideHeadline(inputs({ hasPool: true, terminalComputedHw: 20, worstDrawnStopHw: 40 }))).toBe(40);
     expect(decideHeadline(inputs({ hasPool: true, terminalComputedHw: 20, worstDrawnStopHw: 12 }))).toBe(20);
     expect(decideHeadline(inputs({ hasPool: true, terminalComputedHw: 20, worstDrawnStopHw: undefined }))).toBe(20);
+    // A drawn stop with no all-day value (a peak-only outer tail) is the worst there is: no headline.
+    expect(decideHeadline(inputs({ hasPool: true, terminalComputedHw: 20, worstDrawnStopHw: null }))).toBeNull();
   });
   it('otherwise the #772 branch decision stands (a shared terminal never overrides a genuine branch)', () => {
     // Trunk stops every 10, terminal every 10 only because another branch shares it: the branch's own 20 stands.
@@ -45,6 +47,9 @@ describe('decideHeadline', () => {
 });
 
 describe('settleTier', () => {
+  it('a null headline leaves the tier alone', () => {
+    expect(settleTier('30', null, null)).toBe('30');
+  });
   it('only degrades a tier (AI-220: Halifax 330 peaks never promote an infrequent route)', () => {
     expect(settleTier('15', 25, null)).toBe('30');
     expect(settleTier('30', 12, null)).toBe('30');
@@ -76,7 +81,7 @@ describe('liftTierOnDestinationPool', () => {
 });
 
 const periodInputs = (over: Partial<PeriodInputs> = {}): PeriodInputs => ({
-  termH: 20, branchH: 30, terminalIsBranchScoped: true, worstDrawnStopH: -Infinity, terminalCoverage: 25, branchCoverage: 35,
+  termH: 20, branchH: 30, terminalIsBranchScoped: true, worstDrawnStop: null, terminalCoverage: 25, branchCoverage: 35,
   hasScopedTimes: true, termMaxGap: 24, branchMaxGap: 40, termSustained: true, branchSustained: false, ...over,
 });
 
@@ -87,11 +92,16 @@ describe('decidePeriod', () => {
     // real no-service, never borrowed from the branch.
     expect(decidePeriod(periodInputs({ termH: null, terminalCoverage: null }))).toEqual({ headway: 30, coverage: null, maxGap: 40, sustained: false });
   });
-  it('a period from the destination pool is floored at the worst drawn stop (#771)', () => {
-    const v = decidePeriod(periodInputs({ worstDrawnStopH: 40 }));
-    expect(v.headway).toBe(40);
-    // The floored value matches neither source: coverage and max gap fall back to the terminal's.
-    expect(v).toMatchObject({ coverage: 35, maxGap: 24, sustained: undefined });
-    expect(decidePeriod(periodInputs({ worstDrawnStopH: 12 })).headway).toBe(20);
+  it('a period from the destination pool is floored at the worst drawn stop, companions included (#771)', () => {
+    const worst = { headway: 40, coverage: 45, maxGap: 52, sustained: false };
+    // The floored period is that stop's reading: its coverage, max gap and sustained flag go with it.
+    expect(decidePeriod(periodInputs({ worstDrawnStop: worst }))).toEqual(worst);
+    // A better stop changes nothing: the terminal's value and companions stand.
+    expect(decidePeriod(periodInputs({ worstDrawnStop: { ...worst, headway: 12 } }))).toEqual({ headway: 20, coverage: 25, maxGap: 24, sustained: true });
+    // A stop with no value this period (a peak-only tail at midday) makes the period no service.
+    const none = { headway: null, coverage: 130, maxGap: 150, sustained: undefined };
+    expect(decidePeriod(periodInputs({ worstDrawnStop: none }))).toEqual(none);
+    // No terminal or branch value: the stop's floor has nothing to raise.
+    expect(decidePeriod(periodInputs({ termH: null, branchH: null, worstDrawnStop: worst })).headway).toBeNull();
   });
 });

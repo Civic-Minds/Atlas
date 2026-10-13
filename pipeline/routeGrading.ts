@@ -18,9 +18,10 @@
  *                        every drawn stop and on every weekday its trips differ, never past the
  *                        headline
  *   5. decidePeriod      one period's value (Step 5): the terminal's branch-scoped reading over
- *                        the branch's own, floored at the worst drawn stop when it came from the
- *                        destination pool (#771), with the coverage, max-gap and sustained flags
- *                        following whichever source was picked (#281)
+ *                        the branch's own, with the coverage, max-gap and sustained flags
+ *                        following whichever source was picked (#281); when it came from the
+ *                        destination pool, never better than the worst drawn stop, whose own
+ *                        reading and companions it then takes (#771)
  */
 import { headwayToTier, medianHeadwayInWindow, resolveTerminalHeadline, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
 import { pooledHeadwayInWindow } from './stopPools.js';
@@ -94,8 +95,12 @@ export interface HeadlineInputs {
   thinTerminalSample: boolean;
   /** The thin-shape rescue reading (scopedTerminalHeadline), when thinTerminalSample. */
   scoped: { headway: number; tier: string | null } | null;
-  /** #771: the worst value among the drawn stops some pooled variants skip, when hasPool. */
-  worstDrawnStopHw: number | undefined;
+  /**
+   * #771: the worst all-day value among the drawn stops some pooled variants skip, when hasPool;
+   * null when one of them has no all-day value at all (a peak-only outer tail), undefined when
+   * there is no such stop.
+   */
+  worstDrawnStopHw: number | null | undefined;
   /** Plain-median inputs of the #772 branch decision. */
   plainTerminalComputedHw: number;
   plainNonTerminalStopHws: readonly number[];
@@ -109,8 +114,10 @@ export function decideHeadline(i: HeadlineInputs): number | null {
   // Destination pool (#690): the pool is the branch itself, so it needs no protection against a
   // shared terminal's combined value; the headline is never better than the worst drawn stop
   // some variants skip (#771: MTA Silver's Morgan State stops), the policy that a route headline
-  // never overstates a stop on its drawn line while the pooled values live on the segments.
-  if (i.hasPool) return Math.max(i.terminalComputedHw, i.worstDrawnStopHw ?? i.terminalComputedHw);
+  // never overstates a stop on its drawn line while the pooled values live on the segments. A
+  // drawn stop with no all-day value is the worst there is: the line has no all-day headline,
+  // as #728 refuses its lift at a stop the pool cannot grade.
+  if (i.hasPool) return i.worstDrawnStopHw === null ? null : Math.max(i.terminalComputedHw, i.worstDrawnStopHw ?? i.terminalComputedHw);
   // Otherwise the #772 branch decision on plain medians (#263: a shared terminal's combined
   // value never overrides a genuine branch frequency).
   return resolveTerminalHeadline(i.plainTerminalComputedHw, i.plainNonTerminalStopHws, i.terminalComputedHw, i.branchHw, i.branchTripCount, i.pooledPlainTerminalHw);
@@ -124,7 +131,8 @@ export function decideHeadline(i: HeadlineInputs): number | null {
  */
 export function settleTier(currentTier: string, headway: number | null, scoped: { tier: string | null } | null): string {
   let tier = currentTier;
-  const newTier = headwayToTier(headway);
+  // No headline (a drawn stop without an all-day value, #771): nothing to degrade to.
+  const newTier = headway == null ? tier : headwayToTier(headway);
   if ((TIER_RANK[newTier] ?? -1) > (TIER_RANK[tier] ?? -1)) tier = newTier;
   if (scoped?.tier && scoped.tier !== 'infrequent' && tier === 'infrequent') tier = scoped.tier;
   return tier;
@@ -198,8 +206,12 @@ export interface PeriodInputs {
   branchH: number | null;
   /** The terminal value came from the branch-scoped sample, so a null is real no-service. */
   terminalIsBranchScoped: boolean;
-  /** #771: the worst value among the drawn stops some pooled variants skip, -Infinity when none or no pool. */
-  worstDrawnStopH: number;
+  /**
+   * #771: the drawn stop some pooled variants skip with the worst value this period, with its
+   * own companions; headway null when such a stop has no value this period. Null when the
+   * periods do not come from the pool or no variant skips a drawn stop.
+   */
+  worstDrawnStop: PeriodValue | null;
   terminalCoverage: number | null;
   branchCoverage: number | null;
   /** A scoped time list exists for the terminal (pool, headsign or shape). */
@@ -221,8 +233,12 @@ export interface PeriodValue {
 export function decidePeriod(i: PeriodInputs): PeriodValue {
   const resolvedH = resolveTerminalPeriodHeadway(i.termH, i.branchH, i.terminalIsBranchScoped);
   // #771: a period read from the destination pool is never better than the worst drawn stop's
-  // value in that period (the same floor as the headline).
-  const headway = resolvedH != null && i.worstDrawnStopH > resolvedH ? i.worstDrawnStopH : resolvedH;
+  // value in that period (the same floor as the headline). The floored period is that stop's
+  // reading, companions included, so the coverage, max gap and sustained flag describe the
+  // value shown; a stop with no value this period makes the period no service.
+  const worst = i.worstDrawnStop;
+  if (worst && (worst.headway == null || (resolvedH != null && worst.headway > resolvedH))) return { ...worst };
+  const headway = resolvedH;
   const coverage = selectPeriodCoverageHeadway(i.terminalCoverage, i.branchCoverage, i.termH, headway, i.hasScopedTimes);
   const maxGap = headway === i.termH ? i.termMaxGap : (headway === i.branchH ? i.branchMaxGap : i.termMaxGap);
   // #281: mirror whichever source (terminal vs. branch) resolveTerminalPeriodHeadway picked,

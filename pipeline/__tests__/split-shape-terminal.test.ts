@@ -45,6 +45,13 @@ describe('headline when a destination is split over several shapes', () => {
     const p = await weekdayProps('mta-maryland-silver-split', 'mta-maryland', 'CURTIS BAY');
     expect(p.headwayByPeriod.evening).toBeGreaterThanOrEqual(40);
     expect(p.headway).toBe(31);
+    // The floored evening is the worst Morgan State stop's own reading, companions included:
+    // its coverage, max gap and sustained flag describe the 43 shown, not the terminal pool's.
+    const worst = '3656';
+    expect(p.headwayByPeriod.evening).toBe(p.stopPeriodHeadways[worst].evening);
+    expect(p.periodCoverageHeadway.evening).toBe(p.stopPeriodCoverageHeadways[worst].evening);
+    expect(p.maxGapByPeriod.evening).toBe(56);
+    expect(p.headwayByPeriodSustained.evening).toBe(true);
   });
 
   it('TTC 96B: a pooled stop whose pool publishes nothing does not count its thin own value', async () => {
