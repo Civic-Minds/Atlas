@@ -16527,6 +16527,7 @@
       "lastFeedVersion": "20260701",
       "lastRefreshedAt": "2026-10-12",
       "websiteUrl": "https://amarillo.gov/departments/community-services/transit",
+      "preprocess": "interpolate-untimed-stops",
       "cities": [
         "Amarillo, Texas"
       ],

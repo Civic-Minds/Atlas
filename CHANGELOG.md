@@ -21,6 +21,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Fixed
 
+- **Amarillo shows all its stops**: its feed leaves times blank between timed stops, so only 41 of 293 appeared ([#753](https://github.com/Civic-Minds/Atlas/issues/753))
 - **Routes with a few pre-dawn trips on their own shape show their daytime service**: those trips had taken the direction's slot, so York Region Viva Blue to Newmarket read "limited" at midday instead of every 16 ([#746](https://github.com/Civic-Minds/Atlas/issues/746)).
 - **Re-processing an agency without a name keeps its display name**: it was being overwritten with the slug (#785).
 - **Redwood Coast Transit 20 shows its southbound route to Eureka**: its two daily trips each used their own shape, so only a stub was drawn ([#776](https://github.com/Civic-Minds/Atlas/issues/776)).
