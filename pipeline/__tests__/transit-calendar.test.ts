@@ -502,4 +502,32 @@ describe('detectReferenceDate chooses as of the day after the run (#743)', () =>
       vi.useRealTimers();
     }
   });
+
+  it('reads a period that starts the day after the run (Los Alamos, Oct 14 run)', () => {
+    // Real Los Alamos shape: an Oct 1-11 weekday period, a gap, and Oct 15-Dec 31.
+    const la = [
+      cal('OCT1TO11-Weekday', 'motuwethfr', '20261001', '20261011'),
+      cal('OCT1TO11-Saturday', 'sa', '20261001', '20261011'),
+      cal('OCT15toDEC31-Weekday', 'motuwethfr', '20261015', '20261231'),
+      cal('OCT15toDEC31-Saturday', 'sa', '20261015', '20261231'),
+    ];
+    const t = la.flatMap(c => Array.from({ length: 10 }, () => ({ service_id: c.service_id, route_id: 'r' })));
+    runOn('2026-10-14');
+    const ref = detectReferenceDate(la, [], t);
+    expect([...getActiveServiceIds(la, [], 'Monday', ref)]).toEqual(['OCT15toDEC31-Weekday']);
+  });
+
+  it('keeps the next day when every day of the look-ahead week is a one-day period', () => {
+    // One-day periods (two services each) on every date Oct 13-20, plus a regular period.
+    const days = ['20261013', '20261014', '20261015', '20261016', '20261017', '20261018', '20261019', '20261020'];
+    const week = [
+      cal('reg', 'motuwethfrsasu', '20260101', '20261231'),
+      ...days.flatMap(d => [cal(`${d}-a`, 'motuwethfrsasu', d, d), cal(`${d}-b`, 'motuwethfrsasu', d, d)]),
+    ];
+    const t = week.flatMap(c => Array.from({ length: 5 }, () => ({ service_id: c.service_id, route_id: 'r' })));
+    runOn('2026-10-12');
+    // The step over one-day periods stops at the cap and falls back to Oct 13, not Oct 20.
+    expect(detectReferenceDate(week, [], t)).toBe('20261013');
+  });
 });
+
