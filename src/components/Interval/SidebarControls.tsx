@@ -897,6 +897,16 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   useEffect(() => {
     if (!searchEnterRef) return;
     searchEnterRef.current = () => {
+      // Areas are listed first, so Enter picks the first one when there is any.
+      const area = areaSearchResults[0];
+      if (area && onSelectArea) {
+        trackEvent('search_submitted', { app: analyticsApp, surface: 'global_search', result_type: 'area', result_count: areaSearchResults.length });
+        saveRecentSearch(query);
+        setQuery('');
+        setSearchFocused?.(false);
+        onSelectArea(area);
+        return;
+      }
       const action = resolveSearchEnterAction(displayAgencyGroups, displayRouteResults, stopSearchDisplay.stops);
       if (!action) return;
       trackEvent('search_submitted', {
@@ -922,7 +932,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       }
     };
     return () => { searchEnterRef.current = null; };
-  }, [searchEnterRef, displayAgencyGroups, displayRouteResults, stopSearchDisplay.stops, setSelectedAgencySlug, setQuery, setSearchFocused, query, saveRecentSearch, setSelectedRoute, selectedRoute, setSelectedStop]);
+  }, [searchEnterRef, areaSearchResults, onSelectArea, analyticsApp, displayAgencyGroups, displayRouteResults, stopSearchDisplay.stops, setSelectedAgencySlug, setQuery, setSearchFocused, query, saveRecentSearch, setSelectedRoute, selectedRoute, setSelectedStop]);
 
   const routesFirst = useMemo(
     () => routesBeforeAgencies(query, displayRouteResults, matchedAgencyGroups),
