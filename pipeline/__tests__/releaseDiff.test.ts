@@ -172,6 +172,18 @@ describe('release diff gate: red flags', () => {
     expect(names(evaluateAgency({ slug: 'moose-jaw', live, next: live, service: { end: '20240331' }, allowMissingLive: true }, [], TODAY)))
       .toEqual(['moose-jaw:expired:yellow']);
   });
+
+  it('keeps expired agencies that are already live yellow, and still blocks a new-to-release expired one until allowed', () => {
+    const live = countsOnly(193, 193, 6);
+    // Stale agency: refresh kept its live data, so the release copy is unchanged.
+    expect(names(evaluateAgency({ slug: 'ecat', live, next: live, service: { end: '20221101' }, allowMissingLive: true }, [], TODAY)))
+      .toEqual(['ecat:expired:yellow']);
+    // Expired and not in the live release yet: red, accepted only by an explicit allow.
+    const flags = evaluateAgency({ slug: 'xpress-ga', live: null, next: live, service: { end: '20250705' }, allowMissingLive: true }, [], TODAY);
+    expect(names(flags)).toEqual(expect.arrayContaining(['xpress-ga:expired:red']));
+    expect(applyOverrides(flags, { allow: [], allowDrop: false }).blocked).toEqual(['xpress-ga']);
+    expect(applyOverrides(flags, { allow: ['xpress-ga:expired'], allowDrop: false }).blocked).toEqual([]);
+  });
 });
 
 describe('release diff gate: yellow and clean cases', () => {

@@ -10,11 +10,16 @@ on:
         description: 'Space-separated agency slugs to refresh (e.g. "ttc yrt"). PMTiles and history are rebuilt afterward so the map stays in sync.'
         required: false
         type: string
+      allow:
+        description: 'Space-separated reviewed release-gate overrides, each <slug>:<flag> (e.g. "xpress-ga:expired path:drop"). Passed to both the refresh and publish steps. Leave empty for the weekly run.'
+        required: false
+        type: string
 
 permissions:
   contents: write
   pull-requests: write
   issues: write
+  actions: write
 
 # Never run two data releases at once: overlapping runs could publish tiles
 # and agency data from different builds. Queue instead of cancelling, so a
@@ -46,12 +51,18 @@ jobs:
 
       - name: Refresh agency feeds
         run: |
+          allow_args=()
+          for pair in $ALLOW_INPUT; do
+            [[ "$pair" =~ ^[a-z0-9-]+:[a-z-]+$ ]] || { echo "Bad allow value: $pair (expected <slug>:<flag>)"; exit 1; }
+            allow_args+=(--allow "$pair")
+          done
           if [ -n "${{ inputs.agencies }}" ]; then
-            npm run refresh -- ${{ inputs.agencies }}
+            npm run refresh -- ${{ inputs.agencies }} "${allow_args[@]}"
           else
-            npm run refresh
+            npm run refresh -- "${allow_args[@]}"
           fi
         env:
+          ALLOW_INPUT: ${{ inputs.allow }}
           R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
           R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
           R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
@@ -152,10 +163,57 @@ jobs:
       # Only make the new PMTiles release public after every derived data
       # artifact, including History, has rebuilt successfully.
       - name: Publish verified data release
-        run: npm run publish-data-release
+        run: |
+          allow_args=()
+          for pair in $ALLOW_INPUT; do
+            [[ "$pair" =~ ^[a-z0-9-]+:[a-z-]+$ ]] || { echo "Bad allow value: $pair (expected <slug>:<flag>)"; exit 1; }
+            allow_args+=(--allow "$pair")
+          done
+          npm run publish-data-release -- "${allow_args[@]}"
         env:
+          ALLOW_INPUT: ${{ inputs.allow }}
           R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
           R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
           R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+
+      # publish-data-release has just regenerated shared/data/agency-pages*.json from the new
+      # release (read-only against the public R2 URL, no extra secrets). Agency pages are
+      # prerendered from those committed files, so they go stale unless this lands on main. main
+      # is protected (required CI check), so it goes in as a small PR. A GITHUB_TOKEN PR does not
+      # start CI by itself, but workflow_dispatch is exempt: CI is dispatched on the PR branch, its
+      # "Type Check · Test · Build" check lands on the PR head commit, and auto-merge finishes it.
+      # One Vercel deploy per week. Skipped when the files did not change.
+      - name: Read the published release id
+        id: agency-pages-release
+        run: echo "id=$(node -p "require('./shared/data/agency-pages.json').releaseId")" >> "$GITHUB_OUTPUT"
+
+      - name: Open agency pages pull request
+        id: agency-pages-pr
+        uses: peter-evans/create-pull-request@v8
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          add-paths: |
+            shared/data/agency-pages.json
+            shared/data/agency-page-slugs.json
+          commit-message: "Regenerate agency pages for release-${{ steps.agency-pages-release.outputs.id }}"
+          title: "Regenerate agency pages for release-${{ steps.agency-pages-release.outputs.id }}"
+          body: |
+            Automated: agency page data regenerated from the data release that was just published, so agency pages match the live map.
+          branch: automation/agency-pages
+          delete-branch: true
+          labels: data-quality,pipeline
+
+      - name: Run CI on the agency pages branch
+        if: steps.agency-pages-pr.outputs.pull-request-number != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh workflow run ci.yml --ref automation/agency-pages
+
+      - name: Auto-merge agency pages pull request once checks pass
+        if: steps.agency-pages-pr.outputs.pull-request-number != ''
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh pr merge "${{ steps.agency-pages-pr.outputs.pull-request-number }}" --auto --squash

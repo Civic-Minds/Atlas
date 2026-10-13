@@ -1,0 +1,1088 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
+
+## [Unreleased]
+
+### Added
+
+<<<<<<< HEAD
+- **Every agency gets its own frequency page, with real numbers and a link into the map**: each page shows a bar of how many routes fall in each weekday-midday frequency band (no fixed cutoff, so small agencies still get a useful picture), a route table by mode with AM peak, Midday, PM peak, Evening and Overnight waits, an intro sentence naming the agencies it connects with (stops within 150 m), and nearby agencies, so the agency can be found in search once these go public.
+- **An index lists every agency and area page**: /agencies shows the areas first, then every agency by country and state or province with its route count, with a filter box that narrows the list as you type, and it is built from the same data as the pages and the sitemap, so new agencies appear on their own. Beta-only agencies show only on beta builds, like on the map.
+- **Metro area pages compare every agency in a city region**: each page opens with a frequency-band bar, links to every agency page in it, and Open in the map frames the whole area, so "Toronto area" shows the TTC, MiWay, GO and the rest together (Toronto includes Hamilton and Oshawa to match the GTHA).
+- **Map links can name a metro area**: `?area=toronto` selects that area's agencies and fits the map to it, and share links use it instead of a long agency list when the selection is exactly an area; Open in the map on area pages now uses it.
+=======
+- **Agency pages stay in sync with the weekly data**: the weekly refresh now regenerates their numbers and "Atlas data release" date from the new release instead of going stale until someone reran it by hand.
+- **Every agency gets its own frequency page, with real numbers and a link into the map (beta)**: each page shows a bar of how many routes fall in each weekday-midday frequency band (no fixed cutoff, so small agencies still get a useful picture), a route table by mode with AM peak, Midday, PM peak, Evening and Overnight waits, and nearby agencies, so the agency can be found in search once these go public.
+- **Metro area pages compare every agency in a city region (beta)**: each page opens with a frequency-band bar, links to every agency page in it, and Open in the map frames the whole area, so "Toronto area" shows the TTC, MiWay, GO and the rest together (Toronto includes Hamilton and Oshawa to match the GTHA).
+>>>>>>> fix/refresh-stale-agencies
+- **Atlas is easier to find in search**: every page now has its own title, description and address for search results, About, Docs, Privacy and Terms carry their text in the page itself, a real sitemap and robots file are published, and made-up addresses now return a proper "not found" instead of the map.
+- **Phones get a separate Filters button**: the gear used to mix Settings with the map filters. Frequency, day, time, transit modes and compare now open from a Filters button in the header (with a count of active filters); the gear shows Settings only.
+- **Analytics count more of what people use**: map exports, outbound link clicks, report-issue and feedback opens, and page views on the About, Docs, Privacy and Terms pages were missing, and internal sessions stay excluded.
+- **Shared map images and copied links are tagged (beta)**: shared images now link back to the map, and tags let shared visits be counted in analytics.
+- **A Changelog page lists every app version and map data update (beta)**: newest first by date, and the What's new panel now shows just the latest version with a "See all changes" link.
+- **Top-bar view tabs shrink to icons while one view is on (beta)**: Compare, History or Live stands out, the others show their name on hover, and they expand again when you leave.
+- **Each compare map has its own Frequency, Day and Time controls (beta)**: two frequency thresholds can now be compared as well as two times, Mode and Agencies sit in one bar marked for both maps, shared links keep both sides, the route card says which map shows the route, and switching to History or Live leaves compare (CIV-19).
+- **On-demand zones load only when on-demand is shown**: this saves about 1.5 MB for every visitor, the map says when zones couldn't load instead of showing an empty area, and new zones can be added without a site update after passing checks for broken shapes, eligibility-only service, dropped zones, lost hours and old sources (CIV-50).
+- **On-demand zones are thin and light when zoomed out (beta)**: outlines, fills and stop dots no longer outweigh the routes, and reach full strength by street zoom.
+- **Agencies with unmapped on-demand service say so on their card (beta)**: partly mapped services name the missing part, and the On-demand filter notes that coverage is still growing, so a missing zone no longer looks like no service (CIV-23).
+- **The "In view" list has state and province pills (beta)**: they match the agency list, the What's new panel labels the map data date apart from the app version and merges overlapping notes, and the What's new pill now sits before Feedback.
+
+### Changed
+
+- **Beta: route lines are drawn in segments coloured by the service at each stop**: every trip that serves a stop counts, so the trunk TTC 29A and 29C share reads every 8 while each branch's tail keeps its own 16; the route-level frequency and tier still decide the filter ([#690](https://github.com/Civic-Minds/Atlas/issues/690)).
+- **Text is bigger and easier to read**: nothing a person has to read is below 12px any more, and the faint greys, status colours (green, red, amber) and white-on-pastel fare and timeline pills now meet WCAG AA contrast in light, dark and high-contrast modes.
+- **Frequency reads the same way everywhere, and Compare now says "or better"**: Compare headings read like a claim about the service rather than the filter, and the same frequency was worded eight different ways ("≤10m", "every 12m", "about every 10 min").
+- **Night Service moved to `/research/night`**: it now lives with the other research pages, and old `/apps/night` links redirect there with their filters kept.
+- **The full-day schedule view shows trip time by hour (beta)**: e.g. "Trip time: 35–51 min, slowest 4 p.m.", with minutes on hover.
+- **The Corridors and Fares pages are retired**: old links go to the map, and Diagnostics moved to dev builds only (`/dev/diagnostics`).
+- **The limited-service route count links to the routes behind it**: the number is no longer plain text.
+- **The Research hub, Changelog and docs pages share one page layout**: flat cards, sentence-case titles, and the What's new panel shows the version and map data date on one line.
+
+### Fixed
+
+<<<<<<< HEAD
+- **Buffalo Metro Rail is counted when the LRT filter is on**: the map drew the line but the route counter showed 0 ([#811](https://github.com/Civic-Minds/Atlas/issues/811))
+- **The In view route count matches the lines you can see**: one line published under several route IDs was counted once per ID ([#399](https://github.com/Civic-Minds/Atlas/issues/399)).
+=======
+- **The Refresh GTFS feeds workflow can accept reviewed release-gate flags**: a new "allow" input (e.g. `xpress-ga:expired`) goes to both the refresh and publish steps, so one agency's red flag no longer blocks the whole weekly release with no way around it ([#807](https://github.com/Civic-Minds/Atlas/issues/807)).
+>>>>>>> fix/refresh-stale-agencies
+- **Re-processing an agency without a name keeps its display name**: it was being overwritten with the slug (#785).
+- **Redwood Coast Transit 20 shows its southbound route to Eureka**: its two daily trips each used their own shape, so only a stub was drawn ([#776](https://github.com/Civic-Minds/Atlas/issues/776)).
+- **Weekday shows a route's typical weekday, not its Friday timetable**: CATA VE Campus had shown Friday's every 21 instead of its usual every 24 ([#716](https://github.com/Civic-Minds/Atlas/issues/716)).
+- **Agencies read the timetable running now, not a holiday week**: a schedule period centred on a holiday, like a university year on Christmas break, was read from that week ([#686](https://github.com/Civic-Minds/Atlas/issues/686)).
+- **A build on a timetable's last day publishes the next one**: it had published the ending period, wrong from the next morning, like PART's summer weekend routes after Oct 12 ([#743](https://github.com/Civic-Minds/Atlas/issues/743)).
+- **Selected pills, tabs and "on" switches stand out with a soft tint and firmer outline**: the old grey selection looked dimmer than unselected, and dark-mode switches looked off.
+- **Long names in list cards wrap instead of being cut off**: the full name is now readable, with a tooltip.
+- **A route's small hourly chart shows the slower direction each hour**: before, it showed only the first direction and could hide a weaker one; the full-day view also drops the "All directions" pill, opens on the slower direction, and names pills by destination ("To Downtown") instead of "Direction 1".
+- **The hourly schedule chart sizes bars from zero**: the least frequent hour used to shrink to a stub, and the full-day view now labels each hour's minutes between trips, explains the colours, and its direction pills switch the chart and show which one is picked.
+- **Copied and shared links no longer exclude the people who open them from analytics**: they carried the internal-testing marker, and campaign tags are now removed from the address bar after the first page view is counted.
+- **Redwood Coast Transit 20 draws its full route line from Eureka to Crescent City**: long highway stretches between towns were mistaken for broken route data and left a short stub ([#776](https://github.com/Civic-Minds/Atlas/issues/776))
+- **NJ Transit's 14 commuter rail lines are back on the map**: their feed gives nearly every train its own copy of the line's shape ([#616](https://github.com/Civic-Minds/Atlas/issues/616))
+- **SamTrans 120 shows its weekday service again (every 15 min)**: that day's feed gives every trip its own copy of the same route shape ([#775](https://github.com/Civic-Minds/Atlas/issues/775))
+- **A route's all-day frequency ignores variants with only a few trips a day**: TTC 102 now shows every 30 instead of every 657 and TriMet 12 every 15 instead of every 1141 ([#749](https://github.com/Civic-Minds/Atlas/issues/749))
+- **Mont-Tremblant's Friday and Saturday show the regular timetables**: a passed holiday no longer decides which schedule the feed is read from, so the Thanksgiving and December one-day schedules are gone ([#764](https://github.com/Civic-Minds/Atlas/issues/764))
+- **Avon Transit, Seattle Monorail and Sierra Vista show their current timetables**: feeds where each schedule starts on its own date were still being read from an ended summer or short block, which had put Beaver Creek Express on the map in October ([#767](https://github.com/Civic-Minds/Atlas/issues/767))
+- **Washington State Ferries and similar feeds show one day's timetable**: pooling up to eight sailing days had inflated frequency, so Port Townsend's weekend ferry now reads every 90 minutes instead of a false 45 and the Fauntleroy triangle's weekend values match a single day's sailings ([#744](https://github.com/Civic-Minds/Atlas/issues/744))
+- **NC State Wolfline shows the semester timetable, including routes 40 and 51**: its feed switches timetables by date rather than by schedule period, so the summer one was showing ([#774](https://github.com/Civic-Minds/Atlas/issues/774))
+- **Brandon Transit's weekday routes show their real every-30 service**: a day where the feed swaps one weekday timetable for an identical one no longer falls back to a holiday schedule, which had made them look hourly ([#751](https://github.com/Civic-Minds/Atlas/issues/751))
+- **Routes with no short name show their name in bold in route lists**: Annapolis's Free Downtown Shuttle used to appear dimmed and indented, and agency headings no longer use extra letter spacing ([#777](https://github.com/Civic-Minds/Atlas/issues/777))
+- **Routes with paired trips no longer look like they run every 2 or 3 minutes**: Niagara 105 and 401 showed this in search, lists, cards and the hourly chart, but two buses minutes apart and then a long wait is not frequent service ([#761](https://github.com/Civic-Minds/Atlas/issues/761))
+- **A public agency with no data in the current release can no longer show "Couldn't load"**: the agency checks and the release publish step now fail and list it until it is hidden or refreshed into a release ([#759](https://github.com/Civic-Minds/Atlas/issues/759))
+- **Routes whose buses alternate short and long gaps show their real wait**: Basin Transit 1 (every 1 hour, then 2) had shown the short gap, halving the wait ([#772](https://github.com/Civic-Minds/Atlas/issues/772)).
+
+
+## [3.3.0] - 2026-10-12
+
+### Added
+
+- With a frequency filter on, a route whose branches each miss it now shows the stretch they share when that stretch passes in both directions, like TTC 29 Dufferin's every-8 trunk; stops there show the combined frequency and the route card adds a "Shared stretch" row, while the route still counts as missing the filter ([#736](https://github.com/Civic-Minds/Atlas/issues/736)).
+- Route data now carries scheduled end-to-end running time per route, direction and day, so the coming running-time chart has real timetable numbers; nothing on the map changes yet.
+- The button to save the map as an image is now on for everyone, in three sizes (social, standard and high resolution).
+- Exported map images now use a clean poster layout that names the place, describes the filter and selected route in plain words, includes a colour key, and carries a source line with whose schedules are shown and when Atlas last updated its data, so planners can cite them.
+- Shared links now keep the agencies, transit modes and filters you picked, without replacing your own saved agency choices.
+- New About and Research pages explain what Atlas shows and lead to its research views, including a Frequent Service story that walks through each filtering step before opening its map.
+- Night Service now has its own 30- and 60-minute filters and search, and its route rows open the standard route card with the route highlighted.
+- On-demand services now have their own cards: hours from the agency's schedule with today in bold, whether the zone is running at the selected time (or that its hours aren't confirmed), how pickup works, and booking details shown separately.
+- Agencies running more than one on-demand service now show each zone under its own service name, and links to a service take the map to its area.
+- Schedule charts now mark individual hours with unusually long gaps, and selected routes explain when service covers only part of the selected time window.
+- Mode filters now include aerial trams and gondolas.
+- On the beta site, compare mode puts two maps side by side with the same frequency filter, each for its own day and time, opened from the Compare button beside History in the top bar.
+- On the beta site, tapping a route or stop on a phone opens its card as a panel at the bottom of the screen, so the map stays visible ([#647](https://github.com/Civic-Minds/Atlas/issues/647)).
+- On the beta site, a "What's new" link in the map's bottom bar shows the app version and a plain-language list of recent changes, with the date the map data was last updated.
+- On the beta site, an optional Data Saver mode defers background agency details while keeping the map usable.
+- Releases now stop for review when an agency's new data looks wrong against what's live, such as another agency's routes under its name, missing rail lines, sharp drops, holiday-skewed frequencies, expired schedules, a lost day type, lost weekday frequencies or big single-route changes; agencies with known bad numbers can be held at their live data ([#671](https://github.com/Civic-Minds/Atlas/issues/671), [#710](https://github.com/Civic-Minds/Atlas/issues/710), [#741](https://github.com/Civic-Minds/Atlas/issues/741)).
+
+### Changed
+
+- Frequency filters now require every direction of a route to meet the threshold, so routes no longer slip through on one busy stretch, and the route list, counts and map always agree.
+- Routes with only a few trips a day now say "limited" on route cards, agency cards, nearby routes and search lists, for All day and each time of day, instead of a frequency they don't really run ([#708](https://github.com/Civic-Minds/Atlas/issues/708)).
+- Frequency and period filters now tell apart limited, irregular, one-direction and span-only service instead of treating every route pattern the same.
+- Routes without service in the selected period are hidden from the map, so route cards no longer contradict it.
+- Weekday stop and time-of-day frequencies now come from one typical weekday, so a route with a different Friday timetable no longer looks about twice as frequent, as CATA's White Loop did ([#710](https://github.com/Civic-Minds/Atlas/issues/710)).
+- Routes that run on only some weekdays now show as limited on weekdays instead of a frequency they reach only on those days, while routes that run every weekday through day-specific patterns or holiday-style exceptions keep their weekday frequency ([#710](https://github.com/Civic-Minds/Atlas/issues/710)).
+- Selecting an on-demand zone fades the rest of the map; zones and pickup points disappear outside their service hours, and services without confirmed hours are drawn faded.
+- Picking a route on the map fades the rest of the network again, matching History, stops and search ([#700](https://github.com/Civic-Minds/Atlas/issues/700)).
+- The map's top bar no longer links to Research or shows a "More" menu; public builds hide research links that aren't available ([#651](https://github.com/Civic-Minds/Atlas/issues/651)).
+- Documentation, legal and other standalone pages share the site header and one Atlas wordmark.
+- Settings use a cleaner text-first layout, and the info panel links to Documentation beside Terms and Privacy.
+- History now shows only agencies with meaningful archives, fits the whole network when you pick an agency, fades unselected routes, offers route-mode filters, and uses the same route names as the main list.
+- Search and route lists now collapse duplicate rider-facing variants, and rail, ferry, destination and route labels use rider-facing names instead of internal IDs.
+- Agency browsing now supports combined status and region filters with route counts and refresh information.
+- Faster return visits: the site's code is cached by browsers until the next update.
+- Map loading and wide-area views defer data that isn't needed yet, keeping the map responsive.
+- Test sessions and local builds no longer count as visitors in Atlas analytics.
+- Accessibility improvements to contrast, keyboard focus, reduced motion, colour-vision support and settings controls.
+
+### Fixed
+
+- Short-turn trips and early-morning or late-night bunches a few minutes apart, like MTA Maryland 22's Cold Spring Metro trips or MBTA 455's first trips to Wonderland, no longer show as their own every-10 or every-20 service beside the route's real frequency, and a stray two-trip pattern no longer drags a route down, as on STL 26; a bunch that is a route's only service at the start or end of its day still shows its own frequency ([#732](https://github.com/Civic-Minds/Atlas/issues/732)).
+- Branches drawn from a few early-morning trips now show their own all-day frequency, like TTC 35A and 35B (every 15) and CapMetro 2 (every 16); where two branches meet at a shared last stop, like TTC 94 at Castle Frank, the headline counts only the branch's own trips.
+- Routes whose feed gives almost every trip, or Friday, its own route shape, like CapMetro's MetroRail and routes 201 and 322, no longer take their weekday frequency from a handful of those trips ([#735](https://github.com/Civic-Minds/Atlas/issues/735), [#737](https://github.com/Civic-Minds/Atlas/issues/737)).
+- Routes with one stray midday train, like Metrolink's Riverside Line, show their hourly frequency again instead of every 210 minutes ([#733](https://github.com/Civic-Minds/Atlas/issues/733)).
+- Feeds with an ended seasonal timetable, like Redwood Coast Transit, RABA and Clallam Transit, no longer count it alongside the regular one, while keeping their weekend service and keeping out-of-date feeds like CARTA and Miami-Dade Transit whole; corridors now use the same schedule date as routes ([#734](https://github.com/Civic-Minds/Atlas/issues/734)).
+- A data build run on a holiday now gives the same results as one the next day, and feeds that list every trip by date, like Metro-North, no longer pick a holiday week as their typical week, which had dropped half its lines ([#742](https://github.com/Civic-Minds/Atlas/issues/742)).
+- Weekday frequencies no longer look about twice as frequent when a holiday like Thanksgiving falls in the measured week, and agencies with a far-future end date no longer lose their newest service period's routes, so SCT shows 24 routes instead of 10 ([#658](https://github.com/Civic-Minds/Atlas/issues/658)).
+- Frequent routes like TTC 506, 63, 84 and 100 show again under weekday "every 20 min"; one rare trip pattern no longer makes a whole route look like it has hours without service ([#658](https://github.com/Civic-Minds/Atlas/issues/658)).
+- Routes in feeds that list each trip as its own frequency window no longer show about twice as many buses as run, and single-trip windows count as one trip, so Winter Park's Gold Line shows three daily trips instead of a bus every 56 minutes ([#702](https://github.com/Civic-Minds/Atlas/issues/702), [#706](https://github.com/Civic-Minds/Atlas/issues/706)).
+- Routes whose feeds describe the same buses twice, as a timetable plus a frequency template, a loop passing a stop twice, or a second bus restarting on top of the first like Clemson's Gold route, no longer show buses several times more often than they run ([#711](https://github.com/Civic-Minds/Atlas/issues/711), [#712](https://github.com/Civic-Minds/Atlas/issues/712)).
+- Routes in feeds that write frequency-based trips as midnight templates, like UGA's campus buses, no longer show fake late-night service ([#721](https://github.com/Civic-Minds/Atlas/issues/721)).
+- Routes in feeds that time a whole vehicle shift as one trip, like Waco's South Terrace, show their daytime service again ([#722](https://github.com/Civic-Minds/Atlas/issues/722)).
+- Routes in feeds that leave the route number blank, like Coast RTA, Clemson CAT, MBTA Commuter Rail and TriMet MAX, are no longer merged with other routes ending at the same stop, so each shows with its own frequencies and busy stops get hub markers ([#717](https://github.com/Civic-Minds/Atlas/issues/717)).
+- A bus leaving exactly when a time period ends, like a 6:00 AM first trip, no longer makes a route look like it runs in the period before.
+- A day whose only trips are the after-midnight end of the previous night now shows as limited, so a Saturday-night bus no longer passes Sunday's filters ([#718](https://github.com/Civic-Minds/Atlas/issues/718)).
+- Overnight filters no longer show routes whose service covers too little of the selected period, on the map or in route cards ([#524](https://github.com/Civic-Minds/Atlas/issues/524)).
+- Stop frequencies, stop lists and frequent/night service flags are kept again; a weekday-service change on Oct 8 had dropped them for every agency processed since ([#614](https://github.com/Civic-Minds/Atlas/issues/614)).
+- Agencies with a separate rail feed, like NFTA, LA Metro, WMATA and SEPTA, keep their rail lines on every processing path ([#106](https://github.com/Civic-Minds/Atlas/issues/106), [#121](https://github.com/Civic-Minds/Atlas/issues/121), [#204](https://github.com/Civic-Minds/Atlas/issues/204)).
+- Processing keeps weekday and weekend service, frequency-based stop headways and full-day rail schedules, and rail-like shapes are no longer treated as streets.
+- Agencies whose schedule runs past their feed's stated end date no longer show as outdated, and an agency whose separate rail feed has run out now shows as outdated even when its bus feed is current ([#630](https://github.com/Civic-Minds/Atlas/issues/630)).
+- Agencies sourced from MobilityDatabase follow its always-current feed link, so new schedules show up on the next refresh instead of after the old one expires ([#627](https://github.com/Civic-Minds/Atlas/issues/627), [#629](https://github.com/Civic-Minds/Atlas/issues/629)).
+- The weekly refresh keeps an agency's live data instead of publishing a sharply smaller feed, and reaches the map release again ([#655](https://github.com/Civic-Minds/Atlas/issues/655)).
+- Reprocessing rebuilds each agency from its newest archived feed and refuses expired, older or sharply smaller results instead of replacing good live data ([#613](https://github.com/Civic-Minds/Atlas/issues/613)).
+- Rebuilding agency data can no longer publish an agency in a country Atlas hasn't launched yet ([#668](https://github.com/Civic-Minds/Atlas/issues/668)).
+- A hidden agency's data can be corrected while it stays hidden, and the map build no longer fails because a hidden agency is missing from the tiles ([#615](https://github.com/Civic-Minds/Atlas/issues/615)).
+- The map and route cards can no longer come from different builds: a data release goes live only when its map and agency data were built together, and map releases stop when any requested agency fails, is stale or hasn't been reprocessed.
+- The map keeps showing routes while data built under updated frequency rules rolls out, instead of going blank ([#703](https://github.com/Civic-Minds/Atlas/issues/703)).
+- Map releases fail less often on large uploads, flaky networks and storage read errors.
+- Route lines draw on the map again after the MapLibre 6 upgrade, and routes with schedules but no map shape stay searchable and zoom to their stops.
+- Map image exports wait until every route has loaded and keep phone screens whole and sharp.
+- On phones, search results use the full width, the search box stays on one line and widens while you type, Settings and About fit small screens, route cards no longer break stop names mid-word, docs pages start with their contents collapsed, and Escape closes the export dialog ([#644](https://github.com/Civic-Minds/Atlas/issues/644), [#645](https://github.com/Civic-Minds/Atlas/issues/645), [#646](https://github.com/Civic-Minds/Atlas/issues/646), [#694](https://github.com/Civic-Minds/Atlas/issues/694), [#695](https://github.com/Civic-Minds/Atlas/issues/695), [#696](https://github.com/Civic-Minds/Atlas/issues/696), [#697](https://github.com/Civic-Minds/Atlas/issues/697), [#698](https://github.com/Civic-Minds/Atlas/issues/698)).
+- Headings across the app no longer appear in all capitals.
+- Search fields clear immediately when the X is pressed.
+- Night Service route cards no longer overlap the bottom map controls.
+- History no longer runs out of connections on large requests.
+- On the beta site, the frequent-service story no longer counts 20 agencies twice, so its totals match the system-map audit.
+- Security: MapLibre GL and vulnerable dependencies are patched, and feed text can no longer be rendered as markup.
+
+## [3.2.23] - 2026-09-22
+
+- Regional and broad map views now defer detailed agency downloads until city-level zoom, reducing unnecessary network requests while keeping PMTiles overview routes visible.
+- Added a visible Feedback email link beside the map attribution for launch-period comments and feature requests.
+- Calgary overnight routes starting near the end of the window (such as LRT 201 and late-night buses) no longer pass as frequent overnight routes on the map or in the filter, and their cards now indicate limited service for routes running only part of the period instead of borrowing daytime frequencies ([#507](https://github.com/Civic-Minds/Atlas/issues/507)).
+- Calgary MAX route cards now show the terminal name without repeating the MAX service branding.
+- Fixed the agency report form opening at the width of its flag icon instead of the full card.
+- Removed feed-quality badges from the public agency list so technical review states do not look like rider action items.
+- Added Area Transportation Authority coverage across North Central Pennsylvania, including Punxsutawney's local bus route.
+- Added 19 previously uncovered fixed-route agencies across the US and Canada, including Decatur, Charlottesville, Johnson City, Maui, and Medicine Hat.
+- Added eight more fixed-route agencies across Iowa, New Mexico, Kentucky, Illinois, Tennessee, Indiana, Arizona, and Washington.
+- Added an opt-in history build mode (`materializeAllPeriods`) that keeps every documented schedule period instead of collapsing unchanged ones, for agencies like Sacramento with dense archived history worth showing period-by-period.
+- History's route list no longer shows a divider line between every route, and an agency whose short archived series falls entirely within one year (e.g. "2026") no longer shows a silly-looking repeated range like "2026–2026".
+- Fixed the History route card's chart-toggle icon disappearing on routes with a longer name (e.g. Orange-N) — the name was squeezing the row narrow enough to push the icon out entirely instead of properly truncating.
+- Removed the "Recent" badge and "recent refreshes"/"long archive" text from History — every list there (route list, agency list, recent searches) now uses the same spaced style instead of three different hand-rolled versions, and searching for a different agency while History is open now actually opens it instead of snapping back to whichever agency was already selected.
+- Fixed search doing nothing while an agency's route list was already open anywhere in the app — the search box's underlying value could get stuck indefinitely behind other page activity like the map re-rendering ([#495](https://github.com/Civic-Minds/Atlas/issues/495)).
+- Removed a confusing "shorter series from refreshes" label from History's agency list section headers.
+- Opening History now always shows the full agency list instead of jumping straight to whatever agency the map happened to be showing (e.g. TTC, just because the map defaults to Toronto).
+- Removed the "10+ years of snapshots" internal detail from History's "Explore" section header.
+- Fixed History's agency list not scrolling — the panel had no height limit or scroll behavior, so it just got cut off instead of letting you scroll to agencies further down.
+- Replaced History's "Explore"/"Recent" section labels (sounded like "recently added") with a real Filter control — the agency list is one flat list by default, and the filter lets you narrow to just full- or partial-history agencies using the same plain-language wording already used for the rider-facing badge elsewhere.
+
+## [3.2.22] - 2026-09-03
+
+### Map and route behavior
+
+- Route cards now show a faster combined frequency for a single branch too, not just when a route has multiple destinations — TTC 94 eastbound was showing only "every 20 min" and hiding that Castle Frank buses run every 10 min where a short-turn pattern overlaps ([#493](https://github.com/Civic-Minds/Atlas/issues/493)).
+- Fixed a few routes' combined-frequency figure reading a minute or two faster than reality — a rounding quirk in how two overlapping schedules line up at one or two stops could set the whole number instead of being smoothed out ([#494](https://github.com/Civic-Minds/Atlas/issues/494)).
+- Direction hovers no longer make route cards and map highlights flicker when the hovered row changes the schedule preview height.
+- TTC subway lines now keep their evening service visible when the feed publishes separate same-destination rail shapes.
+- Combined corridor overlays now stay on the route shape that actually serves each shared stop pair, and are temporarily hidden while their map geometry is reworked; filter choices now carry through shared links.
+- Short-turn/branch route variants now show for both directions of a route, not just one ([#470](https://github.com/Civic-Minds/Atlas/issues/470)).
+- Cleaned up the map's "routes/agencies in view" list: removed a duplicate search field, matched its styling to Atlas's main search, grouped results by agency, and kept it experimental-only (hidden from the public build, still on in beta).
+- If an agency's map data or the History list fails to load, Atlas now retries once and shows an error instead of silently displaying nothing ([#474](https://github.com/Civic-Minds/Atlas/issues/474), [#475](https://github.com/Civic-Minds/Atlas/issues/475)).
+- History route selections now settle on one camera target instead of triggering competing map movements and React warnings ([#478](https://github.com/Civic-Minds/Atlas/issues/478)).
+- The History map camera no longer jumps when you open or close a stop's detail card, and can no longer snap back to a route you already navigated away from ([#471](https://github.com/Civic-Minds/Atlas/issues/471), [#472](https://github.com/Civic-Minds/Atlas/issues/472)).
+- History coverage pills now appear only where the History feature is available, keeping the production agency list consistent with its hidden History app.
+
+### Data pipeline
+
+- Fixed a pipeline bug affecting the 10 agencies that filter routes out of a shared/multi-agency feed (Seattle Streetcar, HART, Niagara, Tampa Airport, Stratford, and 5 Colorado mountain-town shuttles) — the filter step wasn't actually applied to the stop list, so these agencies could publish stops that belong to other agencies or excluded routes in that feed. All 10 have now been reprocessed with the fix.
+- Every agency now has a timezone on file, and the weekly refresh no longer silently discards it — links to a specific route/stop default to that agency's own local time instead of the browser's.
+
+### Platform and other
+
+- Live GTFS-RT archiving is paused while its data collection is rebuilt for reliability.
+- Atlas deploys successfully on Vercel again after hitting its plan's function limit.
+- Public route and agency cards no longer expose beta-only live-data indicators while Live remains gated.
+- Added privacy-conscious usage analytics so feature adoption can be measured beyond page visits, with a consent prompt that respects stricter privacy regions and can be turned off in Atlas settings.
+- CARTO basemaps now load without the API-key watermark — Atlas proxies tile requests with the key kept server-side.
+- Shared Atlas links now generate useful previews when posted on social media.
+- Kept legal links and Civic Minds attribution on one compact line in the Info area.
+
+## [3.2.21] - 2026-08-24
+
+### Feed quality
+
+- Feed-quality warnings now explain schedule, map-line, and frequency issues in plain language.
+- Feed review and hidden-route lists now use the same rounded search controls as the Agencies list.
+- Feed audits now cross-check expired snapshots against newer sources, hold inaccessible replacements for manual review, and show how many checks have confirmed an outdated schedule.
+
+### Map and route behavior
+
+- Invisible routes can no longer be selected through the map's transparent click area when they have no service in the active period.
+- Route cards no longer show a bogus "Combined" frequency for lettered route variants that don't actually share a real path, and for larger families (e.g. GRTC's 1/1A/1B/1C) only the members that truly share one now combine — matching letters or numbers in the name wasn't enough evidence on its own ([#448](https://github.com/Civic-Minds/Atlas/issues/448)).
+
+### Data pipeline
+
+- Reprocessed 39 production agencies that were registered but missing from the map, including Orangeville and Owen Sound, and rebuilt the shared route archive.
+
+## [3.2.20] - 2026-08-19
+
+- The Route Diagnostics table header no longer lets scrolling rows slip above it into the top page padding ([#447](https://github.com/Civic-Minds/Atlas/issues/447)).
+- Durango Transit Route 1 no longer combines opposite directions into a false combined headway because they share a direction ID ([#441](https://github.com/Civic-Minds/Atlas/issues/441)).
+- Beta's "Service is uneven" banner no longer fires on routes with completely normal schedules, just because the first or last bus of a time window lands a normal amount inside it.
+- Routes with confirmed source geometry problems now stay visible with a clear warning instead of hiding the whole agency.
+- The PMTiles build and verification pipelines now skip draft configs lacking processed R2 data, preventing 404 errors during map compilation.
+- Added Oregon and Washington regional services for GroveLink, RiverCities Transit, Tillamook, Sunset Empire, Columbia Area Transit, and MATS.
+- Beta Settings now lists degraded and unusable feeds hidden by the feed-quality filter, including the recorded reasons and check dates.
+- The experimental route-match percentage is now beta-only and labeled “match” instead of “coverage.”
+- In view agencies and routes counters now appear in production as well as beta.
+- The degraded/unusable feed-quality badge in the Agencies list now matches dark mode instead of staying a light amber patch.
+- Selected routes from the In view panel now dim other visible routes for staged beta agencies too.
+- Added privacy-friendly analytics and real-user performance monitoring to deployed Atlas builds so usage and map performance can be measured.
+- Niagara’s scheduled evening and night routes now appear as normal service instead of being mislabeled as irregular.
+- RT archives now process one agency per scheduled run, preventing the background Worker from exceeding its free CPU limit.
+- NFTA History now includes 2011 and 2015 bus and Metro Rail schedules, so Buffalo’s service changes can be compared across the full network.
+- Added validated GTFS sources for 18 previously missing Ontario, Pennsylvania, and Ohio agencies, expanding coverage around Pittsburgh and across smaller Ontario cities.
+- Added current GTFS sources for additional regional agencies across Michigan, Iowa, Missouri, North Carolina, Texas, Louisiana, Mississippi, and Florida, ready for the next data publication.
+- Documented Dodge City as blocked until its fixed-route feed includes route shapes.
+- Added staged GTFS coverage for Telluride, Mountain Village, and SMART regional transit, with agency-level filtering for their shared feed.
+- Added Snowmass Village’s local shuttle without duplicating its RFTA regional routes.
+- Added validated Colorado mountain transit coverage for The Lift, RoundAbout, Breck Free Ride, Summit Stage, Vail Transit, and Avon Transit, plus Timmins and Casper; Avon remains marked degraded because its published static schedule is expired.
+- Core Transit now uses its official agency name instead of the older ECO Transit label.
+- The "zooming in to..." orienting card now names the actual nearest city instead of sometimes naming a neighboring one whose fallback bounding box happened to overlap the click ([#430](https://github.com/Civic-Minds/Atlas/issues/430)).
+- Fixed a rare load-timing bug where the Agencies filter could silently save "almost everything off" with no clicking involved, permanently undercounting routes on every later visit until noticed ([#428](https://github.com/Civic-Minds/Atlas/issues/428)).
+- Agencies now start with every active agency selected, and the Agencies panel's All/None actions apply globally instead of only to agencies currently in view.
+- The map now actually draws routes again on deployed builds — a MapLibre GL 6 bug silently stopped it from requesting any map tiles once built for production, even though everything looked fine locally ([#425](https://github.com/Civic-Minds/Atlas/issues/425)).
+- Deployed maps now fall back to loaded route shapes when route tiles fail, preventing a blank map during tile delivery problems.
+- Deep-linked maps now load nearby agencies immediately and show filtered local route shapes while route tiles are still loading, preventing blank maps during tile stalls.
+- Map fallback now chooses local route shapes per agency, so one broken agency tile set cannot hide routes from otherwise healthy agencies.
+- Map startup no longer waits for route tiles before loading the map, so stalled PMTiles requests cannot block local route rendering.
+- Map fallback now checks routes that actually render under the active filters, not just route data present in the tile source.
+- Nearby agencies now begin loading as soon as the map is ready, even when a route-tile request is stalled.
+- Deployed maps now load route tiles through a same-origin range proxy so PMTiles receives the correct range response in production and beta.
+- Beta map badges now report only rendered routes, reclaim the removed Context-button space, and stop showing an endless map-loading state when transit tiles fail.
+- Niagara Transit’s refreshed schedule data now keeps predictable daytime and evening routes visible when irregular routes are hidden.
+- Beta-only agency artifacts now load through the beta data path, while In view counts and lists follow the rendered map filters; Agencies and Routes now open as separate panels that close on outside click.
+- Shared-service route cards now use one Combined label, and agency cards keep routes outside the active filter collapsed until requested.
+- The agency index now derives Metz artifact locations instead of storing stale generated URLs.
+- Reconciliation now preserves day-aware branch metrics, feed validation, collision-safe archives, and live data cache invalidation across clean pipeline runs.
+- The shared beta/production build now preserves MapLibre 6, route-branch selection, and live GeoJSON cache updates after a clean deployment install.
+- Production and beta now build from the same `main` source with deployment-scoped feature flags, preventing the two sites from drifting into conflicting Git branches.
+- Selected routes now agree with the active frequency filter across directions, and stale route panels no longer overlap agency or disambiguation cards.
+- Metz is now available only in beta with staged France schedule data and a linked validation notice while the first country rollout is reviewed.
+- Agency lists now distinguish full versus partial live coverage and use plain-language History labels, while the header and Info panel show the same approximate History count.
+- Combined route summaries now stay within their direction and highlight only the shared section on hover.
+- Halifax Live now includes frequent vehicle-only routes alongside route 1 adherence, and Halifax GTFS-RT feeds are now archived for live-history analysis.
+- Added GTFS coverage for WVU PRT in Morgantown, BATA in Traverse City, and GPTC in Gary.
+- Beta now records explainable GTFS feed-quality ratings and can hide degraded or unusable feeds without hiding feeds that only need review.
+- Metro Transit, Grand River Transit, Brampton Transit, Detroit DDOT, and Spokane Transit history now covers 2016–2026, expanding the History app coverage to a larger set of baseline systems.
+- Scheduled time-limited routes now keep their real frequency instead of being mislabeled as irregular.
+- Split rush-hour-only routes such as TTC 986 are now classified as irregular instead of all-day infrequent service.
+- Beta route cards can now expand schedule charts to inspect the full-day service pattern.
+- The route-count badge now waits for the first viewport bounds instead of briefly counting every loaded route.
+- Beta route cards no longer show branch-only uneven-service warnings when combined branches provide the rider-facing trunk frequency.
+- Combined-corridor overlays now follow GTFS route shapes instead of drawing straight lines between stops.
+- Beta schedule charts now keep the active period label clear of the expand control at narrow widths.
+
+## [3.2.19] - 2026-08-13
+
+- Current GTFS audits now inspect retained current snapshots for structural errors, stale metadata, duplicate content, and geography mismatches before publication.
+- GTFS parsing now ignores fully blank CSV records while still surfacing partially populated records as validation failures.
+- Zoom-in cards now name the place actually clicked instead of an agency's unrelated primary city.
+- Selected routes now explain when a faster section, rather than the full route, matches the active frequency filter.
+- Combined frequencies now use the same section layout as directional frequencies, and qualifying cores no longer show a misleading outside-filter warning.
+- Route-card sparklines now sit inside their direction sections, so each chart only describes one direction.
+- Map right-click reports now use the same in-app report form as other issue reports.
+- Left-side panels now stop above the map attribution instead of covering it.
+- Shared frequency cores now include the terminal shape lead-in, so qualifying sections reach the actual station boundary.
+- Shared route cores now appear under frequency filters when their combined service qualifies, even if each individual branch is slower.
+- Shared route cores now use the displayed branch cadence across their full overlap, so stop-level noise cannot cut the qualifying section short.
+- Shared route cores now include terminal-loop stops when branches list the same stops in opposite order.
+- Bare Atlas URLs now start with the current day and time instead of restoring stale saved filters.
+- Search now puts exact and stronger route or stop matches before weaker matches that happen to be in the current map view.
+- Qualifying route sections can now be clicked like the rest of the map, so partial frequency matches open the correct route.
+- Regional agencies now show their service area instead of an arbitrary city from their stop list.
+- Production builds no longer include the beta-only map context panel.
+
+## [3.2.18] - 2026-08-10
+
+- Hidden-route agency headers now use the same standard agency names and comma-formatted counts as the Agencies list.
+- Route names now preserve KC capitalization, including KC Streetcar.
+- Open pages now warn when refreshed schedule data or a newer app version is available.
+- Current raw GTFS snapshots now live in public Atlas while replaced or expired snapshots move to the private archive, making bucket membership reflect currentness.
+- Current raw GTFS files now sit at the Atlas bucket root, so the bucket itself identifies current data.
+- Expired feeds now remain available as clearly marked fallback schedules until a newer snapshot replaces them.
+- Failed or older feed downloads no longer replace a usable active schedule.
+- Local GTFS snapshots now migrate into the private archive with calendar-aware dates and collision-safe agency paths.
+- Fixed the production map failing to render routes after refresh because its MapLibre worker was being rewritten to the app shell.
+- Search no longer moves the map while a place name is being typed; choose a result or press Enter to navigate.
+- Rail headways now use one representative weekday, so subway and other rail lines no longer show fake high frequency when daily schedules are offset by a minute.
+- Disabling combined corridors now clears both the map band and any previously selected corridor overlay.
+- Irregular destination rows now show their typical gap range and exceptional longest wait instead of only saying that service varies.
+
+## [3.2.17] - 2026-08-10
+
+- Route cards and frequency filters now use consistent whole-route service, with destination departures and terminal patterns handled without false sparse or frequent readings.
+- Weekday and weekend schedules no longer mix when selecting representative route shapes, and refreshed feeds no longer leave stale map data behind.
+- Non-passenger trips and placeholder destinations stay out of rider-facing service, while standard data corrections are explained on affected route cards.
+- Routes with confirmed geometry problems remain visible with a clear warning.
+- Duplicate direction labels now fall back to Westbound/Eastbound, and schedule notices remain readable on narrow route cards.
+- Combined corridor overlays stay off the public Frequency map, and selecting a route no longer bypasses the disabled corridor setting.
+- Weekly feed refreshes now handle duplicate trip IDs, GTFS-Flex records, changed versions, and empty pathway-node coordinates without silently replacing or dropping valid schedules.
+- Live and History coverage counts are shown, and live cards no longer hang on failed responses.
+- Hidden-route inventory is searchable and grouped by agency, with readable counts and clearer irregular-route settings.
+- Corridors and reporting workflows now open from the relevant route or stop context with clearer wait-time and reason labels.
+- The uneven-service warning is beta-only while its thresholds are tuned against more real feeds.
+- Removed an unused dependency path that pulled vulnerable `image-size` code.
+
+## [3.2.16] - 2026-08-06
+
+- Deselecting a route now correctly restores every other route's normal visibility on the map right away
+- Route-card report buttons now collect structured reasons and a required problem description before opening GitHub
+- Suffolk County Transit now shows accurate weekday frequencies across the whole feed, instead of numbers inflated by miscounted holiday service ([#338](https://github.com/Civic-Minds/Atlas/issues/338))
+- Route cards now show the longest service gap when a period's median frequency is uneven ([#281](https://github.com/Civic-Minds/Atlas/issues/281))
+- Visalia routes now keep their selection when switching between weekday and weekend schedules ([#302](https://github.com/Civic-Minds/Atlas/issues/302))
+- GCRTA route 51-51A's midday frequency is now accurate — combining two different trip patterns under one displayed branch had inflated it to a false 4 minutes ([#337](https://github.com/Civic-Minds/Atlas/issues/337))
+- Live history now archives vehicle positions for TTC, Burlington, Hamilton, and STM
+- Patched a dependency vulnerability (react-router CSRF bypass in RSC mode)
+- Beta deployment's browser tab now reads "[Beta] Atlas by Civic Minds" instead of looking identical to production
+- Halifax Transit 7A/7B now show correct direction labels and real frequencies — they're clockwise/counterclockwise around one loop, not corridor branches ([#335](https://github.com/Civic-Minds/Atlas/issues/335), [#336](https://github.com/Civic-Minds/Atlas/issues/336))
+- Time filter can no longer be deselected into a silent, unexplained "all day" state — always shows one real time-of-day period, same as Day
+
+## [3.2.15] - 2026-08-03
+
+- Patched a dependency vulnerability (brace-expansion DoS, GHSA-mh99-v99m-4gvg)
+- Frequency filter now highlights only the actual qualifying stretch of a route, dimming the rest, instead of showing the whole route at full weight when just part of it meets the threshold (#317)
+- Fixed a sidebar map highlight (serving-stop match) that was silently broken and matching nothing
+- Fixed overnight-only service (e.g. CTA's 24-hour Red/Blue Lines) being invisible in Late/Overnight stats — routes whose early-morning trips are coded in plain 0-23h notation rather than GTFS's >=24:00 extended notation are now correctly picked up
+- Fixed an overnight-only route (e.g. TTC's Blue Night Network) still showing on the map under an unrelated period's frequency filter (e.g. Midday) — a PMTiles encoding quirk was dropping the "no service this period" signal before it reached the map
+- Fixed a malformed "Recently viewed" search entry (raw internal route key shown instead of a route name) that could persist in your browser from an older build — now cleaned up automatically on load
+- Fixed TheBus (Honolulu) 1/1L and GoRaleigh 11/11L being wrongly combined into one route's frequency — they're separate routes ("L" isn't always a branch letter), not the same GRTC-style trunk-and-branch pattern this check is designed for
+
+## [3.2.14] - 2026-07-31
+
+- Fixed routes showing up under a frequency filter when only one direction actually met it (Kingston 701 and others) — the filter now requires every direction to qualify, not just the fastest one
+- "Hide irregular routes" now also hides a route whose *other* direction has no sustained service at all, like a peak-only commuter route (Halifax 330) — data populates on the next full weekly refresh
+- Fixed routes with entirely overnight-only service (e.g. TTC's Blue Night Network) being silently dropped from processing rather than just missing a flag — data populates on the next full weekly refresh
+
+## [3.2.13] - 2026-07-30
+
+- Live and History are now beta-only — both cover too few agencies with no scaling plan yet to belong in production nav
+- Corridors is now properly gated (previously unguarded on main aside from a CSS bug hiding its panel)
+- Fixed the info panel still advertising Live/History agency counts even when both are hidden
+
+## [3.2.12] - 2026-07-29
+
+- Fixed intermittent data-loading failures (503s) across the app — switched from R2's rate-limited public dev URL to a proper custom domain
+
+## [3.2.11] - 2026-07-29
+
+- History eligibility now recognizes covered schedule years without storing duplicate unchanged route snapshots, allowing well-documented timelines such as Sacramento’s to appear.
+- Fixed routes showing consistent frequency for a time period they barely run in ([#299](https://github.com/Civic-Minds/Atlas/issues/299))
+- Fixed the "report an issue" data dump wrongly claiming "no scheduled service" for periods where the pipeline simply didn't compute a value ([#298](https://github.com/Civic-Minds/Atlas/issues/298))
+- Fixed the "report an issue" data dump silently dropping a branch with real headway data when its headsign is missing ([#300](https://github.com/Civic-Minds/Atlas/issues/300))
+- Fixed Transit Windsor's 1A and 1C wrongly displayed as branches of one route — they're separate routes that only share a short downtown segment ([#294](https://github.com/Civic-Minds/Atlas/issues/294))
+
+## [3.2.10] - 2026-07-27
+
+- Fixed the weekly GTFS refresh Action crashing on transient R2 network timeouts instead of retrying ([#293](https://github.com/Civic-Minds/Atlas/issues/293))
+- Frequency sparkline bars now show their real time range on hover (each bar is a 90-minute window, not a strict clock hour)
+- Fixed hourly frequency values blending into a neighboring hour's service pattern when the hour already had enough departures to stand on its own ([#282](https://github.com/Civic-Minds/Atlas/issues/282))
+- Fixed stop-card frequency disappearing for routes with real all-day service that falls outside the midday/PM-peak windows ([#279](https://github.com/Civic-Minds/Atlas/issues/279))
+- Fixed headway/frequency values overstating the gap (showing worse frequency than scheduled) in windows with an even number of departures ([#280](https://github.com/Civic-Minds/Atlas/issues/280))
+- Stop cards now use the same back control as Live cards ([#239](https://github.com/Civic-Minds/Atlas/issues/239))
+- Selected routes now explain when they remain visible outside the active frequency filter ([#270](https://github.com/Civic-Minds/Atlas/issues/270))
+- Seattle Streetcar processing now filters the King County multi-agency feed to Seattle routes and publishes them in PMTiles ([#214](https://github.com/Civic-Minds/Atlas/issues/214))
+- Refreshed CTA and Laketran schedule artifacts and rebuilt the live PMTiles archive after the explicit no-service fix ([#274](https://github.com/Civic-Minds/Atlas/issues/274))
+- The shared trunk section of a multi-branch route now shows a real combined frequency instead of just copying its fastest branch's number
+- Rarely-running branches no longer make a route's shared trunk section look more frequent than it actually is
+- Drop-off-only branches are correctly excluded from a route's shared trunk frequency, even on feeds with inconsistent service-tier data
+- Hovering a route's shared trunk frequency now highlights which branches are actually contributing to it on the map
+- Notices on a selected but filtered-out route now appear in the same place as other route-card notices, instead of a one-off spot
+- Sparkline bars for a multi-branch route now color-code each destination so you can tell them apart
+- Hovering an hour on the sparkline now updates each branch's frequency shown below it
+- Route labels now keep an agency's own capitalization (e.g. "GoTriangle") instead of flattening it
+- Long sparkline hover details no longer get cut off inside the route card
+
+## [3.2.9] - 2026-07-24
+
+- Reporting a problem no longer shows blank technical fields to fill in — maintainers add those during triage instead
+- Madison routes D, R, and E now show their real scheduled frequency to each destination — they were showing one shared trunk average instead
+- Copied issue reports now include the frequency shown on screen and how fresh the feed data is, kept short enough to fit in a GitHub link
+- Copied issue reports now paste over GitHub's placeholder text cleanly instead of leaving formatting artifacts behind
+- Copied issue reports now show only the evidence for the time period you're viewing, not every raw metric on the route
+- Sparkline hover tooltips no longer get cut off by the edge of the route card
+- Copied issue reports no longer repeat the summary text twice when pasted into GitHub
+- Nearby stop connections now show straight-line distance instead of an implied walking time that wasn't actually accurate
+- Fixed a flicker when hovering over a destination on the route card
+- Stops that are really the same hub (like a station with multiple platforms) are grouped together more reliably now, and load faster
+- The map now shows one marker per transit hub instead of a cluster of overlapping stop dots when zoomed out
+- Searching for a stop that's part of a larger hub now returns one combined result with all its routes, instead of several near-duplicate entries
+- Stop cards no longer suggest walking to a route you could already board directly
+- Patched a high-severity security vulnerability in a dependency (linkify-it) ([#275](https://github.com/Civic-Minds/Atlas/issues/275))
+- Period filters now keep routes with explicit no-service periods off the map.
+- History agency cards now match other cards by omitting the standalone close button.
+- History now retains current route data when an agency changes route IDs between archived and current GTFS.
+- PMTiles rebuilds now skip unpublished pending agencies before attempting artifact fetches.
+- Refreshed Akron and GCRTA route data so current clockface schedules and clickable route geometry stay in sync.
+- Hovering a direction on a selected route no longer repeatedly refits the map, eliminating the resulting jitter and redraw loop.
+- Search results now resolve legacy composite route keys to the loaded agency, so selecting a route consistently opens its card.
+- Rail replacement bus routes now carry an explicit “Rail replacement bus” note in agency cards while remaining correctly classified as buses.
+- GCRTA’s Waterfront Line now appears under LRT instead of Streetcar, matching the route’s rail service.
+- History route charts now use the same ordered snapshots as their lists, so plotted headways and change indicators stay attached to the correct dates.
+- Route focus now dims the surrounding network consistently in History and Frequency while keeping the selected line prominent.
+- History’s time control is vertically aligned and exiting History uses a direct navigation link so the mode can reset cleanly.
+- Reduced the shared desktop search width so the header fits more naturally across view sizes.
+- Fixed History route rows becoming unclickable after an agency was selected.
+- History compilation now anchors current route snapshots to the public Atlas artifact, so redesigned routes and unchanged current service do not disappear from the timeline.
+- History route timelines now show the newest archived snapshot first and identify when the archive is older than current service.
+- History now opens directly on the eligible agency in the current city so its time scrubber is immediately available.
+- Show Live and History navigation only when the current map view contains an agency that supports those features.
+- Active-period agency counts no longer include routes with explicit no-service data just because their all-day frequency qualifies.
+- GCRTA route labels now preserve agency capitalization such as HealthLine and MetroHealth.
+- Added report buttons to route, stop, and agency cards with prefilled GitHub issue context.
+- Route reports now include the agency and route name in their prefilled issue title.
+- Selected routes now explain when they have no scheduled service during the active period.
+- Constrained the desktop search bar to a wider fixed range so it stays readable without expanding across the header.
+- Matched agency cards to the search bar width for consistent panel alignment.
+- Fixed search results using a different width than the search bar.
+
+## [3.2.8] - 2026-07-20
+
+- **Fixed the app feeling slow/laggy on every load, even before touching Corridors**: Corridors stays mounted in the background so switching apps is instant, but its stop-search index was loading unconditionally on first page load — an unthrottled fetch of every single agency's stops file (800+ requests) firing at once, competing with the visible Frequency map for network and CPU the whole time it was still rendering. Now deferred until Corridors is actually opened.
+- **Fixed routes showing a stuck/stale frequency at their terminus** ([#263](https://github.com/Civic-Minds/Atlas/issues/263)): a sparse branch's own headway (computed from however few trips run that day, with no minimum sample size) could get ratcheted in over a more accurate, better terminal-specific number and never get corrected — e.g. a Rennes Sunday route showing "every 121 min" when every stop, including the terminus, actually ran every 60 min. That ratchet exists to stop a shared terminal's combined frequency from falsely improving a branch's real number, so it now only applies (a) when the branch's own number is backed by enough trips to trust, and (b) when there's an actual branch for it to protect in the first place — a route where every stop shows the same frequency has no trunk/branch split, so the ratchet was misfiring there regardless of trip count. Confirmed across Rennes, Lyon, and several France candidates during this fix, including a case (villeneuve-sur-lot) that confirms the protection still works correctly when a route genuinely does branch.
+- **Audited the remaining 92 dry-run France candidates for the first time**: none had been individually reviewed before (only the 5 real-staged cities had). All 117 flagged shape anomalies were already auto-resolved by existing detectors (80 truncated-at-parse, 33 auto-repaired-and-verified, 5 known hardcoded fixes) — no action needed there. Found and fixed 17 real near-duplicate-headsign cases across TBM (Bordeaux, 17 across two feed snapshots), SETRAM (le Mans), Izilo (Lorient), and Qub (Quimper): each feed publishes both an ALL-CAPS/no-accent stop code and a properly-cased display name for the same destination on different trips, which was splitting headway counts across two list entries per destination instead of counting them together. Also confirmed 2 flagged pairs are NOT duplicates and left them alone: Orléans' "Quai C/D/E" are different real platforms, and Saint-Nazaire's "Redon"/"Besné" are different real origin towns.
+- **Live mode is available on phones**: the Live control was desktop-only (`hidden` below `sm`); it now shows in the header on small screens too.
+- **Map/stop selection at a hub stays consistent**: Frequency map filter and stop card now share one stop-hub expansion helper (same-name + 120 m proximity), so sibling routes at a transfer station cannot disagree between the map and the card.
+- **Share URLs are less likely to drop params**: day, route, stop, headway, period, and map center all merge through one `syncUrlParams` helper that re-reads the live query string before writing.
+- **Error recovery actually remounts the broken view**: Retry on the map ErrorBoundary bumps a key so React remounts children instead of clearing the error flag alone.
+- **Overlapping calendar.txt service periods no longer double headways when calendar_dates cancels one**: French-style exports (confirmed on TAG Grenoble Tram A) that publish two concurrent weekday blocks and remove the superseded one via `exception_type=2` now drop the cancelled service on the reference day, so headways stay at the real interval instead of ~half.
+- **Broken GTFS feeds fail closed during process (soft-skip on weekly refresh)**: structural validation runs after parse; `npm run process` aborts on errors unless `--force`, and refresh leaves feed metadata alone when validation fails so a bad zip is not treated as published.
+- **Empty pipeline output no longer marks a feed as freshly refreshed**: a 0-feature result used to stamp `lastFeedExpiry` / `lastRefreshedAt`, so skip-if-unchanged could permanently ignore a flex/microtransit extract that later gains real routes.
+- **Live map tooltips no longer inject raw GTFS-RT text as HTML**: vehicle headsigns/route labels and history stop cards escape feed strings before `innerHTML`, so a malicious or malformed feed string cannot run as markup in the browser.
+- **Live API routes refuse parked and unkeyed agencies**: proxy and archive endpoints now match the UI eligibility rules (and require configured API keys before calling key-gated upstreams), so inactive configs like LA Metro cannot burn third-party quotas via the public API.
+- **All live API routes share rate limiting**: stop, adherence, and legacy gtfs-rt proxies now enforce the same per-IP budget as vehicles/history; expensive snapshot/replay/history paths use a tighter limit. (Still process-local on Vercel — not a distributed edge limit.)
+- **Live snapshot/replay errors no longer leak infrastructure detail**: clients get a generic unavailable message instead of raw R2/AWS error text.
+- **Live polling no longer rebuilds the map every 15 seconds when nothing moved**: vehicle polls skip React and deck updates when positions/status are unchanged, so idle Live views stay smooth.
+- **Deck.gl loads only when Live is used**: Frequency Map no longer pays the deck bundle cost on first paint; the overlay attaches on demand when vehicle markers are needed.
+- **Wide pans drop far agency GeoJSON from memory**: React keeps at most ~24 agency layers (viewport + search pinned first); IDB still caches data so re-entering an area is fast.
+- **Map pan/zoom stays smoother under load**: route-count badges and search ranking use deferred viewport bounds and a cached bbox check instead of re-scanning every shape vertex on each move, and the map canvas skips re-renders when only the sidebar/stats update. Agency layers stamp `agencySlug` once so feature lists stop re-cloning geometry.
+- **Reprocessed Nice under its corrected `nice-fr` slug in the atlas-staging dress-rehearsal bucket**: the earlier staging upload was still keyed as `nice`, colliding with the unrelated live NICE Bus (Nassau, NY) slug fixed earlier. Reprocessed for real into atlas-staging (isolated from production) under `nice-fr` and removed the stale `nice-*` staging keys. Also confirms the "Lei Feirrièro"/"Leï Feirriero" headsign fix resolves cleanly end-to-end — `route-report` now shows 0 near-duplicate headsigns for this agency.
+- **Selected-route mode keeps the rest of the network readable**: other lines were dimmed to ~15% opacity (looked hidden but stayed clickable). Now ~32% / slightly thicker so context stays visible and click-to-switch is obvious — still focused, not fully hidden.
+- **Selecting a route no longer zooms so the line hides under the route card**: fit-bounds used even padding; the card sits on the left so the west end of long routes was covered. Pads the left more, matching live-vehicles selection.
+- **Staging R2 support**: `ATLAS_ENV=staging` + `.env.staging` target a shared `atlas-staging` bucket for full process/PMTiles dress rehearsals without touching production. Country-launch gate only blocks the live `atlas` bucket.
+- **France expansion grew to ~142 dry-run candidate cities across four batches this cycle**: major metros (Lyon, Marseille, Toulouse, Nice, Cannes, Limoges, …) and a wide mid-size sweep across every métropole région, then two more speedrun batches (Cherbourg, Chamonix, Albi, Angoulême, Montauban, Arcachon, … and Bourg-en-Bresse area, Narbonne, Sète, Haguenau, La Roche-sur-Yon, Dreux, …). Every feed dry-run validated with route LineStrings near the claimed city; still fully `hiddenInProduction` / `pmtilesPending` until a deliberate country launch — zero R2 writes.
+- **Fixed agency-name display collisions from the France batch**: Citibus (Lubbock/Narbonne), TAC (Annemasse/Charleville-Mézières), and TUB (Saint-Brieuc/Bergerac) are genuine same-brand coincidences (verified against each network's real name), not a bug — added to the documented shared-acronym allow-list alongside CAT/GET/TCAT/etc.
+- **Fixed a real slug collision that had silently overwritten a live agency's config**: the France batch's "Nice" candidate was written to `config/agencies/nice.json`, the same slug already used by Nassau Inter-County Express (NICE Bus, Long Island NY) — a real, already-live agency, whose config was fully replaced in-place. Production R2 data was unaffected (only the git-side config changed), but merging as-is would have deleted a live agency on the next index rebuild. Restored NICE Bus's config and moved the French candidate to a new `nice-fr` slug, matching the existing `springfield-mo`-style disambiguation convention. Checked all 142 France candidate slugs against the full existing registry — this was the only collision.
+- **`route-report --live` was overcounting its own flag total**: leftover local dry-run shape-anomaly files inflated the printed total even though `--live` mode already correctly hides that category's detail (it's dry-run-only data). Total now matches what's actually shown.
+- **Vetted the France batch's real-processed staging data (Lyon, Metz, Nice, Rennes, Toulouse) against `route-report`'s 36 flags for the first time**: ~26 confirmed legitimate trunk/branch short-turn patterns (verified via opposite-direction sanity checks and per-stop breakpoint analysis). Fixed 2 real headsign bugs: Lyon ZI8's un-accented "Parc des Lumieres" variant carried no real trip data (0 stops, an orphaned duplicate of "Parc des Lumières 1"), and Nice 69's "Leï Feirriero"/"Lei Feirrièro" split the same destination across two inconsistent accent transcriptions in the source feed. Both now merge into one canonical headsign. A recurring signature among the remaining flags (flat per-stop headway contradicted by a higher reported terminal headway) turned out to be issue #263, fixed separately above.
+- **Route titles with 3+ termini no longer cut off mid-word**: STAR (Rennes) route 12's title overflowed its 2-line clamp and got cut off as "...↔ Rennes (La..." — a route with a middle via-point (e.g. "A ↔ Via-point ↔ B") now shows just the through-route's first and last terminus in the title, matching how it's shown everywhere else the route is listed. The full stop-by-stop path is still on the map itself ([#250](https://github.com/Civic-Minds/Atlas/issues/250)).
+- **Pipeline hard-blocks accidental R2 publishes for unlaunched countries**: `npm run process`, `npm run build-pmtiles-incremental`, and `npm run refresh` now refuse (or skip, for batch refresh) live writes when the target country still has zero production-visible agencies — France and Mexico today. Override only with explicit `--i-am-launching-country` after maintainer approval. Stops the "forgot `--dry-run` / cited Metz as precedent" failure mode that already put Metz on R2 unapproved.
+- **Route cards no longer drop a direction that has real service**: STAR (Rennes) route 77 showed only "to Pacé" with no return-direction row, despite 560 real weekday trips running the other way. The short-turn exclusion logic used raw shape point count as a proxy for a shape's real length, and separately assumed a shorter shape always means a rarer one — both broke down here: a rarely-used 18-trip detour shape was both the most densely-digitized (561 points) and, by real geographic distance, genuinely the longest, so it won as "the" analysis shape while excluding the shape 97% of trips actually used. Now measures real distance instead of point count, and falls back to trip volume whenever the length-based pick covers less than half of all trips ([#249](https://github.com/Civic-Minds/Atlas/issues/249)).
+- **"Near You" panel no longer overlaps the zoom/geolocate controls**: it sat at a fixed 72px from the bottom, which only cleared the geolocate button and actually overlapped the stacked zoom in/out buttons by about half their height. Repositioned above the whole control cluster.
+- **Niagara Transit routes 104/105/109 no longer show a mismatched-color line segment**: each route's map line showed part of its length in a much-higher-frequency tier color than its own card (e.g. route 105's card said "every 60 min" for both directions, but the line rendered a segment in the ≤15 min color, in one case as a fragment fully disconnected from the rest of the route). Root cause was the same stale-data pattern as GO Transit below — `minStopHeadway` was frozen at 2 min in production from before an existing branch/shared-stop fix landed, and the map's line-color expression trusts `minStopHeadway` over the route's own headway. Forced a fresh reprocess; no code change needed ([#252](https://github.com/Civic-Minds/Atlas/issues/252)).
+- **GO Transit 41 headways corrected to real clockface intervals**: "to Square One" showed a blended 17 min against a real 30, and "to Centennial College" showed 13 against irregular actual service — production data was stale, generated before an existing pipeline fix for GO's per-calendar-date service_id pattern had been applied to this agency. Forced a fresh reprocess; no code change needed ([#251](https://github.com/Civic-Minds/Atlas/issues/251)).
+- **Fixed a class of doubled-frequency headway bugs from overlapping calendar.txt periods**: TAG (Grenoble) Tram A showed "every 5 min" when the real service runs every 10 — confirmed against raw trip/stop data that two overlapping weekday `calendar.txt` service periods were both being counted, even though `calendar_dates.txt` explicitly cancels one of them (exception_type 2) for nearly every real date in the overlap. The pipeline only ever applied `calendar_dates.txt` overrides to services with no `calendar.txt` entry at all, so a cancelled-but-still-calendar.txt-listed service kept merging its trips into the count, doubling apparent departures. Sequential schedule exports with this exact overlapping-then-superseded pattern are common in French feeds, so this likely affected other agencies too, not just Grenoble.
+- **French headsigns starting with "Le" no longer get shouted**: TBM (Bordeaux) Tram A showed "to LE Haillan Rostand" — GO Transit's 2-char line codes (LW/LE/KI/MI/BR) were force-uppercased anywhere they appeared as a whole word, which collided with the French article "Le" in place names (Le Haillan, and likely other "Le ..." places on French feeds generally). The line codes are still uppercased correctly as a standalone route label ("LW — Lakeshore West"); only the mid-sentence substitution — which no real GO Transit name actually needed — was removed.
+- **The zoom-in dead end now orients instead of just blocking**: clicking overlapping stops/routes while too zoomed out to disambiguate used to show a bare "Zoom in to choose a route/stop" pill. Now names the place being zoomed into (e.g. "Rennes, France") alongside the hint, derived from whichever agency's coverage area contains the click — no reverse geocoding needed. ([#213](https://github.com/Civic-Minds/Atlas/issues/213))
+- **Removed the duplicate centered "Loading transit networks" card**: the map already had a small, non-intrusive loading badge in the bottom-right corner showing live progress (`X/Y networks`) — the dead-center overlay with a blur backdrop was a second indicator for the exact same state, and a much more intrusive one.
+- **Search dropdown no longer overlaps an already-open agency card**: route/stop/live cards already yielded to an active search, but the agency card independently reimplemented the same "hide while searching" check and missed it — the kind of drift that's caused this same overlap bug more than once. All four now share one `searchOverlayHidesPanel()` check instead of each hand-rolling its own.
+- **Route names with a raw `<>` separator now render as `↔`**: some French feeds (e.g. Divia/Dijon) encode bidirectional termini in `route_long_name` as literal `<>` ("Longvic <> Toison D'or"); displayed as a proper arrow everywhere route labels appear.
+- **Searching a city name now surfaces its transit agency first**: "los ang" led with a Santa Clarita route and dozens of unrelated stops that just happened to contain "Los Angeles" in their name, with LA Metro itself buried after all of them. Agencies whose primary service city matches the query now rank first.
+- **Route Report's interleaved-sub-path shape-corruption check now auto-repairs instead of just flagging**: excises the interleaved detour and bridges the gap directly, self-verifying the result before shipping it — falls back to the original flagged-but-unrepaired points if the fix doesn't fully resolve it. Validated against all 17 known real cases across Nancy Réseau Stan, TBM Bordeaux, and STAR Rennes. Distinct from the duplicate-sequence pattern already caught (Guadalajara, #219/#244). See #246.
+- **Fixed a false-positive in that same shape-corruption check**: the first version flagged any implausibly-long segment relative to a shape's median point spacing, which misfired heavily on densely-sampled feeds (e.g. Rennes: flagged 88% of shapes, all false positives — a long-but-straight segment across a bridge or open area is 8x+ a ~11m median without being corrupt). Now also requires the flagged segment's direction to reverse sharply (>100°) relative to the path's incoming bearing, since real corruption showed a ~174° reversal while every false positive stayed under 34°.
+- **Fixed a second false-positive class, found by validating the detector against live Canada/US agencies (TTC, WMATA, TransLink) before trusting it broadly**: a near-duplicate point (two points ~10cm apart, common where a feed snaps a shape point to a stop location) makes the incoming bearing calculation meaningless, misread as a sharp reversal. Now requires the incoming segment to be at least 2m before trusting its bearing.
+- **Fixed 5 more Nancy Réseau Stan isolated-point shape corruptions** (routes T2 and Corol variants), found via a full sweep for the same single-misplaced-point pattern the general detector can't safely catch — kept as an explicit, narrowly-scoped exception list rather than a general rule, since a broader heuristic came within ~3 points of misfiring on a real TTC terminus loop. One of these (STAN-67$16) needed two adjacent points removed, not one, to fully close the visible gap. Four other sweep candidates matched the noise signature instead and were left alone.
+- **Right-click the map for a small menu**: copy a URL pointing at that exact spot, or jump straight to filing a GitHub issue pre-filled with the location and tagged `user-reported` — both skip having to recenter the map and manually copy coordinates first.
+- **Fixed the local dry-run agency-data preview added in 3.2.6 — it never actually worked.** Its URL match was missing an `atlas/` path segment that's always present in the real request path (`R2_PUBLIC_URL` resolves to a same-origin `/atlas-data` proxy in dev, and route/stop URLs are always built as `<R2_PUBLIC_URL>/atlas/<slug>....json`), so every dry-run preview silently fell through to the real R2 proxy instead — a 404 for any not-yet-published agency, showing as 0 routes/0% coverage on the map with no route card on click, even though the map tiles themselves rendered fine from the separate PMTiles preview.
+- **A direct link to a specific agency's route/stop now defaults to that agency's own current time of day, not the viewer's browser clock**: opening a UK or Mexico agency from Toronto at 11pm local no longer lands on "late/overnight" just because it's late where the viewer happens to be. Requires the agency's timezone, newly captured from GTFS `agency.txt` during processing — existing agencies fall back to the old (local-clock) behavior until they're next reprocessed.
+
+## [3.2.7] - 2026-07-18
+
+- **San Francisco's transit agency now displays as "Muni" instead of "SFMTA"**: SFMTA is the government agency name; Muni is the service brand riders actually use. The shortening logic previously preferred the bare acronym over any compound brand code — now it prefers "Muni" specifically when the name says so, consistent with the "callsign riders actually use" rule already used for BART and AC Transit.
+
+## [3.2.6] - 2026-07-18
+
+- **Local preview now covers a candidate agency's route/stop data, not just its map tiles**: the dev server serves an agency's `--dry-run` process output for any `/atlas-data/<slug>*.json` request when a matching local preview file exists, instead of proxying to R2 — so a brand-new agency's search results, sidebar route cards, and route data all work locally before anything is ever uploaded. Same override-if-present, fall-through-otherwise behavior as the existing PMTiles preview.
+- **Route Report QA tool**: `npm run route-report -- <slug>` prints a route × direction × day frequency table for a processed agency and flags three patterns that have each caused a real published bug before: a terminal headway far above the best headway anywhere on the route (Niagara 301, #241), near-duplicate headsigns on the same route+direction (Niagara typo, #242), and shapes that needed truncation/de-interleaving during parsing (Guadalajara, #219/#244). Reads a `--dry-run` process preview by default so a new feed can be checked before it's ever published; `--live` checks an already-published agency instead. Shape-anomaly tracking is new plumbing added to the parser itself (`shapeAnomalies` on `GtfsData`), not just the report script.
+- **Visually preview a new agency's map tiles locally, before any R2 write**: the local dev server now serves a dry-run-built `atlas.pmtiles` (from `npm run build-pmtiles-incremental -- <slug> --dry-run`) when copied to a well-known path, instead of proxying to production R2 — so a not-yet-published agency's routes render on the real map for a real look before ever going live. Falls back to normal behavior automatically when no preview file is present.
+- **Local dry-run mode for processing a new agency**: `npm run process -- <feed> <slug> ... --dry-run` runs the real pipeline but writes output to `tmp/process-preview/<slug>/` on local disk instead of R2, with no repo files touched — lets a new or unfamiliar feed be inspected (shapes, route counts, headsigns) before publishing. No R2 credentials needed. Formalizes the ad-hoc verification scripts that caught Guadalajara's and Metz's data issues this cycle into an actual documented step.
+- **Wide-area map loading no longer leaves a partial-size canvas visible**: the map now tracks viewport resizing and shows a clear loading state while the first transit networks arrive.
+- **Wide-area map loads now prioritize nearby networks and limit concurrent parsing** so low-zoom views become usable sooner without dropping any eventual agency coverage.
+- **Incremental PMTiles build**: Added `npm run build-pmtiles-incremental -- <slug> [--dry-run]` to add a single new, geographically isolated agency (e.g. Metz, France) into the deployed `atlas.pmtiles` without a full ~467-agency rebuild. Refuses with a clear error if the agency is already published or its bbox overlaps any existing agency (would corrupt the stops layer's density-based tile decisions) — see `docs/ADDING_AGENCIES.md` § Incremental PMTiles Build.
+- **Mi Transporte (Guadalajara) T14B_r1: fixed the deeper shape corruption**: unlike T14B_r2's single bad coordinate jump (already fixed), T14B_r1 had two entire physical paths concatenated under one `shape_id` with colliding, duplicated `shape_pt_sequence` numbers — sorting by sequence alone interleaved both paths into a zigzag. Duplicate sequence numbers now resolve by keeping whichever candidate point is spatially nearest the previously-selected point, so the shape stays on one continuous path. Both T14B shapes now correctly resolve to the same physical corridor traversed in opposite directions ([#244](https://github.com/Civic-Minds/Atlas/issues/244)).
+- **Niagara Transit 301/401: Hospital stop no longer shows misleadingly high frequency**: NRT's feed doesn't consistently use direction to mean outbound vs. inbound — one direction bucket mixed a Port Dalhousie-bound trip with an unrelated Downtown-bound trip under the same generic headsign, so a bus finishing one run and a different bus departing a few minutes later were counted as combined 6-minute service on a route that actually runs every 30 minutes. Per-stop frequency now scopes to each route feature's own shape instead of pooling by headsign alone, which also fixed the same pattern on several other NRT routes.
+- **Niagara Transit 301: removed a phantom "Port Dalhousie" row that never actually went there**: a real short-turn trip was mislabeled with a headsign copy-pasted from the full route (missing one space), so it showed as a near-duplicate westbound destination alongside the genuine Port Dalhousie service. It now shows its real destination instead.
+- **Restored missing YRT trip-lookup data**: `atlas/yrt-trips.json` had silently failed to publish during a past refresh, so York Region Transit's live vehicles had no direction/destination data to fall back on. Re-published via a forced refresh ([#230](https://github.com/Civic-Minds/Atlas/issues/230)).
+- **Mexico coverage hidden from production until validated**: Mi Transporte (Guadalajara) was visible to real users while known data-quality issues in its coverage are still being fixed. Now hidden from the public build (and the external agency directory other tools consume) while remaining visible in local development for QA ([#222](https://github.com/Civic-Minds/Atlas/issues/222)).
+- **Corrupted shapes.txt jumps no longer render as straight lines across the map**: a shape with one badly corrupted coordinate pair — confirmed on Mi Transporte (Guadalajara) route T14B, a ~16.7km jump on an otherwise ~50m-spaced shape — used to draw a long straight artifact across unrelated parts of the city. Shapes are now truncated at the first such implausible, unambiguous jump rather than rendered whole (#219 partial fix — a second, more deeply corrupted T14B shape variant with interleaved duplicate point sequences still needs its own follow-up).
+- **Route cards no longer mislabel every route as "limited service" during an agency's overnight hours**: a route with no service data for whichever period happened to be selected was treated the same as a genuinely short-window/peak-only route. This wasn't agency-specific — any route without 24/7 service, viewed during its own no-service hours, was affected everywhere, not just on the agency (Mi Transporte) where it was first noticed. Routes with no service in the selected period now correctly show nothing for that period instead of a misleading "limited service" label ([#227](https://github.com/Civic-Minds/Atlas/issues/227)).
+- **Frequency-filtered map lines now use the same headway metric for color and visibility**: routes that qualify through effective service data no longer retain a misleading slower tier color.
+- **Live control now uses the same light selected state as the rest of the interface**: the active pill no longer becomes a heavy dark block.
+- **Live vehicle markers are less dominant at city scale**: smaller dots and lighter outlines keep clusters readable without losing hover targets or selected-vehicle emphasis.
+- **Live and map-selection panels no longer overlap**: opening a selected route, stop, or agency card temporarily yields the Live overview panel's space.
+- **Shared panel rows now have one source of truth**: search and Live browsing lists use the same section-divider and whitespace treatment, while card-style rows can explicitly use the shared spaced variant instead of copying one-off Tailwind overrides.
+- **Agency selections now open their cards in Live mode**: choosing an agency from the agency browser no longer closes the panel without showing the result.
+- **Sidebar panels now sit 12px below the search bar**: static and Live panels share the same tighter vertical rhythm.
+- **Live mode now filters the map to live-configured routes**: non-live static routes no longer clutter the live vehicle view, while live routes remain clickable.
+- **Local Live stop cards now receive realtime arrivals**: the dev API registers the stop-departure endpoint instead of silently falling back to static schedule times.
+- **Live stop clicks now open the normal departure card**: upcoming departures remain accessible without restoring the entire Frequency Map interface.
+- **Live map overviews are readable again**: vehicle route-number labels appear after selecting a route instead of overlapping across the entire city.
+- **Routes remain clickable while Live Vehicles is open**: the normal route layers stay visible beneath live vehicle markers so users can open route details from the map.
+- **Live route cards now follow the static route-card layout**: destinations and route identity lead the card, with vehicle status and speed treated as supporting live details.
+- **Live vehicle directions now fill from static route shapes when feeds omit them**: TTC, Edmonton, and Halifax vehicles can show a destination or direction when their realtime metadata is incomplete, while ambiguous matches remain unlabeled.
+- **Live rail coverage prepared for SF Muni and LA Metro**: added vehicles-only polling for Muni Metro and all six current LA Metro rail lines, with each provider's route filtering and API-key contract.
+- **Fixed reference-date detection for feeds with recurring multi-year holiday exceptions**: Emery Go-Round had real, current shape data but published zero routes. The reference-date heuristic's calendarDates sanity-check treats a tight cluster of exception dates as the true service window (the Foothill Transit pattern) — but Emery Go-Round's calendar_dates.txt recorded the same Dec 24/31 holiday closure across three separate years, and averaging across a 3-year span landed the "reference date" a full year in the past, excluding every active trip. The override now only applies when the exception dates themselves span under a year.
+- **Searching a city name now actually moves the map**: Typing a place like "Denver" found matching agencies/routes/stops but the map never moved. Root cause: the fly-to only fired when the query uniquely matched exactly one agency, which silently fails for any city served by more than one operator (Denver alone has RTD Denver and Bustang). Search now checks for an exact city-name match first, independent of how many agencies serve it, so the map reliably flies to a typed place.
+- **Fixed 5 agencies pointing at completely wrong GTFS feeds**: The COMET, GreenLink, CARTA (Chattanooga), Sun Tran, and YCAT had the wrong Mobility Database feed ID configured — each was actually downloading and publishing a different, unrelated agency's data (Bay Area shuttle systems, Flagstaff's NAIPTA, and a Paso Robles, CA operator). Corrected each `feedUrl` to the real agency's current feed, reprocessed, and rebuilt/republished the map tiles.
+- **Fixed the map getting stuck on the wrong place while typing a search**: Typing "Bellevue" could fly the map to Belleville, Ontario and leave it there — a mid-typing prefix ("Bellev") was a unique match for the unrelated Belleville Transit, and once the finished word stopped matching anything, the camera just silently stayed put. The fly-to now waits for typing to pause before evaluating, so a fast-typed word no longer gets stuck on an accidental partial match.
+- **Removed duplicate Wave Transit entry**: `wave-transit` and `wilmington-nc` were the same real agency (Wilmington, NC) under two slugs. The `wave-transit` entry's feed was stale (last updated Feb 2024) and had essentially no processed stop data; `wilmington-nc` is the healthy, actively-refreshed one and is now the only entry.
+- **Agencies and search now know which cities they actually serve, derived from real stop data**: Regional agencies (King County Metro, Sound Transit, SEPTA, WMATA, and 400 others) previously had at most one hand-picked city attached, so searching a city they genuinely serve but weren't tagged with (e.g. "Bellevue" for King County Metro) found nothing. Each agency's stop coordinates are now matched against a North America city gazetteer to derive up to 10 cities it actually serves, ranked by stop density — search matches against the full list, not just the display name. Also caught 5 agencies (COMET, GreenLink, CARTA Chattanooga, Sun Tran, YCAT) whose published stop data was actually a different, unrelated agency's feed — tracked separately for a data fix.
+- **Bare/branded agency names now show their city in the agencies list**: Metra, TriMet, WMATA, MARTA, SEPTA, Sound Transit, GoTriangle, and ~45 other agencies with brand-only names (no city or region in the name itself) were indistinguishable from other agencies once grouped only by state/province. Added the existing `"(City)"` name-suffix convention to each, which the agencies list already renders as a subtitle.
+- **Abbreviated agency names now keep their place instead of dropping it**: AVTA, GET, MTD, VTA, BART, and other long-legal-name agencies collapsed straight to a bare acronym with no city — losing the disambiguating info entirely (two unrelated agencies both landing on "GET" with nothing to tell them apart). The place buried in the legal name is now recovered and shown alongside the acronym.
+- **Agencies list no longer needlessly abbreviates names that fit**: Edmonton Transit Service, Sonoma County Transit, Suffolk County Transit, and a handful of others were collapsing to a bare acronym (ETS, SCT, ...) even though the full name fit the row fine. Now only names that are genuinely too long, or a small set of acronyms more recognizable than their expansion (BART), get shortened.
+- **Map tile fetches now retry on rate-limit/server errors**: A single 429 or 5xx from R2 on any map tile request used to fail silently with no retry, which could blank out the whole map until a manual page reload. Now retries with backoff, matching how the backend pipeline already handles this.
+- **Fixed two agencies with no routes at all**: Dutchess County Public Transit and Fredericksburg Regional Transit had real, valid GTFS data but published zero route features. Dutchess: the reference-date picker preferred a near-empty 2-trip placeholder block over the real 585-trip dominant service just because it started later. Fredericksburg: route shape selection only considered Monday/Saturday/Sunday, silently dropping the agency's actual Tuesday–Friday-only service. Both now publish real routes (62 and 16 respectively).
+- **Routes/coverage badge now fades instead of disappearing instantly** when switching out of the map view (e.g. into Fares).
+- **PMTiles coverage check false positives fixed**: The sparse 9-point sampling grid could miss real route geometry for agencies with only a few routes clustered in part of their bbox (confirmed on Laredo, Siskiyou, Lassen — all render correctly on the map, the checker just wasn't looking in the right tiles). Now samples every tile in an agency's bbox up to a cap, instead of fixed corner/edge points.
+- **Laredo (El Metro) location data corrected**: `center` was off by over a degree (pointed south of the actual service area) and had no `bbox`, which was also the root cause of the false-positive coverage failure above.
+- **Duplicate agency removed**: Grand Valley Transit (Mesa County, CO) was listed twice under different slugs, pointing at the same feed — removed the less complete duplicate.
+- **Continent specialty agencies**: Added JFK AirTrain, Staten Island Ferry, NYC Ferry, Roosevelt Island Tramway, Guadalajara Mi Transporte, Cheyenne Transit Program, Rapid Transit System (Rapid City), and Sioux City Transit — NYC water/airport specialties, first Mexico coverage, first Wyoming agency, and Iowa/Nebraska border.
+- **Seattle specialty agencies**: Added Seattle Center Monorail and Snoqualmie Valley Transportation (SVT). Seattle Streetcar is configured but still pending — its feed is King County Metro's full multi-agency GTFS and needs agency-scoped filtering the pipeline doesn't support yet ([#214](https://github.com/Civic-Minds/Atlas/issues/214)), so it won't appear on the map until that's built.
+- **PMTiles builds**: Retry throttled R2 artifact downloads, refuse incomplete uploads (with an explicit opt-out for agencies still pending their first data publish), and fall back to rclone when Node's large-file R2 transport fails.
+- **Map rendering gaps closed**: Rebuilt and republished the map tiles, fixing dozens of agencies (including GTrans, CTA, Metra, MARTA, Metrolink, and most of the LA/Southern California additions) that had correct data in search and the sidebar but drew nothing on the map — the aggregate tile file had gone stale relative to the agency data. A small number of agencies still have real gaps under investigation (tracked separately, not a tile-staleness issue).
+- **SoCal secondary agencies**: Added Imperial Valley Transit, Kern Transit, Banning Connect, Beaumont Transit, Corona Cruiser, Thousand Oaks Transit, Simi Valley Transit, Camarillo Area Transit, Basin Transit (Morongo Basin), Needles Area Transit, Arvin Transit, Moorpark City Transit, Valley Express, Laguna Beach Transit, and Taft Area Transit — fills major IE / Imperial / Kern / Ventura / high-desert / OC city gaps outside the big regionals.
+- **Southern California coverage**: Added Torrance Transit, Beach Cities Transit, Carson Circuit, and Gold Coast Transit District, repaired Metrolink's missing trip-to-shape links, and expanded SunLine bounds so regional Route 10 appears through San Bernardino.
+- **Limited-service route branches**: Keep clustered short-turn schedule gaps out of normal route-card and route-list headways so sparse service is not presented as frequent service.
+- **Recent searches**: Picking a route from search results now also saves the query to Recent searches (previously only Recent routes updated), so Recent searches no longer shows a stale, older query after a route pick.
+- **PMTiles coverage check**: New `npm run verify-pmtiles-coverage` compares every agency in `index.json` against the deployed PMTiles and fails loudly on any agency with zero route features rendered — catches a `build-pmtiles`/upload step that was silently skipped (confirmed 43 agencies affected, including GTrans, CTA, Metra, MARTA, and Metrolink, all present in search/sidebar with real data but invisible on the map).
+- **Live vehicle API types**: Keep the no-TTC shape fallback typed like the TTC shape map so API typechecking succeeds for all agencies.
+- **Live Vehicles resilience**: Bound optional archive, shape, and sidecar lookups so a stalled enrichment request cannot make the live feed endpoint time out.
+- **Search typing lag**: Keep the search field on immediate local state and defer full route/stop scans (plus cache geometry bboxes) so keystrokes paint without waiting for multi-agency search work.
+- **LA Metro rail**: Ingest the separate Metro Rail GTFS as a supplemental feed so A/B/C/D/E/K lines appear with bus, not bus-only mdb-29.
+- **Agency list headways**: Agency card route rows use the same list display cadence as Recent/Suggested (best active-period destination headway across branches), not a filter-oriented min-stop value.
+- **Near You / period headways**: When a period summary is explicitly null (no service), stop falling through to raw hourly mins that can be bunching spikes (e.g. "every 2 min" overnight).
+- **Route-service metrics**: Keep route lists, nearby/transfer cards, route grouping, stop service, and live scheduled comparisons on the active period’s canonical display cadence instead of stale day, branch, or all-day values.
+- **Route suggestion hierarchy**: Reduced stacked dividers in Recent and Suggested routes so section spacing carries more of the grouping.
+- **Map selection hint**: Align the zoom-in notice with the bottom map status pills so it reads as part of the same map chrome.
+- **Map zoom controls**: Added +/- buttons for zooming the map, since scroll/pinch was the only way to zoom before.
+- **TTC streetcar live gap status**: Fixed shape-matching that silently degraded to "no data" on routes with multiple branch/diversion shapes — position projection now interpolates along the nearest segment instead of snapping to the nearest vertex, and picks whichever shape candidate vehicles actually match instead of assuming the longest one.
+- **Live Vehicles list dividers**: Vehicle and route rows now use the lighter spacing already applied to the agency picker, instead of a heavy border on every row.
+- **Live feed errors**: "Feed unavailable" now shows the actual reason (timed out, unreachable, unreadable data) and which agency, instead of one generic message for everything. A feed that's been down for multiple retries in a row says so instead of implying it'll definitely recover. A partial failure (trip delay data down but positions still working) no longer degrades silently.
+- **Recently seen at this stop (TTC)**: The stop card's live section now also shows recently observed passages from GPS position history, alongside the predicted arrivals — "what actually happened" next to "what the feed predicts."
+- **Map cursor**: Hovering a clickable stop or route now shows a pointer instead of the default cursor.
+- **Map control spacing**: Tightened the gap between the zoom buttons and the locate button to match the spacing already used elsewhere in the same corner.
+- **Search suggestions dividers**: "Recent searches" was the only section header with its own trailing divider, so a single recent search read as boxed in between two lines close together. All section dividers now come from the same side (leading, above the next header) and are inset from the panel edges instead of full-width.
+- **Recent search text weight**: A recent search query was rendered at the heaviest available weight, heavier than even route codes in the same panel. Brought down a step to match its role as a label, not a code.
+- **Agency search results**: Search and the agency card now use the same name/place logic as the agency browse list — a place shows next to the name only when the name doesn't already say it, instead of repeating the same region on every row (searching "California" no longer shows "California" 78 times in a row).
+- **Agency name mislabeling**: Any agency whose name contains "Municipal" or "Community" (e.g. Gardena Municipal Bus Lines) was mislabeled "SFMTA" in route search results — a substring check meant to catch San Francisco's "Muni" brand matched "muni" inside unrelated words. Every short bare-acronym check in the same function (VTA, BART, MBTA, and others) had the identical risk and is now fixed the same way, plus "DDOT (Detroit)" and "QLine (Detroit)" no longer both collapse to their shared city name. A regression test now checks all 438 real agencies for this class of bug automatically.
+
+## [3.2.5] - 2026-07-16
+
+- **Live provider compatibility**: Normalize compact archived GTFS-RT records so downstream consumers receive the documented Atlas contract.
+
+## [3.2.4] - 2026-07-15
+
+- **Live replay build compatibility**: Fixed the Node-handler URL parsing type so the replay API builds successfully in Vercel.
+
+## [3.2.3] - 2026-07-15
+
+- **Live provider response handling**: Atlas canary snapshot and replay endpoints now return correctly through Vercel’s Node function interface.
+
+## [3.2.2] - 2026-07-15
+
+- **Feed data-quality review**: Agencies with repeated GTFS problems now get a temporary verification notice when a new feed arrives, without carrying old feed-specific corrections forward.
+- **Live provider runtime compatibility**: Fixed canary snapshot and replay APIs failing on Vercel’s Node-style request headers.
+- **Live provider response handling**: Updated canary snapshot and replay APIs to write responses through Vercel’s Node function interface.
+
+## [3.2.1] - 2026-07-15
+
+- **Canary live-data contract**: Atlas R2 GTFS-RT snapshots now carry a versioned normalized envelope, and TTC trip updates join the existing canary archive without expanding route coverage. Vehicle snapshots retain operational fields needed by downstream consumers.
+- **Canary snapshot API**: Added an R2-backed `/api/live-snapshot` endpoint with versioned records, route filtering, freshness states, and explicit unavailable responses for downstream consumers.
+- **Canary snapshot lookup**: Paginated live R2 listings so the latest snapshot remains discoverable after a high-volume day.
+- **Canary replay API**: Added bounded `/api/live-replay` access so downstream consumers can validate the existing cohort against historical Atlas snapshots without private R2 access.
+- **Replay pagination**: Added deterministic `offset`/`limit` paging for ranges containing more snapshots than one response.
+- **Canary verification command**: Added `npm run verify:live-contract` to check deployed snapshot freshness, schema, and replay availability before coverage expansion.
+- Give route search names more room so long route destinations are easier to scan.
+- Stack route metadata below the route name so agencies and frequencies remain readable.
+- Exclude malformed Niagara 209/216 short-turn records so published route frequencies are not overstated.
+- Link corrected-data explanations to their technical GitHub issue for deeper context.
+- Keep Niagara’s daytime and nighttime route numbers separate so their frequencies are not combined.
+- Scope stop-level headways to each route branch so shared stops do not make routes appear more frequent than scheduled.
+### Fixed
+- **Live vehicle feed**: Restored the Live map on Vercel by handling its Node-style request headers in the serverless API.
+- **Live agency picker**: Replaced heavy row dividers with lighter spacing so the coverage list reads as grouped places.
+- **Corridors mode**: Restored the From/To station panel so the Corridors header button opens a usable route comparison experience.
+- **Stop search results**: Made stop names the primary readable label, moving stop codes and agency metadata below and beside them.
+- **Place search navigation**: Agency results now move the map immediately, even while map layers are still initializing.
+- **Header controls**: Kept Live and Corridors beside Search as a single left-side group, separate from the Filters controls.
+- **Corridors navigation**: Hid the unclear network-analysis mode from primary navigation while preserving the underlying tool for future refinement.
+- **Header spacing**: Kept Live immediately beside Search instead of letting the flexible search group push it toward the Filters controls.
+- **Search navigation**: Unique city and agency queries now move the map automatically while keeping route and stop results available.
+- **Search result layout**: Reduced divider noise and constrained metadata so route and stop results remain readable on narrow screens.
+- **Search results redesign**: Unified in-area and elsewhere results into one ranked list, standardized the visible cap at 10, and added a shared Show more results control.
+
+## [3.2.0] - 2026-07-14
+
+### Added
+- **Secondary cities batch (+13)**: Sioux Falls SAM, Wilmington Wave, Yakima, Grand Forks CAT, St. George SunTran, Grand Valley Transit, Greeley-Evans GET, Greater Bridgeport Transit, Davenport CitiBus, Bettendorf Transit, Dubuque The Jule, Pocatello Regional Transit, and Albany GA Transit — fills midsize metro holes (incl. first SD coverage).
+- **Santa Cruz METRO**: Added 27 routes and 754 stops covering Santa Cruz, Capitola, and Watsonville.
+
+### Fixed
+- **Route service metrics**: Route cards, filters, sparklines, shared sections, stop panels, and live scheduled comparisons now project named metrics from one canonical route service summary, preventing conflicting headways across surfaces.
+- **Route panel identity consistency**: Agency cards, selected routes, stop panels, nearby routes, and disambiguation now use the shared route-facts identity and display fallbacks.
+- **Route identity consistency**: Search, Recent routes, and route suggestions now derive route names, agency identity, and keys from one shared route-facts record.
+- **Route search recents**: Selecting a route now records it only in Recent routes, where its shared route metadata provides the name and agency consistently.
+- **University / campus-adjacent systems (+10)**: U-M Transit, NCSU Wolfline, Clemson CATbus, CityBus Lafayette, Duke Transit, Streamline (Bozeman), Athens OH, Connect Transit (Bloomington–Normal), DeKalb Public Transit, and Radford Transit — public fixed-route feeds with working GTFS.
+- **Frequency audit reproducibility**: The scheduled-frequency audit now accepts a configurable GTFS directory and seed so findings can be rerun consistently.
+- **Variant shared sections**: Selecting a lettered route family now highlights only that family’s combined corridor segments on the map.
+- **Sparse route sparklines**: Hourly headway points now require three departures, preventing isolated departure clusters from appearing as frequent service.
+- **Stop churn visibility**: Weekly refreshes now log agency stop additions, removals, renames, moves, and route-membership changes against the prior snapshot.
+- **Branched route sparklines**: Route cards now show labeled, stacked branch contributions when branches combine into more frequent shared-section service.
+- **TTC vehicle status**: TTC vehicles now show an observed headway gap instead of “No data” when the feed cannot be joined to scheduled trips.
+- **LRT filter parity**: Map rendering now applies the same Minneapolis METRO LRT classification as the sidebar.
+- **City search aliases**: Searches now surface agencies by known city names even when the agency's display name is an acronym or legal name without the city.
+- **LRT mode classification**: Recognized route_type=0 rail feeds across Calgary, Edmonton, Los Angeles, Phoenix, San Diego, Minneapolis, and Montreal so their rail lines no longer appear as streetcars.
+- **Responsive search bar**: The header search field now uses available space in medium-width browser windows instead of staying at a narrow fixed width.
+- **Agency mode labels**: Agency cards now distinguish streetcars from virtual LRT routes instead of showing both as “Light Rail.”
+- **Headway consistency**: Agency cards and Near You now use the same active-period route headway shown on route cards instead of filter-oriented minimum-stop values.
+- **Recent route headways**: Recent routes now matches the active-period headway shown on the route card instead of retaining an all-day value.
+
+## [3.1.1] — 2026-07-13
+
+### Added
+- **Security Policy (`SECURITY.md`)**: Added a standard vulnerability disclosure policy pointing to `ryan@ryanisnota.pro`.
+
+### Changed
+- **API Rate Limiting**: Added in-memory rate limiting to `/api/live-vehicles` and `/api/history-adherence` serverless endpoints to protect against client hammering and reduce R2/upstream fetch costs.
+
+## [3.1.0] — 2026-07-11
+
+### Added
+- **Public agency directory (`atlas/agencies.json`)**: `refresh.ts` now publishes a small read-only agency index (slug, name, region, center, bbox — no `feedUrl`/pipeline-internal fields) alongside the per-agency artifacts. Lets external consumers discover an agency's slug instead of hardcoding a per-agency map (the gap that blocked Transit-Stats#152's "multi-agency for free" plan). New `pipeline/agencyIndex.ts` + 4 unit tests. Staged agencies excluded.
+- **TERMS.md**: basic terms of service — acceptable use / anti-scraping clause, and an accurate disclosure that the only location data Atlas ever touches is the optional client-side "locate me" button (never sent to or stored on any server). Self-drafted starting point, not a substitute for legal review.
+- **Stop search in main search bar ([#162](https://github.com/Civic-Minds/Atlas/issues/162))**: Users can now search for stops by name or stop code in the main search bar. Typing a stop name or code displays the matching stops in the search panel (grouped by in-area vs elsewhere, showing the serving routes and agency), and selecting a stop flies the map to that stop's location and opens its StopCard.
+- **Per-stop metadata export (`atlas/{slug}-stops-meta.json`)**: the pipeline now derives stop-level facts from each feed — routes served (stop_times→trips→routes join) and direction of travel (headsign-prefix majority, asserted only at ≥90% agreement, vetoed by contradicting side-of-street name suffixes) — and publishes them to R2 alongside the existing artifacts. Official stop names are exported verbatim; the file is a read-only facts layer for external consumers (first consumer: Transit Stats stop resolution). New `pipeline/stopsMeta.ts` + 9 unit tests; URL derivable via `getAgencyArtifactUrls().stopsMetaUrl`. This was implemented but never actually published — `atlas/ttc-stops-meta.json` 404'd on R2 until today. Published for real now (9,378 stops, 1.33 MB) via a new scoped one-off (`scripts/publish-stops-meta-only.ts`) that derives and uploads only this artifact from a local GTFS copy, without touching the fresher (July 6) live geojson/route data a full reprocess would have overwritten. Closes Civic-Minds/Atlas#161.
+- **Live headway on route cards**: Live route cards now show "Every ~X min · scheduled every Y min" — observed headway computed from gaps between predicted arrivals across all stops, compared against the frequency data for the current day and hour. Answers "is the promised frequency actually being delivered right now?"
+- **Per-vehicle speed in Live**: the live API now surfaces GTFS-RT speed (km/h) and per-vehicle timestamps; vehicle rows show current speed. Groundwork for corridor speed analysis.
+- **TTC streetcar position archive**: the GTFS-RT archiver Worker now snapshots streetcar positions (id, route, lat/lon, speed, bearing) every minute to R2 (`positions/ttc/`), 30-day retention — sampling must sit well under the ~5-min headway to capture gaps and bunching. Trip-delay archiving stays at 5-minute cadence. Enables "how slow are streetcars, by route and hour" analysis. Protobuf parser extended to decode floats.
+- **Lettered route variant grouping**: variant families (GRTC-style 1/1A/1B/1C) are treated as one route — the route card folds all variants' branches into the destinations list and notes the combined frequency on shared sections. Conservative detection: numeric base + single letter, same agency, 2+ members.
+- **Streetcar speed analysis script**: `scripts/streetcar-speeds.ts` computes measured commercial speed (stops included) by route and hour from the position archive. First data: 504 King averages 6.7 km/h midafternoon.
+- **Measured headway analysis script**: `scripts/streetcar-headways.ts` reconstructs delivered headways (bunching and holes included) by projecting archived positions onto route shapes and timing midpoint crossings per direction.
+- **Live arrivals on stop cards**: stops served by live-capable agencies show a "Live at this stop" section — next predicted arrivals plus the current observed gap ("Coming every ~7 min right now") via a new `/api/live-stop` endpoint.
+- **Full TTC streetcar network on Live Vehicles**: all 10 streetcar routes (501–512) now show on the Live map via a new `vehiclesOnly` config tier — no anchor-stop curation needed. Delay badges work from the TTC's explicit per-stop delay values. Adherence card and History remain scoped to fully configured routes.
+- **Tier 1–2 coverage**: Springfield MO (City Utilities), Evansville METS, Kenosha Area Transit; Brownsville Metro processed to R2. Tier 1–2 backlog exhausted for public GTFS.
+- **Fixed-route batch (+24)**: Ben Franklin, Asheville, Bloomington, Athens ACC + UGA, Blacksburg, CATA State College, CyRide/Iowa City/Coralville/CAMBUS, Lawrence–KU, SMTD Springfield IL, Topeka, BARTA, COAST NH, Advance Transit, CCTA/GMT + Marble Valley VT, Bis-Man, Bangor, Brandon MB, Juneau, Annapolis. Fills college-town frequency + VT/NH holes.
+- **Northern Canada**: Yellowknife Transit (NWT) and Whitehorse Transit (Yukon).
+
+### Changed
+- **Search results polish**: hovering a result spotlights that route on the map (others fade); truncated headers read "showing 10 of N" instead of a bare match count; lettered variant families collapse to one row ("1 · 4 variants") unless a specific variant is typed.
+- **Agency card filter split**: drop redundant “Matching your filters” all-caps header — the outside-filters notice is enough.
+- **Pittsburgh branding**: Port Authority of Allegheny County → Pittsburgh Regional Transit (PRT); slug unchanged.
+- **Browse filter chips**: selected All/Live/History/region chips use a clear dark border + stronger fill (still not solid black pills) so active state is obvious.
+- **Browse agency long names**: legal names + brand codes show the short callsign (BART, SFMTA, ETS); remaining long primaries compact via `shortenAgencyName`; full registry name on hover `title`.
+- **Shared card notices**: outdated / corrected / outside-filters copy all go through `CardHelpNotice` + style tokens (`CARD_NOTICE`, `CARD_NOTICE_ACTION`, `CARD_NOTICE_FOOTER`, `CARD_NOTICE_INLINE`).
+- **Outside-filters routes control**: “N more routes (outside filters)” now matches the schedule help-notice style (sentence case + Show/Hide →) instead of a loud uppercase section label.
+- **Agency list label standard**: dark = agency name; light = place/sector only when not already in the name. Acronyms never as secondary (`Edmonton Transit Service (ETS)` → `Edmonton Transit Service`; `BC Transit (Kelowna)` → `BC Transit · Kelowna`). Registry name for Edmonton set to full “Edmonton Transit Service (ETS)”.
+- **exo sector labels**: Six Quebec exo feeds no longer share the bare name “exo” — labeled by sector (Trains, La Presqu’île, Sud-Ouest, Le Richelain–Roussillon, Laurentides, Terrebonne-Mascouche) so browse/search can tell them apart.
+- **Browse agencies sort**: Region sections and agencies within them are A–Z (was raw `index.json` order, so Ontario always led).
+- **Info panel subpage header**: Back is arrow-only; page title sits beside it (not on the button) so “Agencies” reads as the current page, not a back destination. Browse title is “Agencies” not “Data”.
+- **Browse agencies chips/badges**: Live/History badges and selected filter chips use subtle grey tokens (`accent-bg` / `bg-btn`) instead of solid near-black pills.
+- **Region multi-select**: Browse agencies location chips (province/state) can be multi-selected — e.g. Alberta + British Columbia together. Empty selection still means all regions.
+- **Agency list labels**: Browse/filter lists render `Name (qualifier)` as `Name · qualifier` (e.g. `BC Transit · Kelowna`, `MiWay · Mississauga`) so place vs acronym parentheses share one pattern; long legal names collapse to the short brand (BART, SFMTA).
+- **Agency list scrollbar**: Browse agencies scrolls only the list — search and filter chips stay fixed so the scrollbar no longer runs beside them.
+- **Live Vehicles empty state**: Replaced the dead-end "Zoom in to start tracking" message (and the static city chips) with a clickable list of live-enabled places — clicking one flies the map to that agency and starts tracking immediately.
+- **Day filter chip indicator**: Always show the active dot indicator on the Day filter chip to reflect that a day-of-service filter is consistently active (Weekday/Saturday/Sunday).
+- **InfoPanel layout**: Restored the "Feedback" header in the Info panel above the "Send feedback" button.
+- **Stop card routes resolution ([#163](https://github.com/Civic-Minds/Atlas/issues/163))**: Extracted the routes serving a stop directly from the stop-level properties (`routesByAgency` populated in the single-pass stop scanner) instead of performing a fragile double-scan GeoJSON join over all map-rendering features.
+- **MapCanvas split into layer hooks**: corridor, history, and live-vehicle overlay effects extracted to `src/components/Interval/map/` hooks (~360 lines out of MapCanvas); dead marker refs removed.
+
+### Fixed
+- **Stop card directions ([#164](https://github.com/Civic-Minds/Atlas/issues/164))**: Derived and stamped stop direction of travel (majority prefix/suffix from stops-meta) onto the exported stops GeoJSON features in the pipeline (`process-core.ts`), and updated the StopCard UI to append the direction suffix to the title (e.g. "Spadina/Dundas — Northbound").
+- **Dismiss search panel on outside click ([#138](https://github.com/Civic-Minds/Atlas/issues/138))**: Added a document-wide `mousedown` event listener to blur the search input and dismiss the search results/suggestions dropdown when clicking outside the search bar.
+- **Unit tests for stats day-scoping**: Updated the `activeDay` check in `useIntervalStats.ts` stats calculation to allow features with `undefined` day properties (aligning with `passesRouteFilter`), fixing 8 failing stats unit tests.
+- **Map filters were silently dead**: MapLibre rejected the routes-layer filter because legacy-syntax clauses (`['==', 'agencySlug', …]`, `['in', string, …]`) mixed with expression-syntax ones made it classify the whole filter as legacy and fail validation — so frequency, mode, day, and search filtering never applied to the map (only the sidebar). All clauses are now unambiguous expressions (`index-of` for substring matches, `['get', …]` equality). Verified: ≤10 min filter drops downtown Toronto from 115 rendered routes to 39; console filter errors gone.
+- **Anchorage (and dir-1-only) sparklines**: route-card sparkline no longer hard-requires `directionId === 0`. Feeds that only encode dir 1 (People Mover 31/40/41/51, etc.) now show hourly headways.
+- **Live vehicle hover tooltip**: reimplemented via manual deck picking driven by MapLibre mouse events (deck canvas stays inert, so gestures keep working); pick radius now accounts for retina displays. Tooltip shows speed and no longer hides for vehicles without delay data.
+- **Streetcars labeled "Bus"**: vehicle rows now use the route's mode (route_type) — Streetcar/Train/Ferry/Bus.
+- **Agencies now load on shared URLs**: opening a link to a new area loads that area's agencies immediately — previously nothing loaded until the map was panned.
+- **Route count badge accuracy**: viewport membership is now geometry-verified (bbox intersection alone counted L-shaped routes that never enter the view) and scoped to the active service day (weekday-only routes no longer count on weekend views).
+- **Live map pan/zoom lock**: the deck.gl vehicle canvas grabbed pointer events whenever vehicles were on screen, swallowing all map gestures. Canvas is now always inert (dots had no click behavior — only a cosmetic hover highlight is lost). With the full streetcar network this froze the map permanently in Toronto.
+- **Headway filtering fallback**: derived time-period headways from hourly data (`headwayByHour`) when the selected period is not pre-computed (e.g. for `late` or `overnight` periods on older agency data runs). This prevents routes with high-frequency service from being hidden under period filters (fixes [#146](https://github.com/Civic-Minds/Atlas/issues/146)).
+
+## [3.0.14] — 2026-07-08
+
+### Changed
+- Frequency/day/period filters now drive from URL (active view) with LS fallback for prefs. Survives refresh, shareable links, back/forward. Agencies remain LS-only.
+
+### Fixed
+- Test 'should filter by worst-direction period headway' updated for new precedence (headBy/min over worst) after RGRTA filter logic change.
+
+## [3.0.13] — 2026-07-08
+
+### Added
+- **Pipeline override audit**: Clears `issueUrl` when upstream publishes a new GTFS file; logs when excluded routes may no longer need overrides (`excludeRouteShortNames` kept until verified).
+- **Unambiguous search Enter-to-select**: Pressing Enter in the main search bar auto-selects the row when exactly one agency or route result is visible.
+- **In-app Corrected Data details**: Clicking "Learn more →" on data override notices opens a dedicated in-app drawer explaining the data corrections made.
+- **London Transit route names preprocessor**: Added a pipeline preprocessor transform (`synthesizeLondonRouteNames`) to dynamically extract descriptive route long names from trip headsigns for agencies like London Transit that publish redundant names.
+
+### Changed
+- **Card Help notices alignment**: Aligned styling, font size, and placement of "We corrected this data" with the outdated-schedule notice under a unified `CardHelpNotice` component.
+- **History eligibility criteria**: Filtered historical data exploration to agencies meeting `agencyQualifiesForHistoryExplore` threshold.
+- **Sidebar search component modularization**: Refactored `SidebarControls.tsx` to extract search suggestions and result list rendering logic into self-contained `SearchSuggestionsPanel` and `SearchResultsList` components.
+- **Search result layouts**: Removed border separators between individual rows in the search suggestions and matched results panels, and removed the " — refine search" suffix from truncated labels.
+- **Search results styling refinement**: Shortened agency names in the search matches list using `shortenAgencyName` and refined spacing/margin layouts between the routes and agencies categories.
+- **Mobile layout refinement**: Hid Live/Corridors toggle buttons on mobile viewports to declutter the header, allowing the search bar to stretch across the full remaining screen width. Moved map filter chips (Frequency, Day, Period, Modes) to a mobile-only core filters section within the Settings panel. Hid bottom map routes count and coverage badges on mobile.
+- **Branch hover debouncing**: Added an intentional 80ms delay before highlighting branches on hover, and 50ms before clearing, to completely prevent rapid layout oscillation/map flickers when positioning the mouse near row boundaries.
+- **Rockford**: `excludeRouteShortNames: ["Test"]` — junk upstream route stripped at process time (Closes [#144](https://github.com/Civic-Minds/Atlas/issues/144)).
+- **Rockford**: Switched `feedUrl` to official `rmtd.org/rmtdgtfs/GTFS_FILES.zip` (valid through Oct 2026); removed Test override — upstream no longer publishes that route.
+- **Niagara Transit**: switched `feedUrl` to current http://68.71.24.110/gtfs/GTFSExport.zip (via transit.land; previous mdb mirror was stale 2021 data with legacy RED/BLUE).
+- **Agencies**: Cascades East Transit, Mountain Transit (Big Bear Lake), RoadRUNNER Transit (Las Cruces), EZ Rider, San Angelo Transit, Brownsville Metro; Roswell/Hobbs (NM), Longview/Texarkana/Fort Bend (TX), Lake Charles/Terrebonne/Tangipahoa (LA); Space Coast, Martin County, Indian River, Collier CAT (FL).
+
+### Fixed
+- **Help notices**: single top border when "outdated schedule" + "We corrected this data" stack (no line between, e.g. Niagara).
+- **Outdated schedule notice**: reworded to "This schedule may be outdated and ended Jan 9, 2021." (no brackets or em dash).
+- **InfoPanel backdrop**: made non-blocking (`pointer-events-none`) + outside-click via listener so background elements (e.g. other "Learn more" buttons in cards) receive proper hover cursors and interactions while panel is open.
+- **Period filter**: prefer minStopHeadwayByPeriod or headwayByPeriod over worstDirectionHeadwayByPeriod for "15 min" etc filters (so routes with good sections or headBy show even if one direction is worse; fixes RGRTA 8/16/22 etc not appearing).
+- **Direction filter**: removed hard-coded directionId===0 restriction from passesRouteFilter and tileFilter (and agency list) so routes with 15min service in one direction (e.g. RGRTA 22) are visible under tight frequency+period filters. Both directions now considered; overlapping geometry accepted for accuracy.
+- **Niagara Transit**: `excludeRouteShortNames: ["RED", "BLUE"]` + display name updated; no longer operates former WEGO Red (rebranded 116/216) or Blue (to Niagara Parks WEGO). Stale entries hidden via overrideNote.
+- **Empty routeShortName routes** (e.g. 145): changed `routeShortName &&` guard to `!= null` in process-core.ts so stop headway loop runs; headwayByHour, stopHeadways, stopOrder etc. now compute.
+- **Pipeline**: Post-merge tier refinement uses `headwayToTier()` instead of undefined `HEADWAY_TIERS`.
+- **MVTA**: Agency label (`MVTA` not `VTA`); 4FUN corridor title and headsign cleanup; MOA/MSP/TS/FUN acronyms; route/stop cards skip direction dividers for simple bidirectional pairs.
+- **RMTD**: `shortenAgencyName` maps Rockford Mass Transit District before generic "Mass" stripping.
+- **Agency card**: Removed period from header and close button; dismiss via outside click, Escape, or map click.
+- **Data override link**: Shown only when `issueUrl` is set — card stops linking after weekly refresh clears the URL while exclusions remain.
+- **Stale schedule help**: Route card "Learn more" opens in-app outdated-schedule explainer instead of GitHub docs; help panel shows when Atlas last fetched the feed (`lastRefreshedAt`, backfilled from last weekly refresh for existing agencies). Expired-feed agencies get `websiteUrl` from GTFS with a "Check current schedules" link in the help panel. Next refresh countdown reads `scheduleCron` from git and `lastCompletedAt` from R2 (`atlas/feed-refresh-meta.json`, no extra commits when feeds are unchanged). Info panel **Schedule sources** view under Data; About footer shortened to one line plus refresh dates.
+
+## [3.0.12] — 2026-07-07
+
+### Fixed
+- **Vercel deploy**: Frontend day-type imports moved to `shared/dayTypes.ts` — `types/` is `.vercelignore`d so `types/gtfs` was missing at build time.
+- **Pipeline refresh**: Correct `headway-utils.ts` import path for `shared/config`.
+
+## [3.0.11] — 2026-07-07
+
+### Changed
+- **Agency route list**: Split matching vs other routes when frequency filter is active; show filter-grade headways; header summary (`12 routes · 8 match ≤60m`); collapsed "outside filters" section.
+
+### Fixed
+- **Frequency filter vs route card** ([#143](https://github.com/Civic-Minds/Atlas/issues/143)): `worstDirectionHeadway` no longer crosses service days — weekend headways were hiding weekday 60-min routes (e.g. TARTA 15) at ≤60m while the card showed "every 60 min".
+- **CI deploy**: TypeScript errors in SidebarControls, useIntervalStats, effectiveHeadway, and searchResults tests.
+
+## [3.0.10] — 2026-07-07
+
+### Changed
+- **Agency card mode filters**: Replaced the prose blurb (`subway and light rail, 23 express routes`) with tappable pills that filter the route list (Subway · 4, Light rail · 12, Express · 23, etc.).
+- **Corridors mode**: Header **Corridors** toggle (like Live); self-contained From/To panel on the map — no longer hijacks the main search bar; shares global day filter; stop card **Corridors from here…** entry.
+- **App drawer hidden**: Removed waffle menu from header again; History/Fares remain URL-only until ready (reverts [#115](https://github.com/Civic-Minds/Atlas/issues/115)).
+- **Near You panel**: Removed close button; panel clears when location is dismissed from the map.
+- **Near You headways**: “Every X min” respects the selected day and period filter (`headwayByPeriod`), not midday headline only.
+- **Near You loading**: Shows spinner while agency GeoJSON loads instead of “No routes within 500 m”.
+- **Near You dismiss** ([#139](https://github.com/Civic-Minds/Atlas/issues/139)): Panel closes on outside click (same pattern as filter chips).
+- **Search suggestions**: Section headers match content — Recent searches / Recent routes / Suggested routes (or agencies in Fares); both recent and suggested routes can show together.
+- **Live Vehicles**: Vehicle detail rows use fleet labels or ordinals instead of raw UUIDs; route list drops redundant "Route N" suffix; multi-agency headers match suggestion section style.
+- **Panel tokens**: Shared `PANEL_TITLE_BAR`, `PANEL_SECTION_HEAD`, `PANEL_CARD_HEADER`, etc. in `styles.ts`; Live Vehicles, Near You, and search suggestions use them.
+
+### Fixed
+- **CI / deploy**: Fix TypeScript errors blocking `tsc` (search result types, viewport bounds, headway-by-hour).
+- **Map route deselect** ([#141](https://github.com/Civic-Minds/Atlas/issues/141)): Unified map click handler; paint resets synchronously on clear; fix invalid MapLibre opacity expression that left highlight stuck after deselect.
+- **MiWay express headsigns** ([#142](https://github.com/Civic-Minds/Atlas/issues/142)): Strip direction-only express labels (`135 E Express Eglinton Exp`) so route cards show WESTBOUND/EASTBOUND without garbled "to W Express Eglinton Exp" rows.
+- **Route card one-way destinations** ([#134](https://github.com/Civic-Minds/Atlas/issues/134)): Unified headsign pipeline (`resolveDisplayHeadsign`) so GeoJSON never drops cleaned-away destinations; route/stop cards share `resolveBranchLabel` with direction fallbacks; route-title redundancy handled at display time, not in stored data. Route cards no longer repeat the section heading as a row label (e.g. "to Southbound" under SOUTHBOUND).
+- **Letter-suffix branch routes**: Pipeline auto-merges GTFS pairs like `blue` + `blue B` when long names prove same corridor (YRT VIVA, etc.) — default-on for all agencies; opt out with `skipLetterSuffixMerge` in `index.json`.
+- **Pipeline modularization**: GTFS normalize/transform orchestration, shape selection, headway utils, geometry, and feature enrichment extracted from `process-core.ts` into dedicated modules.
+- **Map attribution**: Compact linked `OpenStreetMap · CARTO` pill (full license string on `title`); MapLibre default hidden.
+- **Mode filter** ([#135](https://github.com/Civic-Minds/Atlas/issues/135)): Mode gating moved into shared `tileFilter` (map + stats use the same clause); `effectiveMode` coerces string `routeType` and always receives `agencySlug` for virtual LRT rules.
+- **Frequency filter** ([#136](https://github.com/Civic-Minds/Atlas/issues/136)): MapLibre tile filter expressions rewritten to compile with direction/day clauses — invalid nested `to-number`/numeric coalesce caused `setFilter` to fail silently so the map ignored headway/mode pills while stats updated.
+- **Agency search** ([#137](https://github.com/Civic-Minds/Atlas/issues/137)): Dedupe sub-agency slugs (e.g. exo), sort in-viewport/nearest first, align list rows with route results; routes and agencies split into “In this area” / “Elsewhere” with route-first ordering for route-like queries.
+- **Route search**: Substring match on route short names (aligned with map); prefetch GeoJSON for search-matched agencies so routes appear outside the viewport.
+- **Search dismiss** ([#138](https://github.com/Civic-Minds/Atlas/issues/138)): Results/suggestions panel closes on blur when clicking outside; typed results gated on `searchFocused` like other panels.
+- **Agency slug search** (e.g. `ttc`): Agency result appears first; routes that only matched via agency slug are hidden. Search dropdown caps at 5 agencies and 10 routes with a refine-search hint when truncated.
+- **Sidebar panel width**: Live, History, Frequency sidebar, and agency card panels now share `SEARCH_BAR_WIDTH` with the header search bar.
+- **Live Vehicles TTC adherence** ([#140](https://github.com/Civic-Minds/Atlas/issues/140)): Infer delay from predicted vs scheduled stop times when GTFS-RT omits `delay` (TTC); pipeline sidecar now stores per-trip stop schedules.
+- **Search list rows**: Recent, suggested, and typed search results now share `RouteListRow` (route + companion name, agency · headway on the right) and `PANEL_SECTION_HEAD` section labels.
+- **Live Vehicles empty state**: When buses are active off-screen, list them under “Outside this view” instead of a blank panel; true empty shows which routes are monitored in the area. Links to Data panel filtered to live agencies (empty and off-screen states).
+- **Data panel filters**: Agency list adds All / Live / History chips (Live opens from Live Vehicles empty states and settings). Feature badges hidden when that filter is active. Feature + region chips share one scroll row; regions scope to the active feature.
+- **Corridors map**: Stop showing the full PMTiles corridor-band layer in Corridors mode — only clipped A→B route segments render after From/To are set.
+- **Corridors panel alignment**: Corridors input panel now uses the same responsive width as the main search bar and is anchored directly under the header row instead of oversized/off-position.
+- **Corridors UX simplification**: Removed the dedicated From/To Corridors panel; Corridors now uses the single global search bar (like Live) and renders corridor-only map lines in that mode.
+- **Search placeholder flashing**: Removed placeholder fade/crossfade on app switch so search hint text updates instantly between Frequency, Live, and Corridors.
+- **Route card headways**: Removed ranged labels (`every X–Y min`) from direction rows; cards now consistently show a single cadence value per branch.
+- **Route card sparkline realism**: Route-card sparklines now use branch/destination cadence only (no combined trunk minimum), avoiding optimistic lows like `every 3 min` on destination-specific service.
+- **Route card headway ranges (restored, gated)**: Multi-branch rows can show `every X–Y min` again when headsign-scoped trunk wait is ≥5 min, ≥5 min better than destination wait, and ratio ≤4×; route-wide combined deps no longer drive the low end.
+- **Route card duplicate destinations**: Drop stub headsign duplicates that appear in both direction groups (e.g. TTC 900 “to Kipling” under Eastbound and Westbound) — keep the full-length branch only.
+- **Search vs route card**: Focusing the search bar clears the selected route/stop so suggestions don’t stack over an open route card; picking a search result dismisses search focus.
+- **Headway consistency**: Agency route list and search suggestions now use the same period-aware headway as route cards (e.g. midday `every 6 min`), not a different all-day minimum across directions.
+
+## [3.0.9] — 2026-07-06
+
+### Fixed
+- **CI**: Pin `@emnapi/core` and `@emnapi/runtime` at 1.11.2 in `package-lock.json` so `npm ci` passes on Node 22 (Tailwind/Rolldown wasm optional deps).
+
+## [3.0.8] — 2026-07-06
+
+- Clicking a stop now keeps its serving routes fully visible while fading every other route on the map ([#104](https://github.com/Civic-Minds/Atlas/issues/104))
+- API routes are now type-checked in CI alongside the rest of the app ([#111](https://github.com/Civic-Minds/Atlas/issues/111))
+- Agency index validation now runs automatically on every pull request ([#112](https://github.com/Civic-Minds/Atlas/issues/112))
+- Consolidated the R2 public data URL into one shared config value instead of several copies ([#127](https://github.com/Civic-Minds/Atlas/issues/127))
+- Removed unused Leaflet and Playwright dependencies, and some dead internal dev-server code ([#125](https://github.com/Civic-Minds/Atlas/issues/125), [#126](https://github.com/Civic-Minds/Atlas/issues/126))
+- Updated the README and roadmap docs for the MapLibre GL stack ([#128](https://github.com/Civic-Minds/Atlas/issues/128))
+- The weekly feed-refresh workflow now runs typecheck and tests before committing ([#131](https://github.com/Civic-Minds/Atlas/issues/131))
+- Fixed a gitignore pattern that was incorrectly excluding the live-vehicle archiver's own source code
+- Unified stop, route, and agency cards onto one shared layout system ([#103](https://github.com/Civic-Minds/Atlas/issues/103))
+- Removed a redundant period label ("Evening", etc.) that repeated on every stop card headway when the period was already shown in the filter
+- Removed an internal debug toggle that had been left visible on the public stop card
+- Fixed a broken CI install caused by an out-of-sync dependency lockfile
+- Fixed the route card's hourly chart mishandling overnight hours, including two missing early-morning bars ([#100](https://github.com/Civic-Minds/Atlas/issues/100), [#133](https://github.com/Civic-Minds/Atlas/issues/133))
+- Fixed the map's frequency filter disagreeing with the sidebar's own frequency numbers for the same route ([#132](https://github.com/Civic-Minds/Atlas/issues/132))
+- Fixed History showing delay times in the wrong timezone for agencies outside Eastern time ([#105](https://github.com/Civic-Minds/Atlas/issues/105))
+- Fixed the weekly refresh skipping agencies whose supplemental feed had updates even when their primary feed hadn't changed ([#106](https://github.com/Civic-Minds/Atlas/issues/106))
+- Fixed stop-level frequency miscalculating times after midnight ([#107](https://github.com/Civic-Minds/Atlas/issues/107))
+- Fixed an expired feed being skipped indefinitely instead of triggering a reprocess ([#108](https://github.com/Civic-Minds/Atlas/issues/108))
+- Added TransLink and STM to Live Vehicles' tracked regions ([#109](https://github.com/Civic-Minds/Atlas/issues/109))
+- Fixed live vehicle tracking for TTC 503 and STM 55 after a stop ID mismatch ([#110](https://github.com/Civic-Minds/Atlas/issues/110))
+- Fixed a failed agency list load showing an infinite loading spinner instead of a retry option ([#113](https://github.com/Civic-Minds/Atlas/issues/113))
+- Fixed History's live-adherence API failing silently instead of erroring clearly when credentials are missing ([#114](https://github.com/Civic-Minds/Atlas/issues/114))
+- Re-enabled navigation to Corridors, History, and Fares ([#115](https://github.com/Civic-Minds/Atlas/issues/115))
+- The map no longer crashes the whole page on an error — it now shows a recoverable error message instead ([#116](https://github.com/Civic-Minds/Atlas/issues/116))
+- Clicking a stop at a low zoom level now flies in instead of doing nothing; an ambiguous route or stop click now shows a hint to zoom in ([#117](https://github.com/Civic-Minds/Atlas/issues/117))
+- Improved screen-reader support for the main search bar ([#118](https://github.com/Civic-Minds/Atlas/issues/118))
+- Restored the map's attribution control ([#119](https://github.com/Civic-Minds/Atlas/issues/119))
+- Manually processing a feed now archives the source file and updates its expiry info the same way the automated weekly refresh does ([#120](https://github.com/Civic-Minds/Atlas/issues/120))
+- Fixed supplemental feed processing not receiving the same options as the primary feed ([#121](https://github.com/Civic-Minds/Atlas/issues/121))
+- Fixed the local data cache not refreshing after a successful update ([#122](https://github.com/Civic-Minds/Atlas/issues/122))
+- Corridors now use the same frequency-tier color labels as the rest of the map ([#123](https://github.com/Civic-Minds/Atlas/issues/123))
+- Fixed feed metadata parsing breaking on more complex CSV formatting ([#124](https://github.com/Civic-Minds/Atlas/issues/124))
+- Multi-branch routes now show their combined shared-section frequency by default, switching to a specific branch's frequency on hover ([#99](https://github.com/Civic-Minds/Atlas/issues/99))
+- Stop and agency cards now share the same route-row styling as route cards ([#101](https://github.com/Civic-Minds/Atlas/issues/101))
+- Stop cards now group each route's shared frequency under one line instead of nesting a full route card per route ([#102](https://github.com/Civic-Minds/Atlas/issues/102))
+- Fixed limited-service routes repeating a destination that was already shown elsewhere with its regular frequency
+- Added test coverage for History's timezone-bucketed delay calculations ([#130](https://github.com/Civic-Minds/Atlas/issues/130))
+
+## [3.0.7] — 2026-07-06
+
+### Added
+- **Branch hover highlight ([#96](https://github.com/Civic-Minds/Atlas/issues/96))**: Hovering a destination row in the route card highlights that headsign's geometry on the map; sibling branches dim. Inbound (direction 1) branches reveal on hover. Sibling rows in the card fade while hovering.
+
+### Fixed
+- **Route card direction groups ([#97](https://github.com/Civic-Minds/Atlas/issues/97))**: Multi-direction routes show Westbound/Eastbound (etc.) section labels and a divider between groups. Two-group routes label by relative mean shape-end position; sort follows the same axis.
+- **Route card sparkline ([#98](https://github.com/Civic-Minds/Atlas/issues/98))**: Headway chart uses outbound branches only by default (median per hour); follows the hovered branch when one is selected — fixes misleading tall-bar/dot patterns on multi-branch routes.
+- **GRT agency card ([#93](https://github.com/Civic-Minds/Atlas/issues/93))**: ION light rail no longer summarized as "commuter rail" — blurb uses effective mode (same LRT remapping as map filters).
+- **HRT sparkline bunching ([#91](https://github.com/Civic-Minds/Atlas/issues/91))**: Hourly tooltip capped to period headway when paired departures inflate frequency (e.g. Tide 800 at 7 PM).
+- **HRT trunk range display ([#92](https://github.com/Civic-Minds/Atlas/issues/92))**: Tight "every X–Y min" range hidden when period headway is ≥20 min (sparse paired service).
+- **Route card titles ([#95](https://github.com/Civic-Minds/Atlas/issues/95))**: Show route long names alongside numbers when the name adds information (aligned with HSR-style cards).
+- **Frequency filter ([#94](https://github.com/Civic-Minds/Atlas/issues/94))**: Map and sidebar now hide routes above the selected max headway (tileFilter aligned with sidebar filter).
+- **Local dev data loading**: Vite proxies `/atlas-data` to R2 so localhost bypasses browser CORS blocks on artifact fetches.
+- **Map zoom gate**: Progressive route reveal by zoom now uses paint opacity (MapLibre filters cannot use `zoom` expressions).
+
+## [3.0.6] — 2026-07-06
+
+### Added
+- **Agency expansion**: 24 new agencies + stub feed fixes — 343 → 367 total (Stockton, Modesto, Baton Rouge, Knoxville, McAllen, Augusta, Lincoln, South Bend, Rockford, Racine, Sudbury, Anchorage, Lexington, Champaign, Kalamazoo, Laredo, Thunder Bay, Greensboro, Winston-Salem, Allentown, Harrisburg, Jackson MS, Lancaster, Scranton/Wilkes-Barre, PATCO; plus Sarnia, Port Huron, TARTA, Madison).
+- **`npm run discover-gaps`**: MDB `feeds_v2.csv` spatial anti-join + population ranking → `tmp/gap-candidates.json`.
+- **`docs/AGENCY_BACKLOG.md`**: Canonical prioritized expansion queue; linked from `AGENCIES.md` and `ROADMAP.md`.
+
+### Fixed
+- **Duplicate slugs**: Removed duplicate `cota` entry; renamed Youngstown `wrta` → `youngstown-wrta` (Worcester keeps `wrta`).
+
+## [3.0.5] — 2026-07-06
+
+### Added
+- **Pipeline Concurrency**: Introduced parallel processing to pipeline stages (agency feed refreshes, PMTiles metadata downloads, and history snapshot compilation).
+- **R2 Retry Logic**: Implemented robust retry handling with exponential backoff for R2 GET and LIST actions to prevent SSL/socket hangups under high concurrency.
+
+### Fixed
+- **GRTC missing directions ([#82](https://github.com/Civic-Minds/Atlas/issues/82), [#84](https://github.com/Civic-Minds/Atlas/issues/84))**: Union full-route shape clusters in the pipeline so separate weekday/weekend `shape_id`s no longer drop an entire direction from GeoJSON.
+- **Map route count badge ([#83](https://github.com/Civic-Minds/Atlas/issues/83))**: Align PMTiles `tileFilter` with `passesRouteFilter` (period + worst-direction headway); remove duplicate headway filter in MapCanvas.
+- **RGRTA misleading headway ranges ([#80](https://github.com/Civic-Minds/Atlas/issues/80))**: Per-headsign trunk headways (`headsignMinStopHeadwayByPeriod`) so competing branches don't produce optimistic "every 13–30 min" ranges.
+- **CDTA BusPlus casing ([#81](https://github.com/Civic-Minds/Atlas/issues/81))**: Normalize `Busplus` → `BusPlus` in route title display.
+- **Refresh GTFS feeds workflow**: Fixed failure in `refresh-feeds.yml` by adding the missing `R2_PUBLIC_URL` environment variable to the `build-history` step.
+- **Workflow Error Handling**: Updated `pipeline/build-history.ts` to call `process.exit(1)` on error so that failures in history generation fail the workflow rather than passing silently.
+- **Git Push Failure**: Added `git pull --rebase origin main` before `git push` to prevent weekly refreshes from failing when concurrent commits are pushed.
+- **Node.js Deprecation**: Bumped Node.js setup version from `20` to `22` in `ci.yml` and `refresh-feeds.yml`.
+- **Security**: Fixed CodeQL "Incomplete URL substring sanitization" in `pipeline/audit-feed-urls.ts` (use parsed hostname with exact + safe `.endsWith('.mobilitydatabase.org')` + gated GCS `mdb-latest` path check).
+
+## [3.0.4] — 2026-07-06
+
+### Added
+- **Visalia Transit** and **Green Bay Metro**.
+- Gap additions: COTA (Columbus OH), Des Moines DART (IA), Wichita Transit (KS), Appleton/Valley Transit (WI).
+
+### Changed
+- Refreshed feeds + R2 artifacts for waukesha-metro, tulare-county-transit, visalia, green-bay (plus prior pace).
+
+### Fixed
+- **GitHub Actions refresh-feeds (and CI)**: bumped ancient checkout/setup-node; refresh script no longer fails the job on partial errors (expired feeds etc.).
+
+## [3.0.3] — 2026-07-06
+
+### Changed
+- **Changelog**: restored versioned release notes after 3.0.2 (no functional changes).
+
+## [3.0.2] — 2026-07-06
+
+### Fixed
+- **Refresh**: handle agencies that produce 0 features (e.g. flex/microtransit like Durango) without failing the job.
+
+
+## [3.0.1] — 2026-07-06
+
+### Added
+- **Sparkline bar tooltip**: hovering a bar shows a floating pill with the exact hour and headway (e.g. "9 AM · every 12 min"); hovered bar scales up slightly with an accent ring.
+- Empty search results now show a "No routes match your search" message.
+
+### Changed
+- URL: no trailing `?` on bare path (e.g. default `/` not `/?`).
+- Search: "new york" / city names now match via region (in addition to "NYC").
+- Map route clicks now clear active search query (so route card actually appears / "pops up").
+- RouteCardTitle now passes agencyName to getRouteLabel (helps name display in cards for special agencies).
+- **Period label on sparkline hover**: label now updates to the hovered period, not just the selected one; reverts on mouse-leave.
+
+### Removed
+- **DATA_OVERRIDES.md**: deprecated; data overrides now tracked exclusively via individual GitHub issues with `data override` label + `issueUrl` per agency in `index.json`.
+
+### Fixed
+- **Security fixes**: SSRF in live sidecar fetch (whitelist + encoding), tainted format string in console.error, incomplete URL substring sanitization in feed audit.
+- TypeScript errors in SidebarControls (region access on agencyData) and RouteCardTitle (null agencyName) to make dependabot PRs pass CI.
+- Refresh failures: updated ECO Transit feedUrl to working EVTA source; set lastFeedExpiry for Durango (flex feed) to skip 0-feature processing.
+- Sparkline period label making chart width vary; now reserves fixed slot so chart stays consistent width.
+- Sparkline hover tooltip no longer clips on left/right edge (edge-aware translate).
+- Route selection highlight uses full `agency::routeId` (prevents unrelated routes bolding on numeric id collisions e.g. NYC subway).
+- **CI**: sync `package-lock.json` (`@emnapi` entries were missing, causing `npm ci` to fail).
+- **Route card symmetric direction collapse**: routes where both directions share the same headway and no headsigns (e.g. TTC 512) now show a headway row instead of rendering blank.
+- **"Via" capitalization**: added `via` to the lowercase-preserve list in `titleCase` — "Finch via Pioneer Village" no longer renders as "Finch Via Pioneer Village".
+- **Search results missing route names**: routes with a null GTFS `route_short_name` now fall back to `routeId` in search result display, preventing blank rows.
+- **TTC 506 Sparkline 2am Bug (AI-267)**: fixed boundary mapping of hour 26 to `'overnight'` instead of `'late'` to align with period boundaries; used `Math.max` between branch-specific start headways and terminal stop headways in the pipeline to prevent late-night schedule bunching/layover artifacts (e.g. 2-minute gaps at Main Street Station at 2 AM) from inflating route frequency.
+- **TTC 35 Headway Ranges (AI-270)**: pipeline computes branch-specific, headsign-specific period and hourly headways; prevented shared terminal stop headways from bleeding into different branches (e.g. `35A` vs `35B` both ending at Mount Dennis) by comparing branch-specific start headways with terminal stop headways using `Math.max`.
+
+## [3.0.0] — 2026-07-05
+
+### Added
+- **Agency coverage expanded to 324 agencies** across Canada and the US — all provinces, all major US metros. See [index.json](public/data/index.json) for the full list.
+- **IDB cache build version**: `CACHE_BUILD` counter in `agencyGeoWeekVersion()` — increment after mid-week data fixes to force browsers to re-fetch instead of serving stale IDB data
+- **Sparkline click-to-period**: clicking a zone sets the period filter; clicking again resets to All
+- **Sparkline hover**: zone highlights with background band; inactive bars preview in tier color
+- **Period label beside sparkline**: period name shown inline right of chart
+- **SidebarControls refactor**: extracted DisambiguationPanel, StopCard, RouteCardHeadway, LiveAdherenceCard, DirectionLabel, RouteDirectionRow — 1330 → 948 lines
+- **Settings panel split**: Appearance (dark mode) and Filters sections with labeled dividers
+- **History time-scrubber**: year slider to replay service changes on the map
+- **History backfill**: annual snapshots for Community Transit (2016–2026), Kingston Transit (2016–2026), CDTA/Albany, GCRTA/Cleveland — via automated MDB backfill script (`pipeline/backfill-mdb-history.ts`)
+- **MDB fallback feed URLs**: 48 agencies now have `mdbFeedUrl` fallback for pipeline resilience
+- **Pipeline: worst-direction headway**: routes carry `worstDirectionHeadway`; filter gates on worst direction so a route passing one way doesn't appear if the return is too infrequent
+- **Pipeline: bus sub-type detection**: `busSubType` field — `brt`, `express`, `coach`, `local`
+- **Pipeline: short-turn variant metadata**: direction-0 features carry `shortTurnVariants` with headsign + trip share
+- **Late + Evening periods**: Evening extended to midnight; Late added for midnight–3 AM. `--force` flag on `npm run refresh` for schema changes
+- **Hourly sparkline**: per-hour frequency bars (5 AM–2 AM) with 90-min sliding window; replaces named-period bars
+- **Live Vehicles app**: real-time vehicle positions via GTFS-RT; delay-status indicators, 15s polling, route search, route-grouped sidebar, Deck.gl GPU-rendered markers
+- **Live polling**: TTC 503/504, TransLink 99 B-Line, STM 55, Edmonton 004, YRT VIVA Blue, Halifax 1 — with optional API key support (`apiKeyParamEnvVar`, `apiKeyHeaderEnvVar`)
+- **GTFS-RT archiver** (Cloudflare Worker): archives TripUpdates every 5 min to `atlas-live`; 30-day retention cleanup cron; skips idle overnight polls; currently Burlington + Hamilton
+- **Pipeline: static trips lookup**: `atlas/{slug}-trips.json` on R2 for live-vehicles direction/headsign enrichment when GTFS-RT feeds omit them
+- **History: headway trend sparkline**: time-series SVG sparkline on RouteHistoryCard across snapshot years; period tabs
+- **Staged agency support**: `staged: true` in `index.json` hides agencies until data is ready; pipeline auto-clears after first successful refresh
+- **LOD route visibility**: routes appear progressively by tier as zoom increases — frequent rapid from zoom 0, frequent from 7, moderate from 9, infrequent from 11
+- **History config on R2**: `atlas/history-config.json` fetched at runtime; no generated file committed to git
+- **GeoJSON Web Worker**: `geoWorker.ts` parses large agency GeoJSON in background thread; graceful main-thread fallback
+- **IndexedDB GeoJSON cache**: agency GeoJSON persists between sessions keyed by `{slug}-{weekVersion}`; stale entries pruned weekly
+- **Search bar suggestions**: focus shows last 5 searches; falls back to recently viewed routes or popular routes in viewport
+- **PMTiles + MapLibre GL JS migration**: replaced Leaflet; range-requested vector tiles from R2; 98% fewer cold-load data requests, 60 FPS panning
+- **URL-based map state**: `?lat=`, `?lon=`, `?z=`, `?route=`, `?stop=` — shared links open the exact same view
+- **Agency search**: typing an agency slug or name in the search bar filters the map to that network
+- **Connection explorer**: stop card shows routes reachable within 10 min walk (120m–800m); cross-agency connections automatic
+- **GTFS Fares V2 support**: pipeline parses `fare_products`, `rider_categories`, `fare_leg_rules`; prefers V2 adult products when present
+- **Fare map app**: routes colored by base adult fare (Free / <$2 / $2–4 / $4–8 / $8+); `fare-overrides.json` on R2 for manual overrides
+- **Shared UI primitives**: `LIST_ROW`, `SEARCH_PILL`, `SEARCH_FIELD`, `FLOATING_CARD`, `PANEL_ENTER`, transition constants in `styles.ts`; applied across all panels
+- **Info panel**: agency browser with region filter chips, Live tab (polled routes), History tab (covered agencies)
+- **URL routing**: `/apps/frequency`, `/apps/corridors`, `/apps/history`; SPA rewrite in `vercel.json`; browser back/forward works
+- **Corridors band view**: `isCorridor` segments shown when Corridors opens with no From/To selected
+- **History app** (`src/apps/History.tsx`): headway trends over time — agency search → route list → before/after headway comparison with sparkline, period tabs, vertical timeline, year scrubber
+- **GitHub Issues data override pattern**: per-agency override documentation linked from route/agency cards
+- **Multi-feed support**: `supplementalFeedUrls` per agency; zips merged before writing to R2
+- **Warn on expired GTFS feeds**: `refresh.ts` compares `feed_end_date` against today and warns in CI logs
+- **Pipeline: skip unchanged feeds**: compares `feed_end_date` / `feed_version` before processing; skips R2 writes if schedule unchanged; archives raw zips to `atlas-archive` when new
+- **Pipeline: R2 pagination**: `r2List` follows `NextContinuationToken` — no longer capped at 1000 objects
+- **`find-mdb` tool** (`npm run find-mdb`): queries MDB catalog and emits ready-to-paste `index.json` snippets
+- **Stale schedule warning**: route cards show "Schedule may be outdated" in amber when today is past `lastFeedExpiry`
+- **Station View stop-level headways**: each route row shows headway at the selected stop specifically, not the route's terminal headway
+- **Frequency range on route cards**: when trunk stops have ≥35% better headway than the terminal, shows a range (e.g. "every 6–12 min")
+- **Data overrides**: now tracked via per-agency GitHub issues (label `data override`) + `issueUrl` in index.json (UI links "We corrected this data"). Monolithic `DATA_OVERRIDES.md` deprecated.
+
+### Changed
+- **Frequency map now at `/`**: `APP_TO_PATH` updated; `/apps/frequency` remains an alias
+- **App drawer hidden**: Corridors and History lack sufficient data to be useful; re-enable by uncommenting `AppDrawer` in `App.tsx`
+- **Sidebar panel width**: `w-64` → `w-72` (288px) to prevent "Midday" label from clipping
+- **Search bar width**: responsive steps bumped from `w-40/52/64` to `w-44/56/72`
+- **Inter font applied globally**: was loaded from Google Fonts but never set on `html`
+- **Near You panel**: redesigned to LIST_ROW style — each row shows its own nearest stop name and distance; removed misleading shared-stop header
+- **Global UI scale**: root font-size 14px (from browser default 16px)
+- **Responsive header**: unified flex layout with React portal for right section; chips collapse below 1024px into "More filters" panel
+- **Filter chips**: static labels always; dot-only active indicator; "Period" renamed to "Time"; "Now" button removed (didn't belong in either chip)
+- **Live Vehicles**: moved from app drawer to standalone header button (Radio icon); minimum zoom gate at z9
+- **Fares app hidden**: `available: false` — pending fare card UX
+- **Fare data**: manual base fare overrides moved from `index.json` to R2 `fare-overrides.json`; richer fields (`label`, `zones`, `adultCash`, `free`, `fareUrl`) per agency
+- **Stop card**: agency names as plain text (not pill buttons); nearby connections section visually separated with thick top border
+- **Agency filter**: "None" deselects in-viewport agencies only; bbox/center intersection for visibility check; always-visible on/off dot per row
+- **Frequency map: zoom-based progressive rendering**: GPU MapLibre step expression — below z7 only ≤10 min routes; z7–9 shows ≤20 min; z9+ applies headway pill
+- **Disambiguation popup sorted numerically**
+- **Live Vehicles: viewport-based multi-agency polling**: polls all agencies whose bbox overlaps current viewport in parallel; removed agency selector dropdown
+- **Headline headway uses terminal stop midday period**: was all-day average; midday (9am–3pm) is more representative; falls back to all-day for peak-only routes
+- **History agency panel redesign**: purpose-built `HistoryAgencyPanel` showing first→last headway per route with change direction color-coding
+- **History: focus-triggered suggestions panel**: appears on search focus; Escape or map click dismisses
+- **Screen transitions**: History slides up/down, Corridors fades, header chips fade on app switch
+- **index.json refactor**: R2 artifact URLs derived via `getAgencyArtifactUrls`; JSON Schema + `npm run validate-index` added
+- **process-gtfs.ts**: accepts remote `https://...` GTFS URLs directly (auto-downloads to `tmp/`)
+- **Stats pills relocated**: moved from header to `bottom-6 right-14` map overlay; hidden while loading
+- **Live adherence card**: stop rows clickable; deviation labels rounded to whole minutes; sorted by worst deviation first
+- **Live button redesign**: pill with green dot + "Live" label; border when inactive, accent fill + pulsing dot when active
+- **Centralized configs**: `TIME_PERIODS`, `HEADWAY_TIERS`, `STATUS_COLORS`, `Z_MAP_OVERLAY`/`Z_PANEL`/`Z_HEADER` etc. in `shared/config.ts` and `styles.ts`; removed scattered duplicates across 12+ files
+- **MapCanvas tile filter centralized**: `useIntervalStats` returns `tileFilter` expression derived from the same inputs as `passesRouteFilter`; MapCanvas only adds map-state clauses
+- **Sidebar panel left position centralized**: `sidebarLeft` prop threaded from App.tsx via ResizeObserver measurement; `SIDEBAR_LEFT_FALLBACK = 182` as single fallback
+- **Various refactors**: extracted `RouteListRow`, `HeadwaySparkline`, `ServiceTimeline`, `StopInput`, `RouteGroupCard`, map utilities (`mapStyle.ts`, `mapHtml.ts`), `RouteCardTitle` — reduced file sizes across MapCanvas, Corridors, SidebarControls, History
+- **GTFS-RT archiver**: switched from raw protobuf (~1.5 MB/poll) to compact JSON (~5–20 KB); corrected cron to `*/5 * * * *`
+- **Dependency updates**: `@aws-sdk/client-s3`, `lucide-react`, `papaparse`, `playwright`; `actions/checkout` v4→v7, `actions/setup-node` v4→v6
+
+### Fixed
+- **index.json**: decoded unicode escapes in Quebec agency names (RTC, STLévis, Sherbrooke); corrected Bustang Outrider center
+- **Loading spinner**: now fires on MapLibre `sourcedataloading`/`idle` — shows when PMTiles tiles are streaming even if GeoJSON is already cached; "Loading map..." for tile-only, "X/Y networks" when fetching GeoJSON
+- **"ST" all-caps in stop names**: removed `St` from `TRANSIT_ACRONYMS`; was uppercasing "Street" in stop names (e.g. "Nassau ST"); standalone "ST" still uppercases via ≤3-char rule
+- **Route card missing for stale-cached agencies**: `CACHE_BUILD` counter in `agencyGeoWeekVersion()` forces re-fetch after mid-week data fixes
+- **Bustang/Outrider cards missing in Denver**: added explicit bboxes covering actual route extents
+- **RTD Denver showing no routes**: slug was pointing at Bustang feed (mdb-2280); re-processed from correct mdb-178
+- **Near You panel**: each route now shows its own nearest stop; was showing `routes[0].nearestStopName` as a shared header
+- **Agency filter: deselecting had no effect on map**: `selectedAgencies` was only applied to sidebar/stats, never to the PMTiles tile filter
+- **Headsign display all-caps**: reduced ≤4-char uppercase preservation to ≤3 — "LOOP" now title-cases; real 4-char acronyms (BART etc.) are in `TRANSIT_ACRONYMS`
+- **Route 330 stop card headway**: peak-only routes with fewer than 3 midday/PM trips now excluded from stop card for that direction rather than showing misleading all-day median
+- **Worst-direction tier promotion bug**: Step 4 terminal headway override can now only degrade a tier, never promote; prevents AM-peak cluster inflation
+- **Direction-less feed headway understatement**: `synthesizeMissingDirections` assigns direction_id via shape/headsign clustering when feed lacks `direction_id` column
+- **Loop route parent station headway inflation**: parent station credited with only one visit per trip; fixes multi-bay stations over-counting departures
+- **Pipeline: feed expiry date parsing**: strips surrounding quotes from `feed_info.txt` fields (Hamilton uses quoted CSV values)
+- **Search route list alignment + agency headers**: flex-1 truncation misalignment fixed; "(CITY)" parens stripped from route card headers
+- **Duplicate destination rows**: pipeline and UI now dedup on cleaned headsign
+- **Frequency filter for infrequent routes**: map tile expression now treats `tier==='infrequent'` as 9999 to match `passesRouteFilter` JS logic
+- **Blank map for newly added US agencies**: `atlas.pmtiles` was not rebuilt after adding agencies; routes invisible until PMTiles regenerated
+- **Back button stuck after leaving Fares app**: `moveend` and URL-sync effects migrated to `window.history.replaceState` to avoid stale React Router closure capturing `/apps/fares` pathname
+- **Corridors/Live Vehicles capturing events when invisible**: added `inert` attribute to root div of each — suppresses pointer/keyboard events unconditionally including children with explicit `pointer-events-auto`
+- **Fares app breaking all map interactions**: was rendering a second `Interval` (second MapLibre map) on top of the main one; fixed by removing separate `Fares` component and passing `fareView={inFares}` to the main `Interval`
+- **Map route selection fits full extent**: was using `queryRenderedFeatures` (only in-viewport tiles); now scans in-memory GeoJSON for the correct agency
+- **Disambiguation threshold**: lowered from zoom 13 to zoom 11 so clicks on dense corridors at normal city zoom show the route picker
+- **Live Vehicles: agencies outside viewport shown in sidebar**: route list now filtered to vehicles within current map bounds
+- **Live Vehicles: route card header inconsistent**: shared `RouteCardTitle` component; same `text-sm font-black` + `getRouteLabel()` in frequency and live cards
+- **Live Vehicles: vehicle detail showed "—"**: groups by headsign when available; falls back to cleaned vehicle ID
+- **Fares: STM search showing 187 routes**: Fares mode now shows agency fare cards in search, not individual routes
+- **Fares: suggested agencies showing wrong-area/duplicates**: suggestions now scoped to loaded viewport agencies; deduped by name
+- **Fares legend**: replaced circle dots with horizontal line swatches matching map rendering; tightened spacing
+- **Sparkline hover**: switched from `nativeEvent.offsetX` (breaks on child elements) to `getBoundingClientRect` + `clientX`
+- **SidebarControls parse error**: `return ({(() => {` is invalid JSX; fixed to `return (() => {`
+- **Route label cleanup**: suppress terminus-style 1–2 word long names for numeric routes; strip "Via [location]" routing qualifiers; suppress BRT brand names from terminus suppression list; strip leading "- " after prefix removal; suppress redundant "G Line — G-Line Rapid Ride" patterns
+- **Route card**: removed back button from frequency map card; collapsed identical no-headsign directions; `line-clamp-2` on long titles; left-aligned stale schedule notice
+- **Stop card**: removed redundant "Station View" header; destination prefix wrapping fixed
+- **Agency card**: removed debug slug mono text; region + route count as single muted text line
+- **Agency filter pill**: `shortenAgencyName` truncates long formal names to clean short forms
+- **Info button color**: `text-dim` → `text-muted` at rest (was looking disabled)
+- **Live button**: neutral dot when Live is off; was green regardless of state
+- **Route lines antialiasing**: `antialias: true` on MapLibre constructor; zoom-interpolated line-width/opacity
+- **Stats pills hidden while loading**: suppress "0 routes / 0%" during pan to unloaded area
+- **Z-index stack**: named constants in `styles.ts` replace scattered `z-[500]`/`z-[1000]` etc. across 12 files
+- **Time filter**: Late (11pm–2am) and Overnight (2am–6am) periods added; `getNowPeriod` correctly maps early-morning hours to GTFS 24+ notation; period chips now toggleable
+- **App drawer cursor flickering**: added `cursor-default` to dropdown panel wrapper; `button:disabled { cursor: not-allowed }` as global CSS rule
+- **InfoPanel slide carousel offset**: replaced fragile horizontal slide container with clean conditional rendering; fixed margin/clipping bugs
+- **Station stop grouping**: sibling stops grouped by name; multi-agency proximity grouping within 120m; major station hubs shown at zoom 12–15
