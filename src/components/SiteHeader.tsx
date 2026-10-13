@@ -7,7 +7,7 @@ export default function SiteHeader({ showWordmark = true }: { showWordmark?: boo
     <header className="flex items-center justify-between gap-6">
       {showWordmark ? (
         <a href="/" aria-label="Atlas by Civic Minds">
-          <AtlasBrand />
+          <AtlasBrand size="page" />
         </a>
       ) : <span aria-hidden="true" />}
       <nav aria-label="Site navigation" className="flex items-center gap-4 text-sm font-bold text-[var(--text-muted)]">

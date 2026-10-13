@@ -218,13 +218,7 @@ export default function DiagnosticsUnevenPage() {
         ) : agenciesLoadState === 'error' ? (
           <div className="flex flex-col items-center justify-center py-24 gap-3 text-sm text-[var(--text-dim)]">
             <p>Could not load agency data.</p>
-            <button
-              type="button"
-              className="px-3 py-1.5 rounded-full bg-[var(--bg-btn-hover)] text-[var(--text-primary)]"
-              onClick={retry}
-            >
-              Retry
-            </button>
+            <Pill tone="outline" size="segment" onClick={retry}>Retry</Pill>
           </div>
         ) : sorted.length === 0 ? (
           <div className="flex items-center justify-center py-24 text-[var(--text-dim)] text-sm">

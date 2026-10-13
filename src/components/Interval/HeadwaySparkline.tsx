@@ -9,7 +9,7 @@ import { PERIOD_LABELS } from '../../hooks/useIntervalStats';
 import type { TimePeriod } from '../../hooks/useIntervalStats';
 import type { HeadwayByPeriod, HeadwayByHour } from '../../hooks/useAgencyData';
 import type { HeadwayByHourMaxGap } from '../../../shared/config';
-import { ACTION_PRIMARY, APP_TAB_INACTIVE, GLASS_PILL } from '../../styles';
+import Pill from '../ui/Pill';
 import { delayAmount, headwayEvery } from '../../utils/headwayText';
 import { TripTimeStrip } from './TripTimeStrip';
 import type { TripTimeSeries } from '../../utils/tripTime';
@@ -381,15 +381,15 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
             {directionOptions && directionOptions.length > 1 && (
               <div className="mt-4 flex flex-wrap gap-2" role="group" aria-label="Schedule direction">
                 {directionOptions.map(option => (
-                  <button
+                  <Pill
                     key={option.key}
-                    type="button"
-                    aria-pressed={expandedDirection === option.key}
+                    tone="glass"
+                    size="segment"
+                    selected={expandedDirection === option.key}
                     onClick={() => setPickedDirection(option.key)}
-                    className={`h-7 px-2.5 flex items-center justify-center text-xs font-bold border transition-colors ${expandedDirection === option.key ? `${GLASS_PILL} ${ACTION_PRIMARY}` : APP_TAB_INACTIVE}`}
                   >
                     {option.label}
-                  </button>
+                  </Pill>
                 ))}
               </div>
             )}

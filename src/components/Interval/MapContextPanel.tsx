@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import type { MapContextAgency, MapContextRoute } from '../../utils/mapContext';
-import { FLOATING_CARD, LIST_ROW_SPACED, LIST_ROW_PRIMARY, PANEL_SECTION_HEAD, PANEL_TITLE_BAR, PANEL_TITLE, SIDEBAR_PANEL_WIDTH, PANEL_SIDEBAR, SIDEBAR_LEFT_FALLBACK } from '../../styles';
+import { FLOATING_CARD, LIST_ROW_PRIMARY, PANEL_SECTION_HEAD, PANEL_TITLE, SIDEBAR_PANEL_WIDTH, PANEL_SIDEBAR, SIDEBAR_LEFT_FALLBACK } from '../../styles';
 import { FEATURES } from '../../../shared/config';
 import { areaLinkFor } from '../../../shared/agencyArea';
 import RouteListRow from '../RouteListRow';

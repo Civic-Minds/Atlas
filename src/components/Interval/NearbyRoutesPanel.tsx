@@ -3,8 +3,8 @@ import { headwayToTierColor } from '../../utils/colors';
 import { useColorVision } from '../../context/ColorVisionContext';
 import { fmtHeadway, titleCase } from '../../utils/format';
 import type { NearbyRoute } from '../../hooks/useNearbyRoutes';
-import { FLOATING_CARD, PANEL_ENTER, PANEL_Z_INDEX, LIST_ROW, PANEL_TITLE_BAR, PANEL_TITLE, PANEL_BODY, PANEL_EMPTY } from '../../styles';
-import { PanelBody, PanelTitleBar } from '../ui/Panel';
+import { PANEL_Z_INDEX, PANEL_TITLE, PANEL_EMPTY } from '../../styles';
+import Panel, { PanelBody, PanelTitleBar } from '../ui/Panel';
 import ListRow from '../ui/ListRow';
 
 interface NearbyRoutesPanelProps {
@@ -25,13 +25,14 @@ export const NearbyRoutesPanel = forwardRef<HTMLDivElement, NearbyRoutesPanelPro
   const { colorVisionFriendly } = useColorVision();
   const colorMode = colorVisionFriendly ? 'friendly' : 'default';
   return (
-    <div
+    <Panel
+      enter
       ref={ref}
       // 136px clears the stacked zoom controls (bottom-[59px], 64px tall → top edge at 123)
       // plus the geolocate button below them — this used to sit at bottom:72, overlapping
       // the zoom-in button by ~50px.
       style={{ position: 'absolute', bottom: 136, right: 12, zIndex: PANEL_Z_INDEX }}
-      className={`w-64 max-h-[calc(100vh-152px)] flex flex-col ${FLOATING_CARD} ${PANEL_ENTER}`}
+      className="w-64 max-h-[calc(100vh-152px)]"
     >
       <PanelTitleBar>
         <span className={PANEL_TITLE}>Near You</span>
@@ -89,6 +90,6 @@ export const NearbyRoutesPanel = forwardRef<HTMLDivElement, NearbyRoutesPanelPro
           ))}
         </PanelBody>
       )}
-    </div>
+    </Panel>
   );
 });

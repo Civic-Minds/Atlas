@@ -24,7 +24,7 @@ import {
   type RouteSearchResult,
   type StopSearchResult,
 } from '../../utils/searchResults';
-import { FLOATING_CARD, PANEL_ENTER_LEFT, TRANSITION_BASE, LIST_ROW, LIST_ROW_PRIMARY, LIST_ROW_DIM, PANEL_SIDEBAR, Z_PANEL, SIDEBAR_LEFT_FALLBACK, PANEL_SECTION_HEAD, PANEL_SEARCH_SUBHEAD, SIDEBAR_PANEL_WIDTH } from '../../styles';
+import { FLOATING_CARD, PANEL_ENTER_LEFT, TRANSITION_BASE, LIST_ROW_PRIMARY, LIST_ROW_DIM, PANEL_SIDEBAR, Z_PANEL, SIDEBAR_LEFT_FALLBACK, PANEL_SECTION_HEAD, PANEL_SEARCH_SUBHEAD, SIDEBAR_PANEL_WIDTH } from '../../styles';
 import RouteListRow from '../RouteListRow';
 import { DisambiguationPanel } from './panels/DisambiguationPanel';
 import { StopCard } from './panels/StopCard';

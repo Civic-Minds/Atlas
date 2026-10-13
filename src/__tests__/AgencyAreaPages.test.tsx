@@ -168,7 +168,7 @@ describe('not found is never shown while loading', () => {
 
   it('area page: blank first, not-found only for a missing slug', async () => {
     at('/area/no-such-area', <AreaPage />, '/area/:slug');
-    expect(screen.queryByText('No page for this area')).toBeNull();
-    await waitFor(() => expect(screen.getByText('No page for this area')).toBeTruthy(), { timeout: 25000 });
+    expect(screen.queryByText('No page for this region')).toBeNull();
+    await waitFor(() => expect(screen.getByText('No page for this region')).toBeTruthy(), { timeout: 25000 });
   }, 60000);
 });

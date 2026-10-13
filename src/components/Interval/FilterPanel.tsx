@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Settings, SlidersHorizontal, X, ArrowLeft, Search } from 'lucide-react';
 import { CompareSidePicker, SideBadge, type CompareSide } from './CompareControl';
-import { ICON_BTN, DROPDOWN_PANEL, SEARCH_FIELD, SEARCH_PILL, PANEL_SECTION_HEAD, LIST_ROW_PRIMARY, LIST_ROW_DIM, CONTROL_ACTIVE, CONTROL_INACTIVE, dropdownAnim, TRANSITION_BASE, Z_MODAL_TOP } from '../../styles';
+import { ICON_BTN, DROPDOWN_PANEL, SEARCH_FIELD, SEARCH_PILL, PANEL_SECTION_HEAD, LIST_ROW_PRIMARY, LIST_ROW_DIM, dropdownAnim, TRANSITION_BASE, Z_MODAL_TOP } from '../../styles';
 import Pill from '../ui/Pill';
 import ListRow from '../ui/ListRow';
 import Toggle from '../ui/Toggle';
@@ -695,16 +695,15 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                     {DAY_TYPES.map(dayType => {
                       const active = day === dayType;
                       return (
-                        <button
+                        <Pill
                           key={dayType}
+                          size="segment"
                           onClick={() => setDay?.(dayType)}
-                          aria-pressed={active}
-                          className={`flex-1 h-7 flex items-center justify-center text-xs font-bold rounded-full border transition-colors ${
-                            active ? CONTROL_ACTIVE : CONTROL_INACTIVE
-                          }`}
+                          selected={active}
+                          className="flex-1"
                         >
                           {dayType}
-                        </button>
+                        </Pill>
                       );
                     })}
                   </div>

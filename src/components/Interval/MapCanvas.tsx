@@ -44,6 +44,8 @@ import { isOnDemandStopShown, isOnDemandZoneShown, localDateIn, onDemandHoursCon
 import { buildRouteSortKeyExpression } from '../../utils/routeSort';
 import { fitTargetForPoints, routeFitTarget } from '../../utils/routeFitTarget';
 import { lineCoordinates } from '../../../shared/routeGeometry';
+import Panel from '../ui/Panel';
+import ListRow from '../ui/ListRow';
 
 const ON_DEMAND_AREA_COLOR = '#64748b';
 // Selected on-demand features keep their normal paint; the rest fade like routes behind a selection.
@@ -2428,25 +2430,25 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       )}
 
       {mapContextMenu && (
-        <div
-          className={`absolute ${Z_PANEL} rounded-xl bg-[var(--bg-panel)] border border-[var(--border-primary)] shadow-2xl backdrop-blur-md overflow-hidden pointer-events-auto`}
+        <Panel
+          className={`absolute ${Z_PANEL} pointer-events-auto`}
           style={{ left: mapContextMenu.x, top: mapContextMenu.y }}
         >
-          <button
+          <ListRow
             onClick={handleCopyLocationUrl}
-            className="flex items-center gap-2 w-full px-3.5 py-2.5 border-b border-[var(--border-primary)] hover:bg-[var(--bg-btn-hover)] transition-colors text-left cursor-pointer"
+            className="justify-start gap-2"
           >
             <Link2 className="w-3.5 h-3.5 text-[var(--text-dim)] shrink-0" />
             <span className="text-xs font-bold text-[var(--text-primary)] whitespace-nowrap">Copy URL for here</span>
-          </button>
-          <button
+          </ListRow>
+          <ListRow
             onClick={handleReportIssue}
-            className="flex items-center gap-2 w-full px-3.5 py-2.5 hover:bg-[var(--bg-btn-hover)] transition-colors text-left cursor-pointer"
+            className="justify-start gap-2"
           >
             <Flag className="w-3.5 h-3.5 text-[var(--text-dim)] shrink-0" />
             <span className="text-xs font-bold text-[var(--text-primary)] whitespace-nowrap">Report an issue</span>
-          </button>
-        </div>
+          </ListRow>
+        </Panel>
       )}
 
       {showMapContext && mapContextOpen && (
