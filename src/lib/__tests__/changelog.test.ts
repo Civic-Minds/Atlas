@@ -9,27 +9,25 @@ const RELEASES: WhatsNewRelease[] = [
 ];
 
 describe('buildChangelog', () => {
-  it('interleaves app versions and data releases by date, newest first', () => {
+  it('puts a data update on the version whose period it falls in; others stay as lines', () => {
     const entries = buildChangelog(RELEASES, [
       { releaseId: 'release-b', generatedAt: '2026-10-14T05:00:00Z' },
       { releaseId: 'release-a', generatedAt: '2026-10-01T05:00:00Z' },
+      { releaseId: 'release-0', generatedAt: '2026-08-01T05:00:00Z' },
     ]);
-    expect(entries.map(e => e.label)).toEqual([
-      'Map data updated Oct 14, 2026',
-      'App version 3.3',
-      'Map data updated Oct 1, 2026',
-      'App version 3.2',
-    ]);
+    expect(entries.map(e => e.label)).toEqual(['Version 3.3', 'Version 3.2', 'Map data updated Aug 1, 2026']);
+    expect(entries.map(e => (e.kind === 'app' ? e.dataUpdated : undefined))).toEqual(['Oct 14, 2026', 'Oct 1, 2026', undefined]);
   });
 
-  it('lists the app version first on the same day and skips duplicate or undated data releases', () => {
+  it('skips duplicate or undated data releases', () => {
     const entries = buildChangelog(RELEASES, [
       { releaseId: 'release-a', generatedAt: '2026-10-12T01:00:00Z' },
       { releaseId: 'release-a', generatedAt: '2026-10-12T01:00:00Z' },
       { releaseId: 'release-x' },
       { releaseId: 'release-y', generatedAt: 'soon' },
     ]);
-    expect(entries.map(e => e.kind)).toEqual(['app', 'data', 'app']);
+    expect(entries.map(e => e.kind)).toEqual(['app', 'app']);
+    expect(entries[0].kind === 'app' && entries[0].dataUpdated).toBe('Oct 12, 2026');
   });
 
   it('works with no data releases', () => {
