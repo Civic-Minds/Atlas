@@ -34,6 +34,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Fixed
 
+- **Sparse two-stop routes no longer read a made-up headline from three uneven midday arrivals**: Washington State Ferries 131 to Anacortes showed 153 minutes where its sailings run about every 100 (weekday) and 80 (Saturday); the headline now keeps the route's own value when the terminal has only three uneven midday departures ([#745](https://github.com/Civic-Minds/Atlas/issues/745)).
 - **Re-processing an agency without a name keeps its display name**: it was being overwritten with the slug (#785).
 - **Redwood Coast Transit 20 shows its southbound route to Eureka**: its two daily trips each used their own shape, so only a stub was drawn ([#776](https://github.com/Civic-Minds/Atlas/issues/776)).
 - **Weekday shows a route's typical weekday, not its Friday timetable**: CATA VE Campus had shown Friday's every 21 instead of its usual every 24 ([#716](https://github.com/Civic-Minds/Atlas/issues/716)).
