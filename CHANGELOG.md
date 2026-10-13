@@ -45,6 +45,14 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Frequency chart hover no longer covers labels**: hovering an hour bar drew an outline that spilled over the number above and below the chart; it now just shades that hour's column. (#830)
 - **The expired-timetable notice on route cards is smaller and reads properly**: it was bold and oversized after the type-scale change and said "Atlas's latest the Grand River Transit schedule for Waterloo Region ended"; it now says "Grand River Transit's timetable ended on Apr 26, 2026." in regular weight, with no divider line above it, and the expanded version puts the check history in its own paragraph instead of running it on.
 - **The hidden-routes list now looks like the other route lists**: agency names are a lighter group header, routes use the standard row, and the divider lines are gone, so agencies and routes are easy to tell apart.
+- **History no longer logs a render-loop error on load**: the map kept reloading its agency data because its agency list was rebuilt on every render ([#822](https://github.com/Civic-Minds/Atlas/issues/822))
+
+- **The phone search bar shows its "Search" hint**: it was squeezed to a sliver showing only "S", so the "by Civic Minds" line under the logo is hidden on phones to give it room ([#824](https://github.com/Civic-Minds/Atlas/issues/824))
+
+- **Unknown addresses show a not-found page instead of the map**: the live site already answered them with a 404, and the app itself now does the same when it is opened or navigated to a made-up address ([#823](https://github.com/Civic-Minds/Atlas/issues/823))
+
+- **CARTA Chattanooga is no longer listed on the San Francisco area page**: its map center had been set to California, so it also sorted as a nearby agency in the wrong place ([#825](https://github.com/Civic-Minds/Atlas/issues/825))
+
 - **Buffalo Metro Rail is counted when the LRT filter is on**: the map drew the line but the route counter showed 0 ([#811](https://github.com/Civic-Minds/Atlas/issues/811))
 - **The In view route count matches the lines you can see**: one line published under several route IDs was counted once per ID ([#399](https://github.com/Civic-Minds/Atlas/issues/399)).
 - **The Refresh GTFS feeds workflow can accept reviewed release-gate flags**: a new "allow" input (e.g. `xpress-ga:expired`) goes to both the refresh and publish steps, so one agency's red flag no longer blocks the whole weekly release with no way around it ([#807](https://github.com/Civic-Minds/Atlas/issues/807)).
