@@ -27,7 +27,6 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Changed
 
-- **Beta: route lines are drawn in segments coloured by the service at each stop**: every trip that serves a stop counts, so the trunk TTC 29A and 29C share reads every 8 while each branch's tail keeps its own 16; the route-level frequency and tier still decide the filter ([#690](https://github.com/Civic-Minds/Atlas/issues/690)).
 - **Text is bigger and easier to read**: nothing a person has to read is below 12px any more, and the faint greys, status colours (green, red, amber) and white-on-pastel fare and timeline pills now meet WCAG AA contrast in light, dark and high-contrast modes.
 - **Frequency reads the same way everywhere, and Compare now says "or better"**: Compare headings read like a claim about the service rather than the filter, and the same frequency was worded eight different ways ("≤10m", "every 12m", "about every 10 min").
 - **Night Service moved to `/research/night`**: it now lives with the other research pages, and old `/apps/night` links redirect there with their filters kept.
