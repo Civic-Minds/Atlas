@@ -1,14 +1,15 @@
 {
   "slug": "fred-transit",
-  "name": "Fredericksburg Regional Transit",
+  "name": "FXBGO! (Fredericksburg)",
   "hiddenInProduction": true,
   "issueUrl": "https://github.com/Civic-Minds/Atlas/issues/684",
-  "websiteUrl": "http://www.ridefred.com/",
+  "websiteUrl": "http://ridefxbgo.com/",
   "center": [
     38.3204,
     -77.4867
   ],
-  "feedUrl": "https://files.mobilitydatabase.org/mdb-2430/mdb-2430-202504011831/mdb-2430-202504011831.zip",
+  "feedUrl": null,
+  "manualFeedSource": true,
   "lastFeedExpiry": "20250331",
   "lastFeedVersion": null,
   "region": "Virginia",
