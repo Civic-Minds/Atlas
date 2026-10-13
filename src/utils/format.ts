@@ -124,6 +124,8 @@ export function titleCase(s: string): string {
       return TRANSIT_ACRONYMS[m] ?? TRANSIT_ACRONYMS[m.toLowerCase()] ?? m;
     })
     .replace(/'(\p{L})/gu, (_, c) => "'" + c.toLowerCase())
+    // Mc surnames in all-caps feeds: "MCKNIGHT" -> "McKnight"
+    .replace(/\bMc(\p{L})/gu, (_, c: string) => 'Mc' + c.toUpperCase())
     .replace(/l'orme/gi, "l'Orme")
     .replace(/à-l'/gi, "à-l'");
 }
