@@ -29,6 +29,7 @@ const RULES: Array<{ name: string; pattern: RegExp; use: string }> = [
 // control styles with Pill but are not pills.
 const ALLOWED: Record<string, string[]> = {
   'components/Interval/FilterChips.tsx': ['option pill classes'],
+  'components/Interval/FilterPanel.tsx': ['option pill classes'],
   'apps/History.tsx': ['option pill classes'],
 };
 
