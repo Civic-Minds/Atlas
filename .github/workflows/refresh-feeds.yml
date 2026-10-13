@@ -14,6 +14,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  issues: write
 
 # Never run two data releases at once: overlapping runs could publish tiles
 # and agency data from different builds. Queue instead of cancelling, so a
@@ -91,6 +92,30 @@ jobs:
             git reset --quiet
           fi
           git diff --shortstat
+
+      # Refresh keeps an agency's last timetable when every feed it knows about has expired, and
+      # only marks it stale. Keep one open issue listing those agencies so each gets a newer
+      # feed (#612). Never blocks the release.
+      - name: Report agencies on expired timetables
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          body="$RUNNER_TEMP/stale-feeds.md"
+          npx tsx scripts/report-stale-feeds.ts > "$body"
+          count=$(npx tsx scripts/report-stale-feeds.ts --count)
+          title="Agencies on expired timetables"
+          num=$(gh issue list --state open --search "\"$title\" in:title" --json number,title \
+            --jq ".[] | select(.title == \"$title\") | .number" | head -1)
+          if [ -n "$num" ]; then
+            gh issue edit "$num" --body-file "$body"
+            if [ "$count" = "0" ]; then
+              gh issue close "$num" --comment "No public agency is on an expired timetable now."
+            fi
+          elif [ "$count" != "0" ]; then
+            gh issue create --title "$title" --body-file "$body" --label data-quality
+          fi
+          echo "$count public agencies on expired timetables"
 
       - name: Install tippecanoe
         run: sudo apt-get install -y tippecanoe
