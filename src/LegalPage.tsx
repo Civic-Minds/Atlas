@@ -46,7 +46,7 @@ export default function LegalPage({ document }: { document: LegalDocument }) {
   return (
     <PageShell stickyHeader>
         <div className="mt-10 lg:grid lg:grid-cols-[12rem_minmax(0,42rem)] lg:gap-12 lg:items-start">
-          <PageContents items={CONTENTS[privacy ? 'privacy' : 'terms'].map(([id, label]) => ({ id, label }))} />
+          <PageContents title={privacy ? 'Privacy Policy' : 'Terms of Service'} items={CONTENTS[privacy ? 'privacy' : 'terms'].map(([id, label]) => ({ id, label }))} />
           <article className="space-y-8 text-sm leading-relaxed text-[var(--text-dim)]">
           <header><h1 className="text-3xl font-black tracking-tight text-[var(--text-primary)]">{privacy ? 'Privacy Policy' : 'Terms of Service'}</h1><p className="mt-3">Last updated October 3, 2026.</p></header>
           {privacy ? <>

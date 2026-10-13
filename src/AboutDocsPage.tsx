@@ -65,7 +65,7 @@ export default function AboutDocsPage() {
     <PageShell stickyHeader>
 
         <div className="mt-10 lg:grid lg:grid-cols-[12rem_minmax(0,42rem)] lg:gap-12 lg:items-start">
-          <PageContents items={DOCS_CONTENTS.map(([id, label]) => ({ id, label }))} />
+          <PageContents title="Documentation" items={DOCS_CONTENTS.map(([id, label]) => ({ id, label }))} />
 
           <article className="space-y-8">
           <header>
