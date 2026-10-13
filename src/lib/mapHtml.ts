@@ -2,17 +2,18 @@ import { STATUS_COLORS } from '../utils/colors';
 import type { HistoryMapStop } from '../context/HistoryMapOverlay';
 import type { LiveVehicle } from '../context/LiveVehiclesMapOverlay';
 import { escapeHtml } from './escapeHtml';
+import { delayAmount, headwayEvery } from '../utils/headwayText';
 
 export function formatGap(gap: number | null): string {
   if (gap === null) return '–';
-  return `${Math.round(gap * 10) / 10}m`;
+  return delayAmount(Math.round(gap * 10) / 10);
 }
 
 export function formatDelta(delta: number | null): string {
   if (delta === null) return '–';
   const abs = Math.round(Math.abs(delta) * 10) / 10;
   if (Math.abs(delta) < 0.5) return 'on time';
-  return delta > 0 ? `+${abs}m` : `–${abs}m`;
+  return delta > 0 ? `+${delayAmount(abs)}` : `–${delayAmount(abs)}`;
 }
 
 export function StopCardHtml(stop: HistoryMapStop, expanded: boolean): string {
@@ -46,7 +47,7 @@ export function StopCardHtml(stop: HistoryMapStop, expanded: boolean): string {
       <span style="font-size:10px;font-weight:700;color:${color};">${delta}</span>
       ${expanded ? `
         <div style="margin-top:4px;padding-top:4px;border-top:1px solid var(--border-primary,#e5e7eb);">
-          <p style="font-size:9px;color:var(--text-dim,#6b7280);margin:0;">scheduled every ${stop.scheduledHeadwayMin ?? '?'}m</p>
+          <p style="font-size:9px;color:var(--text-dim,#6b7280);margin:0;">scheduled ${headwayEvery(stop.scheduledHeadwayMin)}</p>
         </div>
       ` : ''}
     </div>

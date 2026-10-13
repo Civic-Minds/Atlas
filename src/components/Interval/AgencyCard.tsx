@@ -25,6 +25,7 @@ import {
   resolveOnDemandZone,
   type OnDemandAvailability,
 } from '../../../shared/onDemandAvailability';
+import { headwayTierLabel } from '../../utils/headwayText';
 
 interface RouteRow {
   routeId: string;
@@ -135,7 +136,7 @@ export function getRoutes(
 
 function frequencyFilterLabel(maxHeadway: number): string | null {
   if (maxHeadway === Infinity) return null;
-  return HEADWAY_TIERS.find(t => t.max === maxHeadway)?.label ?? `≤${maxHeadway}m`;
+  return HEADWAY_TIERS.find(t => t.max === maxHeadway)?.label ?? headwayTierLabel(maxHeadway);
 }
 
 /** Separate services that own some zones (e.g. Hamilton Trans-Cab beside myRide), listed once each. */

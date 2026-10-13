@@ -230,7 +230,7 @@ describe('Infrequent routes show "limited" on All day and in specific periods (#
       expect(limitedRow.textContent).toContain('limited');
       expect(limitedRow.textContent).not.toContain('every');
       const { container: frequentRow } = render(<>{routeRowRight('Winter Park', frequent.headway, true, frequent.limited)}</>);
-      expect(frequentRow.textContent).toContain('every 12m');
+      expect(frequentRow.textContent).toContain('every 12 min');
       expect(frequentRow.textContent).not.toContain('limited');
     });
   });

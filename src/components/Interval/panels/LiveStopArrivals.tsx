@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { isLiveEligibleSlug } from '../../../../shared/livePollingConfig';
 import { SidebarCardSection } from '../cardUi';
 import { cleanRouteShortName } from '../../../utils/format';
+import { headwayAbout } from '../../../utils/headwayText';
 
 const POLL_MS = 20_000;
 
@@ -64,7 +65,7 @@ export default function LiveStopArrivals({ slug, stopId, lat, lon }: { slug: str
         )}
         {data.observedGapMin != null && (
           <p className="text-[10px] text-[var(--text-dim)] mt-2">
-            Coming every ~{Math.round(data.observedGapMin)} min right now
+            Coming {headwayAbout(Math.round(data.observedGapMin))} right now
           </p>
         )}
         {hasMeasured && (

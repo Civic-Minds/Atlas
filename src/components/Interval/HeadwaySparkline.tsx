@@ -10,6 +10,7 @@ import type { TimePeriod } from '../../hooks/useIntervalStats';
 import type { HeadwayByPeriod, HeadwayByHour } from '../../hooks/useAgencyData';
 import type { HeadwayByHourMaxGap } from '../../../shared/config';
 import { ACTION_PRIMARY, APP_TAB_INACTIVE, GLASS_PILL } from '../../styles';
+import { delayAmount, headwayEvery } from '../../utils/headwayText';
 
 const HOURS = SPARKLINE_HOURS;
 
@@ -25,7 +26,7 @@ function formatClock(totalMinutes: number): string {
 }
 
 function formatHourTitle(h: number, headway: number): string {
-  return `${formatClock(h * 60)}: every ${headway} min`;
+  return `${formatClock(h * 60)}: ${headwayEvery(headway)}`;
 }
 
 /**
@@ -266,7 +267,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
                 key={h}
                 className="flex-1 min-w-0 flex flex-col items-center"
                 title={hasValue
-                  ? `${formatHourTitle(h, hw)}${seriesLabel ? ` (${seriesLabel})` : ''}${maxGap != null && maxGap > hw ? `; longest gap ${maxGap} min` : ''}`
+                  ? `${formatHourTitle(h, hw)}${seriesLabel ? ` (${seriesLabel})` : ''}${maxGap != null && maxGap > hw ? `; longest gap ${delayAmount(maxGap)}` : ''}`
                   : undefined}
               >
                 <div style={{ height: H }} className="relative flex items-end justify-center w-full">

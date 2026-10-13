@@ -16,6 +16,7 @@ import {
 } from '../../utils/format';
 import RouteListRow from '../RouteListRow';
 import type { RouteListDisplay } from '../../utils/effectiveHeadway';
+import { headwayEvery } from '../../utils/headwayText';
 
 // Reusable/helper interfaces for route snippets
 export interface RecentRoute {
@@ -72,7 +73,7 @@ export function routeRowRight(agencyName: string, headway?: number | null, stack
       <span className={`${LIST_ROW_DIM} ${layout} whitespace-nowrap`}>
         {agency}
         <span className="text-[var(--text-dim)] font-normal"> · </span>
-        every {headway}m
+        {headwayEvery(headway)}
       </span>
     );
   }

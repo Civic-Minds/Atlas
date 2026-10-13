@@ -14,6 +14,7 @@ import {
   agencyQualifiesForHistory,
   type HistoryTier,
 } from '../../shared/historyEligibility';
+import { capitalizeFirst, headwayAmount, headwayEvery } from '../utils/headwayText';
 
 export interface RouteSnapshot {
   label: string;
@@ -72,7 +73,7 @@ function changeSummary(entry: RouteHistoryEntry): { text: string; subtext: strin
   if (Math.abs(fHw - lHw) < 2) return null;
   const worse = lHw > fHw;
   return {
-    text: `Every ${fHw} min → every ${lHw} min`,
+    text: `${capitalizeFirst(headwayEvery(fHw))} → ${headwayEvery(lHw)}`,
     subtext: `${first.label} to ${last.label}`,
     worse,
   };
@@ -242,7 +243,7 @@ function RouteHistoryCard({
                   <g key={i}>
                     <circle cx={p.x} cy={p.y} r="3" fill={lineColor} stroke="var(--bg-panel)" strokeWidth="1.5" />
                     <text x={p.x} y={p.y - 7} textAnchor="middle" fontSize="8" fontWeight="700" fill="var(--text-primary)" fontFamily="inherit">
-                      {p.hw}m
+                      {headwayAmount(p.hw)}
                     </text>
                     {showXLabel && (
                       <text x={xPos} y={height - 3} textAnchor={xAnchor} fontSize="7.5" fontWeight="600" fill="var(--text-muted)" fontFamily="inherit">
@@ -277,7 +278,7 @@ function RouteHistoryCard({
                       {delta > 0 ? `+${delta}` : `${delta}`}
                     </span>
                   )}
-                  <span className={`text-xs font-black tabular-nums ${hwColor}`}>{hw} min</span>
+                  <span className={`text-xs font-black tabular-nums ${hwColor}`}>{headwayAmount(hw)}</span>
                 </div>
               </div>
             );

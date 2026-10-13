@@ -101,7 +101,7 @@ describe('HeadwaySparkline', () => {
     const labels = within(dialog).getAllByTestId('sparkline-headway-label').map(el => el.textContent);
     expect(labels).toEqual(['35', '23', '40']);
     expect(within(dialog).getByTestId('sparkline-legend')).toHaveTextContent('minutes between trips');
-    expect(within(dialog).getByTestId('sparkline-legend')).toHaveTextContent('≤60m');
+    expect(within(dialog).getByTestId('sparkline-legend')).toHaveTextContent('≤60 min');
   });
 
   it('switches the full-day chart to the picked direction', () => {

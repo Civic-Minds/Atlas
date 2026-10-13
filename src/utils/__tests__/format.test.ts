@@ -121,6 +121,6 @@ describe('titleCase', () => {
 describe('fmtHeadway', () => {
   it('uses cautious wording for scheduled cadence', () => {
     expect(fmtHeadway(10)).toBe('about every 10 min');
-    expect(fmtHeadway(90)).toBe('about every 1.5h');
+    expect(fmtHeadway(90)).toBe('about every 1.5 h');
   });
 });
