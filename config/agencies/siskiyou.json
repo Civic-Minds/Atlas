@@ -2,7 +2,6 @@
   "slug": "siskiyou",
   "name": "Siskiyou County",
   "hiddenInProduction": true,
-  "issueUrl": "https://github.com/Civic-Minds/Atlas/issues/492",
   "websiteUrl": "https://www.co.siskiyou.ca.us/generalservices/page/stage-siskiyou-transit-and-general-express",
   "center": [
     41.5121,
@@ -21,8 +20,8 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-117/latest.zip",
   "lastFeedExpiry": "20300725",
   "lastFeedVersion": "UTC: 02-Jul-2026 18:56",
-  "lastRefreshedAt": "2026-10-12",
-  "lastFeedCheckAt": "20261012",
+  "lastRefreshedAt": "2026-10-13",
+  "lastFeedCheckAt": "20261013",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20300925",
@@ -30,19 +29,19 @@
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/siskiyou-ca-us/siskiyou-ca-us.zip",
   "feedQuality": {
-    "status": "unusable",
-    "score": 0,
+    "status": "review",
+    "score": 90,
     "reasons": [
-      "Atlas could not find any usable routes in this feed."
+      "1 minor schedule issue found while reading the feed."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 1,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 0
+      "featureCount": 11
     },
-    "checkedAt": "2026-10-12"
+    "checkedAt": "2026-10-13"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
