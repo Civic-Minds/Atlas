@@ -29,6 +29,7 @@ import type { SupplementalFeedMeta } from '../shared/feedAvailability';
 import { agencyQualifiesForHistory, agencyQualifiesForHistoryExplore } from '../shared/historyEligibility';
 import ErrorBoundary from './components/ErrorBoundary';
 import { DAY_TYPES, getNowDay, type DayType } from '../shared/dayTypes';
+import { isAppGated } from './utils/appGate';
 import { syncUrlParams } from './utils/syncUrlParams';
 import AppUpdateBanner from './components/AppUpdateBanner';
 import type { FeedQuality } from '../shared/feedQuality';
@@ -180,9 +181,7 @@ export default function App() {
   // Direct URL access (e.g. /apps/live) would otherwise bypass the LIVE_ENABLED / HISTORY_ENABLED /
   // CORRIDORS_ENABLED gate below -- fall back to the frequency map, and correct the URL so it
   // doesn't lie about what's actually showing.
-  const gated = (routedApp === 'live' && !FEATURES.live) || (routedApp === 'history' && !FEATURES.history)
-    || (routedApp === 'corridors' && !FEATURES.corridors)
-    || (routedApp === 'night' && !FEATURES.researchApps)
+  const gated = isAppGated(routedApp, FEATURES)
     || ((isFrequentServiceMapRoute || isFrequentServiceStoryRoute) && !FEATURES.frequentService);
   const activeApp: AppId = gated ? 'frequency' : routedApp;
 
