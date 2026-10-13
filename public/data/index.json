@@ -524,7 +524,7 @@
         43.85,
         -79.99
       ],
-      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-grand-river-transit-gtfs-721.zip?alt=media",
+      "feedUrl": "https://webapps.regionofwaterloo.ca/api/grt-routes/api/staticfeeds/1",
       "lastFeedExpiry": "20260426",
       "lastFeedVersion": null,
       "lastRefreshedAt": "20260811",
@@ -10449,7 +10449,7 @@
         43.0481,
         -87.9598
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-2127/latest.zip",
+      "feedUrl": "https://kamino.mcts.org/gtfs/google_transit.zip",
       "lastFeedExpiry": "20250823",
       "lastFeedVersion": null,
       "region": "Wisconsin",
@@ -10847,7 +10847,7 @@
         34.1695,
         -118.2399
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-1280/mdb-1280-202402120036/mdb-1280-202402120036.zip",
+      "feedUrl": "https://www.glendaleca.gov/home/showdocument?id=29549",
       "lastFeedExpiry": "20220831",
       "lastFeedVersion": null,
       "region": "California",
@@ -17636,7 +17636,7 @@
         33.4594,
         -82.0294
       ],
-      "feedUrl": "https://github.com/transitland/gtfs-archives-not-hosted-elsewhere/raw/master/augusta-ga-us.zip",
+      "feedUrl": "https://gismap.augustaga.gov/AugGAgis/GISWebLinks/Transit/GTFS/google_transit.zip",
       "region": "Georgia",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-5780/latest.zip",
       "lastFeedExpiry": "20240224",
@@ -19196,7 +19196,7 @@
         37.9812,
         -87.5622
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/ntd-50043/latest.zip",
+      "feedUrl": "https://metsmyride.evansville.in.gov/GTFS/Static/google_transit.zip",
       "lastFeedExpiry": "20250115",
       "lastFeedVersion": "20240618",
       "lastRefreshedAt": "20260811",
