@@ -1,12 +1,11 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import * as maplibregl from 'maplibre-gl';
 import { getTierColor } from '../../../hooks/useIntervalStats';
-import { useHistoryMapOverlay, type HistoryMapStop } from '../../../context/HistoryMapOverlay';
-import { StopCardHtml } from '../../../lib/mapHtml';
+import { useHistoryMapOverlay } from '../../../context/HistoryMapOverlay';
 import { useColorVision } from '../../../context/ColorVisionContext';
 import { isDrawableLineCoordinates, lineCoordinates } from '../../../../shared/routeGeometry';
 
-/** History map layers: route shape, time-scrubber routes, and stop markers. */
+/** History map layers: route shape, time-scrubber routes, and camera fit. */
 export function useHistoryLayer(
   mapRef: React.RefObject<maplibregl.Map | null>,
   mapLoaded: boolean,
@@ -14,13 +13,7 @@ export function useHistoryLayer(
   const { colorVisionFriendly } = useColorVision();
   const colorMode = colorVisionFriendly ? 'friendly' : 'default';
   const { overlay: historyOverlay } = useHistoryMapOverlay();
-  const [expandedStop, setExpandedStop] = useState<string | null>(null);
-  const expandedStopRef = useRef<string | null>(null);
-  const historyMarkersRef = useRef<maplibregl.Marker[]>([]);
-  const historyStopElsRef = useRef<Map<string, { el: HTMLDivElement; stop: HistoryMapStop }>>(new Map());
   const tryZoomHandlerRef = useRef<(() => void) | null>(null);
-
-  expandedStopRef.current = expandedStop;
 
   // History route shape (historical geometry for selected period, AI-162/AI-161)
   useEffect(() => {
@@ -70,15 +63,10 @@ export function useHistoryLayer(
     }
   }, [historyOverlay, mapLoaded, colorMode]);
 
-  // History stop markers overlay
+  // History camera: fit to the historical route(s), or fly to the agency
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapLoaded) return;
-
-    // Clear old markers
-    historyMarkersRef.current.forEach(m => m.remove());
-    historyMarkersRef.current = [];
-    historyStopElsRef.current.clear();
 
     // Cancel any stale one-shot zoom handler left over from a previous route/overlay
     if (tryZoomHandlerRef.current) {
@@ -123,110 +111,59 @@ export function useHistoryLayer(
       }
     }
 
-    if (historyOverlay.stops.length === 0) {
-      if (historyOverlay.agencyCenter) {
-        // A historical route already has a precise camera target above. Do not
-        // immediately fly back to the agency center; the competing camera
-        // animations can keep emitting moveend updates and trigger React's
-        // update-depth guard (#478).
-        if (!hasRouteGeometry && !hasHistoricalRouteGeometry) {
-          const fitAgencyRoutes = () => {
-            tryZoomHandlerRef.current = null;
-            const features = map.queryRenderedFeatures(undefined, {
-              layers: ['overview-routes-layer', 'routes-layer', 'local-routes-layer'],
-            }).filter(feature => String(feature.properties?.agencySlug ?? '') === historyOverlay.slug);
-            let minLng = 180, maxLng = -180, minLat = 90, maxLat = -90;
-            for (const feature of features) {
-              for (const [lng, lat] of lineCoordinates(feature.geometry)) {
-                minLng = Math.min(minLng, lng);
-                maxLng = Math.max(maxLng, lng);
-                minLat = Math.min(minLat, lat);
-                maxLat = Math.max(maxLat, lat);
-              }
+    if (historyOverlay.agencyCenter) {
+      // A historical route already has a precise camera target above. Do not
+      // immediately fly back to the agency center; the competing camera
+      // animations can keep emitting moveend updates and trigger React's
+      // update-depth guard (#478).
+      if (!hasRouteGeometry && !hasHistoricalRouteGeometry) {
+        const fitAgencyRoutes = () => {
+          tryZoomHandlerRef.current = null;
+          const features = map.queryRenderedFeatures(undefined, {
+            layers: ['overview-routes-layer', 'routes-layer', 'local-routes-layer'],
+          }).filter(feature => String(feature.properties?.agencySlug ?? '') === historyOverlay.slug);
+          let minLng = 180, maxLng = -180, minLat = 90, maxLat = -90;
+          for (const feature of features) {
+            for (const [lng, lat] of lineCoordinates(feature.geometry)) {
+              minLng = Math.min(minLng, lng);
+              maxLng = Math.max(maxLng, lng);
+              minLat = Math.min(minLat, lat);
+              maxLat = Math.max(maxLat, lat);
             }
-            if (minLng < maxLng && minLat < maxLat) {
-              map.fitBounds([[minLng, minLat], [maxLng, maxLat]], { padding: { top: 80, bottom: 80, left: 80, right: 280 }, maxZoom: 11 });
-            }
-          };
-          tryZoomHandlerRef.current = fitAgencyRoutes;
-          map.once('moveend', fitAgencyRoutes);
-          map.flyTo({ center: [historyOverlay.agencyCenter[1], historyOverlay.agencyCenter[0]], zoom: 10, duration: 700 });
-        }
-        // Without historical geometry, try to zoom to the specific current route
-        // after the agency fly completes.
-        if (!hasRouteGeometry && historyOverlay.routeShortName) {
-          const rsn = historyOverlay.routeShortName;
-          const tryZoom = () => {
-            map.off('moveend', tryZoom);
-            tryZoomHandlerRef.current = null;
-            if (!map.getLayer('routes-layer')) return;
-            const features = map.queryRenderedFeatures(undefined, { layers: ['routes-layer'] })
-              .filter((f: maplibregl.MapGeoJSONFeature) => String(f.properties?.routeShortName ?? '') === rsn);
-            if (features.length === 0) return;
-            let minLng = 180, maxLng = -180, minLat = 90, maxLat = -90;
-            features.forEach(f => {
-              lineCoordinates(f.geometry).forEach(([lng, lat]: [number, number]) => {
-                if (lng < minLng) minLng = lng; if (lng > maxLng) maxLng = lng;
-                if (lat < minLat) minLat = lat; if (lat > maxLat) maxLat = lat;
-              });
-            });
-            if (minLng < maxLng) {
-              map.fitBounds([[minLng, minLat], [maxLng, maxLat]], { padding: { top: 80, bottom: 80, left: 80, right: 280 }, maxZoom: 14 });
-            }
-          };
-          tryZoomHandlerRef.current = tryZoom;
-          map.on('moveend', tryZoom);
-        }
+          }
+          if (minLng < maxLng && minLat < maxLat) {
+            map.fitBounds([[minLng, minLat], [maxLng, maxLat]], { padding: { top: 80, bottom: 80, left: 80, right: 280 }, maxZoom: 11 });
+          }
+        };
+        tryZoomHandlerRef.current = fitAgencyRoutes;
+        map.once('moveend', fitAgencyRoutes);
+        map.flyTo({ center: [historyOverlay.agencyCenter[1], historyOverlay.agencyCenter[0]], zoom: 10, duration: 700 });
       }
-      return;
-    }
-
-    let minLng = 180, maxLng = -180, minLat = 90, maxLat = -90;
-
-    historyOverlay.stops.forEach(stop => {
-      if (!stop.lat || !stop.lon) return;
-      const isExpanded = expandedStopRef.current === stop.stopId;
-      const html = StopCardHtml(stop, isExpanded);
-
-      const el = document.createElement('div');
-      el.className = 'history-stop-marker-wrapper';
-      el.innerHTML = html;
-      el.addEventListener('click', (e) => {
-        e.stopPropagation();
-        setExpandedStop(prev => prev === stop.stopId ? null : stop.stopId);
-      });
-
-      const marker = new maplibregl.Marker({ element: el })
-        .setLngLat([stop.lon, stop.lat])
-        .addTo(map);
-
-      historyMarkersRef.current.push(marker);
-      historyStopElsRef.current.set(stop.stopId, { el, stop });
-
-      if (stop.lon < minLng) minLng = stop.lon;
-      if (stop.lon > maxLng) maxLng = stop.lon;
-      if (stop.lat < minLat) minLat = stop.lat;
-      if (stop.lat > maxLat) maxLat = stop.lat;
-    });
-
-    // Zoom to fit stop markers
-    if (historyOverlay.stops.length >= 2) {
-      map.fitBounds([[minLng, minLat], [maxLng, maxLat]], { padding: { top: 80, bottom: 80, left: 80, right: 280 }, maxZoom: 14 });
+      // Without historical geometry, try to zoom to the specific current route
+      // after the agency fly completes.
+      if (!hasRouteGeometry && historyOverlay.routeShortName) {
+        const rsn = historyOverlay.routeShortName;
+        const tryZoom = () => {
+          map.off('moveend', tryZoom);
+          tryZoomHandlerRef.current = null;
+          if (!map.getLayer('routes-layer')) return;
+          const features = map.queryRenderedFeatures(undefined, { layers: ['routes-layer'] })
+            .filter((f: maplibregl.MapGeoJSONFeature) => String(f.properties?.routeShortName ?? '') === rsn);
+          if (features.length === 0) return;
+          let minLng = 180, maxLng = -180, minLat = 90, maxLat = -90;
+          features.forEach(f => {
+            lineCoordinates(f.geometry).forEach(([lng, lat]: [number, number]) => {
+              if (lng < minLng) minLng = lng; if (lng > maxLng) maxLng = lng;
+              if (lat < minLat) minLat = lat; if (lat > maxLat) maxLat = lat;
+            });
+          });
+          if (minLng < maxLng) {
+            map.fitBounds([[minLng, minLat], [maxLng, maxLat]], { padding: { top: 80, bottom: 80, left: 80, right: 280 }, maxZoom: 14 });
+          }
+        };
+        tryZoomHandlerRef.current = tryZoom;
+        map.on('moveend', tryZoom);
+      }
     }
   }, [historyOverlay, mapLoaded]);
-
-  // Re-render marker content in place when a stop card is expanded/collapsed —
-  // deliberately excluded from the effect above so this never re-fits the camera.
-  useEffect(() => {
-    historyStopElsRef.current.forEach(({ el, stop }, stopId) => {
-      el.innerHTML = StopCardHtml(stop, expandedStop === stopId);
-    });
-  }, [expandedStop]);
-
-  // Remove markers on unmount
-  useEffect(() => {
-    return () => {
-      historyMarkersRef.current.forEach(m => m.remove());
-    };
-  }, []);
 }

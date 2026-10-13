@@ -1,9 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { escapeHtml } from '../escapeHtml';
 import { vehicleTooltipHtml } from '../../components/Interval/map/useLiveVehiclesLayer';
-import { StopCardHtml, VehicleMarkerHtml } from '../mapHtml';
+import { VehicleMarkerHtml } from '../mapHtml';
 import type { LiveVehicle } from '../../context/LiveVehiclesMapOverlay';
-import type { HistoryMapStop } from '../../context/HistoryMapOverlay';
 
 function vehicle(partial: Partial<LiveVehicle> & Pick<LiveVehicle, 'routeShortName'>): LiveVehicle {
   return {
@@ -49,22 +48,6 @@ describe('map HTML builders escape untrusted feed text', () => {
     expect(html).not.toContain('<script>');
     expect(html).toContain('&lt;script&gt;');
     expect(html).toContain('&lt;img&gt;');
-  });
-
-  it('StopCardHtml escapes stop name', () => {
-    const stop: HistoryMapStop = {
-      stopId: 's1<script>',
-      name: '<b>Inject</b>',
-      lat: 0,
-      lon: 0,
-      headwayDeltaMin: null,
-      avgGap: null,
-      scheduledHeadwayMin: null,
-    };
-    const html = StopCardHtml(stop, false);
-    expect(html).not.toContain('<b>Inject</b>');
-    expect(html).toContain('&lt;b&gt;Inject&lt;/b&gt;');
-    expect(html).toContain('&lt;script&gt;');
   });
 
   it('VehicleMarkerHtml escapes route short name', () => {
