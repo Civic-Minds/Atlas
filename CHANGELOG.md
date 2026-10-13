@@ -8,6 +8,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Added
 
+- **Atlas is easier to find in search**: every page now has its own title, description and address for search results, About, Docs, Privacy and Terms carry their text in the page itself, a real sitemap and robots file are published, and made-up addresses now return a proper "not found" instead of the map.
 - **Analytics count more of what people use**: map exports, outbound link clicks, report-issue and feedback opens, and page views on the About, Docs, Privacy and Terms pages were missing, and internal sessions stay excluded.
 - **Shared map images and copied links are tagged (beta)**: shared images now link back to the map, and tags let shared visits be counted in analytics.
 - **A Changelog page lists every app version and map data update (beta)**: newest first by date, and the What's new panel now shows just the latest version with a "See all changes" link.
