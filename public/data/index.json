@@ -838,6 +838,7 @@
     {
       "slug": "niagara",
       "name": "Niagara Transit",
+      "labelPlace": "Niagara Region",
       "region": "Ontario",
       "center": [
         43.1594,
@@ -1518,6 +1519,7 @@
     {
       "slug": "yrt",
       "name": "York Region Transit",
+      "labelPlace": "York Region",
       "shortName": "YRT",
       "websiteUrl": "http://www.yrt.ca",
       "region": "Ontario",
@@ -3800,6 +3802,7 @@
     {
       "slug": "tcat",
       "name": "Tompkins Consolidated Area Transit",
+      "labelPlace": "Ithaca",
       "websiteUrl": "http://www.tcatbus.com/",
       "region": "New York",
       "center": [
@@ -4187,6 +4190,7 @@
     {
       "slug": "pvta",
       "name": "Pioneer Valley Transit Authority",
+      "labelPlace": "Pioneer Valley",
       "websiteUrl": "https://www.pvta.com",
       "region": "Massachusetts",
       "center": [
@@ -5619,6 +5623,7 @@
     {
       "slug": "hudsonlink",
       "name": "Hudson Link",
+      "labelPlace": "",
       "websiteUrl": "https://www.ridehudsonlink.com/Tools/Maps-and-Schedules",
       "center": [
         41.73,
@@ -6525,6 +6530,7 @@
     {
       "slug": "caltrain",
       "name": "Caltrain",
+      "labelPlace": "Bay Area",
       "websiteUrl": "http://www.caltrain.com",
       "center": [
         37.4573,
@@ -6970,6 +6976,7 @@
     {
       "slug": "marintransit",
       "name": "Marin Transit",
+      "labelPlace": "Marin County",
       "websiteUrl": "https://marintransit.gov",
       "center": [
         37.9841,
@@ -8870,6 +8877,7 @@
     {
       "slug": "foothill",
       "name": "Foothill Transit",
+      "labelPlace": "San Gabriel Valley",
       "websiteUrl": "https://www.foothilltransit.org",
       "center": [
         34.06,
@@ -12676,6 +12684,8 @@
     {
       "slug": "nice",
       "name": "Nassau Inter-County Express (NICE Bus)",
+      "shortName": "NICE",
+      "labelPlace": "Nassau County",
       "websiteUrl": "http://www.nicebus.com",
       "region": "New York",
       "center": [
@@ -13625,6 +13635,7 @@
     {
       "slug": "muscogee-county",
       "name": "METRA",
+      "labelPlace": "Columbus, GA",
       "websiteUrl": "https://www.columbusga.gov/metra",
       "center": [
         32.46,
@@ -14184,6 +14195,7 @@
     {
       "slug": "new-castle",
       "name": "New Castle Area Transit Authority",
+      "labelPlace": "",
       "region": "Pennsylvania",
       "center": [
         41.0037,
@@ -14221,6 +14233,7 @@
     {
       "slug": "westmoreland",
       "name": "Westmoreland Transit",
+      "labelPlace": "Westmoreland County",
       "region": "Pennsylvania",
       "center": [
         40.3015,
@@ -14374,6 +14387,8 @@
     {
       "slug": "goraleigh",
       "name": "GoRaleigh (Capital Area Transit)",
+      "shortName": "GoRaleigh",
+      "labelPlace": "Raleigh",
       "websiteUrl": "http://www.GoRaleigh.org",
       "center": [
         35.78,
@@ -15311,6 +15326,7 @@
     {
       "slug": "hrt",
       "name": "Hampton Roads Transit",
+      "labelPlace": "",
       "websiteUrl": "https://gohrt.com/",
       "center": [
         37,
@@ -25221,6 +25237,7 @@
     {
       "slug": "sunshine-bus",
       "name": "Sunshine Bus Company",
+      "labelPlace": "St. Johns County",
       "websiteUrl": "http://www.sunshinebus.net/",
       "region": "Florida",
       "center": [
@@ -26270,6 +26287,7 @@
     {
       "slug": "summit-stage",
       "name": "Summit Stage",
+      "labelPlace": "Summit County",
       "websiteUrl": "https://www.summitcountyco.gov/586/Transit-Summit-Stage",
       "region": "Colorado",
       "center": [
