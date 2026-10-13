@@ -12469,6 +12469,7 @@
       "feedUrl": "https://files.mobilitydatabase.org/mdb-509/latest.zip",
       "lastFeedExpiry": "20270313",
       "lastFeedVersion": null,
+      "mergeEquivalentShapeVariantsAllModes": true,
       "lastRefreshedAt": "2026-10-12",
       "cities": [
         "Plainfield, New Jersey",

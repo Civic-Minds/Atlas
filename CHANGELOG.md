@@ -16,6 +16,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ### Fixed
 
 - Redwood Coast Transit 20 now draws its route line from Eureka to Crescent City instead of a short stub, since long highway stretches between towns were mistaken for broken route data ([#776](https://github.com/Civic-Minds/Atlas/issues/776)).
+- NJ Transit's 14 commuter rail lines are back on the map, since their feed gives nearly every train its own copy of the line's shape ([#616](https://github.com/Civic-Minds/Atlas/issues/616)).
 - SamTrans 120 shows its weekday service again (every 15 min), since that day's feed gives every trip its own copy of the same route shape ([#775](https://github.com/Civic-Minds/Atlas/issues/775)).
 - A route's all-day frequency no longer comes from a variant with only a few trips a day, so TTC 102 shows every 30 instead of every 657 and TriMet 12 every 15 instead of every 1141 ([#749](https://github.com/Civic-Minds/Atlas/issues/749)).
 - Mont-Tremblant's Friday and Saturday now show the regular timetables instead of the Thanksgiving and December one-day schedules, since a passed holiday no longer decides which schedule the feed is read from ([#764](https://github.com/Civic-Minds/Atlas/issues/764)).
