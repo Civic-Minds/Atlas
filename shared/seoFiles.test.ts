@@ -50,6 +50,12 @@ describe('vercel.json routing', () => {
     }
   });
 
+  it('serves the agency index from its own prerendered file', () => {
+    for (const source of ['/agencies', '/agencies/']) {
+      expect(vercel.rewrites.find(r => r.source === source)?.destination).toBe('/agencies/index.html');
+    }
+  });
+
   it('serves the prerendered pages from their own file', () => {
     for (const path of ['/about', '/about/docs', '/privacy', '/terms']) {
       expect(vercel.rewrites.find(r => r.source === path)?.destination).toBe(`${path}/index.html`);

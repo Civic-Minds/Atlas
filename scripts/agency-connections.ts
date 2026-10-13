@@ -34,6 +34,7 @@ export interface AgencyConnection {
   slug: string;
   name: string;
   routes: string[];
+  betaOnly?: true;
 }
 
 const M_PER_DEG_LAT = 110540;
@@ -92,6 +93,7 @@ export function computeConnections(
   all: ReadonlyMap<string, AgencyStops>,
   targets: Iterable<string>,
   nameOf: (slug: string) => string,
+  isBetaOnly: (slug: string) => boolean = () => false,
 ): Map<string, AgencyConnection[]> {
   const CELL = CONNECT_M;
   const cellKey = (lon: number, lat: number): [number, number] => [
@@ -124,7 +126,7 @@ export function computeConnections(
       }
     }
     out.set(slug, [...found.entries()]
-      .map(([other, set]) => ({ slug: other, name: nameOf(other), routes: [...set].sort((a, b) => a.localeCompare(b, 'en', { numeric: true })) }))
+      .map(([other, set]) => ({ slug: other, name: nameOf(other), ...(isBetaOnly(other) ? { betaOnly: true as const } : {}), routes: [...set].sort((a, b) => a.localeCompare(b, 'en', { numeric: true })) }))
       .sort((a, b) => b.routes.length - a.routes.length || a.name.localeCompare(b.name)));
   }
   return out;

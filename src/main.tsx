@@ -18,6 +18,7 @@ import { isInternalTestSession } from './lib/internalTest';
 
 const AgencyPage = React.lazy(() => import('./AgencyPage'));
 const AreaPage = React.lazy(() => import('./AreaPage'));
+const AgenciesIndexPage = React.lazy(() => import('./AgenciesIndexPage'));
 const DiagnosticsUnevenPage = React.lazy(() => import('./DiagnosticsUnevenPage'));
 const DiagnosticsPerformancePage = React.lazy(() => import('./DiagnosticsPerformancePage'));
 
@@ -52,6 +53,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           {FEATURES.whatsNew && <Route path="/changelog" element={<ChangelogPage />} />}
           {FEATURES.agencyPages && <Route path="/agency/:slug" element={<AgencyPage />} />}
           {FEATURES.agencyPages && <Route path="/area/:slug" element={<AreaPage />} />}
+          {FEATURES.agencyPages && <Route path="/agencies" element={<AgenciesIndexPage />} />}
           <Route path="/*" element={<App />} />
           </Routes>
         </React.Suspense>

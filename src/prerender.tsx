@@ -16,6 +16,8 @@ import ResearchPage from './apps/ResearchPage';
 import AgencyPage from './AgencyPage';
 import AreaPage from './AreaPage';
 import type { AreaPageData } from '../shared/areaPages';
+import AgenciesIndexPage from './AgenciesIndexPage';
+import type { AgencyIndexData } from '../shared/agencyIndex';
 
 const PAGES: Record<string, () => ReactElement> = {
   '/about': () => <AboutPage />,
@@ -50,4 +52,8 @@ export function renderAgencyPage(data: AgencyPageData): string {
 
 export function renderAreaPage(data: AreaPageData): string {
   return renderToString(<StaticRouter location={`/area/${data.area.slug}`}><AreaPage data={data} /></StaticRouter>);
+}
+
+export function renderAgencyIndex(data: AgencyIndexData): string {
+  return renderToString(<StaticRouter location="/agencies"><AgenciesIndexPage data={data} /></StaticRouter>);
 }

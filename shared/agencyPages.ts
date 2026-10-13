@@ -6,6 +6,7 @@
  */
 import { headwayEvery } from './headwayText';
 import { areaRegionName, areaRegionTitle } from './areaRegions';
+import { BETA_BUILD } from './config';
 import { SITE_URL } from './seo';
 
 export { headwayEvery };
@@ -34,6 +35,8 @@ export interface AgencyPageIdentity {
   center?: [number, number];
   bbox?: [number, number, number, number];
   websiteUrl?: string;
+  /** Visible on beta, preview and dev builds only; the public build never lists it. */
+  betaOnly?: true;
 }
 
 /** Another agency whose stops are within walking distance of this one's, with the routes that serve them. */
@@ -43,6 +46,8 @@ export interface AgencyConnection {
   name: string;
   /** Route labels as the map lists them (see getRouteLabel), natural order. */
   routes: string[];
+  /** The other agency is beta-only: dropped from public pages. */
+  betaOnly?: true;
 }
 
 export interface AgencyPageSummary extends AgencyPageIdentity {
@@ -148,7 +153,7 @@ export function agencyPageData(
         .slice(0, MAX_AREA_LIST)
     : nearbyAgencies(a, all);
   const hasPage = new Set(all.filter(o => o.routes.some(r => r.midday != null)).map(o => o.slug));
-  const connections = (a.connections ?? []).map(c => ({ ...c, page: hasPage.has(c.slug) }));
+  const connections = (a.connections ?? []).filter(c => !c.betaOnly || BETA_BUILD).map(c => ({ ...c, page: hasPage.has(c.slug) }));
   const place = area && agencySpansArea(a.bbox, area.bbox) ? areaRegionName(area) : a.city;
   const areaRef = area ? { slug: area.slug, name: area.name } : undefined;
   const { connections: _drop, ...agency } = a;
