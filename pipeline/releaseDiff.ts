@@ -19,7 +19,9 @@
  *   yellow headway-shift a smaller share of routes halves or doubles
  *   yellow route-shift   any single route's weekday tier moves 2+ steps or its headway
  *                        halves or doubles, whatever the agency's size (#707); not
- *                        reported when headway-shift already fires for the agency
+ *                        reported when headway-shift already fires for the agency.
+ *                        Also lists routes live ran only on weekends that now run
+ *                        on weekdays (#714), which that comparison never reaches
  *   yellow headway-lost  a smaller share of route/directions lose their weekday headway
  *   red    day-lost      a day type (Weekday, Saturday, Sunday) with route lines live has none now
  *   yellow day-shrunk    a day type's route lines fall below DAY_SHRUNK_RATIO of live (live >= DAY_SHRUNK_MIN_LIVE)
@@ -250,7 +252,7 @@ export function headwayShift(live: ArtifactSummary, next: ArtifactSummary): Head
  * on weekdays but has none now. Route/directions gone entirely are left to the
  * drop guard. `liveDirections` counts the live route/directions with a headway.
  */
-export function routeShifts(live: ArtifactSummary, next: ArtifactSummary): { shifted: string[]; lost: string[]; liveDirections: number } {
+export function routeShifts(live: ArtifactSummary, next: ArtifactSummary): { shifted: string[]; lost: string[]; gained: string[]; liveDirections: number } {
   const [liveTiers, nextTiers] = [live.weekdayTiers, next.weekdayTiers];
   const ids = new Set([...Object.keys(live.weekdayHeadways), ...Object.keys(liveTiers)]);
   const shifted: string[] = [];
@@ -273,7 +275,31 @@ export function routeShifts(live: ArtifactSummary, next: ArtifactSummary): { shi
       const [routeId, directionId] = [key.slice(0, key.lastIndexOf('|')), key.slice(key.lastIndexOf('|') + 1)];
       return directionId === '' ? routeId : `${routeId} d${directionId}`;
     });
-  return { shifted, lost, liveDirections: liveWithHeadway.length };
+  return { shifted, lost, gained: gainedWeekdayRoutes(live, next), liveDirections: liveWithHeadway.length };
+}
+
+/**
+ * Routes live had only on non-weekday lines (no weekday rows at all) that the
+ * new output now runs on weekdays (#714). routeShifts compares routes from the
+ * live side's weekday rows, so a route gaining weekday service was never
+ * checked and a wrong headway on it passed silently. Routes absent from live
+ * entirely are new routes, left to the drop/route-count checks. One description
+ * per route, sorted by route ID, with its new median weekday headway.
+ */
+export function gainedWeekdayRoutes(live: ArtifactSummary, next: ArtifactSummary): string[] {
+  const routeIdOf = (key: string) => key.slice(0, key.lastIndexOf('|'));
+  const liveRoutes = new Set(live.routeSignatures.map(sig => sig.slice(0, sig.lastIndexOf('|', sig.lastIndexOf('|') - 1))));
+  const liveWeekdayRoutes = new Set(Object.keys(live.weekdayDirectionHeadway).map(routeIdOf));
+  const gained = new Set<string>();
+  for (const key of Object.keys(next.weekdayDirectionHeadway)) {
+    const routeId = routeIdOf(key);
+    if (liveRoutes.has(routeId) && !liveWeekdayRoutes.has(routeId)) gained.add(routeId);
+  }
+  return [...gained].sort().map(routeId => {
+    const headway = next.weekdayHeadways[routeId];
+    const tier = next.weekdayTiers[routeId];
+    return `${routeId} new weekday service${headway != null ? `, ${headway} min` : tier ? `, tier ${tier}` : ', no headway'}`;
+  });
 }
 
 /**
@@ -367,11 +393,18 @@ export function evaluateAgency(input: AgencyGateInput, peers: GatePeer[], todayY
     // small agency never reaches the share thresholds above (#707). Yellow, so
     // it is listed for review without blocking; skipped when headway-shift
     // already reports the agency.
-    const { shifted, lost: lostDirections, liveDirections } = routeShifts(live, next);
+    const { shifted, lost: lostDirections, gained, liveDirections } = routeShifts(live, next);
     const routes = agencyShift ? [] : shifted;
     if (routes.length) {
       flags.push(flag(slug, 'route-shift', 'yellow',
         `${routes.length} route${routes.length === 1 ? '' : 's'} with a weekday tier change of ${ROUTE_SHIFT_TIER_STEPS}+ steps or a halved/doubled headway (${routes.slice(0, ROUTE_SHIFT_MAX_LISTED).join('; ')}${routes.length > ROUTE_SHIFT_MAX_LISTED ? '; ...' : ''})`));
+    }
+
+    // Routes live ran only on weekends that now run on weekdays are never in
+    // the comparison above, which starts from live's weekday rows (#714).
+    if (gained.length) {
+      flags.push(flag(slug, 'route-shift', 'yellow',
+        `${gained.length} route${gained.length === 1 ? '' : 's'} with no weekday service live now run${gained.length === 1 ? 's' : ''} on weekdays (${gained.slice(0, ROUTE_SHIFT_MAX_LISTED).join('; ')}${gained.length > ROUTE_SHIFT_MAX_LISTED ? '; ...' : ''})`));
     }
 
     // A route/direction that still runs on weekdays but lost its headway drops
