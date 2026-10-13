@@ -9,7 +9,6 @@ import {
   formatDataDate,
   headwayEvery,
   modeLabel,
-  typicalWait,
   type AgencyPageSummary,
 } from './agencyPages';
 import { AREA_PATH_PREFIX, areaPagePath, type AreaConfig } from './areas';
@@ -33,8 +32,6 @@ export interface AreaPageData {
   totalRoutes: number;
   /** Route counts per weekday-midday frequency band (see FREQUENCY_BANDS), no-midday last. */
   bands: number[];
-  /** Median weekday-midday headway across every route in the area. */
-  typicalWait: number | null;
   /** The route with the shortest weekday-midday headway, with its agency. */
   best: { name: string; headway: number; agency: string } | null;
   byMode: Array<{ label: string; routes: number }>;
@@ -99,7 +96,6 @@ export function buildAreaPageData(area: AreaConfig, all: ReadonlyMap<string, Age
     area: { slug, name, type, officialName, country, cities, bbox, center, ...(note ? { note } : {}) },
     totalRoutes: allRoutes.length,
     bands: bandCounts(allRoutes),
-    typicalWait: typicalWait(allRoutes),
     best: best ? { name: best.route.name, headway: best.headway, agency: best.route.agency } : null,
     byMode,
     span: Number.isFinite(firstMin) ? { first: firstMin, last: lastMax } : null,
@@ -153,11 +149,10 @@ export function areaHoursLabel(d: Pick<AreaPageData, 'weekend' | 'spanVaries'>):
   return ['weekday service', d.spanVaries ? 'varies by agency' : '', weekend].filter(Boolean).join(' · ');
 }
 
-/** Two plain sentences, the same template for every area. */
+/** One plain sentence, the same template for every area. */
 export function areaAboutParagraph(d: AreaPageData): string {
   const n = d.agencies.length;
   const out: string[] = [`The ${d.area.name} area has ${plural(n, 'transit agency', 'transit agencies')} running ${plural(d.totalRoutes, 'route', 'routes')}.`];
-  if (d.typicalWait != null) out.push(`At weekday midday, the typical wait is ${headwayEvery(d.typicalWait)}.`);
   return out.join(' ');
 }
 

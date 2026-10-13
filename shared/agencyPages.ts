@@ -168,14 +168,6 @@ export function agencyStats(a: Pick<AgencyPageSummary, 'routes'>): AgencyPageSta
   };
 }
 
-/** Median weekday-midday headway across routes that have one, in whole minutes; null with none. */
-export function typicalWait(routes: ReadonlyArray<Pick<AgencyPageRoute, 'midday'>>): number | null {
-  const v = routes.map(r => r.midday).filter((h): h is number => h != null).sort((x, y) => x - y);
-  if (v.length === 0) return null;
-  const mid = v.length >> 1;
-  return Math.round(v.length % 2 ? v[mid] : (v[mid - 1] + v[mid]) / 2);
-}
-
 /** The route with the shortest weekday-midday headway (ties: first listed); null with none. */
 export function bestRoute<R extends Pick<AgencyPageRoute, 'midday' | 'name'>>(routes: readonly R[]): { route: R; headway: number } | null {
   let best: { route: R; headway: number } | null = null;
@@ -197,11 +189,10 @@ export function weekendLabel(sat: boolean | undefined, sun: boolean | undefined)
   return 'Weekdays only';
 }
 
-/** One sentence that stands alone: "210 weekday routes; the typical weekday midday wait is every 12 min." */
+/** One sentence that stands alone: "210 weekday routes." */
 export function agencyLeadSentence(a: Pick<AgencyPageSummary, 'routes'>): string {
   const n = a.routes.length;
-  const wait = typicalWait(a.routes);
-  return `${n} weekday ${n === 1 ? 'route' : 'routes'}${wait != null ? `; the typical weekday midday wait is ${headwayEvery(wait)}` : ''}.`;
+  return `${n} weekday ${n === 1 ? 'route' : 'routes'}.`;
 }
 
 export function agencyPageDescription(a: AgencyPageSummary): string {
@@ -233,25 +224,11 @@ export function agencyShortLabel(a: Pick<AgencyPageSummary, 'displayName'>): str
   return m ? m[1] : a.displayName;
 }
 
-/**
- * Two or three plain sentences under the route table, the same template for every agency and
- * built only from the summary: route count, the typical weekday-midday wait, and the weekday span.
- */
-export function agencyAboutParagraph(a: Pick<AgencyPageSummary, 'displayName' | 'city' | 'routes' | 'span'>): string {
+/** One plain sentence under the route table, the same template for every agency. */
+export function agencyAboutParagraph(a: Pick<AgencyPageSummary, 'displayName' | 'city' | 'routes'>): string {
   const total = a.routes.length;
   const label = agencyShortLabel(a);
-  const wait = typicalWait(a.routes);
-  const sentences: string[] = [];
-
-  sentences.push(total === 0 ? `${label} has no weekday routes in the data.` : `${label} runs ${total} ${total === 1 ? 'route' : 'routes'} in ${a.city}.`);
-  if (wait != null) sentences.push(`At weekday midday, the typical wait is ${headwayEvery(wait)}.`);
-
-  if (a.span) {
-    sentences.push(a.span.last + 1 - a.span.first >= 24
-      ? 'Across all routes, weekday service covers all 24 hours of the day.'
-      : `Across all routes, weekday service runs from ${agencySpanText(a)}.`);
-  }
-  return sentences.join(' ');
+  return total === 0 ? `${label} has no weekday routes in the data.` : `${label} runs ${total} ${total === 1 ? 'route' : 'routes'} in ${a.city}.`;
 }
 
 /** The map link for the big button: the agency's area, with only that agency on. */

@@ -31,7 +31,7 @@ describe('AgencyPage', () => {
     view(<AgencyPage data={data} />);
     expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('TTC · Toronto');
     expect(screen.getByRole('link', { name: 'Toronto area →' }).getAttribute('href')).toBe('/area/toronto');
-    expect(screen.getByText('every 16 min')).toBeTruthy(); // typical wait: median of 4, 12, 20, 30
+    expect(screen.queryByText('every 16 min')).toBeNull(); // no average wait stat
     expect(screen.getAllByText('every 4 min').length).toBeGreaterThan(0);
     expect(screen.queryByText('24 h')).toBeNull(); // service hours stat removed
     expect(screen.queryByText(/quickest route/)).toBeNull(); // quickest-route stat removed

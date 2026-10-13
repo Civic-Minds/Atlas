@@ -62,7 +62,6 @@ export default function AreaPage({ data: dataProp }: { data?: AreaPageData }) {
   }
 
   const items: StatItem[] = [
-    ...(data.typicalWait != null ? [{ value: headwayEvery(data.typicalWait), label: 'typical wait, weekday midday' }] : []),
     ...(data.totalRoutes > 0 ? [{ value: String(data.totalRoutes), label: modesText(data.byMode) }] : []),
   ];
 
