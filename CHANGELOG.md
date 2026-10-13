@@ -15,6 +15,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Fixed
 
+- A route that runs different timetables Monday to Thursday and on Friday now draws and reports the Monday to Thursday one in the Weekday view, so cata-state-college's VE Campus no longer shows Friday's every 21 minutes when its typical weekday is every 24 ([#716](https://github.com/Civic-Minds/Atlas/issues/716)).
 - Routes with no short name, like Annapolis's Free Downtown Shuttle, now show their name in bold in route lists instead of dimmed and indented, and agency headings in the agency route list no longer use extra letter spacing ([#777](https://github.com/Civic-Minds/Atlas/issues/777)).
 - Routes with paired trips, like Niagara 105 and 401, no longer show as running every 2 or 3 minutes in search, route lists, route and stop cards, live vehicle cards and the hourly chart, since two buses minutes apart and then a long wait is not frequent service ([#761](https://github.com/Civic-Minds/Atlas/issues/761)).
 - A public agency with no data in the current release can no longer reach the public site and show "Couldn't load": the agency checks and the release publish step now fail and list the agency until it is hidden or refreshed into a release ([#759](https://github.com/Civic-Minds/Atlas/issues/759)).
