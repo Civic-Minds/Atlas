@@ -97,8 +97,8 @@ describe('areaAboutParagraph', () => {
   });
 
   it('is one sentence with the agency and route counts', () => {
-    expect(areaAboutParagraph(base({}))).toBe('The Greater Toronto and Hamilton Area has 2 transit agencies running 6 routes.');
-    const one = base({ agencies: [{ slug: 'a', displayName: 'A', totalRoutes: 1, modes: { Bus: 1 } }], totalRoutes: 1 });
+    expect(areaAboutParagraph(base({}))).toBe('The Greater Toronto and Hamilton Area has 2 transit agencies running 6 routes (2 subway, 4 bus).');
+    const one = base({ agencies: [{ slug: 'a', displayName: 'A', totalRoutes: 1, modes: { Bus: 1 } }], totalRoutes: 1, byMode: [{ label: 'Bus', routes: 1 }] });
     expect(areaAboutParagraph(one)).toBe('The Greater Toronto and Hamilton Area has 1 transit agency running 1 route.');
   });
 });

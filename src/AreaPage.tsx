@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { ArrowRight } from 'lucide-react';
-import { agencyPagePath, headwayEvery, modesText } from '../shared/agencyPages';
+import { agencyPagePath } from '../shared/agencyPages';
 import {
   AREA_DATA_SCRIPT_ID,
   areaAboutParagraph,
@@ -15,7 +15,7 @@ import {
 import { ATLAS_MODE } from '../shared/config';
 import { applySeoToDocument } from './lib/seoDom';
 import { LINK, PAGE_ACTION } from './pageStyles';
-import { FrequencyBar, StatRow, type StatItem } from './pageParts';
+import { FrequencyBar } from './pageParts';
 import SiteFooter from './components/SiteFooter';
 import SiteHeader from './components/SiteHeader';
 
@@ -61,9 +61,6 @@ export default function AreaPage({ data: dataProp }: { data?: AreaPageData }) {
     );
   }
 
-  const items: StatItem[] = [
-    ...(data.totalRoutes > 0 ? [{ value: String(data.totalRoutes), label: modesText(data.byMode) }] : []),
-  ];
 
   return (
     <main className="min-h-screen bg-[var(--bg-app)] px-6 py-8 text-[var(--text-primary)] sm:px-10 lg:px-16">
@@ -80,9 +77,8 @@ export default function AreaPage({ data: dataProp }: { data?: AreaPageData }) {
               Open in the map <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </a>
           </div>
+          <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]">{areaAboutParagraph(data)}</p>
           {data.area.note && <p className="mt-3 max-w-2xl text-sm text-[var(--text-muted)]">{data.area.note}</p>}
-
-          <StatRow items={items} />
 
           <section className="mt-14" aria-labelledby="agencies-heading">
             <h2 id="agencies-heading" className="text-xl font-black tracking-tight">Agencies and weekday frequency</h2>
@@ -113,7 +109,6 @@ export default function AreaPage({ data: dataProp }: { data?: AreaPageData }) {
             <p className="mt-2 text-sm text-[var(--text-muted)]">Mode columns count routes. Each route is judged by its slower direction.</p>
           </section>
 
-          <p className="mt-10 max-w-2xl text-sm leading-6 text-[var(--text-dim)]">{areaAboutParagraph(data)}</p>
           <p className="mt-12 text-sm leading-6 text-[var(--text-dim)]">
             Area: {data.area.officialName} ({data.area.type === 'CMA' ? 'Statistics Canada census metropolitan area' : 'US Census metropolitan statistical area'}). Scheduled service, not live arrivals. {areaDatesText(data)}
           </p>

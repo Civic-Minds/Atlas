@@ -151,6 +151,12 @@ describe('agencyIntroSentence', () => {
     expect(agencyIntroSentence({ ...base, routes: rs([3, 10]) }, 'Hamilton', conns('A', 'B', 'C', 'D'))).toContain('A, B, C and 1 other.');
   });
 
+  it('adds the mode split only with more than one mode', () => {
+    const modes = [{ label: 'Subway', routes: 3 }, { label: 'Light rail', routes: 2 }, { label: 'Bus', routes: 209 }];
+    expect(agencyIntroSentence({ ...base, routes: rs([3, 10]) }, 'Toronto', [], modes)).toBe('Hamilton Street Railway operates 1 route (3 subway, 2 light rail, 209 bus) in Toronto with 1,980 stops.');
+    expect(agencyIntroSentence({ ...base, routes: rs([3, 10]) }, 'Toronto', [], [{ label: 'Bus', routes: 1 }])).not.toContain('(');
+  });
+
   it('drops the connects-with clause and the stops when there are none', () => {
     expect(agencyIntroSentence({ ...base, routes: rs([3, 10]) }, 'Hamilton')).toBe('Hamilton Street Railway operates 1 route in Hamilton with 1,980 stops.');
     expect(agencyIntroSentence({ ...base, stops: undefined, routes: rs([3, 10]) }, 'the Bay Area')).toBe('Hamilton Street Railway operates 1 route in the Bay Area.');
