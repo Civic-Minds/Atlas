@@ -12,6 +12,8 @@ import {
   headwayEvery,
   resolveAgencySeo,
   AGENCY_DATA_SCRIPT_ID,
+  CONNECTS_WITH,
+  connectionNames,
   type AgencyPageData,
   type AgencyPageRoute,
 } from '../shared/agencyPages';
@@ -42,8 +44,25 @@ function readEmbeddedData(slug: string | undefined): AgencyPageData | null {
  * so no other agency's data ships with the page. The dev server has no prerendered HTML and
  * loads from the full summary file instead (dead code in production builds).
  */
-const MAX_CONNECTION_AGENCIES = 8;
-const MAX_CONNECTION_ROUTES = 6;
+/** The intro sentence, once, under the title: connecting agencies named in it are links when they have a page. */
+function Intro({ intro, connections }: { intro: string; connections: AgencyPageData['connections'] }) {
+  const at = intro.indexOf(CONNECTS_WITH);
+  const { named, others } = connectionNames(connections);
+  const sentence = 'mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]';
+  if (at < 0 || named.length === 0) return <p className={sentence}>{intro}</p>;
+  return (
+    <p className={sentence}>
+      {intro.slice(0, at)} and <span title="Another agency's stop within 150 m of one of this agency's stops" className="underline decoration-dotted underline-offset-2">connects with</span>{' '}
+      {named.map((c, i) => (
+        <span key={c.slug}>
+          {i > 0 ? (i === named.length - 1 && others === 0 ? ' and ' : ', ') : ''}
+          {c.page ? <a className={`${LINK} underline underline-offset-2`} href={agencyPagePath(c.slug)}>{c.name}</a> : c.name}
+        </span>
+      ))}
+      {others > 0 ? ` and ${others} ${others === 1 ? 'other' : 'others'}` : ''}.
+    </p>
+  );
+}
 
 /** A period cell: the card's cadence, "Limited" when the route runs but has no trustworthy cadence, else a dash. */
 function cell(col: 'am' | 'midday' | 'pm' | 'evening' | 'overnight', r: AgencyPageRoute): string {
@@ -103,6 +122,7 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
               Open in the map <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </a>
           </div>
+          <Intro intro={data!.intro} connections={data!.connections} />
 
           <StatRow items={items} />
 
@@ -142,26 +162,6 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
               </div>
             ))}
           </section>
-
-          {data!.connections.length > 0 && (
-            <section className="mt-12" aria-labelledby="connects-heading">
-              <h2 id="connects-heading" className="text-xl font-black tracking-tight">Connects with</h2>
-              <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">Routes of other agencies with a stop within 150 m of one of this agency's stops.</p>
-              <ul className="mt-4 space-y-2 text-sm leading-6">
-                {data!.connections.slice(0, MAX_CONNECTION_AGENCIES).map(c => (
-                  <li key={c.slug}>
-                    {c.page ? <a className={`font-black underline underline-offset-2 ${LINK}`} href={agencyPagePath(c.slug)}>{c.name}</a> : <span className="font-black">{c.name}</span>}
-                    <span className="text-[var(--text-muted)]">: {c.routes.slice(0, MAX_CONNECTION_ROUTES).map(titleCase).join(', ')}{c.routes.length > MAX_CONNECTION_ROUTES ? ` and ${c.routes.length - MAX_CONNECTION_ROUTES} more` : ''}</span>
-                  </li>
-                ))}
-              </ul>
-              {data!.connections.length > MAX_CONNECTION_AGENCIES && (
-                <p className="mt-2 text-sm text-[var(--text-muted)]">and {data!.connections.length - MAX_CONNECTION_AGENCIES} more agencies</p>
-              )}
-            </section>
-          )}
-
-          <p className="mt-10 max-w-2xl text-sm leading-6 text-[var(--text-dim)]">{data!.intro}</p>
 
           {nearby.length > 0 && (
             <section className="mt-12" aria-labelledby="nearby-heading">

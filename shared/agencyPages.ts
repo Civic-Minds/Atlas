@@ -97,6 +97,14 @@ export function agencySpansArea(agencyBbox: readonly number[] | undefined, areaB
   return overlap(agencyBbox[0], agencyBbox[2], areaBbox[0], areaBbox[2]) >= 0.6 && overlap(agencyBbox[1], agencyBbox[3], areaBbox[1], areaBbox[3]) >= 0.6;
 }
 
+/** The first three connecting agencies by name and how many more there are. */
+export function connectionNames<T>(connections: readonly T[], named = 3): { named: T[]; others: number } {
+  return { named: connections.slice(0, named), others: Math.max(0, connections.length - named) };
+}
+
+/** The literal the intro sentence puts before the connecting agencies (the page splits on it to link the names). */
+export const CONNECTS_WITH = ' and connects with ';
+
 /** "A", "A and B", "A, B and C", "A, B, C and 4 others": the first three named, the rest counted. */
 export function namesList(names: readonly string[], named = 3): string {
   if (names.length <= named) return names.length <= 1 ? (names[0] ?? '') : `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}`;
@@ -118,7 +126,7 @@ export function agencyIntroSentence(
   if (n === 0) return `${a.name} has no weekday routes in the data.`;
   let s = `${a.name} operates ${n.toLocaleString('en-US')} ${n === 1 ? 'route' : 'routes'} in ${place}`;
   if (a.stops) s += ` with ${a.stops.toLocaleString('en-US')} ${a.stops === 1 ? 'stop' : 'stops'}`;
-  if (connections.length) s += ` and connects with ${namesList(connections.map(c => c.name))}`;
+  if (connections.length) s += `${CONNECTS_WITH}${namesList(connections.map(c => c.name))}`;
   return `${s}.`;
 }
 

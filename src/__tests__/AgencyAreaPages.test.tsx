@@ -60,25 +60,30 @@ describe('AgencyPage', () => {
   });
 });
 
-describe('AgencyPage connections and intro', () => {
-  it('shows the intro sentence and a capped Connects with list with links', () => {
-    const withConns = { ...TTC, stops: 7566, connections: [
-      { slug: 'hsr', name: 'HSR', routes: ['1 King', '2 Barton', '3 Cannon', '4 Bay', '5 Delaware', '6 Aberdeen', '7 Locke', '8 York'] },
-      { slug: 'nopage', name: 'Tiny Transit', routes: ['A'] },
-    ] };
+describe('AgencyPage intro', () => {
+  const withConns = { ...TTC, stops: 7566, connections: [
+    { slug: 'hsr', name: 'HSR', routes: ['1 King'] },
+    { slug: 'nopage', name: 'Tiny Transit', routes: ['A'] },
+    { slug: 'c', name: 'C', routes: ['x'] },
+    { slug: 'd', name: 'D', routes: ['y'] },
+  ] };
+
+  it('says it once under the title, linking connecting agencies that have a page and counting the rest', () => {
     const d = agencyPageData(withConns, [withConns, HSR], null);
-    expect(d.intro).toBe('Toronto Transit Commission operates 5 routes in Toronto with 7,566 stops and connects with HSR and Tiny Transit.');
+    expect(d.intro).toBe('Toronto Transit Commission operates 5 routes in Toronto with 7,566 stops and connects with HSR, Tiny Transit, C and 1 other.');
     view(<AgencyPage data={d} />);
-    expect(screen.getByRole('heading', { name: 'Connects with' })).toBeTruthy();
+    const p = screen.getByText(/operates 5 routes in Toronto with 7,566 stops/);
+    expect(p.textContent).toBe(d.intro);
+    expect(document.body.textContent!.split('operates 5 routes').length - 1).toBe(1);
     expect(screen.getByRole('link', { name: 'HSR' }).getAttribute('href')).toBe('/agency/hsr');
     expect(screen.queryByRole('link', { name: 'Tiny Transit' })).toBeNull();
-    expect(screen.getByText(/and 2 more/)).toBeTruthy();
-    expect(screen.getByText(d.intro)).toBeTruthy();
+    expect(screen.queryByRole('heading', { name: 'Connects with' })).toBeNull();
+    expect(screen.getByTitle(/within 150 m/)).toBeTruthy();
   });
 
-  it('omits the section with no connections', () => {
+  it('has no connects-with clause without connections', () => {
     view(<AgencyPage data={agencyPageData(TTC, [TTC, HSR], null)} />);
-    expect(screen.queryByRole('heading', { name: 'Connects with' })).toBeNull();
+    expect(screen.queryByText(/connects with/)).toBeNull();
   });
 });
 
