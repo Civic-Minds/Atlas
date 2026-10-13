@@ -1,3 +1,4 @@
+import { searchAreas, type AreaSearchResult } from '../../../shared/areaSearch';
 import React, { useMemo, useRef, useEffect, useCallback, useState } from 'react';
 import { getTierColor } from '../../utils/colors';
 import { useColorVision } from '../../context/ColorVisionContext';
@@ -78,6 +79,8 @@ interface SidebarControlsProps {
   livePollingOnly: boolean;
   setLivePollingOnly: (v: boolean | ((prev: boolean) => boolean)) => void;
   setSelectedAgencySlug?: (slug: string | null) => void;
+  /** Zoom the map to a metro area chosen in search. */
+  onSelectArea?: (area: AreaSearchResult) => void;
   nightServiceView?: boolean;
   sidebarLeft?: number;
   searchBarWidth?: number;
@@ -139,6 +142,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   livePollingOnly,
   setLivePollingOnly,
   setSelectedAgencySlug,
+  onSelectArea,
   nightServiceView = false,
   sidebarLeft,
   searchBarWidth,
@@ -849,6 +853,10 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     ),
     [matchedAgencyGroups, showAllSearchResults],
   );
+  const areaSearchResults = useMemo(
+    () => (!searchFocused || !query.trim() || !onSelectArea ? [] : searchAreas(query, new Set(agencies.map(a => a.slug)))),
+    [agencies, query, searchFocused, onSelectArea],
+  );
   const displayAgencyGroups = agencySearchDisplay.groups;
   const agencySections = useMemo(() => splitAgencyGroups(displayAgencyGroups), [displayAgencyGroups]);
   const routeSearchDisplay = useMemo(
@@ -1104,6 +1112,8 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         {searchPanelActive && (searchMatchResults !== null || searchStopMatchResults !== null) && (
           <SearchResultsList
             query={query}
+            areaResults={areaSearchResults}
+            onSelectArea={onSelectArea}
             displayAgencyGroups={displayAgencyGroups}
             displayRouteResults={displayRouteResults}
             displayStopResults={stopSearchDisplay.stops}

@@ -6,6 +6,12 @@
 import areaIndexJson from './data/area-index.json';
 
 export interface AreaIndexEntry {
+  /** The city people search for: "Montréal". */
+  name?: string;
+  /** Main cities in the area, matched by area search. */
+  cities?: string[];
+  /** Whether the area has its own page (the same regions /agencies lists). */
+  page?: boolean;
   agencies: string[];
   /** [south, west, north, east] */
   bbox: [number, number, number, number];

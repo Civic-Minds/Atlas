@@ -319,6 +319,8 @@ interface MapCanvasProps {
   initialMapCenter?: { lat: number; lon: number; zoom: number };
   /** [south, west, north, east] to fit on first load (`?area=`); an explicit initialMapCenter wins. */
   initialMapBounds?: [number, number, number, number] | null;
+  /** A metro area chosen in search; the map fits to its bounds (as ?area=<slug> does on load). */
+  areaFocus?: { bbox: [number, number, number, number]; nonce: number } | null;
   /**
    * Second map in compare mode: follows the first map's camera, so it never writes the URL or
    * saved view, has no map controls or context menu, and does not expose itself for debugging.
@@ -400,6 +402,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   selectedAgencies,
   initialMapCenter,
   initialMapBounds,
+  areaFocus,
   secondary = false,
   showMapControls = !secondary,
   onMapReady,
@@ -1898,6 +1901,13 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     const lats = points.map(point => point[1]);
     map.fitBounds([[Math.min(...lons), Math.min(...lats)], [Math.max(...lons), Math.max(...lats)]], { padding: 64, maxZoom: 13, duration: 0 });
   }, [initialOnDemandSlug, initialMapCenter, agencies, mapLoaded]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapLoaded || !areaFocus) return;
+    const [s, w, n, e] = areaFocus.bbox;
+    map.fitBounds([[w, s], [e, n]], { padding: 48, maxZoom: 12, duration: 900 });
+  }, [areaFocus, mapLoaded]);
 
   // Handle Reset View — guard with resetViewKey === 0 to skip initial mount trigger
   useEffect(() => {
