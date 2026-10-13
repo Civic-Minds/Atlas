@@ -29,6 +29,12 @@ function NightServiceRedirect() {
   return <Navigate to={`${FEATURE_ROUTES.nightService}${search}${hash}`} replace />;
 }
 
+/** /docs is the short address for the Docs page at /about/docs. */
+function DocsRedirect() {
+  const { search, hash } = useLocation();
+  return <Navigate to={`/about/docs${search}${hash}`} replace />;
+}
+
 // Collect page views only from deployed builds; local development should not
 // pollute the production and beta analytics data.
 if (import.meta.env.PROD && !isInternalTestSession()) {
@@ -53,6 +59,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
             </>
           )}
           <Route path="/apps/night" element={<NightServiceRedirect />} />
+          <Route path="/docs" element={<DocsRedirect />} />
           {RETIRED_APP_PATHS.map(path => <Route key={path} path={path} element={<Navigate to="/" replace />} />)}
           <Route path="/terms" element={<LegalPage document="terms" />} />
           <Route path="/privacy" element={<LegalPage document="privacy" />} />
