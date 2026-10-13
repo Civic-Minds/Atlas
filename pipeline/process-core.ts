@@ -953,16 +953,18 @@ export async function processGtfsBuffer(
     if (existing && existingHasShape && !hasRouteShape) continue;
     const replacesMaplessWithShape = existing != null && !existingHasShape && hasRouteShape;
     // A pattern that runs only late at night or before dawn never wins the slot from one that
-    // runs in the day, whatever its headway: YRT Viva Blue's 11 pre-dawn Richmond Hill-Newmarket
-    // trips (median 11) took the Newmarket slot from the 85 all-day Finch trips (#746).
-    const daytime = (p: Partial<HeadwayByPeriod> | undefined) =>
+    // runs through the midday, whatever its headway: YRT Viva Blue's 11 pre-dawn Richmond
+    // Hill-Newmarket trips (median 11) took the Newmarket slot from the 85 all-day Finch trips
+    // (#746). Only that pair: a pattern with some daytime service but none at midday (a night
+    // route's first Sunday-morning trips, TTC 304 and 320) keeps the headway rule.
+    const runsInDay = (p: Partial<HeadwayByPeriod> | undefined) =>
       p != null && (p.amPeak != null || p.midday != null || p.pmPeak != null || p.evening != null);
+    const runsMidday = (p: Partial<HeadwayByPeriod> | undefined) => p != null && p.midday != null;
     // Only between two real headways; span and irregular slots keep the rule below.
     const bothTimed = existing != null && !replacesMaplessWithShape && newHeadway != null && existing.properties.headway != null;
-    const newDaytime = daytime(initialPeriodHeadways);
-    const existingDaytime = existing != null && daytime(existing.properties.headwayByPeriod as HeadwayByPeriod | undefined);
-    if (bothTimed && existingDaytime && !newDaytime) continue;
-    const replacesNightOnly = bothTimed && newDaytime && !existingDaytime;
+    const existingPeriods = existing?.properties.headwayByPeriod as HeadwayByPeriod | undefined;
+    if (bothTimed && runsMidday(existingPeriods) && !runsInDay(initialPeriodHeadways)) continue;
+    const replacesNightOnly = bothTimed && runsMidday(initialPeriodHeadways) && !runsInDay(existingPeriods);
     // Otherwise skip if: new result is span (null headway) — span never beats a real tier.
     // Or if existing already has an equal or better real headway.
     if (
