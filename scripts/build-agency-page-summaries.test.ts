@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { summarize } from './build-agency-page-summaries';
+import { displayNameFor, primaryCity, summarize } from './build-agency-page-summaries';
 
 function line(name: string, directionId: number, midday: number | null, extra: Record<string, unknown> = {}) {
   return {
@@ -30,5 +30,20 @@ describe('summarize', () => {
     expect(s.routeCount).toBe(2);
     expect(s.routes.find(r => r.name === 'N')?.midday).toBeNull();
     expect(s.lastRefreshedAt).toBeNull();
+  });
+});
+
+describe('names', () => {
+  const base = { slug: 'x', name: 'Toronto Transit Commission', cities: ['Etobicoke, Ontario'], region: 'Ontario' };
+
+  it('uses the config displayArea as the primary city, else the first listed city', () => {
+    expect(primaryCity({ ...base, displayArea: 'Toronto' })).toBe('Toronto');
+    expect(primaryCity(base)).toBe('Etobicoke');
+  });
+
+  it('puts the short name first with the city in brackets, falling back to the full name', () => {
+    expect(displayNameFor({ ...base, displayArea: 'Toronto', shortName: 'TTC' })).toBe('TTC (Toronto)');
+    expect(displayNameFor({ ...base, displayArea: 'Toronto' })).toBe('Toronto Transit Commission');
+    expect(displayNameFor({ slug: 'h', name: 'Halifax Transit', displayArea: 'Halifax' })).toBe('Halifax Transit');
   });
 });

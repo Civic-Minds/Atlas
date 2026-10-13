@@ -1,6 +1,7 @@
 {
   "slug": "cta",
   "name": "Chicago Transit Authority (CTA)",
+  "shortName": "CTA",
   "displayArea": "Chicago",
   "websiteUrl": "http://transitchicago.com",
   "center": [

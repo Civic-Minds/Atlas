@@ -7,7 +7,7 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { SITE_URL, applySeoToHtml, buildSitemapXml, injectRootHtml, prerenderRoutes, resolveSeo } from '../shared/seo';
-import { agencyPageJsonLd, agencyPagePath, resolveAgencySeo } from '../shared/agencyPages';
+import { AGENCY_DATA_SCRIPT_ID, agencyPageData, agencyPageJsonLd, agencyPagePath, resolveAgencySeo } from '../shared/agencyPages';
 import { AGENCY_PAGE_DATA, agencyPageSummaries } from '../shared/agencyPagesData';
 
 const dist = resolve('dist');
@@ -35,9 +35,11 @@ if (mod.BUILD_FLAGS.agencyPages) {
   } else {
     const urls: string[] = [];
     for (const a of agencies) {
+      const data = agencyPageData(a, agencies);
       const seo = resolveAgencySeo(a, { mode: mod.BUILD_MODE, origin });
+      const embedded = `<script type="application/json" id="${AGENCY_DATA_SCRIPT_ID}">${JSON.stringify(data).replace(/</g, '\\u003c')}</script>\n</body>`;
       const ld = `  <script type="application/ld+json">${JSON.stringify(agencyPageJsonLd(a, seo.canonicalUrl, origin)).replace(/</g, '\\u003c')}</script>\n</head>`;
-      const html = injectRootHtml(applySeoToHtml(shell, seo), mod.renderAgencyPage(a.slug)).replace('</head>', () => ld);
+      const html = injectRootHtml(applySeoToHtml(shell, seo), mod.renderAgencyPage(data)).replace('</head>', () => ld).replace('</body>', () => embedded);
       const file = join(dist, agencyPagePath(a.slug), 'index.html');
       mkdirSync(dirname(file), { recursive: true });
       writeFileSync(file, html);

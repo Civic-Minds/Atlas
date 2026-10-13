@@ -7,14 +7,16 @@
  *
  *   taskpolicy -b nice -n 15 npx tsx scripts/build-agency-page-summaries.ts [slug ...]
  *
- * Passing slugs refreshes only those agencies and keeps the rest of the file. The build reads the
+ * Passing slugs refreshes only those agencies and keeps the rest of the file. `--identity-only` just
+ * re-reads names, cities and short names from config (no network).
+ * publish-data-release runs this automatically after a release goes public, failure-safe. The build reads the
  * committed file, so it works with R2 unreachable.
  *
  * Numbers use the same route rule as the map filter: a route's headway for a period is its worst
  * direction's (routeFilterHeadway). Nothing new is measured here; the service span is just the first
  * and last hour that the published per-hour headways cover on weekdays.
  */
-import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, renameSync } from 'node:fs';
 import { DEFAULT_R2_PUBLIC_URL } from '../shared/config';
 import { effectiveMode } from '../shared/modes';
 import { routeGroupKey } from '../shared/routeGroupKey';
@@ -28,7 +30,7 @@ const OUT = 'shared/data/agency-pages.json';
 // Slugs with a page, small enough for the map bundle (the agency card links only to real pages).
 const SLUGS_OUT = 'shared/data/agency-page-slugs.json';
 const base = (process.env.R2_PUBLIC_URL || DEFAULT_R2_PUBLIC_URL).replace(/\/$/, '');
-const only = new Set(process.argv.slice(2));
+const only = new Set(process.argv.slice(2).filter(arg => !arg.startsWith('--')));
 
 type CatalogAgency = AgencyPageIdentity & { lastRefreshedAt?: string | null; displayArea?: string };
 type Catalog = { agencies: CatalogAgency[] };
@@ -93,53 +95,104 @@ export function summarize(
   };
 }
 
-/** "TTC (Toronto)": the display name plus its city; no bracket when the name already holds the city. */
-function displayNameFor(a: CatalogAgency): string {
+/** The agency's own config file: the source for its short name and primary area. */
+function readConfig(slug: string): { shortName?: string; displayArea?: string } {
+  try {
+    return JSON.parse(readFileSync(`config/agencies/${slug}.json`, 'utf8'));
+  } catch {
+    return {};
+  }
+}
+
+/** Primary city: the config's displayArea when set, else the first city the agency lists. */
+export function primaryCity(a: { displayArea?: string; cities?: string[]; region?: string; name: string }): string {
+  return a.displayArea?.trim() || a.cities?.[0]?.split(',')[0]?.trim() || a.region || a.name;
+}
+
+/** "TTC (Toronto)": short name (else the display name) plus its city; no bracket when the name already holds the city. */
+export function displayNameFor(a: CatalogAgency & { shortName?: string }): string {
+  const city = primaryCity(a);
+  if (a.shortName) return trimRedundantCity(`${a.shortName} (${city})`);
   const { primary, secondary } = agencyDisplayParts(a.name, a.cities, a.displayArea);
   return trimRedundantCity(secondary ? `${primary} (${secondary})` : primary);
 }
 
+function identityFor(a: CatalogAgency) {
+  const cfg = readConfig(a.slug);
+  const full = { ...a, shortName: cfg.shortName, displayArea: cfg.displayArea ?? a.displayArea };
+  return {
+    slug: a.slug,
+    name: a.name,
+    region: a.region,
+    displayName: displayNameFor(full),
+    city: primaryCity(full),
+    country: countryForRegion(a.region) ?? undefined,
+    center: a.center,
+    bbox: a.bbox,
+    websiteUrl: a.websiteUrl,
+  };
+}
+
+/** Write via a temp file and rename, so a crash never leaves a half-written summary. */
+function writeAtomic(file: string, contents: string): void {
+  writeFileSync(`${file}.tmp`, contents);
+  renameSync(`${file}.tmp`, file);
+}
+
+function writeOutputs(out: AgencyPageSummaries): void {
+  writeAtomic(OUT, JSON.stringify(out) + '\n');
+  writeAtomic(SLUGS_OUT, JSON.stringify(out.agencies.filter(a => a.routes.some(r => r.midday != null)).map(a => a.slug)) + '\n');
+}
+
 async function main() {
   const catalog = JSON.parse(readFileSync('public/data/catalog-public.json', 'utf8')) as Catalog;
-  const release = await getJson<{ releaseId: string; generatedAt: string; agencyPrefix: string }>(`${base}/atlas/release.json`);
   const previous: AgencyPageSummaries | null = existsSync(OUT) ? JSON.parse(readFileSync(OUT, 'utf8')) : null;
-  const keep = new Map((only.size && previous ? previous.agencies : []).map(a => [a.slug, a]));
+
+  // --identity-only: refresh names, cities and short names from config with no network.
+  if (process.argv.includes('--identity-only')) {
+    if (!previous) throw new Error(`No ${OUT} to update`);
+    const byslug = new Map(catalog.agencies.map(a => [a.slug, a]));
+    writeOutputs({ ...previous, agencies: previous.agencies.map(p => (byslug.has(p.slug) ? { ...p, ...identityFor(byslug.get(p.slug)!) } : p)) });
+    console.log(`Updated names and cities for ${previous.agencies.length} agencies in ${OUT}`);
+    return;
+  }
+
+  const release = await getJson<{ releaseId: string; generatedAt: string; agencyPrefix: string }>(`${base}/atlas/release.json?t=${Date.now()}`);
+  const prevBySlug = new Map((previous?.agencies ?? []).map(a => [a.slug, a]));
+  const keep = new Map(only.size && previous ? previous.agencies.map(a => [a.slug, a]) : []);
   const targets = catalog.agencies.filter(a => only.size === 0 || only.has(a.slug));
   const results = new Map<string, AgencyPageSummary>();
+  const failed: string[] = [];
   let done = 0;
   const queue = [...targets];
   async function worker() {
     for (let a = queue.shift(); a; a = queue.shift()) {
       try {
         const data = await getJson<{ features: Feature[] }>(`${base}/${release.agencyPrefix}/${a.slug}.json`);
-        results.set(a.slug, {
-          slug: a.slug,
-          name: a.name,
-          region: a.region,
-          displayName: displayNameFor(a),
-          city: a.cities?.[0]?.split(',')[0]?.trim() || a.region || a.name,
-          country: countryForRegion(a.region) ?? undefined,
-          center: a.center,
-          bbox: a.bbox,
-          websiteUrl: a.websiteUrl,
-          ...summarize(data.features, a.slug, a.lastRefreshedAt ?? null),
-        });
+        results.set(a.slug, { ...identityFor(a), ...summarize(data.features, a.slug, a.lastRefreshedAt ?? null) });
       } catch (err) {
-        console.warn(`skipped ${a.slug}: ${(err as Error).message}`);
+        // Keep the previous numbers for an agency that failed, rather than dropping its page.
+        failed.push(a.slug);
+        const old = prevBySlug.get(a.slug);
+        if (old) results.set(a.slug, { ...old, ...identityFor(a) });
+        console.warn(`FAILED ${a.slug}: ${(err as Error).message}${old ? ' (kept the previous numbers)' : ''}`);
       }
       if (++done % 25 === 0) console.log(`${done}/${targets.length}`);
     }
   }
   await Promise.all([worker(), worker(), worker()]);
+  // A mostly failed run means the data was unreachable, not that agencies are gone: write nothing.
+  if (failed.length > Math.max(5, targets.length * 0.1)) {
+    throw new Error(`${failed.length} of ${targets.length} agencies failed; summary files left untouched`);
+  }
   const merged = new Map([...keep, ...results]);
   const out: AgencyPageSummaries = {
     releaseId: release.releaseId,
     generatedAt: release.generatedAt,
     agencies: [...merged.values()].sort((a, b) => a.slug.localeCompare(b.slug)),
   };
-  writeFileSync(OUT, JSON.stringify(out) + '\n');
-  writeFileSync(SLUGS_OUT, JSON.stringify(out.agencies.filter(a => a.routes.some(r => r.midday != null)).map(a => a.slug)) + '\n');
-  console.log(`Wrote ${OUT}: ${out.agencies.length} agencies, release ${release.releaseId}`);
+  writeOutputs(out);
+  console.log(`Wrote ${OUT}: ${out.agencies.length} agencies, release ${release.releaseId}${failed.length ? `; ${failed.length} kept from the previous run: ${failed.join(', ')}` : ''}`);
 }
 
 if (process.argv[1]?.endsWith('build-agency-page-summaries.ts')) await main();

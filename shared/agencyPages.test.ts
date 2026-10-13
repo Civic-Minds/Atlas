@@ -54,9 +54,9 @@ describe('agency page text', () => {
 });
 
 describe('breadcrumbs and nearby agencies', () => {
-  it('runs Atlas, country, region, agency, and leaves the unreliable first city out', () => {
-    expect(agencyBreadcrumbs(TTC).map(c => c.name)).toEqual(['Transit Atlas', 'Canada', 'Ontario', 'TTC (Toronto)']);
-    expect(agencyBreadcrumbs({ ...TTC, city: 'Dartmouth' }).map(c => c.name)).not.toContain('Dartmouth');
+  it('runs Atlas, country, region, primary city, agency', () => {
+    expect(agencyBreadcrumbs(TTC).map(c => c.name)).toEqual(['Transit Atlas', 'Canada', 'Ontario', 'Toronto', 'TTC (Toronto)']);
+    expect(agencyBreadcrumbs({ ...TTC, city: 'Ontario' }).map(c => c.name)).toEqual(['Transit Atlas', 'Canada', 'Ontario', 'TTC (Toronto)']);
   });
 
   it('lists same-region agencies nearest first, never itself or another region', () => {
@@ -80,7 +80,7 @@ describe('head and structured data', () => {
     const ld = agencyPageJsonLd(TTC, 'https://www.transitatlas.fyi/agency/ttc', 'https://www.transitatlas.fyi') as { '@graph': Array<Record<string, unknown>> };
     expect(ld['@graph'].map(n => n['@type'])).toEqual(['Organization', 'BreadcrumbList', 'Dataset']);
     expect(ld['@graph'][0].sameAs).toEqual(['https://www.ttc.ca']);
-    expect(ld['@graph'][0].areaServed).toEqual({ '@type': 'Place', name: 'Ontario, Canada' });
+    expect(ld['@graph'][0].areaServed).toEqual({ '@type': 'Place', name: 'Toronto, Ontario, Canada' });
     expect(ld['@graph'][2].dateModified).toBe('2026-08-27');
     expect(JSON.stringify(ld)).not.toContain('FAQ');
   });
