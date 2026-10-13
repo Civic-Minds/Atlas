@@ -1124,6 +1124,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
               setHideSpan={setHideSpan}
                 setHideLimitedService={setHideLimitedService}
                 limitedServiceRouteCount={stats?.limitedService ?? null}
+                limitedServiceRoutes={stats?.limitedServiceRoutes}
               livePollingOnly={livePollingOnly}
               setLivePollingOnly={setLivePollingOnly}
               onInfoOpen={onInfoOpen}
