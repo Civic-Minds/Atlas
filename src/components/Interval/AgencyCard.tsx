@@ -1,12 +1,11 @@
 import React, { useMemo, useState, useEffect, forwardRef } from 'react';
 import { LIVE_POLLING_ROUTES } from '../../../shared/livePollingConfig';
 import { FEATURES } from '../../../shared/config';
-import type { Agency, FareOverride } from '../../App';
+import type { Agency } from '../../App';
 import type { OpenInfoFn } from '../InfoPanel';
 import type { AgencyLayers } from '../../hooks/useAgencyData';
 import { FLOATING_CARD, PANEL_ENTER, CARD_NOTICE_FOOTER, CARD_NOTICE_INLINE, Z_PANEL, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH, CONTROL_ACTIVE, CONTROL_INACTIVE } from '../../styles';
-import { getFareColor, HEADWAY_TIERS } from '../../utils/colors';
-import { useColorVision } from '../../context/ColorVisionContext';
+import { HEADWAY_TIERS } from '../../utils/colors';
 import { effectiveMode, GTFS_RAIL_MODE_LABELS, isRailReplacementBus, VIRTUAL_LRT_MODE } from '../../../shared/modes';
 import { agencyDisplayParts, getRouteLabel, shouldHideNumericRouteShortName, titleCase } from '../../utils/format';
 import type { DayType, TimePeriod, ShapeProperties } from '../../hooks/useIntervalStats';
@@ -286,8 +285,6 @@ interface Props {
   onRouteSelect: (key: string) => void;
   sidebarLeft?: number;
   searchBarWidth?: number;
-  fareView?: boolean;
-  fareOverride?: FareOverride;
   onInfoOpen?: OpenInfoFn;
   onDemandFocus?: boolean;
   onDemandZoneId?: string | null;
@@ -344,14 +341,10 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
   onRouteSelect,
   sidebarLeft,
   searchBarWidth,
-  fareView,
-  fareOverride,
   onInfoOpen,
   onDemandFocus = false,
   onDemandZoneId = null,
 }, ref) {
-  const { colorVisionFriendly } = useColorVision();
-  const colorMode = colorVisionFriendly ? 'friendly' : 'default';
   const routes = useMemo(
     () => getRoutes(layers, agency.slug, day, period, { maxHeadway, selectedModes, hideSpan, hideLimitedService }),
     [layers, agency.slug, day, period, maxHeadway, selectedModes, hideSpan, hideLimitedService],
@@ -384,18 +377,6 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
 
   const activeFilterLabel = routeFilters.find(f => f.key === activeFilter)?.label;
 
-  const baseFare = useMemo(() => {
-    if (!fareView) return null;
-    if (fareOverride?.free) return 0;
-    const fc = layers[agency.slug];
-    if (fc) {
-      for (const f of fc.features) {
-        const bf = (f.properties as any).baseFare;
-        if (typeof bf === 'number') return bf as number;
-      }
-    }
-    return fareOverride?.adult ?? agency.fare ?? null;
-  }, [fareView, fareOverride, layers, agency]);
   const liveRoutes = useMemo(
     () => LIVE_POLLING_ROUTES.filter(r => r.slug === agency.slug && (!r.apiKeyParamEnvVar && !r.apiKeyHeaderEnvVar || r.active)),
     [agency.slug]
@@ -499,7 +480,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
     <div
       ref={ref}
       data-report-anchor="true"
-      className={`absolute top-20 left-6 sm:left-[var(--sidebar-left)] ${Z_PANEL} ${SIDEBAR_PANEL_WIDTH} ${fareView ? '' : 'max-h-[calc(100vh-104px)] flex flex-col'} ${FLOATING_CARD} ${PANEL_ENTER} overflow-hidden`}
+      className={`absolute top-20 left-6 sm:left-[var(--sidebar-left)] ${Z_PANEL} ${SIDEBAR_PANEL_WIDTH} max-h-[calc(100vh-104px)] flex flex-col ${FLOATING_CARD} ${PANEL_ENTER} overflow-hidden`}
       style={{
         '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px`,
         ...(searchBarWidth ? { width: `${searchBarWidth}px`, maxWidth: 'none' } : {}),
@@ -509,51 +490,6 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
         <div className="flex items-start gap-2 min-w-0">
           <div className="min-w-0 flex-1">
             <p className={`${CARD_TITLE} mb-0`}>{agencyNamePrimary}</p>
-          {fareView ? (
-            <>
-              {fareOverride?.free ? (
-                <div className="mt-2">
-                  <span className="text-sm font-black px-2.5 py-0.5 rounded-full text-white bg-emerald-500">FREE</span>
-                </div>
-              ) : (
-                <>
-                  <div className="flex items-center justify-between mt-2">
-                    <span className="text-[10px] font-bold text-[var(--text-dim)]">
-                      {fareOverride?.label ? `Adult (${fareOverride.label})` : 'Base adult fare'}
-                      {fareOverride?.zones ? ' · from' : ''}
-                    </span>
-                    {baseFare != null ? (
-                      <span
-                        className="text-sm font-black px-2.5 py-0.5 rounded-full text-white"
-                        style={{ background: getFareColor(baseFare, colorMode) }}
-                      >
-                        ${baseFare.toFixed(2)}
-                      </span>
-                    ) : (
-                      <span className="text-xs text-[var(--text-dim)]">fare varies</span>
-                    )}
-                  </div>
-                  {fareOverride?.adultCash != null && fareOverride.adultCash !== baseFare && (
-                    <div className="flex items-center justify-between mt-1">
-                      <span className="text-[10px] text-[var(--text-dim)]">Cash</span>
-                      <span className="text-xs font-bold text-[var(--text-muted)]">${fareOverride.adultCash.toFixed(2)}</span>
-                    </div>
-                  )}
-                </>
-              )}
-              {(fareOverride?.fareUrl ?? agency.fareUrl) && (
-                <OutboundLink
-                  href={(fareOverride?.fareUrl ?? agency.fareUrl)!}
-                  kind="fares"
-                  agencySlug={agency.slug}
-                  className="text-[10px] text-[var(--accent)] hover:underline mt-1.5 block"
-                >
-                  View all fares →
-                </OutboundLink>
-              )}
-            </>
-          ) : (
-          <>
           <p className="text-[9px] font-bold text-[var(--text-dim)] mt-1 leading-snug">
             {agency.onDemandOnly
               ? [agencyNameSecondary, 'On-demand service'].filter(Boolean).join(' · ')
@@ -634,8 +570,6 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
               })}
             </div>
           )}
-          </>
-          )}
           {(agency.feedReviewStatus === 'review' || agency.overrideNote || rolloutNotice) && onInfoOpen && (
             <div className={`${CARD_NOTICE_FOOTER} space-y-1`}>
               {rolloutNotice && (
@@ -686,7 +620,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
         </div>
       </div>
 
-      {!fareView && <div className="flex-1 overflow-y-auto custom-scrollbar">
+      <div className="flex-1 overflow-y-auto custom-scrollbar">
         {visibleRoutes.length === 0 ? (
           <p className="px-4 py-4 text-xs text-[var(--text-dim)]">
             {activeFilterLabel ? `No ${activeFilterLabel.toLowerCase()} routes match.` : 'No routes loaded yet.'}
@@ -735,7 +669,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
             onRouteSelect={onRouteSelect}
           />
         )}
-      </div>}
+      </div>
     </div>
   );
 });

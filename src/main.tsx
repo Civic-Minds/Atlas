@@ -1,23 +1,30 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter, Routes, Route } from 'react-router';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router';
 import App from './App';
 import LegalPage from './LegalPage';
 import AboutDocsPage from './AboutDocsPage';
 import AboutPage from './AboutPage';
 import ChangelogPage from './ChangelogPage';
 import './styles/index.css';
-import { FEATURES } from '../shared/config';
+import { FEATURES, FEATURE_ROUTES } from '../shared/config';
 import { inject } from '@vercel/analytics';
 import { injectSpeedInsights } from '@vercel/speed-insights';
 import AnalyticsConsent from './components/AnalyticsConsent';
 import { ColorVisionProvider } from './context/ColorVisionContext';
+import { RETIRED_APP_PATHS } from './utils/appGate';
 import RouteTracker from './components/RouteTracker';
 import RouteSeo from './components/RouteSeo';
 import { isInternalTestSession } from './lib/internalTest';
 
 const DiagnosticsUnevenPage = React.lazy(() => import('./DiagnosticsUnevenPage'));
 const DiagnosticsPerformancePage = React.lazy(() => import('./DiagnosticsPerformancePage'));
+
+/** Night Service moved from /apps/night to /research/night; keep old links and their filters working. */
+function NightServiceRedirect() {
+  const { search, hash } = useLocation();
+  return <Navigate to={`${FEATURE_ROUTES.nightService}${search}${hash}`} replace />;
+}
 
 // Collect page views only from deployed builds; local development should not
 // pollute the production and beta analytics data.
@@ -38,10 +45,12 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           {/* Maintainer-only research page; it is never included in built bundles. */}
           {import.meta.env.DEV && (
             <>
-              <Route path="/apps/diagnostics/uneven-headway" element={<DiagnosticsUnevenPage />} />
-              <Route path="/apps/diagnostics/performance" element={<DiagnosticsPerformancePage />} />
+              <Route path="/dev/diagnostics/uneven-headway" element={<DiagnosticsUnevenPage />} />
+              <Route path="/dev/diagnostics/performance" element={<DiagnosticsPerformancePage />} />
             </>
           )}
+          <Route path="/apps/night" element={<NightServiceRedirect />} />
+          {RETIRED_APP_PATHS.map(path => <Route key={path} path={path} element={<Navigate to="/" replace />} />)}
           <Route path="/terms" element={<LegalPage document="terms" />} />
           <Route path="/privacy" element={<LegalPage document="privacy" />} />
           <Route path="/about/docs" element={<AboutDocsPage />} />

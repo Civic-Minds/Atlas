@@ -31,7 +31,6 @@ export const COLOR_VISION_STATUS_COLORS: Record<'early' | 'late' | 'on_time' | '
   no_data: { bg: '#6b7280', border: '#4b5563', text: '#4b5563' },
 };
 
-const COLOR_VISION_FARE_COLORS = ['#0072b2', '#009e73', '#b07a00', '#c44516', '#a64f89'];
 
 function palette(mode: ColorVisionMode): HeadwayTier[] {
   return mode === 'friendly' ? COLOR_VISION_HEADWAY_TIERS : HEADWAY_TIERS;
@@ -98,62 +97,13 @@ export function getTimelineHeadwayColor(hw: number | null, mode: ColorVisionMode
   return { bg, fg: '#fff' };
 }
 
-export interface FareTier {
-  max: number;
-  label: string;
-  color: string;
-}
-
-export const FARE_TIERS: FareTier[] = [
-  { max: 0, label: 'Free', color: '#14b8a6' },
-  { max: 2, label: '< $2', color: '#4ade80' },
-  { max: 4, label: '$2–4', color: '#facc15' },
-  { max: 8, label: '$4–8', color: '#fb923c' },
-  { max: Infinity, label: '$8+', color: '#f87171' },
-];
-
-/** Fare legend tiers in the colours the map draws for this colour mode. */
-export function getFareTiers(mode: ColorVisionMode = 'default'): FareTier[] {
-  if (mode !== 'friendly') return FARE_TIERS;
-  return FARE_TIERS.map((tier, index) => ({ ...tier, color: COLOR_VISION_FARE_COLORS[index] }));
-}
-
-export function getFareColor(fare: number | null | undefined, mode: ColorVisionMode = 'default'): string {
-  if (fare == null) return '#6b7280';
-  if (mode === 'friendly') {
-    if (fare === 0) return COLOR_VISION_FARE_COLORS[0];
-    if (fare < 2) return COLOR_VISION_FARE_COLORS[1];
-    if (fare < 4) return COLOR_VISION_FARE_COLORS[2];
-    if (fare < 8) return COLOR_VISION_FARE_COLORS[3];
-    return COLOR_VISION_FARE_COLORS[4];
-  }
-  if (fare === 0) return FARE_TIERS[0].color;
-  if (fare < 2) return FARE_TIERS[1].color;
-  if (fare < 4) return FARE_TIERS[2].color;
-  if (fare < 8) return FARE_TIERS[3].color;
-  return FARE_TIERS[4].color;
-}
-
 /** Flat line color for Night Service view — every visible route already passed the
- * nightService filter, so (unlike fare/headway) there's no tier to express, just one color. */
+ * nightService filter, so (unlike headway) there's no tier to express, just one color. */
 export const NIGHT_SERVICE_COLOR = '#818cf8';
 export const COLOR_VISION_NIGHT_SERVICE_COLOR = '#0072b2';
 
 export function getNightServiceColor(mode: ColorVisionMode = 'default'): string {
   return mode === 'friendly' ? COLOR_VISION_NIGHT_SERVICE_COLOR : NIGHT_SERVICE_COLOR;
-}
-
-/** MapLibre case expression for fare-based line color. */
-export function buildFareColorExpression(mode: ColorVisionMode = 'default'): unknown[] {
-  const colors = mode === 'friendly' ? COLOR_VISION_FARE_COLORS : FARE_TIERS.map(t => t.color);
-  const expr: unknown[] = ['case'];
-  expr.push(['==', ['coalesce', ['get', 'baseFare'], -1], 0], colors[0]);
-  expr.push(['all', ['>', ['coalesce', ['get', 'baseFare'], 999], 0], ['<', ['coalesce', ['get', 'baseFare'], 999], 2]], colors[1]);
-  expr.push(['all', ['>=', ['coalesce', ['get', 'baseFare'], 999], 2], ['<', ['coalesce', ['get', 'baseFare'], 999], 4]], colors[2]);
-  expr.push(['all', ['>=', ['coalesce', ['get', 'baseFare'], 999], 4], ['<', ['coalesce', ['get', 'baseFare'], 999], 8]], colors[3]);
-  expr.push(['>=', ['coalesce', ['get', 'baseFare'], 999], 8], colors[4]);
-  expr.push('#6b7280');
-  return expr;
 }
 
 /** MapLibre step expression for runtime zoom headway gate. */

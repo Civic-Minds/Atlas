@@ -28,7 +28,6 @@ export const BUILD_FLAGS: SeoFlags = {
   whatsNew: FEATURES.whatsNew,
   live: FEATURES.live,
   history: FEATURES.history,
-  corridors: FEATURES.corridors,
 };
 
 export function renderPage(path: string): string {

@@ -14,7 +14,7 @@ export default function ResearchPage() {
         </div>
 
         <div className="mt-10 grid gap-4 sm:grid-cols-2">
-          <a href="/apps/night" className={`${FLOATING_CARD} group p-5 transition-colors hover:border-[var(--accent-border)]`}>
+          <a href={FEATURE_ROUTES.nightService} className={`${FLOATING_CARD} group p-5 transition-colors hover:border-[var(--accent-border)]`}>
             <Moon className="h-5 w-5 text-[var(--accent)]" />
             <h2 className="mt-5 text-lg font-black text-[var(--text-primary)] group-hover:text-[var(--accent)]">Night Service</h2>
             <p className="mt-2 text-sm font-bold leading-6 text-[var(--text-muted)]">Find routes with sustained service from 2am to 6am.</p>

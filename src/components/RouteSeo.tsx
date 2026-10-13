@@ -15,7 +15,6 @@ export default function RouteSeo() {
         whatsNew: FEATURES.whatsNew,
         live: FEATURES.live,
         history: FEATURES.history,
-        corridors: FEATURES.corridors,
       },
       // Production keeps the real site address; staging builds describe the host they run on.
       origin: ATLAS_MODE === 'public' ? undefined : window.location.origin,
