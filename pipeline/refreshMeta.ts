@@ -171,3 +171,12 @@ export function decideRefreshSkipUnchanged(opts: {
   }
   return { skip: false };
 }
+
+/**
+ * A staged agency stays staged until a refresh actually published its data.
+ * Stale, unchanged and refused results published nothing, so un-staging then
+ * would expose an agency with nothing to render.
+ */
+export function shouldClearStaged(result: { processed?: boolean }): boolean {
+  return result.processed === true;
+}
