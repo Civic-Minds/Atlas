@@ -51,7 +51,7 @@ function Intro({ intro, connections }: { intro: string; connections: AgencyPageD
   if (at < 0 || named.length === 0) return <p className={sentence}>{intro}</p>;
   return (
     <p className={sentence}>
-      {intro.slice(0, at)} and <span title="Another agency's stop within 150 m of one of this agency's stops" className="underline decoration-dotted underline-offset-2">connects with</span>{' '}
+      {intro.slice(0, at)} and connects with{' '}
       {named.map((c, i) => (
         <span key={c.slug}>
           {i > 0 ? (i === named.length - 1 && others === 0 ? ' and ' : ', ') : ''}
