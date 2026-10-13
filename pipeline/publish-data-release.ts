@@ -19,6 +19,7 @@ import path from 'path';
 import { PMTiles } from 'pmtiles';
 import './loadEnv.js';
 import { r2Put } from './r2.js';
+import { RELEASE_HISTORY_KEY, appendReleaseHistory } from '../shared/releaseHistory.js';
 import { bumpPublicDataVersion } from './dataVersion.js';
 import { isBuiltIntoTiles, type TileInclusionAgency } from './pmtilesCoverage.js';
 import { R2_PUBLIC_URL } from '../shared/config.js';
@@ -155,6 +156,15 @@ if (gateReport.blocked.length) {
 
 await r2Put('atlas/release.json', JSON.stringify(manifest, null, 2));
 await bumpPublicDataVersion(`release ${manifest.releaseId}`);
+// Public list of every release, read by the changelog page. A failure here must not undo or
+// hide the publish above, and an unreadable existing file is never overwritten.
+try {
+  const history = await fetchJson(RELEASE_HISTORY_KEY);
+  await r2Put(RELEASE_HISTORY_KEY, JSON.stringify(
+    appendReleaseHistory(history, { releaseId: manifest.releaseId, generatedAt: manifest.generatedAt }), null, 2));
+} catch (err) {
+  console.warn(`Release published, but ${RELEASE_HISTORY_KEY} was not updated: ${err instanceof Error ? err.message : err}`);
+}
 // A published manifest must not be publishable again from a later run.
 fs.rmSync(manifestPath);
 console.log(`Published Atlas data release ${manifest.releaseId} (${Object.keys(agencyStamps).length} agency snapshots and both tile archives verified).`);

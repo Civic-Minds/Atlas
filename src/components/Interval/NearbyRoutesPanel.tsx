@@ -53,9 +53,9 @@ export const NearbyRoutesPanel = forwardRef<HTMLDivElement, NearbyRoutesPanelPro
               className={LIST_ROW}
             >
               <div className="flex flex-col min-w-0 flex-1 gap-0.5">
-                <div className="flex items-center gap-2">
+                <div className="flex items-start gap-2">
                   <span
-                    className="w-1.5 h-1.5 rounded-full shrink-0"
+                    className="w-1.5 h-1.5 rounded-full shrink-0 mt-[5px]"
                     style={{ background: headwayToTierColor(r.headway, colorMode) }}
                   />
                   {r.displayShortName ? (
@@ -64,8 +64,9 @@ export const NearbyRoutesPanel = forwardRef<HTMLDivElement, NearbyRoutesPanelPro
                     </span>
                   ) : null}
                   <span className={r.displayShortName
-                    ? 'text-[10px] font-bold text-[var(--text-muted)] truncate'
-                    : 'text-[11px] font-black text-[var(--text-primary)] truncate'}>
+                    ? 'min-w-0 text-[10px] font-bold text-[var(--text-muted)] line-clamp-2 break-words'
+                    : 'min-w-0 text-[11px] font-black text-[var(--text-primary)] line-clamp-2 break-words'}
+                    title={r.routeLongName || r.agencyName}>
                     {r.routeLongName || r.agencyName}
                   </span>
                   {r.headway != null && (

@@ -802,7 +802,7 @@ export default function History({ active, initialAgencySlug, onInfoOpen, query, 
                       className={`${AGENCY_LIST_ROW} border-b border-[var(--border-primary)] last:border-0`}
                     >
                       <span className="min-w-0">
-                        <span className={AGENCY_LIST_PRIMARY}>{shortenAgencyName(agency.name)}</span>
+                        <span className={AGENCY_LIST_PRIMARY} title={agency.name}>{shortenAgencyName(agency.name)}</span>
                         <span className="block text-[10px] text-[var(--text-muted)]">
                           {agency.routes.length} route{agency.routes.length !== 1 ? 's' : ''}
                         </span>

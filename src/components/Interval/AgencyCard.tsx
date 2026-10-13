@@ -13,6 +13,7 @@ import type { DayType, TimePeriod, ShapeProperties } from '../../hooks/useInterv
 import { passesRouteFilter } from '../../hooks/useIntervalStats';
 import { routeListDisplay } from '../../utils/effectiveHeadway';
 import { CARD_TITLE, CardDirectionRow, CardHelpNotice, CardReportButton } from './cardUi';
+import { OutboundLink } from '../OutboundLink';
 import { buildRouteFacts } from '../../utils/routeFacts';
 import { currentAtlasUrl } from '../../utils/reportIssue';
 import { getRolloutNotice } from '../../../shared/rolloutNotice';
@@ -540,14 +541,14 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
                 </>
               )}
               {(fareOverride?.fareUrl ?? agency.fareUrl) && (
-                <a
-                  href={fareOverride?.fareUrl ?? agency.fareUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <OutboundLink
+                  href={(fareOverride?.fareUrl ?? agency.fareUrl)!}
+                  kind="fares"
+                  agencySlug={agency.slug}
                   className="text-[10px] text-[var(--accent)] hover:underline mt-1.5 block"
                 >
                   View all fares →
-                </a>
+                </OutboundLink>
               )}
             </>
           ) : (
@@ -562,9 +563,9 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
               <div className="flex items-baseline justify-between gap-2">
                 <p className="text-[10px] font-black text-[var(--accent)]">On-demand service</p>
                 {agency.onDemandServiceArea.sourceUrl && (
-                  <a href={agency.onDemandServiceArea.sourceUrl} target="_blank" rel="noopener noreferrer" className="shrink-0 text-[10px] text-[var(--accent)] hover:underline">
+                  <OutboundLink href={agency.onDemandServiceArea.sourceUrl} kind="on_demand_source" agencySlug={agency.slug} className="shrink-0 text-[10px] text-[var(--accent)] hover:underline">
                     Details →
-                  </a>
+                  </OutboundLink>
                 )}
               </div>
               <p className="text-[10px] font-bold text-[var(--text-primary)] mt-0.5">{agency.onDemandServiceArea.serviceName}</p>
@@ -600,9 +601,9 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
               <div className="flex items-baseline justify-between gap-2">
                 <p className="text-[10px] font-black text-[var(--accent)]">On-demand service</p>
                 {coverageNote.url && (
-                  <a href={coverageNote.url} target="_blank" rel="noopener noreferrer" className="shrink-0 text-[10px] text-[var(--accent)] hover:underline">
+                  <OutboundLink href={coverageNote.url} kind="coverage_note" agencySlug={agency.slug} className="shrink-0 text-[10px] text-[var(--accent)] hover:underline">
                     Details →
-                  </a>
+                  </OutboundLink>
                 )}
               </div>
               <p className="text-[10px] font-bold text-[var(--text-primary)] mt-0.5">{coverageNote.serviceName}</p>

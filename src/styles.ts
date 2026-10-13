@@ -76,7 +76,7 @@ export const LIST_ROW_DIM = 'text-[10px] text-[var(--text-muted)] font-bold';
 
 /** Shared agency-browser row used by Info and History agency lists. */
 export const AGENCY_LIST_ROW = 'w-full flex items-center justify-between px-5 py-2 hover:bg-[var(--bg-btn-hover)] transition-colors text-left';
-export const AGENCY_LIST_PRIMARY = 'text-xs text-[var(--text-primary)] min-w-0 truncate';
+export const AGENCY_LIST_PRIMARY = 'text-xs text-[var(--text-primary)] min-w-0 line-clamp-2 break-words';
 
 /** Floating panel title bar — Near You, Live Vehicles list, etc. */
 export const PANEL_TITLE_BAR = 'flex items-center gap-1.5 px-4 pt-3 pb-2.5 border-b border-[var(--border-primary)] shrink-0';

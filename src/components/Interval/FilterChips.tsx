@@ -39,6 +39,14 @@ interface FilterChipsProps {
   nightServiceMode?: boolean;
   nightServiceFrequency?: NightServiceFrequency;
   setNightServiceFrequency?: (frequency: NightServiceFrequency) => void;
+  /**
+   * Compare mode. 'shared': only the filters both maps share (Mode and Agencies), labelled as
+   * such. 'side': only Frequency, Day and Time, for one map's own controls. Same chips and menus
+   * as the full bar either way.
+   */
+  variant?: 'full' | 'shared' | 'side';
+  /** Accessible name for the 'side' variant's group, e.g. "Map B settings". */
+  groupLabel?: string;
 }
 
 const MODES = FEATURES.onDemand
@@ -248,6 +256,8 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
   nightServiceMode = false,
   nightServiceFrequency = 60,
   setNightServiceFrequency,
+  variant = 'full',
+  groupLabel,
 }) => {
   const { colorVisionFriendly } = useColorVision();
   const colorMode = colorVisionFriendly ? 'friendly' : 'default';
@@ -350,6 +360,150 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
     );
   }
 
+  const frequencyChip = (className: string) => (
+    <div className={`relative ${className}`}>
+      <button onClick={() => toggle('frequency')} className={chipClass(maxHeadway !== Infinity)}>
+        Frequency
+        <Dot show={maxHeadway !== Infinity} />
+      </button>
+      {openChip === 'frequency' && (
+        <div className={`${PANEL} w-36`}>
+          {HEADWAY_TIERS.map(({ max, label }) => {
+            const isSelected = maxHeadway === max;
+            const color = isFinite(max) ? getTierColor(String(max), colorMode) : 'var(--text-dim)';
+            return (
+              <button
+                key={label}
+                onClick={() => { setMaxHeadway(max); setOpenChip(null); }}
+                className={rowBtn(isSelected, colorMode === 'friendly')}
+                aria-label={max === Infinity ? 'Show all routes' : `Every ${max} min or better`}
+              >
+                <span className="w-2 h-2 rounded-full shrink-0" style={{ background: color }} />
+                {label === 'Infrequent' ? 'All' : label}
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+
+  const dayChip = (className: string) => (
+    <div className={`relative ${className}`}>
+      <button onClick={() => toggle('day')} className={chipClass(true)}>
+        Day
+        <Dot show={true} />
+      </button>
+      {openChip === 'day' && (
+        <div className={`${PANEL} w-36`}>
+          {DAY_TYPES.map((d) => (
+            <button
+              key={d}
+              onClick={() => { setDay(d); setOpenChip(null); }}
+              className={rowBtn(day === d, colorMode === 'friendly')}
+            >
+              {d}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+
+  const periodChip = (className: string) => (
+    <div className={`relative ${className}`}>
+      <button onClick={() => toggle('period')} className={chipClass(true)}>
+        Time
+        <Dot show={true} />
+      </button>
+      {openChip === 'period' && (
+        <div className={`${PANEL} w-36`}>
+          {PERIOD_KEYS.map((p) => (
+            <button
+              key={p}
+              onClick={() => { setPeriod(p); setOpenChip(null); }}
+              className={`${rowBtn(period === p, colorMode === 'friendly')} flex items-center justify-between gap-3`}
+            >
+              <span>{PERIOD_LABELS[p]}</span>
+              <span className="text-[9px] text-[var(--text-dim)] shrink-0">{formatPeriodRange(p)}</span>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+
+  const agenciesChip = (
+    <div className="relative">
+      {(() => {
+        const allOn = selectedAgencies.size >= agencies.length;
+        return (
+          <button onClick={() => toggle('agencies')} className={chipClass(!allOn)}>
+            Agencies
+            <Dot show={!allOn} />
+          </button>
+        );
+      })()}
+      {openChip === 'agencies' && (
+        <AgenciesPanel
+          agencies={agencies}
+          selectedAgencies={selectedAgencies}
+          setSelectedAgencies={setSelectedAgencies}
+          bounds={bounds}
+          agencyQuery={agencyQuery}
+          setAgencyQuery={setAgencyQuery}
+          agencySearchRef={agencySearchRef}
+          highContrast={colorMode === 'friendly'}
+        />
+      )}
+    </div>
+  );
+
+  const modeChip = (className: string) => (
+    <div className={`relative ${className}`}>
+      <button onClick={() => toggle('mode')} className={chipClass(selectedModes.size > 0)}>
+        Mode
+        <Dot show={selectedModes.size > 0} />
+      </button>
+      {openChip === 'mode' && (
+        <div className={`${PANEL} w-36`}>
+          {MODES.map((m) => (
+            <button
+              key={m.id}
+              onClick={() => toggleMode(m.id)}
+              className={rowBtn(modeIsActive(m.id), colorMode === 'friendly')}
+            >
+              {m.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+
+  if (variant === 'side') {
+    return (
+      <div ref={rowRef} className="flex items-center gap-2" role="group" aria-label={groupLabel}>
+        {frequencyChip('')}
+        {dayChip('')}
+        {periodChip('')}
+      </div>
+    );
+  }
+
+  if (variant === 'shared') {
+    return (
+      <div ref={rowRef} className="flex items-center gap-2" role="group" aria-label="Filters for both maps">
+        <span className="h-8 px-3 flex items-center gap-1.5 rounded-full bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] text-xs font-bold text-[var(--text-primary)] whitespace-nowrap">
+          <span className="inline-flex h-4 px-1 items-center justify-center rounded-full bg-[var(--text-primary)] text-[9px] font-black text-[var(--bg-panel)]" aria-hidden="true">A+B</span>
+          Both maps
+        </span>
+        {modeChip('')}
+        {agenciesChip}
+      </div>
+    );
+  }
+
   return (
     <div ref={rowRef} className="flex items-center gap-2">
 
@@ -413,121 +567,15 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
         )}
       </div>
 
-      {/* Frequency */}
-      <div className="relative hidden lg:block">
-        <button onClick={() => toggle('frequency')} className={chipClass(maxHeadway !== Infinity)}>
-          Frequency
-          <Dot show={maxHeadway !== Infinity} />
-        </button>
-        {openChip === 'frequency' && (
-          <div className={`${PANEL} w-36`}>
-            {HEADWAY_TIERS.map(({ max, label }) => {
-              const isSelected = maxHeadway === max;
-              const color = isFinite(max) ? getTierColor(String(max), colorMode) : 'var(--text-dim)';
-              return (
-                <button
-                  key={label}
-                  onClick={() => { setMaxHeadway(max); setOpenChip(null); }}
-                  className={rowBtn(isSelected, colorMode === 'friendly')}
-                  aria-label={max === Infinity ? 'Show all routes' : `Every ${max} min or better`}
-                >
-                  <span className="w-2 h-2 rounded-full shrink-0" style={{ background: color }} />
-                  {label === 'Infrequent' ? 'All' : label}
-                </button>
-              );
-            })}
-          </div>
-        )}
-      </div>
-
-      {/* Day */}
-      <div className="relative hidden lg:block">
-        <button onClick={() => toggle('day')} className={chipClass(true)}>
-          Day
-          <Dot show={true} />
-        </button>
-        {openChip === 'day' && (
-          <div className={`${PANEL} w-36`}>
-            {DAY_TYPES.map((d) => (
-              <button
-                key={d}
-                onClick={() => { setDay(d); setOpenChip(null); }}
-                className={rowBtn(day === d, colorMode === 'friendly')}
-              >
-                {d}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Period */}
-      <div className="relative hidden lg:block">
-        <button onClick={() => toggle('period')} className={chipClass(true)}>
-          Time
-          <Dot show={true} />
-        </button>
-        {openChip === 'period' && (
-          <div className={`${PANEL} w-36`}>
-            {PERIOD_KEYS.map((p) => (
-              <button
-                key={p}
-                onClick={() => { setPeriod(p); setOpenChip(null); }}
-                className={`${rowBtn(period === p, colorMode === 'friendly')} flex items-center justify-between gap-3`}
-              >
-                <span>{PERIOD_LABELS[p]}</span>
-                <span className="text-[9px] text-[var(--text-dim)] shrink-0">{formatPeriodRange(p)}</span>
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
-
+      {/* Frequency, day and time */}
+      {frequencyChip('hidden lg:block')}
+      {dayChip('hidden lg:block')}
+      {periodChip('hidden lg:block')}
       {/* Mode */}
-      <div className="relative hidden lg:block">
-        <button onClick={() => toggle('mode')} className={chipClass(selectedModes.size > 0)}>
-          Mode
-          <Dot show={selectedModes.size > 0} />
-        </button>
-        {openChip === 'mode' && (
-          <div className={`${PANEL} w-36`}>
-            {MODES.map((m) => (
-              <button
-                key={m.id}
-                onClick={() => toggleMode(m.id)}
-                className={rowBtn(modeIsActive(m.id), colorMode === 'friendly')}
-              >
-                {m.label}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
+      {modeChip('hidden lg:block')}
 
       {/* Agencies */}
-      <div className="relative">
-        {(() => {
-          const allOn = selectedAgencies.size >= agencies.length;
-          return (
-            <button onClick={() => toggle('agencies')} className={chipClass(!allOn)}>
-              Agencies
-              <Dot show={!allOn} />
-            </button>
-          );
-        })()}
-        {openChip === 'agencies' && (
-          <AgenciesPanel
-            agencies={agencies}
-            selectedAgencies={selectedAgencies}
-            setSelectedAgencies={setSelectedAgencies}
-            bounds={bounds}
-            agencyQuery={agencyQuery}
-            setAgencyQuery={setAgencyQuery}
-            agencySearchRef={agencySearchRef}
-            highContrast={colorMode === 'friendly'}
-          />
-        )}
-      </div>
+      {agenciesChip}
 
     </div>
   );

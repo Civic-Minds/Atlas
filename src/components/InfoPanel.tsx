@@ -11,6 +11,7 @@ import type { Agency } from '../App';
 import { isFeedExpired } from '../utils/feedFreshness';
 import { effectiveFeedExpiry } from '../../shared/feedAvailability';
 import { trackEvent } from '../lib/analytics';
+import { OutboundLink } from './OutboundLink';
 import { EXPIRED_FEED_CADENCE, EXPIRED_FEED_CONTEXT, EXPIRED_FEED_EXPLANATION, MANUAL_FEED_CONTEXT, NO_ROUTE_SHAPE_DETAIL, NO_ROUTE_SHAPE_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice } from '../content/noticeCopy';
 import RegionFilterPills from './RegionFilterPills';
 
@@ -385,7 +386,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                 <p className="text-[10px] font-bold text-[var(--text-muted)] mb-2">Feedback</p>
                 <a
                   href="mailto:hey@ryanisnota.pro?subject=Atlas%20Feedback"
-                  onClick={() => trackEvent('contact_opened')}
+                  onClick={() => { trackEvent('contact_opened'); trackEvent('feedback_opened', { source: 'info_panel' }); }}
                   className="flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group"
                 >
                   <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">Contact us</span>
@@ -488,7 +489,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                               onClick={() => { onAgencySelect?.(a.slug); onClose(); }}
                               className={AGENCY_LIST_ROW}
                             >
-                              <span className={AGENCY_LIST_PRIMARY}>
+                              <span className={AGENCY_LIST_PRIMARY} title={listLabel}>
                                 {primary}
                                 {secondary && (
                                   <span className="text-[var(--text-dim)]"> · {secondary}</span>
@@ -582,18 +583,18 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                 {EXPIRED_FEED_CADENCE} {helpContext?.manualFeedSource ? MANUAL_FEED_CONTEXT : EXPIRED_FEED_CONTEXT}
               </p>
               {helpContext?.websiteUrl && (
-                <a
+                <OutboundLink
                   href={helpContext.websiteUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  kind="agency_website"
                   className="flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group"
                 >
                   <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">Check current schedules</span>
                   <ExternalLink className="w-3 h-3 text-[var(--text-dim)]" />
-                </a>
+                </OutboundLink>
               )}
               <a
                 href="mailto:hey@ryanisnota.pro?subject=Atlas%20schedule%20feedback"
+                onClick={() => trackEvent('feedback_opened', { source: 'info_panel_schedule' })}
                 className="flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group"
               >
                 <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">Report a problem</span>
@@ -641,10 +642,10 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                 This notice is temporary. It will disappear after review, or become a correction notice if we find a known problem.
               </p>
               {helpContext?.websiteUrl && (
-                <a href={helpContext.websiteUrl} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group">
+                <OutboundLink href={helpContext.websiteUrl} kind="agency_website" className="flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group">
                   <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">Check current schedules</span>
                   <ExternalLink className="w-3 h-3 text-[var(--text-dim)]" />
-                </a>
+                </OutboundLink>
               )}
             </div>
           )}
@@ -684,6 +685,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
               ) : null}
               <a
                 href="mailto:hey@ryanisnota.pro?subject=Atlas%20data%20feedback"
+                onClick={() => trackEvent('feedback_opened', { source: 'info_panel_data' })}
                 className="flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] hover:border-[var(--accent)] transition-colors group"
               >
                 <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">Report a problem</span>

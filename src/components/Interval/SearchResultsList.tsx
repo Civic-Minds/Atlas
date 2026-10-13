@@ -170,7 +170,7 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
             }}
           >
             <div className="min-w-0 flex-1">
-              <p className={`${LIST_ROW_PRIMARY} line-clamp-2 leading-snug ${selectedStop === s.key ? SELECTION_ACTIVE_TEXT : ''}`}>{name}</p>
+              <p className={`${LIST_ROW_PRIMARY} line-clamp-2 leading-snug ${selectedStop === s.key ? SELECTION_ACTIVE_TEXT : ''} break-words`} title={name}>{name}</p>
               {s.stopCode && <p className={`${LIST_ROW_DIM} truncate mt-0.5`}>Stop {s.stopCode}</p>}
             </div>
             <div className="flex flex-col items-end text-right ml-2 shrink-0 min-w-0 max-w-[34%]">
