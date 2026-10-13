@@ -3,17 +3,14 @@ import { useParams } from 'react-router';
 import { ArrowRight } from 'lucide-react';
 import {
   agencyAboutParagraph,
-  bestRoute,
   DEFAULT_THRESHOLD,
   modesText,
   typicalWait,
-  weekendLabel,
   type Threshold,
   agencyDatesText,
   agencyMapHref,
   agencyPageH1,
   agencyPagePath,
-  agencySpanShort,
   agencyStats,
   headwayEvery,
   headwayOrBetter,
@@ -23,7 +20,7 @@ import {
 } from '../shared/agencyPages';
 import { ATLAS_MODE } from '../shared/config';
 import { applySeoToDocument } from './lib/seoDom';
-import { LINK, PILL_BUTTON } from './pageStyles';
+import { LINK, PAGE_ACTION } from './pageStyles';
 import { StatRow, ThresholdToggle, type StatItem } from './pageParts';
 import SiteFooter from './components/SiteFooter';
 import SiteHeader from './components/SiteHeader';
@@ -84,14 +81,9 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
 
   const stats = agencyStats(agency, threshold);
   const wait = typicalWait(agency.routes);
-  const best = bestRoute(agency.routes);
-  const hours = agencySpanShort(agency);
-  const weekend = weekendLabel(agency.sat, agency.sun);
   const nearby = data!.nearby;
   const items: StatItem[] = [
     ...(wait != null ? [{ value: headwayEvery(wait), label: 'typical wait, weekday midday' }] : []),
-    ...(best ? [{ value: headwayEvery(best.headway), label: `quickest route: ${best.route.name}` }] : []),
-    ...(hours ? [{ value: hours, label: ['weekday service', weekend].filter(Boolean).join(' · ') }] : []),
     ...(stats.totalRoutes > 0 ? [{ value: String(stats.totalRoutes), label: modesText(stats.byMode.map(m => ({ label: m.label, routes: m.routes.length }))) }] : []),
   ];
 
@@ -106,7 +98,7 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
               <h1 className="text-2xl font-black tracking-tight sm:text-3xl">{agencyPageH1(agency)}</h1>
               {data!.area && <a className={`mt-1 inline-block text-sm ${LINK}`} href={`/area/${data!.area.slug}`}>{data!.area.name} area →</a>}
             </div>
-            <a href={agencyMapHref(agency)} className={PILL_BUTTON}>
+            <a href={agencyMapHref(agency)} className={PAGE_ACTION}>
               Open in the map <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </a>
           </div>
@@ -154,7 +146,6 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
           </section>
 
           <p className="mt-10 max-w-2xl text-sm leading-6 text-[var(--text-dim)]">{agencyAboutParagraph(agency)}</p>
-          <p className="mt-3 text-sm text-[var(--text-dim)]">{agencyDatesText(agency, data!.releaseDate)}</p>
 
           {nearby.length > 0 && (
             <section className="mt-12" aria-labelledby="nearby-heading">
@@ -163,14 +154,14 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
               </h2>
               <ul className="mt-3 grid gap-x-8 gap-y-2 sm:grid-cols-2">
                 {nearby.map(o => (
-                  <li key={o.slug}><a className={`${LINK} underline underline-offset-2`} href={agencyPagePath(o.slug)}>{o.displayName.replace(/\s*\([^)]*\)\s*$/, '')}</a></li>
+                  <li key={o.slug}><a className={`${LINK} underline underline-offset-2`} href={agencyPagePath(o.slug)}>{o.name}</a></li>
                 ))}
               </ul>
             </section>
           )}
 
           <p className="mt-12 text-sm leading-6 text-[var(--text-dim)]">
-            Scheduled service, not live arrivals.
+            Scheduled service, not live arrivals. {agencyDatesText(agency, data!.releaseDate)}
             {agency.websiteUrl && <> Official site: <a className={LINK} href={agency.websiteUrl} rel="noopener noreferrer">{agency.name}</a>.</>}
           </p>
         </article>

@@ -66,7 +66,7 @@ export interface AgencyPageSummaries {
 /** A page's own numbers plus links to nearby agencies: all one page needs, embedded in its HTML. */
 export interface AgencyPageData {
   agency: AgencyPageSummary;
-  nearby: Array<{ slug: string; displayName: string }>;
+  nearby: Array<{ slug: string; name: string }>;
   /** generatedAt of the data release the numbers come from. */
   releaseDate: string | null;
   /** The metro area page this agency belongs to, when it has one. */
@@ -89,7 +89,7 @@ export function agencyPageData(
         .sort((x, y) => (a.center && x.center ? distanceKm(a.center, x.center) : 0) - (a.center && y.center ? distanceKm(a.center, y.center) : 0))
         .slice(0, MAX_AREA_LIST)
     : nearbyAgencies(a, all);
-  return { agency: a, releaseDate, ...(area ? { area } : {}), nearby: others.map(o => ({ slug: o.slug, displayName: o.displayName })) };
+  return { agency: a, releaseDate, ...(area ? { area } : {}), nearby: others.map(o => ({ slug: o.slug, name: o.name })) };
 }
 
 const MAX_AREA_LIST = 12;

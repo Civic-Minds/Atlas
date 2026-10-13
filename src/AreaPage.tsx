@@ -6,17 +6,15 @@ import {
   AREA_DATA_SCRIPT_ID,
   areaAboutParagraph,
   areaDatesText,
-  areaHoursLabel,
   areaMapHref,
   areaPageH1,
-  areaSpanShort,
   areaSubtitle,
   resolveAreaSeo,
   type AreaPageData,
 } from '../shared/areaPages';
 import { ATLAS_MODE } from '../shared/config';
 import { applySeoToDocument } from './lib/seoDom';
-import { LINK, PILL_BUTTON } from './pageStyles';
+import { LINK, PAGE_ACTION } from './pageStyles';
 import { StatRow, ThresholdToggle, type StatItem } from './pageParts';
 import SiteFooter from './components/SiteFooter';
 import SiteHeader from './components/SiteHeader';
@@ -64,12 +62,9 @@ export default function AreaPage({ data: dataProp }: { data?: AreaPageData }) {
     );
   }
 
-  const span = areaSpanShort(data);
   const within = data.within[String(threshold)] ?? 0;
   const items: StatItem[] = [
     ...(data.typicalWait != null ? [{ value: headwayEvery(data.typicalWait), label: 'typical wait, weekday midday' }] : []),
-    ...(data.best ? [{ value: headwayEvery(data.best.headway), label: `quickest route: ${data.best.name}, ${data.best.agency}` }] : []),
-    ...(span ? [{ value: span, label: areaHoursLabel(data) }] : []),
     ...(data.totalRoutes > 0 ? [{ value: String(data.totalRoutes), label: modesText(data.byMode) }] : []),
   ];
 
@@ -84,7 +79,7 @@ export default function AreaPage({ data: dataProp }: { data?: AreaPageData }) {
               <h1 className="text-2xl font-black tracking-tight sm:text-3xl">{areaPageH1(data)}</h1>
               <p className="mt-1 text-sm text-[var(--text-muted)]">{areaSubtitle(data)}</p>
             </div>
-            <a href={areaMapHref(data)} className={PILL_BUTTON}>
+            <a href={areaMapHref(data)} className={PAGE_ACTION}>
               Open in the map <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </a>
           </div>
@@ -128,9 +123,8 @@ export default function AreaPage({ data: dataProp }: { data?: AreaPageData }) {
           </section>
 
           <p className="mt-10 max-w-2xl text-sm leading-6 text-[var(--text-dim)]">{areaAboutParagraph(data)}</p>
-          <p className="mt-3 text-sm text-[var(--text-dim)]">{areaDatesText(data)}</p>
           <p className="mt-12 text-sm leading-6 text-[var(--text-dim)]">
-            Area: {data.area.officialName} ({data.area.type === 'CMA' ? 'Statistics Canada census metropolitan area' : 'US Census metropolitan statistical area'}). Scheduled service, not live arrivals.
+            Area: {data.area.officialName} ({data.area.type === 'CMA' ? 'Statistics Canada census metropolitan area' : 'US Census metropolitan statistical area'}). Scheduled service, not live arrivals. {areaDatesText(data)}
           </p>
         </article>
 
