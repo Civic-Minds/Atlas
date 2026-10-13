@@ -4,6 +4,7 @@ import {
   dropCoincidentTemplateDepartures,
   expandTripFrequencyOffsets,
   firstVisitStopTimes,
+  frequencyDepartureCounts,
   isStretchedBlockTrip,
   processGtfsBuffer,
   windowsRepeatedByTimetable,
@@ -401,5 +402,36 @@ describe('isStretchedBlockTrip (#722)', () => {
   it('leaves a single-trip row to the #702 rule', () => {
     // waco TL-2533: 18:38-19:30 every 3005 s, two departures.
     expect(isStretchedBlockTrip(stops(['18:38:00', '', '19:30:00']), [window('18:38', '19:30', 3005)])).toBe(false);
+  });
+});
+
+describe('frequencyDepartureCounts (#723)', () => {
+  const stops = (tripId: string, first: string, last: string) => [
+    { trip_id: tripId, departure_time: first, arrival_time: first },
+    { trip_id: tripId, departure_time: last, arrival_time: last },
+  ];
+
+  it('counts a single-trip window once instead of expanding it', () => {
+    // 08:00-08:40 row for a trip that runs 08:00-08:40, headway 20 min: one bus, not two.
+    const counts = frequencyDepartureCounts(
+      [{ trip_id: 't1', start_time: '08:00:00', end_time: '08:40:00', headway_secs: '1200' }],
+      stops('t1', '08:00:00', '08:40:00'),
+    );
+    expect(counts.get('t1')).toBe(1);
+  });
+
+  it('still counts a genuine all-day window in full and dedupes a repeated row', () => {
+    const counts = frequencyDepartureCounts(
+      [
+        { trip_id: 't2', start_time: '06:00:00', end_time: '10:00:00', headway_secs: '600' },
+        { trip_id: 't2', start_time: '06:00:00', end_time: '10:00:00', headway_secs: '600' },
+      ],
+      stops('t2', '06:00:00', '06:30:00'),
+    );
+    expect(counts.get('t2')).toBe(24);
+  });
+
+  it('leaves out trips with no valid window', () => {
+    expect(frequencyDepartureCounts([{ trip_id: 't3', start_time: '08:00:00', end_time: '09:00:00', headway_secs: '30' }], []).has('t3')).toBe(false);
   });
 });
