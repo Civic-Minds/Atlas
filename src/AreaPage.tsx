@@ -15,7 +15,7 @@ import {
 } from '../shared/areaPages';
 import { ATLAS_MODE } from '../shared/config';
 import { applySeoToDocument } from './lib/seoDom';
-import { CHIP, CONTROL_ACTIVE_GLASS, LINK, TILE } from './pageStyles';
+import { CHIP, LINK, PILL_BUTTON, TILE } from './pageStyles';
 import SiteFooter from './components/SiteFooter';
 import SiteHeader from './components/SiteHeader';
 
@@ -76,7 +76,7 @@ export default function AreaPage({ data: dataProp }: { data?: AreaPageData }) {
               <p className="mt-1 text-sm text-[var(--text-muted)]">{areaSubtitle(data)}</p>
             </div>
             <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-              <a href={areaMapHref(data)} className={`inline-flex h-11 items-center gap-2 rounded-full border px-5 text-sm font-bold ${CONTROL_ACTIVE_GLASS}`}>
+              <a href={areaMapHref(data)} className={PILL_BUTTON}>
                 Open in the map <ArrowRight className="h-4 w-4" aria-hidden="true" />
               </a>
               <a className={`text-sm font-bold ${LINK}`} href="/about/docs#frequency">Methodology</a>
