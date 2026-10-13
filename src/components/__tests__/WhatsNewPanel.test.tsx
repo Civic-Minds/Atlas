@@ -10,13 +10,14 @@ const RELEASES: WhatsNewRelease[] = [
   {
     version: '3.3.0',
     month: 'October 2026',
+    date: '2026-10-12',
     items: [
       { text: 'Public change one.' },
       { text: 'Beta change.', beta: true },
       { text: 'Public change two.' },
     ],
   },
-  { version: '3.2.0', month: 'September 2026', items: [{ text: 'Only beta here.', beta: true }] },
+  { version: '3.2.0', month: 'September 2026', date: '2026-09-22', items: [{ text: 'Only beta here.', beta: true }] },
 ];
 
 describe('What\'s new link', () => {
@@ -50,21 +51,21 @@ describe('What\'s new flag', () => {
 });
 
 describe('WhatsNewPanel', () => {
-  it('renders items grouped by version, newest first, with beta items only in beta', async () => {
+  it('shows only the latest version and links to the full changelog', () => {
+    render(<WhatsNewPanel onClose={() => {}} includeBeta releases={RELEASES} loadRelease={async () => null} />);
+    expect(screen.getAllByRole('heading', { level: 3 }).map(h => h.textContent)).toEqual(['App version 3.3 · October 2026']);
+    expect(screen.getByRole('link', { name: 'See all changes' })).toHaveAttribute('href', '/changelog');
+  });
+
+  it('shows beta items only in beta', () => {
     const { unmount } = render(
       <WhatsNewPanel onClose={() => {}} includeBeta releases={RELEASES} loadRelease={async () => null} />,
     );
-    const items = screen.getAllByRole('listitem').map(li => li.textContent);
-    expect(items).toEqual(['Public change one.', 'Beta change.Beta', 'Public change two.', 'Only beta here.Beta']);
-    expect(screen.getAllByRole('heading', { level: 3 }).map(h => h.textContent)).toEqual([
-      'App version 3.3 · October 2026',
-      'App version 3.2 · September 2026',
-    ]);
+    expect(screen.getAllByRole('listitem').map(li => li.textContent)).toEqual(['Public change one.', 'Beta change.Beta', 'Public change two.']);
     unmount();
 
     render(<WhatsNewPanel onClose={() => {}} includeBeta={false} releases={RELEASES} loadRelease={async () => null} />);
     expect(screen.getAllByRole('listitem').map(li => li.textContent)).toEqual(['Public change one.', 'Public change two.']);
-    expect(screen.queryByText(/version 3\.2/)).toBeNull();
   });
 
   it('shows the data date from the release manifest', async () => {
@@ -96,6 +97,7 @@ describe('whatsNew content', () => {
     expect(visibleWhatsNew(true).length).toBe(WHATS_NEW.length);
     for (const release of WHATS_NEW) {
       expect(release.version).toMatch(/^\d+\.\d+\.\d+$/);
+      expect(release.date).toMatch(/^\d{4}-\d{2}-\d{2}$/);
       for (const item of release.items) {
         expect(item.text).not.toMatch(/GTFS|PMTiles|R2|#\d+|\bPR\b/);
       }

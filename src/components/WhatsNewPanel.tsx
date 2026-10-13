@@ -22,7 +22,8 @@ interface Props {
 
 export function WhatsNewPanel({ onClose, includeBeta, releases, loadRelease = resolveDataRelease }: Props) {
   const [dataDate, setDataDate] = useState<string | null>(null);
-  const visible = visibleWhatsNew(includeBeta, releases);
+  // Only the latest version here; older ones live on /changelog.
+  const visible = visibleWhatsNew(includeBeta, releases).slice(0, 1);
 
   useEffect(() => {
     let cancelled = false;
@@ -85,6 +86,7 @@ export function WhatsNewPanel({ onClose, includeBeta, releases, loadRelease = re
               </ul>
             </section>
           ))}
+          <a href="/changelog" className="block text-[11px] font-bold text-[var(--accent)] hover:underline">See all changes</a>
         </div>
       </div>
     </div>
