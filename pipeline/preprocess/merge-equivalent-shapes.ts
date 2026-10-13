@@ -57,8 +57,13 @@ function equivalentGeometry(a: GtfsShape, b: GtfsShape): boolean {
  * Some rail feeds publish one shape per terminal platform. The platform variants
  * are separate GTFS shapes, but they are one rider-facing service pattern and must
  * be combined before calculating headways.
+ *
+ * Light rail only by default. `allModes` is an agency opt-in for feeds that give
+ * other routes one shape per trip: SamTrans 120 on weekdays has 142 trips on 142
+ * shape IDs with identical geometry, so every phase 1 group had one departure and
+ * the route had no Weekday features (#775).
  */
-export function mergeEquivalentShapeVariants(gtfs: GtfsData): { gtfs: GtfsData; mergedGroups: number; mergedTrips: number } {
+export function mergeEquivalentShapeVariants(gtfs: GtfsData, options: { allModes?: boolean } = {}): { gtfs: GtfsData; mergedGroups: number; mergedTrips: number } {
   const routeById = new Map(gtfs.routes.map(route => [route.route_id, route]));
   const shapeById = new Map(gtfs.shapes.map(shape => [shape.id, shape]));
   const shapeTripCounts = new Map<string, number>();
@@ -68,7 +73,7 @@ export function mergeEquivalentShapeVariants(gtfs: GtfsData): { gtfs: GtfsData; 
   for (const trip of gtfs.trips) {
     if (!trip.shape_id || !shapeById.has(trip.shape_id)) continue;
     const route = routeById.get(trip.route_id);
-    if (!route || route.route_type !== '0') continue;
+    if (!route || (!options.allModes && route.route_type !== '0')) continue;
     const groupKey = `${trip.route_id}::${trip.direction_id ?? '0'}::${trip.trip_headsign ?? ''}`;
     let shapeIds = groups.get(groupKey);
     if (!shapeIds) {

@@ -15,6 +15,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Fixed
 
+- SamTrans 120 shows its weekday service again (every 15 min), since that day's feed gives every trip its own copy of the same route shape ([#775](https://github.com/Civic-Minds/Atlas/issues/775)).
 - A route's all-day frequency no longer comes from a variant with only a few trips a day, so TTC 102 shows every 30 instead of every 657 and TriMet 12 every 15 instead of every 1141 ([#749](https://github.com/Civic-Minds/Atlas/issues/749)).
 - Mont-Tremblant's Friday and Saturday now show the regular timetables instead of the Thanksgiving and December one-day schedules, since a passed holiday no longer decides which schedule the feed is read from ([#764](https://github.com/Civic-Minds/Atlas/issues/764)).
 - Avon Transit's Beaver Creek Express no longer shows in October, and Seattle Monorail and Sierra Vista now read their current timetable, since feeds where each schedule starts on its own date were still being read from an ended summer or short block ([#767](https://github.com/Civic-Minds/Atlas/issues/767)).

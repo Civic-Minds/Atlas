@@ -24,6 +24,7 @@ export interface AgencyFeedConfig {
   excludeTripHeadsigns?: string[];
   skipLetterSuffixMerge?: boolean;
   mergeEquivalentShapeVariants?: boolean;
+  mergeEquivalentShapeVariantsAllModes?: boolean;
   fare?: number;
   supplementalFeedUrls?: string[];
 }
@@ -56,6 +57,7 @@ export function agencyProcessOptions(agency: AgencyFeedConfig, overrides: Agency
     excludeTripHeadsigns: agency.excludeTripHeadsigns,
     skipLetterSuffixMerge: agency.skipLetterSuffixMerge,
     mergeEquivalentShapeVariants: agency.mergeEquivalentShapeVariants,
+    mergeEquivalentShapeVariantsAllModes: agency.mergeEquivalentShapeVariantsAllModes,
     manualBaseFare: overrides.manualBaseFare ?? agency.fare,
     force: overrides.force ?? false,
   };
