@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { decideDedupe, isThinNoDaytime, MIN_THIN_REPLACING_DEPARTURES, type DedupePattern } from '../featureDedupe';
 import { MIN_ALL_DAY_TERMINAL_DEPARTURES } from '../headway-utils';
 
-// The dedupe rules in order (#746, #716, #740, #772), each on the case that introduced it.
+// The dedupe rules in order (#596, #716, #740, #772), each on the case that introduced it.
 
 const pattern = (over: Partial<DedupePattern> = {}): DedupePattern => ({
   hasShape: true, dedupeHeadway: 20, headway: 20, departures: 40, hasDaytime: true, runsOnRepDay: true, carriesRepDay: true, ...over,

@@ -1,5 +1,5 @@
 /**
- * Feature dedupe: which pattern draws a route line (#746, #716, #740, #772).
+ * Feature dedupe: which pattern draws a route line (#596, #716, #740, #772).
  *
  * Phase 2 produces one result per (route, direction, day, headsign, shape). The map draws one
  * line per (route group, direction, day, headsign, branch) slot, so the results of a slot
@@ -56,7 +56,7 @@ export function decideDedupe(
 ): DedupeDecision {
   if (!incumbent) return 'replace';
 
-  // Step 1 (#746): a drawn line always beats a mapless point for the same slot, whichever is
+  // Step 1 (#596): a drawn line always beats a mapless point for the same slot, whichever is
   // more frequent and whichever arrives first, so reprocessing never turns a line into a point.
   if (incumbent.hasShape && !candidate.hasShape) return 'keep';
   const replacesMaplessWithShape = !incumbent.hasShape && candidate.hasShape;
