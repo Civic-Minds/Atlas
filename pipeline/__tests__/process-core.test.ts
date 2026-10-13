@@ -7,6 +7,7 @@ import {
   processGtfsBuffer,
   representativeStopSequence,
   selectTerminalDepartureTimes,
+  scopedTerminalHeadline,
   selectPeriodCoverageHeadway,
 } from '../process-core';
 
@@ -474,5 +475,150 @@ describe('feed expiry from calendar dates (#687)', () => {
     expect(result.feedExpiry).toBeNull();
     expect(result.calendarExpiry).toBe(ymd(90));
     expect(result.feedQuality.reasons).not.toContain('The schedule dates in this feed have passed.');
+  });
+});
+
+// CIV-103 / #476: direct regression tests for terminal-headway resolution and corridor clipping.
+
+describe('scopedTerminalHeadline', () => {
+  const every = (step: number, from = 360, to = 1320) => {
+    const out: number[] = [];
+    for (let t = from; t <= to; t += step) out.push(t);
+    return out;
+  };
+
+  it('reads the sustained headway of a daytime-serving terminal sample', () => {
+    const result = scopedTerminalHeadline(every(20), 'Weekday', '3', false);
+    expect(result?.headway).toBe(20);
+    expect(result?.tier).not.toBeNull();
+  });
+
+  it('returns null for a night-only sample so early trips never become the headline', () => {
+    expect(scopedTerminalHeadline([60, 90, 120, 150, 180, 210], 'Weekday', '3', false)).toBeNull();
+    expect(scopedTerminalHeadline(undefined, 'Weekday', '3', false)).toBeNull();
+  });
+
+  it('returns null for a short burst that is not all-day service', () => {
+    // Four PM short turns minutes apart: daytime exists but it is a burst, not a headline.
+    expect(scopedTerminalHeadline([1000, 1004, 1008, 1012], 'Weekday', '3', false)).toBeNull();
+  });
+
+  it('returns null with fewer than four distinct daytime departures', () => {
+    expect(scopedTerminalHeadline([600, 660, 720], 'Weekday', '3', false)).toBeNull();
+  });
+
+  it('gives a headline but no tier for rail, which phase 2 grades on its own window', () => {
+    const result = scopedTerminalHeadline(every(30), 'Weekday', '2', true);
+    expect(result?.headway).toBe(30);
+    expect(result?.tier).toBeNull();
+  });
+
+  it('does not depend on input order', () => {
+    const times = every(20);
+    expect(scopedTerminalHeadline([...times].reverse(), 'Weekday', '3', false))
+      .toEqual(scopedTerminalHeadline(times, 'Weekday', '3', false));
+  });
+});
+
+describe('processGtfsBuffer terminal headway', () => {
+  // One route, one direction. Stops s1..s3; only 'Downtown' trips reach s3. 'Short' trips
+  // (every 60 min) turn at s2, so s2 sees a denser mix than the terminal s3.
+  async function weekdayFeature(downtownStep: number) {
+    const zip = new JSZip();
+    zip.file('agency.txt', 'agency_id,agency_name,agency_url,agency_timezone\na,Term Transit,https://example.test,America/Toronto\n');
+    zip.file('routes.txt', 'route_id,route_short_name,route_long_name,route_type\nr1,1,Main,3\n');
+    zip.file('stops.txt', 'stop_id,stop_name,stop_lat,stop_lon\ns1,One,43.65,-79.38\ns2,Two,43.655,-79.375\ns3,Three,43.66,-79.37\n');
+    zip.file('calendar.txt', 'service_id,monday,tuesday,wednesday,thursday,friday,saturday,sunday,start_date,end_date\nweekday,1,1,1,1,1,0,0,20260101,20261231\n');
+    zip.file('shapes.txt', [
+      'shape_id,shape_pt_lat,shape_pt_lon,shape_pt_sequence',
+      'sh1,43.65,-79.38,1', 'sh1,43.655,-79.375,2', 'sh1,43.66,-79.37,3',
+    ].join('\n') + '\n');
+    const trips = ['route_id,service_id,trip_id,trip_headsign,direction_id,shape_id'];
+    const stopTimes = ['trip_id,arrival_time,departure_time,stop_id,stop_sequence'];
+    for (let start = 360; start <= 1320; start += downtownStep) {
+      const id = `t${start}`;
+      trips.push(`r1,weekday,${id},Downtown,0,sh1`);
+      stopTimes.push(`${id},${hm(start)},${hm(start)},s1,1`, `${id},${hm(start + 5)},${hm(start + 5)},s2,2`, `${id},${hm(start + 10)},${hm(start + 10)},s3,3`);
+    }
+    zip.file('trips.txt', trips.join('\n') + '\n');
+    zip.file('stop_times.txt', stopTimes.join('\n') + '\n');
+    const result = await processGtfsBuffer(await zip.generateAsync({ type: 'nodebuffer' }), undefined, { slug: 'term-transit' });
+    return JSON.parse(result.geojson).features
+      .find((f: any) => f.properties.routeShortName === '1' && f.properties.day === 'Weekday' && f.geometry.type === 'LineString');
+  }
+
+  it('reports the terminal headway, not a stale or default value', async () => {
+    const feature = await weekdayFeature(15);
+    expect(feature.properties.headway).toBe(15);
+    expect(feature.properties.tier).toBeDefined();
+  });
+
+  it('tracks the real headway when service is sparser', async () => {
+    const feature = await weekdayFeature(30);
+    expect(feature.properties.headway).toBe(30);
+  });
+});
+
+describe('processGtfsBuffer corridor clipping', () => {
+  // Two routes share the consecutive links s1->s2->s3. The shape has long tails before s1 and
+  // after s3 that the corridor must not include.
+  async function corridorFixture(withShapes: boolean) {
+    const zip = new JSZip();
+    zip.file('agency.txt', 'agency_id,agency_name,agency_url,agency_timezone\na,Corridor Transit,https://example.test,America/Toronto\n');
+    zip.file('routes.txt', 'route_id,route_short_name,route_long_name,route_type\nr1,1,One,3\nr2,2,Two,3\n');
+    zip.file('stops.txt', 'stop_id,stop_name,stop_lat,stop_lon\ns1,One,43.650,-79.380\ns2,Two,43.655,-79.375\ns3,Three,43.660,-79.370\n');
+    zip.file('calendar.txt', 'service_id,monday,tuesday,wednesday,thursday,friday,saturday,sunday,start_date,end_date\nweekday,1,1,1,1,1,0,0,20260101,20261231\n');
+    if (withShapes) {
+      zip.file('shapes.txt', [
+        'shape_id,shape_pt_lat,shape_pt_lon,shape_pt_sequence',
+        'sh1,43.640,-79.390,1', 'sh1,43.645,-79.385,2', 'sh1,43.650,-79.380,3', 'sh1,43.655,-79.375,4',
+        'sh1,43.660,-79.370,5', 'sh1,43.665,-79.365,6', 'sh1,43.670,-79.360,7',
+      ].join('\n') + '\n');
+    }
+    const trips = ['route_id,service_id,trip_id,trip_headsign,direction_id,shape_id'];
+    const stopTimes = ['trip_id,arrival_time,departure_time,stop_id,stop_sequence'];
+    for (const route of ['r1', 'r2']) {
+      // r2 runs 10 minutes after r1, so the combined corridor headway is 10.
+      for (let start = route === 'r1' ? 360 : 370; start <= 1200; start += 20) {
+        const id = `${route}t${start}`;
+        trips.push(`${route},weekday,${id},Downtown,0,${withShapes ? 'sh1' : ''}`);
+        stopTimes.push(
+          `${id},${hm(start)},${hm(start)},s1,1`,
+          `${id},${hm(start + 5)},${hm(start + 5)},s2,2`,
+          `${id},${hm(start + 10)},${hm(start + 10)},s3,3`,
+        );
+      }
+    }
+    zip.file('trips.txt', trips.join('\n') + '\n');
+    zip.file('stop_times.txt', stopTimes.join('\n') + '\n');
+    const result = await processGtfsBuffer(await zip.generateAsync({ type: 'nodebuffer' }), undefined, { slug: 'corridor-transit' });
+    return JSON.parse(result.corridorsGeojson).features as any[];
+  }
+
+  it('clips each corridor to the shape between its two stops, dropping the tails', async () => {
+    const corridors = (await corridorFixture(true)).filter(f => f.properties.day === 'Weekday');
+    expect(corridors.map(f => f.properties.corridorId).sort()).toEqual(['s1->s2', 's2->s3']);
+    const byId = Object.fromEntries(corridors.map(f => [f.properties.corridorId, f.geometry.coordinates]));
+    // [lon, lat]; the shape's tail points (43.640-43.645 and 43.665-43.670) must be gone.
+    expect(byId['s1->s2'][0][0]).toBeCloseTo(-79.380, 4);
+    expect(byId['s1->s2'][0][1]).toBeCloseTo(43.650, 4);
+    expect(byId['s1->s2'][byId['s1->s2'].length - 1][0]).toBeCloseTo(-79.375, 4);
+    expect(byId['s1->s2'][byId['s1->s2'].length - 1][1]).toBeCloseTo(43.655, 4);
+    expect(byId['s2->s3'][0][0]).toBeCloseTo(-79.375, 4);
+    expect(byId['s2->s3'][0][1]).toBeCloseTo(43.655, 4);
+    expect(byId['s2->s3'][byId['s2->s3'].length - 1][0]).toBeCloseTo(-79.370, 4);
+    expect(byId['s2->s3'][byId['s2->s3'].length - 1][1]).toBeCloseTo(43.660, 4);
+    for (const coords of Object.values(byId) as number[][][]) {
+      for (const [, lat] of coords) {
+        expect(lat).toBeGreaterThan(43.6499);
+        expect(lat).toBeLessThan(43.6601);
+      }
+    }
+    expect(corridors[0].properties.routeIds.sort()).toEqual(['r1', 'r2']);
+    expect(corridors[0].properties.headway).toBe(10);
+  });
+
+  it('omits corridors when no shaped route covers the link rather than drawing a straight line', async () => {
+    expect(await corridorFixture(false)).toEqual([]);
   });
 });

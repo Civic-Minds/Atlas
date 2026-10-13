@@ -25,7 +25,7 @@ import { isOnDemandStopFocused, isOnDemandZoneFocused, ON_DEMAND_FOCUSED_PROP, t
 import { dedupeRouteKeysByDisplay, splitRouteKey } from '../../utils/routeKey';
 import { computeFrequencySegmentOverlay, buildPartialMatchFilterExpression, broadenFilterForPartialMatches } from '../../utils/frequencySegments';
 import { buildSharedHoverSegments } from '../../utils/sharedHoverSegments';
-import { getMapContextAgenciesFromFeatures, isMapContextOutsideClick, type MapContextAgency } from '../../utils/mapContext';
+import { dedupeMapContextByDisplay, getMapContextAgenciesFromFeatures, isMapContextOutsideClick, type MapContextAgency } from '../../utils/mapContext';
 import { MapContextPanel } from './MapContextPanel';
 import MapExportDialog from '../MapExportDialog';
 import { waitForMapExportReady } from '../../utils/mapExport';
@@ -315,6 +315,8 @@ interface MapCanvasProps {
   selectedModes?: Set<number>;
   selectedAgencies?: Set<string>;
   initialMapCenter?: { lat: number; lon: number; zoom: number };
+  /** [south, west, north, east] to fit on first load (`?area=`); an explicit initialMapCenter wins. */
+  initialMapBounds?: [number, number, number, number] | null;
   /**
    * Second map in compare mode: follows the first map's camera, so it never writes the URL or
    * saved view, has no map controls or context menu, and does not expose itself for debugging.
@@ -395,6 +397,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   selectedModes = new Set(),
   selectedAgencies,
   initialMapCenter,
+  initialMapBounds,
   secondary = false,
   showMapControls = !secondary,
   onMapReady,
@@ -417,6 +420,9 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   const [pmtilesRouteAgencies, setPmtilesRouteAgencies] = useState<Set<string> | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
   const [zoom, setZoom] = useState(11);
+  // Stop visibility only changes at zoom 12/14/17, so the style/filter effect depends on this tier
+  // rather than raw zoom and doesn't rebuild on every zoom tick (CIV-104).
+  const stopZoomTier = zoom >= 17 ? 3 : zoom >= 14 ? 2 : zoom >= 12 ? 1 : 0;
   const [mapHint, setMapHint] = useState<string | null>(null);
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
   const agencyDataLoadingRef = useRef(agencyDataLoading);
@@ -637,7 +643,8 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     const layers = ['overview-routes-layer', 'routes-layer', 'local-routes-layer'].filter(layer => map.getLayer(layer));
     const features = layers.length > 0 ? map.queryRenderedFeatures(undefined, { layers }) : [];
     const contextAgencies = getMapContextAgenciesFromFeatures(agencies, features);
-    if (showMapContext) setMapContextAgencies(contextAgencies);
+    // The panel and its counts show distinct rider-visible lines; compare mode below keeps raw keys.
+    if (showMapContext) setMapContextAgencies(dedupeMapContextByDisplay(contextAgencies));
     renderedRouteKeysRef.current?.(new Set(contextAgencies.flatMap(agency => agency.routes.map(route => route.key))));
   }, [agencies, mapLoaded, showMapContext, reportsRenderedRoutes]);
 
@@ -1157,6 +1164,9 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     const borderPrimary = lightMode ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)';
 
     const saved = getSavedView();
+    const fitBounds = !initialMapCenter && initialMapBounds
+      ? [[initialMapBounds[1], initialMapBounds[0]], [initialMapBounds[3], initialMapBounds[2]]] as [[number, number], [number, number]]
+      : null;
     const initialCenter = initialMapCenter
       ?? (hasSavedView && saved ? { lat: saved.lat, lon: saved.lon, zoom: saved.zoom } : null)
       ?? { lat: regionalView.center[0], lon: regionalView.center[1], zoom: regionalView.zoom };
@@ -1164,8 +1174,9 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     const map = new maplibregl.Map({
       container: mapContainer,
       style: getMapStyle(lightMode),
-      center: [initialCenter.lon, initialCenter.lat],
-      zoom: initialCenter.zoom,
+      ...(fitBounds
+        ? { bounds: fitBounds, fitBoundsOptions: { padding: 48, maxZoom: 12 } }
+        : { center: [initialCenter.lon, initialCenter.lat] as [number, number], zoom: initialCenter.zoom }),
       attributionControl: false,
       canvasContextAttributes: { antialias: true, preserveDrawingBuffer: true },
     });
@@ -2271,9 +2282,9 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       if (!showRouteLayers) {
         map.setFilter('stops-layer', ['==', ['get', 'agencySlug'], ''] as any);
       } else {
-        const showAllDetailed = zoom >= 17;
-        const showConsolidated = zoom >= 14 && zoom < 17;
-        const showRail = zoom >= 12 && zoom < 14;
+        const showAllDetailed = stopZoomTier === 3;
+        const showConsolidated = stopZoomTier === 2;
+        const showRail = stopZoomTier === 1;
 
         const allSiblingStopIds = routesForStop?.siblingIdsByAgency
           ? Object.values(routesForStop.siblingIdsByAgency).flatMap(set => Array.from(set))
@@ -2303,7 +2314,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       }
     }
 
-  }, [mapLoaded, q, selectedRoute, hoveredSearchRoute, hoveredBranch, selectedStop, routesForStop, maxHeadway, zoom, showRouteLayers, liveRoutesOnly, filterToAgencies, agencies, tileFilter, nightServiceView, frequentServiceView, historyOverlay, layers, frequencySegmentOverlay, colorMode, onDemandFocus]);
+  }, [mapLoaded, q, selectedRoute, hoveredSearchRoute, hoveredBranch, selectedStop, routesForStop, maxHeadway, stopZoomTier, showRouteLayers, liveRoutesOnly, filterToAgencies, agencies, tileFilter, nightServiceView, frequentServiceView, historyOverlay, layers, frequencySegmentOverlay, colorMode, onDemandFocus]);
 
   // Force-reset route paint when selection clears (guards against stuck highlight state).
   useEffect(() => {

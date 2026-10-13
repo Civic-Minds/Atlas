@@ -1,6 +1,7 @@
-import { fireEvent, render, screen } from '@testing-library/react';
-import { MemoryRouter } from 'react-router';
-import { describe, expect, it } from 'vitest';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { MemoryRouter, Route, Routes } from 'react-router';
+import type { ReactElement } from 'react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import AgencyPage from '../AgencyPage';
 import AreaPage from '../AreaPage';
 import { agencyPageData, type AgencyPageRoute, type AgencyPageSummary } from '../../shared/agencyPages';
@@ -30,7 +31,7 @@ describe('AgencyPage', () => {
   it('shows the short title, the area link, plain stats and the five period columns', () => {
     view(<AgencyPage data={data} />);
     expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('TTC · Toronto');
-    expect(screen.getByRole('link', { name: 'Toronto area →' }).getAttribute('href')).toBe('/area/toronto');
+    expect(screen.getByRole('link', { name: 'Greater Toronto and Hamilton Area →' }).getAttribute('href')).toBe('/area/toronto');
     expect(screen.queryByText('every 16 min')).toBeNull(); // no average wait stat
     expect(screen.getAllByText('every 4 min').length).toBeGreaterThan(0);
     expect(screen.queryByText('24 h')).toBeNull(); // service hours stat removed
@@ -60,12 +61,39 @@ describe('AgencyPage', () => {
   });
 });
 
+describe('AgencyPage intro', () => {
+  const withConns = { ...TTC, stops: 7566, connections: [
+    { slug: 'hsr', name: 'HSR', routes: ['1 King'] },
+    { slug: 'nopage', name: 'Tiny Transit', routes: ['A'] },
+    { slug: 'c', name: 'C', routes: ['x'] },
+    { slug: 'd', name: 'D', routes: ['y'] },
+  ] };
+
+  it('says it once under the title, linking connecting agencies that have a page and counting the rest', () => {
+    const d = agencyPageData(withConns, [withConns, HSR], null);
+    expect(d.intro).toBe('Toronto Transit Commission operates 5 routes (2 subway, 3 bus) in Toronto with 7,566 stops and connects with HSR, Tiny Transit, C and 1 other.');
+    view(<AgencyPage data={d} />);
+    const p = screen.getByText(/operates 5 routes \(2 subway, 3 bus\) in Toronto with 7,566 stops/);
+    expect(p.textContent).toBe(d.intro);
+    expect(document.body.textContent!.split('operates 5 routes (').length - 1).toBe(1);
+    expect(screen.getByRole('link', { name: 'HSR' }).getAttribute('href')).toBe('/agency/hsr');
+    expect(screen.queryByRole('link', { name: 'Tiny Transit' })).toBeNull();
+    expect(screen.queryByRole('heading', { name: 'Connects with' })).toBeNull();
+    expect(screen.getByTitle(/within 150 m/)).toBeTruthy();
+  });
+
+  it('has no connects-with clause without connections', () => {
+    view(<AgencyPage data={agencyPageData(TTC, [TTC, HSR], null)} />);
+    expect(screen.queryByText(/connects with/)).toBeNull();
+  });
+});
+
 describe('AgencyPage other agencies list', () => {
   it('is titled by the area, links the area, and links every agency', () => {
     const withArea = agencyPageData(TTC, [TTC, HSR], null, { slug: 'toronto', name: 'Toronto' }, [TTC, HSR]);
     expect(withArea.nearby.map(n => n.slug)).toEqual(['hsr']);
     view(<AgencyPage data={withArea} />);
-    const heading = screen.getByRole('heading', { name: 'Nearby agencies in Toronto' });
+    const heading = screen.getByRole('heading', { name: 'Nearby agencies in the Greater Toronto and Hamilton Area' });
     expect(heading.querySelector('a')?.getAttribute('href')).toBe('/area/toronto');
     expect(screen.getByRole('link', { name: 'Hamilton Street Railway' }).getAttribute('href')).toBe('/agency/hsr');
   });
@@ -94,4 +122,29 @@ describe('AreaPage', () => {
     expect(screen.queryByText(/15 min or better/)).toBeNull();
     expect(screen.getAllByRole('button', { name: /every 10 min or better/ }).length).toBeGreaterThan(0);
   });
+});
+
+describe('not found is never shown while loading', () => {
+  // The dev server loads page data after the first render; make the tests take that path.
+  beforeEach(() => { vi.stubEnv('DEV', true); });
+  afterEach(() => { vi.unstubAllEnvs(); });
+  const at = (path: string, element: ReactElement, route: string) =>
+    render(<MemoryRouter initialEntries={[path]}><Routes><Route path={route} element={element} /></Routes></MemoryRouter>);
+
+  it('agency page: blank first, the page once its data resolves, not-found only for a missing slug', async () => {
+    const { unmount } = at('/agency/ttc', <AgencyPage />, '/agency/:slug');
+    expect(screen.queryByText('No page for this agency')).toBeNull();
+    await waitFor(() => expect(screen.getByRole('heading', { level: 1 })).toBeTruthy(), { timeout: 25000 });
+    expect(screen.queryByText('No page for this agency')).toBeNull();
+    unmount();
+    at('/agency/no-such-agency', <AgencyPage />, '/agency/:slug');
+    expect(screen.queryByText('No page for this agency')).toBeNull();
+    await waitFor(() => expect(screen.getByText('No page for this agency')).toBeTruthy(), { timeout: 25000 });
+  }, 60000);
+
+  it('area page: blank first, not-found only for a missing slug', async () => {
+    at('/area/no-such-area', <AreaPage />, '/area/:slug');
+    expect(screen.queryByText('No page for this area')).toBeNull();
+    await waitFor(() => expect(screen.getByText('No page for this area')).toBeTruthy(), { timeout: 25000 });
+  }, 60000);
 });

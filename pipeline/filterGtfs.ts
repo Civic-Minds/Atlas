@@ -67,7 +67,7 @@ export function filterGtfsByExcludedShortNames(gtfs: GtfsData, excludeShortNames
   const excluded = new Set(excludeShortNames);
   const routeIds = new Set(
     (gtfs.routes ?? [])
-      .filter(r => excluded.has(r.route_short_name))
+      .filter(r => excluded.has(r.route_short_name ?? ''))
       .map(r => r.route_id),
   );
   if (routeIds.size === 0) return gtfs;

@@ -1,186 +1,119 @@
 /**
- * Audits agencies whose feedUrl is *not* from Mobility Database.
- * Recognizes both legacy GCS mdb-latest mirrors and current files.mobilitydatabase.org.
- * Suggests stable mdb-latest mirrors for true direct/official feeds.
+ * Read-only audit of agency feed URLs.
+ *
+ * Flags URLs that cannot keep up with new schedules:
+ *  - the retired Google-hosted MobilityDatabase mirror (frozen since 2026-06-04, #627)
+ *  - dated MobilityDatabase snapshots (pinned to one publish, #629)
+ * and lists agencies on direct (non-MDB) URLs. With MDB_REFRESH_TOKEN set it
+ * also lists exact provider-name matches in the MDB catalog as leads to verify
+ * by hand. It never suggests the frozen mirror and never auto-picks a match.
  *
  * Run: npx tsx pipeline/audit-feed-urls.ts
  */
 
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
-import { config } from 'dotenv';
-
-config({ path: resolve(process.cwd(), '.env.local') });
+import './loadEnv.js';
+import { isDatedMobilityDatabaseSnapshot, isRetiredMobilityDatabaseMirror } from './feedSourceCandidates.js';
 
 const MDB_API = 'https://api.mobilitydatabase.org/v1';
-const GCS_BASE = 'https://storage.googleapis.com/storage/v1/b/mdb-latest/o';
-const GCS_DOWNLOAD = 'https://storage.googleapis.com/storage/v1/b/mdb-latest/o';
 
 interface Agency {
   slug: string;
   name: string;
   feedUrl?: string | null;
-  region?: string;
+  mdbFeedUrl?: string | null;
 }
 
 interface MdbFeed {
   id: string;
   provider: string;
-  feed_name?: string;
-  locations?: { country_code?: string; subdivision_name?: string; municipality?: string }[];
-  latest_dataset?: { hosted_url?: string; downloaded_at?: string };
+  status?: string;
 }
 
-async function getMdbToken(): Promise<string> {
-  const refreshToken = process.env.MDB_REFRESH_TOKEN;
-  if (!refreshToken) throw new Error('Missing MDB_REFRESH_TOKEN in .env.local');
+export type FeedUrlKind = 'retired-mirror' | 'dated-snapshot' | 'mdb-stable' | 'direct';
+
+export function classifyFeedUrl(url: string): FeedUrlKind {
+  if (isRetiredMobilityDatabaseMirror(url)) return 'retired-mirror';
+  if (isDatedMobilityDatabaseSnapshot(url)) return 'dated-snapshot';
+  try {
+    const host = new URL(url).hostname.toLowerCase();
+    if (host === 'mobilitydatabase.org' || host.endsWith('.mobilitydatabase.org')) return 'mdb-stable';
+  } catch {
+    // Unparseable URLs are treated as direct so they still get a look.
+  }
+  return 'direct';
+}
+
+export function normalizeProviderName(name: string): string {
+  return name.toLowerCase().replace(/[^a-z0-9]/g, '');
+}
+
+async function getMdbToken(refreshToken: string): Promise<string> {
   const res = await fetch(`${MDB_API}/tokens`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ refresh_token: refreshToken }),
   });
   if (!res.ok) throw new Error(`MDB token exchange failed: ${res.status}`);
-  const data = await res.json() as { access_token: string };
-  return data.access_token;
+  return ((await res.json()) as { access_token: string }).access_token;
 }
 
 async function fetchAllMdbFeeds(token: string): Promise<MdbFeed[]> {
   const all: MdbFeed[] = [];
-  let offset = 0;
   const limit = 100;
-  while (true) {
-    const res = await fetch(
-      `${MDB_API}/gtfs_feeds?limit=${limit}&offset=${offset}`,
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
+  for (let offset = 0; ; offset += limit) {
+    const res = await fetch(`${MDB_API}/gtfs_feeds?limit=${limit}&offset=${offset}`, { headers: { Authorization: `Bearer ${token}` } });
     if (!res.ok) throw new Error(`MDB feed list failed: ${res.status}`);
-    const page = await res.json() as MdbFeed[];
-    if (!page.length) break;
+    const page = (await res.json()) as MdbFeed[];
     all.push(...page);
     if (page.length < limit) break;
-    offset += limit;
   }
   return all;
 }
 
-// Extract the GCS object name from a hosted_url like
-// "https://storage.googleapis.com/mdb-latest/ca-ontario-go-transit-gtfs-1993.zip"
-function hostedUrlToFeedId(url: string): string | null {
-  const m = url.match(/mdb-latest\/([^?]+\.zip)/);
-  return m ? m[1].replace(/\.zip$/, '') : null;
-}
-
-function mdbDownloadUrl(feedId: string): string {
-  return `${GCS_DOWNLOAD}/${feedId}.zip?alt=media`;
-}
-
 async function main() {
-  const indexPath = resolve(process.cwd(), 'public/data/index.json');
-  const raw = JSON.parse(readFileSync(indexPath, 'utf8'));
+  const raw = JSON.parse(readFileSync(resolve(process.cwd(), 'public/data/index.json'), 'utf8'));
   const agencies: Agency[] = Array.isArray(raw) ? raw : raw.agencies ?? [];
 
-  const nonMdb = agencies.filter(a => {
-    if (!a.feedUrl) return false;
-    try {
-      const u = new URL(a.feedUrl);
-      const h = u.hostname.toLowerCase();
-      const p = u.pathname.toLowerCase();
-
-      // Proper host-based allowlist to avoid incomplete substring sanitization.
-      // Covers:
-      // - files.mobilitydatabase.org, api.mobilitydatabase.org, etc.
-      // - Legacy GCS mdb-latest mirrors (storage.googleapis.com + mdb-latest path)
-      const isMdbHost = h === 'mobilitydatabase.org' || h.endsWith('.mobilitydatabase.org');
-      const isGcsMdbLatest = h === 'storage.googleapis.com' && p.includes('mdb-latest');
-      const isMdb = isMdbHost || isGcsMdbLatest;
-
-      return !isMdb;
-    } catch {
-      return true; // treat invalid URLs as non-MDB
+  const flagged: Array<{ slug: string; field: string; kind: FeedUrlKind; url: string }> = [];
+  const direct: Agency[] = [];
+  for (const agency of agencies) {
+    for (const field of ['feedUrl', 'mdbFeedUrl'] as const) {
+      const url = agency[field];
+      if (!url) continue;
+      const kind = classifyFeedUrl(url);
+      if (kind === 'retired-mirror' || kind === 'dated-snapshot') flagged.push({ slug: agency.slug, field, kind, url });
     }
-  });
-
-  console.log(`\nAuditing ${nonMdb.length} agencies on direct feed URLs...\n`);
-
-  console.log('Fetching MDB catalog...');
-  const token = await getMdbToken();
-  const allFeeds = await fetchAllMdbFeeds(token);
-  console.log(`Loaded ${allFeeds.length} feeds from MDB.\n`);
-
-  // Build lookup: normalize provider name → feeds
-  // Also index by hosted_url feed ID so we can do fast GCS lookups
-  const feedsByProvider = new Map<string, MdbFeed[]>();
-  for (const feed of allFeeds) {
-    const key = feed.provider.toLowerCase().replace(/[^a-z0-9]/g, '');
-    if (!feedsByProvider.has(key)) feedsByProvider.set(key, []);
-    feedsByProvider.get(key)!.push(feed);
+    if (agency.feedUrl && classifyFeedUrl(agency.feedUrl) === 'direct') direct.push(agency);
   }
 
-  // GCS bucket listing — get all object names once for slug-based matching
-  console.log('Fetching GCS mdb-latest object list...');
-  const gcsRes = await fetch(`${GCS_BASE}?maxResults=3000`);
-  const gcsData = await gcsRes.json() as { items?: { name: string }[]; nextPageToken?: string };
-  const gcsObjects = new Set((gcsData.items ?? []).map(i => i.name));
-  // Fetch page 2 if needed
-  if (gcsData.nextPageToken) {
-    const gcsRes2 = await fetch(`${GCS_BASE}?maxResults=3000&pageToken=${gcsData.nextPageToken}`);
-    const gcsData2 = await gcsRes2.json() as { items?: { name: string }[] };
-    for (const i of gcsData2.items ?? []) gcsObjects.add(i.name);
-  }
-  console.log(`GCS bucket has ${gcsObjects.size} objects.\n`);
-
-  // For each agency, find candidate MDB feeds by matching against the GCS object names
-  // using slug fragments and agency name fragments.
-  const results: { slug: string; name: string; current: string; suggested: string | null; confidence: 'high' | 'low' }[] = [];
-
-  for (const agency of nonMdb) {
-    const slugParts = agency.slug.replace(/-/g, '');
-    const nameParts = agency.name.toLowerCase().replace(/[^a-z0-9]/g, '');
-
-    // Find GCS objects that contain the slug or significant name parts
-    const candidates = [...gcsObjects].filter(obj => {
-      const o = obj.toLowerCase();
-      return o.includes(slugParts) || (nameParts.length >= 4 && o.includes(nameParts));
-    });
-
-    if (candidates.length === 1) {
-      const feedId = candidates[0].replace(/\.zip$/, '');
-      results.push({ slug: agency.slug, name: agency.name, current: agency.feedUrl!, suggested: mdbDownloadUrl(feedId), confidence: 'high' });
-    } else if (candidates.length > 1) {
-      // Multiple matches — pick the shortest (most specific)
-      candidates.sort((a, b) => a.length - b.length);
-      const feedId = candidates[0].replace(/\.zip$/, '');
-      results.push({ slug: agency.slug, name: agency.name, current: agency.feedUrl!, suggested: mdbDownloadUrl(feedId), confidence: 'low' });
-    } else {
-      results.push({ slug: agency.slug, name: agency.name, current: agency.feedUrl!, suggested: null, confidence: 'low' });
-    }
+  for (const kind of ['retired-mirror', 'dated-snapshot'] as const) {
+    const rows = flagged.filter(row => row.kind === kind);
+    console.log(`\n=== ${kind.toUpperCase()} (${rows.length}) ===`);
+    for (const row of rows) console.log(`  ${row.slug} ${row.field}: ${row.url}`);
   }
 
-  const found = results.filter(r => r.suggested);
-  const notFound = results.filter(r => !r.suggested);
-  const highConf = found.filter(r => r.confidence === 'high');
-  const lowConf = found.filter(r => r.confidence === 'low');
-
-  console.log(`=== HIGH CONFIDENCE MATCHES (${highConf.length}) ===`);
-  for (const r of highConf) {
-    console.log(`\n  ${r.slug} (${r.name})`);
-    console.log(`    current:   ${r.current}`);
-    console.log(`    suggested: ${r.suggested}`);
+  console.log(`\n=== DIRECT FEED URLS (${direct.length}) ===`);
+  const refreshToken = process.env.MDB_REFRESH_TOKEN;
+  if (!refreshToken) {
+    for (const agency of direct) console.log(`  ${agency.slug}: ${agency.feedUrl}`);
+    console.log('\n(Set MDB_REFRESH_TOKEN in .env.local to list exact MDB catalog name matches.)');
+    return;
   }
-
-  console.log(`\n=== LOW CONFIDENCE MATCHES (${lowConf.length}) — verify before swapping ===`);
-  for (const r of lowConf) {
-    console.log(`\n  ${r.slug} (${r.name})`);
-    console.log(`    current:   ${r.current}`);
-    console.log(`    suggested: ${r.suggested}`);
+  const feeds = await fetchAllMdbFeeds(await getMdbToken(refreshToken));
+  const byProvider = new Map<string, MdbFeed[]>();
+  for (const feed of feeds) {
+    const key = normalizeProviderName(feed.provider);
+    byProvider.set(key, [...(byProvider.get(key) ?? []), feed]);
   }
-
-  console.log(`\n=== NO MDB MATCH FOUND (${notFound.length}) ===`);
-  for (const r of notFound) {
-    console.log(`  ${r.slug}: ${r.current}`);
+  for (const agency of direct) {
+    const matches = byProvider.get(normalizeProviderName(agency.name)) ?? [];
+    const lead = matches.length ? `  [exact name match, verify: ${matches.map(feed => `${feed.id}${feed.status ? ` (${feed.status})` : ''}`).join(', ')}]` : '';
+    console.log(`  ${agency.slug}: ${agency.feedUrl}${lead}`);
   }
-
-  console.log(`\nSummary: ${found.length}/${nonMdb.length} agencies have MDB mirrors (${highConf.length} high confidence, ${lowConf.length} low confidence).`);
 }
 
-main().catch(e => { console.error(e); process.exit(1); });
+if (process.argv[1]?.endsWith('audit-feed-urls.ts')) {
+  main().catch(e => { console.error(e); process.exit(1); });
+}

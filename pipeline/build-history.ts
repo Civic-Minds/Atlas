@@ -249,7 +249,7 @@ async function main() {
   // Map: slug → routeShortName → sorted array of change events
   const archiveRoutes: Record<string, Record<string, Array<{
     periodKey: string; headway: number; routeLongName?: string; label?: string;
-    headwayByPeriod?: HeadwayByPeriod;
+    headwayByPeriod?: HeadwayByPeriod; geometry?: unknown;
   }>>> = {};
   const coverageBySlug: Record<string, { coverageYears: number[]; materializeAllPeriods?: boolean }> = {};
   let failedFiles = 0;

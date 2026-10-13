@@ -1063,7 +1063,7 @@ export async function processGtfsBuffer(
       ? `${groupName}::${result.dir}::${result.day}::${cleanedForDedup}::${branchKey}`
       : `${groupName}::${result.dir}::${result.day}::${branchKey}`;
     const existing = dedupedFeatures.get(dedupeKey);
-    const isRailRoute = route?.route_type === '2' || route?.route_type === 2;
+    const isRailRoute = String(route?.route_type) === '2';
     const initialPeriodHeadways = computePeriodHeadways(result.times);
     const notRated = result.partialWeekday || result.previousNightTailOnly || result.serviceClass === 'irregular' || result.tier === 'span';
     const newHeadway = notRated ? null : Math.round(initialPeriodHeadways.midday ?? result.medianHeadway);
@@ -1884,7 +1884,7 @@ export async function processGtfsBuffer(
             featureHeadsign && coverageStops.length > 1
               ? branchTerminalTimes(`${shortName}::${dirId}::${day}::${featureHeadsign}`, coverageStops.map(p => p.stopId), terminalId)
               : selectTerminalDepartureTimes(shapeMap?.get(terminalId), headsignMap?.get(terminalId)),
-            day,
+            day as DayType,
             featureRoute?.route_type ?? '',
             railFeature,
           )
@@ -1980,7 +1980,7 @@ export async function processGtfsBuffer(
           featureHeadsign && coverageStops.length > 1
             ? branchTerminalTimes(`${shortName}::${dirId}::${day}::${featureHeadsign}`, coverageStops.map(p => p.stopId), terminalId!)
             : selectTerminalDepartureTimes(shapeMap?.get(terminalId!), headsignMap?.get(terminalId!)),
-          day,
+          day as DayType,
           featureRoute?.route_type ?? '',
           railFeature,
         )
@@ -2196,7 +2196,7 @@ export async function processGtfsBuffer(
         const vals = onShape
           .map(({ stopId }) => hsPeriodHw[stopId]?.[pk])
           .filter((v): v is number => v != null);
-        const minHw = headsignOverlapMinHeadway(vals, periodMedians[pk]);
+        const minHw = headsignOverlapMinHeadway(vals, periodMedians[pk] ?? null);
         if (minHw != null) headsignPeriodMins[pk] = minHw;
       }
       if (Object.keys(headsignPeriodMins).length > 0) {
@@ -2304,7 +2304,7 @@ export async function processGtfsBuffer(
   // single-operator corridors where combined frequency is not meaningful, and the stop-pair
   // chord geometry creates misleading straight-line visuals over the actual shaped route.
   const allRailFeed = (gtfs.routes ?? []).length > 0 &&
-    (gtfs.routes ?? []).every(r => r.route_type === '2' || r.route_type === 2);
+    (gtfs.routes ?? []).every(r => String(r.route_type) === '2');
 
   onStatus?.('Calculating combined corridors...');
   const corridorFeatures: GeoJsonFeature[] = [];
@@ -2344,12 +2344,12 @@ export async function processGtfsBuffer(
           if (pairIndex < 0) return null;
           if (stopPositions && stopPositions.length === stopOrder.length) {
             return clipLineBetweenPositions(
-              feature.geometry.coordinates,
+              feature.geometry.coordinates as number[][],
               stopPositions[pairIndex],
               stopPositions[pairIndex + 1],
             );
           }
-          return clipLineBetweenStops(feature.geometry.coordinates, from, to);
+          return clipLineBetweenStops(feature.geometry.coordinates as number[][], from, to);
         })
         .find((geometry): geometry is number[][] => geometry != null);
       // A corridor without a matching shaped route is safer to omit than to render as a

@@ -1,58 +1,6 @@
 import { STATUS_COLORS } from '../utils/colors';
-import type { HistoryMapStop } from '../context/HistoryMapOverlay';
 import type { LiveVehicle } from '../context/LiveVehiclesMapOverlay';
 import { escapeHtml } from './escapeHtml';
-import { delayAmount, headwayEvery } from '../utils/headwayText';
-
-export function formatGap(gap: number | null): string {
-  if (gap === null) return '–';
-  return delayAmount(Math.round(gap * 10) / 10);
-}
-
-export function formatDelta(delta: number | null): string {
-  if (delta === null) return '–';
-  const abs = Math.round(Math.abs(delta) * 10) / 10;
-  if (Math.abs(delta) < 0.5) return 'on time';
-  return delta > 0 ? `+${delayAmount(abs)}` : `–${delayAmount(abs)}`;
-}
-
-export function StopCardHtml(stop: HistoryMapStop, expanded: boolean): string {
-  const color = STATUS_COLORS[
-    stop.headwayDeltaMin === null ? 'no_data'
-    : stop.headwayDeltaMin <= -1.5 ? 'early'
-    : stop.headwayDeltaMin >= 5.5 ? 'late'
-    : 'on_time'
-  ].border;
-  const delta = formatDelta(stop.headwayDeltaMin);
-  const gap = formatGap(stop.avgGap);
-
-  return `
-    <div class="history-stop-card" data-stop-id="${escapeHtml(stop.stopId)}" style="
-      background: var(--bg-panel, #fff);
-      border: 1.5px solid ${color};
-      border-radius: 12px;
-      padding: 8px 12px;
-      min-width: 120px;
-      max-width: 180px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.14);
-      cursor: pointer;
-      pointer-events: auto;
-      font-family: inherit;
-    ">
-      <p style="font-size:9px;font-weight:700;color:var(--text-dim,#6b7280);margin:0 0 3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(stop.name)}</p>
-      <div style="display:flex;align-items:baseline;gap:3px;">
-        <span style="font-size:18px;font-weight:900;color:var(--text-primary,#111);line-height:1;">${gap}</span>
-        <span style="font-size:9px;color:var(--text-dim,#6b7280);">gap</span>
-      </div>
-      <span style="font-size:10px;font-weight:700;color:${color};">${delta}</span>
-      ${expanded ? `
-        <div style="margin-top:4px;padding-top:4px;border-top:1px solid var(--border-primary,#e5e7eb);">
-          <p style="font-size:9px;color:var(--text-dim,#6b7280);margin:0;">scheduled ${headwayEvery(stop.scheduledHeadwayMin)}</p>
-        </div>
-      ` : ''}
-    </div>
-  `;
-}
 
 export function VehicleMarkerHtml(vehicle: LiveVehicle, hideText: boolean = false): string {
   const colors = STATUS_COLORS[vehicle.status];

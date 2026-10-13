@@ -575,7 +575,6 @@ export default function History({ active, initialAgencySlug, onInfoOpen, query, 
       setOverlay({
         slug: agency.slug,
         routeShortName: selectedRouteShortName ?? '',
-        stops: [],
         agencyCenter: agency.center,
         routeGeometry,
         selectedYear: selectedYear > 0 ? selectedYear : undefined,

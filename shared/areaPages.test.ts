@@ -62,19 +62,16 @@ describe('buildAreaPageData', () => {
   });
 
   it('writes the title, heading, subtitle and lead from the numbers', () => {
-    expect(areaPageTitle(d)).toBe('Toronto area frequency map: 2 transit agencies compared | Transit Atlas');
-    expect(areaPageH1(d)).toBe('Toronto area');
+    expect(areaPageTitle(d)).toBe('Greater Toronto and Hamilton Area transit frequency');
+    expect(areaPageH1(d)).toBe('Greater Toronto and Hamilton Area');
     expect(areaSubtitle(d)).toBe('Toronto, Hamilton');
-    expect(areaPageDescription(d)).toContain('6 weekday routes across 2 transit agencies in the Toronto area');
+    expect(areaPageDescription(d)).toContain('Compare 2 transit agencies in the Greater Toronto and Hamilton Area');
     expect(areaPageDescription(d)).not.toMatch(/frequent\b|15 min/i);
     expect(areaSpanShort(d)).toBe('24 h');
   });
 
-  it('opens the map framed on the area with only its agencies on', () => {
-    const q = new URLSearchParams(areaMapHref(d).slice(2));
-    expect(q.get('agencies')).toBe('ttc.hsr');
-    expect(q.get('lat')).toBe('43.8000');
-    expect(Number(q.get('z'))).toBeGreaterThanOrEqual(7);
+  it('opens the map with ?area= so the app selects the area and fits it', () => {
+    expect(areaMapHref(d)).toBe('/?area=toronto');
   });
 
   it('has a canonical, noindex outside public, and BreadcrumbList plus Dataset JSON-LD', () => {
@@ -97,9 +94,9 @@ describe('areaAboutParagraph', () => {
   });
 
   it('is one sentence with the agency and route counts', () => {
-    expect(areaAboutParagraph(base({}))).toBe('The Toronto area has 2 transit agencies running 6 routes.');
-    const one = base({ agencies: [{ slug: 'a', displayName: 'A', totalRoutes: 1, modes: { Bus: 1 } }], totalRoutes: 1 });
-    expect(areaAboutParagraph(one)).toBe('The Toronto area has 1 transit agency running 1 route.');
+    expect(areaAboutParagraph(base({}))).toBe('The Greater Toronto and Hamilton Area has 2 transit agencies running 6 routes (2 subway, 4 bus).');
+    const one = base({ agencies: [{ slug: 'a', displayName: 'A', totalRoutes: 1, modes: { Bus: 1 } }], totalRoutes: 1, byMode: [{ label: 'Bus', routes: 1 }] });
+    expect(areaAboutParagraph(one)).toBe('The Greater Toronto and Hamilton Area has 1 transit agency running 1 route.');
   });
 });
 
@@ -175,7 +172,7 @@ describe('committed areas (config/areas)', () => {
 describe('areaLinkFor', () => {
   const map: Record<string, [string, string]> = { ttc: ['toronto', 'Toronto'] };
   it('links only agencies in a paged area, and only with the flag on', () => {
-    expect(areaLinkFor('ttc', true, map)).toEqual({ href: '/area/toronto', label: 'Toronto area →' });
+    expect(areaLinkFor('ttc', true, map)).toEqual({ href: '/area/toronto', label: 'Greater Toronto and Hamilton Area →' });
     expect(areaLinkFor('ttc', false, map)).toBeNull();
     expect(areaLinkFor('nowhere', true, map)).toBeNull();
   });
@@ -188,7 +185,30 @@ describe('areaLinkFor', () => {
   });
 });
 
+describe('area index', () => {
+  it('matches config/areas (agencies and bounds, every slug)', () => {
+    const committed = JSON.parse(readFileSync('shared/data/area-index.json', 'utf8')) as Record<string, { agencies: string[]; bbox: number[] }>;
+    const areas = areasOnDisk();
+    expect(Object.keys(committed).sort()).toEqual(areas.map(a => a.slug).sort());
+    for (const a of areas) {
+      expect(committed[a.slug].agencies, a.slug).toEqual(a.agencies);
+      expect(committed[a.slug].bbox, a.slug).toEqual(a.bbox.map(n => Math.round(n * 1000) / 1000));
+    }
+  });
+});
+
 function areasOnDisk(): AreaConfig[] {
   return readdirSync('config/areas').filter(f => f.endsWith('.json') && !f.startsWith('_'))
     .map(f => JSON.parse(readFileSync(`config/areas/${f}`, 'utf8')) as AreaConfig);
 }
+
+describe('areaRegionName', () => {
+  it('uses the common region name where there is one, else "the [City] area"', async () => {
+    const { areaRegionName, areaRegionTitle, areaRegionSentenceStart } = await import('./areaRegions');
+    expect(areaRegionName({ slug: 'toronto', name: 'Toronto' })).toBe('the Greater Toronto and Hamilton Area');
+    expect(areaRegionName({ slug: 'vancouver', name: 'Vancouver' })).toBe('Metro Vancouver');
+    expect(areaRegionName({ slug: 'calgary', name: 'Calgary' })).toBe('the Calgary area');
+    expect(areaRegionTitle({ slug: 'san-francisco', name: 'San Francisco' })).toBe('Bay Area');
+    expect(areaRegionSentenceStart({ slug: 'calgary', name: 'Calgary' })).toBe('The Calgary area');
+  });
+});

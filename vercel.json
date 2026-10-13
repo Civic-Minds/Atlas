@@ -8,6 +8,21 @@
           "value": "public, max-age=31536000, immutable"
         }
       ]
+    },
+    {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "(beta\\.transitatlas\\.fyi|.*\\.vercel\\.app)"
+        }
+      ],
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
     }
   ],
   "rewrites": [
@@ -64,6 +79,14 @@
       "destination": "/agency/:slug/index.html"
     },
     {
+      "source": "/agencies",
+      "destination": "/agencies/index.html"
+    },
+    {
+      "source": "/agencies/",
+      "destination": "/agencies/index.html"
+    },
+    {
       "source": "/area/:slug",
       "destination": "/area/:slug/index.html"
     },
@@ -97,6 +120,14 @@
     },
     {
       "source": "/apps/live/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/docs",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/docs/",
       "destination": "/index.html"
     },
     {
