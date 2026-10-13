@@ -5,6 +5,8 @@ import type { OpenInfoFn } from '../../InfoPanel';
 import type { HeadwayByPeriod } from '../../../hooks/useAgencyData';
 import { titleCase, getRouteLabel, shortenAgencyName, resolveBranchLabel, formatBranchLabel } from '../../../utils/format';
 import { HeadwaySparkline } from '../HeadwaySparkline';
+import { getCachedAgencyGeo } from '../../../lib/agencyGeo';
+import { tripTimeSeriesFor, type PublishedRunningTimes } from '../../../utils/tripTime';
 import RouteCardTitle from '../../RouteCardTitle';
 import {
   CardDirectionRow,
@@ -486,10 +488,21 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           currentRoute.routeShortName ?? '',
           currentRoute.routeLongName ?? '',
         );
+        // Beta only, and only from data already in the agency file: the full-day view's trip time.
+        const runningTimes = FEATURES.beta && routeSlug
+          ? (getCachedAgencyGeo(routeSlug) as { runningTimes?: PublishedRunningTimes } | undefined)?.runningTimes
+          : undefined;
+        const tripTimeFor = (group: DirectionGroup) => {
+          const dir = group.realTier[0] ?? group.span[0];
+          if (!runningTimes || !dir) return null;
+          const routeIds = [...new Set([...group.realTier, ...group.span].map(d => d.routeId))];
+          return tripTimeSeriesFor(runningTimes, routeIds, dir.directionId, dir.day as string);
+        };
         const directionOptions = perDirection.map(({ group, byHour }, index) => ({
           key: `direction-${group.dirId}-${index}`,
           label: pillLabels[index],
           byHour,
+          tripTime: tripTimeFor(group),
         }));
         const hasAny = HOURS.some(h => merged[h] != null);
         if (!hasAny) return null;

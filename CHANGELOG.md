@@ -24,6 +24,11 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 - **Frequency reads the same way everywhere, and Compare now says "or better"**: Compare headings read like a claim about the service rather than the filter, and the same frequency was worded eight different ways ("≤10m", "every 12m", "about every 10 min").
 - **Night Service moved to `/research/night`**: it now lives with the other research pages, and old `/apps/night` links redirect there with their filters kept.
+- The full-day schedule view now shows how long the trip takes by hour, e.g. "Trip time: 35–51 min, slowest 4 p.m.", with minutes on hover (beta only).
+- On-demand zones now load from Atlas's data storage only when on-demand is shown, instead of shipping about 1.5 MB of zone data to every visitor, and the map says when they couldn't load instead of showing an empty area. New zones can be added without a site update, after passing checks for broken shapes, eligibility-only service, dropped zones, lost hours and old sources (CIV-50).
+- On-demand zone outlines, fills and stop dots are thin and light when zoomed out to a region, so they no longer outweigh the routes, and reach full strength by street zoom (beta only).
+- On the beta site, agencies that run on-demand service Atlas hasn't mapped yet now say so on their card, partly mapped services name the part that's missing, and the On-demand filter shows a note that coverage is still growing, so a missing zone no longer looks like no service (CIV-23).
+- On the beta site, the "In view" route list now has the same state and province pills as the agency list, the What's new panel labels the map data date apart from the app version and merges overlapping notes, and the What's new pill now sits before Feedback.
 
 ### Fixed
 

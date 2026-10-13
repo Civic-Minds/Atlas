@@ -170,4 +170,29 @@ describe('HeadwaySparkline', () => {
       expect(slowerDirectionKey(undefined)).toBeNull();
     });
   });
+
+  it('shows the trip time line and per-hour hover under the full-day chart, and hides it without data', () => {
+    render(
+      <HeadwaySparkline
+        byHour={{ 7: 30, 12: 20, 17: 25 }}
+        onPeriodChange={() => {}}
+        allowExpand
+        title="Route 14"
+        directionOptions={[
+          { key: 'east', label: 'Eastbound', byHour: { 7: 30, 12: 20, 17: 25 }, tripTime: { byHour: { 7: 38, 12: 41, 17: 52 } } },
+          { key: 'west', label: 'Westbound', byHour: { 7: 40, 12: 30, 17: 35 }, tripTime: null },
+        ]}
+      />,
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Expand schedule' }));
+    const dialog = screen.getByRole('dialog');
+    // Opens on the slower direction, which has no trip time data.
+    expect(within(dialog).queryByTestId('trip-time-strip')).not.toBeInTheDocument();
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Eastbound' }));
+    expect(within(dialog).getByText('Trip time: 38\u201352 min, slowest 5 p.m.')).toBeInTheDocument();
+    expect(within(dialog).getAllByTestId('trip-time-bar')).toHaveLength(3);
+    expect(dialog.querySelector('[title="5 p.m.: about 52 min"]')).not.toBeNull();
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Westbound' }));
+    expect(within(dialog).queryByTestId('trip-time-strip')).not.toBeInTheDocument();
+  });
 });
