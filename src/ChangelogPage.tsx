@@ -34,21 +34,21 @@ export default function ChangelogPage({ loadReleases = loadDataReleases }: { loa
               <h1 className="text-3xl font-black tracking-tight text-[var(--text-primary)]">Changelog</h1>
               <p className="mt-3">What changed in Atlas and when the map data was refreshed, newest first.</p>
             </header>
-            {entries.map(entry => (
+            {entries.map(entry => entry.kind === 'data' ? (
+              <p key={entry.key} id={entry.key} className="scroll-mt-8 text-xs text-[var(--text-muted)] -my-4">{entry.label}</p>
+            ) : (
               <section key={entry.key} id={entry.key} className="scroll-mt-8">
                 <h2 className="text-base font-black text-[var(--text-primary)] mb-2">
                   {entry.label}
-                  {entry.kind === 'app' && <span className="font-normal text-[var(--text-dim)]"> · {entry.month}</span>}
+                  <span className="font-normal text-[var(--text-dim)]"> · {entry.dataUpdated ? `map data updated ${entry.dataUpdated}` : entry.month}</span>
                 </h2>
-                {entry.kind === 'app' && (
-                  <ul className="list-disc pl-5 space-y-1">
-                    {entry.items.map(item => (
-                      <li key={item.text}>
-                        <WhatsNewItemText item={item} />
-                      </li>
-                    ))}
-                  </ul>
-                )}
+                <ul className="list-disc pl-5 space-y-1">
+                  {entry.items.map(item => (
+                    <li key={item.text}>
+                      <WhatsNewItemText item={item} />
+                    </li>
+                  ))}
+                </ul>
               </section>
             ))}
             <SiteFooter />
