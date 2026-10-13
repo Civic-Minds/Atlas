@@ -275,7 +275,9 @@ export function scopedTerminalHeadline(
   routeType: string,
   railLike: boolean,
 ): { headway: number; tier: string | null } | null {
-  const sorted = [...(times ?? [])].sort((a, b) => a - b);
+  // Unique times: phase 1 drops duplicate departures, and a zero-minute gap would loosen the
+  // every-gap allowance (wsf 73 Bainbridge: 161 trips, 23 distinct times).
+  const sorted = [...new Set(times ?? [])].sort((a, b) => a - b);
   const hasDaytime = (medianHeadwayInWindow(sorted, 540, 900, 3)
     ?? medianHeadwayInWindow(sorted, 900, 1140, 3)) != null;
   if (!hasDaytime) return null;
@@ -552,6 +554,9 @@ export function weekdayServiceDaysByRouteDir(
  * 129B 72, 504A 124; NJT 161 26-34).
  */
 export const MIN_THIN_REPLACING_DEPARTURES = 8;
+
+/** #728: the destination pool at a line's terminal must have this many unique departures (and more than the drawn shape) before its every-gap grade can lift the line's tier. */
+export const MIN_POOLED_TIER_DEPARTURES = 8;
 
 export async function processGtfsBuffer(
   buf: Buffer,
@@ -1184,40 +1189,119 @@ export async function processGtfsBuffer(
   // Station (11 of them), every 19-20 each and every 10 together. A share rather than the first
   // stop, so an early shape that starts at a carhouse still reads its main trips. Built lazily:
   // it fires on few features.
-  const branchTerminalCache = new Map<string, number[]>();
-  const branchTerminalTimes = (hsKey: string, shapeStopIds: readonly string[], terminalId: string): number[] => {
-    const cacheKey = `${hsKey}|${terminalId}|${shapeStopIds.join(',')}`;
-    const hit = branchTerminalCache.get(cacheKey);
-    if (hit) return hit;
-    const shapeStops = new Set(shapeStopIds);
-    const servedShapeStops = new Map<string, Set<string>>();
-    const atTerminal = new Map<string, { seq: number; mins: number }>();
-    for (const st of gtfs.stopTimes ?? []) {
-      if (frequencyTemplateTripIds.has(st.trip_id)) continue;
-      const grps = tripGroupByTripId.get(st.trip_id);
-      if (!grps?.some(g => g.inHeadsign && g.headsign
-        && `${g.shortName}::${g.dirId}::${g.dayType}::${g.headsign}` === hsKey)) continue;
-      const parentId = childToParent.get(st.stop_id);
-      for (const id of [st.stop_id, parentId]) {
-        if (id == null || !shapeStops.has(id)) continue;
-        let served = servedShapeStops.get(st.trip_id);
-        if (!served) { served = new Set(); servedShapeStops.set(st.trip_id, served); }
-        served.add(id);
-      }
-      if (st.stop_id === terminalId || parentId === terminalId) {
-        const timeStr = st.departure_time || st.arrival_time;
-        const mins = timeStr ? t2m(timeStr) : null;
-        const seq = Number(st.stop_sequence);
-        const prev = atTerminal.get(st.trip_id);
-        if (mins != null && (!prev || seq < prev.seq)) atTerminal.set(st.trip_id, { seq, mins });
+  const branchPoolCache = new Map<string, Map<string, Map<string, number>>>();
+  // Built once on first use (#728 reads the pool for every line): stop_times by trip and the
+  // trips of each headsign group, so a pool read touches only its own trips.
+  let stopTimeIdxByTrip: Map<string, number[]> | null = null;
+  let tripsByHsKey: Map<string, string[]> | null = null;
+  // Weekday headsign groups over every weekday's trips (not only the representative weekday's),
+  // with each trip's service_id, so a pool can be graded on the other weekdays too.
+  let weekdayTripsByHsKey: Map<string, Array<[string, string]>> | null = null;
+  const buildBranchIndex = () => {
+    stopTimeIdxByTrip = new Map();
+    const sts = gtfs.stopTimes ?? [];
+    for (let i = 0; i < sts.length; i++) {
+      const tid = sts[i].trip_id;
+      if (frequencyTemplateTripIds.has(tid)) continue;
+      let arr = stopTimeIdxByTrip.get(tid);
+      if (!arr) { arr = []; stopTimeIdxByTrip.set(tid, arr); }
+      arr.push(i);
+    }
+    const sets = new Map<string, Set<string>>();
+    weekdayTripsByHsKey = new Map();
+    for (const [tid, grps] of tripGroupByTripId) {
+      for (const g of grps) {
+        if (!g.headsign) continue;
+        const k = `${g.shortName}::${g.dirId}::${g.dayType}::${g.headsign}`;
+        if (g.dayType === 'Weekday' && !frequencyTemplateTripIds.has(tid)) {
+          let list = weekdayTripsByHsKey.get(k);
+          if (!list) { list = []; weekdayTripsByHsKey.set(k, list); }
+          list.push([tid, g.serviceId]);
+        }
+        if (!g.inHeadsign) continue;
+        let set = sets.get(k);
+        if (!set) { set = new Set(); sets.set(k, set); }
+        set.add(tid);
       }
     }
-    const times = [...atTerminal]
-      .filter(([tripId]) => (servedShapeStops.get(tripId)?.size ?? 0) * 3 >= shapeStops.size * 2)
-      .map(([, v]) => v.mins);
-    branchTerminalCache.set(cacheKey, times);
+    tripsByHsKey = new Map([...sets].map(([k, set]) => [k, [...set]]));
+  };
+  /**
+   * The other weekdays a Weekday pool must also be graded on (#728): each weekday whose active
+   * trips under this headsign differ from the representative weekday's, once per distinct trip
+   * set. Phase 1 reads one weekday (the busiest, the earliest on a tie), so a service that runs
+   * Tuesday to Friday only is invisible to it (septa T2 and T3: Monday ties Tuesday-Friday at
+   * 125 trips, and the Tuesday-Friday service adds a 21-minute gap at 21:38).
+   */
+  const otherWeekdayPools = (hsKey: string): Array<{ name: DayName; tripIds: Set<string> }> => {
+    if (!stopTimeIdxByTrip || !tripsByHsKey) buildBranchIndex();
+    const representative = new Set(tripsByHsKey!.get(hsKey) ?? []);
+    const all = weekdayTripsByHsKey!.get(hsKey) ?? [];
+    const out: Array<{ name: DayName; tripIds: Set<string> }> = [];
+    const seen: Set<string>[] = [representative];
+    const same = (a: Set<string>, b: Set<string>) => a.size === b.size && [...a].every(id => b.has(id));
+    for (const name of WEEKDAYS) {
+      const active = activeServiceIdsByCalendarDay.get(name);
+      if (!active) continue;
+      const tripIds = new Set(all.filter(([, serviceId]) => active.has(serviceId)).map(([tid]) => tid));
+      if (tripIds.size === 0 || seen.some(set => same(set, tripIds))) continue;
+      seen.push(tripIds);
+      out.push({ name, tripIds });
+    }
+    return out;
+  };
+  // The destination pool's trips for a drawn line: the headsign's trips serving at least two
+  // thirds of the drawn stops, each with its first-visit time at every drawn stop it serves.
+  // With fullOuterThird (#728) a trip must also serve every stop of the drawn line's last third,
+  // so a variant that reaches the terminal by another road never lifts the tier for riders on
+  // the outer stops it skips (camtran 13: 4 of 11 pooled trips skipped outer stops, outer third
+  // 180 minutes between buses).
+  const branchPoolTrips = (hsKey: string, shapeStopIds: readonly string[], fullOuterThird = false, weekday?: { name: DayName; tripIds: Set<string> }): Map<string, Map<string, number>> => {
+    const cacheKey = `${hsKey}|${weekday ? `${weekday.name}|` : ''}${fullOuterThird ? 'outer|' : ''}${shapeStopIds.join(',')}`;
+    const hit = branchPoolCache.get(cacheKey);
+    if (hit) return hit;
+    if (!stopTimeIdxByTrip || !tripsByHsKey) buildBranchIndex();
+    const shapeStops = new Set(shapeStopIds);
+    const served = new Map<string, Map<string, { seq: number; mins: number }>>();
+    const sts = gtfs.stopTimes ?? [];
+    for (const tid of weekday?.tripIds ?? tripsByHsKey!.get(hsKey) ?? []) {
+      for (const i of stopTimeIdxByTrip!.get(tid) ?? []) {
+        const st = sts[i];
+        const parentId = childToParent.get(st.stop_id);
+        const timeStr = st.departure_time || st.arrival_time;
+        const mins = timeStr ? t2m(timeStr) : null;
+        if (mins == null) continue;
+        const seq = Number(st.stop_sequence);
+        for (const id of [st.stop_id, parentId]) {
+          if (id == null || !shapeStops.has(id)) continue;
+          let byStop = served.get(tid);
+          if (!byStop) { byStop = new Map(); served.set(tid, byStop); }
+          const prev = byStop.get(id);
+          if (!prev || seq < prev.seq) byStop.set(id, { seq, mins });
+        }
+      }
+    }
+    const outerThird = shapeStopIds.slice(Math.floor(shapeStopIds.length * 2 / 3));
+    const trips = new Map<string, Map<string, number>>();
+    for (const [tid, byStop] of served) {
+      if (byStop.size * 3 < shapeStops.size * 2) continue;
+      if (fullOuterThird && !outerThird.every(id => byStop.has(id))) continue;
+      trips.set(tid, new Map([...byStop].map(([id, v]) => [id, v.mins])));
+    }
+    branchPoolCache.set(cacheKey, trips);
+    return trips;
+  };
+  /** The pool's departure times at one drawn stop (one per trip that serves it). */
+  const branchPoolTimesAt = (hsKey: string, shapeStopIds: readonly string[], stopId: string, fullOuterThird = false, weekday?: { name: DayName; tripIds: Set<string> }): number[] => {
+    const times: number[] = [];
+    for (const byStop of branchPoolTrips(hsKey, shapeStopIds, fullOuterThird, weekday).values()) {
+      const mins = byStop.get(stopId);
+      if (mins != null) times.push(mins);
+    }
     return times;
   };
+  const branchTerminalTimes = (hsKey: string, shapeStopIds: readonly string[], terminalId: string, fullOuterThird = false): number[] =>
+    branchPoolTimesAt(hsKey, shapeStopIds, terminalId, fullOuterThird);
 
   const pushUnique = (map: Map<string, Map<string, number[]>>, key: string, stopId: string, mins: number) => {
     let stopMap = map.get(key);
@@ -1746,6 +1830,61 @@ export async function processGtfsBuffer(
       // the finite scoped headline: take the scoped sample's tier. A finite phase 2 tier stands.
       if (scoped?.tier && scoped.tier !== 'infrequent' && feature.properties.tier === 'infrequent') {
         feature.properties.tier = scoped.tier;
+      }
+      // #728: the tier is phase 2's every-gap grade of the one shape that won dedupe, while the
+      // period values below read the whole destination at the terminal. A shape that covers part
+      // of the day or has one hole is graded 60 or infrequent beside periods of 8-20 (Brampton 7
+      // Kennedy South: the 7 shape has one 38-minute evening gap, the destination runs every 8). When the
+      // destination's branch-scoped pool (the headsign's trips serving at least two thirds of
+      // the drawn stops and every stop of the last third) has more unique departures at the
+      // terminal than the shape and at least MIN_POOLED_TIER_DEPARTURES, grade that pool with
+      // the same every-gap rule over the same window at every drawn stop (the same trips can
+      // leave a longer gap at an earlier stop: guelph 19 Sunday, 31 minutes at one outer stop
+      // against 25 at the terminal) and take the worst grade, never past what the headline
+      // supports. A drawn stop at which the pool has no all-day grade (too few daytime departures,
+      // or a daytime hole among the trips that serve it: the first stop of septa 2 Johnston, where
+      // 50 of the 61 pool trips start and leave a 96-minute evening hole the other 11 fill further
+      // in; rtcsnv 110 Eastern Northbound, a 121-minute hole at the first stop) refuses the lift:
+      // the lifted tier would overstate that stop. Unique times only: phase 1 drops duplicate departures, and a
+      // zero-minute gap would loosen the allowance (wsf 73: 161 trips, 23 distinct times). Rail
+      // and irregular lines are left alone; nothing here changes a headway.
+      if (!railFeature && featureHeadsign && coverageStops.length > 1 && terminalId
+        && feature.properties.serviceClass !== 'irregular' && feature.properties.tier !== 'span' && headway != null) {
+        const hsKey = `${shortName}::${dirId}::${day}::${featureHeadsign}`;
+        const drawnIds = coverageStops.map(p => p.stopId);
+        const shapeTerminalDepartures = new Set(shapeMap?.get(terminalId) ?? []).size;
+        const poolDepartures = new Set(branchPoolTimesAt(hsKey, drawnIds, terminalId, true)).size;
+        if (poolDepartures >= MIN_POOLED_TIER_DEPARTURES && poolDepartures > shapeTerminalDepartures) {
+          const worse = (a: string | null, b: string) => a == null || (TIER_RANK[b] ?? 99) > (TIER_RANK[a] ?? 99) ? b : a;
+          // The pool's worst every-gap grade over the drawn stops; null when a stop has no grade.
+          const gradePool = (weekday?: { name: DayName; tripIds: Set<string> }): string | null => {
+            let worst: string | null = null;
+            for (const stopId of drawnIds) {
+              const graded = scopedTerminalHeadline(branchPoolTimesAt(hsKey, drawnIds, stopId, true, weekday), day, featureRoute?.route_type ?? '', railFeature);
+              if (!graded?.tier) return null;
+              worst = worse(worst, graded.tier);
+            }
+            return worst;
+          };
+          let pooledTier = gradePool();
+          // A Weekday pool is graded on every weekday whose trips differ, and the worst day
+          // counts: the lift must hold on each weekday the line runs.
+          if (pooledTier && day === 'Weekday') {
+            for (const weekday of otherWeekdayPools(hsKey)) {
+              const graded = gradePool(weekday);
+              if (!graded) { pooledTier = null; break; }
+              pooledTier = worse(pooledTier, graded);
+            }
+          }
+          const headlineTier = headwayToTier(headway);
+          if (pooledTier) {
+            const liftedTier = (TIER_RANK[pooledTier] ?? 99) >= (TIER_RANK[headlineTier] ?? 99) ? pooledTier : headlineTier;
+            const current = feature.properties.tier as string;
+            if ((TIER_RANK[liftedTier] ?? 99) < (TIER_RANK[current] ?? 99)) {
+              feature.properties.tier = liftedTier;
+            }
+          }
+        }
       }
 
       // Minimum stop headway — the best frequency available anywhere on this route.
