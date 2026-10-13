@@ -4,7 +4,7 @@ import type { ShapeProperties, TimePeriod, HoveredBranch } from '../../../hooks/
 import type { Agency } from '../../../App';
 import type { OpenInfoFn } from '../../InfoPanel';
 import type { HeadwayByPeriod } from '../../../hooks/useAgencyData';
-import { titleCase, getRouteLabel, shortenAgencyName, resolveBranchLabel } from '../../../utils/format';
+import { titleCase, getRouteLabel, shortenAgencyName, resolveBranchLabel, formatBranchLabel } from '../../../utils/format';
 import { HeadwaySparkline } from '../HeadwaySparkline';
 import RouteCardTitle from '../../RouteCardTitle';
 import {
@@ -76,6 +76,35 @@ function mergeHeadwayByHour(
     merged[h] = values.length === 0 ? null : values.length === 1 ? values[0] : medianHeadway(values);
   }
   return merged;
+}
+
+/**
+ * Labels for the full-day schedule's direction pills. Uses the bound label
+ * (Westbound), else the destination from the headsign ("To Downtown"), and
+ * only falls back to a generic name when a direction has neither. Never
+ * "Direction 0/1".
+ */
+export function directionPillLabels(
+  groups: Pick<DirectionGroup, 'boundLabel' | 'realTier' | 'span'>[],
+  shortName: string,
+  longName: string,
+): string[] {
+  const labels = groups.map(group => {
+    const bound = group.boundLabel?.trim();
+    if (bound) return bound;
+    const destinations = [...new Set([...group.realTier, ...group.span]
+      .map(direction => formatBranchLabel(direction.headsign, shortName, longName))
+      .filter(Boolean))];
+    if (destinations.length === 0) return null;
+    // Branch labels read "to X" mid-row; a standalone pill starts with a capital.
+    const first = destinations[0].charAt(0).toUpperCase() + destinations[0].slice(1);
+    if (destinations.length === 1) return first;
+    return `${first} / ${destinations[1].replace(/^to\s+/i, '')}`;
+  });
+  const generic = (index: number) => groups.length === 2 ? (index === 0 ? 'One way' : 'Other way') : `Pattern ${index + 1}`;
+  const resolved = labels.map((label, index) => label ?? generic(index));
+  return resolved.map((label, index) =>
+    resolved.indexOf(label) === index ? label : `${label} (${resolved.slice(0, index + 1).filter(l => l === label).length})`);
 }
 
 /** Cap hourly values below period summary when paired departures bunch (#91). */
@@ -461,9 +490,14 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           : undefined;
         // Full-day view: one pill per direction, opening on the slower one.
         // Single-direction routes get no pills.
+        const pillLabels = directionPillLabels(
+          perDirection.map(entry => entry.group),
+          currentRoute.routeShortName ?? '',
+          currentRoute.routeLongName ?? '',
+        );
         const directionOptions = perDirection.map(({ group, byHour }, index) => ({
-          key: `direction-${group.dirId}`,
-          label: group.boundLabel ?? `Direction ${index + 1}`,
+          key: `direction-${group.dirId}-${index}`,
+          label: pillLabels[index],
           byHour,
         }));
         const hasAny = HOURS.some(h => merged[h] != null);

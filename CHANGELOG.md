@@ -15,7 +15,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Fixed
 
-- A route's small hourly chart now shows the slower direction each hour instead of only the first direction, so a weaker direction is no longer hidden. The full-day view drops the "All directions" pill and opens on the slower direction.
+- A route's small hourly chart now shows the slower direction each hour instead of only the first direction, so a weaker direction is no longer hidden. The full-day view drops the "All directions" pill, opens on the slower direction, shows no pills for one-direction routes, and names pills by destination ("To Downtown") instead of "Direction 1" when there's no bound label.
 - The hourly schedule chart now sizes bars by trips per hour from zero, so the least frequent hour no longer shrinks to a stub, and the full-day view labels each hour's minutes between trips, explains the colours, and its direction pills now actually switch the chart and clearly show which one is picked.
 - Redwood Coast Transit 20 now draws its route line from Eureka to Crescent City instead of a short stub, since long highway stretches between towns were mistaken for broken route data ([#776](https://github.com/Civic-Minds/Atlas/issues/776)).
 - NJ Transit's 14 commuter rail lines are back on the map, since their feed gives nearly every train its own copy of the line's shape ([#616](https://github.com/Civic-Minds/Atlas/issues/616)).
