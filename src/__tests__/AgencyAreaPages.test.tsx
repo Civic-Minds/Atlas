@@ -65,7 +65,7 @@ describe('AgencyPage other agencies list', () => {
     const withArea = agencyPageData(TTC, [TTC, HSR], null, { slug: 'toronto', name: 'Toronto' }, [TTC, HSR]);
     expect(withArea.nearby.map(n => n.slug)).toEqual(['hsr']);
     view(<AgencyPage data={withArea} />);
-    const heading = screen.getByRole('heading', { name: 'Other agencies in the Toronto area' });
+    const heading = screen.getByRole('heading', { name: 'Nearby agencies in Toronto' });
     expect(heading.querySelector('a')?.getAttribute('href')).toBe('/area/toronto');
     expect(screen.getByRole('link', { name: 'Hamilton Street Railway' }).getAttribute('href')).toBe('/agency/hsr');
   });
