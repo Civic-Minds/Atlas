@@ -10,7 +10,7 @@ import type { AgencyLayers } from '../../hooks/useAgencyData';
 import { FLOATING_CARD, PANEL_ENTER, CARD_NOTICE_FOOTER, CARD_NOTICE_INLINE, Z_PANEL, SIDEBAR_LEFT_FALLBACK, SIDEBAR_PANEL_WIDTH, CONTROL_ACTIVE, CONTROL_INACTIVE } from '../../styles';
 import { HEADWAY_TIERS } from '../../utils/colors';
 import { effectiveMode, GTFS_RAIL_MODE_LABELS, isRailReplacementBus, VIRTUAL_LRT_MODE } from '../../../shared/modes';
-import { headwayEveryRange } from '../../utils/headwayText';
+import { headwayAboutRange } from '../../utils/headwayText';
 import { agencyDisplayParts, getRouteLabel, shouldHideNumericRouteShortName, titleCase } from '../../utils/format';
 import type { DayType, TimePeriod, ShapeProperties } from '../../hooks/useIntervalStats';
 import { passesRouteFilter } from '../../hooks/useIntervalStats';
@@ -320,7 +320,7 @@ function RouteListSection({
           <CardDirectionRow
             label={titleCase(label)}
             headway={r.headway ?? undefined}
-            headwayLabel={r.headway != null && r.sharedHeadway != null ? headwayEveryRange(r.sharedHeadway, r.headway) : undefined}
+            headwayLabel={r.headway != null && r.sharedHeadway != null ? headwayAboutRange(r.sharedHeadway, r.headway) : undefined}
             limited={r.limited}
             subLabel={isRailReplacementBus({ routeType: r.routeType, routeLongName: r.longName })
                 ? 'Rail replacement bus'
