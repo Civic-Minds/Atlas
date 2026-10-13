@@ -26,7 +26,7 @@ import { isOnDemandStopFocused, isOnDemandZoneFocused, ON_DEMAND_FOCUSED_PROP, t
 import { dedupeRouteKeysByDisplay, splitRouteKey } from '../../utils/routeKey';
 import { computeFrequencySegmentOverlay, buildPartialMatchFilterExpression, broadenFilterForPartialMatches } from '../../utils/frequencySegments';
 import { buildSharedHoverSegments } from '../../utils/sharedHoverSegments';
-import { buildRouteSegmentFeatures } from '../../utils/routeSegments';
+import { buildRouteSegmentFeatures, selectedRouteMatches } from '../../utils/routeSegments';
 import { getMapContextAgenciesFromFeatures, isMapContextOutsideClick, type MapContextAgency } from '../../utils/mapContext';
 import { MapContextPanel } from './MapContextPanel';
 import MapExportDialog from '../MapExportDialog';
@@ -1051,8 +1051,14 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   // tier, over the base line. The filter still reads the route-level values.
   const routeSegmentFeatures = useMemo(() => {
     if (!FEATURES.segmentColours || !showRouteLayers || fareView || nightServiceView || frequentServiceView) return [];
-    return buildRouteSegmentFeatures(mapFilteredLayers ?? filteredLayers, period, colorMode);
-  }, [mapFilteredLayers, filteredLayers, period, colorMode, showRouteLayers, fareView, nightServiceView, frequentServiceView]);
+    // The selected route is drawn whether or not it passes the filter, so its pieces come
+    // from the unfiltered layers for the current day.
+    const notSelected = selectedRoute ? (p: { agencySlug: string; routeId: string }) => !selectedRouteMatches(selectedRoute, p.agencySlug, p.routeId) : undefined;
+    const pieces = buildRouteSegmentFeatures(mapFilteredLayers ?? filteredLayers, period, colorMode, notSelected);
+    if (!selectedRoute || !layers) return pieces;
+    return pieces.concat(buildRouteSegmentFeatures(layers, period, colorMode,
+      p => selectedRouteMatches(selectedRoute, p.agencySlug, p.routeId) && (p.day == null || p.day === day)));
+  }, [mapFilteredLayers, filteredLayers, layers, period, day, selectedRoute, colorMode, showRouteLayers, fareView, nightServiceView, frequentServiceView]);
 
   const sharedHoverSegments = useMemo(
     () => buildSharedHoverSegments(layers, selectedRoute, hoveredBranch, day, colorMode),
