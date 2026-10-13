@@ -18,7 +18,7 @@ import {
 } from '../shared/agencyPages';
 import { ATLAS_MODE } from '../shared/config';
 import { applySeoToDocument } from './lib/seoDom';
-import { CHIP, CONTROL_ACTIVE_GLASS, LINK, TILE } from './pageStyles';
+import { CHIP, LINK, PILL_BUTTON, TILE } from './pageStyles';
 import SiteFooter from './components/SiteFooter';
 import SiteHeader from './components/SiteHeader';
 
@@ -86,7 +86,7 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
             <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
               <a
                 href={agencyMapHref(agency)}
-                className={`inline-flex h-11 items-center gap-2 rounded-full border px-5 text-sm font-bold ${CONTROL_ACTIVE_GLASS}`}
+                className={PILL_BUTTON}
               >
                 Open in the map <ArrowRight className="h-4 w-4" aria-hidden="true" />
               </a>
