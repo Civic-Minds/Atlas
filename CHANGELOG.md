@@ -37,6 +37,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Fixed
 
+- **History no longer logs a render-loop error on load**: the map kept reloading its agency data because its agency list was rebuilt on every render ([#822](https://github.com/Civic-Minds/Atlas/issues/822))
+
 - **The phone search bar shows its "Search" hint**: it was squeezed to a sliver showing only "S", so the "by Civic Minds" line under the logo is hidden on phones to give it room ([#824](https://github.com/Civic-Minds/Atlas/issues/824))
 
 - **Unknown addresses show a not-found page instead of the map**: the live site already answered them with a 404, and the app itself now does the same when it is opened or navigated to a made-up address ([#823](https://github.com/Civic-Minds/Atlas/issues/823))
