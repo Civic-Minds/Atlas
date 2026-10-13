@@ -18,7 +18,7 @@
     43.85,
     -79.99
   ],
-  "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-grand-river-transit-gtfs-721.zip?alt=media",
+  "feedUrl": "https://webapps.regionofwaterloo.ca/api/grt-routes/api/staticfeeds/1",
   "lastFeedExpiry": "20260426",
   "lastFeedVersion": null,
   "lastRefreshedAt": "20260811",

@@ -6,7 +6,7 @@
     33.4594,
     -82.0294
   ],
-  "feedUrl": "https://github.com/transitland/gtfs-archives-not-hosted-elsewhere/raw/master/augusta-ga-us.zip",
+  "feedUrl": "https://gismap.augustaga.gov/AugGAgis/GISWebLinks/Transit/GTFS/google_transit.zip",
   "region": "Georgia",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-5780/latest.zip",
   "lastFeedExpiry": "20240224",

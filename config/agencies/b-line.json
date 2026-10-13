@@ -12,7 +12,7 @@
     27.91,
     -97.05
   ],
-  "feedUrl": "https://files.mobilitydatabase.org/mdb-315/latest.zip",
+  "feedUrl": "https://gtfs.ccrta.cadavl.com/CCRTA/GTFS/GTFS_CCRTA.zip",
   "region": "Texas",
   "lastFeedExpiry": "20250531",
   "lastFeedVersion": null,
