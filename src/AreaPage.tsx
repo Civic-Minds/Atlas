@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { ArrowRight } from 'lucide-react';
-import { DEFAULT_THRESHOLD, agencyPagePath, headwayEvery, headwayOrBetter, modesText, type Threshold } from '../shared/agencyPages';
+import { DEFAULT_THRESHOLD, agencyPagePath, headwayEvery, headwayOrBetter, modesText } from '../shared/agencyPages';
 import {
   AREA_DATA_SCRIPT_ID,
   areaAboutParagraph,
@@ -15,7 +15,7 @@ import {
 import { ATLAS_MODE } from '../shared/config';
 import { applySeoToDocument } from './lib/seoDom';
 import { LINK, PAGE_ACTION } from './pageStyles';
-import { StatRow, ThresholdToggle, type StatItem } from './pageParts';
+import { StatRow, type StatItem } from './pageParts';
 import SiteFooter from './components/SiteFooter';
 import SiteHeader from './components/SiteHeader';
 
@@ -35,7 +35,7 @@ function readEmbeddedData(slug: string | undefined): AreaPageData | null {
 export default function AreaPage({ data: dataProp }: { data?: AreaPageData }) {
   const params = useParams();
   const [data, setData] = useState<AreaPageData | null>(() => dataProp ?? readEmbeddedData(params.slug));
-  const [threshold, setThreshold] = useState<Threshold>(DEFAULT_THRESHOLD);
+  const threshold = DEFAULT_THRESHOLD;
   useEffect(() => {
     if (data || !import.meta.env.DEV) return;
     void import('./areaPageDevData').then(m => setData(m.devAreaPageData(params.slug)));
@@ -89,10 +89,6 @@ export default function AreaPage({ data: dataProp }: { data?: AreaPageData }) {
 
           <section className="mt-14" aria-labelledby="agencies-heading">
             <h2 id="agencies-heading" className="text-xl font-black tracking-tight">Agencies and weekday frequency</h2>
-            <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">
-              Agencies define frequent differently; pick a standard. <a className={LINK} href="/about/docs#frequency">Methodology</a>
-            </p>
-            <div className="mt-3"><ThresholdToggle value={threshold} onChange={setThreshold} /></div>
             <p className="mt-3 text-base font-bold">{within} of {data.totalRoutes} routes {headwayOrBetter(threshold)} on a weekday midday</p>
             <div className="mt-6 overflow-x-auto">
               <table className="w-full table-fixed border-collapse text-left text-sm" style={{ minWidth: `${20 + data.modeColumns.length * 5 + 9}rem` }}>

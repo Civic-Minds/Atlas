@@ -39,16 +39,11 @@ describe('AgencyPage', () => {
     expect(screen.queryByText(/frequent routes|frequent service/i)).toBeNull();
   });
 
-  it('changes the counts with the 10 / 15 / 30 toggle and marks the pressed one', () => {
+  it('counts routes every 15 min or better with no picker', () => {
     view(<AgencyPage data={data} />);
     expect(screen.getByText('2 of 5 routes every 15 min or better on a weekday midday')).toBeTruthy();
-    expect(screen.getByRole('button', { name: '15 min' }).getAttribute('aria-pressed')).toBe('true');
-    fireEvent.click(screen.getByRole('button', { name: '10 min' }));
-    expect(screen.getByText('1 of 5 routes every 10 min or better on a weekday midday')).toBeTruthy();
-    expect(screen.getByRole('button', { name: '10 min' }).getAttribute('aria-pressed')).toBe('true');
-    expect(screen.getByRole('button', { name: '15 min' }).getAttribute('aria-pressed')).toBe('false');
-    fireEvent.click(screen.getByRole('button', { name: '30 min' }));
-    expect(screen.getByText('4 of 5 routes every 30 min or better on a weekday midday')).toBeTruthy();
+    expect(screen.queryByRole('button', { name: /min$/ })).toBeNull();
+    expect(screen.queryByText(/pick a standard/i)).toBeNull();
   });
 
   it('hides a stat it cannot compute instead of showing a blank', () => {
@@ -89,11 +84,9 @@ describe('AreaPage', () => {
     expect(hsrRow.textContent).toContain('–'); // no subway routes
   });
 
-  it('updates the column and every row with the toggle', () => {
+  it('shows the 15 min column and counts with no picker', () => {
     view(<AreaPage data={data} />);
-    fireEvent.click(screen.getByRole('button', { name: '30 min' }));
-    expect(screen.getAllByRole('columnheader').map(h => h.textContent).pop()).toBe('Every 30 min or better');
-    expect(screen.getByRole('link', { name: 'TTC (Toronto)' }).closest('tr')!.textContent).toContain('4 of 5');
-    expect(screen.getByText('6 of 7 routes every 30 min or better on a weekday midday')).toBeTruthy();
+    expect(screen.getAllByRole('columnheader').map(h => h.textContent).pop()).toBe('Every 15 min or better');
+    expect(screen.queryByRole('button', { name: /min$/ })).toBeNull();
   });
 });
