@@ -1,0 +1,58 @@
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,location_type,parent_station,stop_timezone,wheelchair_boarding
+5213,5213,Lansdowne Ave at Davenport Rd South Side,,43.671144,-79.44826,,,,,,2
+11578,11578,Lansdowne Ave at St Clair Ave West,,43.676123,-79.450405,,,,,,1
+5221,5221,Lansdowne Ave at Seaforth Ave,,43.642783,-79.437588,,,,,,1
+11579,11579,St Clair Ave West at Caledonia Rd East Side,,43.675379,-79.454079,,,,,,1
+11715,11715,St Clair Ave West at Caledonia Rd,,43.675536,-79.454364,,,,,,1
+5210,5210,Lansdowne Ave at Bloor St West,,43.658219,-79.442624,,,,,,1
+5217,5217,Lansdowne Ave at Paton Rd,,43.660848,-79.443775,,,,,,1
+4402,4402,Lansdowne Ave at Dupont St,,43.666865,-79.446607,,,,,,1
+721,721,Caledonia Rd at Innes Ave North Side,,43.681242,-79.45715,,,,,,1
+725,725,Caledonia Rd at Keith Ave,,43.690575,-79.461131,,,,,,2
+5527,5527,MacDonell Ave at Queen St West North Side,,43.640726,-79.437986,,,,,,1
+4399,4399,Lansdowne Ave at Brandon Ave North Side,,43.669248,-79.447348,,,,,,1
+4411,4411,Lansdowne Ave at Wallace Ave,,43.662412,-79.444618,,,,,,1
+746,746,Caledonia Rd at Summit Ave South Side,,43.686437,-79.459522,,,,,,1
+4404,4404,Lansdowne Ave at Lappin Ave,,43.664789,-79.445593,,,,,,1
+699,699,175 Caledonia Rd,,43.680022,-79.456679,,,,,,1
+5204,5204,Opposite 104 Lansdowne Ave,,43.644009,-79.437865,,,,,,1
+4410,4410,Lansdowne Ave at Wallace Ave,,43.662225,-79.444175,,,,,,2
+2334,2334,Eglinton Ave West at Caledonia Rd,,43.692905,-79.462355,,,,,,1
+5216,5216,Lansdowne Ave at Dundas St West,,43.650369,-79.439863,,,,,,1
+5528,5528,MacDonell Ave at Seaforth Ave,,43.642144,-79.438522,,,,,,2
+5205,5205,106 Lansdowne Ave,,43.644016,-79.438057,,,,,,1
+4408,4408,Lansdowne Ave at Wade Ave - Lansdowne Station,,43.659077,-79.442882,,,,,,1
+741,741,Caledonia Rd at Rogers Rd,,43.68288,-79.457838,,,,,,2
+5211,5211,Lansdowne Ave at College St,,43.650661,-79.439813,,,,,,1
+5207,5207,1325 Lansdowne Ave,,43.673292,-79.449246,,,,,,2
+5224,5224,Lansdowne Ave at Wade Ave - Lansdowne Station,,43.659323,-79.443165,,,,,,1
+5218,5218,Lansdowne Ave at Queen St West,,43.640886,-79.436848,,,,,,1
+13703,13703,Lansdowne Ave at Bloor St West,,43.658445,-79.442808,,,,,,1
+5220,5220,Lansdowne Ave at Rideau Ave,,43.646627,-79.438911,,,,,,2
+728,728,Caledonia Rd at Kitchener Ave,,43.689093,-79.460642,,,,,,1
+733,733,Caledonia Rd at Norman Ave,,43.677577,-79.45562,,,,,,1
+727,727,Caledonia Rd at Kitchener Ave,,43.688899,-79.460424,,,,,,2
+5208,5208,422 Lansdowne Ave,,43.655625,-79.441862,,,,,,1
+5215,5215,Lansdowne Ave at Dundas St West,,43.649963,-79.439556,,,,,,1
+742,742,Caledonia Rd at Rogers Rd,,43.68339,-79.45825,,,,,,1
+4400,4400,Lansdowne Ave at Brandon Ave,,43.669207,-79.447534,,,,,,1
+722,722,Caledonia Rd at Innes Ave,,43.681143,-79.457264,,,,,,1
+713,713,Caledonia Rd at Corby Ave,,43.684568,-79.458579,,,,,,2
+5206,5206,1216 Lansdowne Ave,,43.673282,-79.449421,,,,,,2
+4405,4405,Lansdowne Ave at Lappin Ave,,43.665163,-79.445918,,,,,,1
+5214,5214,Lansdowne Ave at Davenport Rd,,43.671426,-79.448192,,,,,,1
+5212,5212,Lansdowne Ave at College St,,43.651115,-79.440132,,,,,,1
+5209,5209,533 Lansdowne Ave,,43.655682,-79.441766,,,,,,1
+5226,5226,Lansdowne Ave at Whytock Ave,,43.653917,-79.441232,,,,,,1
+734,734,Caledonia Rd at Norman Ave,,43.677844,-79.455867,,,,,,1
+747,747,Caledonia Rd at Summit Ave,,43.686657,-79.459454,,,,,,2
+4401,4401,Lansdowne Ave at Dupont St,,43.666612,-79.446297,,,,,,1
+700,700,180 Caledonia Rd,,43.680034,-79.456794,,,,,,1
+726,726,Caledonia Rd at Keith Ave,,43.690784,-79.461358,,,,,,2
+5225,5225,Lansdowne Ave at Whytock Ave,,43.653613,-79.440973,,,,,,1
+5219,5219,Lansdowne Ave at Rideau Ave South Side,,43.646368,-79.438986,,,,,,1
+15191,15191,Lansdowne Ave at Seaforth Ave North Side,,43.643088,-79.437541,,,,,,1
+16556,16556,Lansdowne Ave at Paton Rd North Side,,43.660913,-79.443619,,,,,,1
+16600,16600,Caledonia Station,,43.692169,-79.465706,,,,,,1
+12554,12554,Lansdowne Ave at St. Clair Ave West South Side,,43.675956,-79.45052,,,,,,1
+16843,16843,Caledonia Rd at Corby Ave South Side,,43.684375,-79.458688,,,,,,1

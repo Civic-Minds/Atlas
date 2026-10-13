@@ -21,6 +21,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Fixed
 
+- **TTC 47 Lansdowne and 63 Ossington no longer read every 2 min**: each bus was counted twice where it ends one trip and starts the next at the same stop ([#341](https://github.com/Civic-Minds/Atlas/issues/341)).
 - **Re-processing an agency without a name keeps its display name**: it was being overwritten with the slug (#785).
 - **Redwood Coast Transit 20 shows its southbound route to Eureka**: its two daily trips each used their own shape, so only a stub was drawn ([#776](https://github.com/Civic-Minds/Atlas/issues/776)).
 - **Weekday shows a route's typical weekday, not its Friday timetable**: CATA VE Campus had shown Friday's every 21 instead of its usual every 24 ([#716](https://github.com/Civic-Minds/Atlas/issues/716)).
