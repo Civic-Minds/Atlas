@@ -1,6 +1,7 @@
-import { fireEvent, render, screen } from '@testing-library/react';
-import { MemoryRouter } from 'react-router';
-import { describe, expect, it } from 'vitest';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { MemoryRouter, Route, Routes } from 'react-router';
+import type { ReactElement } from 'react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import AgencyPage from '../AgencyPage';
 import AreaPage from '../AreaPage';
 import { agencyPageData, type AgencyPageRoute, type AgencyPageSummary } from '../../shared/agencyPages';
@@ -121,4 +122,29 @@ describe('AreaPage', () => {
     expect(screen.queryByText(/15 min or better/)).toBeNull();
     expect(screen.getAllByRole('button', { name: /every 10 min or better/ }).length).toBeGreaterThan(0);
   });
+});
+
+describe('not found is never shown while loading', () => {
+  // The dev server loads page data after the first render; make the tests take that path.
+  beforeEach(() => { vi.stubEnv('DEV', true); });
+  afterEach(() => { vi.unstubAllEnvs(); });
+  const at = (path: string, element: ReactElement, route: string) =>
+    render(<MemoryRouter initialEntries={[path]}><Routes><Route path={route} element={element} /></Routes></MemoryRouter>);
+
+  it('agency page: blank first, the page once its data resolves, not-found only for a missing slug', async () => {
+    const { unmount } = at('/agency/ttc', <AgencyPage />, '/agency/:slug');
+    expect(screen.queryByText('No page for this agency')).toBeNull();
+    await waitFor(() => expect(screen.getByRole('heading', { level: 1 })).toBeTruthy(), { timeout: 25000 });
+    expect(screen.queryByText('No page for this agency')).toBeNull();
+    unmount();
+    at('/agency/no-such-agency', <AgencyPage />, '/agency/:slug');
+    expect(screen.queryByText('No page for this agency')).toBeNull();
+    await waitFor(() => expect(screen.getByText('No page for this agency')).toBeTruthy(), { timeout: 25000 });
+  }, 60000);
+
+  it('area page: blank first, not-found only for a missing slug', async () => {
+    at('/area/no-such-area', <AreaPage />, '/area/:slug');
+    expect(screen.queryByText('No page for this area')).toBeNull();
+    await waitFor(() => expect(screen.getByText('No page for this area')).toBeTruthy(), { timeout: 25000 });
+  }, 60000);
 });

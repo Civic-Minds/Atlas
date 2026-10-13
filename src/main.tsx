@@ -29,14 +29,19 @@ if (import.meta.env.PROD && !isInternalTestSession()) {
   injectSpeedInsights();
 }
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
+const rootElement = document.getElementById('root')!;
+// A prerendered page already has its text in #root. Keep showing that same HTML while the page's code chunk
+// loads, so there is no blank flash (and never a not-found message) before the live page takes over.
+const prerenderedHtml = rootElement.innerHTML.trim();
+
+ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
     <BrowserRouter>
       <ColorVisionProvider>
         <AnalyticsConsent />
         <RouteTracker />
         <RouteSeo />
-        <React.Suspense fallback={null}>
+        <React.Suspense fallback={prerenderedHtml ? <div style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: prerenderedHtml }} /> : null}>
           <Routes>
           {/* Maintainer-only research page; it is never included in built bundles. */}
           {import.meta.env.DEV && (
