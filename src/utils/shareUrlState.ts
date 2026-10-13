@@ -126,3 +126,55 @@ export function encodeModesParam(modes: ReadonlySet<number>): string | null {
   if (modes.size === 0) return null;
   return [...modes].sort((a, b) => a - b).join(SEP);
 }
+
+/**
+ * Compare mode, side B (CIV-19). Side A uses the normal `h` / `p` / `day` params; side B has its
+ * own day (`cday`), time (`cp`) and frequency (`ch`). `ch` is always written while comparing so a
+ * shared link reproduces B exactly; links made before B had its own frequency have no `ch`, and B
+ * then copies A's frequency.
+ *
+ * Sharing: the page URL is the share link, so copying it reproduces both maps (A from `h`/`p`/
+ * `day`, B from these). TODO: once withShareTags (share-utm branch) lands on main, run compare
+ * links through it like every other share link; the compare params need no special handling.
+ */
+export const COMPARE_DAY_PARAM = 'cday';
+export const COMPARE_PERIOD_PARAM = 'cp';
+export const COMPARE_HEADWAY_PARAM = 'ch';
+
+export interface CompareSideParams<Day extends string = string, Period extends string = string> {
+  day: Day;
+  period: Period;
+  maxHeadway: number;
+}
+
+/** Frequency value from a URL (`h` or `ch`): a positive number of minutes, or "all" for no limit. */
+export function parseHeadwayValue(raw: string | null | undefined): number | null {
+  if (!raw) return null;
+  if (raw === 'all' || raw === 'inf' || raw === 'Infinity') return Infinity;
+  const n = Number(raw);
+  return isFinite(n) && n > 0 ? n : null;
+}
+
+export function encodeHeadwayValue(maxHeadway: number): string {
+  return maxHeadway === Infinity ? 'all' : String(maxHeadway);
+}
+
+/** Side B from the URL, or null when the link isn't a compare link (or names an unknown day). */
+export function parseCompareSideParams<Day extends string, Period extends string>(
+  search: string | URLSearchParams,
+  options: { days: readonly Day[]; periods: readonly Period[]; allPeriod: Period; fallbackHeadway: number },
+): CompareSideParams<Day, Period> | null {
+  const sp = toSearchParams(search);
+  const day = sp.get(COMPARE_DAY_PARAM);
+  if (!day || !(options.days as readonly string[]).includes(day)) return null;
+  const cp = sp.get(COMPARE_PERIOD_PARAM);
+  const period = cp && (options.periods as readonly string[]).includes(cp) ? cp as Period : options.allPeriod;
+  const maxHeadway = parseHeadwayValue(sp.get(COMPARE_HEADWAY_PARAM)) ?? options.fallbackHeadway;
+  return { day: day as Day, period, maxHeadway };
+}
+
+/** URL params for side B; all null when compare is off. */
+export function encodeCompareSideParams(side: CompareSideParams | null): Record<'cday' | 'cp' | 'ch', string | null> {
+  if (!side) return { cday: null, cp: null, ch: null };
+  return { cday: side.day, cp: side.period, ch: encodeHeadwayValue(side.maxHeadway) };
+}

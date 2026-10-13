@@ -17,6 +17,7 @@ const History = React.lazy(() => import('./apps/History'));
 const LiveVehicles = React.lazy(() => import('./apps/LiveVehicles'));
 const Corridors = React.lazy(() => import('./apps/Corridors'));
 import type { AppId } from './components/AppDrawer';
+import { ModeTabLabel, modeTabCollapsed, modeTabSpacing } from './components/ModeTabLabel';
 import { CorridorMapOverlayProvider } from './context/CorridorMapOverlay';
 import { HistoryMapOverlayProvider } from './context/HistoryMapOverlay';
 import { LiveVehiclesMapOverlayProvider } from './context/LiveVehiclesMapOverlay';
@@ -357,6 +358,7 @@ export default function App() {
 
   const [liveMounted, setLiveMounted] = useState(false);
   const [intervalSelectionActive, setIntervalSelectionActive] = useState(false);
+  const [compareActive, setCompareActive] = useState(false);
   const [day, setDay] = useState<DayType>(() => {
     try {
       const sp = new URLSearchParams(window.location.search);
@@ -396,6 +398,10 @@ export default function App() {
     () => new Set(Object.keys(layers).map(slug => slug.endsWith('-corridors') ? slug.slice(0, -10) : slug)),
     [layers],
   );
+  // Desktop mode tabs: while one mode is on, the others shrink to icons (beta).
+  const activeModeTab = inLive ? 'live' : activeApp === 'history' ? 'history' : compareActive ? 'compare' : null;
+  const liveTabCollapsed = modeTabCollapsed(FEATURES.collapseModeTabs, activeModeTab, 'live');
+  const historyTabCollapsed = modeTabCollapsed(FEATURES.collapseModeTabs, activeModeTab, 'history');
   const showLiveControl = FEATURES.live && (inLive || [...loadedAgencySlugs].some(slug =>
     LIVE_POLLING_ROUTES.some(route => route.slug === slug && (!route.apiKeyParamEnvVar && !route.apiKeyHeaderEnvVar || route.active)),
   ));
@@ -611,11 +617,15 @@ export default function App() {
           <button
             onClick={() => setActiveApp(inLive ? 'frequency' : 'live')}
             aria-label="Live vehicles"
-            className={`hidden sm:flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold border ${inLive ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
+            aria-pressed={inLive}
+            title={liveTabCollapsed ? 'Live vehicles' : undefined}
+            className={`hidden sm:flex h-8 ${modeTabSpacing(liveTabCollapsed)} items-center rounded-full shrink-0 transition-colors text-xs font-bold border ${inLive ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
           >
             <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${inLive ? 'bg-[var(--accent)] animate-pulse' : 'bg-[var(--text-dim)]'}`} />
-            <span>Live</span>
-            <span className="font-normal text-[var(--text-dim)]">{liveAgencyCount}</span>
+            <ModeTabLabel collapsed={liveTabCollapsed}>
+              <span>Live</span>
+              <span className="font-normal text-[var(--text-dim)]">{liveAgencyCount}</span>
+            </ModeTabLabel>
           </button>
         )}
 
@@ -624,11 +634,14 @@ export default function App() {
             href={inHistory ? '/' : '/apps/history'}
             aria-label={inHistory ? 'Back to frequency map' : 'Historical service'}
             aria-pressed={inHistory}
-            className={`hidden sm:flex h-8 px-3 items-center gap-1.5 rounded-full shrink-0 transition-colors text-xs font-bold border focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${inHistory ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
+            title={historyTabCollapsed ? 'Historical service' : undefined}
+            className={`hidden sm:flex h-8 ${modeTabSpacing(historyTabCollapsed)} items-center rounded-full shrink-0 transition-colors text-xs font-bold border focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)] ${inHistory ? APP_TAB_ACTIVE : APP_TAB_INACTIVE}`}
           >
-            <HistoryIcon className="w-3.5 h-3.5" />
-            <span>History</span>
-            {historyExploreAgencyCount != null && <span className="font-normal text-[var(--text-dim)]">{historyExploreAgencyCount}+</span>}
+            <HistoryIcon className="w-3.5 h-3.5 shrink-0" />
+            <ModeTabLabel collapsed={historyTabCollapsed}>
+              <span>History</span>
+              {historyExploreAgencyCount != null && <span className="font-normal text-[var(--text-dim)]">{historyExploreAgencyCount}+</span>}
+            </ModeTabLabel>
           </a>
         )}
 
@@ -761,6 +774,7 @@ export default function App() {
               onLayersChange={setLayers}
               onSelectedMapAgencyChange={setSelectedMapAgencySlug}
               onSelectionActiveChange={setIntervalSelectionActive}
+              onCompareActiveChange={setCompareActive}
               headerPortalContainer={headerPortalEl}
               viewTabsPortalContainer={viewTabsPortalEl}
               sidebarLeft={sidebarLeft}

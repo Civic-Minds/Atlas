@@ -719,19 +719,19 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                   {compare && (
                     <div className="px-5 pt-2 pb-3">
                       <div className="flex items-center justify-between">
-                        <p className="text-[10px] font-bold text-[var(--text-dim)]">Compare with another day or time</p>
+                        <p className="text-[10px] font-bold text-[var(--text-dim)]">Compare two maps</p>
                         <button
                           type="button"
                           onClick={compare.side ? compare.onExit : compare.onStart}
                           className={`h-7 px-2.5 flex items-center justify-center text-[10px] font-bold rounded-full border transition-colors ${compare.side ? CONTROL_ACTIVE : CONTROL_INACTIVE}`}
                           aria-pressed={!!compare.side}
                         >
-                          {compare.side ? 'Stop comparing' : 'Compare'}
+                          Compare
                         </button>
                       </div>
                       {compare.side && (
                         <div className="mt-2">
-                          <p className="mb-2 flex items-center gap-1.5 text-[10px] font-bold text-[var(--text-dim)]"><SideBadge side="B" /> The day and time above are map A; pick map B here.</p>
+                          <p className="mb-2 flex items-center gap-1.5 text-[10px] font-bold text-[var(--text-dim)]"><SideBadge side="B" /> The frequency, day and time above are map A; pick map B here. Modes and agencies apply to both maps.</p>
                           <CompareSidePicker side={compare.side} onChange={compare.onChange} />
                         </div>
                       )}

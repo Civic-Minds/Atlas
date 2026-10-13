@@ -14,7 +14,7 @@ function routeFeatures(agency: string, shortName: string): GeoJSON.Feature[] {
   return features.filter(f => (f.properties as any).routeShortName === shortName);
 }
 
-const filters = (maxHeadway: number) => ({ maxHeadway, agencies: new Set<string>(), modes: new Set<number>() });
+const filters = { agencies: new Set<string>(), modes: new Set<number>() };
 
 describe('compare mode route rows use the shared filter rule on each side', () => {
   // Real frozen data: MiWay 3 Bloor has Weekday and Saturday features in the fixture.
@@ -29,7 +29,7 @@ describe('compare mode route rows use the shared filter rule on each side', () =
     for (const maxHeadway of [20, 30, 60]) {
       it(`${period}, every ${maxHeadway}: each side matches routePassesHeadwayFilter`, () => {
         for (const [label, day] of [['A', 'Weekday'], ['B', 'Saturday']] as const) {
-          const row = buildCompareRow(label, { day, period }, features, 'miway', filters(maxHeadway));
+          const row = buildCompareRow(label, { day, period, maxHeadway }, features, 'miway', filters);
           const expected = routePassesHeadwayFilter(features.map(f => f.properties as object), period, day, maxHeadway);
           expect(row.passes).toBe(expected);
           expect(row.runs).toBe(true);
@@ -42,7 +42,24 @@ describe('compare mode route rows use the shared filter rule on each side', () =
   }
 
   it('reports no service on a day the route does not run', () => {
-    const row = buildCompareRow('B', { day: 'Sunday', period: 'midday' }, features, 'miway', filters(20));
+    const row = buildCompareRow('B', { day: 'Sunday', period: 'midday', maxHeadway: 20 }, features, 'miway', filters);
     expect(row).toMatchObject({ runs: false, passes: false, headway: null });
+  });
+
+  it('judges each side by its own frequency, so the same day and time can pass on one side only', () => {
+    const day = 'Weekday';
+    const period = 'midday';
+    const props = features.map(f => f.properties as object);
+    // Find a pair of thresholds the route falls between on this day and time.
+    const thresholds = [10, 15, 20, 30, 60];
+    const strict = thresholds.find(t => !routePassesHeadwayFilter(props, period, day, t));
+    const loose = thresholds.find(t => routePassesHeadwayFilter(props, period, day, t));
+    expect(strict).toBeDefined();
+    expect(loose).toBeDefined();
+    const a = buildCompareRow('A', { day, period, maxHeadway: strict! }, features, 'miway', filters);
+    const b = buildCompareRow('B', { day, period, maxHeadway: loose! }, features, 'miway', filters);
+    expect(a.passes).toBe(false);
+    expect(b.passes).toBe(true);
+    expect(a.headway).toBe(b.headway);
   });
 });

@@ -2,9 +2,12 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   AGENCY_URL_MAX_SLUGS,
   encodeAgencySelection,
+  encodeCompareSideParams,
   encodeModesParam,
   isAgencyOff,
   parseAgencyUrlRule,
+  parseCompareSideParams,
+  parseHeadwayValue,
   parseModesParam,
   settleAgencyUrlRule,
   shouldPersistAgencySelection,
@@ -177,5 +180,59 @@ describe('on-demand stays out of public builds (CIV-50)', () => {
     expect(FEATURES.onDemand).toBe(false);
     expect(shareUrl.AVAILABLE_FILTER_MODES.some(m => m.id === -1)).toBe(false);
     expect(shareUrl.parseModesParam('m=-1')).toEqual(new Set());
+  });
+});
+
+describe('compare side B in the URL', () => {
+  const opts = { days: ['Weekday', 'Saturday', 'Sunday'] as const, periods: ['all', 'midday', 'late'] as const, allPeriod: 'all' as const, fallbackHeadway: 10 };
+
+  it('round-trips day, time and frequency', () => {
+    for (const side of [
+      { day: 'Weekday', period: 'late', maxHeadway: 15 },
+      { day: 'Sunday', period: 'all', maxHeadway: Infinity },
+      { day: 'Saturday', period: 'midday', maxHeadway: 10 },
+    ] as const) {
+      const url = mergeUrlSearchParams('?h=10&p=late&z=12', encodeCompareSideParams(side));
+      expect(parseCompareSideParams(url, opts)).toEqual(side);
+    }
+  });
+
+  it('always writes B\'s frequency, even when it matches A, so a shared link reproduces both sides', () => {
+    expect(encodeCompareSideParams({ day: 'Weekday', period: 'late', maxHeadway: 10 })).toEqual({ cday: 'Weekday', cp: 'late', ch: '10' });
+    expect(encodeCompareSideParams({ day: 'Weekday', period: 'late', maxHeadway: Infinity }).ch).toBe('all');
+  });
+
+  it('clears every compare param when compare is off', () => {
+    expect(mergeUrlSearchParams('?cday=Saturday&cp=late&ch=15&h=10', encodeCompareSideParams(null))).not.toMatch(/cday|cp=|ch=/);
+  });
+
+  it('older links without a B frequency copy A\'s', () => {
+    expect(parseCompareSideParams('cday=Saturday&cp=late', opts)).toEqual({ day: 'Saturday', period: 'late', maxHeadway: 10 });
+    expect(parseCompareSideParams('cday=Saturday&cp=late&ch=junk', opts)?.maxHeadway).toBe(10);
+    expect(parseCompareSideParams('cday=Saturday&ch=-5', opts)).toEqual({ day: 'Saturday', period: 'all', maxHeadway: 10 });
+  });
+
+  it('a copied compare link reproduces both maps', () => {
+    // A's frequency and time ride on h/p as before; B's on cday/cp/ch.
+    const shared = mergeUrlSearchParams('?lat=43.7&lon=-79.4&z=11', {
+      h: '10', p: 'late', ...encodeCompareSideParams({ day: 'Weekday', period: 'late', maxHeadway: 20 }),
+    });
+    const sp = new URLSearchParams(shared);
+    expect(parseHeadwayValue(sp.get('h'))).toBe(10);
+    expect(sp.get('p')).toBe('late');
+    expect(parseCompareSideParams(shared, { ...opts, fallbackHeadway: parseHeadwayValue(sp.get('h'))! }))
+      .toEqual({ day: 'Weekday', period: 'late', maxHeadway: 20 });
+  });
+
+  it('is not a compare link without a known day', () => {
+    expect(parseCompareSideParams('cp=late&ch=15', opts)).toBeNull();
+    expect(parseCompareSideParams('cday=Funday&ch=15', opts)).toBeNull();
+  });
+
+  it('reads frequency values the same way as h', () => {
+    expect(parseHeadwayValue('all')).toBe(Infinity);
+    expect(parseHeadwayValue('20')).toBe(20);
+    expect(parseHeadwayValue('0')).toBeNull();
+    expect(parseHeadwayValue(null)).toBeNull();
   });
 });
