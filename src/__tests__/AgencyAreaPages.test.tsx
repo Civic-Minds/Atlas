@@ -79,7 +79,7 @@ describe('AgencyPage intro', () => {
     expect(screen.getByRole('link', { name: 'HSR' }).getAttribute('href')).toBe('/agency/hsr');
     expect(screen.queryByRole('link', { name: 'Tiny Transit' })).toBeNull();
     expect(screen.queryByRole('heading', { name: 'Connects with' })).toBeNull();
-    expect(screen.getByTitle(/within 150 m/)).toBeTruthy();
+    expect(screen.queryByTitle(/150 m/)).toBeNull();
   });
 
   it('has no connects-with clause without connections', () => {
