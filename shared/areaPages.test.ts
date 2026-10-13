@@ -62,10 +62,10 @@ describe('buildAreaPageData', () => {
   });
 
   it('writes the title, heading, subtitle and lead from the numbers', () => {
-    expect(areaPageTitle(d)).toBe('Toronto area frequency map: 2 transit agencies compared | Transit Atlas');
-    expect(areaPageH1(d)).toBe('Toronto area');
+    expect(areaPageTitle(d)).toBe('Greater Toronto and Hamilton Area frequency map: 2 transit agencies compared | Transit Atlas');
+    expect(areaPageH1(d)).toBe('Greater Toronto and Hamilton Area');
     expect(areaSubtitle(d)).toBe('Toronto, Hamilton');
-    expect(areaPageDescription(d)).toContain('6 weekday routes across 2 transit agencies in the Toronto area');
+    expect(areaPageDescription(d)).toContain('6 weekday routes across 2 transit agencies in the Greater Toronto and Hamilton Area');
     expect(areaPageDescription(d)).not.toMatch(/frequent\b|15 min/i);
     expect(areaSpanShort(d)).toBe('24 h');
   });
@@ -97,9 +97,9 @@ describe('areaAboutParagraph', () => {
   });
 
   it('is one sentence with the agency and route counts', () => {
-    expect(areaAboutParagraph(base({}))).toBe('The Toronto area has 2 transit agencies running 6 routes.');
+    expect(areaAboutParagraph(base({}))).toBe('The Greater Toronto and Hamilton Area has 2 transit agencies running 6 routes.');
     const one = base({ agencies: [{ slug: 'a', displayName: 'A', totalRoutes: 1, modes: { Bus: 1 } }], totalRoutes: 1 });
-    expect(areaAboutParagraph(one)).toBe('The Toronto area has 1 transit agency running 1 route.');
+    expect(areaAboutParagraph(one)).toBe('The Greater Toronto and Hamilton Area has 1 transit agency running 1 route.');
   });
 });
 
@@ -175,7 +175,7 @@ describe('committed areas (config/areas)', () => {
 describe('areaLinkFor', () => {
   const map: Record<string, [string, string]> = { ttc: ['toronto', 'Toronto'] };
   it('links only agencies in a paged area, and only with the flag on', () => {
-    expect(areaLinkFor('ttc', true, map)).toEqual({ href: '/area/toronto', label: 'Toronto area →' });
+    expect(areaLinkFor('ttc', true, map)).toEqual({ href: '/area/toronto', label: 'Greater Toronto and Hamilton Area →' });
     expect(areaLinkFor('ttc', false, map)).toBeNull();
     expect(areaLinkFor('nowhere', true, map)).toBeNull();
   });
@@ -192,3 +192,14 @@ function areasOnDisk(): AreaConfig[] {
   return readdirSync('config/areas').filter(f => f.endsWith('.json') && !f.startsWith('_'))
     .map(f => JSON.parse(readFileSync(`config/areas/${f}`, 'utf8')) as AreaConfig);
 }
+
+describe('areaRegionName', () => {
+  it('uses the common region name where there is one, else "the [City] area"', async () => {
+    const { areaRegionName, areaRegionTitle, areaRegionSentenceStart } = await import('./areaRegions');
+    expect(areaRegionName({ slug: 'toronto', name: 'Toronto' })).toBe('the Greater Toronto and Hamilton Area');
+    expect(areaRegionName({ slug: 'vancouver', name: 'Vancouver' })).toBe('Metro Vancouver');
+    expect(areaRegionName({ slug: 'calgary', name: 'Calgary' })).toBe('the Calgary area');
+    expect(areaRegionTitle({ slug: 'san-francisco', name: 'San Francisco' })).toBe('Bay Area');
+    expect(areaRegionSentenceStart({ slug: 'calgary', name: 'Calgary' })).toBe('The Calgary area');
+  });
+});

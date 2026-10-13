@@ -1,5 +1,6 @@
 import agencyAreas from './data/agency-area-slugs.json';
 import { areaPagePath } from './areas';
+import { areaRegionTitle } from './areaRegions';
 
 /** agency slug -> [area slug, area name], for agencies in an area that has a page (config/areas). */
 const AGENCY_AREAS = agencyAreas as unknown as Record<string, [string, string]>;
@@ -15,5 +16,5 @@ export function areaLinkFor(
 ): { href: string; label: string } | null {
   if (!flagOn) return null;
   const hit = map[agencySlug];
-  return hit ? { href: areaPagePath(hit[0]), label: `${hit[1]} area →` } : null;
+  return hit ? { href: areaPagePath(hit[0]), label: `${areaRegionTitle({ slug: hit[0], name: hit[1] })} →` } : null;
 }

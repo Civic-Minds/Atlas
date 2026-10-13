@@ -5,6 +5,7 @@
  * scripts/build-agency-page-summaries.ts); nothing here measures anything new.
  */
 import { headwayEvery } from './headwayText';
+import { areaRegionName, areaRegionTitle } from './areaRegions';
 import { SITE_URL } from './seo';
 
 export { headwayEvery };
@@ -35,6 +36,15 @@ export interface AgencyPageIdentity {
   websiteUrl?: string;
 }
 
+/** Another agency whose stops are within walking distance of this one's, with the routes that serve them. */
+export interface AgencyConnection {
+  slug: string;
+  /** Short name, e.g. "GO Transit". */
+  name: string;
+  /** Route labels as the map lists them (see getRouteLabel), natural order. */
+  routes: string[];
+}
+
 export interface AgencyPageSummary extends AgencyPageIdentity {
   /** Name plus its city in brackets, e.g. "TTC (Toronto)". */
   displayName: string;
@@ -43,6 +53,10 @@ export interface AgencyPageSummary extends AgencyPageIdentity {
   country?: string;
   /** Distinct weekday routes in the release. */
   routeCount: number;
+  /** Unique stops and stations (same-name stops within 150 m count once). */
+  stops?: number;
+  /** Other agencies with a stop within 150 m of one of this agency's stops, most routes first. */
+  connections?: AgencyConnection[];
   routes: AgencyPageRoute[];
   /** First and last hour (0-28, past 24 is after midnight) with weekday headways. */
   span: { first: number; last: number } | null;
@@ -68,6 +82,44 @@ export interface AgencyPageData {
   releaseDate: string | null;
   /** The metro area page this agency belongs to, when it has one. */
   area?: { slug: string; name: string };
+  /** The one-sentence introduction, also the opening of the meta description. */
+  intro: string;
+  /** Connecting agencies (stops within 150 m), with whether each has a page to link to. */
+  connections: Array<AgencyConnection & { page: boolean }>;
+}
+
+type AreaRef = { slug: string; name: string; bbox?: [number, number, number, number] };
+
+/** True when the agency's bounding box covers most of the area's in both directions (GO across the Toronto area). */
+export function agencySpansArea(agencyBbox: readonly number[] | undefined, areaBbox: readonly number[] | undefined): boolean {
+  if (!agencyBbox || !areaBbox) return false;
+  const overlap = (a0: number, a1: number, b0: number, b1: number) => Math.max(0, Math.min(a1, b1) - Math.max(a0, b0)) / (b1 - b0 || 1);
+  return overlap(agencyBbox[0], agencyBbox[2], areaBbox[0], areaBbox[2]) >= 0.6 && overlap(agencyBbox[1], agencyBbox[3], areaBbox[1], areaBbox[3]) >= 0.6;
+}
+
+/** "A", "A and B", "A, B and C", "A, B, C and 4 others": the first three named, the rest counted. */
+export function namesList(names: readonly string[], named = 3): string {
+  if (names.length <= named) return names.length <= 1 ? (names[0] ?? '') : `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}`;
+  const rest = names.length - named;
+  return `${names.slice(0, named).join(', ')} and ${rest} ${rest === 1 ? 'other' : 'others'}`;
+}
+
+/**
+ * One plain sentence, the same template for every agency:
+ * "Hamilton Street Railway operates 31 routes in Hamilton with 1,980 stops and connects with GO Transit and Burlington Transit."
+ * Stops are unique places (same-name stops within 150 m count once); the connects-with clause drops when there are none.
+ */
+export function agencyIntroSentence(
+  a: Pick<AgencyPageSummary, 'name' | 'city' | 'routes' | 'stops'>,
+  place: string,
+  connections: ReadonlyArray<{ name: string }> = [],
+): string {
+  const n = a.routes.length;
+  if (n === 0) return `${a.name} has no weekday routes in the data.`;
+  let s = `${a.name} operates ${n.toLocaleString('en-US')} ${n === 1 ? 'route' : 'routes'} in ${place}`;
+  if (a.stops) s += ` with ${a.stops.toLocaleString('en-US')} ${a.stops === 1 ? 'stop' : 'stops'}`;
+  if (connections.length) s += ` and connects with ${namesList(connections.map(c => c.name))}`;
+  return `${s}.`;
 }
 
 /** The prerendered HTML carries its data in <script type="application/json" id=...>. */
@@ -77,7 +129,7 @@ export function agencyPageData(
   a: AgencyPageSummary,
   all: readonly AgencyPageSummary[],
   releaseDate: string | null = null,
-  area?: { slug: string; name: string },
+  area?: AreaRef,
   areaMembers?: readonly AgencyPageSummary[],
 ): AgencyPageData {
   // With an area page, the list is the area's other agencies (nearest first); otherwise same-region neighbours.
@@ -86,7 +138,12 @@ export function agencyPageData(
         .sort((x, y) => (a.center && x.center ? distanceKm(a.center, x.center) : 0) - (a.center && y.center ? distanceKm(a.center, y.center) : 0))
         .slice(0, MAX_AREA_LIST)
     : nearbyAgencies(a, all);
-  return { agency: a, releaseDate, ...(area ? { area } : {}), nearby: others.map(o => ({ slug: o.slug, name: o.name })) };
+  const hasPage = new Set(all.filter(o => o.routes.some(r => r.midday != null)).map(o => o.slug));
+  const connections = (a.connections ?? []).map(c => ({ ...c, page: hasPage.has(c.slug) }));
+  const place = area && agencySpansArea(a.bbox, area.bbox) ? areaRegionName(area) : a.city;
+  const areaRef = area ? { slug: area.slug, name: area.name } : undefined;
+  const { connections: _drop, ...agency } = a;
+  return { agency, releaseDate, ...(areaRef ? { area: areaRef } : {}), nearby: others.map(o => ({ slug: o.slug, name: o.name })), intro: agencyIntroSentence(a, place, connections), connections };
 }
 
 const MAX_AREA_LIST = 12;
@@ -195,8 +252,8 @@ export function agencyLeadSentence(a: Pick<AgencyPageSummary, 'routes'>): string
   return `${n} weekday ${n === 1 ? 'route' : 'routes'}.`;
 }
 
-export function agencyPageDescription(a: AgencyPageSummary): string {
-  return `${agencyLeadSentence(a)} Route-by-route frequency for ${a.displayName}, from the published schedule.`;
+export function agencyPageDescription(a: AgencyPageSummary, intro?: string): string {
+  return `${intro ?? agencyLeadSentence(a)} Route-by-route frequency for ${a.displayName}, from the published schedule.`;
 }
 
 function hourLabel(h: number): string {
@@ -222,13 +279,6 @@ export function agencySpanShort(a: Pick<AgencyPageSummary, 'span'>): string | nu
 export function agencyShortLabel(a: Pick<AgencyPageSummary, 'displayName'>): string {
   const m = /^(.*\S)\s+\([^)]+\)$/.exec(a.displayName);
   return m ? m[1] : a.displayName;
-}
-
-/** One plain sentence under the route table, the same template for every agency. */
-export function agencyAboutParagraph(a: Pick<AgencyPageSummary, 'displayName' | 'city' | 'routes'>): string {
-  const total = a.routes.length;
-  const label = agencyShortLabel(a);
-  return total === 0 ? `${label} has no weekday routes in the data.` : `${label} runs ${total} ${total === 1 ? 'route' : 'routes'} in ${a.city}.`;
 }
 
 /** The map link for the big button: the agency's area, with only that agency on. */
@@ -285,7 +335,7 @@ export function agencyBreadcrumbs(a: AgencyPageSummary, area?: { slug: string; n
   const crumbs: Crumb[] = [{ name: 'Transit Atlas', href: '/' }];
   if (a.country) crumbs.push({ name: a.country });
   if (a.region) crumbs.push({ name: a.region });
-  if (area) crumbs.push({ name: `${area.name} area`, href: `/area/${area.slug}` });
+  if (area) crumbs.push({ name: areaRegionTitle(area), href: `/area/${area.slug}` });
   else if (a.city && a.city !== a.region && a.city !== a.displayName) crumbs.push({ name: a.city });
   crumbs.push({ name: a.displayName });
   return crumbs;
@@ -313,13 +363,13 @@ export function nearbyAgencies(a: AgencyPageSummary, all: readonly AgencyPageSum
 /** Everything the head needs for an agency page, in the same shape as the other routes. */
 export function resolveAgencySeo(
   a: AgencyPageSummary,
-  ctx: { mode: 'public' | 'preview' | 'beta' | 'dev'; origin?: string },
+  ctx: { mode: 'public' | 'preview' | 'beta' | 'dev'; origin?: string; intro?: string },
 ): { title: string; description: string; canonicalUrl: string; noindex: boolean; matchedPath: string } {
   const origin = (ctx.origin ?? SITE_URL).replace(/\/$/, '');
   const prefix = ctx.mode === 'preview' ? '[Preview] ' : ctx.mode === 'public' ? '' : '[Beta] ';
   return {
     title: `${prefix}${agencyPageTitle(a)}`,
-    description: agencyPageDescription(a),
+    description: agencyPageDescription(a, ctx.intro),
     canonicalUrl: `${origin}${agencyPagePath(a.slug)}`,
     noindex: ctx.mode !== 'public',
     matchedPath: agencyPagePath(a.slug),
@@ -327,7 +377,7 @@ export function resolveAgencySeo(
 }
 
 /** Organization (the agency), BreadcrumbList and Dataset. No FAQ markup. */
-export function agencyPageJsonLd(a: AgencyPageSummary, canonicalUrl: string, origin: string, area?: { slug: string; name: string }): object {
+export function agencyPageJsonLd(a: AgencyPageSummary, canonicalUrl: string, origin: string, area?: { slug: string; name: string }, intro?: string): object {
   const crumbs = agencyBreadcrumbs(a, area);
   const modified = formatIso(a.lastRefreshedAt);
   const place = [a.city, a.region, a.country].filter(Boolean).join(', ');
@@ -353,7 +403,7 @@ export function agencyPageJsonLd(a: AgencyPageSummary, canonicalUrl: string, ori
       {
         '@type': 'Dataset',
         name: `${a.name} scheduled service frequency`,
-        description: agencyPageDescription(a),
+        description: agencyPageDescription(a, intro),
         url: canonicalUrl,
         isAccessibleForFree: true,
         creator: { '@type': 'Organization', name: 'Civic Minds', url: `${SITE_URL}/` },
