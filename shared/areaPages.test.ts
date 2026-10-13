@@ -70,11 +70,8 @@ describe('buildAreaPageData', () => {
     expect(areaSpanShort(d)).toBe('24 h');
   });
 
-  it('opens the map framed on the area with only its agencies on', () => {
-    const q = new URLSearchParams(areaMapHref(d).slice(2));
-    expect(q.get('agencies')).toBe('ttc.hsr');
-    expect(q.get('lat')).toBe('43.8000');
-    expect(Number(q.get('z'))).toBeGreaterThanOrEqual(7);
+  it('opens the map with ?area= so the app selects the area and fits it', () => {
+    expect(areaMapHref(d)).toBe('/?area=toronto');
   });
 
   it('has a canonical, noindex outside public, and BreadcrumbList plus Dataset JSON-LD', () => {
@@ -185,6 +182,18 @@ describe('areaLinkFor', () => {
     const paged = new Map(areasOnDisk().filter(a => a.page).flatMap(a => a.agencies.map(s => [s, a.slug] as const)));
     for (const [agency, [slug]] of Object.entries(committed)) expect(paged.get(agency), agency).toBe(slug);
     expect(Object.keys(committed).length).toBe(paged.size);
+  });
+});
+
+describe('area index', () => {
+  it('matches config/areas (agencies and bounds, every slug)', () => {
+    const committed = JSON.parse(readFileSync('shared/data/area-index.json', 'utf8')) as Record<string, { agencies: string[]; bbox: number[] }>;
+    const areas = areasOnDisk();
+    expect(Object.keys(committed).sort()).toEqual(areas.map(a => a.slug).sort());
+    for (const a of areas) {
+      expect(committed[a.slug].agencies, a.slug).toEqual(a.agencies);
+      expect(committed[a.slug].bbox, a.slug).toEqual(a.bbox.map(n => Math.round(n * 1000) / 1000));
+    }
   });
 });
 

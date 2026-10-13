@@ -69,6 +69,13 @@ function writeAgencyAreaMap(areas: AreaConfig[]) {
   writeFileSync('shared/data/agency-area-slugs.json', JSON.stringify(Object.fromEntries(Object.entries(map).sort(([x], [y]) => x.localeCompare(y)))) + '\n');
 }
 
+/** shared/data/area-index.json: each area's agencies and bounds, for the map's ?area=<slug> link. */
+function writeAreaIndex(areas: AreaConfig[]) {
+  const index = Object.fromEntries([...areas].sort((x, y) => x.slug.localeCompare(y.slug))
+    .map(a => [a.slug, { agencies: a.agencies, bbox: a.bbox.map(n => Math.round(n * 1000) / 1000) }]));
+  writeFileSync('shared/data/area-index.json', JSON.stringify(index) + '\n');
+}
+
 /** --rescore: recompute largeMetro and page from the committed area files and agency summaries (no network). */
 function rescore() {
   const summaries = new Set((JSON.parse(readFileSync('shared/data/agency-pages.json', 'utf8')).agencies as Array<{ slug: string; routes: Array<{ midday: number | null }> }>)
@@ -85,6 +92,7 @@ function rescore() {
     writeFileSync(`config/areas/${f}`, JSON.stringify(a, null, 2) + '\n');
   }
   writeAgencyAreaMap(all);
+  writeAreaIndex(all);
   console.log(`rescored: ${pages} pages`);
 }
 
@@ -184,6 +192,7 @@ async function main() {
   for (const a of areas.sort((x, y) => x.slug.localeCompare(y.slug))) writeFileSync(`config/areas/${a.slug}.json`, JSON.stringify(a, null, 2) + '\n');
   writeFileSync('config/areas/_unassigned.json', JSON.stringify(unassigned.sort((x, y) => x.slug.localeCompare(y.slug)), null, 2) + '\n');
   writeAgencyAreaMap(areas);
+  writeAreaIndex(areas);
   const paged = areas.filter(a => a.page);
   console.log(`areas: ${areas.length} (pages: ${paged.length}); agencies assigned: ${placed.size}; unassigned: ${unassigned.length}`);
 }

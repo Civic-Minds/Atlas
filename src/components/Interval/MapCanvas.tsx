@@ -316,6 +316,8 @@ interface MapCanvasProps {
   selectedModes?: Set<number>;
   selectedAgencies?: Set<string>;
   initialMapCenter?: { lat: number; lon: number; zoom: number };
+  /** [south, west, north, east] to fit on first load (`?area=`); an explicit initialMapCenter wins. */
+  initialMapBounds?: [number, number, number, number] | null;
   /**
    * Second map in compare mode: follows the first map's camera, so it never writes the URL or
    * saved view, has no map controls or context menu, and does not expose itself for debugging.
@@ -396,6 +398,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   selectedModes = new Set(),
   selectedAgencies,
   initialMapCenter,
+  initialMapBounds,
   secondary = false,
   showMapControls = !secondary,
   onMapReady,
@@ -1179,6 +1182,9 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     const borderPrimary = lightMode ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)';
 
     const saved = getSavedView();
+    const fitBounds = !initialMapCenter && initialMapBounds
+      ? [[initialMapBounds[1], initialMapBounds[0]], [initialMapBounds[3], initialMapBounds[2]]] as [[number, number], [number, number]]
+      : null;
     const initialCenter = initialMapCenter
       ?? (hasSavedView && saved ? { lat: saved.lat, lon: saved.lon, zoom: saved.zoom } : null)
       ?? { lat: regionalView.center[0], lon: regionalView.center[1], zoom: regionalView.zoom };
@@ -1186,8 +1192,9 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     const map = new maplibregl.Map({
       container: mapContainer,
       style: getMapStyle(lightMode),
-      center: [initialCenter.lon, initialCenter.lat],
-      zoom: initialCenter.zoom,
+      ...(fitBounds
+        ? { bounds: fitBounds, fitBoundsOptions: { padding: 48, maxZoom: 12 } }
+        : { center: [initialCenter.lon, initialCenter.lat] as [number, number], zoom: initialCenter.zoom }),
       attributionControl: false,
       canvasContextAttributes: { antialias: true, preserveDrawingBuffer: true },
     });

@@ -164,14 +164,9 @@ export function areaDatesText(d: Pick<AreaPageData, 'newestRefresh' | 'releaseDa
   return [refreshed ? `Newest schedule refresh ${refreshed}` : '', release ? `Atlas data release ${release}` : ''].filter(Boolean).join('. ') + '.';
 }
 
-/** The map link: framed on the area's bounds with only its agencies on (the app's `agencies` include list). */
-export function areaMapHref(d: Pick<AreaPageData, 'area' | 'agencies'>): string {
-  const [s, w, n, e] = d.area.bbox;
-  const [lat, lon] = d.area.center;
-  const span = Math.max(n - s, (e - w) * Math.cos((lat * Math.PI) / 180));
-  const z = span > 3 ? 7 : span > 1.5 ? 8 : span > 0.7 ? 9 : span > 0.35 ? 10 : 11;
-  const params = new URLSearchParams({ agencies: d.agencies.map(a => a.slug).join('.'), lat: lat.toFixed(4), lon: lon.toFixed(4), z: String(z) });
-  return `/?${params.toString()}`;
+/** The map link: `?area=<slug>` selects the area's agencies and fits the map to it (the app does the framing). */
+export function areaMapHref(d: Pick<AreaPageData, 'area'>): string {
+  return `/?${new URLSearchParams({ area: d.area.slug }).toString()}`;
 }
 
 export function resolveAreaSeo(
