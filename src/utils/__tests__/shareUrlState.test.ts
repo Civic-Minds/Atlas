@@ -212,6 +212,18 @@ describe('compare side B in the URL', () => {
     expect(parseCompareSideParams('cday=Saturday&ch=-5', opts)).toEqual({ day: 'Saturday', period: 'all', maxHeadway: 10 });
   });
 
+  it('a copied compare link reproduces both maps', () => {
+    // A's frequency and time ride on h/p as before; B's on cday/cp/ch.
+    const shared = mergeUrlSearchParams('?lat=43.7&lon=-79.4&z=11', {
+      h: '10', p: 'late', ...encodeCompareSideParams({ day: 'Weekday', period: 'late', maxHeadway: 20 }),
+    });
+    const sp = new URLSearchParams(shared);
+    expect(parseHeadwayValue(sp.get('h'))).toBe(10);
+    expect(sp.get('p')).toBe('late');
+    expect(parseCompareSideParams(shared, { ...opts, fallbackHeadway: parseHeadwayValue(sp.get('h'))! }))
+      .toEqual({ day: 'Weekday', period: 'late', maxHeadway: 20 });
+  });
+
   it('is not a compare link without a known day', () => {
     expect(parseCompareSideParams('cp=late&ch=15', opts)).toBeNull();
     expect(parseCompareSideParams('cday=Funday&ch=15', opts)).toBeNull();
