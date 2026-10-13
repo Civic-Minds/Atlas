@@ -60,6 +60,28 @@ describe('AgencyPage', () => {
   });
 });
 
+describe('AgencyPage connections and intro', () => {
+  it('shows the intro sentence and a capped Connects with list with links', () => {
+    const withConns = { ...TTC, stops: 7566, connections: [
+      { slug: 'hsr', name: 'HSR', routes: ['1 King', '2 Barton', '3 Cannon', '4 Bay', '5 Delaware', '6 Aberdeen', '7 Locke', '8 York'] },
+      { slug: 'nopage', name: 'Tiny Transit', routes: ['A'] },
+    ] };
+    const d = agencyPageData(withConns, [withConns, HSR], null);
+    expect(d.intro).toBe('Toronto Transit Commission operates 5 routes in Toronto with 7,566 stops and connects with HSR and Tiny Transit.');
+    view(<AgencyPage data={d} />);
+    expect(screen.getByRole('heading', { name: 'Connects with' })).toBeTruthy();
+    expect(screen.getByRole('link', { name: 'HSR' }).getAttribute('href')).toBe('/agency/hsr');
+    expect(screen.queryByRole('link', { name: 'Tiny Transit' })).toBeNull();
+    expect(screen.getByText(/and 2 more/)).toBeTruthy();
+    expect(screen.getByText(d.intro)).toBeTruthy();
+  });
+
+  it('omits the section with no connections', () => {
+    view(<AgencyPage data={agencyPageData(TTC, [TTC, HSR], null)} />);
+    expect(screen.queryByRole('heading', { name: 'Connects with' })).toBeNull();
+  });
+});
+
 describe('AgencyPage other agencies list', () => {
   it('is titled by the area, links the area, and links every agency', () => {
     const withArea = agencyPageData(TTC, [TTC, HSR], null, { slug: 'toronto', name: 'Toronto' }, [TTC, HSR]);

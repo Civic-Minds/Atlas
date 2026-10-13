@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { ArrowRight } from 'lucide-react';
 import {
-  agencyAboutParagraph,
   bandCounts,
   modesText,
   agencyDatesText,
@@ -43,6 +42,9 @@ function readEmbeddedData(slug: string | undefined): AgencyPageData | null {
  * so no other agency's data ships with the page. The dev server has no prerendered HTML and
  * loads from the full summary file instead (dead code in production builds).
  */
+const MAX_CONNECTION_AGENCIES = 8;
+const MAX_CONNECTION_ROUTES = 6;
+
 /** A period cell: the card's cadence, "Limited" when the route runs but has no trustworthy cadence, else a dash. */
 function cell(col: 'am' | 'midday' | 'pm' | 'evening' | 'overnight', r: AgencyPageRoute): string {
   const v = r[col];
@@ -63,8 +65,9 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
     applySeoToDocument(document, resolveAgencySeo(agency, {
       mode: ATLAS_MODE,
       origin: ATLAS_MODE === 'public' ? undefined : window.location.origin,
+      intro: data?.intro,
     }));
-  }, [agency]);
+  }, [agency, data?.intro]);
 
   if (!agency) {
     return (
@@ -140,7 +143,25 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
             ))}
           </section>
 
-          <p className="mt-10 max-w-2xl text-sm leading-6 text-[var(--text-dim)]">{agencyAboutParagraph(agency)}</p>
+          {data!.connections.length > 0 && (
+            <section className="mt-12" aria-labelledby="connects-heading">
+              <h2 id="connects-heading" className="text-xl font-black tracking-tight">Connects with</h2>
+              <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">Routes of other agencies with a stop within 150 m of one of this agency's stops.</p>
+              <ul className="mt-4 space-y-2 text-sm leading-6">
+                {data!.connections.slice(0, MAX_CONNECTION_AGENCIES).map(c => (
+                  <li key={c.slug}>
+                    {c.page ? <a className={`font-black underline underline-offset-2 ${LINK}`} href={agencyPagePath(c.slug)}>{c.name}</a> : <span className="font-black">{c.name}</span>}
+                    <span className="text-[var(--text-muted)]">: {c.routes.slice(0, MAX_CONNECTION_ROUTES).map(titleCase).join(', ')}{c.routes.length > MAX_CONNECTION_ROUTES ? ` and ${c.routes.length - MAX_CONNECTION_ROUTES} more` : ''}</span>
+                  </li>
+                ))}
+              </ul>
+              {data!.connections.length > MAX_CONNECTION_AGENCIES && (
+                <p className="mt-2 text-sm text-[var(--text-muted)]">and {data!.connections.length - MAX_CONNECTION_AGENCIES} more agencies</p>
+              )}
+            </section>
+          )}
+
+          <p className="mt-10 max-w-2xl text-sm leading-6 text-[var(--text-dim)]">{data!.intro}</p>
 
           {nearby.length > 0 && (
             <section className="mt-12" aria-labelledby="nearby-heading">

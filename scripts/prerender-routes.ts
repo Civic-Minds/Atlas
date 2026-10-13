@@ -39,8 +39,8 @@ if (mod.BUILD_FLAGS.agencyPages) {
     // Metro areas (config/areas): pages only for areas flagged page: true. An agency links to its area.
     const areas = readdirSync('config/areas').filter(f => f.endsWith('.json') && !f.startsWith('_'))
       .map(f => JSON.parse(readFileSync(join('config/areas', f), 'utf8')) as AreaConfig).filter(a => a.page);
-    const areaOf = new Map<string, { slug: string; name: string }>();
-    for (const area of areas) for (const slug of area.agencies) areaOf.set(slug, { slug: area.slug, name: area.name });
+    const areaOf = new Map<string, { slug: string; name: string; bbox: AreaConfig['bbox'] }>();
+    for (const area of areas) for (const slug of area.agencies) areaOf.set(slug, { slug: area.slug, name: area.name, bbox: area.bbox });
     const bySlug = new Map(agencies.map(x => [x.slug, x]));
     const areaMembers = new Map<string, typeof agencies>();
     for (const area of areas) {
@@ -49,9 +49,9 @@ if (mod.BUILD_FLAGS.agencyPages) {
     }
     for (const a of agencies) {
       const data = agencyPageData(a, agencies, AGENCY_PAGE_DATA.generatedAt, areaOf.get(a.slug), areaMembers.get(a.slug));
-      const seo = resolveAgencySeo(a, { mode: mod.BUILD_MODE, origin });
+      const seo = resolveAgencySeo(a, { mode: mod.BUILD_MODE, origin, intro: data.intro });
       const embedded = `<script type="application/json" id="${AGENCY_DATA_SCRIPT_ID}">${JSON.stringify(data).replace(/</g, '\\u003c')}</script>\n</body>`;
-      const ld = `  <script type="application/ld+json">${JSON.stringify(agencyPageJsonLd(a, seo.canonicalUrl, origin, areaOf.get(a.slug))).replace(/</g, '\\u003c')}</script>\n</head>`;
+      const ld = `  <script type="application/ld+json">${JSON.stringify(agencyPageJsonLd(a, seo.canonicalUrl, origin, data.area, data.intro)).replace(/</g, '\\u003c')}</script>\n</head>`;
       const html = injectRootHtml(applySeoToHtml(shell, seo), mod.renderAgencyPage(data)).replace('</head>', () => ld).replace('</body>', () => embedded);
       const file = join(dist, agencyPagePath(a.slug), 'index.html');
       mkdirSync(dirname(file), { recursive: true });

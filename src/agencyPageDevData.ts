@@ -11,5 +11,5 @@ export function devAgencyPageData(slug: string | undefined) {
   const all = agencyPageSummaries();
   const area = Object.values(areas).find(a => a.page && a.agencies.includes(agency.slug));
   const members = area ? area.agencies.map(s => all.find(x => x.slug === s)).filter((x): x is NonNullable<typeof x> => !!x) : undefined;
-  return agencyPageData(agency, all, AGENCY_PAGE_DATA.generatedAt, area ? { slug: area.slug, name: area.name } : undefined, members);
+  return agencyPageData(agency, all, AGENCY_PAGE_DATA.generatedAt, area ? { slug: area.slug, name: area.name, bbox: area.bbox } : undefined, members);
 }
