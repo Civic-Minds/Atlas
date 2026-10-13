@@ -17,8 +17,12 @@
  *                        the #728 lift: the destination pool graded with the every-gap rule at
  *                        every drawn stop and on every weekday its trips differ, never past the
  *                        headline
+ *   5. decidePeriod      one period's value (Step 5): the terminal's branch-scoped reading over
+ *                        the branch's own, floored at the worst drawn stop when it came from the
+ *                        destination pool (#771), with the coverage, max-gap and sustained flags
+ *                        following whichever source was picked (#281)
  */
-import { headwayToTier, medianHeadwayInWindow, resolveTerminalHeadline, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
+import { headwayToTier, medianHeadwayInWindow, resolveTerminalHeadline, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
 import { pooledHeadwayInWindow } from './stopPools.js';
 import type { DayName, DayType } from '../types/gtfs.js';
 
@@ -173,4 +177,57 @@ export function liftTierOnDestinationPool(args: {
   const headlineTier = headwayToTier(headway);
   const liftedTier = rank(pooledTier) >= rank(headlineTier) ? pooledTier : headlineTier;
   return rank(liftedTier) < rank(currentTier) ? liftedTier : currentTier;
+}
+
+/** Follow the existing display-source choice without borrowing service into an empty branch. */
+export function selectPeriodCoverageHeadway(
+  terminalCoverage: number | null,
+  branchCoverage: number | null,
+  terminalMedian: number | null,
+  selectedMedian: number | null,
+  terminalIsBranchScoped: boolean,
+): number | null {
+  if (terminalIsBranchScoped && terminalCoverage == null) return null;
+  return selectedMedian === terminalMedian ? terminalCoverage : branchCoverage;
+}
+
+export interface PeriodInputs {
+  /** The terminal's value this period (branch-scoped when available), null for no service. */
+  termH: number | null;
+  /** The branch's own value this period. */
+  branchH: number | null;
+  /** The terminal value came from the branch-scoped sample, so a null is real no-service. */
+  terminalIsBranchScoped: boolean;
+  /** #771: the worst value among the drawn stops some pooled variants skip, -Infinity when none or no pool. */
+  worstDrawnStopH: number;
+  terminalCoverage: number | null;
+  branchCoverage: number | null;
+  /** A scoped time list exists for the terminal (pool, headsign or shape). */
+  hasScopedTimes: boolean;
+  termMaxGap: number | null;
+  branchMaxGap: number | null;
+  termSustained: boolean | undefined;
+  branchSustained: boolean | undefined;
+}
+
+export interface PeriodValue {
+  headway: number | null;
+  coverage: number | null;
+  maxGap: number | null;
+  sustained: boolean | undefined;
+}
+
+/** Step 5: one period's displayed value and the companions that follow its source. */
+export function decidePeriod(i: PeriodInputs): PeriodValue {
+  const resolvedH = resolveTerminalPeriodHeadway(i.termH, i.branchH, i.terminalIsBranchScoped);
+  // #771: a period read from the destination pool is never better than the worst drawn stop's
+  // value in that period (the same floor as the headline).
+  const headway = resolvedH != null && i.worstDrawnStopH > resolvedH ? i.worstDrawnStopH : resolvedH;
+  const coverage = selectPeriodCoverageHeadway(i.terminalCoverage, i.branchCoverage, i.termH, headway, i.hasScopedTimes);
+  const maxGap = headway === i.termH ? i.termMaxGap : (headway === i.branchH ? i.branchMaxGap : i.termMaxGap);
+  // #281: mirror whichever source (terminal vs. branch) resolveTerminalPeriodHeadway picked,
+  // rather than re-deriving the choice: comparing the value against termH/branchH keeps this in
+  // sync with that function's logic by construction.
+  const sustained = headway == null ? undefined : (headway === i.termH ? i.termSustained : (headway === i.branchH ? i.branchSustained : undefined));
+  return { headway, coverage, maxGap, sustained };
 }

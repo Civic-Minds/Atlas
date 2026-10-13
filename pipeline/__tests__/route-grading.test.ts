@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { decideHeadline, liftTierOnDestinationPool, settleTier, terminalReading, type HeadlineInputs } from '../routeGrading';
+import { decideHeadline, decidePeriod, liftTierOnDestinationPool, settleTier, terminalReading, type HeadlineInputs, type PeriodInputs } from '../routeGrading';
 
 // Step 4 of processGtfsBuffer as named steps, each on the case that introduced it.
 
@@ -72,5 +72,26 @@ describe('liftTierOnDestinationPool', () => {
     expect(liftTierOnDestinationPool({ currentTier: '60', headway: 8, day: 'Weekday', drawnStopIds: stops, gradeAt: (_, w) => (w ? null : '15'), otherWeekdays: () => [tue] })).toBe('60');
     // Other weekdays are only consulted for Weekday lines.
     expect(liftTierOnDestinationPool({ currentTier: '60', headway: 8, day: 'Saturday', drawnStopIds: stops, gradeAt: (_, w) => (w ? null : '15'), otherWeekdays: () => [tue] })).toBe('15');
+  });
+});
+
+const periodInputs = (over: Partial<PeriodInputs> = {}): PeriodInputs => ({
+  termH: 20, branchH: 30, terminalIsBranchScoped: true, worstDrawnStopH: -Infinity, terminalCoverage: 25, branchCoverage: 35,
+  hasScopedTimes: true, termMaxGap: 24, branchMaxGap: 40, termSustained: true, branchSustained: false, ...over,
+});
+
+describe('decidePeriod', () => {
+  it('reads the branch-scoped terminal value and carries its companions (#281)', () => {
+    expect(decidePeriod(periodInputs())).toEqual({ headway: 20, coverage: 25, maxGap: 24, sustained: true });
+    // No terminal value: the branch's own value and companions, but a scoped null coverage is
+    // real no-service, never borrowed from the branch.
+    expect(decidePeriod(periodInputs({ termH: null, terminalCoverage: null }))).toEqual({ headway: 30, coverage: null, maxGap: 40, sustained: false });
+  });
+  it('a period from the destination pool is floored at the worst drawn stop (#771)', () => {
+    const v = decidePeriod(periodInputs({ worstDrawnStopH: 40 }));
+    expect(v.headway).toBe(40);
+    // The floored value matches neither source: coverage and max gap fall back to the terminal's.
+    expect(v).toMatchObject({ coverage: 35, maxGap: 24, sustained: undefined });
+    expect(decidePeriod(periodInputs({ worstDrawnStopH: 12 })).headway).toBe(20);
   });
 });

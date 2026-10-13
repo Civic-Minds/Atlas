@@ -37,7 +37,7 @@ import { computePeriodCoverageHeadways } from './headway-utils.js';
 import { makeShapeCoverChecker } from './shapeCoverage.js';
 import { annotateSharedStretches, isPoolablePattern } from './sharedStretch.js';
 import { decideDedupe, type DedupePattern } from './featureDedupe.js';
-import { decideHeadline, liftTierOnDestinationPool, ownStepOneHeadway, pooledStepOneHeadway, settleTier, terminalReading } from './routeGrading.js';
+import { decideHeadline, decidePeriod, liftTierOnDestinationPool, ownStepOneHeadway, pooledStepOneHeadway, settleTier, terminalReading } from './routeGrading.js';
 import type { SharedStretchPattern } from './sharedStretch.js';
 import { buildPooledStopMap, computeStopSharers, pooledHeadwayInWindow, segmentsByTier, type StopSharers } from './stopPools.js';
 
@@ -330,17 +330,7 @@ export function scopedTerminalHeadline(
   return { headway, tier: determined === 'span' ? 'infrequent' : determined };
 }
 
-/** Follow the existing display-source choice without borrowing service into an empty branch. */
-export function selectPeriodCoverageHeadway(
-  terminalCoverage: number | null,
-  branchCoverage: number | null,
-  terminalMedian: number | null,
-  selectedMedian: number | null,
-  terminalIsBranchScoped: boolean,
-): number | null {
-  if (terminalIsBranchScoped && terminalCoverage == null) return null;
-  return selectedMedian === terminalMedian ? terminalCoverage : branchCoverage;
-}
+export { selectPeriodCoverageHeadway } from './routeGrading.js';
 
 /** Evaluate route-level Night Service from either end of a shape. */
 export function hasNightServiceAtShapeEndpoints(
@@ -2137,31 +2127,30 @@ export async function processGtfsBuffer(
     const branchPeriodSustained = feature.properties.headwayByPeriodSustained as HeadwayByPeriodSustained | undefined;
     for (const pk of Object.keys(PERIODS) as PeriodKey[]) {
       const termH = headsignTerminalPeriodHw?.[pk] ?? terminalPeriodHw?.[pk] ?? null;
-      const bH = branchPeriodHw?.[pk] ?? null;
-      const resolvedH = resolveTerminalPeriodHeadway(termH, bH, terminalPeriodIsBranchScoped);
-      // #771: a period read from the destination pool is never better than the worst drawn
-      // stop's value in that period (see worstDrawnStopHw in Step 4).
-      const worstStopH = periodsFromPool && resolvedH != null
+      // #771: the drawn stops some pooled variants skip, read where #690 pools them (see
+      // worstDrawnStopHw in Step 4); -Infinity when the periods do not come from the pool.
+      const worstStopH = periodsFromPool
         ? Math.max(...servedByFewerTrips(periodPoolTimes, onShape).filter(stopId => !ownFallbackPeriodHw.get(stopId)?.has(pk))
           .map(stopId => allStopPeriodHw[stopId]?.[pk] ?? -Infinity))
         : -Infinity;
-      const finalH = resolvedH != null && worstStopH > resolvedH ? worstStopH : resolvedH;
-      periodMedians[pk] = finalH;
-      periodCoverage[pk] = selectPeriodCoverageHeadway(
-        terminalCoverage[pk] ?? null, branchCoverage[pk] ?? null,
-        termH, finalH, terminalScopedTimes != null,
-      );
-      const termMaxGap = headsignTerminalMaxGaps?.[pk] ?? terminalPeriodMaxGaps?.[pk] ?? null;
-      const branchMaxGap = branchPeriodMaxGaps?.[pk] ?? null;
-      periodMaxGaps[pk] = finalH === termH ? termMaxGap : (finalH === bH ? branchMaxGap : termMaxGap);
-      // #281: mirror whichever source (terminal vs. branch) resolveTerminalPeriodHeadway picked,
-      // rather than re-deriving the choice -- comparing the returned value against termH/bH keeps
-      // this in sync with that function's logic by construction instead of duplicating it.
-      if (finalH != null) {
-        const termS = headsignTerminalPeriodSustained?.[pk] ?? terminalPeriodSustained?.[pk];
-        const branchS = branchPeriodSustained?.[pk];
-        periodSustained[pk] = finalH === termH ? termS : (finalH === bH ? branchS : undefined);
-      }
+      // Step 5 (routeGrading.ts): the period's value and its companions.
+      const period = decidePeriod({
+        termH,
+        branchH: branchPeriodHw?.[pk] ?? null,
+        terminalIsBranchScoped: terminalPeriodIsBranchScoped,
+        worstDrawnStopH: worstStopH,
+        terminalCoverage: terminalCoverage[pk] ?? null,
+        branchCoverage: branchCoverage[pk] ?? null,
+        hasScopedTimes: terminalScopedTimes != null,
+        termMaxGap: headsignTerminalMaxGaps?.[pk] ?? terminalPeriodMaxGaps?.[pk] ?? null,
+        branchMaxGap: branchPeriodMaxGaps?.[pk] ?? null,
+        termSustained: headsignTerminalPeriodSustained?.[pk] ?? terminalPeriodSustained?.[pk],
+        branchSustained: branchPeriodSustained?.[pk],
+      });
+      periodMedians[pk] = period.headway;
+      periodCoverage[pk] = period.coverage;
+      periodMaxGaps[pk] = period.maxGap;
+      if (period.headway != null) periodSustained[pk] = period.sustained;
       const allVals = onShape
         .map(({ stopId }) => ownStopPeriodHw[stopId]?.[pk])
         .filter((v): v is number => v != null);
