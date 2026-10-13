@@ -55,12 +55,13 @@ export function summarize(
   features: Feature[],
   slug: string,
   lastRefreshedAt: string | null,
-): Pick<AgencyPageSummary, 'routeCount' | 'routes' | 'span' | 'lastRefreshedAt'> {
+): Pick<AgencyPageSummary, 'routeCount' | 'routes' | 'span' | 'lastRefreshedAt' | 'sat' | 'sun'> {
   const lines = features.filter(f => f.geometry?.type === 'LineString' && f.properties.day === 'Weekday');
   normalizeRouteFilterFeatures(lines);
   const routes = new Map<string, AgencyPageRoute>();
   let first = Infinity;
   let last = -Infinity;
+  const overnight = new Set<string>();
   const best = (prev: number | null | undefined, next: number | null) =>
     next == null ? prev ?? null : prev == null ? Math.round(next) : Math.min(prev, Math.round(next));
   for (const f of lines) {
@@ -78,6 +79,8 @@ export function summarize(
       am: best(prev?.am, routeFilterHeadway(p, 'amPeak')),
       pm: best(prev?.pm, routeFilterHeadway(p, 'pmPeak')),
     });
+    const byPeriod = p.headwayByPeriod as Record<string, number | null> | undefined;
+    if (byPeriod?.overnight != null) overnight.add(key);
     const hours = p.headwayByHour as Record<string, number | null> | undefined;
     for (const [h, v] of Object.entries(hours ?? {})) {
       if (v == null) continue;
@@ -85,6 +88,9 @@ export function summarize(
       last = Math.max(last, Number(h));
     }
   }
+  for (const [key, r] of routes) if (r.midday == null && r.am == null && r.pm == null && overnight.has(key)) r.night = true;
+  const hasDay = (day: string) => features.some(f => f.geometry?.type === 'LineString' && f.properties.day === day
+    && Object.values((f.properties.headwayByHour as Record<string, number | null> | undefined) ?? {}).some(v => v != null));
   const list = [...routes.values()].sort((a, b) =>
     a.name.localeCompare(b.name, 'en', { numeric: true }) || (a.longName ?? '').localeCompare(b.longName ?? ''));
   return {
@@ -92,11 +98,13 @@ export function summarize(
     routes: list,
     span: Number.isFinite(first) ? { first, last } : null,
     lastRefreshedAt,
+    sat: hasDay('Saturday'),
+    sun: hasDay('Sunday'),
   };
 }
 
-/** The agency's own config file: the source for its short name and primary area. */
-function readConfig(slug: string): { shortName?: string; displayArea?: string } {
+/** The agency's own config file: the source for its short name, label place and primary area. */
+function readConfig(slug: string): { shortName?: string; labelPlace?: string; displayArea?: string } {
   try {
     return JSON.parse(readFileSync(`config/agencies/${slug}.json`, 'utf8'));
   } catch {
@@ -109,17 +117,27 @@ export function primaryCity(a: { displayArea?: string; cities?: string[]; region
   return a.displayArea?.trim() || a.cities?.[0]?.split(',')[0]?.trim() || a.region || a.name;
 }
 
-/** "TTC (Toronto)": short name (else the display name) plus its city; no bracket when the name already holds the city. */
-export function displayNameFor(a: CatalogAgency & { shortName?: string }): string {
-  const city = primaryCity(a);
-  if (a.shortName) return trimRedundantCity(`${a.shortName} (${city})`);
+/**
+ * "TTC (Toronto)": short name (else the display name) plus a place in brackets.
+ * - `labelPlace` in the agency config wins ("YRT (York Region)"); an empty one drops the bracket.
+ * - Otherwise the place is the config's displayArea, else the first city the agency lists, but that
+ *   city is dropped when the name already names a region, county or district ("Durham Region
+ *   Transit"), since the first city is then often just where the stops happen to be densest.
+ */
+export function displayNameFor(a: CatalogAgency & { shortName?: string; labelPlace?: string }): string {
   const { primary, secondary } = agencyDisplayParts(a.name, a.cities, a.displayArea);
+  const base = a.shortName ?? primary;
+  if (a.labelPlace !== undefined) return trimRedundantCity(a.labelPlace ? `${base} (${a.labelPlace})` : base);
+  if (a.shortName) return trimRedundantCity(`${a.shortName} (${primaryCity(a)})`);
+  if (!a.displayArea && REGIONAL_NAME.test(primary)) return primary;
   return trimRedundantCity(secondary ? `${primary} (${secondary})` : primary);
 }
 
+const REGIONAL_NAME = /\b(Region|Regional|County|Counties|District|Area|Corridor|Municipality|Rural)\b/i;
+
 function identityFor(a: CatalogAgency) {
   const cfg = readConfig(a.slug);
-  const full = { ...a, shortName: cfg.shortName, displayArea: cfg.displayArea ?? a.displayArea };
+  const full = { ...a, shortName: cfg.shortName, labelPlace: cfg.labelPlace, displayArea: cfg.displayArea ?? a.displayArea };
   return {
     slug: a.slug,
     name: a.name,

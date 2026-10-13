@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import type { MapContextAgency, MapContextRoute } from '../../utils/mapContext';
 import { FLOATING_CARD, LIST_ROW_SPACED, LIST_ROW_PRIMARY, PANEL_SECTION_HEAD, PANEL_TITLE_BAR, PANEL_TITLE, SIDEBAR_PANEL_WIDTH, PANEL_SIDEBAR, SIDEBAR_LEFT_FALLBACK } from '../../styles';
+import { FEATURES } from '../../../shared/config';
+import { areaLinkFor } from '../../../shared/agencyArea';
 import RouteListRow from '../RouteListRow';
 import { routeRowLabels } from './SearchSuggestionsPanel';
 import RegionFilterPills from '../RegionFilterPills';
@@ -74,16 +76,21 @@ export const MapContextPanel: React.FC<MapContextPanelProps> = ({ agencies, mode
 
       <div className="custom-scrollbar overflow-y-auto py-1">
         {mode === 'agencies' ? (
-          agencies.length > 0 ? agencies.map(agency => (
-            <button
-              key={agency.slug}
-              type="button"
-              onClick={() => onSelectAgency?.(agency.slug)}
-              className={`${LIST_ROW_SPACED} ${onSelectAgency ? 'cursor-pointer' : 'cursor-default'}`}
-            >
-              <span className={`${LIST_ROW_PRIMARY} min-w-0 break-words text-left`} title={agency.name}>{agency.name}</span>
-            </button>
-          )) : (
+          agencies.length > 0 ? agencies.map(agency => {
+            const area = areaLinkFor(agency.slug, FEATURES.agencyPages);
+            return (
+              <div key={agency.slug} className="flex items-center">
+                <button
+                  type="button"
+                  onClick={() => onSelectAgency?.(agency.slug)}
+                  className={`${LIST_ROW_SPACED} min-w-0 flex-1 ${onSelectAgency ? 'cursor-pointer' : 'cursor-default'}`}
+                >
+                  <span className={`${LIST_ROW_PRIMARY} min-w-0 break-words text-left`} title={agency.name}>{agency.name}</span>
+                </button>
+                {area && <a href={area.href} className="mr-4 shrink-0 text-xs text-[var(--accent)] hover:underline">{area.label}</a>}
+              </div>
+            );
+          }) : (
             <div className="px-4 py-3 text-[10px] font-bold text-[var(--text-dim)]">No matching agencies.</div>
           )
         ) : (

@@ -3,13 +3,18 @@ import { useParams } from 'react-router';
 import { ArrowRight } from 'lucide-react';
 import {
   agencyAboutParagraph,
+  bestRoute,
+  DEFAULT_THRESHOLD,
+  modesText,
+  typicalWait,
+  weekendLabel,
+  type Threshold,
   agencyDatesText,
   agencyMapHref,
   agencyPageH1,
   agencyPagePath,
   agencySpanShort,
   agencyStats,
-  FREQUENT_MINUTES,
   headwayEvery,
   headwayOrBetter,
   resolveAgencySeo,
@@ -18,7 +23,8 @@ import {
 } from '../shared/agencyPages';
 import { ATLAS_MODE } from '../shared/config';
 import { applySeoToDocument } from './lib/seoDom';
-import { CHIP, LINK, PILL_BUTTON, TILE } from './pageStyles';
+import { LINK, PILL_BUTTON } from './pageStyles';
+import { StatRow, ThresholdToggle, type StatItem } from './pageParts';
 import SiteFooter from './components/SiteFooter';
 import SiteHeader from './components/SiteHeader';
 
@@ -43,6 +49,7 @@ function readEmbeddedData(slug: string | undefined): AgencyPageData | null {
 export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }) {
   const params = useParams();
   const [data, setData] = useState<AgencyPageData | null>(() => dataProp ?? readEmbeddedData(params.slug));
+  const [threshold, setThreshold] = useState<Threshold>(DEFAULT_THRESHOLD);
   useEffect(() => {
     if (data || !import.meta.env.DEV) return;
     void import('./agencyPageDevData').then(m => setData(m.devAgencyPageData(params.slug)));
@@ -70,10 +77,18 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
     );
   }
 
-  const stats = agencyStats(agency);
-  const span = agencySpanShort(agency);
+  const stats = agencyStats(agency, threshold);
+  const wait = typicalWait(agency.routes);
+  const best = bestRoute(agency.routes);
+  const hours = agencySpanShort(agency);
+  const weekend = weekendLabel(agency.sat, agency.sun);
   const nearby = data!.nearby;
-  const standard = headwayOrBetter(FREQUENT_MINUTES);
+  const items: StatItem[] = [
+    ...(wait != null ? [{ value: headwayEvery(wait), label: 'typical wait, weekday midday' }] : []),
+    ...(best ? [{ value: headwayEvery(best.headway), label: `quickest route: ${best.route.name}` }] : []),
+    ...(hours ? [{ value: hours, label: ['weekday service', weekend].filter(Boolean).join(' · ') }] : []),
+    ...(stats.totalRoutes > 0 ? [{ value: String(stats.totalRoutes), label: modesText(stats.byMode.map(m => ({ label: m.label, routes: m.routes.length }))) }] : []),
+  ];
 
   return (
     <main className="min-h-screen bg-[var(--bg-app)] px-6 py-8 text-[var(--text-primary)] sm:px-10 lg:px-16">
@@ -82,40 +97,29 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
 
         <article className="pb-16 pt-10 sm:pt-14">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <h1 className="text-2xl font-black tracking-tight sm:text-3xl">{agencyPageH1(agency)}</h1>
-            <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-              <a
-                href={agencyMapHref(agency)}
-                className={PILL_BUTTON}
-              >
-                Open in the map <ArrowRight className="h-4 w-4" aria-hidden="true" />
-              </a>
-              <a className={`text-sm font-bold ${LINK}`} href="/about/docs#frequency">Methodology</a>
+            <div className="min-w-0">
+              <h1 className="text-2xl font-black tracking-tight sm:text-3xl">{agencyPageH1(agency)}</h1>
+              {data!.area && <a className={`mt-1 inline-block text-sm ${LINK}`} href={`/area/${data!.area.slug}`}>{data!.area.name} area →</a>}
             </div>
+            <a href={agencyMapHref(agency)} className={PILL_BUTTON}>
+              Open in the map <ArrowRight className="h-4 w-4" aria-hidden="true" />
+            </a>
           </div>
 
-          <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            <Tile value={`${stats.frequentMidday} / ${stats.totalRoutes}`} label={`routes ${standard}, weekday midday`} />
-            <Tile value={`${stats.frequentAm} · ${stats.frequentPm}`} label="AM / PM peak, same standard" />
-            <Tile value={span ?? 'Not recorded'} label="weekday service" />
-            <div className={TILE}>
-              <div className="flex flex-wrap gap-1.5">
-                {stats.byMode.map(m => (
-                  <span key={m.mode} className={CHIP}>
-                    {m.routes.length} {m.label.toLowerCase()}
-                  </span>
-                ))}
-              </div>
-              <p className="mt-2 text-sm text-[var(--text-muted)]">routes by mode</p>
-            </div>
-          </div>
+          <StatRow items={items} />
 
           <section className="mt-14" aria-labelledby="routes-heading">
             <h2 id="routes-heading" className="text-xl font-black tracking-tight">Routes and weekday frequency</h2>
+            <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">
+              Agencies define frequent differently; pick a standard. <a className={LINK} href="/about/docs#frequency">Methodology</a>
+            </p>
+            <div className="mt-3"><ThresholdToggle value={threshold} onChange={setThreshold} /></div>
+            <p className="mt-3 text-base font-bold">{stats.within} of {stats.totalRoutes} routes {headwayOrBetter(threshold)} on a weekday midday</p>
             <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">Each route is judged by its slower direction. A dash means no sustained service in that period.</p>
             {stats.byMode.map(group => (
-              <div key={group.mode} className="mt-8">
-                <table className="w-full border-collapse text-left text-sm">
+              <div key={group.mode} className="mt-8 overflow-x-auto">
+                <table className="w-full min-w-[30rem] table-fixed border-collapse text-left text-sm">
+                  <colgroup><col /><col className="w-28" /><col className="w-28" /><col className="w-28" /></colgroup>
                   <caption className="pb-2 text-left text-base font-black">{group.label} routes ({group.routes.length})</caption>
                   <thead>
                     <tr className="text-[var(--text-dim)]">
@@ -129,9 +133,13 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
                     {group.routes.map(r => (
                       <tr key={`${r.name}-${r.longName ?? ''}`}>
                         <th scope="row" className="py-1.5 pr-4 font-normal"><span className="font-black">{r.name}</span>{r.longName && r.longName !== r.name ? <span className="text-[var(--text-muted)]"> {r.longName}</span> : null}</th>
-                        <td className="py-1.5 pr-4">{headwayEvery(r.midday)}</td>
-                        <td className="py-1.5 pr-4">{headwayEvery(r.am)}</td>
-                        <td className="py-1.5">{headwayEvery(r.pm)}</td>
+                        {r.night
+                          ? <td colSpan={3} className="py-1.5 text-[var(--text-muted)]">Night only</td>
+                          : <>
+                              <td className="py-1.5 pr-4">{headwayEvery(r.midday)}</td>
+                              <td className="py-1.5 pr-4">{headwayEvery(r.am)}</td>
+                              <td className="py-1.5">{headwayEvery(r.pm)}</td>
+                            </>}
                       </tr>
                     ))}
                   </tbody>
@@ -155,7 +163,6 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
           )}
 
           <p className="mt-12 text-sm leading-6 text-[var(--text-dim)]">
-            {data!.area && <>Part of the <a className={LINK} href={`/area/${data!.area.slug}`}>{data!.area.name} area</a>. </>}
             Scheduled service, not live arrivals.
             {agency.websiteUrl && <> Official site: <a className={LINK} href={agency.websiteUrl} rel="noopener noreferrer">{agency.name}</a>.</>}
           </p>
@@ -164,15 +171,5 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
         <SiteFooter />
       </div>
     </main>
-  );
-}
-
-/** A flat stat tile: a big number over a short plain label. */
-function Tile({ value, label }: { value: string; label: string }) {
-  return (
-    <div className={TILE}>
-      <p className="whitespace-nowrap text-2xl font-black tracking-tight">{value}</p>
-      <p className="mt-1 text-sm text-[var(--text-muted)]">{label}</p>
-    </div>
   );
 }

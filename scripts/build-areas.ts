@@ -62,19 +62,29 @@ async function extentOf(hit: Hit): Promise<[number, number, number, number] | nu
   return e ? [e.ymin, e.xmin, e.ymax, e.xmax] : null;
 }
 
+/** shared/data/agency-area-slugs.json: which paged area each agency belongs to, small enough for the map bundle. */
+function writeAgencyAreaMap(areas: AreaConfig[]) {
+  const map: Record<string, [string, string]> = {};
+  for (const a of areas.filter(x => x.page)) for (const s of a.agencies) map[s] = [a.slug, a.name];
+  writeFileSync('shared/data/agency-area-slugs.json', JSON.stringify(Object.fromEntries(Object.entries(map).sort(([x], [y]) => x.localeCompare(y)))) + '\n');
+}
+
 /** --rescore: recompute largeMetro and page from the committed area files and agency summaries (no network). */
 function rescore() {
   const summaries = new Set((JSON.parse(readFileSync('shared/data/agency-pages.json', 'utf8')).agencies as Array<{ slug: string; routes: Array<{ midday: number | null }> }>)
     .filter(a => a.routes.some(r => r.midday != null)).map(a => a.slug));
   let pages = 0;
+  const all: AreaConfig[] = [];
   for (const f of readdirSync('config/areas').filter(n => n.endsWith('.json') && !n.startsWith('_'))) {
     const a = JSON.parse(readFileSync(`config/areas/${f}`, 'utf8')) as AreaConfig;
     a.largeMetro = isLargeMetro(a);
     const withPages = a.agencies.filter(s => summaries.has(s)).length;
     a.page = (a.type === 'MSA' || a.type === 'CMA') && (withPages >= 2 || (withPages === 1 && a.largeMetro));
     if (a.page) pages++;
+    all.push(a);
     writeFileSync(`config/areas/${f}`, JSON.stringify(a, null, 2) + '\n');
   }
+  writeAgencyAreaMap(all);
   console.log(`rescored: ${pages} pages`);
 }
 
@@ -173,6 +183,7 @@ async function main() {
   for (const f of readdirSync('config/areas')) rmSync(`config/areas/${f}`);
   for (const a of areas.sort((x, y) => x.slug.localeCompare(y.slug))) writeFileSync(`config/areas/${a.slug}.json`, JSON.stringify(a, null, 2) + '\n');
   writeFileSync('config/areas/_unassigned.json', JSON.stringify(unassigned.sort((x, y) => x.slug.localeCompare(y.slug)), null, 2) + '\n');
+  writeAgencyAreaMap(areas);
   const paged = areas.filter(a => a.page);
   console.log(`areas: ${areas.length} (pages: ${paged.length}); agencies assigned: ${placed.size}; unassigned: ${unassigned.length}`);
 }

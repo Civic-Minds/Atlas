@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   agencyAboutParagraph, agencySpanShort, agencyBreadcrumbs, agencyDatesText, agencyLeadSentence, agencyMapHref, agencyPageDescription, agencyPageH1, agencyPageJsonLd,
   agencyPagePath, agencyPageTitle, agencySpanText, agencyStats, formatDataDate, nearbyAgencies, resolveAgencySeo, trimRedundantCity,
-  type AgencyPageRoute, type AgencyPageSummary,
+  type AgencyPageRoute, type AgencyPageSummary, bestRoute, modesText, routesWithin, typicalWait, weekendLabel,
 } from './agencyPages';
 import { agencyPageSummaries, getAgencyPageSummary } from './agencyPagesData';
 
@@ -25,12 +25,42 @@ describe('agency page text', () => {
   it('writes a standalone lead sentence from the route numbers', () => {
     expect(agencyLeadSentence(TTC)).toBe('2 of 5 routes run every 15 min or better on a weekday midday.');
     expect(agencyPageDescription(TTC)).toContain('2 of 5 routes');
+    expect(agencyLeadSentence(TTC)).not.toMatch(/frequent/i);
   });
 
-  it('counts stats from the published headways', () => {
+  it('counts routes within each standard on the toggle', () => {
     const s = agencyStats(TTC);
-    expect([s.totalRoutes, s.frequentMidday, s.frequentAm, s.frequentPm, s.frequentShare]).toEqual([5, 2, 2, 1, 40]);
+    expect([s.totalRoutes, s.within]).toEqual([5, 2]);
+    expect(agencyStats(TTC, 10).within).toBe(1);
+    expect(agencyStats(TTC, 30).within).toBe(4);
+    expect(agencyStats(TTC, 3).within).toBe(0);
+    expect(routesWithin([], 15)).toBe(0);
     expect(s.byMode.map(m => [m.label, m.routes.length])).toEqual([['Subway', 2], ['Bus', 3]]);
+  });
+
+  it('derives the typical wait as the median midday headway', () => {
+    expect(typicalWait(TTC.routes)).toBe(16); // 4, 12, 20, 30: the middle two average to 16
+    expect(typicalWait([r('a', 3, 10), r('b', 3, 20), r('c', 3, 40)])).toBe(20);
+    expect(typicalWait([r('a', 3, 10), r('b', 3, 15)])).toBe(13); // 12.5 rounds to 13
+    expect(typicalWait([r('a', 3, null)])).toBeNull();
+    expect(typicalWait([])).toBeNull();
+  });
+
+  it('picks the route with the shortest midday headway, ignoring missing values', () => {
+    expect(bestRoute(TTC.routes)?.route.name).toBe('1');
+    expect(bestRoute(TTC.routes)?.headway).toBe(4);
+    expect(bestRoute([r('x', 3, null)])).toBeNull();
+    expect(bestRoute([r('x', 3, 8), r('y', 3, 8)])?.route.name).toBe('x');
+  });
+
+  it('writes the modes line and the weekend label', () => {
+    expect(modesText([{ label: 'Subway', routes: 3 }, { label: 'Light rail', routes: 2 }, { label: 'Bus', routes: 209 }])).toBe('3 subway · 2 light rail · 209 bus');
+    expect(modesText([])).toBe('');
+    expect(weekendLabel(true, true)).toBe('Runs Sat & Sun');
+    expect(weekendLabel(true, false)).toBe('Runs Saturdays');
+    expect(weekendLabel(false, true)).toBe('Runs Sundays');
+    expect(weekendLabel(false, false)).toBe('Weekdays only');
+    expect(weekendLabel(undefined, undefined)).toBeNull();
   });
 
   it('describes the service span in clock hours', () => {

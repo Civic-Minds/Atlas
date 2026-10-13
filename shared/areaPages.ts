@@ -4,10 +4,14 @@
  */
 import {
   FREQUENT_MINUTES,
+  THRESHOLDS,
   agencyStats,
+  bestRoute,
   formatDataDate,
   headwayOrBetter,
   modeLabel,
+  routesWithin,
+  typicalWait,
   type AgencyPageSummary,
 } from './agencyPages';
 import { AREA_PATH_PREFIX, areaPagePath, type AreaConfig } from './areas';
@@ -22,60 +26,94 @@ export interface AreaAgencyRow {
   slug: string;
   displayName: string;
   totalRoutes: number;
-  frequentMidday: number;
+  /** Routes every N min or better on a weekday midday, for each standard on the toggle. */
+  within: Record<string, number>;
+  /** Route counts by mode label (only modes the agency has). */
+  modes: Record<string, number>;
 }
 
 export interface AreaPageData {
   area: Pick<AreaConfig, 'slug' | 'name' | 'type' | 'officialName' | 'country' | 'cities' | 'bbox' | 'center' | 'note'>;
   totalRoutes: number;
-  frequentMidday: number;
-  frequentAm: number;
-  frequentPm: number;
+  within: Record<string, number>;
+  /** Median weekday-midday headway across every route in the area. */
+  typicalWait: number | null;
+  /** The route with the shortest weekday-midday headway, with its agency. */
+  best: { name: string; headway: number; agency: string } | null;
   byMode: Array<{ label: string; routes: number }>;
   span: { first: number; last: number } | null;
+  /** True when agencies' first or last departures differ by 3 hours or more. */
+  spanVaries: boolean;
+  /** Saturday and Sunday: every agency has it, none do, or it varies. */
+  weekend: 'both' | 'sat' | 'sun' | 'none' | 'varies' | null;
   agencies: AreaAgencyRow[];
+  /** Mode columns for the agency table: modes at least one agency has, in display order. */
+  modeColumns: string[];
   /** Newest schedule refresh among the area's agencies, and the data release the numbers come from. */
   newestRefresh: string | null;
   releaseDate: string | null;
 }
 
 const MODE_ORDER = ['Subway', 'Light rail', 'Streetcar', 'Rail', 'Monorail', 'Bus', 'Trolleybus', 'Ferry', 'Cable car', 'Gondola', 'Funicular'];
+const SPAN_VARIES_HOURS = 3;
 
 /** Agencies of the area that have a page (weekday midday service), in the area's own order. */
 export function areaAgencySummaries(area: Pick<AreaConfig, 'agencies'>, all: ReadonlyMap<string, AgencyPageSummary>): AgencyPageSummary[] {
   return area.agencies.map(s => all.get(s)).filter((a): a is AgencyPageSummary => !!a && a.routes.some(r => r.midday != null));
 }
 
+const countsFor = (routes: Parameters<typeof routesWithin>[0]): Record<string, number> =>
+  Object.fromEntries(THRESHOLDS.map(t => [String(t), routesWithin(routes, t)]));
+
 export function buildAreaPageData(area: AreaConfig, all: ReadonlyMap<string, AgencyPageSummary>, releaseDate: string | null): AreaPageData {
   const members = areaAgencySummaries(area, all);
+  const allRoutes = members.flatMap(a => a.routes);
   const modeCounts = new Map<string, number>();
-  let frequentMidday = 0, frequentAm = 0, frequentPm = 0, totalRoutes = 0;
-  let first = Infinity, last = -Infinity;
+  let firstMin = Infinity, firstMax = -Infinity, lastMin = Infinity, lastMax = -Infinity;
   let newest: string | null = null;
   const rows: AreaAgencyRow[] = [];
   for (const a of members) {
     const s = agencyStats(a);
-    totalRoutes += s.totalRoutes;
-    frequentMidday += s.frequentMidday;
-    frequentAm += s.frequentAm;
-    frequentPm += s.frequentPm;
     for (const m of s.byMode) modeCounts.set(m.label, (modeCounts.get(m.label) ?? 0) + m.routes.length);
-    if (a.span) { first = Math.min(first, a.span.first); last = Math.max(last, a.span.last); }
+    if (a.span) {
+      firstMin = Math.min(firstMin, a.span.first); firstMax = Math.max(firstMax, a.span.first);
+      lastMin = Math.min(lastMin, a.span.last); lastMax = Math.max(lastMax, a.span.last);
+    }
     if (a.lastRefreshedAt && (!newest || a.lastRefreshedAt > newest)) newest = a.lastRefreshedAt;
-    rows.push({ slug: a.slug, displayName: a.displayName, totalRoutes: s.totalRoutes, frequentMidday: s.frequentMidday });
+    rows.push({
+      slug: a.slug,
+      displayName: a.displayName,
+      totalRoutes: s.totalRoutes,
+      within: countsFor(a.routes),
+      modes: Object.fromEntries(s.byMode.map(m => [m.label, m.routes.length])),
+    });
   }
-  rows.sort((x, y) => y.frequentMidday - x.frequentMidday || y.totalRoutes - x.totalRoutes || x.displayName.localeCompare(y.displayName));
+  rows.sort((x, y) => (y.within['15'] - x.within['15']) || y.totalRoutes - x.totalRoutes || x.displayName.localeCompare(y.displayName));
+  const known = members.filter(a => a.sat !== undefined || a.sun !== undefined);
+  const all2 = (k: 'sat' | 'sun') => known.length > 0 && known.every(a => a[k]);
+  const any2 = (k: 'sat' | 'sun') => known.some(a => a[k]);
+  const weekend: AreaPageData['weekend'] = known.length === 0 ? null
+    : all2('sat') && all2('sun') ? 'both'
+    : !any2('sat') && !any2('sun') ? 'none'
+    : all2('sat') && !any2('sun') ? 'sat'
+    : all2('sun') && !any2('sat') ? 'sun'
+    : 'varies';
+  const best = bestRoute(members.flatMap(a => a.routes.map(r => ({ ...r, agency: a.displayName }))));
   const { slug, name, type, officialName, country, cities, bbox, center, note } = area;
+  const byMode = [...modeCounts.entries()].map(([label, routes]) => ({ label, routes }))
+    .sort((x, y) => (MODE_ORDER.indexOf(x.label) + 1 || 99) - (MODE_ORDER.indexOf(y.label) + 1 || 99));
   return {
     area: { slug, name, type, officialName, country, cities, bbox, center, ...(note ? { note } : {}) },
-    totalRoutes,
-    frequentMidday,
-    frequentAm,
-    frequentPm,
-    byMode: [...modeCounts.entries()].map(([label, routes]) => ({ label, routes }))
-      .sort((x, y) => (MODE_ORDER.indexOf(x.label) + 1 || 99) - (MODE_ORDER.indexOf(y.label) + 1 || 99)),
-    span: Number.isFinite(first) ? { first, last } : null,
+    totalRoutes: allRoutes.length,
+    within: countsFor(allRoutes),
+    typicalWait: typicalWait(allRoutes),
+    best: best ? { name: best.route.name, headway: best.headway, agency: best.route.agency } : null,
+    byMode,
+    span: Number.isFinite(firstMin) ? { first: firstMin, last: lastMax } : null,
+    spanVaries: Number.isFinite(firstMin) && (firstMax - firstMin >= SPAN_VARIES_HOURS || lastMax - lastMin >= SPAN_VARIES_HOURS),
+    weekend,
     agencies: rows,
+    modeColumns: byMode.map(m => m.label),
     newestRefresh: newest,
     releaseDate,
   };
@@ -97,7 +135,7 @@ export function areaSubtitle(d: Pick<AreaPageData, 'area'>): string {
 
 /** One sentence that stands alone, used as the meta description's opening. */
 export function areaLeadSentence(d: AreaPageData): string {
-  return `${d.frequentMidday} of ${d.totalRoutes} routes across ${plural(d.agencies.length, 'transit agency', 'transit agencies')} in the ${d.area.name} area run ${headwayOrBetter(FREQUENT_MINUTES)} on a weekday midday.`;
+  return `${d.within[String(FREQUENT_MINUTES)]} of ${d.totalRoutes} routes across ${plural(d.agencies.length, 'transit agency', 'transit agencies')} in the ${d.area.name} area run ${headwayOrBetter(FREQUENT_MINUTES)} on a weekday midday.`;
 }
 
 export function areaPageDescription(d: AreaPageData): string {
@@ -109,10 +147,17 @@ function hourLabel(h: number): string {
   return `${hour % 12 === 0 ? 12 : hour % 12}${hour < 12 ? 'am' : 'pm'}`;
 }
 
-/** Tile text for the span: "24 h" or "5am–2am". */
+/** Stat text for the span: "24 h" or "5am–2am". */
 export function areaSpanShort(d: Pick<AreaPageData, 'span'>): string | null {
   if (!d.span) return null;
   return d.span.last + 1 - d.span.first >= 24 ? '24 h' : `${hourLabel(d.span.first)}–${hourLabel(d.span.last + 1)}`;
+}
+
+/** Sub-label under the hours: weekend service, and "varies by agency" when the span is wide. */
+export function areaHoursLabel(d: Pick<AreaPageData, 'weekend' | 'spanVaries'>): string {
+  const weekend = d.weekend === 'both' ? 'Runs Sat & Sun' : d.weekend === 'sat' ? 'Runs Saturdays' : d.weekend === 'sun' ? 'Runs Sundays'
+    : d.weekend === 'none' ? 'Weekdays only' : d.weekend === 'varies' ? 'Weekends vary by agency' : '';
+  return ['weekday service', d.spanVaries ? 'varies by agency' : '', weekend].filter(Boolean).join(' · ');
 }
 
 /** Two or three plain sentences, the same template for every area. */
@@ -121,13 +166,13 @@ export function areaAboutParagraph(d: AreaPageData): string {
   const standard = headwayOrBetter(FREQUENT_MINUTES);
   const out: string[] = [`The ${d.area.name} area has ${plural(n, 'transit agency', 'transit agencies')} running ${plural(d.totalRoutes, 'route', 'routes')}.`];
   if (d.totalRoutes > 0) {
-    const k = d.frequentMidday;
+    const k = d.within[String(FREQUENT_MINUTES)];
     const midday = k === 0 ? `none run ${standard}`
       : k === d.totalRoutes && k > 1 ? `all run ${standard}`
       : `${k} ${k === 1 ? 'runs' : 'run'} ${standard}`;
     out.push(`At weekday midday, ${midday}.`);
-    const top = d.agencies[0];
-    if (n > 1 && top && top.frequentMidday > 0) out.push(`${top.displayName} has the most, with ${top.frequentMidday}.`);
+    const top = [...d.agencies].sort((x, y) => y.within['15'] - x.within['15'])[0];
+    if (n > 1 && top && top.within['15'] > 0) out.push(`${top.displayName} has the most, with ${top.within['15']}.`);
   }
   return out.join(' ');
 }

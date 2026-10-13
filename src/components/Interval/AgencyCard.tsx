@@ -2,6 +2,7 @@ import React, { useMemo, useState, useEffect, forwardRef } from 'react';
 import { LIVE_POLLING_ROUTES } from '../../../shared/livePollingConfig';
 import { FEATURES } from '../../../shared/config';
 import { agencyPagePath } from '../../../shared/agencyPages';
+import { areaLinkFor } from '../../../shared/agencyArea';
 import agencyPageSlugs from '../../../shared/data/agency-page-slugs.json';
 import type { Agency, FareOverride } from '../../App';
 import type { OpenInfoFn } from '../InfoPanel';
@@ -561,9 +562,10 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
               : [agencyNameSecondary, buildHeaderSummary(visibleRoutes, maxHeadway)].filter(Boolean).join(' · ')}
           </p>
           {FEATURES.agencyPages && (agencyPageSlugs as string[]).includes(agency.slug) && (
-            <a href={agencyPagePath(agency.slug)} className="mt-1 block text-xs text-[var(--accent)] hover:underline">
-              About this agency →
-            </a>
+            <p className="mt-1 flex flex-wrap gap-x-3 text-xs">
+              <a href={agencyPagePath(agency.slug)} className="text-[var(--accent)] hover:underline">About this agency →</a>
+              {(() => { const area = areaLinkFor(agency.slug, FEATURES.agencyPages); return area && <a href={area.href} className="text-[var(--accent)] hover:underline">{area.label}</a>; })()}
+            </p>
           )}
           {!agency.onDemandOnly && agency.onDemandServiceArea?.serviceName && (
             <div className="mt-2 border-t border-[var(--border-primary)] pt-2">
