@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   agencyIntroSentence, agencySpansArea, namesList, agencySpanShort, agencyBreadcrumbs, agencyDatesText, agencyLeadSentence, agencyMapHref, agencyPageDescription, agencyPageH1, agencyPageJsonLd,
-  agencyPagePath, agencyPageTitle, agencySpanText, agencyStats, bandCounts, formatDataDate, nearbyAgencies, resolveAgencySeo, trimRedundantCity,
+  agencyPageData, agencyPagePath, agencyPageTitle, agencySpanText, agencyStats, bandCounts, formatDataDate, nearbyAgencies, resolveAgencySeo, trimRedundantCity,
   type AgencyPageRoute, type AgencyPageSummary, bestRoute, modesText, weekendLabel,
 } from './agencyPages';
 import { agencyPageSummaries, getAgencyPageSummary } from './agencyPagesData';
@@ -180,5 +180,14 @@ describe('agency summary pieces', () => {
   it('puts each route in one weekday-midday frequency band', () => {
     expect(bandCounts([{ midday: 10 }, { midday: 12 }, { midday: 15 }, { midday: 20 }, { midday: 30 }, { midday: 45 }, { midday: 90 }, { midday: null }])).toEqual([1, 2, 1, 1, 1, 1, 1]);
     expect(bandCounts([])).toEqual([0, 0, 0, 0, 0, 0, 0]);
+  });
+});
+
+describe('beta-only agencies', () => {
+  it('keeps a beta-only connection only on beta-capable builds', async () => {
+    const { BETA_BUILD } = await import('./config');
+    const a = { ...TTC, connections: [{ slug: 'metz', name: 'Le Met', routes: ['1'], betaOnly: true as const }, { slug: 'hsr', name: 'HSR', routes: ['2'] }] };
+    const names = agencyPageData(a, [a], null).connections.map(c => c.slug);
+    expect(names).toEqual(BETA_BUILD ? ['metz', 'hsr'] : ['hsr']);
   });
 });

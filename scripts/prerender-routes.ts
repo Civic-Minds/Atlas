@@ -8,6 +8,7 @@ import { dirname, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { SITE_URL, applySeoToHtml, buildSitemapXml, injectRootHtml, prerenderRoutes, resolveSeo } from '../shared/seo';
 import { AGENCY_DATA_SCRIPT_ID, agencyPageData, agencyPageJsonLd, agencyPagePath, resolveAgencySeo } from '../shared/agencyPages';
+import { AGENCY_INDEX_DATA_SCRIPT_ID, AGENCY_INDEX_PATH, buildAgencyIndexData, resolveAgencyIndexSeo } from '../shared/agencyIndex';
 import { AREA_DATA_SCRIPT_ID, areaPageJsonLd, buildAreaPageData, resolveAreaSeo } from '../shared/areaPages';
 import { areaPagePath, type AreaConfig } from '../shared/areas';
 import { AGENCY_PAGE_DATA, agencyPageSummaries } from '../shared/agencyPagesData';
@@ -67,6 +68,17 @@ if (mod.BUILD_FLAGS.agencyPages) {
       const ld = `  <script type="application/ld+json">${JSON.stringify(areaPageJsonLd(data, seo.canonicalUrl, origin)).replace(/</g, '\\u003c')}</script>\n</head>`;
       const html = injectRootHtml(applySeoToHtml(shell, seo), mod.renderAreaPage(data)).replace('</head>', () => ld).replace('</body>', () => embedded);
       const file = join(dist, areaPagePath(area.slug), 'index.html');
+      mkdirSync(dirname(file), { recursive: true });
+      writeFileSync(file, html);
+      urls.push(seo.canonicalUrl);
+    }
+    // The index of every agency and area page, built from the same data (so new agencies and areas appear on their own).
+    {
+      const data = buildAgencyIndexData(agencies, areas, AGENCY_PAGE_DATA.generatedAt);
+      const seo = resolveAgencyIndexSeo(data, { mode: mod.BUILD_MODE, origin });
+      const embedded = `<script type="application/json" id="${AGENCY_INDEX_DATA_SCRIPT_ID}">${JSON.stringify(data).replace(/</g, '\\u003c')}</script>\n</body>`;
+      const html = injectRootHtml(applySeoToHtml(shell, seo), mod.renderAgencyIndex(data)).replace('</body>', () => embedded);
+      const file = join(dist, AGENCY_INDEX_PATH, 'index.html');
       mkdirSync(dirname(file), { recursive: true });
       writeFileSync(file, html);
       urls.push(seo.canonicalUrl);

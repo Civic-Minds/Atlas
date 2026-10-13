@@ -157,6 +157,7 @@ function identityFor(a: CatalogAgency) {
     center: a.center,
     bbox: a.bbox,
     websiteUrl: a.websiteUrl,
+    ...(a.betaOnly ? { betaOnly: true as const } : {}),
     validThrough: a.lastFeedExpiry ?? null,
   };
 }
@@ -173,7 +174,10 @@ function writeOutputs(out: AgencyPageSummaries): void {
 }
 
 async function main() {
-  const catalog = JSON.parse(readFileSync('public/data/catalog-public.json', 'utf8')) as Catalog;
+  // The beta catalog is a superset of public: beta-only agencies are marked betaOnly so the public build drops them.
+  const catalog = JSON.parse(readFileSync('public/data/catalog-beta.json', 'utf8')) as Catalog;
+  const publicSlugs = new Set((JSON.parse(readFileSync('public/data/catalog-public.json', 'utf8')) as Catalog).agencies.map(a => a.slug));
+  for (const a of catalog.agencies) a.betaOnly = publicSlugs.has(a.slug) ? undefined : true;
   const previous: AgencyPageSummaries | null = existsSync(OUT) ? JSON.parse(readFileSync(OUT, 'utf8')) : null;
 
   // --identity-only: refresh names, cities and short names from config with no network.
@@ -237,7 +241,8 @@ async function main() {
     }));
   }
   const names = new Map(catalog.agencies.map(a => [a.slug, agencyShortLabel({ displayName: identityFor(a).displayName })]));
-  const connections = computeConnections(stopsCache, results.keys(), slug => names.get(slug) ?? slug);
+  const betaOnlySlugs = new Set(catalog.agencies.filter(a => a.betaOnly).map(a => a.slug));
+  const connections = computeConnections(stopsCache, results.keys(), slug => names.get(slug) ?? slug, slug => betaOnlySlugs.has(slug));
   for (const [slug, list] of connections) {
     const r = results.get(slug)!;
     if (list.length) r.connections = list; else delete r.connections;
