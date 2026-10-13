@@ -54,3 +54,21 @@ describe('route lists show the slower direction (#821)', () => {
     expect(routeListDisplayHeadway([regular, span], 'amPeak')).toBe(30);
   });
 });
+
+describe('steady infrequent-tier rows in route lists (#821)', () => {
+  const steady = (maxGap: number, sustained = true) => row({
+    directionId: 1, tier: 'infrequent',
+    headwayByPeriod: { midday: 10 }, headwayByPeriodSustained: { midday: sustained },
+    maxGapByPeriod: { midday: maxGap }, periodCoverageHeadway: { midday: maxGap },
+  });
+  const other = row({ directionId: 0, headwayByPeriod: { midday: 8 }, periodCoverageHeadway: { midday: 9 } });
+
+  it('keeps the median of a steady row whose longest gap is 30 min or less (TransLink 99 B-Line)', () => {
+    expect(routeListDisplayHeadway([other, steady(30)], 'midday')).toBe(10);
+  });
+
+  it('stays limited past 30 min or when the period is not steady', () => {
+    expect(routeListDisplay([other, steady(31)], 'midday')).toEqual({ headway: null, limited: true });
+    expect(routeListDisplay([other, steady(20, false)], 'midday')).toEqual({ headway: null, limited: true });
+  });
+});

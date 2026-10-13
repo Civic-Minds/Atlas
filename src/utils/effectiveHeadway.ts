@@ -33,11 +33,12 @@ function isBunchedPeriod(p: ShapeProperties, period: Exclude<TimePeriod, 'all'>)
 }
 
 /**
- * The row restarts at the period start (nothing in the hour before) and then departs in every
- * hour of the period, with each hour's cadence and longest gap within 1.5x the median. Its
- * longest period gap is then the hand-off at the period edge, not a hole in service: TTC 927 Kipling via Humber
+ * The row departs in every hour of the period, with each hour's cadence and longest gap within
+ * 1.5x the median. Its longest period gap then falls at a period edge or a hand-off between
+ * patterns, not inside the service: TTC 927 Kipling via Humber
  * College resumes at 19:00 after the Attwell and Royalcrest patterns carry the PM peak, so its
- * downstream stops wait into the evening once while it then runs every 10 all evening.
+ * downstream stops wait into the evening once while it then runs every 10 all evening, and
+ * eastbound Steeles via Humber College runs every 10 with one 24 min gap.
  */
 function runsEveryHourAt(p: ShapeProperties, period: Exclude<TimePeriod, 'all'>, median: number): boolean {
   const window = TIME_PERIODS.find(t => t.key === period);
@@ -179,6 +180,25 @@ function rowRunsInPeriod(p: ShapeProperties, period: TimePeriod): boolean {
   return Object.entries(p.headwayByHour ?? {}).some(([hour, value]) => value != null && isHourInPeriod(Number(hour), period));
 }
 
+/** The longest gap a steady infrequent-tier row may have and still speak for its direction. */
+const LIST_STEADY_INFREQUENT_MAX_GAP = 30;
+
+/**
+ * One row's value for the route list: the card's cadence, or, for an infrequent-tier row the
+ * card hides for its longest gap, the period median when that period is marked steady and its
+ * longest gap is 30 min or less. Without this, the card's gate made whole directions read
+ * "limited" in lists once the slower direction decides (TransLink 99 B-Line, R2, R5).
+ */
+function routeListRowHeadway(p: ShapeProperties, period: TimePeriod): number | null {
+  const card = routeCardDisplayHeadway(p, period);
+  if (card != null || period === 'all' || p.tier !== 'infrequent') return card;
+  if (p.headwayByPeriodSustained?.[period] !== true) return null;
+  const median = p.headwayByPeriod?.[period];
+  const longestGap = p.maxGapByPeriod?.[period];
+  if (median == null || longestGap == null || longestGap > LIST_STEADY_INFREQUENT_MAX_GAP) return null;
+  return pairedTripSafeHeadway(p, period, median);
+}
+
 /**
  * The route list cadence, judged by the slower direction (#821). Within a direction the best
  * branch's cadence speaks for it, so an infrequent short-turn never hides the main pattern (#708).
@@ -196,7 +216,7 @@ export function routeListDisplayHeadway(features: readonly ShapeProperties[], pe
   let slowest: number | null = null;
   for (const rows of byDirection.values()) {
     const values = rows
-      .map(feature => routeCardDisplayHeadway(feature, period))
+      .map(feature => routeListRowHeadway(feature, period))
       .filter((value): value is number => value != null);
     if (values.length === 0) {
       if (rows.some(feature => rowRunsInPeriod(feature, period))) return null;
