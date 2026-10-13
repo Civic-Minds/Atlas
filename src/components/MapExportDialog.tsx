@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Download, Share2, X } from 'lucide-react';
 import { FLOATING_CARD, Z_MODAL_BG, Z_MODAL_TOP } from '../styles';
-import Pill from './ui/Pill';
 import { canShareMapExport, createMapExport, DEFAULT_MAP_EXPORT_SIZE, downloadMapExport, getMapExportLayout, getMapExportOutputSize, MAP_EXPORT_SIZES, MapExportBlockedError, type MapExportText, shareMapExport, type MapExportSize, type MapExportSizeId } from '../utils/mapExport';
 import type { MapExportBox, MapExportDetails } from '../utils/mapExportDetails';
 import { trackEvent } from '../lib/analytics';
@@ -153,27 +152,25 @@ export default function MapExportDialog({ open, sourceSize, prepareSource, relea
         </div>
 
         <div className="mt-4 flex justify-end gap-2">
-          <Pill
-            tone="outline"
-            size="segment"
+          <button
+            type="button"
             onClick={() => void handleExport('download')}
             disabled={!!exportingMode}
-            className="gap-1.5 px-3.5"
+            className="flex items-center gap-1.5 rounded-full border border-[var(--border-primary)] px-3.5 py-2 text-xs font-black text-[var(--text-primary)] hover:bg-[var(--bg-btn-hover)] disabled:cursor-not-allowed disabled:opacity-50"
           >
             <Download className="h-3.5 w-3.5" />
             {exportingMode === 'download' ? (waitingForMap ? 'Map still loading…' : 'Preparing download…') : 'Download PNG'}
-          </Pill>
+          </button>
           {shareSupported && (
-            <Pill
-              tone="outline"
-              size="segment"
+            <button
+              type="button"
               onClick={() => void handleExport('share')}
               disabled={!!exportingMode}
-              className="gap-1.5 px-3.5"
+              className="flex items-center gap-1.5 rounded-full border border-[var(--border-primary)] px-3.5 py-2 text-xs font-black text-[var(--text-primary)] hover:bg-[var(--bg-btn-hover)] disabled:cursor-not-allowed disabled:opacity-50"
             >
               <Share2 className="h-3.5 w-3.5" />
               {exportingMode === 'share' ? (waitingForMap ? 'Map still loading…' : 'Preparing share…') : 'Share image'}
-            </Pill>
+            </button>
           )}
         </div>
       </div>

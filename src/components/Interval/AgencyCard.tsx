@@ -569,6 +569,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
                     key={f.key}
                     onClick={() => setActiveFilter(on ? null : f.key)}
                     selected={on}
+                    className="px-2"
                   >
                     {f.label}
                     <span className={on ? 'opacity-80' : 'text-[var(--text-dim)]'}> {f.count}</span>
