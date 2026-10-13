@@ -106,6 +106,9 @@ describe('Weekday shape maps on a non-representative weekday', () => {
       '395 0 Rouge Hill GO': 30,
       '395 1 York Mills Station': 30,
     });
+    // A night route's stops have no daytime reading to be limited: no segment of its lines is
+    // drawn as limited service (#810), whatever few early trips fall in the 6-22h window.
+    for (const p of weekday) expect((p.segments ?? []).map((g: any) => g.tier)).not.toContain('span');
   });
 
   it('keeps TTC 35 branch headways when 35A and 35B share a displayed headsign', async () => {

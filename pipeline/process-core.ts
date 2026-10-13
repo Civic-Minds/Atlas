@@ -1891,13 +1891,25 @@ export async function processGtfsBuffer(
       // trunk every 8 shared by two branches every 16 reads one segment at 10-15 and tails at 20.
       // Every stop of the drawn pattern is cut in, not only the valued stops above: a stop with
       // no all-day value shows the limited-service styling along its stretch, so a peak-only
-      // outer tail never carries the trunk's pooled colour (#810).
+      // outer tail never carries the trunk's pooled colour (#810). Limited is relative to the
+      // line's own day: on a line that runs mostly outside the 6-22h window (TTC 320 Yonge reads
+      // every 7 overnight; 354 Starspray's last trips end after 06:00) no stop has a daytime
+      // reading to be limited, so a valueless stop has no reading here and joins its
+      // neighbours; on a daytime line a tail its few trips reach before dawn is limited. The
+      // line's day is read from the stop lists it publishes (pooled where #690 pools them): TTC
+      // 24 to Steeles is drawn on a 4-trip pre-dawn shape but its stops read the daytime pool,
+      // so the 3 origin stops only those 4 trips serve are limited.
       if (!isMapless && drawnPatternStops().length > 1) {
+        let lineDeps = 0, lineDaytime = 0;
+        for (const times of stopMetricMap.values()) { lineDeps += times.length; lineDaytime += times.filter(t => t >= 360 && t <= 1320).length; }
+        const lineRunsByDay = lineDaytime * 2 >= lineDeps;
         const segments = segmentsByTier(drawnPatternStops(), stopId => {
           const times = stopMetricMap.get(stopId);
           if (!times || times.length === 0) return null;
+          const headway = allStopHw[stopId] ?? null;
+          if (headway == null && !lineRunsByDay) return null;
           const graded = scopedTerminalHeadline(times, day, featureRoute?.route_type ?? '', railFeature);
-          return { tier: graded?.tier ?? null, headway: allStopHw[stopId] ?? null };
+          return { tier: graded?.tier ?? null, headway };
         });
         if (segments.length > 0) feature.properties.segments = segments;
       }
