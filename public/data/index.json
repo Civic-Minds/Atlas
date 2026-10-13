@@ -524,7 +524,7 @@
         43.85,
         -79.99
       ],
-      "feedUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/ca-ontario-grand-river-transit-gtfs-721.zip?alt=media",
+      "feedUrl": "https://webapps.regionofwaterloo.ca/api/grt-routes/api/staticfeeds/1",
       "lastFeedExpiry": "20260426",
       "lastFeedVersion": null,
       "lastRefreshedAt": "20260811",
@@ -10449,7 +10449,7 @@
         43.0481,
         -87.9598
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-2127/latest.zip",
+      "feedUrl": "https://kamino.mcts.org/gtfs/google_transit.zip",
       "lastFeedExpiry": "20250823",
       "lastFeedVersion": null,
       "region": "Wisconsin",
@@ -10847,7 +10847,7 @@
         34.1695,
         -118.2399
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-1280/mdb-1280-202402120036/mdb-1280-202402120036.zip",
+      "feedUrl": "https://www.glendaleca.gov/home/showdocument?id=29549",
       "lastFeedExpiry": "20220831",
       "lastFeedVersion": null,
       "region": "California",
@@ -15070,7 +15070,9 @@
       "feedRefreshErrorAt": "20261012",
       "feedRefreshRetryCount": 3,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2426/mdb-2426-202504011416/mdb-2426-202504011416.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2426/mdb-2426-202504011416/mdb-2426-202504011416.zip",
+      "hiddenInProduction": true,
+      "issueUrl": "https://github.com/Civic-Minds/Atlas/issues/612"
     },
     {
       "slug": "omniride",
@@ -16439,7 +16441,7 @@
         27.91,
         -97.05
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-315/latest.zip",
+      "feedUrl": "https://gtfs.ccrta.cadavl.com/CCRTA/GTFS/GTFS_CCRTA.zip",
       "region": "Texas",
       "lastFeedExpiry": "20250531",
       "lastFeedVersion": null,
@@ -16687,7 +16689,9 @@
       "feedRefreshErrorAt": "20261012",
       "feedRefreshRetryCount": 3,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-335/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-335/latest.zip",
+      "hiddenInProduction": true,
+      "issueUrl": "https://github.com/Civic-Minds/Atlas/issues/612"
     },
     {
       "slug": "rts",
@@ -17632,7 +17636,7 @@
         33.4594,
         -82.0294
       ],
-      "feedUrl": "https://github.com/transitland/gtfs-archives-not-hosted-elsewhere/raw/master/augusta-ga-us.zip",
+      "feedUrl": "https://gismap.augustaga.gov/AugGAgis/GISWebLinks/Transit/GTFS/google_transit.zip",
       "region": "Georgia",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-5780/latest.zip",
       "lastFeedExpiry": "20240224",
@@ -18749,7 +18753,9 @@
       "feedRefreshErrorAt": "20261012",
       "feedRefreshRetryCount": 3,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://cloud.longviewtexas.gov/maps/LongviewTransitGTFS/LongviewTransitGTFS.zip"
+      "lastFeedSourceUrl": "https://cloud.longviewtexas.gov/maps/LongviewTransitGTFS/LongviewTransitGTFS.zip",
+      "hiddenInProduction": true,
+      "issueUrl": "https://github.com/Civic-Minds/Atlas/issues/612"
     },
     {
       "slug": "texarkana",
@@ -19190,7 +19196,7 @@
         37.9812,
         -87.5622
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/ntd-50043/latest.zip",
+      "feedUrl": "https://metsmyride.evansville.in.gov/GTFS/Static/google_transit.zip",
       "lastFeedExpiry": "20250115",
       "lastFeedVersion": "20240618",
       "lastRefreshedAt": "20260811",
@@ -20276,7 +20282,9 @@
       "feedRefreshErrorAt": "20261012",
       "feedRefreshRetryCount": 3,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2285/latest.zip"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2285/latest.zip",
+      "hiddenInProduction": true,
+      "issueUrl": "https://github.com/Civic-Minds/Atlas/issues/612"
     },
     {
       "slug": "yellowknife",
@@ -20883,7 +20891,7 @@
         39.0871,
         -108.5512
       ],
-      "feedUrl": "https://files.mobilitydatabase.org/mdb-161/latest.zip",
+      "feedUrl": "https://emap.mesacounty.us/datadownload/Google_Transit_Feed/google_transit.zip",
       "lastFeedExpiry": "20251105",
       "lastFeedVersion": "Nov_05_2024",
       "lastRefreshedAt": "20260811",
@@ -21568,7 +21576,9 @@
       "feedRefreshErrorAt": "20261012",
       "feedRefreshRetryCount": 3,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/5226/CTP_gtfs.zip"
+      "lastFeedSourceUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/5226/CTP_gtfs.zip",
+      "hiddenInProduction": true,
+      "issueUrl": "https://github.com/Civic-Minds/Atlas/issues/612"
     },
     {
       "slug": "rapid-city",

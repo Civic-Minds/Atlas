@@ -6,7 +6,7 @@
     43.0481,
     -87.9598
   ],
-  "feedUrl": "https://files.mobilitydatabase.org/mdb-2127/latest.zip",
+  "feedUrl": "https://kamino.mcts.org/gtfs/google_transit.zip",
   "lastFeedExpiry": "20250823",
   "lastFeedVersion": null,
   "region": "Wisconsin",

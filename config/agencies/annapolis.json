@@ -32,5 +32,7 @@
   "feedRefreshErrorAt": "20261012",
   "feedRefreshRetryCount": 3,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2285/latest.zip"
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2285/latest.zip",
+  "hiddenInProduction": true,
+  "issueUrl": "https://github.com/Civic-Minds/Atlas/issues/612"
 }
