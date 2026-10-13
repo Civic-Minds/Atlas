@@ -142,35 +142,45 @@ export function buildPooledStopMap(
   return { map, pooledStops };
 }
 
-/** One drawn-line segment: an inclusive index range into stopOrder graded as one piece. */
+/** One drawn-line segment: a stretch of the line, as fractions of its length, graded as one piece. */
 export interface LineSegment {
-  from: number;
-  to: number;
+  /** Where the segment starts along the line (0-1): half way from the previous stop, or the first stop's own position. */
+  start: number;
+  /** Where it ends: half way to the next stop, or the last stop's own position. */
+  end: number;
   tier: string;
-  /** Worst pooled stop headway inside the segment (null when no stop has one). */
+  /** Worst stop headway inside the segment (null when no stop has one). */
   headway: number | null;
 }
 
+/** Limited-service styling: a drawn stop with no all-day value (#810). */
+export const NO_VALUE_SEGMENT_TIER = 'span';
+
 /**
- * Cuts a line's stop order into runs of equal tier. A stop's tier is the worse of its every-gap
- * grade and the tier its pooled headway implies, so a segment is never coloured better than
- * either reading. Stops without a grade join the neighbouring run with the worse tier. A run can
- * be one stop long: a terminal tail that only one variant serves is a real segment (the map
- * clips each segment at the midpoints between stops).
+ * Cuts a drawn line into runs of equal tier over every stop of its pattern, valued or not. A
+ * stop's tier is the worse of its every-gap grade and the tier its (pooled) headway implies, so
+ * a segment is never coloured better than either reading. A stop with no all-day value reads
+ * NO_VALUE_SEGMENT_TIER: a peak-only outer tail, or an outer stop a few trips reach, shows the
+ * limited-service styling rather than the trunk's pooled value (#810: the route headline still
+ * reads the terminal there when no destination pool applies). A stop with no reading at all
+ * joins the neighbouring run with the worse tier. A run can be one stop long: a terminal tail
+ * that only one variant serves is a real segment. Segments change colour half way between two
+ * stops rather than on a stop; the first starts at its first stop, the last ends at its last.
  */
 export function segmentsByTier(
-  stopOrder: readonly string[],
+  stops: ReadonlyArray<{ stopId: string; t: number }>,
   gradeAt: (stopId: string) => { tier: string | null; headway: number | null } | null,
 ): LineSegment[] {
   const rank = (tier: string | null | undefined) => tier == null ? Infinity : (TIER_RANK[tier] ?? 99);
   const worse = (a: string | null, b: string | null) => a == null ? b : b == null ? a : rank(a) >= rank(b) ? a : b;
   const tiers: Array<string | null> = [];
   const headways: Array<number | null> = [];
-  for (const stopId of stopOrder) {
+  for (const { stopId } of stops) {
     const g = gradeAt(stopId);
-    const byHeadway = g?.headway != null ? headwayToTier(g.headway) : null;
-    tiers.push(g ? worse(g.tier, byHeadway) : null);
-    headways.push(g?.headway ?? null);
+    if (!g) { tiers.push(null); headways.push(null); continue; }
+    if (g.headway == null) { tiers.push(NO_VALUE_SEGMENT_TIER); headways.push(null); continue; }
+    tiers.push(worse(g.tier, headwayToTier(g.headway)));
+    headways.push(g.headway);
   }
   // Ungraded stops take the worse of their graded neighbours.
   for (let i = 0; i < tiers.length; i++) {
@@ -186,8 +196,11 @@ export function segmentsByTier(
     if (last && last.tier === tiers[i]) last.to = i;
     else runs.push({ from: i, to: i, tier: tiers[i]! });
   }
+  const round = (t: number) => Math.round(t * 10000) / 10000;
   return runs.map(run => {
     const inRun = headways.slice(run.from, run.to + 1).filter((h): h is number => h != null);
-    return { from: run.from, to: run.to, tier: run.tier, headway: inRun.length ? Math.max(...inRun) : null };
+    const start = run.from > 0 ? (stops[run.from - 1].t + stops[run.from].t) / 2 : stops[run.from].t;
+    const end = run.to < stops.length - 1 ? (stops[run.to].t + stops[run.to + 1].t) / 2 : stops[run.to].t;
+    return { start: round(start), end: round(end), tier: run.tier, headway: inRun.length ? Math.max(...inRun) : null };
   });
 }

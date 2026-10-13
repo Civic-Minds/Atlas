@@ -1844,14 +1844,14 @@ export async function processGtfsBuffer(
     // Saturday: 60/120 alternation reads 120 at the first stops and 80 further on), so it adds
     // nothing and is left out. Every stop of the drawn pattern counts, with or without an all-day
     // value (Step 2 keeps only valued stops): a peak-only outer tail is the worst of the line.
-    let drawnPatternStops: Array<{ stopId: string }> | null = null;
+    let drawnPatternStopsMemo: Array<{ stopId: string; t: number }> | null = null;
+    const drawnPatternStops = (): Array<{ stopId: string; t: number }> => drawnPatternStopsMemo ??= isMapless
+      ? maplessStopProjection
+      : projectStopsOntoShape([...stopMetricMap.keys()], stopsById, shapePts).filter(p => p.dev2 <= MAX_STOP_DEV2);
     const servedByFewerTrips = (pool: readonly number[] | null): string[] => {
       if (!pool) return [];
-      drawnPatternStops ??= isMapless
-        ? maplessStopProjection
-        : projectStopsOntoShape([...stopMetricMap.keys()], stopsById, shapePts).filter(p => p.dev2 <= MAX_STOP_DEV2);
       const poolCount = new Set(pool).size;
-      return drawnPatternStops.slice(0, -1).map(p => p.stopId).filter(stopId => new Set(stopMetricMap.get(stopId) ?? []).size < poolCount);
+      return drawnPatternStops().slice(0, -1).map(p => p.stopId).filter(stopId => new Set(stopMetricMap.get(stopId) ?? []).size < poolCount);
     };
     // Steps 2-3 and the line's segments (#690), shared by the thin-own-sample path below and
     // the full path: stop data is published from the pooled values whenever any stop has one.
@@ -1889,8 +1889,11 @@ export async function processGtfsBuffer(
       // #690: cut the drawn line into segments graded by what serves each stop: the every-gap
       // grade of the stop's (pooled) departures, never better than its stop headway implies. A
       // trunk every 8 shared by two branches every 16 reads one segment at 10-15 and tails at 20.
-      if (!isMapless && Array.isArray(feature.properties.stopOrder)) {
-        const segments = segmentsByTier(feature.properties.stopOrder as string[], stopId => {
+      // Every stop of the drawn pattern is cut in, not only the valued stops above: a stop with
+      // no all-day value shows the limited-service styling along its stretch, so a peak-only
+      // outer tail never carries the trunk's pooled colour (#810).
+      if (!isMapless && drawnPatternStops().length > 1) {
+        const segments = segmentsByTier(drawnPatternStops(), stopId => {
           const times = stopMetricMap.get(stopId);
           if (!times || times.length === 0) return null;
           const graded = scopedTerminalHeadline(times, day, featureRoute?.route_type ?? '', railFeature);

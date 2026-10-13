@@ -164,7 +164,10 @@ describe('shared stretch pooling (synthetic)', () => {
       expect(p.stopPeriodHeadways.s0.midday).toBe(15);
       expect(p.stopPeriodCoverageHeadways.s0.midday).toBeLessThan(30);
       // Segments: the stretch at tier 15, the tail at 30.
-      expect(p.segments).toEqual([{ from: 0, to: 7, tier: '15', headway: 15 }, { from: 8, to: 8, tier: '30', headway: 30 }]);
+      expect(p.segments.map((g: any) => [g.tier, g.headway])).toEqual([['15', 15], ['30', 30]]);
+      expect(p.segments[0].start).toBe(0);
+      expect(p.segments[1].end).toBe(1);
+      expect(p.segments[0].end).toBe(p.segments[1].start);
       // The route-level minimums keep the own pattern, so the filter never passes on the stretch.
       expect(p.minStopHeadway).toBe(30);
       expect(p.minStopHeadwayByPeriod.midday).toBe(30);
@@ -325,7 +328,8 @@ describe('shared stretch pooling (real feeds)', () => {
     for (const s of tail) expect(c.stopHeadways[s]).toBe(16);
     // The line is cut where the service changes.
     expect(c.segments.length).toBeGreaterThanOrEqual(2);
-    expect(c.segments[0]).toMatchObject({ from: 0, tier: '10', headway: 8 });
+    expect(c.segments[0]).toMatchObject({ tier: '10', headway: 8 });
+    expect(c.segments[0].start).toBeLessThan(0.01);
     expect(c.segments.at(-1).tier).toBe('20');
     expectStretchesSound(routes);
     // Northbound has one "Wilson" feature whose trips run on both shapes. The stops both serve

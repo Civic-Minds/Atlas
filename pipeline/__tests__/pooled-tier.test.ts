@@ -85,7 +85,7 @@ describe('tier regraded on the destination pool along the drawn line (#728)', ()
     expect(south.headway).toBe(8);
     expect(south.tier).toBe('20');
     expect(new Set(Object.values(south.stopHeadways))).toEqual(new Set([8]));
-    expect(south.segments).toEqual([{ from: 0, to: south.stopOrder.length - 1, tier: '20', headway: 8 }]);
+    expect(south.segments).toEqual([{ start: south.stopPositions[0], end: south.stopPositions.at(-1), tier: '20', headway: 8 }]);
   });
 
   it('a lone shape with a real hole keeps its grade: there is no larger pool to read', async () => {
