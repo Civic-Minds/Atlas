@@ -21,6 +21,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Fixed
 
+- **TTC 47 Lansdowne and 63 Ossington no longer read every 2 min**: each bus was counted twice where it ends one trip and starts the next at the same stop ([#341](https://github.com/Civic-Minds/Atlas/issues/341)).
 - **Streamline Goldline in Bozeman follows its streets again**: a shape-repair step cut its out-and-back stretch on Durston and Babcock, leaving six stops off the line ([#433](https://github.com/Civic-Minds/Atlas/issues/433)).
 - **Amarillo shows all its stops**: its feed leaves times blank between timed stops, so only 41 of 293 appeared ([#753](https://github.com/Civic-Minds/Atlas/issues/753))
 - **Routes with a few pre-dawn trips on their own shape show their daytime service**: those trips had taken the direction's slot, so York Region Viva Blue to Newmarket read "limited" at midday instead of every 16 ([#746](https://github.com/Civic-Minds/Atlas/issues/746)).

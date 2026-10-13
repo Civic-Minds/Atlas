@@ -226,6 +226,52 @@ export function windowsRepeatedByTimetable(
   return repeated;
 }
 
+const CHAINED_TRIP_MAX_LAYOVER_MIN = 10;
+
+/**
+ * Stop times where a bus ends one trip and the same block continues from that stop on the next
+ * trip of the same service, route and direction within 10 minutes (#341). Keyed
+ * trip|stop|stop_sequence of the ending trip's last stop; the value says whether the continuing
+ * trip keeps the headsign. Trips without a block_id, hand-overs between different blocks, and
+ * layovers over 10 minutes are not chained.
+ */
+export function findChainedTripEnds(
+  trips: ReadonlyArray<{ trip_id: string; route_id: string; service_id: string; block_id?: string; direction_id?: string; trip_headsign?: string }>,
+  stopTimesByTripId: ReadonlyMap<string, ReadonlyArray<{ stop_id: string; stop_sequence: string | number; arrival_time?: string; departure_time?: string }> | undefined>,
+  firstDepartureByTripId: ReadonlyMap<string, number>,
+): Map<string, boolean> {
+  const chained = new Map<string, boolean>();
+  const tripsByBlock = new Map<string, Array<(typeof trips)[number]>>();
+  for (const trip of trips) {
+    const block = trip.block_id?.trim();
+    if (!block || !firstDepartureByTripId.has(trip.trip_id)) continue;
+    const key = `${block}::${trip.service_id}`;
+    const list = tripsByBlock.get(key) ?? [];
+    list.push(trip);
+    tripsByBlock.set(key, list);
+  }
+  const endpoints = (tripId: string) => {
+    const ordered = [...(stopTimesByTripId.get(tripId) ?? [])]
+      .sort((a, b) => Number(a.stop_sequence) - Number(b.stop_sequence));
+    return { first: ordered[0], last: ordered[ordered.length - 1] };
+  };
+  for (const list of tripsByBlock.values()) {
+    if (list.length < 2) continue;
+    list.sort((a, b) => firstDepartureByTripId.get(a.trip_id)! - firstDepartureByTripId.get(b.trip_id)!);
+    for (let i = 0; i + 1 < list.length; i++) {
+      const ending = list[i], next = list[i + 1];
+      if (ending.route_id !== next.route_id || (ending.direction_id ?? '') !== (next.direction_id ?? '')) continue;
+      const a = endpoints(ending.trip_id).last, b = endpoints(next.trip_id).first;
+      if (!a || !b || a.stop_id !== b.stop_id) continue;
+      const arrive = t2m(a.arrival_time || a.departure_time || ''), leave = t2m(b.departure_time || b.arrival_time || '');
+      if (arrive === null || leave === null || leave < arrive || leave - arrive > CHAINED_TRIP_MAX_LAYOVER_MIN) continue;
+      chained.set(`${ending.trip_id}|${a.stop_id}|${a.stop_sequence}`,
+        (ending.trip_headsign ?? '').trim() === (next.trip_headsign ?? '').trim());
+    }
+  }
+  return chained;
+}
+
 /**
  * A trip's stop_times in stop_sequence order, keeping only its first visit to
  * each stop. Loop and out-and-back trips pass the same stop twice; counting both
@@ -868,6 +914,14 @@ export async function processGtfsBuffer(
     tripStops.push(st);
     stopTimesByTripId.set(st.trip_id, tripStops);
   }
+  // A bus that ends one trip at a stop and leaves it again on the next trip of the same block,
+  // route and direction is one vehicle passing, not two: TTC splits each 47 Lansdowne run at
+  // Lansdowne Station (arrive 10:52, depart 10:54 on the next trip), so that stop counted every
+  // bus twice and read every 2 min against the route's 7 (#341). The ending trip's arrival there
+  // is left out of the pooled stop departures (route group, headsign when the next trip keeps
+  // it, shared stretch), where the continuing trip's departure is also counted. The shape's own
+  // map keeps it, so the ending trip's terminal stays in its stop list.
+  const chainedTripEnds = findChainedTripEnds(gtfs.trips ?? [], stopTimesByTripId, firstDepartureByTripId);
   // Routes whose feed has no usable shape are published as a Point with noRouteShape. Their stop
   // order comes from one representative trip's stop_sequence (the matching trip that serves the
   // most stops), not from the order stops happen to appear in stop_times.txt.
@@ -1160,6 +1214,7 @@ export async function processGtfsBuffer(
     }
 
     // Per-stop departure collection
+    const chainedEnd = chainedTripEnds.get(`${st.trip_id}|${st.stop_id}|${st.stop_sequence}`);
     const tripGroups = frequencyTemplateTripIds.has(st.trip_id) ? [] : (tripGroupByTripId.get(st.trip_id) ?? []);
     for (const grp of tripGroups) {
       const timeStr = st.departure_time || st.arrival_time;
@@ -1179,15 +1234,17 @@ export async function processGtfsBuffer(
           };
           const night = mins < NIGHT_SHIFT_EARLY_CUTOFF && (serviceIdMaxMinute.get(grp.serviceId) ?? Infinity) < NIGHT_SHIFT_EARLY_CUTOFF;
           const pushAll = (stopId: string) => {
-            if (grp.inGroup) pushDep(stopDepsByGroup, gKey, stopId, mins);
-            if (hsKey && grp.inHeadsign) pushDep(stopDepsByHeadsignGroup, hsKey, stopId, mins);
+            const pooledOk = chainedEnd === undefined;
+            const headsignOk = chainedEnd !== true;
+            if (grp.inGroup && pooledOk) pushDep(stopDepsByGroup, gKey, stopId, mins);
+            if (hsKey && grp.inHeadsign && headsignOk) pushDep(stopDepsByHeadsignGroup, hsKey, stopId, mins);
             if (shKey && grp.inShape) pushDep(stopDepsByShapeGroup, shKey, stopId, mins);
             // Drop-off-only stop times (pickup_type 1) are not departures a rider can take.
-            if (smKey && grp.inGroup && st.pickup_type?.trim() !== '1') pushDep(stopDepsBySharedMember, smKey, stopId, mins);
+            if (smKey && grp.inGroup && pooledOk && st.pickup_type?.trim() !== '1') pushDep(stopDepsBySharedMember, smKey, stopId, mins);
             // Night-service-only shift (#297) -- see stopDepsByGroupNight declaration above.
             if (night) {
-              if (grp.inGroup) pushDep(stopDepsByGroupNight, gKey, stopId, mins + 1440);
-              if (hsKey && grp.inHeadsign) pushDep(stopDepsByHeadsignGroupNight, hsKey, stopId, mins + 1440);
+              if (grp.inGroup && pooledOk) pushDep(stopDepsByGroupNight, gKey, stopId, mins + 1440);
+              if (hsKey && grp.inHeadsign && headsignOk) pushDep(stopDepsByHeadsignGroupNight, hsKey, stopId, mins + 1440);
             }
           };
           // Only count first visit per (trip, stop) — loop routes visit the terminus
