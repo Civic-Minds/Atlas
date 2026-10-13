@@ -1,4 +1,4 @@
-import { readFileSync, readdirSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import type { AgencyPageRoute, AgencyPageSummary } from './agencyPages';
 import {
@@ -96,7 +96,6 @@ describe('naming', () => {
 describe('committed areas (config/areas)', () => {
   const files = readdirSync('config/areas').filter(f => f.endsWith('.json') && !f.startsWith('_'));
   const areas = files.map(f => JSON.parse(readFileSync(`config/areas/${f}`, 'utf8')) as AreaConfig);
-  const catalog = new Set((JSON.parse(readFileSync('public/data/catalog-public.json', 'utf8')).agencies as Array<{ slug: string }>).map(a => a.slug));
   const unassigned = (JSON.parse(readFileSync('config/areas/_unassigned.json', 'utf8')) as Array<{ slug: string }>).map(a => a.slug);
 
   it('names each file by its slug and gives every area bounds and agencies', () => {
@@ -109,14 +108,14 @@ describe('committed areas (config/areas)', () => {
     }
   });
 
-  it('places an agency in at most one area, only public ones, and never both placed and unassigned', () => {
+  it('places an agency in at most one area, only real ones, and never both placed and unassigned', () => {
     const seen = new Map<string, string>();
     for (const a of areas) for (const s of a.agencies) {
-      expect(catalog.has(s), `${s} is not a public agency`).toBe(true);
+      expect(existsSync(`config/agencies/${s}.json`), `${s} has no agency config`).toBe(true);
       expect(seen.has(s), `${s} is in ${seen.get(s)} and ${a.slug}`).toBe(false);
       seen.set(s, a.slug);
     }
-    // Agencies added after the last `npx tsx scripts/build-areas.ts` are simply not placed yet.
+    // Agencies added, hidden or removed after the last `npx tsx scripts/build-areas.ts` are simply not placed yet.
     for (const s of unassigned) expect(seen.has(s), s).toBe(false);
   });
 
