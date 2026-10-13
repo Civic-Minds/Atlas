@@ -14,7 +14,7 @@ const TTC: AgencyPageSummary = {
   routeCount: 5, span: { first: 5, last: 28 }, lastRefreshedAt: '2026-08-27', sat: true, sun: true,
   routes: [r('1', 1, 4), r('2', 1, 20), r('5', 3, 12), r('6', 3, 30), r('301', 3, null, { night: true, am: null, pm: null })],
 };
-const HSR: AgencyPageSummary = { ...TTC, slug: 'hsr', displayName: 'HSR (Hamilton)', routes: [r('A', 3, 10), r('B', 3, 25)], routeCount: 2, sat: true, sun: false };
+const HSR: AgencyPageSummary = { ...TTC, slug: 'hsr', name: 'Hamilton Street Railway', displayName: 'HSR (Hamilton)', routes: [r('A', 3, 10), r('B', 3, 25)], routeCount: 2, sat: true, sun: false };
 const AREA: AreaConfig = {
   slug: 'toronto', name: 'Toronto', type: 'CMA', officialName: 'Toronto', country: 'Canada', cities: ['Toronto'], bbox: [43, -80, 44, -79], center: [43.5, -79.5],
   largeMetro: true, page: true, agencies: ['ttc', 'hsr'],
@@ -33,8 +33,8 @@ describe('AgencyPage', () => {
     expect(screen.getByRole('link', { name: 'Toronto area →' }).getAttribute('href')).toBe('/area/toronto');
     expect(screen.getByText('every 16 min')).toBeTruthy(); // typical wait: median of 4, 12, 20, 30
     expect(screen.getAllByText('every 4 min').length).toBeGreaterThan(0);
-    expect(screen.getByText('24 h')).toBeTruthy();
-    expect(screen.getByText('weekday service · Runs Sat & Sun')).toBeTruthy();
+    expect(screen.queryByText('24 h')).toBeNull(); // service hours stat removed
+    expect(screen.queryByText(/quickest route/)).toBeNull(); // quickest-route stat removed
     expect(screen.getByText('Night only')).toBeTruthy();
     expect(screen.queryByText(/frequent routes|frequent service/i)).toBeNull();
   });
@@ -66,7 +66,7 @@ describe('AgencyPage other agencies list', () => {
     view(<AgencyPage data={withArea} />);
     const heading = screen.getByRole('heading', { name: 'Other agencies in the Toronto area' });
     expect(heading.querySelector('a')?.getAttribute('href')).toBe('/area/toronto');
-    expect(screen.getByRole('link', { name: 'HSR' }).getAttribute('href')).toBe('/agency/hsr');
+    expect(screen.getByRole('link', { name: 'Hamilton Street Railway' }).getAttribute('href')).toBe('/agency/hsr');
   });
 
   it('keeps "Nearby agencies" when there is no area page', () => {
