@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Search } from 'lucide-react';
 import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
-import { FLOATING_CARD, GLASS_PILL, PANEL_ENTER_TOP, FILTER_OPTION, CONTROL_ACTIVE, CONTROL_INACTIVE } from '../../styles';
+import { FLOATING_CARD, GLASS_PILL, PANEL_ENTER_TOP, FILTER_OPTION, CONTROL_ACTIVE, CONTROL_ACTIVE_GLASS, CONTROL_INACTIVE } from '../../styles';
 import type { Agency } from '../../App';
 import { PERIOD_LABELS, PERIOD_KEYS } from '../../hooks/useIntervalStats';
 import type { TimePeriod, ViewportBounds } from '../../hooks/useIntervalStats';
@@ -285,7 +285,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
   const chipClass = (active: boolean) =>
     `relative h-8 px-3.5 flex items-center justify-center ${GLASS_PILL} border text-xs font-bold transition-colors whitespace-nowrap ${
       active
-        ? CONTROL_ACTIVE
+        ? CONTROL_ACTIVE_GLASS
         : 'bg-[var(--bg-panel)] border-[var(--border-primary)] text-[var(--text-primary)] hover:text-[var(--accent)]'
     }`;
 

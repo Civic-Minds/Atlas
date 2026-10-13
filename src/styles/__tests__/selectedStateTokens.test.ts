@@ -65,8 +65,14 @@ describe.each(Object.entries(THEMES))('selected-state tokens (%s)', (_name, { to
     expect(contrast(get('--control-active-fg'), get('--control-active-bg'))).toBeGreaterThanOrEqual(7);
   });
 
-  it('selected fill stands out from the surface an unselected pill sits on', () => {
-    expect(contrast(get('--control-active-bg'), pageRgb)).toBeGreaterThanOrEqual(3);
+  it('selected is a tint and edge that clearly beat unselected, with no dark or bright fill', () => {
+    const active = get('--control-active-bg');
+    expect(contrast(active, pageRgb)).toBeGreaterThan(contrast(get('--control-inactive-bg'), pageRgb));
+    expect(contrast(get('--control-active-border'), pageRgb)).toBeGreaterThan(contrast(get('--control-inactive-border'), pageRgb));
+    // Text on the tint is full strength; unselected text is never stronger.
+    expect(contrast(get('--control-active-fg'), pageRgb)).toBeGreaterThanOrEqual(contrast(get('--control-inactive-fg'), pageRgb));
+    // Flat tonal look: the fill stays close to the surface (contrast under 2:1), never a stark block.
+    expect(contrast(active, pageRgb)).toBeLessThan(2);
   });
 
   it('selected list rows keep text readable and have a clear edge', () => {
@@ -75,9 +81,13 @@ describe.each(Object.entries(THEMES))('selected-state tokens (%s)', (_name, { to
     expect(contrast(get('--selection-active-border'), pageRgb)).toBeGreaterThanOrEqual(3);
   });
 
-  it('toggle on and off are distinct, and the on knob is visible on the on track', () => {
-    expect(contrast(get('--toggle-on-bg'), get('--toggle-off-bg'))).toBeGreaterThanOrEqual(2);
-    expect(contrast(get('--toggle-knob-on'), get('--toggle-on-bg'))).toBeGreaterThanOrEqual(4.5);
+  it('toggle on and off are distinct, with a visible accent knob on a pale track', () => {
+    expect(contrast(get('--toggle-knob-on'), get('--toggle-on-bg'))).toBeGreaterThanOrEqual(3);
     expect(contrast(get('--toggle-knob-off'), get('--toggle-off-bg'))).toBeGreaterThanOrEqual(2);
+    expect(contrast(get('--toggle-on-bg'), get('--toggle-off-bg'))).toBeGreaterThanOrEqual(1.2);
+    // The on knob is clearly stronger than the off knob against its own track.
+    expect(contrast(get('--toggle-knob-on'), get('--toggle-on-bg'))).toBeGreaterThan(contrast(get('--toggle-knob-off'), get('--toggle-off-bg')));
+    // Never a stark track: the on track stays close to the surface.
+    expect(contrast(get('--toggle-on-bg'), pageRgb)).toBeLessThan(3);
   });
 });

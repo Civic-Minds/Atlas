@@ -20,7 +20,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Fixed
 
-- **Selected pills, tabs and "on" switches now stand out**: they were a grey that looked dimmer than unselected ones, and dark-mode switches looked off.
+- **Selected pills, tabs and "on" switches stand out with a soft tint and firmer outline**: the old grey selection looked dimmer than unselected, and dark-mode switches looked off.
 - **Long names in list cards wrap instead of being cut off**: the full name is now readable, with a tooltip.
 - **A route's small hourly chart shows the slower direction each hour**: before, it showed only the first direction and could hide a weaker one; the full-day view also drops the "All directions" pill, opens on the slower direction, and names pills by destination ("To Downtown") instead of "Direction 1".
 - **The hourly schedule chart sizes bars from zero**: the least frequent hour used to shrink to a stub, and the full-day view now labels each hour's minutes between trips, explains the colours, and its direction pills switch the chart and show which one is picked.
