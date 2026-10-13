@@ -1,9 +1,8 @@
-import { Fragment, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { ArrowRight } from 'lucide-react';
 import {
   agencyAboutParagraph,
-  agencyBreadcrumbs,
   agencyDatesText,
   agencyMapHref,
   agencyPageH1,
@@ -81,7 +80,6 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
 
   const stats = agencyStats(agency);
   const span = agencySpanShort(agency);
-  const crumbs = agencyBreadcrumbs(agency);
   const nearby = data!.nearby;
   const standard = headwayOrBetter(FREQUENT_MINUTES);
 
@@ -91,19 +89,20 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
         <SiteHeader />
 
         <article className="pb-16 pt-10 sm:pt-14">
-          <nav aria-label="Breadcrumb" className="text-xs text-[var(--text-dim)]">
-            {crumbs.map((c, i) => (
-              <Fragment key={`${c.name}-${i}`}>
-                {i > 0 && <span aria-hidden="true"> › </span>}
-                {c.href ? <a className="hover:underline" href={c.href}>{c.name}</a> : <span aria-current={i === crumbs.length - 1 ? 'page' : undefined}>{c.name}</span>}
-              </Fragment>
-            ))}
-          </nav>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <h1 className="text-2xl font-black tracking-tight sm:text-3xl">{agencyPageH1(agency)}</h1>
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+              <a
+                href={agencyMapHref(agency)}
+                className={`inline-flex h-11 items-center gap-2 rounded-full border px-5 text-sm font-bold ${CONTROL_ACTIVE_GLASS}`}
+              >
+                Open in the map <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              </a>
+              <a className={`text-sm font-bold ${LINK}`} href="/about/docs#frequency">Methodology</a>
+            </div>
+          </div>
 
-          <p className="mt-8 text-sm font-semibold text-[var(--text-muted)]">Frequency map</p>
-          <h1 className="mt-1 text-2xl font-black tracking-tight sm:text-3xl">{agencyPageH1(agency)}</h1>
-
-          <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <Tile value={`${stats.frequentMidday} / ${stats.totalRoutes}`} label={`routes ${standard}, weekday midday`} />
             <Tile value={`${stats.frequentAm} · ${stats.frequentPm}`} label="AM / PM peak, same standard" />
             <Tile value={span ?? 'Not recorded'} label="weekday service" />
@@ -118,17 +117,6 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
               <p className="mt-2 text-sm text-[var(--text-muted)]">routes by mode</p>
             </div>
           </div>
-
-          <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3">
-            <a
-              href={agencyMapHref(agency)}
-              className={`inline-flex h-11 items-center gap-2 rounded-full border px-5 text-sm font-bold ${CONTROL_ACTIVE_GLASS}`}
-            >
-              Open in the map <ArrowRight className="h-4 w-4" aria-hidden="true" />
-            </a>
-            <a className={`text-sm font-bold ${LINK}`} href="/about/docs#frequency">Methodology</a>
-          </div>
-          <p className="mt-4 text-sm text-[var(--text-dim)]">{agencyDatesText(agency, data!.releaseDate)}</p>
 
           <section className="mt-14" aria-labelledby="routes-heading">
             <h2 id="routes-heading" className="text-xl font-black tracking-tight">Routes and weekday frequency</h2>
@@ -161,6 +149,7 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
           </section>
 
           <p className="mt-10 max-w-2xl text-sm leading-6 text-[var(--text-dim)]">{agencyAboutParagraph(agency)}</p>
+          <p className="mt-3 text-sm text-[var(--text-dim)]">{agencyDatesText(agency, data!.releaseDate)}</p>
 
           {nearby.length > 0 && (
             <section className="mt-12" aria-labelledby="nearby-heading">
