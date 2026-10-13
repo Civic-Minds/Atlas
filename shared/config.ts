@@ -54,8 +54,6 @@ export const CARD_CLICK_TO_FLAG_ENABLED = envFlag('VITE_CARD_CLICK_TO_FLAG_ENABL
 // is worth surfacing to a rider needed more real-feed tuning than a single main push should
 // carry -- beta only until it's been validated against a lot more agencies (2026-08-08).
 export const UNEVEN_BANNER_ENABLED = envFlag('VITE_UNEVEN_BANNER_ENABLED');
-// Shared links and shared map images carry utm tags so analytics can count shared visits.
-// Beta-only until it's been seen working end to end.
 export type AtlasMode = 'public' | 'preview' | 'beta' | 'dev';
 
 function getAtlasMode(): AtlasMode {

@@ -90,6 +90,7 @@ describe('withShareTags', () => {
 
   it('never adds atlas_internal', () => {
     expect(withShareTags(base, 'image', true)).not.toContain('atlas_internal');
+    expect(withShareTags(`${base}&atlas_internal=1`, 'link', true)).not.toContain('atlas_internal');
   });
 
   it('returns the URL untouched when the flag is off', () => {

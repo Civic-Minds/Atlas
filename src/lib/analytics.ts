@@ -101,6 +101,8 @@ export type ShareMedium = typeof SHARE_UTM_MEDIUM_IMAGE | typeof SHARE_UTM_MEDIU
 export function withShareTags(url: string, medium: ShareMedium, enabled: boolean = FEATURES.shareUtm): string {
   if (!enabled) return url;
   const u = new URL(url);
+  // The internal-session marker stays in the address bar; a shared copy must not mark recipients.
+  u.searchParams.delete('atlas_internal');
   u.searchParams.set('utm_source', SHARE_UTM_SOURCE);
   u.searchParams.set('utm_medium', medium);
   return u.toString();
