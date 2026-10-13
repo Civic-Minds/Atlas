@@ -46,8 +46,9 @@ describe('paired-trip period floor (#761)', () => {
   });
 
   it('route lists and search no longer show every 2m', () => {
-    expect(routeListDisplayHeadway([niagara105Dir0, niagara105Dir1], 'midday')).toBe(58);
-    expect(routeListDisplayHeadway([niagara105Dir0, niagara105Dir1], 'amPeak')).toBe(30);
+    // Lists show the slower direction (#821): midday 60 (dir 1) over 58, AM 55 (dir 0) over 30.
+    expect(routeListDisplayHeadway([niagara105Dir0, niagara105Dir1], 'midday')).toBe(60);
+    expect(routeListDisplayHeadway([niagara105Dir0, niagara105Dir1], 'amPeak')).toBe(55);
   });
 
   it('raises hourly chart values inside the affected period only', () => {

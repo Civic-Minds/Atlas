@@ -1,0 +1,1048 @@
+[
+ {
+  "routeId": "09261126-47",
+  "directionId": 0,
+  "tier": "infrequent",
+  "serviceClass": "regular",
+  "headway": 20,
+  "headwayByPeriod": {
+   "amPeak": null,
+   "midday": null,
+   "pmPeak": 20,
+   "evening": 23,
+   "late": 43,
+   "overnight": null
+  },
+  "periodCoverageHeadway": {
+   "amPeak": null,
+   "midday": 355,
+   "pmPeak": 55,
+   "evening": 65,
+   "late": 75,
+   "overnight": null
+  },
+  "headwayRangeByPeriod": {
+   "amPeak": null,
+   "midday": null,
+   "pmPeak": {
+    "min": 10,
+    "max": 70
+   },
+   "evening": {
+    "min": 20,
+    "max": 30
+   },
+   "late": null,
+   "overnight": null
+  },
+  "maxGapByPeriod": {
+   "amPeak": null,
+   "midday": 5,
+   "pmPeak": 55,
+   "evening": 65,
+   "late": 75,
+   "overnight": 240
+  },
+  "headwayByPeriodSustained": {
+   "pmPeak": false,
+   "evening": false,
+   "late": true
+  },
+  "headwayByHour": {
+   "5": null,
+   "6": null,
+   "7": null,
+   "8": null,
+   "9": null,
+   "10": null,
+   "11": null,
+   "12": null,
+   "13": null,
+   "14": null,
+   "15": 33,
+   "16": 10,
+   "17": 28,
+   "18": 10,
+   "19": 24,
+   "20": 19,
+   "21": 18,
+   "22": 18,
+   "23": null,
+   "24": null,
+   "25": null,
+   "26": null,
+   "27": null,
+   "28": null
+  },
+  "routeShortName": "47",
+  "routeVariant": "47D",
+  "routeLongName": "Hamilton / Hwy 407 Terminal",
+  "routeBranch": null,
+  "routeType": 3,
+  "day": "Weekday",
+  "headsign": "Hwy. 407 Bus Term",
+  "minStopHeadway": 19,
+  "minStopHeadwayByPeriod": {
+   "pmPeak": 19,
+   "evening": 28
+  },
+  "headsignMinStopHeadwayByPeriod": {
+   "pmPeak": 19,
+   "evening": 22,
+   "late": 43
+  },
+  "shortTurnVariants": [
+   {
+    "headsign": "Erin Mills",
+    "tripShare": 28
+   }
+  ],
+  "worstDirectionPeriodCoverageHeadway": {
+   "amPeak": 95,
+   "midday": 355,
+   "pmPeak": 197,
+   "evening": null,
+   "late": null,
+   "overnight": null
+  },
+  "worstDirectionHeadway": 60,
+  "worstDirectionHeadwayByPeriod": {
+   "late": 43,
+   "amPeak": 43,
+   "overnight": 35
+  },
+  "routeHasLimitedDirection": true
+ },
+ {
+  "routeId": "09261126-47",
+  "directionId": 0,
+  "tier": "infrequent",
+  "serviceClass": "regular",
+  "headway": 21,
+  "headwayByPeriod": {
+   "amPeak": null,
+   "midday": null,
+   "pmPeak": 21,
+   "evening": 30,
+   "late": null,
+   "overnight": null
+  },
+  "periodCoverageHeadway": {
+   "amPeak": null,
+   "midday": 264,
+   "pmPeak": 41,
+   "evening": 71,
+   "late": null,
+   "overnight": null
+  },
+  "headwayRangeByPeriod": {
+   "amPeak": null,
+   "midday": null,
+   "pmPeak": {
+    "min": 5,
+    "max": 41
+   },
+   "evening": {
+    "min": 30,
+    "max": 30
+   },
+   "late": null,
+   "overnight": null
+  },
+  "maxGapByPeriod": {
+   "amPeak": null,
+   "midday": 96,
+   "pmPeak": 41,
+   "evening": 52,
+   "late": 180,
+   "overnight": 240
+  },
+  "headwayByPeriodSustained": {
+   "pmPeak": false,
+   "evening": false
+  },
+  "headwayByHour": {
+   "5": null,
+   "6": null,
+   "7": null,
+   "8": null,
+   "9": null,
+   "10": null,
+   "11": null,
+   "12": null,
+   "13": null,
+   "14": null,
+   "15": 30,
+   "16": 21,
+   "17": 13,
+   "18": 14,
+   "19": 25,
+   "20": 30,
+   "21": null,
+   "22": null,
+   "23": null,
+   "24": null,
+   "25": null,
+   "26": null,
+   "27": null,
+   "28": null
+  },
+  "routeShortName": "47",
+  "routeVariant": "47G",
+  "routeLongName": "Hamilton / Hwy 407 Terminal",
+  "routeBranch": null,
+  "routeType": 3,
+  "day": "Weekday",
+  "headsign": "Erin Mills",
+  "minStopHeadway": 21,
+  "minStopHeadwayByPeriod": {
+   "pmPeak": 21,
+   "evening": 30
+  },
+  "headsignMinStopHeadwayByPeriod": {
+   "pmPeak": 21,
+   "evening": 30
+  },
+  "shortTurnVariants": [
+   {
+    "headsign": "Erin Mills",
+    "tripShare": 28
+   }
+  ],
+  "worstDirectionPeriodCoverageHeadway": {
+   "amPeak": 95,
+   "midday": 355,
+   "pmPeak": 197,
+   "evening": null,
+   "late": null,
+   "overnight": null
+  },
+  "worstDirectionHeadway": 60,
+  "worstDirectionHeadwayByPeriod": {
+   "late": 43,
+   "amPeak": 43,
+   "overnight": 35
+  },
+  "routeHasLimitedDirection": true
+ },
+ {
+  "routeId": "09261126-47",
+  "directionId": 1,
+  "tier": "infrequent",
+  "serviceClass": "regular",
+  "headway": 45,
+  "headwayByPeriod": {
+   "amPeak": 43,
+   "midday": null,
+   "pmPeak": null,
+   "evening": null,
+   "late": null,
+   "overnight": 35
+  },
+  "periodCoverageHeadway": {
+   "amPeak": 70,
+   "midday": null,
+   "pmPeak": 197,
+   "evening": null,
+   "late": null,
+   "overnight": 165
+  },
+  "headwayRangeByPeriod": {
+   "amPeak": null,
+   "midday": null,
+   "pmPeak": null,
+   "evening": null,
+   "late": null,
+   "overnight": {
+    "min": 25,
+    "max": 45
+   }
+  },
+  "maxGapByPeriod": {
+   "amPeak": 70,
+   "midday": 360,
+   "pmPeak": 197,
+   "evening": 240,
+   "late": 180,
+   "overnight": 165
+  },
+  "headwayByPeriodSustained": {
+   "amPeak": true,
+   "overnight": true
+  },
+  "headwayByHour": {
+   "5": null,
+   "6": null,
+   "7": null,
+   "8": null,
+   "9": null,
+   "10": null,
+   "11": null,
+   "12": null,
+   "13": null,
+   "14": null,
+   "15": null,
+   "16": null,
+   "17": null,
+   "18": null,
+   "19": null,
+   "20": null,
+   "21": null,
+   "22": null,
+   "23": null,
+   "24": null,
+   "25": null,
+   "26": null,
+   "27": null,
+   "28": null
+  },
+  "routeShortName": "47",
+  "routeVariant": "47",
+  "routeLongName": "Hamilton / Hwy 407 Terminal",
+  "routeBranch": null,
+  "routeType": 3,
+  "day": "Weekday",
+  "headsign": "Hamilton GO",
+  "minStopHeadway": 40,
+  "minStopHeadwayByPeriod": {
+   "amPeak": 40
+  },
+  "headsignMinStopHeadwayByPeriod": {
+   "amPeak": 40
+  },
+  "shortTurnVariants": [
+   {
+    "headsign": "McMaster U",
+    "tripShare": 35
+   }
+  ],
+  "worstDirectionPeriodCoverageHeadway": {
+   "amPeak": 95,
+   "midday": 355,
+   "pmPeak": 197,
+   "evening": null,
+   "late": null,
+   "overnight": null
+  },
+  "worstDirectionHeadway": 60,
+  "worstDirectionHeadwayByPeriod": {
+   "late": 43,
+   "amPeak": 43,
+   "overnight": 35
+  },
+  "routeHasLimitedDirection": true
+ },
+ {
+  "routeId": "09261126-47",
+  "directionId": 0,
+  "tier": "60",
+  "serviceClass": "time-limited",
+  "headway": 60,
+  "headwayByPeriod": {
+   "amPeak": null,
+   "midday": null,
+   "pmPeak": 20,
+   "evening": 28,
+   "late": null,
+   "overnight": null
+  },
+  "periodCoverageHeadway": {
+   "amPeak": null,
+   "midday": 280,
+   "pmPeak": 70,
+   "evening": 60,
+   "late": 166,
+   "overnight": null
+  },
+  "headwayRangeByPeriod": {
+   "amPeak": null,
+   "midday": null,
+   "pmPeak": null,
+   "evening": {
+    "min": 60,
+    "max": 60
+   },
+   "late": null,
+   "overnight": null
+  },
+  "maxGapByPeriod": {
+   "amPeak": null,
+   "midday": 50,
+   "pmPeak": 70,
+   "evening": 60,
+   "late": 166,
+   "overnight": 240
+  },
+  "headwayByPeriodSustained": {
+   "pmPeak": false,
+   "evening": false
+  },
+  "headwayByHour": {
+   "5": null,
+   "6": null,
+   "7": null,
+   "8": null,
+   "9": null,
+   "10": null,
+   "11": null,
+   "12": null,
+   "13": null,
+   "14": null,
+   "15": 33,
+   "16": 10,
+   "17": 15,
+   "18": null,
+   "19": 20,
+   "20": 16,
+   "21": 16,
+   "22": null,
+   "23": null,
+   "24": null,
+   "25": null,
+   "26": null,
+   "27": null,
+   "28": null
+  },
+  "routeShortName": "47",
+  "routeVariant": "47",
+  "routeLongName": "Hamilton / Hwy 407 Terminal",
+  "routeBranch": null,
+  "routeType": 3,
+  "day": "Weekday",
+  "headsign": "Hwy. 407 Bus Term",
+  "minStopHeadway": 60,
+  "minStopHeadwayByPeriod": {
+   "evening": 60
+  },
+  "headsignMinStopHeadwayByPeriod": {
+   "pmPeak": 20,
+   "evening": 28
+  },
+  "shortTurnVariants": [
+   {
+    "headsign": "Erin Mills",
+    "tripShare": 28
+   }
+  ],
+  "worstDirectionPeriodCoverageHeadway": {
+   "amPeak": 95,
+   "midday": 355,
+   "pmPeak": 197,
+   "evening": null,
+   "late": null,
+   "overnight": null
+  },
+  "worstDirectionHeadway": 60,
+  "worstDirectionHeadwayByPeriod": {
+   "late": 43,
+   "amPeak": 43,
+   "overnight": 35
+  },
+  "routeHasLimitedDirection": true
+ },
+ {
+  "routeId": "09261126-47",
+  "directionId": 1,
+  "tier": "60",
+  "serviceClass": "regular",
+  "headway": 25,
+  "headwayByPeriod": {
+   "amPeak": 3,
+   "midday": 10,
+   "pmPeak": null,
+   "evening": null,
+   "late": null,
+   "overnight": null
+  },
+  "periodCoverageHeadway": {
+   "amPeak": 104,
+   "midday": 60,
+   "pmPeak": null,
+   "evening": null,
+   "late": null,
+   "overnight": null
+  },
+  "headwayRangeByPeriod": {
+   "amPeak": {
+    "min": 5,
+    "max": 30
+   },
+   "midday": {
+    "min": 8,
+    "max": 40
+   },
+   "pmPeak": null,
+   "evening": null,
+   "late": null,
+   "overnight": null
+  },
+  "maxGapByPeriod": {
+   "amPeak": 14,
+   "midday": 30,
+   "pmPeak": null,
+   "evening": null,
+   "late": 180,
+   "overnight": 240
+  },
+  "headwayByPeriodSustained": {
+   "amPeak": false,
+   "midday": false
+  },
+  "headwayByHour": {
+   "5": null,
+   "6": 5,
+   "7": 8,
+   "8": 3,
+   "9": 5,
+   "10": 10,
+   "11": 8,
+   "12": 20,
+   "13": 15,
+   "14": null,
+   "15": null,
+   "16": null,
+   "17": null,
+   "18": null,
+   "19": null,
+   "20": null,
+   "21": null,
+   "22": null,
+   "23": null,
+   "24": null,
+   "25": null,
+   "26": null,
+   "27": null,
+   "28": null
+  },
+  "routeShortName": "47",
+  "routeVariant": "47G",
+  "routeLongName": "Hamilton / Hwy 407 Terminal",
+  "routeBranch": null,
+  "routeType": 3,
+  "day": "Weekday",
+  "headsign": "McMaster U",
+  "minStopHeadway": 25,
+  "minStopHeadwayByPeriod": {
+   "amPeak": 5,
+   "midday": 25
+  },
+  "headsignMinStopHeadwayByPeriod": {
+   "amPeak": 3,
+   "midday": 9
+  },
+  "shortTurnVariants": [
+   {
+    "headsign": "McMaster U",
+    "tripShare": 35
+   }
+  ],
+  "worstDirectionPeriodCoverageHeadway": {
+   "amPeak": 95,
+   "midday": 355,
+   "pmPeak": 197,
+   "evening": null,
+   "late": null,
+   "overnight": null
+  },
+  "worstDirectionHeadway": 60,
+  "worstDirectionHeadwayByPeriod": {
+   "late": 43,
+   "amPeak": 43,
+   "overnight": 35
+  },
+  "routeHasLimitedDirection": true
+ },
+ {
+  "routeId": "09261126-47",
+  "directionId": 1,
+  "tier": "span",
+  "serviceClass": "irregular",
+  "headway": null,
+  "headwayByPeriod": {
+   "amPeak": null,
+   "midday": null,
+   "pmPeak": null,
+   "evening": null,
+   "late": null,
+   "overnight": null
+  },
+  "periodCoverageHeadway": {
+   "amPeak": 80,
+   "midday": null,
+   "pmPeak": null,
+   "evening": null,
+   "late": null,
+   "overnight": null
+  },
+  "headwayRangeByPeriod": {
+   "amPeak": null,
+   "midday": null,
+   "pmPeak": null,
+   "evening": null,
+   "late": null,
+   "overnight": null
+  },
+  "maxGapByPeriod": {
+   "amPeak": 47,
+   "midday": null,
+   "pmPeak": null,
+   "evening": null,
+   "late": 180,
+   "overnight": 240
+  },
+  "headwayByPeriodSustained": {},
+  "headwayByHour": {
+   "5": null,
+   "6": null,
+   "7": null,
+   "8": null,
+   "9": null,
+   "10": null,
+   "11": null,
+   "12": null,
+   "13": null,
+   "14": null,
+   "15": null,
+   "16": null,
+   "17": null,
+   "18": null,
+   "19": null,
+   "20": null,
+   "21": null,
+   "22": null,
+   "23": null,
+   "24": null,
+   "25": null,
+   "26": null,
+   "27": null,
+   "28": null
+  },
+  "routeShortName": "47",
+  "routeVariant": "47B",
+  "routeLongName": "Hamilton / Hwy 407 Terminal",
+  "routeBranch": null,
+  "routeType": 3,
+  "day": "Weekday",
+  "headsign": "McMaster U",
+  "shortTurnVariants": [
+   {
+    "headsign": "McMaster U",
+    "tripShare": 35
+   }
+  ],
+  "worstDirectionPeriodCoverageHeadway": {
+   "amPeak": 95,
+   "midday": 355,
+   "pmPeak": 197,
+   "evening": null,
+   "late": null,
+   "overnight": null
+  },
+  "worstDirectionHeadway": 60,
+  "worstDirectionHeadwayByPeriod": {
+   "late": 43,
+   "amPeak": 43,
+   "overnight": 35
+  },
+  "routeHasLimitedDirection": true
+ },
+ {
+  "routeId": "09261126-47",
+  "directionId": 1,
+  "tier": "60",
+  "serviceClass": "time-limited",
+  "headway": 20,
+  "headwayByPeriod": {
+   "amPeak": 3,
+   "midday": 10,
+   "pmPeak": null,
+   "evening": null,
+   "late": null,
+   "overnight": null
+  },
+  "periodCoverageHeadway": {
+   "amPeak": 104,
+   "midday": 60,
+   "pmPeak": null,
+   "evening": null,
+   "late": null,
+   "overnight": null
+  },
+  "headwayRangeByPeriod": {
+   "amPeak": {
+    "min": 10,
+    "max": 25
+   },
+   "midday": {
+    "min": 10,
+    "max": 35
+   },
+   "pmPeak": null,
+   "evening": null,
+   "late": null,
+   "overnight": null
+  },
+  "maxGapByPeriod": {
+   "amPeak": 14,
+   "midday": 30,
+   "pmPeak": null,
+   "evening": null,
+   "late": 180,
+   "overnight": 240
+  },
+  "headwayByPeriodSustained": {
+   "amPeak": false,
+   "midday": false
+  },
+  "headwayByHour": {
+   "5": null,
+   "6": null,
+   "7": 8,
+   "8": 3,
+   "9": 5,
+   "10": 10,
+   "11": 8,
+   "12": 20,
+   "13": 15,
+   "14": null,
+   "15": null,
+   "16": null,
+   "17": null,
+   "18": null,
+   "19": null,
+   "20": null,
+   "21": null,
+   "22": null,
+   "23": null,
+   "24": null,
+   "25": null,
+   "26": null,
+   "27": null,
+   "28": null
+  },
+  "routeShortName": "47",
+  "routeVariant": "47D",
+  "routeLongName": "Hamilton / Hwy 407 Terminal",
+  "routeBranch": null,
+  "routeType": 3,
+  "day": "Weekday",
+  "headsign": "McMaster U",
+  "minStopHeadway": 20,
+  "minStopHeadwayByPeriod": {
+   "amPeak": 13,
+   "midday": 20
+  },
+  "headsignMinStopHeadwayByPeriod": {
+   "amPeak": 3,
+   "midday": 9
+  },
+  "shortTurnVariants": [
+   {
+    "headsign": "McMaster U",
+    "tripShare": 35
+   }
+  ],
+  "worstDirectionPeriodCoverageHeadway": {
+   "amPeak": 95,
+   "midday": 355,
+   "pmPeak": 197,
+   "evening": null,
+   "late": null,
+   "overnight": null
+  },
+  "worstDirectionHeadway": 60,
+  "worstDirectionHeadwayByPeriod": {
+   "late": 43,
+   "amPeak": 43,
+   "overnight": 35
+  },
+  "routeHasLimitedDirection": true
+ },
+ {
+  "routeId": "09261126-47",
+  "directionId": 0,
+  "tier": "span",
+  "serviceClass": "irregular",
+  "headway": null,
+  "headwayByPeriod": {
+   "amPeak": null,
+   "midday": null,
+   "pmPeak": null,
+   "evening": null,
+   "late": null,
+   "overnight": null
+  },
+  "periodCoverageHeadway": {
+   "amPeak": null,
+   "midday": null,
+   "pmPeak": 160,
+   "evening": null,
+   "late": null,
+   "overnight": null
+  },
+  "headwayRangeByPeriod": {
+   "amPeak": null,
+   "midday": null,
+   "pmPeak": null,
+   "evening": null,
+   "late": null,
+   "overnight": null
+  },
+  "maxGapByPeriod": {
+   "amPeak": null,
+   "midday": null,
+   "pmPeak": 45,
+   "evening": null,
+   "late": 180,
+   "overnight": 240
+  },
+  "headwayByPeriodSustained": {},
+  "headwayByHour": {
+   "5": null,
+   "6": null,
+   "7": null,
+   "8": null,
+   "9": null,
+   "10": null,
+   "11": null,
+   "12": null,
+   "13": null,
+   "14": null,
+   "15": null,
+   "16": null,
+   "17": null,
+   "18": null,
+   "19": null,
+   "20": null,
+   "21": null,
+   "22": null,
+   "23": null,
+   "24": null,
+   "25": null,
+   "26": null,
+   "27": null,
+   "28": null
+  },
+  "routeShortName": "47",
+  "routeVariant": "47B",
+  "routeLongName": "Hamilton / Hwy 407 Terminal",
+  "routeBranch": null,
+  "routeType": 3,
+  "day": "Weekday",
+  "headsign": "Square One",
+  "shortTurnVariants": [
+   {
+    "headsign": "Erin Mills",
+    "tripShare": 28
+   }
+  ],
+  "worstDirectionPeriodCoverageHeadway": {
+   "amPeak": 95,
+   "midday": 355,
+   "pmPeak": 197,
+   "evening": null,
+   "late": null,
+   "overnight": null
+  },
+  "worstDirectionHeadway": 60,
+  "worstDirectionHeadwayByPeriod": {
+   "late": 43,
+   "amPeak": 43,
+   "overnight": 35
+  },
+  "routeHasLimitedDirection": true
+ },
+ {
+  "routeId": "09261126-47",
+  "directionId": 0,
+  "tier": "infrequent",
+  "serviceClass": "regular",
+  "headway": 565,
+  "headwayByPeriod": {
+   "amPeak": null,
+   "midday": null,
+   "pmPeak": null,
+   "evening": null,
+   "late": null,
+   "overnight": null
+  },
+  "periodCoverageHeadway": {
+   "amPeak": 95,
+   "midday": null,
+   "pmPeak": 130,
+   "evening": null,
+   "late": null,
+   "overnight": null
+  },
+  "headwayRangeByPeriod": {
+   "amPeak": null,
+   "midday": null,
+   "pmPeak": null,
+   "evening": null,
+   "late": null,
+   "overnight": null
+  },
+  "maxGapByPeriod": {
+   "amPeak": 95,
+   "midday": 360,
+   "pmPeak": 110,
+   "evening": null,
+   "late": 180,
+   "overnight": 240
+  },
+  "headwayByPeriodSustained": {},
+  "headwayByHour": {
+   "5": null,
+   "6": null,
+   "7": null,
+   "8": null,
+   "9": null,
+   "10": null,
+   "11": null,
+   "12": null,
+   "13": null,
+   "14": null,
+   "15": null,
+   "16": null,
+   "17": null,
+   "18": null,
+   "19": null,
+   "20": null,
+   "21": null,
+   "22": null,
+   "23": null,
+   "24": null,
+   "25": null,
+   "26": null,
+   "27": null,
+   "28": null
+  },
+  "routeShortName": "47",
+  "routeVariant": "47A",
+  "routeLongName": "Hamilton / Hwy 407 Terminal",
+  "routeBranch": null,
+  "routeType": 3,
+  "day": "Weekday",
+  "headsign": "Square One",
+  "shortTurnVariants": [
+   {
+    "headsign": "Erin Mills",
+    "tripShare": 28
+   }
+  ],
+  "worstDirectionPeriodCoverageHeadway": {
+   "amPeak": 95,
+   "midday": 355,
+   "pmPeak": 197,
+   "evening": null,
+   "late": null,
+   "overnight": null
+  },
+  "worstDirectionHeadway": 60,
+  "worstDirectionHeadwayByPeriod": {
+   "late": 43,
+   "amPeak": 43,
+   "overnight": 35
+  },
+  "routeHasLimitedDirection": true
+ },
+ {
+  "routeId": "09261126-47",
+  "directionId": 0,
+  "tier": "span",
+  "serviceClass": "irregular",
+  "headway": null,
+  "headwayByPeriod": {
+   "amPeak": null,
+   "midday": null,
+   "pmPeak": 65,
+   "evening": null,
+   "late": null,
+   "overnight": null
+  },
+  "periodCoverageHeadway": {
+   "amPeak": null,
+   "midday": null,
+   "pmPeak": 75,
+   "evening": 200,
+   "late": null,
+   "overnight": null
+  },
+  "headwayRangeByPeriod": {
+   "amPeak": null,
+   "midday": null,
+   "pmPeak": {
+    "min": 65,
+    "max": 75
+   },
+   "evening": null,
+   "late": null,
+   "overnight": null
+  },
+  "maxGapByPeriod": {
+   "amPeak": null,
+   "midday": null,
+   "pmPeak": 75,
+   "evening": 40,
+   "late": 180,
+   "overnight": 240
+  },
+  "headwayByPeriodSustained": {
+   "pmPeak": true
+  },
+  "headwayByHour": {
+   "5": null,
+   "6": null,
+   "7": null,
+   "8": null,
+   "9": null,
+   "10": null,
+   "11": null,
+   "12": null,
+   "13": null,
+   "14": null,
+   "15": null,
+   "16": null,
+   "17": null,
+   "18": null,
+   "19": null,
+   "20": null,
+   "21": null,
+   "22": null,
+   "23": null,
+   "24": null,
+   "25": null,
+   "26": null,
+   "27": null,
+   "28": null
+  },
+  "routeShortName": "47",
+  "routeVariant": "47C",
+  "routeLongName": "Hamilton / Hwy 407 Terminal",
+  "routeBranch": null,
+  "routeType": 3,
+  "day": "Weekday",
+  "headsign": "Square One",
+  "shortTurnVariants": [
+   {
+    "headsign": "Erin Mills",
+    "tripShare": 28
+   }
+  ],
+  "worstDirectionPeriodCoverageHeadway": {
+   "amPeak": 95,
+   "midday": 355,
+   "pmPeak": 197,
+   "evening": null,
+   "late": null,
+   "overnight": null
+  },
+  "worstDirectionHeadway": 60,
+  "worstDirectionHeadwayByPeriod": {
+   "late": 43,
+   "amPeak": 43,
+   "overnight": 35
+  },
+  "routeHasLimitedDirection": true
+ }
+]

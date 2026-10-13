@@ -1,3 +1,4 @@
+import { searchAreas, type AreaSearchResult } from '../../../shared/areaSearch';
 import React, { useMemo, useRef, useEffect, useCallback, useState } from 'react';
 import { getTierColor } from '../../utils/colors';
 import { useColorVision } from '../../context/ColorVisionContext';
@@ -24,7 +25,7 @@ import {
   type RouteSearchResult,
   type StopSearchResult,
 } from '../../utils/searchResults';
-import { FLOATING_CARD, PANEL_ENTER_LEFT, TRANSITION_BASE, LIST_ROW, LIST_ROW_PRIMARY, LIST_ROW_DIM, PANEL_SIDEBAR, Z_PANEL, SIDEBAR_LEFT_FALLBACK, PANEL_SECTION_HEAD, PANEL_SEARCH_SUBHEAD, SIDEBAR_PANEL_WIDTH } from '../../styles';
+import { FLOATING_CARD, PANEL_ENTER_LEFT, TRANSITION_BASE, LIST_ROW_PRIMARY, LIST_ROW_DIM, PANEL_SIDEBAR, Z_PANEL, SIDEBAR_LEFT_FALLBACK, PANEL_SECTION_HEAD, PANEL_SEARCH_SUBHEAD, SIDEBAR_PANEL_WIDTH } from '../../styles';
 import RouteListRow from '../RouteListRow';
 import { DisambiguationPanel } from './panels/DisambiguationPanel';
 import { StopCard } from './panels/StopCard';
@@ -78,6 +79,8 @@ interface SidebarControlsProps {
   livePollingOnly: boolean;
   setLivePollingOnly: (v: boolean | ((prev: boolean) => boolean)) => void;
   setSelectedAgencySlug?: (slug: string | null) => void;
+  /** Zoom the map to a metro area chosen in search. */
+  onSelectArea?: (area: AreaSearchResult) => void;
   nightServiceView?: boolean;
   sidebarLeft?: number;
   searchBarWidth?: number;
@@ -139,6 +142,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   livePollingOnly,
   setLivePollingOnly,
   setSelectedAgencySlug,
+  onSelectArea,
   nightServiceView = false,
   sidebarLeft,
   searchBarWidth,
@@ -299,7 +303,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
 
   // Compute notable routes fallback
   const notableRoutes = useMemo(() => {
-    const routes = new Map<string, { key: string; shortName: string; longNames: string[]; agencyName: string; headway: number; limited: boolean }>();
+    const routes = new Map<string, { key: string; shortName: string; longNames: string[]; agencyName: string; headway: number; limited: boolean; sharedHeadway?: number }>();
     for (const [slug, fc] of Object.entries(nonCorridorLayers)) {
       if (!fc?.features) continue;
       for (const f of fc.features) {
@@ -318,15 +322,19 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         const display = routeListDisplay(routeFeatures, period);
         const headway = display.headway ?? 999;
         const limited = display.limited;
+        const sharedHeadway = display.sharedHeadway;
         const shortName = facts.shortName;
         const longName = facts.longName || '';
         const agencyName = shortenAgencyName(facts.agencyName);
         const existing = routes.get(groupKey);
         if (!existing) {
-          routes.set(groupKey, { key: facts.key, shortName: slug === 'bart' ? suggestedRouteGroupKey(slug, shortName) : shortName, longNames: longName ? [longName] : [], agencyName, headway, limited });
+          routes.set(groupKey, { key: facts.key, shortName: slug === 'bart' ? suggestedRouteGroupKey(slug, shortName) : shortName, longNames: longName ? [longName] : [], agencyName, headway, limited, sharedHeadway });
         } else {
           if (longName && !existing.longNames.includes(longName)) existing.longNames.push(longName);
-          if (headway < existing.headway) existing.headway = headway;
+          if (headway < existing.headway) {
+            existing.headway = headway;
+            existing.sharedHeadway = sharedHeadway;
+          }
           existing.limited = existing.headway >= 999 && (existing.limited || limited);
         }
       }
@@ -849,6 +857,10 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     ),
     [matchedAgencyGroups, showAllSearchResults],
   );
+  const areaSearchResults = useMemo(
+    () => (!searchFocused || !query.trim() || !onSelectArea ? [] : searchAreas(query, new Set(agencies.map(a => a.slug)))),
+    [agencies, query, searchFocused, onSelectArea],
+  );
   const displayAgencyGroups = agencySearchDisplay.groups;
   const agencySections = useMemo(() => splitAgencyGroups(displayAgencyGroups), [displayAgencyGroups]);
   const routeSearchDisplay = useMemo(
@@ -889,6 +901,16 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   useEffect(() => {
     if (!searchEnterRef) return;
     searchEnterRef.current = () => {
+      // Areas are listed first, so Enter picks the first one when there is any.
+      const area = areaSearchResults[0];
+      if (area && onSelectArea) {
+        trackEvent('search_submitted', { app: analyticsApp, surface: 'global_search', result_type: 'area', result_count: areaSearchResults.length });
+        saveRecentSearch(query);
+        setQuery('');
+        setSearchFocused?.(false);
+        onSelectArea(area);
+        return;
+      }
       const action = resolveSearchEnterAction(displayAgencyGroups, displayRouteResults, stopSearchDisplay.stops);
       if (!action) return;
       trackEvent('search_submitted', {
@@ -914,7 +936,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       }
     };
     return () => { searchEnterRef.current = null; };
-  }, [searchEnterRef, displayAgencyGroups, displayRouteResults, stopSearchDisplay.stops, setSelectedAgencySlug, setQuery, setSearchFocused, query, saveRecentSearch, setSelectedRoute, selectedRoute, setSelectedStop]);
+  }, [searchEnterRef, areaSearchResults, onSelectArea, analyticsApp, displayAgencyGroups, displayRouteResults, stopSearchDisplay.stops, setSelectedAgencySlug, setQuery, setSearchFocused, query, saveRecentSearch, setSelectedRoute, selectedRoute, setSelectedStop]);
 
   const routesFirst = useMemo(
     () => routesBeforeAgencies(query, displayRouteResults, matchedAgencyGroups),
@@ -1104,6 +1126,8 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         {searchPanelActive && (searchMatchResults !== null || searchStopMatchResults !== null) && (
           <SearchResultsList
             query={query}
+            areaResults={areaSearchResults}
+            onSelectArea={onSelectArea}
             displayAgencyGroups={displayAgencyGroups}
             displayRouteResults={displayRouteResults}
             displayStopResults={stopSearchDisplay.stops}

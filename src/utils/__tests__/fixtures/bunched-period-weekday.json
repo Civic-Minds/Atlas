@@ -1,0 +1,1103 @@
+{
+ "lanta410": [
+  {
+   "routeId": "410",
+   "directionId": 0,
+   "tier": "10",
+   "serviceClass": "time-limited",
+   "headway": 4,
+   "headwayByPeriod": {
+    "amPeak": 4,
+    "midday": null,
+    "pmPeak": null,
+    "evening": null,
+    "late": null,
+    "overnight": null
+   },
+   "periodCoverageHeadway": {
+    "amPeak": 115,
+    "midday": null,
+    "pmPeak": null,
+    "evening": null,
+    "late": null,
+    "overnight": null
+   },
+   "headwayRangeByPeriod": {
+    "amPeak": {
+     "min": 3,
+     "max": 5
+    },
+    "midday": null,
+    "pmPeak": null,
+    "evening": null,
+    "late": null,
+    "overnight": null
+   },
+   "maxGapByPeriod": {
+    "amPeak": 5,
+    "midday": null,
+    "pmPeak": null,
+    "evening": null,
+    "late": 180,
+    "overnight": 240
+   },
+   "headwayByPeriodSustained": {
+    "amPeak": false
+   },
+   "headwayByHour": {
+    "5": null,
+    "6": 4,
+    "7": null,
+    "8": null,
+    "9": null,
+    "10": null,
+    "11": null,
+    "12": null,
+    "13": null,
+    "14": null,
+    "15": null,
+    "16": null,
+    "17": null,
+    "18": null,
+    "19": null,
+    "20": null,
+    "21": null,
+    "22": null,
+    "23": null,
+    "24": null,
+    "25": null,
+    "26": null,
+    "27": null,
+    "28": null
+   },
+   "routeShortName": "410",
+   "routeVariant": null,
+   "routeLongName": "410 - Dieruff HS - Emmaus Ave",
+   "routeBranch": null,
+   "routeType": 3,
+   "day": "Weekday",
+   "headsign": "Dieruff High School",
+   "minStopHeadway": 4,
+   "minStopHeadwayByPeriod": {
+    "amPeak": 4
+   },
+   "headsignMinStopHeadwayByPeriod": {
+    "amPeak": 4
+   },
+   "worstDirectionPeriodCoverageHeadway": {
+    "amPeak": null,
+    "midday": null,
+    "pmPeak": null,
+    "evening": null,
+    "late": null,
+    "overnight": null
+   },
+   "worstDirectionHeadway": 4,
+   "routeHasIrregularDirection": true,
+   "routeHasLimitedDirection": true
+  },
+  {
+   "routeId": "410",
+   "directionId": 1,
+   "tier": "span",
+   "serviceClass": "irregular",
+   "headway": null,
+   "headwayByPeriod": {
+    "amPeak": null,
+    "midday": null,
+    "pmPeak": null,
+    "evening": null,
+    "late": null,
+    "overnight": null
+   },
+   "periodCoverageHeadway": {
+    "amPeak": null,
+    "midday": 305,
+    "pmPeak": null,
+    "evening": null,
+    "late": null,
+    "overnight": null
+   },
+   "headwayRangeByPeriod": {
+    "amPeak": null,
+    "midday": null,
+    "pmPeak": null,
+    "evening": null,
+    "late": null,
+    "overnight": null
+   },
+   "maxGapByPeriod": {
+    "amPeak": null,
+    "midday": 45,
+    "pmPeak": null,
+    "evening": null,
+    "late": 180,
+    "overnight": 240
+   },
+   "headwayByPeriodSustained": {},
+   "headwayByHour": {
+    "5": null,
+    "6": null,
+    "7": null,
+    "8": null,
+    "9": null,
+    "10": null,
+    "11": null,
+    "12": null,
+    "13": null,
+    "14": null,
+    "15": null,
+    "16": null,
+    "17": null,
+    "18": null,
+    "19": null,
+    "20": null,
+    "21": null,
+    "22": null,
+    "23": null,
+    "24": null,
+    "25": null,
+    "26": null,
+    "27": null,
+    "28": null
+   },
+   "routeShortName": "410",
+   "routeVariant": null,
+   "routeLongName": "410 - Dieruff HS - Emmaus Ave",
+   "routeBranch": null,
+   "routeType": 3,
+   "day": "Weekday",
+   "headsign": "South Mountain",
+   "worstDirectionPeriodCoverageHeadway": {
+    "amPeak": null,
+    "midday": null,
+    "pmPeak": null,
+    "evening": null,
+    "late": null,
+    "overnight": null
+   },
+   "worstDirectionHeadway": 4,
+   "routeHasIrregularDirection": true,
+   "routeHasLimitedDirection": true
+  }
+ ],
+ "dutchessJMS": [
+  {
+   "routeId": "48",
+   "directionId": 0,
+   "tier": "60",
+   "serviceClass": "regular",
+   "headway": 60,
+   "headwayByPeriod": {
+    "amPeak": 2,
+    "midday": 2,
+    "pmPeak": 2,
+    "evening": null,
+    "late": null,
+    "overnight": null
+   },
+   "periodCoverageHeadway": {
+    "amPeak": 58,
+    "midday": 58,
+    "pmPeak": 58,
+    "evening": null,
+    "late": null,
+    "overnight": null
+   },
+   "headwayRangeByPeriod": {
+    "amPeak": null,
+    "midday": {
+     "min": 60,
+     "max": 60
+    },
+    "pmPeak": {
+     "min": 60,
+     "max": 60
+    },
+    "evening": null,
+    "late": null,
+    "overnight": null
+   },
+   "maxGapByPeriod": {
+    "amPeak": 58,
+    "midday": 58,
+    "pmPeak": 58,
+    "evening": null,
+    "late": 180,
+    "overnight": 240
+   },
+   "headwayByPeriodSustained": {
+    "amPeak": false,
+    "midday": false,
+    "pmPeak": false
+   },
+   "headwayByHour": {
+    "5": null,
+    "6": null,
+    "7": null,
+    "8": null,
+    "9": null,
+    "10": null,
+    "11": null,
+    "12": null,
+    "13": null,
+    "14": null,
+    "15": null,
+    "16": null,
+    "17": null,
+    "18": null,
+    "19": null,
+    "20": null,
+    "21": null,
+    "22": null,
+    "23": null,
+    "24": null,
+    "25": null,
+    "26": null,
+    "27": null,
+    "28": null
+   },
+   "routeShortName": "J MS",
+   "routeVariant": null,
+   "routeLongName": "J (POUGHKEEPSIE NORTHSIDE) MON - SAT",
+   "routeBranch": null,
+   "routeType": 3,
+   "day": "Weekday",
+   "headsign": "Outbound",
+   "minStopHeadway": 60,
+   "minStopHeadwayByPeriod": {
+    "amPeak": 60,
+    "midday": 60,
+    "pmPeak": 60
+   },
+   "headsignMinStopHeadwayByPeriod": {
+    "amPeak": 2,
+    "midday": 2,
+    "pmPeak": 2
+   },
+   "worstDirectionPeriodCoverageHeadway": {
+    "amPeak": 72,
+    "midday": 60,
+    "pmPeak": 60,
+    "evening": 228,
+    "late": null,
+    "overnight": null
+   },
+   "worstDirectionHeadway": 60,
+   "worstDirectionHeadwayByPeriod": {
+    "amPeak": 60,
+    "midday": 60,
+    "pmPeak": 60
+   }
+  },
+  {
+   "routeId": "48",
+   "directionId": 0,
+   "tier": "60",
+   "serviceClass": "regular",
+   "headway": 60,
+   "headwayByPeriod": {
+    "amPeak": 60,
+    "midday": 60,
+    "pmPeak": 60,
+    "evening": null,
+    "late": null,
+    "overnight": null
+   },
+   "periodCoverageHeadway": {
+    "amPeak": 60,
+    "midday": 60,
+    "pmPeak": 60,
+    "evening": null,
+    "late": null,
+    "overnight": null
+   },
+   "headwayRangeByPeriod": {
+    "amPeak": null,
+    "midday": {
+     "min": 60,
+     "max": 60
+    },
+    "pmPeak": {
+     "min": 60,
+     "max": 60
+    },
+    "evening": null,
+    "late": null,
+    "overnight": null
+   },
+   "maxGapByPeriod": {
+    "amPeak": 60,
+    "midday": 60,
+    "pmPeak": 60,
+    "evening": null,
+    "late": 180,
+    "overnight": 240
+   },
+   "headwayByPeriodSustained": {
+    "amPeak": true,
+    "midday": true,
+    "pmPeak": true
+   },
+   "headwayByHour": {
+    "5": null,
+    "6": null,
+    "7": null,
+    "8": null,
+    "9": null,
+    "10": null,
+    "11": null,
+    "12": null,
+    "13": null,
+    "14": null,
+    "15": null,
+    "16": null,
+    "17": null,
+    "18": null,
+    "19": null,
+    "20": null,
+    "21": null,
+    "22": null,
+    "23": null,
+    "24": null,
+    "25": null,
+    "26": null,
+    "27": null,
+    "28": null
+   },
+   "routeShortName": "J MS",
+   "routeVariant": null,
+   "routeLongName": "J (POUGHKEEPSIE NORTHSIDE) MON - SAT",
+   "routeBranch": null,
+   "routeType": 3,
+   "day": "Weekday",
+   "headsign": "Northbound",
+   "minStopHeadway": 60,
+   "minStopHeadwayByPeriod": {
+    "amPeak": 60,
+    "midday": 60,
+    "pmPeak": 60
+   },
+   "headsignMinStopHeadwayByPeriod": {
+    "amPeak": 60,
+    "midday": 60,
+    "pmPeak": 60
+   },
+   "worstDirectionPeriodCoverageHeadway": {
+    "amPeak": 72,
+    "midday": 60,
+    "pmPeak": 60,
+    "evening": 228,
+    "late": null,
+    "overnight": null
+   },
+   "worstDirectionHeadway": 60,
+   "worstDirectionHeadwayByPeriod": {
+    "amPeak": 60,
+    "midday": 60,
+    "pmPeak": 60
+   }
+  },
+  {
+   "routeId": "48",
+   "directionId": 0,
+   "tier": "60",
+   "serviceClass": "regular",
+   "headway": 60,
+   "headwayByPeriod": {
+    "amPeak": null,
+    "midday": 60,
+    "pmPeak": 60,
+    "evening": null,
+    "late": null,
+    "overnight": null
+   },
+   "periodCoverageHeadway": {
+    "amPeak": 72,
+    "midday": 60,
+    "pmPeak": 60,
+    "evening": 228,
+    "late": null,
+    "overnight": null
+   },
+   "headwayRangeByPeriod": {
+    "amPeak": null,
+    "midday": {
+     "min": 60,
+     "max": 60
+    },
+    "pmPeak": {
+     "min": 60,
+     "max": 60
+    },
+    "evening": null,
+    "late": null,
+    "overnight": null
+   },
+   "maxGapByPeriod": {
+    "amPeak": 60,
+    "midday": 60,
+    "pmPeak": 60,
+    "evening": 12,
+    "late": 180,
+    "overnight": 240
+   },
+   "headwayByPeriodSustained": {
+    "midday": true,
+    "pmPeak": true
+   },
+   "headwayByHour": {
+    "5": null,
+    "6": null,
+    "7": null,
+    "8": null,
+    "9": null,
+    "10": null,
+    "11": null,
+    "12": null,
+    "13": null,
+    "14": null,
+    "15": null,
+    "16": null,
+    "17": null,
+    "18": null,
+    "19": null,
+    "20": null,
+    "21": null,
+    "22": null,
+    "23": null,
+    "24": null,
+    "25": null,
+    "26": null,
+    "27": null,
+    "28": null
+   },
+   "routeShortName": "J MS",
+   "routeVariant": null,
+   "routeLongName": "J (POUGHKEEPSIE NORTHSIDE) MON - SAT",
+   "routeBranch": null,
+   "routeType": 3,
+   "day": "Weekday",
+   "headsign": "Southbound",
+   "minStopHeadway": 60,
+   "minStopHeadwayByPeriod": {
+    "amPeak": 60,
+    "midday": 60,
+    "pmPeak": 60
+   },
+   "headsignMinStopHeadwayByPeriod": {
+    "amPeak": 60,
+    "midday": 60,
+    "pmPeak": 60
+   },
+   "worstDirectionPeriodCoverageHeadway": {
+    "amPeak": 72,
+    "midday": 60,
+    "pmPeak": 60,
+    "evening": 228,
+    "late": null,
+    "overnight": null
+   },
+   "worstDirectionHeadway": 60,
+   "worstDirectionHeadwayByPeriod": {
+    "amPeak": 60,
+    "midday": 60,
+    "pmPeak": 60
+   }
+  }
+ ],
+ "metromoverInner": [
+  {
+   "routeId": "14457",
+   "directionId": 0,
+   "tier": "10",
+   "serviceClass": "regular",
+   "headway": 3,
+   "headwayByPeriod": {
+    "amPeak": 3,
+    "midday": 3,
+    "pmPeak": 3,
+    "evening": 3,
+    "late": null,
+    "overnight": 3
+   },
+   "periodCoverageHeadway": {
+    "amPeak": 3,
+    "midday": 3,
+    "pmPeak": 3,
+    "evening": 55,
+    "late": null,
+    "overnight": 215
+   },
+   "headwayRangeByPeriod": {
+    "amPeak": {
+     "min": 2,
+     "max": 3
+    },
+    "midday": {
+     "min": 2,
+     "max": 3
+    },
+    "pmPeak": {
+     "min": 2,
+     "max": 3
+    },
+    "evening": {
+     "min": 2,
+     "max": 3
+    },
+    "late": null,
+    "overnight": null
+   },
+   "maxGapByPeriod": {
+    "amPeak": 3,
+    "midday": 3,
+    "pmPeak": 3,
+    "evening": 3,
+    "late": 180,
+    "overnight": 215
+   },
+   "headwayByPeriodSustained": {
+    "amPeak": true,
+    "midday": true,
+    "pmPeak": true,
+    "evening": false,
+    "overnight": false
+   },
+   "headwayByHour": {
+    "5": 3,
+    "6": 3,
+    "7": 3,
+    "8": 3,
+    "9": 3,
+    "10": 3,
+    "11": 3,
+    "12": 3,
+    "13": 3,
+    "14": 3,
+    "15": 3,
+    "16": 3,
+    "17": 3,
+    "18": 3,
+    "19": 3,
+    "20": 3,
+    "21": 3,
+    "22": 3,
+    "23": null,
+    "24": null,
+    "25": null,
+    "26": null,
+    "27": null,
+    "28": null
+   },
+   "routeShortName": "MMI",
+   "routeVariant": null,
+   "routeLongName": "METROMOVER INNER LOOP",
+   "routeBranch": null,
+   "routeType": 0,
+   "day": "Weekday",
+   "headsign": "INNER LOOP",
+   "minStopHeadway": 3,
+   "minStopHeadwayByPeriod": {
+    "amPeak": 3,
+    "midday": 3,
+    "pmPeak": 3,
+    "evening": 3,
+    "overnight": 2
+   },
+   "headsignMinStopHeadwayByPeriod": {
+    "amPeak": 3,
+    "midday": 3,
+    "pmPeak": 3,
+    "evening": 3,
+    "overnight": 2
+   },
+   "worstDirectionPeriodCoverageHeadway": {
+    "amPeak": 3,
+    "midday": 3,
+    "pmPeak": 3,
+    "evening": 55,
+    "late": null,
+    "overnight": 216
+   },
+   "worstDirectionHeadway": 3,
+   "worstDirectionHeadwayByPeriod": {
+    "amPeak": 3,
+    "midday": 3,
+    "pmPeak": 3
+   }
+  },
+  {
+   "routeId": "14457",
+   "directionId": 1,
+   "tier": "10",
+   "serviceClass": "regular",
+   "headway": 2,
+   "headwayByPeriod": {
+    "amPeak": 2,
+    "midday": 2,
+    "pmPeak": 2,
+    "evening": 3,
+    "late": null,
+    "overnight": 2
+   },
+   "periodCoverageHeadway": {
+    "amPeak": 3,
+    "midday": 3,
+    "pmPeak": 3,
+    "evening": 54,
+    "late": null,
+    "overnight": 216
+   },
+   "headwayRangeByPeriod": {
+    "amPeak": {
+     "min": 2,
+     "max": 3
+    },
+    "midday": {
+     "min": 2,
+     "max": 3
+    },
+    "pmPeak": {
+     "min": 2,
+     "max": 3
+    },
+    "evening": {
+     "min": 2,
+     "max": 3
+    },
+    "late": null,
+    "overnight": null
+   },
+   "maxGapByPeriod": {
+    "amPeak": 3,
+    "midday": 3,
+    "pmPeak": 3,
+    "evening": 3,
+    "late": 180,
+    "overnight": 216
+   },
+   "headwayByPeriodSustained": {
+    "amPeak": true,
+    "midday": true,
+    "pmPeak": true,
+    "evening": false,
+    "overnight": false
+   },
+   "headwayByHour": {
+    "5": 2,
+    "6": 2,
+    "7": 2,
+    "8": 2,
+    "9": 2,
+    "10": 2,
+    "11": 2,
+    "12": 2,
+    "13": 2,
+    "14": 2,
+    "15": 2,
+    "16": 2,
+    "17": 2,
+    "18": 2,
+    "19": 2,
+    "20": 2,
+    "21": 2,
+    "22": 3,
+    "23": null,
+    "24": null,
+    "25": null,
+    "26": null,
+    "27": null,
+    "28": null
+   },
+   "routeShortName": "MMI",
+   "routeVariant": null,
+   "routeLongName": "METROMOVER INNER LOOP",
+   "routeBranch": null,
+   "routeType": 0,
+   "day": "Weekday",
+   "headsign": "INNER LOOP",
+   "minStopHeadway": 2,
+   "minStopHeadwayByPeriod": {
+    "amPeak": 2,
+    "midday": 2,
+    "pmPeak": 2,
+    "evening": 3,
+    "overnight": 2
+   },
+   "headsignMinStopHeadwayByPeriod": {
+    "amPeak": 2,
+    "midday": 2,
+    "pmPeak": 2,
+    "evening": 3,
+    "overnight": 2
+   },
+   "worstDirectionPeriodCoverageHeadway": {
+    "amPeak": 3,
+    "midday": 3,
+    "pmPeak": 3,
+    "evening": 55,
+    "late": null,
+    "overnight": 216
+   },
+   "worstDirectionHeadway": 3,
+   "worstDirectionHeadwayByPeriod": {
+    "amPeak": 3,
+    "midday": 3,
+    "pmPeak": 3
+   }
+  }
+ ],
+ "stm51": [
+  {
+   "routeId": "51",
+   "directionId": 0,
+   "tier": "span",
+   "serviceClass": "irregular",
+   "headway": null,
+   "headwayByPeriod": {
+    "amPeak": 6,
+    "midday": null,
+    "pmPeak": 18,
+    "evening": null,
+    "late": null,
+    "overnight": null
+   },
+   "periodCoverageHeadway": {
+    "amPeak": 30,
+    "midday": 324,
+    "pmPeak": 170,
+    "evening": null,
+    "late": null,
+    "overnight": 222
+   },
+   "headwayRangeByPeriod": {
+    "amPeak": {
+     "min": 4,
+     "max": 9
+    },
+    "midday": null,
+    "pmPeak": {
+     "min": 12,
+     "max": 23
+    },
+    "evening": null,
+    "late": null,
+    "overnight": null
+   },
+   "maxGapByPeriod": {
+    "amPeak": 30,
+    "midday": 324,
+    "pmPeak": 34,
+    "evening": null,
+    "late": 180,
+    "overnight": 222
+   },
+   "headwayByPeriodSustained": {
+    "amPeak": false,
+    "pmPeak": false
+   },
+   "headwayByHour": {
+    "5": null,
+    "6": 22,
+    "7": 6,
+    "8": 5,
+    "9": null,
+    "10": null,
+    "11": null,
+    "12": null,
+    "13": null,
+    "14": null,
+    "15": 18,
+    "16": null,
+    "17": null,
+    "18": null,
+    "19": null,
+    "20": null,
+    "21": null,
+    "22": null,
+    "23": null,
+    "24": null,
+    "25": null,
+    "26": null,
+    "27": null,
+    "28": null
+   },
+   "routeShortName": "51",
+   "routeVariant": null,
+   "routeLongName": "Édouard-Montpetit",
+   "routeBranch": null,
+   "routeType": 3,
+   "day": "Weekday",
+   "headsign": "Est  Station Snowdon",
+   "minStopHeadwayByPeriod": {
+    "amPeak": 5,
+    "pmPeak": 18
+   },
+   "headsignMinStopHeadwayByPeriod": {
+    "amPeak": 5,
+    "pmPeak": 18
+   },
+   "worstDirectionPeriodCoverageHeadway": {
+    "amPeak": 34,
+    "midday": 13,
+    "pmPeak": 11,
+    "evening": 25,
+    "late": 33,
+    "overnight": 222
+   },
+   "worstDirectionHeadway": 10,
+   "worstDirectionHeadwayByPeriod": {
+    "midday": 10,
+    "pmPeak": 8,
+    "evening": 12,
+    "late": 31
+   }
+  },
+  {
+   "routeId": "51",
+   "directionId": 1,
+   "tier": "15",
+   "serviceClass": "regular",
+   "headway": 10,
+   "headwayByPeriod": {
+    "amPeak": 3,
+    "midday": 10,
+    "pmPeak": 4,
+    "evening": 8,
+    "late": 16,
+    "overnight": null
+   },
+   "periodCoverageHeadway": {
+    "amPeak": 34,
+    "midday": 11,
+    "pmPeak": 10,
+    "evening": 14,
+    "late": 31,
+    "overnight": 206
+   },
+   "headwayRangeByPeriod": {
+    "amPeak": {
+     "min": 3,
+     "max": 10
+    },
+    "midday": {
+     "min": 5,
+     "max": 11
+    },
+    "pmPeak": {
+     "min": 3,
+     "max": 8
+    },
+    "evening": {
+     "min": 7,
+     "max": 14
+    },
+    "late": null,
+    "overnight": null
+   },
+   "maxGapByPeriod": {
+    "amPeak": 34,
+    "midday": 11,
+    "pmPeak": 10,
+    "evening": 14,
+    "late": 31,
+    "overnight": 206
+   },
+   "headwayByPeriodSustained": {
+    "amPeak": false,
+    "midday": true,
+    "pmPeak": true,
+    "evening": true,
+    "late": false
+   },
+   "headwayByHour": {
+    "5": null,
+    "6": 24,
+    "7": 8,
+    "8": 3,
+    "9": 6,
+    "10": 10,
+    "11": 9,
+    "12": 10,
+    "13": 10,
+    "14": 5,
+    "15": 4,
+    "16": 4,
+    "17": 4,
+    "18": 5,
+    "19": 7,
+    "20": 7,
+    "21": 13,
+    "22": 13,
+    "23": 15,
+    "24": 20,
+    "25": 32,
+    "26": null,
+    "27": null,
+    "28": null
+   },
+   "routeShortName": "51",
+   "routeVariant": null,
+   "routeLongName": "Édouard-Montpetit",
+   "routeBranch": null,
+   "routeType": 3,
+   "day": "Weekday",
+   "headsign": "Ouest",
+   "minStopHeadway": 10,
+   "minStopHeadwayByPeriod": {
+    "amPeak": 6,
+    "midday": 10,
+    "pmPeak": 5,
+    "evening": 8,
+    "late": 16,
+    "overnight": 120
+   },
+   "headsignMinStopHeadwayByPeriod": {
+    "amPeak": 3,
+    "midday": 10,
+    "pmPeak": 4,
+    "evening": 8,
+    "late": 16,
+    "overnight": 120
+   },
+   "worstDirectionPeriodCoverageHeadway": {
+    "amPeak": 34,
+    "midday": 13,
+    "pmPeak": 11,
+    "evening": 25,
+    "late": 33,
+    "overnight": 222
+   },
+   "worstDirectionHeadway": 10,
+   "worstDirectionHeadwayByPeriod": {
+    "midday": 10,
+    "pmPeak": 8,
+    "evening": 12,
+    "late": 31
+   }
+  },
+  {
+   "routeId": "51",
+   "directionId": 0,
+   "tier": "15",
+   "serviceClass": "regular",
+   "headway": 8,
+   "headwayByPeriod": {
+    "amPeak": 5,
+    "midday": 8,
+    "pmPeak": 8,
+    "evening": 12,
+    "late": 31,
+    "overnight": null
+   },
+   "periodCoverageHeadway": {
+    "amPeak": 21,
+    "midday": 13,
+    "pmPeak": 11,
+    "evening": 25,
+    "late": 33,
+    "overnight": 207
+   },
+   "headwayRangeByPeriod": {
+    "amPeak": {
+     "min": 2,
+     "max": 7
+    },
+    "midday": {
+     "min": 6,
+     "max": 13
+    },
+    "pmPeak": {
+     "min": 4,
+     "max": 10
+    },
+    "evening": {
+     "min": 12,
+     "max": 12
+    },
+    "late": null,
+    "overnight": null
+   },
+   "maxGapByPeriod": {
+    "amPeak": 21,
+    "midday": 13,
+    "pmPeak": 11,
+    "evening": 25,
+    "late": 33,
+    "overnight": 207
+   },
+   "headwayByPeriodSustained": {
+    "amPeak": false,
+    "midday": true,
+    "pmPeak": true,
+    "evening": true,
+    "late": true
+   },
+   "headwayByHour": {
+    "5": 24,
+    "6": 17,
+    "7": 7,
+    "8": 4,
+    "9": 6,
+    "10": 8,
+    "11": 8,
+    "12": 7,
+    "13": 9,
+    "14": 9,
+    "15": 8,
+    "16": 7,
+    "17": 7,
+    "18": 9,
+    "19": 9,
+    "20": 12,
+    "21": 25,
+    "22": 25,
+    "23": 30,
+    "24": 31,
+    "25": null,
+    "26": null,
+    "27": null,
+    "28": null
+   },
+   "routeShortName": "51",
+   "routeVariant": null,
+   "routeLongName": "Édouard-Montpetit",
+   "routeBranch": null,
+   "routeType": 3,
+   "day": "Weekday",
+   "headsign": "Est",
+   "minStopHeadway": 8,
+   "minStopHeadwayByPeriod": {
+    "amPeak": 5,
+    "midday": 8,
+    "pmPeak": 8,
+    "evening": 10,
+    "overnight": 21
+   },
+   "headsignMinStopHeadwayByPeriod": {
+    "amPeak": 5,
+    "midday": 8,
+    "pmPeak": 8,
+    "evening": 12,
+    "late": 31,
+    "overnight": 21
+   },
+   "worstDirectionPeriodCoverageHeadway": {
+    "amPeak": 34,
+    "midday": 13,
+    "pmPeak": 11,
+    "evening": 25,
+    "late": 33,
+    "overnight": 222
+   },
+   "worstDirectionHeadway": 10,
+   "worstDirectionHeadwayByPeriod": {
+    "midday": 10,
+    "pmPeak": 8,
+    "evening": 12,
+    "late": 31
+   }
+  }
+ ]
+}

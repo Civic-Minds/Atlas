@@ -42,5 +42,13 @@
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0
+  "feedRefreshRetryCount": 0,
+  "modeOverrides": [
+    {
+      "routeType": 3,
+      "routeShortName": "500",
+      "mode": 0,
+      "reason": "El Paso Streetcar is a streetcar, published as route_type 3 (bus)"
+    }
+  ]
 }

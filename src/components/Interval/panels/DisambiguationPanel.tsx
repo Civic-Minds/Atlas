@@ -1,6 +1,6 @@
 import React from 'react';
 import { titleCase, getRouteLabel } from '../../../utils/format';
-import { FLOATING_CARD, PANEL_ENTER, LIST_ROW, LIST_ROW_PRIMARY } from '../../../styles';
+import { FLOATING_CARD, PANEL_ENTER, LIST_ROW_PRIMARY } from '../../../styles';
 import ListRow from '../../ui/ListRow';
 
 export interface DisambigRoute {

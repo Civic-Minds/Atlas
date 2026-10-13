@@ -116,7 +116,7 @@ describe('describeMapExport', () => {
   it('includes the selected route and modes', () => {
     const details = describeMapExport({ ...BASE, routeLabel: '505 — Dundas', routeShortName: '505', routeColor: '#15803d', selectedModes: [3, 1] }, samples({ ttc: 30 }), AGENCIES);
     expect(details.route).toEqual({ label: 'Route 505 — Dundas', color: '#15803d' });
-    expect(details.lines).toEqual(['Every 20 min or better · Saturday midday · Subway and Bus']);
+    expect(details.lines).toEqual(['Every 20 min or better · Saturday midday · Subway/Metro and Bus']);
     expect(details.filename).toBe('atlas-toronto-route-505-20min-saturday-midday.png');
   });
 

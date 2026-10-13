@@ -186,9 +186,9 @@ export default function DiagnosticsUnevenPage() {
           <div className="w-8 h-8 bg-[var(--accent)] rounded-full flex items-center justify-center shrink-0 shadow-2xl hover:opacity-80 transition-opacity">
             <MapIcon className="w-3.5 h-3.5 text-white" />
           </div>
-          <div className="flex flex-col leading-tight">
-            <span className="text-xs sm:text-sm font-black text-[var(--text-primary)]">Atlas</span>
-            <span className="text-2xs text-[var(--text-dim)]">by Civic Minds</span>
+          <div className="flex flex-col gap-px">
+            <span className="text-xs sm:text-sm leading-none font-black text-[var(--text-primary)]">Atlas</span>
+            <span className="text-2xs leading-none text-[var(--text-dim)]">by Civic Minds</span>
           </div>
         </a>
         <span className="w-px h-4 bg-[var(--border-primary)] shrink-0 ml-1" aria-hidden="true" />
@@ -218,13 +218,7 @@ export default function DiagnosticsUnevenPage() {
         ) : agenciesLoadState === 'error' ? (
           <div className="flex flex-col items-center justify-center py-24 gap-3 text-sm text-[var(--text-dim)]">
             <p>Could not load agency data.</p>
-            <button
-              type="button"
-              className="px-3 py-1.5 rounded-full bg-[var(--bg-btn-hover)] text-[var(--text-primary)]"
-              onClick={retry}
-            >
-              Retry
-            </button>
+            <Pill tone="outline" size="segment" onClick={retry}>Retry</Pill>
           </div>
         ) : sorted.length === 0 ? (
           <div className="flex items-center justify-center py-24 text-[var(--text-dim)] text-sm">

@@ -69,10 +69,10 @@ function writeAgencyAreaMap(areas: AreaConfig[]) {
   writeFileSync('shared/data/agency-area-slugs.json', JSON.stringify(Object.fromEntries(Object.entries(map).sort(([x], [y]) => x.localeCompare(y)))) + '\n');
 }
 
-/** shared/data/area-index.json: each area's agencies and bounds, for the map's ?area=<slug> link. */
+/** shared/data/area-index.json: each area's name, cities, agencies and bounds, for the map's ?area=<slug> link and area search. */
 function writeAreaIndex(areas: AreaConfig[]) {
   const index = Object.fromEntries([...areas].sort((x, y) => x.slug.localeCompare(y.slug))
-    .map(a => [a.slug, { agencies: a.agencies, bbox: a.bbox.map(n => Math.round(n * 1000) / 1000) }]));
+    .map(a => [a.slug, { name: a.name, cities: a.cities, page: a.page, agencies: a.agencies, bbox: a.bbox.map(n => Math.round(n * 1000) / 1000) }]));
   writeFileSync('shared/data/area-index.json', JSON.stringify(index) + '\n');
 }
 

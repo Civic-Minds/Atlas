@@ -53,5 +53,37 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://cdn.mbta.com/MBTA_GTFS.zip"
+  "lastFeedSourceUrl": "https://cdn.mbta.com/MBTA_GTFS.zip",
+  "modeOverrides": [
+    {
+      "routeType": 0,
+      "routeShortName": "B",
+      "mode": 100,
+      "reason": "Green Line branches are light rail, published as route_type 0 (tram)"
+    },
+    {
+      "routeType": 0,
+      "routeShortName": "C",
+      "mode": 100,
+      "reason": "Green Line branches are light rail, published as route_type 0 (tram)"
+    },
+    {
+      "routeType": 0,
+      "routeShortName": "D",
+      "mode": 100,
+      "reason": "Green Line branches are light rail, published as route_type 0 (tram)"
+    },
+    {
+      "routeType": 0,
+      "routeShortName": "E",
+      "mode": 100,
+      "reason": "Green Line branches are light rail, published as route_type 0 (tram)"
+    },
+    {
+      "routeType": 0,
+      "routeLongName": "Mattapan Line",
+      "mode": 100,
+      "reason": "Mattapan Line is light rail (the MBTA groups it with the Green Line), published as route_type 0 (tram)"
+    }
+  ]
 }

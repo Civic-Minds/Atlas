@@ -1,5 +1,5 @@
 import React from 'react';
-import { PANEL_SECTION_HEAD, LIST_ROW_SPACED, LIST_ROW_PRIMARY, LIST_ROW_DIM, SELECTION_ACTIVE, SELECTION_ACTIVE_TEXT } from '../../styles';
+import { PANEL_SECTION_HEAD, LIST_ROW_PRIMARY, LIST_ROW_DIM, SELECTION_ACTIVE, SELECTION_ACTIVE_TEXT } from '../../styles';
 import type { AgencySearchGroup } from '../../utils/agencySearch';
 import type { RouteSearchResult, StopSearchResult } from '../../utils/searchResults';
 import RouteListRow from '../RouteListRow';
@@ -7,6 +7,7 @@ import { routeRowLabels, routeRowRight } from './SearchSuggestionsPanel';
 import { agencyDisplayParts, shortenAgencyName, titleCase } from '../../utils/format';
 import type { RouteListDisplay } from '../../utils/effectiveHeadway';
 import ListRow from '../ui/ListRow';
+import type { AreaSearchResult } from '../../../shared/areaSearch';
 
 interface SearchSplitListProps<T> {
   headLabel: string;
@@ -35,6 +36,9 @@ export function SearchSplitList<T>({
 
 interface SearchResultsListProps {
   query: string;
+  /** Metro areas matching the query; selecting one zooms the map to it. */
+  areaResults?: AreaSearchResult[];
+  onSelectArea?: (area: AreaSearchResult) => void;
   displayAgencyGroups: AgencySearchGroup[];
   displayRouteResults: RouteSearchResult[];
   displayStopResults?: StopSearchResult[];
@@ -63,6 +67,8 @@ interface SearchResultsListProps {
 
 export const SearchResultsList: React.FC<SearchResultsListProps> = ({
   query,
+  areaResults = [],
+  onSelectArea,
   displayAgencyGroups,
   displayRouteResults,
   displayStopResults = [],
@@ -87,6 +93,32 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
   hasMoreResults = false,
   onShowMoreResults,
 }) => {
+  const areaBlock = areaResults.length > 0 && onSelectArea ? (
+    <SearchSplitList
+      headLabel={`Areas · ${areaResults.length} ${areaResults.length === 1 ? 'match' : 'matches'}`}
+      inView={areaResults}
+      elsewhere={[]}
+      itemKey={(a: AreaSearchResult) => a.slug}
+      renderItem={(a: AreaSearchResult) => (
+        <RouteListRow
+          shortName={a.name}
+          variant="spaced"
+          onClick={() => {
+            saveRecentSearch(query);
+            setQuery('');
+            setSearchFocused?.(false);
+            onSelectArea(a);
+          }}
+          right={(
+            <span className={`${LIST_ROW_DIM} shrink-0 ml-2 text-right`}>
+              {a.agencyCount} {a.agencyCount === 1 ? 'agency' : 'agencies'}
+            </span>
+          )}
+        />
+      )}
+    />
+  ) : null;
+
   const agencyBlock = displayAgencyGroups.length > 0 && setSelectedAgencySlug ? (
     <SearchSplitList
       headLabel={agencyResultsHeadLabel}
@@ -122,7 +154,7 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
       elsewhere={routeSections.elsewhere}
       itemKey={(r: RouteSearchResult) => r.key}
       renderItem={(r: RouteSearchResult) => {
-        const labels = routeRowLabels(r.routeShortName ?? '', r.routeLongName);
+        const labels = routeRowLabels(r.routeShortName ?? '', r.routeLongName, r.routeType);
         const name = r.variantCount && r.variantCount > 1
           ? `${labels.name ? `${labels.name} · ` : ''}${r.variantCount} variants`
           : labels.name;
@@ -143,7 +175,7 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
             }}
             right={(() => {
               const display = displayForRouteKey(r.key);
-              return routeRowRight(r.agencyName || '', display.headway, true, display.limited);
+              return routeRowRight(r.agencyName || '', display.headway, true, display.limited, display.sharedHeadway);
             })()}
           />
         );
@@ -192,6 +224,7 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
   ) : null;
 
   const noResults =
+    !areaBlock &&
     displayAgencyGroups.length === 0 &&
     displayRouteResults.length === 0 &&
     displayStopResults.length === 0;
@@ -204,13 +237,15 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
         </div>
       ) : routesFirst ? (
         <>
-          {routeBlock}
+          {areaBlock}
+          {routeBlock && <div className={areaBlock ? 'pt-3' : undefined}>{routeBlock}</div>}
           {stopBlock && <div className="pt-3">{stopBlock}</div>}
           {agencyBlock && <div className="pt-3">{agencyBlock}</div>}
         </>
       ) : (
         <>
-          {agencyBlock}
+          {areaBlock}
+          {agencyBlock && <div className={areaBlock ? 'pt-3' : undefined}>{agencyBlock}</div>}
           {routeBlock && <div className="pt-3">{routeBlock}</div>}
           {stopBlock && <div className="pt-3">{stopBlock}</div>}
         </>

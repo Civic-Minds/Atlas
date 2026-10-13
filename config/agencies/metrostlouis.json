@@ -42,5 +42,19 @@
       "featureCount": 425
     },
     "checkedAt": "2026-10-12"
-  }
+  },
+  "modeOverrides": [
+    {
+      "routeType": 2,
+      "routeShortName": "MLB",
+      "mode": 100,
+      "reason": "MetroLink is light rail, published as route_type 2 (commuter rail)"
+    },
+    {
+      "routeType": 2,
+      "routeShortName": "MLR",
+      "mode": 100,
+      "reason": "MetroLink is light rail, published as route_type 2 (commuter rail)"
+    }
+  ]
 }

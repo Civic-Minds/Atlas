@@ -35,5 +35,43 @@
   "feedRefreshRetryCount": 3,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://muni-gtfs.apps.sfmta.com/data/muni_gtfs-current.zip",
-  "feedApiKeyEnvVar": "MUNI_511_API_KEY"
+  "feedApiKeyEnvVar": "MUNI_511_API_KEY",
+  "modeOverrides": [
+    {
+      "routeType": 0,
+      "routeShortName": "J",
+      "mode": 100,
+      "reason": "Muni Metro lines are light rail, published as route_type 0 (tram); the F historic streetcar stays a streetcar"
+    },
+    {
+      "routeType": 0,
+      "routeShortName": "K",
+      "mode": 100,
+      "reason": "Muni Metro lines are light rail, published as route_type 0 (tram); the F historic streetcar stays a streetcar"
+    },
+    {
+      "routeType": 0,
+      "routeShortName": "L",
+      "mode": 100,
+      "reason": "Muni Metro lines are light rail, published as route_type 0 (tram); the F historic streetcar stays a streetcar"
+    },
+    {
+      "routeType": 0,
+      "routeShortName": "M",
+      "mode": 100,
+      "reason": "Muni Metro lines are light rail, published as route_type 0 (tram); the F historic streetcar stays a streetcar"
+    },
+    {
+      "routeType": 0,
+      "routeShortName": "N",
+      "mode": 100,
+      "reason": "Muni Metro lines are light rail, published as route_type 0 (tram); the F historic streetcar stays a streetcar"
+    },
+    {
+      "routeType": 0,
+      "routeShortName": "T",
+      "mode": 100,
+      "reason": "Muni Metro lines are light rail, published as route_type 0 (tram); the F historic streetcar stays a streetcar"
+    }
+  ]
 }

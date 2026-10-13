@@ -3,7 +3,7 @@ import { FREQUENCY_BANDS, NO_MIDDAY_PHRASE } from '../shared/agencyPages';
 import { HEADWAY_TIERS } from '../shared/config';
 
 const BAND_PHRASES = [...FREQUENCY_BANDS.map(b => b.phrase), NO_MIDDAY_PHRASE];
-const BAND_SHORT = ['≤10 min', '11–15', '16–20', '21–30', '31–60', '60+', 'no midday'];
+const BAND_SHORT = ['≤10', '11–15', '16–20', '21–30', '31–60', '60+', 'no midday'];
 /** The map's own frequency colours (HEADWAY_TIERS, same bands and edges as the filters), then the neutral no-service grey. */
 const BAND_FILLS = [...HEADWAY_TIERS.map(t => t.color), 'var(--control-inactive-bg)'];
 
@@ -16,6 +16,8 @@ export function FrequencyBar({ counts }: { counts: number[] }) {
   const total = counts.reduce((a, b) => a + b, 0);
   if (total === 0) return null;
   const shown = counts.map((n, i) => ({ n, i })).filter(x => x.n > 0);
+  // The unit goes on the first visible frequency band (not on "no midday"), so the row never reads "3 31–60" bare.
+  const unitBand = shown.find(x => x.i < BAND_SHORT.length - 1)?.i;
   const sentence = (x: { n: number; i: number }) => `${x.n} ${x.n === 1 ? 'route' : 'routes'} ${BAND_PHRASES[x.i]}`;
   let before = 0;
   const centres = new Map<number, number>();
@@ -43,7 +45,7 @@ export function FrequencyBar({ counts }: { counts: number[] }) {
         {shown.map(x => (
           <li key={x.i} className="flex items-center gap-1.5 whitespace-nowrap">
             <span aria-hidden="true" className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: BAND_FILLS[x.i] }} />
-            <span><span className="font-black">{x.n}</span> {BAND_SHORT[x.i]}</span>
+            <span><span className="font-black">{x.n}</span> {BAND_SHORT[x.i]}{x.i === unitBand ? ' min' : ''}</span>
           </li>
         ))}
       </ul>

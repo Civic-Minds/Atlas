@@ -6,7 +6,15 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+### Changed
+
+- **Page footer now groups links into Atlas and Learn, with Terms and Privacy beside the copyright**: Map, Agencies, Changelog, Docs, Research and About are one click away from any content page.
+- **Docs, changelog, terms and privacy pages scroll smoothly and keep the top bar and "On this page" list in view**: long pages were hard to navigate once you scrolled past the top.
+- **The page title shows above "On this page" once you scroll past it**: on long docs pages the sidebar now says which page you are on.
+
 ### Added
+
+- **Search finds metro areas, not just agencies and stops**: typing "Montreal" (accents and case ignored) lists the area at the top, and picking it zooms the map there, like opening a ?area= link
 
 - **Every agency gets its own frequency page, with real numbers and a link into the map**: each page shows a bar of how many routes fall in each weekday-midday frequency band (no fixed cutoff, so small agencies still get a useful picture), a route table by mode with AM peak, Midday, PM peak, Evening and Overnight waits, an intro sentence naming the agencies it connects with (stops within 150 m), and nearby agencies, so the agency can be found in search once these go public.
 - **An index lists every agency and area page**: /agencies shows the areas first, then every agency by country and state or province with its route count, with a filter box that narrows the list as you type, and it is built from the same data as the pages and the sitemap, so new agencies appear on their own. Beta-only agencies show only on beta builds, like on the map.
@@ -27,6 +35,13 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Changed
 
+- **Light rail and metro lines now carry the right mode (#827, #811)**: DART, TriMet MAX, RTD, TRAX, VTA, METRORail, Link, MBTA Green Line, Muni Metro, SEPTA trolleys and more no longer show as Streetcar, St. Louis MetroLink and Pittsburgh's T no longer show as Rail, Miami Metrorail is Subway/Metro, and QLine, TEXRail, Savannah's ferry and two streetcars filed as buses are corrected, through per-route overrides listed in each agency's config rather than guessed from names. Mode order and wording are now the same everywhere (Subway/Metro, Light rail, Streetcar, Commuter rail, Bus, Ferry, Gondola/aerial tram, On-demand); "LRT" and "Rail" became "Light rail" and "Commuter rail", and the Mode menu uses the same pills as the other filters.
+- **The Changelog page lists versions only**: map-data refresh dates are gone (data refreshes far more often than the app changes), which also fixes the date showing twice on the version heading and in the "On this page" list. (CIV-144)
+- **The "Atlas / by Civic Minds" wordmark is tighter**: the two lines sit closer so they read as one unit, in the map header and the page headers.
+- **In view lists keep route numbers**: numbered bus routes (e.g. Toronto's GO Transit and Brampton lines, Kitchener's GRT) no longer lost their number in the In view and search lists.
+- **Menu options stay on one line**: the Time, Mode and Gondola/aerial tram options no longer wrap to two lines.
+- **The agency card and In view panel are full width on phones**: they had shrunk to a sliver the width of the search pill, so the agency name broke into one word per line.
+- **Schedule chart period labels no longer overlap on phones**: "AM Peak" ran into "Midday" in the expanded chart; peak labels are shortened to "AM"/"PM" on narrow screens.
 - **Text is bigger and easier to read**: nothing a person has to read is below 12px any more, and the faint greys, status colours (green, red, amber) and white-on-pastel fare and timeline pills now meet WCAG AA contrast in light, dark and high-contrast modes.
 - **Frequency reads the same way everywhere, and Compare now says "or better"**: Compare headings read like a claim about the service rather than the filter, and the same frequency was worded eight different ways ("≤10m", "every 12m", "about every 10 min").
 - **Night Service moved to `/research/night`**: it now lives with the other research pages, and old `/apps/night` links redirect there with their filters kept.
@@ -37,6 +52,21 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Fixed
 
+- **Frequency chart hover no longer covers labels**: hovering an hour bar drew an outline that spilled over the number above and below the chart; it now just shades that hour's column. (#830)
+- **The expired-timetable notice on route cards is smaller and reads properly**: it was bold and oversized after the type-scale change and said "Atlas's latest the Grand River Transit schedule for Waterloo Region ended"; it now says "Grand River Transit's timetable ended on Apr 26, 2026." in regular weight, with no divider line above it, and the expanded version puts the check history in its own paragraph instead of running it on.
+- **The hidden-routes list now looks like the other route lists**: agency names are a lighter group header, routes use the standard row, and the divider lines are gone, so agencies and routes are easy to tell apart.
+- **History no longer logs a render-loop error on load**: the map kept reloading its agency data because its agency list was rebuilt on every render ([#822](https://github.com/Civic-Minds/Atlas/issues/822))
+
+- **The phone search bar shows its "Search" hint**: it was squeezed to a sliver showing only "S", so the "by Civic Minds" line under the logo is hidden on phones to give it room ([#824](https://github.com/Civic-Minds/Atlas/issues/824))
+
+- **Unknown addresses show a not-found page instead of the map**: the live site already answered them with a 404, and the app itself now does the same when it is opened or navigated to a made-up address ([#823](https://github.com/Civic-Minds/Atlas/issues/823))
+
+- **CARTA Chattanooga is no longer listed on the San Francisco area page**: its map center had been set to California, so it also sorted as a nearby agency in the wrong place ([#825](https://github.com/Civic-Minds/Atlas/issues/825))
+
+- **Route lists show the slower direction's frequency, as the agency page says**: they showed the busier direction, so GO 47 read "every 3 min" in the AM peak from a one-way rush cluster ([#821](https://github.com/Civic-Minds/Atlas/issues/821))
+- **Route lists show a range where alternating branches share a stretch**: GO Lakeshore West reads "every 30–60 min" midday, every 30 on the shared part and every 60 on each branch; sorting and filters still use the per-branch number
+- **A few bunched trips no longer show as "every 2 to 4 min"**: school trips or a short burst packed into part of a period had their in-burst gap shown as the route's frequency ([#826](https://github.com/Civic-Minds/Atlas/issues/826))
+- **Routes that run steadily all period no longer show "limited" because of one hand-off gap**: TTC 927 evenings show every 10 again ([#826](https://github.com/Civic-Minds/Atlas/issues/826))
 - **A route's line comes from its daytime pattern, not a few pre-dawn trips**: those trips had been drawn with no daytime values, like TTC 100 via Linkwood ([#740](https://github.com/Civic-Minds/Atlas/issues/740))
 - **A route's tier no longer drops for one gap in its drawn pattern**: the destination's other trips fill that gap, so Brampton 7 Kennedy South reads every 20 instead of 60 ([#728](https://github.com/Civic-Minds/Atlas/issues/728))
 - **TTC 47 Lansdowne and 63 Ossington no longer read every 2 min**: each bus was counted twice where it ends one trip and starts the next at the same stop ([#341](https://github.com/Civic-Minds/Atlas/issues/341)).

@@ -30,5 +30,13 @@
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261102",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://lfportal.nctd.org/staticGTFS/google_transit.zip"
+  "lastFeedSourceUrl": "https://lfportal.nctd.org/staticGTFS/google_transit.zip",
+  "modeOverrides": [
+    {
+      "routeType": 0,
+      "routeLongName": "SPRINTER",
+      "mode": 100,
+      "reason": "SPRINTER is diesel light rail, published as route_type 0 (tram)"
+    }
+  ]
 }

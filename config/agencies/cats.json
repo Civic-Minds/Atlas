@@ -38,5 +38,13 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2265/latest.zip"
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2265/latest.zip",
+  "modeOverrides": [
+    {
+      "routeType": 0,
+      "routeShortName": "501",
+      "mode": 100,
+      "reason": "LYNX Blue Line is light rail, published as route_type 0 (tram)"
+    }
+  ]
 }

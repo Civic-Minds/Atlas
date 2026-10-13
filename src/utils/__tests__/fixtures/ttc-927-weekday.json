@@ -1,0 +1,1233 @@
+[
+ {
+  "routeId": "927",
+  "directionId": 0,
+  "tier": "infrequent",
+  "serviceClass": "regular",
+  "headway": 10,
+  "headwayByPeriod": {
+   "amPeak": 10,
+   "midday": 10,
+   "pmPeak": null,
+   "evening": 10,
+   "late": 12,
+   "overnight": 12
+  },
+  "periodCoverageHeadway": {
+   "amPeak": 11,
+   "midday": 11,
+   "pmPeak": 224,
+   "evening": 84,
+   "late": 55,
+   "overnight": 215
+  },
+  "headwayRangeByPeriod": {
+   "amPeak": null,
+   "midday": {
+    "min": 7,
+    "max": 10
+   },
+   "pmPeak": null,
+   "evening": {
+    "min": 10,
+    "max": 10
+   },
+   "late": null,
+   "overnight": null
+  },
+  "maxGapByPeriod": {
+   "amPeak": 11,
+   "midday": 11,
+   "pmPeak": 224,
+   "evening": 84,
+   "late": 55,
+   "overnight": 215
+  },
+  "headwayByPeriodSustained": {
+   "amPeak": true,
+   "midday": true,
+   "evening": false,
+   "late": true,
+   "overnight": false
+  },
+  "headwayByHour": {
+   "5": 12,
+   "6": 10,
+   "7": 10,
+   "8": 10,
+   "9": 10,
+   "10": 10,
+   "11": 9,
+   "12": 9,
+   "13": 9,
+   "14": 10,
+   "15": null,
+   "16": null,
+   "17": null,
+   "18": null,
+   "19": 10,
+   "20": 10,
+   "21": 10,
+   "22": 9,
+   "23": 12,
+   "24": 12,
+   "25": null,
+   "26": null,
+   "27": null,
+   "28": null
+  },
+  "maxGapByHour": {
+   "5": 13,
+   "6": 10,
+   "7": 10,
+   "8": 10,
+   "9": 11,
+   "10": 10,
+   "11": 10,
+   "12": 10,
+   "13": 10,
+   "14": 10,
+   "15": 308,
+   "16": null,
+   "17": null,
+   "18": null,
+   "19": 10,
+   "20": 10,
+   "21": 10,
+   "22": 12,
+   "23": 12,
+   "24": 15,
+   "25": null,
+   "26": null,
+   "27": null,
+   "28": null
+  },
+  "routeShortName": "927",
+  "routeVariant": null,
+  "routeLongName": "Highway 27 Express",
+  "routeBranch": null,
+  "routeType": 3,
+  "day": "Weekday",
+  "headsign": "Kipling via Humber College",
+  "minStopHeadway": 9,
+  "minStopHeadwayByPeriod": {
+   "amPeak": 19,
+   "midday": 9,
+   "evening": 10,
+   "late": 12,
+   "overnight": 18
+  },
+  "headsignMinStopHeadwayByPeriod": {
+   "amPeak": 10,
+   "midday": 10,
+   "evening": 10,
+   "late": 12,
+   "overnight": 10
+  },
+  "worstDirectionPeriodCoverageHeadway": {
+   "amPeak": 15,
+   "midday": 46,
+   "pmPeak": 25,
+   "evening": 166,
+   "late": 55,
+   "overnight": 215
+  },
+  "worstDirectionHeadway": 10,
+  "worstDirectionHeadwayByPeriod": {
+   "amPeak": 10,
+   "midday": 10,
+   "late": 12,
+   "pmPeak": 10,
+   "evening": 10
+  },
+  "routeHasLimitedDirection": true
+ },
+ {
+  "routeId": "927",
+  "directionId": 0,
+  "tier": "infrequent",
+  "serviceClass": "regular",
+  "headway": 10,
+  "headwayByPeriod": {
+   "amPeak": 10,
+   "midday": 10,
+   "pmPeak": 10,
+   "evening": 9,
+   "late": null,
+   "overnight": null
+  },
+  "periodCoverageHeadway": {
+   "amPeak": 14,
+   "midday": 285,
+   "pmPeak": 10,
+   "evening": 212,
+   "late": null,
+   "overnight": null
+  },
+  "headwayRangeByPeriod": {
+   "amPeak": {
+    "min": 10,
+    "max": 10
+   },
+   "midday": {
+    "min": 8,
+    "max": 10
+   },
+   "pmPeak": {
+    "min": 8,
+    "max": 10
+   },
+   "evening": null,
+   "late": null,
+   "overnight": null
+  },
+  "maxGapByPeriod": {
+   "amPeak": 10,
+   "midday": 285,
+   "pmPeak": 10,
+   "evening": 10,
+   "late": 180,
+   "overnight": 240
+  },
+  "headwayByPeriodSustained": {
+   "amPeak": true,
+   "midday": false,
+   "pmPeak": true,
+   "evening": false
+  },
+  "headwayByHour": {
+   "5": null,
+   "6": 10,
+   "7": 10,
+   "8": 10,
+   "9": 10,
+   "10": null,
+   "11": null,
+   "12": null,
+   "13": 10,
+   "14": 10,
+   "15": 10,
+   "16": 10,
+   "17": 10,
+   "18": 10,
+   "19": 9,
+   "20": null,
+   "21": null,
+   "22": null,
+   "23": null,
+   "24": null,
+   "25": null,
+   "26": null,
+   "27": null,
+   "28": null
+  },
+  "maxGapByHour": {
+   "5": null,
+   "6": 10,
+   "7": 10,
+   "8": 10,
+   "9": 285,
+   "10": null,
+   "11": null,
+   "12": null,
+   "13": null,
+   "14": 10,
+   "15": 10,
+   "16": 10,
+   "17": 10,
+   "18": 10,
+   "19": 10,
+   "20": null,
+   "21": null,
+   "22": null,
+   "23": null,
+   "24": null,
+   "25": null,
+   "26": null,
+   "27": null,
+   "28": null
+  },
+  "routeShortName": "927",
+  "routeVariant": null,
+  "routeLongName": "Highway 27 Express",
+  "routeBranch": null,
+  "routeType": 3,
+  "day": "Weekday",
+  "headsign": "Kipling via Attwell",
+  "minStopHeadway": 10,
+  "minStopHeadwayByPeriod": {
+   "amPeak": 10,
+   "midday": 10,
+   "pmPeak": 10,
+   "evening": 9
+  },
+  "headsignMinStopHeadwayByPeriod": {
+   "amPeak": 10,
+   "midday": 10,
+   "pmPeak": 10,
+   "evening": 9
+  },
+  "worstDirectionPeriodCoverageHeadway": {
+   "amPeak": 15,
+   "midday": 46,
+   "pmPeak": 25,
+   "evening": 166,
+   "late": 55,
+   "overnight": 215
+  },
+  "worstDirectionHeadway": 10,
+  "worstDirectionHeadwayByPeriod": {
+   "amPeak": 10,
+   "midday": 10,
+   "late": 12,
+   "pmPeak": 10,
+   "evening": 10
+  },
+  "routeHasLimitedDirection": true
+ },
+ {
+  "routeId": "927",
+  "directionId": 0,
+  "tier": "20",
+  "serviceClass": "time-limited",
+  "headway": 20,
+  "headwayByPeriod": {
+   "amPeak": null,
+   "midday": 20,
+   "pmPeak": null,
+   "evening": null,
+   "late": null,
+   "overnight": null
+  },
+  "periodCoverageHeadway": {
+   "amPeak": null,
+   "midday": 255,
+   "pmPeak": null,
+   "evening": null,
+   "late": null,
+   "overnight": null
+  },
+  "headwayRangeByPeriod": {
+   "amPeak": null,
+   "midday": {
+    "min": 20,
+    "max": 20
+   },
+   "pmPeak": null,
+   "evening": null,
+   "late": null,
+   "overnight": null
+  },
+  "maxGapByPeriod": {
+   "amPeak": null,
+   "midday": 20,
+   "pmPeak": null,
+   "evening": null,
+   "late": 180,
+   "overnight": 240
+  },
+  "headwayByPeriodSustained": {
+   "midday": false
+  },
+  "headwayByHour": {
+   "5": null,
+   "6": null,
+   "7": null,
+   "8": null,
+   "9": 20,
+   "10": 20,
+   "11": null,
+   "12": null,
+   "13": null,
+   "14": null,
+   "15": null,
+   "16": null,
+   "17": null,
+   "18": null,
+   "19": null,
+   "20": null,
+   "21": null,
+   "22": null,
+   "23": null,
+   "24": null,
+   "25": null,
+   "26": null,
+   "27": null,
+   "28": null
+  },
+  "maxGapByHour": {
+   "5": null,
+   "6": null,
+   "7": null,
+   "8": null,
+   "9": 20,
+   "10": 20,
+   "11": null,
+   "12": null,
+   "13": null,
+   "14": null,
+   "15": null,
+   "16": null,
+   "17": null,
+   "18": null,
+   "19": null,
+   "20": null,
+   "21": null,
+   "22": null,
+   "23": null,
+   "24": null,
+   "25": null,
+   "26": null,
+   "27": null,
+   "28": null
+  },
+  "routeShortName": "927",
+  "routeVariant": null,
+  "routeLongName": "Highway 27 Express",
+  "routeBranch": null,
+  "routeType": 3,
+  "day": "Weekday",
+  "headsign": "Kipling",
+  "minStopHeadway": 20,
+  "minStopHeadwayByPeriod": {
+   "midday": 20
+  },
+  "headsignMinStopHeadwayByPeriod": {
+   "midday": 20
+  },
+  "worstDirectionPeriodCoverageHeadway": {
+   "amPeak": 15,
+   "midday": 46,
+   "pmPeak": 25,
+   "evening": 166,
+   "late": 55,
+   "overnight": 215
+  },
+  "worstDirectionHeadway": 10,
+  "worstDirectionHeadwayByPeriod": {
+   "amPeak": 10,
+   "midday": 10,
+   "late": 12,
+   "pmPeak": 10,
+   "evening": 10
+  },
+  "routeHasLimitedDirection": true
+ },
+ {
+  "routeId": "927",
+  "directionId": 0,
+  "tier": "10",
+  "serviceClass": "time-limited",
+  "headway": 10,
+  "headwayByPeriod": {
+   "amPeak": null,
+   "midday": 10,
+   "pmPeak": 10,
+   "evening": 10,
+   "late": null,
+   "overnight": null
+  },
+  "periodCoverageHeadway": {
+   "amPeak": null,
+   "midday": null,
+   "pmPeak": 25,
+   "evening": 166,
+   "late": null,
+   "overnight": null
+  },
+  "headwayRangeByPeriod": {
+   "amPeak": null,
+   "midday": {
+    "min": 10,
+    "max": 10
+   },
+   "pmPeak": {
+    "min": 10,
+    "max": 10
+   },
+   "evening": {
+    "min": 10,
+    "max": 10
+   },
+   "late": null,
+   "overnight": null
+  },
+  "maxGapByPeriod": {
+   "amPeak": null,
+   "midday": 10,
+   "pmPeak": 10,
+   "evening": 10,
+   "late": 180,
+   "overnight": 240
+  },
+  "headwayByPeriodSustained": {
+   "midday": false,
+   "pmPeak": true,
+   "evening": false
+  },
+  "headwayByHour": {
+   "5": null,
+   "6": null,
+   "7": null,
+   "8": null,
+   "9": null,
+   "10": null,
+   "11": null,
+   "12": null,
+   "13": null,
+   "14": 10,
+   "15": 10,
+   "16": 10,
+   "17": 10,
+   "18": 10,
+   "19": 10,
+   "20": null,
+   "21": null,
+   "22": null,
+   "23": null,
+   "24": null,
+   "25": null,
+   "26": null,
+   "27": null,
+   "28": null
+  },
+  "maxGapByHour": {
+   "5": null,
+   "6": null,
+   "7": null,
+   "8": null,
+   "9": null,
+   "10": null,
+   "11": null,
+   "12": null,
+   "13": null,
+   "14": 10,
+   "15": 10,
+   "16": 10,
+   "17": 10,
+   "18": 10,
+   "19": 10,
+   "20": 10,
+   "21": null,
+   "22": null,
+   "23": null,
+   "24": null,
+   "25": null,
+   "26": null,
+   "27": null,
+   "28": null
+  },
+  "routeShortName": "927",
+  "routeVariant": null,
+  "routeLongName": "Highway 27 Express",
+  "routeBranch": null,
+  "routeType": 3,
+  "day": "Weekday",
+  "headsign": "Kipling via Royalcrest and Humber College",
+  "minStopHeadway": 10,
+  "minStopHeadwayByPeriod": {
+   "midday": 10,
+   "pmPeak": 10,
+   "evening": 10
+  },
+  "headsignMinStopHeadwayByPeriod": {
+   "midday": 10,
+   "pmPeak": 10,
+   "evening": 10
+  },
+  "worstDirectionPeriodCoverageHeadway": {
+   "amPeak": 15,
+   "midday": 46,
+   "pmPeak": 25,
+   "evening": 166,
+   "late": 55,
+   "overnight": 215
+  },
+  "worstDirectionHeadway": 10,
+  "worstDirectionHeadwayByPeriod": {
+   "amPeak": 10,
+   "midday": 10,
+   "late": 12,
+   "pmPeak": 10,
+   "evening": 10
+  },
+  "routeHasLimitedDirection": true
+ },
+ {
+  "routeId": "927",
+  "directionId": 1,
+  "tier": "infrequent",
+  "serviceClass": "regular",
+  "headway": 10,
+  "headwayByPeriod": {
+   "amPeak": 10,
+   "midday": 10,
+   "pmPeak": 10,
+   "evening": 9,
+   "late": null,
+   "overnight": null
+  },
+  "periodCoverageHeadway": {
+   "amPeak": 15,
+   "midday": 309,
+   "pmPeak": 10,
+   "evening": 212,
+   "late": null,
+   "overnight": null
+  },
+  "headwayRangeByPeriod": {
+   "amPeak": {
+    "min": 10,
+    "max": 10
+   },
+   "midday": {
+    "min": 10,
+    "max": 10
+   },
+   "pmPeak": {
+    "min": 10,
+    "max": 10
+   },
+   "evening": null,
+   "late": null,
+   "overnight": null
+  },
+  "maxGapByPeriod": {
+   "amPeak": 15,
+   "midday": 309,
+   "pmPeak": 10,
+   "evening": 10,
+   "late": 180,
+   "overnight": 240
+  },
+  "headwayByPeriodSustained": {
+   "amPeak": true,
+   "midday": false,
+   "pmPeak": true,
+   "evening": false
+  },
+  "headwayByHour": {
+   "5": null,
+   "6": 10,
+   "7": 10,
+   "8": 10,
+   "9": 10,
+   "10": null,
+   "11": null,
+   "12": null,
+   "13": 10,
+   "14": 10,
+   "15": 10,
+   "16": 10,
+   "17": 10,
+   "18": 10,
+   "19": 9,
+   "20": null,
+   "21": null,
+   "22": null,
+   "23": null,
+   "24": null,
+   "25": null,
+   "26": null,
+   "27": null,
+   "28": null
+  },
+  "maxGapByHour": {
+   "5": null,
+   "6": 10,
+   "7": 15,
+   "8": 10,
+   "9": 309,
+   "10": null,
+   "11": null,
+   "12": null,
+   "13": 10,
+   "14": 10,
+   "15": 10,
+   "16": 10,
+   "17": 10,
+   "18": 10,
+   "19": 10,
+   "20": null,
+   "21": null,
+   "22": null,
+   "23": null,
+   "24": null,
+   "25": null,
+   "26": null,
+   "27": null,
+   "28": null
+  },
+  "routeShortName": "927",
+  "routeVariant": null,
+  "routeLongName": "Highway 27 Express",
+  "routeBranch": null,
+  "routeType": 3,
+  "day": "Weekday",
+  "headsign": "Humber College via Attwell",
+  "minStopHeadway": 10,
+  "minStopHeadwayByPeriod": {
+   "amPeak": 10,
+   "midday": 10,
+   "pmPeak": 10,
+   "evening": 9
+  },
+  "headsignMinStopHeadwayByPeriod": {
+   "amPeak": 10,
+   "midday": 10,
+   "pmPeak": 10,
+   "evening": 9
+  },
+  "worstDirectionPeriodCoverageHeadway": {
+   "amPeak": 15,
+   "midday": 46,
+   "pmPeak": 25,
+   "evening": 166,
+   "late": 55,
+   "overnight": 215
+  },
+  "worstDirectionHeadway": 10,
+  "worstDirectionHeadwayByPeriod": {
+   "amPeak": 10,
+   "midday": 10,
+   "late": 12,
+   "pmPeak": 10,
+   "evening": 10
+  },
+  "routeHasLimitedDirection": true
+ },
+ {
+  "routeId": "927",
+  "directionId": 1,
+  "tier": "span",
+  "serviceClass": "irregular",
+  "headway": null,
+  "headwayByPeriod": {
+   "amPeak": 10,
+   "midday": 10,
+   "pmPeak": null,
+   "evening": null,
+   "late": null,
+   "overnight": 24
+  },
+  "periodCoverageHeadway": {
+   "amPeak": 19,
+   "midday": 337,
+   "pmPeak": null,
+   "evening": null,
+   "late": null,
+   "overnight": 184
+  },
+  "headwayRangeByPeriod": {
+   "amPeak": {
+    "min": 10,
+    "max": 10
+   },
+   "midday": null,
+   "pmPeak": null,
+   "evening": null,
+   "late": null,
+   "overnight": null
+  },
+  "maxGapByPeriod": {
+   "amPeak": 19,
+   "midday": 10,
+   "pmPeak": null,
+   "evening": null,
+   "late": 180,
+   "overnight": 184
+  },
+  "headwayByPeriodSustained": {
+   "amPeak": true,
+   "midday": false,
+   "overnight": true
+  },
+  "headwayByHour": {
+   "5": 24,
+   "6": 10,
+   "7": 10,
+   "8": 10,
+   "9": 10,
+   "10": null,
+   "11": null,
+   "12": null,
+   "13": null,
+   "14": null,
+   "15": null,
+   "16": null,
+   "17": null,
+   "18": null,
+   "19": null,
+   "20": null,
+   "21": null,
+   "22": null,
+   "23": null,
+   "24": null,
+   "25": null,
+   "26": null,
+   "27": null,
+   "28": null
+  },
+  "maxGapByHour": {
+   "5": 24,
+   "6": 19,
+   "7": 10,
+   "8": 10,
+   "9": 10,
+   "10": null,
+   "11": null,
+   "12": null,
+   "13": null,
+   "14": null,
+   "15": null,
+   "16": null,
+   "17": null,
+   "18": null,
+   "19": null,
+   "20": null,
+   "21": null,
+   "22": null,
+   "23": null,
+   "24": null,
+   "25": null,
+   "26": null,
+   "27": null,
+   "28": null
+  },
+  "routeShortName": "927",
+  "routeVariant": null,
+  "routeLongName": "Highway 27 Express",
+  "routeBranch": null,
+  "routeType": 3,
+  "day": "Weekday",
+  "headsign": "Steeles and Signal Hill via Royalcrest and Humber College",
+  "minStopHeadwayByPeriod": {
+   "amPeak": 10,
+   "midday": 10
+  },
+  "headsignMinStopHeadwayByPeriod": {
+   "amPeak": 10,
+   "midday": 10,
+   "overnight": 23
+  },
+  "worstDirectionPeriodCoverageHeadway": {
+   "amPeak": 15,
+   "midday": 46,
+   "pmPeak": 25,
+   "evening": 166,
+   "late": 55,
+   "overnight": 215
+  },
+  "worstDirectionHeadway": 10,
+  "worstDirectionHeadwayByPeriod": {
+   "amPeak": 10,
+   "midday": 10,
+   "late": 12,
+   "pmPeak": 10,
+   "evening": 10
+  },
+  "routeHasLimitedDirection": true
+ },
+ {
+  "routeId": "927",
+  "directionId": 1,
+  "tier": "infrequent",
+  "serviceClass": "regular",
+  "headway": 10,
+  "headwayByPeriod": {
+   "amPeak": null,
+   "midday": 10,
+   "pmPeak": null,
+   "evening": 10,
+   "late": 12,
+   "overnight": null
+  },
+  "periodCoverageHeadway": {
+   "amPeak": null,
+   "midday": 46,
+   "pmPeak": null,
+   "evening": 24,
+   "late": 15,
+   "overnight": null
+  },
+  "headwayRangeByPeriod": {
+   "amPeak": null,
+   "midday": {
+    "min": 9,
+    "max": 10
+   },
+   "pmPeak": null,
+   "evening": {
+    "min": 10,
+    "max": 10
+   },
+   "late": null,
+   "overnight": null
+  },
+  "maxGapByPeriod": {
+   "amPeak": null,
+   "midday": 46,
+   "pmPeak": 240,
+   "evening": 24,
+   "late": 15,
+   "overnight": 240
+  },
+  "headwayByPeriodSustained": {
+   "midday": true,
+   "evening": true,
+   "late": true
+  },
+  "headwayByHour": {
+   "5": null,
+   "6": null,
+   "7": null,
+   "8": 10,
+   "9": 9,
+   "10": 9,
+   "11": 10,
+   "12": 10,
+   "13": 10,
+   "14": null,
+   "15": null,
+   "16": null,
+   "17": null,
+   "18": 10,
+   "19": 10,
+   "20": 10,
+   "21": 10,
+   "22": 10,
+   "23": 12,
+   "24": 12,
+   "25": 12,
+   "26": null,
+   "27": null,
+   "28": null
+  },
+  "maxGapByHour": {
+   "5": null,
+   "6": null,
+   "7": null,
+   "8": 10,
+   "9": 10,
+   "10": 10,
+   "11": 10,
+   "12": 10,
+   "13": 10,
+   "14": 310,
+   "15": null,
+   "16": null,
+   "17": null,
+   "18": 10,
+   "19": 10,
+   "20": 10,
+   "21": 10,
+   "22": 12,
+   "23": 12,
+   "24": 12,
+   "25": 12,
+   "26": null,
+   "27": null,
+   "28": null
+  },
+  "routeShortName": "927",
+  "routeVariant": null,
+  "routeLongName": "Highway 27 Express",
+  "routeBranch": null,
+  "routeType": 3,
+  "day": "Weekday",
+  "headsign": "Steeles via Humber College",
+  "minStopHeadway": 10,
+  "minStopHeadwayByPeriod": {
+   "midday": 10,
+   "evening": 10,
+   "late": 12
+  },
+  "headsignMinStopHeadwayByPeriod": {
+   "midday": 10,
+   "evening": 10,
+   "late": 12
+  },
+  "worstDirectionPeriodCoverageHeadway": {
+   "amPeak": 15,
+   "midday": 46,
+   "pmPeak": 25,
+   "evening": 166,
+   "late": 55,
+   "overnight": 215
+  },
+  "worstDirectionHeadway": 10,
+  "worstDirectionHeadwayByPeriod": {
+   "amPeak": 10,
+   "midday": 10,
+   "late": 12,
+   "pmPeak": 10,
+   "evening": 10
+  },
+  "routeHasLimitedDirection": true
+ },
+ {
+  "routeId": "927",
+  "directionId": 1,
+  "tier": "20",
+  "serviceClass": "time-limited",
+  "headway": 19,
+  "headwayByPeriod": {
+   "amPeak": null,
+   "midday": 19,
+   "pmPeak": null,
+   "evening": null,
+   "late": null,
+   "overnight": null
+  },
+  "periodCoverageHeadway": {
+   "amPeak": null,
+   "midday": 222,
+   "pmPeak": null,
+   "evening": null,
+   "late": null,
+   "overnight": null
+  },
+  "headwayRangeByPeriod": {
+   "amPeak": null,
+   "midday": {
+    "min": 18,
+    "max": 19
+   },
+   "pmPeak": null,
+   "evening": null,
+   "late": null,
+   "overnight": null
+  },
+  "maxGapByPeriod": {
+   "amPeak": null,
+   "midday": 19,
+   "pmPeak": null,
+   "evening": null,
+   "late": 180,
+   "overnight": 240
+  },
+  "headwayByPeriodSustained": {
+   "midday": false
+  },
+  "headwayByHour": {
+   "5": null,
+   "6": null,
+   "7": null,
+   "8": null,
+   "9": 19,
+   "10": 19,
+   "11": null,
+   "12": null,
+   "13": null,
+   "14": null,
+   "15": null,
+   "16": null,
+   "17": null,
+   "18": null,
+   "19": null,
+   "20": null,
+   "21": null,
+   "22": null,
+   "23": null,
+   "24": null,
+   "25": null,
+   "26": null,
+   "27": null,
+   "28": null
+  },
+  "maxGapByHour": {
+   "5": null,
+   "6": null,
+   "7": null,
+   "8": null,
+   "9": 19,
+   "10": 19,
+   "11": null,
+   "12": null,
+   "13": null,
+   "14": null,
+   "15": null,
+   "16": null,
+   "17": null,
+   "18": null,
+   "19": null,
+   "20": null,
+   "21": null,
+   "22": null,
+   "23": null,
+   "24": null,
+   "25": null,
+   "26": null,
+   "27": null,
+   "28": null
+  },
+  "routeShortName": "927",
+  "routeVariant": null,
+  "routeLongName": "Highway 27 Express",
+  "routeBranch": null,
+  "routeType": 3,
+  "day": "Weekday",
+  "headsign": "Humber College",
+  "minStopHeadway": 19,
+  "minStopHeadwayByPeriod": {
+   "midday": 19
+  },
+  "headsignMinStopHeadwayByPeriod": {
+   "midday": 19
+  },
+  "worstDirectionPeriodCoverageHeadway": {
+   "amPeak": 15,
+   "midday": 46,
+   "pmPeak": 25,
+   "evening": 166,
+   "late": 55,
+   "overnight": 215
+  },
+  "worstDirectionHeadway": 10,
+  "worstDirectionHeadwayByPeriod": {
+   "amPeak": 10,
+   "midday": 10,
+   "late": 12,
+   "pmPeak": 10,
+   "evening": 10
+  },
+  "routeHasLimitedDirection": true
+ },
+ {
+  "routeId": "927",
+  "directionId": 1,
+  "tier": "10",
+  "serviceClass": "time-limited",
+  "headway": 10,
+  "headwayByPeriod": {
+   "amPeak": null,
+   "midday": 10,
+   "pmPeak": 10,
+   "evening": 10,
+   "late": null,
+   "overnight": null
+  },
+  "periodCoverageHeadway": {
+   "amPeak": null,
+   "midday": 329,
+   "pmPeak": 10,
+   "evening": 218,
+   "late": null,
+   "overnight": null
+  },
+  "headwayRangeByPeriod": {
+   "amPeak": null,
+   "midday": {
+    "min": 6,
+    "max": 10
+   },
+   "pmPeak": {
+    "min": 10,
+    "max": 10
+   },
+   "evening": null,
+   "late": null,
+   "overnight": null
+  },
+  "maxGapByPeriod": {
+   "amPeak": null,
+   "midday": 10,
+   "pmPeak": 10,
+   "evening": 10,
+   "late": 180,
+   "overnight": 240
+  },
+  "headwayByPeriodSustained": {
+   "midday": false,
+   "pmPeak": true,
+   "evening": false
+  },
+  "headwayByHour": {
+   "5": null,
+   "6": null,
+   "7": null,
+   "8": null,
+   "9": null,
+   "10": null,
+   "11": null,
+   "12": null,
+   "13": 8,
+   "14": 10,
+   "15": 10,
+   "16": 10,
+   "17": 10,
+   "18": 10,
+   "19": 10,
+   "20": null,
+   "21": null,
+   "22": null,
+   "23": null,
+   "24": null,
+   "25": null,
+   "26": null,
+   "27": null,
+   "28": null
+  },
+  "maxGapByHour": {
+   "5": null,
+   "6": null,
+   "7": null,
+   "8": null,
+   "9": null,
+   "10": null,
+   "11": null,
+   "12": null,
+   "13": 9,
+   "14": 10,
+   "15": 10,
+   "16": 10,
+   "17": 10,
+   "18": 10,
+   "19": 10,
+   "20": null,
+   "21": null,
+   "22": null,
+   "23": null,
+   "24": null,
+   "25": null,
+   "26": null,
+   "27": null,
+   "28": null
+  },
+  "routeShortName": "927",
+  "routeVariant": null,
+  "routeLongName": "Highway 27 Express",
+  "routeBranch": null,
+  "routeType": 3,
+  "day": "Weekday",
+  "headsign": "Steeles and Signal Hill via Humber College",
+  "minStopHeadway": 10,
+  "minStopHeadwayByPeriod": {
+   "midday": 10,
+   "pmPeak": 10,
+   "evening": 10
+  },
+  "headsignMinStopHeadwayByPeriod": {
+   "midday": 10,
+   "pmPeak": 10,
+   "evening": 10
+  },
+  "worstDirectionPeriodCoverageHeadway": {
+   "amPeak": 15,
+   "midday": 46,
+   "pmPeak": 25,
+   "evening": 166,
+   "late": 55,
+   "overnight": 215
+  },
+  "worstDirectionHeadway": 10,
+  "worstDirectionHeadwayByPeriod": {
+   "amPeak": 10,
+   "midday": 10,
+   "late": 12,
+   "pmPeak": 10,
+   "evening": 10
+  },
+  "routeHasLimitedDirection": true
+ }
+]

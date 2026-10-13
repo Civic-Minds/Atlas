@@ -4,6 +4,9 @@ import { useAgencies } from './hooks/useAgencies';
 import { ATLAS_MODE } from '../shared/config';
 import { getAtlasMark, markAtlasOnce } from './lib/performance';
 import { FLOATING_CARD } from './styles';
+import Panel from './components/ui/Panel';
+import ListRow from './components/ui/ListRow';
+import Pill from './components/ui/Pill';
 
 interface PerformanceMetric {
   label: string;
@@ -81,20 +84,16 @@ export default function DiagnosticsPerformancePage() {
           <div className="w-8 h-8 bg-[var(--accent)] rounded-full flex items-center justify-center shrink-0 shadow-2xl hover:opacity-80 transition-opacity">
             <MapIcon className="w-3.5 h-3.5 text-white" />
           </div>
-          <div className="flex flex-col leading-tight">
-            <span className="text-xs sm:text-sm font-black text-[var(--text-primary)]">Atlas</span>
-            <span className="text-2xs text-[var(--text-dim)]">by Civic Minds</span>
+          <div className="flex flex-col gap-px">
+            <span className="text-xs sm:text-sm leading-none font-black text-[var(--text-primary)]">Atlas</span>
+            <span className="text-2xs leading-none text-[var(--text-dim)]">by Civic Minds</span>
           </div>
         </a>
         <span className="w-px h-4 bg-[var(--border-primary)] shrink-0 ml-1" aria-hidden="true" />
         <span className="text-xl sm:text-2xl font-black text-[var(--text-primary)] leading-none">Performance</span>
-        <button
-          type="button"
-          onClick={() => window.location.reload()}
-          className="ml-auto px-3 py-1.5 rounded-full bg-[var(--bg-btn-hover)] text-xs font-bold hover:text-[var(--accent)]"
-        >
+        <Pill tone="outline" size="segment" className="ml-auto" onClick={() => window.location.reload()}>
           Reload and measure
-        </button>
+        </Pill>
       </div>
 
       <main className="p-6 max-w-4xl mx-auto space-y-5">
@@ -105,17 +104,17 @@ export default function DiagnosticsPerformancePage() {
           <div><div className="text-xs text-[var(--text-dim)]">Captured</div><div className="font-black">{new Date().toLocaleTimeString()}</div></div>
         </div>
 
-        <section className={`${FLOATING_CARD} overflow-hidden`} aria-labelledby="performance-metrics-heading">
+        <Panel aria-labelledby="performance-metrics-heading" role="region">
           <h1 id="performance-metrics-heading" className="px-5 py-4 text-lg font-black border-b border-[var(--border-primary)]">Load measurements</h1>
-          <div className="divide-y divide-[var(--border-primary)]">
+          <div>
             {rows.map(metric => (
-              <div key={metric.label} className="px-5 py-3 flex items-center justify-between gap-4">
+              <ListRow as="div" key={metric.label} className="gap-4">
                 <div><div className="text-sm font-bold">{metric.label}</div>{metric.detail && <div className="text-xs text-[var(--text-dim)]">{metric.detail}</div>}</div>
                 <div className="text-sm font-black text-right whitespace-nowrap">{metric.value}</div>
-              </div>
+              </ListRow>
             ))}
           </div>
-        </section>
+        </Panel>
 
         <p className="text-xs text-[var(--text-dim)]">Use the reload button for a fresh navigation measurement. These timings are local browser measurements; production also reports Vercel Speed Insights.</p>
       </main>

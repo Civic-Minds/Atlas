@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { X, ExternalLink, Search, Radio, ArrowLeft, ChevronRight, Mail } from 'lucide-react';
-import { DROPDOWN_PANEL, dropdownAnim, SEARCH_PILL, SEARCH_FIELD, Z_MODAL_BG, AGENCY_LIST_ROW, AGENCY_LIST_PRIMARY } from '../styles';
+import { DROPDOWN_PANEL, dropdownAnim, SEARCH_PILL, SEARCH_FIELD, Z_MODAL_BG, AGENCY_LIST_PRIMARY } from '../styles';
 import Pill from './ui/Pill';
 import { LIVE_POLLING_ROUTES, liveCoverageForRouteNames, type LiveCoverage } from '../../shared/livePollingConfig';
 import { R2_PUBLIC_URL, FEATURES } from '../../shared/config';
@@ -564,18 +564,22 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
             </div>
           )}
 
-          {view === 'outdated-schedule' && (
+          {view === 'outdated-schedule' && (() => {
+            const checkHistory = expiredFeedCheckHistory({
+              count: helpContext?.expiredFeedCheckCount,
+              since: helpContext?.expiredFeedCheckSince,
+              lastChecked: helpContext?.lastFeedCheckAt,
+              lastRefreshed: helpContext?.lastRefreshedAt,
+            });
+            return (
             <div className="h-full overflow-y-auto px-5 py-4 space-y-4">
               {helpContext?.agencyName && (
                 <p className="text-xs text-[var(--text-primary)] leading-relaxed">
                   {expiredFeedNotice(helpContext.agencyName, helpContext.expDateStr, helpContext.manualFeedSource)}
-                  {expiredFeedCheckHistory({
-                    count: helpContext.expiredFeedCheckCount,
-                    since: helpContext.expiredFeedCheckSince,
-                    lastChecked: helpContext.lastFeedCheckAt,
-                    lastRefreshed: helpContext.lastRefreshedAt,
-                  })}
                 </p>
+              )}
+              {helpContext?.agencyName && checkHistory && (
+                <p className="text-xs text-[var(--text-primary)] leading-relaxed">{checkHistory}</p>
               )}
               <p className="text-xs text-[var(--text-dim)] leading-relaxed">
                 {EXPIRED_FEED_EXPLANATION}
@@ -602,7 +606,8 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                 <Mail className="w-3 h-3 text-[var(--text-dim)]" />
               </a>
             </div>
-          )}
+            );
+          })()}
 
           {view === 'edge-gap-allowance' && (
             <div className="h-full overflow-y-auto px-5 py-4 space-y-4">
@@ -769,14 +774,15 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                       </div>
                       <div className="space-y-1">
                         {selectedLiveRoutes.map(r => (
-                          <button
+                          <ListRow
                             key={r.displayRouteShortName}
+                            variant="spaced"
                             onClick={() => { onLiveRouteClick?.(r.slug, r.displayRouteShortName); onClose(); }}
-                            className="w-full flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-[var(--bg-btn-hover)] transition-colors text-left"
+                            className="justify-start gap-2"
                           >
                             <Radio className="w-3 h-3 text-[var(--accent)] shrink-0" />
                             <span className="text-xs text-[var(--text-primary)]">{liveRouteLabel(r)}</span>
-                          </button>
+                          </ListRow>
                         ))}
                       </div>
                     </div>

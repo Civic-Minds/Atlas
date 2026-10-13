@@ -12,6 +12,7 @@ import {
   modeLabel,
   type AgencyPageSummary,
 } from './agencyPages';
+import { modeLabelSortIndex } from './modes';
 import { AREA_PATH_PREFIX, areaPagePath, type AreaConfig } from './areas';
 import { areaRegionName, areaRegionSentenceStart, areaRegionTitle } from './areaRegions';
 import { SITE_URL } from './seo';
@@ -24,7 +25,7 @@ export const AREA_DATA_SCRIPT_ID = 'area-page-data';
 
 export interface AreaAgencyRow {
   slug: string;
-  displayName: string;
+  name: string;
   totalRoutes: number;
   /** Route counts by mode label (only modes the agency has). */
   modes: Record<string, number>;
@@ -51,7 +52,6 @@ export interface AreaPageData {
   releaseDate: string | null;
 }
 
-const MODE_ORDER = ['Subway', 'Light rail', 'Streetcar', 'Rail', 'Monorail', 'Bus', 'Trolleybus', 'Ferry', 'Cable car', 'Gondola', 'Funicular'];
 const SPAN_VARIES_HOURS = 3;
 
 /** Agencies of the area that have a page (weekday midday service), in the area's own order. */
@@ -76,12 +76,12 @@ export function buildAreaPageData(area: AreaConfig, all: ReadonlyMap<string, Age
     if (a.lastRefreshedAt && (!newest || a.lastRefreshedAt > newest)) newest = a.lastRefreshedAt;
     rows.push({
       slug: a.slug,
-      displayName: a.displayName,
+      name: a.name,
       totalRoutes: s.totalRoutes,
       modes: Object.fromEntries(s.byMode.map(m => [m.label, m.routes.length])),
     });
   }
-  rows.sort((x, y) => y.totalRoutes - x.totalRoutes || x.displayName.localeCompare(y.displayName));
+  rows.sort((x, y) => y.totalRoutes - x.totalRoutes || x.name.localeCompare(y.name));
   const known = members.filter(a => a.sat !== undefined || a.sun !== undefined);
   const all2 = (k: 'sat' | 'sun') => known.length > 0 && known.every(a => a[k]);
   const any2 = (k: 'sat' | 'sun') => known.some(a => a[k]);
@@ -94,7 +94,7 @@ export function buildAreaPageData(area: AreaConfig, all: ReadonlyMap<string, Age
   const best = bestRoute(members.flatMap(a => a.routes.map(r => ({ ...r, agency: a.displayName }))));
   const { slug, name, type, officialName, country, cities, bbox, center, note } = area;
   const byMode = [...modeCounts.entries()].map(([label, routes]) => ({ label, routes }))
-    .sort((x, y) => (MODE_ORDER.indexOf(x.label) + 1 || 99) - (MODE_ORDER.indexOf(y.label) + 1 || 99));
+    .sort((x, y) => modeLabelSortIndex(x.label) - modeLabelSortIndex(y.label));
   return {
     area: { slug, name, type, officialName, country, cities, bbox, center, ...(note ? { note } : {}) },
     totalRoutes: allRoutes.length,
@@ -177,7 +177,7 @@ export function areaAboutParagraph(d: AreaPageData): string {
 export function areaDatesText(d: Pick<AreaPageData, 'newestRefresh' | 'releaseDate'>): string {
   const refreshed = formatDataDate(d.newestRefresh);
   const release = formatDataDate(d.releaseDate);
-  return [refreshed ? `Newest schedule refresh ${refreshed}` : '', release ? `Atlas data release ${release}` : ''].filter(Boolean).join('. ') + '.';
+  return ["Based on the agencies' published timetables, not live arrivals.", refreshed ? `Newest timetable published ${refreshed}.` : '', release ? `Atlas last updated this page ${release}.` : ''].filter(Boolean).join(' ');
 }
 
 /** The map link: `?area=<slug>` selects the area's agencies and fits the map to it (the app does the framing). */
