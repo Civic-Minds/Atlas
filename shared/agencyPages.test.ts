@@ -17,7 +17,7 @@ const TTC: AgencyPageSummary = {
 
 describe('agency page text', () => {
   it('uses the agreed title and H1', () => {
-    expect(agencyPageTitle(TTC)).toBe('TTC (Toronto) frequency map: frequent routes and service levels | Transit Atlas');
+    expect(agencyPageTitle(TTC)).toBe('TTC frequency: how often routes run | Transit Atlas');
     expect(agencyPageH1(TTC)).toBe('TTC · Toronto');
     expect(agencyPageH1({ displayName: 'Halifax Transit' })).toBe('Halifax Transit');
   });

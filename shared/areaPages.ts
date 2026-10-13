@@ -15,6 +15,7 @@ import {
 import { AREA_PATH_PREFIX, areaPagePath, type AreaConfig } from './areas';
 import { areaRegionName, areaRegionSentenceStart, areaRegionTitle } from './areaRegions';
 import { SITE_URL } from './seo';
+import { DESCRIPTION_MAX, TITLE_MAX, firstThatFits, truncateAtWord } from './seoText';
 
 export { AREA_PATH_PREFIX, areaPagePath };
 
@@ -113,7 +114,15 @@ export function buildAreaPageData(area: AreaConfig, all: ReadonlyMap<string, Age
 const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
 
 export function areaPageTitle(d: Pick<AreaPageData, 'area' | 'agencies'>): string {
-  return `${areaRegionTitle(d.area)} frequency map: ${plural(d.agencies.length, 'transit agency', 'transit agencies')} compared | Transit Atlas`;
+  const region = areaRegionTitle(d.area);
+  const across = `how often transit runs across ${plural(d.agencies.length, 'agency', 'agencies')}`;
+  return firstThatFits([
+    `${region}: ${across} | Transit Atlas`,
+    `${region}: ${across}`,
+    `${region} transit frequency | Transit Atlas`,
+    `${region} transit frequency`,
+    `${truncateAtWord(region, TITLE_MAX - ' transit frequency'.length)} transit frequency`,
+  ], TITLE_MAX);
 }
 
 export function areaPageH1(d: Pick<AreaPageData, 'area'>): string {
@@ -130,7 +139,14 @@ export function areaLeadSentence(d: AreaPageData): string {
 }
 
 export function areaPageDescription(d: AreaPageData): string {
-  return `${areaLeadSentence(d)} Compare each agency's routes and frequency.`;
+  const n = d.agencies.length;
+  const where = areaRegionName(d.area);
+  return firstThatFits([
+    `Compare ${plural(n, 'transit agency', 'transit agencies')} in ${where} side by side: routes and weekday waits by time of day, from published schedules.`,
+    `Compare ${plural(n, 'transit agency', 'transit agencies')} in ${where}: routes and weekday waits by time of day.`,
+    `${areaLeadSentence(d)} Compare each agency's routes and frequency.`,
+    areaLeadSentence(d),
+  ], DESCRIPTION_MAX);
 }
 
 function hourLabel(h: number): string {

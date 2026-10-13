@@ -7,6 +7,7 @@
 import { headwayEvery } from './headwayText';
 import { areaRegionName, areaRegionTitle } from './areaRegions';
 import { BETA_BUILD } from './config';
+import { DESCRIPTION_MAX, DESCRIPTION_MIN, TITLE_MAX, firstThatFits, truncateAtWord } from './seoText';
 import { SITE_URL } from './seo';
 
 export { headwayEvery };
@@ -168,8 +169,16 @@ export function agencyPagePath(slug: string): string {
   return `${AGENCY_PATH_PREFIX}${slug}`;
 }
 
+/** "TTC frequency: how often routes run | Transit Atlas", dropping the brand, then the phrase, for long names (60 characters at most). */
 export function agencyPageTitle(a: Pick<AgencyPageSummary, 'displayName'>): string {
-  return `${a.displayName} frequency map: frequent routes and service levels | Transit Atlas`;
+  const name = agencyShortLabel(a);
+  return firstThatFits([
+    `${name} frequency: how often routes run | Transit Atlas`,
+    `${name} frequency: how often routes run`,
+    `${name} frequency | Transit Atlas`,
+    `${name} frequency`,
+    `${truncateAtWord(name, TITLE_MAX - ' frequency'.length)} frequency`,
+  ], TITLE_MAX);
 }
 
 /** Visible heading: short name plus city, "TTC · Toronto". The long SEO wording lives in <title>. */
@@ -266,8 +275,25 @@ export function agencyLeadSentence(a: Pick<AgencyPageSummary, 'routes'>): string
   return `${n} weekday ${n === 1 ? 'route' : 'routes'}.`;
 }
 
-export function agencyPageDescription(a: AgencyPageSummary, intro?: string): string {
+/** The fuller sentence for structured data: the intro plus what the page is. */
+export function agencyDatasetDescription(a: AgencyPageSummary, intro?: string): string {
   return `${intro ?? agencyLeadSentence(a)} Route-by-route frequency for ${a.displayName}, from the published schedule.`;
+}
+
+/**
+ * The meta description: the intro sentence (name, route count, city, a few connections), losing the mode split, the stop
+ * count and the connections in turn until it fits, and topped up with what the page is when short. 155 characters at most.
+ */
+export function agencyPageDescription(a: AgencyPageSummary, intro?: string): string {
+  const full = intro ?? agencyLeadSentence(a);
+  const noModes = full.replace(/ \([^)]*\)(?= in )/, '');
+  const noStops = noModes.replace(/ with [\d,]+ stops?/, '');
+  const noConnections = noStops.replace(/ and connects with .*?\.$/, '.');
+  const base = firstThatFits([full, noModes, noStops, noConnections], DESCRIPTION_MAX);
+  if (base.length >= DESCRIPTION_MIN || !base.endsWith('.')) return base;
+  const tail = [' Weekday route frequency by time of day, from the published schedule.', ' Weekday waits by time of day.']
+    .find(t => base.length + t.length <= DESCRIPTION_MAX);
+  return tail ? `${base}${tail}` : base;
 }
 
 function hourLabel(h: number): string {
@@ -417,7 +443,7 @@ export function agencyPageJsonLd(a: AgencyPageSummary, canonicalUrl: string, ori
       {
         '@type': 'Dataset',
         name: `${a.name} scheduled service frequency`,
-        description: agencyPageDescription(a, intro),
+        description: agencyDatasetDescription(a, intro),
         url: canonicalUrl,
         isAccessibleForFree: true,
         creator: { '@type': 'Organization', name: 'Civic Minds', url: `${SITE_URL}/` },
