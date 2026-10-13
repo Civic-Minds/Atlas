@@ -104,7 +104,7 @@ export default function AreaPage({ data: dataProp }: { data?: AreaPageData }) {
                 <tbody>
                   {data.agencies.map(a => (
                     <tr key={a.slug}>
-                      <th scope="row" className="py-1.5 pr-4 font-normal"><a className={`font-black ${LINK}`} href={agencyPagePath(a.slug)}>{a.displayName}</a></th>
+                      <th scope="row" className="py-1.5 pr-4 font-normal"><a className={`font-black ${LINK}`} href={agencyPagePath(a.slug)}>{a.name}</a></th>
                       {data.modeColumns.map(m => <td key={m} className="py-1.5 pr-4">{a.modes[m] ?? '–'}</td>)}
                     </tr>
                   ))}

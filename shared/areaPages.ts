@@ -24,7 +24,7 @@ export const AREA_DATA_SCRIPT_ID = 'area-page-data';
 
 export interface AreaAgencyRow {
   slug: string;
-  displayName: string;
+  name: string;
   totalRoutes: number;
   /** Route counts by mode label (only modes the agency has). */
   modes: Record<string, number>;
@@ -76,12 +76,12 @@ export function buildAreaPageData(area: AreaConfig, all: ReadonlyMap<string, Age
     if (a.lastRefreshedAt && (!newest || a.lastRefreshedAt > newest)) newest = a.lastRefreshedAt;
     rows.push({
       slug: a.slug,
-      displayName: a.displayName,
+      name: a.name,
       totalRoutes: s.totalRoutes,
       modes: Object.fromEntries(s.byMode.map(m => [m.label, m.routes.length])),
     });
   }
-  rows.sort((x, y) => y.totalRoutes - x.totalRoutes || x.displayName.localeCompare(y.displayName));
+  rows.sort((x, y) => y.totalRoutes - x.totalRoutes || x.name.localeCompare(y.name));
   const known = members.filter(a => a.sat !== undefined || a.sun !== undefined);
   const all2 = (k: 'sat' | 'sun') => known.length > 0 && known.every(a => a[k]);
   const any2 = (k: 'sat' | 'sun') => known.some(a => a[k]);

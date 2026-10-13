@@ -18,8 +18,10 @@ const TTC: AgencyPageSummary = {
 describe('agency page text', () => {
   it('uses the agreed title and H1', () => {
     expect(agencyPageTitle(TTC)).toBe('TTC frequency: how often routes run | Transit Atlas');
-    expect(agencyPageH1(TTC)).toBe('TTC · Toronto');
-    expect(agencyPageH1({ displayName: 'Halifax Transit' })).toBe('Halifax Transit');
+    expect(agencyPageH1(TTC)).toBe('Toronto Transit Commission');
+    expect(agencyPageH1({ name: 'Hamilton Street Railway', city: 'Hamilton' })).toBe('Hamilton Street Railway');
+    expect(agencyPageH1({ name: 'University of Michigan Transit Services (Ann Arbor)', city: 'Ann Arbor' })).toBe('University of Michigan Transit Services');
+    expect(agencyPageH1({ name: 'GO Transit', city: 'Toronto' })).toBe('GO Transit');
   });
 
   it('writes a standalone lead sentence from the route numbers', () => {

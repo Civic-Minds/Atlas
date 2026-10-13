@@ -176,7 +176,8 @@ export function agencyPageData(
         .slice(0, MAX_AREA_LIST)
     : nearbyAgencies(a, all);
   const hasPage = new Set(all.filter(o => o.routes.some(r => r.midday != null)).map(o => o.slug));
-  const connections = (a.connections ?? []).filter(c => !c.betaOnly || BETA_BUILD).map(c => ({ ...c, page: hasPage.has(c.slug) }));
+  const fullName = new Map(all.map(o => [o.slug, o.name]));
+  const connections = (a.connections ?? []).filter(c => !c.betaOnly || BETA_BUILD).map(c => ({ ...c, name: fullName.get(c.slug) ?? c.name, page: hasPage.has(c.slug) }));
   const place = area && agencySpansArea(a.bbox, area.bbox) ? areaRegionName(area) : a.city;
   const areaRef = area ? { slug: area.slug, name: area.name } : undefined;
   const { connections: _drop, ...agency } = a;
@@ -204,10 +205,9 @@ export function agencyPageTitle(a: Pick<AgencyPageSummary, 'displayName'>): stri
   ], TITLE_MAX);
 }
 
-/** Visible heading: short name plus city, "TTC · Toronto". The long SEO wording lives in <title>. */
-export function agencyPageH1(a: Pick<AgencyPageSummary, 'displayName'>): string {
-  const m = /^(.*\S)\s+\(([^)]+)\)$/.exec(a.displayName);
-  return m ? `${m[1]} · ${m[2]}` : a.displayName;
+/** Visible heading: the full agency name, without a parenthetical city ("GO Transit"). The short form lives in <title>. */
+export function agencyPageH1(a: Pick<AgencyPageSummary, 'name' | 'city'>): string {
+  return introName(a.name, a.city);
 }
 
 const MODE_LABELS: Record<number, [singular: string, plural: string]> = {

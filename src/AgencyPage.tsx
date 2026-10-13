@@ -132,7 +132,9 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0">
               <h1 className="text-2xl font-black tracking-tight sm:text-3xl">{agencyPageH1(agency)}</h1>
-              {data!.area && <a className={`mt-1 inline-block text-sm ${LINK}`} href={`/area/${data!.area.slug}`}>{areaRegionTitle(data!.area)} →</a>}
+              {data!.area
+                ? <a className={`mt-1 inline-block text-sm ${LINK}`} href={`/area/${data!.area.slug}`}>{areaRegionTitle(data!.area)} →</a>
+                : agency.city && <p className="mt-1 text-sm text-[var(--text-muted)]">{agency.city}</p>}
             </div>
             <a href={agencyMapHref(agency)} className={PAGE_ACTION}>
               View on map <ArrowRight className="h-4 w-4" aria-hidden="true" />
