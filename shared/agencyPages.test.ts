@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
-  agencyBreadcrumbs, agencyLeadSentence, agencyMapHref, agencyPageDescription, agencyPageH1, agencyPageJsonLd,
+  agencyAboutParagraph, agencyBreadcrumbs, agencyDatesText, agencyLeadSentence, agencyMapHref, agencyPageDescription, agencyPageH1, agencyPageJsonLd,
   agencyPagePath, agencyPageTitle, agencySpanText, agencyStats, formatDataDate, nearbyAgencies, resolveAgencySeo, trimRedundantCity,
   type AgencyPageRoute, type AgencyPageSummary,
 } from './agencyPages';
@@ -18,7 +18,8 @@ const TTC: AgencyPageSummary = {
 describe('agency page text', () => {
   it('uses the agreed title and H1', () => {
     expect(agencyPageTitle(TTC)).toBe('TTC (Toronto) frequency map: frequent routes and service levels | Transit Atlas');
-    expect(agencyPageH1(TTC)).toBe('TTC (Toronto) frequent service map');
+    expect(agencyPageH1(TTC)).toBe('TTC · Toronto');
+    expect(agencyPageH1({ displayName: 'Halifax Transit' })).toBe('Halifax Transit');
   });
 
   it('writes a standalone lead sentence from the route numbers', () => {
@@ -33,7 +34,8 @@ describe('agency page text', () => {
   });
 
   it('describes the service span in clock hours', () => {
-    expect(agencySpanText(TTC)).toBe('5am to 2am');
+    expect(agencySpanText({ span: { first: 5, last: 25 } })).toBe('5am to 2am');
+    expect(agencySpanText({ span: { first: 5, last: 28 } })).toBe('Runs 24 hours');
     expect(agencySpanText({ span: null })).toBeNull();
   });
 
@@ -104,5 +106,41 @@ describe('trimRedundantCity', () => {
     expect(trimRedundantCity('Halifax Transit (Halifax)')).toBe('Halifax Transit');
     expect(trimRedundantCity('ABQ RIDE (Albuquerque)')).toBe('ABQ RIDE (Albuquerque)');
     expect(trimRedundantCity('Barrie Transit')).toBe('Barrie Transit');
+  });
+});
+
+describe('dates', () => {
+  it('names each date for what it is', () => {
+    expect(agencyDatesText({ lastRefreshedAt: '2026-08-27', validThrough: '20261031' }, '2026-10-13T06:34:30.913Z'))
+      .toBe('Schedule refreshed Aug 27, 2026, valid through Oct 31, 2026. Atlas data release Oct 13, 2026.');
+    expect(agencyDatesText({ lastRefreshedAt: null, validThrough: null }, null)).toBe('.');
+  });
+});
+
+describe('agencyAboutParagraph', () => {
+  const base = { displayName: 'TTC (Toronto)', city: 'Toronto', span: { first: 5, last: 25 } };
+  const rs = (...mids: Array<[number, number | null]>) => mids.map(([mode, h], i) => r(`R${i}`, mode, h));
+
+  it('uses one template: routes, midday count, the mode most of them are, the span', () => {
+    expect(agencyAboutParagraph({ ...base, routes: rs([3, 10], [3, 12], [1, 5], [3, 40], [3, null]) })).toBe(
+      'TTC runs 5 routes in Toronto. At weekday midday, 3 run every 15 min or better. Most of those are bus routes. Across all routes, weekday service runs from 5am to 2am.');
+  });
+
+  it('only names a mode when it is more than half of the frequent routes', () => {
+    expect(agencyAboutParagraph({ ...base, routes: rs([3, 10], [1, 12], [3, 40]) })).not.toContain('Most of those');
+  });
+
+  it('handles all, none, one and zero', () => {
+    expect(agencyAboutParagraph({ ...base, routes: rs([3, 10], [3, 12]) })).toContain('At weekday midday, all run every 15 min or better.');
+    expect(agencyAboutParagraph({ ...base, routes: rs([3, 30], [3, null]) })).toContain('At weekday midday, none run every 15 min or better.');
+    expect(agencyAboutParagraph({ ...base, routes: rs([3, 10], [3, 30]) })).toContain('At weekday midday, 1 runs every 15 min or better.');
+    expect(agencyAboutParagraph({ ...base, routes: rs([3, 10]) })).toContain('runs 1 route in Toronto. At weekday midday, it runs every 15 min or better.');
+    expect(agencyAboutParagraph({ ...base, routes: rs([3, 30]) })).toContain('it does not run every 15 min or better');
+    expect(agencyAboutParagraph({ ...base, routes: [], span: null })).toBe('TTC has no weekday routes in the data.');
+  });
+
+  it('says 24 hours when the span wraps the day, and drops the span when unknown', () => {
+    expect(agencyAboutParagraph({ ...base, span: { first: 5, last: 28 }, routes: rs([3, 30]) })).toContain('covers all 24 hours of the day.');
+    expect(agencyAboutParagraph({ ...base, span: null, routes: rs([3, 30]) })).not.toContain('Across all routes');
   });
 });

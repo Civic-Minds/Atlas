@@ -35,7 +35,7 @@ if (mod.BUILD_FLAGS.agencyPages) {
   } else {
     const urls: string[] = [];
     for (const a of agencies) {
-      const data = agencyPageData(a, agencies);
+      const data = agencyPageData(a, agencies, AGENCY_PAGE_DATA.generatedAt);
       const seo = resolveAgencySeo(a, { mode: mod.BUILD_MODE, origin });
       const embedded = `<script type="application/json" id="${AGENCY_DATA_SCRIPT_ID}">${JSON.stringify(data).replace(/</g, '\\u003c')}</script>\n</body>`;
       const ld = `  <script type="application/ld+json">${JSON.stringify(agencyPageJsonLd(a, seo.canonicalUrl, origin)).replace(/</g, '\\u003c')}</script>\n</head>`;

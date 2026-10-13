@@ -32,7 +32,7 @@ const SLUGS_OUT = 'shared/data/agency-page-slugs.json';
 const base = (process.env.R2_PUBLIC_URL || DEFAULT_R2_PUBLIC_URL).replace(/\/$/, '');
 const only = new Set(process.argv.slice(2).filter(arg => !arg.startsWith('--')));
 
-type CatalogAgency = AgencyPageIdentity & { lastRefreshedAt?: string | null; displayArea?: string };
+type CatalogAgency = AgencyPageIdentity & { lastRefreshedAt?: string | null; lastFeedExpiry?: string | null; displayArea?: string };
 type Catalog = { agencies: CatalogAgency[] };
 type Feature = { geometry: { type: string }; properties: Record<string, unknown> };
 
@@ -130,6 +130,7 @@ function identityFor(a: CatalogAgency) {
     center: a.center,
     bbox: a.bbox,
     websiteUrl: a.websiteUrl,
+    validThrough: a.lastFeedExpiry ?? null,
   };
 }
 
