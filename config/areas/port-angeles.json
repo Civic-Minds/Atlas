@@ -1,0 +1,25 @@
+{
+  "slug": "port-angeles",
+  "name": "Port Angeles",
+  "type": "MicroSA",
+  "officialName": "Port Angeles, WA",
+  "country": "United States",
+  "cities": [
+    "Port Angeles"
+  ],
+  "bbox": [
+    47.86667300012392,
+    -124.84897399961686,
+    48.499783999800286,
+    -122.8969710003979
+  ],
+  "center": [
+    48.1832284999621,
+    -123.87297250000738
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "clallamtransit"
+  ],
+  "page": false
+}

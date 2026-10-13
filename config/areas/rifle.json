@@ -1,0 +1,25 @@
+{
+  "slug": "rifle",
+  "name": "Rifle",
+  "type": "MicroSA",
+  "officialName": "Rifle, CO",
+  "country": "United States",
+  "cities": [
+    "Rifle"
+  ],
+  "bbox": [
+    38.97771999971532,
+    -109.05145899960878,
+    40.09153800023158,
+    -106.42648700038673
+  ],
+  "center": [
+    39.53462899997345,
+    -107.73897299999776
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "snowmass-village"
+  ],
+  "page": false
+}

@@ -1,0 +1,25 @@
+{
+  "slug": "ellensburg",
+  "name": "Ellensburg",
+  "type": "MicroSA",
+  "officialName": "Ellensburg, WA",
+  "country": "United States",
+  "cities": [
+    "Ellensburg"
+  ],
+  "bbox": [
+    46.736150999814164,
+    -121.46597900012162,
+    47.59793899985283,
+    -119.92560500022222
+  ],
+  "center": [
+    47.16704499983349,
+    -120.69579200017192
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "kittitas-county"
+  ],
+  "page": false
+}

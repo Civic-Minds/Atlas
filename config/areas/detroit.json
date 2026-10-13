@@ -1,0 +1,31 @@
+{
+  "slug": "detroit",
+  "name": "Detroit",
+  "type": "MSA",
+  "officialName": "Detroit-Warren-Dearborn, MI",
+  "country": "United States",
+  "cities": [
+    "Detroit",
+    "Warren",
+    "Dearborn"
+  ],
+  "bbox": [
+    42.02792999997491,
+    -84.15818900032271,
+    43.32704899973138,
+    -82.33407300003401
+  ],
+  "center": [
+    42.677489499853145,
+    -83.24613100017837
+  ],
+  "largeMetro": true,
+  "agencies": [
+    "ddot",
+    "detroit-people-mover",
+    "port-huron",
+    "qline",
+    "smart"
+  ],
+  "page": true
+}

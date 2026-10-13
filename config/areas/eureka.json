@@ -1,0 +1,26 @@
+{
+  "slug": "eureka",
+  "name": "Eureka",
+  "type": "MicroSA",
+  "officialName": "Eureka-Arcata, CA",
+  "country": "United States",
+  "cities": [
+    "Eureka",
+    "Arcata"
+  ],
+  "bbox": [
+    40.00124799986658,
+    -124.482003000119,
+    41.46584600006867,
+    -123.40603999987107
+  ],
+  "center": [
+    40.73354699996763,
+    -123.94402149999503
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "humboldt"
+  ],
+  "page": false
+}

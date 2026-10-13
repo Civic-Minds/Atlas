@@ -1,0 +1,25 @@
+{
+  "slug": "vancouver",
+  "name": "Vancouver",
+  "type": "CMA",
+  "officialName": "Vancouver",
+  "country": "Canada",
+  "cities": [
+    "Vancouver"
+  ],
+  "bbox": [
+    48.8124179374473,
+    -123.49483517828017,
+    49.69234854136059,
+    -122.20178799289704
+  ],
+  "center": [
+    49.25238323940394,
+    -122.8483115855886
+  ],
+  "largeMetro": true,
+  "agencies": [
+    "translink"
+  ],
+  "page": true
+}

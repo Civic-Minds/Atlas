@@ -1,0 +1,25 @@
+{
+  "slug": "cedar-rapids",
+  "name": "Cedar Rapids",
+  "type": "MSA",
+  "officialName": "Cedar Rapids, IA",
+  "country": "United States",
+  "cities": [
+    "Cedar Rapids"
+  ],
+  "bbox": [
+    41.85959399975756,
+    -92.29932899963323,
+    42.29906300004358,
+    -90.89801400000133
+  ],
+  "center": [
+    42.07932849990057,
+    -91.59867149981727
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "cedar-rapids"
+  ],
+  "page": false
+}

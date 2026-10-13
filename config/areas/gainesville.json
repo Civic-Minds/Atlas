@@ -1,0 +1,25 @@
+{
+  "slug": "gainesville",
+  "name": "Gainesville",
+  "type": "MSA",
+  "officialName": "Gainesville, FL",
+  "country": "United States",
+  "cities": [
+    "Gainesville"
+  ],
+  "bbox": [
+    28.986573000359215,
+    -83.34617600012075,
+    29.945253999964663,
+    -82.04905199990276
+  ],
+  "center": [
+    29.46591350016194,
+    -82.69761400001175
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "rts"
+  ],
+  "page": false
+}

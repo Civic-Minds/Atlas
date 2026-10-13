@@ -1,0 +1,26 @@
+{
+  "slug": "champaign",
+  "name": "Champaign",
+  "type": "MSA",
+  "officialName": "Champaign-Urbana, IL",
+  "country": "United States",
+  "cities": [
+    "Champaign",
+    "Urbana"
+  ],
+  "bbox": [
+    39.791819999998154,
+    -88.74596700003,
+    40.99777700010697,
+    -87.92876000014408
+  ],
+  "center": [
+    40.39479850005256,
+    -88.33736350008704
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "mtd-champaign"
+  ],
+  "page": false
+}

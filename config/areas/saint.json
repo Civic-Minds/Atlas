@@ -1,0 +1,26 @@
+{
+  "slug": "saint",
+  "name": "Saint",
+  "type": "CA",
+  "officialName": "Saint-Hyacinthe",
+  "country": "Canada",
+  "cities": [
+    "Saint",
+    "Hyacinthe"
+  ],
+  "bbox": [
+    45.511844096263744,
+    -73.07216795493164,
+    45.73362056302693,
+    -72.73565341438541
+  ],
+  "center": [
+    45.62273232964534,
+    -72.90391068465853
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "saint-hyacinthe"
+  ],
+  "page": false
+}

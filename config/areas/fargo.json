@@ -1,0 +1,25 @@
+{
+  "slug": "fargo",
+  "name": "Fargo",
+  "type": "MSA",
+  "officialName": "Fargo, ND-MN",
+  "country": "United States",
+  "cities": [
+    "Fargo"
+  ],
+  "bbox": [
+    46.62865400020141,
+    -97.70617399964979,
+    47.23997699982291,
+    -96.17240500031912
+  ],
+  "center": [
+    46.93431550001216,
+    -96.93928949998445
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "matbus"
+  ],
+  "page": false
+}

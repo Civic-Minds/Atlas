@@ -1,0 +1,25 @@
+{
+  "slug": "durango",
+  "name": "Durango",
+  "type": "MicroSA",
+  "officialName": "Durango, CO",
+  "country": "United States",
+  "cities": [
+    "Durango"
+  ],
+  "bbox": [
+    36.999606000186894,
+    -108.38106899990436,
+    37.64033000019893,
+    -107.48142399985687
+  ],
+  "center": [
+    37.319968000192915,
+    -107.93124649988061
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "durango-transit"
+  ],
+  "page": false
+}

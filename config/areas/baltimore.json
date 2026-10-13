@@ -1,0 +1,28 @@
+{
+  "slug": "baltimore",
+  "name": "Baltimore",
+  "type": "MSA",
+  "officialName": "Baltimore-Columbia-Towson, MD",
+  "country": "United States",
+  "cities": [
+    "Baltimore",
+    "Columbia",
+    "Towson"
+  ],
+  "bbox": [
+    38.711099000170385,
+    -77.31156200024614,
+    39.721503000264,
+    -75.74776100044389
+  ],
+  "center": [
+    39.21630100021719,
+    -76.52966150034501
+  ],
+  "largeMetro": true,
+  "agencies": [
+    "annapolis",
+    "mta-maryland"
+  ],
+  "page": true
+}

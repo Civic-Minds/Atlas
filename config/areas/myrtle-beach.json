@@ -1,0 +1,27 @@
+{
+  "slug": "myrtle-beach",
+  "name": "Myrtle Beach",
+  "type": "MSA",
+  "officialName": "Myrtle Beach-Conway-North Myrtle Beach, SC",
+  "country": "United States",
+  "cities": [
+    "Myrtle Beach",
+    "Conway",
+    "North Myrtle Beach"
+  ],
+  "bbox": [
+    33.56910799970187,
+    -79.3391100000762,
+    34.29983499977065,
+    -78.4993009995696
+  ],
+  "center": [
+    33.93447149973626,
+    -78.91920549982291
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "coast-rta"
+  ],
+  "page": false
+}

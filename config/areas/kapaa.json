@@ -1,0 +1,25 @@
+{
+  "slug": "kapaa",
+  "name": "Kapaa",
+  "type": "MicroSA",
+  "officialName": "Kapaa, HI",
+  "country": "United States",
+  "cities": [
+    "Kapaa"
+  ],
+  "bbox": [
+    21.600383999688606,
+    -160.60087500041163,
+    22.290473000042695,
+    -159.24182699972545
+  ],
+  "center": [
+    21.94542849986565,
+    -159.92135100006854
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "kaua-i-county"
+  ],
+  "page": false
+}

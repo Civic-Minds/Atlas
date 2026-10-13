@@ -1,0 +1,27 @@
+{
+  "slug": "phoenix",
+  "name": "Phoenix",
+  "type": "MSA",
+  "officialName": "Phoenix-Mesa-Chandler, AZ",
+  "country": "United States",
+  "cities": [
+    "Phoenix",
+    "Mesa",
+    "Chandler"
+  ],
+  "bbox": [
+    32.50133199991424,
+    -113.33507499984306,
+    34.04816999976194,
+    -110.44846099981375
+  ],
+  "center": [
+    33.27475099983809,
+    -111.8917679998284
+  ],
+  "largeMetro": true,
+  "agencies": [
+    "valleymetro"
+  ],
+  "page": true
+}

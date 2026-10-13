@@ -62,13 +62,15 @@ export interface AgencyPageData {
   nearby: Array<{ slug: string; displayName: string }>;
   /** generatedAt of the data release the numbers come from. */
   releaseDate: string | null;
+  /** The metro area page this agency belongs to, when it has one. */
+  area?: { slug: string; name: string };
 }
 
 /** The prerendered HTML carries its data in <script type="application/json" id=...>. */
 export const AGENCY_DATA_SCRIPT_ID = 'agency-page-data';
 
-export function agencyPageData(a: AgencyPageSummary, all: readonly AgencyPageSummary[], releaseDate: string | null = null): AgencyPageData {
-  return { agency: a, releaseDate, nearby: nearbyAgencies(a, all).map(o => ({ slug: o.slug, displayName: o.displayName })) };
+export function agencyPageData(a: AgencyPageSummary, all: readonly AgencyPageSummary[], releaseDate: string | null = null, area?: { slug: string; name: string }): AgencyPageData {
+  return { agency: a, releaseDate, ...(area ? { area } : {}), nearby: nearbyAgencies(a, all).map(o => ({ slug: o.slug, displayName: o.displayName })) };
 }
 
 export const AGENCY_PATH_PREFIX = '/agency/';
@@ -260,11 +262,12 @@ export interface Crumb {
 }
 
 /** Transit Atlas > Country > State or province > primary city > Agency. The city is the config's displayArea, else its first listed city. */
-export function agencyBreadcrumbs(a: AgencyPageSummary): Crumb[] {
+export function agencyBreadcrumbs(a: AgencyPageSummary, area?: { slug: string; name: string }): Crumb[] {
   const crumbs: Crumb[] = [{ name: 'Transit Atlas', href: '/' }];
   if (a.country) crumbs.push({ name: a.country });
   if (a.region) crumbs.push({ name: a.region });
-  if (a.city && a.city !== a.region && a.city !== a.displayName) crumbs.push({ name: a.city });
+  if (area) crumbs.push({ name: `${area.name} area`, href: `/area/${area.slug}` });
+  else if (a.city && a.city !== a.region && a.city !== a.displayName) crumbs.push({ name: a.city });
   crumbs.push({ name: a.displayName });
   return crumbs;
 }
@@ -305,10 +308,10 @@ export function resolveAgencySeo(
 }
 
 /** Organization (the agency), BreadcrumbList and Dataset. No FAQ markup. */
-export function agencyPageJsonLd(a: AgencyPageSummary, canonicalUrl: string, origin: string): object {
-  const crumbs = agencyBreadcrumbs(a);
+export function agencyPageJsonLd(a: AgencyPageSummary, canonicalUrl: string, origin: string, area?: { slug: string; name: string }): object {
+  const crumbs = agencyBreadcrumbs(a, area);
   const modified = formatIso(a.lastRefreshedAt);
-  const area = [a.city, a.region, a.country].filter(Boolean).join(', ');
+  const place = [a.city, a.region, a.country].filter(Boolean).join(', ');
   return {
     '@context': 'https://schema.org',
     '@graph': [
@@ -317,7 +320,7 @@ export function agencyPageJsonLd(a: AgencyPageSummary, canonicalUrl: string, ori
         '@id': `${canonicalUrl}#agency`,
         name: a.name,
         ...(a.websiteUrl ? { url: a.websiteUrl, sameAs: [a.websiteUrl] } : {}),
-        areaServed: { '@type': 'Place', name: area || a.displayName },
+        areaServed: { '@type': 'Place', name: place || a.displayName },
       },
       {
         '@type': 'BreadcrumbList',

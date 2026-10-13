@@ -1,0 +1,25 @@
+{
+  "slug": "texarkana",
+  "name": "Texarkana",
+  "type": "MSA",
+  "officialName": "Texarkana, TX-AR",
+  "country": "United States",
+  "cities": [
+    "Texarkana"
+  ],
+  "bbox": [
+    33.019245000364194,
+    -94.7470629998364,
+    33.94528999985901,
+    -93.66490599982184
+  ],
+  "center": [
+    33.482267500111604,
+    -94.20598449982913
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "texarkana"
+  ],
+  "page": false
+}

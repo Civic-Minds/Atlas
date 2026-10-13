@@ -1,0 +1,25 @@
+{
+  "slug": "mobile",
+  "name": "Mobile",
+  "type": "MSA",
+  "officialName": "Mobile, AL",
+  "country": "United States",
+  "cities": [
+    "Mobile"
+  ],
+  "bbox": [
+    30.144425000011907,
+    -88.43200700029462,
+    31.173306000329838,
+    -87.92394399985356
+  ],
+  "center": [
+    30.658865500170872,
+    -88.1779755000741
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "wave-mobile"
+  ],
+  "page": false
+}

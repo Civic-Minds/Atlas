@@ -1,0 +1,25 @@
+{
+  "slug": "duluth",
+  "name": "Duluth",
+  "type": "MSA",
+  "officialName": "Duluth, MN-WI",
+  "country": "United States",
+  "cities": [
+    "Duluth"
+  ],
+  "bbox": [
+    46.156925999958055,
+    -93.09802100016628,
+    48.63154000017854,
+    -91.5493489996794
+  ],
+  "center": [
+    47.3942330000683,
+    -92.32368499992285
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "duluth-transit"
+  ],
+  "page": false
+}

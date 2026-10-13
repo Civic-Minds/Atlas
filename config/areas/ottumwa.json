@@ -1,0 +1,25 @@
+{
+  "slug": "ottumwa",
+  "name": "Ottumwa",
+  "type": "MicroSA",
+  "officialName": "Ottumwa, IA",
+  "country": "United States",
+  "cities": [
+    "Ottumwa"
+  ],
+  "bbox": [
+    40.89886700022889,
+    -92.64037599984368,
+    41.16266299988986,
+    -92.17898299998365
+  ],
+  "center": [
+    41.030765000059375,
+    -92.40967949991366
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "ottumwa"
+  ],
+  "page": false
+}

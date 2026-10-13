@@ -1,0 +1,26 @@
+{
+  "slug": "morgantown",
+  "name": "Morgantown",
+  "type": "MSA",
+  "officialName": "Morgantown, WV",
+  "country": "United States",
+  "cities": [
+    "Morgantown"
+  ],
+  "bbox": [
+    39.19490600006326,
+    -80.42224000040929,
+    39.721430000189414,
+    -79.47656099981543
+  ],
+  "center": [
+    39.458168000126335,
+    -79.94940050011236
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "mountain-line",
+    "wvu-prt"
+  ],
+  "page": true
+}

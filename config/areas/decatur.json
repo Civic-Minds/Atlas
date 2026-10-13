@@ -1,0 +1,25 @@
+{
+  "slug": "decatur",
+  "name": "Decatur",
+  "type": "MSA",
+  "officialName": "Decatur, IL",
+  "country": "United States",
+  "cities": [
+    "Decatur"
+  ],
+  "bbox": [
+    39.65267800023248,
+    -89.21787399965469,
+    40.05534399978374,
+    -88.745057000359
+  ],
+  "center": [
+    39.85401100000811,
+    -88.98146550000683
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "decatur"
+  ],
+  "page": false
+}

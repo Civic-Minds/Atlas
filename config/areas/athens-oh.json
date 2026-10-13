@@ -1,0 +1,25 @@
+{
+  "slug": "athens-oh",
+  "name": "Athens",
+  "type": "MicroSA",
+  "officialName": "Athens, OH",
+  "country": "United States",
+  "cities": [
+    "Athens"
+  ],
+  "bbox": [
+    39.180268000186835,
+    -82.2984900004014,
+    39.55657399970651,
+    -81.72183900027052
+  ],
+  "center": [
+    39.36842099994667,
+    -82.01016450033596
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "athens-oh"
+  ],
+  "page": false
+}

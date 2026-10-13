@@ -1,0 +1,25 @@
+{
+  "slug": "cobourg",
+  "name": "Cobourg",
+  "type": "CA",
+  "officialName": "Cobourg",
+  "country": "Canada",
+  "cities": [
+    "Cobourg"
+  ],
+  "bbox": [
+    43.93999978569481,
+    -78.21880896618732,
+    44.006396430438095,
+    -78.11032092164537
+  ],
+  "center": [
+    43.973198108066455,
+    -78.16456494391635
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "cobourg"
+  ],
+  "page": false
+}

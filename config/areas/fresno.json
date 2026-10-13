@@ -1,0 +1,25 @@
+{
+  "slug": "fresno",
+  "name": "Fresno",
+  "type": "MSA",
+  "officialName": "Fresno, CA",
+  "country": "United States",
+  "cities": [
+    "Fresno"
+  ],
+  "bbox": [
+    35.906914000095696,
+    -120.91873100010041,
+    37.777985999816,
+    -118.36058599987905
+  ],
+  "center": [
+    36.842449999955846,
+    -119.63965849998974
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "fax"
+  ],
+  "page": false
+}

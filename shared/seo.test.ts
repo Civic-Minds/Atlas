@@ -44,7 +44,7 @@ describe('route metadata table', () => {
     const main = readFileSync('src/main.tsx', 'utf8');
     const app = readFileSync('src/App.tsx', 'utf8');
     const routePaths = [...main.matchAll(/<Route path="(\/[^"*]*)"/g)].map(m => m[1])
-      .filter(p => !p.startsWith('/apps/diagnostics') && p !== '/agency/:slug');
+      .filter(p => !p.startsWith('/apps/diagnostics') && p !== '/agency/:slug' && p !== '/area/:slug');
     const appPaths = [...app.matchAll(/'(\/apps\/[a-z]+)':/g)].map(m => m[1]);
     const research = [...readFileSync('shared/config.ts', 'utf8').matchAll(/: '(\/research[^']*)'/g)].map(m => m[1]);
     const known = new Set([...SEO_ROUTES.map(r => r.path), ...UNREACHABLE_APP_PATHS]);

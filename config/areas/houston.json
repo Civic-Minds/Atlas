@@ -1,0 +1,27 @@
+{
+  "slug": "houston",
+  "name": "Houston",
+  "type": "MSA",
+  "officialName": "Houston-Pasadena-The Woodlands, TX",
+  "country": "United States",
+  "cities": [
+    "Houston",
+    "Pasadena",
+    "The Woodlands"
+  ],
+  "bbox": [
+    28.764837000236042,
+    -96.62197999965987,
+    30.90671900004126,
+    -94.35338300015528
+  ],
+  "center": [
+    29.835778000138653,
+    -95.48768149990758
+  ],
+  "largeMetro": true,
+  "agencies": [
+    "metrohouston"
+  ],
+  "page": true
+}

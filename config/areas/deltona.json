@@ -1,0 +1,27 @@
+{
+  "slug": "deltona",
+  "name": "Deltona",
+  "type": "MSA",
+  "officialName": "Deltona-Daytona Beach-Ormond Beach, FL",
+  "country": "United States",
+  "cities": [
+    "Deltona",
+    "Daytona Beach",
+    "Ormond Beach"
+  ],
+  "bbox": [
+    28.612662000120192,
+    -81.68090300004697,
+    29.671087000141164,
+    -80.663460999613
+  ],
+  "center": [
+    29.141874500130676,
+    -81.17218199982997
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "votran"
+  ],
+  "page": false
+}

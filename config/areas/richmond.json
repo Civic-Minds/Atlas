@@ -1,0 +1,26 @@
+{
+  "slug": "richmond",
+  "name": "Richmond",
+  "type": "MSA",
+  "officialName": "Richmond, VA",
+  "country": "United States",
+  "cities": [
+    "Richmond"
+  ],
+  "bbox": [
+    36.707218000107375,
+    -78.24074799959722,
+    38.00816800003918,
+    -76.64536699996789
+  ],
+  "center": [
+    37.357693000073276,
+    -77.44305749978255
+  ],
+  "largeMetro": true,
+  "agencies": [
+    "bay-transit",
+    "grtc"
+  ],
+  "page": true
+}

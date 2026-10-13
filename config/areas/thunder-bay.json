@@ -1,0 +1,25 @@
+{
+  "slug": "thunder-bay",
+  "name": "Thunder Bay",
+  "type": "CMA",
+  "officialName": "Thunder Bay",
+  "country": "Canada",
+  "cities": [
+    "Thunder Bay"
+  ],
+  "bbox": [
+    47.96655202980796,
+    -89.79112560216038,
+    48.77170655886999,
+    -88.50953628243731
+  ],
+  "center": [
+    48.369129294338975,
+    -89.15033094229884
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "thunder-bay"
+  ],
+  "page": false
+}

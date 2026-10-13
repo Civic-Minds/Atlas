@@ -1,0 +1,26 @@
+{
+  "slug": "shreveport",
+  "name": "Shreveport",
+  "type": "MSA",
+  "officialName": "Shreveport-Bossier City, LA",
+  "country": "United States",
+  "cities": [
+    "Shreveport",
+    "Bossier City"
+  ],
+  "bbox": [
+    31.844237000008512,
+    -94.04335199970727,
+    33.01962000001487,
+    -93.35322400008619
+  ],
+  "center": [
+    32.43192850001169,
+    -93.69828799989673
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "sportran"
+  ],
+  "page": false
+}

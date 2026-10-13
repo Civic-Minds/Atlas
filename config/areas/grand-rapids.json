@@ -1,0 +1,27 @@
+{
+  "slug": "grand-rapids",
+  "name": "Grand Rapids",
+  "type": "MSA",
+  "officialName": "Grand Rapids-Wyoming-Kentwood, MI",
+  "country": "United States",
+  "cities": [
+    "Grand Rapids",
+    "Wyoming",
+    "Kentwood"
+  ],
+  "bbox": [
+    42.419722000171795,
+    -87.10766900027828,
+    43.46830799997461,
+    -84.83530500007137
+  ],
+  "center": [
+    42.94401500007321,
+    -85.97148700017482
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "the-rapid"
+  ],
+  "page": false
+}

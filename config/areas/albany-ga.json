@@ -1,0 +1,25 @@
+{
+  "slug": "albany-ga",
+  "name": "Albany",
+  "type": "MSA",
+  "officialName": "Albany, GA",
+  "country": "United States",
+  "cities": [
+    "Albany"
+  ],
+  "bbox": [
+    31.318365000110767,
+    -84.60308600036353,
+    31.967455999804585,
+    -83.64938400044014
+  ],
+  "center": [
+    31.642910499957676,
+    -84.12623500040183
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "albany-ga"
+  ],
+  "page": false
+}

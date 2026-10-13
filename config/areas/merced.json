@@ -1,0 +1,25 @@
+{
+  "slug": "merced",
+  "name": "Merced",
+  "type": "MSA",
+  "officialName": "Merced, CA",
+  "country": "United States",
+  "cities": [
+    "Merced"
+  ],
+  "bbox": [
+    36.740381000089876,
+    -121.24864699987984,
+    37.633363999884125,
+    -120.05205500012511
+  ],
+  "center": [
+    37.186872499987004,
+    -120.65035100000247
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "merced"
+  ],
+  "page": false
+}

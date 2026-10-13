@@ -1,0 +1,25 @@
+{
+  "slug": "odessa",
+  "name": "Odessa",
+  "type": "MSA",
+  "officialName": "Odessa, TX",
+  "country": "United States",
+  "cities": [
+    "Odessa"
+  ],
+  "bbox": [
+    31.65108500004948,
+    -102.79908599969514,
+    32.08720999969959,
+    -102.28697099994304
+  ],
+  "center": [
+    31.869147499874536,
+    -102.54302849981909
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "ez-rider"
+  ],
+  "page": false
+}

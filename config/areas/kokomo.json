@@ -1,0 +1,25 @@
+{
+  "slug": "kokomo",
+  "name": "Kokomo",
+  "type": "MSA",
+  "officialName": "Kokomo, IN",
+  "country": "United States",
+  "cities": [
+    "Kokomo"
+  ],
+  "bbox": [
+    40.37363500026273,
+    -86.37576199981146,
+    40.56552499970763,
+    -85.86211700024724
+  ],
+  "center": [
+    40.46957999998518,
+    -86.11893950002934
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "howard-county"
+  ],
+  "page": false
+}

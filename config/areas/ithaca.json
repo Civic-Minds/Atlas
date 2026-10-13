@@ -1,0 +1,25 @@
+{
+  "slug": "ithaca",
+  "name": "Ithaca",
+  "type": "MSA",
+  "officialName": "Ithaca, NY",
+  "country": "United States",
+  "cities": [
+    "Ithaca"
+  ],
+  "bbox": [
+    42.26297600021608,
+    -76.69665499957438,
+    42.62741900031901,
+    -76.23769500042313
+  ],
+  "center": [
+    42.44519750026754,
+    -76.46717499999875
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "tcat"
+  ],
+  "page": false
+}

@@ -1,0 +1,25 @@
+{
+  "slug": "barrie",
+  "name": "Barrie",
+  "type": "CMA",
+  "officialName": "Barrie",
+  "country": "Canada",
+  "cities": [
+    "Barrie"
+  ],
+  "bbox": [
+    44.138635330225206,
+    -80.07784669334062,
+    44.670451215688956,
+    -79.40646024419878
+  ],
+  "center": [
+    44.404543272957085,
+    -79.7421534687697
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "barrie"
+  ],
+  "page": false
+}

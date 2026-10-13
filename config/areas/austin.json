@@ -1,0 +1,27 @@
+{
+  "slug": "austin",
+  "name": "Austin",
+  "type": "MSA",
+  "officialName": "Austin-Round Rock-San Marcos, TX",
+  "country": "United States",
+  "cities": [
+    "Austin",
+    "Round Rock",
+    "San Marcos"
+  ],
+  "bbox": [
+    29.630718000297346,
+    -98.29759999999203,
+    30.904413999848718,
+    -97.02446099989373
+  ],
+  "center": [
+    30.26756600007303,
+    -97.66103049994288
+  ],
+  "largeMetro": true,
+  "agencies": [
+    "capmetro"
+  ],
+  "page": true
+}

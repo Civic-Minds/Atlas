@@ -1,0 +1,25 @@
+{
+  "slug": "moose-jaw",
+  "name": "Moose Jaw",
+  "type": "CA",
+  "officialName": "Moose Jaw",
+  "country": "Canada",
+  "cities": [
+    "Moose Jaw"
+  ],
+  "bbox": [
+    50.254574275399676,
+    -105.80487280133872,
+    50.62639237453403,
+    -105.22176107713997
+  ],
+  "center": [
+    50.44048332496685,
+    -105.51331693923935
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "moose-jaw"
+  ],
+  "page": false
+}

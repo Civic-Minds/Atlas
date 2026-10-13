@@ -1,0 +1,25 @@
+{
+  "slug": "hobbs",
+  "name": "Hobbs",
+  "type": "MicroSA",
+  "officialName": "Hobbs, NM",
+  "country": "United States",
+  "cities": [
+    "Hobbs"
+  ],
+  "bbox": [
+    32.00020600018172,
+    -103.81457300016955,
+    33.5705890002507,
+    -103.05262099971065
+  ],
+  "center": [
+    32.785397500216206,
+    -103.43359699994011
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "hobbs"
+  ],
+  "page": false
+}

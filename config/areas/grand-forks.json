@@ -1,0 +1,25 @@
+{
+  "slug": "grand-forks",
+  "name": "Grand Forks",
+  "type": "MSA",
+  "officialName": "Grand Forks, ND-MN",
+  "country": "United States",
+  "cities": [
+    "Grand Forks"
+  ],
+  "bbox": [
+    47.49862499989033,
+    -97.90365099979905,
+    48.19499600013783,
+    -95.55328899997745
+  ],
+  "center": [
+    47.84681050001408,
+    -96.72846999988826
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "grand-forks"
+  ],
+  "page": false
+}

@@ -1,0 +1,25 @@
+{
+  "slug": "bay-city",
+  "name": "Bay City",
+  "type": "MSA",
+  "officialName": "Bay City, MI",
+  "country": "United States",
+  "cities": [
+    "Bay City"
+  ],
+  "bbox": [
+    43.478622999798056,
+    -84.16812700032716,
+    43.99706100020559,
+    -83.69881599982124
+  ],
+  "center": [
+    43.73784200000182,
+    -83.9334715000742
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "bay-metro"
+  ],
+  "page": false
+}

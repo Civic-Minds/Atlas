@@ -1,0 +1,25 @@
+{
+  "slug": "binghamton",
+  "name": "Binghamton",
+  "type": "MSA",
+  "officialName": "Binghamton, NY",
+  "country": "United States",
+  "cities": [
+    "Binghamton"
+  ],
+  "bbox": [
+    41.997856000281224,
+    -76.56358900013043,
+    42.41570200018318,
+    -75.35964500034258
+  ],
+  "center": [
+    42.2067790002322,
+    -75.96161700023652
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "broome"
+  ],
+  "page": false
+}

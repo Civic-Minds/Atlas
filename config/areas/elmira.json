@@ -1,0 +1,25 @@
+{
+  "slug": "elmira",
+  "name": "Elmira",
+  "type": "MSA",
+  "officialName": "Elmira, NY",
+  "country": "United States",
+  "cities": [
+    "Elmira"
+  ],
+  "bbox": [
+    42.000063999704814,
+    -76.96610899982403,
+    42.29442300015685,
+    -76.53578199995515
+  ],
+  "center": [
+    42.14724349993083,
+    -76.75094549988958
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "chemung-county"
+  ],
+  "page": false
+}

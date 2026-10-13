@@ -1,0 +1,25 @@
+{
+  "slug": "wood-buffalo",
+  "name": "Wood Buffalo",
+  "type": "CA",
+  "officialName": "Wood Buffalo",
+  "country": "Canada",
+  "cities": [
+    "Wood Buffalo"
+  ],
+  "bbox": [
+    55.08932146110126,
+    -115.47035866520801,
+    60.34076296988457,
+    -107.86979117980727
+  ],
+  "center": [
+    57.715042215492915,
+    -111.67007492250764
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "fort-mcmurray"
+  ],
+  "page": false
+}

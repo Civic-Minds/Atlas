@@ -1,0 +1,47 @@
+{
+  "slug": "los-angeles",
+  "name": "Los Angeles",
+  "type": "MSA",
+  "officialName": "Los Angeles-Long Beach-Anaheim, CA",
+  "country": "United States",
+  "cities": [
+    "Los Angeles",
+    "Long Beach",
+    "Anaheim"
+  ],
+  "bbox": [
+    32.75004000005257,
+    -118.95172099996816,
+    34.82330200032072,
+    -117.41298700038404
+  ],
+  "center": [
+    33.786671000186644,
+    -118.1823540001761
+  ],
+  "largeMetro": true,
+  "agencies": [
+    "avta",
+    "beach-cities-transit",
+    "bigbluebus",
+    "burbankbus",
+    "carson-circuit",
+    "culvercitybus",
+    "foothill",
+    "glendalebeeline",
+    "gtrans",
+    "lacmta",
+    "ladot",
+    "laguna-beach",
+    "longbeach",
+    "metrolink",
+    "montebello",
+    "norwalktransit",
+    "octa",
+    "pasadenatransit",
+    "pvpta",
+    "santaclarita",
+    "torrance-transit"
+  ],
+  "page": true
+}

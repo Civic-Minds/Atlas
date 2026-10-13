@@ -1,0 +1,25 @@
+{
+  "slug": "baton-rouge",
+  "name": "Baton Rouge",
+  "type": "MSA",
+  "officialName": "Baton Rouge, LA",
+  "country": "United States",
+  "cities": [
+    "Baton Rouge"
+  ],
+  "bbox": [
+    29.626813999866275,
+    -91.82307199987338,
+    31.044794000342254,
+    -90.47368000005768
+  ],
+  "center": [
+    30.335804000104265,
+    -91.14837599996554
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "cats-baton"
+  ],
+  "page": false
+}

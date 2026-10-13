@@ -1,0 +1,25 @@
+{
+  "slug": "roanoke",
+  "name": "Roanoke",
+  "type": "MSA",
+  "officialName": "Roanoke, VA",
+  "country": "United States",
+  "cities": [
+    "Roanoke"
+  ],
+  "bbox": [
+    36.78075199999441,
+    -80.4727820003763,
+    37.80097300031971,
+    -79.4986989999306
+  ],
+  "center": [
+    37.29086250015706,
+    -79.98574050015344
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "valley-metro-roanoke"
+  ],
+  "page": false
+}

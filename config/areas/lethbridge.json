@@ -1,0 +1,25 @@
+{
+  "slug": "lethbridge",
+  "name": "Lethbridge",
+  "type": "CMA",
+  "officialName": "Lethbridge",
+  "country": "Canada",
+  "cities": [
+    "Lethbridge"
+  ],
+  "bbox": [
+    49.411969064385076,
+    -113.34494101614587,
+    50.21407332195614,
+    -112.20323005959959
+  ],
+  "center": [
+    49.81302119317061,
+    -112.77408553787274
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "lethbridge"
+  ],
+  "page": false
+}

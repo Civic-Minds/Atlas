@@ -1,0 +1,25 @@
+{
+  "slug": "knoxville",
+  "name": "Knoxville",
+  "type": "MSA",
+  "officialName": "Knoxville, TN",
+  "country": "United States",
+  "cities": [
+    "Knoxville"
+  ],
+  "bbox": [
+    35.4605429997792,
+    -84.91415600035397,
+    36.5920490002085,
+    -83.25529200013204
+  ],
+  "center": [
+    36.02629599999385,
+    -84.084724000243
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "knoxville"
+  ],
+  "page": false
+}

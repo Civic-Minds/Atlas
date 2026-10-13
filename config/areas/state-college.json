@@ -1,0 +1,25 @@
+{
+  "slug": "state-college",
+  "name": "State College",
+  "type": "MSA",
+  "officialName": "State College, PA",
+  "country": "United States",
+  "cities": [
+    "State College"
+  ],
+  "bbox": [
+    40.69155699996,
+    -78.376975999671,
+    41.252834999949975,
+    -77.1438039996757
+  ],
+  "center": [
+    40.97219599995499,
+    -77.76038999967335
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "cata-state-college"
+  ],
+  "page": false
+}

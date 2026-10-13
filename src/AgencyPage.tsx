@@ -18,17 +18,9 @@ import {
 } from '../shared/agencyPages';
 import { ATLAS_MODE } from '../shared/config';
 import { applySeoToDocument } from './lib/seoDom';
-import { SURFACE } from './styles';
+import { CHIP, CONTROL_ACTIVE_GLASS, LINK, TILE } from './pageStyles';
 import SiteFooter from './components/SiteFooter';
 import SiteHeader from './components/SiteHeader';
-
-/** The app's panel surface (SURFACE) as a rounded card, without FLOATING_CARD's shadow. */
-const TILE = `min-w-0 rounded-2xl p-4 ${SURFACE}`;
-/** Selected pill over a page: identical to CONTROL_ACTIVE_GLASS on fix/selected-state-tokens (opaque panel base with the selected tint on top). Switch to that export once it is on main. */
-const CONTROL_ACTIVE_GLASS = 'bg-[var(--bg-panel)] [background-image:linear-gradient(var(--control-active-bg),var(--control-active-bg))] border-[var(--control-active-border)] text-[var(--control-active-fg)]';
-/** Unselected pill: the faint grey the app uses only for unselected controls (CONTROL_INACTIVE, no hover). */
-const CHIP = 'rounded-full border bg-[var(--control-inactive-bg)] border-[var(--control-inactive-border)] text-[var(--control-inactive-fg)] px-2.5 py-0.5 text-xs font-bold';
-const LINK = 'text-[var(--accent)] hover:underline';
 
 /** Read this page's numbers from the JSON the prerender embedded next to the app root. */
 function readEmbeddedData(slug: string | undefined): AgencyPageData | null {
@@ -163,6 +155,7 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
           )}
 
           <p className="mt-12 text-sm leading-6 text-[var(--text-dim)]">
+            {data!.area && <>Part of the <a className={LINK} href={`/area/${data!.area.slug}`}>{data!.area.name} area</a>. </>}
             Scheduled service, not live arrivals.
             {agency.websiteUrl && <> Official site: <a className={LINK} href={agency.websiteUrl} rel="noopener noreferrer">{agency.name}</a>.</>}
           </p>

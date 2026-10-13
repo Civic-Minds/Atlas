@@ -1,0 +1,27 @@
+{
+  "slug": "iowa-city",
+  "name": "Iowa City",
+  "type": "MSA",
+  "officialName": "Iowa City, IA",
+  "country": "United States",
+  "cities": [
+    "Iowa City"
+  ],
+  "bbox": [
+    41.16151400004803,
+    -91.94693900017799,
+    41.862034999788385,
+    -91.36589699990404
+  ],
+  "center": [
+    41.511774499918204,
+    -91.65641800004101
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "cambus",
+    "coralville",
+    "iowa-city"
+  ],
+  "page": true
+}

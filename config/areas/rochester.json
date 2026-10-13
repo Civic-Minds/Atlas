@@ -1,0 +1,25 @@
+{
+  "slug": "rochester",
+  "name": "Rochester",
+  "type": "MSA",
+  "officialName": "Rochester, NY",
+  "country": "United States",
+  "cities": [
+    "Rochester"
+  ],
+  "bbox": [
+    42.471215999739904,
+    -78.46871099977952,
+    43.6842749997726,
+    -76.7023239996345
+  ],
+  "center": [
+    43.07774549975625,
+    -77.58551749970701
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "rgrta"
+  ],
+  "page": false
+}

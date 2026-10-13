@@ -1,0 +1,26 @@
+{
+  "slug": "college-station",
+  "name": "College Station",
+  "type": "MSA",
+  "officialName": "College Station-Bryan, TX",
+  "country": "United States",
+  "cities": [
+    "College Station",
+    "Bryan"
+  ],
+  "bbox": [
+    30.295548999766478,
+    -96.96363000029298,
+    31.357129000249245,
+    -96.07996899987863
+  ],
+  "center": [
+    30.826339000007863,
+    -96.5217995000858
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "brazos"
+  ],
+  "page": false
+}

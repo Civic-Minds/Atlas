@@ -1,0 +1,27 @@
+{
+  "slug": "houma",
+  "name": "Houma",
+  "type": "MSA",
+  "officialName": "Houma-Bayou Cane-Thibodaux, LA",
+  "country": "United States",
+  "cities": [
+    "Houma",
+    "Bayou Cane",
+    "Thibodaux"
+  ],
+  "bbox": [
+    28.985911000008464,
+    -91.35427199972862,
+    29.92200700010812,
+    -89.99894700026216
+  ],
+  "center": [
+    29.45395900005829,
+    -90.6766094999954
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "terrebonne-parish"
+  ],
+  "page": false
+}

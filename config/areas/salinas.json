@@ -1,0 +1,25 @@
+{
+  "slug": "salinas",
+  "name": "Salinas",
+  "type": "MSA",
+  "officialName": "Salinas, CA",
+  "country": "United States",
+  "cities": [
+    "Salinas"
+  ],
+  "bbox": [
+    35.78897699973107,
+    -122.05187799979564,
+    36.91968300006916,
+    -120.21397899988068
+  ],
+  "center": [
+    36.354329999900116,
+    -121.13292849983816
+  ],
+  "largeMetro": false,
+  "agencies": [
+    "mst"
+  ],
+  "page": false
+}
