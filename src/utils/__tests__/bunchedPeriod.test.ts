@@ -45,3 +45,26 @@ describe('bunched trips never set a cadence (#826)', () => {
     expect(routeCardDisplayHeadway(tail, 'amPeak')).toBeNull();
   });
 });
+
+describe('steady infrequent-tier patterns keep their cadence (#826)', () => {
+  it('TTC 927 weekday evening: every 10 from the real pattern, not limited or a 19:00 spill', async () => {
+    const { default: ttc927 } = await import('./fixtures/ttc-927-weekday.json');
+    const features = (ttc927 as unknown[]).map(p => ({ properties: structuredClone(p) as unknown as Record<string, unknown> }));
+    normalizeRouteFilterFeatures(features);
+    const route = features.map(f => f.properties as unknown as ShapeProperties);
+    const humber = route.find(p => p.headsign === 'Kipling via Humber College')!;
+    expect(routeCardDisplayHeadway(humber, 'evening')).toBe(10);
+    expect(routeListDisplayHeadway(route, 'evening')).toBe(10);
+  });
+
+  it('still hides an infrequent row with a real hole inside an hour', () => {
+    const holed = {
+      routeId: 'H', routeShortName: 'H', directionId: 0, tier: 'infrequent', headway: 10,
+      headwayByPeriod: { evening: 10 }, headwayByPeriodSustained: { evening: true },
+      maxGapByPeriod: { evening: 45 }, periodCoverageHeadway: { evening: 45 },
+      headwayByHour: { 19: 10, 20: 10, 21: 10, 22: 10 },
+      maxGapByHour: { 19: 10, 20: 45, 21: 10, 22: 10 },
+    } as unknown as ShapeProperties;
+    expect(routeCardDisplayHeadway(holed, 'evening')).toBeNull();
+  });
+});

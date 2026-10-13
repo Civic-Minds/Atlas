@@ -32,6 +32,26 @@ function isBunchedPeriod(p: ShapeProperties, period: Exclude<TimePeriod, 'all'>)
   return !runsOn;
 }
 
+/**
+ * The row restarts at the period start (nothing in the hour before) and then departs in every
+ * hour of the period, with each hour's cadence and longest gap within 1.5x the median. Its
+ * longest period gap is then the hand-off at the period edge, not a hole in service: TTC 927 Kipling via Humber
+ * College resumes at 19:00 after the Attwell and Royalcrest patterns carry the PM peak, so its
+ * downstream stops wait into the evening once while it then runs every 10 all evening.
+ */
+function runsEveryHourAt(p: ShapeProperties, period: Exclude<TimePeriod, 'all'>, median: number): boolean {
+  const window = TIME_PERIODS.find(t => t.key === period);
+  const byHour = p.headwayByHour;
+  const gapByHour = p.maxGapByHour;
+  if (!window || !byHour || !gapByHour) return false;
+  for (let hour = window.startHour; hour < window.endHour; hour++) {
+    const value = byHour[hour];
+    const gap = gapByHour[hour];
+    if (value == null || value > median * 1.5 || gap == null || gap > median * 1.5) return false;
+  }
+  return true;
+}
+
 /** Headway shown on route cards and lists (display only — filter decisions use shared/routeHeadwayFilter). */
 export function routeCardDisplayHeadway(p: ShapeProperties, period: TimePeriod): number | null {
   // A numeric gap inside a short-turn/peak-only cluster is not sustained route
@@ -48,7 +68,7 @@ export function routeCardDisplayHeadway(p: ShapeProperties, period: TimePeriod):
   if (period !== 'all' && p.tier === 'infrequent') {
     const median = p.headwayByPeriod?.[period] ?? p.headway ?? null;
     const longestGap = p.maxGapByPeriod?.[period];
-    if (median != null && longestGap != null && longestGap > median * 1.5) return null;
+    if (median != null && longestGap != null && longestGap > median * 1.5 && !runsEveryHourAt(p, period, median)) return null;
   }
 
   // A period median marked as unsustained still describes the active period. Display that
