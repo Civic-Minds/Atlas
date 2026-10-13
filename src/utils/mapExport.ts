@@ -108,7 +108,7 @@ const PORTRAIT: PosterMetrics = {
   footerGap: 18,
   key: { size: 13, row: 22, swatch: [26, 6], gap: 8, columnGap: 24 },
   brand: { size: 13, row: 20 },
-  source: { size: 11.5, row: 19 },
+  source: { size: 12, row: 19 },
   credit: { size: 10.5, row: 19 },
   footerPad: 26,
   radius: 12,
