@@ -509,7 +509,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                 </div>
               ) : (
                 <>
-              {/* Appearance */}
+              {/* Appearance. Sections use spacing only, no divider lines (guarded by settingsNoDividers.test.ts). */}
               <div className="px-5 pt-4 pb-1">
                 <p className="text-[9px] font-bold text-[var(--text-dim)]">Appearance</p>
               </div>
@@ -549,7 +549,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
 
               {FEATURES.beta && (
                 <>
-                  <div className="border-t border-[var(--border-primary)] px-5 pt-4 pb-1">
+                  <div className="px-5 pt-4 pb-1">
                     <p className="text-[9px] font-bold text-[var(--text-dim)]">Map</p>
                   </div>
                   <div className="px-5 pb-3">
@@ -574,7 +574,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
 
               {FEATURES.beta && (
                 <>
-                  <div className="border-t border-[var(--border-primary)] px-5 pt-4 pb-1">
+                  <div className="px-5 pt-4 pb-1">
                     <p className="text-[9px] font-bold text-[var(--text-dim)]">Data &amp; performance</p>
                   </div>
                   <div className="px-5 pb-3">
@@ -598,15 +598,15 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
               )}
 
               {/* Filters */}
-              <div className="border-t border-[var(--border-primary)] px-5 pt-4 pb-1">
+              <div className="px-5 pt-4 pb-1">
                 <p className="text-[9px] font-bold text-[var(--text-dim)]">Filters</p>
                 {!inFrequency && (
                   <p className="text-[10px] text-[var(--text-muted)] mt-1">These settings apply to the Frequency map.</p>
                 )}
               </div>
-              <div className="px-5 pb-3 flex flex-col">
+              <div className="px-5 pb-3 flex flex-col gap-4 pt-1">
                 {settings.map(({ id, label, description }) => (
-                  <div key={id} className={`flex items-start justify-between gap-4 py-4 last:pb-2 transition-opacity ${TRANSITION_BASE} ${inFrequency ? 'opacity-100' : 'opacity-40'}`}>
+                  <div key={id} className={`flex items-start justify-between gap-4 transition-opacity ${TRANSITION_BASE} ${inFrequency ? 'opacity-100' : 'opacity-40'}`}>
                     <div className="flex items-start min-w-0">
                       <div className="min-w-0">
                         <p className="text-[11px] font-bold text-[var(--text-primary)] leading-tight">{label}</p>
@@ -650,7 +650,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
 
               {/* Mobile-only Core Filters */}
               {maxHeadway !== undefined && (
-                <div className="block sm:hidden border-t border-[var(--border-primary)] pb-4">
+                <div className="block sm:hidden pb-4">
                   {/* Frequency */}
                   <div className="px-5 pt-4 pb-1">
                     <p className="text-[10px] font-bold text-[var(--text-dim)]">Frequency</p>
