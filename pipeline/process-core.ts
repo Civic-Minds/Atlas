@@ -1054,8 +1054,14 @@ export async function processGtfsBuffer(
     // Only between two real headways; span and irregular slots keep the rule below.
     const bothTimed = existing != null && !replacesMaplessWithShape && newHeadway != null && existing.properties.headway != null;
     const existingPeriods = existing?.properties.headwayByPeriod as HeadwayByPeriod | undefined;
-    if (bothTimed && runsMidday(existingPeriods) && !runsInDay(initialPeriodHeadways)) continue;
-    const replacesNightOnly = bothTimed && runsMidday(initialPeriodHeadways) && !runsInDay(existingPeriods);
+    // The midday side must be a real sample, the same floor as #740's thin rule: in a feed that
+    // gives every 3-5 trip block its own shape (CapMetro, #737) a midday block reads its own few
+    // trips (320 Springdale Sunday 110 -> 153), so those slots keep the headway rule.
+    const newDepartures = new Set(result.times).size;
+    const existingIsMiddaySample = (dedupedDepartures.get(dedupeKey) ?? 0) >= MIN_THIN_REPLACING_DEPARTURES;
+    if (bothTimed && runsMidday(existingPeriods) && existingIsMiddaySample && !runsInDay(initialPeriodHeadways)) continue;
+    const replacesNightOnly = bothTimed && runsMidday(initialPeriodHeadways) && newDepartures >= MIN_THIN_REPLACING_DEPARTURES
+      && !runsInDay(existingPeriods);
     // A thin result with no daytime service never holds the drawn line against a sibling with
     // daytime service under the same destination (#740). TTC 100 via Linkwood's 3 trips before
     // 06:30 scored their own median, 15, against the 31-trip peak shape's 18, and were drawn with
@@ -1067,7 +1073,6 @@ export async function processGtfsBuffer(
     // and the pooled headline of the thin-shape rescue is the right one; preferring a daytime block
     // there read its own few trips (335 Exposition WB Sunday 30 -> 31, tier 60; 243 Tech Ridge EB
     // 35 -> 70) so those feeds keep the better-headway rule.
-    const newDepartures = new Set(result.times).size;
     const newHasDaytime = result.times.some(t => t >= 540 && t < 1140);
     const newIsThin = !newHasDaytime && newDepartures < MIN_ALL_DAY_TERMINAL_DEPARTURES;
     const existingIsThin = dedupedThin.get(dedupeKey) === true;
