@@ -66,6 +66,7 @@ import { buildFeedCandidates, type FeedCandidate } from './feedSourceCandidates.
 import { resolveFeedUrl } from './feedUrl.js';
 import { ROUTE_ARTIFACT_SCHEMA_VERSION } from '../shared/artifactSchema.js';
 import { peekFeedDates } from './archiveSelection.js';
+import { tryArchiveUnchangedFeed } from './archiveIfMissing.js';
 import {
   applyOverrides,
   blockReason,
@@ -454,7 +455,10 @@ async function refreshAgency(
     } catch {
       artifactNeedsReprocess = true;
     }
-    if (!artifactNeedsReprocess) return { summary: skipDecision.reason };
+    if (!artifactNeedsReprocess) {
+      await tryArchiveUnchangedFeed(agency.slug, buf, peekedExpiry, peekedVersion, writeLog);
+      return { summary: skipDecision.reason };
+    }
     writeLog(`\n  ${agency.slug.padEnd(12)} ... reprocessing (current feed, legacy or missing route artifact)\n`);
   }
 

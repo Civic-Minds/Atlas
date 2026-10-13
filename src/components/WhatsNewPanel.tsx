@@ -3,6 +3,7 @@ import { X } from 'lucide-react';
 import { FLOATING_CARD, PANEL_ENTER, Z_MODAL_TOP } from '../styles';
 import { resolveDataRelease, type DataRelease } from '../lib/dataRelease';
 import { formatStoredDate } from '../utils/format';
+import { WhatsNewItemText } from './WhatsNewItemText';
 import { shortVersion, visibleWhatsNew, type WhatsNewRelease } from '../data/whatsNew';
 
 /** "Oct 9, 2026" from the release manifest, or null when it carries no usable date. */
@@ -73,14 +74,7 @@ export function WhatsNewPanel({ onClose, includeBeta, releases, loadRelease = re
                 {release.items.map(item => (
                   <li key={item.text} className="flex items-start gap-2 leading-relaxed text-[var(--text-dim)]">
                     <span aria-hidden="true" className="mt-[7px] h-1 w-1 shrink-0 rounded-full bg-[var(--text-muted)]" />
-                    <span>
-                      {item.text}
-                      {item.beta && (
-                        <span className="ml-1.5 inline-block rounded-full border border-[var(--accent-border)] px-1.5 py-px text-xs font-bold leading-tight text-[var(--accent)] align-middle">
-                          Beta
-                        </span>
-                      )}
-                    </span>
+                    <span><WhatsNewItemText item={item} tagClass="text-xs" /></span>
                   </li>
                 ))}
               </ul>

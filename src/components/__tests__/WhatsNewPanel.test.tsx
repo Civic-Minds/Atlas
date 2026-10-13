@@ -61,7 +61,7 @@ describe('WhatsNewPanel', () => {
     const { unmount } = render(
       <WhatsNewPanel onClose={() => {}} includeBeta releases={RELEASES} loadRelease={async () => null} />,
     );
-    expect(screen.getAllByRole('listitem').map(li => li.textContent)).toEqual(['Public change one.', 'Beta change.Beta', 'Public change two.']);
+    expect(screen.getAllByRole('listitem').map(li => li.textContent)).toEqual(['Public change one.', 'Beta change. Beta', 'Public change two.']);
     unmount();
 
     render(<WhatsNewPanel onClose={() => {}} includeBeta={false} releases={RELEASES} loadRelease={async () => null} />);
