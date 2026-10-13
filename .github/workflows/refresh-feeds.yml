@@ -19,6 +19,7 @@ permissions:
   contents: write
   pull-requests: write
   issues: write
+  actions: write
 
 # Never run two data releases at once: overlapping runs could publish tiles
 # and agency data from different builds. Queue instead of cancelling, so a
@@ -180,10 +181,10 @@ jobs:
       # publish-data-release has just regenerated shared/data/agency-pages*.json from the new
       # release (read-only against the public R2 URL, no extra secrets). Agency pages are
       # prerendered from those committed files, so they go stale unless this lands on main. main
-      # is protected (required CI check), so it goes in as a small PR that auto-merges once CI is
-      # green: one Vercel deploy per week. A GITHUB_TOKEN PR does not start CI, so add a
-      # PAT/App token as the ATLAS_BOT_TOKEN secret for the auto-merge to complete on its own;
-      # without it the PR waits for a manual merge. Skipped when the files did not change.
+      # is protected (required CI check), so it goes in as a small PR. A GITHUB_TOKEN PR does not
+      # start CI by itself, but workflow_dispatch is exempt: CI is dispatched on the PR branch, its
+      # "Type Check · Test · Build" check lands on the PR head commit, and auto-merge finishes it.
+      # One Vercel deploy per week. Skipped when the files did not change.
       - name: Read the published release id
         id: agency-pages-release
         run: echo "id=$(node -p "require('./shared/data/agency-pages.json').releaseId")" >> "$GITHUB_OUTPUT"
@@ -192,7 +193,7 @@ jobs:
         id: agency-pages-pr
         uses: peter-evans/create-pull-request@v8
         with:
-          token: ${{ secrets.ATLAS_BOT_TOKEN || secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           add-paths: |
             shared/data/agency-pages.json
             shared/data/agency-page-slugs.json
@@ -204,9 +205,15 @@ jobs:
           delete-branch: true
           labels: data-quality,pipeline
 
+      - name: Run CI on the agency pages branch
+        if: steps.agency-pages-pr.outputs.pull-request-number != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh workflow run ci.yml --ref automation/agency-pages
+
       - name: Auto-merge agency pages pull request once checks pass
         if: steps.agency-pages-pr.outputs.pull-request-number != ''
         continue-on-error: true
         env:
-          GH_TOKEN: ${{ secrets.ATLAS_BOT_TOKEN || secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: gh pr merge "${{ steps.agency-pages-pr.outputs.pull-request-number }}" --auto --squash

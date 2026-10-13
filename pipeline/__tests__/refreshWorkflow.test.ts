@@ -70,6 +70,13 @@ describe('weekly refresh workflow contract', () => {
     expect(prStep).toContain('Regenerate agency pages for release-');
     expect(prStep).not.toMatch(/push-to-fork|signoff/);
     expect(workflow.slice(merge)).toContain('gh pr merge');
+    const ci = workflow.indexOf('      - name: Run CI on the agency pages branch');
+    expect(ci).toBeGreaterThan(pr);
+    expect(ci).toBeLessThan(merge);
+    expect(workflow).toContain('gh workflow run ci.yml --ref automation/agency-pages');
+    expect(workflow).toMatch(/^  actions: write$/m);
+    expect(workflow).not.toContain('ATLAS_BOT_TOKEN');
+    expect(readFileSync(resolve('.github/workflows/ci.yml'), 'utf8')).toMatch(/^  workflow_dispatch:/m);
     // The generator runs inside publish-data-release, after the pointer moves.
     const publishSrc = readFileSync(resolve('pipeline/publish-data-release.ts'), 'utf8');
     expect(publishSrc.indexOf('build-agency-page-summaries.ts')).toBeGreaterThan(publishSrc.indexOf('Published Atlas data release'));
