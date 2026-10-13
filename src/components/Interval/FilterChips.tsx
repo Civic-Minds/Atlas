@@ -337,7 +337,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
         </div>
         <div className="relative">
           <button onClick={() => toggle('mode')} className={chipClass(selectedModes.size > 0)}>Mode<Dot show={selectedModes.size > 0} /></button>
-          {openChip === 'mode' && <div className={`${PANEL} w-36`}>
+          {openChip === 'mode' && <div className={`${PANEL} w-48`}>
             {MODES.map(mode => <button key={mode.id} onClick={() => toggleMode(mode.id)} className={researchButton(modeIsActive(mode.id))}>{mode.label}</button>)}
           </div>}
         </div>
@@ -404,7 +404,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
         <Dot show={true} />
       </button>
       {openChip === 'period' && (
-        <div className={`${PANEL} w-36`}>
+        <div className={`${PANEL} w-56`}>
           {PERIOD_KEYS.map((p) => (
             <button
               key={p}
@@ -412,8 +412,8 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
               className={`${rowBtn(period === p)} flex items-center justify-between gap-3`}
               aria-pressed={period === p}
             >
-              <span>{PERIOD_LABELS[p]}</span>
-              <span className="text-xs opacity-70 shrink-0">{formatPeriodRange(p)}</span>
+              <span className="whitespace-nowrap">{PERIOD_LABELS[p]}</span>
+              <span className="text-xs opacity-70 shrink-0 whitespace-nowrap">{formatPeriodRange(p)}</span>
             </button>
           ))}
         </div>
@@ -453,7 +453,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
         <Dot show={selectedModes.size > 0} />
       </button>
       {openChip === 'mode' && (
-        <div className={`${PANEL} w-36`}>
+        <div className={`${PANEL} w-48`}>
           {MODES.map((m) => (
             <button
               key={m.id}

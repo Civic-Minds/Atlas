@@ -82,15 +82,15 @@ export const MapContextPanel: React.FC<MapContextPanelProps> = ({ agencies, mode
           agencies.length > 0 ? agencies.map(agency => {
             const area = areaLinkFor(agency.slug, FEATURES.agencyPages);
             return (
-              <div key={agency.slug} className="flex items-center">
+              <div key={agency.slug}>
                 <ListRow
                   variant="spaced"
                   onClick={() => onSelectAgency?.(agency.slug)}
-                  className={`min-w-0 flex-1 ${onSelectAgency ? 'cursor-pointer' : 'cursor-default'}`}
+                  className={`min-w-0 ${onSelectAgency ? 'cursor-pointer' : 'cursor-default'}`}
                 >
-                  <span className={`${LIST_ROW_PRIMARY} min-w-0 break-words text-left`} title={agency.name}>{agency.name}</span>
+                  <span className={`${LIST_ROW_PRIMARY} min-w-0 text-left`} title={agency.name}>{agency.name}</span>
                 </ListRow>
-                {area && <a href={area.href} className="mr-4 shrink-0 text-xs text-[var(--accent)] hover:underline">{area.label}</a>}
+                {area && <a href={area.href} className="-mt-1.5 block truncate px-4 pb-2 text-xs text-[var(--accent)] hover:underline" title={area.label}>{area.label}</a>}
               </div>
             );
           }) : (
@@ -101,7 +101,7 @@ export const MapContextPanel: React.FC<MapContextPanelProps> = ({ agencies, mode
             <section key={group.agencyName}>
               <div className={`${PANEL_SECTION_HEAD.replace('tracking-wide', '')} pt-2 pb-1`}>{group.agencyName}</div>
               {group.routes.map((route: MapContextRoute) => {
-                const labels = routeRowLabels(route.shortName, route.longName);
+                const labels = routeRowLabels(route.shortName, route.longName, route.routeType);
                 return (
                   <RouteListRow
                     key={route.key}
