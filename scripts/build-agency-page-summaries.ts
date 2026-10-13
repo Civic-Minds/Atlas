@@ -21,7 +21,7 @@ import { DEFAULT_R2_PUBLIC_URL } from '../shared/config';
 import { effectiveMode } from '../shared/modes';
 import { routeGroupKey } from '../shared/routeGroupKey';
 import { normalizeRouteFilterFeatures } from '../shared/routeHeadwayFilter';
-import { routeListDisplay, hasDirectionPeriodService } from '../src/utils/effectiveHeadway';
+import { routeListDisplay } from '../src/utils/effectiveHeadway';
 import type { ShapeProperties } from '../src/hooks/useAgencyData';
 import type { AgencyPageIdentity, AgencyPageRoute, AgencyPageSummary, AgencyPageSummaries } from '../shared/agencyPages';
 import { trimRedundantCity } from '../shared/agencyPages';
@@ -76,7 +76,7 @@ export function summarize(
       name: prev?.name ?? (shortName || longName || String(p.routeId ?? '')),
       longName: prev?.longName ?? longName,
       mode: prev?.mode ?? effectiveMode({ routeType: p.routeType as number, routeLongName: longName, routeShortName: shortName, agencySlug: slug }),
-      midday: null, am: null, pm: null,
+      midday: null, am: null, pm: null, evening: null, overnight: null,
     });
     (rows.get(key) ?? rows.set(key, []).get(key)!).push(p as unknown as ShapeProperties);
     const hours = p.headwayByHour as Record<string, number | null> | undefined;
@@ -88,12 +88,14 @@ export function summarize(
   }
   for (const [key, r] of routes) {
     const ps = rows.get(key)!;
-    const day = (['midday', 'amPeak', 'pmPeak'] as const).map(period => routeListDisplay(ps, period));
-    [r.midday, r.am, r.pm] = day.map(d => d.headway);
-    const limited = day.some(d => d.limited);
-    if (limited) r.limited = true;
-    // Night only: overnight service and nothing at all by day (no cadence, no limited daytime service).
-    if (day.every(d => d.headway == null && !d.limited) && ps.some(p => hasDirectionPeriodService(p, 'overnight'))) r.night = true;
+    const cols = [['midday', 'midday'], ['am', 'amPeak'], ['pm', 'pmPeak'], ['evening', 'evening'], ['overnight', 'overnight']] as const;
+    const limited: NonNullable<AgencyPageRoute['limited']> = [];
+    for (const [col, period] of cols) {
+      const d = routeListDisplay(ps, period);
+      r[col] = d.headway;
+      if (d.limited) limited.push(col);
+    }
+    if (limited.length) r.limited = limited;
   }
   const hasDay = (day: string) => features.some(f => f.geometry?.type === 'LineString' && f.properties.day === day
     && Object.values((f.properties.headwayByHour as Record<string, number | null> | undefined) ?? {}).some(v => v != null));

@@ -3,7 +3,7 @@ import { useParams } from 'react-router';
 import { ArrowRight } from 'lucide-react';
 import {
   agencyAboutParagraph,
-  DEFAULT_THRESHOLD,
+  bandCounts,
   modesText,
   typicalWait,
   agencyDatesText,
@@ -12,15 +12,15 @@ import {
   agencyPagePath,
   agencyStats,
   headwayEvery,
-  headwayOrBetter,
   resolveAgencySeo,
   AGENCY_DATA_SCRIPT_ID,
   type AgencyPageData,
+  type AgencyPageRoute,
 } from '../shared/agencyPages';
 import { ATLAS_MODE } from '../shared/config';
 import { applySeoToDocument } from './lib/seoDom';
 import { LINK, PAGE_ACTION } from './pageStyles';
-import { StatRow, type StatItem } from './pageParts';
+import { FrequencyBar, StatRow, type StatItem } from './pageParts';
 import SiteFooter from './components/SiteFooter';
 import SiteHeader from './components/SiteHeader';
 
@@ -43,14 +43,14 @@ function readEmbeddedData(slug: string | undefined): AgencyPageData | null {
  * loads from the full summary file instead (dead code in production builds).
  */
 /** A period cell: the card's cadence, "Limited" when the route runs but has no trustworthy cadence, else a dash. */
-function cell(v: number | null, r: { limited?: boolean }): string {
-  return v != null ? headwayEvery(v) : r.limited ? 'Limited' : headwayEvery(null);
+function cell(col: 'am' | 'midday' | 'pm' | 'evening' | 'overnight', r: AgencyPageRoute): string {
+  const v = r[col];
+  return v != null ? headwayEvery(v) : r.limited?.includes(col) ? 'Limited' : headwayEvery(null);
 }
 
 export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }) {
   const params = useParams();
   const [data, setData] = useState<AgencyPageData | null>(() => dataProp ?? readEmbeddedData(params.slug));
-  const threshold = DEFAULT_THRESHOLD;
   useEffect(() => {
     if (data || !import.meta.env.DEV) return;
     void import('./agencyPageDevData').then(m => setData(m.devAgencyPageData(params.slug)));
@@ -78,7 +78,7 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
     );
   }
 
-  const stats = agencyStats(agency, threshold);
+  const stats = agencyStats(agency);
   const wait = typicalWait(agency.routes);
   const nearby = data!.nearby;
   const items: StatItem[] = [
@@ -106,32 +106,33 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
 
           <section className="mt-14" aria-labelledby="routes-heading">
             <h2 id="routes-heading" className="text-xl font-black tracking-tight">Routes and weekday frequency</h2>
-            <p className="mt-3 text-base font-bold">{stats.within} of {stats.totalRoutes} routes {headwayOrBetter(threshold)} on a weekday midday</p>
+            <p className="mt-3 text-base font-bold">Weekday midday frequency, by route</p>
+            <FrequencyBar counts={bandCounts(agency.routes)} />
             <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">Each route is judged by its slower direction. A dash means no sustained service in that period.</p>
             {stats.byMode.map(group => (
               <div key={group.mode} className="mt-8 overflow-x-auto">
-                <table className="w-full min-w-[30rem] table-fixed border-collapse text-left text-sm">
-                  <colgroup><col /><col className="w-28" /><col className="w-28" /><col className="w-28" /></colgroup>
+                <table className="w-full min-w-[44rem] table-fixed border-collapse text-left text-sm">
+                  <colgroup><col className="w-64" /><col className="w-28" /><col className="w-28" /><col className="w-28" /><col className="w-28" /><col className="w-28" /></colgroup>
                   <caption className="pb-2 text-left text-base font-black">{group.label} routes ({group.routes.length})</caption>
                   <thead>
                     <tr className="text-[var(--text-dim)]">
                       <th scope="col" className="py-1.5 pr-4 font-bold">Route</th>
                       <th scope="col" className="py-1.5 pr-4 font-bold">AM peak</th>
                       <th scope="col" className="py-1.5 pr-4 font-bold">Midday</th>
-                      <th scope="col" className="py-1.5 font-bold">PM peak</th>
+                      <th scope="col" className="py-1.5 pr-4 font-bold">PM peak</th>
+                      <th scope="col" className="py-1.5 pr-4 font-bold">Evening</th>
+                      <th scope="col" className="py-1.5 font-bold">Overnight</th>
                     </tr>
                   </thead>
                   <tbody>
                     {group.routes.map(r => (
                       <tr key={`${r.name}-${r.longName ?? ''}`}>
                         <th scope="row" className="py-1.5 pr-4 font-normal"><span className="font-black">{r.name}</span>{r.longName && r.longName !== r.name ? <span className="text-[var(--text-muted)]"> {r.longName}</span> : null}</th>
-                        {r.night
-                          ? <td colSpan={3} className="py-1.5 text-[var(--text-muted)]">Night only</td>
-                          : <>
-                              <td className="py-1.5 pr-4">{cell(r.am, r)}</td>
-                              <td className="py-1.5 pr-4">{cell(r.midday, r)}</td>
-                              <td className="py-1.5">{cell(r.pm, r)}</td>
-                            </>}
+                        <td className="py-1.5 pr-4">{cell('am', r)}</td>
+                        <td className="py-1.5 pr-4">{cell('midday', r)}</td>
+                        <td className="py-1.5 pr-4">{cell('pm', r)}</td>
+                        <td className="py-1.5 pr-4">{cell('evening', r)}</td>
+                        <td className="py-1.5">{cell('overnight', r)}</td>
                       </tr>
                     ))}
                   </tbody>

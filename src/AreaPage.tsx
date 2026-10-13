@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { ArrowRight } from 'lucide-react';
-import { DEFAULT_THRESHOLD, agencyPagePath, headwayEvery, headwayOrBetter, modesText } from '../shared/agencyPages';
+import { agencyPagePath, headwayEvery, modesText } from '../shared/agencyPages';
 import {
   AREA_DATA_SCRIPT_ID,
   areaAboutParagraph,
@@ -15,7 +15,7 @@ import {
 import { ATLAS_MODE } from '../shared/config';
 import { applySeoToDocument } from './lib/seoDom';
 import { LINK, PAGE_ACTION } from './pageStyles';
-import { StatRow, type StatItem } from './pageParts';
+import { FrequencyBar, StatRow, type StatItem } from './pageParts';
 import SiteFooter from './components/SiteFooter';
 import SiteHeader from './components/SiteHeader';
 
@@ -35,7 +35,6 @@ function readEmbeddedData(slug: string | undefined): AreaPageData | null {
 export default function AreaPage({ data: dataProp }: { data?: AreaPageData }) {
   const params = useParams();
   const [data, setData] = useState<AreaPageData | null>(() => dataProp ?? readEmbeddedData(params.slug));
-  const threshold = DEFAULT_THRESHOLD;
   useEffect(() => {
     if (data || !import.meta.env.DEV) return;
     void import('./areaPageDevData').then(m => setData(m.devAreaPageData(params.slug)));
@@ -62,7 +61,6 @@ export default function AreaPage({ data: dataProp }: { data?: AreaPageData }) {
     );
   }
 
-  const within = data.within[String(threshold)] ?? 0;
   const items: StatItem[] = [
     ...(data.typicalWait != null ? [{ value: headwayEvery(data.typicalWait), label: 'typical wait, weekday midday' }] : []),
     ...(data.totalRoutes > 0 ? [{ value: String(data.totalRoutes), label: modesText(data.byMode) }] : []),
@@ -89,19 +87,18 @@ export default function AreaPage({ data: dataProp }: { data?: AreaPageData }) {
 
           <section className="mt-14" aria-labelledby="agencies-heading">
             <h2 id="agencies-heading" className="text-xl font-black tracking-tight">Agencies and weekday frequency</h2>
-            <p className="mt-3 text-base font-bold">{within} of {data.totalRoutes} routes {headwayOrBetter(threshold)} on a weekday midday</p>
+            <p className="mt-3 text-base font-bold">Weekday midday frequency, by route</p>
+            <FrequencyBar counts={data.bands} />
             <div className="mt-6 overflow-x-auto">
-              <table className="w-full table-fixed border-collapse text-left text-sm" style={{ minWidth: `${20 + data.modeColumns.length * 5 + 9}rem` }}>
+              <table className="w-full table-fixed border-collapse text-left text-sm" style={{ minWidth: `${20 + data.modeColumns.length * 5}rem` }}>
                 <colgroup>
                   <col />
                   {data.modeColumns.map(m => <col key={m} className="w-20" />)}
-                  <col className="w-36" />
                 </colgroup>
                 <thead>
                   <tr className="text-[var(--text-dim)]">
                     <th scope="col" className="py-1.5 pr-4 font-bold">Agency</th>
                     {data.modeColumns.map(m => <th key={m} scope="col" className="py-1.5 pr-4 font-bold">{m}</th>)}
-                    <th scope="col" className="py-1.5 font-bold">{headwayOrBetter(threshold).replace(/^e/, 'E')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -109,7 +106,6 @@ export default function AreaPage({ data: dataProp }: { data?: AreaPageData }) {
                     <tr key={a.slug}>
                       <th scope="row" className="py-1.5 pr-4 font-normal"><a className={`font-black ${LINK}`} href={agencyPagePath(a.slug)}>{a.displayName}</a></th>
                       {data.modeColumns.map(m => <td key={m} className="py-1.5 pr-4">{a.modes[m] ?? '–'}</td>)}
-                      <td className="py-1.5">{a.within[String(threshold)] ?? 0} of {a.totalRoutes}</td>
                     </tr>
                   ))}
                 </tbody>

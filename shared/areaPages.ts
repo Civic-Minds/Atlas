@@ -3,14 +3,12 @@
  * number is added up from the per-agency summaries (shared/agencyPages.ts); nothing new is measured.
  */
 import {
-  FREQUENT_MINUTES,
-  THRESHOLDS,
   agencyStats,
+  bandCounts,
   bestRoute,
   formatDataDate,
-  headwayOrBetter,
+  headwayEvery,
   modeLabel,
-  routesWithin,
   typicalWait,
   type AgencyPageSummary,
 } from './agencyPages';
@@ -26,8 +24,6 @@ export interface AreaAgencyRow {
   slug: string;
   displayName: string;
   totalRoutes: number;
-  /** Routes every N min or better on a weekday midday, for each standard on the toggle. */
-  within: Record<string, number>;
   /** Route counts by mode label (only modes the agency has). */
   modes: Record<string, number>;
 }
@@ -35,7 +31,8 @@ export interface AreaAgencyRow {
 export interface AreaPageData {
   area: Pick<AreaConfig, 'slug' | 'name' | 'type' | 'officialName' | 'country' | 'cities' | 'bbox' | 'center' | 'note'>;
   totalRoutes: number;
-  within: Record<string, number>;
+  /** Route counts per weekday-midday frequency band (see FREQUENCY_BANDS), no-midday last. */
+  bands: number[];
   /** Median weekday-midday headway across every route in the area. */
   typicalWait: number | null;
   /** The route with the shortest weekday-midday headway, with its agency. */
@@ -62,9 +59,6 @@ export function areaAgencySummaries(area: Pick<AreaConfig, 'agencies'>, all: Rea
   return area.agencies.map(s => all.get(s)).filter((a): a is AgencyPageSummary => !!a && a.routes.some(r => r.midday != null));
 }
 
-const countsFor = (routes: Parameters<typeof routesWithin>[0]): Record<string, number> =>
-  Object.fromEntries(THRESHOLDS.map(t => [String(t), routesWithin(routes, t)]));
-
 export function buildAreaPageData(area: AreaConfig, all: ReadonlyMap<string, AgencyPageSummary>, releaseDate: string | null): AreaPageData {
   const members = areaAgencySummaries(area, all);
   const allRoutes = members.flatMap(a => a.routes);
@@ -84,11 +78,10 @@ export function buildAreaPageData(area: AreaConfig, all: ReadonlyMap<string, Age
       slug: a.slug,
       displayName: a.displayName,
       totalRoutes: s.totalRoutes,
-      within: countsFor(a.routes),
       modes: Object.fromEntries(s.byMode.map(m => [m.label, m.routes.length])),
     });
   }
-  rows.sort((x, y) => (y.within['15'] - x.within['15']) || y.totalRoutes - x.totalRoutes || x.displayName.localeCompare(y.displayName));
+  rows.sort((x, y) => y.totalRoutes - x.totalRoutes || x.displayName.localeCompare(y.displayName));
   const known = members.filter(a => a.sat !== undefined || a.sun !== undefined);
   const all2 = (k: 'sat' | 'sun') => known.length > 0 && known.every(a => a[k]);
   const any2 = (k: 'sat' | 'sun') => known.some(a => a[k]);
@@ -105,7 +98,7 @@ export function buildAreaPageData(area: AreaConfig, all: ReadonlyMap<string, Age
   return {
     area: { slug, name, type, officialName, country, cities, bbox, center, ...(note ? { note } : {}) },
     totalRoutes: allRoutes.length,
-    within: countsFor(allRoutes),
+    bands: bandCounts(allRoutes),
     typicalWait: typicalWait(allRoutes),
     best: best ? { name: best.route.name, headway: best.headway, agency: best.route.agency } : null,
     byMode,
@@ -135,7 +128,7 @@ export function areaSubtitle(d: Pick<AreaPageData, 'area'>): string {
 
 /** One sentence that stands alone, used as the meta description's opening. */
 export function areaLeadSentence(d: AreaPageData): string {
-  return `${d.within[String(FREQUENT_MINUTES)]} of ${d.totalRoutes} routes across ${plural(d.agencies.length, 'transit agency', 'transit agencies')} in the ${d.area.name} area run ${headwayOrBetter(FREQUENT_MINUTES)} on a weekday midday.`;
+  return `${plural(d.totalRoutes, 'weekday route', 'weekday routes')} across ${plural(d.agencies.length, 'transit agency', 'transit agencies')} in the ${d.area.name} area.`;
 }
 
 export function areaPageDescription(d: AreaPageData): string {
@@ -160,20 +153,11 @@ export function areaHoursLabel(d: Pick<AreaPageData, 'weekend' | 'spanVaries'>):
   return ['weekday service', d.spanVaries ? 'varies by agency' : '', weekend].filter(Boolean).join(' · ');
 }
 
-/** Two or three plain sentences, the same template for every area. */
+/** Two plain sentences, the same template for every area. */
 export function areaAboutParagraph(d: AreaPageData): string {
   const n = d.agencies.length;
-  const standard = headwayOrBetter(FREQUENT_MINUTES);
   const out: string[] = [`The ${d.area.name} area has ${plural(n, 'transit agency', 'transit agencies')} running ${plural(d.totalRoutes, 'route', 'routes')}.`];
-  if (d.totalRoutes > 0) {
-    const k = d.within[String(FREQUENT_MINUTES)];
-    const midday = k === 0 ? `none run ${standard}`
-      : k === d.totalRoutes && k > 1 ? `all run ${standard}`
-      : `${k} ${k === 1 ? 'runs' : 'run'} ${standard}`;
-    out.push(`At weekday midday, ${midday}.`);
-    const top = [...d.agencies].sort((x, y) => y.within['15'] - x.within['15'])[0];
-    if (n > 1 && top && top.within['15'] > 0) out.push(`${top.displayName} has the most, with ${top.within['15']}.`);
-  }
+  if (d.typicalWait != null) out.push(`At weekday midday, the typical wait is ${headwayEvery(d.typicalWait)}.`);
   return out.join(' ');
 }
 
