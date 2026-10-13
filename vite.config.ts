@@ -141,7 +141,10 @@ export default defineConfig(({ mode, command, isPreview }) => {
         // `atlas/` segment. Matching without it meant this middleware silently
         // never intercepted anything, falling through to the R2 proxy (a 404 for
         // any not-yet-published agency) for the entire time it's existed.
-        const match = /^\/atlas-data\/atlas\/([\w-]+\.json)$/.exec(pathname);
+        // Published data releases load agency JSON from `atlas/releases/<id>/agencies/`
+        // (dataReleaseAgencyUrl); the same local file overrides that path too, so a
+        // reprocessed agency can be looked at on the release's live tiles.
+        const match = /^\/atlas-data\/atlas\/(?:releases\/[\w-]+\/agencies\/)?([\w-]+\.json)$/.exec(pathname);
         if (!match) return next();
         const filename = match[1];
         const slug = filename.replace(/-(stops-meta|stops|corridors|trips)\.json$/, '').replace(/\.json$/, '');
