@@ -36,6 +36,7 @@ import { isRailLikeRoute } from '../shared/modes.js';
 import { computePeriodCoverageHeadways } from './headway-utils.js';
 import { makeShapeCoverChecker } from './shapeCoverage.js';
 import { annotateSharedStretches, isPoolablePattern } from './sharedStretch.js';
+import { decideDedupe, type DedupePattern } from './featureDedupe.js';
 import type { SharedStretchPattern } from './sharedStretch.js';
 import { buildPooledStopMap, computeStopSharers, pooledHeadwayInWindow, segmentsByTier, type StopSharers } from './stopPools.js';
 
@@ -562,15 +563,7 @@ function runDateYmd(): string {
   const d = new Date();
   return `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
 }
-/**
- * #740: a thin no-daytime result (fewer than MIN_ALL_DAY_TERMINAL_DEPARTURES departures, none
- * 09:00-19:00) only loses the drawn line to a daytime sibling with at least this many unique
- * departures, twice the thin cutoff. Set from the 2026-10-12 catalog scan of the 185 decisions
- * the rule changed: every CapMetro per-trip-shape block that regressed had a daytime sibling of
- * 5 or fewer departures, the intended cases 8 or more (TTC 97A 19, 100 31, 73B 44, 96B 51,
- * 129B 72, 504A 124; NJT 161 26-34).
- */
-export const MIN_THIN_REPLACING_DEPARTURES = 8;
+export { MIN_THIN_REPLACING_DEPARTURES } from './featureDedupe.js';
 
 /** #728: the destination pool at a line's terminal must have this many unique departures (and more than the drawn shape) before its every-gap grade can lift the line's tier. */
 export const MIN_POOLED_TIER_DEPARTURES = 8;
@@ -918,18 +911,11 @@ export async function processGtfsBuffer(
   // emit two overlapping features per line. When duplicates exist, keep the lower headway
   // (more frequent / more trips active in the analysis window).
   const dedupedFeatures = new Map<string, GeoJsonFeature>();
-  // Each feature's plain-median headway, which dedupe compares (#772).
-  const dedupeHeadwayByFeature = new Map<GeoJsonFeature, number | null>();
-  // Whether the result kept for each dedupe key has departures between 09:00 and 19:00, and
-  // whether it is a thin no-daytime result (#740).
-  const dedupedHasDaytime = new Map<string, boolean>();
-  const dedupedThin = new Map<string, boolean>();
-  const dedupedDepartures = new Map<string, number>();
+  // What dedupe knows about the pattern holding each slot (featureDedupe.ts).
+  const dedupedPattern = new Map<string, DedupePattern>();
   // Feature → the shapeId it was actually built from, so the per-stop headway
   // resolution loop below can pool departures scoped to that exact physical path.
   const featureShapeId = new Map<GeoJsonFeature, string>();
-  // Feature → whether its pattern runs on the slot's representative weekday (Weekday only).
-  const featureRepWeekday = new Map<GeoJsonFeature, { runs: boolean; carries: boolean }>();
   // Feature → its stop-map group name (routeGroupName), which differs from the displayed
   // routeShortName when the feed's short name is empty (#717).
   const featureGroupName = new Map<GeoJsonFeature, string>();
@@ -976,6 +962,7 @@ export async function processGtfsBuffer(
       ? `${groupName}::${result.dir}::${result.day}::${cleanedForDedup}::${branchKey}`
       : `${groupName}::${result.dir}::${result.day}::${branchKey}`;
     const existing = dedupedFeatures.get(dedupeKey);
+    const incumbent = dedupedPattern.get(dedupeKey);
     const isRailRoute = route?.route_type === '2' || route?.route_type === 2;
     const initialPeriodHeadways = computePeriodHeadways(result.times);
     const notRated = result.partialWeekday || result.previousNightTailOnly || result.serviceClass === 'irregular' || result.tier === 'span';
@@ -984,18 +971,8 @@ export async function processGtfsBuffer(
     // reading alternating gaps honestly never swaps which shape is drawn.
     const newDedupeHeadway = notRated ? null
       : Math.round(computePeriodHeadways(result.times, false).midday ?? result.plainMedianHeadway ?? result.medianHeadway);
-    // A drawn line always beats a mapless Point for the same slot, whichever is more frequent
-    // and whichever arrives first: when two route IDs share a short name and only one has
-    // shapes, reprocessing must never turn a line that draws today into a point.
-    const existingHasShape = existing?.geometry.type === 'LineString';
-    if (existing && existingHasShape && !hasRouteShape) continue;
-    const replacesMaplessWithShape = existing != null && !existingHasShape && hasRouteShape;
-    // Weekday: among patterns competing for one slot, the drawn line comes from a pattern that
-    // runs on the slot's representative weekday, so the line and its stop data describe the
-    // same service (#716: cata-state-college VE Campus drew the Friday-only shape although
-    // the route's typical weekday is Mon-Thu). Only decides between two drawn lines where
-    // one carries that day and the other does not run on it; every other case keeps the
-    // headway rule below.
+    // The slot's representative weekday (#716) and how much of the slot this pattern carries
+    // on it: the dedupe rules themselves are in featureDedupe.ts.
     const repWeekday = result.day === 'Weekday'
       ? (cleanedForDedup ? representativeWeekday.headsign.get(`${groupName}::${result.dir}::${cleanedForDedup}`) : undefined)
         ?? representativeWeekday.group.get(`${groupName}::${result.dir}`)
@@ -1011,39 +988,16 @@ export async function processGtfsBuffer(
     const newRunsOnRepDay = repWeekday != null && (result.daysIncluded?.includes(repWeekday) ?? false);
     const newCarriesRepDay = newRunsOnRepDay && shapeCounts != null && slotCounts != null
       && shapeCounts[repIndex] * 2 >= slotCounts[repIndex];
-    const bothDrawn = existing != null && existingHasShape && hasRouteShape && repWeekday != null;
-    const existingRep = bothDrawn ? featureRepWeekday.get(existing) : undefined;
-    if (bothDrawn && existingRep?.carries && !newRunsOnRepDay) continue;
-    const prefersRepDayShape = bothDrawn && !existingRep?.runs && newCarriesRepDay;
-    // A thin result with no daytime service never holds the drawn line against a sibling with
-    // daytime service under the same destination (#740). TTC 100 via Linkwood's 3 trips before
-    // 06:30 scored their own median, 15, against the 31-trip peak shape's 18, and were drawn with
-    // no daytime values at all. Thin = no departures 09:00-19:00 and fewer than
-    // MIN_ALL_DAY_TERMINAL_DEPARTURES departures. Everything else keeps the better-headway rule,
-    // and a headsign with no daytime sibling (night pieces like TTC 329/334) is never touched.
-    // The daytime sibling must be a real sample (MIN_THIN_REPLACING_DEPARTURES departures). In a
-    // feed that gives every 3-5 trip block its own shape (CapMetro, #737) every block is thin-sized
-    // and the pooled headline of the thin-shape rescue is the right one; preferring a daytime block
-    // there read its own few trips (335 Exposition WB Sunday 30 -> 31, tier 60; 243 Tech Ridge EB
-    // 35 -> 70) so those feeds keep the better-headway rule.
-    const newDepartures = new Set(result.times).size;
-    const newHasDaytime = result.times.some(t => t >= 540 && t < 1140);
-    const newIsThin = !newHasDaytime && newDepartures < MIN_ALL_DAY_TERMINAL_DEPARTURES;
-    const existingIsThin = dedupedThin.get(dedupeKey) === true;
-    const existingIsSample = (dedupedDepartures.get(dedupeKey) ?? 0) >= MIN_THIN_REPLACING_DEPARTURES;
-    if (existing && existingHasShape && hasRouteShape && newIsThin && dedupedHasDaytime.get(dedupeKey) === true && existingIsSample) continue;
-    const daytimeReplacesThin = existing != null && existingIsThin && newHasDaytime && newHeadway != null && newDepartures >= MIN_THIN_REPLACING_DEPARTURES;
-    // Otherwise skip if: new result is span (null headway) — span never beats a real tier.
-    // Or if existing already has an equal or better real headway.
-    if (
-      existing &&
-      !replacesMaplessWithShape &&
-      !prefersRepDayShape &&
-      !daytimeReplacesThin &&
-      (newDedupeHeadway == null ||
-       (dedupeHeadwayByFeature.get(existing) != null &&
-        (dedupeHeadwayByFeature.get(existing) as number) <= newDedupeHeadway))
-    ) continue;
+    const candidate: DedupePattern = {
+      hasShape: hasRouteShape,
+      dedupeHeadway: newDedupeHeadway,
+      headway: newHeadway,
+      departures: new Set(result.times).size,
+      hasDaytime: result.times.some(t => t >= 540 && t < 1140),
+      runsOnRepDay: newRunsOnRepDay,
+      carriesRepDay: newCarriesRepDay,
+    };
+    if (decideDedupe(incumbent, candidate, repWeekday) === 'keep') continue;
 
     const newFeature: GeoJsonFeature = {
       type: 'Feature',
@@ -1102,11 +1056,7 @@ export async function processGtfsBuffer(
     };
     if (existing) maplessStopSequence.delete(existing);
     dedupedFeatures.set(dedupeKey, newFeature);
-    featureRepWeekday.set(newFeature, { runs: newRunsOnRepDay, carries: newCarriesRepDay });
-    dedupeHeadwayByFeature.set(newFeature, newDedupeHeadway);
-    dedupedHasDaytime.set(dedupeKey, newHasDaytime);
-    dedupedThin.set(dedupeKey, newIsThin);
-    dedupedDepartures.set(dedupeKey, newDepartures);
+    dedupedPattern.set(dedupeKey, candidate);
     if (!hasRouteShape) maplessStopSequence.set(newFeature, maplessSequence);
     if (hasRouteShape && shapeId) featureShapeId.set(newFeature, shapeId);
     featureGroupName.set(newFeature, groupName);
