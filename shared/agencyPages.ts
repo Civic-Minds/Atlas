@@ -46,6 +46,8 @@ export interface AgencyPageSummary extends AgencyPageIdentity {
   /** First and last hour (0-28, past 24 is after midnight) with weekday headways. */
   span: { first: number; last: number } | null;
   lastRefreshedAt: string | null;
+  /** Last day the published feed covers (the catalog's lastFeedExpiry), yyyymmdd. */
+  validThrough?: string | null;
 }
 
 export interface AgencyPageSummaries {
@@ -58,13 +60,15 @@ export interface AgencyPageSummaries {
 export interface AgencyPageData {
   agency: AgencyPageSummary;
   nearby: Array<{ slug: string; displayName: string }>;
+  /** generatedAt of the data release the numbers come from. */
+  releaseDate: string | null;
 }
 
 /** The prerendered HTML carries its data in <script type="application/json" id=...>. */
 export const AGENCY_DATA_SCRIPT_ID = 'agency-page-data';
 
-export function agencyPageData(a: AgencyPageSummary, all: readonly AgencyPageSummary[]): AgencyPageData {
-  return { agency: a, nearby: nearbyAgencies(a, all).map(o => ({ slug: o.slug, displayName: o.displayName })) };
+export function agencyPageData(a: AgencyPageSummary, all: readonly AgencyPageSummary[], releaseDate: string | null = null): AgencyPageData {
+  return { agency: a, releaseDate, nearby: nearbyAgencies(a, all).map(o => ({ slug: o.slug, displayName: o.displayName })) };
 }
 
 export const AGENCY_PATH_PREFIX = '/agency/';
@@ -77,8 +81,10 @@ export function agencyPageTitle(a: Pick<AgencyPageSummary, 'displayName'>): stri
   return `${a.displayName} frequency map: frequent routes and service levels | Transit Atlas`;
 }
 
+/** Visible heading: short name plus city, "TTC · Toronto". The long SEO wording lives in <title>. */
 export function agencyPageH1(a: Pick<AgencyPageSummary, 'displayName'>): string {
-  return `${a.displayName} frequent service map`;
+  const m = /^(.*\S)\s+\(([^)]+)\)$/.exec(a.displayName);
+  return m ? `${m[1]} · ${m[2]}` : a.displayName;
 }
 
 const MODE_LABELS: Record<number, [singular: string, plural: string]> = {
@@ -148,7 +154,53 @@ function hourLabel(h: number): string {
 
 export function agencySpanText(a: Pick<AgencyPageSummary, 'span'>): string | null {
   if (!a.span) return null;
+  if (a.span.last + 1 - a.span.first >= 24) return 'Runs 24 hours';
   return `${hourLabel(a.span.first)} to ${hourLabel(a.span.last + 1)}`;
+}
+
+/** The agency's name without its bracketed city: "TTC (Toronto)" becomes "TTC". */
+export function agencyShortLabel(a: Pick<AgencyPageSummary, 'displayName'>): string {
+  const m = /^(.*\S)\s+\([^)]+\)$/.exec(a.displayName);
+  return m ? m[1] : a.displayName;
+}
+
+/**
+ * Two or three plain sentences under the route table, the same template for every agency and
+ * built only from the summary: route count, how many run every 15 min or better at midday, the
+ * mode most of those belong to (only when it is more than half of them), and the weekday span.
+ */
+export function agencyAboutParagraph(a: Pick<AgencyPageSummary, 'displayName' | 'city' | 'routes' | 'span'>): string {
+  const total = a.routes.length;
+  const label = agencyShortLabel(a);
+  const frequent = a.routes.filter(r => r.midday != null && r.midday <= FREQUENT_MINUTES);
+  const k = frequent.length;
+  const standard = headwayOrBetter(FREQUENT_MINUTES);
+  const sentences: string[] = [];
+
+  sentences.push(total === 0 ? `${label} has no weekday routes in the data.` : `${label} runs ${total} ${total === 1 ? 'route' : 'routes'} in ${a.city}.`);
+
+  if (total > 0) {
+    let midday: string;
+    if (total === 1) midday = k === 1 ? `it runs ${standard}` : `it does not run ${standard}`;
+    else if (k === 0) midday = `none run ${standard}`;
+    else if (k === total) midday = `all run ${standard}`;
+    else midday = `${k} ${k === 1 ? 'runs' : 'run'} ${standard}`;
+    sentences.push(`At weekday midday, ${midday}.`);
+
+    if (k >= 2) {
+      const counts = new Map<number, number>();
+      for (const r of frequent) counts.set(r.mode, (counts.get(r.mode) ?? 0) + 1);
+      const [mode, n] = [...counts.entries()].sort((x, y) => y[1] - x[1] || x[0] - y[0])[0];
+      if (n * 2 > k && k < total) sentences.push(`Most of those are ${modeLabel(mode).toLowerCase()} routes.`);
+    }
+  }
+
+  if (a.span) {
+    sentences.push(a.span.last + 1 - a.span.first >= 24
+      ? 'Across all routes, weekday service covers all 24 hours of the day.'
+      : `Across all routes, weekday service runs from ${agencySpanText(a)}.`);
+  }
+  return sentences.join(' ');
 }
 
 /** The map link for the big button: the agency's area, with only that agency on. */
@@ -166,6 +218,18 @@ export function agencyMapHref(a: AgencyPageIdentity): string {
     }
   }
   return `/?${params.toString()}`;
+}
+
+/** The dates, each named for what it is: the agency's schedule, and the Atlas data release it came from. */
+export function agencyDatesText(a: Pick<AgencyPageSummary, 'lastRefreshedAt' | 'validThrough'>, releaseDate: string | null): string {
+  const parts: string[] = [];
+  const refreshed = formatDataDate(a.lastRefreshedAt);
+  const through = formatDataDate(a.validThrough);
+  const release = formatDataDate(releaseDate);
+  if (refreshed) parts.push(`Schedule refreshed ${refreshed}`);
+  if (through) parts.push(`valid through ${through}`);
+  const schedule = parts.join(', ');
+  return [schedule, release ? `Atlas data release ${release}` : ''].filter(Boolean).join('. ') + '.';
 }
 
 /** "Oct 12, 2026" from an ISO or yyyymmdd date; null when unusable. */
