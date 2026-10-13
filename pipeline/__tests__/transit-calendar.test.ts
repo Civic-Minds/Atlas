@@ -531,3 +531,74 @@ describe('detectReferenceDate chooses as of the day after the run (#743)', () =>
   });
 });
 
+
+describe('detectReferenceDate leaves a holiday midpoint week (#686)', () => {
+  afterEach(() => { vi.useRealTimers(); });
+  const weekdays = (from: Date, to: Date) => {
+    const out: string[] = [];
+    for (const t = new Date(from); t <= to; t.setDate(t.getDate() + 1)) {
+      if (t.getDay() === 0 || t.getDay() === 6) continue;
+      out.push(`${t.getFullYear()}${String(t.getMonth() + 1).padStart(2, '0')}${String(t.getDate()).padStart(2, '0')}`);
+    }
+    return out;
+  };
+  const calendar = [
+    cal('Weekday', 'motuwethfr', '20260820', '20270430'),
+    cal('Saturday', 'sa', '20260820', '20270430'),
+    cal('Reduced', 'motuwethfr', '20260820', '20270430'),
+  ];
+  const trips = [
+    ...Array.from({ length: 40 }, () => ({ service_id: 'Weekday', route_id: '1' })),
+    ...Array.from({ length: 10 }, () => ({ service_id: 'Saturday', route_id: '1' })),
+    ...Array.from({ length: 15 }, () => ({ service_id: 'Reduced', route_id: '1' })),
+  ];
+
+  it('reads a term week when the academic-year midpoint is Christmas break (RTS Gainesville)', () => {
+    vi.useFakeTimers({ toFake: ['Date'], now: new Date('2026-10-12T12:00:00') });
+    const calendarDates = [
+      ...weekdays(new Date(2026, 11, 21), new Date(2027, 0, 1)).map(d => removed('Weekday', d)),
+      ...weekdays(new Date(2026, 8, 28), new Date(2026, 11, 18)).map(d => removed('Reduced', d)),
+    ];
+    const ref = detectReferenceDate(calendar, calendarDates, trips);
+    expect(ref < '20261221' || ref > '20270103').toBe(true);
+    expect([...getActiveServiceIds(calendar, calendarDates, 'Tuesday', ref)]).toEqual(['Weekday']);
+  });
+
+  it('keeps the midpoint when its week is typical', () => {
+    vi.useFakeTimers({ toFake: ['Date'], now: new Date('2026-10-12T12:00:00') });
+    // No break removals: the midpoint (Dec 24) week is ordinary, so it stays.
+    expect(detectReferenceDate(calendar, [], trips)).toBe('20261224');
+  });
+
+  it('leaves a midpoint week holding a one-day service', () => {
+    vi.useFakeTimers({ toFake: ['Date'], now: new Date('2026-10-12T12:00:00') });
+    // A one-day timetable on Tue Dec 22, two days before the Dec 24 midpoint: a change-over
+    // or special day, so the midpoint week is not typical and the week after the run is read.
+    const withOneDay = [...calendar, cal('Special', 'tu', '20261222', '20261222')];
+    const withOneDayTrips = [...trips, ...Array.from({ length: 30 }, () => ({ service_id: 'Special', route_id: '1' }))];
+    expect(detectReferenceDate(withOneDay, [], withOneDayTrips)).toBe('20261013');
+  });
+
+  it('leaves a midpoint week where a running block starts after the reference', () => {
+    vi.useFakeTimers({ toFake: ['Date'], now: new Date('2026-10-12T12:00:00') });
+    // A winter Saturday block from Sat Dec 26, two days after the Dec 24 midpoint: read at
+    // Dec 24 its range does not cover the reference, so that Saturday would lose its service
+    // (Calgary's Saturday and LRT Sunday blocks). The week after the run is read instead.
+    const withLateBlock = [...calendar, cal('WinterSat', 'sa', '20261226', '20270430')];
+    const withLateBlockTrips = [...trips, ...Array.from({ length: 10 }, () => ({ service_id: 'WinterSat', route_id: '1' }))];
+    expect(detectReferenceDate(withLateBlock, [], withLateBlockTrips)).toBe('20261013');
+  });
+
+  it('skips a near-run week with a holiday swap day (VTA, Oct 12)', () => {
+    vi.useFakeTimers({ toFake: ['Date'], now: new Date('2026-10-09T12:00:00') });
+    const calendarDates = [
+      ...weekdays(new Date(2026, 11, 21), new Date(2027, 0, 1)).flatMap(d => [removed('Weekday', d), removed('Reduced', d)]),
+      // Oct 12: the school-day service is removed and a holiday service added.
+      removed('Reduced', '20261012'),
+      added('Holiday', '20261012'),
+    ];
+    const ref = detectReferenceDate(calendar, calendarDates, trips);
+    // The week around the reference (±3 days) must not reach Oct 12.
+    expect(ref >= '20261016' && ref < '20261221').toBe(true);
+  });
+});

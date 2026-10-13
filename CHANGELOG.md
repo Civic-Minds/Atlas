@@ -15,6 +15,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Fixed
 
+- Agencies whose schedule period's middle falls on a holiday or a timetable change-over, like a university year centred on Christmas break, now read the timetable running near the build date instead ([#686](https://github.com/Civic-Minds/Atlas/issues/686)).
 - A data build on the last day of a timetable period no longer publishes that period, which was wrong from the next morning, like PART's summer Saturday and Sunday routes after Oct 12 ([#743](https://github.com/Civic-Minds/Atlas/issues/743)).
 - Redwood Coast Transit 20 now draws its route line from Eureka to Crescent City instead of a short stub, since long highway stretches between towns were mistaken for broken route data ([#776](https://github.com/Civic-Minds/Atlas/issues/776)).
 - NJ Transit's 14 commuter rail lines are back on the map, since their feed gives nearly every train its own copy of the line's shape ([#616](https://github.com/Civic-Minds/Atlas/issues/616)).

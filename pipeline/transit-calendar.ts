@@ -187,6 +187,7 @@ export function detectReferenceDate(
         set.add(cd.service_id);
         removalsByDate.set(cd.date, set);
     }
+    const additionDates = new Set((calendarDates ?? []).filter(cd => cd.exception_type === '1').map(cd => cd.date));
 
     const referenceFor = (bestStartDate: string, switched: boolean): string => {
         const bestGroup = groups.get(bestStartDate)!;
@@ -247,8 +248,60 @@ export function detectReferenceDate(
         const em = parseInt(bestEndDate.substring(4, 6)) - 1;
         const ed = parseInt(bestEndDate.substring(6, 8));
 
-        const mid = new Date((new Date(sy, sm, sd).getTime() + new Date(ey, em, ed).getTime()) / 2);
-        const calendarRef = `${mid.getFullYear()}${String(mid.getMonth() + 1).padStart(2, '0')}${String(mid.getDate()).padStart(2, '0')}`;
+        const midpoint = new Date((new Date(sy, sm, sd).getTime() + new Date(ey, em, ed).getTime()) / 2);
+        const midpointRef = `${midpoint.getFullYear()}${String(midpoint.getMonth() + 1).padStart(2, '0')}${String(midpoint.getDate()).padStart(2, '0')}`;
+        // A typical week around a date (3 days each side, the window getActiveServiceIds reads):
+        // no one-day service in it, and no day where calendar_dates removes most of the running
+        // multi-day service.
+        const multiDay = effectiveCalendar.filter(c => c.start_date < c.end_date);
+        const oneDayDates = new Set(effectiveCalendar.filter(c => c.start_date === c.end_date).map(c => c.start_date));
+        const typicalWeek = (ref: string): boolean => {
+            for (let k = -3; k <= 3; k++) {
+                const date = addDaysYmd(ref, k);
+                if (oneDayDates.has(date)) return false;
+                const field = DOW_FIELDS[ymdToDate(date).getDay()];
+                const running = multiDay.filter(c => c[field] === '1' && c.start_date <= date && date <= c.end_date);
+                // getActiveServiceIds reads calendar.txt ranges at the reference itself, so a day
+                // with a running service whose block does not cover the reference (Calgary's
+                // Saturday and LRT Sunday blocks starting after it) makes the week atypical.
+                if (running.some(c => !(c.start_date <= ref && ref <= c.end_date))) return false;
+                const removed = removalsByDate.get(date);
+                if (running.length === 0 || !removed) continue;
+                // Atypical when the removals take out most of the day's service: all of the
+                // running services, or (with trip counts) at least half of their trips (RTS:
+                // the 40-trip term service is removed over the break, a 15-trip reduced one runs).
+                if (running.every(c => removed.has(c.service_id))) return false;
+                // A day that removes running services and adds others is a holiday swap (VTA's
+                // Oct 12 Indigenous Peoples' Day: 16 school-day services out, 11 in).
+                if (additionDates.has(date) && running.some(c => removed.has(c.service_id))) return false;
+                if (tripCountByServiceId) {
+                    const total = running.reduce((n, c) => n + (tripCountByServiceId.get(c.service_id) ?? 0), 0);
+                    const gone = running.filter(c => removed.has(c.service_id)).reduce((n, c) => n + (tripCountByServiceId.get(c.service_id) ?? 0), 0);
+                    if (total > 0 && gone * 2 >= total) return false;
+                }
+            }
+            return true;
+        };
+        // When the midpoint lands in a holiday or removed week and the period is running, read
+        // the first typical week from the day after the run instead. RTS Gainesville's
+        // academic-year period (Aug 20-Apr 30) has its midpoint on Dec 24, Christmas break, when
+        // the term service is removed (#686). Otherwise the midpoint stays as before.
+        const periodRunning = bestStartDate <= todayStr && todayStr <= bestEndDate;
+        const nearRunRef = (): string => {
+            for (let k = 0; k <= 56; k++) {
+                const d = addDaysYmd(todayStr, k);
+                if (d > bestEndDate) break;
+                if (typicalWeek(d)) return d;
+            }
+            return midpointRef;
+        };
+        // Not for feeds that also run trips on all-zero calendar.txt rows (services defined only
+        // by calendar_dates additions): getActiveServiceIds admits those by a ±90-day occurrence
+        // count, so near the run date a school-holiday block later in the window pools with the
+        // term timetable (Auch, cal2-43). They keep the midpoint.
+        const hasPlaceholderServices = effectiveCalendar.some(c => DOW_FIELDS.every(f => c[f] !== '1'));
+        const calendarRef = periodRunning && !hasPlaceholderServices && !typicalWeek(midpointRef) ? nearRunRef() : midpointRef;
+        const mid = ymdToDate(calendarRef);
 
         // Sanity-check: if calendarDates type-1 entries exist and their midpoint is
         // more than 90 days from the calendar-derived reference, the calendar may have

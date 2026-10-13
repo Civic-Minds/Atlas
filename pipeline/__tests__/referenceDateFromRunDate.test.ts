@@ -51,9 +51,9 @@ describe('referenceDateFromRunDate (#774)', () => {
     expect(features.some((p: any) => p.routeShortName === '40')).toBe(false);
   });
 
-  it('keeps the detected reference date without the opt-in', async () => {
+  it('reads the semester without the opt-in too: the midpoint week (Jul 2) holds Independence Day (#686)', async () => {
     vi.useFakeTimers({ toFake: ['Date'], now: new Date('2026-10-14T12:00:00') });
     const features = await weekday({});
-    expect(features.find((p: any) => p.routeShortName === '41')?.headway).toBe(15);
+    expect(features.find((p: any) => p.routeShortName === '41')?.headway).toBe(11);
   });
 });
