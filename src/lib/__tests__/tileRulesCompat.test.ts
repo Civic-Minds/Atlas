@@ -7,7 +7,8 @@ import {
 } from '../../../shared/artifactSchema';
 import { isCompatibleDataRelease } from '../dataRelease';
 
-// Temporary v1 + v2 acceptance during the #665 rollout. Drop v1 in #703.
+// Temporary v1 + v2 acceptance during the #665 rollout (drop v1 in #703), and v2 + v3 during
+// the #749 rollout.
 describe('accepted tile-rules versions', () => {
   const release = {
     releaseId: 'release-test',
@@ -20,11 +21,12 @@ describe('accepted tile-rules versions', () => {
   const accepted: Array<[string, unknown]> = [
     ['version 1', 1],
     ['version 2', 2],
+    ['version 3', 3],
     ['no stamp (counts as 1)', undefined],
   ];
   const rejected: Array<[string, unknown]> = [
     ['version 0', 0],
-    ['version 3', 3],
+    ['version 4', 4],
     ['a string', '2'],
     ['garbage text', 'garbage'],
     ['null', null],
@@ -37,8 +39,8 @@ describe('accepted tile-rules versions', () => {
     expect(ACCEPTED_TILE_RULES_VERSIONS).toContain(TILE_RULES_VERSION);
   });
 
-  it('accepts exactly versions 1 and 2', () => {
-    expect([...ACCEPTED_TILE_RULES_VERSIONS].sort()).toEqual([1, 2]);
+  it('accepts exactly versions 1, 2 and 3', () => {
+    expect([...ACCEPTED_TILE_RULES_VERSIONS].sort()).toEqual([1, 2, 3]);
   });
 
   it.each(accepted)('accepts %s', (_label, tileRulesVersion) => {

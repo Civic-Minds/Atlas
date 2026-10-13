@@ -105,13 +105,24 @@ function routeKeyOf(agency: string, p: Record<string, any>): string {
  * fields). Period: the slowest real (sustained, non-span) destination in that direction,
  * ignoring infrequent-tier siblings when a sustained regular pattern runs in the period.
  * All day: the slowest regular-tier destination (infrequent siblings dropped when a regular
- * pattern exists). Returns undefined when that direction has no such value.
+ * pattern exists), leaving out occasional patterns that are steady in no period and run in
+ * fewer daytime periods than the steady ones (#749). Returns undefined when that direction has
+ * no such value.
  */
 function directionSustainedValue(features: Record<string, any>[], period: AuditPeriod): number | undefined {
   if (period === 'all') {
     const pool = features.filter(p => p.tier !== 'span' && p.headway != null);
     const regular = pool.filter(p => p.tier !== 'infrequent');
-    const use = regular.length > 0 ? regular : pool;
+    const regularPool = regular.length > 0 ? regular : pool;
+    // An occasional pattern (TTC 102's 3-trip Markham short turn) is steady in no period and runs
+    // in fewer daytime periods than the steady ones; a slow all-day destination runs in as many (#749).
+    const isSteady = (p: Record<string, any>) => PERIOD_KEYS.some(pk => typeof p.headwayByPeriod?.[pk] === 'number'
+      && p.headwayByPeriodSustained?.[pk] !== false);
+    const periodsRun = (p: Record<string, any>) => (['amPeak', 'midday', 'pmPeak', 'evening'] as const)
+      .filter(pk => p.periodCoverageHeadway?.[pk] != null).length;
+    const steady = regularPool.filter(isSteady);
+    const keptPeriods = steady.length ? Math.max(...steady.map(periodsRun)) : 0;
+    const use = steady.length > 0 ? regularPool.filter(p => isSteady(p) || periodsRun(p) >= keptPeriods) : regularPool;
     return use.length ? Math.max(...use.map(p => p.headway as number)) : undefined;
   }
   // Occasional short-turn / extension patterns (tier infrequent) do not count against a direction
