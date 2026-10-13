@@ -1,0 +1,2 @@
+route_id,agency_id,route_short_name,route_long_name,route_type,route_url,route_color,route_text_color,route_sort_order,network_id
+35,TRIMET,35,Macadam/Greeley,3,https://trimet.org/schedules/r035.htm,4679AA,FFFFFF,3750,TRIMET

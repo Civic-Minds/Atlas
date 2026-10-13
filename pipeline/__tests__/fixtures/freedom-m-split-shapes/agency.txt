@@ -1,0 +1,2 @@
+agency_id,agency_name,agency_url,agency_timezone,agency_lang,agency_phone,agency_fare_url,agency_email
+235,Freedom Transit,https://www.freedom-transit.org/default.htm,America/New_York,en,724-223-8747,https://www.freedom-transit.org/fixed-route-fares-Washington-County-PA.htm,support@availtec.com

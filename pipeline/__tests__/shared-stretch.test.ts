@@ -270,12 +270,11 @@ describe('shared stretch pooling (patterns)', () => {
       { id: 'T', direction: 0, headsign: 'Downtown', stops: [...seq(0, 9), 's10'], every: 60, offset: 15 },
     ]);
     // One destination: dedupe keeps one line and every stop reads the whole destination: gaps
-    // 15, 15, 30, mean 20 (19 where the 9-15h window cuts the terminal's list to 17 gaps). The
-    // headline is the worst stop on the drawn line (#771 on top of this branch); until then the
-    // route-level Step 4 reads the plain terminal median.
+    // 15, 15, 30, mean 20 (19 where the 9-15h window cuts the terminal's list to 17 gaps), and
+    // the headline is the worst stop on the drawn line (#771).
     expect(routes).toHaveLength(1);
     const line = routes[0];
-    expect([15, 19, 20]).toContain(line.headway);
+    expect([19, 20]).toContain(line.headway);
     for (const stopId of line.stopOrder.slice(0, 10)) expect([19, 20]).toContain(line.stopHeadways[stopId]);
     expectStretchesSound(routes);
   });
@@ -329,11 +328,12 @@ describe('shared stretch pooling (real feeds)', () => {
     expect(c.segments[0]).toMatchObject({ from: 0, tier: '10', headway: 8 });
     expect(c.segments.at(-1).tier).toBe('20');
     expectStretchesSound(routes);
-    // Northbound has one "Wilson" feature, but its trips run on both shapes: one destination,
-    // so the whole service is its headline (#690).
+    // Northbound has one "Wilson" feature whose trips run on both shapes. The stops both serve
+    // read the whole destination (8, #690); the 29C-only stops get every 16, and the headline is
+    // the worst drawn stop's, 16 (#771: a pooled headline never overstates part of the line).
     const north = routes.filter(p => p.directionId === 1);
     expect(north).toHaveLength(1);
-    expect(north[0].headway).toBe(8);
+    expect(north[0].headway).toBe(16);
     const pooled = stopHwAt(north[0]).filter(v => v === 8);
     expect(pooled.length).toBeGreaterThanOrEqual(north[0].stopOrder.length - 3);
     // Phase 2 pairs each pooled stop with an opposite-direction stop on read.
@@ -370,9 +370,9 @@ describe('shared stretch pooling (real feeds)', () => {
   it('HSR 01 King: the shared trunk pools to every 6', async () => {
     const routes = await weekdayRoutes(await fixtureZip('hsr-01-king'), 'hamilton');
     // Eastbound: one destination (Eastgate Square) on two shapes, every 12 each. Every common
-    // stop reads the whole destination (6) and there is no shared stretch (a same-destination
-    // variant is the same line, not another branch); the headline is the worst stop on the drawn
-    // line (12), never the pooled trunk value (policy, #690/#771).
+    // stop reads the whole destination, 6 (#690), and there is no shared stretch (a
+    // same-destination variant is the same line). The stops only one shape serves get every 12,
+    // so the headline is 12 (#771: the worst drawn stop).
     const east = routes.filter(p => p.directionId === 0);
     expect(east).toHaveLength(1);
     expect(east[0].headway).toBe(12);
