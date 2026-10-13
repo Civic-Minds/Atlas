@@ -20,6 +20,11 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ### Fixed
 
+- **Re-processing an agency without a name keeps its display name**: it was being overwritten with the slug (#785).
+- **Redwood Coast Transit 20 shows its southbound route to Eureka**: its two daily trips each used their own shape, so only a stub was drawn ([#776](https://github.com/Civic-Minds/Atlas/issues/776)).
+- **Weekday shows a route's typical weekday, not its Friday timetable**: CATA VE Campus had shown Friday's every 21 instead of its usual every 24 ([#716](https://github.com/Civic-Minds/Atlas/issues/716)).
+- **Agencies read the timetable running now, not a holiday week**: a schedule period centred on a holiday, like a university year on Christmas break, was read from that week ([#686](https://github.com/Civic-Minds/Atlas/issues/686)).
+- **A build on a timetable's last day publishes the next one**: it had published the ending period, wrong from the next morning, like PART's summer weekend routes after Oct 12 ([#743](https://github.com/Civic-Minds/Atlas/issues/743)).
 - **Long names in list cards wrap instead of being cut off**: the full name is now readable, with a tooltip.
 - **A route's small hourly chart shows the slower direction each hour**: before, it showed only the first direction and could hide a weaker one; the full-day view also drops the "All directions" pill, opens on the slower direction, and names pills by destination ("To Downtown") instead of "Direction 1".
 - **The hourly schedule chart sizes bars from zero**: the least frequent hour used to shrink to a stub, and the full-day view now labels each hour's minutes between trips, explains the colours, and its direction pills switch the chart and show which one is picked.
@@ -36,6 +41,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Routes with no short name show their name in bold in route lists**: Annapolis's Free Downtown Shuttle used to appear dimmed and indented, and agency headings no longer use extra letter spacing ([#777](https://github.com/Civic-Minds/Atlas/issues/777))
 - **Routes with paired trips no longer look like they run every 2 or 3 minutes**: Niagara 105 and 401 showed this in search, lists, cards and the hourly chart, but two buses minutes apart and then a long wait is not frequent service ([#761](https://github.com/Civic-Minds/Atlas/issues/761))
 - **A public agency with no data in the current release can no longer show "Couldn't load"**: the agency checks and the release publish step now fail and list it until it is hidden or refreshed into a release ([#759](https://github.com/Civic-Minds/Atlas/issues/759))
+- **Routes whose buses alternate short and long gaps show their real wait**: Basin Transit 1 (every 1 hour, then 2) had shown the short gap, halving the wait ([#772](https://github.com/Civic-Minds/Atlas/issues/772)).
 
 ## [3.3.0] - 2026-10-12
 

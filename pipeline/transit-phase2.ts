@@ -10,6 +10,7 @@ import {
     DAY_TO_TYPE,
 } from '../types/gtfs';
 import { computeMedian } from './transit-utils';
+import { typicalOfGaps } from './headway-utils';
 import { DEFAULT_CRITERIA, getTiersForCriteria } from './defaults';
 import { SURFACE_TIER_MAXES, TIME_PERIODS } from '../shared/config.js';
 import { isRailLikeRoute } from '../shared/modes.js';
@@ -209,7 +210,9 @@ export function computeHeadwayStats(times: number[]) {
     for (let i = 1; i < times.length; i++) gaps.push(times[i] - times[i - 1]);
 
     const avg = gaps.length ? gaps.reduce((a, b) => a + b, 0) / gaps.length : 0;
-    const median = computeMedian(gaps);
+    const plainMedian = computeMedian(gaps);
+    // Alternating short and long gaps read their typical wait, not the short gap (#772).
+    const median = gaps.length >= 3 ? typicalOfGaps(gaps) : plainMedian;
 
     // Peak detection: 2-hour sliding window, O(n) two-pointer
     let peakHeadway = avg;
@@ -246,6 +249,7 @@ export function computeHeadwayStats(times: number[]) {
     return {
         avg,
         median,
+        plainMedian,
         peakHeadway: Math.round(peakHeadway * 10) / 10,
         baseHeadway: Math.round(base * 10) / 10,
         peakWindow,
@@ -588,6 +592,7 @@ export function applyAnalysisCriteria(
             dir: raw.dir,
             avgHeadway: Math.round(stats.avg),
             medianHeadway: Math.round(stats.median),
+            plainMedianHeadway: Math.round(stats.plainMedian),
             tier,
             edgeGapAllowance,
             serviceClass,
@@ -795,6 +800,7 @@ export function applyAnalysisCriteria(
             dir: rep.dir,
             avgHeadway: stats.avg,
             medianHeadway: stats.median,
+            plainMedianHeadway: stats.plainMedian,
             peakHeadway: stats.peakHeadway,
             baseHeadway: Math.round(stats.baseHeadway * 10) / 10,
             peakWindow: stats.peakWindow,

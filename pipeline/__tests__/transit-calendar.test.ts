@@ -515,3 +515,150 @@ describe('getActiveServiceIds calendar_dates additions for calendar.txt services
     expect([...getActiveServiceIds([], cd3, 'Friday', '20261116')]).toEqual(['F']);
   });
 });
+
+describe('detectReferenceDate chooses as of the day after the run (#743)', () => {
+  afterEach(() => { vi.useRealTimers(); });
+  const runOn = (d: string) => vi.useFakeTimers({ toFake: ['Date'], now: new Date(`${d}T12:00:00`) });
+  // Real PART calendar.txt: the regular period and a Cold Spring summer period ending Oct 12.
+  const calendar = [
+    cal('Sat', 'sa', '20250901', '20261231'),
+    cal('Sun', 'su', '20250901', '20261231'),
+    cal('WD', 'motuwethfr', '20250901', '20261231'),
+    cal('ColdSpringSat', 'sa', '20260523', '20261012'),
+    cal('ColdSpringSun', 'su', '20260523', '20261012'),
+  ];
+  const trips = [
+    ...Array.from({ length: 20 }, () => ({ service_id: 'WD', route_id: '1' })),
+    ...Array.from({ length: 10 }, () => ({ service_id: 'Sat', route_id: '1' })),
+    ...Array.from({ length: 10 }, () => ({ service_id: 'Sun', route_id: '1' })),
+    ...Array.from({ length: 8 }, () => ({ service_id: 'ColdSpringSat', route_id: '9' })),
+    ...Array.from({ length: 8 }, () => ({ service_id: 'ColdSpringSun', route_id: '9' })),
+  ];
+
+  it('does not publish a period that ends on the run date (PART, Oct 12)', () => {
+    for (const run of ['2026-10-12', '2026-10-13']) {
+      runOn(run);
+      const ref = detectReferenceDate(calendar, [], trips);
+      expect([...getActiveServiceIds(calendar, [], 'Saturday', ref)]).toEqual(['Sat']);
+      vi.useRealTimers();
+    }
+  });
+
+  it('a run on the last day of a holiday period still steps past it', () => {
+    // One-day holiday periods Oct 12 and 13 (back to back) next to a regular period.
+    const holiday = [
+      cal('reg-wk', 'motuwethfr', '20260101', '20261231'),
+      cal('reg-sa', 'sa', '20260101', '20261231'),
+      cal('hol-1', 'motuwethfrsasu', '20261012', '20261012'),
+      cal('hol-1b', 'motuwethfrsasu', '20261012', '20261012'),
+      cal('hol-2', 'motuwethfrsasu', '20261013', '20261013'),
+      cal('hol-2b', 'motuwethfrsasu', '20261013', '20261013'),
+    ];
+    const t = holiday.flatMap(c => Array.from({ length: 5 }, () => ({ service_id: c.service_id, route_id: 'r' })));
+    for (const run of ['2026-10-11', '2026-10-12']) {
+      runOn(run);
+      const ref = detectReferenceDate(holiday, [], t);
+      expect([...getActiveServiceIds(holiday, [], 'Tuesday', ref)]).toEqual(['reg-wk']);
+      vi.useRealTimers();
+    }
+  });
+
+  it('reads a period that starts the day after the run (Los Alamos, Oct 14 run)', () => {
+    // Real Los Alamos shape: an Oct 1-11 weekday period, a gap, and Oct 15-Dec 31.
+    const la = [
+      cal('OCT1TO11-Weekday', 'motuwethfr', '20261001', '20261011'),
+      cal('OCT1TO11-Saturday', 'sa', '20261001', '20261011'),
+      cal('OCT15toDEC31-Weekday', 'motuwethfr', '20261015', '20261231'),
+      cal('OCT15toDEC31-Saturday', 'sa', '20261015', '20261231'),
+    ];
+    const t = la.flatMap(c => Array.from({ length: 10 }, () => ({ service_id: c.service_id, route_id: 'r' })));
+    runOn('2026-10-14');
+    const ref = detectReferenceDate(la, [], t);
+    expect([...getActiveServiceIds(la, [], 'Monday', ref)]).toEqual(['OCT15toDEC31-Weekday']);
+  });
+
+  it('keeps the next day when every day of the look-ahead week is a one-day period', () => {
+    // One-day periods (two services each) on every date Oct 13-20, plus a regular period.
+    const days = ['20261013', '20261014', '20261015', '20261016', '20261017', '20261018', '20261019', '20261020'];
+    const week = [
+      cal('reg', 'motuwethfrsasu', '20260101', '20261231'),
+      ...days.flatMap(d => [cal(`${d}-a`, 'motuwethfrsasu', d, d), cal(`${d}-b`, 'motuwethfrsasu', d, d)]),
+    ];
+    const t = week.flatMap(c => Array.from({ length: 5 }, () => ({ service_id: c.service_id, route_id: 'r' })));
+    runOn('2026-10-12');
+    // The step over one-day periods stops at the cap and falls back to Oct 13, not Oct 20.
+    expect(detectReferenceDate(week, [], t)).toBe('20261013');
+  });
+});
+
+
+describe('detectReferenceDate leaves a holiday midpoint week (#686)', () => {
+  afterEach(() => { vi.useRealTimers(); });
+  const weekdays = (from: Date, to: Date) => {
+    const out: string[] = [];
+    for (const t = new Date(from); t <= to; t.setDate(t.getDate() + 1)) {
+      if (t.getDay() === 0 || t.getDay() === 6) continue;
+      out.push(`${t.getFullYear()}${String(t.getMonth() + 1).padStart(2, '0')}${String(t.getDate()).padStart(2, '0')}`);
+    }
+    return out;
+  };
+  const calendar = [
+    cal('Weekday', 'motuwethfr', '20260820', '20270430'),
+    cal('Saturday', 'sa', '20260820', '20270430'),
+    cal('Reduced', 'motuwethfr', '20260820', '20270430'),
+  ];
+  const trips = [
+    ...Array.from({ length: 40 }, () => ({ service_id: 'Weekday', route_id: '1' })),
+    ...Array.from({ length: 10 }, () => ({ service_id: 'Saturday', route_id: '1' })),
+    ...Array.from({ length: 15 }, () => ({ service_id: 'Reduced', route_id: '1' })),
+  ];
+
+  it('reads a term week when the academic-year midpoint is Christmas break (RTS Gainesville)', () => {
+    vi.useFakeTimers({ toFake: ['Date'], now: new Date('2026-10-12T12:00:00') });
+    const calendarDates = [
+      ...weekdays(new Date(2026, 11, 21), new Date(2027, 0, 1)).map(d => removed('Weekday', d)),
+      ...weekdays(new Date(2026, 8, 28), new Date(2026, 11, 18)).map(d => removed('Reduced', d)),
+    ];
+    const ref = detectReferenceDate(calendar, calendarDates, trips);
+    expect(ref < '20261221' || ref > '20270103').toBe(true);
+    expect([...getActiveServiceIds(calendar, calendarDates, 'Tuesday', ref)]).toEqual(['Weekday']);
+  });
+
+  it('keeps the midpoint when its week is typical', () => {
+    vi.useFakeTimers({ toFake: ['Date'], now: new Date('2026-10-12T12:00:00') });
+    // No break removals: the midpoint (Dec 24) week is ordinary, so it stays.
+    expect(detectReferenceDate(calendar, [], trips)).toBe('20261224');
+  });
+
+  it('leaves a midpoint week holding a one-day service', () => {
+    vi.useFakeTimers({ toFake: ['Date'], now: new Date('2026-10-12T12:00:00') });
+    // A one-day timetable on Tue Dec 22, two days before the Dec 24 midpoint: a change-over
+    // or special day, so the midpoint week is not typical and the week after the run is read.
+    const withOneDay = [...calendar, cal('Special', 'tu', '20261222', '20261222')];
+    const withOneDayTrips = [...trips, ...Array.from({ length: 30 }, () => ({ service_id: 'Special', route_id: '1' }))];
+    expect(detectReferenceDate(withOneDay, [], withOneDayTrips)).toBe('20261013');
+  });
+
+  it('leaves a midpoint week where a running block starts after the reference', () => {
+    vi.useFakeTimers({ toFake: ['Date'], now: new Date('2026-10-12T12:00:00') });
+    // A winter Saturday block from Sat Dec 26, two days after the Dec 24 midpoint: read at
+    // Dec 24 its range does not cover the reference, so that Saturday would lose its service
+    // (Calgary's Saturday and LRT Sunday blocks). The week after the run is read instead.
+    const withLateBlock = [...calendar, cal('WinterSat', 'sa', '20261226', '20270430')];
+    const withLateBlockTrips = [...trips, ...Array.from({ length: 10 }, () => ({ service_id: 'WinterSat', route_id: '1' }))];
+    expect(detectReferenceDate(withLateBlock, [], withLateBlockTrips)).toBe('20261013');
+  });
+
+  it('skips a near-run week with a holiday swap day (VTA, Oct 12)', () => {
+    vi.useFakeTimers({ toFake: ['Date'], now: new Date('2026-10-09T12:00:00') });
+    const calendarDates = [
+      ...weekdays(new Date(2026, 11, 21), new Date(2027, 0, 1)).flatMap(d => [removed('Weekday', d), removed('Reduced', d)]),
+      // Oct 12: the school-day service is removed and a holiday service added.
+      removed('Reduced', '20261012'),
+      added('Holiday', '20261012'),
+    ];
+    const ref = detectReferenceDate(calendar, calendarDates, trips);
+    // The week around the reference (±3 days) must not reach Oct 12.
+    expect(ref >= '20261016' && ref < '20261221').toBe(true);
+  });
+});

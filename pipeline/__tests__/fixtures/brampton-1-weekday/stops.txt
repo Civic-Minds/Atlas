@@ -1,0 +1,87 @@
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,location_type,parent_station,stop_timezone,wheelchair_boarding
+00000270,1028,Clark Blvd at Lisa St,,  43.709748, -79.724024,,,0,,,1
+00000280,1029,Clark Blvd opp 185 Clark Blvd,,  43.705847, -79.726028,,,0,,,1
+00000290,1030,Clark Blvd at West Dr,,  43.704774, -79.727214,,,0,,,1
+00002390,1218,Central Park Dr at Knightsbridge Rd,,  43.718001, -79.717910,,,0,,,1
+00002410,3540,Knightsbridge Rd w/of Central Park Drive,,  43.717559, -79.717953,,,0,,,1
+00003864,1341,Knightsbridge Rd w/of Bramalea Rd,,  43.721200, -79.714346,,,0,,,1
+00003865,1342,Knightsbridge Rd btwn Kings Cross & Central Pk Dr,,  43.718865, -79.716507,,,0,,,1
+00007455,1593,Major William Sharpe Dr e/of Chinguacousy Rd,,  43.676794, -79.794583,,,0,,,1
+00008000,1632,Coventry Rd w/of Airport Rd - 1A,,  43.740613, -79.692993,,,0,,,1
+00008020,1634,Conventry Rd at Walker Dr,,  43.738869, -79.695360,,,0,,,1
+00008030,1635,Walker Dr at 299 Walker Dr ( Bell Building ) - 1A,,  43.739239, -79.697384,,,0,,,1
+00008040,1636,Walker Rd at Gateway Blvd - 1A,,  43.737914, -79.698902,,,0,,,0
+00008050,1637,Gateway Blvd at Queen St E - 1A,,  43.738254, -79.700337,,,0,,,1
+00008070,1638,Queen St E w/of Tim Hortons (2433 Queen St E),,  43.736677, -79.704038,,,0,,,0
+00008200,1641,West Dr at 83 West Dr,,  43.705708, -79.729296,,,0,,,1
+00008210,1642,West Dr at 115 West Dr,,  43.707824, -79.732443,,,0,,,1
+00008245,1643,Queen St E at 300 Queen St E,,  43.700155, -79.744648,,,0,,,1
+00008250,1644,Queen St E w/of Hansen Rd,,  43.698520, -79.746508,,,0,,,1
+00008260,1645,Queen St E btwn Hansen Rd & Kennedy Rd N,,  43.697342, -79.747843,,,0,,,1
+00008280,1647,Queen St E at Beech St,,  43.693939, -79.751551,,,0,,,1
+00008290,1648,Queen St E at 164 Queen St,,  43.692585, -79.753035,,,0,,,1
+00008310,1651,Queen St E w/of Scott St,,  43.689419, -79.756277,,,0,,,1
+00008320,1652,Queen St E e/of Theatre Lane,,  43.687299, -79.758516,,,0,,,1
+00008340,1654,George St opp Diplock Lane,,  43.685426, -79.761521,,,0,,,1
+00008350,1655,Queen St W at Mill St N,,  43.683694, -79.762473,,,0,,,1
+00008360,1656,Queen St W at Park St,,  43.682720, -79.763555,,,0,,,1
+00008370,1657,McMurchy - Zum Queen West Station Stop WB,,  43.680472, -79.766040,,,0,,,1
+00008380,1658,Queen St W at Haggert Ave N,,  43.679199, -79.767412,,,0,,,1
+00008390,1659,Queen St W at Mercer Dr,,  43.677935, -79.768806,,,0,,,1
+00008400,1660,McLaughlin - Zum Queen West Station Stop WB,,  43.675742, -79.771301,,,0,,,1
+00008410,1661,Queen St W e/of Kimbark Dr,,  43.672954, -79.774387,,,0,,,1
+00008430,1663,Major William Sharpe Dr n/of Burgby Ave,,  43.671533, -79.782989,,,0,,,1
+00008440,1664,Major William Sharpe Dr opp Candy Cres (S),,  43.672868, -79.785205,,,0,,,1
+00008450,1665,Flowertown Ave w/of Major William Sharpe Dr,,  43.675613, -79.788279,,,0,,,0
+00008460,1666,Flowertown Ave at Chinguacousy Rd,,  43.673927, -79.791041,,,0,,,1
+00009867,3607,Clark Blvd w/of Peel Centre Dr,,  43.714309, -79.719670,,,0,,,1
+00009895,3593,Central Park Dr s/of Knightsbridge Rd,,  43.717319, -79.716765,,,0,,,1
+00013930,2170,Flower City Community Campus Route 1/1A/3A/57 Stop,,  43.671368, -79.769836,,,0,,,1
+00013935,2171,McLaughlin Rd S n/of Bufford Dr,,  43.674693, -79.768574,,,0,,,1
+00014560,2235,McLaughlin Rd S at FCCC Entrance,,  43.674312, -79.768543,,,0,,,1
+00015630,2349,Queen St W at Sobey's Entrance (WB),,  43.668223, -79.779834,,,0,,,1
+00017550,2543,The Gore Rd n/of Queen St,,  43.766442, -79.655656,,,0,,,1
+00017555,2544,The Gore Rd s/of Fogal Rd,,  43.769367, -79.659158,,,0,,,1
+00021135,2885,Queen St e/of Sun Pac Blvd,,  43.750946, -79.687392,,,0,,,1
+00021137,2886,Queen St E at Maritime Ontario,,  43.745823, -79.693447,,,0,,,1
+00021160,2888,Queen St E at Canadian Tire,,  43.740465, -79.699715,,,0,,,1
+00021210,2891,Bramalea Rd at Kensington Rd,,  43.723254, -79.716016,,,0,,,1
+00023140,2949,Team Canada Dr btwn Knightsbridge & Peel Cente Dr,,  43.717650, -79.719575,,,0,,,1
+00023180,2954,Queen St E w/of Hwy 410 (Petro Canada),,  43.703861, -79.740470,,,0,,,1
+00045510,3548,Downtown Terminal Route 1/1A WB /561 Stop,,  43.686892, -79.763022,,,0,place_4CRN,,1
+00045528,4001,Bramalea Terminal Route 1/1A WB - Departure,,  43.719117, -79.720436,,,0,place_CITY,,1
+00047140,3565,Hwy 50 s/of Ebenezer Rd,,  43.777909, -79.654921,,,0,,,1
+00047143,3768,Highway 50 at 8950 Highway 50,,  43.776167, -79.653932,,,0,,,1
+00047145,3769,Highway 50 s/of Fogal Rd,,  43.773076, -79.652218,,,0,,,1
+00049040,3644,Mississauga Rd n/of Beacon Hill Dr,,  43.654356, -79.812149,,,0,,,1
+00049050,3645,Mississauga Rd at Credit Ridge Commons,,  43.655836, -79.814293,,,0,,,1
+00050150,4035,Highway 50 - Zum Queen Station Stop WB,,  43.767120, -79.649676,,,0,place_QU50-W,,1
+00050154,4037,McVean - Zum Queen Station Stop WB,,  43.761528, -79.673772,,,0,,,1
+00050156,4038,Goreway - Zum Queen Station Stop WB,,  43.752459, -79.685609,,,0,,,1
+00050158,4039,Airport Road - Zum Queen Station Stop WB,,  43.742944, -79.696843,,,0,,,1
+00050160,4040,Chrysler - Zum Queen Station Stop WB,,  43.738194, -79.702309,,,0,,,1
+00050162,4041,Torbram - Zum Queen Station Stop WB,,  43.733374, -79.707822,,,0,,,1
+00050164,4042,Glenvale - Zum Queen Station Stop WB,,  43.727724, -79.714151,,,0,,,1
+00050170,4045,Laurelcrest - Zum Queen Station Stop WB,,  43.708580, -79.735318,,,0,,,1
+00050172,4046,Rutherford - Zum Queen Station Stop WB,,  43.701541, -79.743109,,,0,,,1
+00050174,4047,Kennedy - Zum Queen Station Stop WB,,  43.695367, -79.750006,,,0,,,1
+00050176,4048,Centre - Zum Queen Station Stop WB,,  43.690964, -79.754764,,,0,,,1
+00091350,3528,Queen St W e/of Major William Sharpe,,  43.670675, -79.777034,,,0,,,1
+00091360,3804,James Potter - Zum Queen West Station Stop WB,,  43.662863, -79.785716,,,0,,,1
+00091365,3805,Queen St W opp Angelgate Rd,,  43.660969, -79.787841,,,0,,,1
+00091370,3806,Creditview - Zum Queen West Station Stop WB,,  43.656476, -79.792832,,,0,,,1
+00091375,3807,Queen St opp Links Lane,,  43.654256, -79.795260,,,0,,,1
+00091380,3808,Queen St w/of Elbern Markell Dr,,  43.651734, -79.797903,,,0,,,1
+00092000,3774,Chinguacousy - Zum Queen West Station Stop WB,,  43.666174, -79.782134,,,0,,,1
+15090711,2315,Mount Pleasant GO Station - Route 1 / 561 Stop,,  43.674774, -79.822827,,,0,place_MPGO,,1
+15090825,1268,Mississauga Rd n/of Adamsville Rd,,  43.651233, -79.807886,,,0,,,1
+15090826,1269,Williams - Zum Queen West Station Stop NB,,  43.658624, -79.818007,,,0,,,1
+16090503,2809,Mississauga Rd - Zum Queen West Station Stop WB,,  43.648293, -79.801803,,,0,,,1
+16090504,2810,Bovaird - Zum Queen West Station Stop EB,,  43.667532, -79.828847,,,0,,,1
+16090506,2812,Ebenezer Rd e/of Royal Country Dr,,  43.770674, -79.665114,,,0,,,1
+16090507,2813,Ebenezer Rd e/of Alfonso Cres,,  43.767900, -79.668228,,,0,,,1
+16090508,2814,Ebenezer Rd e/of Don Minaker Dr,,  43.765173, -79.671138,,,0,,,1
+19030401,4202,Bovaird Dr w/of Elbern Markell Dr,,  43.668788, -79.827396,,,0,,,0
+19090339,4257,Mississauga Rd s/of Royal West Dr,,  43.662160, -79.822665,,,0,,,1
+20090801,4263,Clark Blvd e/of Dixie Rd,,  43.711093, -79.722411,,,0,,,1
+26042704,4466,W Ebenezer Rd at The Gore Rd,,  43.771718, -79.663909,,,0,,,1

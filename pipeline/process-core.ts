@@ -21,7 +21,7 @@ import { ROUTE_ARTIFACT_SCHEMA_VERSION } from '../shared/artifactSchema.js';
 import { DAY_TYPES, WEEKDAYS, type DayName, type DayType } from '../types/gtfs.js';
 import { ALL_DAYS } from '../shared/dayTypes.js';
 import { expandFrequencyWindow, expandTripFrequencyWindows, isSingleTripFrequencyWindow, parseFrequencyWindow, SINGLE_TRIP_WINDOW_MAX_DEPARTURES, SINGLE_TRIP_WINDOW_SPAN_TOLERANCE_MIN, t2m, type FrequencyWindow } from './transit-utils.js';
-import { adaptiveMedianHeadwayInWindow, computeHourMaxGaps, computePeriodHeadways, computePeriodHeadwayRanges, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, hasGenuineBranchPattern, hasSustainedFrequentService, hasSustainedNightService, headsignOverlapMinHeadway, headwayToTier, isThinAllDayTerminalSample, medianHeadwayInWindow, MIN_ALL_DAY_TERMINAL_DEPARTURES, nightServiceDepartureTimes, NIGHT_SERVICE_WINDOW_END_MIN, resolveTerminalHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
+import { adaptiveMedianHeadwayInWindow, computeHourMaxGaps, computePeriodHeadways, computePeriodHeadwayRanges, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, hasSustainedFrequentService, hasSustainedNightService, headsignOverlapMinHeadway, headwayToTier, isThinAllDayTerminalSample, medianHeadwayInWindow, MIN_ALL_DAY_TERMINAL_DEPARTURES, nightServiceDepartureTimes, NIGHT_SERVICE_WINDOW_END_MIN, resolveTerminalHeadline, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
 import { computeRouteBaseFares, detectBusSubType } from './route-metadata.js';
 import { buildStopsMeta } from './stopsMeta.js';
 import { clipLineBetweenPositions, clipLineBetweenStops, projectStopsOntoShape, simplifyLine } from './geometry.js';
@@ -269,6 +269,16 @@ export function selectTerminalDepartureTimes(
  * shape's trips (capmetro 2: four trips per shape, an 80-minute hole, "infrequent" under a
  * 16-minute headline). The tier is null for rail, which phase 2 grades on a midday window.
  */
+/** The Step 1 headline window (midday, then PM peak, then a sustained 6-22h value) read as the
+ * typical wait on the headsign's pooled departures at the terminal, or null (#772). */
+function pooledTerminalHeadway(times: readonly number[] | undefined): number | null {
+  if (!times || times.length === 0) return null;
+  const sorted = [...times].sort((a, b) => a - b);
+  return medianHeadwayInWindow(sorted, 540, 900, 3, true)
+    ?? medianHeadwayInWindow(sorted, 900, 1140, 3, true)
+    ?? sustainedMedianHeadwayInWindow(sorted, 360, 1320, 3, undefined, true);
+}
+
 export function scopedTerminalHeadline(
   times: readonly number[] | undefined,
   day: DayType,
@@ -285,7 +295,7 @@ export function scopedTerminalHeadline(
   const daytime = sorted.filter(t => t >= 360 && t <= 1320);
   if (new Set(daytime).size < MIN_ALL_DAY_TERMINAL_DEPARTURES
     || daytime[daytime.length - 1] - daytime[0] <= BURST_MAX_SPAN_MINUTES) return null;
-  const headway = sustainedMedianHeadwayInWindow(sorted, 360, 1320, 3);
+  const headway = sustainedMedianHeadwayInWindow(sorted, 360, 1320, 3, undefined, true);
   if (headway == null) return null;
   const dayConfig = DEFAULT_CRITERIA.dayTypes[day];
   if (railLike || !dayConfig) return { headway, tier: null };
@@ -892,9 +902,13 @@ export async function processGtfsBuffer(
   // emit two overlapping features per line. When duplicates exist, keep the lower headway
   // (more frequent / more trips active in the analysis window).
   const dedupedFeatures = new Map<string, GeoJsonFeature>();
+  // Each feature's plain-median headway, which dedupe compares (#772).
+  const dedupeHeadwayByFeature = new Map<GeoJsonFeature, number | null>();
   // Feature → the shapeId it was actually built from, so the per-stop headway
   // resolution loop below can pool departures scoped to that exact physical path.
   const featureShapeId = new Map<GeoJsonFeature, string>();
+  // Feature → whether its pattern runs on the slot's representative weekday (Weekday only).
+  const featureRepWeekday = new Map<GeoJsonFeature, { runs: boolean; carries: boolean }>();
   // Feature → its stop-map group name (routeGroupName), which differs from the displayed
   // routeShortName when the feed's short name is empty (#717).
   const featureGroupName = new Map<GeoJsonFeature, string>();
@@ -943,23 +957,52 @@ export async function processGtfsBuffer(
     const existing = dedupedFeatures.get(dedupeKey);
     const isRailRoute = route?.route_type === '2' || route?.route_type === 2;
     const initialPeriodHeadways = computePeriodHeadways(result.times);
-    const newHeadway = result.partialWeekday || result.previousNightTailOnly || result.serviceClass === 'irregular' || result.tier === 'span'
-      ? null
-      : Math.round(initialPeriodHeadways.midday ?? result.medianHeadway);
+    const notRated = result.partialWeekday || result.previousNightTailOnly || result.serviceClass === 'irregular' || result.tier === 'span';
+    const newHeadway = notRated ? null : Math.round(initialPeriodHeadways.midday ?? result.medianHeadway);
+    // Dedupe picks the shape that speaks for the slot by the plain median, as before #772, so
+    // reading alternating gaps honestly never swaps which shape is drawn.
+    const newDedupeHeadway = notRated ? null
+      : Math.round(computePeriodHeadways(result.times, false).midday ?? result.plainMedianHeadway ?? result.medianHeadway);
     // A drawn line always beats a mapless Point for the same slot, whichever is more frequent
     // and whichever arrives first: when two route IDs share a short name and only one has
     // shapes, reprocessing must never turn a line that draws today into a point.
     const existingHasShape = existing?.geometry.type === 'LineString';
     if (existing && existingHasShape && !hasRouteShape) continue;
     const replacesMaplessWithShape = existing != null && !existingHasShape && hasRouteShape;
+    // Weekday: among patterns competing for one slot, the drawn line comes from a pattern that
+    // runs on the slot's representative weekday, so the line and its stop data describe the
+    // same service (#716: cata-state-college VE Campus drew the Friday-only shape although
+    // the route's typical weekday is Mon-Thu). Only decides between two drawn lines where
+    // one carries that day and the other does not run on it; every other case keeps the
+    // headway rule below.
+    const repWeekday = result.day === 'Weekday'
+      ? (cleanedForDedup ? representativeWeekday.headsign.get(`${groupName}::${result.dir}::${cleanedForDedup}`) : undefined)
+        ?? representativeWeekday.group.get(`${groupName}::${result.dir}`)
+      : undefined;
+    // A pattern "carries" the representative weekday when it has at least half of the slot's
+    // departures on it. A thin fragment (capmetro gives nearly every trip its own shape) is
+    // never preferred over a more frequent pattern just for running on that day.
+    const repIndex = repWeekday != null ? WEEKDAYS.indexOf(repWeekday) : -1;
+    const slotCounts = repWeekday == null ? undefined
+      : (cleanedForDedup ? weekdayCounts.headsign.get(`${groupName}::${result.dir}::${cleanedForDedup}`) : undefined)
+        ?? weekdayCounts.group.get(`${groupName}::${result.dir}`);
+    const shapeCounts = result.shapeId ? weekdayCounts.shape.get(result.shapeId) : undefined;
+    const newRunsOnRepDay = repWeekday != null && (result.daysIncluded?.includes(repWeekday) ?? false);
+    const newCarriesRepDay = newRunsOnRepDay && shapeCounts != null && slotCounts != null
+      && shapeCounts[repIndex] * 2 >= slotCounts[repIndex];
+    const bothDrawn = existing != null && existingHasShape && hasRouteShape && repWeekday != null;
+    const existingRep = bothDrawn ? featureRepWeekday.get(existing) : undefined;
+    if (bothDrawn && existingRep?.carries && !newRunsOnRepDay) continue;
+    const prefersRepDayShape = bothDrawn && !existingRep?.runs && newCarriesRepDay;
     // Otherwise skip if: new result is span (null headway) — span never beats a real tier.
     // Or if existing already has an equal or better real headway.
     if (
       existing &&
       !replacesMaplessWithShape &&
-      (newHeadway == null ||
-       (existing.properties.headway != null &&
-        (existing.properties.headway as number) <= newHeadway))
+      !prefersRepDayShape &&
+      (newDedupeHeadway == null ||
+       (dedupeHeadwayByFeature.get(existing) != null &&
+        (dedupeHeadwayByFeature.get(existing) as number) <= newDedupeHeadway))
     ) continue;
 
     const newFeature: GeoJsonFeature = {
@@ -1019,6 +1062,8 @@ export async function processGtfsBuffer(
     };
     if (existing) maplessStopSequence.delete(existing);
     dedupedFeatures.set(dedupeKey, newFeature);
+    featureRepWeekday.set(newFeature, { runs: newRunsOnRepDay, carries: newCarriesRepDay });
+    dedupeHeadwayByFeature.set(newFeature, newDedupeHeadway);
     if (!hasRouteShape) maplessStopSequence.set(newFeature, maplessSequence);
     if (hasRouteShape && shapeId) featureShapeId.set(newFeature, shapeId);
     featureGroupName.set(newFeature, groupName);
@@ -1529,6 +1574,10 @@ export async function processGtfsBuffer(
 
     // Step 1: compute all-day, per-period, and per-hour headways for every stop in the route+dir group.
     const allStopHw: Record<string, number> = {};
+    // The same all-day and midday values on the plain median. Step 4's branch decision reads
+    // these, so the alternating-gap reading only ever raises a headline (#772).
+    const allStopHwPlain: Record<string, number> = {};
+    const allStopMiddayHwPlain: Record<string, number> = {};
     const allStopPeriodHw: Record<string, Partial<Record<PeriodKey, number>>> = {};
     const allStopPeriodCoverageHw: Record<string, HeadwayByPeriod> = {};
     const allStopPeriodMaxGaps: Record<string, HeadwayByPeriodMaxGap> = {};
@@ -1551,13 +1600,19 @@ export async function processGtfsBuffer(
       // would median right back down to the misleading peak-cluster gap. Rejecting a
       // disproportionate single gap catches that case while still rescuing routes with real,
       // consistent service that simply falls outside 9h–19h (e.g. TTC 32, 5–15min gaps all day).
-      const hw = medianHeadwayInWindow(times, 540, 900, 3)             // midday 9–15h
-              ?? medianHeadwayInWindow(times, 900, 1140, 3)            // PM peak 15–19h
-              ?? sustainedMedianHeadwayInWindow(times, 360, 1320, 3);  // last resort: raw all-day 6–22h
+      const hw = medianHeadwayInWindow(times, 540, 900, 3, true)             // midday 9–15h
+              ?? medianHeadwayInWindow(times, 900, 1140, 3, true)            // PM peak 15–19h
+              ?? sustainedMedianHeadwayInWindow(times, 360, 1320, 3, undefined, true);  // last resort: raw all-day 6–22h
       if (hw != null) allStopHw[stopId] = hw;
+      const hwPlain = medianHeadwayInWindow(times, 540, 900, 3)
+              ?? medianHeadwayInWindow(times, 900, 1140, 3)
+              ?? sustainedMedianHeadwayInWindow(times, 360, 1320, 3);
+      if (hwPlain != null) allStopHwPlain[stopId] = hwPlain;
+      const middayPlain = medianHeadwayInWindow(forCrossMidnightWindow(times, PERIODS.midday.end), PERIODS.midday.start, PERIODS.midday.end, 3);
+      if (middayPlain != null) allStopMiddayHwPlain[stopId] = middayPlain;
       const byPeriod: Partial<Record<PeriodKey, number>> = {};
       for (const [pk, { start, end }] of Object.entries(PERIODS) as [PeriodKey, { start: number; end: number }][]) {
-        const ph = medianHeadwayInWindow(forCrossMidnightWindow(times, end), start, end, 3);
+        const ph = medianHeadwayInWindow(forCrossMidnightWindow(times, end), start, end, 3, true);
         if (ph != null) byPeriod[pk] = ph;
       }
       allStopPeriodMaxGaps[stopId] = computePeriodMaxGaps(times);
@@ -1675,9 +1730,6 @@ export async function processGtfsBuffer(
       // statistics of one uniform service, not a real protection scenario).
       const branchHw = feature.properties.headway as number | null;
       const branchTripCount = featureBranchTripCount.get(feature) ?? 0;
-      const nonTerminalStopHws = onShape.slice(0, -1)
-        .map(({ stopId }) => stopHeadways[stopId])
-        .filter((v): v is number => v != null);
       // A terminal value from the all-day fallback window on fewer than four departures is a
       // two-gap mean, not a headway: keep the phase 2 branch value (metrolink Riverside, #733).
       const thinTerminalSample = branchHw != null
@@ -1702,11 +1754,20 @@ export async function processGtfsBuffer(
           railFeature,
         )
         : null;
+      // The branch decision runs on plain medians (resolveTerminalHeadline, #772).
+      const plainStopHws = Object.keys(stopHeadways).map(id => allStopHwPlain[id]).filter((v): v is number => v != null).sort((a, b) => a - b);
+      const plainMid = Math.floor(plainStopHws.length / 2);
+      const plainAllStopMedian = plainStopHws.length === 0 ? allStopMedian
+        : plainStopHws.length % 2 === 0 ? Math.round((plainStopHws[plainMid - 1] + plainStopHws[plainMid]) / 2) : plainStopHws[plainMid];
+      const plainTerminalComputedHw = (terminalId ? allStopMiddayHwPlain[terminalId] ?? allStopHwPlain[terminalId] : undefined)
+        ?? plainAllStopMedian;
+      const plainNonTerminalStopHws = onShape.slice(0, -1)
+        .map(({ stopId }) => allStopHwPlain[stopId])
+        .filter((v): v is number => v != null);
       const headway = thinTerminalSample
         ? (scoped?.headway ?? branchHw)
-        : hasGenuineBranchPattern(terminalComputedHw, nonTerminalStopHws)
-        ? resolveTerminalHeadway(terminalComputedHw, branchHw, branchTripCount)
-        : terminalComputedHw;
+        : resolveTerminalHeadline(plainTerminalComputedHw, plainNonTerminalStopHws, terminalComputedHw, branchHw, branchTripCount,
+          pooledTerminalHeadway(terminalId ? headsignMap?.get(terminalId) : undefined));
       feature.properties.headway = headway;
 
       // AI-220: Step 4 may only degrade a tier (branch less frequent than trunk),

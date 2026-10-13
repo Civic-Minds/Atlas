@@ -36,6 +36,7 @@ import {
 } from './overrideAudit.js';
 import { readFeedReviewHistory, shouldReviewNextFeed } from './feedReview.js';
 import { todayUtcYmd } from './utils.js';
+import { readConfigAgencyName, resolveAgencyName } from './agencyName.js';
 import { candidateIsOlderThanActive } from './refreshMeta.js';
 import {
   COUNTRY_LAUNCH_FLAG,
@@ -57,7 +58,7 @@ const positional = rawArgs.filter(a => !FLAG_ARGS.has(a) && a !== '--force');
 
 const input = positional[0];
 const slug = positional[1];
-const agencyName = positional[2] || slug;
+const agencyName = resolveAgencyName(positional[2], slug, positional[2] ? null : readConfigAgencyName(slug));
 const centerArg = positional[3];
 
 if (!input || !slug) {
