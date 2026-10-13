@@ -88,6 +88,31 @@ describe('AgencyPage intro', () => {
   });
 });
 
+describe('AgencyPage intro place, notes and headings', () => {
+  const um = { ...TTC, slug: 'um', name: 'University of Michigan Transit Services (Toronto)', city: 'Toronto', stops: 12, websiteUrl: 'https://example.org' };
+
+  it('links the place to its area page and drops the repeated city from the name', () => {
+    const d = agencyPageData(um, [um, HSR], '2026-10-13T00:00:00Z', { slug: 'toronto', name: 'Toronto' });
+    expect(d.intro.startsWith('University of Michigan Transit Services operates 5 routes')).toBe(true);
+    view(<AgencyPage data={d} />);
+    expect(screen.getByRole('link', { name: 'Toronto' }).getAttribute('href')).toBe('/area/toronto');
+    expect(screen.getByRole('link', { name: 'University of Michigan Transit Services' }).getAttribute('href')).toBe('https://example.org');
+    expect(screen.getByText(/Agency website:/)).toBeTruthy();
+    expect(screen.getByText(/Based on the agency's published timetable, not live arrivals\./)).toBeTruthy();
+  });
+
+  it('has the bar note, the dash note above the tables, and counts without brackets', () => {
+    view(<AgencyPage data={agencyPageData(TTC, [TTC, HSR], null)} />);
+    expect(screen.getByRole('link', { name: /See all agencies/ }).getAttribute('href')).toBe('/agencies');
+    expect(screen.getByText("The bar splits this agency's routes by how often they run on a weekday midday. Each route is judged by its slower direction.")).toBeTruthy();
+    expect(screen.getByText('A dash means no regular service in that period.')).toBeTruthy();
+    expect(screen.queryByText(/sustained/)).toBeNull();
+    const caption = screen.getAllByText(/^Subway routes/)[0];
+    expect(caption.textContent).toBe('Subway routes 2');
+    expect(caption.querySelector('span')?.className).toContain('font-normal');
+  });
+});
+
 describe('AgencyPage other agencies list', () => {
   it('is titled by the area, links the area, and links every agency', () => {
     const withArea = agencyPageData(TTC, [TTC, HSR], null, { slug: 'toronto', name: 'Toronto' }, [TTC, HSR]);

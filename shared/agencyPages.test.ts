@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
-  agencyIntroSentence, agencySpansArea, namesList, agencySpanShort, agencyBreadcrumbs, agencyDatesText, agencyLeadSentence, agencyMapHref, agencyPageDescription, agencyPageH1, agencyPageJsonLd,
+  agencyIntroSentence, introName, agencySpansArea, namesList, agencySpanShort, agencyBreadcrumbs, agencyDatesText, agencyLeadSentence, agencyMapHref, agencyPageDescription, agencyPageH1, agencyPageJsonLd,
   agencyPageData, agencyPagePath, agencyPageTitle, agencySpanText, agencyStats, bandCounts, formatDataDate, nearbyAgencies, resolveAgencySeo, trimRedundantCity,
   type AgencyPageRoute, type AgencyPageSummary, bestRoute, modesText, weekendLabel,
 } from './agencyPages';
@@ -132,9 +132,25 @@ describe('trimRedundantCity', () => {
 
 describe('dates', () => {
   it('names each date for what it is', () => {
+    const lead = "Based on the agency's published timetable, not live arrivals.";
     expect(agencyDatesText({ lastRefreshedAt: '2026-08-27', validThrough: '20261031' }, '2026-10-13T06:34:30.913Z'))
-      .toBe('Schedule refreshed Aug 27, 2026, valid through Oct 31, 2026. Atlas data release Oct 13, 2026.');
-    expect(agencyDatesText({ lastRefreshedAt: null, validThrough: null }, null)).toBe('.');
+      .toBe(`${lead} This timetable was published Aug 27, 2026 and covers service until Oct 31, 2026. Atlas last updated this page Oct 13, 2026.`);
+    expect(agencyDatesText({ lastRefreshedAt: null, validThrough: null }, null)).toBe(lead);
+    expect(agencyDatesText({ lastRefreshedAt: '2026-08-27', validThrough: null }, '2026-10-13')).toBe(`${lead} This timetable was published Aug 27, 2026. Atlas last updated this page Oct 13, 2026.`);
+    expect(agencyDatesText({ lastRefreshedAt: null, validThrough: '20261031' }, null)).toBe(`${lead} This timetable covers service until Oct 31, 2026.`);
+  });
+
+  it('says plainly when the timetable has ended', () => {
+    expect(agencyDatesText({ lastRefreshedAt: '2026-01-05', validThrough: '20260901' }, '2026-10-13T00:00:00Z'))
+      .toBe("Based on the agency's published timetable, not live arrivals. This timetable ended on Sep 1, 2026; the agency hasn't published a newer one yet. Atlas last updated this page Oct 13, 2026.");
+  });
+
+  it('drops a trailing city from the agency name only when the sentence names that place', () => {
+    expect(introName('University of Michigan Transit Services (Ann Arbor)', 'Ann Arbor')).toBe('University of Michigan Transit Services');
+    expect(introName('University of Michigan Transit Services (Ann Arbor)', 'the Greater Toronto and Hamilton Area')).toBe('University of Michigan Transit Services (Ann Arbor)');
+    expect(introName('Alameda-Contra Costa Transit District (AC Transit)', 'Berkeley')).toBe('Alameda-Contra Costa Transit District (AC Transit)');
+    expect(introName('ABQ RIDE (Albuquerque)', 'Albuquerque')).toBe('ABQ RIDE');
+    expect(introName('Toronto Transit Commission', 'Toronto')).toBe('Toronto Transit Commission');
   });
 });
 

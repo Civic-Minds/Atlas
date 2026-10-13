@@ -177,7 +177,7 @@ export function areaAboutParagraph(d: AreaPageData): string {
 export function areaDatesText(d: Pick<AreaPageData, 'newestRefresh' | 'releaseDate'>): string {
   const refreshed = formatDataDate(d.newestRefresh);
   const release = formatDataDate(d.releaseDate);
-  return [refreshed ? `Newest schedule refresh ${refreshed}` : '', release ? `Atlas data release ${release}` : ''].filter(Boolean).join('. ') + '.';
+  return ["Based on the agencies' published timetables, not live arrivals.", refreshed ? `Newest timetable published ${refreshed}.` : '', release ? `Atlas last updated this page ${release}.` : ''].filter(Boolean).join(' ');
 }
 
 /** The map link: `?area=<slug>` selects the area's agencies and fits the map to it (the app does the framing). */
