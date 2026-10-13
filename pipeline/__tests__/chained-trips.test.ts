@@ -2,7 +2,7 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import JSZip from 'jszip';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
-import { processGtfsBuffer } from '../process-core';
+import { findChainedTripEnds, processGtfsBuffer } from '../process-core';
 
 // TTC 47 Lansdowne (real feed 20261031, route 47, weekday service 1, shapes thinned). TTC splits
 // each run at Lansdowne Station: southbound a bus runs 16600 -> 5224 on shape 1122805 (arriving,
@@ -34,5 +34,33 @@ describe('chained trips of one block', () => {
       expect(direction.headwayByPeriod.midday).toBeGreaterThanOrEqual(6);
     }
     expect(weekday).toHaveLength(2);
+  });
+});
+
+describe('findChainedTripEnds', () => {
+  // Trip A runs X -> Y and ends at Y at 10:52; trip B leaves Y at `leave` toward Z.
+  const stopTimes = (leave: string) => new Map([
+    ['A', [{ stop_id: 'X', stop_sequence: 1, departure_time: '10:30:00' }, { stop_id: 'Y', stop_sequence: 2, arrival_time: '10:52:00' }]],
+    ['B', [{ stop_id: 'Y', stop_sequence: 1, departure_time: leave }, { stop_id: 'Z', stop_sequence: 2, arrival_time: '11:10:00' }]],
+  ]);
+  const firstDeparture = new Map([['A', 630], ['B', 654]]);
+  const trip = (trip_id: string, block_id?: string) =>
+    ({ trip_id, route_id: '47', service_id: '1', direction_id: '0', trip_headsign: 'Queen', block_id });
+
+  it('chains a same-block hand-over within 10 minutes', () => {
+    const chained = findChainedTripEnds([trip('A', 'b1'), trip('B', 'b1')], stopTimes('10:54:00'), firstDeparture);
+    expect([...chained]).toEqual([['A|Y|2', true]]);
+  });
+
+  it('keeps both departures when the feed has no block_id', () => {
+    expect(findChainedTripEnds([trip('A'), trip('B')], stopTimes('10:54:00'), firstDeparture).size).toBe(0);
+  });
+
+  it('keeps both departures for two different blocks at the same stop', () => {
+    expect(findChainedTripEnds([trip('A', 'b1'), trip('B', 'b2')], stopTimes('10:54:00'), firstDeparture).size).toBe(0);
+  });
+
+  it('keeps both departures after a layover over 10 minutes', () => {
+    expect(findChainedTripEnds([trip('A', 'b1'), trip('B', 'b1')], stopTimes('11:03:00'), new Map([['A', 630], ['B', 663]])).size).toBe(0);
   });
 });
