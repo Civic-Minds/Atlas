@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Maximize2, X } from 'lucide-react';
-import { headwayToTierColor } from '../../utils/colors';
+import { headwayToTierColor, getHeadwayTiers } from '../../utils/colors';
 import { useColorVision } from '../../context/ColorVisionContext';
 export { headwayToTierColor };
 import { periodKeyForHour, isHourInPeriod, SPARKLINE_HOURS, TIME_PERIODS } from '../../../shared/config';
@@ -9,7 +9,7 @@ import { PERIOD_LABELS } from '../../hooks/useIntervalStats';
 import type { TimePeriod } from '../../hooks/useIntervalStats';
 import type { HeadwayByPeriod, HeadwayByHour } from '../../hooks/useAgencyData';
 import type { HeadwayByHourMaxGap } from '../../../shared/config';
-import { CONTROL_ACTIVE, CONTROL_INACTIVE } from '../../styles';
+import { ACTION_PRIMARY, APP_TAB_INACTIVE, GLASS_PILL } from '../../styles';
 
 const HOURS = SPARKLINE_HOURS;
 
@@ -26,6 +26,18 @@ function formatClock(totalMinutes: number): string {
 
 function formatHourTitle(h: number, headway: number): string {
   return `${formatClock(h * 60)}: every ${headway} min`;
+}
+
+/**
+ * Bar height for one hour. Height is proportional to trips per hour
+ * (1 / headway) measured from zero, so a 35-minute hour is ~2/3 the height of
+ * a 23-minute hour instead of collapsing to a stub. A small floor keeps any
+ * hour with service visible.
+ */
+export function sparklineBarHeight(headway: number | null | undefined, maxFreq: number, chartHeight: number): number {
+  if (headway == null || !(headway > 0) || !(maxFreq > 0)) return 0;
+  const floor = Math.min(3, chartHeight);
+  return Math.max(floor, Math.round((1 / headway) / maxFreq * chartHeight));
 }
 
 const HOUR_TO_PERIOD: Record<number, string> = Object.fromEntries(
@@ -96,13 +108,15 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
   }, [isExpanded]);
 
   const H = expanded ? 150 : 28;
-  const selectedExpandedDirection = expanded ? directionOptions?.find(option => option.key === expandedDirection) : undefined;
-  const displayedByHour = selectedExpandedDirection?.byHour ?? byHour;
+  const displayedByHour = byHour;
+  // The full-day view shows the direction picked with the pills above it;
+  // the inline chart always shows the route's merged schedule.
+  const modalByHour = directionOptions?.find(option => option.key === expandedDirection)?.byHour ?? byHour;
   const valids = HOURS.map(h => displayedByHour[h]).filter((v): v is number => v != null);
   if (valids.length === 0) return null;
 
   const maxFreq = Math.max(...valids.map(v => 1 / v));
-  const minFreq = Math.min(...valids.map(v => 1 / v));
+  const tierLegend = getHeadwayTiers(colorMode);
 
   const activePeriodKey = expanded ? null : period && period !== 'all' ? period : null;
 
@@ -172,7 +186,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
             className="absolute inset-y-5 rounded-sm pointer-events-none odd:bg-[var(--bg-btn-hover)] even:bg-transparent opacity-40"
             style={{ left: `${band.left * 100}%`, width: `${band.width * 100}%` }}
           >
-            <span className="absolute -top-5 left-1 text-[9px] font-black text-[var(--text-muted)] whitespace-nowrap">
+            <span className="absolute -top-5 left-0.5 sm:left-1 text-[8px] sm:text-[9px] font-black text-[var(--text-muted)] whitespace-nowrap">
               {band.label}
             </span>
           </div>
@@ -199,12 +213,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
             const hw = displayedByHour[h];
             const maxGap = maxGapByHour?.[h];
             const hasValue = hw != null;
-            const freq = hw ? 1 / hw : 0;
-            const barH = hasValue
-              ? (maxFreq > minFreq
-                  ? Math.max(4, Math.round((freq - minFreq) / (maxFreq - minFreq) * (H - 4) + 4))
-                  : H)
-              : 0;
+            const barH = sparklineBarHeight(hw, maxFreq, H);
             const inActivePeriod = activePeriodKey
               ? isHourInPeriod(h, activePeriodKey)
               : true;
@@ -230,10 +239,19 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
                   ? `${formatHourTitle(h, hw)}${maxGap != null && maxGap > hw ? `; longest gap ${maxGap} min` : ''}`
                   : undefined}
               >
-                <div style={{ height: H }} className="flex items-end justify-center w-full">
+                <div style={{ height: H }} className="relative flex items-end justify-center w-full">
+                  {expanded && hasValue && (
+                    <span
+                      data-testid="sparkline-headway-label"
+                      className="absolute left-1/2 -translate-x-1/2 text-[8px] sm:text-[10px] font-bold tabular-nums leading-none text-[var(--text-primary)] pointer-events-none"
+                      style={{ bottom: barH + 3 }}
+                    >
+                      {hw}
+                    </span>
+                  )}
                   {hasValue && (
                     segments.length > 0 && segmentTotalFreq > 0 ? (
-                      <div className={`${expanded ? 'w-[14px]' : 'w-[7px]'} flex flex-col-reverse overflow-hidden rounded-sm transition-[opacity,transform] duration-75 ${opacity} ${isTooltipHover ? 'scale-y-[1.15] ring-1 ring-[var(--accent)] ring-offset-1 ring-offset-[var(--bg-app)]' : ''}`}>
+                      <div className={`${expanded ? 'w-[8px] sm:w-[14px]' : 'w-[7px]'} flex flex-col-reverse overflow-hidden rounded-sm transition-[opacity,transform] duration-75 ${opacity} ${isTooltipHover ? 'scale-y-[1.15] ring-1 ring-[var(--accent)] ring-offset-1 ring-offset-[var(--bg-app)]' : ''}`}>
                         {segments.map(segment => (
                           <div
                             key={segment.label}
@@ -244,7 +262,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
                     ) : (
                       <div
                         style={{ height: barH, background: barColor }}
-                        className={`${expanded ? 'w-[14px]' : 'w-[7px]'} rounded-sm transition-[background,opacity,transform] duration-75 ${opacity} ${isTooltipHover ? 'scale-y-[1.15] ring-1 ring-[var(--accent)] ring-offset-1 ring-offset-[var(--bg-app)]' : ''}`}
+                        className={`${expanded ? 'w-[8px] sm:w-[14px]' : 'w-[7px]'} rounded-sm transition-[background,opacity,transform] duration-75 ${opacity} ${isTooltipHover ? 'scale-y-[1.15] ring-1 ring-[var(--accent)] ring-offset-1 ring-offset-[var(--bg-app)]' : ''}`}
                       />
                     )
                   )}
@@ -269,9 +287,14 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
         {HOURS.map(h => (
           <div key={h} className="flex-1 min-w-0 text-center">
             {(expanded || HOUR_LABELS[h]) && (
-              <span className={expanded ? 'text-[9px] text-[var(--text-dim)]' : 'text-[7px] text-[var(--text-dim)]'}>
-                {expanded ? formatClock(h * 60) : HOUR_LABELS[h]}
-              </span>
+              expanded ? (
+                // Phones get every third hour so the clock labels don't collide.
+                <span className={`text-[9px] text-[var(--text-dim)] whitespace-nowrap ${(h - HOURS[0]) % 3 === 0 ? '' : 'hidden sm:inline'}`}>
+                  {formatClock(h * 60)}
+                </span>
+              ) : (
+                <span className="text-[7px] text-[var(--text-dim)]">{HOUR_LABELS[h]}</span>
+              )
             )}
           </div>
         ))}
@@ -281,6 +304,17 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
           {hoveredHour != null && displayedByHour[hoveredHour] != null
             ? formatHourTitle(hoveredHour, displayedByHour[hoveredHour]!)
             : 'Hover over an hour to inspect its scheduled headway window.'}
+        </div>
+      )}
+      {expanded && (
+        <div className="mt-2 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[10px] font-bold text-[var(--text-dim)]" data-testid="sparkline-legend">
+          <span className="text-[var(--text-muted)]">Numbers = minutes between trips. Taller bar = more trips that hour. Colour:</span>
+          {tierLegend.map(tier => (
+            <span key={tier.label} className="inline-flex items-center gap-1">
+              <span className="inline-block h-2 w-2 rounded-sm" style={{ background: tier.color }} />
+              {tier.label}
+            </span>
+          ))}
         </div>
       )}
       {allowExpand && !expanded && isExpanded && createPortal(
@@ -309,15 +343,14 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
               </button>
             </div>
             {directionOptions && directionOptions.length > 1 && (
-              <div className="mt-4 flex flex-wrap gap-2" role="tablist" aria-label="Schedule direction">
+              <div className="mt-4 flex flex-wrap gap-2" role="group" aria-label="Schedule direction">
                 {directionOptions.map(option => (
                   <button
                     key={option.key}
                     type="button"
-                    role="tab"
-                    aria-selected={expandedDirection === option.key}
+                    aria-pressed={expandedDirection === option.key}
                     onClick={() => setExpandedDirection(option.key)}
-                    className={`h-7 px-2.5 flex items-center justify-center text-[11px] font-bold rounded-full border transition-colors ${expandedDirection === option.key ? CONTROL_ACTIVE : CONTROL_INACTIVE}`}
+                    className={`h-7 px-2.5 flex items-center justify-center text-[11px] font-bold border transition-colors ${expandedDirection === option.key ? `${GLASS_PILL} ${ACTION_PRIMARY}` : APP_TAB_INACTIVE}`}
                   >
                     {option.label}
                   </button>
@@ -325,7 +358,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
               </div>
             )}
             <HeadwaySparkline
-              byHour={displayedByHour}
+              byHour={modalByHour}
               period="all"
               onPeriodChange={() => {}}
               onPeriodHover={onPeriodHover}
