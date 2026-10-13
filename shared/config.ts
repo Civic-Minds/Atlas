@@ -71,9 +71,10 @@ function getAtlasMode(): AtlasMode {
 export const ATLAS_MODE = getAtlasMode();
 export const BETA_BUILD = ATLAS_MODE !== 'public';
 export const PREVIEW_BUILD = ATLAS_MODE === 'preview';
-// One static page per agency at /agency/<slug>, built from a committed summary of the data release.
-// Beta and dev only until Ryan has reviewed them; public builds neither route nor prerender them.
-export const AGENCY_PAGES_ENABLED = ATLAS_MODE === 'beta' || ATLAS_MODE === 'dev';
+// One static page per agency at /agency/<slug>, per area at /area/<slug>, and the /agencies index, built from a
+// committed summary of the data release. On for every build (public too, Ryan 2026-10-13); the public build
+// still drops beta-only agencies (see agencyPagesData).
+export const AGENCY_PAGES_ENABLED = true;
 export const RESEARCH_APPS_ENABLED = ATLAS_MODE === 'beta' || ATLAS_MODE === 'dev';
 // Route and stop cards open as a bottom sheet on phones instead of a narrow floating panel.
 // Beta-only while the layout is tried on real phones (Ryan, 2026-10-10, #647).
