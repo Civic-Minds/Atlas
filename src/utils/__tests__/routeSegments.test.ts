@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildRouteSegmentFeatures, clipSegmentRange, selectedRouteMatches } from '../routeSegments';
+import { buildRouteSegmentFeatures, clipSegmentRange } from '../routeSegments';
 import { getTierColor } from '../colors';
 
 // #690: the pipeline's per-line segments become clipped, tier-coloured pieces for the beta map.
@@ -37,17 +37,6 @@ describe('buildRouteSegmentFeatures', () => {
     expect(pieces[1].properties.color).toBe(getTierColor('20'));
     expect(pieces[1].geometry.coordinates).toEqual([[2.5, 0], [3, 0], [4, 0]]);
     expect(buildRouteSegmentFeatures(layers, 'midday')).toEqual([]);
-  });
-
-  it('keeps only the lines an accept callback allows (the selected route from unfiltered layers)', () => {
-    const layers = { ttc: { type: 'FeatureCollection' as const, features: [
-      line({ segments: [{ from: 0, to: 4, tier: '15', headway: 12 }] }),
-      line({ routeId: '63', segments: [{ from: 0, to: 4, tier: '30', headway: 24 }] }),
-    ] } };
-    expect(buildRouteSegmentFeatures(layers, 'all', 'default', p => selectedRouteMatches('ttc::29', p.agencySlug, p.routeId)).map(f => f.properties.routeId)).toEqual(['29']);
-    expect(selectedRouteMatches('ttc::29::A', 'ttc', '29')).toBe(true);
-    expect(selectedRouteMatches('ttc::29', 'ttc', '291')).toBe(false);
-    expect(selectedRouteMatches(null, 'ttc', '29')).toBe(false);
   });
 
   it('skips lines without segments or with stop data that does not line up', () => {

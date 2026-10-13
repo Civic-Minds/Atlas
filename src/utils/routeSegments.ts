@@ -45,19 +45,10 @@ export function clipSegmentRange(coords: number[][], stopPositions: number[], fr
   return clipLinestring(coords, tStart, tEnd);
 }
 
-/** True when a selected-route key (`slug::routeId` or `slug::routeId::branch`) names this route. */
-export function selectedRouteMatches(selectedRoute: string | null | undefined, agencySlug: string, routeId: string): boolean {
-  if (!selectedRoute) return false;
-  const [slug, id] = selectedRoute.split('::');
-  return slug === agencySlug && id === routeId;
-}
-
 export function buildRouteSegmentFeatures(
   layers: Record<string, GeoJSON.FeatureCollection> | AgencyLayers | undefined,
   period: TimePeriod,
   colorMode: ColorVisionMode = 'default',
-  /** Keep only lines this accepts (the selected route is built from the unfiltered layers). */
-  accept?: (p: { agencySlug: string; routeId: string; day: string | null }) => boolean,
 ): GeoJSON.Feature<GeoJSON.LineString, RouteSegmentProperties>[] {
   if (!layers || period !== 'all') return [];
   const out: GeoJSON.Feature<GeoJSON.LineString, RouteSegmentProperties>[] = [];
@@ -67,7 +58,6 @@ export function buildRouteSegmentFeatures(
       const p = feature.properties as unknown as (ShapeProperties & { segments?: LineSegmentRange[]; agencySlug?: string }) | null;
       const segments = p?.segments;
       if (!p || !Array.isArray(segments) || segments.length === 0) continue;
-      if (accept && !accept({ agencySlug: p.agencySlug ?? slug, routeId: String(p.routeId), day: p.day ?? null })) continue;
       const stopPositions = p.stopPositions;
       if (!Array.isArray(stopPositions) || !Array.isArray(p.stopOrder) || stopPositions.length !== p.stopOrder.length) continue;
       for (const segment of segments) {
